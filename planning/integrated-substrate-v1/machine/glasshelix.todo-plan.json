@@ -1,0 +1,1173 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "glasshelix"
+  },
+  "invariants": [
+    {
+      "id": "GH-IS1-OWNERSHIP",
+      "severity": "error",
+      "rule": "Cellerator owns reusable mathematical/dynamical computation; Baseplane owns sequence meaning and representations; GlassHelix owns scientific experiments. Reuse existing numerical/lifetime owners, preserve real consumers and separate Todo authorities."
+    },
+    {
+      "id": "GH-IS1-PRESERVE",
+      "severity": "error",
+      "rule": "Execute only after the reviewed predecessor barrier. Preserve useful mechanisms, source, successful outcomes and negative evidence. No hand editing Todo/generated authority, no Ampere activation, no preprint edits, no CellShard authority changes."
+    },
+    {
+      "id": "GH-IS1-EXTEND",
+      "severity": "error",
+      "rule": "Keep the libraries easy to extend and fast. No compulsory Cellpack format, universal hidden axis, second general runtime, or unmeasured default. Distinguish equivalent lowering, model choices and approximations."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "GH-IS1-000",
+      "kind": "epic",
+      "title": "GlassHelix integrated scientific experiment",
+      "objective": "Closure-only aggregate; no child depends on this epic.",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "scope": {
+        "read_paths": [
+          "planning/integrated-substrate-v1"
+        ],
+        "exclusive_paths": []
+      },
+      "completion_contract": {
+        "required": [
+          "All local required outcomes are integrated and truthfully evidenced; preserve unfinished frontier work."
+        ]
+      },
+      "gates": [
+        {
+          "id": "GH-IS1-CLOSURE",
+          "type": "task_state",
+          "task_id": "GH-IS1-CLOSE",
+          "status": "done",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "GH-IS1-ADOPT",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Reconcile finished predecessors and publish the small shared foundation",
+      "objective": "After the global predecessor barrier, inventory the completed frontier, assign every useful behavior/unfinished obligation, and integrate the minimum contracts needed by parallel lanes.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "planning/integrated-substrate-v1",
+          "include",
+          "src",
+          "CMakeLists.txt",
+          "cmake"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-ML2-0000"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-MOON-0000"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Global activation gate passes against live authorities; current claims, pending patches and frozen interfaces are reconciled without taking over predecessor work.",
+          "Expanded preservation and source-to-destination maps include all current predecessor outcomes and newly discovered work.",
+          "Small contract and dependency-target decision is committed and available to every child worktree; no broad new framework or numerical reset."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-ADOPT.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.",
+      "gates": [
+        {
+          "id": "GH-IS1-ADOPT-GLOBAL-BARRIER",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/integrated-substrate-v1/tools/gates.py",
+            "activation",
+            "--config",
+            "planning/integrated-substrate-v1/local-config.json"
+          ],
+          "cwd": ".",
+          "input_paths": [
+            "planning/integrated-substrate-v1/tools",
+            "planning/integrated-substrate-v1/local-config.json",
+            "planning/integrated-substrate-v1/machine"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GH-IS1-SCIENCE",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Unify scientific specifications and whole-hypothesis results",
+      "objective": "Make observations, models, hypotheses, conditioning and scientific result scope coherent without introducing general numerical ownership.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/GlassHelix/experiment",
+          "src/experiment",
+          "python/glasshelix/experiment",
+          "tests/substrate/science"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-ADOPT"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Measurement, state, parameters and mechanism interpretations remain distinct.",
+          "Whole joint alternatives and non-identifiability are preserved through results and replay.",
+          "One small experiment specification composes the predecessor native/model facilities."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-SCIENCE.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks."
+    },
+    {
+      "id": "GH-IS1-DATA",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Integrate the actual predecessor cohort and experiment adapters",
+      "objective": "Retain completed ML2 CellTag formulation/cohort work and make its evidence/splits reusable by experiment clients.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "python/glasshelix/data",
+          "src/data",
+          "experiments/celltag_reprogramming/data_adapter",
+          "tests/substrate/data"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-ADOPT"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Actual cohort/source/split and observability restrictions are preserved; no fabricated individual trajectories or paired modalities.",
+          "Preprocessing and sample/lineage/donor units are inspectable and replayable.",
+          "External missing data remains an explicit limitation, not silent replacement by remembered datasets."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-DATA.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks."
+    },
+    {
+      "id": "GH-IS1-MODELS",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Compose scientific models from Cellerator mathematics",
+      "objective": "Consolidate plain matrix, actor-port and current ML2 model clients; extract reusable numerical logic downward.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "python/glasshelix/models",
+          "include/GlassHelix/models",
+          "tests/substrate/models"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-ADOPT"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Plain and actor-local model choices use the common experiment surface and declared native/provider capabilities.",
+          "Generic math has a CE owner or a concrete CE extraction demand accepted at the foundation seam.",
+          "Loss choice and biological interpretation stay scientific policy, not kernel selection."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-MODELS.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks."
+    },
+    {
+      "id": "GH-IS1-ANALYSIS",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Integrate interrogation and scientific refactoring proposals",
+      "objective": "Unify response requests, perturbations, candidate comparison and evidence-labelled structural proposals.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "python/glasshelix/analysis",
+          "include/GlassHelix/analysis",
+          "python/glasshelix/refactoring",
+          "tests/substrate/analysis"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-ADOPT"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Requested responses use CE derivative capabilities without cloning differentiation or solver runtimes.",
+          "Supplied basis/refactoring demonstrations and inferred mechanisms remain distinct.",
+          "Uncertainty, readout/state migration and optimizer policy are explicit at the proposal boundary."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-ANALYSIS.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks."
+    },
+    {
+      "id": "GH-IS1-BUILD",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Make experiment execution and replay accessible",
+      "objective": "Integrate package entry points, installed CE consumption and reproducible result/replay paths.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "cmake/substrate",
+          "python/glasshelix/cli",
+          "tests/substrate/install",
+          "tests/substrate/replay"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-ADOPT"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "A user can run/evaluate/replay an experiment without importing moonshot directories.",
+          "Native and optional framework routes clearly expose dependencies and unsupported capabilities.",
+          "Historical missing raw benchmark evidence is not reconstructed or promoted as authenticated."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-BUILD.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks."
+    },
+    {
+      "id": "GH-IS1-MERGE-A",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Integrate the scientific consumer surface",
+      "objective": "Merge independent specification/data/model/analysis/package work into the experiment built on Cellerator.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "cmake",
+          "include",
+          "src",
+          "components",
+          "tests",
+          "examples",
+          "experiments",
+          "python",
+          "bindings",
+          "planning/integrated-substrate-v1/receipts"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-SCIENCE"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-IS1-DATA"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-IS1-MODELS"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-IS1-ANALYSIS"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-IS1-BUILD"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "A coherent experimental client is present in the accepted lineage, not several incompatible model demos.",
+          "Reusable numerical ownership is downward in CE; any unresolved demand is visible before native binding.",
+          "Dependent worktrees inherit integrated source and generated interface artifacts."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-MERGE-A.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks."
+    },
+    {
+      "id": "GH-IS1-BRIDGE",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Accept installed Cellerator mathematics and framework capabilities",
+      "objective": "Bind scientific requests to a current, evidenced CE provider rather than a prototype receipt.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "src/system",
+          "bindings",
+          "tests/substrate/interop",
+          "planning/integrated-substrate-v1/receipts"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-MERGE-A"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "External CE-INTEGRATE is effectively done; current source/build/capability evidence passes the provider gate.",
+          "Ordered scientific roles and output effects survive native binding.",
+          "Forward, requested state/parameter VJP and JVP use genuine supported native routes."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-BRIDGE.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.",
+      "gates": [
+        {
+          "id": "GH-IS1-BRIDGE-CELLERATOR-PROVIDER",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/integrated-substrate-v1/tools/gates.py",
+            "provider",
+            "--config",
+            "planning/integrated-substrate-v1/local-config.json",
+            "--consumer",
+            "GH-IS1-BRIDGE",
+            "--provider",
+            "cellerator"
+          ],
+          "cwd": ".",
+          "input_paths": [
+            "planning/integrated-substrate-v1/tools",
+            "planning/integrated-substrate-v1/local-config.json",
+            "planning/integrated-substrate-v1/machine"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GH-IS1-PIPELINE",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Deliver fitted/evaluated models and replayable scientific outputs",
+      "objective": "Exercise the current ML2 experiment and both useful moonshot model families through the integrated toolkit.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/celltag_reprogramming/integrated",
+          "examples/substrate/scientific_tool",
+          "tests/substrate/pipeline"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-BRIDGE"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "A supported fit/evaluation protocol, controls, checkpoint and replay work through installed components.",
+          "A refactoring proposal executes via CE and preserves or explicitly changes the model as declared.",
+          "No biological victory or unique mechanism is required for a valid experimental result."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-PIPELINE.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks."
+    },
+    {
+      "id": "GH-IS1-QUALIFY",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Evaluate scientific correctness, usability and total execution cost",
+      "objective": "Check data/interpretation boundaries, requested derivatives and experiment-level costs with meaningful controls.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "bench/substrate",
+          "tests/substrate/qualification",
+          "planning/integrated-substrate-v1/results/gh"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-PIPELINE"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Scientific units, leakage controls and whole-alternative semantics are tested, not assumed.",
+          "Native speed and model quality/cost are reported separately; all evidence names exact sources.",
+          "A new small scientific experiment is added without building new general math infrastructure."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-QUALIFY.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks."
+    },
+    {
+      "id": "GH-IS1-DOCS",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Explain the scientific experiment and its usable library path",
+      "objective": "Publish intuitive scientific design, practical examples and supported results without disguising the unfinished frontier.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "README.md",
+          "AGENTS.md",
+          "docs"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-PIPELINE"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "The README positions GH as a scientific experiment on CE, not a competing mathematical library.",
+          "Native capability, fitted model, biological inference and speculation have distinct evidence.",
+          "No stale mutable status table is replicated across human and agent documents."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-DOCS.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks."
+    },
+    {
+      "id": "GH-IS1-JOINT",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Prove the three tools can compose without losing meaning",
+      "objective": "Run one bounded sequence-conditioned scientific witness through installed BP and CE components.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "examples/substrate/joint",
+          "tests/substrate/joint",
+          "planning/integrated-substrate-v1/receipts/joint"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-PIPELINE"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "External BP-CLOSE provider and CE-INTEGRATE capabilities pass live/source-bound gates.",
+          "Exact sequence provenance, CE numerical/derivative ownership and GH scientific meaning survive end to end.",
+          "The witness is labelled engineering interoperability, not a compulsory model or genome-scale validation."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-JOINT.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.",
+      "gates": [
+        {
+          "id": "GH-IS1-JOINT-BASEPLANE-PROVIDER",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/integrated-substrate-v1/tools/gates.py",
+            "provider",
+            "--config",
+            "planning/integrated-substrate-v1/local-config.json",
+            "--consumer",
+            "GH-IS1-JOINT",
+            "--provider",
+            "baseplane"
+          ],
+          "cwd": ".",
+          "input_paths": [
+            "planning/integrated-substrate-v1/tools",
+            "planning/integrated-substrate-v1/local-config.json",
+            "planning/integrated-substrate-v1/machine"
+          ]
+        },
+        {
+          "id": "GH-IS1-JOINT-CELLERATOR-PROVIDER",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/integrated-substrate-v1/tools/gates.py",
+            "provider",
+            "--config",
+            "planning/integrated-substrate-v1/local-config.json",
+            "--consumer",
+            "GH-IS1-JOINT",
+            "--provider",
+            "cellerator"
+          ],
+          "cwd": ".",
+          "input_paths": [
+            "planning/integrated-substrate-v1/tools",
+            "planning/integrated-substrate-v1/local-config.json",
+            "planning/integrated-substrate-v1/machine"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GH-IS1-CLOSE",
+      "parent_id": "GH-IS1-000",
+      "kind": "task",
+      "title": "Accept the scientific tool and the complete successor handoff",
+      "objective": "Resolve final findings and publish what is integrated, experimental, measured or deliberately still open.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "cmake",
+          "include",
+          "src",
+          "components",
+          "tests",
+          "examples",
+          "experiments",
+          "python",
+          "bindings",
+          "docs",
+          "planning/integrated-substrate-v1/receipts"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-IS1-QUALIFY"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-IS1-DOCS"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-IS1-JOINT"
+        }
+      ],
+      "invariants": [
+        "GH-IS1-OWNERSHIP",
+        "GH-IS1-PRESERVE",
+        "GH-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "The GH vertical slice and joint installed-consumer witness pass with truthful scientific scope.",
+          "All required migration/extension obligations are accounted for; no duplicate general math stack remains.",
+          "Publish final three-project source/capability matrix; this does not close unrelated research questions."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/GH-IS1-CLOSE.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks."
+    }
+  ],
+  "runs": [
+    {
+      "id": "GH-IS1-RUN-V1",
+      "root_task_id": "GH-IS1-000",
+      "charter": {
+        "objective": "Integrate the completed frontier into deliberate, extensible, performant tools.",
+        "desired_end_state": "Usable installed APIs, real composed execution, preserved research and easier future development.",
+        "boundaries": [
+          "Cellerator owns reusable mathematical/dynamical computation; Baseplane owns sequence meaning and representations; GlassHelix owns scientific experiments. Reuse existing numerical/lifetime owners, preserve real consumers and separate Todo authorities.",
+          "Execute only after the reviewed predecessor barrier. Preserve useful mechanisms, source, successful outcomes and negative evidence. No hand editing Todo/generated authority, no Ampere activation, no preprint edits, no CellShard authority changes.",
+          "Keep the libraries easy to extend and fast. No compulsory Cellpack format, universal hidden axis, second general runtime, or unmeasured default. Distinguish equivalent lowering, model choices and approximations."
+        ],
+        "delegated_judgment": "Parallelize disjoint domains under a bounded total agent budget; serialize shared integration and clean GPU timing. Accept actual patches before creating dependent worktrees. Reconcile late predecessor work and claims first.",
+        "references": [
+          "planning/integrated-substrate-v1/START_CONTROLLER.md",
+          "planning/integrated-substrate-v1/docs/01_CHARTER.md"
+        ]
+      },
+      "lanes": [
+        {
+          "id": "GH-IS1-ADOPT-L",
+          "role": "implementer",
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "tasks": [
+            "GH-IS1-ADOPT"
+          ],
+          "motivation": "Bounded domain ownership; root accepts patches and binds dependent worktrees to accepted commits.",
+          "references": [
+            "planning/integrated-substrate-v1/tasks/GH-IS1-ADOPT.md"
+          ]
+        },
+        {
+          "id": "GH-IS1-SCIENCE-L",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "GH-IS1-MERGE-A"
+          },
+          "tasks": [
+            "GH-IS1-SCIENCE"
+          ],
+          "motivation": "Bounded domain ownership; root accepts patches and binds dependent worktrees to accepted commits.",
+          "references": [
+            "planning/integrated-substrate-v1/tasks/GH-IS1-SCIENCE.md"
+          ],
+          "parent_lane_id": "GH-IS1-ADOPT-L"
+        },
+        {
+          "id": "GH-IS1-DATA-L",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "GH-IS1-MERGE-A"
+          },
+          "tasks": [
+            "GH-IS1-DATA"
+          ],
+          "motivation": "Bounded domain ownership; root accepts patches and binds dependent worktrees to accepted commits.",
+          "references": [
+            "planning/integrated-substrate-v1/tasks/GH-IS1-DATA.md"
+          ],
+          "parent_lane_id": "GH-IS1-ADOPT-L"
+        },
+        {
+          "id": "GH-IS1-MODELS-L",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "GH-IS1-MERGE-A"
+          },
+          "tasks": [
+            "GH-IS1-MODELS"
+          ],
+          "motivation": "Bounded domain ownership; root accepts patches and binds dependent worktrees to accepted commits.",
+          "references": [
+            "planning/integrated-substrate-v1/tasks/GH-IS1-MODELS.md"
+          ],
+          "parent_lane_id": "GH-IS1-ADOPT-L"
+        },
+        {
+          "id": "GH-IS1-ANALYSIS-L",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "GH-IS1-MERGE-A"
+          },
+          "tasks": [
+            "GH-IS1-ANALYSIS"
+          ],
+          "motivation": "Bounded domain ownership; root accepts patches and binds dependent worktrees to accepted commits.",
+          "references": [
+            "planning/integrated-substrate-v1/tasks/GH-IS1-ANALYSIS.md"
+          ],
+          "parent_lane_id": "GH-IS1-ADOPT-L"
+        },
+        {
+          "id": "GH-IS1-BUILD-L",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "GH-IS1-MERGE-A"
+          },
+          "tasks": [
+            "GH-IS1-BUILD"
+          ],
+          "motivation": "Bounded domain ownership; root accepts patches and binds dependent worktrees to accepted commits.",
+          "references": [
+            "planning/integrated-substrate-v1/tasks/GH-IS1-BUILD.md"
+          ],
+          "parent_lane_id": "GH-IS1-ADOPT-L"
+        },
+        {
+          "id": "GH-IS1-QUALIFY-L",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "GH-IS1-CLOSE"
+          },
+          "tasks": [
+            "GH-IS1-QUALIFY"
+          ],
+          "motivation": "Bounded domain ownership; root accepts patches and binds dependent worktrees to accepted commits.",
+          "references": [
+            "planning/integrated-substrate-v1/tasks/GH-IS1-QUALIFY.md"
+          ],
+          "parent_lane_id": "GH-IS1-ADOPT-L"
+        },
+        {
+          "id": "GH-IS1-DOCS-L",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "GH-IS1-CLOSE"
+          },
+          "tasks": [
+            "GH-IS1-DOCS"
+          ],
+          "motivation": "Bounded domain ownership; root accepts patches and binds dependent worktrees to accepted commits.",
+          "references": [
+            "planning/integrated-substrate-v1/tasks/GH-IS1-DOCS.md"
+          ],
+          "parent_lane_id": "GH-IS1-ADOPT-L"
+        },
+        {
+          "id": "GH-IS1-INTEGRATOR-L",
+          "parent_lane_id": "GH-IS1-ADOPT-L",
+          "role": "integrator",
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "tasks": [
+            "GH-IS1-MERGE-A",
+            "GH-IS1-BRIDGE",
+            "GH-IS1-PIPELINE",
+            "GH-IS1-JOINT",
+            "GH-IS1-CLOSE",
+            "GH-IS1-000"
+          ],
+          "motivation": "One owner for shared source, accepted lineage, intermediate integration and final capability receipts.",
+          "references": [
+            "planning/integrated-substrate-v1/START_CONTROLLER.md"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "run_id": "CE-IS1-RUN-V1",
+  "root_task_id": "CE-IS1-000",
+  "root_lane_id": "CE-IS1-ADOPT-L",
+  "root_lane_role": "implementer",
+  "lanes": [
+    {
+      "id": "CE-IS1-ADOPT-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "exclusive"
+      },
+      "tasks": [
+        "CE-IS1-ADOPT"
+      ]
+    },
+    {
+      "id": "CE-IS1-STATE-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-A"
+      },
+      "tasks": [
+        "CE-IS1-STATE"
+      ]
+    },
+    {
+      "id": "CE-IS1-PACK-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-A"
+      },
+      "tasks": [
+        "CE-IS1-PACK"
+      ]
+    },
+    {
+      "id": "CE-IS1-OPS-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-A"
+      },
+      "tasks": [
+        "CE-IS1-OPS"
+      ]
+    },
+    {
+      "id": "CE-IS1-EFFECTS-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-A"
+      },
+      "tasks": [
+        "CE-IS1-EFFECTS"
+      ]
+    },
+    {
+      "id": "CE-IS1-EXEC-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-A"
+      },
+      "tasks": [
+        "CE-IS1-EXEC"
+      ]
+    },
+    {
+      "id": "CE-IS1-BUILD-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-A"
+      },
+      "tasks": [
+        "CE-IS1-BUILD"
+      ]
+    },
+    {
+      "id": "CE-IS1-STRATEGIES-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-B"
+      },
+      "tasks": [
+        "CE-IS1-STRATEGIES"
+      ]
+    },
+    {
+      "id": "CE-IS1-MATH-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-B"
+      },
+      "tasks": [
+        "CE-IS1-MATH"
+      ]
+    },
+    {
+      "id": "CE-IS1-DIFF-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-B"
+      },
+      "tasks": [
+        "CE-IS1-DIFF"
+      ]
+    },
+    {
+      "id": "CE-IS1-ADAPT-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-B"
+      },
+      "tasks": [
+        "CE-IS1-ADAPT"
+      ]
+    },
+    {
+      "id": "CE-IS1-LOWER-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-MERGE-B"
+      },
+      "tasks": [
+        "CE-IS1-LOWER"
+      ]
+    },
+    {
+      "id": "CE-IS1-TORCH-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-INTEGRATE"
+      },
+      "tasks": [
+        "CE-IS1-TORCH"
+      ]
+    },
+    {
+      "id": "CE-IS1-QUALIFY-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-CLOSE"
+      },
+      "tasks": [
+        "CE-IS1-QUALIFY"
+      ]
+    },
+    {
+      "id": "CE-IS1-DOCS-L",
+      "role": "implementer",
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-IS1-CLOSE"
+      },
+      "tasks": [
+        "CE-IS1-DOCS"
+      ]
+    },
+    {
+      "id": "CE-IS1-INTEGRATOR-L",
+      "role": "integrator",
+      "workspace": {
+        "mode": "exclusive"
+      },
+      "tasks": [
+        "CE-IS1-MERGE-A",
+        "CE-IS1-MERGE-B",
+        "CE-IS1-INTEGRATE",
+        "CE-IS1-CLOSE",
+        "CE-IS1-000"
+      ]
+    }
+  ],
+  "gate_bindings": [
+    {
+      "id": "CE-IS1-CLOSURE",
+      "type": "task_state",
+      "task_id": "CE-IS1-CLOSE",
+      "status": "done",
+      "required": true
+    },
+    {
+      "id": "CE-IS1-ADOPT-GLOBAL-BARRIER",
+      "type": "command",
+      "required": true,
+      "argv": [
+        "python3",
+        "-B",
+        "planning/integrated-substrate-v1/tools/gates.py",
+        "activation",
+        "--config",
+        "planning/integrated-substrate-v1/local-config.json"
+      ],
+      "cwd": ".",
+      "input_paths": [
+        "planning/integrated-substrate-v1/tools",
+        "planning/integrated-substrate-v1/local-config.json",
+        "planning/integrated-substrate-v1/machine"
+      ]
+    }
+  ],
+  "missing_gate_input_paths": [
+    "planning/integrated-substrate-v1/local-config.json"
+  ]
+}

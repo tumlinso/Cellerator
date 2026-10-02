@@ -1,0 +1,47 @@
+[
+  {
+    "provider_project": "cellerator",
+    "provider_task": "CE-IS1-INTEGRATE",
+    "consumer_task": "BP-IS1-BRIDGE",
+    "receipt": "planning/integrated-substrate-v1/receipts/provider.json",
+    "required": [
+      "effects",
+      "native_forward"
+    ]
+  },
+  {
+    "provider_project": "cellerator",
+    "provider_task": "CE-IS1-INTEGRATE",
+    "consumer_task": "GH-IS1-BRIDGE",
+    "receipt": "planning/integrated-substrate-v1/receipts/provider.json",
+    "required": [
+      "native_forward",
+      "input_vjp",
+      "parameter_vjp",
+      "jvp",
+      "framework"
+    ]
+  },
+  {
+    "provider_project": "baseplane",
+    "provider_task": "BP-IS1-CLOSE",
+    "consumer_task": "GH-IS1-JOINT",
+    "receipt": "planning/integrated-substrate-v1/receipts/provider.json",
+    "required": [
+      "exact_sequence",
+      "query",
+      "representation",
+      "installed_consumer"
+    ]
+  },
+  {
+    "provider_project": "cellerator",
+    "provider_task": "CE-IS1-INTEGRATE",
+    "consumer_task": "GH-IS1-JOINT",
+    "receipt": "planning/integrated-substrate-v1/receipts/provider.json",
+    "required": [
+      "native_forward",
+      "jvp"
+    ]
+  }
+]

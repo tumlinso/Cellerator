@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "default_max_live_agents_including_root_and_heads": 8,
+  "maximum_simultaneous_timing_jobs": 1,
+  "gpu_allocation": "read current resource authority; explicit lease; no implicit device selection",
+  "allow_nested_worker_planners": false,
+  "failure_policy": "pause only affected dependent region; do not mark unperformed native/scientific work done",
+  "epics_are_closure_only": true,
+  "source_handoff": "accepted integration commit required before dependent worktree creation",
+  "roles": "one programme controller; optional repository coordinator seats only when authority/tools require them; coarse domain workers",
+  "task_authority": "three independent native authorities; no package-local task database"
+}

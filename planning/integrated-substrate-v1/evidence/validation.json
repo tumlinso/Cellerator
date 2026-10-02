@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "record_kind": "is1_authoring_validation",
+  "captured_at": "2026-10-02T14:54:57.529728+00:00",
+  "status": "passed_authoring_checks_only",
+  "scope": "Local authored references, static plan structure, staging/gate unit fixtures and C++ cold packing contract. Not native repository or scientific acceptance.",
+  "python_test_count": 52,
+  "environment": {
+    "python": "3.13.5",
+    "numpy": "2.3.5",
+    "system": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "cxx": "c++ (Debian 14.2.0-19) 14.2.0",
+    "nvcc": null
+  },
+  "checks": [
+    {
+      "name": "python-tests",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "cwd": "package_root",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "status": "passed",
+      "evidence_path": "evidence/python-tests.log"
+    },
+    {
+      "name": "static-validation",
+      "argv": [
+        "python3",
+        "tools/validate_package.py",
+        "--verify-manifest"
+      ],
+      "cwd": "package_root",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "status": "passed",
+      "evidence_path": "evidence/static-validation.log"
+    },
+    {
+      "name": "cpp-build",
+      "argv": [
+        "c++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pedantic",
+        "seed/cpp/packing_conformance.cc",
+        "-o",
+        "/mnt/data/is1_validation_work/packing_conformance"
+      ],
+      "cwd": "package_root",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "status": "passed",
+      "evidence_path": "evidence/cpp-build.log"
+    },
+    {
+      "name": "cpp-tests",
+      "argv": [
+        "/mnt/data/is1_validation_work/packing_conformance"
+      ],
+      "cwd": "package_root",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "status": "passed",
+      "evidence_path": "evidence/cpp-tests.log"
+    },
+    {
+      "name": "cpp-ubsan-build",
+      "argv": [
+        "c++",
+        "-std=c++17",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pedantic",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "seed/cpp/packing_conformance.cc",
+        "-o",
+        "/mnt/data/is1_validation_work/packing_conformance_ubsan"
+      ],
+      "cwd": "package_root",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "status": "passed",
+      "evidence_path": "evidence/cpp-ubsan-build.log"
+    },
+    {
+      "name": "cpp-ubsan-tests",
+      "argv": [
+        "/mnt/data/is1_validation_work/packing_conformance_ubsan"
+      ],
+      "cwd": "package_root",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "status": "passed",
+      "evidence_path": "evidence/cpp-ubsan-tests.log"
+    },
+    {
+      "name": "host-demo",
+      "argv": [
+        "python3",
+        "seed/python/demo.py"
+      ],
+      "cwd": "package_root",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "status": "passed",
+      "evidence_path": "evidence/host-demo.log"
+    },
+    {
+      "name": "python-syntax",
+      "argv": [
+        "python3",
+        "-m",
+        "compileall",
+        "-q",
+        "tools",
+        "seed/python",
+        "tests"
+      ],
+      "cwd": "package_root",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "status": "passed",
+      "evidence_path": "evidence/python-syntax.log"
+    }
+  ],
+  "not_run": [
+    {
+      "kind": "native_todo_plan_validation",
+      "reason": "Requires create-only staging, fresh authority reconciliation, inspected installed schema/gates, and non-mutating native plan_preview before adoption. Static tests are not a native pass."
+    },
+    {
+      "kind": "cuda_compilation",
+      "reason": "No nvcc in the authoring container. Authored SM70 kernel remains uncompiled."
+    },
+    {
+      "kind": "cuda_execution_sanitizers_and_performance",
+      "reason": "No assigned GPU/device execution in this authoring task."
+    },
+    {
+      "kind": "native_repository_build_and_installed_sibling_integration",
+      "reason": "No remote repositories were modified or built; seeds remain adapters/oracles for later agentic integration."
+    },
+    {
+      "kind": "framework_autograd_native_integration",
+      "reason": "Future CE/CelleraTorch qualification tasks own this."
+    },
+    {
+      "kind": "scientific_or_biological_validation",
+      "reason": "The tiny host demo is a synthetic engineering witness, not a biological result."
+    }
+  ],
+  "remote_mutation": {
+    "source_changes": false,
+    "todo_import_or_activation": false,
+    "task_claims_or_supersession": false,
+    "gpu_workloads": false
+  },
+  "important_boundaries": [
+    "Gate fixtures are synthetic unit tests; they do not satisfy real activation or provider acceptance.",
+    "Host tests of a CUDA indexing/composition contract do not verify the actual emitted instruction or GPU behavior.",
+    "Local C++ timing is not a GPU or application speed benchmark.",
+    "Hashes bind artifact bytes, not the truth of an author-written claim."
+  ],
+  "evidence_sha256": {
+    "cpp-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cpp-tests.log": "299433c956814cfa9f3e715954449cafbd21d20a30f742707819a39435437413",
+    "cpp-ubsan-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cpp-ubsan-tests.log": "299433c956814cfa9f3e715954449cafbd21d20a30f742707819a39435437413",
+    "host-demo.json": "d780bf54cd5e2ebd78b0946fb5173abb7d63039a9d63cb0e59185546a4872a0e",
+    "host-demo.log": "d780bf54cd5e2ebd78b0946fb5173abb7d63039a9d63cb0e59185546a4872a0e",
+    "python-syntax.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "python-tests.log": "4f3b98bb8f63b0a49679aa50ebeed827d0bc1f71d0caed93831856b33b17b393",
+    "static-validation.json": "aaf86c50e6f978821e72f57e847515d3d513a4998256dd8c435b20ab94cce4ea",
+    "static-validation.log": "aaf86c50e6f978821e72f57e847515d3d513a4998256dd8c435b20ab94cce4ea"
+  }
+}

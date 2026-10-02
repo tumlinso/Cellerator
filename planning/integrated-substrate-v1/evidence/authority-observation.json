@@ -1,0 +1,40 @@
+{
+  "tool": "project-control.program_context",
+  "observed_at": [
+    "2026-10-02T14:17:52Z",
+    "2026-10-02T14:17:53Z",
+    "2026-10-02T14:17:54Z"
+  ],
+  "atomic": false,
+  "projects": [
+    {
+      "project": "cellerator",
+      "head": "217def8f85a98ff131317476eb1288a98209c3b1",
+      "revision": 7552,
+      "selected_run": "CE-ML2-RUN-V1"
+    },
+    {
+      "project": "baseplane",
+      "head": "e6f08398f1b018caa7def3b0cc6a845eccd4ca29",
+      "revision": 369,
+      "selected_run": "BP-CUDA-LAB-RUN-1"
+    },
+    {
+      "project": "glasshelix",
+      "head": "55bf5e8c1305519fd9b97b4105853f181dbb4d0b",
+      "revision": 312,
+      "selected_run": "GH-ML2-RUN-V1"
+    }
+  ],
+  "subsequent_source_change": {
+    "project": "glasshelix",
+    "head": "9daefdb7f162db32a07aa25e210e161e940efd47",
+    "observed_at": "2026-10-02T14:18:52Z"
+  },
+  "notes": [
+    "Selected run is not the complete scheduled-work inventory.",
+    "Active historical run labels, pending old patches and stale-heartbeat reports must be interpreted, not blindly repaired.",
+    "CE-MOON-090 and CE-MOON-MMA had live claims in plan_preview context; this package does not take them over.",
+    "Schema versions 2 and 3 were reported accepted by live plan_preview context. Supplied new plans still need native validation at adoption."
+  ]
+}

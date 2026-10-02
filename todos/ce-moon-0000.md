@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-0000: Cellerator single-cell moonshot
 
-Task revision: `7677`; current project revision is in `todo-status.md`.
+Task revision: `7678`; current project revision is in `todo-status.md`.
 
 ## Objective
 Closure-only aggregate; children do not depend on the epic.

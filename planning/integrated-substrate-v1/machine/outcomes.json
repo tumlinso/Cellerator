@@ -1,0 +1,1083 @@
+[
+  {
+    "project": "cellerator",
+    "slug": "ADOPT",
+    "id": "CE-IS1-ADOPT",
+    "title": "Reconcile finished predecessors and publish the small shared foundation",
+    "objective": "After the global predecessor barrier, inventory the completed frontier, assign every useful behavior/unfinished obligation, and integrate the minimum contracts needed by parallel lanes.",
+    "depends": [],
+    "paths": [
+      "planning/integrated-substrate-v1",
+      "include",
+      "src",
+      "CMakeLists.txt",
+      "cmake"
+    ],
+    "accept": [
+      "Global activation gate passes against live authorities; current claims, pending patches and frozen interfaces are reconciled without taking over predecessor work.",
+      "Expanded preservation and source-to-destination maps include all current predecessor outcomes and newly discovered work.",
+      "Small contract and dependency-target decision is committed and available to every child worktree; no broad new framework or numerical reset."
+    ],
+    "detail": "The observed baseline is evidence, not a checkout pin. Inspect the finished tree again. Preserve staged immutable seeds; adjust destination scopes through native plan preview before dispatch when existing locations are better. Current active run labels are not sufficient to classify old work. This task cannot be used to bypass the after-current-work instruction.",
+    "role": "foundation"
+  },
+  {
+    "project": "baseplane",
+    "slug": "ADOPT",
+    "id": "BP-IS1-ADOPT",
+    "title": "Reconcile finished predecessors and publish the small shared foundation",
+    "objective": "After the global predecessor barrier, inventory the completed frontier, assign every useful behavior/unfinished obligation, and integrate the minimum contracts needed by parallel lanes.",
+    "depends": [],
+    "paths": [
+      "planning/integrated-substrate-v1",
+      "include",
+      "src",
+      "CMakeLists.txt",
+      "cmake"
+    ],
+    "accept": [
+      "Global activation gate passes against live authorities; current claims, pending patches and frozen interfaces are reconciled without taking over predecessor work.",
+      "Expanded preservation and source-to-destination maps include all current predecessor outcomes and newly discovered work.",
+      "Small contract and dependency-target decision is committed and available to every child worktree; no broad new framework or numerical reset."
+    ],
+    "detail": "The observed baseline is evidence, not a checkout pin. Inspect the finished tree again. Preserve staged immutable seeds; adjust destination scopes through native plan preview before dispatch when existing locations are better. Current active run labels are not sufficient to classify old work. This task cannot be used to bypass the after-current-work instruction.",
+    "role": "foundation"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "ADOPT",
+    "id": "GH-IS1-ADOPT",
+    "title": "Reconcile finished predecessors and publish the small shared foundation",
+    "objective": "After the global predecessor barrier, inventory the completed frontier, assign every useful behavior/unfinished obligation, and integrate the minimum contracts needed by parallel lanes.",
+    "depends": [],
+    "paths": [
+      "planning/integrated-substrate-v1",
+      "include",
+      "src",
+      "CMakeLists.txt",
+      "cmake"
+    ],
+    "accept": [
+      "Global activation gate passes against live authorities; current claims, pending patches and frozen interfaces are reconciled without taking over predecessor work.",
+      "Expanded preservation and source-to-destination maps include all current predecessor outcomes and newly discovered work.",
+      "Small contract and dependency-target decision is committed and available to every child worktree; no broad new framework or numerical reset."
+    ],
+    "detail": "The observed baseline is evidence, not a checkout pin. Inspect the finished tree again. Preserve staged immutable seeds; adjust destination scopes through native plan preview before dispatch when existing locations are better. Current active run labels are not sufficient to classify old work. This task cannot be used to bypass the after-current-work instruction.",
+    "role": "foundation"
+  },
+  {
+    "project": "cellerator",
+    "slug": "STATE",
+    "id": "CE-IS1-STATE",
+    "title": "Unify structured state, support and readout objects",
+    "objective": "Make scalar patches and actor-private/ragged hidden state usable native objects with explicit semantics and owner-compatible views.",
+    "depends": [
+      "CE-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/Cellerator/state",
+      "src/state",
+      "tests/substrate/state"
+    ],
+    "accept": [
+      "Scalar-state and actor-private examples preserve logical identity, readout meaning and both useful algebraic axes.",
+      "Supports carry universe/type/version; duplicate IDs, physical replicas and stale slot incarnations are tested.",
+      "Existing memory/generation owners are reused; no second allocator or canonical parameter owner."
+    ],
+    "detail": "Map prior M01/M05/M07/M08 and STATE outputs here. Do not force uniform hidden width or globally named latent columns. Storage views are optional projections; no compulsory per-step transpose/canonicalization.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "PACK",
+    "id": "CE-IS1-PACK",
+    "title": "Publish a format-independent packing strategy seam",
+    "objective": "Separate strategy selection, semantic realization and physical lowering; wrap existing generic occupancy and Cellpack capabilities without making them mandatory.",
+    "depends": [
+      "CE-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/Cellerator/packing",
+      "src/packing/core",
+      "tests/substrate/packing"
+    ],
+    "accept": [
+      "Identity, supplied-plan and actual Cellpack adapter paths conform to one cold strategy contract.",
+      "Independent source/destination/state/op orders and contribution ownership are representable; unsupported projections fail clearly.",
+      "The current CPK1 N=1 candidate stays narrow and usable; no hidden universal conversion through Cellpack."
+    ],
+    "detail": "Read evaluator.hh, packing_plan.hh and row_masked_n1_candidate.hh. The generic view and frozen image have different scope. Preserve exact occupancy vs hypothetical cost distinction. Start from the supplied Python/C++ contract witnesses, not a fresh plugin infrastructure.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "OPS",
+    "id": "CE-IS1-OPS",
+    "title": "Integrate the current matrix and process mathematics",
+    "objective": "Turn completed matrix-patch, nonlinear polynomial, port/process and indexed-mechanism work into callable reusable native operations.",
+    "depends": [
+      "CE-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/Cellerator/math/matrix",
+      "src/math/matrix",
+      "include/Cellerator/math/process",
+      "src/math/process",
+      "tests/substrate/operators"
+    ],
+    "accept": [
+      "Existing M01–M06 functions are represented or explicitly mapped to supported/experimental alternatives, not reimplemented as a new runtime.",
+      "Each operation declares precise axes, numerical policy and real derivative capabilities; repeated argument/parameter multiplicity survives.",
+      "One installed/native consumer executes both a scalar patch and a process/port computation."
+    ],
+    "detail": "Retain ordered slots and output effects from indexed incidence. Plain LXR is a restricted model family, not an equivalent arbitrary sparse-matmul lowering. Actual SM70 implementations integrate through existing providers; shared registry edits go to MERGE-A.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "EFFECTS",
+    "id": "CE-IS1-EFFECTS",
+    "title": "Integrate composable effects, residuals and port algebra",
+    "objective": "Unify general numerical providers from both moonshot campaigns and add precise reusable effect carriers.",
+    "depends": [
+      "CE-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/Cellerator/math/effects",
+      "src/math/effects",
+      "tests/substrate/effects"
+    ],
+    "accept": [
+      "DFA/counted, monomial/block-affine, lifting/residual and finite-relation operators have a single CE owner.",
+      "New accumulated-observable affine and hybrid discrete/continuous compositions match direct application in reference tests.",
+      "Sequential order, overflow, floating association and expansion-point limits are explicit."
+    ],
+    "detail": "Use new cards N01–N03. Baseplane keeps source/sequence adapters. A compact carrier is selected only when it pays for its size; neither arbitrary nonlinear functions nor dense low-rank products are assumed closed under composition.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "EXEC",
+    "id": "CE-IS1-EXEC",
+    "title": "Make prepared resident execution the normal path",
+    "objective": "Consolidate runtime/program/value/tape ownership and remove repeated preparation, copies and hidden synchronization from composed use.",
+    "depends": [
+      "CE-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/Cellerator/execution",
+      "src/execution",
+      "tests/substrate/execution"
+    ],
+    "accept": [
+      "One prepared multi-operation program runs repeatedly with changing values/parameters using existing owners.",
+      "Capacity, streams, aliasing, immutable topology, value generations and saved-primal lifetimes are visible and tested.",
+      "Direct native calls and explicit physical-output order remain available; adaptive queues are optional."
+    ],
+    "detail": "Preserve training_program_v2 and parameter-owner mechanisms. Static prepared sweeps are the baseline. Runtime worklists, cooperative residency and capture are optional alternatives, not required architecture. Do not add a second generic scheduler.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "BUILD",
+    "id": "CE-IS1-BUILD",
+    "title": "Make components installable without dependency cycles",
+    "objective": "Design and test granular CMake/package boundaries and installed-consumer fixtures for the mathematical library and optional adapters.",
+    "depends": [
+      "CE-IS1-ADOPT"
+    ],
+    "paths": [
+      "cmake/substrate",
+      "tests/substrate/install",
+      "examples/substrate/install"
+    ],
+    "accept": [
+      "CPU/reference or compiler components and SM70 numerical components are independently selectable where source permits.",
+      "Baseplane exact-core ↔ CE bridge ↔ BP representation dependency graph is acyclic at target level.",
+      "No supported consumer compiles sibling private source; central build patch is returned for MERGE-A."
+    ],
+    "detail": "Torch is optional for core math. Pin a verified CUDA 12.x SM70 toolchain rather than assuming a CUDA 13 upgrade is safe. Keep existing package/component exports or rename them deliberately with sibling repairs.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "MERGE-A",
+    "id": "CE-IS1-MERGE-A",
+    "title": "Integrate the first usable mathematical substrate",
+    "objective": "Accept the six independent foundations into one buildable lineage and publish the first native SDK/contract receipt.",
+    "depends": [
+      "CE-IS1-STATE",
+      "CE-IS1-PACK",
+      "CE-IS1-OPS",
+      "CE-IS1-EFFECTS",
+      "CE-IS1-EXEC",
+      "CE-IS1-BUILD"
+    ],
+    "paths": [
+      "CMakeLists.txt",
+      "cmake",
+      "include",
+      "src",
+      "components",
+      "tests",
+      "examples",
+      "experiments",
+      "planning/integrated-substrate-v1/receipts"
+    ],
+    "accept": [
+      "Every accepted patch is actually integrated and re-tested together; dependent worktrees start at this accepted commit.",
+      "CE vertical slice runs through a chosen/supplied packer and native operation; unimplemented advanced routes are explicitly unsupported.",
+      "Shared registry/build/header edits are resolved by one owner; the target graph has no cycle."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "cellerator",
+    "slug": "STRATEGIES",
+    "id": "CE-IS1-STRATEGIES",
+    "title": "Add genuinely different packing and repair strategies",
+    "objective": "Implement alternative geometry/operation packers and their amortized-cost selection without coupling them to Cellpack.",
+    "depends": [
+      "CE-IS1-MERGE-A"
+    ],
+    "paths": [
+      "src/packing/strategies",
+      "include/Cellerator/packing/strategies",
+      "tests/substrate/strategies",
+      "bench/substrate/strategies"
+    ],
+    "accept": [
+      "At least one genuinely different packer plus a caller-defined strategy executes the same supported operation as the baseline.",
+      "Compare two-sided relation geometry, opcode/shared-load cohorts and mixed dense/sparse candidates where applicable.",
+      "Incremental repair and hysteresis have explicit migration cost and do not silently drop work or derivatives."
+    ],
+    "detail": "New card N08. Include no-pack, Cellpack and direct vector controls. The deferred CUDA occupancy evaluator is investigated only if preparation measurements justify it; record its disposition regardless.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "MATH",
+    "id": "CE-IS1-MATH",
+    "title": "Extend the algebra with executable frontier operators",
+    "objective": "Build exact quadratic deltas, boundary-port solves and residual/multilevel variants through the integrated operator interface.",
+    "depends": [
+      "CE-IS1-MERGE-A"
+    ],
+    "paths": [
+      "include/Cellerator/math/frontier",
+      "src/math/frontier",
+      "tests/substrate/frontier"
+    ],
+    "accept": [
+      "New N04–N06 reference identities and native prototypes execute through CE, with explicit exact/model/approximation labels.",
+      "Conditioning and solve residuals are checked; no unstable explicit inverse is introduced for a tensor-core marketing claim.",
+      "At least two nontrivial new compositions have actual native consumers; unsupported variants remain mapped and callable references where useful."
+    ],
+    "detail": "Reuse prior exact flows and M11 feedback machinery; do not implement a second solver stack. Exact quadratic delta includes the delta*M*delta term. Low-rank recompression and nonlinear jets are approximations unless exact structure is supplied.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "DIFF",
+    "id": "CE-IS1-DIFF",
+    "title": "Compile and integrate requested response computation",
+    "objective": "Make forward, state/parameter VJP and JVP composable first-class capabilities using saved-primal ownership.",
+    "depends": [
+      "CE-IS1-MERGE-A"
+    ],
+    "paths": [
+      "include/Cellerator/math/response",
+      "src/math/response",
+      "tests/substrate/response"
+    ],
+    "accept": [
+      "Capabilities match implementations and are checked against references, finite differences and adjoint identities.",
+      "Response panels use genuinely requested directions; nonlinear chain rules are not applied as independent primal columns.",
+      "Primal-zero/response-live cases, repeated coefficients and cross-generation tapes are protected."
+    ],
+    "detail": "New N07 and prior M09. Differentiate the declared numerical/model operation, not a convenient different implementation. State and parameter tangents are independently tagged. Higher-order support is optional and explicitly advertised.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "ADAPT",
+    "id": "CE-IS1-ADAPT",
+    "title": "Integrate reuse, structural rewrites and trainable regrowth",
+    "objective": "Make parameter-aware caches, remembered deltas and externally supplied structural changes coexist under existing generation/lifetime rules.",
+    "depends": [
+      "CE-IS1-MERGE-A"
+    ],
+    "paths": [
+      "include/Cellerator/math/adaptive",
+      "src/math/adaptive",
+      "tests/substrate/adaptive"
+    ],
+    "accept": [
+      "Linear and quadratic delta paths compare against last transmitted state; changing parameters invalidates caches.",
+      "One supplied exact refactoring preserves function/readout and one explicit approximate reduction reports discrepancy.",
+      "Tapes, slot incarnation, state initialization and optimizer reset/migration are handled coherently."
+    ],
+    "detail": "Prior M08/M10 and N09/N12. Share common work across worlds only with full contextual equality; preserve complete hypotheses. A promoted explicit mechanism does not imply its current value is known.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "LOWER",
+    "id": "CE-IS1-LOWER",
+    "title": "Search and integrate useful Volta-native realizations",
+    "objective": "Add bounded typed rewrite/specialization and instruction/layout alternatives through the existing compiler/provider seam.",
+    "depends": [
+      "CE-IS1-MERGE-A"
+    ],
+    "paths": [
+      "include/Cellerator/compiler/substrate",
+      "src/compiler/substrate",
+      "src/compute/architecture/providers/nvidia/sm70/substrate",
+      "tests/substrate/lowering"
+    ],
+    "accept": [
+      "SM70 capability filters reject later-architecture instructions; emitted instructions/register costs are inspected.",
+      "At least one fused or specialized composition competes against a direct/vendor baseline with the same declared semantics.",
+      "M04/M12/M13 and BP numerical machine ideas remain explicit alternatives with consistent numerical/derivative policies."
+    ],
+    "detail": "New N10–N11. Full Volta palette allowed; branch-free dogma is not. A small enumerator or local rewrite set is enough—do not require a new universal e-graph compiler. Preserve exploration outputs even when they lose.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "MERGE-B",
+    "id": "CE-IS1-MERGE-B",
+    "title": "Integrate strategies, responses and frontier math",
+    "objective": "Merge the second numerical wave into the established substrate, remove replaced duplicates and re-run native compositions.",
+    "depends": [
+      "CE-IS1-STRATEGIES",
+      "CE-IS1-MATH",
+      "CE-IS1-DIFF",
+      "CE-IS1-ADAPT",
+      "CE-IS1-LOWER"
+    ],
+    "paths": [
+      "CMakeLists.txt",
+      "cmake",
+      "include",
+      "src",
+      "components",
+      "tests",
+      "examples",
+      "experiments",
+      "planning/integrated-substrate-v1/receipts"
+    ],
+    "accept": [
+      "The integrated program can mix appropriate strategy/provider families without losing logical meaning or gradients.",
+      "New math, derivatives and adaptive lifetime behavior are checked together; leaves are not merely marked done.",
+      "All source migrations have one preferred callable entry and evidence-preserving archived drivers."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "cellerator",
+    "slug": "TORCH",
+    "id": "CE-IS1-TORCH",
+    "title": "Expose native mathematics through the existing framework adapter",
+    "objective": "Extend CelleraTorch rather than creating another learning stack; preserve canonical masters and valid saved-primal semantics.",
+    "depends": [
+      "CE-IS1-MERGE-B"
+    ],
+    "paths": [
+      "components/CelleraTorch",
+      "tests/substrate/torch"
+    ],
+    "accept": [
+      "Real native forward/input-VJP/parameter-VJP and requested JVP paths are reachable through supported framework calls.",
+      "No optimizer step hides in backward; parameter update/publication remains explicit.",
+      "Shape, dtype, device, alias and stale-tape errors are tested; core CE still builds without Torch."
+    ],
+    "detail": "Repair current predecessor adapters in place or replace them with verified consumers. Framework-generated graphs need explicit source/value/tape identity, not a second owner of native coefficients.",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "INTEGRATE",
+    "id": "CE-IS1-INTEGRATE",
+    "title": "Publish the installed numerical capability handoff",
+    "objective": "Accept the adapter and publish source-bound capabilities that Baseplane and GlassHelix can actually consume.",
+    "depends": [
+      "CE-IS1-TORCH"
+    ],
+    "paths": [
+      "CMakeLists.txt",
+      "cmake",
+      "include",
+      "src",
+      "components",
+      "tests",
+      "examples",
+      "experiments",
+      "planning/integrated-substrate-v1/receipts"
+    ],
+    "accept": [
+      "Installed native and framework consumers pass actual supported shape/precision/derivative checks.",
+      "Publish receipts/provider.json with current CE commit, build identities, capabilities and hashed real test evidence.",
+      "No fixture receipt or reference-only result is accepted as a native provider."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "cellerator",
+    "slug": "QUALIFY",
+    "id": "CE-IS1-QUALIFY",
+    "title": "Measure complete-path performance and extension friction",
+    "objective": "Benchmark preparation/reuse/derivatives/adaptation and perform an independent extension exercise.",
+    "depends": [
+      "CE-IS1-INTEGRATE"
+    ],
+    "paths": [
+      "bench/substrate/qualification",
+      "tests/substrate/qualification",
+      "planning/integrated-substrate-v1/results/ce"
+    ],
+    "accept": [
+      "Cold/warm/training/changing-structure comparisons include bytes, launches and quality, not only best kernel time.",
+      "Custom packer and new operator are added without central rewrites or mandatory hot-path abstraction overhead.",
+      "Selection policies use measured comparable evidence; regressions require a reason and a retained fallback."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "DOCS",
+    "id": "CE-IS1-DOCS",
+    "title": "Make the library legible to users and future implementers",
+    "objective": "Publish coherent use/design/contribution paths and selected authenticated results, preserving research history.",
+    "depends": [
+      "CE-IS1-INTEGRATE"
+    ],
+    "paths": [
+      "README.md",
+      "AGENTS.md",
+      "docs",
+      "scripts/ce_geo/validate_documentation.py"
+    ],
+    "accept": [
+      "Human overview explains the mathematical library and its unfinished frontier; minimal examples run.",
+      "Agent contracts, development rationale, live status authority and historical notes are distinct.",
+      "Remove status-fossil assertions and duplicate mutable ledgers; retain raw benchmark provenance."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "cellerator",
+    "slug": "CLOSE",
+    "id": "CE-IS1-CLOSE",
+    "title": "Accept the deliberate, extensible mathematical library",
+    "objective": "Resolve final findings and publish a scoped completion record, without claiming every research direction is solved.",
+    "depends": [
+      "CE-IS1-QUALIFY",
+      "CE-IS1-DOCS"
+    ],
+    "paths": [
+      "CMakeLists.txt",
+      "cmake",
+      "include",
+      "src",
+      "components",
+      "tests",
+      "examples",
+      "experiments",
+      "docs",
+      "planning/integrated-substrate-v1/receipts"
+    ],
+    "accept": [
+      "Core vertical slice, real alternative packing, derivative/lifetime guarantees and out-of-tree installation pass.",
+      "Preservation ledger has no unexplained loss or orphaned required integration; deferred research has owner and trigger.",
+      "Refresh provider receipt if source changed after handoff; preserve all predecessor authority/evidence."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "baseplane",
+    "slug": "SEQ",
+    "id": "BP-IS1-SEQ",
+    "title": "Integrate exact sequence and source/query contracts",
+    "objective": "Retain the standalone exact core while giving higher representations a common source, validity and question boundary.",
+    "depends": [
+      "BP-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/Baseplane/seq",
+      "src/seq",
+      "tests/seq",
+      "include/Baseplane/query/contracts"
+    ],
+    "accept": [
+      "Existing exact predicates remain usable without Cellerator representation dependencies.",
+      "Coordinates/strand/invalid bases/halos and output capacity are checked against scalar references.",
+      "Higher query contracts distinguish exact answers, certified bounds, learned confidence and detail requests."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "baseplane",
+    "slug": "HIERARCHY",
+    "id": "BP-IS1-HIERARCHY",
+    "title": "Make effects and refinable hierarchy a usable component",
+    "objective": "Integrate effect, lifting, learned/chosen chunks and question-specific summary portfolios using CE numerical providers.",
+    "depends": [
+      "BP-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/Baseplane/representation",
+      "src/representation",
+      "tests/substrate/hierarchy"
+    ],
+    "accept": [
+      "Order-sensitive composition, source revisits and coarse/detail pathways share one ownership model.",
+      "Competing boundaries, multiple summary kinds and nonuniform scale remain possible.",
+      "Generic numerical math is not duplicated; current provider interfaces or explicit demands are used."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "baseplane",
+    "slug": "INDEX",
+    "id": "BP-IS1-INDEX",
+    "title": "Integrate real rendezvous, subscriptions and factor joins",
+    "objective": "Build coherent whole-input nomination/index/query paths that scale beyond warp-local demonstrations.",
+    "depends": [
+      "BP-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/Baseplane/index",
+      "src/index",
+      "tests/substrate/index"
+    ],
+    "accept": [
+      "Complete equal-key posting ranges cross warp boundaries and handle oversized groups without silent truncation.",
+      "Candidate nomination recall, exact verification and relation scoring have separate evidence.",
+      "Subscription and factorized hyperedge paths preserve source roles and output/capacity accounting."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "baseplane",
+    "slug": "REUSE",
+    "id": "BP-IS1-REUSE",
+    "title": "Integrate edit invalidation and contextual reuse",
+    "objective": "Unify source/version dependency tracking, repeat sharing, memoized answers and counterfactual occurrences.",
+    "depends": [
+      "BP-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/Baseplane/incremental",
+      "src/incremental",
+      "tests/substrate/incremental"
+    ],
+    "accept": [
+      "A seam edit invalidates both affected values and directory memberships correctly.",
+      "Identical content may share context-free work while occurrence/context differences remain distinct.",
+      "Result caches, plan caches, residual stores and world deltas use complete version/guard keys."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "baseplane",
+    "slug": "LEARNING",
+    "id": "BP-IS1-LEARNING",
+    "title": "Keep learned representation and routing in the integrated path",
+    "objective": "Integrate sequence-conditioned learned chunking, gates, portfolios and counterexample refinement as explicit model options.",
+    "depends": [
+      "BP-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/Baseplane/learning",
+      "src/learning",
+      "python/baseplane",
+      "tests/substrate/learning"
+    ],
+    "accept": [
+      "A small declared learned task runs through the same representation/provider interface as constructed alternatives.",
+      "Teacher, discrete/hardened route and residual correction are separately versioned; gradient conventions are stated.",
+      "No annotation oracle, surprise-equals-function assumption or permanent starvation of quiet regions."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "baseplane",
+    "slug": "BUILD",
+    "id": "BP-IS1-BUILD",
+    "title": "Make exact and representation components cleanly installable",
+    "objective": "Build/install optional representation/query components and external-consumer fixtures without sibling-source coupling.",
+    "depends": [
+      "BP-IS1-ADOPT"
+    ],
+    "paths": [
+      "cmake/substrate",
+      "tests/substrate/install",
+      "examples/substrate/install"
+    ],
+    "accept": [
+      "Exact core builds alone; higher components consume selected installed CE capabilities.",
+      "Acyclic target graph and CPU/CUDA availability are checked.",
+      "Shared root build patch is accepted by MERGE-A, not independently rewritten by every leaf."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "baseplane",
+    "slug": "MERGE-A",
+    "id": "BP-IS1-MERGE-A",
+    "title": "Integrate the sequence-facing domains",
+    "objective": "Merge independent sequence, hierarchy, indexing, reuse, learning and package work into a coherent client surface.",
+    "depends": [
+      "BP-IS1-SEQ",
+      "BP-IS1-HIERARCHY",
+      "BP-IS1-INDEX",
+      "BP-IS1-REUSE",
+      "BP-IS1-LEARNING",
+      "BP-IS1-BUILD"
+    ],
+    "paths": [
+      "CMakeLists.txt",
+      "cmake",
+      "include",
+      "src",
+      "components",
+      "tests",
+      "examples",
+      "experiments",
+      "python",
+      "planning/integrated-substrate-v1/receipts"
+    ],
+    "accept": [
+      "All accepted patches are present in the integrator lineage before dependent worktrees begin.",
+      "The exact→representation→question route is callable, with missing new CE capabilities explicitly blocked.",
+      "Old isolated drivers are mapped to integrated or optional experimental routes."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "baseplane",
+    "slug": "BRIDGE",
+    "id": "BP-IS1-BRIDGE",
+    "title": "Accept the real Cellerator provider and bind the sequence bridge",
+    "objective": "Consume source-bound installed CE capabilities and repair optional target/interface boundaries.",
+    "depends": [
+      "BP-IS1-MERGE-A"
+    ],
+    "paths": [
+      "src/interop",
+      "include/Baseplane/interop",
+      "tests/substrate/interop",
+      "planning/integrated-substrate-v1/receipts"
+    ],
+    "accept": [
+      "External CE-INTEGRATE is effectively done and provider receipt hashes/source/capabilities validate.",
+      "A real installed consumer uses CE general effects/math; sequence identity stays BP-owned.",
+      "No dependency cycle, stale DeviceMathContext or imported private implementation."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "baseplane",
+    "slug": "COMPOSE",
+    "id": "BP-IS1-COMPOSE",
+    "title": "Deliver an end-to-end adaptive sequence tool",
+    "objective": "Compose predicates, effects, questions, nonlocal candidates and selective richer math through one prepared/client path.",
+    "depends": [
+      "BP-IS1-BRIDGE"
+    ],
+    "paths": [
+      "examples/substrate/sequence_tool",
+      "tests/substrate/composition",
+      "bench/substrate/composition"
+    ],
+    "accept": [
+      "A bounded example includes order sensitivity, exact revisit, nonlocal group, learned option and edit repair.",
+      "Question/capacity/output/approximation contracts survive composition; ordinary branch/cohort alternatives are allowed.",
+      "Users do not need to import experimental directories or rebuild a new driver for each query."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "baseplane",
+    "slug": "QUALIFY",
+    "id": "BP-IS1-QUALIFY",
+    "title": "Qualify sequence semantics, total cost and meaningful learning scope",
+    "objective": "Activate relevant Q01–Q04 obligations and retain Q05 as an explicit external handoff.",
+    "depends": [
+      "BP-IS1-COMPOSE"
+    ],
+    "paths": [
+      "bench/substrate/qualification",
+      "tests/substrate/qualification",
+      "planning/integrated-substrate-v1/results/bp"
+    ],
+    "accept": [
+      "Adversarial sequence/edit/output tests and cold/reuse/directory/refinement costs are recorded.",
+      "Learned comparisons use a declared objective and proper split; unavailable biological data is not replaced by a toy claim.",
+      "A new query/summary is added through the documented seam; current baseline/vendor losses remain visible."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "baseplane",
+    "slug": "DOCS",
+    "id": "BP-IS1-DOCS",
+    "title": "Publish usable sequence APIs and the open research frontier",
+    "objective": "Explain exact input, learned representation, question/refinement and real results through one human reading path.",
+    "depends": [
+      "BP-IS1-COMPOSE"
+    ],
+    "paths": [
+      "README.md",
+      "AGENTS.md",
+      "docs"
+    ],
+    "accept": [
+      "Minimal exact and hierarchical examples execute through installed components.",
+      "All 48 cards retain source/evidence/destination/disposition, without claiming 48 supported implementations.",
+      "Historical lab, active status and design rationale are not conflated."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "baseplane",
+    "slug": "CLOSE",
+    "id": "BP-IS1-CLOSE",
+    "title": "Accept the integrated, extensible sequence library",
+    "objective": "Resolve final integration findings and publish the capability/results handoff for sibling consumption.",
+    "depends": [
+      "BP-IS1-QUALIFY",
+      "BP-IS1-DOCS"
+    ],
+    "paths": [
+      "CMakeLists.txt",
+      "cmake",
+      "include",
+      "src",
+      "components",
+      "tests",
+      "examples",
+      "experiments",
+      "python",
+      "docs",
+      "planning/integrated-substrate-v1/receipts"
+    ],
+    "accept": [
+      "Core sequence vertical slice, optional CE bridge and extension exercise pass.",
+      "Publish receipts/provider.json with real installed-consumer evidence for the joint witness.",
+      "Unfinished obligations have explicit ownership/trigger; no implicit CellShard or Ampere activation."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "SCIENCE",
+    "id": "GH-IS1-SCIENCE",
+    "title": "Unify scientific specifications and whole-hypothesis results",
+    "objective": "Make observations, models, hypotheses, conditioning and scientific result scope coherent without introducing general numerical ownership.",
+    "depends": [
+      "GH-IS1-ADOPT"
+    ],
+    "paths": [
+      "include/GlassHelix/experiment",
+      "src/experiment",
+      "python/glasshelix/experiment",
+      "tests/substrate/science"
+    ],
+    "accept": [
+      "Measurement, state, parameters and mechanism interpretations remain distinct.",
+      "Whole joint alternatives and non-identifiability are preserved through results and replay.",
+      "One small experiment specification composes the predecessor native/model facilities."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "DATA",
+    "id": "GH-IS1-DATA",
+    "title": "Integrate the actual predecessor cohort and experiment adapters",
+    "objective": "Retain completed ML2 CellTag formulation/cohort work and make its evidence/splits reusable by experiment clients.",
+    "depends": [
+      "GH-IS1-ADOPT"
+    ],
+    "paths": [
+      "python/glasshelix/data",
+      "src/data",
+      "experiments/celltag_reprogramming/data_adapter",
+      "tests/substrate/data"
+    ],
+    "accept": [
+      "Actual cohort/source/split and observability restrictions are preserved; no fabricated individual trajectories or paired modalities.",
+      "Preprocessing and sample/lineage/donor units are inspectable and replayable.",
+      "External missing data remains an explicit limitation, not silent replacement by remembered datasets."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "MODELS",
+    "id": "GH-IS1-MODELS",
+    "title": "Compose scientific models from Cellerator mathematics",
+    "objective": "Consolidate plain matrix, actor-port and current ML2 model clients; extract reusable numerical logic downward.",
+    "depends": [
+      "GH-IS1-ADOPT"
+    ],
+    "paths": [
+      "python/glasshelix/models",
+      "include/GlassHelix/models",
+      "tests/substrate/models"
+    ],
+    "accept": [
+      "Plain and actor-local model choices use the common experiment surface and declared native/provider capabilities.",
+      "Generic math has a CE owner or a concrete CE extraction demand accepted at the foundation seam.",
+      "Loss choice and biological interpretation stay scientific policy, not kernel selection."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "ANALYSIS",
+    "id": "GH-IS1-ANALYSIS",
+    "title": "Integrate interrogation and scientific refactoring proposals",
+    "objective": "Unify response requests, perturbations, candidate comparison and evidence-labelled structural proposals.",
+    "depends": [
+      "GH-IS1-ADOPT"
+    ],
+    "paths": [
+      "python/glasshelix/analysis",
+      "include/GlassHelix/analysis",
+      "python/glasshelix/refactoring",
+      "tests/substrate/analysis"
+    ],
+    "accept": [
+      "Requested responses use CE derivative capabilities without cloning differentiation or solver runtimes.",
+      "Supplied basis/refactoring demonstrations and inferred mechanisms remain distinct.",
+      "Uncertainty, readout/state migration and optimizer policy are explicit at the proposal boundary."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "BUILD",
+    "id": "GH-IS1-BUILD",
+    "title": "Make experiment execution and replay accessible",
+    "objective": "Integrate package entry points, installed CE consumption and reproducible result/replay paths.",
+    "depends": [
+      "GH-IS1-ADOPT"
+    ],
+    "paths": [
+      "cmake/substrate",
+      "python/glasshelix/cli",
+      "tests/substrate/install",
+      "tests/substrate/replay"
+    ],
+    "accept": [
+      "A user can run/evaluate/replay an experiment without importing moonshot directories.",
+      "Native and optional framework routes clearly expose dependencies and unsupported capabilities.",
+      "Historical missing raw benchmark evidence is not reconstructed or promoted as authenticated."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "MERGE-A",
+    "id": "GH-IS1-MERGE-A",
+    "title": "Integrate the scientific consumer surface",
+    "objective": "Merge independent specification/data/model/analysis/package work into the experiment built on Cellerator.",
+    "depends": [
+      "GH-IS1-SCIENCE",
+      "GH-IS1-DATA",
+      "GH-IS1-MODELS",
+      "GH-IS1-ANALYSIS",
+      "GH-IS1-BUILD"
+    ],
+    "paths": [
+      "CMakeLists.txt",
+      "cmake",
+      "include",
+      "src",
+      "components",
+      "tests",
+      "examples",
+      "experiments",
+      "python",
+      "bindings",
+      "planning/integrated-substrate-v1/receipts"
+    ],
+    "accept": [
+      "A coherent experimental client is present in the accepted lineage, not several incompatible model demos.",
+      "Reusable numerical ownership is downward in CE; any unresolved demand is visible before native binding.",
+      "Dependent worktrees inherit integrated source and generated interface artifacts."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "BRIDGE",
+    "id": "GH-IS1-BRIDGE",
+    "title": "Accept installed Cellerator mathematics and framework capabilities",
+    "objective": "Bind scientific requests to a current, evidenced CE provider rather than a prototype receipt.",
+    "depends": [
+      "GH-IS1-MERGE-A"
+    ],
+    "paths": [
+      "src/system",
+      "bindings",
+      "tests/substrate/interop",
+      "planning/integrated-substrate-v1/receipts"
+    ],
+    "accept": [
+      "External CE-INTEGRATE is effectively done; current source/build/capability evidence passes the provider gate.",
+      "Ordered scientific roles and output effects survive native binding.",
+      "Forward, requested state/parameter VJP and JVP use genuine supported native routes."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "PIPELINE",
+    "id": "GH-IS1-PIPELINE",
+    "title": "Deliver fitted/evaluated models and replayable scientific outputs",
+    "objective": "Exercise the current ML2 experiment and both useful moonshot model families through the integrated toolkit.",
+    "depends": [
+      "GH-IS1-BRIDGE"
+    ],
+    "paths": [
+      "experiments/celltag_reprogramming/integrated",
+      "examples/substrate/scientific_tool",
+      "tests/substrate/pipeline"
+    ],
+    "accept": [
+      "A supported fit/evaluation protocol, controls, checkpoint and replay work through installed components.",
+      "A refactoring proposal executes via CE and preserves or explicitly changes the model as declared.",
+      "No biological victory or unique mechanism is required for a valid experimental result."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "QUALIFY",
+    "id": "GH-IS1-QUALIFY",
+    "title": "Evaluate scientific correctness, usability and total execution cost",
+    "objective": "Check data/interpretation boundaries, requested derivatives and experiment-level costs with meaningful controls.",
+    "depends": [
+      "GH-IS1-PIPELINE"
+    ],
+    "paths": [
+      "bench/substrate",
+      "tests/substrate/qualification",
+      "planning/integrated-substrate-v1/results/gh"
+    ],
+    "accept": [
+      "Scientific units, leakage controls and whole-alternative semantics are tested, not assumed.",
+      "Native speed and model quality/cost are reported separately; all evidence names exact sources.",
+      "A new small scientific experiment is added without building new general math infrastructure."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "DOCS",
+    "id": "GH-IS1-DOCS",
+    "title": "Explain the scientific experiment and its usable library path",
+    "objective": "Publish intuitive scientific design, practical examples and supported results without disguising the unfinished frontier.",
+    "depends": [
+      "GH-IS1-PIPELINE"
+    ],
+    "paths": [
+      "README.md",
+      "AGENTS.md",
+      "docs"
+    ],
+    "accept": [
+      "The README positions GH as a scientific experiment on CE, not a competing mathematical library.",
+      "Native capability, fitted model, biological inference and speculation have distinct evidence.",
+      "No stale mutable status table is replicated across human and agent documents."
+    ],
+    "detail": "",
+    "role": "leaf"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "JOINT",
+    "id": "GH-IS1-JOINT",
+    "title": "Prove the three tools can compose without losing meaning",
+    "objective": "Run one bounded sequence-conditioned scientific witness through installed BP and CE components.",
+    "depends": [
+      "GH-IS1-PIPELINE"
+    ],
+    "paths": [
+      "examples/substrate/joint",
+      "tests/substrate/joint",
+      "planning/integrated-substrate-v1/receipts/joint"
+    ],
+    "accept": [
+      "External BP-CLOSE provider and CE-INTEGRATE capabilities pass live/source-bound gates.",
+      "Exact sequence provenance, CE numerical/derivative ownership and GH scientific meaning survive end to end.",
+      "The witness is labelled engineering interoperability, not a compulsory model or genome-scale validation."
+    ],
+    "detail": "",
+    "role": "merge"
+  },
+  {
+    "project": "glasshelix",
+    "slug": "CLOSE",
+    "id": "GH-IS1-CLOSE",
+    "title": "Accept the scientific tool and the complete successor handoff",
+    "objective": "Resolve final findings and publish what is integrated, experimental, measured or deliberately still open.",
+    "depends": [
+      "GH-IS1-QUALIFY",
+      "GH-IS1-DOCS",
+      "GH-IS1-JOINT"
+    ],
+    "paths": [
+      "CMakeLists.txt",
+      "cmake",
+      "include",
+      "src",
+      "components",
+      "tests",
+      "examples",
+      "experiments",
+      "python",
+      "bindings",
+      "docs",
+      "planning/integrated-substrate-v1/receipts"
+    ],
+    "accept": [
+      "The GH vertical slice and joint installed-consumer witness pass with truthful scientific scope.",
+      "All required migration/extension obligations are accounted for; no duplicate general math stack remains.",
+      "Publish final three-project source/capability matrix; this does not close unrelated research questions."
+    ],
+    "detail": "",
+    "role": "merge"
+  }
+]

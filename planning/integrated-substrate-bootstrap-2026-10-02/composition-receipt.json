@@ -1,0 +1,148 @@
+{
+  "source_plan_sha256": "d6ac6937f14510d5a3829c20bb6eef44e49f493e1a5a80994c4b24491752afca",
+  "derived_plan_sha256": "c78430d03c083f18e528a6452a04e7309ef12f615c00c1125847025693d424ce",
+  "authority_revision": 7677,
+  "existing_task_definitions": [
+    {
+      "id": "CE-ML2-0000",
+      "parent_id": null,
+      "kind": "epic",
+      "title": "Cellerator ML2 integration",
+      "objective": "Closure-only aggregate for the verified local outcomes, not a coordinator seat or prerequisite of children.",
+      "status": "done",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "result": "validated",
+      "next_action": "",
+      "notes": "",
+      "tags": [],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated"
+        ]
+      },
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": []
+      },
+      "gates": []
+    },
+    {
+      "id": "CE-MOON-000",
+      "parent_id": null,
+      "kind": "epic",
+      "title": "Cellerator numerical research for Baseplane moonshots",
+      "objective": "Aggregate Cellerator-owned experimental numerical and learned mechanisms; no replacement of ML2 or unrelated research.",
+      "status": "done",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "result": "implemented",
+      "next_action": "Close only the completed CE-MOON-RUN-1 provider aggregate; preserve the independent CE-MOON-RUN-V1 claims and all unrelated work.",
+      "notes": "Research-stage ML-like mechanisms are in Cellerator scope from inception. This aggregate is not a prerequisite of its children.",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "planning/baseplane_moonshot_bootstrap/results/cellerator"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap"
+        ],
+        "forbidden_paths": []
+      },
+      "gates": []
+    },
+    {
+      "id": "CE-MOON-0000",
+      "parent_id": null,
+      "kind": "epic",
+      "title": "Cellerator single-cell moonshot",
+      "objective": "Closure-only aggregate; children do not depend on the epic.",
+      "status": "done",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "result": "validated",
+      "next_action": "",
+      "notes": "",
+      "tags": [],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [
+          "experiments/moonshot-parallel-v1/seeds",
+          "planning/moonshot-parallel-v1",
+          "planning/moonshot-v1"
+        ],
+        "forbidden_paths": []
+      },
+      "gates": [
+        {
+          "id": "CE-MOON-CLOSURE-DONE",
+          "type": "task_state",
+          "required": true,
+          "status": "done",
+          "task_id": "CE-MOON-INTEGRATE"
+        }
+      ]
+    }
+  ],
+  "inherent_import_metadata_changes": [
+    "Task version increment",
+    "Task revision and updated_at refreshed",
+    "Scope rows recreated with identical mode/path"
+  ],
+  "preserved_existing_tables": [
+    "barrier_requirements",
+    "barriers",
+    "checkpoint_gates",
+    "checkpoint_interfaces",
+    "checkpoints",
+    "decisions",
+    "events",
+    "evidence",
+    "gates",
+    "handoffs",
+    "interface_consumers",
+    "interfaces",
+    "invariants",
+    "live_recovery_audit",
+    "migration_warnings",
+    "named_locks",
+    "ownership_scopes",
+    "resource_classes",
+    "resource_instances",
+    "resource_requests",
+    "task_artifacts",
+    "task_completion_gates",
+    "task_dependencies",
+    "task_invariants",
+    "task_locks",
+    "tasks",
+    "workflow_context_fragments",
+    "workflow_integration_queue",
+    "workflow_lane_tasks",
+    "workflow_lanes",
+    "workflow_message_receipts",
+    "workflow_message_recipients",
+    "workflow_messages",
+    "workflow_patch_artifacts",
+    "workflow_recovery_audit",
+    "workflow_rendezvous",
+    "workflow_rendezvous_arrivals",
+    "workflow_rendezvous_participants",
+    "workflow_run_charters",
+    "workflow_runs",
+    "workflow_workspaces"
+  ],
+  "modified_source_tasks": [],
+  "frozen_interfaces_in_proposal": []
+}

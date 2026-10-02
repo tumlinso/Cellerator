@@ -1,0 +1,57 @@
+{
+  "static-validation": {
+    "command": [
+      "python3",
+      "tools/validate_package.py",
+      "--verify-manifest"
+    ],
+    "exit_code": 0,
+    "log": "/home/tumlinson/Cellerator/planning/integrated-substrate-preflight-2026-10-02/static-validation.log"
+  },
+  "python-tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ],
+    "exit_code": 0,
+    "log": "/home/tumlinson/Cellerator/planning/integrated-substrate-preflight-2026-10-02/python-tests.log"
+  },
+  "cpp-build": {
+    "command": [
+      "c++",
+      "-std=c++17",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-pedantic",
+      "seed/cpp/packing_conformance.cc",
+      "-o",
+      "/tmp/is1-bootstrap-preflight-9h1f3_at/packing_conformance"
+    ],
+    "exit_code": 0,
+    "log": "/home/tumlinson/Cellerator/planning/integrated-substrate-preflight-2026-10-02/cpp-build.log"
+  },
+  "cpp-tests": {
+    "command": [
+      "/tmp/is1-bootstrap-preflight-9h1f3_at/packing_conformance"
+    ],
+    "exit_code": 0,
+    "log": "/home/tumlinson/Cellerator/planning/integrated-substrate-preflight-2026-10-02/cpp-tests.log"
+  },
+  "host-demo": {
+    "command": [
+      "python3",
+      "seed/python/demo.py"
+    ],
+    "exit_code": 0,
+    "log": "/home/tumlinson/Cellerator/planning/integrated-substrate-preflight-2026-10-02/host-demo.log"
+  },
+  "zip_sha256": "8e0d4a5dd305b2a388c975469b001995ff3d1a3ba921a7f723a9ee07df3302b8",
+  "source": "/tmp/is1-bootstrap-preflight-9h1f3_at/integrated_substrate_bootstrap_2026-10-02"
+}

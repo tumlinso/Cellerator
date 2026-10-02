@@ -1,0 +1,17 @@
+# Small record contracts, not another task system
+
+The templates are deliberately incomplete and must not pass activation/provider gates. `tools/gates.py` is the executable validator. It reads current native task state through the inspected installed `SemanticReader` interface; it never writes authority or runs commands named in evidence.
+
+`local-config.json` (ignored) gives explicit absolute roots for `cellerator`, `baseplane`, `glasshelix`, the installed Todo provider module directory and an absolute activation-review path. Optional `artifact_roots` names installed/build artifact directories outside those repositories; they cannot override repository roots. Gate configuration should name the accepted provider/integration checkouts, not arbitrary unmerged worker branches.
+
+An activation review records current exact heads, capture time, controller review, a complete live run inventory, resolved claim/patch scope and hashed authority-observation files. Each run row names `project`, `run_id`, `root_task_id`, `disposition` and `reason`. Dispositions are `predecessor`, `completed`, `historical_closed`, `preserved_deferred` or `permission_locked`. Deferred/locked rows also name `preservation_owner` and `trigger`. Required predecessor roots and any newly classified predecessor must read effectively done. Historical closure must read a terminal state. The template's booleans are false on purpose.
+
+Inventory completeness and review are assertions made by the responsible controller using the live tools. The checker cannot authenticate an omitted run or the truth of arbitrarily fabricated logs. Hash checks bind the provided artifacts; they are not a substitute for actually performing/reviewing the observations and tests. Parser unit fixtures are not acceptance evidence.
+
+A provider receipt names `record_kind: is1_provider_receipt`, project, exact task, source commit and review. Each capability has `name`, `status: implemented`, actual `call`, supported `shapes` and `numerical_policy`. Keep optional limitations/unsupported cases and detailed precision/derivative rules alongside these fields. Required capability names come from `machine/cross-authority.json`.
+
+Every `build_artifacts` entry names `project` or configured `root`, relative `path` and `sha256`. Every check names `kind`, `execution: real`, `status: passed`, integer `exit_code: 0`, real `argv`, `source_commits`, `project`, relative `path` (or `evidence_path`), `sha256` and actual `backend`. CE requires native correctness, installed consumer and derivative checks, including real SM70 execution; GH's bridge additionally requires framework-consumer evidence. BP requires sequence correctness and an installed consumer. These records summarize actual checks; changing fields does not create their evidence.
+
+Publish generated receipts and results under ignored `receipts/` and `results/` after committing the tested source. Preserve/register their durable artifacts through the existing project workflow. The package's immutable `machine/` inputs and original predecessor packages remain untouched; revised native proposals and the expanded preservation inventory are separate reviewed records.
+
+The measurement template uses null for unmeasured fields and `status: not_run`. Change status only after the actual operation. Baseline and candidate records must state whether they implement equal mathematics or distinct model/approximation choices. No schema can turn an unfair comparison into a valid speedup.

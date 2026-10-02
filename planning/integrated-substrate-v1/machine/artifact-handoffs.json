@@ -1,0 +1,272 @@
+[
+  {
+    "task_id": "CE-IS1-ADOPT",
+    "required_accepted_base_task": null,
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "foundation"
+  },
+  {
+    "task_id": "BP-IS1-ADOPT",
+    "required_accepted_base_task": null,
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "foundation"
+  },
+  {
+    "task_id": "GH-IS1-ADOPT",
+    "required_accepted_base_task": null,
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "foundation"
+  },
+  {
+    "task_id": "CE-IS1-STATE",
+    "required_accepted_base_task": "CE-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-PACK",
+    "required_accepted_base_task": "CE-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-OPS",
+    "required_accepted_base_task": "CE-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-EFFECTS",
+    "required_accepted_base_task": "CE-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-EXEC",
+    "required_accepted_base_task": "CE-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-BUILD",
+    "required_accepted_base_task": "CE-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-MERGE-A",
+    "required_accepted_base_task": "CE-IS1-STATE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "CE-IS1-STRATEGIES",
+    "required_accepted_base_task": "CE-IS1-MERGE-A",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-MATH",
+    "required_accepted_base_task": "CE-IS1-MERGE-A",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-DIFF",
+    "required_accepted_base_task": "CE-IS1-MERGE-A",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-ADAPT",
+    "required_accepted_base_task": "CE-IS1-MERGE-A",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-LOWER",
+    "required_accepted_base_task": "CE-IS1-MERGE-A",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-MERGE-B",
+    "required_accepted_base_task": "CE-IS1-STRATEGIES",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "CE-IS1-TORCH",
+    "required_accepted_base_task": "CE-IS1-MERGE-B",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-INTEGRATE",
+    "required_accepted_base_task": "CE-IS1-TORCH",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "CE-IS1-QUALIFY",
+    "required_accepted_base_task": "CE-IS1-INTEGRATE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-DOCS",
+    "required_accepted_base_task": "CE-IS1-INTEGRATE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "CE-IS1-CLOSE",
+    "required_accepted_base_task": "CE-IS1-QUALIFY",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "BP-IS1-SEQ",
+    "required_accepted_base_task": "BP-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "BP-IS1-HIERARCHY",
+    "required_accepted_base_task": "BP-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "BP-IS1-INDEX",
+    "required_accepted_base_task": "BP-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "BP-IS1-REUSE",
+    "required_accepted_base_task": "BP-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "BP-IS1-LEARNING",
+    "required_accepted_base_task": "BP-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "BP-IS1-BUILD",
+    "required_accepted_base_task": "BP-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "BP-IS1-MERGE-A",
+    "required_accepted_base_task": "BP-IS1-SEQ",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "BP-IS1-BRIDGE",
+    "required_accepted_base_task": "BP-IS1-MERGE-A",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "BP-IS1-COMPOSE",
+    "required_accepted_base_task": "BP-IS1-BRIDGE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "BP-IS1-QUALIFY",
+    "required_accepted_base_task": "BP-IS1-COMPOSE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "BP-IS1-DOCS",
+    "required_accepted_base_task": "BP-IS1-COMPOSE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "BP-IS1-CLOSE",
+    "required_accepted_base_task": "BP-IS1-QUALIFY",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "GH-IS1-SCIENCE",
+    "required_accepted_base_task": "GH-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "GH-IS1-DATA",
+    "required_accepted_base_task": "GH-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "GH-IS1-MODELS",
+    "required_accepted_base_task": "GH-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "GH-IS1-ANALYSIS",
+    "required_accepted_base_task": "GH-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "GH-IS1-BUILD",
+    "required_accepted_base_task": "GH-IS1-ADOPT",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "GH-IS1-MERGE-A",
+    "required_accepted_base_task": "GH-IS1-SCIENCE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "GH-IS1-BRIDGE",
+    "required_accepted_base_task": "GH-IS1-MERGE-A",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "GH-IS1-PIPELINE",
+    "required_accepted_base_task": "GH-IS1-BRIDGE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "GH-IS1-QUALIFY",
+    "required_accepted_base_task": "GH-IS1-PIPELINE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "GH-IS1-DOCS",
+    "required_accepted_base_task": "GH-IS1-PIPELINE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "leaf"
+  },
+  {
+    "task_id": "GH-IS1-JOINT",
+    "required_accepted_base_task": "GH-IS1-PIPELINE",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  },
+  {
+    "task_id": "GH-IS1-CLOSE",
+    "required_accepted_base_task": "GH-IS1-QUALIFY",
+    "base_requirement": "actual accepted source, not completion text",
+    "ownership": "merge"
+  }
+]

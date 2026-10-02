@@ -1,0 +1,195 @@
+[
+  {
+    "project": "cellerator",
+    "run_id": "compat-v2",
+    "root_task_id": "CE-REMAP-00",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-POST-REMAP-RUN",
+    "root_task_id": "CE-POST-REMAP-01",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-BIOPREP-EXTRACTION-RUN",
+    "root_task_id": "CE-BIOPREP-01",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-PTR-RUN",
+    "root_task_id": "CE-PTR",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-AMP-RUN-V1",
+    "root_task_id": "CE-AMP-00",
+    "disposition": "permission_locked",
+    "reason": "Ampere requires separate permission; bootstrap preserves ten queued tasks.",
+    "preservation_owner": "root/Cellerator user",
+    "trigger": "CE-AMP-PERMISSION plus CE-GEO-COMPLETE and CE-EXOP-COMPLETE"
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-GEO-RUN-V1",
+    "root_task_id": "CE-GEO-00",
+    "disposition": "preserved_deferred",
+    "reason": "GEO aggregate remains planned despite 108 completed lane tasks; preserve aggregate and permission-gated descendants.",
+    "preservation_owner": "root/Cellerator user",
+    "trigger": "Separately requested GEO aggregate closure/AMP reconciliation"
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-EXOP-RUN-V1",
+    "root_task_id": "CE-EXOP-00",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-JBC-RUN-V1",
+    "root_task_id": "CE-JBC-B01",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-CCP1-RUN-V1",
+    "root_task_id": "CE-CCP1-0000",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-SS1-RUN-V1",
+    "root_task_id": "CE-SS1-0000",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-RU1-RUN-V1",
+    "root_task_id": "CE-RU1-0000",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-NF1-RUN-V1",
+    "root_task_id": "CE-NF1-0000",
+    "disposition": "historical_closed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-NF1A-RUN-V1",
+    "root_task_id": "CE-NF1A-0000",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-ML2-RUN-V1",
+    "root_task_id": "CE-ML2-0000",
+    "disposition": "predecessor",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-DOCS-RUN-V1",
+    "root_task_id": "CE-DOCS-000",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-MOON-RUN-1",
+    "root_task_id": "CE-MOON-000",
+    "disposition": "predecessor",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "cellerator",
+    "run_id": "CE-MOON-RUN-V1",
+    "root_task_id": "CE-MOON-0000",
+    "disposition": "predecessor",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "baseplane",
+    "run_id": "compat-v2",
+    "root_task_id": "BITOP-00",
+    "disposition": "historical_closed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "baseplane",
+    "run_id": "BP-CUDA-LAB-RUN-1",
+    "root_task_id": "BP-CUDA-LAB-00",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "baseplane",
+    "run_id": "BP-CUDA-LAB-CLOSE-1",
+    "root_task_id": "BP-CUDA-LAB-00",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "baseplane",
+    "run_id": "BP-DOCS-RUN-V1",
+    "root_task_id": "BP-DOCS-000",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "baseplane",
+    "run_id": "BP-MOON-RUN-1",
+    "root_task_id": "BP-MOON-000",
+    "disposition": "predecessor",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "glasshelix",
+    "run_id": "GH-NF1-RUN-V1",
+    "root_task_id": "GH-NF1-0000",
+    "disposition": "historical_closed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "glasshelix",
+    "run_id": "GH-NF1A-RUN-V1",
+    "root_task_id": "GH-NF1A-0000",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "glasshelix",
+    "run_id": "GH-ML2-RUN-V1",
+    "root_task_id": "GH-ML2-0000",
+    "disposition": "predecessor",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "glasshelix",
+    "run_id": "GH-DOCS-RUN-V1",
+    "root_task_id": "GH-DOCS-000",
+    "disposition": "completed",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  },
+  {
+    "project": "glasshelix",
+    "run_id": "GH-MOON-RUN-V1",
+    "root_task_id": "GH-MOON-0000",
+    "disposition": "predecessor",
+    "reason": "Live root effectively terminal; retain existing lanes, artifacts and workspace records."
+  }
+]
