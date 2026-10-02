@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-INTEGRATE: Integrate useful prototypes and publish an honest receipt
 
-Task revision: `7493`; current project revision is in `todo-status.md`.
+Task revision: `7653`; current project revision is in `todo-status.md`.
 
 ## Objective
 Move selected reusable pieces into current CE owners and expose consumers without adding a second runtime.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `integration_exclusive`
 - Result: `-`
 
