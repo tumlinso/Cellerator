@@ -1,0 +1,58 @@
+{
+  "commands": [
+    [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "/home/tumlinson/Cellerator/components/CelleraTorch/tests/test_biology.py",
+      "--junitxml=/home/tumlinson/Cellerator/docs/learning/bio-evidence/pytest.xml"
+    ],
+    [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "/home/tumlinson/Cellerator/bench/learning/shared_support_lifecycle.py",
+      "--run-cuda",
+      "--output",
+      "/home/tumlinson/Cellerator/docs/learning/bio-evidence/benchmark.json",
+      "--repetitions",
+      "5"
+    ]
+  ],
+  "cwd": "/home/tumlinson/Cellerator",
+  "environment": {
+    "installed_package": "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/lib/python3.13/site-packages/celleratorch",
+    "installed_version": "0.1.0",
+    "python": "3.13.11",
+    "python_executable": "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+    "torch": "2.7.0+cu126",
+    "torch_cuda": "12.6"
+  },
+  "input_sha256": {
+    "/home/tumlinson/Cellerator/bench/learning/shared_support_lifecycle.py": "0605f039b2c0325c1e207564656f3fccff9571c58793c685f77813c0182d4ac5",
+    "/home/tumlinson/Cellerator/components/CelleraTorch/python/celleratorch/__init__.py": "3cf269bf8446e0a8d901dbbf88aad3497a91c837876061d52c6215b0aa1dd24a",
+    "/home/tumlinson/Cellerator/components/CelleraTorch/python/celleratorch/biology.py": "e4a77615284fae67d608f9f00ca9ebbd23efcb51ce6305b46f0d1543bb5a2cf4",
+    "/home/tumlinson/Cellerator/components/CelleraTorch/python/celleratorch/mechanism.py": "d627e92d771ee7a917f57aadf03cf0537663c7fde882677c2b0d06195e9e6d43",
+    "/home/tumlinson/Cellerator/components/CelleraTorch/src/mechanism.cc": "9518741debb43555d74b2592f635bf3f57afb80db9020b7a8a3172d444326961",
+    "/home/tumlinson/Cellerator/components/CelleraTorch/tests/test_biology.py": "140281ba6bbc0e98c63dd45d005cd4eee1ec5ec311a38818b271d43649d99a51",
+    "/home/tumlinson/Cellerator/docs/learning/capability-receipt.json": "dd2eda1eae473f595e93daa4455c7d0549dc276f205fcd88e7c2e47f3fe4bb06",
+    "/home/tumlinson/Cellerator/docs/learning/verify_bio_evidence.py": "6191b5cb80433343abf4cafbfac444224b3817f906adb460781b86f6abf2a572",
+    "/home/tumlinson/Software/cellerator-ml2-python/lib/libcellera_torch_mechanism.so": "79c21e4428d49a679cedbfcdb394d56ffe58382cb933db3f9abd554bee52a33b",
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/lib/python3.13/site-packages/celleratorch/__init__.py": "3cf269bf8446e0a8d901dbbf88aad3497a91c837876061d52c6215b0aa1dd24a",
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/lib/python3.13/site-packages/celleratorch/biology.py": "e4a77615284fae67d608f9f00ca9ebbd23efcb51ce6305b46f0d1543bb5a2cf4",
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/lib/python3.13/site-packages/celleratorch/mechanism.py": "d627e92d771ee7a917f57aadf03cf0537663c7fde882677c2b0d06195e9e6d43",
+    "/tmp/ce-bio-wheel-20261002/celleratorch-0.1.0-py3-none-any.whl": "081d984a473f61938b2a1eb26a1efcd06bb1d0208d814b9380f5c3a2e14f97e3"
+  },
+  "native_library": {
+    "path": "/home/tumlinson/Software/cellerator-ml2-python/lib/libcellera_torch_mechanism.so",
+    "qualification": "unchanged dependency qualified by CE-ML2-TRAIN",
+    "sha256": "79c21e4428d49a679cedbfcdb394d56ffe58382cb933db3f9abd554bee52a33b"
+  },
+  "prepared_at_unix": 1790953608.7518759,
+  "required_environment": {
+    "CELLERATORCH_NATIVE_LIBRARY": "/home/tumlinson/Software/cellerator-ml2-python/lib/libcellera_torch_mechanism.so",
+    "CELLERATORCH_REQUIRE_NATIVE": "1"
+  },
+  "schema_version": 1,
+  "source_commit": "009a5579c1facec8c3bce3c36f6764c9f49ab97c",
+  "task": "CE-ML2-BIO"
+}

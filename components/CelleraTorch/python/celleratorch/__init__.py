@@ -18,9 +18,11 @@ from .mechanism import (
     load_checkpoint,
     save_checkpoint,
 )
+from .biology import SharedSupportRelation, SharedSupportSpec
 
 __all__ = [
     "Axis", "BiologicalTensor", "Identity", "Incidence", "Mechanism",
     "MechanismModule", "MechanismSpec", "OutputContribution",
     "guarded_step", "load_checkpoint", "save_checkpoint",
+    "SharedSupportRelation", "SharedSupportSpec",
 ]
