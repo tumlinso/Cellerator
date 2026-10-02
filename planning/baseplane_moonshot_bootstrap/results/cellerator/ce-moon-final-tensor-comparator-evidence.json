@@ -1,0 +1,41 @@
+{
+  "source_commit": "f6425a78ad728212ba3d24a40cfa1630d2ad18b8",
+  "changed_source": "experiments/baseplane_moonshot/families/tensor/cuda_probe.cu",
+  "repair": "oracle requires finite actual and expected before tolerance comparison",
+  "self_check": "rejects deliberate actual/expected NaN and infinity and finite mismatch; zero equality passes; --self-check exits before CUDA runtime access",
+  "commands": [
+    [
+      "python",
+      "/tmp/moonshot_build_slot.py",
+      "cmake",
+      "--build",
+      "/tmp/ce-moon-final-cuda",
+      "--target",
+      "ce_moon_tensor_cuda",
+      "-j1"
+    ],
+    [
+      "/tmp/ce-moon-final-cuda/families/tensor/ce_moon_tensor_cuda",
+      "--self-check"
+    ]
+  ],
+  "status": {
+    "cuda_sm70_compiled": true,
+    "host_comparator_self_check_passed": true,
+    "gpu_run_by_this_agent": false
+  },
+  "runtime_argv": [
+    "/tmp/ce-moon-final-cuda/families/tensor/ce_moon_tensor_cuda"
+  ],
+  "binary_sha256": "599954303efa6a859b9168c7767ef7516858d74f954f9a9b1c56fa79ff84801d",
+  "logs": [
+    {
+      "path": "/tmp/ce-moon-final-tensor-comparator-build.log",
+      "sha256": "42efbe70e60c6b132c303cd5120b2a12d5d7d75aac2dc2210628bfd7065dbe11"
+    },
+    {
+      "path": "/tmp/ce-moon-final-tensor-comparator-self-check.log",
+      "sha256": "b10166329f31505ce2a13d5fc973aa55941ca3a43cccd0bd2216b0054734332a"
+    }
+  ]
+}
