@@ -1,0 +1,45 @@
+{
+  "record_kind": "non_executable_reconciliation_request",
+  "schema_version": 1,
+  "native_mutation_schema": false,
+  "default": "additive",
+  "preserve": [
+    "CE-ML2-TRAIN",
+    "GH-ML2-REPAIR",
+    "completed NF1A/compiler/geometry evidence",
+    "existing whole-candidate science contracts"
+  ],
+  "integrate_candidates": {
+    "CE-ML2-BIO": [
+      "CE-MOON-MMA",
+      "CE-MOON-STATE",
+      "CE-MOON-DIFF",
+      "CE-MOON-INTEGRATE"
+    ],
+    "GH-ML2-DESIGN": [
+      "GH-MOON-MODELS"
+    ],
+    "GH-ML2-LEARN": [
+      "GH-MOON-REFACTOR",
+      "GH-MOON-CONSUMER"
+    ]
+  },
+  "retain_separate": [
+    "GH-ML2-DATA",
+    "GH-ML2-PILOT",
+    "GH-ML2-ACCEPT",
+    "CE-ML2-BIO full-cost qualification where not performed"
+  ],
+  "leave_untouched": [
+    "CE-AMP-*",
+    "GH-PREPRINT",
+    "GH-SCIENCE-FOUNDATIONS"
+  ],
+  "supersession_preconditions": [
+    "fresh exact source and authority read",
+    "owner reconciliation of active claims/lanes/dispatches",
+    "explicit successor obligations and dependency rewrite",
+    "preservation of successful source and evidence",
+    "native preview and audited apply; no direct Todo writes"
+  ]
+}

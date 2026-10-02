@@ -1,0 +1,123 @@
+{
+  "before_snapshot_revision": 7478,
+  "after_snapshot_revision": 7493,
+  "import_before_revision": 7492,
+  "import_after_revision": 7493,
+  "applied_modify": [],
+  "tables": {
+    "tasks": {
+      "prior_rows": 1279,
+      "removed_or_changed": 4,
+      "added": 15,
+      "changed_row_ids": [
+        {
+          "id": "CE-MOON-020"
+        },
+        {
+          "id": "CE-MOON-050"
+        },
+        {
+          "id": "CE-MOON-040"
+        },
+        {
+          "id": "CE-MOON-030"
+        }
+      ]
+    },
+    "task_dependencies": {
+      "prior_rows": 1423,
+      "removed_or_changed": 0,
+      "added": 11,
+      "changed_row_ids": []
+    },
+    "ownership_scopes": {
+      "prior_rows": 16620,
+      "removed_or_changed": 0,
+      "added": 154,
+      "changed_row_ids": []
+    },
+    "gates": {
+      "prior_rows": 1260,
+      "removed_or_changed": 0,
+      "added": 2,
+      "changed_row_ids": []
+    },
+    "task_completion_gates": {
+      "prior_rows": 840,
+      "removed_or_changed": 0,
+      "added": 0,
+      "changed_row_ids": []
+    },
+    "interfaces": {
+      "prior_rows": 109,
+      "removed_or_changed": 0,
+      "added": 0,
+      "changed_row_ids": []
+    },
+    "checkpoints": {
+      "prior_rows": 164,
+      "removed_or_changed": 0,
+      "added": 0,
+      "changed_row_ids": []
+    },
+    "workflow_runs": {
+      "prior_rows": 16,
+      "removed_or_changed": 0,
+      "added": 1,
+      "changed_row_ids": []
+    },
+    "workflow_lanes": {
+      "prior_rows": 163,
+      "removed_or_changed": 4,
+      "added": 11,
+      "changed_row_ids": [
+        {
+          "id": "CE-MOON-L-LEARNING",
+          "run_id": "CE-MOON-RUN-1"
+        },
+        {
+          "id": "CE-MOON-L-EFFECTS",
+          "run_id": "CE-MOON-RUN-1"
+        },
+        {
+          "id": "CE-MOON-L-TENSOR",
+          "run_id": "CE-MOON-RUN-1"
+        },
+        {
+          "id": "CE-MOON-L-MECHANISMS",
+          "run_id": "CE-MOON-RUN-1"
+        }
+      ]
+    },
+    "workflow_lane_tasks": {
+      "prior_rows": 1147,
+      "removed_or_changed": 4,
+      "added": 15,
+      "changed_row_ids": [
+        {
+          "task_id": "CE-MOON-040",
+          "lane_id": "CE-MOON-L-LEARNING"
+        },
+        {
+          "task_id": "CE-MOON-020",
+          "lane_id": "CE-MOON-L-EFFECTS"
+        },
+        {
+          "task_id": "CE-MOON-030",
+          "lane_id": "CE-MOON-L-TENSOR"
+        },
+        {
+          "task_id": "CE-MOON-050",
+          "lane_id": "CE-MOON-L-MECHANISMS"
+        }
+      ]
+    },
+    "workflow_workspaces": {
+      "prior_rows": 117,
+      "removed_or_changed": 0,
+      "added": 5,
+      "changed_row_ids": []
+    }
+  },
+  "concurrent_activity": "Existing companion workers claimed CE-MOON-020/030/040/050 between snapshot and import; their live changes are preserved, not attributed to bootstrap."
+}

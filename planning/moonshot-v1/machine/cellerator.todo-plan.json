@@ -1,0 +1,520 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "Cellerator"
+  },
+  "invariants": [
+    {
+      "id": "CE-MOON-OWNERSHIP",
+      "severity": "error",
+      "rule": "Cellerator owns native mathematics, physical representations, compilation and execution; CelleraTorch owns framework integration; GlassHelix owns models, evidence, interpretation and authorized refactorings. Keep separate Todo authorities."
+    },
+    {
+      "id": "CE-MOON-SEMANTICS",
+      "severity": "error",
+      "rule": "Preserve logical identity, local coordinate meaning, single-snapshot reads, ordered/repeated arguments, contribution ownership and saved-primal generations. Numerical zero is not absent derivative support. No hidden optimizer update in backward."
+    },
+    {
+      "id": "CE-MOON-EXPERIMENT",
+      "severity": "error",
+      "rule": "This is a prototype campaign. Label equivalent lowering, new model family and approximation separately. Small correctness/gradient checks suffice for prototype acceptance; no invented speedup, scientific identification or exhaustive qualification requirement."
+    },
+    {
+      "id": "CE-MOON-PRESERVE",
+      "severity": "error",
+      "rule": "Keep successful ML2-TRAIN, NF1A, existing compiler/runtime and sibling consumers. Never hand-edit Todo storage/generated views. Do not activate Ampere or edit preprints. Reconcile claims and frozen interfaces before source integration or selective supersession."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "CE-MOON-0000",
+      "kind": "epic",
+      "title": "Cellerator single-cell moonshot",
+      "objective": "Closure-only aggregate; children do not depend on the epic.",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "scope": {
+        "read_paths": [
+          "planning/moonshot-v1"
+        ],
+        "exclusive_paths": []
+      },
+      "completion_contract": {
+        "required": [
+          "Close after the local prototype outcomes and capability receipt; this is not biological or performance qualification."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/START_CONTROLLER.md"
+      ]
+    },
+    {
+      "id": "CE-MOON-ADOPT",
+      "parent_id": "CE-MOON-0000",
+      "kind": "task",
+      "title": "Adopt the moonshot without disturbing live work",
+      "objective": "Refresh source, claims and plans; install staged prototypes and publish the integration or selective-supersession decision.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "planning/moonshot-v1",
+          "experiments/moonshot-v1"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [],
+      "invariants": [
+        "CE-MOON-OWNERSHIP",
+        "CE-MOON-SEMANTICS",
+        "CE-MOON-EXPERIMENT",
+        "CE-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Read START_CONTROLLER and RECONCILIATION; preserve existing successful work and bind actual source epochs.",
+          "Copy staged sources only into a claimed new experimental directory; no old plan reapply or unmanaged Todo writes."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    },
+    {
+      "id": "CE-MOON-MMA",
+      "parent_id": "CE-MOON-0000",
+      "kind": "task",
+      "title": "Make single-cell matrix algebra callable on SM70",
+      "objective": "Implement matrix-patch and four-job micro-MMA primitives, plus the zero-safe process packet seed.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot-v1"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-ADOPT"
+        }
+      ],
+      "invariants": [
+        "CE-MOON-OWNERSHIP",
+        "CE-MOON-SEMANTICS",
+        "CE-MOON-EXPERIMENT",
+        "CE-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Compile CUDA12 sm70 seeds and run small output/mapping checks; explicitly record unsupported paths.",
+          "Deliver callable patch and micro-MMA routes; no fake cell batching or speedup requirement."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    },
+    {
+      "id": "CE-MOON-STATE",
+      "parent_id": "CE-MOON-0000",
+      "kind": "task",
+      "title": "Represent local state and pack computational support",
+      "objective": "Adapt nonowning actor-local state views and footprint packing; preserve local bases and physical alias identity.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot-v1"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-ADOPT"
+        }
+      ],
+      "invariants": [
+        "CE-MOON-OWNERSHIP",
+        "CE-MOON-SEMANTICS",
+        "CE-MOON-EXPERIMENT",
+        "CE-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Provide local coordinate/slot-generation maps, distinct support/activity/capacity and exact output ownership.",
+          "Implement local-port reference/realization and support-based placement without merging identities or imposing a global latent dictionary."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    },
+    {
+      "id": "CE-MOON-DIFF",
+      "parent_id": "CE-MOON-0000",
+      "kind": "task",
+      "title": "Expose derivatives and ordinary framework composition",
+      "objective": "Implement requested patch/port/process derivatives through existing parameter, tape and CelleraTorch contracts.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot-v1",
+          "components/CelleraTorch"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-MMA"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-MOON-STATE"
+        }
+      ],
+      "invariants": [
+        "CE-MOON-OWNERSHIP",
+        "CE-MOON-SEMANTICS",
+        "CE-MOON-EXPERIMENT",
+        "CE-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Check input and parameter gradients and a selected JVP against the declared stored-value or surrogate policy.",
+          "Keep backward nonmutating; publish an actual CT/native capability receipt, with unsupported higher-order actions explicit."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    },
+    {
+      "id": "CE-MOON-REWRITE",
+      "parent_id": "CE-MOON-0000",
+      "kind": "task",
+      "title": "Publish supplied refactorings and recycle residual capacity",
+      "objective": "Implement an epoch-safe supplied extraction/remapping path and a live-gradient residual-regrowth example.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot-v1"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-DIFF"
+        }
+      ],
+      "invariants": [
+        "CE-MOON-OWNERSHIP",
+        "CE-MOON-SEMANTICS",
+        "CE-MOON-EXPERIMENT",
+        "CE-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Retain or drain old tapes; migrate state/readout/parameters and explicitly reset incompatible optimizer moments.",
+          "Demonstrate supplied exact linear refactoring and initially function-preserving live regrowth; do not claim automatic mechanism discovery."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    },
+    {
+      "id": "CE-MOON-TRAJECTORY",
+      "parent_id": "CE-MOON-0000",
+      "kind": "task",
+      "title": "Build matrix-flow and change-driven trajectory prototypes",
+      "objective": "Expose an exact Sylvester-flow block and a last-transmitted-value delta ledger; choose one additional unusual mechanism.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot-v1"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-DIFF"
+        }
+      ],
+      "invariants": [
+        "CE-MOON-OWNERSHIP",
+        "CE-MOON-SEMANTICS",
+        "CE-MOON-EXPERIMENT",
+        "CE-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Implement fixed-generation flow caching with correct parameter dependence and delta invalidation.",
+          "Choose a feedback-island, texture-atlas, precision-expansion or matrix-polynomial extension; a runnable experiment is sufficient without performance qualification."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    },
+    {
+      "id": "CE-MOON-INTEGRATE",
+      "parent_id": "CE-MOON-0000",
+      "kind": "task",
+      "title": "Integrate useful prototypes and publish an honest receipt",
+      "objective": "Move selected reusable pieces into current CE owners and expose consumers without adding a second runtime.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot-v1",
+          "include/Cellerator",
+          "src",
+          "components/CelleraTorch",
+          "CMakeLists.txt",
+          "cmake",
+          "docs/learning",
+          "planning/moonshot-v1"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-REWRITE"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-MOON-TRAJECTORY"
+        }
+      ],
+      "invariants": [
+        "CE-MOON-OWNERSHIP",
+        "CE-MOON-SEMANTICS",
+        "CE-MOON-EXPERIMENT",
+        "CE-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Resolve overlapping scopes through the existing owner; repair actual sibling consumers and affected small checks.",
+          "Document native/CT callable paths, implementation status, observed behavior and unrun experiments; keep speculative branches selectable."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    }
+  ],
+  "runs": [
+    {
+      "id": "CE-MOON-RUN-V1",
+      "root_task_id": "CE-MOON-0000",
+      "charter": {
+        "objective": "Prototype diverse Volta-native single-cell mathematics and externally refactorable local hidden state.",
+        "desired_end_state": "Runnable experimental operators and consumers, with honest capability receipts and no unmeasured performance claims.",
+        "boundaries": [
+          "Cellerator owns native mathematics, physical representations, compilation and execution; CelleraTorch owns framework integration; GlassHelix owns models, evidence, interpretation and authorized refactorings. Keep separate Todo authorities.",
+          "Preserve logical identity, local coordinate meaning, single-snapshot reads, ordered/repeated arguments, contribution ownership and saved-primal generations. Numerical zero is not absent derivative support. No hidden optimizer update in backward.",
+          "This is a prototype campaign. Label equivalent lowering, new model family and approximation separately. Small correctness/gradient checks suffice for prototype acceptance; no invented speedup, scientific identification or exhaustive qualification requirement.",
+          "Keep successful ML2-TRAIN, NF1A, existing compiler/runtime and sibling consumers. Never hand-edit Todo storage/generated views. Do not activate Ampere or edit preprints. Reconcile claims and frozen interfaces before source integration or selective supersession."
+        ],
+        "delegated_judgment": "One writable lane per authority by default; use configured bounded Codex children for genuinely independent work. Prefer prototypes over exhaustive qualification. Reconcile any live overlapping owner.",
+        "references": [
+          "planning/moonshot-v1/START_CONTROLLER.md",
+          "planning/moonshot-v1/RECONCILIATION.md"
+        ]
+      },
+      "lanes": [
+        {
+          "id": "CE-MOON-L-EXEC",
+          "role": "implementer",
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "tasks": [
+            "CE-MOON-ADOPT",
+            "CE-MOON-MMA",
+            "CE-MOON-STATE",
+            "CE-MOON-DIFF",
+            "CE-MOON-REWRITE",
+            "CE-MOON-TRAJECTORY",
+            "CE-MOON-INTEGRATE",
+            "CE-MOON-0000"
+          ],
+          "motivation": "Coarse serial outcomes avoid overlapping writes. A root may add a justified independent lane through the canonical authority.",
+          "references": [
+            "planning/moonshot-v1/START_CONTROLLER.md"
+          ]
+        }
+      ]
+    }
+  ]
+}

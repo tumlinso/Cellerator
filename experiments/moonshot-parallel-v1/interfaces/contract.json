@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "record_kind": "moonshot_shared_prototype_contract",
+  "native_ABI": false,
+  "seeds": {
+    "source": "planning/moonshot-v1/payload/cellerator",
+    "archive_sha256": "dd63f52ec2e25dfcbc3d06e3982a198c0a8b8bbe7575272cfadada545dca6b1a",
+    "files": {
+      "CMakeLists.txt": "05b1379355fc70604f497f54f197258037742e7301d6f894cbfc0b6e9962e945",
+      "include/moonshot/kernels.cuh": "3970901d970165fcefaa6203d70b7f6e8da1c1a19e5e2405669e1170e4d4350f",
+      "include/moonshot/state_packet.hh": "0abeb28c741fedad6f7c464e32740377cc82a51fb119936065106db0cda0aa74",
+      "kernels/patch16_sm70.cu": "246da2828dd53be7c8800d9fd9b7e0637d5769a17f875f6ecf604f7228013e48",
+      "kernels/product2_jvp_sm70.cu": "3af81ffa60e8f2d8dda9d9d8053730b261971fcece64fba314a0451c09d8909f",
+      "kernels/quad_mma_sm70.cu": "2aac2b106d0315af4acd1bd005eae2e0b8ec99899da089251bcb97758337a09d",
+      "reference/moonref/__init__.py": "93a3a1ba67e4f90556c9ffd2532e4bd8c4fc6647ee76f2383970d4c66de43fc9",
+      "reference/moonref/delta.py": "894b22cf90bd81ba171b14231260a582489da92cd3d049b690124db21e2eafce",
+      "reference/moonref/operators.py": "3d5784dba4c80858659bdf83ea5e54460aae43123b34c69713e835a9d3a0ba86",
+      "reference/moonref/packing.py": "f4fe40bc1dfefab467811a29496e81818cd06451ce0a368111f567280f2df261",
+      "reference/moonref/promotion.py": "66632c482c5ae36add195944b590c05e0c110103cd8d3c509b40e8d555045c4d",
+      "reference/smoke.py": "0ebc008aa6dd693401483522e3bddb2afeb8c4c593938be28e3e2dc0ee5eee62",
+      "tests/gpu_smoke.cu": "debbc5dce14c5a4bbaf1743fc601d7733cf896b0204d32b04fa97286e6743946",
+      "tests/layout.cc": "028cace3efb16d539cc7d5912d685b0749481add3d73d6d6cc6b9366924be379"
+    },
+    "policy": "immutable copy; lane-local adaptations only"
+  },
+  "source_identity": {
+    "cellerator_HEAD": "544a1ae6e2925146f78a6ef62123ba5257c45251",
+    "original_package_CE_HEAD": "47bd95a21d5143d2293dedbdaa35b6f1d97dda3c",
+    "original_package_GH_HEAD": "34782c48d3d89465af0b635eb78b56d872c212ac"
+  },
+  "state": {
+    "ownership": "nonowning views over canonical native owners; no second allocator or public identity",
+    "logical_key": [
+      "actor_id",
+      "local_slot",
+      "slot_incarnation"
+    ],
+    "generations": [
+      "structure_epoch",
+      "value_generation",
+      "activity_generation",
+      "parameter_generation"
+    ],
+    "physical_mapping": "explicit logical coordinate to canonical offset and physical replica offsets",
+    "separate_masks": [
+      "structural_support",
+      "trainable_capacity",
+      "forward_activity",
+      "response_support"
+    ],
+    "snapshot": "all reads and saved primals bind one recorded state and parameter generation",
+    "publication": "retain or drain old readers/tapes before publishing structural remap; declare optimizer reset"
+  },
+  "precision": {
+    "reference": "float64 algebra; FP32 requested reference route",
+    "quad_mma": {
+      "storage": "FP16 inputs",
+      "accumulation": "FP32",
+      "output": "FP32"
+    },
+    "patch16": {
+      "storage": "FP16 L,X,R",
+      "first_product": "FP32 accumulation",
+      "nonlinear_intermediate": "FP16(tanh(first_product))",
+      "second_product": "FP32 accumulation",
+      "output": "FP32",
+      "derivative_policy": "explicit stored-half primal with declared STE surrogate; do not claim exact derivative through rounding"
+    },
+    "product2_jvp": {
+      "storage": "FP32",
+      "arithmetic": "FP32",
+      "output": "FP32"
+    }
+  },
+  "derivatives": {
+    "receipt_fields": [
+      "forward",
+      "input_vjp",
+      "parameter_vjp",
+      "jvp",
+      "second_order"
+    ],
+    "default_status": "not_implemented until lane evidence",
+    "saved_primal": "use recorded forward operands and generations; backward does not mutate parameters",
+    "trainable_zero": "zero forward contribution preserves outgoing parameter-gradient support",
+    "replicas": "sum pullbacks to one canonical owner"
+  },
+  "admission": [
+    "dtype",
+    "shape_and_extents",
+    "device_and_stream",
+    "alignment",
+    "index_bounds",
+    "output_aliasing",
+    "capacity",
+    "generation_match",
+    "deterministic_padding"
+  ],
+  "outputs": {
+    "ownership": "one declared owner per output contribution",
+    "product2": "mechanism-local scratch; assembly preserves ordered and repeated arguments",
+    "duplicates": "never merge actor identity from identical support",
+    "alias_policy": "reject unapproved overlap before launch"
+  },
+  "lanes": {
+    "mma": "experiments/moonshot-parallel-v1/mma",
+    "state": "experiments/moonshot-parallel-v1/state",
+    "diff": "experiments/moonshot-parallel-v1/diff",
+    "rewrite": "experiments/moonshot-parallel-v1/rewrite",
+    "trajectory": "experiments/moonshot-parallel-v1/trajectory"
+  },
+  "preservation": {
+    "active_companion_tasks_reported_by_root": [
+      "CE-MOON-020",
+      "CE-MOON-030",
+      "CE-MOON-040",
+      "CE-MOON-050"
+    ],
+    "companion_paths": [
+      "experiments/baseplane_moonshot",
+      "planning/bp-moonshot-20261002/results/cellerator"
+    ],
+    "unchanged_existing_tasks": true,
+    "integration_guard": "CE-MOON-NATIVE-READY required task_state CE-ML2-BIO done before broad integration",
+    "scope": "experimental paths only; no source/native CT writes during adoption"
+  },
+  "claims": {
+    "performance": "not_measured",
+    "CUDA": "seed sources uncompiled by adoption",
+    "science": "engineering hypothesis; supplied maps do not establish scientific identity"
+  }
+}

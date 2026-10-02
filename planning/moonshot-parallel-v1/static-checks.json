@@ -1,0 +1,30 @@
+{
+  "status": "local_static_checks_passed_native_validation_owned_by_root",
+  "receipt_gate_checks": [
+    "absent receipt rejected exit1",
+    "synthetic validator unit fixture accepted as structure only",
+    "wrong evidence hash rejected",
+    "missing JVP rejected",
+    "pending CE effective authority rejected"
+  ],
+  "checks": [
+    {
+      "role": "cellerator",
+      "tasks": 11,
+      "lanes": 7,
+      "contracts_and_invariants": "original preserved",
+      "dependencies": "only submitted tasks, acyclic",
+      "lane_assignment": "exactly_once",
+      "plan_sha256": "2bf6dd2938c4bff624c105a1fb35955955762eeee75a242a609e6041f1424ae7"
+    },
+    {
+      "role": "glasshelix",
+      "tasks": 9,
+      "lanes": 5,
+      "contracts_and_invariants": "original preserved",
+      "dependencies": "only submitted tasks, acyclic",
+      "lane_assignment": "exactly_once",
+      "plan_sha256": "e112803bf3bbe200bf9b22a4a6e8f208abea4025191e5a6d1b166bcd65741934"
+    }
+  ]
+}

@@ -1,0 +1,338 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "GlassHelix"
+  },
+  "invariants": [
+    {
+      "id": "GH-MOON-OWNERSHIP",
+      "severity": "error",
+      "rule": "Cellerator owns native mathematics, physical representations, compilation and execution; CelleraTorch owns framework integration; GlassHelix owns models, evidence, interpretation and authorized refactorings. Keep separate Todo authorities."
+    },
+    {
+      "id": "GH-MOON-SEMANTICS",
+      "severity": "error",
+      "rule": "Preserve logical identity, local coordinate meaning, single-snapshot reads, ordered/repeated arguments, contribution ownership and saved-primal generations. Numerical zero is not absent derivative support. No hidden optimizer update in backward."
+    },
+    {
+      "id": "GH-MOON-EXPERIMENT",
+      "severity": "error",
+      "rule": "This is a prototype campaign. Label equivalent lowering, new model family and approximation separately. Small correctness/gradient checks suffice for prototype acceptance; no invented speedup, scientific identification or exhaustive qualification requirement."
+    },
+    {
+      "id": "GH-MOON-PRESERVE",
+      "severity": "error",
+      "rule": "Keep successful ML2-TRAIN, NF1A, existing compiler/runtime and sibling consumers. Never hand-edit Todo storage/generated views. Do not activate Ampere or edit preprints. Reconcile claims and frozen interfaces before source integration or selective supersession."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "GH-MOON-0000",
+      "kind": "epic",
+      "title": "GlassHelix single-cell moonshot",
+      "objective": "Closure-only aggregate; children do not depend on the epic.",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "scope": {
+        "read_paths": [
+          "planning/moonshot-v1"
+        ],
+        "exclusive_paths": []
+      },
+      "completion_contract": {
+        "required": [
+          "Close after the local prototype outcomes and capability receipt; this is not biological or performance qualification."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/START_CONTROLLER.md"
+      ]
+    },
+    {
+      "id": "GH-MOON-ADOPT",
+      "parent_id": "GH-MOON-0000",
+      "kind": "task",
+      "title": "Reconcile the scientific consumer scope",
+      "objective": "Refresh GH-ML2 design/learning boundaries and adopt the experimental package without retiring science obligations.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "planning/moonshot-v1",
+          "experiments/moonshot-v1"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [],
+      "invariants": [
+        "GH-MOON-OWNERSHIP",
+        "GH-MOON-SEMANTICS",
+        "GH-MOON-EXPERIMENT",
+        "GH-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Preserve GH-ML2-REPAIR and independent data/pilot obligations; record any controlled DESIGN/LEARN integration.",
+          "Keep supplied refactoring distinct from identified mechanism and retain whole-candidate semantics."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    },
+    {
+      "id": "GH-MOON-MODELS",
+      "parent_id": "GH-MOON-0000",
+      "kind": "task",
+      "title": "Try two different single-cell model families",
+      "objective": "Build plain matrix-native prediction and actor-local hidden-state consumers from the supplied Torch references.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot-v1"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-MOON-ADOPT"
+        }
+      ],
+      "invariants": [
+        "GH-MOON-OWNERSHIP",
+        "GH-MOON-SEMANTICS",
+        "GH-MOON-EXPERIMENT",
+        "GH-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Run small forward/backward learning examples for both families; private hidden bases need no global alignment.",
+          "Use the actual CE/CT capability receipt before claiming a native route; no duplicate GH numerical runtime."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    },
+    {
+      "id": "GH-MOON-REFACTOR",
+      "parent_id": "GH-MOON-0000",
+      "kind": "task",
+      "title": "Exercise learning-time extraction and regrowth",
+      "objective": "Apply a supplied coordinate/refactoring map and continue residual learning with a newly explicit actor.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot-v1"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-MOON-MODELS"
+        }
+      ],
+      "invariants": [
+        "GH-MOON-OWNERSHIP",
+        "GH-MOON-SEMANTICS",
+        "GH-MOON-EXPERIMENT",
+        "GH-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Record state/parameter/readout migration, evidence label and model epochs; preserve or declare changes in trajectory behavior.",
+          "Show newly reused residual capacity receives gradients; do not infer identity from support overlap alone."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    },
+    {
+      "id": "GH-MOON-CONSUMER",
+      "parent_id": "GH-MOON-0000",
+      "kind": "task",
+      "title": "Publish a usable experimental model interface",
+      "objective": "Bind selected prototypes to existing GH roles and CE execution; document both plain and refactorable examples.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot-v1",
+          "python/glasshelix",
+          "include/GlassHelix",
+          "src/system",
+          "tests",
+          "CMakeLists.txt",
+          "docs/learning",
+          "planning/moonshot-v1"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "planning/moonshot-v1",
+          "docs/design",
+          "docs/development",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-MOON-REFACTOR"
+        }
+      ],
+      "invariants": [
+        "GH-MOON-OWNERSHIP",
+        "GH-MOON-SEMANTICS",
+        "GH-MOON-EXPERIMENT",
+        "GH-MOON-PRESERVE"
+      ],
+      "completion_contract": {
+        "required": [
+          "Integrate only through reconciled scopes and the current scientific/native seams.",
+          "Provide runnable examples and an honest capability receipt; biological validation and production qualification remain separate."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/moonshot-v1/TASK_BRIEFS.md",
+        "planning/moonshot-v1/MECHANISMS.md",
+        "planning/moonshot-v1/INTEGRATION.md"
+      ],
+      "next_action": "Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search."
+    }
+  ],
+  "runs": [
+    {
+      "id": "GH-MOON-RUN-V1",
+      "root_task_id": "GH-MOON-0000",
+      "charter": {
+        "objective": "Prototype diverse Volta-native single-cell mathematics and externally refactorable local hidden state.",
+        "desired_end_state": "Runnable experimental operators and consumers, with honest capability receipts and no unmeasured performance claims.",
+        "boundaries": [
+          "Cellerator owns native mathematics, physical representations, compilation and execution; CelleraTorch owns framework integration; GlassHelix owns models, evidence, interpretation and authorized refactorings. Keep separate Todo authorities.",
+          "Preserve logical identity, local coordinate meaning, single-snapshot reads, ordered/repeated arguments, contribution ownership and saved-primal generations. Numerical zero is not absent derivative support. No hidden optimizer update in backward.",
+          "This is a prototype campaign. Label equivalent lowering, new model family and approximation separately. Small correctness/gradient checks suffice for prototype acceptance; no invented speedup, scientific identification or exhaustive qualification requirement.",
+          "Keep successful ML2-TRAIN, NF1A, existing compiler/runtime and sibling consumers. Never hand-edit Todo storage/generated views. Do not activate Ampere or edit preprints. Reconcile claims and frozen interfaces before source integration or selective supersession."
+        ],
+        "delegated_judgment": "One writable lane per authority by default; use configured bounded Codex children for genuinely independent work. Prefer prototypes over exhaustive qualification. Reconcile any live overlapping owner.",
+        "references": [
+          "planning/moonshot-v1/START_CONTROLLER.md",
+          "planning/moonshot-v1/RECONCILIATION.md"
+        ]
+      },
+      "lanes": [
+        {
+          "id": "GH-MOON-L-EXEC",
+          "role": "implementer",
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "tasks": [
+            "GH-MOON-ADOPT",
+            "GH-MOON-MODELS",
+            "GH-MOON-REFACTOR",
+            "GH-MOON-CONSUMER",
+            "GH-MOON-0000"
+          ],
+          "motivation": "Coarse serial outcomes avoid overlapping writes. A root may add a justified independent lane through the canonical authority.",
+          "references": [
+            "planning/moonshot-v1/START_CONTROLLER.md"
+          ]
+        }
+      ]
+    }
+  ]
+}

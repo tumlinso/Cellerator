@@ -1,0 +1,23 @@
+{
+  "record_kind": "moonshot_adoption_evidence",
+  "source_HEAD": "544a1ae6e2925146f78a6ef62123ba5257c45251",
+  "seed_files": 14,
+  "gate_argv": [
+    "python3",
+    "-B",
+    "planning/moonshot-parallel-v1/check_adoption.py",
+    "--root",
+    "."
+  ],
+  "gate_exit_code": 0,
+  "gate_stdout": "Adoption passed: 14 immutable archive-matched seeds; shared identity, precision, derivative, admission and ownership contracts present. No CUDA/science qualification.",
+  "negative_controls": [
+    "missing parameter_generation rejected",
+    "tampered seed rejected"
+  ],
+  "contract_sha256": "f6a9d8fd3fa262e6e41a1be0927ca7052dfa266c77b304c5f561a7ae766c1cda",
+  "checker_sha256": "55e483d30fb91fe5c34077747acd47cf6699a50ef99e9745f17d0cd17e35756e",
+  "CUDA": "not_run",
+  "performance": "not_measured",
+  "existing_tasks": "preserved; workflow state belongs to root"
+}
