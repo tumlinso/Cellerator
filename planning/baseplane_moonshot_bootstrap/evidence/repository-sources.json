@@ -1,0 +1,110 @@
+{
+  "project": "baseplane",
+  "commit": "f4e9986607becd8528f42c36f0890bd7dd8f4a0d",
+  "source": "project-control read-only source_context",
+  "records": [
+    {
+      "id": "R01",
+      "path": "README.md",
+      "lines": "1–40",
+      "why": "User-facing objective and current capability boundary."
+    },
+    {
+      "id": "R02",
+      "path": "AGENTS.md",
+      "lines": "1–25",
+      "why": "Authority, ownership, source-grounding and workflow rules."
+    },
+    {
+      "id": "R03",
+      "path": "docs/design/overview.md",
+      "lines": "1–37",
+      "why": "Online hierarchy, source recoverability versus loss, locality and movement."
+    },
+    {
+      "id": "R04",
+      "path": "docs/design/program.md",
+      "lines": "1–17",
+      "why": "Four-project responsibilities."
+    },
+    {
+      "id": "R05",
+      "path": "docs/status/current.md",
+      "lines": "1–23",
+      "why": "Dated state and limits; this page itself describes an older inspected commit."
+    },
+    {
+      "id": "R06",
+      "path": "CMakeLists.txt",
+      "lines": "1–212",
+      "why": "Actual linked sources and existing host/CUDA target surface."
+    },
+    {
+      "id": "R07",
+      "path": "todos.md",
+      "lines": "1–54",
+      "why": "All 33 BITOP-00 records plus completed lab/docs projections; read-only generated view."
+    },
+    {
+      "id": "R08",
+      "path": "include/Baseplane/seq/predicate_plan.hh",
+      "lines": "1–135",
+      "why": "Bounded v1 predicate contract and prepared metadata."
+    },
+    {
+      "id": "R09",
+      "path": "src/seq/predicate_plan.cpp",
+      "lines": "1–140",
+      "why": "Verifier and hashing source; excerpt is not an exhaustive executor audit."
+    },
+    {
+      "id": "R10",
+      "path": "include/Baseplane/seq/sequence_event.hh",
+      "lines": "1–155",
+      "why": "Eight-byte event core and explicit produced/stored/dropped/capacity semantics."
+    },
+    {
+      "id": "R11",
+      "path": "include/Baseplane/seq/dna2_validity.hh",
+      "lines": "1–101",
+      "why": "Validity, local coordinate bound and chunk origin/ownership/halo."
+    },
+    {
+      "id": "R12",
+      "path": "src/seq/dna2.cu",
+      "lines": "1–275",
+      "why": "Packed scanner and old compact emitter implementation; later file sections not exhaustively read."
+    },
+    {
+      "id": "R13",
+      "path": "experiments/cuda_lab/results/selection/report.md",
+      "lines": "1–36",
+      "why": "Historical four-experiment findings and limitations."
+    },
+    {
+      "id": "R14",
+      "path": "experiments/cuda_lab/cuda/kernels.cuh",
+      "lines": "1–115",
+      "why": "Actual Boolean lift, affine producer/scan and compact work kernels."
+    },
+    {
+      "id": "R15",
+      "path": "experiments/cuda_lab/cuda/driver.cu",
+      "lines": "1–120",
+      "why": "Synthetic fixture construction and measured-path boundaries."
+    },
+    {
+      "id": "R16",
+      "path": "docs/development/start.md",
+      "lines": "1–25",
+      "why": "Existing CPU and lab build commands."
+    },
+    {
+      "id": "R17",
+      "path": "docs/development/source-map.md",
+      "lines": "1–12",
+      "why": "Repository source organization."
+    }
+  ],
+  "coverage": "Focused architectural/source/ledger review, not a line-by-line audit of every repository file. Tool history retrieval was bounded; no unseen implementation or causal history is inferred."
+}

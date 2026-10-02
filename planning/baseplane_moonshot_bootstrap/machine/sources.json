@@ -1,0 +1,181 @@
+{
+  "observed_date": "2026-10-02",
+  "sources": [
+    {
+      "id": "S01",
+      "title": "NVIDIA Volta Tuning Guide, CUDA 12.9.1",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/volta-tuning-guide/index.html",
+      "source_takeaway": "Official architecture constraints: independent thread scheduling, resource hierarchy and Tensor Cores. Use for legality and occupancy questions, not a prediction that a particular kernel is fast.",
+      "inspection": "Sections 1.4.1–1.4.3",
+      "kind": "primary"
+    },
+    {
+      "id": "S02",
+      "title": "NVIDIA PTX ISA 8.8",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/parallel-thread-execution/index.html",
+      "source_takeaway": "Target notes establish sm_70 match.sync, eligible packed integer and Boolean operations, and FP16 mma.m8n8k4. Later-generation operations must not leak into the Volta baseline.",
+      "inspection": "Sections 9.7.1.23, 9.7.8.6, 9.7.13.10, 9.7.14.5 and target ISA notes",
+      "kind": "primary"
+    },
+    {
+      "id": "S03",
+      "title": "NVIDIA CUDA C++ Programming Guide 12.9.1",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-c-programming-guide/index.html",
+      "source_takeaway": "Defines synchronized warp participation, opaque WMMA fragments, alignment and stride requirements, and finite-precision texture filtering. These are implementation contracts, not performance claims.",
+      "inspection": "Warp matrix functions; Texture and Surface Memory; Linear Filtering; Compute Capability 7.x",
+      "kind": "primary"
+    },
+    {
+      "id": "S04",
+      "title": "Jia et al. (2018), Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking",
+      "url": "https://arxiv.org/abs/1804.06826",
+      "source_takeaway": "Empirical disassembly and microbenchmarks expose native Volta execution details beyond high-level APIs. Their observed mappings motivate inspection; they are not a portable fragment ABI or a promise about our binaries.",
+      "inspection": "PDF inspected, including tensor-core section p.41 / PDF page 42",
+      "kind": "primary"
+    },
+    {
+      "id": "S05",
+      "title": "NVIDIA CUDA Binary Utilities 12.9.1",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-binary-utilities/index.html",
+      "source_takeaway": "Official cuobjdump/nvdisasm reference for inspecting emitted native instructions. Compilation/disassembly can answer instruction questions without launching a GPU benchmark.",
+      "inspection": "cuobjdump and nvdisasm",
+      "kind": "primary"
+    },
+    {
+      "id": "S06",
+      "title": "NVIDIA (2025), Navigating GPU Architecture Support",
+      "url": "https://developer.nvidia.com/blog/?p=102958",
+      "source_takeaway": "CUDA 13 removes offline compilation for architectures before compute capability 7.5. Retain an sm_70-capable toolkit; this package targets the repository’s CUDA 12.9 route.",
+      "inspection": "GPU support and developer guidance",
+      "kind": "primary"
+    },
+    {
+      "id": "S07",
+      "title": "Gu and Dao (2023), Mamba",
+      "url": "https://arxiv.org/abs/2312.00752",
+      "source_takeaway": "Input-dependent state-space parameters and hardware-aware scan provide a useful precedent for sequence-dependent state evolution. Transfer the effect-composition question, not an assumption that every neural update admits a small associative summary.",
+      "inspection": "Full HTML v2 examined",
+      "kind": "primary"
+    },
+    {
+      "id": "S08",
+      "title": "Hwang, Wang and Gu (2025), H-Net",
+      "url": "https://arxiv.org/abs/2507.07955",
+      "source_takeaway": "Dynamic chunking jointly learns hierarchical segmentation with sequence modeling. This supports treating boundaries as learned computation rather than a supplied genome annotation.",
+      "inspection": "Full HTML v1, architecture and routing sections",
+      "kind": "primary"
+    },
+    {
+      "id": "S09",
+      "title": "Pagnoni et al. (2024), Byte Latent Transformer",
+      "url": "https://arxiv.org/abs/2412.09871",
+      "source_takeaway": "Entropy-based variable patching reallocates computation over a byte stream. It suggests a cheap initial routing baseline; predictive surprise is not itself biological importance.",
+      "inspection": "Abstract and primary publication record",
+      "kind": "primary"
+    },
+    {
+      "id": "S10",
+      "title": "Sweldens (1995), The Lifting Scheme",
+      "url": "https://cm-bell-labs.github.io/who/wim/papers/spie95.pdf",
+      "source_takeaway": "Predict/update lifting offers an in-place multiresolution construction. Retaining detail coefficients permits reconstruction; discarding them makes a different, lossy representation.",
+      "inspection": "PDF text and page image inspected",
+      "kind": "primary"
+    },
+    {
+      "id": "S11",
+      "title": "Nevill-Manning and Witten (1997), SEQUITUR",
+      "url": "https://arxiv.org/abs/cs/9709102",
+      "source_takeaway": "Repeated phrases can induce an incremental hierarchical grammar. Use this as a structural reuse hypothesis, not a claim that grammatical compression discovers functional biology.",
+      "inspection": "Abstract and author publication site",
+      "kind": "primary"
+    },
+    {
+      "id": "S12",
+      "title": "Bannai et al. (2018), Refining the r-index",
+      "url": "https://arxiv.org/abs/1802.05906",
+      "source_takeaway": "Compressed indexing provides exact candidate-location machinery in repetitive collections. Index construction, occurrence output and repetitive posting lists still cost work.",
+      "inspection": "Primary abstract",
+      "kind": "primary"
+    },
+    {
+      "id": "S13",
+      "title": "Ashkiani et al. (2018), A Dynamic Hash Table for the GPU",
+      "url": "https://arxiv.org/abs/1710.11246",
+      "source_takeaway": "Warp-cooperative work sharing and slab-oriented lookup offer a routing substrate. A safe bulk-built directory is the first experiment; fully concurrent mutation is a separate problem.",
+      "inspection": "Primary abstract and HTML",
+      "kind": "primary"
+    },
+    {
+      "id": "S14",
+      "title": "Ashkiani et al. (2017), GPU Multisplit",
+      "url": "https://arxiv.org/abs/1701.01189",
+      "source_takeaway": "Programmer-defined bucket partitioning can avoid unnecessary within-bucket sorting. It suggests opcode cohorts and carrier routing; published throughput on other devices is not imported as a V100 result.",
+      "inspection": "Primary abstract",
+      "kind": "primary"
+    },
+    {
+      "id": "S15",
+      "title": "Petersen et al. (2022), Deep Differentiable Logic Gate Networks",
+      "url": "https://arxiv.org/abs/2210.08277",
+      "source_takeaway": "Continuous relaxations can learn discrete gate networks. Transfer the learned-to-Boolean compilation route, while measuring hardening error separately from task accuracy.",
+      "inspection": "Primary abstract and author implementation",
+      "kind": "primary"
+    },
+    {
+      "id": "S16",
+      "title": "Petersen et al. (2024), Convolutional Differentiable Logic Gate Networks",
+      "url": "https://arxiv.org/abs/2411.04732",
+      "source_takeaway": "Convolutional logic-gate constructions expand the expressivity of learned Boolean operators. This motivates local learned predicates beyond a fixed motif dictionary.",
+      "inspection": "Primary abstract",
+      "kind": "primary"
+    },
+    {
+      "id": "S17",
+      "title": "Anderson et al. (2021), Efficient Parallel Self-Adjusting Computation",
+      "url": "https://arxiv.org/abs/2105.06712",
+      "source_takeaway": "Tracking dependencies can reuse unaffected computation after input changes. Genome edits require both value invalidation and repair of any changed routing/partition structure.",
+      "inspection": "Primary abstract",
+      "kind": "primary"
+    },
+    {
+      "id": "S18",
+      "title": "Willsey et al. (2021), egg: Fast and Extensible Equality Saturation",
+      "url": "https://arxiv.org/abs/2004.03082",
+      "source_takeaway": "E-graphs organize equivalent expressions and rewrite-driven optimization. Use a tiny typed offline rewrite experiment, not another general runtime compiler inside Baseplane.",
+      "inspection": "Primary abstract and HTML",
+      "kind": "primary"
+    },
+    {
+      "id": "S19",
+      "title": "Huynh, Knezevic and Patera (2013), Static condensation Reduced Basis Element method",
+      "url": "https://numdam.org/articles/10.1051/m2an/2012022/",
+      "source_takeaway": "Interface-level condensed response operators motivate port summaries. The source’s mathematical guarantees concern its numerical problem; they do not establish a genomic response model.",
+      "inspection": "Primary article abstract",
+      "kind": "primary"
+    },
+    {
+      "id": "S20",
+      "title": "Nguyen et al. (2023), HyenaDNA",
+      "url": "https://arxiv.org/abs/2306.15794",
+      "source_takeaway": "A long-range single-nucleotide sequence-model precedent. It is a scientific/model baseline to understand, not a substitute for Baseplane’s adaptive hardware-native representation question.",
+      "inspection": "Primary abstract",
+      "kind": "primary"
+    },
+    {
+      "id": "S21",
+      "title": "Avsec et al. (2021), Enformer",
+      "url": "https://www.nature.com/articles/s41592-021-01252-x",
+      "source_takeaway": "Sequence-to-functional-output modeling provides a concrete biological target family. Predictive associations and variant scores do not by themselves establish causal mechanisms.",
+      "inspection": "Primary paper abstract",
+      "kind": "primary"
+    },
+    {
+      "id": "S22",
+      "title": "Harris et al., GPU Gems 3, Parallel Prefix Sum (Scan) with CUDA",
+      "url": "https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-39-parallel-prefix-sum-scan-cuda",
+      "source_takeaway": "Scan is a reusable parallel primitive for ranks and composition. Adapt the algorithmic idea to Volta synchronization rather than copying old warp-synchronous assumptions.",
+      "inspection": "NVIDIA chapter",
+      "kind": "primary"
+    }
+  ]
+}

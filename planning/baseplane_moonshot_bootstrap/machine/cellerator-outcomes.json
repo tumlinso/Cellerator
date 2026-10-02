@@ -1,0 +1,151 @@
+{
+  "outcomes": [
+    {
+      "id": "CE-MOON-010",
+      "title": "Adopt the numerical research lane without replacing ML2",
+      "objective": "Inspect current Cellerator claims and numerical entry points; install a small independently buildable numerical experimental module and split supplied mixed research seeds by semantic ownership. Preserve all existing ML2 and unrelated work. No production runtime integration is a prerequisite.",
+      "scopes": [
+        "experiments/baseplane_moonshot/include",
+        "experiments/baseplane_moonshot/host",
+        "experiments/baseplane_moonshot/cuda",
+        "experiments/baseplane_moonshot/python",
+        "experiments/baseplane_moonshot/CMakeLists.txt",
+        "experiments/baseplane_moonshot/README.md",
+        "planning/bp-moonshot-20261002/results/cellerator"
+      ],
+      "depends_on": [],
+      "experiment_ids": [],
+      "support_experiment_ids": [],
+      "parallel_policy": "integration_exclusive",
+      "repository": "cellerator"
+    },
+    {
+      "id": "CE-MOON-020",
+      "title": "Continuous, refinable and multi-state numerical operators",
+      "objective": "Implement learned or parameterized effect algebras, block-monomial maps, polynomial response approximations, lifting/refinement primitives and continuous state operators as Cellerator research. Preserve algebraic restrictions and explicit approximation error; do not wait for a production API.",
+      "scopes": [
+        "experiments/baseplane_moonshot/families/effects"
+      ],
+      "depends_on": [
+        "CE-MOON-010"
+      ],
+      "experiment_ids": [
+        "E09",
+        "E10",
+        "E11",
+        "E12"
+      ],
+      "support_experiment_ids": [
+        "E08",
+        "E13",
+        "E14",
+        "E15",
+        "E24",
+        "E39"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "cellerator",
+      "consumer_task": "BP-MOON-040"
+    },
+    {
+      "id": "CE-MOON-030",
+      "title": "Tensor Core relational and latent mechanisms",
+      "objective": "Build semantically explicit object-feature, relation, finite-relation and possible-state Tensor Core mechanisms. Include optional local gradients and learning fixtures where useful. Layout axes and padding are part of the operator contract; experimental kernels belong here before qualification.",
+      "scopes": [
+        "experiments/baseplane_moonshot/families/tensor"
+      ],
+      "depends_on": [
+        "CE-MOON-010"
+      ],
+      "experiment_ids": [
+        "E21",
+        "E22",
+        "E23",
+        "E24"
+      ],
+      "support_experiment_ids": [
+        "E08",
+        "E10",
+        "E44",
+        "E46"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "cellerator",
+      "consumer_task": "BP-MOON-070"
+    },
+    {
+      "id": "CE-MOON-040",
+      "title": "Learning, routing and hardening into cheap operators",
+      "objective": "Explore differentiable Boolean gates, learned predicate selection, small bounded optimizer fixtures, typed numerical rewrites and guarded specialization. Baseplane supplies sequence semantics and compiles sequence-specific hard predicates; Cellerator supplies the learned numerical mechanism from inception.",
+      "scopes": [
+        "experiments/baseplane_moonshot/families/learning"
+      ],
+      "depends_on": [
+        "CE-MOON-010"
+      ],
+      "experiment_ids": [
+        "E29",
+        "E30",
+        "E31",
+        "E32"
+      ],
+      "support_experiment_ids": [
+        "E14",
+        "E27",
+        "E37",
+        "E39",
+        "E40"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "cellerator",
+      "consumer_task": "BP-MOON-090"
+    },
+    {
+      "id": "CE-MOON-050",
+      "title": "Port, factor, multigrid and counterfactual mechanisms",
+      "objective": "Implement numerical response ports, learned coarse/fine correction, factor aggregation and alternate-world state batches. Baseplane owns which loci/relations/world interventions mean what; Cellerator owns their parameterized numerical execution and exploratory fitting.",
+      "scopes": [
+        "experiments/baseplane_moonshot/families/mechanisms"
+      ],
+      "depends_on": [
+        "CE-MOON-010"
+      ],
+      "experiment_ids": [
+        "E41",
+        "E42",
+        "E43",
+        "E44"
+      ],
+      "support_experiment_ids": [
+        "E11",
+        "E25",
+        "E28",
+        "E45"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "cellerator",
+      "consumer_task": "BP-MOON-120"
+    },
+    {
+      "id": "CE-MOON-090",
+      "title": "Hand back numerical providers and truthful experimental receipts",
+      "objective": "Connect only the small provider interfaces that the sequence experiments actually consume; report authored/compiled/run/compared per operator. Preserve existing learning/compiler/runtime work and leave production promotion separate.",
+      "scopes": [
+        "experiments/baseplane_moonshot/include",
+        "experiments/baseplane_moonshot/CMakeLists.txt",
+        "experiments/baseplane_moonshot/README.md",
+        "planning/bp-moonshot-20261002/results/cellerator"
+      ],
+      "depends_on": [
+        "CE-MOON-020",
+        "CE-MOON-030",
+        "CE-MOON-040",
+        "CE-MOON-050"
+      ],
+      "experiment_ids": [],
+      "support_experiment_ids": [],
+      "parallel_policy": "integration_exclusive",
+      "repository": "cellerator"
+    }
+  ]
+}

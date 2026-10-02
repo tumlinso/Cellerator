@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.18)
+project(baseplane_moonshot_seeds LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_executable(bp_moon_host_smoke host/smoke.cpp)
+add_executable(bp_moon_demo host/demo.cpp)
+target_include_directories(bp_moon_host_smoke PRIVATE include)
+target_include_directories(bp_moon_demo PRIVATE include)
+enable_testing()
+add_test(NAME host_smoke COMMAND bp_moon_host_smoke)
+# CUDA is deliberately separate. See tools/compile_cuda.sh; no root Baseplane edit.

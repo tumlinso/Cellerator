@@ -1,0 +1,77 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "cellerator"
+  },
+  "tasks": [
+    {
+      "id": "CE-MOON-000",
+      "kind": "epic",
+      "title": "Cellerator numerical research for Baseplane moonshots",
+      "objective": "Aggregate Cellerator-owned experimental numerical and learned mechanisms; no replacement of ML2 or unrelated research.",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap"
+        ]
+      },
+      "notes": "Research-stage ML-like mechanisms are in Cellerator scope from inception. This aggregate is not a prerequisite of its children."
+    },
+    {
+      "id": "CE-MOON-010",
+      "parent_id": "CE-MOON-000",
+      "kind": "task",
+      "title": "Adopt the numerical research lane without replacing ML2",
+      "objective": "Inspect current Cellerator claims and numerical entry points; install a small independently buildable numerical experimental module and split supplied mixed research seeds by semantic ownership. Preserve all existing ML2 and unrelated work. No production runtime integration is a prerequisite.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/baseplane_moonshot/include",
+          "experiments/baseplane_moonshot/host",
+          "experiments/baseplane_moonshot/cuda",
+          "experiments/baseplane_moonshot/python",
+          "experiments/baseplane_moonshot/CMakeLists.txt",
+          "experiments/baseplane_moonshot/README.md",
+          "planning/baseplane_moonshot_bootstrap/results/cellerator"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/baseplane_moonshot",
+          "include/Cellerator",
+          "src/execution",
+          "src/geometry",
+          "src/compiler",
+          "examples/relation_update_spine_v1",
+          "docs/learning",
+          "tests/native_foundation/training"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-010.md; implement concrete research operators under Cellerator authority. Apply the adopted ownership and research policy recorded in planning/baseplane_moonshot_adoption/cellerator-policy.todo-plan.json; verify its authority receipt before seed installation.",
+      "notes": "No maturity gate before experimentation. Existing source is read-only outside declared scope. Use exact provider artifact/commit receipts, not invented foreign task dependencies. No silent ML2 supersession or production ABI change."
+    }
+  ],
+  "runs": [],
+  "invariants": [
+    {
+      "id": "VENDOR-FIRST",
+      "rule": "Use cuSPARSE for conventional CSR/BELL, cuBLASLt for ordinary dense work, CUB for data movement primitives, and custom CUDA only for CellPack structure vendor APIs cannot express.\nMoonshot amendment (2026-10-02): For the explicitly authorized CE-MOON research outcomes, isolated experiments/baseplane_moonshot kernels may implement alternative numerical and learned mechanisms from inception; use meaningful vendor comparators where applicable. This exception grants no production promotion, frozen-contract change, new general runtime, or activation of unrelated epics; existing BENCH-EVIDENCE, FAIR-NUMERICS and REAL-DATA-PROMOTION requirements remain.",
+      "scope": {},
+      "severity": "error",
+      "enforcement": null
+    }
+  ]
+}

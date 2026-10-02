@@ -1,0 +1,96 @@
+{
+  "status": "superseded",
+  "receipt": {
+    "status": "retired",
+    "changed": true,
+    "source_run_id": "compat-v2",
+    "successor_run_id": "BP-MOON-RUN-1",
+    "intended_run_id": "BP-MOON-RUN-1",
+    "changed_task_ids": [
+      "BP-BITOP-20",
+      "BP-BITOP-21",
+      "BP-BITOP-22",
+      "BP-BITOP-23",
+      "BP-BITOP-24",
+      "BP-BITOP-25",
+      "BP-BITOP-30",
+      "BP-BITOP-31",
+      "BP-BITOP-32",
+      "BP-BITOP-33",
+      "BP-BITOP-34",
+      "BP-BITOP-35",
+      "BP-BITOP-36",
+      "BP-BITOP-50",
+      "CE-BITOP-41",
+      "CE-BITOP-42",
+      "CE-BITOP-43",
+      "CE-BITOP-44",
+      "CE-BITOP-45",
+      "CS-BITOP-60",
+      "STACK-BITOP-51",
+      "STACK-BITOP-52",
+      "STACK-BITOP-53"
+    ],
+    "preserved_task_ids": [
+      "BP-BITOP-03",
+      "BP-BITOP-10",
+      "BP-BITOP-11",
+      "BP-BITOP-12",
+      "BP-BITOP-13",
+      "CE-BITOP-40",
+      "STACK-BITOP-01",
+      "STACK-BITOP-02",
+      "STACK-BITOP-04"
+    ],
+    "preserved_workspace_ids": [],
+    "pre_revision": 217,
+    "post_revision": 218,
+    "reason": "User-authorized 2026-10-02 replacement of deferred BITOP-00 execution with the reviewed Baseplane moonshot workshop; preserve successful outcomes, source and evidence, integrate unfinished scope by the old-to-new map.",
+    "request_hash": "6b415c9909d51cc4c9faca13fd5d572082ad2af2632b8f5413139a9ae16608cf",
+    "project_revision": 218,
+    "projection": {
+      "snapshot": true,
+      "markdown": true,
+      "error": null,
+      "revision": 218
+    }
+  },
+  "replayed": false,
+  "continuation": {
+    "run_id": "BP-MOON-RUN-1",
+    "lane_id": "BP-MOON-L-AUTOMATA",
+    "task_id": "BP-MOON-030",
+    "workspace_id": null,
+    "observed_revision": 218,
+    "status": "blocked",
+    "blockers": [
+      {
+        "kind": "lane_task",
+        "state": "not_serial_lane_head"
+      },
+      {
+        "kind": "task",
+        "state": "not_ready",
+        "assessment": {
+          "task_id": "BP-MOON-030",
+          "lifecycle": "planned",
+          "execution": "blocked_dependency",
+          "ready": false,
+          "reasons": [
+            {
+              "type": "task",
+              "satisfied": false,
+              "blocked_state": "blocked_dependency",
+              "reason": "task BP-MOON-010 must be done"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "workspace",
+        "state": "workflow_workspace_required"
+      }
+    ]
+  },
+  "recommended_next_call": null
+}

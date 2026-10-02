@@ -1,0 +1,139 @@
+{
+  "purpose": "Numerical experimental ownership is Cellerator from inception, not only after promotion.",
+  "local_authorities": [
+    "baseplane",
+    "cellerator"
+  ],
+  "observations_are_not_atomic": true,
+  "not_superseded": [
+    "CE-ML2-RUN-V1",
+    "unrelated Cellerator epics",
+    "GlassHelix authority",
+    "CellShard authority"
+  ],
+  "links": [
+    {
+      "id": "BPCE-MOON-020",
+      "producer_repository": "cellerator",
+      "producer_task": "CE-MOON-020",
+      "consumer_repository": "baseplane",
+      "consumer_task": "BP-MOON-040",
+      "primary_experiments": [
+        "E09",
+        "E10",
+        "E11",
+        "E12"
+      ],
+      "additional_consumers": [
+        "E08",
+        "E13",
+        "E14",
+        "E15",
+        "E24",
+        "E39"
+      ],
+      "contract": "Thin experimental provider: typed dimensions/axis meaning, explicit weights/state, caller-owned buffers/stream/scratch, precision and source-independent operator semantics. Baseplane supplies sequence-derived inputs and maps outputs back to source.",
+      "required_receipt": [
+        "producer_commit_or_source_digest",
+        "artifact_paths",
+        "entry_point_and_shape_contract",
+        "authored_compiled_run_compared_status",
+        "minimal_input_output_example",
+        "known_approximation_and_loss"
+      ],
+      "activation": "Provider and consumer remain separate local tasks. Bind foreign evidence through the installed supported coordination mechanism; never insert foreign IDs into a local depends_on. No wait for global production ABI or completion of all ML2.",
+      "fallback": "A Baseplane scalar oracle/fixture may unblock sequence design. It is not a duplicate numerical backend or proof the Cellerator provider is delivered."
+    },
+    {
+      "id": "BPCE-MOON-030",
+      "producer_repository": "cellerator",
+      "producer_task": "CE-MOON-030",
+      "consumer_repository": "baseplane",
+      "consumer_task": "BP-MOON-070",
+      "primary_experiments": [
+        "E21",
+        "E22",
+        "E23",
+        "E24"
+      ],
+      "additional_consumers": [
+        "E08",
+        "E10",
+        "E44",
+        "E46"
+      ],
+      "contract": "Thin experimental provider: typed dimensions/axis meaning, explicit weights/state, caller-owned buffers/stream/scratch, precision and source-independent operator semantics. Baseplane supplies sequence-derived inputs and maps outputs back to source.",
+      "required_receipt": [
+        "producer_commit_or_source_digest",
+        "artifact_paths",
+        "entry_point_and_shape_contract",
+        "authored_compiled_run_compared_status",
+        "minimal_input_output_example",
+        "known_approximation_and_loss"
+      ],
+      "activation": "Provider and consumer remain separate local tasks. Bind foreign evidence through the installed supported coordination mechanism; never insert foreign IDs into a local depends_on. No wait for global production ABI or completion of all ML2.",
+      "fallback": "A Baseplane scalar oracle/fixture may unblock sequence design. It is not a duplicate numerical backend or proof the Cellerator provider is delivered."
+    },
+    {
+      "id": "BPCE-MOON-040",
+      "producer_repository": "cellerator",
+      "producer_task": "CE-MOON-040",
+      "consumer_repository": "baseplane",
+      "consumer_task": "BP-MOON-090",
+      "primary_experiments": [
+        "E29",
+        "E30",
+        "E31",
+        "E32"
+      ],
+      "additional_consumers": [
+        "E14",
+        "E27",
+        "E37",
+        "E39",
+        "E40"
+      ],
+      "contract": "Thin experimental provider: typed dimensions/axis meaning, explicit weights/state, caller-owned buffers/stream/scratch, precision and source-independent operator semantics. Baseplane supplies sequence-derived inputs and maps outputs back to source.",
+      "required_receipt": [
+        "producer_commit_or_source_digest",
+        "artifact_paths",
+        "entry_point_and_shape_contract",
+        "authored_compiled_run_compared_status",
+        "minimal_input_output_example",
+        "known_approximation_and_loss"
+      ],
+      "activation": "Provider and consumer remain separate local tasks. Bind foreign evidence through the installed supported coordination mechanism; never insert foreign IDs into a local depends_on. No wait for global production ABI or completion of all ML2.",
+      "fallback": "A Baseplane scalar oracle/fixture may unblock sequence design. It is not a duplicate numerical backend or proof the Cellerator provider is delivered."
+    },
+    {
+      "id": "BPCE-MOON-050",
+      "producer_repository": "cellerator",
+      "producer_task": "CE-MOON-050",
+      "consumer_repository": "baseplane",
+      "consumer_task": "BP-MOON-120",
+      "primary_experiments": [
+        "E41",
+        "E42",
+        "E43",
+        "E44"
+      ],
+      "additional_consumers": [
+        "E11",
+        "E25",
+        "E28",
+        "E45"
+      ],
+      "contract": "Thin experimental provider: typed dimensions/axis meaning, explicit weights/state, caller-owned buffers/stream/scratch, precision and source-independent operator semantics. Baseplane supplies sequence-derived inputs and maps outputs back to source.",
+      "required_receipt": [
+        "producer_commit_or_source_digest",
+        "artifact_paths",
+        "entry_point_and_shape_contract",
+        "authored_compiled_run_compared_status",
+        "minimal_input_output_example",
+        "known_approximation_and_loss"
+      ],
+      "activation": "Provider and consumer remain separate local tasks. Bind foreign evidence through the installed supported coordination mechanism; never insert foreign IDs into a local depends_on. No wait for global production ABI or completion of all ML2.",
+      "fallback": "A Baseplane scalar oracle/fixture may unblock sequence design. It is not a duplicate numerical backend or proof the Cellerator provider is delivered."
+    }
+  ]
+}

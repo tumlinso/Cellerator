@@ -1,0 +1,26 @@
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /mnt/data/bp_moon_host_build
+[ 25%] Building CXX object CMakeFiles/bp_moon_host_smoke.dir/host/smoke.cpp.o
+[ 75%] Built target bp_moon_demo
+[100%] Linking CXX executable bp_moon_host_smoke
+[100%] Built target bp_moon_host_smoke
+Internal ctest changing into directory: /mnt/data/bp_moon_host_build
+Test project /mnt/data/bp_moon_host_build
+    Start 1: host_smoke
+1/1 Test #1: host_smoke .......................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.01 sec
+Exact input: ACGTACGTTTTTACGNACGTACGTGGGGACGT
+Toy regional effects: 8; distinct exact strings: 4
+Query visits 15 tree nodes and refines 7 windows.
+[0,4) ACGT effect=11
+[4,8) ACGT effect=11
+[8,12) TTTT effect=15
+[16,20) ACGT effect=11
+[20,24) ACGT effect=11
+[24,28) GGGG effect=10
+[28,32) ACGT effect=11
+Demonstrates composition/provenance/refinement plumbing only; not learned biology or a speed result.

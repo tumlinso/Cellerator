@@ -1,0 +1,184 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "baseplane"
+  },
+  "tasks": [
+    {
+      "id": "BITOP-00",
+      "kind": "epic",
+      "title": "Baseplane BitOp roadmap",
+      "objective": "Coordinate Baseplane sequence primitives as a subordinate library of the Cellerator biological execution model, preserving standalone CPU/CUDA capability while deferring shared identities, relations, runtime integration, numerical interpretation, fusion, and planning to CE-ARCH-00.",
+      "status": "superseded",
+      "priority": 1,
+      "parallel_policy": "serial",
+      "invariants": [
+        "sqlite-authority",
+        "ownership",
+        "preserve-work",
+        "non-goals"
+      ],
+      "next_action": "Historical aggregate superseded by BP-MOON-000. compat-v2 was retired through signed maintenance; see planning/baseplane_moonshot_adoption/baseplane-supersession.json and the original old-to-new map. Preserve completed evidence; production qualification remains Q01-Q05.",
+      "notes": "Mandatory Baseplane-local completion excludes BP-BITOP-36, CE-BITOP-41/42/43/44/45, STACK-BITOP-51, and CS-BITOP-60 unless their external/activation checkpoints are satisfied. Baseplane must not freeze an independent numerical ecosystem, DeviceMathContext integration, parameter_descriptor learned boundary, or mandatory event/segment materialization. This parent owns no implementation and never edits external repositories. Deferral record: Deferred by user on 2026-09-29 for an intermediary epic. Do not claim, activate, or implement this task. Resume only after explicit user authorization and a replacement BitOP plan has been reviewed and applied. Historical next action: Remain lifecycle-blocked until STACK-BITOP-53 validates every mandatory lane; then a coordinator plan revision may close the parent as validated.",
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated",
+          "failed",
+          "superseded"
+        ]
+      },
+      "tags": [
+        "bitop-rewrite-pending",
+        "deferred"
+      ],
+      "result": "superseded"
+    },
+    {
+      "id": "BP-MOON-000",
+      "kind": "epic",
+      "title": "Baseplane moonshot workshop: sequence that organizes its computation",
+      "objective": "Aggregate the experimental outcomes and honest dispositions. This is not a prerequisite of its children and does not declare a final architecture.",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot"
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "next_action": "Close only after every workshop outcome has a truthful artifact/disposition and the later-qualification handoff is recorded.",
+      "notes": "User authorized broad lightly qualified experiments on 2026-10-02. Runtime installation and old-program supersession must precede implementation; this plan file itself changes no authority."
+    },
+    {
+      "id": "BP-MOON-010",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Install a small experimental substrate, not a universal framework",
+      "objective": "Adopt the reviewed successor policy; preserve exact sequence and completed evidence; install independently buildable seed fixtures, source maps, counters and capability declarations. Unblock experiments without first finishing the entire old BitOp executor. Split mixed seeds by ownership per machine/seed-ownership.json; coordinate with CE-MOON-010, but do not mutate its authority from this task.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/include",
+          "experiments/moonshot/host",
+          "experiments/moonshot/cuda",
+          "experiments/moonshot/python",
+          "experiments/moonshot/CMakeLists.txt",
+          "experiments/moonshot/README.md",
+          "planning/baseplane_moonshot_bootstrap/results"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-010.md and implement the assigned family, adapting within its scope. Apply the adopted ownership and research policy recorded in planning/baseplane_moonshot_adoption/baseplane-policy.todo-plan.json; verify its authority receipt before seed installation.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    }
+  ],
+  "runs": [],
+  "invariants": [
+    {
+      "id": "ownership",
+      "rule": "Baseplane owns packed sequence representation, validity-aware low-level predicates, portable/prepared sequence programs, CPU/SIMD/CUDA execution, explicit residency, compact masks/events, generic segments, and scalar references. Cellerator owns the shared domain/order/identity/operand ABI, relation structures, runtime integration, numerical interpretation, fusion, planning, learned/mechanistic state, and partition policy. CelleraTorch is optional. CellShard remains read-only and parked. Experimental clarification for experiments/cuda_lab only: temporary local floating arithmetic, candidate grouping and conditional sequence-representation kernels are allowed to test the new hypothesis; they do not acquire shared numerical/ABI ownership or authorize edits in Cellerator, CelleraTorch, GlassHelix or CellShard.\nMoonshot amendment (2026-10-02; governs contrary restrictions only within this scope): For BP-MOON-RUN-1 in experiments/moonshot, Baseplane owns exact sequence grounding, validity, provenance, sequence-to-effect generation and sequence-specific representation/routing. Cellerator owns shared numerical/ABI/planning capability and experimental learned or parameterized operators from inception under independent CE-MOON tasks. General numerical seed code is split into its Cellerator provider, not duplicated. No Baseplane task acquires another repository scope; GlassHelix and CellShard remain outside this campaign.",
+      "scope": {},
+      "severity": "error",
+      "enforcement": null
+    },
+    {
+      "id": "non-goals",
+      "rule": "Do not add sequence file parsers, genome/motif databases, IUPAC core parsing, PWM/ontology policy, AnnData/HDF5/CSPACK ownership, training/autograd in Baseplane, dense per-base embeddings, unrestricted GPU VM, NVRTC first path, dynamic parallelism, cooperative-grid baseline, Tensor Core Boolean claims, broad reorganization, or CP-BP matrix types. Scoped exception authorized by the 2026-09-28 CUDA prototyping request: experiments/cuda_lab may contain isolated small parameterized floating-point inference probes and online routing/hierarchy tests. No production API, trainer/autograd framework, dense genome-token model, or unrestricted runtime is authorized by this exception.\nMoonshot amendment (2026-10-02; governs contrary restrictions only within this scope): For the isolated BP-MOON workshop, bounded finite-state interpreters, persistent/cohort experiments, parameterized inference, tensor arithmetic and learned-to-instruction consumers are permitted. Toy trainers and general learned/numerical operators belong to the paired Cellerator research scope. No unrestricted VM, general training framework, dense genome-token prerequisite, causal claim or unrelated reorganization is authorized. This extends the isolated research exception to experiments/moonshot without changing production contracts.",
+      "scope": {},
+      "severity": "error",
+      "enforcement": null
+    },
+    {
+      "id": "conditional-policy",
+      "rule": "Measure packed direct versus resident planes, direct allowed masks versus capped exact expansion, four multi-motif mappings, current versus shuffle count reduction, event mask versus records by density, stable versus unordered output, halo versus continuation, and lowered CUDA versus interpreter. Graphs/persistent kernels/NVRTC/discrete-program learning remain post-evidence.\nMoonshot amendment (2026-10-02; governs contrary restrictions only within this scope): BP-MOON catalogue implementation does not require prior speedup evidence. Small semantic, capacity and synchronization probes support experimentation; existing required gates remain required unless explicitly revised. Production promotion, benchmarking, large training and multi-GPU qualification remain separate Q01-Q05 work. Existing measured failures remain evidence, not a blanket prohibition on different hypotheses.",
+      "scope": {},
+      "severity": "warning",
+      "enforcement": null
+    },
+    {
+      "id": "stop-conditions",
+      "rule": "Stop and hand off/block with exact evidence on unidentified dirty owned files, overlapping live lease, missing/frozen-interface mismatch, checkpoint/base-HEAD drift, absent resource, ownership contradiction, stable exact API break, missing CPU oracle, occupied CMake seam, material plan/code divergence, contaminated benchmark, unexplained sanitizer finding, or optional branch without activation evidence.\nMoonshot amendment (2026-10-02; governs contrary restrictions only within this scope): For BP-MOON, stop for unsafe resources, ownership conflicts, invalid assumptions, unsupported instructions or the preserved identity/capacity/frozen-interface safeguards. Lack of a speedup, an unproven research hypothesis or an unstable isolated experimental API alone is not a stop condition. The user-authorized moonshot catalogue supplies activation evidence for isolated ideas only.",
+      "scope": {},
+      "severity": "error",
+      "enforcement": null
+    },
+    {
+      "id": "cuda-v100",
+      "rule": "CUDA work targets Volta sm_70 on Tesla V100 and CUDA 12.9. Use custom bitwise kernels only when semantics or measured traffic justify them. Benchmark, profiler, sanitizer, and all-GPU gates require their exclusive resources; source must never hardcode the assigned device.\nMoonshot amendment (2026-10-02; governs contrary restrictions only within this scope): For BP-MOON isolated implementation, alternative instruction compositions are permitted before performance qualification. Preserve Volta sm_70, a capable CUDA 12.9 route, explicit warp masks, legal synchronization, assigned resources and no hardcoded device. No benchmark or speed claim is authorized by a compile receipt.",
+      "scope": {},
+      "severity": "error",
+      "enforcement": null
+    },
+    {
+      "id": "communication",
+      "rule": "Use ownership intervals plus bounded halos for local dependencies, compact continuation/finite-state summaries only for small regular state, and sparse Cellerator event/object routing for long range. Raw information communicates locally; compressed meaning communicates globally.\nMoonshot amendment (2026-10-02; governs contrary restrictions only within this scope): For BP-MOON, compact summaries and demand-driven exact source/detail movement are both permitted, including real whole-input candidate directories and nonlocal retrieval. Declare traffic, candidate construction, routing and revisit costs; compressed summaries are not presumed sufficient or lossless.",
+      "scope": {},
+      "severity": "error",
+      "enforcement": null
+    },
+    {
+      "id": "external-repositories",
+      "rule": "Cellerator, CelleraTorch, and CellShard are external to this Baseplane project root. Cellerator implementation ownership is represented only by external CE-ARCH checkpoint decisions; Baseplane tasks never duplicate or claim it. CellShard receives no work. Any future external task must inspect the owning ledger, AGENTS.md, Git state, claims, and leases and stop on overlap.\nMoonshot amendment (2026-10-02; governs contrary restrictions only within this scope): For this paired adoption, Cellerator implementation ownership is additionally represented by its own CE-MOON tasks and provider receipts, not only CE-ARCH checkpoints. Apply its companion plan through its own authority. Baseplane tasks never claim Cellerator paths. Preserve ML2 and unrelated runs; no GlassHelix or CellShard work is added. Recheck owning instructions, Git, claims and resource leases before implementation.",
+      "scope": {},
+      "severity": "error",
+      "enforcement": null
+    },
+    {
+      "id": "cellerator-blocker",
+      "rule": "CELLERATOR-EXTERNAL-STATE is ready-with-mandatory-recheck because the observed CP-MATH-08A referee work landed and Cellerator implementation paths are Git-clean, but the user prohibited re-opening its todo ledger in this turn. Every external task must perform a read-only Git/session/claim/lease audit before editing, must never mutate Cellerator todo state, and must stop on any overlap.\nMoonshot amendment (2026-10-02; governs contrary restrictions only within this scope): The prior turn-specific prohibition on reopening the Cellerator ledger is superseded for the user-authorized 2026-10-02 CE-MOON companion adoption. Its plan administration is performed through Cellerator authority; implementation requires its own bounded claims and overlap/resource audit. Preserve CE-ML2, CE-PTR, CE-AMP and unrelated work; this is not permission to repair their lifecycle.",
+      "scope": {},
+      "severity": "error",
+      "enforcement": null
+    },
+    {
+      "id": "BP-MOON-RESEARCH-TRUTH",
+      "rule": "BP-MOON preserves diverse mechanisms and meaningful failures with no top-two retention limit. Record authored, compiled, run and compared separately. Source recovery is not lossless embedding; a candidate relation is not causality; fixtures do not prove trained genome-scale representation. Preserve completed lab/docs outcomes and all exact validity, provenance and caller-owned capacity contracts.",
+      "scope": {
+        "paths": [
+          "experiments/moonshot"
+        ]
+      },
+      "severity": "error",
+      "enforcement": null
+    },
+    {
+      "id": "sqlite-authority",
+      "rule": "Baseplane SQLite state is the only BitOp operational authority. state.snapshot.json and Markdown are generated projections; never hand-edit them or use the CellStack/Cellerator CP-MATH ledger as BitOp state.",
+      "scope": {},
+      "severity": "error",
+      "enforcement": null
+    },
+    {
+      "id": "preserve-work",
+      "rule": "Never reset, clean, stash, rebase, switch branches, overwrite, or attribute unrelated dirty work. Recheck Git HEAD, worktrees, active claims, changes, guard, and audit at pickup and handoff.",
+      "scope": {},
+      "severity": "error",
+      "enforcement": null
+    }
+  ]
+}

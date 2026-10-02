@@ -1,0 +1,316 @@
+{
+  "outcomes": [
+    {
+      "id": "BP-MOON-010",
+      "title": "Install a small experimental substrate, not a universal framework",
+      "objective": "Adopt the reviewed successor policy; preserve exact sequence and completed evidence; install independently buildable seed fixtures, source maps, counters and capability declarations. Unblock experiments without first finishing the entire old BitOp executor.",
+      "scopes": [
+        "experiments/moonshot/include",
+        "experiments/moonshot/host",
+        "experiments/moonshot/cuda",
+        "experiments/moonshot/python",
+        "experiments/moonshot/CMakeLists.txt",
+        "experiments/moonshot/README.md",
+        "planning/bp-moonshot-20261002/results"
+      ],
+      "depends_on": [],
+      "experiment_ids": [],
+      "parallel_policy": "integration_exclusive",
+      "repository": "baseplane"
+    },
+    {
+      "id": "BP-MOON-020",
+      "title": "Masks as executable geometry",
+      "objective": "Implement a diverse set of concrete masks as executable geometry experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "scopes": [
+        "experiments/moonshot/families/logic"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E01",
+        "E02",
+        "E03",
+        "E04"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane"
+    },
+    {
+      "id": "BP-MOON-030",
+      "title": "Finite-state effect machines",
+      "objective": "Implement a diverse set of concrete finite-state effect machines experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "scopes": [
+        "experiments/moonshot/families/automata"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E05",
+        "E06",
+        "E07",
+        "E08"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane"
+    },
+    {
+      "id": "BP-MOON-040",
+      "title": "Continuous response algebras",
+      "objective": "Build sequence-grounded fixtures, source mapping and hierarchical consumers for continuous, refinable and multi-state numerical operators. Use CE-MOON-020 numerical research providers from Cellerator rather than building a parallel numerical owner in Baseplane. Prototype sequence questions immediately with small reference fixtures where needed.",
+      "scopes": [
+        "experiments/moonshot/families/effects"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E09",
+        "E10",
+        "E11",
+        "E12"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane",
+      "external_provider": {
+        "repository": "cellerator",
+        "task": "CE-MOON-020",
+        "binding": "machine/cross-authority.json; artifact evidence, not a foreign local dependency"
+      }
+    },
+    {
+      "id": "BP-MOON-050",
+      "title": "Adaptive and refinable hierarchy",
+      "objective": "Implement a diverse set of concrete adaptive and refinable hierarchy experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "scopes": [
+        "experiments/moonshot/families/hierarchy"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E13",
+        "E14",
+        "E15",
+        "E16"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane"
+    },
+    {
+      "id": "BP-MOON-060",
+      "title": "Real nonlocal candidate discovery",
+      "objective": "Implement a diverse set of concrete real nonlocal candidate discovery experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "scopes": [
+        "experiments/moonshot/families/rendezvous"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E17",
+        "E18",
+        "E19",
+        "E20"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane"
+    },
+    {
+      "id": "BP-MOON-070",
+      "title": "Meaningful Tensor Core axes",
+      "objective": "Build sequence-grounded fixtures, source mapping and hierarchical consumers for tensor core relational and latent mechanisms. Use CE-MOON-030 numerical research providers from Cellerator rather than building a parallel numerical owner in Baseplane. Prototype sequence questions immediately with small reference fixtures where needed.",
+      "scopes": [
+        "experiments/moonshot/families/tensor"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E21",
+        "E22",
+        "E23",
+        "E24"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane",
+      "external_provider": {
+        "repository": "cellerator",
+        "task": "CE-MOON-030",
+        "binding": "machine/cross-authority.json; artifact evidence, not a foreign local dependency"
+      }
+    },
+    {
+      "id": "BP-MOON-080",
+      "title": "Question-driven execution",
+      "objective": "Implement a diverse set of concrete question-driven execution experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "scopes": [
+        "experiments/moonshot/families/demand"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E25",
+        "E26",
+        "E27",
+        "E28"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane"
+    },
+    {
+      "id": "BP-MOON-090",
+      "title": "Learning that becomes cheap machinery",
+      "objective": "Build sequence-grounded fixtures, source mapping and hierarchical consumers for learning, routing and hardening into cheap operators. Use CE-MOON-040 numerical research providers from Cellerator rather than building a parallel numerical owner in Baseplane. Prototype sequence questions immediately with small reference fixtures where needed.",
+      "scopes": [
+        "experiments/moonshot/families/compiler"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E29",
+        "E30",
+        "E31",
+        "E32"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane",
+      "external_provider": {
+        "repository": "cellerator",
+        "task": "CE-MOON-040",
+        "binding": "machine/cross-authority.json; artifact evidence, not a foreign local dependency"
+      }
+    },
+    {
+      "id": "BP-MOON-100",
+      "title": "Reuse under context and sequence changes",
+      "objective": "Implement a diverse set of concrete reuse under context and sequence changes experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "scopes": [
+        "experiments/moonshot/families/incremental"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E33",
+        "E34",
+        "E35",
+        "E36"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane"
+    },
+    {
+      "id": "BP-MOON-110",
+      "title": "Multiple representations and interpretations",
+      "objective": "Implement a diverse set of concrete multiple representations and interpretations experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "scopes": [
+        "experiments/moonshot/families/hypotheses"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E37",
+        "E38",
+        "E39",
+        "E40"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane"
+    },
+    {
+      "id": "BP-MOON-120",
+      "title": "Ports, factors and counterfactual worlds",
+      "objective": "Build sequence-grounded fixtures, source mapping and hierarchical consumers for port, factor, multigrid and counterfactual mechanisms. Use CE-MOON-050 numerical research providers from Cellerator rather than building a parallel numerical owner in Baseplane. Prototype sequence questions immediately with small reference fixtures where needed.",
+      "scopes": [
+        "experiments/moonshot/families/ports"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E41",
+        "E42",
+        "E43",
+        "E44"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane",
+      "external_provider": {
+        "repository": "cellerator",
+        "task": "CE-MOON-050",
+        "binding": "machine/cross-authority.json; artifact evidence, not a foreign local dependency"
+      }
+    },
+    {
+      "id": "BP-MOON-130",
+      "title": "Unconventional Volta execution paths",
+      "objective": "Implement a diverse set of concrete unconventional volta execution paths experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "scopes": [
+        "experiments/moonshot/families/machine"
+      ],
+      "depends_on": [
+        "BP-MOON-010"
+      ],
+      "experiment_ids": [
+        "E45",
+        "E46",
+        "E47",
+        "E48"
+      ],
+      "parallel_policy": "parallel_safe",
+      "repository": "baseplane"
+    },
+    {
+      "id": "BP-MOON-140",
+      "title": "Compose mechanisms into alternative Baseplane paths",
+      "objective": "Build several end-to-end sequence-grounded combinations, keeping more than one architectural ontology alive. Include actual candidate construction and a refine/revisit path, not an oracle packet or disconnected kernel collection.",
+      "scopes": [
+        "experiments/moonshot/compositions"
+      ],
+      "depends_on": [
+        "BP-MOON-020",
+        "BP-MOON-030",
+        "BP-MOON-040",
+        "BP-MOON-050",
+        "BP-MOON-060",
+        "BP-MOON-070",
+        "BP-MOON-080",
+        "BP-MOON-090",
+        "BP-MOON-100",
+        "BP-MOON-110",
+        "BP-MOON-120",
+        "BP-MOON-130"
+      ],
+      "experiment_ids": [],
+      "parallel_policy": "integration_exclusive",
+      "repository": "baseplane"
+    },
+    {
+      "id": "BP-MOON-150",
+      "title": "Integrate a navigable research library and candid handoff",
+      "objective": "Resolve small shared-seam changes, keep existing Baseplane targets intact, inventory every candidate and migrated obligation, and hand back many runnable or explicitly uncompiled experiments without declaring a production architecture or scientific validation.",
+      "scopes": [
+        "experiments/moonshot/include",
+        "experiments/moonshot/host",
+        "experiments/moonshot/cuda",
+        "experiments/moonshot/python",
+        "experiments/moonshot/CMakeLists.txt",
+        "experiments/moonshot/README.md",
+        "planning/bp-moonshot-20261002/results",
+        "docs/status/current.md"
+      ],
+      "depends_on": [
+        "BP-MOON-140"
+      ],
+      "experiment_ids": [],
+      "parallel_policy": "integration_exclusive",
+      "repository": "baseplane"
+    }
+  ]
+}

@@ -1,0 +1,867 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "baseplane"
+  },
+  "tasks": [
+    {
+      "id": "BP-MOON-000",
+      "kind": "epic",
+      "title": "Baseplane moonshot workshop: sequence that organizes its computation",
+      "objective": "Aggregate the experimental outcomes and honest dispositions. This is not a prerequisite of its children and does not declare a final architecture.",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot"
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "next_action": "Close only after every workshop outcome has a truthful artifact/disposition and the later-qualification handoff is recorded.",
+      "notes": "User authorized broad lightly qualified experiments on 2026-10-02. Runtime installation and old-program supersession must precede implementation; this plan file itself changes no authority."
+    },
+    {
+      "id": "BP-MOON-010",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Install a small experimental substrate, not a universal framework",
+      "objective": "Adopt the reviewed successor policy; preserve exact sequence and completed evidence; install independently buildable seed fixtures, source maps, counters and capability declarations. Unblock experiments without first finishing the entire old BitOp executor. Split mixed seeds by ownership per machine/seed-ownership.json; coordinate with CE-MOON-010, but do not mutate its authority from this task.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/include",
+          "experiments/moonshot/host",
+          "experiments/moonshot/cuda",
+          "experiments/moonshot/python",
+          "experiments/moonshot/CMakeLists.txt",
+          "experiments/moonshot/README.md",
+          "planning/baseplane_moonshot_bootstrap/results"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-010.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    },
+    {
+      "id": "BP-MOON-020",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Masks as executable geometry",
+      "objective": "Implement a diverse set of concrete masks as executable geometry experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/logic"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-020.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    },
+    {
+      "id": "BP-MOON-030",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Finite-state effect machines",
+      "objective": "Implement a diverse set of concrete finite-state effect machines experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/automata"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-030.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    },
+    {
+      "id": "BP-MOON-040",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Continuous response algebras",
+      "objective": "Build sequence-grounded fixtures, source mapping and hierarchical consumers for continuous, refinable and multi-state numerical operators. Use CE-MOON-020 numerical research providers from Cellerator rather than building a parallel numerical owner in Baseplane. Prototype sequence questions immediately with small reference fixtures where needed.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/effects"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-040.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful. Cellerator numerical research provider: CE-MOON-020. Experimental status does not transfer numerical ownership to Baseplane. Bind its actual receipt before claiming the integrated path complete."
+    },
+    {
+      "id": "BP-MOON-050",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Adaptive and refinable hierarchy",
+      "objective": "Implement a diverse set of concrete adaptive and refinable hierarchy experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/hierarchy"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-050.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    },
+    {
+      "id": "BP-MOON-060",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Real nonlocal candidate discovery",
+      "objective": "Implement a diverse set of concrete real nonlocal candidate discovery experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/rendezvous"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-060.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    },
+    {
+      "id": "BP-MOON-070",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Meaningful Tensor Core axes",
+      "objective": "Build sequence-grounded fixtures, source mapping and hierarchical consumers for tensor core relational and latent mechanisms. Use CE-MOON-030 numerical research providers from Cellerator rather than building a parallel numerical owner in Baseplane. Prototype sequence questions immediately with small reference fixtures where needed.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/tensor"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-070.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful. Cellerator numerical research provider: CE-MOON-030. Experimental status does not transfer numerical ownership to Baseplane. Bind its actual receipt before claiming the integrated path complete."
+    },
+    {
+      "id": "BP-MOON-080",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Question-driven execution",
+      "objective": "Implement a diverse set of concrete question-driven execution experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/demand"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-080.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    },
+    {
+      "id": "BP-MOON-090",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Learning that becomes cheap machinery",
+      "objective": "Build sequence-grounded fixtures, source mapping and hierarchical consumers for learning, routing and hardening into cheap operators. Use CE-MOON-040 numerical research providers from Cellerator rather than building a parallel numerical owner in Baseplane. Prototype sequence questions immediately with small reference fixtures where needed.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/compiler"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-090.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful. Cellerator numerical research provider: CE-MOON-040. Experimental status does not transfer numerical ownership to Baseplane. Bind its actual receipt before claiming the integrated path complete."
+    },
+    {
+      "id": "BP-MOON-100",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Reuse under context and sequence changes",
+      "objective": "Implement a diverse set of concrete reuse under context and sequence changes experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/incremental"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-100.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    },
+    {
+      "id": "BP-MOON-110",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Multiple representations and interpretations",
+      "objective": "Implement a diverse set of concrete multiple representations and interpretations experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/hypotheses"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-110.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    },
+    {
+      "id": "BP-MOON-120",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Ports, factors and counterfactual worlds",
+      "objective": "Build sequence-grounded fixtures, source mapping and hierarchical consumers for port, factor, multigrid and counterfactual mechanisms. Use CE-MOON-050 numerical research providers from Cellerator rather than building a parallel numerical owner in Baseplane. Prototype sequence questions immediately with small reference fixtures where needed.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/ports"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-120.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful. Cellerator numerical research provider: CE-MOON-050. Experimental status does not transfer numerical ownership to Baseplane. Bind its actual receipt before claiming the integrated path complete."
+    },
+    {
+      "id": "BP-MOON-130",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Unconventional Volta execution paths",
+      "objective": "Implement a diverse set of concrete unconventional volta execution paths experiments from the assigned catalogue; preserve semantic distinctions, report uncertainty, and stop qualification from consuming the invention budget.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/families/machine"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-130.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    },
+    {
+      "id": "BP-MOON-140",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Compose mechanisms into alternative Baseplane paths",
+      "objective": "Build several end-to-end sequence-grounded combinations, keeping more than one architectural ontology alive. Include actual candidate construction and a refine/revisit path, not an oracle packet or disconnected kernel collection.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/compositions"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-020"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-030"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-040"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-050"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-060"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-070"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-080"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-090"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-100"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-110"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-120"
+        },
+        {
+          "type": "task",
+          "task_id": "BP-MOON-130"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-140.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    },
+    {
+      "id": "BP-MOON-150",
+      "parent_id": "BP-MOON-000",
+      "kind": "task",
+      "title": "Integrate a navigable research library and candid handoff",
+      "objective": "Resolve small shared-seam changes, keep existing Baseplane targets intact, inventory every candidate and migrated obligation, and hand back many runnable or explicitly uncompiled experiments without declaring a production architecture or scientific validation. Verify Cellerator provider receipts and keep two local authorities, not two numerical implementations.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/moonshot/include",
+          "experiments/moonshot/host",
+          "experiments/moonshot/cuda",
+          "experiments/moonshot/python",
+          "experiments/moonshot/CMakeLists.txt",
+          "experiments/moonshot/README.md",
+          "planning/baseplane_moonshot_bootstrap/results",
+          "docs/status/current.md"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/moonshot",
+          "include/Baseplane",
+          "src/seq",
+          "experiments/cuda_lab"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "BP-MOON-140"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/BP-MOON-150.md and implement the assigned family, adapting within its scope.",
+      "notes": "Experimental implementation is the goal; validated refers only to explicitly recorded checks. no_change_required requires an artifact-level rationale, not abandonment. No biological/performance claim is implied. Use installed Todo lifecycle; never edit generated authority. Ordinary branch instructions, multiple passes and shared primitives are allowed when useful."
+    }
+  ],
+  "runs": [
+    {
+      "id": "BP-MOON-RUN-1",
+      "root_task_id": "BP-MOON-000",
+      "charter": {
+        "objective": "Explore many GPU-native ways for exact genomic information to build and refine hierarchical learned representations.",
+        "motivation": "Replace the deferred BitOp roadmap with a broader implementation-first workshop while preserving successful substrate and negative evidence.",
+        "desired_end_state": "Diverse concrete experimental mechanisms, several compositions, source-grounded interfaces, and an honest later-qualification inventory.",
+        "boundaries": [
+          "This plan writes Baseplane only; the paired Cellerator plan owns experimental learned/numerical providers from inception. Neither authority silently writes the other.",
+          "Maintain source validity, strand, provenance, explicit buffer capacities and Volta synchronization.",
+          "Broad isolated experimentation is authorized; production promotion and broad benchmarks are not.",
+          "Preserve completed old tasks, lab findings and retained work. The reviewed supersession protocol is required before claiming this run."
+        ],
+        "acceptance_conditions": [
+          "Each catalogue item has a truthful disposition and artifact or explicit defer/reject reason; seeds are not reported as completed architectures.",
+          "Representative mechanisms can be built/run in their declared environments or are explicitly marked uncompiled; minimal correctness checks only.",
+          "No silent dropped work, no hidden oracle candidate input, no unbounded memory/queue construction."
+        ],
+        "delegated_judgment": "Use dependency-driven parallel family lanes after foundation integration. Dispatch bounded configured Codex subagents under the root claim and file ownership; the root retains lifecycle and acceptance. Lane count is potential independence, not agent capacity: obey the total active agent budget including root and any heads. Shared seams have one owner; integrate family patches before compositions and closure.",
+        "references": [
+          "planning/baseplane_moonshot_bootstrap/START_HERE.md",
+          "planning/baseplane_moonshot_bootstrap/docs/00_INTENT.md",
+          "planning/baseplane_moonshot_bootstrap/docs/05_EXECUTION_AND_SUPERSESSION.md",
+          "planning/baseplane_moonshot_bootstrap/machine/experiments.json",
+          "planning/baseplane_moonshot_bootstrap/docs/07_CELLERATOR_RESEARCH_SCOPE.md"
+        ]
+      },
+      "lanes": [
+        {
+          "id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "tasks": [
+            "BP-MOON-010"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-LOGIC",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-020"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-AUTOMATA",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-030"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-EFFECTS",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-040"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-HIERARCHY",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-050"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-RENDEZVOUS",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-060"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-TENSOR",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-070"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-DEMAND",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-080"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-COMPILER",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-090"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-INCREMENTAL",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-100"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-HYPOTHESES",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-110"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-PORTS",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-120"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-MACHINE",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "BP-MOON-140"
+          },
+          "tasks": [
+            "BP-MOON-130"
+          ]
+        },
+        {
+          "id": "BP-MOON-L-INTEGRATION",
+          "parent_lane_id": "BP-MOON-L-FOUNDATION",
+          "role": "integrator",
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "tasks": [
+            "BP-MOON-140",
+            "BP-MOON-150",
+            "BP-MOON-000"
+          ]
+        }
+      ]
+    }
+  ]
+}

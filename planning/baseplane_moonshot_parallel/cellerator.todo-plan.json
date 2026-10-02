@@ -1,0 +1,394 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "cellerator"
+  },
+  "tasks": [
+    {
+      "id": "CE-MOON-000",
+      "kind": "epic",
+      "title": "Cellerator numerical research for Baseplane moonshots",
+      "objective": "Aggregate Cellerator-owned experimental numerical and learned mechanisms; no replacement of ML2 or unrelated research.",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap"
+        ]
+      },
+      "notes": "Research-stage ML-like mechanisms are in Cellerator scope from inception. This aggregate is not a prerequisite of its children."
+    },
+    {
+      "id": "CE-MOON-010",
+      "parent_id": "CE-MOON-000",
+      "kind": "task",
+      "title": "Adopt the numerical research lane without replacing ML2",
+      "objective": "Inspect current Cellerator claims and numerical entry points; install a small independently buildable numerical experimental module and split supplied mixed research seeds by semantic ownership. Preserve all existing ML2 and unrelated work. No production runtime integration is a prerequisite.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/baseplane_moonshot/include",
+          "experiments/baseplane_moonshot/host",
+          "experiments/baseplane_moonshot/cuda",
+          "experiments/baseplane_moonshot/python",
+          "experiments/baseplane_moonshot/CMakeLists.txt",
+          "experiments/baseplane_moonshot/README.md",
+          "planning/baseplane_moonshot_bootstrap/results/cellerator"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/baseplane_moonshot",
+          "include/Cellerator",
+          "src/execution",
+          "src/geometry",
+          "src/compiler",
+          "examples/relation_update_spine_v1",
+          "docs/learning",
+          "tests/native_foundation/training"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-010.md; implement concrete research operators under Cellerator authority.",
+      "notes": "No maturity gate before experimentation. Existing source is read-only outside declared scope. Use exact provider artifact/commit receipts, not invented foreign task dependencies. No silent ML2 supersession or production ABI change."
+    },
+    {
+      "id": "CE-MOON-020",
+      "parent_id": "CE-MOON-000",
+      "kind": "task",
+      "title": "Continuous, refinable and multi-state numerical operators",
+      "objective": "Implement learned or parameterized effect algebras, block-monomial maps, polynomial response approximations, lifting/refinement primitives and continuous state operators as Cellerator research. Preserve algebraic restrictions and explicit approximation error; do not wait for a production API.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/baseplane_moonshot/families/effects"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/baseplane_moonshot",
+          "include/Cellerator",
+          "src/execution",
+          "src/geometry",
+          "src/compiler",
+          "examples/relation_update_spine_v1",
+          "docs/learning",
+          "tests/native_foundation/training"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-020.md; implement concrete research operators under Cellerator authority.",
+      "notes": "No maturity gate before experimentation. Existing source is read-only outside declared scope. Use exact provider artifact/commit receipts, not invented foreign task dependencies. No silent ML2 supersession or production ABI change."
+    },
+    {
+      "id": "CE-MOON-030",
+      "parent_id": "CE-MOON-000",
+      "kind": "task",
+      "title": "Tensor Core relational and latent mechanisms",
+      "objective": "Build semantically explicit object-feature, relation, finite-relation and possible-state Tensor Core mechanisms. Include optional local gradients and learning fixtures where useful. Layout axes and padding are part of the operator contract; experimental kernels belong here before qualification.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/baseplane_moonshot/families/tensor"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/baseplane_moonshot",
+          "include/Cellerator",
+          "src/execution",
+          "src/geometry",
+          "src/compiler",
+          "examples/relation_update_spine_v1",
+          "docs/learning",
+          "tests/native_foundation/training"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-030.md; implement concrete research operators under Cellerator authority.",
+      "notes": "No maturity gate before experimentation. Existing source is read-only outside declared scope. Use exact provider artifact/commit receipts, not invented foreign task dependencies. No silent ML2 supersession or production ABI change."
+    },
+    {
+      "id": "CE-MOON-040",
+      "parent_id": "CE-MOON-000",
+      "kind": "task",
+      "title": "Learning, routing and hardening into cheap operators",
+      "objective": "Explore differentiable Boolean gates, learned predicate selection, small bounded optimizer fixtures, typed numerical rewrites and guarded specialization. Baseplane supplies sequence semantics and compiles sequence-specific hard predicates; Cellerator supplies the learned numerical mechanism from inception.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/baseplane_moonshot/families/learning"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/baseplane_moonshot",
+          "include/Cellerator",
+          "src/execution",
+          "src/geometry",
+          "src/compiler",
+          "examples/relation_update_spine_v1",
+          "docs/learning",
+          "tests/native_foundation/training"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-040.md; implement concrete research operators under Cellerator authority.",
+      "notes": "No maturity gate before experimentation. Existing source is read-only outside declared scope. Use exact provider artifact/commit receipts, not invented foreign task dependencies. No silent ML2 supersession or production ABI change."
+    },
+    {
+      "id": "CE-MOON-050",
+      "parent_id": "CE-MOON-000",
+      "kind": "task",
+      "title": "Port, factor, multigrid and counterfactual mechanisms",
+      "objective": "Implement numerical response ports, learned coarse/fine correction, factor aggregation and alternate-world state batches. Baseplane owns which loci/relations/world interventions mean what; Cellerator owns their parameterized numerical execution and exploratory fitting.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/baseplane_moonshot/families/mechanisms"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/baseplane_moonshot",
+          "include/Cellerator",
+          "src/execution",
+          "src/geometry",
+          "src/compiler",
+          "examples/relation_update_spine_v1",
+          "docs/learning",
+          "tests/native_foundation/training"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-010"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-050.md; implement concrete research operators under Cellerator authority.",
+      "notes": "No maturity gate before experimentation. Existing source is read-only outside declared scope. Use exact provider artifact/commit receipts, not invented foreign task dependencies. No silent ML2 supersession or production ABI change."
+    },
+    {
+      "id": "CE-MOON-090",
+      "parent_id": "CE-MOON-000",
+      "kind": "task",
+      "title": "Hand back numerical providers and truthful experimental receipts",
+      "objective": "Connect only the small provider interfaces that the sequence experiments actually consume; report authored/compiled/run/compared per operator. Preserve existing learning/compiler/runtime work and leave production promotion separate.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/baseplane_moonshot/include",
+          "experiments/baseplane_moonshot/CMakeLists.txt",
+          "experiments/baseplane_moonshot/README.md",
+          "planning/baseplane_moonshot_bootstrap/results/cellerator"
+        ],
+        "read_paths": [
+          "planning/baseplane_moonshot_bootstrap",
+          "experiments/baseplane_moonshot",
+          "include/Cellerator",
+          "src/execution",
+          "src/geometry",
+          "src/compiler",
+          "examples/relation_update_spine_v1",
+          "docs/learning",
+          "tests/native_foundation/training"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-MOON-020"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-MOON-030"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-MOON-040"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-MOON-050"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-090.md; implement concrete research operators under Cellerator authority.",
+      "notes": "No maturity gate before experimentation. Existing source is read-only outside declared scope. Use exact provider artifact/commit receipts, not invented foreign task dependencies. No silent ML2 supersession or production ABI change."
+    }
+  ],
+  "runs": [
+    {
+      "id": "CE-MOON-RUN-1",
+      "root_task_id": "CE-MOON-000",
+      "charter": {
+        "objective": "Create learned and parameterized numerical research mechanisms for sequence-grounded Baseplane experiments.",
+        "motivation": "User clarification: Cellerator owns experimental ML-like math as well as qualified numerical execution.",
+        "boundaries": [
+          "Cellerator local authority only. Baseplane owns sequence meaning; use explicit provider receipts.",
+          "Preserve CE-ML2-RUN-V1 and all unrelated work. No blanket task-prefix retirement.",
+          "Experiments are welcome immediately; public promotion is separate. No new general runtime prerequisite.",
+          "Inspect exact claims/leases before use; broad read coverage is not an authorization receipt."
+        ],
+        "acceptance_conditions": [
+          "Concrete operators with truthful authored/compiled/run/compared status.",
+          "Declared numerical contracts and source-independent inputs; sequence interpretation remains Baseplane-owned."
+        ],
+        "delegated_judgment": "Use dependency-driven parallel family lanes after foundation integration. Dispatch bounded configured Codex subagents under the root claim and file ownership; the root retains lifecycle and acceptance. Lane count is potential independence, not agent capacity: obey the total active agent budget including root and any heads. Shared seams have one owner; integrate family patches before compositions and closure.",
+        "references": [
+          "planning/baseplane_moonshot_bootstrap/docs/07_CELLERATOR_RESEARCH_SCOPE.md",
+          "planning/baseplane_moonshot_bootstrap/machine/cross-authority.json"
+        ]
+      },
+      "lanes": [
+        {
+          "id": "CE-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "tasks": [
+            "CE-MOON-010"
+          ]
+        },
+        {
+          "id": "CE-MOON-L-EFFECTS",
+          "parent_lane_id": "CE-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "CE-MOON-090"
+          },
+          "tasks": [
+            "CE-MOON-020"
+          ]
+        },
+        {
+          "id": "CE-MOON-L-TENSOR",
+          "parent_lane_id": "CE-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "CE-MOON-090"
+          },
+          "tasks": [
+            "CE-MOON-030"
+          ]
+        },
+        {
+          "id": "CE-MOON-L-LEARNING",
+          "parent_lane_id": "CE-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "CE-MOON-090"
+          },
+          "tasks": [
+            "CE-MOON-040"
+          ]
+        },
+        {
+          "id": "CE-MOON-L-MECHANISMS",
+          "parent_lane_id": "CE-MOON-L-FOUNDATION",
+          "role": "implementer",
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "CE-MOON-090"
+          },
+          "tasks": [
+            "CE-MOON-050"
+          ]
+        },
+        {
+          "id": "CE-MOON-L-INTEGRATION",
+          "parent_lane_id": "CE-MOON-L-FOUNDATION",
+          "role": "integrator",
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "tasks": [
+            "CE-MOON-090",
+            "CE-MOON-000"
+          ]
+        }
+      ]
+    }
+  ]
+}

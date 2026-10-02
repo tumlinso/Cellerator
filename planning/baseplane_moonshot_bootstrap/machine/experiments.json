@@ -1,0 +1,1417 @@
+{
+  "campaign": "BP-MOON-20261002",
+  "status": "designed catalogue with supplied experimental seeds",
+  "experiments": [
+    {
+      "id": "E01",
+      "title": "LUT3 circuit tiles",
+      "family": 20,
+      "owner_task": "BP-MOON-020",
+      "question": "Can a learned local decision become a few truth-table instructions rather than a feature tensor?",
+      "mechanism": "Represent 32 positions per Boolean plane. Build a typed three-input gate DAG over exact bases, validity, strand and prior threshold masks; emit several planes for later learned mixing. Compile fixed truth tables into LOP3 immediates. Keep weights/truth-table provenance beside the circuit.",
+      "volta_mapping": "LOP3, shifts, bitwise masks, register reuse; one lane may own 32 biological positions rather than one.",
+      "semantic_limit": "A Boolean gate cannot retain arbitrary floating magnitude. Different masks must refer to the same coordinate domain; complements are masked by validity.",
+      "minimum_probe": "Compare all eight truth-table rows and a 31/32-base seam; keep exact source coordinates.",
+      "sources": [
+        "S02",
+        "S15",
+        "S16"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp; seed/cuda/volta.cuh; seed/python/learn_lut.py",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/logic/e01",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-020",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E02",
+      "title": "Carry-plane evidence counters",
+      "family": 20,
+      "owner_task": "BP-MOON-020",
+      "question": "Can many predicates accumulate graded evidence without unpacking each genomic position?",
+      "mechanism": "Maintain bit-sliced counters using XOR for sum and AND for carry. Add motif supports and threshold the counter planes with Boolean comparison. Explore weighted two-bit votes or saturating counters as separate semantics, not accidental wraparound.",
+      "volta_mapping": "LOP3 carry compositions, XOR/AND, POPC only when a scalar total is needed.",
+      "semantic_limit": "Carry propagation depth and register pressure grow with precision. Overflow and saturation policies are part of the operator.",
+      "minimum_probe": "Fifteen supports reach 15 in four planes; a sixteenth sets an explicit overflow mask.",
+      "sources": [
+        "S02"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp; seed/cuda/volta.cuh",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/logic/e02",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-020",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E03",
+      "title": "Strand-covariant local grammar",
+      "family": 20,
+      "owner_task": "BP-MOON-020",
+      "question": "Can orientation and relative spacing be data transformations rather than duplicate branching kernels?",
+      "mechanism": "Build forward/reverse mask operators with explicit coordinate transforms. Compose spacing, adjacency, exclusions and run boundaries using cross-word funnels. Canonicalize a grammar with a strand tag, but retain both anchors when the requested duplicate policy requires them.",
+      "volta_mapping": "BREV/byte permutation where appropriate, SHF-style funnels, shifts, LOP3 and adjacent coalesced loads.",
+      "semantic_limit": "Reversing two-bit fields is not the same as reversing all bits. Halos and palindrome duplicates must match existing sequence semantics.",
+      "minimum_probe": "Use a motif spanning two packed words and its reverse complement; check owned-anchor emission exactly once.",
+      "sources": [
+        "S02",
+        "S03"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/logic/e03",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-020",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E04",
+      "title": "Mask-index query algebra",
+      "family": 20,
+      "owner_task": "BP-MOON-020",
+      "question": "Can a support mask be simultaneously a predicate, a local index and a routing instruction?",
+      "mechanism": "Pair support with rank/select. Intersect two questions in mask space, use rank to address compact descriptors, and select to return to original coordinates. Compose local support maps rather than materializing dense position IDs at each stage.",
+      "volta_mapping": "POPC, FFS/CLZ, masks, ballot and shuffle; explicit local-to-parent support composition.",
+      "semantic_limit": "A mask belongs to a declared domain. Local rank is not a globally unique identity, and disjoint source sets cannot become a fabricated contiguous interval.",
+      "minimum_probe": "Round-trip every selected bit through select then rank; include empty and full masks.",
+      "sources": [
+        "S02",
+        "S22"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/logic/e04",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-020",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E05",
+      "title": "A warp is a transition function",
+      "family": 30,
+      "owner_task": "BP-MOON-030",
+      "question": "Can one warp represent what a region does for every possible entry state?",
+      "mechanism": "Let lane s hold T(s) for a 32-state machine. A concatenated region stores R(L(s)); fetching lane L(s) from the right table is a shuffle. Build a hierarchy of these maps, with explicit state vocabulary and reset semantics. Query a root map without traversing every base.",
+      "volta_mapping": "One SHFL per scalar state-map composition; identity padding and warp-uniform execution.",
+      "semantic_limit": "Thirty-two states are a bounded model class, not a universal biological state. Table bytes must be amortized over useful regions and repeated queries.",
+      "minimum_probe": "Compose two real sequence-derived toy transition maps and compare with direct concatenation; check order and associativity.",
+      "sources": [
+        "S02",
+        "S07",
+        "S22"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp; seed/cuda/volta.cuh",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/automata/e05",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-030",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E06",
+      "title": "Counted and witnessed transducers",
+      "family": 30,
+      "owner_task": "BP-MOON-030",
+      "question": "Can an effect summary retain enough evidence to explain its outputs?",
+      "mechanism": "Augment each possible entry state with an emitted-count monoid and an optional first/last witness. Compose counts as cL(s)+cR(TL(s)); transform witnesses into parent coordinates. Defer full event reconstruction to a source revisit when bounded summaries cannot hold it.",
+      "volta_mapping": "SHFL for state-dependent count lookup, integer add/min/max and compact witness fields.",
+      "semantic_limit": "Counts and a few witnesses do not preserve every event. Bound counter overflow; variable-length emission is not magically closed under fixed-size composition.",
+      "minimum_probe": "Two different entry states produce different counts; verify a cross-seam event can be reconstructed from source.",
+      "sources": [
+        "S02"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp; seed/cuda/volta.cuh",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/automata/e06",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-030",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E07",
+      "title": "Bounded stack grammar tiles",
+      "family": 30,
+      "owner_task": "BP-MOON-030",
+      "question": "Can local syntax be processed as a compact register machine rather than a large token model?",
+      "mechanism": "Implement a tiny bounded push/pop transducer for nested synthetic grammar or paired sequence evidence. Store net depth, prefix underflow requirements and a short unmatched boundary stack; compose tiles when the bounded summary suffices, otherwise request detailed replay.",
+      "volta_mapping": "Packed integer stack, bitfield extraction/insertion, predicates, table lookup through shuffle.",
+      "semantic_limit": "Unbounded context-free parsing is not compressed into a constant-size exact summary. Overflow is a refine/replay condition, not silent acceptance.",
+      "minimum_probe": "Construct a pair that opens before a tile boundary and closes after it, plus one depth-overflow case.",
+      "sources": [
+        "S02",
+        "S11"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/automata/e07",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-030",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E08",
+      "title": "Small-state weighted alternatives",
+      "family": 30,
+      "owner_task": "BP-MOON-030",
+      "question": "Can a region carry several possible state transitions instead of a single deterministic interpretation?",
+      "mechanism": "Use tiny weighted automata with sparse destination masks and scores. Try probability, max-plus and Boolean relation versions as different algebras. Compose sparse rows and prune only under a declared approximation policy; retain alternatives for later queries.",
+      "volta_mapping": "Mask intersection, shuffle, FP32 FMA or add/min/max. Ordinary MMA is not a native max-plus operation.",
+      "semantic_limit": "State/edge count can grow; exact and pruned results need different tags. Normalization is not evidence calibration.",
+      "minimum_probe": "Two paths that merge into one state, and a case where pruning the locally weaker path changes a later answer.",
+      "sources": [
+        "S02",
+        "S07"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/automata/e08",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-030",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-020",
+        "CE-MOON-030"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E09",
+      "title": "Permutation-diagonal affine effects",
+      "family": 40,
+      "owner_task": "CE-MOON-020",
+      "question": "Can CarryFold mix channels while keeping a small composition algebra?",
+      "mechanism": "Represent h_out[i]=d[i]*h_in[p[i]]+b[i]. Compose permutations, scales and offsets using the derived monomial-affine rule. This introduces channel re-routing while remaining closed; apply nonlinearities only at explicitly represented breaks in the algebra.",
+      "volta_mapping": "Three SHFL field lookups plus multiply/add per lane; 32 lanes can own 32 latent coordinates.",
+      "semantic_limit": "Closure is mathematical; floating parenthesization changes rounding. Arbitrary nonlinear or dense updates do not remain monomial.",
+      "minimum_probe": "Compare composed application to sequential application and show an order-sensitive example.",
+      "sources": [
+        "S02",
+        "S07",
+        "S22"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp; seed/cuda/volta.cuh",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/effects/e09",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-040",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/effects",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E10",
+      "title": "Block-monomial response maps",
+      "family": 40,
+      "owner_task": "CE-MOON-020",
+      "question": "Can a middle ground between diagonal scans and dense state matrices preserve useful mixing?",
+      "mechanism": "Partition latent state into fixed small blocks. Each output block selects one input block, then applies a small dense matrix and offset. Compose block permutations and block matrices without densifying the block graph. Permit occasional explicit repartition steps outside the closed segment.",
+      "volta_mapping": "Register shuffle for block routing; half2 or FP32 microtiles; tensor-core tiles only when enough block work can be packed with meaningful axes.",
+      "semantic_limit": "Fixed block structure limits coupling. A general sparse matrix product need not preserve sparsity or this representation.",
+      "minimum_probe": "Compose three 2x2-block operators; compare to a dense host expansion without timing.",
+      "sources": [
+        "S01",
+        "S07"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/effects/e10",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-040",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/effects",
+      "numerical_support_tasks": [
+        "CE-MOON-030"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E11",
+      "title": "Regional polynomial jets",
+      "family": 40,
+      "owner_task": "CE-MOON-020",
+      "question": "Can a region cache its local response to a small change in cellular state?",
+      "mechanism": "Store a value, small Jacobian and optional second-order terms around an explicit expansion point. Compose local response jets and route queries inside a trust region through the approximation; outside it, refine/recompute and update the expansion point.",
+      "volta_mapping": "FP32/FP64 small matrices, FMA and shared tiles; FP64 is ordinary V100 arithmetic, not FP64 Tensor Cores.",
+      "semantic_limit": "Truncated jets are approximate and can become unstable under long composition. A trust score is not a certified error bound unless derived.",
+      "minimum_probe": "A known quadratic response with one in-radius and one out-of-radius query; show truncation error honestly.",
+      "sources": [
+        "S01",
+        "S19"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/effects/e11",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-040",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/effects",
+      "numerical_support_tasks": [
+        "CE-MOON-050"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E12",
+      "title": "Bidirectional effect checkpoints",
+      "family": 40,
+      "owner_task": "CE-MOON-020",
+      "question": "Can coarse sequence context be available from either side without materializing every fine latent state?",
+      "mechanism": "Build prefix/suffix summaries over bounded effect families. Keep coarse checkpoints and reconstruct only requested interior states by applying local effects. Explore bidirectional feature fusion after reconstruction rather than forcing both directions into one incompatible algebra.",
+      "volta_mapping": "Associative scans, CUB baseline, tiled checkpoint storage, shuffle/local replay.",
+      "semantic_limit": "Initial summary construction remains proportional to input work. Arbitrary input-dependent nonlinear recurrences cannot be summarized by the same small map.",
+      "minimum_probe": "Query the middle of a region using left and right checkpoints; compare against full sequential fixture evaluation.",
+      "sources": [
+        "S07",
+        "S22"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/effects/e12",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-040",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/effects",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E13",
+      "title": "Reversible lifting with residual reservoirs",
+      "family": 50,
+      "owner_task": "BP-MOON-050",
+      "question": "Can expensive context travel upward while recoverable detail stays off the hot path?",
+      "mechanism": "Split neighboring carriers into coarse and detail through predict/update lifting. Put detail in a separate reservoir, optionally compressed or stored by source reference. Higher layers read coarse values first and selectively pull residuals when their question requires them.",
+      "volta_mapping": "Lane pairing/shuffle XOR, FP32 FMA, ballot-ranked sparse residual writes and coalesced sidecars.",
+      "semantic_limit": "A retained full residual tree is not compression by itself. Dropped residuals lose information; source availability enables replay, not automatic lossless decoding.",
+      "minimum_probe": "Round-trip retained details, then demonstrate that omission changes a query and that re-expansion restores it.",
+      "sources": [
+        "S10"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp; seed/cuda/volta.cuh",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/hierarchy/e13",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-050",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-020"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E14",
+      "title": "Learned dynamic chunk boundaries",
+      "family": 50,
+      "owner_task": "BP-MOON-050",
+      "question": "Can the hierarchy be learned during encoding rather than supplied by annotation?",
+      "mechanism": "Use a small context-dependent boundary scorer, compact boundary carriers and gather an inverse map for dechunking. Train the scorer with a bounded synthetic sequence task and a compute-budget penalty; compare against fixed windows and a cheap surprise-based route.",
+      "volta_mapping": "Small half2/FP32 scorer or packed cohort WMMA, ballot/scan boundary compaction, gather/scatter maps.",
+      "semantic_limit": "Learned boundaries are model decisions, not discovered biological entities. A label-conditioned segmentation oracle is not allowed in the inference path.",
+      "minimum_probe": "An insertion shifts local content: compare fixed versus learned boundary behavior and verify reverse mapping to exact bases.",
+      "sources": [
+        "S08",
+        "S09"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/hierarchy/e14",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-050",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-020",
+        "CE-MOON-040"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E15",
+      "title": "Precision as a refinable resource",
+      "family": 50,
+      "owner_task": "BP-MOON-050",
+      "question": "Can latent information remain as coarse bits until a query needs more precision?",
+      "mechanism": "Encode selected latent coordinates as sign/exponent class plus successive residual planes. Carry a conservative interval where possible; evaluate easy decisions with the first planes and fetch additional planes only for ambiguous comparisons.",
+      "volta_mapping": "Bitplanes, integer comparisons, byte packing, half2 conversion, late FP32 expansion.",
+      "semantic_limit": "No implicit claim that a few bits preserve a learned task. Certified interval rejection and heuristic low-precision routing are different modes.",
+      "minimum_probe": "Use values straddling a decision threshold and verify only ambiguous items require the next precision plane.",
+      "sources": [
+        "S02",
+        "S03"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/hierarchy/e15",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-050",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-020"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E16",
+      "title": "Content-defined seam forests",
+      "family": 50,
+      "owner_task": "BP-MOON-050",
+      "question": "Can hierarchy boundaries remain useful under sequence edits without becoming biological assertions?",
+      "mechanism": "Choose chunk boundaries from rolling content fingerprints, then maintain a second offset or learned segmentation as an alternative. Store exact source spans and combine answers from the two seam systems when a question straddles one boundary.",
+      "volta_mapping": "Rolling integer hashes, shifts/multiply, ballot boundary discovery, prefix compaction.",
+      "semantic_limit": "Hash boundaries provide stable engineering chunks, not functional regions. Worst-case repetitive or adversarial sequence can destroy the expected chunk-size distribution.",
+      "minimum_probe": "Insert one base and compare which chunks must be rebuilt; cap maximum and minimum chunk lengths explicitly.",
+      "sources": [
+        "S11",
+        "S17"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/hierarchy/e16",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-050",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E17",
+      "title": "Whole-directory rendezvous",
+      "family": 60,
+      "owner_task": "BP-MOON-060",
+      "question": "Can distant sequence-derived objects actually find each other without oracle-assembled packets?",
+      "mechanism": "Generate keys from current carriers, build a whole-input directory by sort or count-prefix-fill, and expose complete posting ranges. Process groups larger than a warp in tiled loops. Keep coordinates and candidate reasons; separate key equality from final relation verification.",
+      "volta_mapping": "CUB sort/scan as first executor; later multisplit, shared tiles and match.any for within-tile acceleration.",
+      "semantic_limit": "A global directory is not all-to-all biological reasoning. Popular keys can have quadratic pair output; tile, aggregate, budget or explicitly report truncation.",
+      "minimum_probe": "At least 97 inputs and a group of 33 equal keys, with peers crossing warp and block boundaries.",
+      "sources": [
+        "S13",
+        "S14"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/rendezvous/e17",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-060",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E18",
+      "title": "Warp-cooperative posting hash",
+      "family": 60,
+      "owner_task": "BP-MOON-060",
+      "question": "Can the directory itself follow the geometry of a warp?",
+      "mechanism": "Build a bulk, immutable hash table whose buckets hold a small row of keys and posting descriptors. Lanes inspect a bucket cooperatively and vote on the matching slot; overflow chains or a second hash choice retain all entries. Add concurrent updates only as a later separate variation.",
+      "volta_mapping": "Coalesced bucket loads, ballot/FFS, SHFL key broadcast; global/shared atomics during bulk construction only.",
+      "semantic_limit": "Reservation is not publication. A counter does not make a partially written posting list safe for concurrent readers.",
+      "minimum_probe": "Force hash collisions and overflow buckets, and compare complete group membership with the sort reference.",
+      "sources": [
+        "S13",
+        "S02"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/rendezvous/e18",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-060",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E19",
+      "title": "Approximate nomination, exact verification",
+      "family": 60,
+      "owner_task": "BP-MOON-060",
+      "question": "Can a cheap sketch send the right objects toward a precise comparison?",
+      "mechanism": "Create compact multi-probe keys from learned low-dimensional coordinates, motif supports or sequence sketches. Union candidates from multiple directories, deduplicate, then run exact or richer learned comparisons. Record candidate misses separately from comparison correctness.",
+      "volta_mapping": "XOR/POPC sketches, packed integer distances, DP4A where the score is actually a byte dot product, sorted posting merges.",
+      "semantic_limit": "Approximate nomination may miss useful edges. Bloom-like membership cannot prove semantic nonrelation; hash equality cannot prove exact sequence identity.",
+      "minimum_probe": "An adversarial near-neighbor pair falls into different first buckets but is recovered by a second probe.",
+      "sources": [
+        "S12",
+        "S13"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/rendezvous/e19",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-060",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E20",
+      "title": "Subscriptions instead of exhaustive features",
+      "family": 60,
+      "owner_task": "BP-MOON-060",
+      "question": "Can higher-level questions cause the right sequence evidence to be produced?",
+      "mechanism": "Represent a subscription as a typed predicate, region/context restriction and destination ID. Batch equivalent subscriptions, evaluate them against exact sequence or summaries, and route compact answers to the requesting higher-level state. Share repeated predicates across queries.",
+      "volta_mapping": "Mask intersections, opcode cohorts, posting lists and warp-aggregated emission.",
+      "semantic_limit": "Subscriptions must not leak training labels into inference. A query\u2019s support includes every region actually inspected, not just positive hits.",
+      "minimum_probe": "Two requesters share a motif predicate but have different regions and receive different exact source-grounded answers.",
+      "sources": [
+        "S02",
+        "S14"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/rendezvous/e20",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-060",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E21",
+      "title": "Object-by-feature Tensor Core tiles",
+      "family": 70,
+      "owner_task": "CE-MOON-030",
+      "question": "What biologically meaningful work fills both matrix axes inside a single sequence?",
+      "mechanism": "Pack 16 promoted objects as rows and 16 local features as columns, multiply by a learned feature transform, and retain the object-to-source map. The rows come from one region or compatible event cohort, not necessarily 16 unrelated cells or genomes.",
+      "volta_mapping": "WMMA m16n16k16 FP16 inputs/FP32 accumulation; explicit zero padding and opaque fragments.",
+      "semantic_limit": "Packing cost, useful occupancy and mask recovery can dominate. A 1xN vector reshaped arbitrarily is not the same operator.",
+      "minimum_probe": "Identity and a nontrivial feature transform on one 16-object tile with source IDs retained.",
+      "sources": [
+        "S01",
+        "S03",
+        "S04"
+      ],
+      "supplied_seed": "seed/cuda/volta.cuh",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/tensor/e21",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-070",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/tensor",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E22",
+      "title": "Relation tiles over promoted events",
+      "family": 70,
+      "owner_task": "CE-MOON-030",
+      "question": "Can Tensor Cores help decide which already nominated objects should communicate?",
+      "mechanism": "Given 16 event descriptors, compute a small relation score tile such as Q K^T, apply explicit self/strand/support masks, then compact selected relations. Build Q and K with role-specific maps when relations are directed.",
+      "volta_mapping": "WMMA plus register/shared transpose, FP32 score masks, ballot or tile-local sparse emit.",
+      "semantic_limit": "A similarity score is not a regulatory edge or causality. Global candidate discovery belongs to E17\u2013E19 and its cost is not omitted.",
+      "minimum_probe": "Use two distant source intervals and verify directed Q/K scores and exact pair provenance survive compaction.",
+      "sources": [
+        "S03",
+        "S20",
+        "S21"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/tensor/e22",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-070",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/tensor",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E23",
+      "title": "Arithmetic finite-relation composition",
+      "family": 70,
+      "owner_task": "CE-MOON-030",
+      "question": "Can an FP16 Tensor Core tile serve as a small finite-state relation engine?",
+      "mechanism": "Encode 16-state adjacency relations as 0/1 FP16 matrices, compute ordinary FP32-accumulated products, then threshold counts to obtain existence of two-step paths. Test bounded path-count and weighted variants separately.",
+      "volta_mapping": "Ordinary WMMA arithmetic followed by threshold; no native Boolean Tensor Core instruction is assumed.",
+      "semantic_limit": "For a single 16-term 0/1 product the integer range is tiny; arbitrary-length repeated counting and arbitrary semirings have different precision and algebra requirements.",
+      "minimum_probe": "Compare a known 16-state relation product to integer Boolean composition, including multiple paths and empty rows.",
+      "sources": [
+        "S02",
+        "S03"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp; seed/cuda/volta.cuh",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/tensor/e23",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-070",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/tensor",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E24",
+      "title": "Tensor tiles of possible incoming states",
+      "family": 70,
+      "owner_task": "CE-MOON-030",
+      "question": "Can dense arithmetic cheaply evaluate several possible interpretations of the same region?",
+      "mechanism": "Place 16 candidate entry-state vectors in tile rows and apply a shared local feature transform. Treat the outputs as a sampled regional response table; a later query selects/interpolates or refines the relevant state instead of re-running an expensive local block.",
+      "volta_mapping": "HMMA/WMMA across possible states, not biological sample batching; shared region-conditioned parameters.",
+      "semantic_limit": "Sampling a continuous state manifold is approximate and can suffer dimension blowup. Distillation to E05 is justified only for an explicitly discretized vocabulary.",
+      "minimum_probe": "One region, several entry states and a query between sampled states; report interpolation error rather than calling it exact.",
+      "sources": [
+        "S03",
+        "S07"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/tensor/e24",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-070",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_support_tasks": [
+        "CE-MOON-020"
+      ],
+      "numerical_path": "experiments/baseplane_moonshot/families/tensor",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E25",
+      "title": "Query-pull refinement",
+      "family": 80,
+      "owner_task": "BP-MOON-080",
+      "question": "Can expensive features be computed because another layer asks, rather than because every base passes through the same network?",
+      "mechanism": "Send a question plus current tolerance/state version downward. A region returns an answer from its summary, a certified bound, or a request for child detail. Batch unresolved requests by operator and depth; produce only the richer floating objects required by the active questions.",
+      "volta_mapping": "Queue compaction, masked tree traversal, warp-cooperative source fetch and small numerical kernels.",
+      "semantic_limit": "Query-specific sufficiency is not universal sufficiency. Learned confidence is not a proof of absence; keep an exploration/replay route.",
+      "minimum_probe": "A scalar max query can safely prune with a true bound; demonstrate that a different query cannot reuse that certificate.",
+      "sources": [
+        "S10",
+        "S17"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/demand/e25",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-080",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-050"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E26",
+      "title": "Opcode-cohort wave execution",
+      "family": 80,
+      "owner_task": "BP-MOON-080",
+      "question": "Can information choose the next operator without forcing each lane through a different branch tree?",
+      "mechanism": "Carriers contain a bounded opcode and operands. Partition them into cohorts, execute uniform operator kernels and emit the next wave. Compare ordinary kernel waves with a bounded resident CTA interpreter whose whole warp changes opcode together.",
+      "volta_mapping": "Multisplit, ballot/scan, predicate selection, shared queues; resident loops bounded by epochs and explicit work budget.",
+      "semantic_limit": "Branchless is not free, and a warp-uniform branch is acceptable. No cross-block spinning queue may assume all producers are resident.",
+      "minimum_probe": "Two operator types and three waves, with capacity exhaustion and an empty wave handled explicitly.",
+      "sources": [
+        "S14",
+        "S01"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/demand/e26",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-080",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E27",
+      "title": "Compute auctions with debt",
+      "family": 80,
+      "owner_task": "BP-MOON-080",
+      "question": "Can limited representational bandwidth be allocated without permanently ignoring quiet sequence?",
+      "mechanism": "Assign carriers a query-value estimate, cost estimate and starvation debt. Use small discrete priority buckets instead of a full sort. Spend a fixed wave budget on high-value work while reserving exploration and aging deferred carriers.",
+      "volta_mapping": "Quantized priorities, integer atomics/buckets, scan and compact; numerical scoring uses tiny FP/DP4A maps.",
+      "semantic_limit": "Scores are scheduling heuristics, not calibrated biological importance. Fairness and deferred work must remain visible; low entropy is not a reason for permanent deletion.",
+      "minimum_probe": "An initially low-scoring but query-relevant item is eventually revisited through debt or exploration.",
+      "sources": [
+        "S09",
+        "S14"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/demand/e27",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-080",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-040"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E28",
+      "title": "Sparse multiscale wavefront",
+      "family": 80,
+      "owner_task": "BP-MOON-080",
+      "question": "Can regional interpretation grow through local interactions instead of a fixed deep stack?",
+      "mechanism": "Treat active regions as cells with small state and pending messages. Apply bounded local update rounds, promote stable aggregates, and wake fine regions when incoming long-range evidence changes their context. Distinguish synchronous Jacobi-style waves from asynchronous semantics.",
+      "volta_mapping": "Shared-memory neighborhoods, mask activation, frontier compaction, optional persistent tile loops.",
+      "semantic_limit": "Termination, oscillation and order dependence are model properties; a work budget is not proof of convergence.",
+      "minimum_probe": "A remote message changes a previously stable local summary; verify it re-enters the active frontier.",
+      "sources": [
+        "S01",
+        "S17"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/demand/e28",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-080",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-050"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E29",
+      "title": "Continuous gates hardened to LOP3",
+      "family": 90,
+      "owner_task": "CE-MOON-040",
+      "question": "Can useful local learning eventually become instruction-level structure?",
+      "mechanism": "Learn a small Boolean network through relaxed gates or a small truth-table model, discretize it and emit native constant-LUT kernels. Keep the floating teacher and hard circuit separately versioned, and compare their decisions before reusing the circuit as a route.",
+      "volta_mapping": "LOP3 immediates plus masks; optional offline code generation, not runtime NVRTC as a prerequisite.",
+      "semantic_limit": "A learned circuit is not automatically scientifically interpretable. Truth-table fit alone says nothing about generalization to biological data.",
+      "minimum_probe": "Fit a synthetic gate, emit its eight-bit LUT and exhaustively check all rows; log hardening disagreement on a larger fixture later.",
+      "sources": [
+        "S15",
+        "S16"
+      ],
+      "supplied_seed": "seed/python/learn_lut.py",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/compiler/e29",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-090",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/learning",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E30",
+      "title": "State-conditioned predicate banks",
+      "family": 90,
+      "owner_task": "CE-MOON-040",
+      "question": "Can a fixed set of cheap predicates adapt to the current cell without scanning with a large neural model?",
+      "mechanism": "Learn a small state-to-bank selection or mixture over reusable sequence predicate circuits. The current state selects compatible banks or thresholds; predicates remain exact conditional questions, while bank choice is a learned hypothesis.",
+      "volta_mapping": "State scoring in a small dense/DP4A tile, predicates in bitplanes, cohort scheduling by selected bank.",
+      "semantic_limit": "Avoid a bank for every possible state. Keep identity, selection provenance and weight/state versions; bank choice does not change exact motif semantics.",
+      "minimum_probe": "The same exact sequence under two synthetic states requests different predicates and yields source-grounded outputs.",
+      "sources": [
+        "S15",
+        "S07"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/compiler/e30",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-090",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/learning",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E31",
+      "title": "Typed equality-saturation microcompiler",
+      "family": 90,
+      "owner_task": "CE-MOON-040",
+      "question": "Can we search for elegant instruction compositions rather than hand-picking one expression?",
+      "mechanism": "Build a tiny offline rewrite space for mask DAGs, affine maps and layout transforms. Preserve types, coordinate domains and numerical modes. Extract alternatives minimizing an explicit estimated combination of instructions, live registers and movement; later inspect emitted SASS.",
+      "volta_mapping": "CPU-side rewriting; outputs specialize LOP3/SHFL/funnel/half2 or small MMA sequences.",
+      "semantic_limit": "Floating reassociation is not an exact rewrite. Do not build a general Cellerator planner or install egg as an obligatory runtime dependency.",
+      "minimum_probe": "Two exact Boolean forms reduce to the same exhaustive truth table; an unsafe floating rewrite is rejected or separately tagged.",
+      "sources": [
+        "S18",
+        "S02",
+        "S05"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/compiler/e31",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-090",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/learning",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E32",
+      "title": "Guarded partial evaluation",
+      "family": 90,
+      "owner_task": "CE-MOON-040",
+      "question": "Can repeated questions collapse into reusable cheap programs?",
+      "mechanism": "Specialize a regional computation for stable motif parameters, query type or state subset. Record guards and versions. On guard failure fall back to the unspecialized path, and consider re-specialization only after repeated reuse.",
+      "volta_mapping": "Constant folding, LUT/program packing, cached prepared kernels, uniform guard evaluation.",
+      "semantic_limit": "A cached result depends on its context, not just raw sequence. Never convert an approximate learned guess into an exact static biological fact.",
+      "minimum_probe": "Change a weight or query version and show the specialized result is not silently reused.",
+      "sources": [
+        "S18",
+        "S17"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/compiler/e32",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-090",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/learning",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E33",
+      "title": "Repeat quotient plus contextual residual",
+      "family": 100,
+      "owner_task": "BP-MOON-100",
+      "question": "Can identical sequence reuse work without pretending identical sequence has identical function?",
+      "mechanism": "Intern verified exact substrings or hierarchical child tuples. Share their context-independent sequence effects, then attach per-occurrence context/state residuals and source maps. Explore a DAG whose nodes represent shared content and whose edges retain occurrence context.",
+      "volta_mapping": "Hash nomination plus exact comparison, sorted child tuples, coalesced shared descriptors.",
+      "semantic_limit": "Hash equality is not identity. Local sequence reuse does not justify reusing a context-dependent biological answer.",
+      "minimum_probe": "Two identical strings receive one content ID but remain separate occurrences with different state versions; an N-bearing string stays distinct.",
+      "sources": [
+        "S11",
+        "S12"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/incremental/e33",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-100",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E34",
+      "title": "Variant-driven dirty cones",
+      "family": 100,
+      "owner_task": "BP-MOON-100",
+      "question": "Can a small sequence edit change only the computation it actually affects?",
+      "mechanism": "Maintain reverse dependencies from exact chunks to effects, partitions, posting memberships and query answers. On an edit, invalidate the affected value cone and structural memberships, then recompute to a fixed point or bounded wave frontier.",
+      "volta_mapping": "Bitset dirty flags, frontier scan/compaction, versioned arrays and sparse work queues.",
+      "semantic_limit": "A local edit can change a global routing key or learned boundary far away. The dirty cone may be large; do not claim constant-time variant scoring.",
+      "minimum_probe": "An edited leaf invalidates ancestors plus an affected directory membership, but preserves a demonstrably independent sibling.",
+      "sources": [
+        "S17"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/incremental/e34",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-100",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E35",
+      "title": "Query-support memoization",
+      "family": 100,
+      "owner_task": "BP-MOON-100",
+      "question": "Can a remembered answer declare exactly what changes would invalidate it?",
+      "mechanism": "Cache answers with their query, sequence, weight, cell-state and representation versions plus an exact or conservative dependency support set. Reuse only when both identity and support checks permit it. Distinguish result caches from cached computation plans.",
+      "volta_mapping": "Compact version tuples, support masks/intervals, hash lookup and batched validation.",
+      "semantic_limit": "An attention or pooling answer may depend on negative evidence from many inspected regions; positive hits alone understate support.",
+      "minimum_probe": "An edit outside a true support set preserves a result; changing query or weights invalidates it.",
+      "sources": [
+        "S17"
+      ],
+      "supplied_seed": "seed/include/bp_moon/reference.hpp",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/incremental/e35",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-100",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E36",
+      "title": "Grammar-compressed effect reuse",
+      "family": 100,
+      "owner_task": "BP-MOON-100",
+      "question": "Can repeated sequence phrases share their compositional effects at several scales?",
+      "mechanism": "Infer a small repeated-phrase grammar or child-pair dictionary, then cache E05/E09 effects on grammar nodes. Derive per-occurrence source spans separately. Compare a static grammar pass with incremental chunk-pair interning rather than requiring a whole-genome parse first.",
+      "volta_mapping": "Integer child IDs, hash/sort interning, postorder effect composition, compact DAG traversal.",
+      "semantic_limit": "Grammar compression discovers repeated syntax, not functional modules. Building the grammar and expanding occurrences are charged work.",
+      "minimum_probe": "A repeated phrase appears in two contexts; its local effect is shared while occurrence provenance stays distinct.",
+      "sources": [
+        "S11",
+        "S17"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/incremental/e36",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-100",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E37",
+      "title": "Competing parse forests",
+      "family": 110,
+      "owner_task": "BP-MOON-110",
+      "question": "Can the encoder postpone a bad boundary decision instead of irreversibly collapsing alternatives?",
+      "mechanism": "Keep a small beam of alternative segmentations or local grammar states, sharing common prefixes and exact source references. Higher-level queries prune or refine alternatives; use a bounded packed forest rather than copying the entire sequence representation.",
+      "volta_mapping": "Small state masks, lane-per-hypothesis tables, compact backpointers and uniform beam updates.",
+      "semantic_limit": "A beam is approximate and can discard the correct interpretation. Its scores are not automatically posterior probabilities.",
+      "minimum_probe": "A deliberately ambiguous boundary has two valid interpretations; a later query resolves them differently.",
+      "sources": [
+        "S08",
+        "S11"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/hypotheses/e37",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-110",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-040"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E38",
+      "title": "Role-bound binary routing sketches",
+      "family": 110,
+      "owner_task": "BP-MOON-110",
+      "question": "Can order and role travel cheaply in a bit vector before rich floating computation?",
+      "mechanism": "Assign codes to local objects, bind role tags with XOR and position-dependent permutation, and bundle into a sketch with explicit collision risk. Use the sketch for nomination only; retain exact supports and a richer floating sidecar for final decisions.",
+      "volta_mapping": "XOR, rotations/permutations, POPC distance, bit-sliced majority counters.",
+      "semantic_limit": "Bundling is lossy; XOR without role/order binding can cancel repetitions. No claim that a random binary code is a sufficient biological embedding.",
+      "minimum_probe": "AB and BA differ under role binding, while deliberately constructed sketch collisions trigger exact verification.",
+      "sources": [
+        "S02"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/hypotheses/e38",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-110",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E39",
+      "title": "Question-specific summary portfolios",
+      "family": 110,
+      "owner_task": "BP-MOON-110",
+      "question": "Can different future questions receive different compact summaries of the same region?",
+      "mechanism": "Maintain a portfolio: counts for abundance questions, effects for state propagation, extrema/bounds for pruning and small learned vectors for similarity. Queries select the representation they need; unsupported questions cause source replay rather than forced use of one universal vector.",
+      "volta_mapping": "Typed sidecars, compact tags, opcode cohorts, narrow numerical paths.",
+      "semantic_limit": "Multiple summaries cost memory. Sufficiency is stated per question family, not globally for biology.",
+      "minimum_probe": "Construct two sequences with equal counts but different order: the count query agrees and the effect query must not.",
+      "sources": [
+        "S07",
+        "S10"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/hypotheses/e39",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-110",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-020",
+        "CE-MOON-040"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E40",
+      "title": "Counterexample-guided resolution",
+      "family": 110,
+      "owner_task": "BP-MOON-110",
+      "question": "Can failed questions teach the hierarchy where it was too coarse?",
+      "mechanism": "Search for query pairs or sequence perturbations whose different target answers collapse to the same coarse representation. Add a residual channel, split rule or predicate only at those failure sites. Keep random exploration so current queries do not define the entire genome forever.",
+      "volta_mapping": "Compact mismatch masks, targeted replay, local feature insertion and rebuilt candidate keys.",
+      "semantic_limit": "This is an adaptive research procedure, not a formal guarantee of universal sufficiency. Held-out perturbations must remain separate during later qualification.",
+      "minimum_probe": "A histogram collision reveals an order-sensitive question; one additional effect feature separates it.",
+      "sources": [
+        "S08",
+        "S15"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/hypotheses/e40",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-110",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-040"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E41",
+      "title": "Boundary-port response operators",
+      "family": 120,
+      "owner_task": "CE-MOON-050",
+      "question": "Can a region expose a few ways it can interact with the rest of the system instead of all its interior state?",
+      "mechanism": "Give a synthetic regional system a small set of ports and eliminate internal variables to form a response map. Compose neighboring or related regions through compatible ports; reconstruct interior detail only when asked. Then explore learning ports rather than fixing them by genomic distance.",
+      "volta_mapping": "Small FP32/FP64 solves and condensed matrix blocks; WMMA only for supported dense products, not arbitrary factorization.",
+      "semantic_limit": "The Schur-complement analogy is exact only for the specified numerical model. Port growth, conditioning and nonlinear context can defeat compression.",
+      "minimum_probe": "Eliminate a tiny linear interior and compare port responses and reconstructed interior with the full solve.",
+      "sources": [
+        "S19"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/ports/e41",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-120",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/mechanisms",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E42",
+      "title": "Learned multigrid correction",
+      "family": 120,
+      "owner_task": "CE-MOON-050",
+      "question": "Can coarse context repair fine representations rather than merely summarize them?",
+      "mechanism": "Construct restriction and prolongation maps between sequence-grounded levels. Run cheap coarse corrections to a local consistency objective, then refine the residual at selected fine regions. Test fixed linear maps first and learned maps as a separate experiment.",
+      "volta_mapping": "Segment reductions, sparse gather/scatter, small matrix products and residual-driven active masks.",
+      "semantic_limit": "A neural hierarchy is not automatically a convergent multigrid method. Record the exact objective and stopping/budget semantics.",
+      "minimum_probe": "A known coupled synthetic system improves after a coarse correction; include one poorly chosen restriction that fails.",
+      "sources": [
+        "S19",
+        "S10"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/ports/e42",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-120",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/mechanisms",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E43",
+      "title": "Hyperedge rendezvous and factor joins",
+      "family": 120,
+      "owner_task": "CE-MOON-050",
+      "question": "Can meaningful multi-object combinations be found without generating every pair first?",
+      "mechanism": "Represent a candidate mechanism as a small factor with typed roles. Use inverted postings and mask intersections to fill compatible roles, then evaluate only surviving tuples. Preserve a factorized relation when expanding every hyperedge would be wasteful.",
+      "volta_mapping": "Posting-list intersection, shared mini-joins, ballot candidates, small dense factor scoring.",
+      "semantic_limit": "Join cardinality can still explode. A satisfied syntactic factor is a candidate hypothesis, not a proven regulatory mechanism.",
+      "minimum_probe": "A three-role relation whose valid tuples are sparse, with complete source provenance for all roles.",
+      "sources": [
+        "S13",
+        "S14"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/ports/e43",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-120",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_path": "experiments/baseplane_moonshot/families/mechanisms",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E44",
+      "title": "Counterfactual packet worlds",
+      "family": 120,
+      "owner_task": "CE-MOON-050",
+      "question": "Can alternative sequences or cellular conditions share almost all their execution?",
+      "mechanism": "Carry a world ID and a sparse delta over an immutable sequence/effect DAG. Share unchanged computation, split only when a predicate or state response diverges, and merge worlds when their guarded execution states become equivalent under a declared query.",
+      "volta_mapping": "Bitset world support, lane-per-world evaluation, shared immutable nodes, versioned delta queues.",
+      "semantic_limit": "Computational counterfactuals are model evaluations, not identified causal effects. Similar numerical states cannot be merged without a valid query-relative equivalence.",
+      "minimum_probe": "Two sequence variants share most nodes and diverge at one operator; compare each result to independent execution.",
+      "sources": [
+        "S17",
+        "S19"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/ports/e44",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-120",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "cellerator",
+      "numerical_support_tasks": [
+        "CE-MOON-030"
+      ],
+      "numerical_path": "experiments/baseplane_moonshot/families/mechanisms",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E45",
+      "title": "Texture-unit response tables",
+      "family": 130,
+      "owner_task": "BP-MOON-130",
+      "question": "Can the texture hardware be a useful cheap surrogate for a small learned response surface?",
+      "mechanism": "Tabulate a two-dimensional learned response and evaluate it through an explicitly configured floating texture object. Compare nearest, interpolated and ordinary arithmetic lookup, with coordinate and boundary conventions fixed.",
+      "volta_mapping": "Texture fetch/filter hardware and cache, FP coordinates; table creation remains outside the hot kernel.",
+      "semantic_limit": "Interpolation uses limited fractional precision. This is an approximate numerical path, never an exact validity or motif gate.",
+      "minimum_probe": "A bilinear function and a sharp discontinuity expose interpolation accuracy and boundary behavior.",
+      "sources": [
+        "S03"
+      ],
+      "supplied_seed": "seed/cuda/volta.cuh",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/machine/e45",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-130",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-050"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E46",
+      "title": "Byte dots and butterfly features",
+      "family": 130,
+      "owner_task": "BP-MOON-130",
+      "question": "Can small floating-like mixing be replaced by structured integer/register operations where appropriate?",
+      "mechanism": "Try learned or fixed butterfly transforms for order-sensitive feature mixing, and independently try signed-byte dot products for tiny routing scores. Preserve scale/zero-point metadata and compare arithmetic meaning before combining them.",
+      "volta_mapping": "SHFL.XOR butterflies, FP32/half2 arithmetic, DP4A signed packed bytes, explicit widening.",
+      "semantic_limit": "Butterflies are a restricted transform family; byte dot products are not binary tensor instructions. Quantization error and accumulator range are explicit.",
+      "minimum_probe": "Round-trip an invertible butterfly and compare one packed byte dot with its scalar sum.",
+      "sources": [
+        "S02",
+        "S01"
+      ],
+      "supplied_seed": "seed/cuda/volta.cuh",
+      "status": "seed_authored",
+      "suggested_path": "experiments/moonshot/families/machine/e46",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-130",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "numerical_support_tasks": [
+        "CE-MOON-030"
+      ],
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E47",
+      "title": "Instruction-composition search",
+      "family": 130,
+      "owner_task": "BP-MOON-130",
+      "question": "Can Baseplane discover a good machine idiom instead of merely selecting a library routine?",
+      "mechanism": "Enumerate bounded straight-line candidates for bit packing, rank, base permutation or state-map composition. Reject candidates by tiny exhaustive examples, compile survivors and inspect instruction count/register footprint. Preserve several alternatives without running a timing tournament now.",
+      "volta_mapping": "LOP3, PRMT, SHF, BFE/BFI, IMAD, SHFL and compiler output; native SASS inspection where the toolchain supports it.",
+      "semantic_limit": "PTX mnemonics do not promise one native instruction. Correctness on small examples is not universal proof unless the entire finite input space is covered.",
+      "minimum_probe": "Synthesize two correct small bit permutations with different register/movement tradeoffs and save disassembly.",
+      "sources": [
+        "S02",
+        "S04",
+        "S05"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/machine/e47",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-130",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    },
+    {
+      "id": "E48",
+      "title": "Residency and recomputation choreography",
+      "family": 130,
+      "owner_task": "BP-MOON-130",
+      "question": "Can information movement become part of the representation rather than an afterthought?",
+      "mechanism": "For a fixed semantic operator, create register-recomputed, shared-staged and global-materialized variants. Fuse cheap sequence predicates into the consumer when this avoids a full plane stream; keep a resident plane form when repeated questions justify it.",
+      "volta_mapping": "Coalesced loads, read-only/texture paths where meaningful, shared bank-aware layouts, software double buffering and integer/FP overlap.",
+      "semantic_limit": "Volta has no cp.async or TMA. Double buffering requires explicit ordinary loads/stores and synchronization; register spills can erase apparent gains.",
+      "minimum_probe": "Compile the variants, record ptxas resources and verify one identical output; defer crossover benchmarking.",
+      "sources": [
+        "S01",
+        "S02",
+        "S05"
+      ],
+      "supplied_seed": "none",
+      "status": "designed_not_implemented",
+      "suggested_path": "experiments/moonshot/families/machine/e48",
+      "later_costs": [
+        "representation bytes and build cost",
+        "packing/routing/revisit work",
+        "information loss or approximation",
+        "actual useful computation and end-to-end output cost"
+      ],
+      "sequence_owner_task": "BP-MOON-130",
+      "scientific_question_owner": "baseplane",
+      "owner_repository": "baseplane",
+      "ownership_rule": "Sequence grounding, biological interpretation and source-specific routing semantics remain Baseplane. Learned/numerical mechanism implementation may be Cellerator-owned immediately, including toy or unqualified experiments."
+    }
+  ]
+}

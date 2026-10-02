@@ -1,0 +1,17 @@
+{
+  "status": "unavailable",
+  "full_plan_validated": false,
+  "attempts": [
+    {
+      "proposal": "empty diagnostic proposal",
+      "result": "internal_error: bounded_read_failed"
+    },
+    {
+      "proposal": "schema-3 two-record read-only probe, not the full campaign",
+      "result": "TimeoutError"
+    }
+  ],
+  "effect": "No application tool was invoked. These failures are not successful validation and no handoff authorization was returned.",
+  "next_step": "Validate both machine/baseplane.todo-plan.json and machine/cellerator.todo-plan.json with the installed canonical runtime in their respective owning repositories. Structural package checks do not replace native validation.",
+  "cellerator_plan_status": "not natively validated or applied"
+}

@@ -1,0 +1,21 @@
+{
+  "status": "Authored bundle is not yet installed. Split mixed source files once during paired adoption; do not maintain duplicate numerical backends.",
+  "baseplane": [
+    "PackedFixture and exact base/validity/source-coordinate fixtures",
+    "sequence-to-effect generation and sequence-specific source-support mapping",
+    "host/demo.cpp sequence scenario and biological query semantics",
+    "exact predicates, masks and emission adapters to Baseplane source"
+  ],
+  "cellerator": [
+    "Dfa32/CountedDfa32 and generalized effect-composition operators when reused as numerical primitives",
+    "MonomialAffine, lifting and residual numerical operations",
+    "compose_relation, WMMA, DP4A and butterfly numerical kernels",
+    "learn_lut.py training/hardening fixture and learned state/routing operators"
+  ],
+  "split_files": [
+    "seed/include/bp_moon/reference.hpp",
+    "seed/cuda/volta.cuh",
+    "seed/host/smoke.cpp"
+  ],
+  "rule": "Keep a thin Cellerator provider library built independently. Baseplane examples consume its headers/library via explicit build path or installed target after inspection. Separate scalar test oracles are allowed; no hardcoded sibling path, no duplicate general runtime and no promotion prerequisite. Existing bp_moon namespace is a seed label, not ownership authority."
+}

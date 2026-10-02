@@ -1,0 +1,81 @@
+{
+  "prepared_date": "2026-10-02",
+  "live_repository_or_authority_modified": false,
+  "package_checks": {
+    "status": "passed_structural_checks",
+    "scope": [
+      "all JSON parses",
+      "23 local native task shapes",
+      "no foreign local depends_on",
+      "acyclic graphs and queue order",
+      "48 experiment cards with source/owner links",
+      "33-record old-program map",
+      "10 cross-family combinations",
+      "relative markdown links"
+    ],
+    "not_native_runtime_validation": true
+  },
+  "host": {
+    "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+    "cmake": "cmake version 3.31.6",
+    "build_type": "Debug",
+    "test": "ctest host_smoke",
+    "reference_case_groups_checked": 12,
+    "result": "passed",
+    "commands": [
+      "bash tools/build_host.sh /mnt/data/bp_moon_host_build",
+      "/mnt/data/bp_moon_host_build/bp_moon_host_smoke",
+      "/mnt/data/bp_moon_host_build/bp_moon_demo"
+    ],
+    "evidence": [
+      "evidence/host-build.txt",
+      "evidence/host-smoke.json",
+      "evidence/host-demo.txt"
+    ],
+    "qualification": "Small algebra/fixture checks only. No new genome-model validation or benchmark."
+  },
+  "learning_fixture": {
+    "status": "ran",
+    "command": "python3 seed/python/learn_lut.py",
+    "result": "synthetic learned truth-table hardens to 0x78; complete eight-input teacher fixture, no held-out generalization",
+    "evidence": "evidence/learned-lut-fixture.json"
+  },
+  "cuda": {
+    "status": "authored_not_compiled_not_run",
+    "reason": "nvcc and NVIDIA device tools unavailable in this container",
+    "kernel_definitions": [
+      "predicate_circuit",
+      "dfa_compose",
+      "counted_dfa_compose",
+      "monomial_compose",
+      "lift_pairs",
+      "emit_selected",
+      "local_equal_peers",
+      "bitplane_count4",
+      "wmma16",
+      "positive_relation",
+      "packed_dot",
+      "butterfly32",
+      "texture_response"
+    ],
+    "future_compile": "tools/compile_cuda.sh",
+    "future_run": "bp_moon_cuda_smoke --run DEVICE with explicit local resource assignment"
+  },
+  "native_todo": {
+    "status": "not_validated_not_applied",
+    "baseplane_preview_attempts": "bounded_read_failed then TimeoutError on a small probe, not the full plan",
+    "cellerator_preview": "not attempted",
+    "local_validator_module_available": false,
+    "evidence": "evidence/native-preview.json",
+    "required_next_action": "Actual target-specific validation of both candidate plans before adoption; Baseplane cutover uses supported reviewed supersession."
+  },
+  "source_hashes": {
+    "seed/CMakeLists.txt": "6f9caa9a5ae628edc0c64c2e00a5fc977ee91a31d0ef5a0ee8d3b93039517f4f",
+    "seed/host/smoke.cpp": "39e7f8f3f0ceac57ab84681498ffad4d65b07ce4aeadb7f35b4682df6747c0f5",
+    "seed/host/demo.cpp": "836b3f13c1b7b3ee826d24cba11c98ff4963539be2a8942df174061ad1c1d4ec",
+    "seed/python/learn_lut.py": "9725ee55c735947bdd3f2d90909231263c977b319b872dfc8f05ef636bd7ec97",
+    "seed/cuda/smoke.cu": "cc8d16336e189ebfdcf2a51fcf9428542c76a0d769251457cb590cdccc18fc84",
+    "seed/cuda/volta.cuh": "c0dc22df7974cf727857bdab24b87fa7c8ab60efddc79de5fb566f0c759e2535",
+    "seed/include/bp_moon/reference.hpp": "191ef27b4bd855b8385e4f9119dd00b3fe856804e1168fcab771d46d05b481df"
+  }
+}
