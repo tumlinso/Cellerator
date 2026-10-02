@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `7578`
+Project revision: `7589`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -995,7 +995,7 @@ Project revision: `7578`
 - `CE-MOON-DIFF` | status: planned | execution: ready | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-INTEGRATE` | status: planned | execution: ready | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-MERGE-DIFF` | status: planned | execution: ready | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
-- `CE-MOON-MERGE-FOUNDATION` | status: in_progress | execution: claimed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
+- `CE-MOON-MERGE-FOUNDATION` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-MMA` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-NATIVE-READY` | status: planned | execution: ready | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-REWRITE` | status: planned | execution: ready | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
