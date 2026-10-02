@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-ML2-BIO: Realize and assess one biology-purpose learning construction
 
-Task revision: `7418`; current project revision is in `todo-status.md`.
+Task revision: `7634`; current project revision is in `todo-status.md`.
 
 ## Objective
 Turn the scientifically selected structured computation into a reusable CE/CT facility or a justified composition of existing facilities, with exact semantics and complete-cost evidence.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `evaluated_not_promoted`
 
 ## Next Action
 Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.

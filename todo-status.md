@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `7609`
+Project revision: `7654`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -983,7 +983,7 @@ Project revision: `7609`
 - `CE-ARCH-70A` | status: done | execution: closed | next: Audit the user-owned Baseplane predicate-plan implementation, establish the baseline build failure or success, add the minimal ABI/version and validity checks, run focused Baseplane host and Cellerator compile/runtime tests, then freeze the interface.
 - `CE-ARCH-80` | status: done | execution: closed | next: Complete: CE-ARCH-81 through CE-ARCH-92 satisfy the continuation barrier and the CE-ARCH-92 real-data audit validates the migration definition.
 - `CE-ARCH-81` | status: done | execution: closed | next: Audit each roadmap exit criterion against canonical source and tests, publish the truthful matrix, and leave implementation gaps owned by CE-ARCH-82 through CE-ARCH-92.
-- `CE-ML2-BIO` | status: planned | execution: ready | next: Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.
+- `CE-ML2-BIO` | status: done | execution: closed | next: Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.
 - `CE-ML2-TRAIN` | status: done | execution: closed | next: Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.
 - `CE-MOON-010` | status: done | execution: closed | next: Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-010.md; implement concrete research operators under Cellerator authority. Apply the adopted ownership and research policy recorded in planning/baseplane_moonshot_adoption/cellerator-policy.todo-plan.json; verify its authority receipt before seed installation.
 - `CE-MOON-020` | status: done | execution: closed | next: Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-020.md; implement concrete research operators under Cellerator authority.
@@ -993,14 +993,14 @@ Project revision: `7609`
 - `CE-MOON-090` | status: done | execution: closed | next: Integrate the four numerical providers and repair reviewed tensor/mechanisms defects in disjoint scopes; preserve CE-MOON-RUN-V1 and its active claims.
 - `CE-MOON-ADOPT` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-DIFF` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
-- `CE-MOON-INTEGRATE` | status: planned | execution: ready | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
+- `CE-MOON-INTEGRATE` | status: in_progress | execution: claimed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-MERGE-DIFF` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-MERGE-FOUNDATION` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-MMA` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
-- `CE-MOON-NATIVE-READY` | status: planned | execution: ready | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
-- `CE-MOON-REWRITE` | status: planned | execution: ready | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
+- `CE-MOON-NATIVE-READY` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
+- `CE-MOON-REWRITE` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-STATE` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
-- `CE-MOON-TRAJECTORY` | status: planned | execution: ready | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
+- `CE-MOON-TRAJECTORY` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-NF1-0000` | status: superseded | execution: closed | next: 
 - `CE-PTR` | status: done | execution: closed | next: Advance the first-class CE-PTR run through its parallel lanes; close the epic only after CE-PTR-15 acceptance.
 - `CE-PTR-00` | status: done | execution: closed | next: No further bootstrap action; leave CE-PTR-01 unclaimed and ready.
@@ -1208,7 +1208,7 @@ Project revision: `7609`
 - `CE-JBC-X06` | status: done | execution: closed | next: Build the shared value and gradient identity spine. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X07` | status: done | execution: closed | next: Compare specialized and generalized view families. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X08` | status: done | execution: closed | next: Emit cross-operation Pareto frontier and promotion disposition. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
-- `CE-ML2-0000` | status: planned | execution: inactive | next: Closure-only aggregate for the verified local outcomes, not a coordinator seat or prerequisite of children.
+- `CE-ML2-0000` | status: done | execution: closed | next: Closure-only aggregate for the verified local outcomes, not a coordinator seat or prerequisite of children.
 - `CE-MOON-000` | status: done | execution: closed | next: Close only the completed CE-MOON-RUN-1 provider aggregate; preserve the independent CE-MOON-RUN-V1 claims and all unrelated work.
 - `CE-MOON-0000` | status: planned | execution: inactive | next: Closure-only aggregate; children do not depend on the epic.
 - `CE-NF1-A01` | status: done | execution: closed | next: 

@@ -1,0 +1,36 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "/home/tumlinson/Cellerator/components/CelleraTorch/tests/test_biology.py",
+        "--junitxml=/home/tumlinson/Cellerator/docs/learning/bio-evidence/pytest.xml"
+      ],
+      "elapsed_seconds": 4.024918684997829,
+      "returncode": 0,
+      "stderr": "/home/tumlinson/Cellerator/docs/learning/bio-evidence/command-0.stderr.txt",
+      "stdout": "/home/tumlinson/Cellerator/docs/learning/bio-evidence/command-0.stdout.txt"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/learning/shared_support_lifecycle.py",
+        "--run-cuda",
+        "--output",
+        "/home/tumlinson/Cellerator/docs/learning/bio-evidence/benchmark.json",
+        "--repetitions",
+        "5"
+      ],
+      "elapsed_seconds": 4.144204156997148,
+      "returncode": 0,
+      "stderr": "/home/tumlinson/Cellerator/docs/learning/bio-evidence/command-1.stderr.txt",
+      "stdout": "/home/tumlinson/Cellerator/docs/learning/bio-evidence/command-1.stdout.txt"
+    }
+  ],
+  "manifest_sha256": "ff2f0a0ce9d442f9afff15245a432b8023e23058656bbb4e641cae3322e50fc2",
+  "source_unchanged_after_run": true,
+  "status": "passed"
+}

@@ -1,0 +1,418 @@
+{
+  "schema_version": 1,
+  "disposition": "evaluated_not_promoted",
+  "precision": "f32",
+  "seed": 1701,
+  "repetitions": 5,
+  "warmup_iterations": 2,
+  "results": [
+    {
+      "name": "shared_batch",
+      "batch": 32,
+      "source_extent": 64,
+      "target_extent": 32,
+      "logical_edges": 256,
+      "reference_equality": {
+        "forward_max_abs": 1.1920928955078125e-07,
+        "gradient_max_abs": [
+          3.4924596548080444e-10,
+          4.656612873077393e-10,
+          2.9103830456733704e-10,
+          7.450580596923828e-09
+        ],
+        "adam_parameter_max_abs": 7.450580596923828e-09
+      },
+      "paths": {
+        "native_composition": {
+          "cold": {
+            "support_identity_packing_ms": 0.361644,
+            "initial_coefficients_upload_ms": 0.13223,
+            "support_upload_ms": null,
+            "program_or_module_preparation_ms": 9.025935,
+            "optimizer_setup_ms": 0.06643,
+            "complete_setup_ms": 9.681241
+          },
+          "median_ms": {
+            "input_target_upload_ms": 0.102821,
+            "forward_ms": 0.217676,
+            "loss_ms": 0.083578,
+            "backward_ms": 0.63273,
+            "adam_and_publication_ms": 0.648927,
+            "complete_iteration_ms": 1.816046
+          },
+          "samples": [
+            {
+              "input_target_upload_ms": 0.117887,
+              "forward_ms": 0.218134,
+              "loss_ms": 0.082222,
+              "backward_ms": 0.513567,
+              "adam_and_publication_ms": 0.646318,
+              "complete_iteration_ms": 1.702189
+            },
+            {
+              "input_target_upload_ms": 0.102307,
+              "forward_ms": 0.228377,
+              "loss_ms": 0.083578,
+              "backward_ms": 0.597695,
+              "adam_and_publication_ms": 0.649631,
+              "complete_iteration_ms": 1.785852
+            },
+            {
+              "input_target_upload_ms": 0.103449,
+              "forward_ms": 0.216302,
+              "loss_ms": 0.083983,
+              "backward_ms": 0.817304,
+              "adam_and_publication_ms": 0.648927,
+              "complete_iteration_ms": 1.996372
+            },
+            {
+              "input_target_upload_ms": 0.102821,
+              "forward_ms": 0.217676,
+              "loss_ms": 0.092984,
+              "backward_ms": 0.63273,
+              "adam_and_publication_ms": 0.645495,
+              "complete_iteration_ms": 1.816046
+            },
+            {
+              "input_target_upload_ms": 0.101886,
+              "forward_ms": 0.21707,
+              "loss_ms": 0.083067,
+              "backward_ms": 0.742256,
+              "adam_and_publication_ms": 0.653071,
+              "complete_iteration_ms": 1.92008
+            }
+          ],
+          "torch_peak_allocated_bytes": 66560,
+          "torch_peak_reserved_bytes": 2097152,
+          "torch_allocated_before_bytes": 1024,
+          "native_reserved_bytes": null,
+          "device_memory_observation": {
+            "total_bytes": 16928342016,
+            "free_before_setup_bytes": 16537092096,
+            "free_after_setup_bytes": 16537092096,
+            "setup_global_used_delta_bytes": 0,
+            "max_observed_global_used_delta_bytes": 0,
+            "free_bytes_at_setup_and_iteration_boundaries": [
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096
+            ],
+            "note": "Global device observations include native allocations and Torch pools, may include other processes, and miss within-stage transients. They are not per-owner reserved bytes and must not be summed with Torch counters."
+          },
+          "native_memory_note": "No public native allocation-byte query; Torch peaks exclude raw native CUDA allocations."
+        },
+        "torch_materialized": {
+          "cold": {
+            "support_identity_packing_ms": 0.334128,
+            "initial_coefficients_upload_ms": 0.12918,
+            "support_upload_ms": 0.057555,
+            "program_or_module_preparation_ms": 0.190321,
+            "optimizer_setup_ms": 0.063662,
+            "complete_setup_ms": 0.855325
+          },
+          "median_ms": {
+            "input_target_upload_ms": 0.107156,
+            "forward_ms": 0.297851,
+            "loss_ms": 0.08411,
+            "backward_ms": 2.055633,
+            "adam_and_publication_ms": 0.31019,
+            "complete_iteration_ms": 2.955643
+          },
+          "samples": [
+            {
+              "input_target_upload_ms": 0.109489,
+              "forward_ms": 0.289456,
+              "loss_ms": 0.084063,
+              "backward_ms": 2.100366,
+              "adam_and_publication_ms": 0.313134,
+              "complete_iteration_ms": 3.029568
+            },
+            {
+              "input_target_upload_ms": 0.107423,
+              "forward_ms": 0.295282,
+              "loss_ms": 0.083892,
+              "backward_ms": 1.734131,
+              "adam_and_publication_ms": 0.31019,
+              "complete_iteration_ms": 2.651659
+            },
+            {
+              "input_target_upload_ms": 0.107156,
+              "forward_ms": 0.306553,
+              "loss_ms": 0.08574,
+              "backward_ms": 1.780132,
+              "adam_and_publication_ms": 0.31052,
+              "complete_iteration_ms": 2.711804
+            },
+            {
+              "input_target_upload_ms": 0.103407,
+              "forward_ms": 0.297851,
+              "loss_ms": 0.085469,
+              "backward_ms": 2.085479,
+              "adam_and_publication_ms": 0.289501,
+              "complete_iteration_ms": 2.984549
+            },
+            {
+              "input_target_upload_ms": 0.103467,
+              "forward_ms": 0.302875,
+              "loss_ms": 0.08411,
+              "backward_ms": 2.055633,
+              "adam_and_publication_ms": 0.288315,
+              "complete_iteration_ms": 2.955643
+            }
+          ],
+          "torch_peak_allocated_bytes": 302080,
+          "torch_peak_reserved_bytes": 2097152,
+          "torch_allocated_before_bytes": 2048,
+          "native_reserved_bytes": null,
+          "device_memory_observation": {
+            "total_bytes": 16928342016,
+            "free_before_setup_bytes": 16537092096,
+            "free_after_setup_bytes": 16537092096,
+            "setup_global_used_delta_bytes": 0,
+            "max_observed_global_used_delta_bytes": 0,
+            "free_bytes_at_setup_and_iteration_boundaries": [
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096
+            ],
+            "note": "Global device observations include native allocations and Torch pools, may include other processes, and miss within-stage transients. They are not per-owner reserved bytes and must not be summed with Torch counters."
+          },
+          "native_memory_note": "No public native allocation-byte query; Torch peaks exclude raw native CUDA allocations."
+        }
+      },
+      "theoretical_value_storage_bytes": {
+        "shared_edge_values": 1024,
+        "activities": 12288,
+        "materialized_instance_edges": 32768,
+        "shared_int64_topology": 4096
+      },
+      "storage_note": "Array formulas only; exclude optimizer, saved activations, identities and prepared native workspaces."
+    },
+    {
+      "name": "small_counter_regime",
+      "batch": 1,
+      "source_extent": 64,
+      "target_extent": 32,
+      "logical_edges": 16,
+      "reference_equality": {
+        "forward_max_abs": 2.3283064365386963e-10,
+        "gradient_max_abs": [
+          4.656612873077393e-10,
+          9.313225746154785e-10,
+          9.313225746154785e-10,
+          4.656612873077393e-10
+        ],
+        "adam_parameter_max_abs": 0.0
+      },
+      "paths": {
+        "native_composition": {
+          "cold": {
+            "support_identity_packing_ms": 0.100468,
+            "initial_coefficients_upload_ms": 0.121435,
+            "support_upload_ms": null,
+            "program_or_module_preparation_ms": 1.705252,
+            "optimizer_setup_ms": 0.082014,
+            "complete_setup_ms": 2.101673
+          },
+          "median_ms": {
+            "input_target_upload_ms": 0.095691,
+            "forward_ms": 0.226853,
+            "loss_ms": 0.092578,
+            "backward_ms": 0.67118,
+            "adam_and_publication_ms": 0.648548,
+            "complete_iteration_ms": 1.870941
+          },
+          "samples": [
+            {
+              "input_target_upload_ms": 0.115374,
+              "forward_ms": 0.258016,
+              "loss_ms": 0.095023,
+              "backward_ms": 0.867155,
+              "adam_and_publication_ms": 0.742191,
+              "complete_iteration_ms": 2.268171
+            },
+            {
+              "input_target_upload_ms": 0.096613,
+              "forward_ms": 0.226853,
+              "loss_ms": 0.082232,
+              "backward_ms": 0.507228,
+              "adam_and_publication_ms": 0.648548,
+              "complete_iteration_ms": 1.686258
+            },
+            {
+              "input_target_upload_ms": 0.094665,
+              "forward_ms": 0.215725,
+              "loss_ms": 0.092578,
+              "backward_ms": 0.524138,
+              "adam_and_publication_ms": 0.643332,
+              "complete_iteration_ms": 1.693512
+            },
+            {
+              "input_target_upload_ms": 0.095691,
+              "forward_ms": 0.230071,
+              "loss_ms": 0.102613,
+              "backward_ms": 0.67118,
+              "adam_and_publication_ms": 0.646702,
+              "complete_iteration_ms": 1.870941
+            },
+            {
+              "input_target_upload_ms": 0.09562,
+              "forward_ms": 0.21688,
+              "loss_ms": 0.082708,
+              "backward_ms": 0.81777,
+              "adam_and_publication_ms": 0.813372,
+              "complete_iteration_ms": 2.170851
+            }
+          ],
+          "torch_peak_allocated_bytes": 11264,
+          "torch_peak_reserved_bytes": 2097152,
+          "torch_allocated_before_bytes": 2560,
+          "native_reserved_bytes": null,
+          "device_memory_observation": {
+            "total_bytes": 16928342016,
+            "free_before_setup_bytes": 16537092096,
+            "free_after_setup_bytes": 16537092096,
+            "setup_global_used_delta_bytes": 0,
+            "max_observed_global_used_delta_bytes": 0,
+            "free_bytes_at_setup_and_iteration_boundaries": [
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096
+            ],
+            "note": "Global device observations include native allocations and Torch pools, may include other processes, and miss within-stage transients. They are not per-owner reserved bytes and must not be summed with Torch counters."
+          },
+          "native_memory_note": "No public native allocation-byte query; Torch peaks exclude raw native CUDA allocations."
+        },
+        "torch_materialized": {
+          "cold": {
+            "support_identity_packing_ms": 0.111415,
+            "initial_coefficients_upload_ms": 0.123456,
+            "support_upload_ms": 0.050693,
+            "program_or_module_preparation_ms": 0.149624,
+            "optimizer_setup_ms": 0.064289,
+            "complete_setup_ms": 0.593357
+          },
+          "median_ms": {
+            "input_target_upload_ms": 0.096644,
+            "forward_ms": 0.287644,
+            "loss_ms": 0.092982,
+            "backward_ms": 1.883556,
+            "adam_and_publication_ms": 0.337338,
+            "complete_iteration_ms": 2.865728
+          },
+          "samples": [
+            {
+              "input_target_upload_ms": 0.096055,
+              "forward_ms": 0.290332,
+              "loss_ms": 0.097585,
+              "backward_ms": 1.876951,
+              "adam_and_publication_ms": 0.438412,
+              "complete_iteration_ms": 2.94153
+            },
+            {
+              "input_target_upload_ms": 0.096644,
+              "forward_ms": 0.281916,
+              "loss_ms": 0.092982,
+              "backward_ms": 1.883556,
+              "adam_and_publication_ms": 0.300901,
+              "complete_iteration_ms": 2.776727
+            },
+            {
+              "input_target_upload_ms": 0.095485,
+              "forward_ms": 0.283094,
+              "loss_ms": 0.081579,
+              "backward_ms": 1.949605,
+              "adam_and_publication_ms": 0.337338,
+              "complete_iteration_ms": 2.865728
+            },
+            {
+              "input_target_upload_ms": 0.130566,
+              "forward_ms": 0.445745,
+              "loss_ms": 0.12967,
+              "backward_ms": 2.146723,
+              "adam_and_publication_ms": 0.291761,
+              "complete_iteration_ms": 3.301829
+            },
+            {
+              "input_target_upload_ms": 0.100507,
+              "forward_ms": 0.287644,
+              "loss_ms": 0.082427,
+              "backward_ms": 1.671622,
+              "adam_and_publication_ms": 0.354009,
+              "complete_iteration_ms": 2.652225
+            }
+          ],
+          "torch_peak_allocated_bytes": 15360,
+          "torch_peak_reserved_bytes": 2097152,
+          "torch_allocated_before_bytes": 3072,
+          "native_reserved_bytes": null,
+          "device_memory_observation": {
+            "total_bytes": 16928342016,
+            "free_before_setup_bytes": 16537092096,
+            "free_after_setup_bytes": 16537092096,
+            "setup_global_used_delta_bytes": 0,
+            "max_observed_global_used_delta_bytes": 0,
+            "free_bytes_at_setup_and_iteration_boundaries": [
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096,
+              16537092096
+            ],
+            "note": "Global device observations include native allocations and Torch pools, may include other processes, and miss within-stage transients. They are not per-owner reserved bytes and must not be summed with Torch counters."
+          },
+          "native_memory_note": "No public native allocation-byte query; Torch peaks exclude raw native CUDA allocations."
+        }
+      },
+      "theoretical_value_storage_bytes": {
+        "shared_edge_values": 64,
+        "activities": 384,
+        "materialized_instance_edges": 64,
+        "shared_int64_topology": 256
+      },
+      "storage_note": "Array formulas only; exclude optimizer, saved activations, identities and prepared native workspaces."
+    }
+  ],
+  "timing_policy": "Synchronized wall times per stage and complete iteration; not unsynchronized kernel timings. Cold means fresh program, after library/context warmup.",
+  "checkpoint_rebuild": "not measured",
+  "environment": {
+    "python": "3.13.11",
+    "torch": "2.7.0+cu126",
+    "torch_cuda": "12.6",
+    "gpu": "Tesla V100-SXM2-16GB",
+    "cuda_visible_devices": "3",
+    "git_head": "009a5579c1facec8c3bce3c36f6764c9f49ab97c"
+  },
+  "source_sha256": {
+    "bench/learning/shared_support_lifecycle.py": "0605f039b2c0325c1e207564656f3fccff9571c58793c685f77813c0182d4ac5",
+    "components/CelleraTorch/python/celleratorch/biology.py": "e4a77615284fae67d608f9f00ca9ebbd23efcb51ce6305b46f0d1543bb5a2cf4",
+    "components/CelleraTorch/python/celleratorch/mechanism.py": "d627e92d771ee7a917f57aadf03cf0537663c7fde882677c2b0d06195e9e6d43",
+    "components/CelleraTorch/src/mechanism.cc": "9518741debb43555d74b2592f635bf3f57afb80db9020b7a8a3172d444326961"
+  },
+  "native_library": {
+    "path": "/home/tumlinson/Software/cellerator-ml2-python/lib/libcellera_torch_mechanism.so",
+    "sha256": "79c21e4428d49a679cedbfcdb394d56ffe58382cb933db3f9abd554bee52a33b"
+  }
+}
