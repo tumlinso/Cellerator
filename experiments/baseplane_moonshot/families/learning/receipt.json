@@ -1,0 +1,109 @@
+{
+  "producer_repository": "cellerator",
+  "producer_task": "CE-MOON-040",
+  "provider_contract": "BPCE-MOON-040",
+  "base_commit": "544a1ae6e2925146f78a6ef62123ba5257c45251",
+  "producer_commit_or_source_digest": "3c51be9b3efa88d5786a0850798476d6342180b78887482da63b47b95b87de5d",
+  "artifact_paths": [
+    "experiments/baseplane_moonshot/families/learning/learning.hpp",
+    "experiments/baseplane_moonshot/families/learning/test.cpp",
+    "experiments/baseplane_moonshot/families/learning/CMakeLists.txt",
+    "experiments/baseplane_moonshot/families/learning/README.md"
+  ],
+  "sha256": {
+    "learning.hpp": "a4fa4c3312fb26492a6cb217b4aad91aa17be95a4e43ff7fe442a9727d4ba8f3",
+    "test.cpp": "21e498922605492e601568777702e077427a1a9f4617d85b893ab83c3690df6b",
+    "CMakeLists.txt": "3d2dc82996a1852ba1b828c93527a562cf840eb509a06ea1879f37d12f24a43a",
+    "README.md": "b4bf3edb099f3f2cf30abccf26c62a257ebfbe372b892eb3ff195b1b11a33224"
+  },
+  "entry_point_and_shape_contract": {
+    "header": "experiments/baseplane_moonshot/families/learning/learning.hpp",
+    "cmake_target": "Cellerator::moonshot_learning",
+    "namespace": "ce_moon::learning",
+    "fit_logistic": "caller row-major double rows[n*d], targets[n] in [0,1], output weights[d+1] with last bias; fresh deterministic batch fitting",
+    "predict_logistic": "single caller row[d], weights[d+1]; no training labels",
+    "scratch": "private CPU scratch O(n+d); no stream/device allocation"
+  },
+  "authored_compiled_run_compared_status": {
+    "E14_scorer": {
+      "authored": true,
+      "host_compiled": true,
+      "host_run": true,
+      "compared": "complete objective finite differences; deterministic fit and held-out synthetic numeric rows"
+    },
+    "E29": {
+      "authored": true,
+      "host_compiled": true,
+      "host_run": true,
+      "compared": "8 exhaustive target/teacher/hard rows",
+      "native_lop3_source": "authored; instruction compilation and GPU execution not_run"
+    },
+    "E30": {
+      "authored": true,
+      "host_compiled": true,
+      "host_run": true,
+      "compared": "two learned state-conditioned bank scorers"
+    },
+    "E31": {
+      "authored": true,
+      "host_compiled": true,
+      "host_run": true,
+      "compared": "8 exhaustive rewritten Boolean rows; domain rejection and unsafe floating witness"
+    },
+    "E32": {
+      "authored": true,
+      "host_compiled": true,
+      "host_run": true,
+      "compared": "fresh guard and independent query/state/domain/weight invalidations against current teacher"
+    }
+  },
+  "minimal_input_output_example": {
+    "features": [
+      -3,
+      -2,
+      -1,
+      1,
+      2,
+      3
+    ],
+    "targets": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "initial_loss": 0.693147,
+    "final_loss": 0.0149117,
+    "heldout_features": [
+      -1.5,
+      1.5
+    ],
+    "heldout_probabilities": "<0.1 and >0.9",
+    "lut_immediate": 120,
+    "rewrite_instruction_count": [
+      3,
+      2
+    ]
+  },
+  "known_approximation_and_loss": [
+    "hard LUT loses continuous confidence",
+    "finite Boolean rewrite search; instruction cost only",
+    "sigmoid bank scores are uncalibrated scheduling hypotheses",
+    "expected activation penalty does not enforce hard count",
+    "fixed-step numeric toy training has no convergence or biological validation claim",
+    "caller-managed versions must track parameter/query/state/domain mutations"
+  ],
+  "validation": {
+    "compiler": "GNU C++ 13.3.0, C++17, Release",
+    "test_command": "ctest --test-dir /tmp/ce-moon-learning-build -R ce_moon_learning_test --output-on-failure -V",
+    "result": "1/1 passed",
+    "observed_stdout": "E14 objective 0.693147 -> 0.0149117; rate 0.993223 -> 0.287083; E29 LUT 120; E30 banks 0/1; E31 cost 3 -> 2; E32 four guard invalidations pass",
+    "sanitizer_command": "c++ -std=c++17 -Wall -Wextra -Wpedantic -Werror -fsanitize=undefined,address -fno-omit-frame-pointer -g experiments/baseplane_moonshot/families/learning/test.cpp -o /tmp/ce-moon-learning-sanitized; /tmp/ce-moon-learning-sanitized",
+    "sanitizer_result": "passed; no AddressSanitizer or UndefinedBehaviorSanitizer diagnostics"
+  },
+  "gpu_launch": "not_run",
+  "benchmark": "not_run",
+  "biological_validation": "not_run"
+}

@@ -1,0 +1,7 @@
+add_library(ce_moonshot_learning INTERFACE)
+add_library(Cellerator::moonshot_learning ALIAS ce_moonshot_learning)
+target_link_libraries(ce_moonshot_learning INTERFACE Cellerator::moonshot)
+target_include_directories(ce_moonshot_learning INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+add_executable(ce_moon_learning_test test.cpp)
+target_link_libraries(ce_moon_learning_test PRIVATE Cellerator::moonshot_learning)
+add_test(NAME ce_moon_learning_test COMMAND ce_moon_learning_test)

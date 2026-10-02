@@ -1,0 +1,34 @@
+{
+  "kind": "controller_gpu_semantic_comparison",
+  "source_commit": "f6425a78ad728212ba3d24a40cfa1630d2ad18b8",
+  "evidence_id": "fba3e31c-a618-4903-9dfb-f2559c85e11e",
+  "binary_path": "/tmp/ce-moon-final-cuda/families/tensor/ce_moon_tensor_cuda",
+  "binary_sha256": "599954303efa6a859b9168c7767ef7516858d74f954f9a9b1c56fa79ff84801d",
+  "returncode": 0,
+  "stdout": "E21-E24 GPU compared against host oracles; directed provenance and overflow passed\n",
+  "stderr": "[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n",
+  "native_cuda_foreground_interlock_held": true,
+  "lease_observation": {
+    "format": "CUDA-FOREGROUND-LEASE/1",
+    "owner_id": "foreground:7da0adc8-196d-460f-8e8b-5191ccd0f351",
+    "resource_ids": [
+      "accelerator:GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ],
+    "observed_unix": 1790950879.3383393,
+    "state_at_capture": "active"
+  },
+  "raw_references": {
+    "stdout_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integration/.todo-orchestrator/runtime/background-artifacts/foreground/b88c46e1-9702-4044-a6a0-66e6197ce534/foreground.stdout.txt",
+    "stderr_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integration/.todo-orchestrator/runtime/background-artifacts/foreground/b88c46e1-9702-4044-a6a0-66e6197ce534/foreground.stderr.txt",
+    "lease_receipt": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integration/.todo-orchestrator/runtime/background-artifacts/foreground/b88c46e1-9702-4044-a6a0-66e6197ce534/lease.json"
+  },
+  "compared": [
+    "E21 object-feature transform",
+    "E22 directed pair provenance and capacity overflow",
+    "E23 finite relation path counts",
+    "E24 possible-state responses"
+  ],
+  "benchmark_run": false,
+  "performance_metric": null,
+  "limits": "Tiny synthetic numeric fixtures. Other effects/mechanisms CUDA representatives remain compile-only; learning remains host-only."
+}

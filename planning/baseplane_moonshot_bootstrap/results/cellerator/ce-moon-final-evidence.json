@@ -1,0 +1,104 @@
+{
+  "source_commit": "b72bfa3af4782303bc8630ff355d308b54f55ede",
+  "source_dirty": false,
+  "build_dir": "/tmp/ce-moon-final-cuda",
+  "toolkit": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+  "cuda_architecture": "70",
+  "commands": [
+    [
+      "python",
+      "/tmp/moonshot_build_slot.py",
+      "cmake",
+      "-S",
+      "experiments/baseplane_moonshot",
+      "-B",
+      "/tmp/ce-moon-final-cuda",
+      "-DCE_MOON_ENABLE_CUDA=ON",
+      "-DCE_MOON_TENSOR_ENABLE_CUDA=ON",
+      "-DCMAKE_CUDA_ARCHITECTURES=70",
+      "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    ],
+    [
+      "python",
+      "/tmp/moonshot_build_slot.py",
+      "cmake",
+      "--build",
+      "/tmp/ce-moon-final-cuda",
+      "-j1"
+    ],
+    [
+      "ctest",
+      "--test-dir",
+      "/tmp/ce-moon-final-cuda",
+      "--output-on-failure"
+    ]
+  ],
+  "unused_configuration_option": "CE_MOON_TENSOR_ENABLE_CUDA; real CUDA activation uses CE_MOON_ENABLE_CUDA",
+  "binaries": [
+    {
+      "path": "/tmp/ce-moon-final-cuda/ce_moon_host_smoke",
+      "sha256": "f818bc310f708797432101deb9fa3f3abd9889a8290d93f23bf09df75f5a7673"
+    },
+    {
+      "path": "/tmp/ce-moon-final-cuda/ce_moon_cuda_header_link",
+      "sha256": "43d9275fc905678dd9d3cadc5897c91d74c33b32add3e0adfc5cc07174d6551f"
+    },
+    {
+      "path": "/tmp/ce-moon-final-cuda/families/effects/ce_moon_effects_smoke",
+      "sha256": "53921757eadd65f4b2169bfb955ba2a07c52c9645ddab0c94bd2621989ef7328"
+    },
+    {
+      "path": "/tmp/ce-moon-final-cuda/families/learning/ce_moon_learning_test",
+      "sha256": "a94b1ac9475cf163e1d406d15d83b096a77bb62ffce703185f05ad27c6910d3e"
+    },
+    {
+      "path": "/tmp/ce-moon-final-cuda/families/mechanisms/ce_moon_mechanisms_probe",
+      "sha256": "855e2b9ef337b244877c83501d6f61477c8118aab1aa00e1af14f97aa45a0958"
+    },
+    {
+      "path": "/tmp/ce-moon-final-cuda/families/tensor/ce_moon_tensor_host",
+      "sha256": "202dfa2eefed6aad0d1ffcc0ea979b872bd047fbbde8158ea63cd07be035febe"
+    },
+    {
+      "path": "/tmp/ce-moon-final-cuda/families/tensor/ce_moon_tensor_cuda",
+      "sha256": "138e79cf79eee487108dadecbcadb94578f0ab873d07e10038e210f9c74abf6c"
+    }
+  ],
+  "logs": [
+    {
+      "path": "/tmp/ce-moon-final-configure.log",
+      "sha256": "bc773346763171bc57ed5a6be7954e57561604928a0c70796409da2baa47af4b"
+    },
+    {
+      "path": "/tmp/ce-moon-final-build.log",
+      "sha256": "9ed19cf8a3fa4a6a3d541581def1e730386d8a3e639d6e47f21867450b59a775"
+    },
+    {
+      "path": "/tmp/ce-moon-final-test-list.log",
+      "sha256": "79005697e661ba5ac884ba308c0774df82dcc708dfea945c1949806c1bbd1c57"
+    },
+    {
+      "path": "/tmp/ce-moon-final-host-tests.log",
+      "sha256": "e82bbbd24f2008c4cd26dd0a4f00403077f5454ecf629a3eae2f4dae7a8852b6"
+    }
+  ],
+  "host_tests": {
+    "passed": 6,
+    "failed": 0,
+    "gpu_tests_registered": 0
+  },
+  "cuda_runtime_probe": {
+    "argv": [
+      "/tmp/ce-moon-final-cuda/families/tensor/ce_moon_tensor_cuda"
+    ],
+    "uses_visible_device": 0,
+    "expected_stdout": "E21-E24 GPU compared against host oracles; directed provenance and overflow passed",
+    "executed_by_this_agent": false
+  },
+  "known_runtime_test_limits": [
+    "small exactly representable synthetic values only, no throughput/generalization claim",
+    "harness oracle comparator does not explicitly reject nonfinite actual values; compare helper rejects finite mismatches >1e-5 only",
+    "new effects/mechanisms CUDA object targets compiled without runtime harness launch"
+  ]
+}
