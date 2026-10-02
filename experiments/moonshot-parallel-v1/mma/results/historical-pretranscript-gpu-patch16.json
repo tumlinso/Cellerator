@@ -1,0 +1,20 @@
+{
+  "module": "patch16",
+  "stage": "gpu",
+  "passed": true,
+  "argv": [
+    "experiments/moonshot-parallel-v1/mma/results/gpu-bin/patch16/patch16_smoke"
+  ],
+  "exit_code": 0,
+  "stdout": "patch16 host admission passed\npatch16 oracle passed count=1 kind=0\npatch16 oracle passed count=1 kind=1\npatch16 oracle passed count=1 kind=2\npatch16 oracle passed count=4 kind=0\npatch16 oracle passed count=4 kind=1\npatch16 oracle passed count=4 kind=2\npatch16 oracle passed count=5 kind=0\npatch16 oracle passed count=5 kind=1\npatch16 oracle passed count=5 kind=2\n",
+  "stderr": "",
+  "utc": "2026-10-02T14:29:57.344319+00:00",
+  "binary_sha256": "b2b3aa2c18211710a02cf44b3be271b37b2d3e97099392925f8b846ea6232ede",
+  "source_hashes": {
+    "patch16/CMakeLists.txt": "32cb02a0253b0612306493db8db2f9673cd2131e68dc4c0db8af338989b070e1",
+    "patch16/patch16.cu": "13935f762a142c65fa6bcc17dda9be7a3fc8f8de42ba81f7c33b570eb947fc9e",
+    "patch16/patch16.cuh": "ab2a0eaf20091e021ba65745dd03341cb6c69a6a63e60ee799ace743714ff54e",
+    "patch16/smoke.cu": "bdb927014e4b4febfe3784897fb57ac6024ed2b9eb3c45444628fc4d2b047cbe"
+  },
+  "build_manifest_sha256": "d37270464d099602137b3276bbb5ac8e63abc09e2847a8577a3ee3f2b2a0fc4a"
+}

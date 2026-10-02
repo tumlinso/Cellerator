@@ -1,0 +1,20 @@
+{
+  "module": "quad",
+  "stage": "gpu",
+  "passed": true,
+  "argv": [
+    "experiments/moonshot-parallel-v1/mma/results/gpu-bin/quad/moonshot_quad_test"
+  ],
+  "exit_code": 0,
+  "stdout": "quad GPU PASS device=Tesla V100-SXM2-16GB sm=70 fixtures=198 outputs=101376 FP16 inputs FP32 accumulation/output\n",
+  "stderr": "",
+  "utc": "2026-10-02T14:15:29.029178+00:00",
+  "binary_sha256": "36d4d5556167251f846097f9d7f3c9637e9e6c8934d8ed35b71397b67993910c",
+  "source_hashes": {
+    "quad/CMakeLists.txt": "e425afc106dea086cf15227fd7734caa48d51a9e67a39fb516e5e68c5c7f4646",
+    "quad/check_mapping.py": "fb913903c8626c30e4bf3597b3407201e3dae267d7ed486219bee360357d74ab",
+    "quad/quad_mma.cu": "369c4d049c9f8cea75c132efedfa883fb5e6032cb66e43d93c3abf855e7d9068",
+    "quad/quad_mma.cuh": "d850715c4aa4c348703ec885d1bddf37711228d1ead2ad73c0900ef0a1b7d12a",
+    "quad/quad_test.cu": "52821a7d54991bad37499ddb742265dc6a90c3840bffd50edd3e04b4dc9ce1c0"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "gates": [
+    {
+      "id": "CE-MOON-STATE-CPU",
+      "type": "command",
+      "argv": [
+        "env",
+        "CUDA_VISIBLE_DEVICES=",
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "-B",
+        "check_cpu.py"
+      ],
+      "cwd": "experiments/moonshot-parallel-v1/state",
+      "timeout": 120,
+      "required": true
+    }
+  ]
+}

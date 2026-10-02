@@ -1,0 +1,22 @@
+{
+  "module": "product",
+  "stage": "gpu",
+  "passed": true,
+  "argv": [
+    "experiments/moonshot-parallel-v1/mma/results/gpu-bin/product/moon_product_smoke",
+    "--gpu"
+  ],
+  "exit_code": 0,
+  "stdout": "product host checks PASS\nproduct GPU count=0 PASS\nproduct GPU count=1 PASS\nproduct GPU count=31 PASS\nproduct GPU count=32 PASS\nproduct GPU count=33 PASS\nproduct GPU count=127 PASS\nproduct GPU count=129 PASS\n",
+  "stderr": "",
+  "utc": "2026-10-02T14:15:29.253175+00:00",
+  "binary_sha256": "13bedd1604c89bc23f591e9061de8810a9a8a1ae3098cdb45fc4d9bcf64ef4cc",
+  "source_hashes": {
+    "product/CMakeLists.txt": "44b46481b1e2320ec35f3954fc676bdd9ae9c855c6260aa359cdc810e9bd0944",
+    "product/oracle.hpp": "9fa397c24cb49c629b6e2e95469717aa36e06d102f9d85b51c6ba4d827b68e3c",
+    "product/oracle_tests.cpp": "b574468e3399acd810fcc173e304d1ef7547a0a220f334297a188afc24e67117",
+    "product/product.cu": "6d09e5235b3f6c4b33c406fb0ac4b0e9df764a80fa8eedd8a4b6b659e582993f",
+    "product/product.hpp": "c06ab70ec98b7996e6d68f41bb1abc2d48760bac68757119fbdaef591704471b",
+    "product/tests.cu": "fcb9557990364d97051d74879707e5d506f4450ab33f103370d24fec76df1643"
+  }
+}
