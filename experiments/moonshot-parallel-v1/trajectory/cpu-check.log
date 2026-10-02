@@ -1,0 +1,34 @@
+test_flow_checkpoint_rebuilds_cache_and_preserves_parameter_gradients (test_continuation.ContinuationTests.test_flow_checkpoint_rebuilds_cache_and_preserves_parameter_gradients) ... ok
+test_ledger_checkpoint_retains_pending_subthreshold_changes (test_continuation.ContinuationTests.test_ledger_checkpoint_retains_pending_subthreshold_changes) ... ok
+test_bound_covers_instantaneous_omission (test_delta.DeltaTests.test_bound_covers_instantaneous_omission) ... ok
+test_checkpoint_continuation_preserves_recurrence_and_transmitted_state (test_delta.DeltaTests.test_checkpoint_continuation_preserves_recurrence_and_transmitted_state) ... ok
+test_checkpoint_rejects_malformed_payload (test_delta.DeltaTests.test_checkpoint_rejects_malformed_payload) ... ok
+test_constructor_admission (test_delta.DeltaTests.test_constructor_admission) ... ok
+test_failed_updates_leave_all_state_unchanged (test_delta.DeltaTests.test_failed_updates_leave_all_state_unchanged) ... ok
+test_generations_and_actual_weights_invalidate (test_delta.DeltaTests.test_generations_and_actual_weights_invalidate) ... ok
+test_gradual_subthreshold_steps_accumulate_from_last_transmission (test_delta.DeltaTests.test_gradual_subthreshold_steps_accumulate_from_last_transmission) ... ok
+test_owned_snapshots_and_return_values (test_delta.DeltaTests.test_owned_snapshots_and_return_values) ... ok
+test_tau_zero_agrees_with_direct_with_rounding_tolerance (test_delta.DeltaTests.test_tau_zero_agrees_with_direct_with_rounding_tolerance) ... ok
+test_threshold_equality_is_not_transmitted (test_delta.DeltaTests.test_threshold_equality_is_not_transmitted) ... ok
+test_admission_errors (test_flow.FlowTests.test_admission_errors) ... ok
+test_cache_metadata_dt_and_precision (test_flow.FlowTests.test_cache_metadata_dt_and_precision) ... ok
+test_checkpoint_admission (test_flow.FlowTests.test_checkpoint_admission) ... ok
+test_checkpoint_exact_schema (test_flow.FlowTests.test_checkpoint_exact_schema) ... ok
+test_dt_inference_guard_and_grad_mode (test_flow.FlowTests.test_dt_inference_guard_and_grad_mode) ... ok
+test_exact_diagonal_solution_and_composition (test_flow.FlowTests.test_exact_diagonal_solution_and_composition) ... ok
+test_gradcheck_X_L_R_dt (test_flow.FlowTests.test_gradcheck_X_L_R_dt) ... ok
+test_inference_reuse_mutation_and_replacement (test_flow.FlowTests.test_inference_reuse_mutation_and_replacement) ... ok
+test_serialized_checkpoint_restores_values_gradients_empty_cache (test_flow.FlowTests.test_serialized_checkpoint_restores_values_gradients_empty_cache) ... ok
+test_two_optimizer_steps_fresh_graphs (test_flow.FlowTests.test_two_optimizer_steps_fresh_graphs) ... ok
+test_admission_for_every_operand (test_polynomial.PolynomialTests.test_admission_for_every_operand) ... ok
+test_all_apis_remain_autograd_differentiable (test_polynomial.PolynomialTests.test_all_apis_remain_autograd_differentiable) ... ok
+test_float32_and_noncontiguous (test_polynomial.PolynomialTests.test_float32_and_noncontiguous) ... ok
+test_forward_and_input_preservation (test_polynomial.PolynomialTests.test_forward_and_input_preservation) ... ok
+test_jvp_finite_difference_and_autograd (test_polynomial.PolynomialTests.test_jvp_finite_difference_and_autograd) ... ok
+test_vjp_autograd_and_adjoint (test_polynomial.PolynomialTests.test_vjp_autograd_and_adjoint) ... ok
+test_zero_state_preserves_state_response (test_polynomial.PolynomialTests.test_zero_state_preserves_state_response) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 1.131s
+
+OK
