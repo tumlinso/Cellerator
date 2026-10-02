@@ -1,0 +1,41 @@
+{
+  "capability": {
+    "automatic_mechanism_discovery": false,
+    "biological_equivalence": false,
+    "checkpoint": "fresh controller, residual parameters and external Adam state",
+    "cuda_qualification": false,
+    "native_concurrency": false,
+    "off_manifold_state": "rejected",
+    "optimizer": "external Adam; affected moments reset, scalar steps retained",
+    "physical_replicas": "coherent gathers; summed adjoints",
+    "publication": "validated staged snapshot replacement; external synchronization",
+    "regrowth": "seeded nonzero U, initially zero V; externally optimized",
+    "route": "experimental CPU Torch controller",
+    "saved_tapes": "explicit acquisition and release; drain before publication or restore",
+    "supplied_invariant_quotient": true,
+    "supplied_invertible_linear_transform": true
+  },
+  "environment": {
+    "device": "CPU",
+    "python": "3.13.11",
+    "torch": "2.7.0+cu126"
+  },
+  "qualification": "passed",
+  "schema_version": 1,
+  "source_sha256": {
+    "README.md": "0a5a9164c3d8b1b023d379926d1a21fe64946e622c905e054031f8a6c044ac52",
+    "check.py": "4d536f1afa94502922432feb5eb81d1b526c312b8ce7b374d1f277ba9cb4053d",
+    "check_rewrite.py": "a7e38da1350ed3e85911fb5deffe9077254bbffefe76948bc41a485d2ff29415",
+    "checkpoint.py": "562335ae3d750fde7d8b2e864c28d5d1d19e613ce543777340055c3cc5e51a8c",
+    "regrowth.py": "a49d751f7e80e96b5d5ad06a282450efe68d37c5dfb63187008667a9e17498f6",
+    "snapshot.py": "27c900d0f87d1eb618dae40f433075bb9c5c4e76e03ee944aa9939e1bcef4037",
+    "test_checkpoint.py": "8344f690bcec4d33beb30820e493dda2be1515801dc2749263b6adafd9eba828",
+    "test_regrowth.py": "c88cb123450ca66ac96f044d686108273f58973972990b17dc4a2a3429873e9f",
+    "test_snapshot.py": "d1d0595d9583755fc6739eadfd473574d223efc1ebbc64eb4b5a48609b6321ab"
+  },
+  "suites": [
+    "test_snapshot",
+    "test_regrowth",
+    "test_checkpoint"
+  ]
+}
