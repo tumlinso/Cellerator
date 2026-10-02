@@ -1,0 +1,100 @@
+{
+  "capability": {
+    "backward_mutates_parameters": false,
+    "cuda_forward_evidence": "separate MMA lane; no CUDA derivative qualification",
+    "forward": true,
+    "input_vjp": true,
+    "mixed_derivative_convention": "stored half operands/intermediate; straight-through quantization surrogate",
+    "parameter_vjp": true,
+    "precision": {
+      "patch": [
+        "fp32",
+        "stored_half_ste"
+      ],
+      "ports": [
+        "fp32"
+      ],
+      "product": [
+        "fp32"
+      ]
+    },
+    "production_celleratorch_registration": false,
+    "route": "C++17 CPU native numerical execution via ctypes; experimental Torch adapter",
+    "saved_primal": "native owned immutable copies; Torch saved original input version checks",
+    "selected_explicit_jvp": true,
+    "shapes": {
+      "patch": "matching nonempty square matrices",
+      "ports": "flattened heterogeneous positive actor widths; shared port width; supplied directed edges",
+      "product": "flattened vectors; ordered and repeated indexed pairs"
+    },
+    "torch_admission": "CPU float32 contiguous tensors and static integer metadata",
+    "unsupported": [
+      "CUDA derivatives",
+      "Torch forward AD",
+      "higher-order derivatives",
+      "batched operators"
+    ]
+  },
+  "environment": {
+    "device": "CPU",
+    "native_cache_identity": "source contents, compiler identity and numerical compile flags; wrappers source-bound above",
+    "native_compile_flags": {
+      "patch": [
+        "-std=c++17",
+        "-O2",
+        "-ffp-contract=off",
+        "-shared",
+        "-fPIC"
+      ],
+      "ports": [
+        "-std=c++17",
+        "-O2",
+        "-shared",
+        "-fPIC",
+        "-ffp-contract=off"
+      ],
+      "product": [
+        "-std=c++17",
+        "-O2",
+        "-shared",
+        "-fPIC",
+        "-ffp-contract=off"
+      ]
+    },
+    "native_compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "numpy": "2.5.3",
+    "platform": "Linux-6.8.0-142-generic-x86_64-with-glibc2.39",
+    "python": "3.13.11",
+    "torch": "2.7.0+cu126"
+  },
+  "qualification": "passed",
+  "schema_version": 1,
+  "source_sha256": {
+    "README.md": "f8cd6c3fa61cc5057ddd6f353ece47a83fdec4c4161a68d4ac55e527d84500d7",
+    "adapter/__init__.py": "7b2deea696b8aec07c70a416caf79ffcb9a9e4faaccfb5063448a385868d4470",
+    "adapter/test_adapter.py": "fee17779206a296f6217c4533a2027f523ce864d97d83796e008b2f6c0bf2a47",
+    "adapter/torch_ops.py": "311e80391638b4553744c51090c44c16283c95115a2e967f20f8340f045e24fa",
+    "check_diff.py": "28e4b85e418b2a5f40cbd4a96e8b524d46b18820bea1592c12501974ba3d81d5",
+    "patch/README.md": "bf61c9d917beefad7c41ece46b91b6543d53c67e5c4ef64c2c802da5a12ccf42",
+    "patch/__init__.py": "f7cbacd2db97d4b66a6dd4dc56033dc7acc4ae42a670d05b84836c6cbf92e484",
+    "patch/native.cc": "3877534a91c9725eb656087eba9b9e2d99f51832a6a8cd4ba3fa85ef3c0ee72a",
+    "patch/ops.py": "2e28795606cf85cb38d62611b3ef3fcd6a27356e69ad0ddd00c23993c6051a4f",
+    "patch/test_patch.py": "0d4329dec264f1268e1de0696b55905f436361656151c3ef35c632d66d5cd034",
+    "ports/README.md": "5fa094174f415c60f4488c98aea9102a5735c66eed5d4a4dfe2f028e5da27bd6",
+    "ports/__init__.py": "16ddc5045ccd5315c3ce3aff18f7eaf4a9911380ec404b4f5323ce5b7adab568",
+    "ports/ops.py": "876e130b87d6cd178f542de1b8d4adc64ac06f8a2f3c774106fdee4c9aaef3df",
+    "ports/test_ports.py": "8f3e046265c02f95dadfd8375af5ea33c92ede452cd4ad65880064b1929b0569",
+    "ports/transport.cc": "133b0745415ecdf055d8e6af3b76ca0dbf9805a60bff4f3b9c12711b52110eec",
+    "product/README.md": "c510205504198aad23b63cf9b2d4a79cbceeed6f74c7e7f7d206f62dcb079e6b",
+    "product/__init__.py": "7a97ea06e0446ec42412e749470d6715ab6dfaad72d0346a0e6c817dc5466124",
+    "product/native.cpp": "6f6faaa817cf11f9106129bda96f761929088d35c14c4270a120819c94a589aa",
+    "product/ops.py": "2f53b88ea5bb728ed083c55d808c01d79e8e3a51db3001cc50bfa95458b745e9",
+    "product/test_product.py": "2efd51df1e228b2080c5b5d41e858dbaedd677595e440fb3e66884f6cdb52acb"
+  },
+  "suites": [
+    "patch.test_patch",
+    "product.test_product",
+    "ports.test_ports",
+    "adapter.test_adapter"
+  ]
+}
