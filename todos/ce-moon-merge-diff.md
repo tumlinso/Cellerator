@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-MERGE-DIFF: Merge accepted isolated prototype artifacts: merge-diff
 
-Task revision: `7493`; current project revision is in `todo-status.md`.
+Task revision: `7609`; current project revision is in `todo-status.md`.
 
 ## Objective
 Make reviewed predecessor artifacts available in the integrator lineage before dependent lane creation.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
