@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `7476`
+Project revision: `7478`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -985,7 +985,7 @@ Project revision: `7476`
 - `CE-ARCH-81` | status: done | execution: closed | next: Audit each roadmap exit criterion against canonical source and tests, publish the truthful matrix, and leave implementation gaps owned by CE-ARCH-82 through CE-ARCH-92.
 - `CE-ML2-BIO` | status: planned | execution: ready | next: Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.
 - `CE-ML2-TRAIN` | status: done | execution: closed | next: Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.
-- `CE-MOON-010` | status: planned | execution: ready | next: Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-010.md; implement concrete research operators under Cellerator authority. Apply the adopted ownership and research policy recorded in planning/baseplane_moonshot_adoption/cellerator-policy.todo-plan.json; verify its authority receipt before seed installation.
+- `CE-MOON-010` | status: done | execution: closed | next: Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-010.md; implement concrete research operators under Cellerator authority. Apply the adopted ownership and research policy recorded in planning/baseplane_moonshot_adoption/cellerator-policy.todo-plan.json; verify its authority receipt before seed installation.
 - `CE-MOON-020` | status: planned | execution: ready | next: Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-020.md; implement concrete research operators under Cellerator authority.
 - `CE-MOON-030` | status: planned | execution: ready | next: Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-030.md; implement concrete research operators under Cellerator authority.
 - `CE-MOON-040` | status: planned | execution: ready | next: Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-040.md; implement concrete research operators under Cellerator authority.
