@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `7673`
+Project revision: `7677`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -1210,7 +1210,7 @@ Project revision: `7673`
 - `CE-JBC-X08` | status: done | execution: closed | next: Emit cross-operation Pareto frontier and promotion disposition. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-ML2-0000` | status: done | execution: closed | next: Closure-only aggregate for the verified local outcomes, not a coordinator seat or prerequisite of children.
 - `CE-MOON-000` | status: done | execution: closed | next: Close only the completed CE-MOON-RUN-1 provider aggregate; preserve the independent CE-MOON-RUN-V1 claims and all unrelated work.
-- `CE-MOON-0000` | status: planned | execution: inactive | next: Closure-only aggregate; children do not depend on the epic.
+- `CE-MOON-0000` | status: done | execution: closed | next: Closure-only aggregate; children do not depend on the epic.
 - `CE-NF1-A01` | status: done | execution: closed | next: 
 - `CE-NF1-A02` | status: done | execution: closed | next: 
 - `CE-NF1-A03` | status: done | execution: closed | next: 

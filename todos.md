@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `7673`
+Project revision: `7677`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1591,7 +1591,7 @@ Project revision: `7673`
 - `CE-JBC-X08` | kind: task | status: done | parent: - | objective: Emit cross-operation Pareto frontier and promotion disposition. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-ML2-0000` | kind: epic | status: done | parent: - | objective: Closure-only aggregate for the verified local outcomes, not a coordinator seat or prerequisite of children.
 - `CE-MOON-000` | kind: epic | status: done | parent: - | objective: Aggregate Cellerator-owned experimental numerical and learned mechanisms; no replacement of ML2 or unrelated research.
-- `CE-MOON-0000` | kind: epic | status: planned | parent: - | objective: Closure-only aggregate; children do not depend on the epic.
+- `CE-MOON-0000` | kind: epic | status: done | parent: - | objective: Closure-only aggregate; children do not depend on the epic.
 - `CE-NF1-A01` | kind: task | status: done | parent: CE-NF1-0000 | objective: 
 - `CE-NF1-A02` | kind: task | status: done | parent: CE-NF1-0000 | objective: 
 - `CE-NF1-A03` | kind: task | status: done | parent: CE-NF1-0000 | objective: 
