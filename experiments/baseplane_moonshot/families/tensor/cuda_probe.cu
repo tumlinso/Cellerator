@@ -1,10 +1,22 @@
 #include <ce_moon/tensor.cuh>
+#include <cmath>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
+#include <string>
 using namespace ce_moon::tensor;
 void checked(cudaError_t e){if(e!=cudaSuccess)throw std::runtime_error(cudaGetErrorString(e));}
-void equal(const Matrix16& actual,const Matrix16& expected){for(unsigned i=0;i<256;++i)if(std::abs(actual[i]-expected[i])>1e-5f)throw std::runtime_error("GPU oracle mismatch");}
-int main(){
+void equal(const Matrix16& actual,const Matrix16& expected){for(unsigned i=0;i<256;++i)if(!std::isfinite(actual[i])||!std::isfinite(expected[i])||std::abs(actual[i]-expected[i])>1e-5f)throw std::runtime_error("GPU oracle mismatch or nonfinite value");}
+void comparator_self_check(){
+ Matrix16 zero{},nonfinite{};equal(zero,zero);
+ auto rejects=[&](const Matrix16& actual,const Matrix16& expected){bool rejected=false;try{equal(actual,expected);}catch(const std::runtime_error&){rejected=true;}if(!rejected)throw std::runtime_error("oracle comparator accepted invalid value");};
+ nonfinite[0]=std::numeric_limits<float>::quiet_NaN();rejects(nonfinite,zero);rejects(zero,nonfinite);
+ nonfinite[0]=std::numeric_limits<float>::infinity();rejects(nonfinite,zero);rejects(zero,nonfinite);
+ nonfinite[0]=1.f;rejects(nonfinite,zero);
+}
+int main(int argc,char** argv){
+ comparator_self_check();
+ if(argc>1){if(argc==2&&std::string(argv[1])=="--self-check"){std::cout<<"Tensor comparator finite/mismatch self-check passed; no GPU accessed\n";return 0;}throw std::runtime_error("usage: ce_moon_tensor_cuda [--self-check]");}
  int device=0;checked(cudaGetDevice(&device));cudaDeviceProp prop{};checked(cudaGetDeviceProperties(&prop,device));if(prop.major<7)throw std::runtime_error("sm70 required");
  float *a,*b,*result;__half *pa,*pb;unsigned char *exists,*mask;unsigned long long* ids;cuda::DevicePair* pairs;unsigned *required,*overflow;
  checked(cudaMalloc(&a,1024));checked(cudaMalloc(&b,1024));checked(cudaMalloc(&result,1024));checked(cudaMalloc(&pa,512));checked(cudaMalloc(&pb,512));checked(cudaMalloc(&exists,256));checked(cudaMalloc(&mask,256));checked(cudaMalloc(&ids,128));checked(cudaMalloc(&pairs,sizeof(cuda::DevicePair)));checked(cudaMalloc(&required,4));checked(cudaMalloc(&overflow,4));cudaStream_t stream;checked(cudaStreamCreate(&stream));
