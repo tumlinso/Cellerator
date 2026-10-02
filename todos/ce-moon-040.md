@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-040: Learning, routing and hardening into cheap operators
 
-Task revision: `7475`; current project revision is in `todo-status.md`.
+Task revision: `7491`; current project revision is in `todo-status.md`.
 
 ## Objective
 Explore differentiable Boolean gates, learned predicate selection, small bounded optimizer fixtures, typed numerical rewrites and guarded specialization. Baseplane supplies sequence semantics and compiles sequence-specific hard predicates; Cellerator supplies the learned numerical mechanism from inception.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

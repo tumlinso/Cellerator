@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-050: Port, factor, multigrid and counterfactual mechanisms
 
-Task revision: `7475`; current project revision is in `todo-status.md`.
+Task revision: `7492`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement numerical response ports, learned coarse/fine correction, factor aggregation and alternate-world state batches. Baseplane owns which loci/relations/world interventions mean what; Cellerator owns their parameterized numerical execution and exploratory fitting.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 
