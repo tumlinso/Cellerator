@@ -1,0 +1,61 @@
+{
+  "contract": "BPCE-MOON-030",
+  "producer_task": "CE-MOON-030",
+  "primary_experiments": [
+    "E21",
+    "E22",
+    "E23",
+    "E24"
+  ],
+  "producer_commit_or_source_digest": {
+    "experiments/baseplane_moonshot/families/tensor/CMakeLists.txt": "748e9fdb4c16fe5f8770d73b08c2b71b9188225e3b2a4e5eff90b011c85d517b",
+    "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.hpp": "8b7c1b6d0e07b757d98fc43a8ebe57dc4691b7ccea20cd3a43983dcf47e07d51",
+    "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.cuh": "b5da9bb46b4ce7553f48e256f2ddd0e283972d5b6a77a4fba20f346abcbe1e47",
+    "experiments/baseplane_moonshot/families/tensor/host.cpp": "b947c00b3f54fc06502d5c452048066c3c38ecfa4a9d76df433b70c29ed60f9b",
+    "experiments/baseplane_moonshot/families/tensor/cuda_probe.cu": "c43bc8ecaee560345824489a5ad23fdafcb3ea880797c3f8fed1fb215c97d02d",
+    "experiments/baseplane_moonshot/families/tensor/README.md": "e2b3618e5a8a3ea251307d840aa38cb52aeffe5e147d58bb6bbaf759cc486b63"
+  },
+  "artifact_paths": [
+    "experiments/baseplane_moonshot/families/tensor/CMakeLists.txt",
+    "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.hpp",
+    "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.cuh",
+    "experiments/baseplane_moonshot/families/tensor/host.cpp",
+    "experiments/baseplane_moonshot/families/tensor/cuda_probe.cu",
+    "experiments/baseplane_moonshot/families/tensor/README.md"
+  ],
+  "entry_point_and_shape_contract": "Cellerator::moonshot_tensor; ce_moon/tensor.hpp and ce_moon/tensor.cuh; row-major 16x16 FP32 host tiles; explicit rows/features/outputs; device FP16 packing + FP32 WMMA; opaque IDs; caller buffers/stream/capacity",
+  "authored_compiled_run_compared_status": {
+    "host": {
+      "authored": true,
+      "compiled": true,
+      "run": true,
+      "compared": true
+    },
+    "sm70_cuda": {
+      "authored": true,
+      "compiled": true,
+      "run": false,
+      "compared": false,
+      "reason": "GPU launch reserved for root controller"
+    }
+  },
+  "minimal_input_output_example": {
+    "E21": "[1,2] * [[2,-1],[3,0]] = [8,-1], object ID retained",
+    "E22": "Q=[[1,2],[3,-1]], K=[[2,0],[-1,4]], QK^T=[[2,7],[6,-7]], off-diagonal mask + threshold0 + capacity1 yields 7->9001, required2, overflow",
+    "E23": "0->1,0->2 and 1->3,2->3,2->4 gives count(0,3)=2,count(0,4)=1; existence true at both",
+    "E24": "tanh shared W=1 at entries[-1,+1], interpolate query .5 = .380797; direct=.462117; error=.0813201"
+  },
+  "known_approximation_and_loss": [
+    "FP16 conversion and FP32 WMMA accumulation; finite FP16 active values required",
+    "Sampled nonlinear responses approximate continuous states along scalar coordinate; no extrapolation",
+    "Capacity truncation is explicit through required/overflow; IDs retained for emitted relations",
+    "Single binary finite relation product exact bounded counts; no arbitrary semiring/repeated-count claim"
+  ],
+  "evidence": {
+    "configure": "/tmp/ce-moon-tensor-build-129/CMakeCache.txt",
+    "host_test": "/tmp/ce-moon-tensor-build-129/Testing/Temporary/LastTest.log",
+    "cuda_executable": "/tmp/ce-moon-tensor-build-129/families/tensor/ce_moon_tensor_cuda",
+    "toolchain": "GCC13.3; CUDA12.9.86; sm70",
+    "failed_attempt": "Default /usr/bin/nvcc CUDA12.0 failed CMake compiler identification with GCC13/glibc _Float* errors; installed CUDA12.9 succeeded"
+  }
+}
