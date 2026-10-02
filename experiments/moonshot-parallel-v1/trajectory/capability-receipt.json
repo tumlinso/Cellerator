@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "task": "CE-MOON-TRAJECTORY",
+  "route": "Torch/NumPy CPU reference",
+  "base_commit": "02de77304b93e6f631b7c097a13a08549949124e",
+  "mechanisms": [
+    "M03 exact local Sylvester flow",
+    "M10 last-transmitted linear delta ledger",
+    "M02 matrix polynomial with state and parameter JVP/VJP"
+  ],
+  "qualification": {
+    "tests": 29,
+    "command": [
+      "env",
+      "CUDA_VISIBLE_DEVICES=",
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "-B",
+      "experiments/moonshot-parallel-v1/trajectory/check.py"
+    ],
+    "status": "passed",
+    "source_sha256": {
+      "check.py": "b420ddf5eb5cd16609e1be12ead4561c41fc72563b76f003034cc7555c41cd7f",
+      "delta.py": "9afe1ccbaa60d989efdff2928498f0ad7f1c76950435faa6285fbdd7864a8a68",
+      "flow.py": "e615f87c5d085129991e98a77d45134f253f4906ca67e73f30f49ce9ac5f1561",
+      "polynomial.py": "d82e6b19a4931b52e88cadcfbd5d630d524ae7343cb548804a1303ed181e036b",
+      "test_continuation.py": "5325e283d4cb974ae2647a50c5d5ddd40f5a893edd518202cfc0da9c49b6818f",
+      "test_delta.py": "5182643f25c1278ee532d3b9ba327127c06a9940cbd4e085fd3831324f2ebe4a",
+      "test_flow.py": "9ff3799f33a17d94a9b6ea40319d14c35b96ff7f1c2c402b2629d6ca9f884b6a",
+      "test_polynomial.py": "fcc29205fa3999eb5e538f2f3b1431da59b5e3f20788b0ddf462d8bd8ab5f548"
+    },
+    "log_sha256": "9c8eda49a6f36344236ceccbb1e53eb41fff10da9469d95a1493570692d1a00f",
+    "required_gate": "CE-MOON-TRAJECTORY-CPU"
+  },
+  "capability": {
+    "forward": true,
+    "flow_X_L_R_dt_gradients": true,
+    "polynomial_state_parameter_JVP_VJP": true,
+    "two_optimizer_steps": true,
+    "actual_parameter_mutation_invalidation": true,
+    "atomic_delta_publication": true,
+    "fresh_owner_checkpoint_continuation": true,
+    "native_registration": false,
+    "cuda": false,
+    "performance_qualified": false,
+    "trajectory_error_bound": false
+  },
+  "limits": [
+    "CPU float32/float64 Torch flow and polynomial; CPU float64 NumPy ledger.",
+    "Flow cache requires external synchronization for concurrent factor mutation.",
+    "Inference deliberately detaches output; training always builds fresh matrix exponential graphs.",
+    "Delta omission bound excludes floating-point recurrence error and does not bound trajectories.",
+    "Checkpoint arrays are owned snapshots; storage authentication is outside this reference."
+  ],
+  "integration": {
+    "target": "CE-MOON-INTEGRATE",
+    "publication": "held for CE-MOON-NATIVE-READY / CE-ML2-BIO",
+    "acceptance": "Root accepted experimental numerical scope pending repaired gate; campaign/native acceptance remains with root."
+  }
+}
