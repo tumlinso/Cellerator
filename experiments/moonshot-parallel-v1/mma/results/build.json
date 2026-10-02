@@ -1,0 +1,38 @@
+{
+  "record_kind": "mma_aggregate_build_evidence",
+  "compiler": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+  "compiler_version": "12.9.86",
+  "architecture": "sm_70",
+  "build_directory": "/tmp/moonshot-mma-aggregate-build",
+  "configure": [
+    "cmake",
+    "-S",
+    "experiments/moonshot-parallel-v1/mma",
+    "-B",
+    "/tmp/moonshot-mma-aggregate-build",
+    "-DMOONSHOT_CUDA=ON",
+    "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "-DCMAKE_BUILD_TYPE=Release"
+  ],
+  "build": [
+    "cmake",
+    "--build",
+    "/tmp/moonshot-mma-aggregate-build",
+    "-j2"
+  ],
+  "configure_exit_code": 0,
+  "build_exit_code": 0,
+  "host_ctest": {
+    "passed": 5,
+    "failed": 0,
+    "names": [
+      "moonshot_mma_cpu",
+      "patch16_admission",
+      "moonshot_quad_admission",
+      "moon_product_oracle",
+      "moon_product_metadata"
+    ]
+  },
+  "GPU": "not_run_by_aggregate_worker",
+  "timing": "not_measured"
+}
