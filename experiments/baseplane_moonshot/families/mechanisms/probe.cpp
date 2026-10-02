@@ -7,6 +7,18 @@ static void near(double a,double b,double tolerance=1e-10) { check(std::abs(a-b)
 template<class F> static void rejects(F f) { bool caught=false; try { f(); } catch(const std::exception&) { caught=true; } check(caught,"expected rejection"); }
 int main() {
   try {
+    // Dimension overflow must be rejected before allocation or wrapped shape checks.
+    const auto huge=std::numeric_limits<std::size_t>::max()/2+1;
+    unsigned overflow_shapes=0;
+    try { Matrix invalid(huge,2,{}); } catch(const std::overflow_error&) { ++overflow_shapes; }
+    try { Matrix invalid(huge,2); } catch(const std::overflow_error&) { ++overflow_shapes; }
+    check(overflow_shapes==2,"overflow dimensions");
+    Matrix bounds(2,2,{1,2,3,4});const Matrix& const_bounds=bounds;
+    unsigned rejected_coordinates=0;
+    try { (void)bounds(0,2); } catch(const std::out_of_range&) { ++rejected_coordinates; }
+    try { (void)const_bounds(0,2); } catch(const std::out_of_range&) { ++rejected_coordinates; }
+    try { (void)bounds(2,0); } catch(const std::out_of_range&) { ++rejected_coordinates; }
+    check(rejected_coordinates==3,"matrix axis bounds");
     // E41 4xp-xi=1, -xp+3xi=2. Exact (5/11,9/11).
     auto ports=condense_ports(Matrix(1,1,{4}),Matrix(1,1,{-1}),Matrix(1,1,{-1}),Matrix(1,1,{3}),{1},{2});
     auto xp=solve_ports(ports),xi=reconstruct_interior(ports,xp);
@@ -60,6 +72,12 @@ int main() {
     check(join_factors(ra,rb,rc,{0,1,2,3},nullptr,0).required==2,"count pass");
     check(join_factors({},rb,rc,{0,1,2,3},nullptr,0).required==0,"empty join");
     rejects([&]{join_factors(ra,rb,rc,{1},output,2);});
+    bool score_overflow=false;
+    try {
+      join_factors({{1,0,std::numeric_limits<double>::max()}},{{2,0,0}},{{3,0,0}},
+                   {0,2,0,0},output,1);
+    } catch(const std::overflow_error&) { score_overflow=true; }
+    check(score_overflow,"nonfinite factor tuple rejected");
     auto aggregates=aggregate_factors(ra,rb,rc,{0,1,2,3});
     check(aggregates.size()==2 && aggregates[0].count==1,"factorized cardinality");
     near(aggregates[0].score_sum,30);near(aggregates[1].score_sum,36);
@@ -93,6 +111,6 @@ int main() {
     near(bilinear_response(0.49,0.5,{0,1,0,1}),0.49); // hard-step oracle gives zero here
     rejects([&]{bilinear_response(1.1,0.5,{0,1,2,3});});
     std::cout<<"E44 query=(5,9,5) evaluations="<<batch.evaluations<<" independent=15; E45 step error=0.49\n";
-    std::cout<<"CE-MOON-050 scalar references compared successfully\n";
+    std::cout<<"CE-MOON-050 scalar references and shape/score overflow guards compared successfully\n";
   } catch(const std::exception& e) { std::cerr<<e.what()<<"\n";return 1; }
 }

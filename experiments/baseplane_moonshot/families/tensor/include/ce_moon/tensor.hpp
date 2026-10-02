@@ -52,7 +52,15 @@ inline Interpolated interpolate(const Matrix16& table,const std::array<float,16>
  if(query<coordinates[0]||query>coordinates[rows-1])throw std::out_of_range("unsampled query");
  Interpolated out;while(out.upper+1<rows&&coordinates[out.upper]<query)++out.upper;
  out.lower=out.upper?out.upper-1:0;if(coordinates[out.upper]==query)out.lower=out.upper;
- if(out.lower!=out.upper)out.alpha=(query-coordinates[out.lower])/(coordinates[out.upper]-coordinates[out.lower]);
- for(unsigned j=0;j<outputs;++j){float a=table[out.lower*16+j],b=table[out.upper*16+j];finite(a);finite(b);out.values[j]=a+(b-a)*out.alpha;}return out;
+ // Finite float endpoints may have a difference beyond the float range.
+ const double alpha=out.lower==out.upper?0.:
+   (double(query)-coordinates[out.lower])/(double(coordinates[out.upper])-coordinates[out.lower]);
+ out.alpha=float(alpha);finite(out.alpha);
+ for(unsigned j=0;j<outputs;++j){
+  const float a=table[out.lower*16+j],b=table[out.upper*16+j];finite(a);finite(b);
+  const double value=double(a)+(double(b)-a)*alpha;
+  if(!std::isfinite(value)||std::abs(value)>std::numeric_limits<float>::max())throw std::overflow_error("interpolation result");
+  out.values[j]=float(value);finite(out.values[j]);
+ }return out;
 }
 } // namespace ce_moon::tensor

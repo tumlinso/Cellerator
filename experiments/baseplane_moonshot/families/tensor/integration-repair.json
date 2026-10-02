@@ -1,0 +1,63 @@
+{
+  "task": "CE-MOON-090",
+  "kind": "integration_review_repair",
+  "family": "tensor",
+  "baseline_commit": "cd861339d4ee50e8773f31b42711d6f8cd082cdb",
+  "status": "targeted_host_tests_pass",
+  "cases": [
+    "coordinates [-FLT_MAX, FLT_MAX], query 0: alpha=.5 and result=.5",
+    "values [-FLT_MAX, FLT_MAX], query .5: result=0"
+  ],
+  "source_hashes": {
+    "include/ce_moon/tensor.hpp": "750ec9c5b0424ac6968b6585d179e3e981f72a02b88f2c80b04e3983e992cb8f",
+    "host.cpp": "786c8e899c63d36afd20a385b5777fe4e92a1fe9be234cc362245187dacfff2d"
+  },
+  "configure": {
+    "argv": [
+      "python3",
+      "/tmp/moonshot_build_slot.py",
+      "cmake",
+      "-S",
+      "experiments/baseplane_moonshot",
+      "-B",
+      "/tmp/ce-moon-integration-repairs-20261002",
+      "-DCE_MOON_ENABLE_CUDA=OFF"
+    ],
+    "exit_code": 0
+  },
+  "validation": [
+    {
+      "argv": [
+        "python3",
+        "/tmp/moonshot_build_slot.py",
+        "cmake",
+        "--build",
+        "/tmp/ce-moon-integration-repairs-20261002",
+        "--target",
+        "ce_moon_tensor_host",
+        "ce_moon_mechanisms_probe",
+        "-j1"
+      ],
+      "exit_code": 0,
+      "output": "[ 50%] Building CXX object families/tensor/CMakeFiles/ce_moon_tensor_host.dir/host.cpp.o\n[100%] Linking CXX executable ce_moon_tensor_host\n[100%] Built target ce_moon_tensor_host\n[ 50%] Building CXX object families/mechanisms/CMakeFiles/ce_moon_mechanisms_probe.dir/probe.cpp.o\n[100%] Linking CXX executable ce_moon_mechanisms_probe\n[100%] Built target ce_moon_mechanisms_probe\n"
+    },
+    {
+      "argv": [
+        "ctest",
+        "--test-dir",
+        "/tmp/ce-moon-integration-repairs-20261002",
+        "-R",
+        "^ce_moon_(tensor_host|mechanisms_probe)$",
+        "--output-on-failure"
+      ],
+      "exit_code": 0,
+      "output": "Internal ctest changing into directory: /tmp/ce-moon-integration-repairs-20261002\nTest project /tmp/ce-moon-integration-repairs-20261002\n    Start 5: ce_moon_mechanisms_probe\n1/2 Test #5: ce_moon_mechanisms_probe .........   Passed    0.00 sec\n    Start 6: ce_moon_tensor_host\n2/2 Test #6: ce_moon_tensor_host ..............   Passed    0.00 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =   0.01 sec\n"
+    }
+  ],
+  "authored": true,
+  "host_compiled": true,
+  "host_run": true,
+  "gpu_executed": false,
+  "historical_receipts_rewritten": false,
+  "limitations": "Focused CPU semantic repair. Aggregate campaign validation remains root-owned."
+}

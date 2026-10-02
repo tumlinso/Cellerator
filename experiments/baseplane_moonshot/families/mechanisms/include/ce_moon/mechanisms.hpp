@@ -13,13 +13,24 @@ namespace ce_moon::mechanisms {
 struct Matrix {
   std::size_t rows=0, cols=0;
   std::vector<double> data;
-  Matrix() = default;
-  Matrix(std::size_t r, std::size_t c): rows(r),cols(c),data(r*c,0) {}
-  Matrix(std::size_t r, std::size_t c,std::vector<double> v):rows(r),cols(c),data(std::move(v)) {
-    if(data.size()!=r*c) throw std::invalid_argument("matrix shape");
+  static std::size_t checked_size(std::size_t r,std::size_t c) {
+    if(c && r>std::numeric_limits<std::size_t>::max()/c)
+      throw std::overflow_error("matrix dimensions");
+    return r*c;
   }
-  double& operator()(std::size_t r,std::size_t c) { return data.at(r*cols+c); }
-  double operator()(std::size_t r,std::size_t c) const { return data.at(r*cols+c); }
+  Matrix() = default;
+  Matrix(std::size_t r, std::size_t c): rows(r),cols(c),data(checked_size(r,c),0) {}
+  Matrix(std::size_t r, std::size_t c,std::vector<double> v):rows(r),cols(c),data(std::move(v)) {
+    if(data.size()!=checked_size(r,c)) throw std::invalid_argument("matrix shape");
+  }
+  std::size_t index(std::size_t r,std::size_t c) const {
+    if(r>=rows || c>=cols) throw std::out_of_range("matrix coordinate");
+    // Dimensions are public in this experimental record; guard their mutation too.
+    if(data.size()!=checked_size(rows,cols)) throw std::invalid_argument("matrix shape");
+    return r*cols+c;
+  }
+  double& operator()(std::size_t r,std::size_t c) { return data.at(index(r,c)); }
+  double operator()(std::size_t r,std::size_t c) const { return data.at(index(r,c)); }
 };
 inline void finite(const std::vector<double>& a) {
   for(double v:a) if(!std::isfinite(v)) throw std::invalid_argument("nonfinite numerical input");
@@ -163,8 +174,11 @@ inline JoinResult join_factors(const std::vector<RoleEntry>& a,const std::vector
     if(ib==pb.end() || ic==pc.end()) continue;
     for(const auto* y:ib->second) for(const auto* z:ic->second) {
       if(count==std::numeric_limits<std::size_t>::max()) throw std::overflow_error("join cardinality");
-      if(count<capacity) output[count]={{x.id,y->id,z->id},x.key,
-        weights[0]+weights[1]*x.value+weights[2]*y->value+weights[3]*z->value};
+      if(count<capacity) {
+        const double score=weights[0]+weights[1]*x.value+weights[2]*y->value+weights[3]*z->value;
+        if(!std::isfinite(score)) throw std::overflow_error("factor tuple score");
+        output[count]={{x.id,y->id,z->id},x.key,score};
+      }
       ++count;
     }
   }

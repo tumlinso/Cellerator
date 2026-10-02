@@ -16,6 +16,13 @@ int main(){
  a={};b={};for(auto& row:a)row.fill(1);for(auto& row:b)row.fill(1);for(float c:finite_relation_counts(a,b))check(c==16);
  Matrix16 states{},weights{};states[0]=-1;states[16]=1;weights[0]=1;auto table=possible_states(states,weights,{2,1,1});std::array<float,16> coordinates{};coordinates[0]=-1;coordinates[1]=1;
  auto sampled=interpolate(table,coordinates,2,1,1);check(sampled.values[0]==table[16]);auto query=interpolate(table,coordinates,2,1,.5f);float error=std::abs(query.values[0]-std::tanh(.5f));check(error>.08f&&error<.09f);
+ // Valid float endpoints must not overflow subtraction in interpolation.
+ const float largest=std::numeric_limits<float>::max();
+ Matrix16 extreme{};extreme[16]=1;
+ std::array<float,16> extremes{};extremes[0]=-largest;extremes[1]=largest;
+ auto midpoint=interpolate(extreme,extremes,2,1,0);check(midpoint.alpha==.5f&&midpoint.values[0]==.5f);
+ extremes[0]=0;extremes[1]=1;extreme[0]=-largest;extreme[16]=largest;
+ check(interpolate(extreme,extremes,2,1,.5f).values[0]==0);
  unsigned rejected=0;try{coordinates[1]=-1;interpolate(table,coordinates,2,1,0);}catch(const std::invalid_argument&){++rejected;}try{compact_relations(scores,ids,0,mask,0,1);}catch(const std::invalid_argument&){++rejected;}try{a[0][0]=2;finite_relation_counts(a,b);}catch(const std::invalid_argument&){++rejected;}check(rejected==3);
- std::cout<<"E21 identity/nontrivial/padding passed; E22 directed mask/capacity/IDs passed; E23 integer oracle/count16 passed; E24 interpolation_error="<<error<<" passed\n";
+ std::cout<<"E21 identity/nontrivial/padding passed; E22 directed mask/capacity/IDs passed; E23 integer oracle/count16 passed; E24 interpolation_error="<<error<<" passed; extreme interpolation passed\n";
 }
