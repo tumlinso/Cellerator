@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `7666`
+Project revision: `7673`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -993,7 +993,7 @@ Project revision: `7666`
 - `CE-MOON-090` | status: done | execution: closed | next: Integrate the four numerical providers and repair reviewed tensor/mechanisms defects in disjoint scopes; preserve CE-MOON-RUN-V1 and its active claims.
 - `CE-MOON-ADOPT` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-DIFF` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
-- `CE-MOON-INTEGRATE` | status: in_progress | execution: claimed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
+- `CE-MOON-INTEGRATE` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-MERGE-DIFF` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-MERGE-FOUNDATION` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
 - `CE-MOON-MMA` | status: done | execution: closed | next: Use the task brief and staged source; bind a small real check, implement, and report actual capability. Do not restart the broad design search.
