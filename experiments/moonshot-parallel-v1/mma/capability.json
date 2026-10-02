@@ -1,0 +1,66 @@
+{
+  "source_hashes": {
+    "patch16/CMakeLists.txt": "32cb02a0253b0612306493db8db2f9673cd2131e68dc4c0db8af338989b070e1",
+    "patch16/patch16.cu": "13935f762a142c65fa6bcc17dda9be7a3fc8f8de42ba81f7c33b570eb947fc9e",
+    "patch16/patch16.cuh": "ab2a0eaf20091e021ba65745dd03341cb6c69a6a63e60ee799ace743714ff54e",
+    "patch16/smoke.cu": "bdb927014e4b4febfe3784897fb57ac6024ed2b9eb3c45444628fc4d2b047cbe",
+    "quad/CMakeLists.txt": "e425afc106dea086cf15227fd7734caa48d51a9e67a39fb516e5e68c5c7f4646",
+    "quad/check_mapping.py": "fb913903c8626c30e4bf3597b3407201e3dae267d7ed486219bee360357d74ab",
+    "quad/quad_mma.cu": "369c4d049c9f8cea75c132efedfa883fb5e6032cb66e43d93c3abf855e7d9068",
+    "quad/quad_mma.cuh": "d850715c4aa4c348703ec885d1bddf37711228d1ead2ad73c0900ef0a1b7d12a",
+    "quad/quad_test.cu": "52821a7d54991bad37499ddb742265dc6a90c3840bffd50edd3e04b4dc9ce1c0",
+    "product/CMakeLists.txt": "44b46481b1e2320ec35f3954fc676bdd9ae9c855c6260aa359cdc810e9bd0944",
+    "product/oracle.hpp": "9fa397c24cb49c629b6e2e95469717aa36e06d102f9d85b51c6ba4d827b68e3c",
+    "product/oracle_tests.cpp": "b574468e3399acd810fcc173e304d1ef7547a0a220f334297a188afc24e67117",
+    "product/product.cu": "6d09e5235b3f6c4b33c406fb0ac4b0e9df764a80fa8eedd8a4b6b659e582993f",
+    "product/product.hpp": "c06ab70ec98b7996e6d68f41bb1abc2d48760bac68757119fbdaef591704471b",
+    "product/tests.cu": "fcb9557990364d97051d74879707e5d506f4450ab33f103370d24fec76df1643"
+  },
+  "validation": {
+    "compiled_admission-product": {
+      "passed": true,
+      "evidence": "results/compiled_admission-product-aggregate.json"
+    },
+    "gpu-product": {
+      "passed": true,
+      "evidence": "results/gpu-product-aggregate.json"
+    },
+    "gpu": {
+      "passed": true,
+      "evidence": "results/gpu.json"
+    },
+    "compiled_admission": {
+      "passed": true,
+      "evidence": "results/compiled_admission.json"
+    }
+  },
+  "record_kind": "experimental_mma_capability",
+  "schema_version": 1,
+  "native_core_integration": false,
+  "forward": "GPU smoke validated",
+  "derivatives": {
+    "patch_input_vjp": "not_implemented",
+    "patch_parameter_vjp": "not_implemented",
+    "patch_jvp": "not_implemented",
+    "quad_derivatives": "not_implemented",
+    "product_jvp": "GPU smoke validated"
+  },
+  "precision": {
+    "patch16": "FP16 L/X/R, FP32 accum, stored FP16 tanh intermediate, FP32 output",
+    "quad": "FP16 operands; FP32 accumulation/output",
+    "product": "FP32 product and directional derivative"
+  },
+  "timing": "not_measured",
+  "unsupported": [
+    "native prepared_program integration",
+    "CelleraTorch adapter",
+    "native backward routes",
+    "higher order differentiation",
+    "general shape/architecture support beyond module admission contracts"
+  ],
+  "device_modules": {
+    "patch16": true,
+    "quad": true,
+    "product": true
+  }
+}

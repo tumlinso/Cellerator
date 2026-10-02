@@ -1,0 +1,30 @@
+{
+  "task": "CE-MOON-STATE",
+  "run": "CE-MOON-RUN-V1",
+  "lane": "CE-MOON-L-STATE",
+  "source_base": "217def8f85a98ff131317476eb1288a98209c3b1",
+  "classification": "CPU experimental reference and host borrowed-view implementation",
+  "command": [
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+    "-B",
+    "experiments/moonshot-parallel-v1/state/check_cpu.py"
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "exit_code": 0,
+  "python": "3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]",
+  "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "checks": {
+    "python_tests": 11,
+    "cpp17_host_witness": true
+  },
+  "evidence": "cpu-check.log",
+  "not_qualified": [
+    "CUDA state/port execution",
+    "native CE identity/owner adapter integration",
+    "execution performance",
+    "biological inference"
+  ],
+  "workflow_gate": "pending controller acceptance and required-gate execution"
+}

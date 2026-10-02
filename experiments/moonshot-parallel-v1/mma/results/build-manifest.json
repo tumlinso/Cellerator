@@ -1,0 +1,85 @@
+{
+  "schema": "MMA-FRESH-BUILD/1",
+  "utc": "2026-10-02T14:30:09.558130+00:00",
+  "fresh_objects": true,
+  "input_hashes": {
+    "patch16/CMakeLists.txt": "32cb02a0253b0612306493db8db2f9673cd2131e68dc4c0db8af338989b070e1",
+    "patch16/patch16.cu": "13935f762a142c65fa6bcc17dda9be7a3fc8f8de42ba81f7c33b570eb947fc9e",
+    "patch16/patch16.cuh": "ab2a0eaf20091e021ba65745dd03341cb6c69a6a63e60ee799ace743714ff54e",
+    "patch16/smoke.cu": "bdb927014e4b4febfe3784897fb57ac6024ed2b9eb3c45444628fc4d2b047cbe",
+    "quad/CMakeLists.txt": "e425afc106dea086cf15227fd7734caa48d51a9e67a39fb516e5e68c5c7f4646",
+    "quad/check_mapping.py": "fb913903c8626c30e4bf3597b3407201e3dae267d7ed486219bee360357d74ab",
+    "quad/quad_mma.cu": "369c4d049c9f8cea75c132efedfa883fb5e6032cb66e43d93c3abf855e7d9068",
+    "quad/quad_mma.cuh": "d850715c4aa4c348703ec885d1bddf37711228d1ead2ad73c0900ef0a1b7d12a",
+    "quad/quad_test.cu": "52821a7d54991bad37499ddb742265dc6a90c3840bffd50edd3e04b4dc9ce1c0",
+    "product/CMakeLists.txt": "44b46481b1e2320ec35f3954fc676bdd9ae9c855c6260aa359cdc810e9bd0944",
+    "product/oracle.hpp": "9fa397c24cb49c629b6e2e95469717aa36e06d102f9d85b51c6ba4d827b68e3c",
+    "product/oracle_tests.cpp": "b574468e3399acd810fcc173e304d1ef7547a0a220f334297a188afc24e67117",
+    "product/product.cu": "6d09e5235b3f6c4b33c406fb0ac4b0e9df764a80fa8eedd8a4b6b659e582993f",
+    "product/product.hpp": "c06ab70ec98b7996e6d68f41bb1abc2d48760bac68757119fbdaef591704471b",
+    "product/tests.cu": "fcb9557990364d97051d74879707e5d506f4450ab33f103370d24fec76df1643",
+    "CMakeLists.txt": "e1ef841ef96e793ccc670b27c54eda34e554b10b8137852cecdf3b857249cf9a",
+    "build_mma.py": "515e3c53d41d2c400feb788c9d44a3b5adf9886a8618f87072381f301180b816",
+    "check_mma.py": "beffda89c544fea964964930f8b6c4cb75539d07f7323b4cc863a9820bd98853"
+  },
+  "source_hashes": {
+    "patch16/CMakeLists.txt": "32cb02a0253b0612306493db8db2f9673cd2131e68dc4c0db8af338989b070e1",
+    "patch16/patch16.cu": "13935f762a142c65fa6bcc17dda9be7a3fc8f8de42ba81f7c33b570eb947fc9e",
+    "patch16/patch16.cuh": "ab2a0eaf20091e021ba65745dd03341cb6c69a6a63e60ee799ace743714ff54e",
+    "patch16/smoke.cu": "bdb927014e4b4febfe3784897fb57ac6024ed2b9eb3c45444628fc4d2b047cbe",
+    "quad/CMakeLists.txt": "e425afc106dea086cf15227fd7734caa48d51a9e67a39fb516e5e68c5c7f4646",
+    "quad/check_mapping.py": "fb913903c8626c30e4bf3597b3407201e3dae267d7ed486219bee360357d74ab",
+    "quad/quad_mma.cu": "369c4d049c9f8cea75c132efedfa883fb5e6032cb66e43d93c3abf855e7d9068",
+    "quad/quad_mma.cuh": "d850715c4aa4c348703ec885d1bddf37711228d1ead2ad73c0900ef0a1b7d12a",
+    "quad/quad_test.cu": "52821a7d54991bad37499ddb742265dc6a90c3840bffd50edd3e04b4dc9ce1c0",
+    "product/CMakeLists.txt": "44b46481b1e2320ec35f3954fc676bdd9ae9c855c6260aa359cdc810e9bd0944",
+    "product/oracle.hpp": "9fa397c24cb49c629b6e2e95469717aa36e06d102f9d85b51c6ba4d827b68e3c",
+    "product/oracle_tests.cpp": "b574468e3399acd810fcc173e304d1ef7547a0a220f334297a188afc24e67117",
+    "product/product.cu": "6d09e5235b3f6c4b33c406fb0ac4b0e9df764a80fa8eedd8a4b6b659e582993f",
+    "product/product.hpp": "c06ab70ec98b7996e6d68f41bb1abc2d48760bac68757119fbdaef591704471b",
+    "product/tests.cu": "fcb9557990364d97051d74879707e5d506f4450ab33f103370d24fec76df1643"
+  },
+  "compiler": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+  "compiler_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0\n",
+  "architecture": "sm_70",
+  "commands": [
+    {
+      "argv": [
+        "cmake",
+        "-S",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/experiments/moonshot-parallel-v1/mma",
+        "-B",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/experiments/moonshot-parallel-v1/mma/results/gpu-bin",
+        "-DMOONSHOT_CUDA=ON",
+        "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
+      "exit_code": 0,
+      "log_sha256": "11bbc538335dad4274b82823af40283501a00697655c514ef088b43d8e37317c"
+    },
+    {
+      "argv": [
+        "cmake",
+        "--build",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/experiments/moonshot-parallel-v1/mma/results/gpu-bin",
+        "-j2"
+      ],
+      "exit_code": 0,
+      "log_sha256": "7900da3e03f27d7584e397958990a024b5c8d4c138ea5d8fcef9bd996ba5c9e4"
+    }
+  ],
+  "binaries": {
+    "patch16": {
+      "path": "patch16/patch16_smoke",
+      "sha256": "a352f0b2e5d3336fc8a9f1afd8348176e8fba414a8078965065d2b6bad9872f8"
+    },
+    "quad": {
+      "path": "quad/moonshot_quad_test",
+      "sha256": "f7277911ccdd691f825533a890271a9b9568a92fb1415f77f903d0acafd6a607"
+    },
+    "product": {
+      "path": "product/moon_product_smoke",
+      "sha256": "926e4d967f7e1c5068599bf450635b50842035072ee1acbee25a1db13b04b6f9"
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "stage": "gpu",
+  "passed": true,
+  "utc": "2026-10-02T14:15:28.567195+00:00",
+  "output": [
+    "CPU stored-half patch oracle, product zero/repeated directional witnesses and quad mapping passed; device kernels not executed",
+    "patch16: patch16 host admission passed\npatch16 oracle passed count=1 kind=0\npatch16 oracle passed count=1 kind=1\npatch16 oracle passed count=1 kind=2\npatch16 oracle passed count=4 kind=0\npatch16 oracle passed count=4 kind=1\npatch16 oracle passed count=4 kind=2\npatch16 oracle passed count=5 kind=0\npatch16 oracle passed count=5 kind=1\npatch16 oracle passed count=5 kind=2",
+    "quad: quad GPU PASS device=Tesla V100-SXM2-16GB sm=70 fixtures=198 outputs=101376 FP16 inputs FP32 accumulation/output",
+    "product: product host checks PASS\nproduct GPU count=0 PASS\nproduct GPU count=1 PASS\nproduct GPU count=31 PASS\nproduct GPU count=32 PASS\nproduct GPU count=33 PASS\nproduct GPU count=127 PASS\nproduct GPU count=129 PASS"
+  ],
+  "modules": {
+    "patch16": {
+      "module": "patch16",
+      "stage": "gpu",
+      "passed": true,
+      "argv": [
+        "experiments/moonshot-parallel-v1/mma/results/gpu-bin/patch16/patch16_smoke"
+      ],
+      "exit_code": 0,
+      "stdout": "patch16 host admission passed\npatch16 oracle passed count=1 kind=0\npatch16 oracle passed count=1 kind=1\npatch16 oracle passed count=1 kind=2\npatch16 oracle passed count=4 kind=0\npatch16 oracle passed count=4 kind=1\npatch16 oracle passed count=4 kind=2\npatch16 oracle passed count=5 kind=0\npatch16 oracle passed count=5 kind=1\npatch16 oracle passed count=5 kind=2\n",
+      "stderr": "",
+      "utc": "2026-10-02T14:15:28.785444+00:00",
+      "binary_sha256": "6a952934730b05e5d83753ea1d161e81fd90cf0e538f6cd77aa2718af429df90",
+      "source_hashes": {
+        "patch16/CMakeLists.txt": "32cb02a0253b0612306493db8db2f9673cd2131e68dc4c0db8af338989b070e1",
+        "patch16/patch16.cu": "13935f762a142c65fa6bcc17dda9be7a3fc8f8de42ba81f7c33b570eb947fc9e",
+        "patch16/patch16.cuh": "ab2a0eaf20091e021ba65745dd03341cb6c69a6a63e60ee799ace743714ff54e",
+        "patch16/smoke.cu": "bdb927014e4b4febfe3784897fb57ac6024ed2b9eb3c45444628fc4d2b047cbe"
+      }
+    },
+    "quad": {
+      "module": "quad",
+      "stage": "gpu",
+      "passed": true,
+      "argv": [
+        "experiments/moonshot-parallel-v1/mma/results/gpu-bin/quad/moonshot_quad_test"
+      ],
+      "exit_code": 0,
+      "stdout": "quad GPU PASS device=Tesla V100-SXM2-16GB sm=70 fixtures=198 outputs=101376 FP16 inputs FP32 accumulation/output\n",
+      "stderr": "",
+      "utc": "2026-10-02T14:15:29.029178+00:00",
+      "binary_sha256": "36d4d5556167251f846097f9d7f3c9637e9e6c8934d8ed35b71397b67993910c",
+      "source_hashes": {
+        "quad/CMakeLists.txt": "e425afc106dea086cf15227fd7734caa48d51a9e67a39fb516e5e68c5c7f4646",
+        "quad/check_mapping.py": "fb913903c8626c30e4bf3597b3407201e3dae267d7ed486219bee360357d74ab",
+        "quad/quad_mma.cu": "369c4d049c9f8cea75c132efedfa883fb5e6032cb66e43d93c3abf855e7d9068",
+        "quad/quad_mma.cuh": "d850715c4aa4c348703ec885d1bddf37711228d1ead2ad73c0900ef0a1b7d12a",
+        "quad/quad_test.cu": "52821a7d54991bad37499ddb742265dc6a90c3840bffd50edd3e04b4dc9ce1c0"
+      }
+    },
+    "product": {
+      "module": "product",
+      "stage": "gpu",
+      "passed": true,
+      "argv": [
+        "experiments/moonshot-parallel-v1/mma/results/gpu-bin/product/moon_product_smoke",
+        "--gpu"
+      ],
+      "exit_code": 0,
+      "stdout": "product host checks PASS\nproduct GPU count=0 PASS\nproduct GPU count=1 PASS\nproduct GPU count=31 PASS\nproduct GPU count=32 PASS\nproduct GPU count=33 PASS\nproduct GPU count=127 PASS\nproduct GPU count=129 PASS\n",
+      "stderr": "",
+      "utc": "2026-10-02T14:15:29.253175+00:00",
+      "binary_sha256": "13bedd1604c89bc23f591e9061de8810a9a8a1ae3098cdb45fc4d9bcf64ef4cc",
+      "source_hashes": {
+        "product/CMakeLists.txt": "44b46481b1e2320ec35f3954fc676bdd9ae9c855c6260aa359cdc810e9bd0944",
+        "product/oracle.hpp": "9fa397c24cb49c629b6e2e95469717aa36e06d102f9d85b51c6ba4d827b68e3c",
+        "product/oracle_tests.cpp": "b574468e3399acd810fcc173e304d1ef7547a0a220f334297a188afc24e67117",
+        "product/product.cu": "6d09e5235b3f6c4b33c406fb0ac4b0e9df764a80fa8eedd8a4b6b659e582993f",
+        "product/product.hpp": "c06ab70ec98b7996e6d68f41bb1abc2d48760bac68757119fbdaef591704471b",
+        "product/tests.cu": "fcb9557990364d97051d74879707e5d506f4450ab33f103370d24fec76df1643"
+      }
+    }
+  },
+  "source_hashes": {
+    "patch16/CMakeLists.txt": "32cb02a0253b0612306493db8db2f9673cd2131e68dc4c0db8af338989b070e1",
+    "patch16/patch16.cu": "13935f762a142c65fa6bcc17dda9be7a3fc8f8de42ba81f7c33b570eb947fc9e",
+    "patch16/patch16.cuh": "ab2a0eaf20091e021ba65745dd03341cb6c69a6a63e60ee799ace743714ff54e",
+    "patch16/smoke.cu": "bdb927014e4b4febfe3784897fb57ac6024ed2b9eb3c45444628fc4d2b047cbe",
+    "quad/CMakeLists.txt": "e425afc106dea086cf15227fd7734caa48d51a9e67a39fb516e5e68c5c7f4646",
+    "quad/check_mapping.py": "fb913903c8626c30e4bf3597b3407201e3dae267d7ed486219bee360357d74ab",
+    "quad/quad_mma.cu": "369c4d049c9f8cea75c132efedfa883fb5e6032cb66e43d93c3abf855e7d9068",
+    "quad/quad_mma.cuh": "d850715c4aa4c348703ec885d1bddf37711228d1ead2ad73c0900ef0a1b7d12a",
+    "quad/quad_test.cu": "52821a7d54991bad37499ddb742265dc6a90c3840bffd50edd3e04b4dc9ce1c0",
+    "product/CMakeLists.txt": "44b46481b1e2320ec35f3954fc676bdd9ae9c855c6260aa359cdc810e9bd0944",
+    "product/oracle.hpp": "9fa397c24cb49c629b6e2e95469717aa36e06d102f9d85b51c6ba4d827b68e3c",
+    "product/oracle_tests.cpp": "b574468e3399acd810fcc173e304d1ef7547a0a220f334297a188afc24e67117",
+    "product/product.cu": "6d09e5235b3f6c4b33c406fb0ac4b0e9df764a80fa8eedd8a4b6b659e582993f",
+    "product/product.hpp": "c06ab70ec98b7996e6d68f41bb1abc2d48760bac68757119fbdaef591704471b",
+    "product/tests.cu": "fcb9557990364d97051d74879707e5d506f4450ab33f103370d24fec76df1643"
+  },
+  "scope": "tiny correctness witnesses; no measured performance, native adapter or backward qualification"
+}

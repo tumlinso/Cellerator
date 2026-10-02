@@ -1,0 +1,8 @@
+	wmma.load.a.sync.aligned.row.m16n16k16.global.f16 	{%r17, %r18, %r19, %r20, %r21, %r22, %r23, %r24}, [%rd10], %r16;
+	wmma.load.b.sync.aligned.row.m16n16k16.global.f16 	{%r25, %r26, %r27, %r28, %r29, %r30, %r31, %r32}, [%rd12], %r16;
+	wmma.mma.sync.aligned.row.row.m16n16k16.f32.f32 {%f2, %f3, %f4, %f5, %f6, %f7, %f8, %f9}, {%r17, %r18, %r19, %r20, %r21, %r22, %r23, %r24}, {%r25, %r26, %r27, %r28, %r29, %r30, %r31, %r32}, {%f1, %f1, %f1, %f1, %f1, %f1, %f1, %f1};
+	wmma.store.d.sync.aligned.row.m16n16k16.shared.f32 	[%r35], {%f2, %f3, %f4, %f5, %f6, %f7, %f8, %f9}, %r16;
+	wmma.load.a.sync.aligned.row.m16n16k16.shared.f16 	{%r51, %r52, %r53, %r54, %r55, %r56, %r57, %r58}, [%r40], %r50;
+	wmma.load.b.sync.aligned.row.m16n16k16.global.f16 	{%r59, %r60, %r61, %r62, %r63, %r64, %r65, %r66}, [%rd16], %r50;
+	wmma.mma.sync.aligned.row.row.m16n16k16.f32.f32 {%f34, %f35, %f36, %f37, %f38, %f39, %f40, %f41}, {%r51, %r52, %r53, %r54, %r55, %r56, %r57, %r58}, {%r59, %r60, %r61, %r62, %r63, %r64, %r65, %r66}, {%f33, %f33, %f33, %f33, %f33, %f33, %f33, %f33};
+	wmma.store.d.sync.aligned.row.m16n16k16.global.f32 	[%rd18], {%f34, %f35, %f36, %f37, %f38, %f39, %f40, %f41}, %r50;

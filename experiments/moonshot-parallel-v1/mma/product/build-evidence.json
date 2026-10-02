@@ -1,0 +1,19 @@
+{
+  "record_kind": "product2_compile_and_host_checks",
+  "observed_at": "2026-10-02T14:10:07.168925+00:00",
+  "source_head": "217def8f85a98ff131317476eb1288a98209c3b1",
+  "commit": "uncommitted candidate under root claim",
+  "compiler": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+  "compile": "PASS (-std=c++17 -arch=sm_70 --fmad=false, -lcuda)",
+  "cpu_fp32_oracle": "PASS counts 0/1/31/32/33/127/129, finite difference, repeated/zero arguments",
+  "host_metadata": "PASS extent/alignment/alias/overflow/empty/stale checks",
+  "gpu": "root first run counts0/1 PASS; incorrect allocation-size test failed at count31; fixed to exceed cuMemGetAddressRange range; awaiting root rerun",
+  "performance": "not_measured",
+  "sha256": {
+    "oracle.hpp": "9fa397c24cb49c629b6e2e95469717aa36e06d102f9d85b51c6ba4d827b68e3c",
+    "oracle_tests.cpp": "b574468e3399acd810fcc173e304d1ef7547a0a220f334297a188afc24e67117",
+    "product.cu": "6d09e5235b3f6c4b33c406fb0ac4b0e9df764a80fa8eedd8a4b6b659e582993f",
+    "product.hpp": "c06ab70ec98b7996e6d68f41bb1abc2d48760bac68757119fbdaef591704471b",
+    "tests.cu": "fcb9557990364d97051d74879707e5d506f4450ab33f103370d24fec76df1643"
+  }
+}
