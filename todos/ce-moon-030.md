@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-030: Tensor Core relational and latent mechanisms
 
-Task revision: `7475`; current project revision is in `todo-status.md`.
+Task revision: `7490`; current project revision is in `todo-status.md`.
 
 ## Objective
 Build semantically explicit object-feature, relation, finite-relation and possible-state Tensor Core mechanisms. Include optional local gradients and learning fixtures where useful. Layout axes and padding are part of the operator contract; experimental kernels belong here before qualification.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 
