@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `7504`
+Project revision: `7578`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1369,18 +1369,18 @@ Project revision: `7504`
 - `CE-MOON-010` | kind: task | status: done | parent: CE-MOON-000 | objective: Inspect current Cellerator claims and numerical entry points; install a small independently buildable numerical experimental module and split supplied mixed research seeds by semantic ownership. Preserve all existing ML2 and unrelated work. No production runtime integration is a prerequisite.
 - `CE-MOON-020` | kind: task | status: done | parent: CE-MOON-000 | objective: Implement learned or parameterized effect algebras, block-monomial maps, polynomial response approximations, lifting/refinement primitives and continuous state operators as Cellerator research. Preserve algebraic restrictions and explicit approximation error; do not wait for a production API.
 - `CE-MOON-030` | kind: task | status: done | parent: CE-MOON-000 | objective: Build semantically explicit object-feature, relation, finite-relation and possible-state Tensor Core mechanisms. Include optional local gradients and learning fixtures where useful. Layout axes and padding are part of the operator contract; experimental kernels belong here before qualification.
-- `CE-MOON-040` | kind: task | status: in_progress | parent: CE-MOON-000 | objective: Explore differentiable Boolean gates, learned predicate selection, small bounded optimizer fixtures, typed numerical rewrites and guarded specialization. Baseplane supplies sequence semantics and compiles sequence-specific hard predicates; Cellerator supplies the learned numerical mechanism from inception.
-- `CE-MOON-050` | kind: task | status: in_progress | parent: CE-MOON-000 | objective: Implement numerical response ports, learned coarse/fine correction, factor aggregation and alternate-world state batches. Baseplane owns which loci/relations/world interventions mean what; Cellerator owns their parameterized numerical execution and exploratory fitting.
-- `CE-MOON-090` | kind: task | status: planned | parent: CE-MOON-000 | objective: Connect only the small provider interfaces that the sequence experiments actually consume; report authored/compiled/run/compared per operator. Preserve existing learning/compiler/runtime work and leave production promotion separate.
+- `CE-MOON-040` | kind: task | status: done | parent: CE-MOON-000 | objective: Explore differentiable Boolean gates, learned predicate selection, small bounded optimizer fixtures, typed numerical rewrites and guarded specialization. Baseplane supplies sequence semantics and compiles sequence-specific hard predicates; Cellerator supplies the learned numerical mechanism from inception.
+- `CE-MOON-050` | kind: task | status: done | parent: CE-MOON-000 | objective: Implement numerical response ports, learned coarse/fine correction, factor aggregation and alternate-world state batches. Baseplane owns which loci/relations/world interventions mean what; Cellerator owns their parameterized numerical execution and exploratory fitting.
+- `CE-MOON-090` | kind: task | status: done | parent: CE-MOON-000 | objective: Connect only the small provider interfaces that the sequence experiments actually consume; report authored/compiled/run/compared per operator. Preserve existing learning/compiler/runtime work and leave production promotion separate.
 - `CE-MOON-ADOPT` | kind: task | status: done | parent: CE-MOON-0000 | objective: Refresh source, claims and plans; install staged prototypes and publish the integration or selective-supersession decision.
 - `CE-MOON-DIFF` | kind: task | status: planned | parent: CE-MOON-0000 | objective: Implement requested patch/port/process derivatives through existing parameter, tape and CelleraTorch contracts.
 - `CE-MOON-INTEGRATE` | kind: task | status: planned | parent: CE-MOON-0000 | objective: Move selected reusable pieces into current CE owners and expose consumers without adding a second runtime.
 - `CE-MOON-MERGE-DIFF` | kind: task | status: planned | parent: CE-MOON-0000 | objective: Make reviewed predecessor artifacts available in the integrator lineage before dependent lane creation.
-- `CE-MOON-MERGE-FOUNDATION` | kind: task | status: planned | parent: CE-MOON-0000 | objective: Make reviewed predecessor artifacts available in the integrator lineage before dependent lane creation.
-- `CE-MOON-MMA` | kind: task | status: planned | parent: CE-MOON-0000 | objective: Implement matrix-patch and four-job micro-MMA primitives, plus the zero-safe process packet seed.
+- `CE-MOON-MERGE-FOUNDATION` | kind: task | status: in_progress | parent: CE-MOON-0000 | objective: Make reviewed predecessor artifacts available in the integrator lineage before dependent lane creation.
+- `CE-MOON-MMA` | kind: task | status: done | parent: CE-MOON-0000 | objective: Implement matrix-patch and four-job micro-MMA primitives, plus the zero-safe process packet seed.
 - `CE-MOON-NATIVE-READY` | kind: task | status: planned | parent: CE-MOON-0000 | objective: Protect scheduled ML2-BIO native ownership before broad CE integration dispatch.
 - `CE-MOON-REWRITE` | kind: task | status: planned | parent: CE-MOON-0000 | objective: Implement an epoch-safe supplied extraction/remapping path and a live-gradient residual-regrowth example.
-- `CE-MOON-STATE` | kind: task | status: planned | parent: CE-MOON-0000 | objective: Adapt nonowning actor-local state views and footprint packing; preserve local bases and physical alias identity.
+- `CE-MOON-STATE` | kind: task | status: done | parent: CE-MOON-0000 | objective: Adapt nonowning actor-local state views and footprint packing; preserve local bases and physical alias identity.
 - `CE-MOON-TRAJECTORY` | kind: task | status: planned | parent: CE-MOON-0000 | objective: Expose an exact Sylvester-flow block and a last-transmitted-value delta ledger; choose one additional unusual mechanism.
 - `CE-NF1-0000` | kind: epic | status: superseded | parent: - | objective: 
 - `CE-PTR` | kind: epic | status: done | parent: - | objective: Remove inappropriate generic STL ownership and incidental container structures from production Cellerator by replacing them with explicit semantic structures, lifetimes, memory domains, images, views, and prepared workspaces without creating a generic container library.
@@ -1590,7 +1590,7 @@ Project revision: `7504`
 - `CE-JBC-X07` | kind: task | status: done | parent: - | objective: Compare specialized and generalized view families. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X08` | kind: task | status: done | parent: - | objective: Emit cross-operation Pareto frontier and promotion disposition. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-ML2-0000` | kind: epic | status: planned | parent: - | objective: Closure-only aggregate for the verified local outcomes, not a coordinator seat or prerequisite of children.
-- `CE-MOON-000` | kind: epic | status: planned | parent: - | objective: Aggregate Cellerator-owned experimental numerical and learned mechanisms; no replacement of ML2 or unrelated research.
+- `CE-MOON-000` | kind: epic | status: done | parent: - | objective: Aggregate Cellerator-owned experimental numerical and learned mechanisms; no replacement of ML2 or unrelated research.
 - `CE-MOON-0000` | kind: epic | status: planned | parent: - | objective: Closure-only aggregate; children do not depend on the epic.
 - `CE-NF1-A01` | kind: task | status: done | parent: CE-NF1-0000 | objective: 
 - `CE-NF1-A02` | kind: task | status: done | parent: CE-NF1-0000 | objective: 

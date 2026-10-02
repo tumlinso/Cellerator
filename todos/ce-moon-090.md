@@ -3,23 +3,25 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-090: Hand back numerical providers and truthful experimental receipts
 
-Task revision: `7475`; current project revision is in `todo-status.md`.
+Task revision: `7562`; current project revision is in `todo-status.md`.
 
 ## Objective
 Connect only the small provider interfaces that the sequence experiments actually consume; report authored/compiled/run/compared per operator. Preserve existing learning/compiler/runtime work and leave production promotion separate.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
-- Parallel policy: `integration_exclusive`
-- Result: `-`
+- Lifecycle: `done`
+- Execution: `closed`
+- Parallel policy: `parallel_safe`
+- Result: `implemented`
 
 ## Next Action
-Read planning/baseplane_moonshot_bootstrap/tasks/CE-MOON-090.md; implement concrete research operators under Cellerator authority.
+Integrate the four numerical providers and repair reviewed tensor/mechanisms defects in disjoint scopes; preserve CE-MOON-RUN-V1 and its active claims.
 
 ## Ownership
 - `exclusive`: `experiments/baseplane_moonshot/CMakeLists.txt`
 - `exclusive`: `experiments/baseplane_moonshot/README.md`
+- `exclusive`: `experiments/baseplane_moonshot/families/mechanisms`
+- `exclusive`: `experiments/baseplane_moonshot/families/tensor`
 - `exclusive`: `experiments/baseplane_moonshot/include`
 - `exclusive`: `planning/baseplane_moonshot_bootstrap/results/cellerator`
 - `forbidden`: `.todo-orchestrator`

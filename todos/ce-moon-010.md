@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-010: Adopt the numerical research lane without replacing ML2
 
-Task revision: `7478`; current project revision is in `todo-status.md`.
+Task revision: `7527`; current project revision is in `todo-status.md`.
 
 ## Objective
 Inspect current Cellerator claims and numerical entry points; install a small independently buildable numerical experimental module and split supplied mixed research seeds by semantic ownership. Preserve all existing ML2 and unrelated work. No production runtime integration is a prerequisite.
