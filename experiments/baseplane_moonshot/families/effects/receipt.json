@@ -1,0 +1,126 @@
+{
+  "task": "CE-MOON-020",
+  "recorded_at": "2026-10-02T13:46:14.047644+00:00",
+  "producer_base_commit": "544a1ae6e2925146f78a6ef62123ba5257c45251",
+  "producer_source_digest": "351c0176e0aae51af92727a2ff14dab81245d5675a9d8b0eb0ce09d4de20f6d4",
+  "artifact_sha256": {
+    "experiments/baseplane_moonshot/families/effects/CMakeLists.txt": "a9ab832ca26b4a8d0749bef988a567090e5280fc62b3cd15fd6bddade827a58e",
+    "experiments/baseplane_moonshot/families/effects/README.md": "522900693a8d9ce9dc16d39982c94ff4576940ab560be8087d33467ee9e13651",
+    "experiments/baseplane_moonshot/families/effects/include/ce_moon/effects.hpp": "cbcf4c5c7c48c554763c28e553bf95ed3cd0b29d0ea72c7db792403a808122fb",
+    "experiments/baseplane_moonshot/families/effects/representative.cu": "695f57367fbc1bd092c434b1d8ff9eca9c0a1b0757dbd3817ce7101a1cb6b14d",
+    "experiments/baseplane_moonshot/families/effects/smoke.cpp": "add3e3e72ddc3cb02659a06d1e937f1d674382cf7ca24820c98c5c490e520f12"
+  },
+  "entry_point_and_shape_contract": {
+    "target": "Cellerator::moonshot_effects",
+    "header": "ce_moon/effects.hpp",
+    "namespace": "ce_moon::effects",
+    "weighted": "Weighted<N> source rows/destination columns, probability sum-product without normalization/max-plus with absent -inf/Boolean exact0-or-1",
+    "block": "BlockAffine<Blocks,Width> permutation of Blocks dense Width-by-Width transforms plus offsets",
+    "jet": "scalar quadratic coefficient jet with explicit center/radius; no certified response bound",
+    "checkpoint": "Checkpoints<N> monomial prefix/suffix at sparse boundaries; local replay bounded by stride",
+    "precision": "precision_interval scalar[0,1] binary plane intervals, source scalar retained"
+  },
+  "primary_cards": {
+    "E09": "foundation monomial compose/apply order and sequential comparison",
+    "E10": "block graph closure tested against independent dense expansion,80 random fixtures",
+    "E11": "second-order scalar jets composed with trust-radius restriction; actual x^4 truncation error0.0041",
+    "E12": "sparse bidirectional checkpoints tested at every boundary of11 effects"
+  },
+  "additional_support": {
+    "E08": "weighted three algebras; explicit pruning alters later answer0.42->0.06",
+    "E13": "foundation lifting roundtrip,omission loses detail",
+    "E14": "scorer implementation belongs to learning provider; no segmentation claim here",
+    "E15": "refinable intervals on retained source scalar",
+    "E24": "matrix response implementation belongs to tensor provider; no matrix-tile claim here",
+    "E39": "order-sensitive affine effect consumer support"
+  },
+  "status": {
+    "authored": true,
+    "host_compiled": true,
+    "host_run": true,
+    "host_compared": true,
+    "cuda_sm70_compiled": true,
+    "gpu_run": false,
+    "gpu_compared": false,
+    "trained_parameters": false,
+    "biological_validation": false,
+    "benchmark_run": false
+  },
+  "known_approximation_and_loss": [
+    "binary64 rounding changes mathematical associativity",
+    "weights are not normalized or calibrated",
+    "pruning may change future best-state answers, removed mass is no downstream bound",
+    "jets discard higher powers; trust radius is no scientific error certificate",
+    "checkpoints retain local effects, constructor linear; right propagation is not inversion",
+    "precision source retained, no compression claim",
+    "CUDA representative compiles only existing monomial/lifting paths; new operators host-only"
+  ],
+  "minimal_input_output_example": {
+    "weighted_probability": {
+      "left": [
+        [
+          0.6,
+          0.4
+        ],
+        [
+          0.2,
+          0.8
+        ]
+      ],
+      "right": [
+        [
+          0.1,
+          0.9
+        ],
+        [
+          0.9,
+          0.1
+        ]
+      ],
+      "composed_00": 0.42,
+      "prune_threshold": 0.5,
+      "pruned_composed_00": 0.06
+    },
+    "jet": {
+      "response": "x^4 around x=1 truncated degree2",
+      "query": 1.1,
+      "estimate": 1.46,
+      "actual": 1.4641
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "ctest",
+        "--test-dir",
+        "/tmp/ce-moon-effects-host",
+        "-R",
+        "ce_moon_effects_smoke",
+        "--output-on-failure"
+      ],
+      "returncode": 0,
+      "output": "Internal ctest changing into directory: /tmp/ce-moon-effects-host\nTest project /tmp/ce-moon-effects-host\n    Start 3: ce_moon_effects_smoke\n1/1 Test #3: ce_moon_effects_smoke ............   Passed    0.01 sec\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.01 sec\n"
+    },
+    {
+      "argv": [
+        "/tmp/ce-moon-effects-host/families/effects/ce_moon_effects_smoke"
+      ],
+      "returncode": 0,
+      "output": "{\"status\":\"effects_pass\",\"block_random_cases\":80,\"jet_truncation_error\":0.0041,\"checkpoint_maps\":8,\"gpu_run\":false}\n"
+    },
+    {
+      "argv": [
+        "python",
+        "/tmp/moonshot_build_slot.py",
+        "cmake",
+        "--build",
+        "/tmp/ce-moon-effects-cuda",
+        "--target",
+        "ce_moon_effects_cuda_compile",
+        "-j1"
+      ],
+      "returncode": 0,
+      "output": "[100%] Built target ce_moon_effects_cuda_compile\n"
+    }
+  ]
+}
