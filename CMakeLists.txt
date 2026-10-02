@@ -88,6 +88,7 @@ if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
         include(tests/relation_update_spine_v1/CMakeLists.txt)
     endif()
 endif()
+include(cmake/Product2.cmake)
 # Build the linked NF1 numerical foundation and its host reference consumer.
 # CUDA relation/value tests are enabled only with the semantic spine owner.
 option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 numerical foundation tests" OFF)

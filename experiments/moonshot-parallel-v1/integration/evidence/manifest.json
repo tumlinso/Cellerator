@@ -1,0 +1,116 @@
+{
+  "build_records": {
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/qualification.json": "df5571563b89043a1726035ab2488a45eda1287f38cfda169adf7a5f1e08d5d7",
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/experiments/moonshot-parallel-v1/integration/native-product2-cpu-build.json": "4a770e32a33453c52d84a9619d38cf963ff68656d9ecf51acd16ca4d9674ad62"
+  },
+  "command_environment": [
+    {
+      "LD_LIBRARY_PATH": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib"
+    },
+    {
+      "CUDA_VISIBLE_DEVICES": "",
+      "LD_LIBRARY_PATH": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib"
+    },
+    {
+      "LD_LIBRARY_PATH": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/installed/lib:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64"
+    },
+    {
+      "LD_LIBRARY_PATH": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib"
+    }
+  ],
+  "commands": [
+    [
+      "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-moon-product-final-5j5vfm2t/cellerator_product2_test"
+    ],
+    [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/experiments/moonshot-parallel-v1/integration/test_product_adapter.py"
+    ],
+    [
+      "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/cellerator_product2_cuda_smoke"
+    ],
+    [
+      "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-moon-product-consumer-8yqknw_k/build/product2_consumer"
+    ]
+  ],
+  "compiled_outputs_sha256": {
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-moon-product-consumer-8yqknw_k/build/product2_consumer": "9983f06cf721616068738f025cef38f22ac2a8760152002e6ee796125a77230f",
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-moon-product-final-5j5vfm2t/cellerator_product2_release_test": "cd45ca74b8c60ed53dd9e4cef8c283ea206917ac4273536ac8e7b541a989a51d",
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-moon-product-final-5j5vfm2t/cellerator_product2_test": "0eba13cf3f74c6da7a61d0b172c8cdcd17807fe696b3ca451a0b64c605608c92",
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-moon-product-final-5j5vfm2t/libcellerator_product2.so": "651d7952be25a750dfacba52e49ae70caf5ed6f492d41f6a98bb26bb7206c125",
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/cellerator_product2_cuda_smoke": "0338b94f078b39f4d060beca8c18f679c582344ea5e39bec7bd57074ad8c4e1b",
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/installed/lib/libcellerator_product2.so": "f1c85292c76cc80f9c31aaff225d3e5e416a57a38183724b8a9f911e0e81220b",
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/libcellerator_product2.so": "5c309bb32b0667ede8819e28d4f584deee7dd97590378fae0b8d844ee28b7240",
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib/libcellerator_product2.so": "651d7952be25a750dfacba52e49ae70caf5ed6f492d41f6a98bb26bb7206c125"
+  },
+  "dynamic_linkage": {
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-moon-product-consumer-8yqknw_k/build/product2_consumer": {
+      "ldd_argv": [
+        "ldd",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-moon-product-consumer-8yqknw_k/build/product2_consumer"
+      ],
+      "ldd_stderr": "",
+      "ldd_stdout": "\tlinux-vdso.so.1 (0x00007ffef57e2000)\n\tlibcellerator_product2.so => /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib/libcellerator_product2.so (0x00007c2aa11e2000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007c2aa0e00000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007c2aa11a3000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007c2aa0a00000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007c2aa10b8000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007c2aa11f5000)\n",
+      "loader_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib",
+      "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib/libcellerator_product2.so",
+      "sha256": "651d7952be25a750dfacba52e49ae70caf5ed6f492d41f6a98bb26bb7206c125"
+    },
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-moon-product-final-5j5vfm2t/cellerator_product2_test": {
+      "ldd_argv": [
+        "ldd",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-moon-product-final-5j5vfm2t/cellerator_product2_test"
+      ],
+      "ldd_stderr": "",
+      "ldd_stdout": "\tlinux-vdso.so.1 (0x00007fffd491a000)\n\tlibcellerator_product2.so => /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib/libcellerator_product2.so (0x00007c5ced246000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007c5cece00000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007c5ced207000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007c5ceca00000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007c5ced11c000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007c5ced25b000)\n",
+      "loader_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib",
+      "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib/libcellerator_product2.so",
+      "sha256": "651d7952be25a750dfacba52e49ae70caf5ed6f492d41f6a98bb26bb7206c125"
+    },
+    "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/cellerator_product2_cuda_smoke": {
+      "ldd_argv": [
+        "ldd",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/cellerator_product2_cuda_smoke"
+      ],
+      "ldd_stderr": "",
+      "ldd_stdout": "\tlinux-vdso.so.1 (0x00007ffc3754e000)\n\tlibcellerator_product2.so => /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/installed/lib/libcellerator_product2.so (0x000072b50c0ac000)\n\tlibcudart.so.12 => /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64/libcudart.so.12 (0x000072b50bc00000)\n\tlibcuda.so.1 => /lib/x86_64-linux-gnu/libcuda.so.1 (0x000072b505e00000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000072b505a00000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000072b50c06b000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000072b505600000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000072b50bf82000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000072b50c0c5000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x000072b50bf7d000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x000072b50bf78000)\n\tlibrt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x000072b50bf71000)\n",
+      "loader_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/installed/lib:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64",
+      "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/installed/lib/libcellerator_product2.so",
+      "sha256": "f1c85292c76cc80f9c31aaff225d3e5e416a57a38183724b8a9f911e0e81220b"
+    }
+  },
+  "git_head_at_preparation": "0902fec2885c49deae840d8e4d95044b18d5fe71",
+  "python": "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+  "required_environment": {
+    "CELLERATOR_PRODUCT2_LIBRARY": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-install/lib/libcellerator_product2.so",
+    "LD_LIBRARY_PATH": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-integrate-v1/build-product2-cuda-qualified-v3/installed/lib:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64"
+  },
+  "schema_version": 1,
+  "source_sha256": {
+    "CMakeLists.txt": "dc2d4d3eccde2d3a347619e5636e9e0cb6bd1916304bc8dd63b6d7e279b023a6",
+    "cmake/Product2.cmake": "5dd19fe5ac50861f8661350719a82d9ec692f2c181302ab3020cdb5fe5f4df5a",
+    "components/CelleraTorch/python/celleratorch/moonshot_product.py": "2f340e956bfb38a5f17335eadf32b57ca9a78af172ee249323f9bccb67215068",
+    "experiments/moonshot-parallel-v1/integration/native_product2_consumer.cc": "b3a7ebfb392978cc1fbcefe853bd55fc9994033b7661bfb6621e253e58466931",
+    "experiments/moonshot-parallel-v1/integration/native_product2_test.cc": "2ca1d38834a83b5192f930024b28a1d772595cc27597dad44117f6f33ace20db",
+    "experiments/moonshot-parallel-v1/integration/product2_cuda_smoke.cu": "c2967bd3793678f3d81870b3386a6c1eb1f50fa00d8af26693dca8d83b42b2ae",
+    "experiments/moonshot-parallel-v1/integration/test_product_adapter.py": "be8829c1fa38bc62739a6d1be41f4476f57ab3488bc88f4996c92853b2f7bcc6",
+    "experiments/moonshot-parallel-v1/integration/verify_product_evidence.py": "9f082edbb8e44e2dfedb86b45b515c3c9cf7013d076bf5c6590995ac3c30f432",
+    "include/Cellerator/compute/operation/indexed_mechanism/incidence.hh": "ebf4a729a9432416994bacec347ddf8d3ff35e623d40520f7cb199827409a154",
+    "include/Cellerator/compute/operation/native_foundation_contract.hh": "0c9c4a3a4f2a1afda5101813993685b7e03c8f9ac2041961033798e395255509",
+    "include/Cellerator/compute/operation/operation_core_v2/schema.hh": "8cb0eac80df4318c3c9e9e477097e222df630d505aaa377ccfad68d527a425c2",
+    "include/Cellerator/compute/operation/product2/c_api.h": "0a082e758901acb85137868e0af78b97d2bcfe7a5ef9818663d071cccfd43511",
+    "include/Cellerator/compute/operation/product2/product2.hh": "35c9b7b3a6e31d8d273ee03afd8f7c25db242bb42d1610b5137b56fa265c7314",
+    "include/Cellerator/execution/biological_abi.hh": "b64e98995524b32ca55ad1dd14f454f650b0359a542a7f80f6224cd19b73267c",
+    "include/Cellerator/execution/execution_order.hh": "5ce60c6d1f51885b0337b4c9ba3349d0bc541c7a7e0b173c83857a53633eedf7",
+    "include/Cellerator/execution/identity.hh": "ac3e3e2c46a7b1928ea49317c82a94b0663f5739946fe9ad3aba12772c0e58b0",
+    "include/Cellerator/execution/launch_bindings.hh": "3e97b60066c8c1bcb01933a49015c5180c0e24632ec6de86d9409aadb2bf8b61",
+    "include/Cellerator/execution/lifetimes.hh": "5680593018778d61630d01d7b095a6f3dd746dc41dcffff05821b9d2e1c637a0",
+    "include/Cellerator/execution/operands.hh": "4514b949c2c082eaa2f8fefe9540bc4614c14d87746edb63964ade3ada8e8aba",
+    "include/Cellerator/execution/program/program_v2.h": "96f1a63c8ca9bfbdb9000f87c3772865cd37b36f2f8f2d10fe6e2a041efa58c8",
+    "include/Cellerator/execution/validation.hh": "bd4b93acb6fefea15dc6cbdd82ee2867e21aab28a62eb9a753b71642256772b8",
+    "src/compute/operation/product2/product2.cc": "a63462b664ad15ac60b245daa963e83cc363ec98bd6c8d28921f7435e877f87a",
+    "src/compute/operation/product2/product2.cu": "93149aa36988afc1c90989bbb173d8fb9f25f52056f019d69fb823f34439f8d5",
+    "src/execution/program/program_v2.cc": "48eee0a0f850ce30eebc0cf4eb3eca25975e857bc5ebb71b6246a5ffbba9664a"
+  },
+  "task": "CE-MOON-INTEGRATE",
+  "torch": "2.7.0+cu126"
+}
