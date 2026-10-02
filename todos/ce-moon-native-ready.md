@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-NATIVE-READY: Verify existing native owner completion
 
-Task revision: `7493`; current project revision is in `todo-status.md`.
+Task revision: `7616`; current project revision is in `todo-status.md`.
 
 ## Objective
 Protect scheduled ML2-BIO native ownership before broad CE integration dispatch.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `idle`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

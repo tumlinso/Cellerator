@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-TRAJECTORY: Build matrix-flow and change-driven trajectory prototypes
 
-Task revision: `7493`; current project revision is in `todo-status.md`.
+Task revision: `7615`; current project revision is in `todo-status.md`.
 
 ## Objective
 Expose an exact Sylvester-flow block and a last-transmitted-value delta ledger; choose one additional unusual mechanism.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `idle`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

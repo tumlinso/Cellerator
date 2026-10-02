@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-REWRITE: Publish supplied refactorings and recycle residual capacity
 
-Task revision: `7493`; current project revision is in `todo-status.md`.
+Task revision: `7614`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement an epoch-safe supplied extraction/remapping path and a live-gradient residual-regrowth example.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `idle`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 
