@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-DIFF: Expose derivatives and ordinary framework composition
 
-Task revision: `7493`; current project revision is in `todo-status.md`.
+Task revision: `7592`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement requested patch/port/process derivatives through existing parameter, tape and CelleraTorch contracts.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 
