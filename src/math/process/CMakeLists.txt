@@ -1,0 +1,10 @@
+get_filename_component(_ce_ops_root "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+add_library(cellerator_private_ports STATIC ports.cc
+  "${_ce_ops_root}/experiments/moonshot-parallel-v1/diff/ports/transport.cc")
+add_library(Cellerator::private_ports ALIAS cellerator_private_ports)
+target_include_directories(cellerator_private_ports PUBLIC "${_ce_ops_root}/include")
+target_compile_features(cellerator_private_ports PUBLIC cxx_std_20)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(cellerator_private_ports PRIVATE -fno-fast-math -ffp-contract=off)
+endif()
+unset(_ce_ops_root)

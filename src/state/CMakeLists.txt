@@ -1,0 +1,6 @@
+get_filename_component(_ce_state_root "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+add_library(cellerator_structured_state STATIC structured_state.cc)
+add_library(Cellerator::structured_state ALIAS cellerator_structured_state)
+target_include_directories(cellerator_structured_state PUBLIC "${_ce_state_root}/include")
+target_compile_features(cellerator_structured_state PUBLIC cxx_std_20)
+unset(_ce_state_root)

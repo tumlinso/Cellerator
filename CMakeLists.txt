@@ -43,6 +43,14 @@ endif()
 
 project(Cellerator LANGUAGES CXX)
 
+# Selectable installed host/SM70 substrate components use actual source owners.
+# Branch before legacy compiler/native/Torch exports to avoid namespace collisions.
+option(CELLERATOR_BUILD_SUBSTRATE_SDK "Build the selected substrate SDK" OFF)
+if(CELLERATOR_BUILD_SUBSTRATE_SDK)
+    include(cmake/substrate/Substrate.cmake)
+    return()
+endif()
+
 # Native session and execution targets are declared early. They also back the
 # optional shared Torch producer, so PIC must be enabled before target creation.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
