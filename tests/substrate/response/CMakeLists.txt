@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.24)
+project(CelleratorRequestedResponses LANGUAGES CXX)
+include(CTest)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS response)
+add_executable(ce_response_consumer native_consumer.cc)
+target_link_libraries(ce_response_consumer PRIVATE Cellerator::response)
+target_compile_options(ce_response_consumer PRIVATE -Wall -Wextra -Werror -fno-fast-math -ffp-contract=off)
+add_test(NAME ce_response_consumer COMMAND ce_response_consumer)

@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.24)
+project(CelleratorStrategyHostSample LANGUAGES CXX)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS packing_strategy)
+get_filename_component(CE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+add_subdirectory("${CE_ROOT}/src/packing/strategies" strategy-owner)
+add_executable(ce_strategy_host_sample host_sample.cc)
+target_link_libraries(ce_strategy_host_sample PRIVATE Cellerator::packing_strategies)
+target_compile_options(ce_strategy_host_sample PRIVATE -Wall -Wextra -Werror -fno-fast-math -ffp-contract=off)

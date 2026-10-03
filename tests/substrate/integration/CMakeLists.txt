@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.24)
+project(CelleratorCoreB LANGUAGES CXX)
+include(CTest)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS packing_strategies frontier response adaptive)
+add_executable(ce_core_b core_b_test.cc)
+target_link_libraries(ce_core_b PRIVATE Cellerator::packing_strategies Cellerator::frontier Cellerator::response Cellerator::adaptive)
+target_compile_options(ce_core_b PRIVATE -Wall -Wextra -Werror -fno-fast-math -ffp-contract=off)
+add_test(NAME ce_core_b COMMAND ce_core_b)
