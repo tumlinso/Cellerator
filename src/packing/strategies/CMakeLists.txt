@@ -1,0 +1,11 @@
+get_filename_component(_ce_strategy_root "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+add_library(cellerator_packing_strategies STATIC placement.cc)
+add_library(Cellerator::packing_strategies ALIAS cellerator_packing_strategies)
+target_include_directories(cellerator_packing_strategies PUBLIC
+  $<BUILD_INTERFACE:${_ce_strategy_root}/include> $<INSTALL_INTERFACE:include>)
+target_link_libraries(cellerator_packing_strategies PUBLIC Cellerator::packing_strategy)
+target_compile_features(cellerator_packing_strategies PUBLIC cxx_std_20)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(cellerator_packing_strategies PRIVATE -Wall -Wextra -Werror -fno-fast-math -ffp-contract=off)
+endif()
+unset(_ce_strategy_root)

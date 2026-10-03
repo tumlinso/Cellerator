@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.24)
+project(CelleratorPackingStrategies LANGUAGES CXX)
+include(CTest)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS packing_strategies)
+add_executable(ce_strategy_consumer native_consumer.cc)
+target_link_libraries(ce_strategy_consumer PRIVATE Cellerator::packing_strategies)
+target_compile_options(ce_strategy_consumer PRIVATE -Wall -Wextra -Werror -fno-fast-math -ffp-contract=off)
+add_test(NAME ce_strategy_consumer COMMAND ce_strategy_consumer)

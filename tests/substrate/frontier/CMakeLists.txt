@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.24)
+project(CelleratorFrontierChecks LANGUAGES CXX)
+include(CTest)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS frontier)
+add_executable(ce_frontier_consumer native_consumer.cc)
+target_link_libraries(ce_frontier_consumer PRIVATE Cellerator::frontier)
+target_compile_options(ce_frontier_consumer PRIVATE -Wall -Wextra -Werror -fno-fast-math -ffp-contract=off)
+add_test(NAME ce_frontier_consumer COMMAND ce_frontier_consumer)
