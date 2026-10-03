@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/home/tumlinson/.local/share/project-control/candidates/call-audit-256m-20260926/bin/python",
+    "-m",
+    "project_control.cli",
+    "plan",
+    "validate",
+    "--project",
+    "cellerator",
+    "--file",
+    "/home/tumlinson/Cellerator/planning/integrated-substrate-bootstrap-2026-10-02/mechanics-pass/cellerator.todo-plan.json"
+  ],
+  "returncode": 2,
+  "stdout": "",
+  "stderr": "project-control: Plan validation failed\n",
+  "public_validation_diagnostic": {
+    "code": "plan_validation_failed",
+    "message": "Plan validation failed",
+    "details": {
+      "errors": [
+        "task CE-IS1-TORCH has unknown task dependency CE-IS1-MERGE-B"
+      ]
+    }
+  }
+}

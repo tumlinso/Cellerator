@@ -1,0 +1,423 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "cellerator"
+  },
+  "invariants": [
+    {
+      "id": "CE-IS1-OWNERSHIP",
+      "severity": "error",
+      "rule": "Cellerator owns reusable mathematical/dynamical computation; Baseplane owns sequence meaning and representations; GlassHelix owns scientific experiments. Reuse existing numerical/lifetime owners, preserve real consumers and separate Todo authorities."
+    },
+    {
+      "id": "CE-IS1-PRESERVE",
+      "severity": "error",
+      "rule": "Execute only after the reviewed predecessor barrier. Preserve useful mechanisms, source, successful outcomes and negative evidence. No hand editing Todo/generated authority, no Ampere activation, no preprint edits, no CellShard authority changes."
+    },
+    {
+      "id": "CE-IS1-EXTEND",
+      "severity": "error",
+      "rule": "Keep the libraries easy to extend and fast. No compulsory Cellpack format, universal hidden axis, second general runtime, or unmeasured default. Distinguish equivalent lowering, model choices and approximations."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "CE-IS1-000",
+      "kind": "epic",
+      "title": "Cellerator integrated mathematical substrate",
+      "objective": "Closure-only aggregate; no child depends on this epic.",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "scope": {
+        "read_paths": [
+          "planning/integrated-substrate-v1"
+        ],
+        "exclusive_paths": []
+      },
+      "completion_contract": {
+        "required": [
+          "All local required outcomes are integrated and truthfully evidenced; preserve unfinished frontier work."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-IS1-CLOSURE",
+          "type": "task_state",
+          "task_id": "CE-IS1-CLOSE",
+          "status": "done",
+          "required": true
+        }
+      ],
+      "parent_id": null,
+      "status": "planned",
+      "result": "",
+      "next_action": "",
+      "notes": "",
+      "tags": [],
+      "result_policy": {}
+    },
+    {
+      "id": "CE-IS1-TORCH",
+      "parent_id": "CE-IS1-000",
+      "kind": "task",
+      "title": "Expose native mathematics through the existing framework adapter",
+      "objective": "Extend CelleraTorch rather than creating another learning stack; preserve canonical masters and valid saved-primal semantics.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "components/CelleraTorch",
+          "tests/substrate/torch"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-IS1-MERGE-B"
+        }
+      ],
+      "invariants": [
+        "CE-IS1-OWNERSHIP",
+        "CE-IS1-PRESERVE",
+        "CE-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Real native forward/input-VJP/parameter-VJP and requested JVP paths are reachable through supported framework calls.",
+          "No optimizer step hides in backward; parameter update/publication remains explicit.",
+          "Shape, dtype, device, alias and stale-tape errors are tested; core CE still builds without Torch."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/CE-IS1-TORCH.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.\n\nUser hold (2026-10-03): defer packaging, frontends, provider delivery and final qualification while continuing native mechanics. Resume only after an explicit user instruction to resume this deferred scope and owner review of current prerequisite evidence; retain all existing completion/provider contracts.",
+      "status": "blocked",
+      "result": "",
+      "notes": "User hold (2026-10-03): defer packaging, frontends, provider delivery and final qualification while continuing native mechanics. Resume only after an explicit user instruction to resume this deferred scope and owner review of current prerequisite evidence; retain all existing completion/provider contracts.",
+      "tags": [
+        "deferred",
+        "is1-packaging-deferred"
+      ]
+    },
+    {
+      "id": "CE-IS1-INTEGRATE",
+      "parent_id": "CE-IS1-000",
+      "kind": "task",
+      "title": "Publish the installed numerical capability handoff",
+      "objective": "Accept the adapter and publish source-bound capabilities that Baseplane and GlassHelix can actually consume.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "cmake",
+          "include",
+          "src",
+          "components",
+          "tests",
+          "examples",
+          "experiments",
+          "planning/integrated-substrate-v1/receipts"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-IS1-TORCH"
+        }
+      ],
+      "invariants": [
+        "CE-IS1-OWNERSHIP",
+        "CE-IS1-PRESERVE",
+        "CE-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Installed native and framework consumers pass actual supported shape/precision/derivative checks.",
+          "Publish receipts/provider.json with current CE commit, build identities, capabilities and hashed real test evidence.",
+          "No fixture receipt or reference-only result is accepted as a native provider."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/CE-IS1-INTEGRATE.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.\n\nUser hold (2026-10-03): defer packaging, frontends, provider delivery and final qualification while continuing native mechanics. Resume only after an explicit user instruction to resume this deferred scope and owner review of current prerequisite evidence; retain all existing completion/provider contracts.",
+      "status": "blocked",
+      "result": "",
+      "notes": "User hold (2026-10-03): defer packaging, frontends, provider delivery and final qualification while continuing native mechanics. Resume only after an explicit user instruction to resume this deferred scope and owner review of current prerequisite evidence; retain all existing completion/provider contracts.",
+      "tags": [
+        "deferred",
+        "is1-packaging-deferred"
+      ]
+    },
+    {
+      "id": "CE-IS1-QUALIFY",
+      "parent_id": "CE-IS1-000",
+      "kind": "task",
+      "title": "Measure complete-path performance and extension friction",
+      "objective": "Benchmark preparation/reuse/derivatives/adaptation and perform an independent extension exercise.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "bench/substrate/qualification",
+          "tests/substrate/qualification",
+          "planning/integrated-substrate-v1/results/ce"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-IS1-INTEGRATE"
+        }
+      ],
+      "invariants": [
+        "CE-IS1-OWNERSHIP",
+        "CE-IS1-PRESERVE",
+        "CE-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Cold/warm/training/changing-structure comparisons include bytes, launches and quality, not only best kernel time.",
+          "Custom packer and new operator are added without central rewrites or mandatory hot-path abstraction overhead.",
+          "Selection policies use measured comparable evidence; regressions require a reason and a retained fallback."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/CE-IS1-QUALIFY.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.\n\nUser hold (2026-10-03): defer packaging, frontends, provider delivery and final qualification while continuing native mechanics. Resume only after an explicit user instruction to resume this deferred scope and owner review of current prerequisite evidence; retain all existing completion/provider contracts.",
+      "status": "blocked",
+      "result": "",
+      "notes": "User hold (2026-10-03): defer packaging, frontends, provider delivery and final qualification while continuing native mechanics. Resume only after an explicit user instruction to resume this deferred scope and owner review of current prerequisite evidence; retain all existing completion/provider contracts.",
+      "tags": [
+        "deferred",
+        "is1-packaging-deferred"
+      ]
+    },
+    {
+      "id": "CE-IS1-DOCS",
+      "parent_id": "CE-IS1-000",
+      "kind": "task",
+      "title": "Make the library legible to users and future implementers",
+      "objective": "Publish coherent use/design/contribution paths and selected authenticated results, preserving research history.",
+      "priority": 100,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "README.md",
+          "AGENTS.md",
+          "docs",
+          "scripts/ce_geo/validate_documentation.py"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-IS1-INTEGRATE"
+        }
+      ],
+      "invariants": [
+        "CE-IS1-OWNERSHIP",
+        "CE-IS1-PRESERVE",
+        "CE-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Human overview explains the mathematical library and its unfinished frontier; minimal examples run.",
+          "Agent contracts, development rationale, live status authority and historical notes are distinct.",
+          "Remove status-fossil assertions and duplicate mutable ledgers; retain raw benchmark provenance."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/CE-IS1-DOCS.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.\n\nUser hold (2026-10-03): defer packaging, frontends, provider delivery and final qualification while continuing native mechanics. Resume only after an explicit user instruction to resume this deferred scope and owner review of current prerequisite evidence; retain all existing completion/provider contracts.",
+      "status": "blocked",
+      "result": "",
+      "notes": "User hold (2026-10-03): defer packaging, frontends, provider delivery and final qualification while continuing native mechanics. Resume only after an explicit user instruction to resume this deferred scope and owner review of current prerequisite evidence; retain all existing completion/provider contracts.",
+      "tags": [
+        "deferred",
+        "is1-packaging-deferred"
+      ]
+    },
+    {
+      "id": "CE-IS1-CLOSE",
+      "parent_id": "CE-IS1-000",
+      "kind": "task",
+      "title": "Accept the deliberate, extensible mathematical library",
+      "objective": "Resolve final findings and publish a scoped completion record, without claiming every research direction is solved.",
+      "priority": 100,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "cmake",
+          "include",
+          "src",
+          "components",
+          "tests",
+          "examples",
+          "experiments",
+          "docs",
+          "planning/integrated-substrate-v1/receipts"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "README.md",
+          "include",
+          "src",
+          "planning",
+          "experiments",
+          "tests",
+          "docs"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md",
+          "preprint"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-IS1-QUALIFY"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-IS1-DOCS"
+        }
+      ],
+      "invariants": [
+        "CE-IS1-OWNERSHIP",
+        "CE-IS1-PRESERVE",
+        "CE-IS1-EXTEND"
+      ],
+      "completion_contract": {
+        "required": [
+          "Core vertical slice, real alternative packing, derivative/lifetime guarantees and out-of-tree installation pass.",
+          "Preservation ledger has no unexplained loss or orphaned required integration; deferred research has owner and trigger.",
+          "Refresh provider receipt if source changed after handoff; preserve all predecessor authority/evidence."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "references": [
+        "planning/integrated-substrate-v1/tasks/CE-IS1-CLOSE.md"
+      ],
+      "next_action": "Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.\n\nUser hold (2026-10-03): defer packaging, frontends, provider delivery and final qualification while continuing native mechanics. Resume only after an explicit user instruction to resume this deferred scope and owner review of current prerequisite evidence; retain all existing completion/provider contracts.",
+      "status": "blocked",
+      "result": "",
+      "notes": "User hold (2026-10-03): defer packaging, frontends, provider delivery and final qualification while continuing native mechanics. Resume only after an explicit user instruction to resume this deferred scope and owner review of current prerequisite evidence; retain all existing completion/provider contracts.",
+      "tags": [
+        "deferred",
+        "is1-packaging-deferred"
+      ]
+    }
+  ],
+  "runs": []
+}
