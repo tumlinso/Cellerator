@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-IS1-ADOPT: Reconcile finished predecessors and publish the small shared foundation
 
-Task revision: `7679`; current project revision is in `todo-status.md`.
+Task revision: `7687`; current project revision is in `todo-status.md`.
 
 ## Objective
 After the global predecessor barrier, inventory the completed frontier, assign every useful behavior/unfinished obligation, and integrate the minimum contracts needed by parallel lanes.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.
