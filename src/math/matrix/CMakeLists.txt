@@ -1,0 +1,10 @@
+get_filename_component(_ce_ops_root "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+add_library(cellerator_matrix_patch STATIC patch.cc
+  "${_ce_ops_root}/experiments/moonshot-parallel-v1/diff/patch/native.cc")
+add_library(Cellerator::matrix_patch ALIAS cellerator_matrix_patch)
+target_include_directories(cellerator_matrix_patch PUBLIC "${_ce_ops_root}/include")
+target_compile_features(cellerator_matrix_patch PUBLIC cxx_std_20)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(cellerator_matrix_patch PRIVATE -fno-fast-math -ffp-contract=off)
+endif()
+unset(_ce_ops_root)

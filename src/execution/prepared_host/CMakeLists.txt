@@ -1,0 +1,4 @@
+add_library(cellerator_prepared_host INTERFACE)
+add_library(Cellerator::prepared_host ALIAS cellerator_prepared_host)
+target_link_libraries(cellerator_prepared_host INTERFACE Cellerator::local_differential)
+target_compile_features(cellerator_prepared_host INTERFACE cxx_std_20)
