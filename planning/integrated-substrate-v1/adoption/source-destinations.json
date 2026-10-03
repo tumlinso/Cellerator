@@ -1,0 +1,157 @@
+{
+  "source_base": "41fcd6e7",
+  "entries": [
+    {
+      "seam": "identity",
+      "source": "include/Cellerator/execution/identity.hh",
+      "destination": "include/Cellerator/execution/identity.hh",
+      "owner": "CE-IS1-STATE",
+      "disposition": "reuse",
+      "contract": "Domain/order/structure epoch/value generation remain distinct native types."
+    },
+    {
+      "seam": "operation_contract",
+      "source": "include/Cellerator/compute/operation/native_foundation_contract.hh",
+      "destination": "include/Cellerator/compute/operation/native_foundation_contract.hh",
+      "owner": "CE-IS1-OPS",
+      "disposition": "reuse",
+      "contract": "Advertise forward/JVP/VJP/second-direction independently; unsupported stays explicit."
+    },
+    {
+      "seam": "incidence",
+      "source": "src/compute/operation/indexed_mechanism/incidence.cc",
+      "destination": "src/compute/operation/indexed_mechanism/incidence.cc",
+      "owner": "CE-IS1-OPS",
+      "disposition": "reuse",
+      "contract": "Ordered slots and repeated arguments; explicit output assembly owners."
+    },
+    {
+      "seam": "state",
+      "source": "experiments/moonshot-parallel-v1/state/state_view.hh",
+      "destination": "include/Cellerator/state",
+      "owner": "CE-IS1-STATE",
+      "disposition": "adapt",
+      "contract": "Actor/private/ragged view; replace demo identities through native owner adaptation."
+    },
+    {
+      "seam": "packing",
+      "source": "include/Cellerator/compute/operation/prepared_relation.hh",
+      "destination": "include/Cellerator/packing",
+      "owner": "CE-IS1-PACK",
+      "disposition": "adapt",
+      "contract": "Strategy emits validated realization; preserve prepared projection/value/lifetime owner."
+    },
+    {
+      "seam": "matrix_patch",
+      "source": "experiments/moonshot-parallel-v1/mma",
+      "destination": "include/Cellerator/math/matrix",
+      "owner": "CE-IS1-OPS",
+      "disposition": "adapt",
+      "contract": "SM70 patch/product/quadratic provider kernels remain optional provider implementations."
+    },
+    {
+      "seam": "product2",
+      "source": "src/compute/operation/product2/product2.cc",
+      "destination": "src/compute/operation/product2/product2.cc",
+      "owner": "CE-IS1-OPS",
+      "disposition": "reuse",
+      "contract": "Native FP32 forward/VJP/JVP owner; no implicit CUDA Torch or higher response grant."
+    },
+    {
+      "seam": "trajectory",
+      "source": "experiments/moonshot-parallel-v1/trajectory",
+      "destination": "include/Cellerator/math/process",
+      "owner": "CE-IS1-OPS",
+      "disposition": "adapt",
+      "contract": "Matrix polynomial/Sylvester flow/remembered transmission; CPU experimental provenance retained."
+    },
+    {
+      "seam": "effects",
+      "source": "experiments/baseplane_moonshot/families/effects",
+      "destination": "include/Cellerator/math/effects",
+      "owner": "CE-IS1-EFFECTS",
+      "disposition": "adapt",
+      "contract": "Affine/jet/weighted/finite effects retain composition order and truncation limits."
+    },
+    {
+      "seam": "tensor",
+      "source": "experiments/baseplane_moonshot/families/tensor",
+      "destination": "include/Cellerator/math/matrix",
+      "owner": "CE-IS1-OPS",
+      "disposition": "adapt",
+      "contract": "Numerical tensor math owns shape/precision/capacity; caller supplies sequence meaning."
+    },
+    {
+      "seam": "learning",
+      "source": "experiments/baseplane_moonshot/families/learning",
+      "destination": "include/Cellerator/math",
+      "owner": "CE-IS1-MATH",
+      "disposition": "adapt",
+      "contract": "Learning/routing/hardening host prototypes retained for later native owner integration."
+    },
+    {
+      "seam": "mechanisms",
+      "source": "experiments/baseplane_moonshot/families/mechanisms",
+      "destination": "include/Cellerator/math/effects",
+      "owner": "CE-IS1-EFFECTS",
+      "disposition": "adapt",
+      "contract": "Port/factor/coarse/counterfactual algebra retains explicit numerical axes; extensions MATH."
+    },
+    {
+      "seam": "derivatives",
+      "source": "experiments/moonshot-parallel-v1/diff",
+      "destination": "include/Cellerator/math",
+      "owner": "CE-IS1-DIFF",
+      "disposition": "adapt",
+      "contract": "Reference product/patch/port derivatives feed local_differential with explicit supported policies."
+    },
+    {
+      "seam": "rewrite",
+      "source": "experiments/moonshot-parallel-v1/rewrite",
+      "destination": "include/Cellerator/state",
+      "owner": "CE-IS1-ADAPT",
+      "disposition": "adapt",
+      "contract": "Drain tapes; explicit migration/reset; retain slot incarnations and quotient conditions."
+    },
+    {
+      "seam": "training",
+      "source": "src/compute/operation/indexed_mechanism/training.cu",
+      "destination": "src/compute/operation/indexed_mechanism/training.cu",
+      "owner": "CE-IS1-EXEC",
+      "disposition": "reuse",
+      "contract": "Single canonical coefficient owner, readers, generations and saved tapes."
+    },
+    {
+      "seam": "numeric",
+      "source": "src/compute/operation/native_numeric/host_relation.cc",
+      "destination": "src/compute/operation/native_numeric/host_relation.cc",
+      "owner": "CE-IS1-OPS",
+      "disposition": "reuse",
+      "contract": "Host relation performs cold topology preparation and explicit value/order binding."
+    },
+    {
+      "seam": "torch",
+      "source": "components/CelleraTorch",
+      "destination": "components/CelleraTorch",
+      "owner": "CE-IS1-TORCH",
+      "disposition": "reuse",
+      "contract": "Framework adapter over CE numerical and parameter owners; preserve snapshot/restore."
+    },
+    {
+      "seam": "build",
+      "source": "cmake/package/CelleratorConfig.cmake.in",
+      "destination": "cmake/substrate",
+      "owner": "CE-IS1-BUILD",
+      "disposition": "extend",
+      "contract": "Granular installed targets; exact Baseplane::seq independent; bridge optional."
+    },
+    {
+      "seam": "sealed_seeds",
+      "source": "planning/integrated-substrate-v1/seed",
+      "destination": "planning/integrated-substrate-v1/seed",
+      "owner": "CE-IS1-ADOPT",
+      "disposition": "retain_immutable",
+      "contract": "Witnesses only; no native/runtime/science acceptance from seed tests."
+    }
+  ]
+}

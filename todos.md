@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `7678`
+Project revision: `7681`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1365,7 +1365,7 @@ Project revision: `7678`
 - `CE-ARCH-80` | kind: epic | status: done | parent: - | objective: Finish the implementation and evidence required by roadmap Phases 4 through 11 and the definition of migration completion, without erasing the bounded results of CE-ARCH-40 through CE-ARCH-79.
 - `CE-ARCH-81` | kind: validation_task | status: done | parent: CE-ARCH-80 | objective: Replace stale completion language with a source-backed Phase 4 through Phase 11 exit matrix that distinguishes implemented, partial, missing, and externally blocked requirements.
 - `CE-IS1-ADAPT` | kind: task | status: planned | parent: CE-IS1-000 | objective: Make parameter-aware caches, remembered deltas and externally supplied structural changes coexist under existing generation/lifetime rules.
-- `CE-IS1-ADOPT` | kind: task | status: planned | parent: CE-IS1-000 | objective: After the global predecessor barrier, inventory the completed frontier, assign every useful behavior/unfinished obligation, and integrate the minimum contracts needed by parallel lanes.
+- `CE-IS1-ADOPT` | kind: task | status: in_progress | parent: CE-IS1-000 | objective: After the global predecessor barrier, inventory the completed frontier, assign every useful behavior/unfinished obligation, and integrate the minimum contracts needed by parallel lanes.
 - `CE-IS1-BUILD` | kind: task | status: planned | parent: CE-IS1-000 | objective: Design and test granular CMake/package boundaries and installed-consumer fixtures for the mathematical library and optional adapters.
 - `CE-IS1-CLOSE` | kind: task | status: planned | parent: CE-IS1-000 | objective: Resolve final findings and publish a scoped completion record, without claiming every research direction is solved.
 - `CE-IS1-DIFF` | kind: task | status: planned | parent: CE-IS1-000 | objective: Make forward, state/parameter VJP and JVP composable first-class capabilities using saved-primal ownership.

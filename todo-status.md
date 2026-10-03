@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `7678`
+Project revision: `7681`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -984,7 +984,7 @@ Project revision: `7678`
 - `CE-ARCH-80` | status: done | execution: closed | next: Complete: CE-ARCH-81 through CE-ARCH-92 satisfy the continuation barrier and the CE-ARCH-92 real-data audit validates the migration definition.
 - `CE-ARCH-81` | status: done | execution: closed | next: Audit each roadmap exit criterion against canonical source and tests, publish the truthful matrix, and leave implementation gaps owned by CE-ARCH-82 through CE-ARCH-92.
 - `CE-IS1-ADAPT` | status: planned | execution: ready | next: Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.
-- `CE-IS1-ADOPT` | status: planned | execution: ready | next: Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.
+- `CE-IS1-ADOPT` | status: in_progress | execution: claimed | next: Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.
 - `CE-IS1-BUILD` | status: planned | execution: ready | next: Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.
 - `CE-IS1-CLOSE` | status: planned | execution: ready | next: Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.
 - `CE-IS1-DIFF` | status: planned | execution: ready | next: Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.
