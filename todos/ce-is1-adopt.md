@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-IS1-ADOPT: Reconcile finished predecessors and publish the small shared foundation
 
-Task revision: `7687`; current project revision is in `todo-status.md`.
+Task revision: `7877`; current project revision is in `todo-status.md`.
 
 ## Objective
 After the global predecessor barrier, inventory the completed frontier, assign every useful behavior/unfinished obligation, and integrate the minimum contracts needed by parallel lanes.

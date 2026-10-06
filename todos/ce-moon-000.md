@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-MOON-000: Cellerator numerical research for Baseplane moonshots
 
-Task revision: `7678`; current project revision is in `todo-status.md`.
+Task revision: `7877`; current project revision is in `todo-status.md`.
 
 ## Objective
 Aggregate Cellerator-owned experimental numerical and learned mechanisms; no replacement of ML2 or unrelated research.

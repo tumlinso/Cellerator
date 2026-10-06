@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-IS1-STRATEGIES: Add genuinely different packing and repair strategies
 
-Task revision: `7678`; current project revision is in `todo-status.md`.
+Task revision: `7877`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement alternative geometry/operation packers and their amortized-cost selection without coupling them to Cellpack.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Use the task brief and accepted predecessor source. Implement a substantive integrated outcome; bind real acceptance commands before completion. Do not split ordinary inspect/build/retry work into procedural tasks.
