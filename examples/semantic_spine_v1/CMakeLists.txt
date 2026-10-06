@@ -6,6 +6,13 @@ add_executable(ceSemanticSpineDemo examples/semantic_spine_v1/regulatory_reuse.c
 target_compile_features(ceSemanticSpineDemo PRIVATE cxx_std_17)
 target_link_libraries(ceSemanticSpineDemo PRIVATE Cellerator::prepared_relation_cuda CUDA::cudart)
 set_target_properties(ceSemanticSpineDemo PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+# Generic native reference workload. Scientific interpretation and upstream
+# compatibility remain in the caller; this executable accepts typed arrays.
+add_executable(ceNativeNeighborhoodMoments examples/native_neighborhood_moments/main.cc)
+target_compile_features(ceNativeNeighborhoodMoments PRIVATE cxx_std_20)
+target_link_libraries(ceNativeNeighborhoodMoments PRIVATE
+  Cellerator::prepared_relation_cuda Cellerator::native_numeric CUDA::cudart)
+set_target_properties(ceNativeNeighborhoodMoments PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 # Reference fixture is never the required accelerator acceptance target.
 add_executable(ceSemanticSpineReferenceFixture examples/semantic_spine_v1/regulatory_reuse.cc)
 target_compile_definitions(ceSemanticSpineReferenceFixture PRIVATE CELLERATOR_SPINE_REFERENCE_ONLY=1)
