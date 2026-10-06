@@ -32,23 +32,30 @@ Use the installed Project Control/Codex front door and this repository's Todo au
 
 External compatibility is not an absolute constraint at this stage. A reviewed internal move may change names/interfaces if it improves development; repair real sibling consumers and relevant tests together. Frozen contracts and overlapping active work still require their owner's explicit reconciliation. Do not use a documentation task to rewrite numerical behavior, introduce another planner, or complete unrelated old epics.
 
-## scVelo and CellRank library probes
+## Software ports and design probes
 
-During a user-authorized scVelo or CellRank probe with a scoped Project Control
-task, additive Cellerator changes are permitted without renewed permission.
-Keep additions general, clean, and maintainable, with explicit contracts and
+During active library development, any explicitly user-authorized software
+port or design probe with a scoped Project Control task carries standing
+permission for additive changes to Cellerator, without renewed permission. Keep
+additions general, clean, and maintainable, with explicit contracts and
 validation; use small architectural cleanup only to resolve demonstrated
-friction. Preserve native scientific computation by default. An optional,
-opportunistic FP16 Tensor Core mode is the only permitted deliberate numerical
-deviation. Compare it with upstream/native computation; a higher-precision
-reference may supplement that comparison. Prefer FP32 accumulation where
-supported, and declare and qualify actual accumulation and output policy. Use
-the mode only within its demonstrated numerical envelope, retaining native
-fallback for unsupported or unsafe regimes. Existing Tensor Core documentation
-defines implementation requirements.
-Report missing or insufficient reusable primitives promptly with the concrete
-computation, evidence, existing capability and gap, proposed owner and general
-contract, and downstream impact. Discuss major API, granularity, or ownership
+friction. General numerical, state, graph, relation, statistical, and
+iterative mechanisms belong in Cellerator; Baseplane should own only
+intrinsically sequence-grounded functionality.
+
+Preserve native computation by default. An optional, opportunistic FP16 Tensor
+Core mode is the only permitted deliberate numerical deviation. Compare it
+with upstream/native computation. A higher-precision reference may supplement
+that comparison. Prefer FP32 accumulation where supported, and declare and
+qualify actual accumulation and output policy. Use the mode only within its
+demonstrated numerical envelope, retaining native fallback for unsupported or
+unsafe regimes. Existing Tensor Core documentation defines implementation
+requirements.
+
+When a basic reusable primitive appears missing or insufficient, report this
+promptly to the user. Include the concrete computation and evidence, current
+library capability and gap, proposed owner and general contract, and
+downstream impact. Discuss major API, granularity, ownership, or architectural
 choices with the user before committing to them.
 
 ## Validate what changed
