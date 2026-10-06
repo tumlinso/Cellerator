@@ -1,4 +1,5 @@
 #include <Cellerator/compute/operation/product2/c_api.h>
+#include "cuda_stream_device.cuh"
 #include <cuda_runtime.h>
 #include <cuda.h>
 #include <cstdint>
@@ -56,7 +57,7 @@ ce_product2_status admit(const ce_product2_cuda_context*c,const ce_product2_bind
  Span rs[5],ws[2];for(int i=0;i<reads;++i)if(!span(rp[i],rc[i],rs[i]))return CE_PRODUCT2_OVERFLOW;
  for(int i=0;i<writes;++i){if(!span(wp[i],wc[i],ws[i]))return CE_PRODUCT2_OVERFLOW;for(int j=0;j<reads;++j)if(overlap(ws[i],rs[j]))return CE_PRODUCT2_ALIAS;for(int j=0;j<i;++j)if(overlap(ws[i],ws[j]))return CE_PRODUCT2_ALIAS;}
  int dev=-1,sd=-1;if(cudaGetDevice(&dev)!=cudaSuccess || dev!=c->device)return CE_PRODUCT2_BACKEND_ERROR;
- if(cudaStreamGetDevice(c->stream,&sd)!=cudaSuccess || sd!=dev)return CE_PRODUCT2_BACKEND_ERROR;
+ if(!cellerator::runtime::detail::stream_device(c->stream,&sd) || sd!=dev)return CE_PRODUCT2_BACKEND_ERROR;
  for(int i=0;i<reads;++i){auto e=device_span(rp[i],rc[i],dev);if(e)return e;}
  for(int i=0;i<writes;++i){auto e=device_span(wp[i],wc[i],dev);if(e)return e;}
  return CE_PRODUCT2_SUCCESS;
@@ -93,7 +94,7 @@ extern "C" ce_product2_status ce_product2_cuda_create(uint64_t n,uint64_t m,cons
  try {
  auto c=std::make_unique<ce_product2_cuda_context>();if(m){c->host_a.assign(a,a+m);c->host_b.assign(b,b+m);}c->n=n;c->m=m;c->generation=generation;c->stream=reinterpret_cast<cudaStream_t>(s);
  int sd=-1;cudaDeviceProp p{};
- if(cudaGetDevice(&c->device)!=cudaSuccess || cudaStreamGetDevice(c->stream,&sd)!=cudaSuccess || sd!=c->device || cudaGetDeviceProperties(&p,c->device)!=cudaSuccess)return CE_PRODUCT2_BACKEND_ERROR;
+ if(cudaGetDevice(&c->device)!=cudaSuccess || !cellerator::runtime::detail::stream_device(c->stream,&sd) || sd!=c->device || cudaGetDeviceProperties(&p,c->device)!=cudaSuccess)return CE_PRODUCT2_BACKEND_ERROR;
  if(p.major!=7 || p.minor!=0)return CE_PRODUCT2_UNAVAILABLE;
  if(m){if(cudaMalloc(&c->a,m*sizeof(int64_t))!=cudaSuccess || cudaMalloc(&c->b,m*sizeof(int64_t))!=cudaSuccess)return CE_PRODUCT2_BACKEND_ERROR;
  auto ea=cudaMemcpyAsync(c->a,a,m*sizeof(int64_t),cudaMemcpyHostToDevice,c->stream);

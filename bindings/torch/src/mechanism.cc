@@ -23,7 +23,6 @@ std::uintptr_t version(const ::torch::Tensor& t) {
 struct AliasState {
     std::weak_ptr<MechanismHandle> handle;
     ::torch::Tensor tensor;
-    ::torch::Tensor value_baseline;
     std::vector<std::pair<::torch::Tensor, std::uintptr_t>> aliases;
     std::mutex mutex;
 };
@@ -61,8 +60,9 @@ void validate_coefficients_locked(const ::torch::Tensor& tensor, AliasState& sta
         "coefficient tensor metadata no longer matches canonical FP32 storage");
     TORCH_CHECK(tensor.data_ptr<float>() == owner->data(),
         "coefficient tensor no longer aliases canonical native storage; Module.to or parameter replacement is unsupported");
-    TORCH_CHECK(state.value_baseline.defined() && ::torch::equal(tensor, state.value_baseline),
-        "native coefficient values changed outside guarded update or checkpoint restore");
+    for (const auto& alias : state.aliases)
+        TORCH_CHECK(version(alias.first) == alias.second,
+            "coefficient tensor version changed outside guarded update");
     auto found = std::find_if(state.aliases.begin(), state.aliases.end(), [&](const auto& alias) {
         return alias.first.unsafeGetTensorImpl() == tensor.unsafeGetTensorImpl();
     });
@@ -189,9 +189,10 @@ public:
         std::lock_guard<std::mutex> registry_lock(alias_map_mutex);
         registered_owners[owner->data()] = owner;
     }
-    state->tensor = ::torch::from_blob(owner->data(), {static_cast<std::int64_t>(owner->size())},
-        [owner = std::move(owner)](void*) {}, options).set_requires_grad(true);
-    state->value_baseline = state->tensor.detach().clone();
+    auto* owner_data = owner->data();
+    const auto owner_size = static_cast<std::int64_t>(owner->size());
+    state->tensor = ::torch::from_blob(owner_data, {owner_size},
+        [owner](void*) {}, options).set_requires_grad(true);
     state->aliases.emplace_back(state->tensor, version(state->tensor));
     return state->tensor;
 }
@@ -246,7 +247,6 @@ void publish_update(const std::shared_ptr<MechanismHandle>& handle) {
     try {
         handle->publish_write(at::cuda::getCurrentCUDAStream(handle->owner()->device()).stream());
         for (auto& alias : state->aliases) alias.second = version(alias.first);
-        state->value_baseline.copy_(state->tensor);
     } catch (...) {
         handle->poison();
         throw;
@@ -257,7 +257,6 @@ void synchronize_coefficients(const std::shared_ptr<MechanismHandle>& handle) {
     auto state = state_for(handle);
     std::lock_guard<std::mutex> lock(state->mutex);
     TORCH_CHECK(state->tensor.defined(), "native coefficient Tensor has not been attached");
-    state->value_baseline.copy_(state->tensor);
     for (auto& alias : state->aliases) alias.second = version(alias.first);
 }
 

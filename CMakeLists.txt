@@ -697,6 +697,19 @@ include(compat/cp_math_v1/CMakeLists.txt)
 
 include(cmake/NativeFoundation.cmake)
 
+if(CELLERATOR_BUILD_TESTS AND NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
+    add_executable(celleratorCudaStreamDeviceTest
+        tests/bindings/native/cuda_stream_device_test.cc)
+    target_include_directories(celleratorCudaStreamDeviceTest PRIVATE
+        "${PROJECT_SOURCE_DIR}/src/runtime")
+    target_link_libraries(celleratorCudaStreamDeviceTest PRIVATE
+        CUDA::cudart CUDA::cuda_driver)
+    target_compile_features(celleratorCudaStreamDeviceTest PRIVATE cxx_std_17)
+    add_test(NAME cellerator_cuda_stream_device
+        COMMAND celleratorCudaStreamDeviceTest)
+    set_tests_properties(cellerator_cuda_stream_device PROPERTIES SKIP_RETURN_CODE 77)
+endif()
+
 if(CELLERATOR_ENABLE_PYTHON)
     cellerator_configure_python_mechanism_bindings()
 endif()

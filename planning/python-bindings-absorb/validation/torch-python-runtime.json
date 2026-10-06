@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "project_root": "/tmp/cellerator-python-bindings",
+  "command_cwd": "/tmp/cellerator-python-bindings",
+  "recipe": "baseline",
+  "argv": [
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/bindings/python"
+  ],
+  "resources": {
+    "gpus": 2,
+    "cpu_threads": 4
+  },
+  "paths": [
+    "python/cellerator",
+    "bindings/python",
+    "bindings/torch/src/mechanism.cc",
+    "bindings/torch/src/python_module.cc",
+    "include/Cellerator/bindings",
+    "tests/bindings/python"
+  ],
+  "timeout": 1200
+}

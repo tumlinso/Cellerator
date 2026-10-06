@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "project_root": "/tmp/cellerator-python-bindings",
+  "command_cwd": "/tmp/cellerator-python-bindings",
+  "recipe": "baseline",
+  "argv": [
+    "/tmp/cellerator-bindings-build/celleratorCudaStreamDeviceTest"
+  ],
+  "resources": {
+    "gpus": 2,
+    "cpu_threads": 4
+  },
+  "paths": [
+    "src/runtime/cuda_stream_device.cuh",
+    "src/runtime/relation_value_readiness.cu",
+    "src/compute/operation/product2/product2.cu",
+    "tests/bindings/native/cuda_stream_device_test.cc"
+  ],
+  "timeout": 600
+}

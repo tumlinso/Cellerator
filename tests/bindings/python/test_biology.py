@@ -13,7 +13,7 @@ import pytest
 torch = pytest.importorskip("torch")
 from torch import nn
 
-from cellerator import mechanisms_available
+from cellerator import SharedSupportSpec, mechanisms_available
 from cellerator.torch import (
     Axis, BiologicalTensor, Identity, guarded_step, load_checkpoint, save_checkpoint,
 )

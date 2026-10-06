@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "project_root": "/tmp/cellerator-python-bindings",
+  "command_cwd": "/tmp/cellerator-python-bindings",
+  "recipe": "baseline",
+  "argv": [
+    "/tmp/cellerator-bindings-host/bin/python",
+    "/tmp/cellerator-python-bindings/planning/python-bindings-absorb/validation/native_python_runtime.py"
+  ],
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 4
+  },
+  "paths": [
+    "bindings/python",
+    "include/Cellerator/bindings",
+    "tests/bindings/native",
+    "tests/bindings/python"
+  ],
+  "timeout": 600
+}

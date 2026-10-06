@@ -55,8 +55,8 @@ inline void validate_export_dtype_(::torch::ScalarType dtype) {
     }
 }
 
-inline void require_row_compressed_part_(const cellshard::sparse::compressed &part, const char *label) {
-    if (part.axis != cellshard::sparse::compressed_by_row) {
+inline void require_row_compressed_part_(const ::cellshard::sparse::compressed &part, const char *label) {
+    if (part.axis != ::cellshard::sparse::compressed_by_row) {
         throw std::invalid_argument(std::string(label) + " requires row-compressed CSR input");
     }
     if ((part.rows != 0 && part.majorPtr == 0) || (part.nnz != 0 && (part.minorIdx == 0 || part.val == 0))) {
@@ -106,7 +106,7 @@ inline void copy_value_payload_(
 // hot-path usage easier. The explicit copy keeps ownership and performance
 // semantics obvious.
 inline ::torch::Tensor export_as_tensor(
-    const cellshard::sparse::compressed &part,
+    const ::cellshard::sparse::compressed &part,
     const ExportOptions &options = ExportOptions()) {
     detail::require_row_compressed_part_(part, "export_as_tensor(part)");
 
@@ -149,7 +149,7 @@ inline ::torch::Tensor export_as_tensor(
 // The only sane place to use this is at an explicit interop boundary, for
 // example "hand this matrix to a Torch-native prototype model".
 inline ::torch::Tensor export_as_tensor(
-    const cellshard::sharded<cellshard::sparse::compressed> &view,
+    const ::cellshard::sharded<::cellshard::sparse::compressed> &view,
     const ExportOptions &options = ExportOptions()) {
     const std::int64_t rows = detail::checked_i64_(view.rows, "rows");
     const std::int64_t cols = detail::checked_i64_(view.cols, "cols");
@@ -170,7 +170,7 @@ inline ::torch::Tensor export_as_tensor(
 
     crow_ptr[0] = 0;
     for (unsigned long partition_id = 0; partition_id < view.num_partitions; ++partition_id) {
-        const cellshard::sparse::compressed *part = view.parts != 0 ? view.parts[partition_id] : 0;
+        const ::cellshard::sparse::compressed *part = view.parts != 0 ? view.parts[partition_id] : 0;
         if (part == 0) {
             throw std::invalid_argument("export_as_tensor(sharded) requires every part to already be loaded on host");
         }

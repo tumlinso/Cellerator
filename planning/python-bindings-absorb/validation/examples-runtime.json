@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "project_root": "/tmp/cellerator-python-bindings",
+  "command_cwd": "/tmp/cellerator-python-bindings",
+  "recipe": "baseline",
+  "argv": [
+    "python",
+    "/tmp/cellerator-python-bindings/planning/python-bindings-absorb/validation/example_runtime.py"
+  ],
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 4
+  },
+  "paths": [
+    "examples/torch",
+    "tests/bindings/torch/quantize_primitive_test.cc",
+    "tests/bindings/torch/dense_reduce_compile_test.cc",
+    "tests/examples/torch/bindings_compile_test.cc"
+  ],
+  "timeout": 600
+}

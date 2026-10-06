@@ -315,7 +315,8 @@ py::tuple native_forward(const std::shared_ptr<cellerator::bindings::MechanismHa
     py::array input, std::uintptr_t stream_address) {
     if (!py::isinstance<py::array>(input) || input.ndim() != 2 || !(input.flags() & py::array::c_style))
         throw py::value_error("input must be a contiguous rank-2 NumPy float32 or float16 array");
-    const bool half = input.dtype().kind() == 'e' && input.itemsize() == 2;
+    const bool half = input.dtype().kind() == 'e' && input.itemsize() == 2 &&
+        input.dtype().attr("isnative").cast<bool>();
     if (!half && !(input.dtype().is(py::dtype::of<float>()) && input.itemsize() == 4))
         throw py::value_error("input must be a contiguous rank-2 NumPy float32 or float16 array");
     const auto input_alignment = half ? alignof(std::uint16_t) : alignof(float);

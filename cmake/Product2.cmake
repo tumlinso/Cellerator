@@ -13,6 +13,8 @@ if(CELLERATOR_BUILD_PRODUCT2)
     enable_language(CUDA)
     target_sources(cellerator_product2 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/product2/product2.cu)
     target_link_libraries(cellerator_product2 PRIVATE CUDA::cudart CUDA::cuda_driver)
+    target_include_directories(cellerator_product2 PRIVATE
+      ${PROJECT_SOURCE_DIR}/src/runtime)
     set_target_properties(cellerator_product2 PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED ON)
     target_compile_definitions(cellerator_product2 PUBLIC CELLERATOR_PRODUCT2_HAS_CUDA=1)
     if(CELLERATOR_BUILD_TESTS)

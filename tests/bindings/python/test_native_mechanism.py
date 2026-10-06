@@ -77,6 +77,8 @@ def test_native_handle_rejects_invalid_numpy_shapes_and_precision():
         handle.forward(np.asarray([[1.0, 2.0]], dtype=np.float32)[:, ::-1])
     with pytest.raises(ValueError, match="float32"):
         handle.forward(np.asarray([[1.0, 2.0]], dtype=np.float64))
+    with pytest.raises(ValueError, match="float32 or float16"):
+        handle.forward(np.asarray([[1.0, 2.0]], dtype=">f2"))
 
 
 @requires_mechanisms

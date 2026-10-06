@@ -49,10 +49,12 @@ if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
         src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_pack.cu
         src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cu
         src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_dispatch.cc)
+    target_include_directories(cellerator_relation_update_support PRIVATE
+        ${PROJECT_SOURCE_DIR}/src/runtime)
     target_link_libraries(cellerator_relation_update_support PUBLIC
         Cellerator::relation_calculus cellerator_relation_gradient_cover
         Cellerator::architecture_provider Cellerator::transpose_backward_candidate
-        Cellerator::feature_major_small_n_candidate CUDA::cudart)
+        Cellerator::feature_major_small_n_candidate CUDA::cudart CUDA::cuda_driver)
     target_compile_features(cellerator_relation_update_support PUBLIC cxx_std_17)
     set_target_properties(cellerator_relation_update_support PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
     add_library(cellerator_prepared_relation_cuda STATIC

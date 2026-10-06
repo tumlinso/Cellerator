@@ -254,12 +254,26 @@ def test_out_of_band_coefficient_value_write_blocks_forward_and_checkpoint(tmp_p
     module = make_module(precision=precision)
     optimizer = torch.optim.Adam([module.coefficients], lr=1e-2)
     x = torch.rand((2, 3), device="cuda")
+    module(x).sum().backward()
     with torch.no_grad():
-        module.coefficients.data.add_(0.125)
-    with pytest.raises(RuntimeError, match="changed outside guarded update"):
+        module.coefficients.add_(0.125)
+    # Keep the Python module check out of the way to exercise the native
+    # TensorImpl alias baseline as well.
+    module.coefficients._cellerator_expected_version = module.coefficients._version
+    with pytest.raises(RuntimeError, match="version changed outside guarded update"):
         module(x)
-    with pytest.raises(RuntimeError, match="changed outside guarded update"):
+    with pytest.raises(RuntimeError, match="version changed outside guarded update"):
         save_checkpoint(tmp_path / f"{precision}.pt", module, optimizer)
+
+
+@requires_native
+def test_coefficient_mutation_before_first_forward_is_rejected():
+    module = make_module()
+    x = torch.rand((2, 3), device="cuda")
+    with torch.no_grad():
+        module.coefficients.add_(0.125)
+    with pytest.raises(RuntimeError, match="changed outside guarded_step"):
+        module(x)
 
 
 @requires_native
@@ -442,9 +456,11 @@ def test_abandoned_forward_releases_native_reader():
 def test_python_owner_binding_releases_with_dropped_module():
     module = make_module()
     binding_ref = weakref.ref(module._binding)
+    handle_ref = weakref.ref(module._native)
     del module
     gc.collect()
     assert binding_ref() is None
+    assert handle_ref() is None
 
 
 @requires_native

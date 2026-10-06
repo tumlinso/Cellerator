@@ -92,10 +92,12 @@ class MechanismModule(nn.Module):
         self.max_live_forwards = int(max_live_forwards)
         self.coefficients = self._binding.parameter
         self._owner_key = int(self.coefficients.data_ptr())
-        # A version baseline detects ordinary in-place mutation outside the guard.
-        self.coefficients._cellerator_expected_version = self.coefficients._version
+        if not hasattr(self.coefficients, "_cellerator_expected_version"):
+            self.coefficients._cellerator_expected_version = self.coefficients._version
 
     def forward(self, x: Tensor | BiologicalTensor) -> Tensor:
+        if self.coefficients._version != self.coefficients._cellerator_expected_version:
+            raise RuntimeError("native coefficients changed outside guarded_step")
         if isinstance(x, BiologicalTensor):
             if x.axis != self.spec.input_axis:
                 raise ValueError("input biological axis identity does not match prepared mechanism")
@@ -206,7 +208,7 @@ def guarded_step(modules: MechanismModule | nn.Module | Iterable[nn.Module],
         if module.coefficients._version != module.coefficients._cellerator_expected_version:
             raise RuntimeError("native coefficients changed outside guarded_step")
         _torch.validate_coefficients(module.coefficients, module._native)
-        module._native.preflight_update()
+        module._native.preflight_write()
     # Reject native parameter views hidden in the optimizer when their owner
     # was omitted from the guarded module set. This check is native because a
     # tensor alias can be created without going through this Python registry.
@@ -378,7 +380,7 @@ def save_checkpoint(path: str | os.PathLike, model: nn.Module,
         if module.coefficients._version != module.coefficients._cellerator_expected_version:
             raise RuntimeError("native coefficients changed outside guarded_step")
         _torch.validate_coefficients(module.coefficients, module._native)
-        module._native.preflight_update()
+        module._native.preflight_write()
         values = torch.from_numpy(module._native.snapshot()).clone()
         native_records.append({
             "module_name": name,
@@ -527,6 +529,7 @@ def load_checkpoint(path: str | os.PathLike, model: nn.Module,
         model.load_state_dict(restored_ordinary, strict=False)
         for name, module in owners:
             module._native.restore(prepared_values[name].detach().cpu().contiguous().numpy())
+            torch.cuda.synchronize(module._native.device)
             _torch.synchronize_coefficients(module._native)
             module.coefficients._cellerator_expected_version = module.coefficients._version
         optimizer.state.clear()
