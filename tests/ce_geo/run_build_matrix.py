@@ -29,7 +29,7 @@ def main() -> int:
                 "cmake", "-S", str(source), "-B", str(build),
                 "-DCMAKE_BUILD_TYPE=Release",
                 "-DCMAKE_CUDA_ARCHITECTURES=70",
-                f"-DCELLERATOR_ENABLE_TORCH_MODELS={torch_mode}",
+                f"-DCELLERATOR_ENABLE_TORCH={torch_mode}",
             ], source)
             run([
                 "cmake", "--build", str(build),

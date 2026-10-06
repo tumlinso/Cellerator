@@ -25,7 +25,7 @@ include-only downstream compile fixture.
 
 The compiler umbrella remains usable in a host-only build. It cannot include a
 header that requires the CUDA compiler, CUDA runtime headers, a GPU device,
-CellShard, or CelleraTorch. Backend capability declarations are host-safe;
+CellShard, or optional Torch bindings. Backend capability declarations are host-safe;
 concrete accelerator provider entry headers are explicit imports.
 
 The runtime umbrella exposes the portable execution surface and provider-neutral

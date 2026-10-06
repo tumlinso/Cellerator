@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Opt-in complete-cost CUDA comparison for the shared-support composition.
 
-Run with the matching CelleraTorch library and an assigned GPU lease. Nothing
+Run with the installed Cellerator package and an assigned GPU lease. Nothing
 runs on CUDA without --run-cuda. Output is evidence, not a promotion decision.
 """
 from __future__ import annotations
@@ -10,6 +10,7 @@ import argparse
 import gc
 import hashlib
 import json
+from importlib import metadata
 import os
 from pathlib import Path
 import platform
@@ -36,8 +37,12 @@ def main():
     if not args.run_cuda:
         raise SystemExit('CUDA execution requires explicit --run-cuda and an assigned lease')
     import torch
-    from celleratorch import (Axis, Identity, SharedSupportSpec,
-                             SharedSupportRelation, guarded_step)
+    import cellerator
+    from cellerator import (Axis, Identity, SharedSupportSpec, prepare_mechanism)
+    from cellerator import _native as cellerator_native
+    import cellerator.torch as cellerator_torch
+    from cellerator.torch import SharedSupportRelation, guarded_step
+    from cellerator.torch import _torch as cellerator_torch_native
     if not torch.cuda.is_available():
         raise RuntimeError('assigned CUDA device is unavailable')
     torch.set_num_threads(1)
@@ -117,11 +122,13 @@ def main():
 
         spec = make_spec()
         weights = weights_cpu.to(device)
-        native = SharedSupportRelation(spec, weights, max_batch=batch,
-                                       max_live_forwards=2)
+        handle = prepare_mechanism(spec.mechanism_spec(), weights_cpu.numpy(),
+                                   device=str(device), max_batch=batch,
+                                   max_live_forwards=2)
+        native = SharedSupportRelation.from_handle(spec, handle)
         baseline = Materialized(weights, src_cpu.to(device), dst_cpu.to(device), outputs)
         reference = equality(native, baseline, data)
-        del native, baseline, weights
+        del native, baseline, weights, handle
         gc.collect()
         torch.cuda.empty_cache()
         paths = {}
@@ -132,14 +139,20 @@ def main():
             observed_free = [free_before]
             wall_start = time.perf_counter_ns()
             packed, packing_ms = timed(make_spec)
-            initial, weight_upload_ms = timed(lambda: weights_cpu.to(device))
             if kind == 'native_composition':
-                # Constructor includes semantic lowering, native support upload,
-                # program preparation and native-owned coefficient allocation.
-                model, preparation_ms = timed(lambda: SharedSupportRelation(
-                    packed, initial, max_batch=batch, max_live_forwards=2))
-                support_upload_ms = None  # included in preparation, cannot separate publicly
+                # Preparation includes semantic lowering, native support and
+                # coefficient upload, and prepared-program construction.
+                def prepare_native():
+                    handle = prepare_mechanism(packed.mechanism_spec(),
+                        weights_cpu.numpy(), device=str(device), max_batch=batch,
+                        max_live_forwards=2)
+                    return SharedSupportRelation.from_handle(packed, handle)
+                model, preparation_ms = timed(prepare_native)
+                initial = model.coefficients
+                weight_upload_ms = None
+                support_upload_ms = None  # included in preparation
             else:
+                initial, weight_upload_ms = timed(lambda: weights_cpu.to(device))
                 support, support_upload_ms = timed(lambda: (src_cpu.to(device), dst_cpu.to(device)))
                 model, preparation_ms = timed(lambda: Materialized(initial, *support, outputs))
             opt, optimizer_setup_ms = timed(lambda: optimizer(model))
@@ -203,11 +216,32 @@ def main():
                             'materialized_instance_edges': 4*batch*edges,
                             'shared_int64_topology': 16*edges},
                         'storage_note': 'Array formulas only; exclude optimizer, saved activations, identities and prepared native workspaces.'})
+    distribution = metadata.distribution('cellerator')
+    package_artifacts = {}
+    package_paths = set()
+    for relative in distribution.files or ():
+        relative_path = Path(relative)
+        if relative_path.parts[:1] != ('cellerator',):
+            continue
+        installed = Path(distribution.locate_file(relative_path)).resolve()
+        if installed.is_file():
+            package_artifacts[str(relative_path)] = digest(installed)
+            package_paths.add(installed)
+    if not any(Path(name).name.startswith('_native') for name in package_artifacts):
+        raise RuntimeError('installed Cellerator distribution is missing its native core extension')
+    if not any(Path(name).name.startswith('_torch') for name in package_artifacts):
+        raise RuntimeError('installed Cellerator distribution is missing its Torch adapter extension')
+    imported_modules = (cellerator.__file__, cellerator_native.__file__,
+                        cellerator_torch.__file__, cellerator_torch_native.__file__)
+    if any(Path(module_path).resolve() not in package_paths for module_path in imported_modules):
+        raise RuntimeError('an imported Cellerator module is not listed in the installed distribution')
     root = Path(__file__).resolve().parents[2]
-    source_paths = [Path(__file__), root/'components/CelleraTorch/python/celleratorch/biology.py',
-                    root/'components/CelleraTorch/python/celleratorch/mechanism.py',
-                    root/'components/CelleraTorch/src/mechanism.cc']
-    library = Path(os.environ['CELLERATORCH_NATIVE_LIBRARY']).resolve()
+    native_libraries = {
+        'cellerator._native': {'path': str(Path(cellerator_native.__file__).resolve()),
+                               'sha256': digest(cellerator_native.__file__)},
+        'cellerator.torch._torch': {'path': str(Path(cellerator_torch_native.__file__).resolve()),
+                                    'sha256': digest(cellerator_torch_native.__file__)},
+    }
     output = {'schema_version': 1, 'disposition': 'evaluated_not_promoted',
               'precision': 'f32', 'seed': args.seed, 'repetitions': args.repetitions,
               'warmup_iterations': 2, 'results': results,
@@ -217,8 +251,12 @@ def main():
                   'torch_cuda': torch.version.cuda, 'gpu': torch.cuda.get_device_name(device),
                   'cuda_visible_devices': os.environ.get('CUDA_VISIBLE_DEVICES'),
                   'git_head': subprocess.check_output(['git','rev-parse','HEAD'], cwd=root, text=True).strip()},
-              'source_sha256': {str(p.relative_to(root)): digest(p) for p in source_paths},
-              'native_library': {'path': str(library), 'sha256': digest(library)}}
+              'source_sha256': {str(Path(__file__).resolve().relative_to(root)): digest(__file__)},
+              'cellerator_version': distribution.version,
+              'cellerator_artifacts_sha256': package_artifacts,
+              'native_libraries': native_libraries,
+              'adapter_module': str(Path(cellerator_torch.__file__).resolve()),
+              'adapter_module_sha256': digest(cellerator_torch.__file__)}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(output, indent=2)+'\n')
     print(json.dumps({'output': str(args.output), 'disposition': output['disposition']}))

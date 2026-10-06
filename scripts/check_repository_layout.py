@@ -21,12 +21,12 @@ CANONICAL_SOURCE_ROOTS = (
     ROOT / "include" / "Cellerator",
     ROOT / "src",
     ROOT / "modules",
-    ROOT / "components" / "CelleraTorch",
+    ROOT / "bindings" / "torch",
 )
 IMPLEMENTATION_SCAN_ROOTS = (
     ROOT / "tests",
     ROOT / "bench",
-    ROOT / "components" / "CelleraTorch" / "tests",
+    ROOT / "bindings" / "torch" / "tests",
 )
 HISTORICAL_CPP_SUFFIXES = {".cpp", ".hpp", ".cxx", ".hxx", ".ixx", ".cppm"}
 PUBLIC_HEADER_SUFFIXES = {".h", ".hh", ".cuh", ".inl", ".tcc"}

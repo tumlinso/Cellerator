@@ -14,6 +14,10 @@ add_library(Cellerator::native_foundation ALIAS cellerator_native_foundation)
 target_link_libraries(cellerator_native_foundation INTERFACE
     Cellerator::native_numeric
     Cellerator::executable_program)
+if(TARGET Cellerator::model_ops)
+    target_link_libraries(cellerator_native_foundation INTERFACE
+        Cellerator::model_ops)
+endif()
 if(TARGET Cellerator::local_differential)
     target_link_libraries(cellerator_native_foundation INTERFACE Cellerator::local_differential)
 endif()
@@ -65,8 +69,12 @@ endif()
 
 # Export the actual linked dependency closure, including the preserved program
 # and candidate owners. Consumers use these libraries, never source inclusion.
-include(${PROJECT_SOURCE_DIR}/cmake/CelleraTorchLearning.cmake)
 set(_nf_pending cellerator_native_foundation)
+if(TARGET cellerator_training_program)
+    # Keep the native training-program API available to optional bindings
+    # without making the native owner depend on any framework adapter.
+    list(APPEND _nf_pending cellerator_training_program)
+endif()
 set(_nf_exports)
 while(_nf_pending)
     list(POP_FRONT _nf_pending _nf_target)

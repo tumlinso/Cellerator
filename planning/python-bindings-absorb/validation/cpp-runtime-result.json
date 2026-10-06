@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "controller_evidence_id": "9584eed0-9f5b-4972-a1a9-4fb3c0a7e840",
+  "foreground_id": "859d7b9a-1050-4dc2-a376-fd129c268551",
+  "checks": [
+    "native_tensor_views_and_lifetime",
+    "program_current_stream",
+    "autograd_bridge",
+    "pair_loss_forward_and_mean_gradients",
+    "grouped_bucket_forward_and_finite_difference_gradients_both_modes",
+    "weighted_neighbor_gather_and_malformed_inputs"
+  ],
+  "resources": {
+    "gpus": 2,
+    "cpu_threads": 4
+  },
+  "performance_claims": false,
+  "previous_failure": {
+    "evidence_id": "c3992c56-f937-40c1-9626-2190c2a11ab6",
+    "reason": "inherited ranking derivative signs inverted",
+    "resolution": "user-approved sign correction matching unchanged forward formula"
+  }
+}

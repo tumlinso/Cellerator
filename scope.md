@@ -37,7 +37,7 @@ Cellerator owns:
 - single-GPU and multi-GPU execution planning;
 - layout-aware sparse transforms, reductions, and biological operators reused by higher layers;
 - independent correctness referees, structural validation, and performance instrumentation;
-- narrow shared ABI contracts used by Baseplane, CellShard, CelleraTorch, and other adapters.
+- narrow shared ABI contracts used by Baseplane, CellShard, optional Cellerator Torch bindings, and other adapters.
 
 ## Subordinate and Adjacent Repositories
 
@@ -70,16 +70,20 @@ CellShard owns storage and distribution:
 
 CellShard does not own Cellerator's biological geometry, physical projection semantics, planner, or kernels.
 
-### CelleraTorch
+### Optional Torch bindings
 
-CelleraTorch owns Torch and libtorch adaptation:
+The optional `cellerator.torch` package and C++ bindings under
+`bindings/torch/` adapt Torch and libtorch to Cellerator-owned contracts:
 
 - tensor views;
 - custom-op registration;
 - framework module wrappers;
 - explicit conversion at framework boundaries.
 
-It does not own native Cellerator structures, parameters, planning, or reusable math.
+They do not create a separate runtime or own native structures, parameters,
+planning, or reusable math. CMake consumers opt in with
+`CELLERATOR_ENABLE_TORCH`; ordinary native consumers do not discover or link
+Torch.
 
 ## Higher Layers
 
@@ -153,6 +157,6 @@ ownership. Cellerator owns portable biological geometry semantics, physical
 projection meaning, planner-visible complete cost, and native numerical
 execution. CellShard still owns persistence and transport, BioPrep owns
 biological preprocessing policy, Baseplane owns sequence-specialized
-primitives, and CelleraTorch remains an adapter. The measured `sm_70` N=64
+primitives, and optional Torch bindings remain adapters. The measured `sm_70` N=64
 hybrid promotion is regime-specific and does not make MMA or one sparse layout
 the repository default.

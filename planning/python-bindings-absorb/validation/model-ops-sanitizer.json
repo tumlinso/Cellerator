@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "project_root": "/tmp/cellerator-python-bindings",
+  "command_cwd": "/tmp/cellerator-python-bindings",
+  "recipe": "compute-sanitizer",
+  "argv": [
+    "/tmp/cellerator-bindings-build/bindings/torch/celleratorTorchModelCustomOpsTest"
+  ],
+  "resources": {
+    "gpus": 2,
+    "cpu_threads": 4
+  },
+  "paths": [
+    "bindings/torch",
+    "src/compute/operation/model_ops",
+    "include/Cellerator/compute/operation/model_ops",
+    "tests/bindings"
+  ],
+  "timeout": 600,
+  "toolchain": {
+    "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+    "require_sanitizer": true
+  }
+}

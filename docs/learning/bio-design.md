@@ -18,8 +18,9 @@ y[b,j] = a[b,j] * v[b,j]
 Repeated source/target pairs remain distinct logical edges; their contributions
 add. A zero value or activity does not remove an edge from differentiation.
 Torch owns activity generation, multiplication, loss and Adam orchestration.
-Cellerator owns prepared relation execution and coefficient storage;
-CelleraTorch exposes its canonical parameter and publishes guarded updates.
+Cellerator owns prepared relation execution, coefficient storage and the native
+handle. The optional `cellerator.torch` adapter wraps that same handle and
+publishes guarded updates.
 The wrapper uses existing one-input product mechanisms and explicit additive
 output contributions. It introduces no new native planner or numerical kernel.
 
@@ -86,15 +87,18 @@ experiment.
 The script requires an assigned GPU lease and explicit execution:
 
 ```sh
-PYTHONPATH=components/CelleraTorch/python \
-CELLERATORCH_NATIVE_LIBRARY=/absolute/path/to/matching/library.so \
 python bench/learning/shared_support_lifecycle.py --run-cuda \
   --output /absolute/path/to/shared-support-lifecycle.json
 ```
 
+Install the `cellerator` distribution with its optional Torch integration enabled
+before running this benchmark; it discovers the packaged native modules through
+Python distribution metadata and does not use a development-tree library path.
+
 The output includes a batch-sharing regime (`B=32,n=64,m=32,E=256`) and a
 small counter regime (`B=1,n=64,m=32,E=16`). It records fresh program setup,
-identity packing, initial value transfer, support upload where separately
+identity packing, initial coefficient transfer (separate for the Torch reference
+and included in native preparation), support upload where separately
 observable, optimizer construction, input/target transfer, forward, loss,
 backward and optimizer/publication costs. Native support upload is included
 in program preparation because its public API does not expose that boundary.

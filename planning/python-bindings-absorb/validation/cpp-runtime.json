@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "project_root": "/tmp/cellerator-python-bindings",
+  "command_cwd": "/tmp/cellerator-python-bindings",
+  "recipe": "baseline",
+  "argv": [
+    "python",
+    "/tmp/cellerator-python-bindings/planning/python-bindings-absorb/validation/cpp_runtime.py"
+  ],
+  "resources": {
+    "gpus": 2,
+    "cpu_threads": 4
+  },
+  "paths": [
+    "bindings/torch",
+    "src/compute/operation/model_ops",
+    "include/Cellerator/compute/operation/model_ops",
+    "tests/bindings"
+  ],
+  "timeout": 600
+}

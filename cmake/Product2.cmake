@@ -1,5 +1,5 @@
 # Independent product2 operation: existing indexed mechanism ABI is unchanged.
-option(CELLERATOR_BUILD_PRODUCT2 "Build standalone prepared product2 operation" OFF)
+option(CELLERATOR_BUILD_PRODUCT2 "Build standalone prepared product2 operation" ${CELLERATOR_ENABLE_PYTHON})
 if(CELLERATOR_BUILD_PRODUCT2)
   add_library(cellerator_product2 SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/product2/product2.cc
@@ -35,6 +35,14 @@ if(CELLERATOR_BUILD_PRODUCT2)
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Product2
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Product2
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Product2)
+  if(CELLERATOR_ENABLE_PYTHON)
+    # The Python extension resolves its native dependency relative to the
+    # package and can therefore run after wheel installation without an
+    # environment-specific library search path.
+    install(TARGETS cellerator_product2
+      LIBRARY DESTINATION cellerator/.libs COMPONENT Python
+      RUNTIME DESTINATION cellerator/.libs COMPONENT Python)
+  endif()
   # Carry the public operation's established identity/program dependency headers
   # in the independently installable component, without changing native libraries.
   install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Product2)

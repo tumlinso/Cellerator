@@ -1,11 +1,22 @@
 # Native product2 integration
 
-The native operation evaluates `y[i] = k[i] * x[a[i]] * x[b[i]]` in FP32. Direct CPU and CUDA calls and typed `prepared_program_v2` stages passed the retained tests. An installed C++ consumer links exported `Cellerator::product2` without compiling numerical source. Input and coefficient VJPs and a JVP with both input and coefficient directions are implemented. The tests exercise zeros, repeated inputs, empty support, generation checks, aliases, indices, typed axis admission and CUDA owner/context topology agreement.
+The native operation evaluates `y[i] = k[i] * x[a[i]] * x[b[i]]` in FP32. The
+installed `cellerator` package exposes product2 forward, VJP and JVP through its
+`_native` extension; the optional `cellerator.torch` package provides the Torch
+module and autograd adapter. Build and install instructions are in
+[`docs/development/python-bindings.md`](../../../docs/development/python-bindings.md).
 
-The standalone Torch adapter passed 10 CPU tests. It uses the new native product library through `CELLERATOR_PRODUCT2_LIBRARY`; CUDA Torch tensors, mixed precision and higher-order differentiation remain unsupported. Existing indexed-mechanism files and libraries are separate dependencies.
+`test_product_adapter.py` exercises the installed Python/Torch surface against
+independent formulas, finite differences, aliases, malformed inputs, optimizer
+updates and first-order derivative limits. The C++ installed-consumer project
+under `tests/learning_consumer` uses the optional `Cellerator::torch` component.
 
-Actual controller evidence: `4b0564f9-4c0b-4ab6-8d5d-a097ff5c095f`. The manifest binds source and transitive headers to retained clean-build command logs, output hashes, and actual execution evidence. Inputs and outputs were checked before and after execution. Actual dynamically resolved product libraries are hashed. Pure verification depends on the retained managed build workspace and binaries; a clean checkout needs fresh qualification. `capability.json` supplies callable paths, shape and precision policy, derivative support and hashed test evidence for the GH consumer. Consumer acceptance must separately bind the final delivered CE commit and live task completion.
+The records in `evidence/` and `capability.json` qualify the earlier standalone
+adapter and its separate product library. Their hashes and logs remain unchanged
+and do not qualify the absorbed package. Fresh installed-package and runtime
+acceptance is pending the active Cellerator binding migration and root-owned
+validation. The exact old test and evidence verifier are retained as dated source snapshots in `history/`; they are not current package gates.
 
-No performance victory, biological fit, native optimizer ownership or sanitizer qualification is claimed.
-
-Pure gate: `python experiments/moonshot-parallel-v1/integration/verify_product_evidence.py verify`.
+No performance victory, biological fit, native optimizer ownership, CUDA Torch
+tensor support beyond the active adapter contract, mixed precision, higher-order
+differentiation or sanitizer qualification is claimed by this consumer migration.

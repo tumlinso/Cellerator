@@ -1,4 +1,6 @@
-# TRAIN qualification receipt
+# Historical TRAIN qualification receipt
+
+This record describes the component-era TRAIN installation from 2026-09-29. Its paths, package names and loader setup are retained as historical evidence and are not current Cellerator installation instructions. Current package acceptance remains pending the active bindings migration.
 
 Status: **TRAIN completed as implemented on 2026-09-29, revision 7474**.
 All six bound Project Control gates passed; no active TRAIN claim remains.
@@ -19,9 +21,10 @@ All six bound Project Control gates passed; no active TRAIN claim remains.
   Executable: `/home/tumlinson/Software/cuda-sanitizer-12.9/usr/local/cuda-12.9/bin/compute-sanitizer`.
   The system PATH wrapper targets an absent 13.1 installation and is not used.
 
-The two Torch producers use distinct build/install trees. Load only the Python
-producer into the Python distribution. Set `CELLERATORCH_NATIVE_LIBRARY` to
-its `lib/libcellera_torch_mechanism.so` before constructing a Python module.
+The historical run used two Torch producers with distinct build/install trees.
+It installed the Python producer into the then-separate distribution and set
+`CELLERATORCH_NATIVE_LIBRARY` to that producer’s
+`lib/libcellera_torch_mechanism.so` before constructing a Python module.
 
 ## GPU qualification on 2026-09-27
 

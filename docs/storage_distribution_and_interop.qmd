@@ -13,13 +13,11 @@ Baseplane
     sequence-specialized computation
 
 Cellerator
-    domains, structures, geometry, planning, kernels, state
+    domains, structures, geometry, planning, kernels, state, Python bindings
+    optional Torch framework adapter at cellerator.torch
 
 CellShard
     persistence, sharding, transport, staging, publication
-
-CelleraTorch
-    framework adaptation
 ```
 
 ## CellShard boundary
@@ -267,11 +265,11 @@ CellShard may store and deliver:
 
 Cellerator and Baseplane define event ownership and cross-boundary semantics.
 
-## CelleraTorch
+## Optional Torch adapter
 
-CelleraTorch is an explicit adapter.
-
-It may create:
+The optional `cellerator.torch` package is a framework adapter over
+Cellerator-owned native behavior. Its build and import are optional. It may
+create:
 
 - zero-copy Torch views when memory, dtype, shape, stride, order, and lifetime permit;
 - custom operators that invoke prepared Cellerator operations;
@@ -280,7 +278,7 @@ It may create:
 
 It must not:
 
-- make Torch own canonical Cellerator parameter allocation by default;
+- create a second canonical parameter owner;
 - hide per-step sparse conversion;
 - rebuild structure in every forward;
 - discard biological domain and order identity;
@@ -298,7 +296,8 @@ Native parameters should remain:
 - writable or read-only by contract;
 - distinguishable from optimizer state.
 
-CelleraTorch may expose views over that storage.
+The Torch adapter may expose views over that storage while retaining the native
+handle as the owner.
 
 When a zero-copy view is impossible, conversion cost must be explicit and benchmarked at the intended reuse.
 
@@ -316,10 +315,10 @@ They must not perform hidden CPU transforms over matrices that the native core s
 
 A Python convenience layer does not change ownership:
 
-- Cellerator owns numerical semantics;
+- Cellerator owns numerical semantics and native state;
 - CellShard owns persistence;
 - Baseplane owns sequence primitives;
-- CelleraTorch owns Torch adaptation.
+- `cellerator.torch` owns only framework adaptation.
 
 ## Interop identity
 

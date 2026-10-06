@@ -20,6 +20,8 @@ The active documentation spine is:
 12. `developer_reference.qmd`
 
 `index.qmd` is the reader entry point. `_quarto.yml` defines the rendered book.
+The separate [Python bindings guide](development/python-bindings.md) documents
+the optional Python and Torch build/install surface.
 
 ## Current state versus target state
 

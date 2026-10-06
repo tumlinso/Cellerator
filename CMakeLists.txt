@@ -69,14 +69,19 @@ if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
 endif()
 find_package(PkgConfig QUIET)
 
-# Native Cellerator is the default build. CelleraTorch remains an explicit
-# compatibility adapter and is the only path that may discover Torch.
-option(CELLERATOR_ENABLE_TORCH_MODELS "Enable the CelleraTorch compatibility component targets" OFF)
+# Python and Torch are optional integrations. Native Cellerator builds never
+# discover either dependency unless its corresponding option is enabled.
+option(CELLERATOR_ENABLE_PYTHON "Build the optional cellerator Python extension" OFF)
+option(CELLERATOR_ENABLE_TORCH "Build the optional Cellerator Torch adapters" OFF)
+option(CELLERATOR_BUILD_TORCH_EXAMPLES "Build optional CellShard-dependent Torch examples" OFF)
 option(CELLERATOR_ENABLE_CELLSHARD "Build the embedded CellShard component" OFF)
 option(CELLERATOR_BUILD_TESTS "Build Cellerator test executables" ON)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visible CUDA device capability at configure time." ON)
 option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the default CMAKE_CUDA_ARCHITECTURES when the user did not provide one." ON)
+if(CELLERATOR_BUILD_TORCH_EXAMPLES AND NOT CELLERATOR_ENABLE_TORCH)
+    message(FATAL_ERROR "CELLERATOR_BUILD_TORCH_EXAMPLES requires CELLERATOR_ENABLE_TORCH")
+endif()
 
 # The compiler is host-first. Its target graph decides whether CUDA is enabled
 # before the legacy runtime targets below are declared.
@@ -97,10 +102,21 @@ if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
     endif()
 endif()
 include(cmake/Product2.cmake)
+# Product2 is host-capable and must be available to the Python module before
+# the CUDA-off early return. Mechanism bindings are attached after their CUDA
+# owner targets have been declared below.
+if(CELLERATOR_ENABLE_PYTHON)
+    include(cmake/CelleratorPython.cmake)
+endif()
 # Build the linked NF1 numerical foundation and its host reference consumer.
 # CUDA relation/value tests are enabled only with the semantic spine owner.
 option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 numerical foundation tests" OFF)
 if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
+    if(CELLERATOR_ENABLE_TORCH)
+        message(FATAL_ERROR
+            "CELLERATOR_ENABLE_TORCH requires the CUDA indexed-mechanism owner; "
+            "configure with CELLERATOR_ENABLE_CUDA=AUTO or ON.")
+    endif()
     return()
 endif()
 set(CELLERATOR_CUDA_MODE "generic" CACHE STRING
@@ -433,6 +449,21 @@ cellerator_enable_perf(cellerator_compute_matrix_convert)
 cellerator_enable_perf(cellerator_runtime_fleet)
 
 include(src/CMakeLists.txt)
+# General numerical operations used by both native C++ and optional framework
+# adapters remain in Cellerator even when the Torch integration is disabled.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/model_ops/CMakeLists.txt")
+    add_subdirectory(src/compute/operation/model_ops)
+    if(CELLERATOR_BUILD_TESTS AND
+       EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/bindings/model_ops/model_ops_dimension_contract_test.cc")
+        enable_testing()
+        add_executable(celleratorModelOpsDimensionContractTest
+            tests/bindings/model_ops/model_ops_dimension_contract_test.cc)
+        target_link_libraries(celleratorModelOpsDimensionContractTest PRIVATE
+            Cellerator::model_ops)
+        add_test(NAME cellerator_model_ops_dimension_contract
+            COMMAND celleratorModelOpsDimensionContractTest)
+    endif()
+endif()
 # The legacy compute manifest declares the provider source inventories.  Split
 # them into provider-owned targets after all of their shared dependencies have
 # been declared, then emit the cold compiled-provider manifest.
@@ -665,3 +696,11 @@ add_subdirectory(compat)
 include(compat/cp_math_v1/CMakeLists.txt)
 
 include(cmake/NativeFoundation.cmake)
+
+if(CELLERATOR_ENABLE_PYTHON)
+    cellerator_configure_python_mechanism_bindings()
+endif()
+
+if(CELLERATOR_ENABLE_TORCH)
+    add_subdirectory(bindings/torch)
+endif()

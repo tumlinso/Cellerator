@@ -5,14 +5,13 @@ build-backend = "scikit_build_core.build"
 [project]
 name = "cellerator"
 version = "0.1.0"
-description = "GPU-native Python orchestration for Cellerator sparse omics preprocessing."
+description = "Thin Python bindings for Cellerator native numerical operations."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
 dependencies = ["numpy>=1.24"]
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Environment :: GPU :: NVIDIA CUDA",
     "Intended Audience :: Science/Research",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
@@ -25,11 +24,18 @@ classifiers = [
 
 [project.optional-dependencies]
 anndata = ["anndata>=0.10"]
+torch = ["torch>=2.7,<2.8"]
 
 [tool.scikit-build]
 cmake.source-dir = "."
 wheel.packages = ["python/cellerator"]
+build.targets = ["cellerator_python_extensions"]
 cmake.define.CELLERATOR_ENABLE_PYTHON = "ON"
-cmake.define.CELLERATOR_ENABLE_TORCH_MODELS = "OFF"
+cmake.define.CELLERATOR_ENABLE_TORCH = "OFF"
+cmake.define.CELLERATOR_ENABLE_CUDA = "OFF"
+cmake.define.CELLERATOR_BUILD_PRODUCT2 = "ON"
+cmake.define.CELLERATOR_BUILD_TESTS = "OFF"
+cmake.define.CELLERATOR_BUILD_TORCH_EXAMPLES = "OFF"
 cmake.define.CELLERATOR_BUILD_PREPROCESS_WORKBENCH = "OFF"
 cmake.define.CELLERATOR_BUILD_PREPROCESS_BENCHMARKS = "OFF"
+install.components = ["Python"]

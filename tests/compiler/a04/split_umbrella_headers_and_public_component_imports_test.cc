@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
         "#include <Cellerator/compiler.hh>", "#include <Cellerator/runtime.hh>",
         "#include <Cellerator/Cellerator.hh>", "host-safe compiler contracts",
         "includes `compiler.hh` and `runtime.hh`", "Small-umbrella rule",
-        "never every", "CUDA compiler", "CellShard", "CelleraTorch",
+        "never every", "CUDA compiler", "CellShard", "optional Torch bindings",
         "#include <Cellerator/compiler/ir/common/ir_v1.hh>",
         "#include <Cellerator/compiler/profile/profile_artifact_v1.hh>",
         "#include <Cellerator/compiler/planning/planner_v1.hh>",

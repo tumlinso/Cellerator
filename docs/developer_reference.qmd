@@ -22,6 +22,15 @@ authority.
 include/Cellerator/
     public Cellerator contracts and device views
 
+python/cellerator/
+    root Python package and lightweight declarations
+
+bindings/python/
+    pybind11 core extension
+
+bindings/torch/
+    optional Torch bindings and framework adapters
+
 src/runtime/
     current CUDA runtime substrate
 
@@ -32,8 +41,8 @@ components/CellPack/
     current CP-BP geometry compiler, tile projections, validation, and
     direct packed consumer
 
-components/CelleraTorch/
-    Torch and libtorch integration boundary
+bindings/torch/
+    optional Torch bindings and framework adapter
 
 src/models/
     native and legacy model implementations
@@ -80,11 +89,11 @@ cmake -S . -B build
 cmake --build build -j 4
 ```
 
-Disable the optional Torch component when its dependencies are unavailable:
+Disable the optional Torch adapter when its dependencies are unavailable:
 
 ```bash
 cmake -S . -B build \
-    -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
+    -DCELLERATOR_ENABLE_TORCH=OFF
 cmake --build build -j 4
 ```
 
@@ -109,7 +118,7 @@ CELLERATOR_REAL_COMPUTE
 CELLERATOR_REAL_ACCUM
 CELLERATOR_DEFAULT_SPARSE_LAYOUT
 CELLERATOR_DEFAULT_TRAINING_PRECISION
-CELLERATOR_ENABLE_TORCH_MODELS
+CELLERATOR_ENABLE_TORCH
 CELLERATOR_ENABLE_HARDWARE_PROBE
 CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES
 ```
@@ -229,6 +238,9 @@ When a code change modifies an invariant, ownership boundary, execution
 lifetime, projection, planner behavior, or supported current state, update the
 corresponding documentation in the same change.
 
+The root Python distribution and optional Torch adapter are documented in the
+[Python bindings guide](development/python-bindings.md).
+
 ## Public include policy
 
 Public callers should include:
@@ -240,8 +252,7 @@ Public callers should include:
 Do not expose a new public header that reaches into `src/`. Existing violations
 are migration work, not precedent.
 
-Framework-independent math, structures, kernels, and planning must remain
-outside Torch-linked code. CelleraTorch wraps stable native contracts.
+Framework-independent math, structures, kernels, and planning remain in Cellerator native targets. The optional Torch adapter wraps stable Cellerator contracts and is exported as `Cellerator::torch`; ordinary native consumers do not discover or link libtorch. The Python distribution exposes core functionality under `cellerator` and optional framework integration under `cellerator.torch`.
 
 ## Naming and file form
 

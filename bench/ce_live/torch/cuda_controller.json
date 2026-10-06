@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-44-celleratorch-quantitative",
+  "recipe": "baseline",
+  "paths": [
+    "bench/ce_live/torch",
+    "tests/bindings/torch/quantitative_smoke_test.cc",
+    "bindings/torch/src/program_ops.cu",
+    "bindings/torch/src/autograd_ops.cu",
+    "docs/CE_LIVE_CELLERATORCH_RESULTS.md"
+  ],
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 4,
+    "isolate_pcie_root": false,
+    "isolate_nvlink_domain": false
+  },
+  "benchmark": {
+    "build_argv": [
+      ["cmake", "-S", ".", "-B", "build-cellerator-torch", "-DCELLERATOR_ENABLE_CUDA=ON", "-DCELLERATOR_ENABLE_TORCH=ON", "-DCELLERATOR_BUILD_TESTS=ON", "-DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF", "-DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF", "-DCMAKE_CUDA_ARCHITECTURES=70", "-DCMAKE_BUILD_TYPE=Release"],
+      ["cmake", "--build", "build-cellerator-torch", "--target", "celleratorTorchQuantitativeSmokeTest", "-j", "4"]
+    ]
+  },
+  "correctness_argv": [
+    "bash", "bench/ce_live/torch/run_quantitative_smoke.sh"
+  ],
+  "correctness_timeout": 900,
+  "argv": [
+    "bash", "bench/ce_live/torch/run_quantitative_smoke.sh"
+  ],
+  "timeout": 1200,
+  "practical_regression_percent": 2.0,
+  "quiescence": {
+    "timeout_seconds": 30,
+    "consecutive_idle_samples": 3
+  }
+}

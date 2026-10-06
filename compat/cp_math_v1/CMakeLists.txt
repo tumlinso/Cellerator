@@ -187,6 +187,6 @@ set_target_properties(cpMathPackedDenseOperandBench PROPERTIES
 )
 cellerator_enable_perf(cpMathPackedDenseOperandBench)
 
-if(CELLERATOR_ENABLE_TORCH_MODELS)
-    add_subdirectory(components/CelleraTorch)
-endif()
+# Optional C++ Torch adapters are added once by the root build after native
+# owners exist, under CELLERATOR_ENABLE_TORCH. Keep CP-Math compatibility
+# evidence independent of adapter/package ownership.

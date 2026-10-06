@@ -234,18 +234,19 @@ quantitative forward path, bounded N=16 training, pointer-free replay,
 generation readiness, concurrency acceptance, and reproducible Wave C evidence.
 The accepted evidence boundary is recorded in `docs/CE_LIVE_EVIDENCE.md`.
 
-The next frontier is the separately owned CelleraTorch adapter group. Its entry
-contract is limited to non-owning parameter/program/training/readiness views and
-current-stream adaptation; Cellerator retains structure, parameter, planner,
-session, generation, and reusable-kernel ownership. Distributed work remains
+The Python/Torch consolidation moves framework bindings under Cellerator. The
+core package owns declarations, native handles, parameters, planning, generations,
+and reusable kernels; optional Torch modules and adapters consume those handles
+and provide framework integration. Native consumers can build without
+discovering libtorch. Distributed work remains
 separately gated, and the measured Tensor Core non-promotion creates no default
 Tensor Core path.
 
-The native build is now the default and does not discover Torch. Historical
-framework/model compatibility remains available explicitly with
-`-DCELLERATOR_ENABLE_TORCH_MODELS=ON`. Likewise, the configured legacy sparse
-fallback does not establish a planner preference or revive a global
-Blocked-ELL-first policy.
+The native build is the default and does not discover Torch. Optional framework
+integration is built with `-DCELLERATOR_ENABLE_TORCH=ON` and requires the CUDA
+indexed-mechanism owner. It remains an adapter over native Cellerator math and
+state. Likewise, the configured legacy sparse fallback does not establish a
+planner preference or revive a global Blocked-ELL-first policy.
 
 ## Phase 4: execution image version 2
 

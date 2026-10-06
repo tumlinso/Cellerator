@@ -27,69 +27,76 @@
 
 ## `dense_reduce_pair_losses`
 
-- Purpose: fuse `dense_reduce` pairwise local-smoothness and far-separation loss evaluation for CUDA training.
-- Owner: `src/models/dense_reduce/`
+- Purpose: provide reusable FP32 CUDA pairwise local-smoothness and far-separation loss evaluation with first-order gradients.
+- Owner: `src/compute/operation/model_ops/`
 - Boundary:
-  C++ caller in [`src/models/dense_reduce/dR_model.hh`](/home/tumlinson/Software/Repos/Cellerator/src/models/dense_reduce/dR_model.hh:202)
-  CUDA/differentiation backend in [`src/compute/model_ops/model_ops.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/model_ops/model_ops.cu:1)
+  Torch adapter in [`bindings/torch/src/model_ops.cu`](bindings/torch/src/model_ops.cu)
+  Torch-free pointer API in [`include/Cellerator/compute/operation/model_ops/model_ops.hh`](include/Cellerator/compute/operation/model_ops/model_ops.hh)
+  CUDA backend in [`src/compute/operation/model_ops/model_ops.cu`](src/compute/operation/model_ops/model_ops.cu)
 - Inputs:
   contiguous CUDA `int64` `pair_rows`, `pair_cols`
   contiguous CUDA `float32` `latent_unit`, `developmental_time`
   scalar windows and margin
 - Outputs:
   CUDA scalar `local_loss`, CUDA scalar `far_loss`
-- Backend: custom CUDA kernels with C++ differentiation wrapper
+- Backend: custom CUDA kernels; the optional Torch adapter owns tensor allocation and autograd
 - Backward:
-  custom backward for `latent_unit`
+  native custom backward for `latent_unit`; each nonempty loss is normalized by its contributing pair count
+  this corrects the legacy adapter, which divided the forward sums but omitted the corresponding count in its backward scale; forward values are unchanged
   no gradients for pair indices or time
 - Assumptions:
   `latent_unit` is row-major `[batch, latent_dim]`
-  Volta `sm_70`
-- Status: legacy Torch-only prototype op; superseded for new identity reduction by `state_reduce_native_runtime`
+  inputs share a CUDA device; pair indices must be within the latent row range
+  FP32 accumulation and output; no Tensor Core or broader numerical envelope is claimed
+- Status: implemented (CUDA correctness pending)
 
 ## `developmental_stage_bucket_losses`
 
-- Purpose: keep `developmental_time` bucket ranking/anchor/spread loss on device and avoid CPU bucket discovery plus repeated masked selects.
-- Owner: `src/models/developmental_time/`
+- Purpose: provide reusable FP32 CUDA bucket ranking, anchor, and spread losses with first-order gradients.
+- Owner: `src/compute/operation/model_ops/`
 - Boundary:
-  C++ caller in [`src/models/developmental_time/dT_model.hh`](/home/tumlinson/Software/Repos/Cellerator/src/models/developmental_time/dT_model.hh:234)
-  CUDA/differentiation backend in [`src/compute/model_ops/model_ops.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/model_ops/model_ops.cu:1)
+  Torch adapter in [`bindings/torch/src/model_ops.cu`](bindings/torch/src/model_ops.cu)
+  Torch-free pointer API in [`include/Cellerator/compute/operation/model_ops/model_ops.hh`](include/Cellerator/compute/operation/model_ops/model_ops.hh)
+  CUDA backend in [`src/compute/operation/model_ops/model_ops.cu`](src/compute/operation/model_ops/model_ops.cu)
 - Inputs:
   contiguous CUDA `float32` `stage`
   contiguous CUDA `int64` `day_buckets`
   scalar margin/std config
 - Outputs:
   CUDA scalar `ranking`, `anchor`, `spread`
-- Backend: custom CUDA kernels with C++ differentiation wrapper
+- Backend: custom CUDA kernels; the optional Torch adapter owns tensor allocation and autograd
 - Backward:
   custom backward for `stage`
   no gradients for `day_buckets`
 - Assumptions:
-  bucket ids are non-negative
-  bucket count is small enough that one-block bucket finalization is acceptable
-  Volta `sm_70`
-- Status: implemented
+  inputs share a CUDA device; bucket ids are non-negative and are sized before launch
+  bucket labels fit signed 32-bit indexing; scratch scales with inferred `max(label) + 1`, including empty groups
+  bucket finalization is a single-thread pass over bucket statistics and all-pairs ranking is O(bucket_count^2); this favors the existing small-bucket workload
+  FP32 accumulation and output; no Tensor Core or broader numerical envelope is claimed
+- Status: implemented (CUDA correctness pending)
 
 ## `weighted_future_target`
 
 - Purpose: build quantizer forward-neighbor dense targets on GPU when the reference feature table is already resident there.
-- Owner: `src/models/quantize/`
+- Owner: `src/compute/operation/model_ops/` (numerical gather); quantizer remains a consumer
 - Boundary:
-  C++ caller in [`src/models/quantize/quantize.hh`](/home/tumlinson/Software/Repos/Cellerator/src/models/quantize/quantize.hh:342)
-  CUDA backend in [`src/compute/model_ops/model_ops.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/model_ops/model_ops.cu:1)
+  Torch adapter in [`bindings/torch/src/model_ops.cu`](bindings/torch/src/model_ops.cu)
+  Torch-free pointer API in [`include/Cellerator/compute/operation/model_ops/model_ops.hh`](include/Cellerator/compute/operation/model_ops/model_ops.hh)
+  CUDA backend in [`src/compute/operation/model_ops/model_ops.cu`](src/compute/operation/model_ops/model_ops.cu)
 - Inputs:
   contiguous CUDA `float32` `reference_dense`
   contiguous CUDA `int64` `neighbor_row_indices`
   contiguous CUDA `float32` `neighbor_weights`
 - Outputs:
   CUDA `float32` dense target matrix
-- Backend: custom CUDA kernel
+- Backend: custom CUDA kernel; the optional Torch adapter owns tensor allocation and current-stream selection
 - Backward:
   not used; target is treated as supervision, not a differentiable input
 - Assumptions:
-  invalid neighbor rows are encoded as `-1`
-  Volta `sm_70`
-- Status: implemented
+  all negative neighbor indices are skipped; nonnegative indices must be within the reference row range
+  inputs share a CUDA device; FP32 accumulation and output
+  no Tensor Core or broader numerical envelope is claimed
+- Status: implemented (CUDA correctness pending)
 
 ## `sparse_ops_runtime_v1`
 

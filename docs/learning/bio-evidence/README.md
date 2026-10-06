@@ -1,6 +1,6 @@
 # Shared-support composition evidence
 
-The installed CelleraTorch package passed 9 tests with no failures, errors or skips. The tests cover the declared shared-support expression and its CUDA gradients, logical permutations, repeated support, optimizer publication and checkpoint identity. This is engineering qualification on fixtures; it does not establish a biological fit.
+Historical record: the installed CelleraTorch package passed 9 tests with no failures, errors or skips. The tests cover the declared shared-support expression and its CUDA gradients, logical permutations, repeated support, optimizer publication and checkpoint identity. This is engineering qualification on fixtures; it does not establish a biological fit.
 
 The root ran both manifest commands under CUDA controller evidence `8452c23e-942e-4085-8602-ae9b4b3562a7`. `manifest.json` records the exact source, installed package, wheel and native library hashes before execution; `run.json` confirms unchanged inputs after execution. The native library matches the earlier CE-ML2-TRAIN qualification. New composition execution was tested here.
 
@@ -17,10 +17,9 @@ The results retain both the shared-batch fixture and a small counter regime. The
 
 Torch peak allocation counters exclude raw native allocations. Global free-memory observations also include native allocations and Torch pools, can include other processes, and miss within-stage transients. They cannot establish per-owner native reserved bytes or be added to Torch counters. Native support upload is included in preparation where the public API cannot separate it. Checkpoint rebuild cost was not measured.
 
-The pure verification command is:
-
-```sh
-/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python docs/learning/verify_bio_evidence.py verify
-```
-
-The verifier checks current source/install/library hashes, the original command manifest, positive pytest counts with no skips or failures, successful controller identity, complete-cost samples and medians, and retained evidence hashes. Preparation and verification launch no GPU work.
+The original verifier source is preserved at
+`docs/learning/history/verify_bio_evidence_2026-10-06.py`. It checked the
+component-era source/install/library hashes, recorded command manifest, test
+counts, controller identity, complete-cost samples and retained evidence hashes.
+It is not a current package gate. Preparation and verification launch no GPU
+work.

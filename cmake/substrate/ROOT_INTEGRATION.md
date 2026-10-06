@@ -2,7 +2,7 @@
 
 The independent SDK entry point is `cmake -S cmake/substrate`. It selects actual
 CE translation units, never sibling private sources. The normal native CUDA and
-CelleraTorch builds retain their existing ownership and targets.
+optional Cellerator Torch adapter builds retain their native owners.
 
 For a root entry point, add this block directly after `project(Cellerator LANGUAGES CXX)`
 and before native/compiler/adaptor target creation:

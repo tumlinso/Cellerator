@@ -38,8 +38,8 @@ unsupported. No new reverse sweep is implemented.
   `src/execution/program/program_v2.cc` remain the native fixed stage-graph runner.
 - `native_numeric/local_arithmetic` and `differential/local_arithmetic` remain the
   arithmetic and derivative providers. Only their host forward callbacks are used.
-- CelleraTorch keeps its existing tensor lifetime and training program adapter;
-  this additive host façade does not change tensor/device ownership.
+- The optional `cellerator.torch` adapter continues to use the native mechanism
+  owner; this additive host façade does not change tensor/device ownership.
 
 FP32/FP64 use the providers' nearest-even and nonfinite propagation policy. This
 focused gate does not qualify CUDA streams, asynchronous leases, capture, adaptive

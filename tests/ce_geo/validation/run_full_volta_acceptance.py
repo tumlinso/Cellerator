@@ -219,7 +219,7 @@ def main() -> int:
         commands = [
             ["cmake", "-S", ".", "-B", "build",
              "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_CUDA_ARCHITECTURES=70",
-             "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF"],
+             "-DCELLERATOR_ENABLE_TORCH=OFF"],
             [sys.executable,
              "tests/ce_geo/validation/baseline_golden_regression.py",
              "--build", "build"],

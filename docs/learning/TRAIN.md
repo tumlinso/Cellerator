@@ -9,8 +9,9 @@ Preparation owns forward and reverse incidence; value changes do not rebuild it.
 Native Cellerator owns numerical kernels, FP32 canonical coefficients, an FP16
 derived plane, saved execution operands, read tickets and guarded publication.
 The existing execution session owns allocations; prepared_program_v2 dispatches
-stages. CelleraTorch owns dispatcher registration, first-order autograd, modules,
-stock optimizer integration and Python packaging. The old N16 route is retained.
+stages. The optional `cellerator.torch` adapter owns dispatcher registration, first-order
+autograd, modules, stock optimizer integration and framework checkpoint handling.
+Cellerator owns the native mechanism and parameter state. The old N16 route is retained.
 
 Mixed precision evaluates stored half operands with FP32 arithmetic. Backward
 uses those stored values with an identity straight-through surrogate for

@@ -88,8 +88,8 @@ class WaveAFoundationAudit(unittest.TestCase):
         self.assertIn("src/runtime/value_readiness.cu", cmake)
         self.assertIn("celleratorValueReadinessTest", cmake)
         self.assertIn(
-            'option(CELLERATOR_ENABLE_TORCH_MODELS '
-            '"Enable the CelleraTorch compatibility component targets" OFF)',
+            'option(CELLERATOR_ENABLE_TORCH '
+            '"Build the optional Cellerator Torch adapters" OFF)',
             cmake,
         )
 

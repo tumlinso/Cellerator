@@ -319,9 +319,9 @@ Owns sequence-specialized representations and primitives within the Cellerator u
 
 Owns persistence, delivery, staging, generation, and distributed data movement.
 
-### CelleraTorch
+### Python and Torch adapters
 
-Owns framework adaptation.
+Cellerator owns the Python package and native numerical APIs. The optional `cellerator.torch` adapter supplies Torch modules, autograd integration, optimizer guards, and framework checkpoint serialization. It consumes Cellerator-owned native handles and does not create a second parameter or topology owner. A native-only build does not discover or link Torch.
 
 ## Architecture-specific execution
 
@@ -395,8 +395,7 @@ are classified in `CE_PTR_INVENTORY.md`. They are not architectural defaults:
 new prepared paths may not copy them, and allocation-free claims apply only to
 the sealed/session paths whose tests measure that contract. CellShard continues
 to persist and transport opaque images; it does not acquire projection meaning.
-BioPrep retains preprocessing policy, and CelleraTorch remains an optional ABI
-adapter.
+BioPrep retains preprocessing policy. Python and Torch expose Cellerator-owned behavior through the root `cellerator` package and optional `cellerator.torch` adapter.
 
 ## Integrated CE-GEO realization
 

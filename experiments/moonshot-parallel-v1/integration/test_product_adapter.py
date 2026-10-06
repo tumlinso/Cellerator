@@ -1,16 +1,13 @@
-"""First-order Torch qualification against the standalone native product2 ABI."""
-import importlib.util
-import os
+"""First-order Torch qualification through the installed Cellerator package."""
+from importlib import metadata
 from pathlib import Path
 import unittest
 
 import torch
-
-ROOT = Path(__file__).resolve().parents[3]
-SPEC = importlib.util.spec_from_file_location("moonshot_product", ROOT / "components/CelleraTorch/python/celleratorch/moonshot_product.py")
-MODULE = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(MODULE)
-product2, product2_jvp, Product2Module = MODULE.product2, MODULE.product2_jvp, MODULE.Product2Module
+import cellerator
+import cellerator.torch as cellerator_torch
+from cellerator import _native
+from cellerator.torch import Product2Module, product2, product2_jvp
 
 
 def inputs():
@@ -20,14 +17,15 @@ def inputs():
 
 
 class ProductAdapterTests(unittest.TestCase):
-    def test_library_is_required(self):
-        previous = os.environ.pop("CELLERATOR_PRODUCT2_LIBRARY", None)
-        try:
-            with self.assertRaisesRegex(RuntimeError, "CELLERATOR_PRODUCT2_LIBRARY"):
-                product2(*inputs())
-        finally:
-            if previous is not None:
-                os.environ["CELLERATOR_PRODUCT2_LIBRARY"] = previous
+    def test_calls_resolve_from_installed_native_package(self):
+        distribution = metadata.distribution('cellerator')
+        installed_files = {Path(distribution.locate_file(entry)).resolve()
+                           for entry in distribution.files or ()}
+        for module_path in (cellerator.__file__, _native.__file__, cellerator_torch.__file__):
+            self.assertIn(Path(module_path).resolve(), installed_files)
+            self.assertTrue(Path(module_path).is_file())
+        self.assertTrue(Path(_native.__file__).name.startswith('_native'))
+        self.assertEqual(product2(*inputs()).numel(), 5)
 
     def test_native_forward_vjp_repeated_zeros(self):
         x, k, a, b = inputs()
@@ -102,7 +100,7 @@ class ProductAdapterTests(unittest.TestCase):
             y = product2(*values)
             with torch.no_grad():
                 values[changed][0] += 1
-            with self.assertRaisesRegex(RuntimeError, "modified by an inplace operation"):
+            with self.assertRaisesRegex(RuntimeError, 'modified by an inplace operation'):
                 y.sum().backward()
 
     def test_composition_optimizer_and_checkpoint(self):
@@ -124,11 +122,11 @@ class ProductAdapterTests(unittest.TestCase):
         restored = Product2Module(initial, a, b)
         restored.load_state_dict(checkpoint)
         torch.testing.assert_close(restored(x), model(x))
-        self.assertEqual(set(checkpoint), {"coefficients", "a", "b"})
+        self.assertEqual(set(checkpoint), {'coefficients', 'a', 'b'})
 
     def test_admission_types_shapes_extents_indices(self):
         x, k, a, b = inputs()
-        for invalid in (x.double(), x.reshape(2, 2), x.to("meta")):
+        for invalid in (x.double(), x.reshape(2, 2), x.to('meta')):
             with self.assertRaises(ValueError):
                 product2(invalid, k, a, b)
         with self.assertRaises(ValueError):
@@ -151,6 +149,6 @@ class ProductAdapterTests(unittest.TestCase):
             torch.autograd.grad(gx.sum(), x)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     torch.set_num_threads(1)
     unittest.main(verbosity=2)
