@@ -127,18 +127,18 @@ void for_each_dense_reduce_encoded_batch(
         const unsigned long row_end_ul = matrix->partition_offsets[part_id + 1];
         const std::int64_t row_count = detail::checked_i64_dense_reduce_(row_end_ul - row_begin_ul, "partition row count");
 
-        if (!cellshard::partition_loaded(matrix, part_id)) {
+        if (!::cellshard::partition_loaded(matrix, part_id)) {
             if (storage == nullptr) {
                 throw std::runtime_error("dense reduce inference encountered an unloaded partition without shard storage");
             }
-            if (!cellshard::fetch_partition(matrix, storage, part_id)) {
+            if (!::cellshard::fetch_partition(matrix, storage, part_id)) {
                 throw std::runtime_error("dense reduce inference failed to fetch a CellShard partition");
             }
             loaded_here = true;
         }
 
-        const cellshard::sparse::compressed *part = matrix->parts[part_id];
-        if (part == nullptr || part->axis != cellshard::sparse::compressed_by_row) {
+        const ::cellshard::sparse::compressed *part = matrix->parts[part_id];
+        if (part == nullptr || part->axis != ::cellshard::sparse::compressed_by_row) {
             throw std::runtime_error("dense reduce inference requires loaded row-compressed CSR partitions");
         }
 
@@ -163,7 +163,7 @@ void for_each_dense_reduce_encoded_batch(
         });
 
         if (loaded_here && config.drop_fetched_parts) {
-            cellshard::drop_partition(matrix, part_id);
+            ::cellshard::drop_partition(matrix, part_id);
         }
     }
 }

@@ -34,9 +34,9 @@ struct DenseReduceBatch {
 
 class BalancedDenseReduceSampler {
 public:
-    using matrix_type = cellshard::sharded<cellshard::sparse::compressed>;
-    using part_type = cellshard::sparse::compressed;
-    using storage_type = cellshard::shard_storage;
+    using matrix_type = ::cellshard::sharded<::cellshard::sparse::compressed>;
+    using part_type = ::cellshard::sparse::compressed;
+    using storage_type = ::cellshard::shard_storage;
 
     struct Options {
         bool with_replacement = true;
@@ -101,13 +101,13 @@ public:
                 const unsigned long *bucket_rows = bucket_rows_begin_(static_cast<std::size_t>(bucket_id));
                 for (const unsigned long local_pos : local_positions) {
                     const unsigned long global_row = bucket_rows[static_cast<std::size_t>(local_pos)];
-                    const unsigned long part_id = cellshard::find_partition(matrix_, global_row);
+                    const unsigned long part_id = ::cellshard::find_partition(matrix_, global_row);
                     part_type *part = require_partition_(part_id, &fetched_partitions);
                     const unsigned long part_row_base = matrix_->partition_offsets[part_id];
-                    const cellshard::types::dim_t local_row =
-                        static_cast<cellshard::types::dim_t>(global_row - part_row_base);
-                    const cellshard::types::ptr_t row_begin = part->majorPtr[local_row];
-                    const cellshard::types::ptr_t row_end = part->majorPtr[local_row + 1];
+                    const ::cellshard::types::dim_t local_row =
+                        static_cast<::cellshard::types::dim_t>(global_row - part_row_base);
+                    const ::cellshard::types::ptr_t row_begin = part->majorPtr[local_row];
+                    const ::cellshard::types::ptr_t row_end = part->majorPtr[local_row + 1];
 
                     sampled_rows.push_back(sampled_row_span{
                         global_row,
@@ -136,8 +136,8 @@ private:
         std::int64_t bucket_id;
         float developmental_time;
         part_type *part;
-        cellshard::types::ptr_t row_begin;
-        cellshard::types::ptr_t row_end;
+        ::cellshard::types::ptr_t row_begin;
+        ::cellshard::types::ptr_t row_end;
     };
 
     static std::int64_t checked_i64_(unsigned long value, const char *label) {
@@ -180,7 +180,7 @@ private:
         checked_i64_(matrix_->rows, "rows");
         checked_i64_(matrix_->cols, "cols");
         for (unsigned long part_id = 0; part_id < matrix_->num_partitions; ++part_id) {
-            if (matrix_->partition_aux[part_id] != cellshard::sparse::compressed_by_row) {
+            if (matrix_->partition_aux[part_id] != ::cellshard::sparse::compressed_by_row) {
                 throw std::invalid_argument("BalancedDenseReduceSampler requires CSR parts compressed by row");
             }
         }
@@ -264,11 +264,11 @@ private:
         if (part_id >= matrix_->num_partitions) {
             throw std::out_of_range("sampled row resolved to an invalid CellShard partition");
         }
-        if (!cellshard::partition_loaded(matrix_, part_id)) {
+        if (!::cellshard::partition_loaded(matrix_, part_id)) {
             if (storage_ == 0) {
                 throw std::runtime_error("sampled row lives in an unloaded CellShard partition, but no shard_storage was provided");
             }
-            if (!cellshard::fetch_partition(matrix_, storage_, part_id)) {
+            if (!::cellshard::fetch_partition(matrix_, storage_, part_id)) {
                 throw std::runtime_error("failed to fetch CellShard partition for sampled row");
             }
             // Cold-partition fetches dominate latency more than local row copy.
@@ -277,7 +277,7 @@ private:
 
         part_type *part = matrix_->parts[part_id];
         if (part == 0) throw std::runtime_error("CellShard partition is still null after fetch");
-        if (part->axis != cellshard::sparse::compressed_by_row) {
+        if (part->axis != ::cellshard::sparse::compressed_by_row) {
             throw std::runtime_error("BalancedDenseReduceSampler only supports row-compressed CSR partitions");
         }
         if (matrix_->cols != 0 && part->cols != matrix_->cols) {
@@ -289,7 +289,7 @@ private:
     void drop_fetched_partitions_(const host_buffer<unsigned long> &fetched_partitions) {
         if (!options_.drop_fetched_parts) return;
         for (std::size_t i = fetched_partitions.size(); i != 0u; --i) {
-            cellshard::drop_partition(matrix_, fetched_partitions[i - 1u]);
+            ::cellshard::drop_partition(matrix_, fetched_partitions[i - 1u]);
         }
     }
 
@@ -324,7 +324,7 @@ private:
             const std::int64_t row_nnz = static_cast<std::int64_t>(row.row_end - row.row_begin);
             for (std::int64_t i = 0; i < row_nnz; ++i) {
                 col_ptr[nnz_cursor + i] =
-                    static_cast<std::int64_t>(row.part->minorIdx[row.row_begin + static_cast<cellshard::types::ptr_t>(i)]);
+                    static_cast<std::int64_t>(row.part->minorIdx[row.row_begin + static_cast<::cellshard::types::ptr_t>(i)]);
             }
             if (row_nnz != 0) {
                 std::memcpy(
