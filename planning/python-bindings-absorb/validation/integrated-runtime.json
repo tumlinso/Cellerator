@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "command_cwd": "/home/tumlinson/Cellerator",
+  "recipe": "baseline",
+  "argv": [
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+    "-B",
+    "/tmp/cellerator-python-bindings/planning/python-bindings-absorb/validation/integrated_runtime.py",
+    "--build",
+    "/tmp/cellerator-bindings-integrated-build",
+    "--package-root",
+    "/tmp/cellerator-bindings-integrated-install"
+  ],
+  "resources": {
+    "gpus": 2,
+    "cpu_threads": 4
+  },
+  "paths": [
+    "bindings",
+    "python/cellerator",
+    "include/Cellerator/bindings",
+    "include/Cellerator/compute/operation/prepared_relation.hh",
+    "include/Cellerator/compute/operation/relation_semantics.hh",
+    "include/Cellerator/compute/candidate/sparse/project.hh",
+    "src/compute/operation/prepared_relation.cu",
+    "src/compute/operation/relation_semantics.cc",
+    "src/compute/candidate/sparse/project.cu",
+    "tests/bindings"
+  ],
+  "timeout": 600
+}

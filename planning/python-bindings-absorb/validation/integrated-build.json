@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "source_record": "integration-source-identity.json",
+  "build_root": "/tmp/cellerator-bindings-integrated-build",
+  "install_root": "/tmp/cellerator-bindings-integrated-install",
+  "toolchain": {
+    "cuda": "12.9",
+    "host_compiler": "g++12",
+    "cuda_architectures": "70"
+  },
+  "targets": [
+    "cellerator_torch_adapter_compile_tests",
+    "cellerator_python_extensions",
+    "cellerator_indexed_mechanism_binding_test"
+  ],
+  "install_components": [
+    "Python",
+    "Torch"
+  ],
+  "runtime": "See integrated-runtime-result.json; executes rebuilt CMake prefix, not this wheel.",
+  "wheel": {
+    "filename": "cellerator-0.1.0-cp313-cp313-linux_x86_64.whl",
+    "sha256": "ed9ccd994a6c2ba7f2480c44812a72e79cb10334abe31a21bffb643682e3b4ec",
+    "status": "build passed; installed-wheel discovery validated with the earlier final wheel, not rerun for this combined-source wheel."
+  }
+}

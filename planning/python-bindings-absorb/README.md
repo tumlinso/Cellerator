@@ -6,7 +6,9 @@ The bounded canonical task is `CE-PYBIND-ABSORB` in `CE-PYBIND-RUN-V1`; it was r
 
 The migration implements one Torch-free `cellerator` Python core and optional `cellerator.torch`, thin Cellerator-owned C++ adapters, and native extracted model operations. No compiler binding, new planner, CPU indexed-mechanism backend, or higher-order differentiation is added. Product2 retains its existing CPU FP32 framework contract. Existing supported native precision and lifecycle govern mechanism bindings.
 
-Validation and delivery evidence will be recorded here after the affected builds and checks. Historical scientific and performance receipts remain historical evidence; this migration does not extend their claims. The final source will be committed and retained in durable Git storage, with a verified delivery backup if canonical integration must wait for other work.
+Validation and delivery evidence is recorded below and in `validation/`. Historical scientific and performance receipts remain historical evidence; this migration does not extend their claims. The migration source is committed on `codex/python-bindings` and fast-forwarded into canonical `main`; verified bundles and tested wheels are saved under `planning/python-bindings-delivery/`.
+
+Canonical integration retained all 74 saved FP64 files byte-for-byte and left its pre-existing staged patch unchanged. The moments producer branch `codex/ce-mom-producer` remains separate and preserved. Leftover generated legacy package metadata was saved in the private Git integration backup. GlassHelix consumer repairs are committed on its canonical `main` as `c801f48400febe293dc8600d9715ef7cd26a1fdd`.
 
 The first durable source checkpoint is `c041eb63410b75211bfbc7ec4db05f93eb51b1ef` on `codex/python-bindings`, with a verified Git bundle saved at `/home/tumlinson/Cellerator/planning/python-bindings-delivery/checkpoint.bundle`. Final runtime fixes and installed-consumer qualification follow this checkpoint.
 
@@ -19,6 +21,7 @@ The first durable source checkpoint is `c041eb63410b75211bfbc7ec4db05f93eb51b1ef
 - Pair gradients now match the mean loss and both grouped-bucket ranking modes use the derivative signs of their unchanged forward formula. Both corrections were explicitly approved by the user. Independent references, bucket finite differences and malformed shape/index cases passed.
 - Native stream ownership queries use the driver API so Torch-first imports work with the selected CUDA 12.9 build and Torch 2.7/cu126 runtime. Default, legacy, per-thread, ordinary and foreign-device stream queries preserve the calling context in the two-device check.
 - Installed C++ consumers built with ordinary `find_package(Cellerator)` (no Torch discovery) and `COMPONENTS torch`; CellShard-dependent examples built separately and their existing fixture executables passed under the controller.
+- After canonical integration, consumers were rebuilt against the preserved FP64 descriptor/view changes. The rebuilt native owner fixture, C++ view/program/autograd fixtures and all 50 Python binding tests passed under controller evidence `e9711970-b988-4db5-93e3-261129e06d46`; exact combined-source hashes are recorded in `validation/integration-source-identity.json`.
 - GlassHelix installed mechanism training/gradients, fresh-process checkpoint replay and shared-support synthetic fixture passed with the installed wheel; its CPU native Product2 integration and ten learning tests also passed. Historical receipts were preserved.
 
 Tested wheels are saved locally in `planning/python-bindings-delivery/host/` and `torch/`. Host SHA256: `55fe065a5908f1d7ecb750a5655a5c48c462f269e46987e8bbe91eef9773b2ae`. CUDA/Torch SHA256: `30330140376984e37712c97fabf0e0f6bef70a803df8bea0624e7636c2fa9e0c`.

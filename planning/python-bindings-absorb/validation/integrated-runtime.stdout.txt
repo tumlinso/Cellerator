@@ -1,0 +1,15 @@
+Running rebuilt cellerator_indexed_mechanism_binding_test
+native mechanism owner/program/tape lifecycle passed
+Running rebuilt cellerator_torch_native_views_test
+CE-LIVE-40 native views passed
+Running rebuilt cellerator_torch_program_ops_test
+Cellerator Torch program op tests passed
+Running rebuilt cellerator_torch_autograd_ops_test
+..................................................                       [100%]
+=============================== warnings summary ===============================
+tests/bindings/python/test_biology.py::test_native_source_target_and_edge_permutation_covariance
+  /home/tumlinson/Cellerator/tests/bindings/python/test_biology.py:61: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+    spec or support(), torch.tensor(initial, device="cuda", dtype=torch.float32),
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+50 passed, 1 warning in 3.74s
