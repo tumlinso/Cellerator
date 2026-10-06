@@ -29,13 +29,19 @@ SOURCE_PATHS = (
     "src/compute/operation/native_numeric/CMakeLists.txt",
     "src/compute/operation/native_numeric/device_linear.cu",
     "src/compute/operation/native_numeric/host_relation.cc",
+    "include/Cellerator/compute/candidate/sparse/project.hh",
     "include/Cellerator/compute/operation/prepared_relation.hh",
     "include/Cellerator/compute/operation/relation_semantics.hh",
     "src/compute/operation/prepared_relation.cu",
     "src/compute/candidate/sparse/project.cu",
+    "src/compute/operation/relation_semantics.cc",
     "examples/semantic_spine_v1/CMakeLists.txt",
     "tests/native_numeric/device_arithmetic.cc",
     "tests/native_numeric/build_probe.py",
+)
+OPTIONAL_SOURCE_PATHS = (
+    "include/Cellerator/compute/operation/device_elementwise.hh",
+    "src/compute/operation/device_elementwise.cuh",
 )
 EXAMPLE_ROOT = "examples/native_neighborhood_moments"
 
@@ -74,6 +80,32 @@ def file_record(path: Path, root: Path) -> dict[str, str]:
     return {"path": str(path.relative_to(root)), "sha256": sha256(path)}
 
 
+def scoped_git_evidence(source_root: Path, paths: Sequence[str]) -> dict[str, object]:
+    command = ["git", "-C", str(source_root)]
+    try:
+        status = subprocess.run(
+            command + ["status", "--short", "--untracked-files=all", "--", *paths],
+            check=True,
+            text=True,
+            capture_output=True,
+        ).stdout
+        diff = subprocess.run(
+            command + ["diff", "--binary", "HEAD", "--", *paths],
+            check=True,
+            capture_output=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError) as error:
+        return {"available": False, "error": str(error), "paths": list(paths)}
+    digest = hashlib.sha256(status.encode("utf-8") + b"\0" + diff).hexdigest()
+    return {
+        "available": True,
+        "paths": list(paths),
+        "status": status,
+        "diff_sha256": digest,
+        "diff_bytes": len(diff),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build", required=True, type=Path, help="isolated CMake build directory")
@@ -104,6 +136,8 @@ def main() -> int:
         parser.error("--build must be outside the Baseplane source checkout")
 
     sources = [source_root / item for item in SOURCE_PATHS]
+    optional_sources = [source_root / item for item in OPTIONAL_SOURCE_PATHS]
+    sources.extend(path for path in optional_sources if path.is_file())
     example_dir = source_root / EXAMPLE_ROOT
     if example_dir.is_dir():
         sources.extend(sorted(path for path in example_dir.rglob("*") if path.is_file()))
@@ -164,6 +198,7 @@ def main() -> int:
     configure_ok = configure_result["returncode"] == 0
     complete_build = configure_ok and build_ok and not missing_binaries
     source_file_hashes = {str(path.relative_to(source_root)): sha256(path) for path in sources}
+    scoped_git = scoped_git_evidence(source_root, sorted(source_file_hashes))
     native_binary = binary_paths["ceNativeNeighborhoodMoments"]
     arithmetic_binary = binary_paths["ceNativeArithmeticTest"]
     configure_log = Path(configure_result["log"])
@@ -206,6 +241,7 @@ def main() -> int:
         "cxx": cxx_version,
         "nvcc": cuda_version,
         "source_file_sha256": source_file_hashes,
+        "scoped_git": scoped_git,
         "source_sha256": [file_record(path, source_root) for path in sources],
         "cmake_cache_sha256": sha256(cache) if cache.is_file() else None,
         "compile_commands_sha256": sha256(compile_commands) if compile_commands.is_file() else None,
