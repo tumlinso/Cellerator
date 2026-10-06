@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python3",
+    "/home/tumlinson/Cellerator/tests/fp64/measure_costs.py",
+    "--binary",
+    "/tmp/cellerator-fp64-build/fp64_cost_bench",
+    "--baseline-library",
+    "/home/tumlinson/Cellerator/planning/fp64/evidence/baseline/libhistorical_csr_baseline.so",
+    "--receipt",
+    "/home/tumlinson/Cellerator/planning/fp64/evidence/costs.json"
+  ],
+  "campaign_id": "cellerator-fp64-costs",
+  "command_cwd": "/home/tumlinson/Cellerator",
+  "paths": [
+    "tests/fp64/CMakeLists.txt",
+    "tests/fp64/admission_test.cu",
+    "tests/fp64/compare_scipy.py",
+    "tests/fp64/cost_bench.cu",
+    "tests/fp64/fp64_qualification.cu",
+    "tests/fp64/measure_costs.py",
+    "tests/fp64/run_checks.py",
+    "include/Cellerator/compute/operation/prepared_relation.hh",
+    "src/compute/operation/prepared_relation.cu",
+    "src/compute/operation/relation_semantics.cc",
+    "include/Cellerator/compute/operation/device_elementwise.hh",
+    "src/compute/operation/device_elementwise.cuh",
+    "include/Cellerator/compute/candidate/sparse/project.hh",
+    "src/compute/candidate/sparse/project.cu",
+    "include/Cellerator/compute/operation/relation_semantics.hh"
+  ],
+  "project_root": "/home/tumlinson/Cellerator",
+  "recipe": "baseline",
+  "resources": {
+    "cpu_threads": 4,
+    "gpu_uuids": [
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "gpus": 1
+  },
+  "schema_version": 1,
+  "timeout": 3600,
+  "toolchain": {
+    "require_sanitizer": false,
+    "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+  }
+}

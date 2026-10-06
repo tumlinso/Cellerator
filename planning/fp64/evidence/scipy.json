@@ -1,0 +1,64 @@
+{
+  "status": "passed",
+  "cases": 194,
+  "coverage": {
+    "prepared_cases": 128,
+    "shared_csr_cases": 64,
+    "variance_cases": 2
+  },
+  "widths": [
+    1,
+    3,
+    15,
+    16,
+    17,
+    33,
+    65,
+    257
+  ],
+  "commit": "ebaa6d295423f8d5267027b5665287572f65ba6b",
+  "binary": "/tmp/cellerator-fp64-build/fp64_qualification",
+  "binary_sha256": "4263e3dbf937b7b80dce2a8f6062830c08380979ae4f545497c6356553b870b0",
+  "source_sha256": {
+    "tests/fp64/fp64_qualification.cu": "956b36813811503d16af8037c5688b92477d545d927840a1ad6fe5cec2e9d6e5",
+    "tests/fp64/compare_scipy.py": "98c74cfc31eb7a62beb49e2a960db9eed67b56f85c6b50106328d551f84e9e56",
+    "include/Cellerator/compute/operation/prepared_relation.hh": "bac94276a92e269225f10110f053f82983532dd0915bfd257f8bf3aa47cf8ad4",
+    "src/compute/operation/prepared_relation.cu": "8fb124c10967a485316260b42c0148c63b2cc1ae6f8310638cfb94ed582034a3",
+    "include/Cellerator/compute/operation/device_elementwise.hh": "c6a4cb1950f114b6f893cfc1a78c713b835f64489be3a3f116b6950ed75be3f2",
+    "src/compute/operation/device_elementwise.cuh": "f7162d31eb9d40677cc847637338affeceebad296358965b09bd33051c12956c",
+    "include/Cellerator/compute/candidate/sparse/project.hh": "083ca6f248cd69d0c744b2b3b70f266e0057e79c230f464e3eaf70fa5582eab7",
+    "src/compute/candidate/sparse/project.cu": "38d288838243ed46281b6d7f9e36125f287bbeb1c1df22fd1e8931095a7800f4",
+    "include/Cellerator/compute/operation/relation_semantics.hh": "e9c14944440c41bc4497d5bb75a7b2405bd32a767258ddb443997b2b2dd1ab22",
+    "src/compute/operation/relation_semantics.cc": "7e8253f58c1435fff955765faa1f262b0aa004682352021b30ad523e8f3a0752"
+  },
+  "relation_cases": 192,
+  "variance_cancellation": [
+    {
+      "kind": "variance",
+      "max_centered_error": 0.0,
+      "max_roundoff_bound": 4.988498130835069e-13
+    },
+    {
+      "kind": "variance",
+      "max_centered_error": 0.5,
+      "max_roundoff_bound": 115.46319687028056
+    }
+  ],
+  "tuples": [
+    "f32xf32->f32",
+    "f32xf64->f64",
+    "f64xf32->f64",
+    "f64xf64->f64"
+  ],
+  "directions": [
+    "forward",
+    "transpose"
+  ],
+  "generations": [
+    1,
+    2
+  ],
+  "oracle": "SciPy CSR with duplicate-edge coalescing; inputs rounded to stored dtype",
+  "records_jsonl": "/home/tumlinson/Cellerator/planning/fp64/evidence/scipy.jsonl",
+  "records_sha256": "6bcb7d70d3463669cc0467415f14a8438d788eefa8175ac94ec7b25af0e752d0"
+}

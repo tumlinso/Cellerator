@@ -1,0 +1,101 @@
+{
+  "schema": "cellerator.fp64.native.v1",
+  "source_sha256": {
+    "include/Cellerator/compute/candidate/sparse/project.hh": "083ca6f248cd69d0c744b2b3b70f266e0057e79c230f464e3eaf70fa5582eab7",
+    "include/Cellerator/compute/operation/device_elementwise.hh": "c6a4cb1950f114b6f893cfc1a78c713b835f64489be3a3f116b6950ed75be3f2",
+    "include/Cellerator/compute/operation/prepared_relation.hh": "bac94276a92e269225f10110f053f82983532dd0915bfd257f8bf3aa47cf8ad4",
+    "include/Cellerator/compute/operation/relation_semantics.hh": "e9c14944440c41bc4497d5bb75a7b2405bd32a767258ddb443997b2b2dd1ab22",
+    "src/compute/candidate/sparse/project.cu": "38d288838243ed46281b6d7f9e36125f287bbeb1c1df22fd1e8931095a7800f4",
+    "src/compute/operation/device_elementwise.cuh": "f7162d31eb9d40677cc847637338affeceebad296358965b09bd33051c12956c",
+    "src/compute/operation/prepared_relation.cu": "8fb124c10967a485316260b42c0148c63b2cc1ae6f8310638cfb94ed582034a3",
+    "src/compute/operation/relation_semantics.cc": "7e8253f58c1435fff955765faa1f262b0aa004682352021b30ad523e8f3a0752",
+    "tests/fp64/CMakeLists.txt": "25d3d077d559ba9d5b2d99d1a8f47ba39fd863e48d119318c5e48411b71010c1",
+    "tests/fp64/admission_test.cu": "5e05132497706fc8623d4bf2a47648b0d20b314d68f937f4899968ce67138ef9",
+    "tests/fp64/compare_scipy.py": "98c74cfc31eb7a62beb49e2a960db9eed67b56f85c6b50106328d551f84e9e56",
+    "tests/fp64/cost_bench.cu": "11f338a7c78242356204be6499a70e58b99f6c5c486ee084370bbdbf7fcf0e41",
+    "tests/fp64/fp64_qualification.cu": "956b36813811503d16af8037c5688b92477d545d927840a1ad6fe5cec2e9d6e5",
+    "tests/fp64/measure_costs.py": "11d644e4a680467bdb13b8cdc9afd402552a064c757cb1ccfc944c8b7c5c77af",
+    "tests/fp64/run_checks.py": "b100138ac850d9d3d2ba6225cd8027e56ce6b8a83799daa957696c0a170be82b"
+  },
+  "status": "passed",
+  "tests": [
+    {
+      "argv": [
+        "/tmp/cellerator-fp64-build/fp64_existing_adapter_test"
+      ],
+      "binary_sha256": "ada08047a0788d5f6c7e2bc1521b283e0f2a1736b45e604523c3048d674300c4",
+      "elapsed_seconds": 0.10992127400095342,
+      "name": "adapter",
+      "returncode": 0,
+      "stderr_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/adapter.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/adapter.stdout.txt",
+      "stdout_sha256": "34073306420782723048741919a247655c6500fa98a2360fdc5e6a113ce50dee"
+    },
+    {
+      "argv": [
+        "/tmp/cellerator-fp64-build/fp64_existing_forward_test"
+      ],
+      "binary_sha256": "59d3622a050021c43b064595a80dba35c9336914c36fd82787b4cc433d39d8c1",
+      "elapsed_seconds": 0.3343587720009964,
+      "name": "forward",
+      "returncode": 0,
+      "stderr_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/forward.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/forward.stdout.txt",
+      "stdout_sha256": "f502ac10ce50341dd374d36becad08039bf56297b8339db9ed8a751f126e8069"
+    },
+    {
+      "argv": [
+        "/tmp/cellerator-fp64-build/fp64_existing_transpose_test"
+      ],
+      "binary_sha256": "bf69a875c1d8fc4cd6caa0be856fb7fbea5f5339ee1fffff454e1d369ba75cb1",
+      "elapsed_seconds": 0.3402219400013564,
+      "name": "transpose",
+      "returncode": 0,
+      "stderr_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/transpose.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/transpose.stdout.txt",
+      "stdout_sha256": "2d07ce138ccf4681592417ffbb534b351130d173013b58bade1f0cce7ed84196"
+    },
+    {
+      "argv": [
+        "/tmp/cellerator-fp64-build/fp64_existing_lifecycle_test"
+      ],
+      "binary_sha256": "cef24c9c1d90dffcd371193de3e15f3f2632feb47babb46f784095223029aa48",
+      "elapsed_seconds": 0.36594631200568983,
+      "name": "lifecycle",
+      "returncode": 0,
+      "stderr_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/lifecycle.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/lifecycle.stdout.txt",
+      "stdout_sha256": "d00f3c7a0f4d329872a91f5656c0fc42dfb6c571095045b02a03733dcb468d86"
+    },
+    {
+      "argv": [
+        "/tmp/cellerator-fp64-build/fp64_existing_overhead_test"
+      ],
+      "binary_sha256": "755544f59773ec1116c6700d72330a266bad28cf90aee10602c8a88ae98767c7",
+      "elapsed_seconds": 0.5666737190040294,
+      "name": "overhead",
+      "returncode": 0,
+      "stderr_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/overhead.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/overhead.stdout.txt",
+      "stdout_sha256": "7f43fa376c2855c6767e759ec0c8c098ccb39d766e3d38615c015f2036a9310d"
+    },
+    {
+      "argv": [
+        "/tmp/cellerator-fp64-build/fp64_admission_test"
+      ],
+      "binary_sha256": "22a0aaf0eaeb9ee3812503fbd6884fd94e589c8d633df95a32a5e2cff7474ef9",
+      "elapsed_seconds": 0.3369213480036706,
+      "name": "fp64_admission",
+      "returncode": 0,
+      "stderr_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/fp64_admission.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/native/fp64_admission.stdout.txt",
+      "stdout_sha256": "fa7bddb9088fd681613e136f94196613c96be895051ac14e96f27d5cb04d0d20"
+    }
+  ]
+}

@@ -48,10 +48,17 @@ status validate(const operation_descriptor& op) noexcept {
     if (op.update != output_update::overwrite && op.update != output_update::accumulate
         && op.update != output_update::affine_accumulate)
         return {status_code::unsupported_semantics, "unknown destination update"};
-    if (op.update == output_update::affine_accumulate
-        && (!std::isfinite(op.input_scale) || !std::isfinite(op.destination_scale)))
-        return {status_code::invalid_argument, "destination effect coefficients must be finite"};
     const auto& a = op.arithmetic;
+    if (op.update == output_update::affine_accumulate) {
+        if (!std::isfinite(op.input_scale) || !std::isfinite(op.destination_scale))
+            return {status_code::invalid_argument, "destination effect coefficients must be finite"};
+        // Existing FP32 routes retain their old representable coefficient range.
+        // The descriptor stores double so FP64 routes do not lose precision.
+        if (a.multiply != execution::numeric_type::f64
+            && (!std::isfinite(static_cast<float>(op.input_scale))
+                || !std::isfinite(static_cast<float>(op.destination_scale))))
+            return {status_code::invalid_argument, "FP32 destination coefficients must remain finite after rounding"};
+    }
     if (!float_bytes(a.relation_storage) || !float_bytes(a.input_storage)
         || !float_bytes(a.multiply) || !float_bytes(a.accumulation)
         || !float_bytes(a.output_storage))
@@ -81,7 +88,10 @@ bool equivalent(const operation_descriptor& x, const operation_descriptor& y) no
         && p.permit_reassociation == q.permit_reassociation && p.nonfinite == q.nonfinite
         && x.dense_width == y.dense_width && x.update == y.update
         && (x.update != output_update::affine_accumulate
-            || (x.input_scale == y.input_scale && x.destination_scale == y.destination_scale))
+            || (p.multiply == execution::numeric_type::f64
+                ? (x.input_scale == y.input_scale && x.destination_scale == y.destination_scale)
+                : (static_cast<float>(x.input_scale) == static_cast<float>(y.input_scale)
+                    && static_cast<float>(x.destination_scale) == static_cast<float>(y.destination_scale))))
         && x.input_output_aliasing_legal == y.input_output_aliasing_legal;
 }
 } // namespace cellerator::compute::relation

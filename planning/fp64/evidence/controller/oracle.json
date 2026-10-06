@@ -1,0 +1,93 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python3",
+    "/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py",
+    "run",
+    "--spec",
+    "/home/tumlinson/Cellerator/planning/fp64/evidence/controller/oracle.spec.json",
+    "--json"
+  ],
+  "binary_sha256": {
+    "/tmp/cellerator-fp64-build/fp64_qualification": "4263e3dbf937b7b80dce2a8f6062830c08380979ae4f545497c6356553b870b0"
+  },
+  "controller_receipt": {
+    "classification": "decision-result",
+    "evidence_id": "7babdfc1-5849-4777-994c-2ce9ff19488f",
+    "lease_receipt": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/5941b1b5-4e4b-4bda-8b3c-1906fd8ad320/lease.json",
+    "message": "No action-worthy result; evidence stored.",
+    "ok": true,
+    "returncode": 0,
+    "status": "succeeded",
+    "stderr_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/5941b1b5-4e4b-4bda-8b3c-1906fd8ad320/foreground.stderr.txt",
+    "stdout_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/5941b1b5-4e4b-4bda-8b3c-1906fd8ad320/foreground.stdout.txt"
+  },
+  "elapsed_seconds": 3.9078118830002495,
+  "phase": "oracle",
+  "returncode": 0,
+  "source_sha256": {
+    "include/Cellerator/compute/candidate/sparse/project.hh": "083ca6f248cd69d0c744b2b3b70f266e0057e79c230f464e3eaf70fa5582eab7",
+    "include/Cellerator/compute/operation/device_elementwise.hh": "c6a4cb1950f114b6f893cfc1a78c713b835f64489be3a3f116b6950ed75be3f2",
+    "include/Cellerator/compute/operation/prepared_relation.hh": "bac94276a92e269225f10110f053f82983532dd0915bfd257f8bf3aa47cf8ad4",
+    "include/Cellerator/compute/operation/relation_semantics.hh": "e9c14944440c41bc4497d5bb75a7b2405bd32a767258ddb443997b2b2dd1ab22",
+    "src/compute/candidate/sparse/project.cu": "38d288838243ed46281b6d7f9e36125f287bbeb1c1df22fd1e8931095a7800f4",
+    "src/compute/operation/device_elementwise.cuh": "f7162d31eb9d40677cc847637338affeceebad296358965b09bd33051c12956c",
+    "src/compute/operation/prepared_relation.cu": "8fb124c10967a485316260b42c0148c63b2cc1ae6f8310638cfb94ed582034a3",
+    "src/compute/operation/relation_semantics.cc": "7e8253f58c1435fff955765faa1f262b0aa004682352021b30ad523e8f3a0752",
+    "tests/fp64/CMakeLists.txt": "25d3d077d559ba9d5b2d99d1a8f47ba39fd863e48d119318c5e48411b71010c1",
+    "tests/fp64/admission_test.cu": "5e05132497706fc8623d4bf2a47648b0d20b314d68f937f4899968ce67138ef9",
+    "tests/fp64/compare_scipy.py": "98c74cfc31eb7a62beb49e2a960db9eed67b56f85c6b50106328d551f84e9e56",
+    "tests/fp64/cost_bench.cu": "11f338a7c78242356204be6499a70e58b99f6c5c486ee084370bbdbf7fcf0e41",
+    "tests/fp64/fp64_qualification.cu": "956b36813811503d16af8037c5688b92477d545d927840a1ad6fe5cec2e9d6e5",
+    "tests/fp64/measure_costs.py": "11d644e4a680467bdb13b8cdc9afd402552a064c757cb1ccfc944c8b7c5c77af",
+    "tests/fp64/run_checks.py": "b100138ac850d9d3d2ba6225cd8027e56ce6b8a83799daa957696c0a170be82b"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python3",
+      "/home/tumlinson/Cellerator/tests/fp64/compare_scipy.py",
+      "--binary",
+      "/tmp/cellerator-fp64-build/fp64_qualification",
+      "--receipt",
+      "/home/tumlinson/Cellerator/planning/fp64/evidence/scipy.json"
+    ],
+    "campaign_id": "cellerator-fp64-oracle",
+    "command_cwd": "/home/tumlinson/Cellerator",
+    "paths": [
+      "tests/fp64/CMakeLists.txt",
+      "tests/fp64/admission_test.cu",
+      "tests/fp64/compare_scipy.py",
+      "tests/fp64/cost_bench.cu",
+      "tests/fp64/fp64_qualification.cu",
+      "tests/fp64/measure_costs.py",
+      "tests/fp64/run_checks.py",
+      "include/Cellerator/compute/operation/prepared_relation.hh",
+      "src/compute/operation/prepared_relation.cu",
+      "src/compute/operation/relation_semantics.cc",
+      "include/Cellerator/compute/operation/device_elementwise.hh",
+      "src/compute/operation/device_elementwise.cuh",
+      "include/Cellerator/compute/candidate/sparse/project.hh",
+      "src/compute/candidate/sparse/project.cu",
+      "include/Cellerator/compute/operation/relation_semantics.hh"
+    ],
+    "project_root": "/home/tumlinson/Cellerator",
+    "recipe": "baseline",
+    "resources": {
+      "cpu_threads": 4,
+      "gpu_uuids": [
+        "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      ],
+      "gpus": 1
+    },
+    "schema_version": 1,
+    "timeout": 3600,
+    "toolchain": {
+      "require_sanitizer": false,
+      "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+    }
+  },
+  "spec_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/controller/oracle.spec.json",
+  "stderr_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/controller/oracle.stderr.txt",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_path": "/home/tumlinson/Cellerator/planning/fp64/evidence/controller/oracle.stdout.txt",
+  "stdout_sha256": "9d6126052d03680954cb9811207d4cfc3883d07c9c354905e25cccc544112e05"
+}

@@ -28,8 +28,8 @@ struct device_values_binding {
     execution::value_generation generation{};
     int device_ordinal = 0;
 };
-struct device_f32_values_binding {
-    const float* data = nullptr;
+template<class T> struct device_numeric_values_binding {
+    const T* data = nullptr;
     std::uint64_t count = 0;
     execution::structure_id structure{};
     execution::structure_epoch epoch{};
@@ -37,17 +37,21 @@ struct device_f32_values_binding {
     execution::value_generation generation{};
     int device_ordinal = 0;
 };
+using device_f32_values_binding = device_numeric_values_binding<float>;
+using device_f64_values_binding = device_numeric_values_binding<double>;
 struct device_state_view {
     const void* data = nullptr;
-    std::uint64_t count = 0; // f32 element capacity, including dense width
+    std::uint64_t count = 0; // element capacity, including dense width
     axis_descriptor axis{};
     int device_ordinal = 0;
+    execution::numeric_type dtype = execution::numeric_type::f32;
 };
 struct device_result_view {
     void* data = nullptr;
     std::uint64_t count = 0;
     axis_descriptor axis{};
     int device_ordinal = 0;
+    execution::numeric_type dtype = execution::numeric_type::f32;
 };
 struct prepared_relation_pair; // owns cold preparation; no general-purpose container API
 struct preparation_report {
@@ -94,6 +98,7 @@ status create_relation_instance(const prepared_relation_pair& source,
 status publish_values(prepared_relation_pair&, const device_values_binding&,
                       cudaStream_t stream) noexcept;
 status publish_f32_values(prepared_relation_pair&,const device_f32_values_binding&,cudaStream_t) noexcept;
+status publish_f64_values(prepared_relation_pair&,const device_f64_values_binding&,cudaStream_t) noexcept;
 // Explicit lower-precision evaluation; only available when derive_f16 was set.
 // The operation still identifies the authoritative f32 relation semantics.
 status enqueue_derived_f16(prepared_relation_pair&,const operation_descriptor&,

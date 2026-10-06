@@ -41,8 +41,8 @@ struct operation_descriptor {
     // Declared effect: input_scale * relation(input) + destination_scale * destination.
     // These fields are used only by affine_accumulate; overwrite and accumulate
     // retain their fixed (1, 0) and (1, 1) contracts for aggregate compatibility.
-    float input_scale = 1.0f;
-    float destination_scale = 0.0f;
+    double input_scale = 1.0;
+    double destination_scale = 0.0;
 };
 enum class status_code : std::uint8_t {
     ok, invalid_argument, invalid_identity, invalid_shape, invalid_axis,

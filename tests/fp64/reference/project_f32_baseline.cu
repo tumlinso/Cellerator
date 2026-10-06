@@ -6,8 +6,6 @@
 
 #include <stdexcept>
 #include <string>
-#include <type_traits>
-#include <limits>
 
 namespace cellerator::compute::sparse::project {
 
@@ -35,63 +33,35 @@ inline void cusparse_require_(cusparseStatus_t status, const char *label) {
 
 namespace {
 
-// Prepared relations retain an authoritative edge-value plane. This shared
-// traversal also handles the optional edge-to-value projection used by
-// transpose views.
-template<class V, class X, class M, class A, class Y, class C, bool GridStride>
-__global__ void csr_spmm_fwd_kernel_(
+// Prepared f32 relations retain an authoritative edge-value plane.  The
+// retained f16 kernel cannot consume it or its optional edge-to-value map.
+__global__ void csr_spmm_fwd_f32_kernel_(
     const std::uint32_t *major_ptr,
     const std::uint32_t *minor_idx,
-    const V *values,
+    const float *values,
     std::uint32_t rows,
-    const X *rhs,
+    const float *rhs,
     std::int64_t rhs_ld,
     std::int64_t out_cols,
-    Y *out,
+    float *out,
     std::int64_t out_ld,
     const std::uint32_t *value_indices,
-    C input_scale,
-    C destination_scale) {
+    float input_scale,
+    float destination_scale) {
     const std::uint32_t row = static_cast<std::uint32_t>(blockIdx.x);
-    std::int64_t col = static_cast<std::int64_t>(threadIdx.x) +
+    const std::int64_t col = static_cast<std::int64_t>(threadIdx.x) +
         static_cast<std::int64_t>(blockIdx.y) * blockDim.x;
-    if (row >= rows) return;
+    if (row >= rows || col >= out_cols) return;
 
-    for (; col < out_cols;) {
-        A accum = A{0};
-        for (std::uint32_t edge = major_ptr[row]; edge < major_ptr[row + 1u]; ++edge) {
-            const std::uint32_t value = value_indices == nullptr ? edge : value_indices[edge];
-            if constexpr (std::is_same_v<V, float> && std::is_same_v<X, float> &&
-                          std::is_same_v<M, float> && std::is_same_v<A, float>) {
-                // Preserve the historical FP32 expression and its codegen.
-                accum += values[value] * rhs[static_cast<std::int64_t>(minor_idx[edge]) * rhs_ld + col];
-            } else {
-                accum += static_cast<A>(
-                    static_cast<M>(values[value]) *
-                    static_cast<M>(rhs[static_cast<std::int64_t>(minor_idx[edge]) * rhs_ld + col]));
-            }
-        }
-        Y* destination = out + static_cast<std::int64_t>(row) * out_ld + col;
-        if (destination_scale == C{0}) {
-            *destination = static_cast<Y>(static_cast<Y>(input_scale) * static_cast<Y>(accum));
-        } else if constexpr (std::is_same_v<A, float> && std::is_same_v<Y, float> && std::is_same_v<C, float>) {
-            // Keep the historical FP32 epilogue, including its fused operation.
-            *destination = fmaf(input_scale, accum, destination_scale * *destination);
-        } else {
-            const Y alpha = static_cast<Y>(input_scale);
-            const Y beta_y = static_cast<Y>(destination_scale);
-            const Y scaled_destination = beta_y * *destination;
-            *destination = static_cast<Y>(::fma(alpha, static_cast<Y>(accum), scaled_destination));
-        }
-
-        if constexpr (!GridStride) {
-            break;
-        } else {
-            const std::int64_t stride = static_cast<std::int64_t>(blockDim.x) * gridDim.y;
-            if (out_cols - col <= stride) break;
-            col += stride;
-        }
+    float accum = 0.0f;
+    for (std::uint32_t edge = major_ptr[row]; edge < major_ptr[row + 1u]; ++edge) {
+        const std::uint32_t value = value_indices == nullptr ? edge : value_indices[edge];
+        accum += values[value] * rhs[static_cast<std::int64_t>(minor_idx[edge]) * rhs_ld + col];
     }
+    float* destination = out + static_cast<std::int64_t>(row) * out_ld + col;
+    *destination = destination_scale == 0.0f
+        ? input_scale * accum
+        : fmaf(input_scale, accum, destination_scale * *destination);
 }
 
 } // namespace
@@ -115,58 +85,16 @@ void csr_spmm_fwd_f16_f32(
     runtime::cuda_require(cudaGetLastError(), "csr_spmm_fwd_kernel");
 }
 
-template<class V, class X, class M, class A, class Y, class C,
-         std::enable_if_t<supported_csr_spmm_fwd_v<V, X, M, A, Y, C>, int>>
-void csr_spmm_fwd(const runtime::execution_context& ctx,
-    const std::uint32_t* major_ptr, const std::uint32_t* minor_idx, const V* values,
-    std::uint32_t rows, std::uint32_t, const X* rhs, std::int64_t rhs_ld,
-    std::int64_t out_cols, Y* out, std::int64_t out_ld,
-    const std::uint32_t* value_indices, C input_scale, C destination_scale) {
-    runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmm_fwd)");
-    if(!rows || !out_cols)return;
-    if (rows > static_cast<std::uint32_t>(std::numeric_limits<int>::max())) {
-        throw std::invalid_argument("csr_spmm_fwd rows exceed the CUDA grid.x limit");
-    }
-    constexpr std::int64_t max_grid_y = 65535;
-    const std::int64_t column_blocks = out_cols / kSpmmColsThreads +
-        (out_cols % kSpmmColsThreads != 0);
-    const unsigned int grid_y = static_cast<unsigned int>(column_blocks < max_grid_y ? column_blocks : max_grid_y);
-    const dim3 grid(rows, grid_y, 1u);
-    if (column_blocks <= max_grid_y) {
-        csr_spmm_fwd_kernel_<V, X, M, A, Y, C, false><<<grid,kSpmmColsThreads,0,ctx.stream>>>(
-            major_ptr,minor_idx,values,rows,rhs,rhs_ld,out_cols,out,out_ld,value_indices,input_scale,destination_scale);
-    } else {
-        csr_spmm_fwd_kernel_<V, X, M, A, Y, C, true><<<grid,kSpmmColsThreads,0,ctx.stream>>>(
-            major_ptr,minor_idx,values,rows,rhs,rhs_ld,out_cols,out,out_ld,value_indices,input_scale,destination_scale);
-    }
-    runtime::cuda_require(cudaGetLastError(),"csr_spmm_fwd_kernel");
-}
-
-template void csr_spmm_fwd<float, float, float, float, float, float>(
-    const runtime::execution_context&, const std::uint32_t*, const std::uint32_t*,
-    const float*, std::uint32_t, std::uint32_t, const float*, std::int64_t,
-    std::int64_t, float*, std::int64_t, const std::uint32_t*, float, float);
-template void csr_spmm_fwd<float, double, double, double, double, double>(
-    const runtime::execution_context&, const std::uint32_t*, const std::uint32_t*,
-    const float*, std::uint32_t, std::uint32_t, const double*, std::int64_t,
-    std::int64_t, double*, std::int64_t, const std::uint32_t*, double, double);
-template void csr_spmm_fwd<double, float, double, double, double, double>(
-    const runtime::execution_context&, const std::uint32_t*, const std::uint32_t*,
-    const double*, std::uint32_t, std::uint32_t, const float*, std::int64_t,
-    std::int64_t, double*, std::int64_t, const std::uint32_t*, double, double);
-template void csr_spmm_fwd<double, double, double, double, double, double>(
-    const runtime::execution_context&, const std::uint32_t*, const std::uint32_t*,
-    const double*, std::uint32_t, std::uint32_t, const double*, std::int64_t,
-    std::int64_t, double*, std::int64_t, const std::uint32_t*, double, double);
-
 void csr_spmm_fwd_f32(const runtime::execution_context& ctx,
     const std::uint32_t* major_ptr,const std::uint32_t* minor_idx,const float* values,
-    std::uint32_t rows,std::uint32_t cols,const float* rhs,std::int64_t rhs_ld,
+    std::uint32_t rows,std::uint32_t,const float* rhs,std::int64_t rhs_ld,
     std::int64_t out_cols,float* out,std::int64_t out_ld,const std::uint32_t* value_indices,
     float input_scale,float destination_scale) {
-    csr_spmm_fwd<float, float, float, float, float, float>(
-        ctx, major_ptr, minor_idx, values, rows, cols, rhs, rhs_ld, out_cols, out,
-        out_ld, value_indices, input_scale, destination_scale);
+    runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmm_f32)");
+    if(!rows || !out_cols)return;
+    const dim3 grid(rows,static_cast<unsigned int>((out_cols+kSpmmColsThreads-1)/kSpmmColsThreads),1u);
+    csr_spmm_fwd_f32_kernel_<<<grid,kSpmmColsThreads,0,ctx.stream>>>(major_ptr,minor_idx,values,rows,rhs,rhs_ld,out_cols,out,out_ld,value_indices,input_scale,destination_scale);
+    runtime::cuda_require(cudaGetLastError(),"csr_spmm_f32_kernel");
 }
 
 void blocked_ell_spmm_fwd_f16_f32(
