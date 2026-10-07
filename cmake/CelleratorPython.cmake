@@ -44,4 +44,25 @@ function(cellerator_configure_python_mechanism_bindings)
                 cxx_std_20)
         endif()
     endif()
+
+    # Attach the resident Python surface only when both native implementations
+    # exist. The extension remains importable in host-only builds and reports
+    # the missing capability without acquiring CUDA at import time.
+    if(CMAKE_CUDA_COMPILER AND TARGET Cellerator::prepared_relation_cuda AND
+       TARGET Cellerator::native_numeric AND TARGET CUDA::cudart)
+        target_sources(cellerator_python_native PRIVATE
+            ${PROJECT_SOURCE_DIR}/bindings/python/native_numeric.cc)
+        target_compile_definitions(cellerator_python_native PRIVATE
+            CELLERATOR_HAS_RESIDENT_CUDA=1)
+        target_include_directories(cellerator_python_native PRIVATE
+            ${PROJECT_SOURCE_DIR}/third_party/dlpack/include)
+        target_link_libraries(cellerator_python_native PRIVATE
+            Cellerator::prepared_relation_cuda
+            Cellerator::native_numeric
+            CUDA::cudart)
+        # These operation libraries are static. Python's MODULE target must be
+        # able to link them into a shared object in CUDA-enabled builds.
+        set_target_properties(cellerator_prepared_relation_cuda
+            cellerator_native_numeric PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
 endfunction()

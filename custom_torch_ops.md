@@ -1,5 +1,50 @@
 # Custom Torch Ops Registry
 
+## `resident_cuda_torch_interop`
+
+- Purpose: provide an optional thin Torch view over Cellerator's resident CUDA
+  streams, buffers, prepared CSR relation, and FP32 numeric operations.
+- Owning model or component: `cellerator.cuda` owns native resident state and
+  numeric execution; `cellerator.torch.cuda` is only a framework adapter.
+- Status: implemented; CUDA qualification is pending.
+- Python API boundary: `cellerator.torch.cuda` validates and borrows contiguous
+  CUDA FP32 tensors, records borrowed storage on the active Torch stream,
+  delegates `multiply_into`, `axpby_into`, and prepared CSR application to the
+  native API, and exposes DLPack aliases for native-owned buffers.
+- C++ binding boundary: Torch-free `cellerator.cuda` bindings over the existing
+  resident Cellerator APIs. This entry adds no libtorch binding or independent
+  topology/value owner.
+- CUDA or library backend: existing Cellerator native FP32 numeric kernels and
+  prepared CSR implementation; no Torch arithmetic or new math backend is
+  introduced here.
+- Input contract: CUDA float32 contiguous rank-one or rank-two tensors, all on
+  one device, with `requires_grad=False`; the supplied or implicit stream must
+  be PyTorch's current stream. CSR topology is contiguous NumPy `uint64` data;
+  weights are a borrowed FP32 CUDA vector. For direct `Buffer.borrow`,
+  `capacity_bytes` is a trusted caller precondition that must describe the
+  accessible allocation extent.
+- Output contract: caller-owned CUDA FP32 output tensors, or a zero-copy Torch
+  alias of a native-owned buffer through DLPack. Prepared CSR output has shape
+  `[destination_count, feature_width]`.
+- Dtype, layout, and device assumptions: FP32 native storage and round-to-nearest
+  arithmetic. The existing prepared-relation candidate permits FMA and
+  reassociation under its native numeric contract, and this adapter adds no
+  precision mode. Tensors are contiguous on one CUDA device. `record_stream`
+  protects Torch allocator lifetime. Native arithmetic and prepared apply do
+  not retain per-call borrowed views after enqueue, so direct callers preserve
+  those views and owners through completion. A prepared owner retains the
+  weight buffer published as its current value generation. Callers establish
+  producer readiness and mutation ordering themselves.
+- Backward or autograd notes: forward-only; tensors requiring gradients are
+  rejected. No autograd implementation is provided.
+- Distributed implications: single-device stream and buffer interop only; no
+  multi-GPU behavior is claimed.
+- Code location: `python/cellerator/torch/cuda.py` and the native
+  `cellerator.cuda` bindings.
+- Validation notes: focused CUDA adapter tests, including a producer-to-consumer
+  DLPack stream handoff, are provided in `tests/bindings/python/test_resident_torch.py`;
+  execution and CUDA qualification remain pending the controller-managed run.
+
 ## `state_reduce_native_runtime`
 
 - Purpose: replace the old Torch-bound dense reducer with a native CUDA cell-identity reducer that trains on Blocked-ELL or sliced-ELL batches without libtorch or Torch custom ops.

@@ -1,5 +1,8 @@
 #include <Cellerator/bindings/mechanism_handle.hh>
 #include <Cellerator/compute/operation/product2/c_api.h>
+#ifdef CELLERATOR_HAS_RESIDENT_CUDA
+#include "native_numeric.hh"
+#endif
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -399,6 +402,13 @@ PYBIND11_MODULE(_native, m) {
         return false;
 #endif
     });
+    m.def("resident_cuda_available", [] {
+#ifdef CELLERATOR_HAS_RESIDENT_CUDA
+        return true;
+#else
+        return false;
+#endif
+    });
 
     py::class_<PreparedProduct2, std::shared_ptr<PreparedProduct2>>(m, "PreparedProduct2")
         .def("forward", &PreparedProduct2::forward)
@@ -517,5 +527,9 @@ PYBIND11_MODULE(_native, m) {
         .def("publish_write", [](Handle& h, std::uintptr_t stream) { h.publish_write(reinterpret_cast<void*>(stream)); }, py::arg("stream") = 0)
         .def("poison", &Handle::poison)
         .def("forward", &native_forward, py::arg("input"), py::arg("stream") = 0);
+#endif
+
+#ifdef CELLERATOR_HAS_RESIDENT_CUDA
+    cellerator::bindings::python::bind_resident_cuda(m);
 #endif
 }
