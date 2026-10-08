@@ -113,8 +113,10 @@ def test_borrowed_buffer_rejects_invalid_capacity_alignment_and_extent():
 def test_stream_and_prepared_relation_reject_invalid_device_and_wrong_stream():
     with pytest.raises(ValueError, match="device ordinal is out of range"):
         cuda.Stream.borrow((1 << 31) - 1, 0, object())
-    with pytest.raises(ValueError, match="not valid on the declared device"):
-        cuda.Stream.borrow(0, 1, object())
+    # Handle 0 is CUDA's valid legacy/default stream. Reject the missing
+    # lifetime owner instead of treating a predefined stream handle as invalid.
+    with pytest.raises(ValueError, match="requires an owner"):
+        cuda.Stream.borrow(0, 0, None)
 
     stream = cuda.Stream(0)
     other_stream = cuda.Stream(0)
