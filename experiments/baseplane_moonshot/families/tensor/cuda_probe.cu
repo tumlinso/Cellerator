@@ -9,10 +9,11 @@ void checked(cudaError_t e){if(e!=cudaSuccess)throw std::runtime_error(cudaGetEr
 void equal(const Matrix16& actual,const Matrix16& expected){for(unsigned i=0;i<256;++i)if(!std::isfinite(actual[i])||!std::isfinite(expected[i])||std::abs(actual[i]-expected[i])>1e-5f)throw std::runtime_error("GPU oracle mismatch or nonfinite value");}
 void comparator_self_check(){
  Matrix16 zero{},nonfinite{};equal(zero,zero);
+ Matrix16 within_tolerance{};within_tolerance[0]=5e-6f;equal(within_tolerance,zero);
  auto rejects=[&](const Matrix16& actual,const Matrix16& expected){bool rejected=false;try{equal(actual,expected);}catch(const std::runtime_error&){rejected=true;}if(!rejected)throw std::runtime_error("oracle comparator accepted invalid value");};
  nonfinite[0]=std::numeric_limits<float>::quiet_NaN();rejects(nonfinite,zero);rejects(zero,nonfinite);
  nonfinite[0]=std::numeric_limits<float>::infinity();rejects(nonfinite,zero);rejects(zero,nonfinite);
- nonfinite[0]=1.f;rejects(nonfinite,zero);
+ nonfinite[0]=2e-5f;rejects(nonfinite,zero);
 }
 int main(int argc,char** argv){
  comparator_self_check();

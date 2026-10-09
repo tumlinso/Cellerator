@@ -8,12 +8,12 @@
     "E24"
   ],
   "producer_commit_or_source_digest": {
-    "experiments/baseplane_moonshot/families/tensor/CMakeLists.txt": "748e9fdb4c16fe5f8770d73b08c2b71b9188225e3b2a4e5eff90b011c85d517b",
-    "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.hpp": "8b7c1b6d0e07b757d98fc43a8ebe57dc4691b7ccea20cd3a43983dcf47e07d51",
+    "experiments/baseplane_moonshot/families/tensor/CMakeLists.txt": "5f58d9e3502fd47363830356be04e28b924fbebb8b93763119931696c6875846",
+    "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.hpp": "750ec9c5b0424ac6968b6585d179e3e981f72a02b88f2c80b04e3983e992cb8f",
     "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.cuh": "b5da9bb46b4ce7553f48e256f2ddd0e283972d5b6a77a4fba20f346abcbe1e47",
-    "experiments/baseplane_moonshot/families/tensor/host.cpp": "b947c00b3f54fc06502d5c452048066c3c38ecfa4a9d76df433b70c29ed60f9b",
-    "experiments/baseplane_moonshot/families/tensor/cuda_probe.cu": "c43bc8ecaee560345824489a5ad23fdafcb3ea880797c3f8fed1fb215c97d02d",
-    "experiments/baseplane_moonshot/families/tensor/README.md": "e2b3618e5a8a3ea251307d840aa38cb52aeffe5e147d58bb6bbaf759cc486b63"
+    "experiments/baseplane_moonshot/families/tensor/host.cpp": "0a05b35cb3981ca8548c5ad86f199c3c5bb7aef24006c892547ff7b1ae337f2b",
+    "experiments/baseplane_moonshot/families/tensor/cuda_probe.cu": "37210b2a1317205a05d8d2fe176cac2ba0d28adf30a1d3a1e6ebf027c51780bd",
+    "experiments/baseplane_moonshot/families/tensor/README.md": "49bad2ff53d230089519163dbe7b6c755aae0c6d709e6e40d3cac0a9384b8dc5"
   },
   "artifact_paths": [
     "experiments/baseplane_moonshot/families/tensor/CMakeLists.txt",
@@ -21,7 +21,21 @@
     "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.cuh",
     "experiments/baseplane_moonshot/families/tensor/host.cpp",
     "experiments/baseplane_moonshot/families/tensor/cuda_probe.cu",
-    "experiments/baseplane_moonshot/families/tensor/README.md"
+    "experiments/baseplane_moonshot/families/tensor/README.md",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/controller-result.json",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/controller-evidence.json",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/controller-spec.json",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/lease.json",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/foreground.stdout.txt",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/foreground.stderr.txt",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/source-patch.tensor.diff",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/source-manifest.json",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/sanitizer/run/raw.log",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/sanitizer/run/run_config.json",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/sanitizer/run/stdout.txt",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/sanitizer/run/stderr.txt",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/sanitizer/run/summary.json",
+    "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/sanitizer/run/summary.txt"
   ],
   "entry_point_and_shape_contract": "Cellerator::moonshot_tensor; ce_moon/tensor.hpp and ce_moon/tensor.cuh; row-major 16x16 FP32 host tiles; explicit rows/features/outputs; device FP16 packing + FP32 WMMA; opaque IDs; caller buffers/stream/capacity",
   "authored_compiled_run_compared_status": {
@@ -34,9 +48,9 @@
     "sm70_cuda": {
       "authored": true,
       "compiled": true,
-      "run": false,
-      "compared": false,
-      "reason": "GPU launch reserved for root controller"
+      "run": true,
+      "compared": true,
+      "reason": "CUDA-controller run on Tesla V100-SXM2-16GB compared E21-E24 with host oracles; directed provenance and capacity checks passed."
     }
   },
   "minimal_input_output_example": {
@@ -52,10 +66,92 @@
     "Single binary finite relation product exact bounded counts; no arbitrary semiring/repeated-count claim"
   ],
   "evidence": {
-    "configure": "/tmp/ce-moon-tensor-build-129/CMakeCache.txt",
-    "host_test": "/tmp/ce-moon-tensor-build-129/Testing/Temporary/LastTest.log",
-    "cuda_executable": "/tmp/ce-moon-tensor-build-129/families/tensor/ce_moon_tensor_cuda",
-    "toolchain": "GCC13.3; CUDA12.9.86; sm70",
-    "failed_attempt": "Default /usr/bin/nvcc CUDA12.0 failed CMake compiler identification with GCC13/glibc _Float* errors; installed CUDA12.9 succeeded"
+    "configure": "/tmp/ce-moon-tensor-cuda-20261009/CMakeCache.txt",
+    "host_test": "/tmp/ce-moon-tensor-cuda-20261009/Testing/Temporary/LastTest.log",
+    "cuda_executable": "/tmp/ce-moon-tensor-cuda-20261009/families/tensor/ce_moon_tensor_cuda",
+    "toolchain": "GCC13.3; CUDA12.9.86; sm70; CUDA-controller V100 correctness and memcheck run",
+    "failed_attempt": "Default /usr/bin/nvcc CUDA12.0 failed CMake compiler identification with GCC13/glibc _Float* errors; installed CUDA12.9 succeeded",
+    "cpu_configure": "/tmp/ce-moon-tensor-cpu-20261009/CMakeCache.txt",
+    "cpu_host_test": "/tmp/ce-moon-tensor-cpu-20261009/Testing/Temporary/LastTest.log",
+    "cuda_comparator_self_check": "passed via ce_moon_tensor_cuda_comparator_self_check in the CUDA-build CTest run; no CUDA API/device access",
+    "validation_commands": {
+      "cpu_configure": [
+        "cmake",
+        "-S",
+        "experiments/baseplane_moonshot",
+        "-B",
+        "/tmp/ce-moon-tensor-cpu-20261009",
+        "-DCE_MOON_ENABLE_CUDA=OFF"
+      ],
+      "cpu_build": [
+        "cmake",
+        "--build",
+        "/tmp/ce-moon-tensor-cpu-20261009",
+        "--target",
+        "ce_moon_tensor_host",
+        "-j2"
+      ],
+      "cpu_test": [
+        "ctest",
+        "--test-dir",
+        "/tmp/ce-moon-tensor-cpu-20261009",
+        "-R",
+        "^ce_moon_tensor_host$",
+        "--output-on-failure"
+      ],
+      "cuda_configure": [
+        "cmake",
+        "-S",
+        "experiments/baseplane_moonshot",
+        "-B",
+        "/tmp/ce-moon-tensor-cuda-20261009",
+        "-DCE_MOON_ENABLE_CUDA=ON",
+        "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc"
+      ],
+      "cuda_build": [
+        "cmake",
+        "--build",
+        "/tmp/ce-moon-tensor-cuda-20261009",
+        "--target",
+        "ce_moon_tensor_host",
+        "ce_moon_tensor_cuda",
+        "-j2"
+      ],
+      "cuda_cpu_tests": [
+        "ctest",
+        "--test-dir",
+        "/tmp/ce-moon-tensor-cuda-20261009",
+        "-R",
+        "^ce_moon_tensor_(host|cuda_comparator_self_check)$",
+        "--output-on-failure"
+      ]
+    },
+    "device_probe_run": true,
+    "controller_gpu_run": {
+      "status": "succeeded",
+      "evidence_id": "42af2d4d-f234-430f-81f0-9786cdb1df69",
+      "job_id": "85945f8e-1377-41c9-8177-d4a058240667",
+      "source_commit": "43530e301db0ddcc6dc1bac854fcf22fc2bf9cfa",
+      "source_fingerprint": "2c337a349f4538b7e23b70131b91aabd25928f2b57dbbdd193e6c0020067c727",
+      "tracked_patch_sha256": "c7457a9983fc05520d1363ae67b4f1b3641d7a94df99df92f8a43c0304a35121",
+      "binary_sha256": "51339a4fc06cc2110eb0b53a7404794770777bef7b3cfd341953e6ba42070bd8",
+      "gpu": "Tesla V100-SXM2-16GB; compute capability 7.0; driver 580.173.02",
+      "probe_output": "E21-E24 GPU compared against host oracles; directed provenance and overflow passed",
+      "returncode": 0,
+      "source_manifest": "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/source-manifest.json",
+      "controller_result": "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/controller-result.json",
+      "controller_evidence": "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/controller-evidence.json",
+      "lease": "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/lease.json"
+    },
+    "compute_sanitizer": {
+      "tool": "compute-sanitizer memcheck",
+      "returncode": 0,
+      "error_count": 0,
+      "controller_classification": "partial",
+      "conclusive": false,
+      "raw_log": "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/sanitizer/run/raw.log",
+      "summary": "experiments/baseplane_moonshot/families/tensor/results/controller-42af2d4d/sanitizer/run/summary.json",
+      "interpretation": "No sanitizer errors or device fault were reported; the controller diagnostic classification remains partial/inconclusive."
+    }
   }
 }

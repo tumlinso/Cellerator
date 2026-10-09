@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "command_cwd": "/home/tumlinson/Cellerator",
+  "recipe": "compute-sanitizer",
+  "toolchain": {
+    "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+    "require_sanitizer": true
+  },
+  "benchmark": {
+    "build_argv": [
+      "cmake",
+      "--build",
+      "/tmp/ce-moon-tensor-cuda-20261009",
+      "--target",
+      "ce_moon_tensor_cuda",
+      "-j2"
+    ]
+  },
+  "argv": [
+    "/tmp/ce-moon-tensor-cuda-20261009/families/tensor/ce_moon_tensor_cuda"
+  ],
+  "correctness_argv": [
+    "/tmp/ce-moon-tensor-cuda-20261009/families/tensor/ce_moon_tensor_cuda"
+  ],
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  },
+  "quiescence": {
+    "timeout_seconds": 60,
+    "consecutive_idle_samples": 3
+  }
+}

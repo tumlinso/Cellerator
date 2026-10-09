@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T06:39:32Z",
+  "generated_at": "2026-10-09T07:27:17Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,13 +19,13 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 7993,
+  "project_revision": 8003,
   "schema_version": 2,
   "semantic_context": {
     "declarations": [],
     "invalidations": [],
     "orientation": [],
-    "project_revision": 7993,
+    "project_revision": 8003,
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "skill_uses": []
   },
@@ -84730,6 +84730,106 @@
         "revision": 7993,
         "seq": 7993,
         "timestamp": "2026-10-09T06:39:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "session",
+        "event_type": "owner-maintenance-session.created",
+        "payload_json": "{\"purpose\": \"IS1 deferral\"}",
+        "revision": 7994,
+        "seq": 7994,
+        "timestamp": "2026-10-09T07:22:07Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-IS1-DOCS",
+        "entity_type": "workflow_lane",
+        "event_type": "workflow.lane_task.deferred",
+        "payload_json": "{\"charter_hash\": \"e0a5181ac72e19da1455ac9f55e1ceda21a11a112b0bcb60ce931bd422981d5e\", \"charter_version\": 1, \"reason\": \"User explicitly deferred IS1 while finishing and closing Moonshot. Retain backlog, task outcomes, interfaces and prior evidence; re-enqueue only when user resumes IS1.\", \"run_id\": \"CE-IS1-RUN-V1\", \"task_id\": \"CE-IS1-DOCS\"}",
+        "revision": 7995,
+        "seq": 7995,
+        "timestamp": "2026-10-09T07:22:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-IS1-INTEGRATE",
+        "entity_type": "workflow_lane",
+        "event_type": "workflow.lane_task.deferred",
+        "payload_json": "{\"charter_hash\": \"e0a5181ac72e19da1455ac9f55e1ceda21a11a112b0bcb60ce931bd422981d5e\", \"charter_version\": 1, \"reason\": \"User explicitly deferred IS1 while finishing and closing Moonshot. Retain backlog, task outcomes, interfaces and prior evidence; re-enqueue only when user resumes IS1.\", \"run_id\": \"CE-IS1-RUN-V1\", \"task_id\": \"CE-IS1-INTEGRATE\"}",
+        "revision": 7996,
+        "seq": 7996,
+        "timestamp": "2026-10-09T07:22:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-IS1-CLOSE",
+        "entity_type": "workflow_lane",
+        "event_type": "workflow.lane_task.deferred",
+        "payload_json": "{\"charter_hash\": \"e0a5181ac72e19da1455ac9f55e1ceda21a11a112b0bcb60ce931bd422981d5e\", \"charter_version\": 1, \"reason\": \"User explicitly deferred IS1 while finishing and closing Moonshot. Retain backlog, task outcomes, interfaces and prior evidence; re-enqueue only when user resumes IS1.\", \"run_id\": \"CE-IS1-RUN-V1\", \"task_id\": \"CE-IS1-CLOSE\"}",
+        "revision": 7997,
+        "seq": 7997,
+        "timestamp": "2026-10-09T07:22:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-IS1-000",
+        "entity_type": "workflow_lane",
+        "event_type": "workflow.lane_task.deferred",
+        "payload_json": "{\"charter_hash\": \"e0a5181ac72e19da1455ac9f55e1ceda21a11a112b0bcb60ce931bd422981d5e\", \"charter_version\": 1, \"reason\": \"User explicitly deferred IS1 while finishing and closing Moonshot. Retain backlog, task outcomes, interfaces and prior evidence; re-enqueue only when user resumes IS1.\", \"run_id\": \"CE-IS1-RUN-V1\", \"task_id\": \"CE-IS1-000\"}",
+        "revision": 7998,
+        "seq": 7998,
+        "timestamp": "2026-10-09T07:22:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-IS1-QUALIFY",
+        "entity_type": "workflow_lane",
+        "event_type": "workflow.lane_task.deferred",
+        "payload_json": "{\"charter_hash\": \"e0a5181ac72e19da1455ac9f55e1ceda21a11a112b0bcb60ce931bd422981d5e\", \"charter_version\": 1, \"reason\": \"User explicitly deferred IS1 while finishing and closing Moonshot. Retain backlog, task outcomes, interfaces and prior evidence; re-enqueue only when user resumes IS1.\", \"run_id\": \"CE-IS1-RUN-V1\", \"task_id\": \"CE-IS1-QUALIFY\"}",
+        "revision": 7999,
+        "seq": 7999,
+        "timestamp": "2026-10-09T07:22:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-IS1-TORCH",
+        "entity_type": "workflow_lane",
+        "event_type": "workflow.lane_task.deferred",
+        "payload_json": "{\"charter_hash\": \"e0a5181ac72e19da1455ac9f55e1ceda21a11a112b0bcb60ce931bd422981d5e\", \"charter_version\": 1, \"reason\": \"User explicitly deferred IS1 while finishing and closing Moonshot. Retain backlog, task outcomes, interfaces and prior evidence; re-enqueue only when user resumes IS1.\", \"run_id\": \"CE-IS1-RUN-V1\", \"task_id\": \"CE-IS1-TORCH\"}",
+        "revision": 8000,
+        "seq": 8000,
+        "timestamp": "2026-10-09T07:22:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "d29a8d69-8ff0-4a71-b301-02570240f0de",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_cleanup_eligible",
+        "payload_json": "{\"cleanup_eligible\": true, \"deleted\": false}",
+        "revision": 8001,
+        "seq": 8001,
+        "timestamp": "2026-10-09T07:27:07Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "d9cd41d7-1d2d-4d02-b21c-45d232a80e8c",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_cleanup_eligible",
+        "payload_json": "{\"cleanup_eligible\": true, \"deleted\": false}",
+        "revision": 8002,
+        "seq": 8002,
+        "timestamp": "2026-10-09T07:27:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "a40f9948-937d-4dc1-98b3-1b29d2c91e10",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_cleanup_eligible",
+        "payload_json": "{\"cleanup_eligible\": true, \"deleted\": false}",
+        "revision": 8003,
+        "seq": 8003,
+        "timestamp": "2026-10-09T07:27:17Z"
       }
     ],
     "evidence": [
@@ -372057,12 +372157,12 @@
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-10-09T07:22:08Z",
         "enqueued_at": "2026-10-02T16:37:27Z",
         "lane_id": "CE-IS1-DOCS-L",
         "position": 0,
-        "revision": 7678,
-        "state": "queued",
+        "revision": 7995,
+        "state": "skipped",
         "task_id": "CE-IS1-DOCS"
       },
       {
@@ -372107,32 +372207,32 @@
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-10-09T07:22:08Z",
         "enqueued_at": "2026-10-02T16:37:27Z",
         "lane_id": "CE-IS1-INTEGRATOR-L",
         "position": 2,
-        "revision": 7678,
-        "state": "queued",
+        "revision": 7996,
+        "state": "skipped",
         "task_id": "CE-IS1-INTEGRATE"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-10-09T07:22:08Z",
         "enqueued_at": "2026-10-02T16:37:27Z",
         "lane_id": "CE-IS1-INTEGRATOR-L",
         "position": 3,
-        "revision": 7678,
-        "state": "queued",
+        "revision": 7997,
+        "state": "skipped",
         "task_id": "CE-IS1-CLOSE"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-10-09T07:22:08Z",
         "enqueued_at": "2026-10-02T16:37:27Z",
         "lane_id": "CE-IS1-INTEGRATOR-L",
         "position": 4,
-        "revision": 7678,
-        "state": "queued",
+        "revision": 7998,
+        "state": "skipped",
         "task_id": "CE-IS1-000"
       },
       {
@@ -372177,12 +372277,12 @@
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-10-09T07:22:08Z",
         "enqueued_at": "2026-10-02T16:37:27Z",
         "lane_id": "CE-IS1-QUALIFY-L",
         "position": 0,
-        "revision": 7678,
-        "state": "queued",
+        "revision": 7999,
+        "state": "skipped",
         "task_id": "CE-IS1-QUALIFY"
       },
       {
@@ -372207,12 +372307,12 @@
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-10-09T07:22:08Z",
         "enqueued_at": "2026-10-02T16:37:27Z",
         "lane_id": "CE-IS1-TORCH-L",
         "position": 0,
-        "revision": 7678,
-        "state": "queued",
+        "revision": 8000,
+        "state": "skipped",
         "task_id": "CE-IS1-TORCH"
       },
       {
@@ -385353,7 +385453,7 @@
         "artifact_ref": "3f58a147e3d914052565522953b0e5e655133b23",
         "base_commit": "544a1ae6e2925146f78a6ef62123ba5257c45251",
         "branch": "codex/ce-moon-l-tensor",
-        "cleanup_eligible": 0,
+        "cleanup_eligible": 1,
         "created_at": "2026-10-02T13:39:11Z",
         "diff_hash": "4db6eea169673878ec534305cfecf4faf258e897658e6945823dc4876a74a889",
         "id": "a40f9948-937d-4dc1-98b3-1b29d2c91e10",
@@ -385364,7 +385464,7 @@
         "repository_identity": "d79d49b73227d23d9fb3f3b4dd4af973e8a3c8118442d378fafda99257ace30c",
         "run_id": "CE-MOON-RUN-1",
         "state": "integrated",
-        "updated_at": "2026-10-02T14:09:15Z",
+        "updated_at": "2026-10-09T07:27:17Z",
         "worktree_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-tensor"
       },
       {
@@ -385752,7 +385852,7 @@
         "artifact_ref": "b1aeabd696060e1b445a6c44c59828be0fccbd4d",
         "base_commit": "544a1ae6e2925146f78a6ef62123ba5257c45251",
         "branch": "codex/ce-moon-l-mechanisms",
-        "cleanup_eligible": 0,
+        "cleanup_eligible": 1,
         "created_at": "2026-10-02T13:39:11Z",
         "diff_hash": "8807fe861fca972f5c90544a209f67dc73cb3158718fa9f6ed3b6d8db372d324",
         "id": "d29a8d69-8ff0-4a71-b301-02570240f0de",
@@ -385763,7 +385863,7 @@
         "repository_identity": "d79d49b73227d23d9fb3f3b4dd4af973e8a3c8118442d378fafda99257ace30c",
         "run_id": "CE-MOON-RUN-1",
         "state": "integrated",
-        "updated_at": "2026-10-02T14:09:26Z",
+        "updated_at": "2026-10-09T07:27:07Z",
         "worktree_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-mechanisms"
       },
       {
@@ -385828,7 +385928,7 @@
         "artifact_ref": "873ec5e70b26bc4bfd0b8e2821c505cd0e606711",
         "base_commit": "217def8f85a98ff131317476eb1288a98209c3b1",
         "branch": "codex/ce-moon-l-mma",
-        "cleanup_eligible": 0,
+        "cleanup_eligible": 1,
         "created_at": "2026-10-02T13:51:06Z",
         "diff_hash": "2103ee29159c911bd740b9af3c6e6fcbfcb0043a57ba9066f48b921c68caccd3",
         "id": "d9cd41d7-1d2d-4d02-b21c-45d232a80e8c",
@@ -385839,7 +385939,7 @@
         "repository_identity": "d79d49b73227d23d9fb3f3b4dd4af973e8a3c8118442d378fafda99257ace30c",
         "run_id": "CE-MOON-RUN-V1",
         "state": "integrated",
-        "updated_at": "2026-10-02T14:32:41Z",
+        "updated_at": "2026-10-09T07:27:15Z",
         "worktree_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-moon-l-mma"
       },
       {

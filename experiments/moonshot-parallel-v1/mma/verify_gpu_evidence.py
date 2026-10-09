@@ -7,6 +7,13 @@ HERE=pathlib.Path(__file__).resolve().parent
 def require(ok,message):
     if not ok:raise ValueError(message)
 
+def require_manifest_receipt(receipt,manifest_path,manifest_hash):
+    expected_path=str(manifest_path.resolve())
+    binaries=receipt.get('binaries',[]) if isinstance(receipt,dict) else []
+    require(any(isinstance(item,dict) and item.get('path')==expected_path
+                and item.get('sha256')==manifest_hash for item in binaries),
+            'controller binary receipt does not bind the fresh build manifest')
+
 def verify():
     results=HERE/'results';aggregate=json.loads((results/'gpu.json').read_text());receipt=json.loads((results/'controller-success.json').read_text())
     require(aggregate.get('stage')=='gpu' and aggregate.get('passed') is True,'latest aggregate GPU run failed or absent')
@@ -16,6 +23,7 @@ def verify():
     manifest_path=results/'build-manifest.json'
     raw=manifest_path.read_bytes();manifest=json.loads(raw)
     manifest_hash=hashlib.sha256(raw).hexdigest()
+    require_manifest_receipt(receipt,manifest_path,manifest_hash)
     require(manifest.get('schema')=='MMA-FRESH-BUILD/1' and manifest.get('fresh_objects') is True,'fresh build provenance missing')
     require(manifest.get('input_hashes')==check_mma.build_input_hashes(),'build inputs changed since compilation')
     require(manifest.get('source_hashes')==check_mma.source_hashes(),'build source identity stale')

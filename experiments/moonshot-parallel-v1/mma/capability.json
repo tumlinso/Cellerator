@@ -17,27 +17,23 @@
     "product/tests.cu": "fcb9557990364d97051d74879707e5d506f4450ab33f103370d24fec76df1643"
   },
   "validation": {
-    "compiled_admission-product": {
+    "cpu_reference": {
       "passed": true,
-      "evidence": "results/compiled_admission-product-aggregate.json"
-    },
-    "gpu-product": {
-      "passed": true,
-      "evidence": "results/gpu-product-aggregate.json"
-    },
-    "gpu": {
-      "passed": true,
-      "evidence": "results/gpu.json"
+      "evidence": "results/cpu_reference.json"
     },
     "compiled_admission": {
       "passed": true,
       "evidence": "results/compiled_admission.json"
+    },
+    "gpu": {
+      "passed": true,
+      "evidence": "results/gpu.json"
     }
   },
   "record_kind": "experimental_mma_capability",
   "schema_version": 1,
   "native_core_integration": false,
-  "forward": "GPU smoke validated",
+  "forward": "GPU numerical smoke passed; full acceptance requires verify_gpu_evidence.py",
   "derivatives": {
     "patch_input_vjp": "not_implemented",
     "patch_parameter_vjp": "not_implemented",
@@ -62,5 +58,7 @@
     "patch16": true,
     "quad": true,
     "product": true
-  }
+  },
+  "device_validation_scope": "per-module numerical smoke only; does not establish controller admission or full acceptance",
+  "full_acceptance_gate": "verify_gpu_evidence.py"
 }

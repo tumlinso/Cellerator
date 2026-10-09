@@ -1,0 +1,25 @@
+{
+  "tool": "compute-sanitizer",
+  "status": "partial",
+  "conclusive": false,
+  "command": "/tmp/ce-moon-tensor-cuda-20261009/families/tensor/ce_moon_tensor_cuda ",
+  "exit_status": 0,
+  "signal": "",
+  "crash_class": "unknown",
+  "likely_domain": "unknown",
+  "next_step": "The sanitizer run did not report a device fault. Escalate to batch cuda-gdb if the crash still reproduces.",
+  "reasons": [
+    "compute-sanitizer reported zero errors."
+  ],
+  "matched_signatures": [],
+  "stderr_tail": [],
+  "stdout_tail": [
+    "E21-E24 GPU compared against host oracles; directed provenance and overflow passed"
+  ],
+  "backtrace_head": [],
+  "host_frames": [],
+  "source_hint": null,
+  "tool_detail": "memcheck",
+  "limitations": [],
+  "error_count": 0
+}

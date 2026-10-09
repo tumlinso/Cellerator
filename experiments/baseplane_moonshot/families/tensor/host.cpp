@@ -1,5 +1,6 @@
 #include <ce_moon/tensor.hpp>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 using namespace ce_moon::tensor;
 void check(bool x){if(!x)throw std::runtime_error("tensor fixture mismatch");}
@@ -23,6 +24,24 @@ int main(){
  auto midpoint=interpolate(extreme,extremes,2,1,0);check(midpoint.alpha==.5f&&midpoint.values[0]==.5f);
  extremes[0]=0;extremes[1]=1;extreme[0]=-largest;extreme[16]=largest;
  check(interpolate(extreme,extremes,2,1,.5f).values[0]==0);
+ // The sampled response is y=x; an extreme interval must preserve a
+ // representable subnormal query even though its reported float alpha rounds
+ // to zero.
+ extremes[1]=largest;extreme[0]=0;extreme[16]=largest;
+ const float tiny=std::numeric_limits<float>::denorm_min();
+ const auto subnormal=interpolate(extreme,extremes,2,1,tiny);
+ check(subnormal.alpha==0.f&&subnormal.values[0]==tiny);
  unsigned rejected=0;try{coordinates[1]=-1;interpolate(table,coordinates,2,1,0);}catch(const std::invalid_argument&){++rejected;}try{compact_relations(scores,ids,0,mask,0,1);}catch(const std::invalid_argument&){++rejected;}try{a[0][0]=2;finite_relation_counts(a,b);}catch(const std::invalid_argument&){++rejected;}check(rejected==3);
- std::cout<<"E21 identity/nontrivial/padding passed; E22 directed mask/capacity/IDs passed; E23 integer oracle/count16 passed; E24 interpolation_error="<<error<<" passed; extreme interpolation passed\n";
+ unsigned nonfinite_rejected=0;
+ auto rejects_nonfinite=[&](const Matrix16& samples,const std::array<float,16>& sample_coordinates,float sample_query){
+  try{interpolate(samples,sample_coordinates,2,1,sample_query);}catch(const std::invalid_argument&){++nonfinite_rejected;}
+ };
+ auto valid_coordinates=std::array<float,16>{};valid_coordinates[0]=-1;valid_coordinates[1]=1;
+ auto nonfinite_coordinates=valid_coordinates;nonfinite_coordinates[0]=std::numeric_limits<float>::infinity();
+ rejects_nonfinite(table,nonfinite_coordinates,0);
+ rejects_nonfinite(table,valid_coordinates,std::numeric_limits<float>::quiet_NaN());
+ auto nonfinite_table=table;nonfinite_table[0]=std::numeric_limits<float>::infinity();
+ rejects_nonfinite(nonfinite_table,valid_coordinates,-1);
+ check(nonfinite_rejected==3);
+ std::cout<<"E21 identity/nontrivial/padding passed; E22 directed mask/capacity/IDs passed; E23 integer oracle/count16 passed; E24 interpolation_error="<<error<<" passed; extreme/subnormal and nonfinite interpolation passed\n";
 }

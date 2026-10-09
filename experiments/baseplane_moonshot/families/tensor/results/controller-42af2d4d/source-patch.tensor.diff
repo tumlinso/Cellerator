@@ -1,0 +1,201 @@
+diff --git a/experiments/baseplane_moonshot/families/tensor/CMakeLists.txt b/experiments/baseplane_moonshot/families/tensor/CMakeLists.txt
+index 42e6edbc..bf13fd76 100644
+--- a/experiments/baseplane_moonshot/families/tensor/CMakeLists.txt
++++ b/experiments/baseplane_moonshot/families/tensor/CMakeLists.txt
+@@ -9,4 +9,5 @@ if(CE_MOON_ENABLE_CUDA)
+   add_executable(ce_moon_tensor_cuda cuda_probe.cu)
+   target_link_libraries(ce_moon_tensor_cuda PRIVATE Cellerator::moonshot_tensor)
+   set_target_properties(ce_moon_tensor_cuda PROPERTIES CUDA_ARCHITECTURES 70 CUDA_STANDARD 17)
++  add_test(NAME ce_moon_tensor_cuda_comparator_self_check COMMAND ce_moon_tensor_cuda --self-check)
+ endif()
+diff --git a/experiments/baseplane_moonshot/families/tensor/README.md b/experiments/baseplane_moonshot/families/tensor/README.md
+index 99e754fc..aa976379 100644
+--- a/experiments/baseplane_moonshot/families/tensor/README.md
++++ b/experiments/baseplane_moonshot/families/tensor/README.md
+@@ -31,17 +31,19 @@ such guarantee. Mask recovery, packing, provenance handling, sparse emission,
+ transfer and construction cost remain part of any future performance claim.
+ No throughput or biological efficacy has been measured.
+ 
+-Build from repository root with the repository's resource slot wrapper:
++Build from repository root; this compiles the `sm_70` probe but does not launch it:
+ 
+ ```sh
+-python /tmp/moonshot_build_slot.py cmake -S experiments/baseplane_moonshot -B /tmp/ce-moon-tensor-build-129 -DCE_MOON_ENABLE_CUDA=ON -DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc
+-python /tmp/moonshot_build_slot.py cmake --build /tmp/ce-moon-tensor-build-129 --target ce_moon_tensor_host ce_moon_tensor_cuda -j1
+-ctest --test-dir /tmp/ce-moon-tensor-build-129 -R '^ce_moon_tensor_host$' --output-on-failure
++cmake -S experiments/baseplane_moonshot -B /tmp/ce-moon-tensor-build -DCE_MOON_ENABLE_CUDA=ON -DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc
++cmake --build /tmp/ce-moon-tensor-build --target ce_moon_tensor_host ce_moon_tensor_cuda -j2
++ctest --test-dir /tmp/ce-moon-tensor-build -R '^ce_moon_tensor_(host|cuda_comparator_self_check)$' --output-on-failure
+ ```
+ 
+-The CUDA executable `families/tensor/ce_moon_tensor_cuda` is deliberately absent
+-from automatic CTest: only the controller may run it with assigned GPU resources.
+-It compares all four numerical paths with host oracles and checks directed
+-pair IDs/capacity on device. The provider receipt records current evidence;
+-compilation alone does not claim a GPU run. This family supplies E08/E10/E44/E46
+-with reusable numerical tiles but does not claim those scientific consumers.
++The CUDA executable's GPU probe is deliberately absent from automatic CTest;
++only the controller may run it with assigned GPU resources. CUDA-enabled CTest
++does run its `--self-check` mode, which checks comparator finiteness, tolerance,
++and mismatch handling without accessing a GPU. The GPU probe compares all four
++numerical paths with host oracles and checks directed pair IDs/capacity on device.
++The provider receipt records current evidence; compilation alone does not claim
++a GPU run. This family supplies E08/E10/E44/E46 with reusable numerical tiles
++but does not claim those scientific consumers.
+diff --git a/experiments/baseplane_moonshot/families/tensor/cuda_probe.cu b/experiments/baseplane_moonshot/families/tensor/cuda_probe.cu
+index c37bde63..d04f6c11 100644
+--- a/experiments/baseplane_moonshot/families/tensor/cuda_probe.cu
++++ b/experiments/baseplane_moonshot/families/tensor/cuda_probe.cu
+@@ -9,10 +9,11 @@ void checked(cudaError_t e){if(e!=cudaSuccess)throw std::runtime_error(cudaGetEr
+ void equal(const Matrix16& actual,const Matrix16& expected){for(unsigned i=0;i<256;++i)if(!std::isfinite(actual[i])||!std::isfinite(expected[i])||std::abs(actual[i]-expected[i])>1e-5f)throw std::runtime_error("GPU oracle mismatch or nonfinite value");}
+ void comparator_self_check(){
+  Matrix16 zero{},nonfinite{};equal(zero,zero);
++ Matrix16 within_tolerance{};within_tolerance[0]=5e-6f;equal(within_tolerance,zero);
+  auto rejects=[&](const Matrix16& actual,const Matrix16& expected){bool rejected=false;try{equal(actual,expected);}catch(const std::runtime_error&){rejected=true;}if(!rejected)throw std::runtime_error("oracle comparator accepted invalid value");};
+  nonfinite[0]=std::numeric_limits<float>::quiet_NaN();rejects(nonfinite,zero);rejects(zero,nonfinite);
+  nonfinite[0]=std::numeric_limits<float>::infinity();rejects(nonfinite,zero);rejects(zero,nonfinite);
+- nonfinite[0]=1.f;rejects(nonfinite,zero);
++ nonfinite[0]=2e-5f;rejects(nonfinite,zero);
+ }
+ int main(int argc,char** argv){
+  comparator_self_check();
+diff --git a/experiments/baseplane_moonshot/families/tensor/host.cpp b/experiments/baseplane_moonshot/families/tensor/host.cpp
+index 10e5503d..9f9cf12c 100644
+--- a/experiments/baseplane_moonshot/families/tensor/host.cpp
++++ b/experiments/baseplane_moonshot/families/tensor/host.cpp
+@@ -1,5 +1,6 @@
+ #include <ce_moon/tensor.hpp>
+ #include <iostream>
++#include <limits>
+ #include <stdexcept>
+ using namespace ce_moon::tensor;
+ void check(bool x){if(!x)throw std::runtime_error("tensor fixture mismatch");}
+@@ -23,6 +24,24 @@ int main(){
+  auto midpoint=interpolate(extreme,extremes,2,1,0);check(midpoint.alpha==.5f&&midpoint.values[0]==.5f);
+  extremes[0]=0;extremes[1]=1;extreme[0]=-largest;extreme[16]=largest;
+  check(interpolate(extreme,extremes,2,1,.5f).values[0]==0);
++ // The sampled response is y=x; an extreme interval must preserve a
++ // representable subnormal query even though its reported float alpha rounds
++ // to zero.
++ extremes[1]=largest;extreme[0]=0;extreme[16]=largest;
++ const float tiny=std::numeric_limits<float>::denorm_min();
++ const auto subnormal=interpolate(extreme,extremes,2,1,tiny);
++ check(subnormal.alpha==0.f&&subnormal.values[0]==tiny);
+  unsigned rejected=0;try{coordinates[1]=-1;interpolate(table,coordinates,2,1,0);}catch(const std::invalid_argument&){++rejected;}try{compact_relations(scores,ids,0,mask,0,1);}catch(const std::invalid_argument&){++rejected;}try{a[0][0]=2;finite_relation_counts(a,b);}catch(const std::invalid_argument&){++rejected;}check(rejected==3);
+- std::cout<<"E21 identity/nontrivial/padding passed; E22 directed mask/capacity/IDs passed; E23 integer oracle/count16 passed; E24 interpolation_error="<<error<<" passed; extreme interpolation passed\n";
++ unsigned nonfinite_rejected=0;
++ auto rejects_nonfinite=[&](const Matrix16& samples,const std::array<float,16>& sample_coordinates,float sample_query){
++  try{interpolate(samples,sample_coordinates,2,1,sample_query);}catch(const std::invalid_argument&){++nonfinite_rejected;}
++ };
++ auto valid_coordinates=std::array<float,16>{};valid_coordinates[0]=-1;valid_coordinates[1]=1;
++ auto nonfinite_coordinates=valid_coordinates;nonfinite_coordinates[0]=std::numeric_limits<float>::infinity();
++ rejects_nonfinite(table,nonfinite_coordinates,0);
++ rejects_nonfinite(table,valid_coordinates,std::numeric_limits<float>::quiet_NaN());
++ auto nonfinite_table=table;nonfinite_table[0]=std::numeric_limits<float>::infinity();
++ rejects_nonfinite(nonfinite_table,valid_coordinates,-1);
++ check(nonfinite_rejected==3);
++ std::cout<<"E21 identity/nontrivial/padding passed; E22 directed mask/capacity/IDs passed; E23 integer oracle/count16 passed; E24 interpolation_error="<<error<<" passed; extreme/subnormal and nonfinite interpolation passed\n";
+ }
+diff --git a/experiments/baseplane_moonshot/families/tensor/provider-receipt.json b/experiments/baseplane_moonshot/families/tensor/provider-receipt.json
+index af82e968..e93434c1 100644
+--- a/experiments/baseplane_moonshot/families/tensor/provider-receipt.json
++++ b/experiments/baseplane_moonshot/families/tensor/provider-receipt.json
+@@ -8,12 +8,12 @@
+     "E24"
+   ],
+   "producer_commit_or_source_digest": {
+-    "experiments/baseplane_moonshot/families/tensor/CMakeLists.txt": "748e9fdb4c16fe5f8770d73b08c2b71b9188225e3b2a4e5eff90b011c85d517b",
+-    "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.hpp": "8b7c1b6d0e07b757d98fc43a8ebe57dc4691b7ccea20cd3a43983dcf47e07d51",
++    "experiments/baseplane_moonshot/families/tensor/CMakeLists.txt": "5f58d9e3502fd47363830356be04e28b924fbebb8b93763119931696c6875846",
++    "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.hpp": "750ec9c5b0424ac6968b6585d179e3e981f72a02b88f2c80b04e3983e992cb8f",
+     "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.cuh": "b5da9bb46b4ce7553f48e256f2ddd0e283972d5b6a77a4fba20f346abcbe1e47",
+-    "experiments/baseplane_moonshot/families/tensor/host.cpp": "b947c00b3f54fc06502d5c452048066c3c38ecfa4a9d76df433b70c29ed60f9b",
+-    "experiments/baseplane_moonshot/families/tensor/cuda_probe.cu": "c43bc8ecaee560345824489a5ad23fdafcb3ea880797c3f8fed1fb215c97d02d",
+-    "experiments/baseplane_moonshot/families/tensor/README.md": "e2b3618e5a8a3ea251307d840aa38cb52aeffe5e147d58bb6bbaf759cc486b63"
++    "experiments/baseplane_moonshot/families/tensor/host.cpp": "0a05b35cb3981ca8548c5ad86f199c3c5bb7aef24006c892547ff7b1ae337f2b",
++    "experiments/baseplane_moonshot/families/tensor/cuda_probe.cu": "37210b2a1317205a05d8d2fe176cac2ba0d28adf30a1d3a1e6ebf027c51780bd",
++    "experiments/baseplane_moonshot/families/tensor/README.md": "2317983d8bd265ed12d7615a97cb0a9c922c4c1767666548135ca6145d3305e1"
+   },
+   "artifact_paths": [
+     "experiments/baseplane_moonshot/families/tensor/CMakeLists.txt",
+@@ -36,7 +36,7 @@
+       "compiled": true,
+       "run": false,
+       "compared": false,
+-      "reason": "GPU launch reserved for root controller"
++      "reason": "CUDA executable compiled for sm70; comparator self-check passed without device access; GPU probe reserved for root controller"
+     }
+   },
+   "minimal_input_output_example": {
+@@ -52,10 +52,66 @@
+     "Single binary finite relation product exact bounded counts; no arbitrary semiring/repeated-count claim"
+   ],
+   "evidence": {
+-    "configure": "/tmp/ce-moon-tensor-build-129/CMakeCache.txt",
+-    "host_test": "/tmp/ce-moon-tensor-build-129/Testing/Temporary/LastTest.log",
+-    "cuda_executable": "/tmp/ce-moon-tensor-build-129/families/tensor/ce_moon_tensor_cuda",
+-    "toolchain": "GCC13.3; CUDA12.9.86; sm70",
+-    "failed_attempt": "Default /usr/bin/nvcc CUDA12.0 failed CMake compiler identification with GCC13/glibc _Float* errors; installed CUDA12.9 succeeded"
++    "configure": "/tmp/ce-moon-tensor-cuda-20261009/CMakeCache.txt",
++    "host_test": "/tmp/ce-moon-tensor-cuda-20261009/Testing/Temporary/LastTest.log",
++    "cuda_executable": "/tmp/ce-moon-tensor-cuda-20261009/families/tensor/ce_moon_tensor_cuda",
++    "toolchain": "GCC13.3; CUDA12.9.86; sm70; CUDA compile only, no device launch",
++    "failed_attempt": "Default /usr/bin/nvcc CUDA12.0 failed CMake compiler identification with GCC13/glibc _Float* errors; installed CUDA12.9 succeeded",
++    "cpu_configure": "/tmp/ce-moon-tensor-cpu-20261009/CMakeCache.txt",
++    "cpu_host_test": "/tmp/ce-moon-tensor-cpu-20261009/Testing/Temporary/LastTest.log",
++    "cuda_comparator_self_check": "passed via ce_moon_tensor_cuda_comparator_self_check in the CUDA-build CTest run; no CUDA API/device access",
++    "validation_commands": {
++      "cpu_configure": [
++        "cmake",
++        "-S",
++        "experiments/baseplane_moonshot",
++        "-B",
++        "/tmp/ce-moon-tensor-cpu-20261009",
++        "-DCE_MOON_ENABLE_CUDA=OFF"
++      ],
++      "cpu_build": [
++        "cmake",
++        "--build",
++        "/tmp/ce-moon-tensor-cpu-20261009",
++        "--target",
++        "ce_moon_tensor_host",
++        "-j2"
++      ],
++      "cpu_test": [
++        "ctest",
++        "--test-dir",
++        "/tmp/ce-moon-tensor-cpu-20261009",
++        "-R",
++        "^ce_moon_tensor_host$",
++        "--output-on-failure"
++      ],
++      "cuda_configure": [
++        "cmake",
++        "-S",
++        "experiments/baseplane_moonshot",
++        "-B",
++        "/tmp/ce-moon-tensor-cuda-20261009",
++        "-DCE_MOON_ENABLE_CUDA=ON",
++        "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc"
++      ],
++      "cuda_build": [
++        "cmake",
++        "--build",
++        "/tmp/ce-moon-tensor-cuda-20261009",
++        "--target",
++        "ce_moon_tensor_host",
++        "ce_moon_tensor_cuda",
++        "-j2"
++      ],
++      "cuda_cpu_tests": [
++        "ctest",
++        "--test-dir",
++        "/tmp/ce-moon-tensor-cuda-20261009",
++        "-R",
++        "^ce_moon_tensor_(host|cuda_comparator_self_check)$",
++        "--output-on-failure"
++      ]
++    },
++    "device_probe_run": false
+   }
+ }

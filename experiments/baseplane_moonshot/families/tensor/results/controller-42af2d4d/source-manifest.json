@@ -1,0 +1,115 @@
+{
+  "format": "CE-MOON-TENSOR-CONTROLLER-EVIDENCE/1",
+  "controller_result": {
+    "status": "succeeded",
+    "evidence_id": "42af2d4d-f234-430f-81f0-9786cdb1df69",
+    "job_id": "85945f8e-1377-41c9-8177-d4a058240667",
+    "source_commit": "43530e301db0ddcc6dc1bac854fcf22fc2bf9cfa",
+    "source_fingerprint": "2c337a349f4538b7e23b70131b91aabd25928f2b57dbbdd193e6c0020067c727",
+    "global_tracked_patch_sha256": "c7457a9983fc05520d1363ae67b4f1b3641d7a94df99df92f8a43c0304a35121",
+    "tensor_patch_sha256": "e468d577b000e8ab023c3b142e45669da6e48ec301ea25173d18afae91bf3b68",
+    "tensor_patch_scope": "Only experiments/baseplane_moonshot/families/tensor paths extracted from the verified controller patch."
+  },
+  "binary": {
+    "path_at_run": "/tmp/ce-moon-tensor-cuda-20261009/families/tensor/ce_moon_tensor_cuda",
+    "sha256_at_run": "51339a4fc06cc2110eb0b53a7404794770777bef7b3cfd341953e6ba42070bd8",
+    "sha256_current": "51339a4fc06cc2110eb0b53a7404794770777bef7b3cfd341953e6ba42070bd8",
+    "build_argv": [
+      "cmake",
+      "--build",
+      "/tmp/ce-moon-tensor-cuda-20261009",
+      "--target",
+      "ce_moon_tensor_cuda",
+      "-j2"
+    ],
+    "build_returncode": 0,
+    "run_argv": [
+      "/tmp/ce-moon-tensor-cuda-20261009/families/tensor/ce_moon_tensor_cuda"
+    ],
+    "run_returncode": 0,
+    "run_stdout": "sanitizer/run/stdout.txt"
+  },
+  "gpu": [
+    {
+      "clocks_sm_mhz": 1312.0,
+      "compute_capability": "7.0",
+      "driver_version": "580.173.02",
+      "index": 0,
+      "memory_free_mib": 16145,
+      "memory_total_mib": 16384,
+      "name": "Tesla V100-SXM2-16GB",
+      "pci_bus_id": "00000000:02:00.0",
+      "temperature_c": 36.0,
+      "throttle_reasons": "0x0000000000000000",
+      "utilization_percent": 0.0,
+      "uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    }
+  ],
+  "toolchain": {
+    "environment": {
+      "CUDACXX": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "CUDAToolkit_ROOT": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+      "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer:/home/tumlinson/.local/bin:/home/tumlinson/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/tumlinson/.local/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/nvvm/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/compilers/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/comm_libs/12.9/nccl/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/comm_libs/12.9/nvshmem/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/comm_libs/hpcx/bin:/home/tumlinson/.codex/tmp/arg0/codex-arg0zQULvS:/home/tumlinson/.nvm/versions/node/v22.23.2/bin:/home/tumlinson/Software/miniconda3/bin:/home/tumlinson/Software/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/tumlinson/Software/llama.cpp/build/bin:/home/tumlinson/Software/sratoolkit.3.3.0-ubuntu64/bin"
+    },
+    "nvcc": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+    "sanitizer": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "version": "12.9"
+  },
+  "compute_sanitizer": {
+    "tool": "memcheck",
+    "exit_status": 0,
+    "error_count": 0,
+    "classification": "partial",
+    "conclusive": false,
+    "summary": "Zero errors reported; controller classifier labeled diagnostic partial/inconclusive."
+  },
+  "tensor_sources": {
+    "experiments/baseplane_moonshot/families/tensor/CMakeLists.txt": {
+      "baseline_sha256": "748e9fdb4c16fe5f8770d73b08c2b71b9188225e3b2a4e5eff90b011c85d517b",
+      "run_sha256": "5f58d9e3502fd47363830356be04e28b924fbebb8b93763119931696c6875846",
+      "reconstructed_sha256": "5f58d9e3502fd47363830356be04e28b924fbebb8b93763119931696c6875846"
+    },
+    "experiments/baseplane_moonshot/families/tensor/README.md": {
+      "baseline_sha256": "e2b3618e5a8a3ea251307d840aa38cb52aeffe5e147d58bb6bbaf759cc486b63",
+      "run_sha256": "2317983d8bd265ed12d7615a97cb0a9c922c4c1767666548135ca6145d3305e1",
+      "reconstructed_sha256": "2317983d8bd265ed12d7615a97cb0a9c922c4c1767666548135ca6145d3305e1"
+    },
+    "experiments/baseplane_moonshot/families/tensor/cuda_probe.cu": {
+      "baseline_sha256": "913c1f52541ec5f128dce7b501a2424be912ee9e579b463945a5a0cd05aea386",
+      "run_sha256": "37210b2a1317205a05d8d2fe176cac2ba0d28adf30a1d3a1e6ebf027c51780bd",
+      "reconstructed_sha256": "37210b2a1317205a05d8d2fe176cac2ba0d28adf30a1d3a1e6ebf027c51780bd"
+    },
+    "experiments/baseplane_moonshot/families/tensor/host.cpp": {
+      "baseline_sha256": "786c8e899c63d36afd20a385b5777fe4e92a1fe9be234cc362245187dacfff2d",
+      "run_sha256": "0a05b35cb3981ca8548c5ad86f199c3c5bb7aef24006c892547ff7b1ae337f2b",
+      "reconstructed_sha256": "0a05b35cb3981ca8548c5ad86f199c3c5bb7aef24006c892547ff7b1ae337f2b"
+    },
+    "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.hpp": {
+      "baseline_sha256": "750ec9c5b0424ac6968b6585d179e3e981f72a02b88f2c80b04e3983e992cb8f",
+      "run_sha256": "750ec9c5b0424ac6968b6585d179e3e981f72a02b88f2c80b04e3983e992cb8f",
+      "reconstructed_sha256": "750ec9c5b0424ac6968b6585d179e3e981f72a02b88f2c80b04e3983e992cb8f"
+    },
+    "experiments/baseplane_moonshot/families/tensor/include/ce_moon/tensor.cuh": {
+      "baseline_sha256": "b5da9bb46b4ce7553f48e256f2ddd0e283972d5b6a77a4fba20f346abcbe1e47",
+      "run_sha256": "b5da9bb46b4ce7553f48e256f2ddd0e283972d5b6a77a4fba20f346abcbe1e47",
+      "reconstructed_sha256": "b5da9bb46b4ce7553f48e256f2ddd0e283972d5b6a77a4fba20f346abcbe1e47"
+    }
+  },
+  "artifact_sha256": {
+    "controller-result.json": "72fcd9182c3339322952a77ae6867297edfc53064e16ae33612fceab64389efe",
+    "controller-evidence.json": "b526c5de89ef7af3393fa0c4ade27a4ebfb8e4cae309745520cc6b98a3203e75",
+    "controller-spec.json": "120a032585cd8f8f306a9dec476f105f1e57a85179e5874586195f4d0939841d",
+    "lease.json": "bdf422051c3d1db2cc678b0071439a8460a83b76934b7700e6addb97243e7a9f",
+    "foreground.stdout.txt": "08b23ef49d7331353c21727df8871cc43d1e22ccc1f9183634f1c191390050f5",
+    "foreground.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sanitizer/run/raw.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+    "sanitizer/run/run_config.json": "4f7d25f283c50145ebc0f39aecf000554823489f89f5933e24f2a3260d305355",
+    "sanitizer/run/stdout.txt": "c3ce6a172db7428d09eeb9171da7d622ba2d05827b5d682819e5d8ca2faab21b",
+    "sanitizer/run/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sanitizer/run/summary.json": "497b45261031f30d79686edd40baf905ce1b17167a7b45fc35a85d657bc188b9",
+    "sanitizer/run/summary.txt": "fcb23799a8d20adb6412215f2c2fb13237d3fc371eac10dc743117ac89d5c6a3",
+    "source-patch.tensor.diff": "e468d577b000e8ab023c3b142e45669da6e48ec301ea25173d18afae91bf3b68"
+  },
+  "lease_file": "lease.json records admission-time owner and accelerator; post-run idle/quiescence samples are preserved in controller-evidence.json."
+}

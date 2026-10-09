@@ -31,17 +31,24 @@ such guarantee. Mask recovery, packing, provenance handling, sparse emission,
 transfer and construction cost remain part of any future performance claim.
 No throughput or biological efficacy has been measured.
 
-Build from repository root with the repository's resource slot wrapper:
+Build from repository root; this compiles the `sm_70` probe but does not launch it:
 
 ```sh
-python /tmp/moonshot_build_slot.py cmake -S experiments/baseplane_moonshot -B /tmp/ce-moon-tensor-build-129 -DCE_MOON_ENABLE_CUDA=ON -DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc
-python /tmp/moonshot_build_slot.py cmake --build /tmp/ce-moon-tensor-build-129 --target ce_moon_tensor_host ce_moon_tensor_cuda -j1
-ctest --test-dir /tmp/ce-moon-tensor-build-129 -R '^ce_moon_tensor_host$' --output-on-failure
+cmake -S experiments/baseplane_moonshot -B /tmp/ce-moon-tensor-build -DCE_MOON_ENABLE_CUDA=ON -DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc
+cmake --build /tmp/ce-moon-tensor-build --target ce_moon_tensor_host ce_moon_tensor_cuda -j2
+ctest --test-dir /tmp/ce-moon-tensor-build -R '^ce_moon_tensor_(host|cuda_comparator_self_check)$' --output-on-failure
 ```
 
-The CUDA executable `families/tensor/ce_moon_tensor_cuda` is deliberately absent
-from automatic CTest: only the controller may run it with assigned GPU resources.
-It compares all four numerical paths with host oracles and checks directed
-pair IDs/capacity on device. The provider receipt records current evidence;
-compilation alone does not claim a GPU run. This family supplies E08/E10/E44/E46
-with reusable numerical tiles but does not claim those scientific consumers.
+The CUDA executable's GPU probe is deliberately absent from automatic CTest;
+only the controller may run it with assigned GPU resources. CUDA-enabled CTest
+does run its `--self-check` mode, which checks comparator finiteness, tolerance,
+and mismatch handling without accessing a GPU. The GPU probe compares all four
+numerical paths with host oracles and checks directed pair IDs/capacity on device.
+The 2026-10-09 CUDA-controller run on a Tesla V100-SXM2-16GB compared E21–E24
+with host oracles and passed directed provenance/capacity checks. Compute
+Sanitizer memcheck reported zero errors; its diagnostic classification was
+partial and inconclusive. The source manifest, binary digest, controller
+transcript, and lease record are preserved under
+[`results/controller-42af2d4d`](results/controller-42af2d4d/). This family
+supplies E08/E10/E44/E46 with reusable numerical tiles but does not claim those
+scientific consumers.

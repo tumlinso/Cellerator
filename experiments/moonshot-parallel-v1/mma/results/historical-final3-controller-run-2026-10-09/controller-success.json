@@ -1,0 +1,50 @@
+{
+  "classification": "decision-result",
+  "evidence_id": "37aea6c6-bb8a-48fd-b5e8-c141b5bea37c",
+  "ok": true,
+  "returncode": 0,
+  "status": "succeeded",
+  "stdout_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/9e9640a4-7ba1-4829-abbd-acfcc5dca022/foreground.stdout.txt",
+  "stderr_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/9e9640a4-7ba1-4829-abbd-acfcc5dca022/foreground.stderr.txt",
+  "lease_receipt": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/9e9640a4-7ba1-4829-abbd-acfcc5dca022/lease.json",
+  "preserved_artifacts": {
+    "stdout": {
+      "path": "controller-success.stdout.txt",
+      "sha256": "33bd412747a6bad1255a72132937f6b19c27347a501f94102b33e29d60bed0ca"
+    },
+    "stderr": {
+      "path": "controller-success.stderr.txt",
+      "sha256": "3373596d706ef6709d41f59bf7f7b78c2973606ba87dfa5ce4daeaaa2e7a10bb"
+    }
+  },
+  "lease_evidence": "controller-success.lease.json",
+  "resource_ids": [
+    "accelerator:GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+  ],
+  "binaries": [
+    {
+      "path": "/home/tumlinson/Cellerator/experiments/moonshot-parallel-v1/mma/results/build-manifest.json",
+      "sha256": "6f297253dca7ff4544357d484bacd2cfdcc1880891c43923c970522ff897d09e"
+    }
+  ],
+  "build": {
+    "argv": [
+      "cmake",
+      "--build",
+      "/tmp/cellerator-moonshot-mma-gpu-20261009-final3",
+      "-j2"
+    ],
+    "returncode": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "1486006401a5ed2b56c905c8362604e4bf2f3110d1733cb170c8d97f5762837d"
+  },
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python3",
+    "-B",
+    "experiments/moonshot-parallel-v1/mma/check_mma.py",
+    "--build-dir",
+    "/tmp/cellerator-moonshot-mma-gpu-20261009-final3",
+    "--gpu",
+    "--record"
+  ]
+}
