@@ -32,6 +32,22 @@ Use the installed Project Control/Codex front door and this repository's Todo au
 
 External compatibility is not an absolute constraint at this stage. A reviewed internal move may change names/interfaces if it improves development; repair real sibling consumers and relevant tests together. Frozen contracts and overlapping active work still require their owner's explicit reconciliation. Do not use a documentation task to rewrite numerical behavior, introduce another planner, or complete unrelated old epics.
 
+## Hardware and algorithm choice
+
+Use the [CUDA skill](/home/tumlinson/.agents/skills/cuda/SKILL.md) for GPU
+computation, porting, correctness, profiling and optimization. Follow its focused
+guidance for the actual operation and target hardware, including host execution
+rules when running GPU work.
+
+Aim to make full use of the hardware. Reflect on algorithm, representation and
+ownership choices before tuning a kernel: consider how layout, locality, reuse,
+fusion and precision can make the semantic operation native to the machine.
+Consider unconventional algorithms or encodings when they offer a sound fit.
+Choose wisely using an independent correctness oracle and complete workload
+costs, including preparation, conversion, memory and communication. Compare
+with the strongest conventional or library alternative and retain the evidence
+that supports or rejects each candidate.
+
 ## Software ports and design probes
 
 During active library development, any explicitly user-authorized software
@@ -43,14 +59,21 @@ friction. General numerical, state, graph, relation, statistical, and
 iterative mechanisms belong in Cellerator; Baseplane should own only
 intrinsically sequence-grounded functionality.
 
-Preserve native computation by default. An optional, opportunistic FP16 Tensor
-Core mode is the only permitted deliberate numerical deviation. Compare it
-with upstream/native computation. A higher-precision reference may supplement
-that comparison. Prefer FP32 accumulation where supported, and declare and
-qualify actual accumulation and output policy. Use the mode only within its
-demonstrated numerical envelope, retaining native fallback for unsupported or
-unsafe regimes. Existing Tensor Core documentation defines implementation
-requirements.
+Use FP16 as the general computation default, retaining FP32, FP64 and other
+supported precision types as explicit alternatives. FP16 execution may use
+ordinary CUDA arithmetic or Tensor Cores; choose the implementation by the
+operation's contract and measured complete cost. Declare storage, multiply,
+accumulation and output types separately, using FP32 accumulation where
+appropriate. Respect explicit caller precision and existing operation contracts.
+Compare approximate computation with upstream/native computation; a
+higher-precision reference may supplement that comparison. Keep numerical claims
+within demonstrated evidence and retain suitable alternatives for unsupported
+or unsafe regimes. See [Numerical policy](docs/architecture.qmd#numerical-policy)
+for the provisional evidence boundary and current implementation distinction.
+
+Prefer templates for algorithms whose behavior is independent of numeric type.
+Keep genuinely type-specific arithmetic, numerical constraints and hardware
+specializations explicit; do not force them into a shared implementation.
 
 When a basic reusable primitive appears missing or insufficient, report this
 promptly to the user. Include the concrete computation and evidence, current

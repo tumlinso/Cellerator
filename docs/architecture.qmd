@@ -95,6 +95,33 @@ Examples:
 - fixed sequence-derived motif relation reused across state evaluations;
 - one structure with fp16, bf16, int8, and fp32 value planes.
 
+### Numerical policy
+
+FP16 is Cellerator's general computation default when an operation's contract
+supports it. It is a first-class arithmetic type for both SIMT and Tensor Core
+implementations; Tensor Core use is an implementation choice, not a condition
+for using FP16. FP32 and FP64 remain available as explicit alternatives, along
+with other types already supported by a particular operation. FP32
+accumulation is appropriate when it improves the operation's error behavior,
+but each operation declares its own policy for storage, multiplication,
+accumulation, and output.
+
+This is the design policy; it does not claim that every current algorithm or
+build configuration implements FP16 arithmetic. The source CMake defaults
+currently select FP16 storage, FP32 computation, and FP32 accumulation for new,
+unspecified real work. Author-reported tests on biological data support FP16
+as a reasonable approximation so far, but exhaustive scientific validation
+and a general error bound have not been established. Preserve per-operation
+evidence and compare against the upstream/native computation or a suitable
+higher-precision reference. See [Performance and Validation](performance_validation.qmd)
+for the evidence and reporting contract.
+
+Use templates when an algorithm is independent of numeric type; this keeps
+one implementation and one semantic contract across types. Add type-specific
+specialization only where arithmetic semantics, supported instructions, or
+measured performance require it, and keep the declared precision contract
+explicit.
+
 ### CellPack and CP-BP compiler
 
 The compiler observes biological regularity and produces semantic execution geometry.
