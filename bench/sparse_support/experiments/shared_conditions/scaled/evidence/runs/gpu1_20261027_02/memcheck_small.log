@@ -1,0 +1,7 @@
+========= COMPUTE-SANITIZER
+{"record":"preparation","case":"small","state_view":"observed_predicates","edges":96,"cells":8,"predicates":72,"roots":64,"nodes":192,"load_ms":0.192781,"host_compile_ms":0.097712,"device_setup_ms":3902.016363,"shared_state_bytes":1768,"native_specific_bytes":8264,"candidate_specific_bytes":5272,"native_total_bytes":10032,"candidate_total_bytes":7040,"joint_probe_setup_bytes":15304,"local_dirty_edges":29,"latent_dirty_edges":84,"local_update_items":24,"local_effective_state_changes":24,"latent_update_items":8,"latent_effective_state_changes":8,"local_root_visits":24,"latent_root_visits":64}
+{"record":"correctness","case":"small","status":"pass","full_paths":3}
+{"record":"correctness","case":"small","update":"local_gene_patch","status":"pass","paths":6}
+{"record":"correctness","case":"small","update":"shared_latent_toggle","status":"pass","paths":6}
+{"record":"correctness","case":"small","status":"pass","all":true}
+========= ERROR SUMMARY: 0 errors

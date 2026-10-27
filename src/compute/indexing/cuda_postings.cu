@@ -1,6 +1,7 @@
 #include <Cellerator/compute/indexing/cuda_postings.cuh>
 
 #include <cuda_runtime.h>
+#include <cub/block/block_scan.cuh>
 
 #include <algorithm>
 #include <limits>
@@ -9,6 +10,8 @@ namespace cellerator::compute::indexing {
 namespace {
 
 constexpr unsigned posting_scatter_threads = 128u;
+constexpr unsigned posting_query_threads = 128u;
+constexpr unsigned posting_scan_items_per_thread = 16u;
 
 __global__ void clear_status(cuda_posting_status_v1 *status) {
     if (blockIdx.x == 0 && threadIdx.x == 0) *status = {};
@@ -95,16 +98,97 @@ __device__ void merge_cell(
     *count = written;
 }
 
+// Prove the narrow layout where union-by-concatenation is exact. The canonical
+// host projection guarantees each individual posting slice is strictly
+// increasing by stable edge ID. Here we additionally prove the query keys are
+// unique and ordered and that selected slices form one increasing, disjoint
+// sequence. Any unsupported row falls back to merge_cell.
+__device__ bool try_ordered_disjoint_cell(
+    cuda_reverse_posting_view_v1 index, const std::uint64_t *query_offsets,
+    const posting_term_v1 *queries, std::uint64_t cell,
+    cuda_posting_scratch_v1::cursor_v1 *cursors,
+    std::uint64_t *count, cuda_posting_status_v1 *status,
+    bool query_cursors_prepared) {
+    const auto qb = query_offsets[cell], qe = query_offsets[cell + 1];
+    bool have_previous_term = false;
+    bool have_previous_posting = false;
+    posting_term_v1 previous_term{};
+    std::uint64_t previous_last_id = 0;
+    std::uint64_t prefix = 0;
+
+    for (auto qi = qb; qi < qe; ++qi) {
+        const auto query = queries[qi];
+        if (query.reserved != 0u) {
+            atomicCAS(&status->code, 0u,
+                static_cast<std::uint32_t>(cuda_posting_code_v1::invalid_query));
+            *count = 0;
+            return false;
+        }
+        if (have_previous_term && !term_less(previous_term, query))
+            return false;
+        previous_term = query;
+        have_previous_term = true;
+
+        std::uint64_t begin = 0u, end = 0u;
+        if (query_cursors_prepared) {
+            begin = cursors[qi].position;
+            end = cursors[qi].end;
+        } else {
+            const auto term = find_term(index, query);
+            begin = term == index.term_count ? 0u : index.term_offsets[term];
+            end = term == index.term_count ? 0u : index.term_offsets[term + 1u];
+        }
+        cursors[qi] = {begin, end, prefix, 0u, 0u};
+        const auto length = end - begin;
+        if (length != 0u) {
+            const auto first_id = index.items[begin].logical_edge_id;
+            const auto last_id = index.items[end - 1u].logical_edge_id;
+            if (have_previous_posting && first_id <= previous_last_id)
+                return false;
+            previous_last_id = last_id;
+            have_previous_posting = true;
+        }
+        if (prefix > ~std::uint64_t{0} - length)
+            return false;
+        prefix += length;
+    }
+    if (qb < qe) cursors[qb].row_mode = 1u;
+    *count = prefix;
+    return true;
+}
+
+__global__ void query_term_lookup_kernel(
+    cuda_reverse_posting_view_v1 index, const posting_term_v1 *queries,
+    std::uint64_t query_count,
+    cuda_posting_scratch_v1::cursor_v1 *cursors,
+    cuda_posting_status_v1 *status) {
+    const auto qi = static_cast<std::uint64_t>(blockIdx.x) * blockDim.x
+        + threadIdx.x;
+    if (qi >= query_count) return;
+    const auto query = queries[qi];
+    if (query.reserved != 0u) {
+        atomicCAS(&status->code, 0u,
+            static_cast<std::uint32_t>(cuda_posting_code_v1::invalid_query));
+        cursors[qi] = {0u, 0u, 0u, 0u, 0u};
+        return;
+    }
+    const auto term = find_term(index, query);
+    const auto begin = term == index.term_count ? 0u : index.term_offsets[term];
+    const auto end = term == index.term_count ? 0u : index.term_offsets[term + 1u];
+    cursors[qi] = {begin, end, 0u, 0u, 0u};
+}
+
 __global__ void query_counts_kernel(
     cuda_reverse_posting_view_v1 index, std::uint64_t cells,
     const std::uint64_t *query_offsets, const posting_term_v1 *queries,
+    std::uint64_t query_count,
     cuda_posting_scratch_v1::cursor_v1 *cursors,
     std::uint64_t *counts, cuda_posting_status_v1 *status) {
     const auto cell = static_cast<std::uint64_t>(blockIdx.x);
     if (cell >= cells || threadIdx.x != 0) return;
     const auto qb = query_offsets[cell];
     const auto qe = query_offsets[cell + 1];
-    if (qb > qe) {
+    if (qb > qe || qe > query_count) {
         atomicCAS(&status->code, 0u,
                   static_cast<std::uint32_t>(cuda_posting_code_v1::invalid_query));
         counts[cell] = 0;
@@ -118,20 +202,148 @@ __global__ void query_counts_kernel(
         const auto query = queries[qb];
         if (query.reserved != 0u) {
             atomicCAS(&status->code, 0u,
-                      static_cast<std::uint32_t>(cuda_posting_code_v1::invalid_query));
+                static_cast<std::uint32_t>(cuda_posting_code_v1::invalid_query));
             counts[cell] = 0;
             return;
         }
-        const auto term = find_term(index, query);
-        const auto begin = term == index.term_count ? 0u : index.term_offsets[term];
-        const auto end = term == index.term_count ? 0u : index.term_offsets[term + 1u];
-        cursors[qb] = {begin, end};
+        std::uint64_t begin = 0u, end = 0u;
+        if (query_count > cells) {
+            begin = cursors[qb].position;
+            end = cursors[qb].end;
+            cursors[qb].output_offset = 0u;
+            cursors[qb].row_mode = 1u;
+            cursors[qb].reserved = 0u;
+        } else {
+            const auto term = find_term(index, query);
+            begin = term == index.term_count ? 0u : index.term_offsets[term];
+            end = term == index.term_count ? 0u : index.term_offsets[term + 1u];
+            cursors[qb] = {begin, end, 0u, 1u, 0u};
+        }
         counts[cell] = end - begin;
     } else {
-        merge_cell(index, query_offsets, queries, cell, cursors, nullptr,
-                   counts + cell, status);
+        if (!try_ordered_disjoint_cell(index, query_offsets, queries, cell,
+                cursors, counts + cell, status, query_count > cells)) {
+            if (status->code == 0u) {
+                if (qb < qe) cursors[qb].row_mode = 0u;
+                merge_cell(index, query_offsets, queries, cell, cursors, nullptr,
+                           counts + cell, status);
+            }
+        }
     }
     if (status->code == 0)
+        atomicAdd(reinterpret_cast<unsigned long long *>(&status->required),
+                  static_cast<unsigned long long>(counts[cell]));
+}
+
+// For larger batches, term lookup runs in parallel and this row kernel proves
+// the ordered-disjoint precondition while scanning each row's posting lengths.
+// One CTA handles a row; 128 threads each own a contiguous chunk of terms so
+// BlockScan yields the exact row-relative destination prefix for concatenation.
+__global__ void query_counts_parallel_rows_kernel(
+    cuda_reverse_posting_view_v1 index, std::uint64_t cells,
+    const std::uint64_t *query_offsets, const posting_term_v1 *queries,
+    std::uint64_t query_count,
+    cuda_posting_scratch_v1::cursor_v1 *cursors,
+    std::uint64_t *counts, cuda_posting_status_v1 *status) {
+    using block_scan = cub::BlockScan<std::uint64_t, posting_query_threads>;
+    __shared__ typename block_scan::TempStorage scan_storage;
+    __shared__ std::uint32_t eligible;
+    const auto cell = static_cast<std::uint64_t>(blockIdx.x);
+    if (cell >= cells) return;
+    const auto qb = query_offsets[cell];
+    const auto qe = query_offsets[cell + 1u];
+    if (qb > qe || qe > query_count) {
+        if (threadIdx.x == 0u) {
+            atomicCAS(&status->code, 0u,
+                static_cast<std::uint32_t>(cuda_posting_code_v1::invalid_query));
+            counts[cell] = 0u;
+        }
+        return;
+    }
+    if (qb == qe) {
+        if (threadIdx.x == 0u) counts[cell] = 0u;
+        return;
+    }
+    if (qe - qb == 1u) {
+        if (threadIdx.x == 0u) {
+            const auto query = queries[qb];
+            if (query.reserved != 0u) {
+                atomicCAS(&status->code, 0u,
+                    static_cast<std::uint32_t>(cuda_posting_code_v1::invalid_query));
+                counts[cell] = 0u;
+            } else if (cursors[qb].end < cursors[qb].position
+                || cursors[qb].end > index.item_count) {
+                atomicCAS(&status->code, 0u,
+                    static_cast<std::uint32_t>(cuda_posting_code_v1::invalid_query));
+                counts[cell] = 0u;
+            } else {
+                const auto cursor = cursors[qb];
+                cursors[qb].output_offset = 0u;
+                cursors[qb].row_mode = 1u;
+                cursors[qb].reserved = 0u;
+                counts[cell] = cursor.end - cursor.position;
+            }
+        }
+    } else {
+        if (threadIdx.x == 0u) eligible = 1u;
+        __syncthreads();
+        if (threadIdx.x == 0u
+            && qe - qb > posting_query_threads * posting_scan_items_per_thread)
+            eligible = 0u;
+        __syncthreads();
+        std::uint64_t local_lengths[posting_scan_items_per_thread]{};
+        std::uint64_t local_sum = 0u;
+        for (unsigned item = 0u; item < posting_scan_items_per_thread; ++item) {
+            const auto qi = qb
+                + static_cast<std::uint64_t>(threadIdx.x)
+                    * posting_scan_items_per_thread + item;
+            if (qi >= qe) break;
+            const auto query = queries[qi];
+            const auto cursor = cursors[qi];
+            if (query.reserved != 0u || cursor.end <= cursor.position
+                || cursor.end > index.item_count) {
+                atomicExch(&eligible, 0u);
+                continue;
+            }
+            if (qi != qb) {
+                const auto previous = queries[qi - 1u];
+                const auto previous_cursor = cursors[qi - 1u];
+                if (!term_less(previous, query)
+                    || previous_cursor.end <= previous_cursor.position
+                    || previous_cursor.end > index.item_count
+                    || index.items[previous_cursor.end - 1u].logical_edge_id
+                        >= index.items[cursor.position].logical_edge_id)
+                    atomicExch(&eligible, 0u);
+            }
+            const auto length = cursor.end - cursor.position;
+            local_lengths[item] = length;
+            local_sum += length;
+        }
+        std::uint64_t thread_prefix = 0u, aggregate = 0u;
+        block_scan(scan_storage).ExclusiveSum(local_sum, thread_prefix, aggregate);
+        __syncthreads();
+        if (eligible != 0u) {
+            auto prefix = thread_prefix;
+            for (unsigned item = 0u; item < posting_scan_items_per_thread; ++item) {
+                const auto qi = qb
+                    + static_cast<std::uint64_t>(threadIdx.x)
+                        * posting_scan_items_per_thread + item;
+                if (qi >= qe) break;
+                cursors[qi].output_offset = prefix;
+                prefix += local_lengths[item];
+            }
+            if (threadIdx.x == 0u) {
+                cursors[qb].row_mode = 1u;
+                counts[cell] = aggregate;
+            }
+        } else if (threadIdx.x == 0u) {
+            cursors[qb].row_mode = 0u;
+            merge_cell(index, query_offsets, queries, cell, cursors, nullptr,
+                       counts + cell, status);
+        }
+    }
+    __syncthreads();
+    if (threadIdx.x == 0u && status->code == 0u)
         atomicAdd(reinterpret_cast<unsigned long long *>(&status->required),
                   static_cast<unsigned long long>(counts[cell]));
 }
@@ -152,32 +364,51 @@ __global__ void prepare_offsets_kernel(
     }
 }
 
+__device__ std::uint64_t query_cell_for_index(
+    const std::uint64_t *query_offsets, std::uint64_t cells,
+    std::uint64_t query_index) {
+    std::uint64_t lo = 0u, hi = cells;
+    while (lo < hi) {
+        const auto mid = lo + (hi - lo) / 2u;
+        if (query_offsets[mid + 1u] <= query_index) lo = mid + 1u;
+        else hi = mid;
+    }
+    return lo;
+}
+
 __global__ void query_scatter_kernel(
     cuda_reverse_posting_view_v1 index, std::uint64_t cells,
     const std::uint64_t *query_offsets, const posting_term_v1 *queries,
+    std::uint64_t query_count,
     cuda_posting_scratch_v1::cursor_v1 *cursors,
     const std::uint64_t *counts, cuda_posting_output_v1 output,
     cuda_posting_status_v1 *status) {
     if (status->code != 0) return;
-    const auto cell = static_cast<std::uint64_t>(blockIdx.x);
+    const auto qi = static_cast<std::uint64_t>(blockIdx.x);
+    if (qi >= query_count) return;
+    const auto cell = query_cell_for_index(query_offsets, cells, qi);
     if (cell >= cells) return;
     const auto qb = query_offsets[cell], qe = query_offsets[cell + 1];
-    if (qb <= qe && qe - qb == 1u) {
-        const auto cursor = cursors[qb];
+    if (qb >= qe || qi < qb || qi >= qe) return;
+    if (cursors[qb].row_mode != 0u) {
+        const auto cursor = cursors[qi];
         const auto expected = counts[cell];
-        if (cursor.end < cursor.position || cursor.end - cursor.position != expected) {
+        if (cursor.end < cursor.position
+            || cursor.output_offset > expected
+            || cursor.end - cursor.position > expected - cursor.output_offset) {
             if (threadIdx.x == 0)
                 atomicCAS(&status->code, 0u,
                           static_cast<std::uint32_t>(cuda_posting_code_v1::invalid_query));
             return;
         }
-        if (output.items == nullptr || expected == 0u) return;
-        auto *destination = output.items + output.offsets[cell];
-        for (std::uint64_t i = threadIdx.x; i < expected; i += blockDim.x)
+        const auto length = cursor.end - cursor.position;
+        if (output.items == nullptr || length == 0u) return;
+        auto *destination = output.items + output.offsets[cell] + cursor.output_offset;
+        for (std::uint64_t i = threadIdx.x; i < length; i += blockDim.x)
             destination[i] = index.items[cursor.position + i];
         return;
     }
-    if (threadIdx.x != 0) return;
+    if (qi != qb || threadIdx.x != 0) return;
     std::uint64_t written = 0;
     merge_cell(index, query_offsets, queries, cell, cursors,
         output.items == nullptr ? nullptr : output.items + output.offsets[cell],
@@ -258,22 +489,39 @@ cudaError_t cuda_query_reverse_postings_any_v1(
         || (output.item_capacity && output.items == nullptr)
         || (cells && output.offsets == nullptr))
         return cudaErrorInvalidValue;
-    if (cells > std::numeric_limits<unsigned>::max()) return cudaErrorInvalidValue;
+    if (cells > std::numeric_limits<unsigned>::max()
+        || query_count > std::numeric_limits<unsigned>::max())
+        return cudaErrorInvalidValue;
 
     clear_status<<<1, 1, 0, stream>>>(scratch.status);
     auto err = cudaGetLastError();
     if (err != cudaSuccess || cells == 0) return err;
-    query_counts_kernel<<<static_cast<unsigned>(cells), 1, 0, stream>>>(
-        index, cells, query_offsets, queries, scratch.cursors,
-        scratch.counts, scratch.status);
+    if (query_count > cells) {
+        const auto lookup_blocks = static_cast<unsigned>(
+            (query_count + posting_query_threads - 1u) / posting_query_threads);
+        query_term_lookup_kernel<<<lookup_blocks, posting_query_threads, 0, stream>>>(
+            index, queries, query_count, scratch.cursors, scratch.status);
+        err = cudaGetLastError();
+        if (err != cudaSuccess) return err;
+    }
+    if (query_count > cells) {
+        query_counts_parallel_rows_kernel<<<static_cast<unsigned>(cells),
+            posting_query_threads, 0, stream>>>(index, cells, query_offsets,
+            queries, query_count, scratch.cursors, scratch.counts, scratch.status);
+    } else {
+        query_counts_kernel<<<static_cast<unsigned>(cells), 1, 0, stream>>>(
+            index, cells, query_offsets, queries, query_count, scratch.cursors,
+            scratch.counts, scratch.status);
+    }
     err = cudaGetLastError();
     if (err != cudaSuccess) return err;
     prepare_offsets_kernel<<<1, 1, 0, stream>>>(
         cells, output, scratch.counts, scratch.status);
     err = cudaGetLastError();
     if (err != cudaSuccess) return err;
-    query_scatter_kernel<<<static_cast<unsigned>(cells), posting_scatter_threads, 0, stream>>>(
-        index, cells, query_offsets, queries, scratch.cursors,
+    if (query_count == 0u) return cudaSuccess;
+    query_scatter_kernel<<<static_cast<unsigned>(query_count), posting_scatter_threads, 0, stream>>>(
+        index, cells, query_offsets, queries, query_count, scratch.cursors,
         scratch.counts, output, scratch.status);
     return cudaGetLastError();
 }

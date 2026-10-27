@@ -171,3 +171,14 @@ cuda_profile*.log
 !bench/sparse_support/evidence/*.jsonl
 !bench/sparse_support/evidence/*.md
 !bench/sparse_support/evidence/*.txt
+
+# Reproducible large inputs and built experiment artifacts stay local; retain
+# their manifests, hashes, generators, and checkpoint notes in Git.
+/bench/sparse_support/**/*.bin
+/bench/sparse_support/**/*.cegeo
+/bench/sparse_support/**/prepared_images/prepared_images.json
+/bench/sparse_support/**/cellerator_sparse_support_cuda_indexing_bench
+/bench/sparse_support/**/geometry_image_probe
+/bench/sparse_support/**/validator_differential_probe
+/bench/sparse_support/**/validator_scaling_probe
+/bench/sparse_support/**/scaled_condition_probe

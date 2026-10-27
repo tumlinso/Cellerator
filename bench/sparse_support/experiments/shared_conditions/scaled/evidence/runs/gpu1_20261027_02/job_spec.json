@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "owner_id": "cellerator",
+  "idempotency_key": "cellerator-scaled-condition-dag-probe-gpu1-20261027-v2",
+  "argv": [
+    "/bin/bash",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/shared_conditions/scaled/evidence/runs/gpu1_20261027_02/run_gpu_probe.sh"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+    "CELLERATOR_CONDITION_RUN_DIR": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/shared_conditions/scaled/evidence/runs/gpu1_20261027_02",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "resources": [
+    {
+      "schema_version": 1,
+      "kind": "gpu",
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+      },
+      "quantities": {
+        "memory_bytes": 2147483648
+      },
+      "mode": "exclusive",
+      "same_host": true,
+      "topology_constraints": {}
+    }
+  ],
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "kda.experiment",
+    "cellerator.sparse_support.shared_conditions"
+  ],
+  "priority": 50,
+  "priority_class": "normal",
+  "timeout_seconds": 900,
+  "max_attempts": 1,
+  "interruption": {
+    "cancellation_supported": true,
+    "checkpoint_supported": false,
+    "cooperative_yield": false,
+    "restart_safe": false
+  }
+}

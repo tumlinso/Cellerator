@@ -1,0 +1,51 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python3",
+    "/home/tumlinson/Cellerator/bench/sparse_support/run_scaled_sparse_native_baseline.py"
+  ],
+  "environment": {
+    "CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED": "1",
+    "MKL_NUM_THREADS": "2",
+    "OMP_NUM_THREADS": "2",
+    "PATH": "/home/tumlinson/Software/miniconda3/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/usr/local/bin:/usr/bin:/bin",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "idempotency_key": "cellerator-scaled-sparse-native-baseline-20261027-gpu2",
+  "interruption": {
+    "cancellation_supported": true,
+    "restart_safe": true
+  },
+  "max_attempts": 1,
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "parameters": {
+        "consecutive_samples": 3,
+        "interval_seconds": 1,
+        "max_utilization_percent": 0,
+        "timeout_seconds": 60
+      },
+      "schema_version": 1
+    }
+  ],
+  "resources": [
+    {
+      "kind": "gpu",
+      "mode": "exclusive",
+      "quantities": {
+        "memory_bytes": 4294967296
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      }
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator.sparse_support.indexing",
+    "scaled.fixture.v3",
+    "frozen.serial_postings_baseline"
+  ],
+  "timeout_seconds": 1800,
+  "working_directory": "/home/tumlinson/Cellerator"
+}

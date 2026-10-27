@@ -27,6 +27,10 @@ Device Scheduler job; the commands below describe CPU-only work.
 
 ## Host indexing benchmark
 
+Deterministic small and scaled support/query/event fixtures, including the raw
+little-endian bundle schema shared by host and accelerator harnesses, are
+documented in [scaled_fixtures.md](scaled_fixtures.md).
+
 `cellerator_sparse_support_indexing_bench` compares the production CPU
 full-rescan, reverse-posting, condition-bitmap, dirty-update, and candidate
 workset paths on deterministic base-plus-delta support fixtures. Each record

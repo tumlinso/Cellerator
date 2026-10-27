@@ -1,0 +1,48 @@
+{
+  "binary": {
+    "path": "bench/sparse_support/experiments/shared_conditions/scaled/evidence/runs/gpu1_20261027_01/scaled_condition_probe",
+    "sha256": "413097033601729161ee2d954aff649d0d857082f44af4523ea47cbeedfd9d14",
+    "size_bytes": 783888
+  },
+  "compile": {
+    "build_dir": "/tmp/cellerator-scaled-cond-build129",
+    "cmake_cuda_compiler": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "cmake_cxx_compiler": "/usr/bin/g++-12",
+    "cmake_source": "bench/sparse_support/experiments/shared_conditions/scaled",
+    "cuda_architecture": "70",
+    "cuda_host_compiler": "/usr/bin/g++-12"
+  },
+  "fixture_generators": {
+    "v2_frozen_generator_sha256": "a17c73f2f1e9e8d10e9c73abf4599f6a0df21b86812d59d8665cb6ee13eeee89",
+    "v3_frozen_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b"
+  },
+  "git_head": "4452dc117ad4b5240602d754506431f5f859d5f0",
+  "inputs": {
+    "v2/large-events": {
+      "manifest_sha256": "31cd6f8dc0be56172ea3e7db66e1ce20605fa0b56deda898893a2c285a34d9ae",
+      "provenance_sha256": "28dfd51eea436eee8def250f18d1599de8640f4e6be60d0fbf904a4e7cb34196"
+    },
+    "v2/small": {
+      "manifest_sha256": "41bc9d6d5eed6f1255bb7b6f63700f42887096865393c1938c66f39d27ef38f6",
+      "provenance_sha256": "28dfd51eea436eee8def250f18d1599de8640f4e6be60d0fbf904a4e7cb34196"
+    },
+    "v3/large-ranked": {
+      "manifest_sha256": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32",
+      "provenance_sha256": "c2cfa7e61c4debcef10bf8b0995bad3a2efc22e6d5582647e5225997d8d412f4"
+    }
+  },
+  "source_sha256": {
+    "bench/sparse_support/experiments/shared_conditions/scaled/CMakeLists.txt": "629a090a522c57660d01805996baad1ad12fe3d9ec82a240e4a3e008a3fea7ff",
+    "bench/sparse_support/experiments/shared_conditions/scaled/run_gpu_probe.sh": "979a628d58281b58132f3a7822e27f58b69ad4c0a0f0da2b88299988846cbdba",
+    "bench/sparse_support/experiments/shared_conditions/scaled/scaled_condition_probe.cu": "8432dcaf7dff4cfe887e39c74e34dbe6e399cb3483eba6a085e4ae370f798d1f",
+    "include/Cellerator/compute/gating/condition_program.hh": "e2f85182ef3d9cf5f356c2282ba151041e85f0d897d6b6ecdde95e21ae45dc56",
+    "include/Cellerator/compute/gating/cuda_worksets.cuh": "5788db91a789e137d8033b3d87cddb92abee4ad01d989df284bcb467cf164c71",
+    "src/compute/gating/condition_program.cc": "e31a6912ffba2fdb381e1fc99806d6efa6783581d111ada53215125891d5027c",
+    "src/compute/gating/cuda_worksets.cu": "d8ccb3c4f53726f30dc831a0d188913f6e8e86754a3563dd9f3cd922ac7dbd30"
+  },
+  "toolchain": {
+    "compute_sanitizer": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "gxx_version": "12.4.0",
+    "nvcc_version": "12.9.86"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "attempt_id": "0d4b187b-c2eb-4721-af11-73cdd44bc518",
+  "attempt_state": "succeeded",
+  "binary_sha256": "75862a08112973d66fc7dd78a3e1bd5544ae776baa15ca370f1047d1a24e92ec",
+  "candidate_source_sha256": "4a407ff064e1c46cd9cd461e348f24b0e318eaf0dc885a739f87fca2ecd736b8",
+  "case": "q32_unique",
+  "cleanup_verified": true,
+  "command": [
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "--tool",
+    "memcheck",
+    "--error-exitcode",
+    "99",
+    "/tmp/cellerator_csr_union_bitmap_build/csr_union_bitmap_bench",
+    "--input-root",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/csr_union_bitmap/input/large-retrieval-a17c73f2",
+    "--case",
+    "q32_unique",
+    "--warmups",
+    "0",
+    "--samples",
+    "3"
+  ],
+  "exit_code": 0,
+  "input_manifest_sha256": "3e433776b818916bb8650b9ef71a09cef5c8dccb6e9b55e39ac9052d5c9a7091",
+  "job_id": "c2b8bb5c-514b-4c33-8f2f-f82d3ed7fecf",
+  "job_state": "succeeded",
+  "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "scheduler_logs_receipt_sha256": "cb1068d5ccc04719d203e746a9ac56c146f8f1b9ef6429d9870edaae42fd55ec",
+  "scheduler_terminal_receipt_sha256": "56ffe453209e7764ac0582409c859d83f8d342e051996d5293799e93a8d44fd3",
+  "schema": "cellerator.csr_union_bitmap_memcheck.v1"
+}

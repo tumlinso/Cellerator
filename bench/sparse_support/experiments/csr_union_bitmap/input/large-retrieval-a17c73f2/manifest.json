@@ -1,0 +1,928 @@
+{
+  "fixture_generation_ms": 2860.3808429979836,
+  "fixture_metadata": {
+    "array_bytes": 153838960,
+    "cell_query_candidate_counts": [
+      934,
+      934,
+      934,
+      934,
+      934,
+      934,
+      934,
+      934,
+      2280,
+      2280,
+      2280,
+      2280,
+      2280,
+      2280,
+      2280,
+      2280,
+      1111,
+      1111,
+      1111,
+      1111,
+      1111,
+      1111,
+      1111,
+      1111,
+      1363,
+      1363,
+      1363,
+      1363,
+      1363,
+      1363,
+      1363,
+      1363
+    ],
+    "cell_state_values_independent": true,
+    "cells": 32,
+    "cohort_support_reuse_fraction": 1.0,
+    "cross_module_edge_count": 480216,
+    "dense_cell_edge_state_bytes_if_materialized": 32000000,
+    "dense_entity_affinity_bytes_if_materialized": 1600000000,
+    "duplicate_directed_endpoint_pairs": 0,
+    "edge_predicate_participants_per_edge": 2,
+    "edges": 1000000,
+    "entities": 20000,
+    "event_occurrences": 2048,
+    "event_unique_edge_fraction": 0.48583984375,
+    "event_window_query_occurrences": 1627,
+    "event_window_query_occurrences_per_window": [
+      25,
+      25,
+      27,
+      22,
+      23,
+      24,
+      27,
+      21,
+      30,
+      26,
+      23,
+      25,
+      23,
+      27,
+      26,
+      25,
+      26,
+      23,
+      27,
+      27,
+      27,
+      24,
+      27,
+      23,
+      27,
+      28,
+      24,
+      23,
+      23,
+      24,
+      27,
+      26,
+      27,
+      27,
+      27,
+      29,
+      26,
+      28,
+      24,
+      26,
+      27,
+      25,
+      21,
+      25,
+      24,
+      23,
+      25,
+      29,
+      26,
+      29,
+      26,
+      25,
+      27,
+      28,
+      27,
+      25,
+      23,
+      24,
+      24,
+      24,
+      22,
+      26,
+      26,
+      27
+    ],
+    "event_window_unique_edge_count_per_cell": [
+      19,
+      23,
+      17,
+      23,
+      17,
+      19,
+      16,
+      15,
+      18,
+      16,
+      19,
+      24,
+      17,
+      19,
+      19,
+      15,
+      15,
+      12,
+      17,
+      18,
+      20,
+      18,
+      24,
+      21,
+      15,
+      18,
+      16,
+      18,
+      20,
+      19,
+      15,
+      15
+    ],
+    "events_per_cell": 64,
+    "latent_change_correlated_cohort_groups": 64,
+    "latent_change_count": 512,
+    "latent_change_edge_fanout_per_cell": [
+      63353,
+      63353,
+      63353,
+      63353,
+      63353,
+      63353,
+      63353,
+      63353,
+      57455,
+      57455,
+      57455,
+      57455,
+      57455,
+      57455,
+      57455,
+      57455,
+      59085,
+      59085,
+      59085,
+      59085,
+      59085,
+      59085,
+      59085,
+      59085,
+      66883,
+      66883,
+      66883,
+      66883,
+      66883,
+      66883,
+      66883,
+      66883
+    ],
+    "latent_changed_edge_fraction_per_cell_mean": 0.061694,
+    "layout": "identity",
+    "local_gene_change_count": 96,
+    "local_gene_change_edge_fanout_per_cell": [
+      70,
+      109,
+      75,
+      108,
+      75,
+      279,
+      116,
+      110,
+      562,
+      573,
+      130,
+      337,
+      646,
+      174,
+      95,
+      92,
+      107,
+      93,
+      68,
+      210,
+      60,
+      84,
+      262,
+      67,
+      86,
+      190,
+      59,
+      88,
+      278,
+      262,
+      202,
+      67
+    ],
+    "local_gene_changed_edge_fraction_per_cell_mean": 0.0001791875,
+    "max_source_degree_cap": 512,
+    "module_local_edge_count": 519784,
+    "module_local_edge_fraction": 0.519784,
+    "modules": 256,
+    "observed_gene_predicate_count": 20000,
+    "physical_layout_sha256": "145395e1cf3e94fae02f6e98b7af5f54cc997d70e759305df1c7ecb717939127",
+    "query_case_candidate_counts": [
+      46,
+      342,
+      159,
+      2716,
+      1959,
+      7020,
+      6916,
+      50065,
+      49973,
+      106033,
+      105834
+    ],
+    "query_case_names": [
+      "unique_1",
+      "unique_8",
+      "duplicate_8",
+      "unique_32",
+      "duplicate_32",
+      "unique_128",
+      "duplicate_128",
+      "unique_1024",
+      "duplicate_1024",
+      "unique_2048",
+      "duplicate_2048"
+    ],
+    "ranked_identity_and_position_separate": true,
+    "schema": "cellerator.scaled_sparse_fixture.v1",
+    "seed": 20261027,
+    "shared_latent_predicate_count": 256,
+    "source_degree": {
+      "histogram_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        14,
+        22,
+        134,
+        355,
+        1178,
+        1951,
+        2269,
+        2676,
+        2856,
+        1778,
+        1441,
+        1065,
+        1010,
+        696,
+        528,
+        458,
+        330,
+        250,
+        218,
+        153,
+        115,
+        118,
+        80,
+        61,
+        242
+      ],
+      "histogram_edges": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        14,
+        17,
+        20,
+        23,
+        27,
+        33,
+        39,
+        46,
+        54,
+        65,
+        77,
+        91,
+        108,
+        129,
+        153,
+        182,
+        216,
+        257,
+        305,
+        363,
+        432,
+        513
+      ],
+      "max": 512,
+      "one": 0,
+      "p50": 29,
+      "p90": 91,
+      "p99": 495,
+      "zero": 0
+    },
+    "source_role": 0,
+    "topology_sha256": "5ec1f6bbc958ba62112fcd26a88d4912e5812806bfe0617a1e3df7abc7582bc3",
+    "unique_directed_endpoint_pairs": 1000000
+  },
+  "generator": "bench/sparse_support/scaled_fixtures.py",
+  "generator_sha256": "a17c73f2f1e9e8d10e9c73abf4599f6a0df21b86812d59d8665cb6ee13eeee89",
+  "query_cases": {
+    "q1024_duplicate4": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 13093824,
+        "sha256": "4b0bd955add7b0755d21c80a183194a4851faad049ba95130418426c7f6ec4a1",
+        "shape": [
+          1636728
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "e60c05c4c747e0154efb83a2c5a9d6d3e8666b4c9f2c649717c3aeeb3df128d3",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "b28d1212fdf63d45a5823f66a0a65303eefd1f6a382b617072999c1370d54c2d",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 262144,
+        "sha256": "894c475cb40a9ec19f4770c3a397e8b453fd2e97eacdd4dba41561fa0a84a2e9",
+        "shape": [
+          32768
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "7190184066bfa01d71ffead55ad64ef80020aa155a3b073c4dd4c1a830981fc0",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "f821283837367aa0279fa2f1f260a7a7d08a0e66c727467352c048a09134229b",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q1024_unique": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 13138752,
+        "sha256": "dcb321ffc9d10e1ddfbbf8859e4844f299413c81c1188eff85d4936edf01b70d",
+        "shape": [
+          1642344
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "eb3d84a92d9641027abc2b0516ed3040253f632b50bd803c29f6ab0854fbeeac",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "b28d1212fdf63d45a5823f66a0a65303eefd1f6a382b617072999c1370d54c2d",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 262144,
+        "sha256": "d9d88c966e695a0d9fd55966402e918c409f71b9068a9dd8ad760136ffa3577d",
+        "shape": [
+          32768
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "0cc7d28e42199a7af81a3ba49d031a346af7e6e4e240ad4ecefd435f09478e99",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "0cc7d28e42199a7af81a3ba49d031a346af7e6e4e240ad4ecefd435f09478e99",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q128_duplicate4": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 1658280,
+        "sha256": "91ad7ddc469c69ef872b47ade14ff06b2527e1cce5cee287af9c8f4c6df6da89",
+        "shape": [
+          207285
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "66b6814fdd4776370329b4dbbd3b93d47863a2d0d335c5e9ec3f791701b2f1b8",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "fa79624e78d049858a240f29426435609857e25aecf8b5a1b7830402fa2b3c2b",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 32768,
+        "sha256": "18420671233c5dd882ac9f0ea917ff2b0560769bd9d42ac4420c509db071f450",
+        "shape": [
+          4096
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "42d3ac793638107ebe116e597ceeb9442acf325f2942d85bc70ba975e53bfaed",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "128dc286921de5092f8ea73e6e3266b97030146d9c7580eadfe9559d44078ac3",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q128_unique": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 1702216,
+        "sha256": "3a4fd1aab352332ce93ef81d9630776ba2ed5716ec020917445e2eb3e29a5fbb",
+        "shape": [
+          212777
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "0af498ace3764466567d4d5db9a97ca5a81786c22b3cae33e35be7fa3ec60824",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "fa79624e78d049858a240f29426435609857e25aecf8b5a1b7830402fa2b3c2b",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 32768,
+        "sha256": "2daf857ac5da7ac4f3e01ba334d75a1f57b50f0293fd484d7c02e99ff8aaa5a5",
+        "shape": [
+          4096
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "b45625779d056763bf0eadbe215b3b84d43dcc7e09408ed02aadff1f192a338a",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "b45625779d056763bf0eadbe215b3b84d43dcc7e09408ed02aadff1f192a338a",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q1_unique": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 5632,
+        "sha256": "23110747c02040c6e88bf4150fe7ab0bd6790201338436f147cd728a196575d3",
+        "shape": [
+          704
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "25b20b16150ad04c290001d59a4b46f65544cc3fbb7a7d7d5d0f43b8a4d9f2a9",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "4e8adfac993e338c03c60ea14fe73d9663ea5d66eac4c2a46125f5c8276bb96b",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 256,
+        "sha256": "595036a82ea1c7f917625bf09c9d018156a0875893872e903c51484455b3062b",
+        "shape": [
+          32
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "232fb84a0c2792bf54965e6141991f871bff975f7b893a76971346180d3ed266",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "232fb84a0c2792bf54965e6141991f871bff975f7b893a76971346180d3ed266",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q2048_duplicate4": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 26252560,
+        "sha256": "c23c7556cceac89dd8d8cd9465bc57f03dd21362cedde0c7c41a4cce78ad3174",
+        "shape": [
+          3281570
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "0064f6431169b66a7fff5c1a2670e8c9ce835b3cf7553617ca3efc8f18373be1",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "5872aa8d46927b4591a6a6b639b1a5fd0c5ac6e417f002f0b9c19ea1ac295d4d",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 524288,
+        "sha256": "bca89a96957bf4179fec9d906f136c6c5ad2276b56ee46f9b61a91987c76110c",
+        "shape": [
+          65536
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "d7aff7bf2ca36784ea6f5fb894abf8ba2e5e647ad22423473fbc29de029c1101",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "97505563acf9a5c573823745648d7bcc1b9cb0ca6274d711663c8a53e7a77377",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q2048_unique": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 26298096,
+        "sha256": "bcc40c05971ed33b5b84f3260fc60bee43a19c8e36ce27769bfbfc0daf08b3c9",
+        "shape": [
+          3287262
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "36aad189a26a7bd2e2171b6cb71fbd56c6c4946295f8c3da6dd2e7078e783cdd",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "5872aa8d46927b4591a6a6b639b1a5fd0c5ac6e417f002f0b9c19ea1ac295d4d",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 524288,
+        "sha256": "141d7a676b767a2066ce2e947023761ddb0dc63f2569578998e347a72f99b9fa",
+        "shape": [
+          65536
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "6ce9e86d2419fa5257d91e518c00f56d0869f286924f489e84fb3cd658b80fdb",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "6ce9e86d2419fa5257d91e518c00f56d0869f286924f489e84fb3cd658b80fdb",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q32_duplicate4": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 415864,
+        "sha256": "eab219ba166a2569a77e2403aa529d9661402b227391032db2afac889a42185c",
+        "shape": [
+          51983
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "b423252a7f25bfbac15ece2f5dac817905e9a12ee66fac63adbaafe1b9f30c37",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "7237dd33ec723a0b7c3a145667145a88558e46f477b63fdfcb865e6c7dcd6938",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 8192,
+        "sha256": "e228516060890ba0ccf1b88ab0554eda347a63b7bb0f7551289fa7412caa18eb",
+        "shape": [
+          1024
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "d5ec2a7a5b18b371c075a570887cb246350e1007c1e0824ee42497033da50f8c",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "76c39c0392b6ffd330c556cb198e21440bdfe454067756dff20ebc06364f480b",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q32_unique": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 458920,
+        "sha256": "924b79b11133cb637b87bd9fbfb1ba218ed5fc854e8cda723869c13458ed6c02",
+        "shape": [
+          57365
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "a070cd72b230be2deb9fcf32074019b77084b0caba6f4330ce894985ef1f1997",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "7237dd33ec723a0b7c3a145667145a88558e46f477b63fdfcb865e6c7dcd6938",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 8192,
+        "sha256": "d340cf42b0b05a13c0d7482c286aff2edda0a9b0a7711f322eeba45400df7307",
+        "shape": [
+          1024
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "33c95dcd949cf01f8c690f92927be1c642eae2dc542c9366d534c64e8aa4f51a",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "33c95dcd949cf01f8c690f92927be1c642eae2dc542c9366d534c64e8aa4f51a",
+        "shape": [
+          32
+        ]
+      }
+    }
+  },
+  "query_preparation_ms": 441.73614300234476,
+  "schema": "cellerator.csr_union_bitmap_fixture.v1",
+  "support_arrays": {
+    "cell_query_entities": {
+      "dtype": "<i8",
+      "file": "cell_query_entities.bin",
+      "nbytes": 6144,
+      "sha256": "91f0c3431c1997d2908bb6293877794f5a0b0f8530179186e6c0b7b133045f6c",
+      "shape": [
+        768
+      ]
+    },
+    "cell_query_indptr": {
+      "dtype": "<i8",
+      "file": "cell_query_indptr.bin",
+      "nbytes": 264,
+      "sha256": "4f5f9631ec769f2ff4b6fb46209136265e3a7ced3121a2a6adae2c03f25675fe",
+      "shape": [
+        33
+      ]
+    },
+    "logical_edge_id": {
+      "dtype": "<i8",
+      "file": "logical_edge_id.bin",
+      "nbytes": 8000000,
+      "sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+      "shape": [
+        1000000
+      ]
+    },
+    "participant_entity_id": {
+      "dtype": "<i8",
+      "file": "participant_entity_id.bin",
+      "nbytes": 8000000,
+      "sha256": "3f14188bf1de490033991d3ed74edcdc2a13be66f087a5c428081f3c96c5acc0",
+      "shape": [
+        1000000
+      ]
+    },
+    "physical_to_logical_ordinal": {
+      "dtype": "<i8",
+      "file": "physical_to_logical_ordinal.bin",
+      "nbytes": 8000000,
+      "sha256": "6f8f1531c1170336132e3a5cf9fde98aa28840393edd4387ab4d7c7e743586fb",
+      "shape": [
+        1000000
+      ]
+    },
+    "source_edge_indptr": {
+      "dtype": "<i8",
+      "file": "source_edge_indptr.bin",
+      "nbytes": 160008,
+      "sha256": "dcb32369d3e44a119a95f8b08e9a976e1b80a19a6a9a0838b163a69393aa4808",
+      "shape": [
+        20001
+      ]
+    },
+    "source_edge_ordinals": {
+      "dtype": "<i8",
+      "file": "source_edge_ordinals.bin",
+      "nbytes": 8000000,
+      "sha256": "6f8f1531c1170336132e3a5cf9fde98aa28840393edd4387ab4d7c7e743586fb",
+      "shape": [
+        1000000
+      ]
+    },
+    "source_entity_id": {
+      "dtype": "<i8",
+      "file": "source_entity_id.bin",
+      "nbytes": 8000000,
+      "sha256": "0913c4fd0ddb53909bed2744f15ac66aa353948adc9d2991d9e5f648130d4cba",
+      "shape": [
+        1000000
+      ]
+    }
+  }
+}

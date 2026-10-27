@@ -72,7 +72,14 @@ struct cuda_posting_output_v1 {
 struct cuda_posting_scratch_v1 {
     // One cursor pair per input query term; query offsets partition these
     // entries by cell. counts has one entry per cell.
-    struct cursor_v1 { std::uint64_t position, end; };
+    struct cursor_v1 {
+        std::uint64_t position, end;
+        // Row-relative destination prefix for the verified concatenation
+        // path. Only the first cursor's mode is read for a query row.
+        std::uint64_t output_offset;
+        std::uint32_t row_mode;
+        std::uint32_t reserved;
+    };
     cursor_v1 *cursors = nullptr;
     std::uint64_t cursor_capacity = 0u;
     std::uint64_t *counts = nullptr;

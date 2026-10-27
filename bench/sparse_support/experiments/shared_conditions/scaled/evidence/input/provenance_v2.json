@@ -1,0 +1,296 @@
+{
+  "bundle_root": "/tmp/cellerator_scaled_sparse_fixtures_a17c73f2",
+  "generator_sha256_at_v2_freeze": "a17c73f2f1e9e8d10e9c73abf4599f6a0df21b86812d59d8665cb6ee13eeee89",
+  "live_generator_sha256_not_used": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+  "fixtures": {
+    "small": {
+      "manifest_sha256": "41bc9d6d5eed6f1255bb7b6f63700f42887096865393c1938c66f39d27ef38f6",
+      "metadata": {
+        "entities": 64,
+        "modules": 8,
+        "edges": 96,
+        "cells": 8,
+        "observed_gene_predicate_count": 64,
+        "shared_latent_predicate_count": 8,
+        "edge_predicate_participants_per_edge": 2,
+        "local_gene_change_count": 24,
+        "latent_change_count": 8,
+        "local_gene_changed_edge_fraction_per_cell_mean": 0.03776041666666667,
+        "latent_changed_edge_fraction_per_cell_mean": 0.109375,
+        "max_source_degree_cap": 63,
+        "topology_sha256": "3755cf50273d5a8012cf036058f8c3ab77ded7bcc72f20254369e775d10b3b3b",
+        "physical_layout_sha256": "332a1b185b29fd001cbd21cfa87276559d8be88596dfcc93cc83bba1af22a9f7",
+        "array_bytes": 35535
+      },
+      "selected_arrays": {
+        "edge_ids": {
+          "file": "edge_ids.bin",
+          "sha256": "8f54b923aa16e7ebcac7413657941295eea299d788cb16cce1c6cd06134349db",
+          "nbytes": 768
+        },
+        "edge_ordinal": {
+          "file": "edge_ordinal.bin",
+          "sha256": "89bec042b172bd3f39b6cc1b73dc1d6529d1510473e799fe9777b3aaacca8e65",
+          "nbytes": 768
+        },
+        "edge_condition_indptr": {
+          "file": "edge_condition_indptr.bin",
+          "sha256": "d082ee653a8cda07de628a3898097c6cb70e21f1f695ae2b73e467d7d66dcdb5",
+          "nbytes": 776
+        },
+        "edge_condition_predicate_id": {
+          "file": "edge_condition_predicate_id.bin",
+          "sha256": "18a843b99c4f13c1d6af4dddc12a7983a849b76b5a74ce2456a9f798a93dafb6",
+          "nbytes": 1536
+        },
+        "cell_observed_predicate_offsets": {
+          "file": "cell_observed_predicate_offsets.bin",
+          "sha256": "d203a0a1fff28048849567a2513ad6eb08d57d48f9e2c069b0bf05b2708c2139",
+          "nbytes": 72
+        },
+        "cell_observed_predicate_ids": {
+          "file": "cell_observed_predicate_ids.bin",
+          "sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+          "nbytes": 1536
+        },
+        "cell_observed_predicate_values": {
+          "file": "cell_observed_predicate_values.bin",
+          "sha256": "ef758728710a496ffc93f8b0424c7b2f728fbee193eda67bf69384094c8a1abd",
+          "nbytes": 192
+        },
+        "gate_initial_state": {
+          "file": "gate_initial_state.bin",
+          "sha256": "2ca5a74401895c17dd7462672e109fd72cdac62f40256ca40bd659b17e2939bb",
+          "nbytes": 64
+        },
+        "local_gene_change_cell_id": {
+          "file": "local_gene_change_cell_id.bin",
+          "sha256": "cbe58061bcaa87a81adeb61e9db89492612b7216fe1d993552f1e0240575acff",
+          "nbytes": 96
+        },
+        "local_gene_change_gene_id": {
+          "file": "local_gene_change_gene_id.bin",
+          "sha256": "bb8037574c0de72b6f3267c267b28e641d228b8e3f568450504c109ab0c4f69c",
+          "nbytes": 192
+        },
+        "local_gene_change_value": {
+          "file": "local_gene_change_value.bin",
+          "sha256": "1e7ea71dea811eae2bd045efec10b6a55a12556bd1e711a0fe94420f1b32934c",
+          "nbytes": 24
+        },
+        "local_gene_change_edge_fanout": {
+          "file": "local_gene_change_edge_fanout.bin",
+          "sha256": "94318b626a273bb5e1acb7058399330424cef91c231fd80fae7bf533c22c8c89",
+          "nbytes": 64
+        },
+        "gate_change_cell_id": {
+          "file": "gate_change_cell_id.bin",
+          "sha256": "ff1f6ee5d67458cfac950f62e93042e21fcb867e2234dcc8721801231064ad40",
+          "nbytes": 32
+        },
+        "gate_change_predicate_id": {
+          "file": "gate_change_predicate_id.bin",
+          "sha256": "b0da5b1bd2e6f3d76a2e9cc5e7ac9abba91737dd877305d6e06e252d024e40ef",
+          "nbytes": 32
+        },
+        "gate_change_value": {
+          "file": "gate_change_value.bin",
+          "sha256": "9d523143304148a2b2d887da817f10830e37f50d7689ca5a9e69f10d7b2eb31f",
+          "nbytes": 8
+        },
+        "latent_change_edge_fanout": {
+          "file": "latent_change_edge_fanout.bin",
+          "sha256": "7bcd7a1953c4012e108254a37d07eddae392be1df389fd2c243e4453ccf25b92",
+          "nbytes": 64
+        },
+        "event_offsets": {
+          "file": "event_offsets.bin",
+          "sha256": "1314d05c2cc269d6eb0fb263c25d24ea2cbfb417a9a0210b6c26eeeb30f8caff",
+          "nbytes": 72
+        },
+        "event_entity_ids": {
+          "file": "event_entity_ids.bin",
+          "sha256": "0cf7a274207789d4cd2a8d2fa658ef4c32d96e71a831f0caa37a452c4a4abe77",
+          "nbytes": 1024
+        },
+        "event_ordinals": {
+          "file": "event_ordinals.bin",
+          "sha256": "d9c57b6ce27f95f1f4417b94dde0be7c5495b1f7d4d616c21784f92ec93a16c0",
+          "nbytes": 512
+        },
+        "event_timestamp": {
+          "file": "event_timestamp.bin",
+          "sha256": "59a467c22d0e70835326a0446d3331da7ce8c63e595c3a89540ced3ae1bc52e5",
+          "nbytes": 1024
+        },
+        "event_window_query_indptr": {
+          "file": "event_window_query_indptr.bin",
+          "sha256": "9b8678939cc3d95ca5325637e5866b116b46e34c1722d036af4872b1c9c9691e",
+          "nbytes": 136
+        },
+        "event_window_query_indices": {
+          "file": "event_window_query_indices.bin",
+          "sha256": "8b8c71ba6ac4e00a80a6e8c2c67999d8446930c07094719ee2ef3df3aad917b6",
+          "nbytes": 856
+        },
+        "event_window_query_edge_ids": {
+          "file": "event_window_query_edge_ids.bin",
+          "sha256": "41429d32a1a07c238a15c97bed65d8b48e7130776f2ee6fc4a1fa18bf7df2f49",
+          "nbytes": 856
+        },
+        "event_window_unique_edge_count": {
+          "file": "event_window_unique_edge_count.bin",
+          "sha256": "7a760d9de2c5df9ea3abe6b28f5b475bfcafb392a32bc7cffff9e4ff237354b4",
+          "nbytes": 64
+        }
+      }
+    },
+    "large-events": {
+      "manifest_sha256": "31cd6f8dc0be56172ea3e7db66e1ce20605fa0b56deda898893a2c285a34d9ae",
+      "metadata": {
+        "entities": 20000,
+        "modules": 256,
+        "edges": 1280000,
+        "cells": 8,
+        "observed_gene_predicate_count": 20000,
+        "shared_latent_predicate_count": 256,
+        "edge_predicate_participants_per_edge": 2,
+        "local_gene_change_count": 24,
+        "latent_change_count": 128,
+        "local_gene_changed_edge_fraction_per_cell_mean": 0.00014013671875,
+        "latent_changed_edge_fraction_per_cell_mean": 0.06269531249999999,
+        "max_source_degree_cap": 512,
+        "topology_sha256": "4d34d686656c0aa4bb1d89368993d9d31476ca568cd8b5d87f8231783efa9a38",
+        "physical_layout_sha256": "bacb74c790ac45bd3956bb0f211ffa3a92ecec532446a746478bd5b508f97dc1",
+        "array_bytes": 196675944
+      },
+      "selected_arrays": {
+        "edge_ids": {
+          "file": "edge_ids.bin",
+          "sha256": "df553ebd316dfa0f6e5c067886095dc65d6893f50ca4fbe7911df4d8bdec3fdb",
+          "nbytes": 10240000
+        },
+        "edge_ordinal": {
+          "file": "edge_ordinal.bin",
+          "sha256": "e69ecaafd3ecf1b2d01121cc37bfbc6ff9f8641081fe6180d9998bdffae8ceed",
+          "nbytes": 10240000
+        },
+        "edge_condition_indptr": {
+          "file": "edge_condition_indptr.bin",
+          "sha256": "60d5994112377f6225d3fd2671c6891b2d39bc4631bb14cd91a363e500c96eec",
+          "nbytes": 10240008
+        },
+        "edge_condition_predicate_id": {
+          "file": "edge_condition_predicate_id.bin",
+          "sha256": "a8447af7312117da2553f59a6a64c6f83a71a9f92c2a1d495dca648823f685b7",
+          "nbytes": 20480000
+        },
+        "cell_observed_predicate_offsets": {
+          "file": "cell_observed_predicate_offsets.bin",
+          "sha256": "d203a0a1fff28048849567a2513ad6eb08d57d48f9e2c069b0bf05b2708c2139",
+          "nbytes": 72
+        },
+        "cell_observed_predicate_ids": {
+          "file": "cell_observed_predicate_ids.bin",
+          "sha256": "0faba790761100331d4007afb516d87215553c0283d1a8bb4513d52730b9b89a",
+          "nbytes": 1536
+        },
+        "cell_observed_predicate_values": {
+          "file": "cell_observed_predicate_values.bin",
+          "sha256": "f1b770cd30e5df29a21f5dbe19d3d15cb610e3153f734d4b5dabc2623709c6dd",
+          "nbytes": 192
+        },
+        "gate_initial_state": {
+          "file": "gate_initial_state.bin",
+          "sha256": "5801519b94a7dbe28312e98142ea76c7e4aae6e62974edca0336ef8ba97edc8e",
+          "nbytes": 2048
+        },
+        "local_gene_change_cell_id": {
+          "file": "local_gene_change_cell_id.bin",
+          "sha256": "cbe58061bcaa87a81adeb61e9db89492612b7216fe1d993552f1e0240575acff",
+          "nbytes": 96
+        },
+        "local_gene_change_gene_id": {
+          "file": "local_gene_change_gene_id.bin",
+          "sha256": "f2389c2d0978c156646c28693e302e689f07be997518f5562abb1fda4216e620",
+          "nbytes": 192
+        },
+        "local_gene_change_value": {
+          "file": "local_gene_change_value.bin",
+          "sha256": "6a067be3774cf324f633bfbf623c5c428571a85b0ec6d6abc6cc92a859c2f221",
+          "nbytes": 24
+        },
+        "local_gene_change_edge_fanout": {
+          "file": "local_gene_change_edge_fanout.bin",
+          "sha256": "1ab44511824d7098f4505425b38d31e68c07da8781018f26e8b226d5b1beda5d",
+          "nbytes": 64
+        },
+        "gate_change_cell_id": {
+          "file": "gate_change_cell_id.bin",
+          "sha256": "1d83e8a9abaefaee6c42bf6ab6b2abc63e1bf5d901979aa06551daa73354fc55",
+          "nbytes": 512
+        },
+        "gate_change_predicate_id": {
+          "file": "gate_change_predicate_id.bin",
+          "sha256": "62543cc9434eda090e7cfd9bf55ca85c60a2ba2e00ce701471dac2565bd8c7ca",
+          "nbytes": 512
+        },
+        "gate_change_value": {
+          "file": "gate_change_value.bin",
+          "sha256": "442ce2bd3694cdec6f4baf6906c1150c3a0e832940e5aaccb12d4f5a1cf3f81e",
+          "nbytes": 128
+        },
+        "gate_change_group_id": {
+          "file": "gate_change_group_id.bin",
+          "sha256": "881682810d19644bb451764881623002a38933fd7525a78dc82751ec13257ae9",
+          "nbytes": 512
+        },
+        "latent_change_edge_fanout": {
+          "file": "latent_change_edge_fanout.bin",
+          "sha256": "e1fbd3e551a5e835bbcfb00f54bb639122113f9c802579c5473991e17fe9f791",
+          "nbytes": 64
+        },
+        "event_offsets": {
+          "file": "event_offsets.bin",
+          "sha256": "bf8553a6e34cfc06a7e6f4cb4872325d69dbe27e9424d588fe4eeaaf58798c94",
+          "nbytes": 72
+        },
+        "event_entity_ids": {
+          "file": "event_entity_ids.bin",
+          "sha256": "304bfdba9e1f7916a71a5c80eb109498a0e3a03f163999794c13741c0ec0d624",
+          "nbytes": 32768
+        },
+        "event_ordinals": {
+          "file": "event_ordinals.bin",
+          "sha256": "888194a9bae27a757ce83fc6198aa9581a49a7c07d06fd8131d9f346a25be9dd",
+          "nbytes": 16384
+        },
+        "event_timestamp": {
+          "file": "event_timestamp.bin",
+          "sha256": "f51b6f2277d7025cd030bb6dbcdce2c4dcbb91f43a048c09ec8fce14cf488062",
+          "nbytes": 32768
+        },
+        "event_window_query_indptr": {
+          "file": "event_window_query_indptr.bin",
+          "sha256": "b7ab015c84591b91f5495faa052958a6fe3660220400a445a109539364708dac",
+          "nbytes": 136
+        },
+        "event_window_query_indices": {
+          "file": "event_window_query_indices.bin",
+          "sha256": "ef18f0e4e31930b2a0133969e51eb75c6eb453ff336f1496ec19b74b3e59d9f0",
+          "nbytes": 25320
+        },
+        "event_window_query_edge_ids": {
+          "file": "event_window_query_edge_ids.bin",
+          "sha256": "5c7db2634eb07e59cfae41a4e53fbe28648702113c6e85b0bf9b399bbce1d9b8",
+          "nbytes": 25320
+        },
+        "event_window_unique_edge_count": {
+          "file": "event_window_unique_edge_count.bin",
+          "sha256": "6767fd09ac0c4079c1491e152fba8b5224111d02694912aecee4340a73d020ee",
+          "nbytes": 64
+        }
+      }
+    }
+  }
+}

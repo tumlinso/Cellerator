@@ -1,14 +1,33 @@
 #include <Cellerator/compute/projection/physical_mma_hybrid.hh>
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <limits>
+#include <vector>
 
 namespace cellerator::compute::projection {
 namespace {
 
 constexpr std::uint64_t image_alignment = 64u;
+
+struct index_interval {
+    std::uint64_t begin = 0u;
+    std::uint64_t end = 0u;
+};
+
+bool intervals_disjoint(std::vector<index_interval> &intervals) noexcept {
+    std::sort(intervals.begin(), intervals.end(),
+        [](const index_interval &left, const index_interval &right) {
+            return left.begin < right.begin
+                || (left.begin == right.begin && left.end < right.end);
+        });
+    for (std::size_t index = 1u; index < intervals.size(); ++index)
+        if (intervals[index - 1u].end > intervals[index].begin)
+            return false;
+    return true;
+}
 
 bool add_u64(std::uint64_t lhs, std::uint64_t rhs,
     std::uint64_t *out) noexcept {
@@ -117,251 +136,247 @@ bool validate_physical_mma_hybrid_image_v1(
     for (std::uint8_t value : header.reserved0)
         if (value != 0u) return false;
 
-    std::uint64_t ends[9]{};
-    std::uint64_t residual_row_count = header.residual_region_count;
-    std::uint64_t residual_column_count = 0u;
-    if (!section_range(header.source_group_offset, header.source_group_count,
-            sizeof(physical_group_v1), bytes, &ends[0])
-        || !section_range(header.destination_group_offset,
-            header.destination_group_count, sizeof(physical_group_v1), bytes,
-            &ends[1])
-        || !section_range(header.tile_offset, header.tile_count,
-            sizeof(mma_tile_v1), bytes, &ends[2])
-        || !section_range(header.compact_slot_offset, header.compact_slot_count,
-            sizeof(mma_compact_slot_v1), bytes, &ends[3])
-        || !section_range(header.residual_region_offset,
-            header.residual_region_count, sizeof(residual_region_v1), bytes,
-            &ends[4])
-        || !section_range(header.schedule_entry_offset,
-            header.schedule_entry_count, sizeof(projection_schedule_entry_v1),
-            bytes, &ends[7])
-        || !section_range(header.value_map_offset, header.value_map_count,
-            sizeof(projection_value_map_v1), bytes, &ends[8]))
-        return false;
+    try {
+        std::uint64_t ends[9]{};
+        std::uint64_t residual_row_count = header.residual_region_count;
+        std::uint64_t residual_column_count = 0u;
+        if (!section_range(header.source_group_offset, header.source_group_count,
+                sizeof(physical_group_v1), bytes, &ends[0])
+            || !section_range(header.destination_group_offset,
+                header.destination_group_count, sizeof(physical_group_v1), bytes,
+                &ends[1])
+            || !section_range(header.tile_offset, header.tile_count,
+                sizeof(mma_tile_v1), bytes, &ends[2])
+            || !section_range(header.compact_slot_offset, header.compact_slot_count,
+                sizeof(mma_compact_slot_v1), bytes, &ends[3])
+            || !section_range(header.residual_region_offset,
+                header.residual_region_count, sizeof(residual_region_v1), bytes,
+                &ends[4])
+            || !section_range(header.schedule_entry_offset,
+                header.schedule_entry_count, sizeof(projection_schedule_entry_v1),
+                bytes, &ends[7])
+            || !section_range(header.value_map_offset, header.value_map_count,
+                sizeof(projection_value_map_v1), bytes, &ends[8]))
+            return false;
 
-    for (std::uint32_t index = 0u; index < header.source_group_count; ++index) {
-        physical_group_v1 group{};
-        if (!read_record(image, header.source_group_offset, index, &group)
-            || group.group_id != index || group.semantic_component_id == 0u
-            || group.member_count == 0u
-            || group.member_count > mma_group_extent_limit_v1
-            || group.padded_count < group.member_count
-            || group.padded_count > mma_group_extent_limit_v1
-            || !zero_words(group.reserved, 3u))
-            return false;
-    }
-    for (std::uint32_t index = 0u; index < header.destination_group_count;
-        ++index) {
-        physical_group_v1 group{};
-        if (!read_record(image, header.destination_group_offset, index, &group)
-            || group.group_id != index || group.semantic_component_id == 0u
-            || group.member_count == 0u
-            || group.member_count > mma_group_extent_limit_v1
-            || group.padded_count < group.member_count
-            || group.padded_count > mma_group_extent_limit_v1
-            || !zero_words(group.reserved, 3u))
-            return false;
-    }
-
-    for (std::uint32_t index = 0u; index < header.tile_count; ++index) {
-        mma_tile_v1 tile{};
-        std::uint64_t slot_end = 0u;
-        if (!read_record(image, header.tile_offset, index, &tile)
-            || tile.tile_id != index || tile.semantic_component_id == 0u
-            || tile.source_group_index >= header.source_group_count
-            || tile.destination_group_index >= header.destination_group_count
-            || tile.compact_slot_count == 0u
-            || population_count(tile) != tile.compact_slot_count
-            || !add_u64(tile.compact_slot_offset, tile.compact_slot_count,
-                &slot_end)
-            || slot_end > header.compact_slot_count
-            || !zero_words(tile.reserved, 3u))
-            return false;
-        for (std::uint32_t local = 0u; local < tile.compact_slot_count; ++local) {
-            mma_compact_slot_v1 slot{};
-            if (!read_record(image, header.compact_slot_offset,
-                    tile.compact_slot_offset + local, &slot)
-                || slot.row >= mma_group_extent_limit_v1
-                || slot.column >= mma_group_extent_limit_v1
-                || slot.dense_slot != slot.row * mma_group_extent_limit_v1
-                    + slot.column
-                || !mma_occupancy_bit_v1(tile, slot.row, slot.column)
-                || slot.logical_edge_index >= header.value_map_count)
-                return false;
-            projection_value_map_v1 map{};
-            if (!read_record(image, header.value_map_offset,
-                    slot.logical_edge_index, &map)
-                || map.region_kind != physical_region_kind_v1::mma
-                || map.region_index != index
-                || map.projection_slot != slot.dense_slot)
+        for (std::uint32_t index = 0u; index < header.source_group_count; ++index) {
+            physical_group_v1 group{};
+            if (!read_record(image, header.source_group_offset, index, &group)
+                || group.group_id != index || group.semantic_component_id == 0u
+                || group.member_count == 0u
+                || group.member_count > mma_group_extent_limit_v1
+                || group.padded_count < group.member_count
+                || group.padded_count > mma_group_extent_limit_v1
+                || !zero_words(group.reserved, 3u))
                 return false;
         }
-    }
-
-    for (std::uint32_t index = 0u; index < header.residual_region_count;
-        ++index) {
-        residual_region_v1 residual{};
-        if (!read_record(image, header.residual_region_offset, index, &residual)
-            || residual.region_id != index || residual.semantic_component_id == 0u
-            || residual.encoding != residual_encoding_v1::row_owned_csr
-            || residual.destination_group_index >= header.destination_group_count
-            || residual.row_count == 0u || !zero_words(residual.reserved, 3u)
-            || !add_u64(residual_row_count, residual.row_count,
-                &residual_row_count)
-            || !add_u64(residual_column_count, residual.edge_count,
-                &residual_column_count))
-            return false;
-        for (std::uint8_t value : residual.reserved0)
-            if (value != 0u) return false;
-    }
-    if (!section_range(header.residual_row_offset_offset, residual_row_count,
-            sizeof(std::uint32_t), bytes, &ends[5])
-        || !section_range(header.residual_column_index_offset,
-            residual_column_count, sizeof(std::uint32_t), bytes, &ends[6]))
-        return false;
-    const std::uint64_t offsets[] = {header.source_group_offset,
-        header.destination_group_offset, header.tile_offset,
-        header.compact_slot_offset, header.residual_region_offset,
-        header.residual_row_offset_offset,
-        header.residual_column_index_offset, header.schedule_entry_offset,
-        header.value_map_offset};
-    for (std::size_t left = 0u; left < 9u; ++left) {
-        if (ends[left] == 0u) continue;
-        for (std::size_t right = 0u; right < left; ++right)
-            if (ends[right] != 0u && offsets[left] < ends[right]
-                && offsets[right] < ends[left])
-                return false;
-    }
-
-    for (std::uint32_t index = 0u; index < header.residual_region_count;
-        ++index) {
-        residual_region_v1 residual{};
-        physical_group_v1 destination{};
-        if (!read_record(image, header.residual_region_offset, index, &residual)
-            || !read_record(image, header.destination_group_offset,
-                residual.destination_group_index, &destination)
-            || residual.row_count > destination.padded_count)
-            return false;
-        std::uint64_t row_end = 0u;
-        std::uint64_t column_end = 0u;
-        std::uint64_t value_end = 0u;
-        if (!add_u64(residual.row_offset_index,
-                static_cast<std::uint64_t>(residual.row_count) + 1u, &row_end)
-            || row_end > residual_row_count
-            || !add_u64(residual.column_index_offset, residual.edge_count,
-                &column_end)
-            || column_end > residual_column_count
-            || !add_u64(residual.value_map_offset, residual.edge_count,
-                &value_end)
-            || value_end > header.value_map_count)
-            return false;
-        std::uint32_t previous = 0u;
-        for (std::uint32_t row = 0u; row <= residual.row_count; ++row) {
-            std::uint32_t current = 0u;
-            if (!read_record(image, header.residual_row_offset_offset,
-                    residual.row_offset_index + row, &current)
-                || current > residual.edge_count
-                || (row == 0u && current != 0u)
-                || (row != 0u && current < previous))
-                return false;
-            previous = current;
-        }
-        if (previous != residual.edge_count) return false;
-
-        for (std::uint32_t prior_index = 0u; prior_index < index;
-            ++prior_index) {
-            residual_region_v1 prior{};
-            if (!read_record(image, header.residual_region_offset,
-                    prior_index, &prior))
-                return false;
-            const std::uint64_t prior_row_end =
-                static_cast<std::uint64_t>(prior.row_offset_index)
-                + prior.row_count + 1u;
-            const std::uint64_t prior_column_end =
-                static_cast<std::uint64_t>(prior.column_index_offset)
-                + prior.edge_count;
-            const std::uint64_t prior_value_end =
-                static_cast<std::uint64_t>(prior.value_map_offset)
-                + prior.edge_count;
-            if ((residual.row_offset_index < prior_row_end
-                    && prior.row_offset_index < row_end)
-                || (residual.column_index_offset < prior_column_end
-                    && prior.column_index_offset < column_end)
-                || (residual.value_map_offset < prior_value_end
-                    && prior.value_map_offset < value_end))
+        for (std::uint32_t index = 0u; index < header.destination_group_count;
+            ++index) {
+            physical_group_v1 group{};
+            if (!read_record(image, header.destination_group_offset, index, &group)
+                || group.group_id != index || group.semantic_component_id == 0u
+                || group.member_count == 0u
+                || group.member_count > mma_group_extent_limit_v1
+                || group.padded_count < group.member_count
+                || group.padded_count > mma_group_extent_limit_v1
+                || !zero_words(group.reserved, 3u))
                 return false;
         }
-    }
 
-    for (std::uint32_t index = 0u; index < header.schedule_entry_count; ++index) {
-        projection_schedule_entry_v1 entry{};
-        if (!read_record(image, header.schedule_entry_offset, index, &entry)
-            || entry.destination_group_index >= header.destination_group_count
-            || entry.dense_column_count == 0u
-            || entry.dense_column_begin > header.dense_width
-            || entry.dense_column_count
-                > header.dense_width - entry.dense_column_begin
-            || !zero_words(entry.reserved, 3u))
-            return false;
-        if ((entry.kind == schedule_work_kind_v1::mma_tile
-                && entry.work_index >= header.tile_count)
-            || (entry.kind == schedule_work_kind_v1::residual_region
-                && entry.work_index >= header.residual_region_count)
-            || (entry.kind != schedule_work_kind_v1::mma_tile
-                && entry.kind != schedule_work_kind_v1::residual_region))
-            return false;
-        for (std::uint8_t value : entry.reserved0)
-            if (value != 0u) return false;
-    }
-
-    for (std::uint64_t index = 0u; index < header.value_map_count; ++index) {
-        projection_value_map_v1 map{};
-        if (!read_record(image, header.value_map_offset, index, &map)
-            || map.logical_edge_id.width != header.logical_edge_id_width
-            || map.logical_edge_id.value >= header.logical_edge_count
-            || !valid_physical_region_kind_v1(map.region_kind)
-            || (map.region_kind == physical_region_kind_v1::mma
-                && map.region_index >= header.tile_count)
-            || (map.region_kind == physical_region_kind_v1::residual
-                && map.region_index >= header.residual_region_count)
-            || !zero_words(map.reserved, 2u))
-            return false;
-        for (std::uint8_t value : map.logical_edge_id.reserved)
-            if (value != 0u) return false;
-        for (std::uint8_t value : map.reserved0)
-            if (value != 0u) return false;
-        for (std::uint64_t prior = 0u; prior < index; ++prior) {
-            projection_value_map_v1 other{};
-            if (!read_record(image, header.value_map_offset, prior, &other)
-                || other.logical_edge_id.value == map.logical_edge_id.value)
-                return false;
-        }
-        if (map.region_kind == physical_region_kind_v1::mma) {
+        std::vector<std::uint64_t> physical_slot_keys;
+        std::vector<std::uint8_t> slot_map_owners(
+            static_cast<std::size_t>(header.value_map_count), 0u);
+        physical_slot_keys.reserve(header.compact_slot_count);
+        for (std::uint32_t index = 0u; index < header.tile_count; ++index) {
             mma_tile_v1 tile{};
-            bool found = false;
-            if (!read_record(image, header.tile_offset, map.region_index, &tile))
+            std::uint64_t slot_end = 0u;
+            if (!read_record(image, header.tile_offset, index, &tile)
+                || tile.tile_id != index || tile.semantic_component_id == 0u
+                || tile.source_group_index >= header.source_group_count
+                || tile.destination_group_index >= header.destination_group_count
+                || tile.compact_slot_count == 0u
+                || population_count(tile) != tile.compact_slot_count
+                || !add_u64(tile.compact_slot_offset, tile.compact_slot_count,
+                    &slot_end)
+                || slot_end > header.compact_slot_count
+                || !zero_words(tile.reserved, 3u))
                 return false;
-            for (std::uint32_t local = 0u; local < tile.compact_slot_count;
-                ++local) {
+            for (std::uint32_t local = 0u; local < tile.compact_slot_count; ++local) {
                 mma_compact_slot_v1 slot{};
                 if (!read_record(image, header.compact_slot_offset,
-                        tile.compact_slot_offset + local, &slot))
+                        tile.compact_slot_offset + local, &slot)
+                    || slot.row >= mma_group_extent_limit_v1
+                    || slot.column >= mma_group_extent_limit_v1
+                    || slot.dense_slot != slot.row * mma_group_extent_limit_v1
+                        + slot.column
+                    || !mma_occupancy_bit_v1(tile, slot.row, slot.column)
+                    || slot.logical_edge_index >= header.value_map_count)
                     return false;
-                found = found || (slot.logical_edge_index == index
-                    && slot.dense_slot == map.projection_slot);
+                projection_value_map_v1 map{};
+                if (!read_record(image, header.value_map_offset,
+                        slot.logical_edge_index, &map)
+                    || map.region_kind != physical_region_kind_v1::mma
+                    || map.region_index != index
+                    || map.projection_slot != slot.dense_slot
+                    || slot_map_owners[slot.logical_edge_index] != 0u)
+                    return false;
+                slot_map_owners[slot.logical_edge_index] = 1u;
+                physical_slot_keys.push_back(
+                    (static_cast<std::uint64_t>(index) << 8u) | slot.dense_slot);
             }
-            if (!found) return false;
-        } else {
-            residual_region_v1 residual{};
-            if (!read_record(image, header.residual_region_offset,
-                    map.region_index, &residual)
-                || map.projection_slot >= residual.edge_count
-                || index != static_cast<std::uint64_t>(
-                    residual.value_map_offset) + map.projection_slot)
-                return false;
         }
+        std::sort(physical_slot_keys.begin(), physical_slot_keys.end());
+        if (std::adjacent_find(physical_slot_keys.begin(), physical_slot_keys.end())
+            != physical_slot_keys.end())
+            return false;
+
+        std::vector<index_interval> residual_row_ranges;
+        std::vector<index_interval> residual_column_ranges;
+        std::vector<index_interval> residual_value_ranges;
+        residual_row_ranges.reserve(header.residual_region_count);
+        residual_column_ranges.reserve(header.residual_region_count);
+        residual_value_ranges.reserve(header.residual_region_count);
+        for (std::uint32_t index = 0u; index < header.residual_region_count;
+            ++index) {
+            residual_region_v1 residual{};
+            if (!read_record(image, header.residual_region_offset, index, &residual)
+                || residual.region_id != index || residual.semantic_component_id == 0u
+                || residual.encoding != residual_encoding_v1::row_owned_csr
+                || residual.destination_group_index >= header.destination_group_count
+                || residual.row_count == 0u || !zero_words(residual.reserved, 3u)
+                || !add_u64(residual_row_count, residual.row_count,
+                    &residual_row_count)
+                || !add_u64(residual_column_count, residual.edge_count,
+                    &residual_column_count))
+                return false;
+            for (std::uint8_t value : residual.reserved0)
+                if (value != 0u) return false;
+        }
+        if (!section_range(header.residual_row_offset_offset, residual_row_count,
+                sizeof(std::uint32_t), bytes, &ends[5])
+            || !section_range(header.residual_column_index_offset,
+                residual_column_count, sizeof(std::uint32_t), bytes, &ends[6]))
+            return false;
+        const std::uint64_t offsets[] = {header.source_group_offset,
+            header.destination_group_offset, header.tile_offset,
+            header.compact_slot_offset, header.residual_region_offset,
+            header.residual_row_offset_offset,
+            header.residual_column_index_offset, header.schedule_entry_offset,
+            header.value_map_offset};
+        for (std::size_t left = 0u; left < 9u; ++left) {
+            if (ends[left] == 0u) continue;
+            for (std::size_t right = 0u; right < left; ++right)
+                if (ends[right] != 0u && offsets[left] < ends[right]
+                    && offsets[right] < ends[left])
+                    return false;
+        }
+
+        for (std::uint32_t index = 0u; index < header.residual_region_count;
+            ++index) {
+            residual_region_v1 residual{};
+            physical_group_v1 destination{};
+            if (!read_record(image, header.residual_region_offset, index, &residual)
+                || !read_record(image, header.destination_group_offset,
+                    residual.destination_group_index, &destination)
+                || residual.row_count > destination.padded_count)
+                return false;
+            std::uint64_t row_end = 0u;
+            std::uint64_t column_end = 0u;
+            std::uint64_t value_end = 0u;
+            if (!add_u64(residual.row_offset_index,
+                    static_cast<std::uint64_t>(residual.row_count) + 1u, &row_end)
+                || row_end > residual_row_count
+                || !add_u64(residual.column_index_offset, residual.edge_count,
+                    &column_end)
+                || column_end > residual_column_count
+                || !add_u64(residual.value_map_offset, residual.edge_count,
+                    &value_end)
+                || value_end > header.value_map_count)
+                return false;
+            residual_row_ranges.push_back({residual.row_offset_index, row_end});
+            if (residual.column_index_offset < column_end)
+                residual_column_ranges.push_back(
+                    {residual.column_index_offset, column_end});
+            if (residual.value_map_offset < value_end)
+                residual_value_ranges.push_back(
+                    {residual.value_map_offset, value_end});
+            std::uint32_t previous = 0u;
+            for (std::uint32_t row = 0u; row <= residual.row_count; ++row) {
+                std::uint32_t current = 0u;
+                if (!read_record(image, header.residual_row_offset_offset,
+                        residual.row_offset_index + row, &current)
+                    || current > residual.edge_count
+                    || (row == 0u && current != 0u)
+                    || (row != 0u && current < previous))
+                    return false;
+                previous = current;
+            }
+            if (previous != residual.edge_count) return false;
+        }
+        if (!intervals_disjoint(residual_row_ranges)
+            || !intervals_disjoint(residual_column_ranges)
+            || !intervals_disjoint(residual_value_ranges))
+            return false;
+
+        for (std::uint32_t index = 0u; index < header.schedule_entry_count; ++index) {
+            projection_schedule_entry_v1 entry{};
+            if (!read_record(image, header.schedule_entry_offset, index, &entry)
+                || entry.destination_group_index >= header.destination_group_count
+                || entry.dense_column_count == 0u
+                || entry.dense_column_begin > header.dense_width
+                || entry.dense_column_count
+                    > header.dense_width - entry.dense_column_begin
+                || !zero_words(entry.reserved, 3u))
+                return false;
+            if ((entry.kind == schedule_work_kind_v1::mma_tile
+                    && entry.work_index >= header.tile_count)
+                || (entry.kind == schedule_work_kind_v1::residual_region
+                    && entry.work_index >= header.residual_region_count)
+                || (entry.kind != schedule_work_kind_v1::mma_tile
+                    && entry.kind != schedule_work_kind_v1::residual_region))
+                return false;
+            for (std::uint8_t value : entry.reserved0)
+                if (value != 0u) return false;
+        }
+
+        std::vector<std::uint8_t> logical_edge_owners(
+            static_cast<std::size_t>(header.logical_edge_count), 0u);
+        for (std::uint64_t index = 0u; index < header.value_map_count; ++index) {
+            projection_value_map_v1 map{};
+            if (!read_record(image, header.value_map_offset, index, &map)
+                || map.logical_edge_id.width != header.logical_edge_id_width
+                || map.logical_edge_id.value >= header.logical_edge_count
+                || !valid_physical_region_kind_v1(map.region_kind)
+                || (map.region_kind == physical_region_kind_v1::mma
+                    && map.region_index >= header.tile_count)
+                || (map.region_kind == physical_region_kind_v1::residual
+                    && map.region_index >= header.residual_region_count)
+                || !zero_words(map.reserved, 2u)
+                || logical_edge_owners[map.logical_edge_id.value] != 0u)
+                return false;
+            logical_edge_owners[map.logical_edge_id.value] = 1u;
+            for (std::uint8_t value : map.logical_edge_id.reserved)
+                if (value != 0u) return false;
+            for (std::uint8_t value : map.reserved0)
+                if (value != 0u) return false;
+            if (map.region_kind == physical_region_kind_v1::mma) {
+                if (slot_map_owners[index] != 1u) return false;
+            } else {
+                residual_region_v1 residual{};
+                if (!read_record(image, header.residual_region_offset,
+                        map.region_index, &residual)
+                    || map.projection_slot >= residual.edge_count
+                    || index != static_cast<std::uint64_t>(
+                        residual.value_map_offset) + map.projection_slot)
+                    return false;
+            }
+        }
+        return true;
+    } catch (...) {
+        // This validator is a noexcept cold-boundary check. Allocation
+        // exhaustion must reject the image without terminating the process.
+        return false;
     }
-    return true;
 }
 
 } // namespace cellerator::compute::projection

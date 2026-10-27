@@ -1,0 +1,22 @@
+{
+  "binary_original_path": "/tmp/cellerator_sparse_bench_build_v3/bench/sparse_support/cellerator_sparse_support_cuda_indexing_bench",
+  "binary_path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/frozen_baseline/cellerator_sparse_support_cuda_indexing_bench",
+  "binary_sha256": "a628a22579a576d51f942f91d3c0f279ec7c371fdec36f0b454a956e7a44ae7f",
+  "build_configuration": {},
+  "build_directory": "/tmp/cellerator_sparse_bench_build_v3",
+  "dynamic_dependencies": "libcudart.so.12 plus standard Linux libraries; no project shared library dependency",
+  "notes": [
+    "Indexing CUDA source and header are the exact committed HEAD snapshot used by this baseline build; the subsequently modified ordered-disjoint fastpath is excluded.",
+    "Benchmark driver source contains the direct condition-root-map measurement and accounting.",
+    "Do not rebuild or overwrite this executable; use a new build path for candidates."
+  ],
+  "schema": "cellerator.sparse_support.frozen_native_baseline.v1",
+  "source_revision": "4452dc117ad4b5240602d754506431f5f859d5f0",
+  "source_snapshot_sha256_by_path": {
+    "cuda_indexing_bench.cu": "976854973052a80d41399190d0dc811cf7e2493de28e1e50247d5a4eaa9bcb10",
+    "include/Cellerator/compute/gating/cuda_worksets.cuh": "5788db91a789e137d8033b3d87cddb92abee4ad01d989df284bcb467cf164c71",
+    "include/Cellerator/compute/indexing/cuda_postings.cuh": "f3c4015ff13b49b8e3e320f5dd59c9c6b4d556aab1560f422cc929cfa185f1b0",
+    "src/compute/gating/cuda_worksets.cu": "d8ccb3c4f53726f30dc831a0d188913f6e8e86754a3563dd9f3cd922ac7dbd30",
+    "src/compute/indexing/cuda_postings.cu": "a3aecefb1ed359342bbc6ffb6843bda079f8a28082030f07510a0e78275e3853"
+  }
+}

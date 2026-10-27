@@ -57,13 +57,16 @@ def candidate_mode(candidate: dict, build_directory: str | None = None) -> str:
 
 
 def run_driver(request_path: Path, *, case: str, warmup: int, rounds: int,
-               iterations: int, setup_pairs: int, seed: int) -> dict:
+               iterations: int, setup_pairs: int, seed: int,
+               fixture_root: str | None = None) -> dict:
     output_dir = request_path.parent / (request_path.stem + f"-{case}-driver")
     command = [sys.executable, str(DRIVER), "--output-dir", str(output_dir),
                "--case", case, "--warmup", str(warmup),
                "--rounds", str(rounds), "--iterations", str(iterations),
                "--setup-pairs", str(setup_pairs),
                "--seed", str(seed)]
+    if fixture_root:
+        command.extend(["--fixture-root", fixture_root])
     proc = subprocess.run(command, cwd=REPO, text=True, capture_output=True,
                           env=os.environ.copy(), check=False)
     if proc.returncode != 0:
@@ -181,7 +184,8 @@ def op_validate(request: dict, request_path: Path) -> dict:
         result = run_driver(request_path, case=case["id"], warmup=1,
                             rounds=1, iterations=1,
                             setup_pairs=1,
-                            seed=int(case["input"]["seed"]))
+                            seed=int(case["input"]["seed"]),
+                            fixture_root=case["input"].get("fixture_root"))
         case_result = result["results"][case["id"]]
         rows.append({
             "case_id": case["id"], "workload_sha256": case["workload_sha256"],
@@ -208,7 +212,8 @@ def op_benchmark(request: dict, request_path: Path) -> dict:
         rounds=int(timing["repetitions"]),
         iterations=int(timing.get("iterations", 2)),
         setup_pairs=int(timing.get("setup_pairs", 5)),
-        seed=int(case["input"]["seed"]))
+        seed=int(case["input"]["seed"]),
+        fixture_root=case["input"].get("fixture_root"))
     case_result = result["results"][case["id"]]
     if not checks_pass(case_result):
         raise RuntimeError("benchmark numerical checks did not pass")

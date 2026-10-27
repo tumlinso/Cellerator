@@ -224,6 +224,88 @@ int main() {
                       cudaMemcpyDeviceToHost) == cudaSuccess);
     assert(unchanged.logical_edge_id == 999 && unchanged_offset == 999);
 
+    // Source-ordered unique terms whose posting ranges are globally disjoint
+    // use the parallel count/concatenate path. The other rows deliberately
+    // violate its precondition and must retain exact merge behavior.
+    const reverse_posting_record_v1 disjoint_records[] = {
+        {1, 0, 100, 10, 0}, {1, 0, 100, 20, 1},
+        {1, 0, 200, 30, 2}, {1, 0, 200, 40, 3},
+        {1, 0, 300, 20, 4}, {1, 0, 300, 50, 5},
+        {1, 0, 400, 60, 6},
+    };
+    reverse_posting_view_v1 disjoint_host_index{
+        8, 9, 18, disjoint_records, 7};
+    const auto disjoint_requirements =
+        cuda_posting_projection_requirements_v1(disjoint_host_index);
+    posting_term_v1 disjoint_terms[4]{};
+    std::uint64_t disjoint_term_offsets[5]{};
+    indexed_work_item_v1 disjoint_items[7]{};
+    cuda_posting_prepare_requirements_v1 disjoint_prepared{};
+    assert(build_cuda_posting_projection_v1(disjoint_host_index,
+        disjoint_terms, 4, disjoint_term_offsets, 5, disjoint_items, 7,
+        &disjoint_prepared) == cuda_posting_prepare_status_v1::success);
+    assert(disjoint_requirements.term_count == 4
+        && disjoint_prepared.item_count == 7);
+    auto *d_disjoint_terms = device_copy(disjoint_terms, 4);
+    auto *d_disjoint_term_offsets = device_copy(disjoint_term_offsets, 5);
+    auto *d_disjoint_items = device_copy(disjoint_items, 7);
+    cuda_reverse_posting_view_v1 disjoint_index{
+        8, 9, 18, d_disjoint_terms, d_disjoint_term_offsets, 4,
+        d_disjoint_items, 7};
+    const std::uint64_t disjoint_query_offsets[] = {0, 3, 5, 7, 9, 10};
+    const posting_term_v1 disjoint_queries[] = {
+        {1, 0, 100}, {1, 0, 200}, {1, 0, 400}, // verified concat
+        {1, 0, 400}, {1, 0, 100},             // unsorted fallback
+        {1, 0, 100}, {1, 0, 300},             // overlap fallback
+        {1, 0, 100}, {1, 0, 100},             // duplicate fallback
+        {1, 0, 999},                           // missing q1
+    };
+    auto *d_disjoint_query_offsets = device_copy(disjoint_query_offsets, 6);
+    auto *d_disjoint_queries = device_copy(disjoint_queries, 10);
+    cuda_posting_scratch_v1 disjoint_scratch{};
+    assert(cudaMalloc(&disjoint_scratch.cursors,
+        10 * sizeof(*disjoint_scratch.cursors)) == cudaSuccess);
+    disjoint_scratch.cursor_capacity = 10;
+    assert(cudaMalloc(&disjoint_scratch.counts,
+        5 * sizeof(std::uint64_t)) == cudaSuccess);
+    assert(cudaMalloc(&disjoint_scratch.status,
+        sizeof(cuda_posting_status_v1)) == cudaSuccess);
+    std::uint64_t *d_disjoint_output_offsets = nullptr;
+    indexed_work_item_v1 *d_disjoint_output_items = nullptr;
+    assert(cudaMalloc(&d_disjoint_output_offsets,
+        6 * sizeof(std::uint64_t)) == cudaSuccess);
+    assert(cudaMalloc(&d_disjoint_output_items,
+        13 * sizeof(indexed_work_item_v1)) == cudaSuccess);
+    cuda_posting_output_v1 disjoint_output{
+        d_disjoint_output_offsets, 6, d_disjoint_output_items, 13};
+    assert(cuda_query_reverse_postings_any_v1(disjoint_index, 18, 5,
+        d_disjoint_query_offsets, d_disjoint_queries, 10, disjoint_output,
+        disjoint_scratch, nullptr) == cudaSuccess);
+    assert(cudaDeviceSynchronize() == cudaSuccess);
+    cuda_posting_status_v1 disjoint_status{};
+    assert(cudaMemcpy(&disjoint_status, disjoint_scratch.status,
+        sizeof(disjoint_status), cudaMemcpyDeviceToHost) == cudaSuccess);
+    assert(disjoint_status.code == 0 && disjoint_status.required == 13);
+    const auto disjoint_actual_offsets =
+        host_copy(d_disjoint_output_offsets, 6);
+    assert((disjoint_actual_offsets ==
+        std::vector<std::uint64_t>{0, 5, 8, 11, 13, 13}));
+    const auto disjoint_actual = host_copy(d_disjoint_output_items, 13);
+    const std::uint64_t expected_ids[] = {
+        10, 20, 30, 40, 60, 10, 20, 60, 10, 20, 50, 10, 20};
+    for (std::size_t i = 0; i < 13; ++i)
+        assert(disjoint_actual[i].logical_edge_id == expected_ids[i]);
+    release(d_disjoint_output_items);
+    release(d_disjoint_output_offsets);
+    release(disjoint_scratch.status);
+    release(disjoint_scratch.counts);
+    release(disjoint_scratch.cursors);
+    release(d_disjoint_queries);
+    release(d_disjoint_query_offsets);
+    release(d_disjoint_items);
+    release(d_disjoint_term_offsets);
+    release(d_disjoint_terms);
+
     // Sparse per-cell changes preserve the two untouched middle bits while
     // recomputing only the four dirty edge ordinals.
     const std::uint8_t changed_predicates[] = {0, 1};
