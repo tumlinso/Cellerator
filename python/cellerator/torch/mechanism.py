@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import importlib
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Protocol, runtime_checkable
 
 import torch
 from torch import Tensor, nn
@@ -13,7 +13,10 @@ from cellerator import (
     SharedSupportSpec, _native,
 )
 from cellerator import _known_mechanism_handles
-_torch = importlib.import_module("._torch", __package__)
+try:
+    _torch = importlib.import_module("._torch", __package__)
+except ImportError:  # CPU references and owner-protocol tests do not need CUDA bindings.
+    _torch = None
 
 
 class BiologicalTensor:
@@ -29,8 +32,11 @@ class _OwnerBinding:
     """Python lifetime anchor for one native handle and its sole Torch leaf."""
 
     def __init__(self, handle: object):
+        if _torch is None:
+            raise ImportError("native CUDA mechanism adapters require optional libtorch support")
         self.handle = handle
         self.parameter = nn.Parameter(_torch.coefficients(handle), requires_grad=True)
+        self.api = _torch
         self.parameter._cellerator_native_handle = handle
         self.parameter._cellerator_owner_key = int(self.parameter.data_ptr())
         self.parameter._cellerator_expected_version = self.parameter._version
@@ -42,6 +48,145 @@ class _OwnerBinding:
             binding = cls(handle)
             handle._cellerator_torch_binding = binding
         return binding
+
+    def validate(self) -> None:
+        _torch.validate_coefficients(self.parameter, self.handle)
+
+    def preflight(self) -> None:
+        self.handle.preflight_write()
+
+    def begin(self) -> None:
+        _torch.begin_update(self.handle)
+
+    def publish(self) -> None:
+        _torch.publish_update(self.handle)
+
+    def poison(self) -> None:
+        self.handle.poison()
+
+    def snapshot(self):
+        return self.handle.snapshot()
+
+    def restore(self, values, metadata=None) -> None:
+        if metadata is not None:
+            raise ValueError("mechanism checkpoint does not accept sparse owner metadata")
+        self.handle.restore(values)
+
+    @property
+    def device(self) -> int:
+        return int(self.handle.device)
+
+
+@runtime_checkable
+class NativeOwnerProtocol(Protocol):
+    """Small adapter contract for a canonical native FP32 parameter owner.
+
+    Sparse support modules can implement this protocol without pretending to
+    be a MechanismModule. ``parameter`` is the sole optimizer leaf; support
+    edges and packed projections must not introduce additional parameters.
+    The native API supplies validation, guarded publication, and snapshots.
+    """
+
+    handle: object
+    parameter: nn.Parameter
+    api: object
+
+    def validate(self) -> None: ...
+    def preflight(self) -> None: ...
+    def begin(self) -> None: ...
+    def publish(self) -> None: ...
+    def poison(self) -> None: ...
+    def snapshot(self): ...
+    def restore(self, values, metadata=None) -> None: ...
+    def pin_read(self): ...
+    def complete_read(self, ticket) -> None: ...
+
+
+def _owner_adapter(module: nn.Module):
+    """Return a module's explicit native owner adapter, if it has one."""
+    adapter = getattr(module, "_cellerator_native_owner", None)
+    if adapter is None and isinstance(module, MechanismModule):
+        adapter = module._binding
+    if adapter is None:
+        return None
+    required = ("handle", "parameter", "api", "validate", "preflight",
+                "begin", "publish", "poison", "snapshot", "restore")
+    if any(not hasattr(adapter, field) for field in required):
+        raise TypeError("native owner adapter must expose handle, parameter, and api")
+    return adapter
+
+
+def attach_native_owner(module: nn.Module, handle: object, parameter: nn.Parameter,
+                        api: object, *, prefix: str = "sparse") -> None:
+    """Attach a generic native owner adapter to a Torch module.
+
+    This is the shared lifecycle bridge for optional native-backed modules.
+    It deliberately does not register a second Parameter or alter the owner.
+    """
+    if not isinstance(module, nn.Module) or not isinstance(parameter, nn.Parameter):
+        raise TypeError("module and parameter must be a torch module and Parameter")
+    if getattr(module, "_cellerator_native_owner", None) is not None:
+        raise ValueError("module already has a native parameter owner")
+    adapter = type("_AttachedNativeOwner", (), {})()
+    adapter.handle = handle
+    adapter.parameter = parameter
+    adapter.api = api
+    adapter.validate = lambda: getattr(api, f"{prefix}_validate_parameters")(handle, parameter)
+    adapter.preflight = lambda: getattr(api, f"{prefix}_preflight_write")(handle)
+    adapter.begin = lambda: getattr(api, f"{prefix}_begin_update")(handle)
+    adapter.publish = lambda: getattr(api, f"{prefix}_publish_update")(handle)
+    adapter.poison = lambda: getattr(api, f"{prefix}_poison")(handle)
+    adapter.snapshot = lambda: getattr(api, f"{prefix}_snapshot")(handle)
+
+    def restore(values, metadata=None):
+        # Native sparse restore consumes a contiguous CPU FP32 tensor. Checkpoint
+        # files and other owner adapters may provide NumPy arrays; normalize at
+        # this generic protocol boundary without changing the canonical leaf.
+        if isinstance(values, Tensor):
+            restored_values = values.detach().to(device="cpu", dtype=torch.float32).contiguous()
+        else:
+            restored_values = torch.as_tensor(
+                values, dtype=torch.float32, device="cpu").contiguous()
+        getattr(api, f"{prefix}_restore")(handle, restored_values, metadata)
+
+    adapter.restore = restore
+    pin = getattr(api, f"{prefix}_pin_read", None)
+    complete = getattr(api, f"{prefix}_complete_read", None)
+    if pin is not None and complete is not None:
+        adapter.pin_read = lambda: pin(handle)
+        adapter.complete_read = lambda ticket: complete(handle, ticket)
+    native_device = getattr(handle, "device", parameter.device.index)
+    adapter.device = (int(native_device) if parameter.is_cuda else None)
+    module._cellerator_native_owner = adapter
+    parameter._cellerator_native_handle = handle
+    parameter._cellerator_owner_key = int(parameter.data_ptr())
+    parameter._cellerator_expected_version = parameter._version
+
+
+def _unique_owner_modules(modules: nn.Module | Iterable[nn.Module]) -> list[tuple[nn.Module, NativeOwnerProtocol]]:
+    roots = [modules] if isinstance(modules, nn.Module) else list(modules)
+    result: list[tuple[nn.Module, NativeOwnerProtocol]] = []
+    seen: set[int] = set()
+    for root in roots:
+        for module in root.modules():
+            owner = _owner_adapter(module)
+            if owner is not None and id(owner.handle) not in seen:
+                seen.add(id(owner.handle))
+                result.append((module, owner))
+    return result
+
+
+def _model_native_owners(model: nn.Module):
+    result = []
+    seen: set[int] = set()
+    for name, module in model.named_modules(remove_duplicate=False):
+        owner = _owner_adapter(module)
+        if owner is not None and id(owner.handle) not in seen:
+            seen.add(id(owner.handle))
+            result.append((name, module, owner))
+    if not result:
+        raise ValueError("checkpoint model must contain at least one native parameter owner")
+    return result
 
 
 class MechanismModule(nn.Module):
@@ -195,26 +340,43 @@ def guarded_step(modules: MechanismModule | nn.Module | Iterable[nn.Module],
     """
     if closure is not None:
         raise ValueError("guarded_step does not support optimizer closures")
-    native_modules = _unique_modules(modules)
+    native_owners = _unique_owner_modules(modules)
     parameters = _validate_optimizer(optimizer)
     parameter_set = {id(p) for p in parameters}
-    native_by_parameter = {id(m.coefficients): m for m in native_modules}
-    for module in native_modules:
-        if id(module.coefficients) not in parameter_set:
+    native_by_parameter = {id(owner.parameter): (module, owner)
+                           for module, owner in native_owners}
+    for module, owner in native_owners:
+        parameter = owner.parameter
+        if id(parameter) not in parameter_set:
             raise ValueError("optimizer must include every native coefficient owner")
-        if (module.coefficients._cellerator_owner_key != module._owner_key
-                or module.coefficients._cellerator_native_handle is not module._native):
+        owner_key = getattr(module, "_owner_key", getattr(parameter, "_cellerator_owner_key", None))
+        if (parameter._cellerator_owner_key != owner_key
+                or parameter._cellerator_native_handle is not owner.handle):
             raise RuntimeError("native coefficient view lost its registered owner")
-        if module.coefficients._version != module.coefficients._cellerator_expected_version:
+        if parameter._version != parameter._cellerator_expected_version:
             raise RuntimeError("native coefficients changed outside guarded_step")
-        _torch.validate_coefficients(module.coefficients, module._native)
-        module._native.preflight_write()
+        owner.validate()
+        owner.preflight()
     # Reject native parameter views hidden in the optimizer when their owner
     # was omitted from the guarded module set. This check is native because a
     # tensor alias can be created without going through this Python registry.
     try:
         for parameter in parameters:
-            if _torch.is_native_coefficient(parameter, _known_mechanism_handles()) and id(parameter) not in native_by_parameter:
+            is_native = (_torch is not None and
+                         _torch.is_native_coefficient(parameter, _known_mechanism_handles()))
+            # Sparse bindings accept only their own handle type. Generic owner
+            # adapters (including CPU reference owners) may coexist with real
+            # Mechanism/SparseTorchHandle instances, so never pass a mixed list
+            # through one pybind signature. The sparse registry also detects
+            # aliases whose owner was omitted from the guarded module set.
+            sparse_apis = {id(owner.api): owner.api for _, owner in native_owners}
+            if _torch is not None:
+                sparse_apis[id(_torch)] = _torch
+            for api in sparse_apis.values():
+                sparse_check = getattr(api, "is_sparse_native_owner", None)
+                if sparse_check is not None:
+                    is_native = is_native or sparse_check(parameter, [])
+            if is_native and id(parameter) not in native_by_parameter:
                 raise ValueError(
                     "optimizer contains a native coefficient whose owner is absent from modules"
                 )
@@ -234,29 +396,30 @@ def guarded_step(modules: MechanismModule | nn.Module | Iterable[nn.Module],
         scaler.update()
         return False
 
-    changed = [m for m in native_modules if m.coefficients.grad is not None]
-    begun: list[MechanismModule] = []
+    changed = [(m, owner) for m, owner in native_owners if owner.parameter.grad is not None]
+    begun: list[tuple[nn.Module, NativeOwnerProtocol]] = []
     try:
-        for module in changed:
-            _torch.begin_update(module._native)
-            begun.append(module)
+        for module, owner in changed:
+            owner.begin()
+            begun.append((module, owner))
         optimizer.step()
-        for module in begun:
-            if not bool(torch.isfinite(module.coefficients).all().item()):
+        for module, owner in begun:
+            parameter = owner.parameter
+            if not bool(torch.isfinite(parameter).all().item()):
                 raise FloatingPointError("Adam produced non-finite native coefficients")
-            if (module.precision == "mixed_f16"
-                    and not bool(torch.isfinite(module.coefficients.to(torch.float16)).all().item())):
+            if (getattr(module, "precision", None) == "mixed_f16"
+                    and not bool(torch.isfinite(parameter.to(torch.float16)).all().item())):
                 raise FloatingPointError("Adam produced coefficients outside finite FP16 storage range")
-        for module in begun:
-            _torch.publish_update(module._native)
-            module.coefficients._cellerator_expected_version = module.coefficients._version
+        for _, owner in begun:
+            owner.publish()
+            owner.parameter._cellerator_expected_version = owner.parameter._version
         if scaler is not None:
             scaler.update()
         return True
     except Exception:
-        for module in native_modules:
+        for _, owner in native_owners:
             try:
-                module._native.poison()
+                owner.poison()
             except Exception:
                 pass
         raise
@@ -330,8 +493,6 @@ def _cpu_value(value):
 def _model_mechanisms(model: nn.Module) -> tuple[list[tuple[str, MechanismModule]], set[int]]:
     modules = [(name, child) for name, child in model.named_modules(remove_duplicate=False)
                if isinstance(child, MechanismModule)]
-    if not modules:
-        raise ValueError("checkpoint model must contain at least one MechanismModule")
     by_owner: dict[int, tuple[str, MechanismModule]] = {}
     for name, module in modules:
         by_owner.setdefault(module._owner_key, (name, module))
@@ -356,19 +517,21 @@ def _optimizer_named_groups(model: nn.Module, optimizer: torch.optim.Optimizer):
                 raise ValueError("every optimizer parameter must be registered by the checkpoint model")
             names.append(name)
         groups.append((names, {k: _cpu_value(v) for k, v in group.items() if k != "params"}))
-    owners, _ = _model_mechanisms(model)
+    owners = _model_native_owners(model)
     optimizer_params = [p for group in optimizer.param_groups for p in group["params"]]
     counts = {id(p): sum(id(candidate) == id(p) for candidate in optimizer_params)
-              for _, module in owners for p in (module.coefficients,)}
+              for _, _, owner in owners for p in (owner.parameter,)}
     if any(count != 1 for count in counts.values()):
-        raise ValueError("checkpoint optimizer must contain each native coefficient owner exactly once")
+        raise ValueError("checkpoint optimizer must contain each native owner exactly once")
     return groups, names_by_parameter
 
 
 def save_checkpoint(path: str | os.PathLike, model: nn.Module,
                     optimizer: torch.optim.Optimizer) -> None:
     """Save an entire composed model, native logical owners, and named Adam state."""
-    owners, native_parameter_ids = _model_mechanisms(model)
+    owners, _ = _model_mechanisms(model)
+    all_owners = _model_native_owners(model)
+    native_parameter_ids = {id(owner.parameter) for _, _, owner in all_owners}
     groups, names_by_parameter = _optimizer_named_groups(model, optimizer)
     model_state = model.state_dict()
     native_names = {name for name, parameter in _named_parameters_all(model).items()
@@ -383,12 +546,38 @@ def save_checkpoint(path: str | os.PathLike, model: nn.Module,
         module._native.preflight_write()
         values = torch.from_numpy(module._native.snapshot()).clone()
         native_records.append({
+            "kind": "mechanism",
             "module_name": name,
             "spec": _spec_data(module.spec),
             "precision": module.precision,
             "coefficient_ids": [_identity_data(i) for i in module.spec.coefficient_ids],
             "coefficients": values,
         })
+    sparse_records = []
+    mechanism_handles = {id(module._native) for _, module in owners}
+    for name, module, owner in all_owners:
+        if id(owner.handle) in mechanism_handles:
+            continue
+        parameter = owner.parameter
+        if parameter._version != parameter._cellerator_expected_version:
+            raise RuntimeError("native parameters changed outside guarded_step")
+        owner.validate()
+        owner.preflight()
+        snapshot = owner.snapshot()
+        if not (isinstance(snapshot, tuple) and len(snapshot) == 2):
+            raise RuntimeError("sparse owner snapshot must return (values, metadata)")
+        values, metadata = snapshot
+        values = values if isinstance(values, Tensor) else torch.as_tensor(values, dtype=torch.float32)
+        record = {
+            "kind": "sparse_support",
+            "module_name": name,
+            "parameter_values": values.detach().to("cpu").clone(),
+            "parameter_metadata": _cpu_value(metadata),
+        }
+        state_fn = getattr(module, "_sparse_checkpoint_state", None)
+        if state_fn is not None:
+            record["module_state"] = _cpu_value(state_fn())
+        sparse_records.append(record)
     named_optimizer_state = {}
     for group in optimizer.param_groups:
         for parameter in group["params"]:
@@ -396,9 +585,9 @@ def save_checkpoint(path: str | os.PathLike, model: nn.Module,
             if parameter in optimizer.state:
                 named_optimizer_state[name] = _cpu_value(optimizer.state[parameter])
     torch.save({
-        "format": "cellerator-training-v2",
+        "format": "cellerator-training-v3" if sparse_records else "cellerator-training-v2",
         "ordinary_model": ordinary_state,
-        "native_owners": native_records,
+        "native_owners": native_records + sparse_records,
         "optimizer_groups": [{"parameter_names": names, "options": options}
                              for names, options in groups],
         "optimizer_state": named_optimizer_state,
@@ -433,33 +622,64 @@ def load_checkpoint(path: str | os.PathLike, model: nn.Module,
     poisons all native owners so callers can retry from a whole checkpoint.
     """
     data = torch.load(path, map_location=map_location, weights_only=False)
-    if data.get("format") != "cellerator-training-v2":
+    if data.get("format") not in ("cellerator-training-v2", "cellerator-training-v3"):
         raise ValueError("unsupported Cellerator training checkpoint")
     owners, native_parameter_ids = _model_mechanisms(model)
     owner_by_name = {name: module for name, module in owners}
-    if set(owner_by_name) != {record["module_name"] for record in data["native_owners"]}:
+    all_owners = _model_native_owners(model)
+    generic_by_name = {name: (module, owner) for name, module, owner in all_owners}
+    expected_names = {record["module_name"] for record in data["native_owners"]}
+    if set(generic_by_name) != expected_names:
         raise ValueError("checkpoint native owner module paths do not match target model")
     permutations: dict[str, list[int]] = {}
     prepared_values: dict[str, Tensor] = {}
+    prepared_sparse: dict[str, tuple[Tensor, object, object]] = {}
     for record in data["native_owners"]:
-        module = owner_by_name[record["module_name"]]
-        saved_spec = _spec_from_data(record["spec"])
-        saved_ids, target_ids = _validate_spec_match(saved_spec, module.spec)
-        if record["precision"] != module.precision:
-            raise ValueError("checkpoint precision does not match prepared mechanism")
-        permutations[record["module_name"]] = [saved_ids.index(i) for i in target_ids]
-        values = record["coefficients"]
-        if values.dtype != torch.float32 or values.ndim != 1 or values.numel() != len(saved_ids):
-            raise ValueError("checkpoint native coefficient values have an invalid shape or dtype")
-        if not bool(torch.isfinite(values).all().item()):
-            raise ValueError("checkpoint native coefficients must be finite")
-        if module.precision == "mixed_f16" and not bool((values.abs() < 65520.0).all().item()):
-            raise ValueError("checkpoint mixed coefficients exceed finite FP16 storage range")
-        prepared_values[record["module_name"]] = values[permutations[record["module_name"]]].contiguous()
+        module_name = record["module_name"]
+        kind = record.get("kind", "mechanism")
+        if kind == "mechanism":
+            module = owner_by_name.get(module_name)
+            if module is None:
+                raise ValueError("checkpoint mechanism owner kind does not match target")
+            saved_spec = _spec_from_data(record["spec"])
+            saved_ids, target_ids = _validate_spec_match(saved_spec, module.spec)
+            if record["precision"] != module.precision:
+                raise ValueError("checkpoint precision does not match prepared mechanism")
+            permutations[module_name] = [saved_ids.index(i) for i in target_ids]
+            values = record["coefficients"]
+            if values.dtype != torch.float32 or values.ndim != 1 or values.numel() != len(saved_ids):
+                raise ValueError("checkpoint native coefficient values have an invalid shape or dtype")
+            if not bool(torch.isfinite(values).all().item()):
+                raise ValueError("checkpoint native coefficients must be finite")
+            if module.precision == "mixed_f16" and not bool((values.abs() < 65520.0).all().item()):
+                raise ValueError("checkpoint mixed coefficients exceed finite FP16 storage range")
+            prepared_values[module_name] = values[permutations[module_name]].contiguous()
+        elif kind == "sparse_support":
+            if data.get("format") != "cellerator-training-v3":
+                raise ValueError("sparse owner records require checkpoint format v3")
+            module, owner = generic_by_name[module_name]
+            values = record.get("parameter_values")
+            if not isinstance(values, Tensor) or values.dtype != torch.float32 or values.ndim != 1:
+                raise ValueError("checkpoint sparse parameter values must be a flat FP32 tensor")
+            if values.numel() != owner.parameter.numel() or not bool(torch.isfinite(values).all().item()):
+                raise ValueError("checkpoint sparse parameter values do not match target owner")
+            owner.validate()
+            _, current_metadata = owner.snapshot()
+            if current_metadata != record.get("parameter_metadata"):
+                raise ValueError("checkpoint sparse parameter block metadata does not match target")
+            state = record.get("module_state")
+            prepare_state = getattr(module, "_prepare_sparse_checkpoint_state", None)
+            prepared_state = prepare_state(state) if prepare_state is not None else state
+            prepared_sparse[module_name] = (values.contiguous(), record["parameter_metadata"], prepared_state)
+        else:
+            raise ValueError(f"unsupported native checkpoint owner kind {kind!r}")
 
     current_state = model.state_dict()
     native_names = {name for name, parameter in _named_parameters_all(model).items()
                     if id(parameter) in native_parameter_ids}
+    native_names.update(parameter_name for _, _, owner in all_owners
+                        for parameter_name, parameter in _named_parameters_all(model).items()
+                        if parameter is owner.parameter)
     current_ordinary = {name: value for name, value in current_state.items() if name not in native_names}
     ordinary = data["ordinary_model"]
     if set(ordinary) != set(current_ordinary):
@@ -523,7 +743,8 @@ def load_checkpoint(path: str | os.PathLike, model: nn.Module,
             + [p for group in optimizer.param_groups for p in group["params"]]
             if tensor.is_cuda and tensor.device.index is not None
         }
-        cuda_devices.update(module._native.device for _, module in owners)
+        cuda_devices.update(owner.device for _, _, owner in all_owners
+                            if owner.device is not None)
         for device in sorted(cuda_devices):
             torch.cuda.synchronize(device)
         model.load_state_dict(restored_ordinary, strict=False)
@@ -532,6 +753,15 @@ def load_checkpoint(path: str | os.PathLike, model: nn.Module,
             torch.cuda.synchronize(module._native.device)
             _torch.synchronize_coefficients(module._native)
             module.coefficients._cellerator_expected_version = module.coefficients._version
+        for name, (values, metadata, prepared_state) in prepared_sparse.items():
+            module, owner = generic_by_name[name]
+            owner.restore(values.detach().cpu().contiguous().numpy(), metadata)
+            if owner.device is not None:
+                torch.cuda.synchronize(owner.device)
+            owner.parameter._cellerator_expected_version = owner.parameter._version
+            restore_state = getattr(module, "_restore_sparse_checkpoint_state", None)
+            if restore_state is not None:
+                restore_state(prepared_state)
         optimizer.state.clear()
         for name, state in data["optimizer_state"].items():
             parameter = params_by_name.get(name)
@@ -558,9 +788,9 @@ def load_checkpoint(path: str | os.PathLike, model: nn.Module,
             if isinstance(module, MechanismModule):
                 module.coefficients._cellerator_expected_version = module.coefficients._version
     except Exception:
-        for _, module in owners:
+        for _, _, owner in all_owners:
             try:
-                module._native.poison()
+                owner.poison()
             except Exception:
                 pass
         raise

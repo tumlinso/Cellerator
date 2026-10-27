@@ -1,0 +1,37 @@
+{
+  "schema": "cellerator.sparse_support.lifecycle_qualification.v1",
+  "job_id": "78cfba09-82c8-467c-8e76-c3296529e05b",
+  "state": "succeeded",
+  "cleanup_verified": true,
+  "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+  "precondition": {
+    "name": "gpu.quiescence",
+    "timeout_seconds": 60,
+    "interval_seconds": 1,
+    "consecutive_samples": 3,
+    "max_utilization_percent": 0,
+    "verified_samples": 3
+  },
+  "result": {
+    "passed": 29,
+    "failed": 0,
+    "duration_seconds": 4.53,
+    "stdout_sha256": "16bc8d5fc9e72a11eb2d61bc1d9e619225313430b4b13701cc4287908423c865"
+  },
+  "source_identities": {
+    "package_snapshot": "build-sparse-support/evidence/torch-v3/package",
+    "package_identity_file": "package_identity.json",
+    "package_identity_sha256": "9e3cfcfa3a84eaa267ba0c17552f5835a024b9e9d606f95430c4c58adb6d9523",
+    "job_identity_file": "job_identity.json",
+    "test_cuda_lifecycle_extra.py_sha256": "5ee6bd30bf18d300fe18ccd997be918753df0cf7e5c663c86d3429b941d9b51d",
+    "test_mechanism.py_sha256": "8e51bbae5089e9acb1c50ecca23a7a343dc7642d358ac99519697841f25a44c9"
+  },
+  "artifacts": {
+    "job_spec": "job.json",
+    "scheduler_receipt": "device_scheduler_job_get.json",
+    "scheduler_logs": "device_scheduler_job_logs.json",
+    "stdout": "stdout.txt",
+    "report": "REPORT.md"
+  },
+  "binary_policy": "Package binaries remain at the source snapshot path and were not copied into this evidence directory."
+}

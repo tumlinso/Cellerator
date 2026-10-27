@@ -1,0 +1,23 @@
+{
+  "binary_sha256": "e5f903954e39f9c0d7f3ab7fdd142a07025cf4b5bd0f0e164f46763035f07a85",
+  "source_sha256": {
+    "include/Cellerator/compute/operation/sparse_support/training.hh": "308c1c7713a1346db11359f633a676c533e88221785ee83f4bc0681317231bf1",
+    "include/Cellerator/compute/projection/physical_mma_hybrid.hh": "76c177bcc19f7f8bde23fb6aa816283e9cf808faeb9100aab5e9f0b489dc8851",
+    "src/compute/operation/sparse_support/training.cc": "505a57cade9a5b398d097fb7fe7befbd6f4dcf8fa523e3f87a7fa6a2bc0e9b7b",
+    "src/compute/operation/sparse_support/training.cu": "4dec815882d3b85e61f5ec70234690c8186030bcb7ec15546c5d81ba17efcc76",
+    "tests/sparse_support/numeric_cuda_test.cu": "ac080a5de2eb9395875fa690a9f1313a86814349ccdf4315adc268a35187e9ac",
+    "src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu": "53faa923a23e559fad7eb4658b67b7212f38928476c94ebd508e5073e369445f"
+  },
+  "binary_source": "build-sparse-support/tests/sparse_support/cellerator_sparse_support_numeric_cuda",
+  "build_mtimes": {
+    "binary": "2026-10-27T18:59:24.146382757Z",
+    "test_object": "2026-10-27T18:59:23.964383686Z",
+    "training_cuda_object": "2026-10-27T18:58:44.702583889Z",
+    "training_host_object": "2026-10-27T18:58:32.063648258Z",
+    "test_source": "2026-10-27T18:58:44.517584831Z",
+    "training_cuda_source": "2026-10-27T18:54:44.358800071Z",
+    "training_host_source": "2026-10-27T18:55:16.199640036Z",
+    "training_header": "2026-10-27T18:54:51.648763465Z"
+  },
+  "compile": "root-integrated CMake target cellerator_sparse_support_numeric_cuda; CUDA_ARCHITECTURES=70, Release"
+}

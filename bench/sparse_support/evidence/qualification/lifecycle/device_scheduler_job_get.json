@@ -1,0 +1,418 @@
+{
+  "attempt": {
+    "attempt_id": "00c5f1cb-dde1-42a3-ba1f-188f3407cf3c",
+    "cleanup_verified": true,
+    "created_at": "2026-10-27T19:34:29.757775Z",
+    "error": {},
+    "evidence": [
+      {
+        "adapter_errors": [],
+        "kind": "execution_preconditions",
+        "operation_id": "preconditions:00c5f1cb-dde1-42a3-ba1f-188f3407cf3c",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 3,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-27T19:34:32.222195+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T19:34:34.603502+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T19:34:32.222195+00:00",
+                        "process_observed_at": "2026-10-27T19:34:34.603502+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-27T19:34:38.049801+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T19:34:40.408187+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T19:34:38.049801+00:00",
+                        "process_observed_at": "2026-10-27T19:34:40.408187+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-27T19:34:43.855246+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T19:34:46.223238+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T19:34:43.855246+00:00",
+                        "process_observed_at": "2026-10-27T19:34:46.223238+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 3,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      6979321856
+                    ],
+                    "timeout_seconds": 60.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      }
+    ],
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 6442450944.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "claim_id": "2ef76208-68c5-4c0b-83a8-1ffa805a78ba",
+      "fencing_token": 932,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 1,
+            "inventory_observed_at": "2026-10-27T19:34:24.912324+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:03:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-27T19:34:24.912324+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          "capabilities": [
+            "shared-admission",
+            "whole-device-exclusive-admission",
+            "memory-accounting-only",
+            "nvidia-smi-compute-process-telemetry"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "schema_version": 1,
+          "topology": {
+            "links": [],
+            "pci_bus_id": "00000000:03:00.0",
+            "topology_state": "partial"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-bbc656c3f36cab8f101074eec8904295.service",
+      "identity": "00c5f1cb-dde1-42a3-ba1f-188f3407cf3c",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-bbc656c3f36cab8f101074eec8904295.service",
+        "description": "Device Scheduler attempt 00c5f1cb-dde1-42a3-ba1f-188f3407cf3c",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "efa541fb926a49b385c0ebbe2ed017cc",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-10-27T19:34:46.302101Z"
+    },
+    "finished_at": "2026-10-27T19:35:01.319052Z",
+    "id": "00c5f1cb-dde1-42a3-ba1f-188f3407cf3c",
+    "job_id": "78cfba09-82c8-467c-8e76-c3296529e05b",
+    "operation_id": "start:00c5f1cb-dde1-42a3-ba1f-188f3407cf3c",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:00c5f1cb-dde1-42a3-ba1f-188f3407cf3c",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "observation": {
+                  "consecutive_samples": 3,
+                  "samples": [
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-27T19:34:32.222195+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T19:34:34.603502+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T19:34:32.222195+00:00",
+                      "process_observed_at": "2026-10-27T19:34:34.603502+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-27T19:34:38.049801+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T19:34:40.408187+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T19:34:38.049801+00:00",
+                      "process_observed_at": "2026-10-27T19:34:40.408187+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-27T19:34:43.855246+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T19:34:46.223238+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T19:34:43.855246+00:00",
+                      "process_observed_at": "2026-10-27T19:34:46.223238+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    }
+                  ],
+                  "state": "observed"
+                },
+                "parameters": {
+                  "consecutive_samples": 3,
+                  "interval_seconds": 1.0,
+                  "max_utilization_percent": 0,
+                  "minimum_free_bytes": [
+                    6979321856
+                  ],
+                  "timeout_seconds": 60.0
+                },
+                "precondition_index": 0
+              },
+              "name": "gpu.quiescence",
+              "resource_ids": [
+                "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+              ],
+              "schema_version": 1,
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "state": "verified"
+    },
+    "result": {
+      "active_state": "active",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-bbc656c3f36cab8f101074eec8904295.service",
+        "invocation_id": "efa541fb926a49b385c0ebbe2ed017cc",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt 00c5f1cb-dde1-42a3-ba1f-188f3407cf3c"
+      },
+      "exit_code": 0,
+      "invocation_id": "efa541fb926a49b385c0ebbe2ed017cc",
+      "logs": "============================= test session starts ==============================\nplatform linux -- Python 3.13.11, pytest-9.1.1, pluggy-1.6.0 -- /home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python\ncachedir: .pytest_cache\nrootdir: /home/tumlinson/Cellerator\nconfigfile: pyproject.toml\ncollecting ... collected 29 items\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_checkpoint_continues_after_promotion_and_revocation PASSED [  3%]\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_live_tape_freezes_structure_but_not_parameter_generation PASSED [  6%]\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_parameter_update_published_on_one_stream_is_visible_on_another PASSED [ 10%]\ntests/test_mechanism.py::test_f32_full_vjp_repeated_slots_and_additive_outputs PASSED [ 13%]\ntests/test_mechanism.py::test_input_and_output_permutation_covariance_including_full_vjp PASSED [ 17%]\ntests/test_mechanism.py::test_mechanism_rejects_higher_order_gradient_request PASSED [ 20%]\ntests/test_mechanism.py::test_biological_axis_identity_is_checked_independently_of_shape PASSED [ 24%]\ntests/test_mechanism.py::test_mixed_forward_and_ste_gradients_match_stored_value_reference PASSED [ 27%]\ntests/test_mechanism.py::test_mixed_initial_coefficients_must_round_to_finite_half PASSED [ 31%]\ntests/test_mechanism.py::test_shared_module_use_accumulates_before_one_guarded_adam_step PASSED [ 34%]\ntests/test_mechanism.py::test_from_handle_reuses_exact_parameter_and_optimizer_gradient PASSED [ 37%]\ntests/test_mechanism.py::test_out_of_band_coefficient_value_write_blocks_forward_and_checkpoint[f32] PASSED [ 41%]\ntests/test_mechanism.py::test_out_of_band_coefficient_value_write_blocks_forward_and_checkpoint[mixed_f16] PASSED [ 44%]\ntests/test_mechanism.py::test_coefficient_mutation_before_first_forward_is_rejected PASSED [ 48%]\ntests/test_mechanism.py::test_guard_rejects_native_owner_missing_from_module_set PASSED [ 51%]\ntests/test_mechanism.py::test_nondefault_stream_and_tail_batch PASSED    [ 55%]\ntests/test_mechanism.py::test_checkpoint_restores_values_and_adam_for_next_step PASSED [ 58%]\ntests/test_mechanism.py::test_checkpoint_aligns_adam_moments_by_logical_coefficient_id PASSED [ 62%]\ntests/test_mechanism.py::test_mixed_checkpoint_overflow_is_rejected_before_target_mutation PASSED [ 65%]\ntests/test_mechanism.py::test_composed_torch_model_fits_coefficients_and_roundtrips_next_step PASSED [ 68%]\ntests/test_mechanism.py::test_live_tape_blocks_update_and_each_tape_has_one_backward PASSED [ 72%]\ntests/test_mechanism.py::test_stale_saved_input_is_rejected PASSED       [ 75%]\ntests/test_mechanism.py::test_abandoned_forward_releases_native_reader PASSED [ 79%]\ntests/test_mechanism.py::test_python_owner_binding_releases_with_dropped_module PASSED [ 82%]\ntests/test_mechanism.py::test_grad_scaler_skip_does_not_publish_generation PASSED [ 86%]\ntests/test_mechanism.py::test_partial_optimizer_failure_poisons_owner_and_whole_checkpoint_restores PASSED [ 89%]\ntests/test_mechanism.py::test_invalid_declarations_fail_before_native_construction PASSED [ 93%]\ntests/test_mechanism.py::test_shared_coefficient_binding_and_unused_parameter_gradient PASSED [ 96%]\ntests/test_mechanism.py::test_identity_words_preserve_full_uint64_range PASSED [100%]\n============================== 29 passed in 4.53s ==============================\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "success",
+      "state": "succeeded",
+      "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.13.11, pytest-9.1.1, pluggy-1.6.0 -- /home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python\ncachedir: .pytest_cache\nrootdir: /home/tumlinson/Cellerator\nconfigfile: pyproject.toml\ncollecting ... collected 29 items\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_checkpoint_continues_after_promotion_and_revocation PASSED [  3%]\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_live_tape_freezes_structure_but_not_parameter_generation PASSED [  6%]\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_parameter_update_published_on_one_stream_is_visible_on_another PASSED [ 10%]\ntests/test_mechanism.py::test_f32_full_vjp_repeated_slots_and_additive_outputs PASSED [ 13%]\ntests/test_mechanism.py::test_input_and_output_permutation_covariance_including_full_vjp PASSED [ 17%]\ntests/test_mechanism.py::test_mechanism_rejects_higher_order_gradient_request PASSED [ 20%]\ntests/test_mechanism.py::test_biological_axis_identity_is_checked_independently_of_shape PASSED [ 24%]\ntests/test_mechanism.py::test_mixed_forward_and_ste_gradients_match_stored_value_reference PASSED [ 27%]\ntests/test_mechanism.py::test_mixed_initial_coefficients_must_round_to_finite_half PASSED [ 31%]\ntests/test_mechanism.py::test_shared_module_use_accumulates_before_one_guarded_adam_step PASSED [ 34%]\ntests/test_mechanism.py::test_from_handle_reuses_exact_parameter_and_optimizer_gradient PASSED [ 37%]\ntests/test_mechanism.py::test_out_of_band_coefficient_value_write_blocks_forward_and_checkpoint[f32] PASSED [ 41%]\ntests/test_mechanism.py::test_out_of_band_coefficient_value_write_blocks_forward_and_checkpoint[mixed_f16] PASSED [ 44%]\ntests/test_mechanism.py::test_coefficient_mutation_before_first_forward_is_rejected PASSED [ 48%]\ntests/test_mechanism.py::test_guard_rejects_native_owner_missing_from_module_set PASSED [ 51%]\ntests/test_mechanism.py::test_nondefault_stream_and_tail_batch PASSED    [ 55%]\ntests/test_mechanism.py::test_checkpoint_restores_values_and_adam_for_next_step PASSED [ 58%]\ntests/test_mechanism.py::test_checkpoint_aligns_adam_moments_by_logical_coefficient_id PASSED [ 62%]\ntests/test_mechanism.py::test_mixed_checkpoint_overflow_is_rejected_before_target_mutation PASSED [ 65%]\ntests/test_mechanism.py::test_composed_torch_model_fits_coefficients_and_roundtrips_next_step PASSED [ 68%]\ntests/test_mechanism.py::test_live_tape_blocks_update_and_each_tape_has_one_backward PASSED [ 72%]\ntests/test_mechanism.py::test_stale_saved_input_is_rejected PASSED       [ 75%]\ntests/test_mechanism.py::test_abandoned_forward_releases_native_reader PASSED [ 79%]\ntests/test_mechanism.py::test_python_owner_binding_releases_with_dropped_module PASSED [ 82%]\ntests/test_mechanism.py::test_grad_scaler_skip_does_not_publish_generation PASSED [ 86%]\ntests/test_mechanism.py::test_partial_optimizer_failure_poisons_owner_and_whole_checkpoint_restores PASSED [ 89%]\ntests/test_mechanism.py::test_invalid_declarations_fail_before_native_construction PASSED [ 93%]\ntests/test_mechanism.py::test_shared_coefficient_binding_and_unused_parameter_gradient PASSED [ 96%]\ntests/test_mechanism.py::test_identity_words_preserve_full_uint64_range PASSED [100%]\n============================== 29 passed in 4.53s ==============================\n",
+      "substate": "exited",
+      "unit_name": "device-scheduler-attempt-bbc656c3f36cab8f101074eec8904295.service"
+    },
+    "started_at": "2026-10-27T19:34:46.302198Z",
+    "state": "succeeded"
+  },
+  "attempt_count": 1,
+  "attempt_id": "00c5f1cb-dde1-42a3-ba1f-188f3407cf3c",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-27T19:34:22.345067Z",
+  "decision_id": "b20cdd53-17d1-424f-83f7-125f24a899b0",
+  "id": "78cfba09-82c8-467c-8e76-c3296529e05b",
+  "job_id": "78cfba09-82c8-467c-8e76-c3296529e05b",
+  "lease_binding": null,
+  "lease_fencing_token": 932,
+  "lease_id": "2ef76208-68c5-4c0b-83a8-1ffa805a78ba",
+  "lease_state": "released",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "active",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-bbc656c3f36cab8f101074eec8904295.service",
+      "invocation_id": "efa541fb926a49b385c0ebbe2ed017cc",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt 00c5f1cb-dde1-42a3-ba1f-188f3407cf3c"
+    },
+    "exit_code": 0,
+    "invocation_id": "efa541fb926a49b385c0ebbe2ed017cc",
+    "logs": "============================= test session starts ==============================\nplatform linux -- Python 3.13.11, pytest-9.1.1, pluggy-1.6.0 -- /home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python\ncachedir: .pytest_cache\nrootdir: /home/tumlinson/Cellerator\nconfigfile: pyproject.toml\ncollecting ... collected 29 items\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_checkpoint_continues_after_promotion_and_revocation PASSED [  3%]\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_live_tape_freezes_structure_but_not_parameter_generation PASSED [  6%]\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_parameter_update_published_on_one_stream_is_visible_on_another PASSED [ 10%]\ntests/test_mechanism.py::test_f32_full_vjp_repeated_slots_and_additive_outputs PASSED [ 13%]\ntests/test_mechanism.py::test_input_and_output_permutation_covariance_including_full_vjp PASSED [ 17%]\ntests/test_mechanism.py::test_mechanism_rejects_higher_order_gradient_request PASSED [ 20%]\ntests/test_mechanism.py::test_biological_axis_identity_is_checked_independently_of_shape PASSED [ 24%]\ntests/test_mechanism.py::test_mixed_forward_and_ste_gradients_match_stored_value_reference PASSED [ 27%]\ntests/test_mechanism.py::test_mixed_initial_coefficients_must_round_to_finite_half PASSED [ 31%]\ntests/test_mechanism.py::test_shared_module_use_accumulates_before_one_guarded_adam_step PASSED [ 34%]\ntests/test_mechanism.py::test_from_handle_reuses_exact_parameter_and_optimizer_gradient PASSED [ 37%]\ntests/test_mechanism.py::test_out_of_band_coefficient_value_write_blocks_forward_and_checkpoint[f32] PASSED [ 41%]\ntests/test_mechanism.py::test_out_of_band_coefficient_value_write_blocks_forward_and_checkpoint[mixed_f16] PASSED [ 44%]\ntests/test_mechanism.py::test_coefficient_mutation_before_first_forward_is_rejected PASSED [ 48%]\ntests/test_mechanism.py::test_guard_rejects_native_owner_missing_from_module_set PASSED [ 51%]\ntests/test_mechanism.py::test_nondefault_stream_and_tail_batch PASSED    [ 55%]\ntests/test_mechanism.py::test_checkpoint_restores_values_and_adam_for_next_step PASSED [ 58%]\ntests/test_mechanism.py::test_checkpoint_aligns_adam_moments_by_logical_coefficient_id PASSED [ 62%]\ntests/test_mechanism.py::test_mixed_checkpoint_overflow_is_rejected_before_target_mutation PASSED [ 65%]\ntests/test_mechanism.py::test_composed_torch_model_fits_coefficients_and_roundtrips_next_step PASSED [ 68%]\ntests/test_mechanism.py::test_live_tape_blocks_update_and_each_tape_has_one_backward PASSED [ 72%]\ntests/test_mechanism.py::test_stale_saved_input_is_rejected PASSED       [ 75%]\ntests/test_mechanism.py::test_abandoned_forward_releases_native_reader PASSED [ 79%]\ntests/test_mechanism.py::test_python_owner_binding_releases_with_dropped_module PASSED [ 82%]\ntests/test_mechanism.py::test_grad_scaler_skip_does_not_publish_generation PASSED [ 86%]\ntests/test_mechanism.py::test_partial_optimizer_failure_poisons_owner_and_whole_checkpoint_restores PASSED [ 89%]\ntests/test_mechanism.py::test_invalid_declarations_fail_before_native_construction PASSED [ 93%]\ntests/test_mechanism.py::test_shared_coefficient_binding_and_unused_parameter_gradient PASSED [ 96%]\ntests/test_mechanism.py::test_identity_words_preserve_full_uint64_range PASSED [100%]\n============================== 29 passed in 4.53s ==============================\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "success",
+    "state": "succeeded",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.13.11, pytest-9.1.1, pluggy-1.6.0 -- /home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python\ncachedir: .pytest_cache\nrootdir: /home/tumlinson/Cellerator\nconfigfile: pyproject.toml\ncollecting ... collected 29 items\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_checkpoint_continues_after_promotion_and_revocation PASSED [  3%]\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_live_tape_freezes_structure_but_not_parameter_generation PASSED [  6%]\ntests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_parameter_update_published_on_one_stream_is_visible_on_another PASSED [ 10%]\ntests/test_mechanism.py::test_f32_full_vjp_repeated_slots_and_additive_outputs PASSED [ 13%]\ntests/test_mechanism.py::test_input_and_output_permutation_covariance_including_full_vjp PASSED [ 17%]\ntests/test_mechanism.py::test_mechanism_rejects_higher_order_gradient_request PASSED [ 20%]\ntests/test_mechanism.py::test_biological_axis_identity_is_checked_independently_of_shape PASSED [ 24%]\ntests/test_mechanism.py::test_mixed_forward_and_ste_gradients_match_stored_value_reference PASSED [ 27%]\ntests/test_mechanism.py::test_mixed_initial_coefficients_must_round_to_finite_half PASSED [ 31%]\ntests/test_mechanism.py::test_shared_module_use_accumulates_before_one_guarded_adam_step PASSED [ 34%]\ntests/test_mechanism.py::test_from_handle_reuses_exact_parameter_and_optimizer_gradient PASSED [ 37%]\ntests/test_mechanism.py::test_out_of_band_coefficient_value_write_blocks_forward_and_checkpoint[f32] PASSED [ 41%]\ntests/test_mechanism.py::test_out_of_band_coefficient_value_write_blocks_forward_and_checkpoint[mixed_f16] PASSED [ 44%]\ntests/test_mechanism.py::test_coefficient_mutation_before_first_forward_is_rejected PASSED [ 48%]\ntests/test_mechanism.py::test_guard_rejects_native_owner_missing_from_module_set PASSED [ 51%]\ntests/test_mechanism.py::test_nondefault_stream_and_tail_batch PASSED    [ 55%]\ntests/test_mechanism.py::test_checkpoint_restores_values_and_adam_for_next_step PASSED [ 58%]\ntests/test_mechanism.py::test_checkpoint_aligns_adam_moments_by_logical_coefficient_id PASSED [ 62%]\ntests/test_mechanism.py::test_mixed_checkpoint_overflow_is_rejected_before_target_mutation PASSED [ 65%]\ntests/test_mechanism.py::test_composed_torch_model_fits_coefficients_and_roundtrips_next_step PASSED [ 68%]\ntests/test_mechanism.py::test_live_tape_blocks_update_and_each_tape_has_one_backward PASSED [ 72%]\ntests/test_mechanism.py::test_stale_saved_input_is_rejected PASSED       [ 75%]\ntests/test_mechanism.py::test_abandoned_forward_releases_native_reader PASSED [ 79%]\ntests/test_mechanism.py::test_python_owner_binding_releases_with_dropped_module PASSED [ 82%]\ntests/test_mechanism.py::test_grad_scaler_skip_does_not_publish_generation PASSED [ 86%]\ntests/test_mechanism.py::test_partial_optimizer_failure_poisons_owner_and_whole_checkpoint_restores PASSED [ 89%]\ntests/test_mechanism.py::test_invalid_declarations_fail_before_native_construction PASSED [ 93%]\ntests/test_mechanism.py::test_shared_coefficient_binding_and_unused_parameter_gradient PASSED [ 96%]\ntests/test_mechanism.py::test_identity_words_preserve_full_uint64_range PASSED [100%]\n============================== 29 passed in 4.53s ==============================\n",
+    "substate": "exited",
+    "unit_name": "device-scheduler-attempt-bbc656c3f36cab8f101074eec8904295.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/pytest",
+      "-v",
+      "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu1/tests/test_cuda_lifecycle_extra.py",
+      "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu1/tests/test_mechanism.py"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CELLERATOR_REQUIRE_NATIVE": "1",
+      "CELLERATOR_RUN_CUDA_TESTS": "1",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "PYTHONPATH": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v3/package:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu1"
+    },
+    "event_trigger": null,
+    "idempotency_key": "cellerator-sparse-lifecycle-gpu1-20261027-v1",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": true
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 6442450944.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "gpu.exclusive"
+    ],
+    "timeout_seconds": 300.0,
+    "working_directory": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu1"
+  },
+  "state": "succeeded",
+  "updated_at": "2026-10-27T19:35:01.319052Z"
+}
