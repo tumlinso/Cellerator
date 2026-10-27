@@ -213,3 +213,14 @@
   sparse batches are implicit-zero expression matrices
   offset anchor in the sparse CUDA path treats the dense floor as zero
 - Status: implemented for sparse CUDA reconstruction/range training path
+
+## `sparse_support_training`
+
+- Purpose: native compiled gated sparse relation and indexed latent-state transition with explicit first-order VJPs, adapted to Torch autograd.
+- Ownership: Torch-free support/indexing/gating plus native sparse-support numerical operations; one canonical flat native parameter owner.
+- Boundary: contiguous same-device tensors, explicit stable support IDs/epochs, distinct primal and derivative candidate worksets, caller stream; tapes pin numerical and projection generations.
+- Arithmetic: FP16 storage/multiplication and FP32 accumulation/gradients/master parameters, with explicit FP32 reference.
+- Gates: sigmoid probability followed by threshold pruning; the straight-through derivative is an explicit biased estimator on a bounded derivative set.
+- Packing: existing CE-GEO physical cover/value maps form the first replaceable width-64 backend, with per-cell gates, residual/delta execution, and sparse SIMT backward.
+- Lifecycle: support publication and optimizer writes require retired tapes; checkpoint logical state/parameters before rebinding physical projection.
+- Status: native and Torch reference/VJP, cyclic-sampling, lifecycle and checkpoint tests pass on the qualified V100 snapshots. Held-out fixture evidence reports pruning quality separately; event results remain weak. See `docs/sparse_support_foundation.qmd` and `bench/sparse_support/evidence/qualification/`.

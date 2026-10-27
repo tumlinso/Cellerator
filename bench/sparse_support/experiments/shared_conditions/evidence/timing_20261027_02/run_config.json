@@ -1,0 +1,22 @@
+{
+  "benchmark_id": "cellerator_shared_condition_bitplane_probe",
+  "workload_family": "sparse_support_gating",
+  "dataset_tier": "large-compute",
+  "scenario_kind": "synthetic_three_way_ablation",
+  "dataset_id": "synthetic_binary_condition_dag_v1",
+  "seed": 1511508451,
+  "shapes": [
+    {"edges": 2176, "cells": 64, "sharing": "few"},
+    {"edges": 2176, "cells": 512, "sharing": "few"},
+    {"edges": 65536, "cells": 64, "sharing": "few"},
+    {"edges": 2176, "cells": 64, "sharing": "weak"}
+  ],
+  "warmup": 2,
+  "repeats": 11,
+  "paired_order": "rotating_control_direct_map_bitplane",
+  "timers": ["cuda_event_device_timeline", "host_wall_with_completion_sync"],
+  "inputs_resident": true,
+  "consumer": "Cellerator_cuda_build_condition_worksets_v1_for_all_paths",
+  "target_architecture": "sm_70",
+  "device_resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+}

@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.20)
+project(cellerator_counted_condition_probe LANGUAGES CXX)
+
+add_executable(counted_condition_probe counted_condition_probe.cc)
+target_compile_features(counted_condition_probe PRIVATE cxx_std_17)
+if(MSVC)
+  target_compile_options(counted_condition_probe PRIVATE /O2)
+else()
+  target_compile_options(counted_condition_probe PRIVATE -O3 -Wall -Wextra -Wpedantic)
+endif()

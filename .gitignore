@@ -6,6 +6,8 @@ docs/*
 !docs/preamble.tex
 !docs/semantic_spine_v1/
 !docs/semantic_spine_v1/**
+!docs/sparse_support_foundation/
+!docs/sparse_support_foundation/**
 !docs/pipeline/
 docs/pipeline/*
 !docs/pipeline/README.md
@@ -161,3 +163,11 @@ cuda_profile*.log
 
 /.quarto/
 **/*.quarto_ipynb
+**/.kda-experiments.lock
+
+# Source-bound sparse support qualification summaries; raw profiler reports and
+# build outputs remain ignored by their existing rules.
+!bench/sparse_support/evidence/*.json
+!bench/sparse_support/evidence/*.jsonl
+!bench/sparse_support/evidence/*.md
+!bench/sparse_support/evidence/*.txt

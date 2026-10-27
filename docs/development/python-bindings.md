@@ -2,8 +2,9 @@
 
 The Python distribution is named `cellerator`. It provides Torch-free identity
 and mechanism declarations plus native numerical entry points. Torch support is
-an optional adapter in `cellerator.torch`; it does not create another topology
-or parameter owner. No compiler API is exposed through this binding surface.
+an optional adapter in `cellerator.torch`; it borrows native topology and
+parameter owners. The sparse-support adapter exposes a bounded CE-GEO
+projection builder; the general compiler remains a native API.
 
 The resident CUDA bindings are available from `cellerator.cuda` when the
 Python/CUDA native capability is built. This module remains Torch-free and owns
@@ -62,6 +63,17 @@ target_link_libraries(my_target PRIVATE Cellerator::torch)
 ```
 
 Ordinary `find_package(Cellerator)` consumers do not discover or link Torch.
+
+The [sparse support facility](../sparse_support_foundation.qmd) adds
+`cellerator.torch.sparse_support` when the CUDA/Torch adapter and
+`CELLERATOR_ENABLE_SPARSE_SUPPORT` are enabled. It provides explicit support and
+workset records, prepared relation/latent operations, ranked-gene and event
+consumers, and CE-GEO projection preparation. `guarded_step`, `save_checkpoint`,
+and `load_checkpoint` use its canonical native parameter owner. These compiled
+operations supply first-order backward implementations; the pruning estimator
+and derivative candidate policy are explicit model choices. Native builds can
+use `Cellerator::sparse_support`, `Cellerator::sparse_support_cuda`, and
+`Cellerator::sparse_support_numeric` without linking Torch.
 
 The separately enabled [ATen tokenization facility](../tokenization.qmd)
 provides `cellerator.tokenization`, `Cellerator::tokenization` and reusable

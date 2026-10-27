@@ -1,0 +1,91 @@
+===== NCU rules for candidate_query_scatter, highest estimated speedup first =====
+Kernel: cellerator::compute::indexing::<unnamed>::query_scatter_kernel(cellerator::compute::indexing::cuda_reverse_posting_view_v1, unsigned long, const unsigned long *, const cellerator::compute::indexing::posting_term_v1 *, cellerator::compute::indexing::cuda_posting_scratch_v1::cursor_v1 *, const unsigned long *, cellerator::compute::indexing::cuda_posting_output_v1, cellerator::compute::indexing::cuda_posting_status_v1 *)
+Rule results status: available
+speedup: est. % of the kernel's time (global) or of the part the rule is about (local)
+
+[OPT]  97.63% (local)  ComputeWorkloadAnalysis / HighPipeUtilization: Low Utilization
+    All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough
+    warps per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.
+
+[OPT]  94.04% (local)  SchedulerStats / IssueSlotUtilization
+    Every scheduler is capable of issuing one instruction per cycle, but for this workload each scheduler only
+    issues an instruction every 42.9 cycles. This might leave hardware resources underutilized and may lead to
+    less optimal performance. Out of the maximum of 16 warps per scheduler, this workload allocates an average
+    of 0.98 active warps per scheduler, which already limits the scheduler to less than a warp per
+    instruction.
+
+[OPT]  91.98% (global)  Occupancy / AchievedOccupancy
+    The difference between calculated theoretical (75.0%) and measured achieved occupancy (6.0%) can be the
+    result of warp scheduling overheads or workload imbalances during the kernel execution. Load imbalances
+    can occur between warps within a block as well as across blocks of the same kernel. See the CUDA Best
+    Practices Guide (https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#occupancy) for more
+    details on optimizing occupancy.
+
+[OPT]  66.60% (global)  WarpStateStats / CPIStall: Long Scoreboard Stalls
+    On average, each warp of this workload spends 27.9 cycles being stalled waiting for a scoreboard
+    dependency on a L1TEX (local, global, surface, texture) operation. Find the instruction producing the data
+    being waited upon to identify the culprit. To reduce the number of cycles waiting on L1TEX data accesses
+    verify the memory access patterns are optimal for the target architecture, attempt to increase cache hit
+    rates by increasing data locality (coalescing), or by changing the cache configuration. Consider moving
+    frequently used data to shared memory. This stall type represents about 66.6% of the total average of 41.8
+    cycles between issuing two instructions.
+
+[OPT]  25.00% (global)  Occupancy / TheoreticalOccupancy
+    The 12.00 theoretical warps per scheduler this kernel can issue according to its occupancy are below the
+    hardware maximum of 16. This kernel's theoretical occupancy (75.0%) is limited by the number of required
+    registers.
+
+[OPT]  20.00% (global)  LaunchStats / LaunchConfiguration: Small Grid
+    The grid for this launch is configured to execute only 64 blocks, which is less than the GPU's 80
+    multiprocessors. This can underutilize some multiprocessors. If you do not intend to execute this kernel
+    concurrently with other workloads, consider reducing the block size to have at least one block per
+    multiprocessor or increase the size of the grid to fully utilize the available hardware resources. See the
+    Hardware Model (https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#metrics-hw-model)
+    description for more details on launch configurations.
+
+[OPT]  19.17% (global)  WorkloadDistribution / WorkloadImbalance: SMSPs Workload Imbalance
+    One or more SMSPs have a much lower number of active cycles than the average number of active cycles.
+    Maximum instance value is 64.75% above the average, while the minimum instance value is 100.00% below the
+    average.
+
+[OPT]  19.17% (global)  WorkloadDistribution / WorkloadImbalance: SMs Workload Imbalance
+    One or more SMs have a much lower number of active cycles than the average number of active cycles.
+    Maximum instance value is 63.66% above the average, while the minimum instance value is 100.00% below the
+    average.
+
+[OPT]  19.17% (global)  WorkloadDistribution / WorkloadImbalance: L1 Slices Workload Imbalance
+    One or more L1 Slices have a much lower number of active cycles than the average number of active cycles.
+    Maximum instance value is 63.66% above the average, while the minimum instance value is 100.00% below the
+    average.
+
+[OPT]  10.31% (global)  SourceCounters / UncoalescedGlobalAccess
+    This kernel has uncoalesced global accesses resulting in a total of 33600 excessive sectors (49% of the
+    total 68188 sectors). Check the L2 Theoretical Sectors Global Excessive table for the primary source
+    locations. The CUDA Programming Guide (https://docs.nvidia.com/cuda/cuda-c-programming-
+    guide/index.html#device-memory-accesses) has additional information on reducing uncoalesced device memory
+    accesses.
+
+[OPT]   4.22% (global)  MemoryWorkloadAnalysis_Tables / MemoryCacheAccessPattern: L1TEX Global Load Access Pattern
+    The memory access pattern for global loads from L1TEX might not be optimal. On average, only 15.6 of the
+    32 bytes transmitted per sector are utilized by each thread. This could possibly be caused by a stride
+    between threads. Check the Source Counters section for uncoalesced global loads.
+
+[OPT]   4.20% (global)  MemoryWorkloadAnalysis_Tables / MemoryCacheAccessPattern: L1TEX Global Store Access Pattern
+    The memory access pattern for global stores to L1TEX might not be optimal. On average, only 15.6 of the 32
+    bytes transmitted per sector are utilized by each thread. This could possibly be caused by a stride
+    between threads. Check the Source Counters section for uncoalesced global stores.
+
+[OPT]      -  SpeedOfLight / SOLBottleneck: Small Grid
+    This kernel grid is too small to fill the available resources on this device, resulting in only 0.1 full
+    waves across all SMs. Look at Launch Statistics for more details.
+
+[OK]      -  WarpStateStats / CPIStall
+    Check the Warp Stall Sampling (All Samples) table for the top stall locations in your source based on
+    sampling data. The Profiling Guide (https://docs.nvidia.com/nsight-
+    compute/ProfilingGuide/index.html#metrics-reference) provides more details on each stall reason.
+
+[OK]      -  SpeedOfLight_RooflineChart / SOLFPRoofline: Roofline Analysis
+    The ratio of peak float (FP32) to double (FP64) performance on this device is 2:1. The workload achieved
+    0% of this device's FP32 peak performance and 0% of its FP64 peak performance. See the Profiling Guide
+    (https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#roofline) for more details on roofline
+    analysis.

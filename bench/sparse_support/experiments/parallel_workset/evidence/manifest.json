@@ -1,0 +1,69 @@
+{
+  "experiment": "parallel_workset_prefix_scatter_v1",
+  "workload": {
+    "official_anchor": {
+      "edges": 2176,
+      "cells": 64,
+      "entities": 256,
+      "source_skew": 0.9,
+      "gate_density": 0.5,
+      "dirty_fraction": 0.01,
+      "seed": 20261027,
+      "fixture_digest": "0xf82d50df3b097939"
+    },
+    "additional_cases": ["batch_b1_skew09", "batch_b512_skew09", "derivative_heavy"]
+  },
+  "build": {
+    "compiler": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "cuda_version": "12.9.86",
+    "host_compiler": "/usr/bin/g++",
+    "architecture": "sm_70",
+    "build_directory": "/tmp/cellerator_parallel_workset_build129",
+    "binary_sha256": "dc1de413ae49a9536dfe31188c05fa316d6297e6dc5d2117cf3270c96e781d95",
+    "probe_source_sha256": "9ee87ef61955e1187d9e9136c69126d5662c9982d0475c633776ec88f3fa06ea",
+    "cmake_sha256": "91f804c8f9647b269db27d44410edc53f98de0dc76b918abda6b1fa30b0c7337",
+    "production_workset_sha256": "58c9d2302f8f6086b438cbfd4558ef054c2de546e40696940bd2c53bc1d142c1",
+    "production_condition_sha256": "3d8d6b8d526884480cc80547ab1587cc09401331c352dcba2a10e03c64d2ad33",
+    "production_postings_sha256": "a3aecefb1ed359342bbc6ffb6843bda079f8a28082030f07510a0e78275e3853",
+    "production_host_postings_sha256": "aae47682995442ede9fd9d91754c5006f07c5983b27f1d761e17da55d4645830",
+    "support_validation_sha256": "926504f78f7d0e6064777250f7b9fbb926a5317a25a2fc6bae3b3aec3a40eced"
+  },
+  "host_oracle": {
+    "result": "pass",
+    "result_file": "host_oracle.jsonl",
+    "result_sha256": "13b392cf7c530aab7a8c5c6e34f4068ced280709238076e11d510a3830115131"
+  },
+  "scheduler": {
+    "gpu0_job_id": "db05e497-7269-45a0-abb1-40844e894918",
+    "gpu0_job_state": "cancelled",
+    "gpu0_attempt_id": null,
+    "gpu0_cleanup_verified": true,
+    "first_gpu2_job_id": "51c5c951-bd34-475f-82ed-ed4f1d500a2b",
+    "first_gpu2_job_state": "cancelled",
+    "first_gpu2_attempt_id": "5a899d70-1f26-4846-a20e-eb918daf0b09",
+    "first_gpu2_attempt_started_at": null,
+    "first_gpu2_precondition_failure": "GPU lease quiescence and memory threshold were not observed before the deadline",
+    "first_gpu2_cleanup_verified": true,
+    "first_gpu2_recovery_outcome": "unknown_but_inactive_and_fenced",
+    "first_gpu2_fenced": true,
+    "corrected_job_id": "0720f9b4-68ff-4f55-b9c7-c54f03321a7e",
+    "corrected_idempotency_key": "cellerator-parallel-workset-paired-v100-20261027-v1-gpu2-q120",
+    "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+    "submitted_state": "queued",
+    "latest_observed_state": "blocked",
+    "attempt_id": "dc11ae48-c913-4371-a547-c786d7cb1e23",
+    "precondition_timeout_seconds": 120,
+    "max_utilization_percent": 0,
+    "corrected_request_count": 1,
+    "attempt_count": 0,
+    "attempt_started_at": null,
+    "attempt_cleanup_verified": true,
+    "precondition_state": "unsupported",
+    "precondition_failure": "gpu.quiescence parameters are outside the supported bounded schema",
+    "observed_utilization_percent": 3,
+    "observed_compute_process_count": 0,
+    "measurement_result": "not_run",
+    "final_receipt_file": "q120_gpu2_job.json",
+    "final_receipt_sha256": "cbad3c57d607cf386ad859f800d1c2e25d28e1ad666105881601ea2c4033b0b5"
+  }
+}

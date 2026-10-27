@@ -1,0 +1,184 @@
+{
+  "attempt": {
+    "attempt_id": "dc11ae48-c913-4371-a547-c786d7cb1e23",
+    "cleanup_verified": true,
+    "created_at": "2026-10-27T19:20:06.355067Z",
+    "error": {
+      "cleanup_error": null,
+      "reason": "execution_precondition_unverified"
+    },
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 1073741824.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        }
+      ],
+      "claim_id": "ebd5ad78-719e-45d9-a117-212b7eb2ade5",
+      "fencing_token": 908,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 2,
+            "inventory_observed_at": "2026-10-27T19:20:03.260875+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:83:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-27T19:20:03.260875+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 3,
+            "uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          },
+          "capabilities": [
+            "shared-admission",
+            "whole-device-exclusive-admission",
+            "memory-accounting-only",
+            "nvidia-smi-compute-process-telemetry"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+          "schema_version": 1,
+          "topology": {
+            "links": [],
+            "pci_bus_id": "00000000:83:00.0",
+            "topology_state": "partial"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": null,
+    "finished_at": "2026-10-27T19:20:06.427881Z",
+    "id": "dc11ae48-c913-4371-a547-c786d7cb1e23",
+    "job_id": "0720f9b4-68ff-4f55-b9c7-c54f03321a7e",
+    "operation_id": "start:dc11ae48-c913-4371-a547-c786d7cb1e23",
+    "precondition_operation_id": "preconditions:dc11ae48-c913-4371-a547-c786d7cb1e23",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:dc11ae48-c913-4371-a547-c786d7cb1e23",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "reason": "gpu.quiescence parameters are outside the supported bounded schema"
+              },
+              "name": "gpu.quiescence",
+              "schema_version": 1,
+              "state": "unsupported"
+            }
+          ],
+          "state": "unsupported"
+        }
+      ],
+      "state": "blocked"
+    },
+    "result": {},
+    "started_at": null,
+    "state": "blocked"
+  },
+  "attempt_count": 0,
+  "attempt_id": "dc11ae48-c913-4371-a547-c786d7cb1e23",
+  "blocked_reason": "job resource lease is not active",
+  "blocked_reason_code": "blocked",
+  "cleanup_verified": true,
+  "created_at": "2026-10-27T19:20:04.386681Z",
+  "decision_id": "f4ea92d0-1321-4360-8946-f7ac288bcb32",
+  "id": "0720f9b4-68ff-4f55-b9c7-c54f03321a7e",
+  "job_id": "0720f9b4-68ff-4f55-b9c7-c54f03321a7e",
+  "lease_binding": null,
+  "lease_fencing_token": null,
+  "lease_id": null,
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": null,
+  "spec": {
+    "argv": [
+      "/bin/bash",
+      "/home/tumlinson/Cellerator/bench/sparse_support/experiments/parallel_workset/run_matrix.sh"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "LD_LIBRARY_PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64",
+      "OMP_NUM_THREADS": "2",
+      "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/compilers/bin:/usr/local/bin:/usr/bin:/bin",
+      "PYTHONUNBUFFERED": "1"
+    },
+    "event_trigger": null,
+    "idempotency_key": "cellerator-parallel-workset-paired-v100-20261027-v1-gpu2-q120",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": true
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 120
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 1073741824.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "bench.parallel_workset",
+      "gpu.exclusive",
+      "cellerator.sparse_support.indexing"
+    ],
+    "timeout_seconds": 900.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "blocked",
+  "updated_at": "2026-10-27T19:21:41.125504Z"
+}

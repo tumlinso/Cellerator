@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "owner_id": "cellerator",
+  "idempotency_key": "cellerator-shared-condition-probe-timing-20261027-02",
+  "argv": [
+    "/home/tumlinson/Cellerator/build-shared-condition-probe-12/shared_condition_probe",
+    "--suite",
+    "--repeats", "11"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "resources": [
+    {
+      "schema_version": 1,
+      "kind": "gpu",
+      "selectors": {"resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"},
+      "quantities": {"memory_bytes": 2147483648},
+      "mode": "exclusive",
+      "same_host": true,
+      "topology_constraints": {}
+    }
+  ],
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ],
+  "tags": ["gpu.exclusive"],
+  "priority": 50,
+  "priority_class": "normal",
+  "timeout_seconds": 600,
+  "max_attempts": 1,
+  "interruption": {
+    "cancellation_supported": true,
+    "checkpoint_supported": false,
+    "cooperative_yield": false,
+    "restart_safe": false
+  }
+}

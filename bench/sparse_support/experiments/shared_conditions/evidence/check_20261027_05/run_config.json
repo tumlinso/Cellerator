@@ -1,0 +1,16 @@
+{
+  "benchmark_id": "cellerator_shared_condition_bitplane_probe",
+  "workload_family": "sparse_support_gating",
+  "dataset_tier": "small",
+  "scenario_kind": "correctness_ablation_suite",
+  "dataset_id": "synthetic_binary_condition_dag_v1",
+  "seed": 1511508451,
+  "shapes": [
+    {"edges": 2176, "cells": 64, "sharing": "few"},
+    {"edges": 2176, "cells": 512, "sharing": "few"},
+    {"edges": 65536, "cells": 64, "sharing": "few"},
+    {"edges": 2176, "cells": 64, "sharing": "weak"}
+  ],
+  "comparison": "scalar_oracle_and_current_direct_map_bitplane",
+  "target_architecture": "sm_70"
+}

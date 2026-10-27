@@ -1,0 +1,185 @@
+===== Stall hotspots for posting_query_skewed =====
+Kernel: query_counts_kernel
+Source-line attribution: 103/103 sampled PCs mapped (available)
+
+===== By line in the kernel function (outermost inline frame, from --binary; SASS of 103/103 sampled PCs matched the report) =====
+Total distinct (file, line) entries: 7
+
+Rank      Total File                            Line  Breakdown (stall: count)
+------------------------------------------------------------------------------------------------------------------------------------------------------
+   0       9011 cuda_postings.cu                 103  long_scoreboard: 4258, wait: 3264, selected: 1085, branch_resolving: 219, no_instructions: 185
+   1         54 cuda_postings.cu                 101  wait: 37, selected: 16, no_instructions: 1
+   2         29 cuda_postings.cu                  96  no_instructions: 29
+   3         22 cuda_postings.cu                 102  imc_miss: 19, selected: 2, wait: 1
+   4         15 cuda_postings.cu                 105  long_scoreboard: 13, no_instructions: 2
+   5          1 cuda_postings.cu                 108  drain: 1
+   6          1 cuda_postings.cu                 104  imc_miss: 1
+
+
+===== Per-stall-type top lines =====
+
+--- long_scoreboard ---
+      4258  cuda_postings.cu:103
+        13  cuda_postings.cu:105
+
+--- wait ---
+      3264  cuda_postings.cu:103
+        37  cuda_postings.cu:101
+         1  cuda_postings.cu:102
+
+--- drain ---
+         1  cuda_postings.cu:108
+
+--- no_instructions ---
+       185  cuda_postings.cu:103
+        29  cuda_postings.cu:96
+         2  cuda_postings.cu:105
+         1  cuda_postings.cu:101
+
+--- selected ---
+      1085  cuda_postings.cu:103
+        16  cuda_postings.cu:101
+         2  cuda_postings.cu:102
+
+--- branch_resolving ---
+       219  cuda_postings.cu:103
+
+--- imc_miss ---
+        19  cuda_postings.cu:102
+         1  cuda_postings.cu:104
+
+
+===== Executed instructions per line (inst_executed, 2229672 warp-level) =====
+       2227624   99.9%  cuda_postings.cu:103
+           576    0.0%  cuda_postings.cu:106
+           448    0.0%  cuda_postings.cu:102
+           384    0.0%  cuda_postings.cu:104
+           256    0.0%  cuda_postings.cu:101
+           192    0.0%  cuda_postings.cu:105
+           128    0.0%  cuda_postings.cu:96
+            64    0.0%  cuda_postings.cu:108
+
+
+===== By innermost source line (ncu's own attribution) =====
+Total distinct (file, line) entries: 24
+
+Rank      Total File                            Line  Breakdown (stall: count)
+------------------------------------------------------------------------------------------------------------------------------------------------------
+   0       3747 cuda_postings.cu                  89  long_scoreboard: 2883, wait: 641, selected: 144, branch_resolving: 44, no_instructions: 35
+   1       1330 cuda_postings.cu                  88  wait: 696, long_scoreboard: 435, selected: 199
+   2        937 cuda_postings.cu                  73  long_scoreboard: 400, wait: 317, selected: 180, no_instructions: 40
+   3        603 cuda_postings.cu                  75  long_scoreboard: 392, wait: 118, selected: 93
+   4        553 cuda_postings.cu                  72  wait: 413, selected: 140
+   5        505 cuda_postings.cu                  86  wait: 353, selected: 90, branch_resolving: 41, no_instructions: 21
+   6        275 cuda_postings.cu                  81  wait: 192, branch_resolving: 42, no_instructions: 24, selected: 17
+   7        267 cuda_postings.cu                  90  wait: 194, selected: 73
+   8        221 cuda_postings.cu                  74  wait: 182, selected: 39
+   9        214 cuda_postings.cu                  71  branch_resolving: 92, no_instructions: 65, selected: 33, wait: 24
+  10        175 cuda_postings.cu                  83  wait: 111, selected: 64
+  11        151 cuda_postings.cu                  30  long_scoreboard: 129, wait: 14, selected: 8
+  12         54 cuda_postings.cu                 101  wait: 37, selected: 16, no_instructions: 1
+  13         29 cuda_postings.cu                  96  no_instructions: 29
+  14         22 cuda_postings.cu                 102  imc_miss: 19, selected: 2, wait: 1
+  15         15 cuda_postings.cu                 105  long_scoreboard: 13, no_instructions: 2
+  16         11 cuda_postings.cu                  62  long_scoreboard: 8, wait: 2, selected: 1
+  17         10 cuda_postings.cu                  52  long_scoreboard: 10
+  18          6 cuda_postings.cu                  33  wait: 4, long_scoreboard: 1, selected: 1
+  19          3 cuda_postings.cu                  58  selected: 2, wait: 1
+  20          2 cuda_postings.cu                  28  wait: 1, selected: 1
+  21          1 cuda_postings.cu                  50  wait: 1
+  22          1 cuda_postings.cu                 108  drain: 1
+  23          1 cuda_postings.cu                 104  imc_miss: 1
+
+
+===== Per-stall-type top lines =====
+
+--- long_scoreboard ---
+      2883  cuda_postings.cu:89
+       435  cuda_postings.cu:88
+       400  cuda_postings.cu:73
+       392  cuda_postings.cu:75
+       129  cuda_postings.cu:30
+        13  cuda_postings.cu:105
+        10  cuda_postings.cu:52
+         8  cuda_postings.cu:62
+         1  cuda_postings.cu:33
+
+--- wait ---
+       696  cuda_postings.cu:88
+       641  cuda_postings.cu:89
+       413  cuda_postings.cu:72
+       353  cuda_postings.cu:86
+       317  cuda_postings.cu:73
+       194  cuda_postings.cu:90
+       192  cuda_postings.cu:81
+       182  cuda_postings.cu:74
+       118  cuda_postings.cu:75
+       111  cuda_postings.cu:83
+
+--- drain ---
+         1  cuda_postings.cu:108
+
+--- no_instructions ---
+        65  cuda_postings.cu:71
+        40  cuda_postings.cu:73
+        35  cuda_postings.cu:89
+        29  cuda_postings.cu:96
+        24  cuda_postings.cu:81
+        21  cuda_postings.cu:86
+         2  cuda_postings.cu:105
+         1  cuda_postings.cu:101
+
+--- selected ---
+       199  cuda_postings.cu:88
+       180  cuda_postings.cu:73
+       144  cuda_postings.cu:89
+       140  cuda_postings.cu:72
+        93  cuda_postings.cu:75
+        90  cuda_postings.cu:86
+        73  cuda_postings.cu:90
+        64  cuda_postings.cu:83
+        39  cuda_postings.cu:74
+        33  cuda_postings.cu:71
+
+--- branch_resolving ---
+        92  cuda_postings.cu:71
+        44  cuda_postings.cu:89
+        42  cuda_postings.cu:81
+        41  cuda_postings.cu:86
+
+--- imc_miss ---
+        19  cuda_postings.cu:102
+         1  cuda_postings.cu:104
+
+
+===== Executed instructions per line (inst_executed, 2229672 warp-level) =====
+        394488   17.7%  cuda_postings.cu:88
+        362318   16.2%  cuda_postings.cu:73
+        328560   14.7%  cuda_postings.cu:89
+        197628    8.9%  cuda_postings.cu:72
+        197244    8.8%  cuda_postings.cu:75
+        197244    8.8%  cuda_postings.cu:86
+        132584    5.9%  cuda_postings.cu:71
+        131496    5.9%  cuda_postings.cu:83
+         98622    4.4%  cuda_postings.cu:74
+         98622    4.4%  cuda_postings.cu:90
+         65876    3.0%  cuda_postings.cu:81
+         13387    0.6%  cuda_postings.cu:30
+          3702    0.2%  cuda_postings.cu:58
+          1851    0.1%  cuda_postings.cu:28
+          1058    0.0%  cuda_postings.cu:33
+           768    0.0%  cuda_postings.cu:50
+           576    0.0%  cuda_postings.cu:106
+           512    0.0%  cuda_postings.cu:51
+           448    0.0%  cuda_postings.cu:102
+           384    0.0%  cuda_postings.cu:104
+           384    0.0%  cuda_postings.cu:62
+           320    0.0%  cuda_postings.cu:52
+           256    0.0%  cuda_postings.cu:101
+           256    0.0%  cuda_postings.cu:103
+           256    0.0%  cuda_postings.cu:60
+           192    0.0%  cuda_postings.cu:44
+           192    0.0%  cuda_postings.cu:105
+           128    0.0%  cuda_postings.cu:96
+           128    0.0%  cuda_postings.cu:59
+            64    0.0%  cuda_postings.cu:93

@@ -1,0 +1,10 @@
+{
+  "benchmark_id": "cellerator_shared_condition_bitplane_probe_sanitizers",
+  "workload_family": "sparse_support_gating",
+  "dataset_tier": "small",
+  "scenario_kind": "sanitizer_check",
+  "dataset_id": "synthetic_weak_sharing_binary_dag_v1",
+  "shape": {"edges": 2176, "cells": 64, "sharing": "weak", "nodes": 2304},
+  "tools": ["compute-sanitizer memcheck", "compute-sanitizer racecheck"],
+  "target_architecture": "sm_70"
+}

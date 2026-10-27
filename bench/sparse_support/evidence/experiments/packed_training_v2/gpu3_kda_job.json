@@ -1,0 +1,58 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python3",
+    "/home/tumlinson/Cellerator/bench/sparse_support/run_packed_training_kda.py",
+    "--task",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/packed_training_v2/kda_task.json",
+    "--workspace",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/packed_training_v2/kda_workspace",
+    "--output-dir",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/packed_training_v2/run_001"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "timeout_seconds": 1800,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-packed-vs-simt-training-v2-gpu3-20261027-r1",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 4294967296
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator.sparse_support.training",
+    "kda.experiment"
+  ],
+  "environment": {
+    "PATH": "/home/tumlinson/Software/miniconda3/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin:/usr/local/bin:/usr/bin:/bin",
+    "PYTHONPATH": "/home/tumlinson/kda:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v2/package:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v2",
+    "CELLERATOR_SPARSE_PACKAGE_ROOT": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v2/package",
+    "CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED": "1",
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "interruption": {
+    "restart_safe": true,
+    "cancellation_supported": true
+  },
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ]
+}

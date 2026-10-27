@@ -1,0 +1,33 @@
+{
+  "captured_unix_ns": 1793127467362017861,
+  "change": "For a one-term query, count using the indexed posting offsets and scatter the already sorted unique posting in parallel; keep the existing serial k-way merge for multi-term queries.",
+  "copied_artifacts": {
+    "benchmark_binary": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/candidate/cellerator_sparse_support_cuda_indexing_bench",
+      "sha256": "ac6a2a441dc5c6f7d1aa45225495b439a56b346dfd5e2a6f6b309a645e1cdadc"
+    },
+    "benchmark_source": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/candidate/cuda_indexing_bench.cu",
+      "sha256": "61531743487023be636c498cd9ae7554cf932bca8f9e5fc2fc1e1488f3925e6d"
+    },
+    "cuda_library": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/candidate/libcellerator_sparse_support_cuda.a",
+      "sha256": "2172d92ad778592c9f5991368d7ee5e234c8eb5503a3c682e799e83fb155c08c"
+    },
+    "cuda_postings_source": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/candidate/cuda_postings.cu",
+      "sha256": "a3aecefb1ed359342bbc6ffb6843bda079f8a28082030f07510a0e78275e3853"
+    },
+    "postings_header": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/candidate/cuda_postings.cuh",
+      "sha256": "f3c4015ff13b49b8e3e320f5dd59c9c6b4d556aab1560f422cc929cfa185f1b0"
+    },
+    "support_header": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/candidate/reverse_postings.hh",
+      "sha256": "bbabcc387ca3f3428ddd3973b45616ce3a293e097111bd200993b7fcf836a414"
+    }
+  },
+  "git_head": "11a0c927978c683061a17f50c8c16a9afa39f2f2",
+  "schema": "cellerator.sparse_support.posting_singleton_candidate.v1",
+  "variant": "single_term_direct_count_parallel_scatter"
+}

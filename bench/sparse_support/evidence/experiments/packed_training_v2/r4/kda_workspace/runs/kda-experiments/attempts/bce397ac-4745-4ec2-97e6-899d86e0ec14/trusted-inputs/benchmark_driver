@@ -1,0 +1,819 @@
+#!/usr/bin/env python3
+"""Paired SIMT versus CE-GEO N64 sparse relation training benchmark.
+
+The caller owns Device Scheduler admission. This driver refuses to run unless
+the job explicitly sets CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED=1. It uses the
+frozen v2 Torch package supplied by CELLERATOR_SPARSE_PACKAGE_ROOT, and writes
+raw source-bound timing and preparation evidence to --output-dir.
+
+Measured step scope:
+  inference: gate scoring + shared edge-value calculation + sparse relation
+  training: zero_grad + gate scoring/STE + edge values + relation + loss +
+            backward (including derivative-only gate candidates) + guarded Adam
+
+Support and per-cell worksets are frozen before timing. Packed training uses
+the production CE-GEO N64 forward dispatch; its backward remains the same native
+SIMT VJP as the control. This measures the current mixed packed-forward/SIMT-
+backward implementation, not a packed backward kernel.
+"""
+from __future__ import annotations
+
+import argparse
+import gc
+import hashlib
+import importlib
+import json
+import math
+import os
+from pathlib import Path
+import platform
+import random
+import statistics
+import subprocess
+import sys
+import time
+from typing import Any
+
+
+WIDTH = 64
+ENTITIES = 32
+MECHANISMS = 4
+RANK_COUNT = 8
+SEED = 20261027
+FROZEN_V2_HASHES = {
+    "package/cellerator/torch/sparse_support.py":
+        "813d96e0560682f0243c665b96f0dddfec198225749175fbe05d4cc605bbcf03",
+    "tests/test_cuda_training.py":
+        "4077faea2a5ffc34618293c22e715cc593f09f18d630e4764aec76d3d28dfa7c",
+    "package/cellerator/torch/mechanism.py":
+        "353ce0989fa9ed8091a653ce080051325540f6414f2126b501623b1ea4a5dd65",
+}
+
+
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def json_bytes(value: Any) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+
+
+def tensor_digest(tensors: list[Any]) -> str:
+    digest = hashlib.sha256()
+    for tensor in tensors:
+        host = tensor.detach().contiguous().cpu()
+        digest.update(str(host.dtype).encode())
+        digest.update(json_bytes(list(host.shape)))
+        digest.update(host.numpy().tobytes())
+    return digest.hexdigest()
+
+
+def make_support(SupportSpec):
+    # Four locally dense 4x4 modules inside a 16x16 source/destination tile.
+    # The graph is shared across cells; only current active source sets differ.
+    edge_ids, sources, destinations = [], [], []
+    for source in range(16):
+        module = source // 4
+        for local_target in range(4):
+            edge_ids.append(source * 4 + local_target + 1)
+            sources.append(source)
+            destinations.append(16 + module * 4 + local_target)
+    return SupportSpec(tuple(edge_ids), tuple(sources), tuple(destinations), 1)
+
+
+def make_candidate_rows(support, active_rows: list[list[int]]):
+    by_source: dict[int, list[int]] = {}
+    for ordinal, source in enumerate(support.sources):
+        by_source.setdefault(source, []).append(ordinal)
+    rows = []
+    for active in active_rows:
+        ordinals = sorted({ordinal for source in active
+                           for ordinal in by_source.get(int(source), ())},
+                          key=lambda ordinal: support.edge_ids[ordinal])
+        rows.append(ordinals)
+    return rows
+
+
+def make_worksets(torch, PerCellWorkset, support, candidate_rows, device):
+    derivative_offsets = [0]
+    derivative_ordinals: list[int] = []
+    derivative_ids: list[int] = []
+    derivative_gate_indices: list[int] = []
+    primal_offsets = [0]
+    primal_ordinals: list[int] = []
+    primal_ids: list[int] = []
+    primal_gate_indices: list[int] = []
+    admitted: list[int] = []
+
+    for cell, ordinals in enumerate(candidate_rows):
+        row_begin = len(derivative_ordinals)
+        for ordinal in ordinals:
+            edge_id = support.edge_ids[ordinal]
+            gate_index = len(derivative_ordinals)
+            derivative_ordinals.append(ordinal)
+            derivative_ids.append(edge_id)
+            derivative_gate_indices.append(gate_index)
+            # Frozen hard gate mask from a stable hash. The soft probabilities
+            # are recomputed from shared trainable state on every step.
+            hard = int((edge_id * 13 + cell * 7 + SEED) % 2 == 0)
+            admitted.append(hard)
+            if hard:
+                primal_ordinals.append(ordinal)
+                primal_ids.append(edge_id)
+                primal_gate_indices.append(gate_index)
+        derivative_offsets.append(len(derivative_ordinals))
+        primal_offsets.append(len(primal_ordinals))
+        if derivative_offsets[-1] - row_begin != len(ordinals):
+            raise RuntimeError("candidate row construction lost a support item")
+
+    # An initial mask is later replaced by the actual median-thresholded
+    # sigmoid decisions. These arrays define only the derivative candidate set.
+    derivative = PerCellWorkset(
+        torch.tensor(derivative_offsets, device=device, dtype=torch.int64),
+        torch.tensor(derivative_ordinals, device=device, dtype=torch.int64),
+        torch.tensor(derivative_ids, device=device, dtype=torch.int64),
+        torch.tensor(derivative_gate_indices, device=device, dtype=torch.int64),
+        support.structure_epoch, 1, len(candidate_rows) * len(support.edge_ids))
+    gate_mask = torch.tensor(admitted, device=device, dtype=torch.bool)
+    # This provisional primal is rebuilt from the sigmoid threshold below.
+    primal = PerCellWorkset(
+        torch.tensor(primal_offsets, device=device, dtype=torch.int64),
+        torch.tensor(primal_ordinals, device=device, dtype=torch.int64),
+        torch.tensor(primal_ids, device=device, dtype=torch.int64),
+        torch.tensor(primal_gate_indices, device=device, dtype=torch.int64),
+        support.structure_epoch, 1, len(candidate_rows) * len(support.edge_ids))
+    return primal, derivative, gate_mask
+
+
+def workset_with_mask(torch, PerCellWorkset, support, candidate_rows,
+                      derivative, admitted_mask, device):
+    offsets = [0]
+    ordinals: list[int] = []
+    edge_ids: list[int] = []
+    gate_indices: list[int] = []
+    host_mask = admitted_mask.detach().to("cpu").tolist()
+    cursor = 0
+    for row in candidate_rows:
+        for ordinal in row:
+            if host_mask[cursor]:
+                ordinals.append(ordinal)
+                edge_ids.append(support.edge_ids[ordinal])
+                gate_indices.append(cursor)
+            cursor += 1
+        offsets.append(len(ordinals))
+    if cursor != len(host_mask):
+        raise RuntimeError("frozen gate mask does not match the derivative workset")
+    primal = PerCellWorkset(
+        torch.tensor(offsets, device=device, dtype=torch.int64),
+        torch.tensor(ordinals, device=device, dtype=torch.int64),
+        torch.tensor(edge_ids, device=device, dtype=torch.int64),
+        torch.tensor(gate_indices, device=device, dtype=torch.int64),
+        support.structure_epoch, derivative.state_generation, derivative.capacity)
+    return primal
+
+
+def make_case(torch, fixture_module, support, device, case_name: str, seed: int):
+    from cellerator.torch.sparse_support import make_masked_gene_fixture, make_next_event_fixture
+
+    with torch.no_grad(), fixture_module._pinned_forward():
+        entity = fixture_module.block("entity_embedding").detach()
+        rank = fixture_module.block("rank_embedding").detach()
+
+    if case_name == "event_local":
+        fixture = make_next_event_fixture(seed=seed, cells=4, steps=6, entities=ENTITIES)
+        tokens = fixture["events"][:, -1].to(device=device, dtype=torch.int64)
+        cells = int(tokens.numel())
+        context = torch.zeros((cells, ENTITIES, WIDTH), device=device, dtype=torch.float32)
+        event_features = entity.index_select(0, tokens)
+        context.scatter_add_(1, tokens[:, None, None].expand(-1, 1, WIDTH),
+                             event_features[:, None, :])
+        active_rows = [[int(token)] for token in tokens.detach().cpu().tolist()]
+        case_shape = {"cells": cells, "event_occurrences_per_cell": 1,
+                      "selected_entities_per_cell": 1, "relation_width": WIDTH}
+        fixture_identity = {
+            "fixture": "make_next_event_fixture", "seed": seed,
+            "cells": 4, "steps": 6, "entities": ENTITIES,
+            "selected_occurrences": "last observed event per cell",
+        }
+    elif case_name == "ranked_batch":
+        fixture = make_masked_gene_fixture(seed=seed, cells=32, selected=8,
+                                           entities=ENTITIES)
+        genes = fixture["genes"].to(device=device, dtype=torch.int64)
+        ranks = fixture["ranks"].to(device=device, dtype=torch.int64)
+        valid = genes >= 0
+        safe_genes = genes.clamp_min(0)
+        features = entity.index_select(0, safe_genes.reshape(-1)).view(
+            genes.shape[0], genes.shape[1], WIDTH)
+        features = (features + rank.index_select(0, ranks.reshape(-1)).view_as(features))
+        features = features * valid.unsqueeze(-1)
+        context = torch.zeros((genes.shape[0], ENTITIES, WIDTH), device=device,
+                              dtype=torch.float32)
+        context.scatter_add_(1, safe_genes.unsqueeze(-1).expand(-1, -1, WIDTH), features)
+        active_rows = [sorted({int(gene) for gene in row if 0 <= int(gene) < 16})
+                       for row in fixture["genes"].tolist()]
+        cells = int(genes.shape[0])
+        case_shape = {"cells": cells, "selected_genes_per_cell": 8,
+                      "relation_width": WIDTH}
+        fixture_identity = {
+            "fixture": "make_masked_gene_fixture", "seed": seed,
+            "cells": 32, "selected": 8, "entities": ENTITIES,
+            "observed_fields": ["genes", "ranks"],
+        }
+    else:
+        raise ValueError(f"unknown benchmark case: {case_name}")
+
+    inputs = context.to(dtype=torch.float16).contiguous()
+    rows = make_candidate_rows(support, active_rows)
+    primal, derivative, provisional = make_worksets(
+        torch, importlib.import_module("cellerator.torch.sparse_support").PerCellWorkset,
+        support, rows, device)
+    target_gen = torch.Generator(device="cpu").manual_seed(seed + 111)
+    target_cpu = torch.randn((cells, ENTITIES, WIDTH), generator=target_gen,
+                             dtype=torch.float32) * 0.1
+    target = target_cpu.to(device=device)
+    metadata = {
+        "case": case_name,
+        "shape": case_shape,
+        "fixture_identity": fixture_identity,
+        "active_source_counts": [len(row) for row in active_rows],
+        "candidate_items": len(derivative.edge_ordinals),
+        "hard_mask_provisional_admitted_items": int(provisional.sum().item()),
+        "hard_mask_provisional_derivative_only_items":
+            int(provisional.numel() - provisional.sum().item()),
+        "candidate_rows": rows,
+    }
+    return context, inputs, target, rows, derivative, provisional, metadata
+
+
+def gate_values_for_step(torch, GateValues, module, context, derivative, hard_mask,
+                         *, threshold: float, capture: bool = False):
+    scored = module.score_candidates(
+        context, derivative, temperature=1.0, threshold=threshold, prune=False)
+    probabilities = scored.probabilities
+    if capture and probabilities.requires_grad:
+        probabilities.retain_grad()
+    mask = hard_mask.to(dtype=probabilities.dtype)
+    train_values = probabilities + (probabilities * mask - probabilities).detach()
+    gates = GateValues(
+        probabilities, hard_mask, train_values, scored.logical_edge_ids,
+        scored.edge_ordinals, scored.structure_epoch, scored.state_generation)
+    return gates, probabilities
+
+
+def make_optimizer(torch, module):
+    return torch.optim.Adam([module.parameters_flat], lr=1.0e-3,
+                            foreach=False, fused=False)
+
+
+def inference_step(torch, GateValues, module, context, inputs, primal, derivative,
+                   hard_mask, threshold):
+    module.eval()
+    with torch.no_grad(), module._pinned_forward():
+        gates, _ = gate_values_for_step(torch, GateValues, module, context, derivative,
+                                        hard_mask, threshold=threshold)
+        edge_values = module.logical_edge_values()
+        return module.relation(inputs, edge_values, gates, primal, derivative)
+
+
+def training_step(torch, GateValues, guarded_step, module, optimizer, context,
+                  inputs, target, primal, derivative, hard_mask, threshold,
+                  *, capture: bool = False):
+    module.train()
+    optimizer.zero_grad(set_to_none=True)
+    with module._pinned_forward():
+        gates, probabilities = gate_values_for_step(
+            torch, GateValues, module, context, derivative, hard_mask,
+            threshold=threshold, capture=capture)
+        edge_values = module.logical_edge_values()
+        output = module.relation(inputs, edge_values, gates, primal, derivative)
+        loss = torch.nn.functional.mse_loss(output, target)
+    loss.backward()
+    if module.parameters_flat.grad is None:
+        raise RuntimeError("native sparse owner received no gradient")
+    result = None
+    if capture:
+        result = {
+            "loss": float(loss.detach().cpu()),
+            "output": output.detach().clone(),
+            "parameter_grad": module.parameters_flat.grad.detach().clone(),
+            "probability_grad": (None if probabilities.grad is None
+                                 else probabilities.grad.detach().clone()),
+        }
+    if not guarded_step(module, optimizer):
+        raise FloatingPointError("guarded Adam rejected a nonfinite sparse gradient")
+    return result
+
+
+def event_pair_ms(start_event, end_event, torch, fn, iterations: int):
+    torch.cuda.synchronize()
+    start_event.record()
+    wall_start = time.perf_counter()
+    for _ in range(iterations):
+        fn()
+    end_event.record()
+    torch.cuda.synchronize()
+    wall_ms = (time.perf_counter() - wall_start) * 1000.0 / iterations
+    device_ms = start_event.elapsed_time(end_event) / iterations
+    return {"cuda_event_ms_per_step": device_ms, "synchronized_wall_ms_per_step": wall_ms}
+
+
+def stats(samples: list[float]) -> dict[str, float]:
+    ordered = sorted(samples)
+    return {
+        "count": len(samples),
+        "median": statistics.median(samples),
+        "mean": statistics.mean(samples),
+        "stdev": statistics.stdev(samples) if len(samples) > 1 else 0.0,
+        "p10": ordered[max(0, math.floor(0.10 * (len(ordered) - 1)))],
+        "p90": ordered[min(len(ordered) - 1, math.ceil(0.90 * (len(ordered) - 1)))],
+    }
+
+
+def paired_ratio_ci(ratios: list[float], seed: int, draws: int = 10000):
+    rng = random.Random(seed)
+    values = []
+    for _ in range(draws):
+        values.append(statistics.median(rng.choices(ratios, k=len(ratios))))
+    values.sort()
+    return [values[int(0.025 * (len(values) - 1))],
+            values[int(0.975 * (len(values) - 1))]]
+
+
+def prepare_module(torch, prepare_sparse_slice, module_type, support, *, device,
+                   seed, packed, compiled, cells):
+    kwargs = {}
+    if packed:
+        kwargs = {
+            "ce_geo_image": compiled["image"],
+            "source_group_members": compiled["source_group_members"],
+            "destination_group_members": compiled["destination_group_members"],
+            "geometry_edge_ids": compiled["geometry_edge_ids_in_support_order"],
+            "projection_id": int(compiled["projection_id"]),
+            "max_cells": cells,
+            "max_primal_items": cells * len(support.edge_ids),
+        }
+    torch.cuda.synchronize()
+    start_alloc = torch.cuda.memory_allocated(device)
+    wall_start = time.perf_counter()
+    module = prepare_sparse_slice(
+        module_type, support, entities=ENTITIES, mechanisms=MECHANISMS,
+        rank_count=RANK_COUNT, device=device,
+        parameter_axis_words=(31, 32, 41, 42, 51, 52, 61, 62),
+        seed=seed, reader_capacity=16, **kwargs)
+    torch.cuda.synchronize()
+    wall_ms = (time.perf_counter() - wall_start) * 1000.0
+    alloc_delta = torch.cuda.memory_allocated(device) - start_alloc
+    return module, {"wall_ms": wall_ms, "allocated_delta_bytes": alloc_delta}
+
+
+def release_module(torch, module):
+    del module
+    gc.collect()
+    torch.cuda.synchronize()
+    torch.cuda.empty_cache()
+
+
+def benchmark_case(torch, package, support, case_name, seed, args, compiled):
+    from cellerator.torch.mechanism import guarded_step
+    from cellerator.torch.sparse_support import (
+        GateValues, KaryoplastEventSlice, PerCellWorkset, RankedGeneSlice,
+    )
+
+    module_type = KaryoplastEventSlice if case_name == "event_local" else RankedGeneSlice
+    cells = 4 if case_name == "event_local" else 32
+    baseline, baseline_setup = prepare_module(
+        torch, package.prepare_sparse_slice, module_type, support,
+        device=torch.cuda.current_device(), seed=seed, packed=False,
+        compiled=compiled, cells=cells)
+    case_prep_start = time.perf_counter()
+    context, inputs, target, candidate_rows, derivative, provisional_mask, shape_meta = make_case(
+        torch, baseline, support, torch.cuda.current_device(), case_name, seed)
+    torch.cuda.synchronize()
+    shape_meta["shared_workset_and_input_prep_ms"] = (
+        time.perf_counter() - case_prep_start) * 1000.0
+
+    # Choose a genuine sigmoid threshold once from the frozen initial parameter
+    # state. The resulting hard decisions and primal workset stay fixed across
+    # both paths; probabilities and their STE gradients are recomputed per step.
+    freeze_start = time.perf_counter()
+    with torch.no_grad(), baseline._pinned_forward():
+        initial_gates = baseline.score_candidates(
+            context, derivative, temperature=1.0, threshold=0.5, prune=False)
+        initial_p = initial_gates.probabilities.detach()
+        threshold = float(torch.quantile(initial_p.float(), 0.5).cpu())
+        hard_mask = initial_p >= threshold
+        primal = workset_with_mask(torch, PerCellWorkset, support, candidate_rows,
+                                   derivative, hard_mask, torch.cuda.current_device())
+        initial_active = int(hard_mask.sum().item())
+    torch.cuda.synchronize()
+    shape_meta["hard_gate_freeze_and_primal_workset_ms"] = (
+        time.perf_counter() - freeze_start) * 1000.0
+    shape_meta["frozen_tensor_bytes"] = sum(
+        tensor.numel() * tensor.element_size() for tensor in (
+            context, inputs, target, primal.cell_offsets, primal.edge_ordinals,
+            primal.logical_edge_ids, primal.gate_value_indices,
+            derivative.cell_offsets, derivative.edge_ordinals,
+            derivative.logical_edge_ids, derivative.gate_value_indices, hard_mask))
+    shape_meta.update({
+        "threshold": threshold,
+        "hard_admitted_items": initial_active,
+        "hard_derivative_only_items": int(hard_mask.numel() - initial_active),
+        "primal_items": int(primal.edge_ordinals.numel()),
+        "derivative_items": int(derivative.edge_ordinals.numel()),
+        "derivative_only_work_fraction": (
+            0.0 if derivative.edge_ordinals.numel() == 0 else
+            float(derivative.edge_ordinals.numel() - primal.edge_ordinals.numel()) /
+            float(derivative.edge_ordinals.numel())),
+        "workset_digest": tensor_digest([
+            primal.cell_offsets, primal.edge_ordinals, primal.logical_edge_ids,
+            primal.gate_value_indices, derivative.cell_offsets,
+            derivative.edge_ordinals, derivative.logical_edge_ids,
+            derivative.gate_value_indices, hard_mask]),
+        "frozen_input_digest": tensor_digest([context, inputs, target]),
+    })
+    if initial_active == 0 or initial_active == hard_mask.numel():
+        raise RuntimeError("median sigmoid threshold did not produce both primal and derivative-only candidates")
+
+    # Measure baseline and packed cold setup separately with no competing model
+    # allocation, then construct both identical owners for paired timings.
+    simt_setup = baseline_setup
+    baseline = None
+    release_module(torch, baseline)
+    packed, packed_setup = prepare_module(
+        torch, package.prepare_sparse_slice, module_type, support,
+        device=torch.cuda.current_device(), seed=seed, packed=True,
+        compiled=compiled, cells=cells)
+    packed = None
+    release_module(torch, packed)
+    packed_setup = dict(packed_setup)
+    packed_setup["ce_geo_compile_shared_host_ms"] = compiled["host_compile_ms"]
+
+    baseline, _ = prepare_module(
+        torch, package.prepare_sparse_slice, module_type, support,
+        device=torch.cuda.current_device(), seed=seed, packed=False,
+        compiled=compiled, cells=cells)
+    packed, _ = prepare_module(
+        torch, package.prepare_sparse_slice, module_type, support,
+        device=torch.cuda.current_device(), seed=seed, packed=True,
+        compiled=compiled, cells=cells)
+    if not torch.equal(baseline.parameters_flat.detach(), packed.parameters_flat.detach()):
+        raise RuntimeError("SIMT and packed owners do not start from identical parameters")
+
+    simt_optimizer = make_optimizer(torch, baseline)
+    packed_optimizer = make_optimizer(torch, packed)
+    funcs = {
+        "simt": {
+            "infer": lambda: inference_step(
+                torch, GateValues, baseline, context, inputs, primal, derivative,
+                hard_mask, threshold),
+            "train": lambda: training_step(
+                torch, GateValues, guarded_step, baseline, simt_optimizer,
+                context, inputs, target, primal, derivative, hard_mask, threshold),
+        },
+        "packed": {
+            "infer": lambda: inference_step(
+                torch, GateValues, packed, context, inputs, primal, derivative,
+                hard_mask, threshold),
+            "train": lambda: training_step(
+                torch, GateValues, guarded_step, packed, packed_optimizer,
+                context, inputs, target, primal, derivative, hard_mask, threshold),
+        },
+    }
+
+    # Independent numerical check before timed updates. It exercises the
+    # derivative-only STE candidate gradients as well as the same forward.
+    check_results = {}
+    for label in ("simt", "packed"):
+        optimizer = simt_optimizer if label == "simt" else packed_optimizer
+        module = baseline if label == "simt" else packed
+        optimizer.zero_grad(set_to_none=True)
+        with torch.no_grad():
+            output = funcs[label]["infer"]()
+        check_results[label] = {"inference_output": output.detach().clone()}
+        captured = training_step(
+            torch, GateValues, guarded_step, module, optimizer, context, inputs,
+            target, primal, derivative, hard_mask, threshold, capture=True)
+        check_results[label].update(captured)
+    output_ok = torch.allclose(check_results["simt"]["inference_output"],
+                               check_results["packed"]["inference_output"],
+                               atol=5.0e-3, rtol=5.0e-3)
+    gradient_ok = torch.allclose(check_results["simt"]["parameter_grad"],
+                                  check_results["packed"]["parameter_grad"],
+                                  atol=6.0e-3, rtol=6.0e-3)
+    loss_ok = math.isclose(check_results["simt"]["loss"],
+                           check_results["packed"]["loss"],
+                           abs_tol=5.0e-4, rel_tol=5.0e-3)
+    if not (output_ok and gradient_ok and loss_ok):
+        raise AssertionError("SIMT/packed numerical check failed: " + json.dumps({
+            "output_max_abs": float((check_results["simt"]["inference_output"] -
+                                      check_results["packed"]["inference_output"]).abs().max().cpu()),
+            "grad_max_abs": float((check_results["simt"]["parameter_grad"] -
+                                    check_results["packed"]["parameter_grad"]).abs().max().cpu()),
+            "loss_simt": check_results["simt"]["loss"],
+            "loss_packed": check_results["packed"]["loss"],
+        }))
+    derivative_grad_nonzero = {}
+    for label in ("simt", "packed"):
+        pgrad = check_results[label]["probability_grad"]
+        if pgrad is None:
+            derivative_grad_nonzero[label] = 0
+        else:
+            derivative_grad_nonzero[label] = int(
+                ((pgrad != 0) & (~hard_mask)).sum().item())
+    if any(value == 0 for value in derivative_grad_nonzero.values()):
+        raise AssertionError("derivative-only gate candidates did not contribute STE gradients")
+
+    # Warm both variants in alternating order so Adam state and allocator state
+    # are initialized before collecting paired samples.
+    for i in range(args.warmup):
+        order = ("simt", "packed") if i % 2 == 0 else ("packed", "simt")
+        for label in order:
+            funcs[label]["infer"]()
+    torch.cuda.synchronize()
+    for i in range(args.warmup):
+        order = ("simt", "packed") if i % 2 == 0 else ("packed", "simt")
+        for label in order:
+            funcs[label]["train"]()
+    torch.cuda.synchronize()
+
+    start_event = torch.cuda.Event(enable_timing=True)
+    end_event = torch.cuda.Event(enable_timing=True)
+    phase_samples: dict[str, dict[str, list[dict[str, Any]]]] = {
+        phase: {"simt": [], "packed": []} for phase in ("inference", "training")}
+    peak_extra: dict[str, dict[str, int]] = {
+        phase: {"simt": 0, "packed": 0} for phase in ("inference", "training")}
+    for phase, fn_key in (("inference", "infer"), ("training", "train")):
+        for round_index in range(args.rounds):
+            order = (("simt", "packed") if round_index % 2 == 0
+                     else ("packed", "simt"))
+            pair: dict[str, Any] = {"round": round_index, "order": list(order)}
+            for label in order:
+                torch.cuda.synchronize()
+                start_alloc = torch.cuda.memory_allocated()
+                torch.cuda.reset_peak_memory_stats()
+                sample = event_pair_ms(start_event, end_event, torch,
+                                       funcs[label][fn_key], args.iterations)
+                torch.cuda.synchronize()
+                sample["peak_allocated_delta_bytes"] = max(
+                    0, int(torch.cuda.max_memory_allocated() - start_alloc))
+                peak_extra[phase][label] = max(peak_extra[phase][label],
+                                               sample["peak_allocated_delta_bytes"])
+                sample["round"] = round_index
+                sample["candidate"] = label
+                phase_samples[phase][label].append(sample)
+                pair[label] = sample
+            pair["paired_cuda_ratio_simt_over_packed"] = (
+                pair["simt"]["cuda_event_ms_per_step"] /
+                pair["packed"]["cuda_event_ms_per_step"])
+            pair["paired_wall_ratio_simt_over_packed"] = (
+                pair["simt"]["synchronized_wall_ms_per_step"] /
+                pair["packed"]["synchronized_wall_ms_per_step"])
+            phase_samples[phase].setdefault("pairs", []).append(pair)
+
+    parameter_max_abs = float((baseline.parameters_flat.detach() -
+                               packed.parameters_flat.detach()).abs().max().cpu())
+    if len(baseline._read_tickets) or len(packed._read_tickets):
+        raise RuntimeError("forward read lease remains outstanding after training steps")
+
+    phase_results = {}
+    for phase in ("inference", "training"):
+        phase_results[phase] = {}
+        pairs = phase_samples[phase]["pairs"]
+        cuda_ratios = [p["paired_cuda_ratio_simt_over_packed"] for p in pairs]
+        wall_ratios = [p["paired_wall_ratio_simt_over_packed"] for p in pairs]
+        for label in ("simt", "packed"):
+            samples = phase_samples[phase][label]
+            phase_results[phase][label] = {
+                "cuda_event_ms_per_step": stats(
+                    [s["cuda_event_ms_per_step"] for s in samples]),
+                "synchronized_wall_ms_per_step": stats(
+                    [s["synchronized_wall_ms_per_step"] for s in samples]),
+                "max_peak_allocated_delta_bytes": peak_extra[phase][label],
+                "raw_samples": samples,
+            }
+        phase_results[phase]["paired"] = {
+            "simt_over_packed_cuda_ratio_median": statistics.median(cuda_ratios),
+            "simt_over_packed_cuda_ratio_bootstrap_95pct": paired_ratio_ci(cuda_ratios, seed + 37),
+            "simt_over_packed_wall_ratio_median": statistics.median(wall_ratios),
+            "simt_over_packed_wall_ratio_bootstrap_95pct": paired_ratio_ci(wall_ratios, seed + 41),
+            "raw_pairs": pairs,
+        }
+
+    packed_extra_setup_ms = ((packed_setup["wall_ms"] + compiled["host_compile_ms"])
+                             - simt_setup["wall_ms"])
+    break_even = {}
+    for unit, simt_key, packed_key in (
+            ("cuda_event", "cuda_event_ms_per_step", "cuda_event_ms_per_step"),
+            ("synchronized_wall", "synchronized_wall_ms_per_step",
+             "synchronized_wall_ms_per_step")):
+        simt_step = phase_results["training"]["simt"][simt_key]["median"]
+        packed_step = phase_results["training"]["packed"][packed_key]["median"]
+        saving = simt_step - packed_step
+        break_even[unit] = {
+            "extra_cold_setup_ms": packed_extra_setup_ms,
+            "training_step_saving_ms": saving,
+            "break_even_steps": (packed_extra_setup_ms / saving if saving > 0.0 else None),
+        }
+
+    params = int(baseline.parameters_flat.numel())
+    return {
+        "case": shape_meta,
+        "setup": {
+            "simt": simt_setup,
+            "packed": packed_setup,
+            "packed_extra_cold_setup_ms_including_geometry_compile": packed_extra_setup_ms,
+            "shared_workset_and_input_prep_ms": shape_meta["shared_workset_and_input_prep_ms"],
+            "hard_gate_freeze_and_primal_workset_ms":
+                shape_meta["hard_gate_freeze_and_primal_workset_ms"],
+            "break_even": break_even,
+        },
+        "checks": {
+            "inference_output_allclose_atol_5e-3_rtol_5e-3": bool(output_ok),
+            "training_parameter_gradient_allclose_atol_6e-3_rtol_6e-3": bool(gradient_ok),
+            "loss_close_abs_5e-4_rel_5e-3": bool(loss_ok),
+            "derivative_only_probability_grad_nonzero": derivative_grad_nonzero,
+            "max_parameter_difference_after_measured_training": parameter_max_abs,
+            "remaining_read_tickets": 0,
+        },
+        "parameters": {"shared_fp32_parameter_count": params,
+                       "adam_state_initialized": True},
+        "phases": phase_results,
+        "backend_scope": {
+            "simt": "SIMT native sparse relation forward and VJP",
+            "packed": "CE-GEO N64 packed forward plus the same SIMT native VJP",
+            "hard_support_and_admission_mask": "frozen and byte-identical across candidates",
+            "gate_probabilities": "recomputed from trainable shared state per step",
+            "derivative_only_candidates": "included in VJP and reported in case metadata",
+        },
+    }
+
+
+def summarize_case(name: str, case: dict) -> str:
+    lines = [f"### {name}"]
+    lines.append(f"- Shape: `{json.dumps(case['case']['shape'], sort_keys=True)}`")
+    lines.append(
+        f"- Work: {case['case']['primal_items']} primal / "
+        f"{case['case']['derivative_items']} derivative candidates; "
+        f"{case['case']['derivative_only_work_fraction']:.1%} derivative-only.")
+    for phase in ("inference", "training"):
+        simt = case["phases"][phase]["simt"]
+        packed = case["phases"][phase]["packed"]
+        pair = case["phases"][phase]["paired"]
+        lines.append(
+            f"- {phase}: CUDA event SIMT {simt['cuda_event_ms_per_step']['median']:.6f} ms, "
+            f"packed {packed['cuda_event_ms_per_step']['median']:.6f} ms "
+            f"(paired SIMT/packed {pair['simt_over_packed_cuda_ratio_median']:.3f}, "
+            f"95% bootstrap {pair['simt_over_packed_cuda_ratio_bootstrap_95pct']}); "
+            f"synchronized wall SIMT "
+            f"{simt['synchronized_wall_ms_per_step']['median']:.6f} ms, packed "
+            f"{packed['synchronized_wall_ms_per_step']['median']:.6f} ms "
+            f"(ratio {pair['simt_over_packed_wall_ratio_median']:.3f}).")
+    lines.append(
+        f"- Cold setup: SIMT {case['setup']['simt']['wall_ms']:.3f} ms; packed "
+        f"{case['setup']['packed_extra_cold_setup_ms_including_geometry_compile'] + case['setup']['simt']['wall_ms']:.3f} ms "
+        f"including shared geometry compilation; packed extra "
+        f"{case['setup']['packed_extra_cold_setup_ms_including_geometry_compile']:.3f} ms.")
+    lines.append(
+        f"- Training break-even: `{json.dumps(case['setup']['break_even'], sort_keys=True)}`")
+    lines.append(
+        f"- Checks: output={case['checks']['inference_output_allclose_atol_5e-3_rtol_5e-3']}, "
+        f"gradients={case['checks']['training_parameter_gradient_allclose_atol_6e-3_rtol_6e-3']}, "
+        f"derivative-only gate gradient counts="
+        f"{case['checks']['derivative_only_probability_grad_nonzero']}.")
+    return "\n".join(lines)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--case", choices=("all", "event_local", "ranked_batch"), default="all")
+    parser.add_argument("--warmup", type=int, default=3)
+    parser.add_argument("--rounds", type=int, default=9)
+    parser.add_argument("--iterations", type=int, default=2)
+    parser.add_argument("--seed", type=int, default=SEED)
+    args = parser.parse_args()
+    if os.environ.get("CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED") != "1":
+        parser.error("run only inside the admitted Device Scheduler job")
+    package_root = Path(os.environ.get("CELLERATOR_SPARSE_PACKAGE_ROOT", ""))
+    if not package_root.is_dir():
+        parser.error("CELLERATOR_SPARSE_PACKAGE_ROOT must name the frozen v2 package directory")
+    if min(args.warmup, args.rounds, args.iterations) <= 0:
+        parser.error("warmup, rounds, and iterations must be positive")
+    output_dir = args.output_dir.resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    import torch
+    from cellerator.torch import _torch
+    from cellerator.torch.sparse_support import (
+        KaryoplastEventSlice, RankedGeneSlice, SupportSpec,
+        compile_sparse_support_ce_geo, prepare_sparse_slice,
+    )
+    package = importlib.import_module("cellerator.torch.sparse_support")
+    mechanism = importlib.import_module("cellerator.torch.mechanism")
+    if not torch.cuda.is_available():
+        raise RuntimeError("scheduler-admitted job has no CUDA device")
+    device = torch.cuda.current_device()
+    if Path(package.__file__).resolve().is_relative_to(package_root.resolve()) is False:
+        raise RuntimeError(f"imported package {package.__file__} is outside frozen root {package_root}")
+    identity_path = package_root.parent / "identity.json"
+    source_identities = {}
+    frozen_identity = json.loads(identity_path.read_text())
+    for relative, expected in FROZEN_V2_HASHES.items():
+        source_path = package_root.parent / relative
+        manifest_expected = frozen_identity.get(relative)
+        if manifest_expected != expected:
+            raise RuntimeError(f"frozen v2 identity changed for {relative}: {manifest_expected}")
+        actual = sha256_file(source_path)
+        if actual != expected:
+            raise RuntimeError(f"frozen v2 source identity changed for {relative}: {actual}")
+        source_identities[relative] = actual
+    extension_path = Path(_torch.__file__).resolve()
+    source_identities["frozen_v2_identity.json"] = sha256_file(identity_path)
+    extension_hash = sha256_file(extension_path)
+    expected_extension = frozen_identity[
+        "package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so"]
+    if extension_hash != expected_extension:
+        raise RuntimeError("frozen v2 Torch extension hash mismatch")
+    source_identities["frozen_v2_torch_extension"] = extension_hash
+    source_identities["benchmark_driver"] = sha256_file(Path(__file__).resolve())
+
+    torch.manual_seed(args.seed)
+    torch.set_num_threads(2)
+    support = make_support(SupportSpec)
+    compile_start = time.perf_counter()
+    compiled = compile_sparse_support_ce_geo(
+        support, source_count=ENTITIES, destination_count=ENTITIES,
+        projection_id=91)
+    compile_ms = (time.perf_counter() - compile_start) * 1000.0
+    compiled["host_compile_ms"] = compile_ms
+    compiled_meta = {key: compiled[key] for key in (
+        "projection_id", "structure_epoch", "structure_identity", "tile_count",
+        "residual_region_count", "value_map_count")}
+    compiled_meta["image_sha256"] = sha256_bytes(compiled["image"])
+    compiled_meta["host_compile_ms"] = compile_ms
+
+    cases = ("event_local", "ranked_batch") if args.case == "all" else (args.case,)
+    results = {}
+    for case_index, case_name in enumerate(cases):
+        results[case_name] = benchmark_case(
+            torch, package, support, case_name, args.seed + case_index * 997,
+            args, compiled)
+
+    props = torch.cuda.get_device_properties(device)
+    config = {
+        "benchmark_id": "cellerator-packed-vs-simt-training-v2",
+        "workload_family": "sparse_support_relation_training",
+        "dataset_tier": "small",
+        "backend_control": "same frozen v2 binary; handle projection toggles SIMT vs CE-GEO N64",
+        "torch_package_root": str(package_root.resolve()),
+        "torch_package_source": str(Path(package.__file__).resolve()),
+        "python": sys.version,
+        "platform": platform.platform(),
+        "torch_version": torch.__version__,
+        "torch_cuda_version": torch.version.cuda,
+        "device": {"index": device, "name": props.name,
+                   "compute_capability": [props.major, props.minor],
+                   "total_memory_bytes": props.total_memory},
+        "source_identities": source_identities,
+        "support": {"edge_count": len(support.edge_ids),
+                    "sources": support.sources,
+                    "destinations": support.destinations,
+                    "edge_ids_sha256": sha256_bytes(json_bytes(support.edge_ids)),
+                    "compiled_geometry": compiled_meta},
+        "timing": {"warmup_steps_per_candidate": args.warmup,
+                   "paired_rounds": args.rounds,
+                   "iterations_per_sample": args.iterations,
+                   "cuda_event": "events enclose each candidate sample; synchronized before/after",
+                   "wall": "perf_counter around submitted sample through final CUDA sync",
+                   "paired_order": "alternates SIMT-first and packed-first",
+                   "optimizer": "torch.optim.Adam through guarded_step, lr=1e-3, foreach/fused=false"},
+        "scheduler": {"job_id": os.environ.get("DEVICE_SCHEDULER_JOB_ID"),
+                      "attempt_id": os.environ.get("DEVICE_SCHEDULER_ATTEMPT_ID"),
+                      "admitted_marker": os.environ.get("CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED")},
+        "cases": list(cases),
+    }
+    (output_dir / "run_config.json").write_text(json.dumps(config, indent=2, sort_keys=True) + "\n")
+    (output_dir / "results.json").write_text(json.dumps(results, indent=2, sort_keys=True) + "\n")
+    summary = ["# Packed versus SIMT sparse-support training benchmark", "",
+               f"Source identity: `{source_identities['benchmark_driver']}`",
+               f"Frozen Torch extension: `{extension_hash}`", "",
+               "SIMT control and packed candidate use identical support, source inputs, "
+               "workset rows, hard admission bits, and initial shared parameters. "
+               "Packed backward is the existing SIMT VJP.", ""]
+    summary.extend(summarize_case(name, value) for name, value in results.items())
+    (output_dir / "summary.md").write_text("\n\n".join(summary) + "\n")
+    print(json.dumps({"output_dir": str(output_dir), "cases": list(cases),
+                      "results": str(output_dir / "results.json")}, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

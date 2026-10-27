@@ -1,0 +1,7 @@
+{
+  "error": "RuntimeError: could not identify the scheduled CUDA device UUID from the visible GPU mapping",
+  "request_id": "c808eb11-c52e-4ecb-8af0-617695a8eff6",
+  "schema_version": 1,
+  "status": "error",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py\", line 228, in main\n    response = op_probe(request)\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py\", line 110, in op_probe\n    raise RuntimeError(\"could not identify the scheduled CUDA device UUID from the visible GPU mapping\")\nRuntimeError: could not identify the scheduled CUDA device UUID from the visible GPU mapping\n"
+}

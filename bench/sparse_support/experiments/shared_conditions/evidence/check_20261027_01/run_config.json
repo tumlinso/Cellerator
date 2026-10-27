@@ -1,0 +1,14 @@
+{
+  "benchmark_id": "cellerator_shared_condition_bitplane_probe",
+  "workload_family": "sparse_support_gating",
+  "dataset_tier": "small",
+  "scenario_kind": "representation_probe",
+  "dataset_id": "synthetic_binary_condition_dag_v1",
+  "seed": 1511508451,
+  "shape": {"edges": 2176, "cells": 64, "sharing": "few"},
+  "warmup": 0,
+  "repeats": 1,
+  "profile_friendly": true,
+  "target_architecture": "sm_70",
+  "comparison": "correctness_only"
+}

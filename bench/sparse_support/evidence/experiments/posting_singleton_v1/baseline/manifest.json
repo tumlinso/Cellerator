@@ -1,0 +1,29 @@
+{
+  "captured_unix_ns": 1793127412050248425,
+  "copied_artifacts": {
+    "baseline_raw_matrix": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/baseline/cuda_indexing_v100_qualification_20261027.jsonl",
+      "sha256": "5e6686f2046830829498cf7dcf4a3d96ea898e321947a84a1cbcd5eca319c7d4"
+    },
+    "benchmark_binary": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/baseline/cellerator_sparse_support_cuda_indexing_bench",
+      "sha256": "c20c6a314f4df79d5658abf393eac91c272494ef13cff63f3f4144c1f30c00b1"
+    },
+    "benchmark_source": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/baseline/cuda_indexing_bench.cu",
+      "sha256": "61531743487023be636c498cd9ae7554cf932bca8f9e5fc2fc1e1488f3925e6d"
+    },
+    "cuda_library": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/baseline/libcellerator_sparse_support_cuda.a",
+      "sha256": "c0714b92a6a12c6b58b72975fbbfc026529655ef7d032c60aa0d9c21cf21b30f"
+    },
+    "cuda_postings_source": {
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/baseline/cuda_postings.cu",
+      "sha256": "9737f19a6655d0d3fdc34acf3c2e40076360b999d4189759b55f4f9c15fc5333"
+    }
+  },
+  "git_head": "11a0c927978c683061a17f50c8c16a9afa39f2f2",
+  "note": "The executable is a frozen pre-change statically linked benchmark; host input generation is unchanged and the existing qualification JSONL carries the original complete setup and pipeline samples.",
+  "schema": "cellerator.sparse_support.posting_singleton_candidate.v1",
+  "variant": "serial_control_frozen_before_singleton_fast_path"
+}

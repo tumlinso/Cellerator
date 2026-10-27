@@ -2,6 +2,58 @@
 title: "Current Implementation"
 ---
 
+## Sparse support foundation — 2026-10-27
+
+The additive [sparse support facility](sparse_support_foundation.qmd) provides
+Torch-free logical support, exact reverse/temporal indexes, shared condition
+programs, capacity-checked primal/derivative worksets, bounded seeded proposals,
+and publication between pinned training windows. Ordered participant roles,
+occurrence identities, structure epochs, and parameter generations remain
+separate. The optional Torch adapter uses one canonical native parameter owner
+and the existing guarded Adam lifecycle.
+
+Width-64 numerical operations include indexed recurrent latent transitions,
+gated sparse relations, and explicit first-order VJPs. The first packed route
+executes the existing CE-GEO WMMA cover plus its residual and a separate
+adaptation delta; backward currently uses sparse SIMT kernels. Learned values
+and per-cell gates remain mutable. Compilation does not make routes permanently
+active. The event and ranked-gene consumers are controlled synthetic training
+fixtures, without biological validation.
+
+Native host reference/index/image tests pass. Native CUDA correctness and
+Compute Sanitizer memcheck, racecheck, and synccheck pass on the frozen v5
+numerical binary. Integrated Torch checks establish packed forward, surrogate
+gate VJP, recurrent VJP, and support/owner lifecycle behavior. Source-bound
+qualification records distinguish these checks from learning and performance
+measurements; see the facility's evidence map.
+
+The final sampled-gradient integration run passes 26 tests, including a complete
+Torch surrogate-VJP comparison and accumulation for repeated gate indices.
+A separate 29-test run covers existing mechanism and owner lifecycle behavior.
+The final 28-test suite adds exact cold snapshot restoration after promotion
+and revocation, including retired-ID history and base/delta ownership. Five
+CPU binding tests also pass. Numerical and learning measurements retain their
+earlier frozen identities; the final snapshot change does not alter kernels.
+The corrected 50-epoch ranked fixture reaches 56.25% pruned held-out accuracy
+versus 34.38% for shuffled support. The event fixture's 28.12% on 64 held-out
+cells remains close to four-class chance; it is a weak learning result. Earlier
+post-pruning results with an incorrect derivative-to-gate scatter are retained
+as invalid estimator evidence, alongside the correction and regression.
+
+The retained singleton-posting optimization improves posting plus bitmap/workset
+time by 1.26× on the ordinary synthetic anchor and 1.71× under source skew in
+five paired V100 rounds. Construction costs can outweigh these steady-state
+gains. This is an indexing result, not a complete model-training speedup or a
+universal sparse-format selection rule. The [experiment record](../bench/sparse_support/evidence/experiments/posting_singleton_v1/REPORT.md)
+retains the rescan control, numerical checks, profiles, and negative results.
+
+The [balanced packed/SIMT confirmation](../bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/run_001/REPORT.md)
+uses five confirmation rounds with 21 paired samples and explicit initialization
+and preparation costs. Same-process paired training favors SIMT by about 2.5%
+on both small relation fixtures. The separate-request KDA aggregate interval
+crosses parity; no packed performance regime is promoted. These relation-stage
+measurements exclude application discovery and recurrent sequence maintenance.
+
 ## ATen tokenization addition — 2026-10-26
 
 The optional [tokenization facility](tokenization.qmd) adds ATen-owned tensor

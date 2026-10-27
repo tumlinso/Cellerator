@@ -22,6 +22,12 @@ The optional [ATen tokenization facility](tokenization.qmd) provides ranked
 features, caller-defined event streams, ragged sequence storage and reusable
 numerical operations without enabling the CUDA-mechanism Torch adapter.
 
+The [sparse support foundation](sparse_support_foundation.qmd) separates
+logical support, indexing, conditional gating, and latent numerical operations.
+`CELLERATOR_ENABLE_SPARSE_SUPPORT` builds the Torch-free host contracts;
+CUDA adds posting/workset and numerical targets. Optional Torch bindings and
+the synthetic training examples use the same native parameter owner.
+
 ```text
 include/Cellerator/
     public Cellerator contracts and device views

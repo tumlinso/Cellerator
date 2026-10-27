@@ -1,0 +1,173 @@
+{
+  "budgets": {
+    "max_build_jobs": 1,
+    "max_candidates": 2,
+    "max_seconds": 1500
+  },
+  "cases": [
+    {
+      "id": "event_local",
+      "input": {
+        "cells": 4,
+        "entities": 32,
+        "fixture": "make_next_event_fixture",
+        "observed_occurrence": "last positive event",
+        "seed": 20261027,
+        "steps": 6
+      },
+      "parameters": {
+        "active_events_per_cell": 1,
+        "support_edges": 64,
+        "width": 64
+      },
+      "weight": 1.0
+    },
+    {
+      "id": "ranked_batch",
+      "input": {
+        "cells": 32,
+        "entities": 32,
+        "fixture": "make_masked_gene_fixture",
+        "seed": 20261027,
+        "selected_genes": 8
+      },
+      "parameters": {
+        "rank_count": 8,
+        "support_edges": 64,
+        "width": 64
+      },
+      "weight": 1.0
+    }
+  ],
+  "commands": {
+    "benchmark": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3",
+        "/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py",
+        "benchmark",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 300
+    },
+    "build": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3",
+        "/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py",
+        "build",
+        "{request}",
+        "{result}"
+      ],
+      "cpu_only": true,
+      "timeout_seconds": 30
+    },
+    "validate": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3",
+        "/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py",
+        "validate",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 300
+    }
+  },
+  "execution": {
+    "mode": "direct"
+  },
+  "numerical_requirements": {
+    "inference_output": {
+      "atol": 0.005,
+      "reference": "paired native SIMT sparse relation path",
+      "rtol": 0.005
+    },
+    "loss": {
+      "atol": 0.0005,
+      "rtol": 0.005
+    },
+    "ste": "verify finite nonzero probability gradients for hard-pruned derivative-only candidates",
+    "training_parameter_gradient": {
+      "atol": 0.006,
+      "reference": "paired native SIMT sparse relation path",
+      "rtol": 0.006
+    }
+  },
+  "probe": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python3",
+      "/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py",
+      "probe",
+      "{request}",
+      "{result}"
+    ],
+    "timeout_seconds": 30
+  },
+  "promotion": {
+    "bootstrap_samples": 1000,
+    "confidence": 0.95,
+    "max_regression": 0.9,
+    "min_improvement": 10.0
+  },
+  "schema_version": 1,
+  "target": {
+    "architecture": "sm_70",
+    "compiler_target": "sm_70",
+    "kind": "cuda"
+  },
+  "task_id": "cellerator-packed-vs-simt-training-v2-r2",
+  "timing": {
+    "confirmation_rounds": 2,
+    "direction": "minimize",
+    "metric": "training_step_wall_ms",
+    "repetitions": 2,
+    "rounds": 2,
+    "scope": "zero_grad+gate_score_and_ste+edge_values+relation_forward+loss+backward+guarded_adam; synchronized wall",
+    "seed": 20261027,
+    "unit": "ms",
+    "warmup": 2
+  },
+  "toolchain": {
+    "compiler_target_probe_argv": [
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "--list-gpu-code"
+    ],
+    "runtime": "frozen v2 Torch extension built for Volta; Torch CUDA runtime 12.6"
+  },
+  "trusted_inputs": [
+    {
+      "id": "benchmark_driver",
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/packed_training_benchmark.py",
+      "role": "benchmark"
+    },
+    {
+      "id": "kda_adapter",
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py",
+      "role": "harness"
+    },
+    {
+      "id": "frozen_v2_identity",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v2/identity.json",
+      "role": "reference"
+    },
+    {
+      "id": "frozen_v2_sparse_support_python",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v2/package/cellerator/torch/sparse_support.py",
+      "role": "reference"
+    },
+    {
+      "id": "frozen_v2_mechanism_python",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v2/package/cellerator/torch/mechanism.py",
+      "role": "reference"
+    },
+    {
+      "id": "frozen_v2_cuda_training_test",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v2/tests/test_cuda_training.py",
+      "role": "validator"
+    },
+    {
+      "id": "frozen_v2_torch_extension",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v2/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+      "role": "toolchain"
+    }
+  ]
+}

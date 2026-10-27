@@ -1,0 +1,82 @@
+{
+  "argv": [
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+    "--set",
+    "full",
+    "--import-source",
+    "yes",
+    "--source-folders",
+    "/home/tumlinson/Cellerator,/home/tumlinson/Cellerator/bench/sparse_support/evidence/profiles/ncu_posting_query_v100_skewed_20261027_v3/harness",
+    "--kernel-name",
+    "regex:query_counts_kernel",
+    "--launch-count",
+    "1",
+    "-o",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/profiles/ncu_posting_query_v100_skewed_20261027_v3/reports/full_posting_query",
+    "/home/tumlinson/Cellerator/build-sparse-support/bench/sparse_support/cellerator_sparse_support_cuda_indexing_bench",
+    "--case-id",
+    "source_skew_0_9",
+    "--edges",
+    "2176",
+    "--cells",
+    "64",
+    "--entities",
+    "256",
+    "--gate-density",
+    "0.5",
+    "--source-skew",
+    "0.9",
+    "--dirty-fraction",
+    "0.01",
+    "--seed",
+    "20261027",
+    "--warmup",
+    "1",
+    "--samples",
+    "3",
+    "--iterations",
+    "1"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "timeout_seconds": 600,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-sparse-index-ncu-posting-20261027-0-v2-v3",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 2147483648
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator.sparse_support.indexing",
+    "profile.ncu"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "2",
+    "PYTHONUNBUFFERED": "1",
+    "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/compilers/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin:/usr/local/bin:/usr/bin:/bin"
+  },
+  "interruption": {
+    "restart_safe": true,
+    "cancellation_supported": true
+  },
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ]
+}

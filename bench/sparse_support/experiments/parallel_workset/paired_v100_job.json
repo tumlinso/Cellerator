@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "/bin/bash",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/parallel_workset/run_matrix.sh"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "timeout_seconds": 900,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-parallel-workset-paired-v100-20261027-v1-gpu2-q120",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": { "memory_bytes": 1073741824 },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator.sparse_support.indexing",
+    "bench.parallel_workset"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "2",
+    "PYTHONUNBUFFERED": "1",
+    "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/compilers/bin:/usr/local/bin:/usr/bin:/bin",
+    "LD_LIBRARY_PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64"
+  },
+  "interruption": {
+    "restart_safe": true,
+    "cancellation_supported": true
+  },
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 120,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ]
+}

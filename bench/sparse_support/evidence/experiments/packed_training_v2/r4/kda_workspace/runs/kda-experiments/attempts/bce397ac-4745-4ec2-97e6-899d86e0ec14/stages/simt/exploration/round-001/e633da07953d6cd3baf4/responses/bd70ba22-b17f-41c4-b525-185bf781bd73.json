@@ -1,0 +1,78 @@
+{
+  "backend_candidate": "simt",
+  "case_id": "ranked_batch",
+  "diagnostic_paired_ratios": {
+    "raw_pairs": [
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 3.9669759273529053,
+          "peak_allocated_delta_bytes": 1562112,
+          "round": 0,
+          "synchronized_wall_ms_per_step": 3.9749904990458163
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.8850025750204208,
+        "paired_wall_ratio_simt_over_packed": 0.8853042546213048,
+        "round": 0,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 3.5107839107513428,
+          "peak_allocated_delta_bytes": 1562112,
+          "round": 0,
+          "synchronized_wall_ms_per_step": 3.5190760008845245
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 4.30079984664917,
+          "peak_allocated_delta_bytes": 1562112,
+          "round": 1,
+          "synchronized_wall_ms_per_step": 4.308735000449815
+        },
+        "paired_cuda_ratio_simt_over_packed": 1.0147619068209512,
+        "paired_wall_ratio_simt_over_packed": 1.0147445824952903,
+        "round": 1,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 4.364287853240967,
+          "peak_allocated_delta_bytes": 1562112,
+          "round": 1,
+          "synchronized_wall_ms_per_step": 4.372265499114292
+        }
+      }
+    ],
+    "simt_over_packed_cuda_ratio_bootstrap_95pct": [
+      0.8850025750204208,
+      1.0147619068209512
+    ],
+    "simt_over_packed_cuda_ratio_median": 0.949882240920686,
+    "simt_over_packed_wall_ratio_bootstrap_95pct": [
+      0.8853042546213048,
+      1.0147445824952903
+    ],
+    "simt_over_packed_wall_ratio_median": 0.9500244185582976
+  },
+  "driver_output_dir": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/packed_training_v2/r4/kda_workspace/runs/kda-experiments/attempts/bce397ac-4745-4ec2-97e6-899d86e0ec14/stages/simt/exploration/round-001/e633da07953d6cd3baf4/requests/bd70ba22-b17f-41c4-b525-185bf781bd73-ranked_batch-driver",
+  "metric": "training_step_wall_ms",
+  "repetitions": 2,
+  "request_id": "bd70ba22-b17f-41c4-b525-185bf781bd73",
+  "samples": [
+    3.5190760008845245,
+    4.372265499114292
+  ],
+  "schema_version": 1,
+  "status": "ok",
+  "timing_scope": "zero_grad+gate_score_and_ste+edge_values+relation_forward+loss+backward+guarded_adam; synchronized wall",
+  "unit": "ms",
+  "warmup": 2,
+  "workload_sha256": "f5adf39c9134bb4d3fd690ee7ee30dedfc0e198bc8a91d67c1b05e005b33c051"
+}
