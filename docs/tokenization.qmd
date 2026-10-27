@@ -1,0 +1,184 @@
+---
+title: "ATen tokenization"
+---
+
+Cellerator's optional tokenization component transforms caller-defined features
+and event occurrences into sequences. ATen owns tensor storage, devices, views
+and dtypes. Numerical operations remain reusable independently of tokenization.
+The component does not depend on Cellerator's CUDA-mechanism Torch adapter.
+
+## Build and Python installation
+
+Select a matching Torch installation for the C++ library and Python interpreter:
+
+```sh
+cmake -S . -B build/tokenization-cpu \
+  -DCELLERATOR_ENABLE_CUDA=OFF \
+  -DCELLERATOR_ENABLE_TOKENIZATION=ON \
+  -DCELLERATOR_ENABLE_PYTHON=ON \
+  -DCELLERATOR_BUILD_PRODUCT2=ON \
+  -DPython_EXECUTABLE=/path/to/python \
+  -Dpybind11_DIR="$(/path/to/python -m pybind11 --cmakedir)"
+cmake --build build/tokenization-cpu --target cellerator_python_extensions -j2
+```
+
+Use CPU libtorch for a configuration without CUDA dependencies. A CUDA-enabled
+Torch package can require the CUDA toolkit even when executing CPU tensors.
+For CUDA kernels, enable `CELLERATOR_ENABLE_CUDA=ON` with a compatible CUDA
+Torch package and explicit `CMAKE_CUDA_ARCHITECTURES`.
+
+Build/install the Python package against the interpreter's existing Torch:
+
+```sh
+/path/to/python -m pip install --no-build-isolation . \
+  --config-settings=cmake.define.CELLERATOR_ENABLE_TOKENIZATION=ON
+```
+
+Add `--config-settings=cmake.define.CELLERATOR_ENABLE_CUDA=ON` for CUDA append.
+Install build dependencies (`scikit-build-core` and `pybind11`) and Torch into
+that interpreter first. The default package remains independent of libtorch;
+request tokenization explicitly. No general migration of existing native
+runtime buffers is performed by enabling this component.
+
+Installed C++ consumers use:
+
+```cmake
+find_package(Cellerator CONFIG REQUIRED COMPONENTS tokenization)
+target_link_libraries(my_target PRIVATE Cellerator::tokenization)
+```
+
+Consumers needing only numerical operations request the `aten_ops` component
+and link `Cellerator::aten_ops`. These C++ targets do not link `torch_python`.
+
+## Representation and identity
+
+`Vocabulary` maps unique caller-defined integer identities to nonnegative token
+IDs. Build symbolic-label dictionaries at the caller boundary; keep feature
+identities explicit when columns are reordered. Move prepared vocabularies to
+the selected device explicitly. Unknown identities are errors by default;
+dropping them or using an explicit unknown token is a caller decision.
+
+`TokenBatch` contains flat `int64` token IDs, `int64` offsets delimiting each
+sequence, and named attribute tensors shaped `[occurrences, ...]`. Attributes
+retain their dtype and move with their occurrences. Names such as `time`,
+`measurement` or `provenance` do not acquire built-in semantics. Empty sequences
+are represented by repeated offsets. Repeated token IDs are valid.
+
+Packing and padding preserve sequence boundaries and attribute alignment.
+`add_boundaries` accepts caller-created prefix/suffix batches with explicit
+attribute values, so the library does not invent special-token metadata.
+
+## Ranked features and numerical operations
+
+`ranked_feature` accepts dense `[observations, features]` or canonical CSR
+tensors, explicitly aligned unique feature identities and a vocabulary. CSR
+columns must be sorted and unique within each row. Unstored entries are zero;
+explicit zeros are ineligible by default. General nonzero measurements may be
+negative. A supplied eligibility mask restricts the original nonzero support.
+
+Caller-supplied scores determine descending rank; otherwise measurements are
+scores. Equal scores are ordered by ascending feature identity, including at
+the truncation boundary. Output can retain measurements, scores and arbitrary
+aligned attributes. Sparse ranking operates on stored entries without a dense
+observation-by-feature intermediate.
+
+`normalize_features`, `select_ranked_features` and `nonzero_feature_median`
+belong to the separate ATen numerical layer. Compose normalization before
+ranking to supply another scoring convention. Real arithmetic uses FP32 for
+half/BF16/FP32/integer input and FP64 for FP64 input, with explicit FP64
+computation available. Normalization preserves floating storage dtype; promote
+the input explicitly when FP32 or FP64 normalized scores must retain precision.
+
+Median fitting accepts supplied dense/CSR batches sharing a feature axis and
+device. It excludes zero measurements, uses the mean of the two middle values
+for even counts, and returns NaN/zero/false for empty-feature median/count/validity.
+Feature blocking bounds temporary memory. Corpus choice, input normalization,
+gene alias aggregation and persistent reference-statistics storage are caller
+responsibilities.
+
+The `geneformer_style` profile calculates
+`score[c,g] = counts[c,g] / total_counts[c] * 10000 / feature_medians[g]`.
+It accepts nonnegative measurements, retains positive expressed features and
+uses fixed supplied reference factors. Total counts are supplied independently
+of vocabulary filtering. Empty observations yield empty sequences.
+The profile uses FP32 arithmetic unless counts are FP64; its `compute_type`
+option accepts `"float32"` or `"float64"` for an explicit choice. Use FP64 for
+upstream formula comparisons where rounding could change feature ordering.
+
+This implements a Geneformer-style profile rather than all upstream dataset
+processing. Compare the supported formula against the
+[upstream tokenizer](https://geneformer.readthedocs.io/en/latest/_modules/geneformer/tokenizer.html).
+Gene-ID collapsing, model-specific vocabulary artifacts, special tokens and
+sequence lengths remain explicit caller inputs. Ties use Cellerator's stable
+identity rule; upstream NumPy sorting and different arithmetic precision may
+order ties and near-ties differently.
+
+## Event streams and incremental storage
+
+`event_stream` encodes supplied event identities while retaining their order,
+repetitions and attributes. It does not detect events, infer causal order, sort
+timestamps, or interpret an injected occurrence as a causal intervention.
+The Karyoplast example starts with already-defined positive gene events.
+
+`SequenceBuffer` owns ATen storage with explicit per-sequence capacities,
+current lengths and an attribute schema. `append_into` updates selected rows
+and returns device-resident success flags. Pass a reusable `status_buffer` bool
+tensor aligned to selected rows to avoid allocating status on each append;
+its contents are overwritten on the next use. A row that cannot accommodate its
+update is unchanged. `append_checked` additionally checks success on the host;
+other successful rows may already have advanced when an overflow is reported.
+`reserve` explicitly creates larger storage while preserving current contents.
+No operation automatically evicts events or chooses a model history window.
+
+The bounded append path writes only new payload, retains tensor ownership, and
+does not copy previous history or read lengths back to the host each step.
+Compact encoding, validation and `compact()` can synchronize to determine
+data-dependent output sizes. Encoding-into convenience functions compose
+encoding with append and may inherit the encoding synchronization costs.
+They are distinct from appending already-encoded batches on the fast path.
+Storage accessors return borrowed tensor views; treat lengths as read-only.
+Append, compaction and reserve validate length bounds before using them.
+
+Pure normalization and attribute gathers retain ordinary ATen differentiation;
+discrete identity/rank choices do not have gradients. Mutable append is for
+inference/storage and rejects gradient-tracked payloads. CUDA operations use the
+current stream on the tensor's device; callers establish ordering across
+streams and must not concurrently mutate the same buffer.
+
+## Scientific ownership and qualification
+
+Karyoplast determines what an event means and how observations produce it.
+Cytoplast owns environment and population execution. Intervention semantics,
+lifecycle commands, history windows, model state and daughter-state inheritance
+are not tokenizer protocols. Embeddings remain separate from tokenization.
+
+Run the numerical/core/append CTests and the independent Python suite under
+`tests/tokenization`. The benchmark driver under `bench/tokenization` requires
+an explicit device and compares an ATen baseline. GPU tests, sanitizers and
+timing require admitted Device Scheduler execution. Qualification results and
+environment limits are recorded separately; CPU success does not qualify CUDA
+correctness, performance or scientific validity.
+
+## HPC CUDA and profiling
+
+PyTorch's CUDA runtime package and the CUDA development toolkit serve different
+roles. Build Cellerator's CUDA kernels with the selected HPC toolkit's `nvcc`
+and use its Nsight and Compute Sanitizer tools to inspect execution. Source
+mapping requires `CELLERATOR_ENABLE_CUDA_LINEINFO=ON`.
+
+On this host the explicit compiler is
+`/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc`, with
+`CMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-12` and
+`CMAKE_CUDA_ARCHITECTURES=70` for V100. The installed PyTorch 2.7 package uses
+CUDA runtime 12.6. Compatibility is qualified by compilation and admitted
+execution; matching toolkit/runtime major versions alone is not qualification.
+Use the finite `bench/tokenization/profile_smoke.py` workload inside a scheduler
+job for Nsight Systems tracing or a bounded Nsight Compute kernel capture.
+
+In the qualified installation, generic HPC `compilers/bin` profiler wrappers
+defaulted to an absent CUDA 13.1 tool tree. Use these installed CUDA 12.9 tools
+explicitly rather than changing the global toolkit configuration:
+
+- `/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer`
+- `/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/target-linux-x64/nsys`
+- `/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu`

@@ -1,5 +1,27 @@
 # Custom Torch Ops Registry
 
+## `tokenization_sequence_append`
+
+- Purpose: append caller-supplied token occurrences and aligned attributes to
+  explicit-capacity per-sequence ATen storage without copying previous history.
+- Owner: `src/compute/tokenization/`; public ATen contracts under
+  `include/Cellerator/compute/tokenization/`.
+- Boundary: integer token IDs, offsets, capacities, lengths and selected row IDs;
+  aligned contiguous attribute tensors retain their dtype and trailing shape.
+- Backend: CPU implementation and generic CUDA indexing/copy kernels on the
+  current ATen stream under the correct device guard. No Tensor Core operation.
+- Mutation: successful selected rows append new payload and advance length;
+  overflowing rows remain unchanged and return device-resident storage status.
+  Capacity growth is explicit. Prepared scratch avoids per-step host readback.
+- Backward: inference/storage only; gradient-tracked append payloads are rejected.
+  Pure encoding, normalization and attribute gathers retain ATen differentiation.
+- Semantics: no event detection, ordering inference, causal intervention,
+  biological lifecycle commands, model state or scheduling behavior.
+- Status: implemented; CPU C++ and V100 Python/CUDA tests pass, with zero
+  Compute Sanitizer memcheck errors. HPC CUDA 12.9 Nsight Systems and Compute
+  captures succeed. Source-bound qualification is under
+  `bench/tokenization/evidence/2026-10-26/`.
+
 ## `resident_cuda_torch_interop`
 
 - Purpose: provide an optional thin Torch view over Cellerator's resident CUDA

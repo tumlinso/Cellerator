@@ -1,0 +1,58 @@
+---
+title: "ATen tokenization qualification 2026-10-26"
+---
+
+The additive tokenization facility is implemented and installed in
+`/home/tumlinson/Software/miniconda3/bin/python` as `cellerator.tokenization`.
+It includes vocabulary mapping, ranked features, the Geneformer-style profile,
+event streams, attributes, packing, explicit-capacity append, and separate
+normalization, deterministic selection and exact nonzero median primitives.
+Scientific event, intervention and lifecycle choices remain downstream.
+
+## Validation
+
+- CPU C++ tests: 3/3 passed; installed C++ consumer passed against CPU libtorch.
+- Final installed Python CPU/CUDA suite: 26/26 passed on a V100.
+- HPC CUDA 12.9 Compute Sanitizer: 26 tests passed, zero reported errors.
+- HPC Nsight Systems timeline and Nsight Compute append-kernel captures succeeded.
+- Compiler: HPC nvcc 12.9.86, g++-12, SM70 with lineinfo. Torch: 2.7.0+cu126.
+- Default-off tokenization configuration retains the existing dependency boundary.
+
+## Bounded performance
+
+Synthetic append case: 32 sequences, eight events per append, 32 calls,
+five samples, matching token and attribute writes. CPU uses four threads.
+
+| Device | Cellerator microseconds per append | ATen baseline microseconds per append |
+|---|---:|---:|
+| CPU | 5.35 | 15.94 |
+| V100 | 33.77 | 50.56 |
+
+The V100 steady-state append allocation counter increased by zero. Ranking
+wrappers were slower than the simpler ATen compositions in the measured
+32-by-20,000-feature, 1% and 10% density fixtures. The initial ATen compositions
+are correctness-qualified; these results do not establish a universal speedup.
+CPU memory measurements are coarse process RSS high-water marks.
+
+## Artifacts and boundaries
+
+The [source-bound qualification record](../bench/tokenization/evidence/2026-10-26/qualification.json)
+contains source hashes, wheel identity, full timing records and scheduler job IDs.
+Full logs, wheel and profiler reports remain in `build/tokenization-evidence/`.
+Profiler captures precede the final host-side implicit-device fix; CUDA append
+kernel source is unchanged. Final-wheel tests, sanitizer and benchmark were rerun.
+
+All executed GPU jobs used exclusive scheduler admission and verified cleanup.
+Obsolete Cellerator requests were cancelled/recovered through supported APIs.
+No GPU resources remain held by this work. Pre-existing unresolved scheduler
+records were preserved. A user-authorized Cellerator execution grant was added;
+its private client configuration is `~/.config/device-scheduler/cellerator-client.toml`.
+
+Project Control task lookup and supported plan preview returned
+`native_operation_rejected`; no task completion was asserted and no authority
+store or generated projections were edited. Existing unrelated worktree changes
+were preserved. No broad ATen migration, commit or push was performed.
+
+See the [API and HPC tool paths](tokenization.qmd) for usage. The generic HPC
+profiler wrappers selected an absent 13.1 tree; qualification used explicit
+installed 12.9 tool paths. These are software checks, not biological validation.

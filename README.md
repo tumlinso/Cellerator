@@ -37,6 +37,14 @@ points. The [current implementation record](docs/current_implementation.qmd)
 separates dated implementation evidence from longer-term design intent. Python
 and optional Torch setup is documented in the [binding guide](docs/development/python-bindings.md).
 
+[CelleraTorch](CelleraTorch/README.md) is a separate experimental workspace
+inside this repository for exploring a smaller biological numerical runtime.
+Its [design notes](CelleraTorch/docs/design.md) describe PyTorch-owned
+orchestration, scheduling, autograd and graph execution around Torch-independent
+native kernels and structure-aware representations. Only documentation has
+been added; implementation is on hold. The folder shares this repository's Git
+history and is outside its component, build and package registration.
+
 Cellerator provides the numerical execution beneath [GlassHelix](https://github.com/tumlinso/GlassHelix)'s questions about dynamics and mechanism. [Baseplane](https://github.com/tumlinso/Baseplane) develops sequence-grounded representations and shares the numerical boundary rather than becoming a second general runtime. See [Baseplane integration](docs/baseplane_integration.qmd) and [storage and framework boundaries](docs/storage_distribution_and_interop.qmd).
 
 This is active research software. Its ambition is broader than its measured execution envelopes.

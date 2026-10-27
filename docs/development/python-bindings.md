@@ -25,8 +25,8 @@ python -m pip install .
 ```
 
 For the optional Torch adapter, install the distribution's Torch extra and
-configure both Torch and the CUDA backend. This is the only mode that discovers
-and links libtorch; the Torch adapter requires the CUDA indexed-mechanism owner:
+configure both Torch and the CUDA backend. The Torch adapter requires the CUDA
+indexed-mechanism owner:
 
 ```sh
 python -m pip install '.[torch]' \
@@ -62,6 +62,14 @@ target_link_libraries(my_target PRIVATE Cellerator::torch)
 ```
 
 Ordinary `find_package(Cellerator)` consumers do not discover or link Torch.
+
+The separately enabled [ATen tokenization facility](../tokenization.qmd)
+provides `cellerator.tokenization`, `Cellerator::tokenization` and reusable
+`Cellerator::aten_ops`. It discovers libtorch when
+`CELLERATOR_ENABLE_TOKENIZATION=ON`, supports CPU-only Torch, and does not
+require `CELLERATOR_ENABLE_TORCH` or the CUDA indexed-mechanism adapter. Build
+against the selected Python interpreter's Torch installation for matching
+tensor casters and ABI. Ordinary builds keep both optional facilities disabled.
 
 ## API shape
 

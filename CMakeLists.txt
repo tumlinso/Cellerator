@@ -73,6 +73,8 @@ find_package(PkgConfig QUIET)
 # discover either dependency unless its corresponding option is enabled.
 option(CELLERATOR_ENABLE_PYTHON "Build the optional cellerator Python extension" OFF)
 option(CELLERATOR_ENABLE_TORCH "Build the optional Cellerator Torch adapters" OFF)
+option(CELLERATOR_ENABLE_TOKENIZATION
+    "Build the optional ATen-backed tokenization facility" OFF)
 option(CELLERATOR_BUILD_TORCH_EXAMPLES "Build optional CellShard-dependent Torch examples" OFF)
 option(CELLERATOR_ENABLE_CELLSHARD "Build the embedded CellShard component" OFF)
 option(CELLERATOR_BUILD_TESTS "Build Cellerator test executables" ON)
@@ -108,6 +110,9 @@ include(cmake/Product2.cmake)
 if(CELLERATOR_ENABLE_PYTHON)
     include(cmake/CelleratorPython.cmake)
 endif()
+# ATen numerical operations and tokenization have a separate optional
+# dependency boundary from the CUDA mechanism Torch adapters below.
+include(cmake/CelleratorTokenization.cmake)
 # Build the linked NF1 numerical foundation and its host reference consumer.
 # CUDA relation/value tests are enabled only with the semantic spine owner.
 option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 numerical foundation tests" OFF)

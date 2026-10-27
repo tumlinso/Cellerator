@@ -18,6 +18,10 @@ authority.
 
 ## Repository map
 
+The optional [ATen tokenization facility](tokenization.qmd) provides ranked
+features, caller-defined event streams, ragged sequence storage and reusable
+numerical operations without enabling the CUDA-mechanism Torch adapter.
+
 ```text
 include/Cellerator/
     public Cellerator contracts and device views
@@ -126,6 +130,19 @@ CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES
 `CELLERATOR_DEFAULT_SPARSE_LAYOUT=blocked_ell` is a current build default, not
 the target architectural rule. New core code must not interpret it as a demand
 that every structure use Blocked-ELL.
+
+The numerical design policy makes FP16 the general computation default where
+the operation supports it, while keeping FP32, FP64, and other supported types
+available explicitly. Type-independent algorithms should use templates;
+specialize only for a real semantic or measured implementation need. This
+policy is not yet the same as the source-level CMake defaults: currently,
+`CELLERATOR_REAL_STORAGE=f16`, `CELLERATOR_REAL_COMPUTE=f32`, and
+`CELLERATOR_REAL_ACCUM=f32`. These options separately describe storage,
+arithmetic, and reduction defaults. Do not infer a configured build's runtime
+precision from the architectural policy; inspect its configure values and the
+operation's supported type combinations. See [Architecture](architecture.qmd#numerical-policy)
+for the policy and [Performance and Validation](performance_validation.qmd)
+for how precision claims are qualified.
 
 The current native baseline is Volta `sm_70`. Portable contracts should remain
 valid across NVIDIA generations. Kernel schedules may specialize by runtime

@@ -2,6 +2,26 @@
 title: "Current Implementation"
 ---
 
+## ATen tokenization addition — 2026-10-26
+
+The optional [tokenization facility](tokenization.qmd) adds ATen-owned tensor
+contracts for vocabularies, ragged/padded sequences, ranked features and supplied
+event streams. Separate numerical operations provide normalization,
+deterministic selection and exact blocked nonzero per-feature median fitting.
+Explicit-capacity sequence buffers provide CPU and CUDA append with aligned
+attributes, reusable status storage and overflow reporting. This is additive;
+existing runtime buffers have not been migrated to ATen.
+
+The Geneformer-style profile consumes caller-supplied totals, medians and
+vocabulary. Event inference, intervention and lifecycle meanings, model state
+and population execution remain downstream decisions. The examples use
+synthetic, already-defined biological inputs rather than reconstructed histories.
+
+Build, correctness, profiling and bounded timing qualification are recorded
+with their source and environment identities under `bench/tokenization/evidence/`.
+These checks establish software behavior in the tested configurations and do
+not establish biological validity or a universal performance advantage.
+
 ## Historical implementation audit — 2026-09-06
 
 This detailed snapshot predates the 2026-09-29 documentation refresh, subsequent learning work, and the current Python binding consolidation. References below to the former CelleraTorch component and its paths describe the audited historical state only. For the current binding surface, see [Python bindings](development/python-bindings.md). The material below remains useful as a source-linked record for its stated date and campaign scope.
