@@ -20,13 +20,19 @@ add_library(cellerator_architecture_provider STATIC
     src/compute/architecture/provider_registry.cc
     ${CELLERATOR_NVIDIA_COMMON_PROVIDER_SOURCES}
     ${CELLERATOR_NVIDIA_SM70_PROVIDER_SOURCES}
-    src/compute/projection/mma_physical_cover_validation.cc
     src/compute/projection/mma_physical_work_layout.cc
     src/compute/projection/mma_residual_builder.cc
     src/compute/projection/physical_mma_hybrid.cc
 )
 add_library(Cellerator::architecture_provider ALIAS
     cellerator_architecture_provider)
+if(TARGET Cellerator::sparse_support)
+    # Cold image construction/validation is host-capable and shares one owner.
+    target_link_libraries(cellerator_architecture_provider PUBLIC Cellerator::sparse_support)
+else()
+    target_sources(cellerator_architecture_provider PRIVATE
+        src/compute/projection/mma_physical_cover_validation.cc)
+endif()
 target_include_directories(cellerator_architecture_provider PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>

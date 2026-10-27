@@ -9,6 +9,35 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/indexed_mechanism/C
     add_subdirectory(src/compute/operation/indexed_mechanism)
 endif()
 
+if(CELLERATOR_ENABLE_SPARSE_SUPPORT)
+    if(EXISTS "${PROJECT_SOURCE_DIR}/src/compute/gating/cuda_worksets.cu")
+        add_library(cellerator_sparse_support_cuda STATIC
+            "${PROJECT_SOURCE_DIR}/src/compute/gating/cuda_worksets.cu")
+        add_library(Cellerator::sparse_support_cuda ALIAS cellerator_sparse_support_cuda)
+        target_include_directories(cellerator_sparse_support_cuda PUBLIC
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+        target_link_libraries(cellerator_sparse_support_cuda PUBLIC
+            Cellerator::sparse_support CUDA::cudart)
+        set_target_properties(cellerator_sparse_support_cuda PROPERTIES
+            POSITION_INDEPENDENT_CODE ON CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+        if(EXISTS "${PROJECT_SOURCE_DIR}/src/compute/indexing/cuda_postings.cu")
+            target_sources(cellerator_sparse_support_cuda PRIVATE
+                "${PROJECT_SOURCE_DIR}/src/compute/indexing/cuda_postings.cu")
+        endif()
+    endif()
+    add_subdirectory(src/compute/operation/sparse_support)
+    if(CELLERATOR_ENABLE_CUDA_LINEINFO)
+        foreach(_sparse_cuda_target IN ITEMS
+                cellerator_sparse_support_cuda cellerator_sparse_support_numeric)
+            if(TARGET ${_sparse_cuda_target})
+                target_compile_options(${_sparse_cuda_target} PRIVATE
+                    $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo>)
+            endif()
+        endforeach()
+    endif()
+endif()
+
 add_library(cellerator_native_foundation INTERFACE)
 add_library(Cellerator::native_foundation ALIAS cellerator_native_foundation)
 target_link_libraries(cellerator_native_foundation INTERFACE
@@ -25,6 +54,16 @@ endif()
 if(TARGET Cellerator::indexed_mechanism)
     target_link_libraries(cellerator_native_foundation INTERFACE
         Cellerator::indexed_mechanism)
+endif()
+
+if(TARGET Cellerator::sparse_support)
+    target_link_libraries(cellerator_native_foundation INTERFACE Cellerator::sparse_support)
+endif()
+if(TARGET Cellerator::sparse_support_numeric)
+    target_link_libraries(cellerator_native_foundation INTERFACE Cellerator::sparse_support_numeric)
+endif()
+if(TARGET Cellerator::sparse_support_cuda)
+    target_link_libraries(cellerator_native_foundation INTERFACE Cellerator::sparse_support_cuda)
 endif()
 
 if(TARGET cellerator_prepared_relation_cuda)

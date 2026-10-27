@@ -113,6 +113,7 @@ endif()
 # ATen numerical operations and tokenization have a separate optional
 # dependency boundary from the CUDA mechanism Torch adapters below.
 include(cmake/CelleratorTokenization.cmake)
+include(cmake/CelleratorSparseSupport.cmake)
 # Build the linked NF1 numerical foundation and its host reference consumer.
 # CUDA relation/value tests are enabled only with the semantic spine owner.
 option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 numerical foundation tests" OFF)
@@ -701,6 +702,13 @@ add_subdirectory(compat)
 include(compat/cp_math_v1/CMakeLists.txt)
 
 include(cmake/NativeFoundation.cmake)
+
+if(CELLERATOR_ENABLE_SPARSE_SUPPORT AND CELLERATOR_BUILD_TESTS)
+    add_subdirectory(tests/sparse_support)
+endif()
+if(CELLERATOR_ENABLE_SPARSE_SUPPORT AND EXISTS "${PROJECT_SOURCE_DIR}/bench/sparse_support/CMakeLists.txt")
+    add_subdirectory(bench/sparse_support)
+endif()
 
 if(CELLERATOR_BUILD_TESTS AND NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     add_executable(celleratorCudaStreamDeviceTest

@@ -1,0 +1,112 @@
+#include <Cellerator/compute/operation/sparse_support/training.hh>
+
+#define main ce_geo_mma_projection_roundtrip_regression
+#include "../ce_geo/projection/mma_projection_roundtrip_test.cc"
+#undef main
+
+#include <cassert>
+#include <cmath>
+#include <cstdint>
+#include <limits>
+#include <vector>
+
+using namespace cellerator::compute::operation::sparse_support;
+
+int main() {
+    const auto image = physical_image();
+    const std::uint64_t physical_edge_ids[] = {0, 1};
+    const std::uint32_t physical_sources[] = {0, 0};
+    const std::uint32_t physical_destinations[] = {0, 0};
+    const std::uint32_t source_group_members[] = {0};
+    const std::uint32_t destination_group_members[] = {0};
+    ce_geo_n64_projection_binding_v1 binding;
+    assert(prepare_ce_geo_n64_projection_v1(image.data(), image.size(),
+        physical_edge_ids, physical_sources, physical_destinations,
+        source_group_members, destination_group_members, 1, 1, 7, 11,
+        &binding) == status_v1::success);
+    assert(binding.edge_value_map_indices.size() == 2
+        && binding.edge_value_map_indices[0] == 0
+        && binding.edge_value_map_indices[1] == 1);
+    assert(binding.tile_destination_groups[0] == 0
+        && binding.tile_source_bases[0] == 0
+        && binding.source_members.size() == 16
+        && binding.source_members[0] == 0
+        && binding.logical_source_to_physical[0] == 0
+        && binding.destination_members[0] == 0);
+    const std::uint64_t delta_edge_ids[] = {0, 1, 2};
+    const std::uint32_t delta_sources[] = {0, 0, 1};
+    const std::uint32_t delta_destinations[] = {0, 0, 1};
+    assert(prepare_ce_geo_n64_projection_v1(image.data(), image.size(),
+        delta_edge_ids, delta_sources, delta_destinations,
+        source_group_members, destination_group_members, 2, 2, 7, 11,
+        &binding) == status_v1::success);
+    assert(binding.edge_value_map_indices[2]
+        == std::numeric_limits<std::uint64_t>::max()
+        && binding.logical_source_to_physical[1]
+            == std::numeric_limits<std::uint32_t>::max());
+
+    const std::uint64_t edge_ids[] = {5, 9};
+    const std::uint32_t sources[] = {0, 1};
+    const std::uint32_t destinations[] = {0, 0};
+    edge_axis_view_v1 edges{3, 2, edge_ids, sources, destinations};
+    const std::uint64_t cell_offsets[] = {0, 2};
+    const std::uint64_t primal_ordinals[] = {0, 1};
+    const std::uint64_t primal_ids[] = {5, 9};
+    const std::uint64_t gate_index[] = {0, 1};
+    per_cell_edge_workset_view_v1 primal{3, 4, 1, cell_offsets,
+        primal_ordinals, primal_ids, gate_index, 2, 2};
+    const std::uint64_t gate_ordinals[] = {0, 1};
+    const std::uint64_t gate_ids[] = {5, 9};
+    const float probabilities[] = {0.75f, 0.5f};
+    const std::uint8_t admitted[] = {0, 1};
+    edge_gate_values_view_v1 gates{3, 4, 1, gate_ordinals, gate_ids,
+        probabilities, admitted, 2, 2};
+    std::vector<float> x(2 * 64, 1.0f);
+    std::fill(x.begin(), x.begin() + 64, std::numeric_limits<float>::quiet_NaN());
+    std::fill(x.begin() + 64, x.end(), 2.0f);
+    const float weights[] = {7.0f, 3.0f};
+    std::vector<float> y(64);
+    assert(sparse_forward_f32_reference_v1(edges, primal, gates, 2, 1,
+        x, weights, y) == status_v1::success);
+    for (float value : y) assert(value == 3.0f);
+
+    const std::uint64_t derivative_ordinals[] = {1};
+    const std::uint64_t derivative_ids[] = {9};
+    const std::uint64_t derivative_gates[] = {1};
+    const std::uint64_t derivative_offsets[] = {0, 1};
+    per_cell_edge_workset_view_v1 derivative{3, 4, 1, derivative_offsets,
+        derivative_ordinals, derivative_ids, derivative_gates, 1, 1};
+    std::vector<float> dy(64, 1.0f), dx(128), dw(2), dg(1);
+    assert(sparse_backward_f32_reference_v1(edges, primal, derivative, gates,
+        2, 1, x, weights, dy, dx, dw, dg) == status_v1::success);
+    assert(dw[0] == 0.0f && dw[1] == 64.0f);
+    assert(dg[0] == 384.0f);
+    for (std::size_t i = 0; i < 64; ++i) assert(dx[i] == 0.0f);
+    for (std::size_t i = 64; i < dx.size(); ++i) assert(dx[i] == 1.5f);
+
+    latent_transition_shape_v1 shape{2, 2, 2, 1};
+    const std::uint32_t affected[] = {1};
+    const std::uint64_t affected_offsets[] = {0, 1, 1};
+    const float state[] = {0, 0, 1, -1, 2, 3, -2, 4};
+    const float input[] = {0.25f, -0.5f};
+    const float a[] = {1, 0, 0, 1};
+    const float b[] = {2, -1};
+    const float bias[] = {0, 0};
+    std::vector<float> next(8), next_grad(8, 1.0f), state_grad(8),
+        input_grad(2), da(4), db(2), dbias(2);
+    assert(latent_transition_f32_reference_v1(shape, affected_offsets, affected, state, input,
+        a, b, bias, next) == status_v1::success);
+    assert(next[0] == state[0] && next[1] == state[1]
+        && next[4] == state[4] && next[5] == state[5]
+        && next[6] == state[6] && next[7] == state[7]);
+    assert(std::abs(next[2] - std::tanh(1.5f)) < 1e-6f);
+    assert(std::abs(next[3] - std::tanh(-1.25f)) < 1e-6f);
+    assert(latent_transition_vjp_f32_reference_v1(shape, affected_offsets, affected, state,
+        input, a, b, bias, next, next_grad, state_grad, input_grad, da, db,
+        dbias) == status_v1::success);
+    assert(state_grad[0] == 1.0f && state_grad[1] == 1.0f
+        && state_grad[4] == 1.0f && state_grad[5] == 1.0f);
+    assert(std::abs(state_grad[2] - (1.0f - next[2] * next[2])) < 1e-6f);
+    assert(std::abs(state_grad[3] - (1.0f - next[3] * next[3])) < 1e-6f);
+    return 0;
+}
