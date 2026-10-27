@@ -38,6 +38,8 @@ enum class adaptive_support_status_v1 : std::uint8_t {
     no_live_forward_tapes,
     live_forward_tapes,
     stale_epoch,
+    invalid_snapshot,
+    pending_changes,
 };
 
 // Host-owned logical overlay. Stable base and adaptive delta remain distinct;
@@ -58,6 +60,18 @@ public:
     adaptive_support_status_v1 stage_revocation(
         std::uint64_t logical_edge_id);
     adaptive_support_status_v1 publish_pending(std::uint64_t next_epoch);
+
+    // Replace this manager with a validated logical checkpoint snapshot.
+    // The views contain the active base/delta partition; revoked IDs retain
+    // retired identity history, and evidence may refer to active or revoked
+    // promoted edges. Restore is permitted only after all tapes and staged
+    // edits have retired.
+    adaptive_support_status_v1 restore_snapshot(
+        const support_snapshot_pair_v1 &snapshot,
+        const std::uint64_t *revoked_edge_ids,
+        std::uint64_t revoked_edge_count,
+        const support_promotion_record_v1 *promotion_records,
+        std::uint64_t promotion_record_count);
 
     adaptive_support_status_v1 pin_forward_tape(std::uint64_t expected_epoch) noexcept;
     adaptive_support_status_v1 retire_forward_tape(std::uint64_t expected_epoch) noexcept;

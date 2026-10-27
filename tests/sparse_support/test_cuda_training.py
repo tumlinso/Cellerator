@@ -367,6 +367,70 @@ class SparseSupportCudaTrainingTest(unittest.TestCase):
             target_optimizer.state[target.parameters_flat]["exp_avg"],
             source_optimizer.state[source.parameters_flat]["exp_avg"]))
 
+    def test_checkpoint_restores_promoted_then_revoked_identity_at_exact_epoch(self):
+        source = self._module()
+        source_optimizer = torch.optim.Adam([source.parameters_flat], lr=0.01)
+        source.parameters_flat.square().sum().backward()
+        self.assertTrue(guarded_step(source, source_optimizer))
+        source.stage_promotion(12, 0, 1, discovery_round_id=9,
+                              scorer_generation=self.native.sparse_generation(source._native),
+                              proposal_score=0.5)
+        source.publish_support(2)
+        source.stage_revocation(12)
+        source.publish_support(3)
+        self.assertEqual(source.support.edge_ids, (10, 11))
+        self.assertEqual(source.structure_epoch, 3)
+        source_snapshot = source._support_index.snapshot()
+        self.assertEqual(source_snapshot["base"]["edge_ids"].tolist(), [10, 11])
+        self.assertEqual(source_snapshot["delta"]["edge_ids"].tolist(), [])
+        self.assertEqual(source_snapshot["revoked_edge_ids"].tolist(), [12])
+        self.assertEqual(source_snapshot["promotion_evidence_edge_ids"].tolist(), [12])
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "promoted-then-revoked.pt"
+            save_checkpoint(path, source, source_optimizer)
+            target = self._module()
+            target_optimizer = torch.optim.Adam([target.parameters_flat], lr=0.5)
+            target_leaf = target.parameters_flat
+            target_handle_owner = self.native.sparse_parameters(target._native).data_ptr()
+            load_checkpoint(path, target, target_optimizer)
+
+        self.assertIs(target.parameters_flat, target_leaf)
+        self.assertEqual(target.structure_epoch, 3)
+        self.assertEqual(target.support.edge_ids, (10, 11))
+        self.assertEqual(target.support.sources, (0, 1))
+        self.assertEqual(target.support.destinations, (2, 2))
+        self.assertEqual(self.native.sparse_parameters(target._native).data_ptr(),
+                         target_handle_owner)
+        restored = target._support_index.snapshot()
+        self.assertEqual(restored["base"]["edge_ids"].tolist(), [10, 11])
+        self.assertEqual(restored["delta"]["edge_ids"].tolist(), [])
+        self.assertEqual(restored["revoked_edge_ids"].tolist(), [12])
+        self.assertEqual(restored["promotion_evidence_edge_ids"].tolist(), [12])
+        self.assertEqual(restored["promotion_evidence_round_ids"].tolist(), [9])
+        self.assertEqual(target_optimizer.param_groups[0]["lr"], 0.01)
+        self.assertTrue(torch.equal(target.parameters_flat, source.parameters_flat))
+        self.assertTrue(torch.equal(
+            target_optimizer.state[target_leaf]["exp_avg"],
+            source_optimizer.state[source.parameters_flat]["exp_avg"]))
+
+        with self.assertRaisesRegex(RuntimeError, "status"):
+            target.stage_promotion(12, 0, 1, discovery_round_id=10)
+
+        next_gradient = torch.linspace(
+            -0.25, 0.25, source.parameters_flat.numel(),
+            device=source.parameters_flat.device)
+        source_optimizer.zero_grad(set_to_none=True)
+        target_optimizer.zero_grad(set_to_none=True)
+        source.parameters_flat.grad = next_gradient.clone()
+        target.parameters_flat.grad = next_gradient.clone()
+        self.assertTrue(guarded_step(source, source_optimizer))
+        self.assertTrue(guarded_step(target, target_optimizer))
+        self.assertTrue(torch.equal(target.parameters_flat, source.parameters_flat))
+        self.assertTrue(torch.equal(
+            target_optimizer.state[target_leaf]["exp_avg"],
+            source_optimizer.state[source.parameters_flat]["exp_avg"]))
+
 
 if __name__ == "__main__":
     unittest.main()

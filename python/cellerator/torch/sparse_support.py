@@ -147,11 +147,24 @@ def _snapshot_edges(snapshot: dict) -> dict[int, tuple[int, int]]:
         offsets = relation["participant_offsets"]
         roles = relation["participant_roles"]
         entities = relation["participant_entity_ids"]
+        if (len(offsets) != len(ids) + 1 or len(offsets) == 0
+                or int(offsets[0]) != 0 or int(offsets[-1]) != len(entities)
+                or len(roles) != len(entities)):
+            raise ValueError("logical support snapshot has malformed participant arrays")
+        previous_id = 0
         for index, edge_id in enumerate(ids.tolist()):
             begin, end = int(offsets[index]), int(offsets[index + 1])
-            if end - begin != 2 or roles[begin:end].tolist() != [0, 1]:
+            edge_id = int(edge_id)
+            if edge_id <= previous_id or edge_id in result:
+                raise ValueError("logical support snapshot IDs are not unique and sorted")
+            if (begin < 0 or end < begin or end > len(entities)
+                    or end - begin != 2 or roles[begin:end].tolist() != [0, 1]):
                 raise ValueError("numeric relation projection requires ordered pair roles 0/1")
-            result[int(edge_id)] = tuple(int(value) - 1 for value in entities[begin:end])
+            endpoints = tuple(int(value) - 1 for value in entities[begin:end])
+            if min(endpoints) < 0:
+                raise ValueError("logical support snapshot endpoints must be positive identities")
+            result[edge_id] = endpoints
+            previous_id = edge_id
     return result
 
 
@@ -712,9 +725,14 @@ class SparseSupportModule(nn.Module):
         }
 
     def _prepare_sparse_checkpoint_state(self, state):
-        if state is None or int(state.get("structure_epoch", -1)) < 0:
+        if state is None or int(state.get("structure_epoch", -1)) <= 0:
             raise ValueError("checkpoint sparse support state is missing or malformed")
         import numpy as np
+
+        if self._read_tickets:
+            raise RuntimeError("sparse checkpoint restore requires all parameter read tapes to retire")
+        if self._pending_promotions or self._pending_revocations:
+            raise RuntimeError("sparse checkpoint restore requires no staged support edits")
 
         saved_snapshot = state.get("support_snapshot")
         if not isinstance(saved_snapshot, dict) or not {
@@ -725,6 +743,14 @@ class SparseSupportModule(nn.Module):
             raise ValueError("checkpoint support base/delta snapshot is missing or malformed")
         if int(saved_snapshot["structure_epoch"]) != int(state["structure_epoch"]):
             raise ValueError("checkpoint support snapshot has a stale structure epoch")
+        current_snapshot = self._support_index.snapshot()
+        for name in ("base", "delta"):
+            relation = saved_snapshot[name]
+            current_relation = current_snapshot[name]
+            if (int(relation["structure_epoch"]) != int(state["structure_epoch"])
+                    or int(relation["structure_id"]) != int(current_relation["structure_id"])
+                    or int(relation["relation_id"]) != int(current_relation["relation_id"])):
+                raise ValueError("checkpoint support relation identity differs from the target")
         desired_edges = _snapshot_edges(saved_snapshot)
         saved = state.get("support", {})
         try:
@@ -739,7 +765,6 @@ class SparseSupportModule(nn.Module):
             raise ValueError("checkpoint logical support arrays are inconsistent")
         if desired_edges != dict(zip(saved_ids, zip(saved_sources, saved_destinations))):
             raise ValueError("checkpoint logical support disagrees with its base/delta snapshot")
-        current_snapshot = self._support_index.snapshot()
         current_edges = _snapshot_edges(current_snapshot)
         if int(current_snapshot["structure_epoch"]) > int(state["structure_epoch"]):
             raise ValueError("target support epoch is newer than the checkpoint")
@@ -747,23 +772,31 @@ class SparseSupportModule(nn.Module):
             if current_edges[edge_id] != desired_edges[edge_id]:
                 raise ValueError("checkpoint reuses a logical edge ID for different endpoints")
         current_revoked = set(map(int, current_snapshot["revoked_edge_ids"].tolist()))
-        desired_revoked = set(map(int, saved_snapshot["revoked_edge_ids"].tolist()))
-        if not desired_revoked.issubset(current_revoked | set(current_edges)):
-            raise ValueError("checkpoint contains revoked IDs absent from the target support history")
+        revoked_values = tuple(map(int, saved_snapshot["revoked_edge_ids"].tolist()))
+        desired_revoked = set(revoked_values)
+        if (tuple(sorted(desired_revoked)) != revoked_values
+                or any(edge_id <= 0 for edge_id in revoked_values)
+                or desired_revoked & desired_edges.keys()):
+            raise ValueError("checkpoint tombstones are malformed or overlap active support")
         if desired_edges.keys() & current_revoked:
             raise ValueError("checkpoint reuses a logical edge ID revoked by the target support history")
+        current_history = current_edges.keys() | current_revoked
+        desired_history = desired_edges.keys() | desired_revoked
+        if not current_history.issubset(desired_history):
+            raise ValueError("checkpoint would discard target support identity history")
         evidence_fields = ("promotion_evidence_edge_ids", "promotion_evidence_round_ids",
                            "promotion_evidence_scorer_generations",
                            "promotion_evidence_scores")
         evidence_sizes = {len(saved_snapshot[key]) for key in evidence_fields}
         if len(evidence_sizes) != 1:
             raise ValueError("checkpoint support promotion evidence arrays disagree")
-        evidence_ids = set(map(int, saved_snapshot[evidence_fields[0]].tolist()))
-        if not evidence_ids.issubset(desired_edges):
-            raise ValueError("checkpoint promotion evidence references inactive support")
-        if (current_edges == desired_edges
-                and int(current_snapshot["structure_epoch"]) != int(state["structure_epoch"])):
-            raise ValueError("checkpoint epoch differs but has no support revision to publish")
+        evidence_ids_list = tuple(map(int, saved_snapshot[evidence_fields[0]].tolist()))
+        evidence_ids = set(evidence_ids_list)
+        evidence_scores = saved_snapshot["promotion_evidence_scores"].tolist()
+        if (len(evidence_ids) != len(evidence_ids_list)
+                or not evidence_ids.issubset(desired_history)
+                or not np.isfinite(np.asarray(evidence_scores, dtype=np.float32)).all()):
+            raise ValueError("checkpoint promotion evidence is malformed or references unknown support")
         policy = state.get("gate_policy", {})
         if (policy.get("estimator") not in ("soft", "straight_through")
                 or float(policy.get("temperature", 0.0)) <= 0
@@ -774,33 +807,35 @@ class SparseSupportModule(nn.Module):
     def _restore_sparse_checkpoint_state(self, state):
         self._prepare_sparse_checkpoint_state(state)
         desired_edges = _snapshot_edges(state["support_snapshot"])
-        current_edges = _snapshot_edges(self._support_index.snapshot())
-        evidence = state["support_snapshot"]
-        evidence_by_id = {}
-        evidence_ids = evidence["promotion_evidence_edge_ids"].tolist()
-        evidence_rounds = evidence["promotion_evidence_round_ids"].tolist()
-        evidence_generations = evidence["promotion_evidence_scorer_generations"].tolist()
-        evidence_scores = evidence["promotion_evidence_scores"].tolist()
-        evidence_by_id.update({int(edge_id): (int(round_id), int(generation), float(score))
-                               for edge_id, round_id, generation, score in zip(
-                                   evidence_ids, evidence_rounds,
-                                   evidence_generations, evidence_scores)})
-        for edge_id in sorted(current_edges.keys() - desired_edges.keys()):
-            self.stage_revocation(edge_id)
-        for edge_id in sorted(desired_edges.keys() - current_edges.keys()):
-            source, destination = desired_edges[edge_id]
-            round_id, generation, score = evidence_by_id.get(edge_id, (0, 0, 0.0))
-            self.stage_promotion(edge_id, source, destination,
-                                 discovery_round_id=round_id,
-                                 scorer_generation=generation,
-                                 proposal_score=score)
-        if desired_edges != current_edges:
-            current_epoch = int(self._support_index.structure_epoch)
-            self.publish_support(max(int(state["structure_epoch"]), current_epoch + 1))
-            if _snapshot_edges(self._support_index.snapshot()) != desired_edges:
-                raise RuntimeError("checkpoint support restoration did not reproduce logical routes")
-        self.application_state = dict(state.get("application_state", {}))
-        self.gate_policy = dict(state["gate_policy"])
+        epoch = int(state["structure_epoch"])
+        try:
+            # Restore the exact logical partition and identity history before
+            # rebuilding the numerical view. The existing manager object is
+            # retained by both handles, and sparse_rebind_handle retains the
+            # one canonical parameter owner and Torch leaf.
+            self._support_index.restore_snapshot(state["support_snapshot"])
+            self._native = self._torch_native.sparse_rebind_handle(
+                self._native, list(desired_edges),
+                [desired_edges[edge_id][0] for edge_id in desired_edges],
+                [desired_edges[edge_id][1] for edge_id in desired_edges], epoch)
+            self.support = SupportSpec(
+                tuple(desired_edges),
+                tuple(desired_edges[edge_id][0] for edge_id in desired_edges),
+                tuple(desired_edges[edge_id][1] for edge_id in desired_edges), epoch)
+            self.structure_epoch = epoch
+            (self._source_endpoint_indices,
+             self._destination_endpoint_indices) = (
+                self._torch_native.sparse_endpoint_indices(self._native))
+            self._mechanism_route_generation = -1
+            self._pending_promotions.clear()
+            self._pending_revocations.clear()
+            self.application_state = dict(state.get("application_state", {}))
+            self.gate_policy = dict(state["gate_policy"])
+        except Exception:
+            # Restore may have replaced the manager before an allocation or
+            # projection rebind fails. Refuse future execution in that case.
+            self._poisoned = True
+            raise
 
 
 def prepare_sparse_slice(module_type, support: SupportSpec, *, entities: int,

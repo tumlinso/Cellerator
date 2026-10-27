@@ -61,6 +61,54 @@ int main() {
     assert(manager.promotion_records().size() == 2u
         && manager.promotion_records()[1].scorer_generation == 5u);
 
+    const support::logical_support_view_v1 initial_base{1u, 0u, 7u, 99u, 1u,
+        base_edges, 2u, base_parts, 4u};
+    support::adaptive_support_manager_v1 restored_manager;
+    assert(restored_manager.initialize(initial_base, 8u)
+        == support::adaptive_support_status_v1::success);
+    const auto& revoked_ids = manager.revoked_edge_ids();
+    const auto& promotion_records = manager.promotion_records();
+    assert(restored_manager.pin_forward_tape(1u)
+        == support::adaptive_support_status_v1::success);
+    assert(restored_manager.restore_snapshot(managed_snapshot,
+        revoked_ids.data(), revoked_ids.size(), promotion_records.data(),
+        promotion_records.size())
+        == support::adaptive_support_status_v1::live_forward_tapes);
+    assert(restored_manager.retire_forward_tape(1u)
+        == support::adaptive_support_status_v1::success);
+    assert(restored_manager.restore_snapshot(managed_snapshot,
+        revoked_ids.data(), revoked_ids.size(), promotion_records.data(),
+        promotion_records.size())
+        == support::adaptive_support_status_v1::success);
+    support::support_snapshot_pair_v1 restored_snapshot{};
+    assert(restored_manager.snapshot(&restored_snapshot)
+        == support::adaptive_support_status_v1::success);
+    assert(restored_snapshot.snapshot_structure_epoch == 5u
+        && restored_snapshot.base->edge_count == 2u
+        && restored_snapshot.base->edges[0].logical_edge_id == 20u
+        && restored_snapshot.base->edges[1].logical_edge_id == 40u
+        && restored_snapshot.delta->edge_count == 1u
+        && restored_snapshot.delta->edges[0].logical_edge_id == 50u);
+    assert(restored_manager.revoked_edge_ids() == revoked_ids
+        && restored_manager.promotion_records().size() == promotion_records.size()
+        && restored_manager.promotion_records()[0].logical_edge_id == 40u
+        && restored_manager.promotion_records()[1].logical_edge_id == 50u);
+    assert(restored_manager.stage_promotion({10u, promoted_parts, 2u})
+        == support::adaptive_support_status_v1::duplicate_logical_edge);
+
+    support::adaptive_support_manager_v1 conflicting_manager;
+    const support::logical_support_participant_v1 conflicting_parts[] = {
+        {0u, 0u, 101u}, {1u, 0u, 201u}, {0u, 0u, 999u}, {1u, 0u, 201u}};
+    const support::logical_support_view_v1 conflicting_base{1u, 0u, 7u, 99u, 1u,
+        base_edges, 2u, conflicting_parts, 4u};
+    assert(conflicting_manager.initialize(conflicting_base, 8u)
+        == support::adaptive_support_status_v1::success);
+    assert(conflicting_manager.restore_snapshot(managed_snapshot,
+        revoked_ids.data(), revoked_ids.size(), promotion_records.data(),
+        promotion_records.size())
+        == support::adaptive_support_status_v1::invalid_snapshot);
+    assert(conflicting_manager.structure_epoch() == 1u);
+
     indexing::reverse_posting_record_v1 records[6]{}, entries[6]{};
     indexing::reverse_posting_view_v1 index{};
     assert(indexing::build_reverse_postings_v1(snapshot, records, 6u,

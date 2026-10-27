@@ -62,6 +62,8 @@ public:
     }
     cellerator::compute::support::adaptive_support_status_v1 publish_pending_snapshot(
         std::uint64_t epoch, owned_support_snapshot_v1* output);
+    cellerator::compute::support::adaptive_support_status_v1 restore_snapshot(
+        const owned_support_snapshot_v1& snapshot);
     cellerator::compute::support::adaptive_support_status_v1 pin_forward_tape(
         std::uint64_t epoch) noexcept {
         std::lock_guard<std::mutex> lock(mutex_);

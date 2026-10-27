@@ -58,6 +58,47 @@ class NativeIndexingBindingsTest(unittest.TestCase):
         self.assertEqual(snapshot["base"]["edge_ids"].tolist(), [20, 30])
         self.assertEqual(snapshot["delta"]["edge_ids"].tolist(), [40])
 
+    def test_cold_snapshot_restore_preserves_partition_tombstones_and_evidence(self):
+        source = self.support_handle()
+        source.stage_promotion(30, np.array([0, 1], dtype=np.int32),
+                               np.array([4, 5], dtype=np.int64), 11, 4, 0.75)
+        source.stage_promotion(40, np.array([0, 1], dtype=np.int32),
+                               np.array([6, 7], dtype=np.int64), 12, 5, 0.9)
+        source.publish_pending_snapshot(2)
+        source.stage_base_promotion(30)
+        source.stage_revocation(40)
+        source_snapshot = source.publish_pending_snapshot(3)
+        self.assertEqual(source_snapshot["base"]["edge_ids"].tolist(), [10, 20, 30])
+        self.assertEqual(source_snapshot["delta"]["edge_ids"].tolist(), [])
+        self.assertEqual(source_snapshot["revoked_edge_ids"].tolist(), [40])
+
+        target = self.support_handle()
+        target.pin_forward_tape(1)
+        with self.assertRaisesRegex(RuntimeError, "status"):
+            target.restore_snapshot(source_snapshot)
+        target.retire_forward_tape(1)
+        target.restore_snapshot(source_snapshot)
+        restored = target.snapshot()
+        self.assertEqual(target.structure_epoch, 3)
+        self.assertEqual(restored["base"]["edge_ids"].tolist(), [10, 20, 30])
+        self.assertEqual(restored["delta"]["edge_ids"].tolist(), [])
+        self.assertEqual(restored["revoked_edge_ids"].tolist(), [40])
+        self.assertEqual(restored["promotion_evidence_edge_ids"].tolist(), [30, 40])
+        self.assertEqual(restored["promotion_evidence_round_ids"].tolist(), [11, 12])
+        with self.assertRaisesRegex(RuntimeError, "status"):
+            target.stage_promotion(40, np.array([0, 1], dtype=np.int32),
+                                   np.array([8, 9], dtype=np.int64))
+
+        conflict = self.native.NativeSupportHandle(
+            np.array([10, 20], dtype=np.int64),
+            np.array([0, 2, 4], dtype=np.int64),
+            np.array([0, 1, 0, 1], dtype=np.int32),
+            np.array([1, 2, 4, 3], dtype=np.int64),
+            7, 99, 1, 8)
+        with self.assertRaisesRegex(RuntimeError, "status"):
+            conflict.restore_snapshot(source_snapshot)
+        self.assertEqual(conflict.structure_epoch, 1)
+
     def test_native_temporal_window_keeps_occurrence_identity(self):
         ring = self.native.NativeTemporalOccurrenceRing(1, 7, 3)
         ring.append(100, 0, None)

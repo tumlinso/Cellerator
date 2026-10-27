@@ -31,7 +31,11 @@ py::array_t<T> require_vector(py::handle value, const char *name) {
     if (!py::isinstance<py::array>(value))
         throw py::type_error(std::string(name) + " must be a NumPy array");
     auto array = py::reinterpret_borrow<py::array>(value);
-    if (!array.dtype().is(py::dtype::of<T>()) || array.ndim() != 1
+    const auto expected_dtype = py::dtype::of<T>();
+    const int dtype_matches = PyObject_RichCompareBool(
+        array.dtype().ptr(), expected_dtype.ptr(), Py_EQ);
+    if (dtype_matches < 0) throw py::error_already_set();
+    if (dtype_matches == 0 || array.ndim() != 1
         || !(array.flags() & py::array::c_style)
         || reinterpret_cast<std::uintptr_t>(array.data()) % alignof(T) != 0u)
         throw py::value_error(std::string(name) + " has an incompatible dtype or layout");
@@ -94,6 +98,86 @@ py::dict relation_dict(const ce_support::logical_support_view_v1 &view) {
     result["participant_offsets"] = vector_array(offsets);
     result["participant_roles"] = vector_array(roles);
     result["participant_entity_ids"] = vector_array(entities);
+    return result;
+}
+
+ce_bindings::owned_logical_support_v1 relation_from_dict(
+        const py::dict& value, std::uint64_t expected_epoch) {
+    auto ids = require_vector<std::int64_t>(value["edge_ids"], "edge_ids");
+    auto offsets = require_vector<std::int64_t>(value["participant_offsets"],
+                                                "participant_offsets");
+    auto roles = require_vector<std::int32_t>(value["participant_roles"],
+                                               "participant_roles");
+    auto entities = require_vector<std::int64_t>(value["participant_entity_ids"],
+                                                  "participant_entity_ids");
+    ce_bindings::owned_logical_support_v1 result;
+    result.relation_id = py::cast<std::uint64_t>(value["relation_id"]);
+    result.structure_id = py::cast<std::uint64_t>(value["structure_id"]);
+    result.structure_epoch = py::cast<std::uint64_t>(value["structure_epoch"]);
+    if (result.structure_epoch != expected_epoch
+        || offsets.size() != ids.size() + 1 || offsets.size() == 0
+        || offsets.data()[0] != 0 || offsets.data()[offsets.size() - 1] != entities.size()
+        || roles.size() != entities.size())
+        throw py::value_error("snapshot relation metadata or CSR arrays are inconsistent");
+    result.edges.reserve(static_cast<std::size_t>(ids.size()));
+    result.participants.reserve(static_cast<std::size_t>(entities.size()));
+    for (py::ssize_t i = 0; i < ids.size(); ++i) {
+        if (ids.data()[i] <= 0 || offsets.data()[i] < 0
+            || offsets.data()[i + 1] <= offsets.data()[i]
+            || offsets.data()[i + 1] - offsets.data()[i]
+                > std::numeric_limits<std::uint32_t>::max())
+            throw py::value_error("snapshot edge IDs or participant offsets are invalid");
+        result.edges.push_back({static_cast<std::uint64_t>(ids.data()[i]),
+            static_cast<std::uint64_t>(offsets.data()[i]),
+            static_cast<std::uint32_t>(offsets.data()[i + 1] - offsets.data()[i]), 0u});
+    }
+    for (py::ssize_t i = 0; i < entities.size(); ++i) {
+        if (roles.data()[i] < 0 || entities.data()[i] <= 0)
+            throw py::value_error("snapshot participant identities are invalid");
+        result.participants.push_back({static_cast<std::uint32_t>(roles.data()[i]), 0u,
+            static_cast<std::uint64_t>(entities.data()[i])});
+    }
+    return result;
+}
+
+ce_bindings::owned_support_snapshot_v1 support_snapshot_from_dict(
+        const py::dict& value) {
+    ce_bindings::owned_support_snapshot_v1 result;
+    result.structure_epoch = py::cast<std::uint64_t>(value["structure_epoch"]);
+    result.base = relation_from_dict(py::cast<py::dict>(value["base"]),
+                                     result.structure_epoch);
+    result.delta = relation_from_dict(py::cast<py::dict>(value["delta"]),
+                                      result.structure_epoch);
+    auto revoked = require_vector<std::int64_t>(value["revoked_edge_ids"],
+                                                 "revoked_edge_ids");
+    auto evidence_ids = require_vector<std::int64_t>(
+        value["promotion_evidence_edge_ids"], "promotion_evidence_edge_ids");
+    auto evidence_rounds = require_vector<std::uint64_t>(
+        value["promotion_evidence_round_ids"], "promotion_evidence_round_ids");
+    auto evidence_generations = require_vector<std::uint64_t>(
+        value["promotion_evidence_scorer_generations"],
+        "promotion_evidence_scorer_generations");
+    auto evidence_scores = require_vector<float>(value["promotion_evidence_scores"],
+                                                 "promotion_evidence_scores");
+    if (evidence_ids.size() != evidence_rounds.size()
+        || evidence_ids.size() != evidence_generations.size()
+        || evidence_ids.size() != evidence_scores.size())
+        throw py::value_error("snapshot promotion evidence arrays disagree");
+    result.revoked_edge_ids.reserve(static_cast<std::size_t>(revoked.size()));
+    for (py::ssize_t i = 0; i < revoked.size(); ++i) {
+        const auto id = revoked.data()[i];
+        if (id <= 0) throw py::value_error("snapshot revoked IDs must be positive");
+        result.revoked_edge_ids.push_back(static_cast<std::uint64_t>(id));
+    }
+    result.promotion_records.reserve(static_cast<std::size_t>(evidence_ids.size()));
+    for (py::ssize_t i = 0; i < evidence_ids.size(); ++i) {
+        if (evidence_ids.data()[i] <= 0)
+            throw py::value_error("snapshot evidence IDs must be positive");
+        result.promotion_records.push_back({
+            static_cast<std::uint64_t>(evidence_ids.data()[i]),
+            evidence_rounds.data()[i], evidence_generations.data()[i],
+            evidence_scores.data()[i]});
+    }
     return result;
 }
 
@@ -824,6 +908,21 @@ ce_bindings::native_support_handle_v1::publish_pending_snapshot(
     return ce_support::adaptive_support_status_v1::success;
 }
 
+ce_support::adaptive_support_status_v1
+ce_bindings::native_support_handle_v1::restore_snapshot(
+    const ce_bindings::owned_support_snapshot_v1& snapshot) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    const auto base = snapshot.base.view();
+    const auto delta = snapshot.delta.view();
+    const ce_support::support_snapshot_pair_v1 pair{
+        &base, &delta, snapshot.structure_epoch};
+    return manager_.restore_snapshot(pair,
+        snapshot.revoked_edge_ids.empty() ? nullptr : snapshot.revoked_edge_ids.data(),
+        snapshot.revoked_edge_ids.size(),
+        snapshot.promotion_records.empty() ? nullptr : snapshot.promotion_records.data(),
+        snapshot.promotion_records.size());
+}
+
 void bind_sparse_support_indexing(py::module_ &module) {
     py::class_<ce_bindings::native_support_handle_v1,
                std::shared_ptr<ce_bindings::native_support_handle_v1>>(
@@ -936,6 +1035,11 @@ void bind_sparse_support_indexing(py::module_ &module) {
         .def("snapshot", [](const ce_bindings::native_support_handle_v1 &handle) {
             return support_snapshot_dict(handle.snapshot_copy());
         })
+        .def("restore_snapshot", [](ce_bindings::native_support_handle_v1 &handle,
+                                      const py::dict& snapshot_arg) {
+            const auto snapshot = support_snapshot_from_dict(snapshot_arg);
+            require_adaptive(handle.restore_snapshot(snapshot), "restore snapshot");
+        }, py::arg("snapshot"))
         .def_property_readonly("structure_epoch",
             &ce_bindings::native_support_handle_v1::structure_epoch);
 
