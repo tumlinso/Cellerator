@@ -13,6 +13,7 @@ from dataclasses import dataclass
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -43,6 +44,82 @@ def _csr_from_keys(keys: np.ndarray, key_count: int) -> tuple[np.ndarray, np.nda
         values[pos] = ordinal
         cursors[key] += 1
     return indptr, values
+
+
+def _unique_directed_relation(edges: int, entities: int, modules: int,
+                              max_source_degree: int, rng: np.random.Generator,
+                              local_fraction: float = 0.65
+                              ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Build E unique, non-self directed pairs with bounded skewed outdegree."""
+    if entities < 2:
+        raise ValueError("a directed non-self relation needs at least two entities")
+    cap = min(max_source_degree, entities - 1)
+    if edges > entities * cap:
+        raise ValueError(f"{edges} unique pairs exceed entity/capacity bound {entities * cap}")
+    active_count = min(edges, entities)
+    active = rng.choice(entities, size=active_count, replace=False)
+    degree = np.zeros(entities, dtype=np.int64)
+    degree[active] = 1
+    remaining = edges - active_count
+    weights = rng.pareto(1.35, size=entities) + 1.0
+    hot_count = max(1, min(16, entities // 128 or 1))
+    hot = rng.choice(entities, size=hot_count, replace=False)
+    weights[hot] *= 16.0
+    while remaining:
+        available = degree < cap
+        available_ids = np.flatnonzero(available)
+        probabilities = weights[available]
+        probabilities /= probabilities.sum()
+        proposed = rng.multinomial(remaining, probabilities)
+        accepted = np.minimum(proposed, cap - degree[available])
+        degree[available_ids] += accepted
+        used = int(accepted.sum())
+        if used == 0:
+            raise RuntimeError("degree-cap redistribution made no progress")
+        remaining -= used
+
+    source = np.repeat(np.arange(entities, dtype=np.int64), degree)
+    destination = np.empty(edges, dtype=np.int64)
+    entity_modules = np.arange(entities, dtype=np.int64) % modules
+    module_members = [np.flatnonzero(entity_modules == module)
+                      for module in range(modules)]
+    cursor = 0
+    for entity, outdegree in enumerate(degree):
+        count = int(outdegree)
+        if not count:
+            continue
+        local_pool = module_members[int(entity_modules[entity])]
+        local_pool = local_pool[local_pool != entity]
+        local_count = (count if modules == 1 else
+                       min(int(count * local_fraction), local_pool.size))
+        if local_count:
+            local_targets = rng.choice(local_pool, size=local_count, replace=False)
+            destination[cursor:cursor + local_count] = local_targets
+        cross_count = count - local_count
+        if cross_count:
+            modulus = entities - 1
+            stride = int(rng.integers(1, modulus + 1))
+            while math.gcd(stride, modulus) != 1:
+                stride = int(rng.integers(1, modulus + 1))
+            start = int(rng.integers(modulus))
+            scan = 0
+            found: list[np.ndarray] = []
+            found_count = 0
+            while found_count < cross_count:
+                width = min(modulus - scan, max(32, 2 * (cross_count - found_count)))
+                ranks = (start + np.arange(scan, scan + width, dtype=np.int64) * stride) % modulus
+                candidates = ranks + (ranks >= entity)
+                candidates = candidates[entity_modules[candidates] != entity_modules[entity]]
+                take = min(cross_count - found_count, candidates.size)
+                if take:
+                    found.append(candidates[:take])
+                    found_count += take
+                scan += width
+                if scan >= modulus and found_count < cross_count:
+                    raise RuntimeError("cross-module neighborhood is too small for unique pairs")
+            destination[cursor + local_count:cursor + count] = np.concatenate(found)
+        cursor += count
+    return source, destination, degree
 
 
 def _csr_union(posting_indptr: np.ndarray, posting_ids: np.ndarray,
@@ -93,8 +170,10 @@ def make_scaled_fixture(
     cells: int = 512,
     seed: int = 20261027,
     modules: int = 256,
-    gates: int = 64,
+    max_source_degree: int = 512,
+    local_edge_fraction: float = 0.65,
     events_per_cell: int = 64,
+    rank_count: int = 8,
     cohort_size: int = 16,
     layout: str = "identity",
     query_sizes: tuple[int, ...] | None = None,
@@ -106,40 +185,22 @@ def make_scaled_fixture(
     incidence distribution.  Cells in a cohort share selected query support;
     their values, event streams, and gate states remain independently seeded.
     """
-    if min(edges, entities, cells, modules, gates, events_per_cell, cohort_size) < 1:
+    if min(edges, entities, cells, modules, max_source_degree, rank_count,
+           events_per_cell, cohort_size) < 1:
         raise ValueError("all shape parameters must be positive")
-    if modules > entities or gates > entities:
-        raise ValueError("modules and gates must not exceed entities")
+    if rank_count > entities:
+        raise ValueError("rank_count must not exceed entity count")
+    if not 0.0 <= local_edge_fraction <= 1.0:
+        raise ValueError("local_edge_fraction must be between zero and one")
+    if modules > entities:
+        raise ValueError("modules must not exceed entities")
     if layout not in {"identity", "shuffled"}:
         raise ValueError("layout must be 'identity' or 'shuffled'")
     rng = np.random.default_rng(seed)
     edge_ord = np.arange(edges, dtype=np.int64)
-    module_id = rng.integers(0, modules, size=edges, dtype=np.int32)
-
-    # A subset of source IDs forms repeatable high-degree hubs.  Remaining
-    # choices are Zipf distributed, preserving a long tail of low-degree IDs.
-    hub_count = max(1, min(16, entities // 128 or 1))
-    hub_ids = np.arange(hub_count, dtype=np.int64)
-    source = np.empty(edges, dtype=np.int64)
-    hub_pick = rng.random(edges) < 0.22
-    source[hub_pick] = rng.choice(hub_ids, size=int(hub_pick.sum()))
-    tail_count = int((~hub_pick).sum())
-    if tail_count:
-        source[~hub_pick] = ((rng.zipf(1.35, size=tail_count) - 1) % entities)
-    # Module anchors guarantee repeated, cross-cell topology independent of
-    # the degree-skewed source role.
-    use_anchor = rng.random(edges) < 0.28
-    source[use_anchor] = module_id[use_anchor] % entities
-
-    participant = np.empty(edges, dtype=np.int64)
-    participant_anchor = rng.random(edges) < 0.45
-    participant[participant_anchor] = (module_id[participant_anchor] + modules) % entities
-    other_count = int((~participant_anchor).sum())
-    if other_count:
-        participant[~participant_anchor] = ((rng.zipf(1.18, size=other_count) - 1) % entities)
-    # Keep directed role identity, but avoid redundant same-entity incidences.
-    same = participant == source
-    participant[same] = (participant[same] + 1) % entities
+    source, participant, source_degree = _unique_directed_relation(
+        edges, entities, modules, max_source_degree, rng, local_edge_fraction)
+    module_id = (source % modules).astype(np.int32)
 
     source_indptr, source_ids = _csr_from_keys(source, entities)
     all_keys = np.concatenate((source, participant))
@@ -160,7 +221,7 @@ def make_scaled_fixture(
     # appears at most once in an all-role entity row.
 
     if query_sizes is None:
-        query_sizes = tuple(sorted({1, min(32, entities), min(128, entities),
+        query_sizes = tuple(sorted({1, min(8, entities), min(32, entities), min(128, entities),
                                     min(1024, entities), min(2048, entities)}))
     if any(q < 0 or q > entities for q in query_sizes):
         raise ValueError("query sizes must be between zero and entity count")
@@ -224,9 +285,18 @@ def make_scaled_fixture(
         start = cell * events_per_cell
         stop = start + events_per_cell
         burst_count = min(4, max(1, events_per_cell // 8))
-        burst_edges = rng.integers(0, edges, size=burst_count, dtype=np.int64)
+        query_lo, query_hi = cell_query_indptr[cell:cell + 2]
+        active_postings = [source_ids[source_indptr[gene]:source_indptr[gene + 1]]
+                           for gene in cell_query_entities[query_lo:query_hi]]
+        active_edges = np.concatenate(active_postings)
+        if active_edges.size == 0:
+            active_edges = edge_ord
+        burst_edges = rng.choice(active_edges, size=burst_count, replace=True)
         picks = rng.integers(0, burst_count, size=events_per_cell)
-        fresh = rng.integers(0, edges, size=events_per_cell, dtype=np.int64)
+        fresh_active = rng.choice(active_edges, size=events_per_cell, replace=True)
+        fresh_background = rng.integers(0, edges, size=events_per_cell, dtype=np.int64)
+        fresh = np.where(rng.random(events_per_cell) < 0.5,
+                         fresh_active, fresh_background)
         burst_mask = rng.random(events_per_cell) < 0.55
         event_edge[start:stop] = np.where(burst_mask, burst_edges[picks], fresh)
         event_time[start:stop] = np.arange(events_per_cell, dtype=np.int64) * 10
@@ -234,51 +304,101 @@ def make_scaled_fixture(
     window_stop = np.asarray([events_per_cell // 2, events_per_cell], dtype=np.int32)
     window_indptr = [0]
     window_event_indices: list[int] = []
+    event_window_query_indices: list[int] = []
+    event_window_query_indptr = [0]
     window_cells: list[int] = []
     window_ids: list[int] = []
     for cell in range(cells):
         base = cell * events_per_cell
+        query_lo, query_hi = cell_query_indptr[cell:cell + 2]
+        selected_query_entities = np.asarray(
+            cell_query_entities[query_lo:query_hi], dtype=np.int64)
         for w, (lo, hi) in enumerate(zip(window_start, window_stop)):
             window_cells.append(cell)
             window_ids.append(w)
-            window_event_indices.extend(range(base + int(lo), base + int(hi)))
+            event_indices = np.arange(base + int(lo), base + int(hi), dtype=np.int64)
+            window_event_indices.extend(event_indices.tolist())
+            matches = event_indices[np.isin(source[event_edge[event_indices]],
+                                            selected_query_entities)]
+            event_window_query_indices.extend(matches.tolist())
+            event_window_query_indptr.append(len(event_window_query_indices))
             window_indptr.append(len(window_event_indices))
 
-    # Each module maps to two gate predicates.  Correlated scheduled changes
-    # touch a shared gate across cohorts, while each cell's values are separate.
-    module_gate_a = np.arange(modules, dtype=np.int32) % gates
-    module_gate_b = (module_gate_a + 1 + (np.arange(modules) % max(1, gates - 1))) % gates
-    module_gate_b = module_gate_b.astype(np.int32, copy=False)
-    gate_initial = rng.integers(0, 2, size=(cells, gates), dtype=np.uint8)
-    gate_change_cell: list[int] = []
-    gate_change_id: list[int] = []
-    gate_change_time: list[int] = []
-    gate_change_value: list[int] = []
-    gate_change_group: list[int] = []
-    changes_per_cell = min(8, max(1, gates // 8))
+    # Local observed predicates are sparse per cell and keyed by gene ID.
+    observed_predicate_values = np.concatenate([
+        rng.integers(0, 2, size=selected_count, dtype=np.uint8)
+        for _ in range(cells)])
+    local_change_cell: list[int] = []
+    local_change_gene: list[int] = []
+    local_change_time: list[int] = []
+    local_change_value: list[int] = []
+    local_change_group: list[int] = []
+    local_changes_per_cell = min(3, selected_count)
+    for cell in range(cells):
+        qlo, qhi = cell_query_indptr[cell:cell + 2]
+        selected = np.asarray(cell_query_entities[qlo:qhi], dtype=np.int64)
+        changed = rng.choice(selected, size=local_changes_per_cell, replace=False)
+        state_lo = cell * selected_count
+        state_by_gene = dict(zip(selected.tolist(),
+                                 observed_predicate_values[state_lo:state_lo + selected_count].tolist()))
+        times = np.sort(rng.choice(max(1, events_per_cell * 10),
+                                   size=local_changes_per_cell, replace=False))
+        for local_index, (gene_id, timestamp) in enumerate(zip(changed, times)):
+            local_change_cell.append(cell)
+            local_change_gene.append(int(gene_id))
+            local_change_time.append(int(timestamp))
+            local_change_value.append(1 - state_by_gene[int(gene_id)])
+            local_change_group.append(cell * local_changes_per_cell + local_index)
+    local_change_cell_a = np.asarray(local_change_cell, dtype=np.int32)
+    local_change_gene_a = np.asarray(local_change_gene, dtype=np.int64)
+    local_change_time_a = np.asarray(local_change_time, dtype=np.int64)
+    local_change_value_a = np.asarray(local_change_value, dtype=np.uint8)
+    local_change_group_a = np.asarray(local_change_group, dtype=np.int32)
+
+    # One latent predicate is shared by each source module. Cohort-synchronized
+    # flips change many module-local edges while retaining explicit dependency IDs.
+    latent_values = rng.integers(0, 2, size=(cells, modules), dtype=np.uint8)
+    latent_change_cell: list[int] = []
+    latent_change_module: list[int] = []
+    latent_change_time: list[int] = []
+    latent_change_value: list[int] = []
+    latent_change_group: list[int] = []
+    latent_changes_per_cohort = min(modules, max(1, modules // 16))
     for cohort in np.unique(cohort_ids):
         cohort_cells = np.flatnonzero(cohort_ids == cohort)
-        for change_index in range(changes_per_cell):
-            gate_id = int(rng.integers(0, gates))
+        selected_modules = rng.choice(modules, size=latent_changes_per_cohort,
+                                      replace=False)
+        for change_index, module_id_value in enumerate(selected_modules):
             timestamp = int((change_index + 1) * events_per_cell * 10
-                            // (changes_per_cell + 1))
-            change_group = int(cohort * changes_per_cell + change_index)
+                            // (latent_changes_per_cohort + 1))
+            change_group = int(cohort * latent_changes_per_cohort + change_index)
+            module_id_int = int(module_id_value)
             for cell in cohort_cells:
-                gate_change_cell.append(int(cell))
-                gate_change_id.append(gate_id)
-                gate_change_time.append(timestamp)
-                gate_change_value.append(int(1 - gate_initial[cell, gate_id]))
-                gate_change_group.append(change_group)
-    gate_change_cell_a = np.asarray(gate_change_cell, dtype=np.int32)
-    gate_change_id_a = np.asarray(gate_change_id, dtype=np.int32)
-    gate_change_time_a = np.asarray(gate_change_time, dtype=np.int64)
-    gate_change_value_a = np.asarray(gate_change_value, dtype=np.uint8)
-    gate_change_group_a = np.asarray(gate_change_group, dtype=np.int32)
+                latent_change_cell.append(int(cell))
+                latent_change_module.append(module_id_int)
+                latent_change_time.append(timestamp)
+                latent_change_value.append(1 - int(latent_values[cell, module_id_int]))
+                latent_change_group.append(change_group)
+    latent_change_cell_a = np.asarray(latent_change_cell, dtype=np.int32)
+    latent_change_module_a = np.asarray(latent_change_module, dtype=np.int32)
+    latent_change_time_a = np.asarray(latent_change_time, dtype=np.int64)
+    latent_change_value_a = np.asarray(latent_change_value, dtype=np.uint8)
+    latent_change_group_a = np.asarray(latent_change_group, dtype=np.int32)
 
-    rank_count = min(8, entities)
     ranked_entities = np.empty((cells, rank_count), dtype=np.int64)
+    ranked_cohort_support: dict[int, tuple[np.ndarray, np.ndarray]] = {}
+    shared_rank_count = int(rank_count * 0.75)
     for cell in range(cells):
-        ranked_entities[cell] = rng.choice(entities, size=rank_count, replace=False)
+        cohort = int(cohort_ids[cell])
+        if cohort not in ranked_cohort_support:
+            shared = rng.choice(entities, size=shared_rank_count, replace=False)
+            available = np.setdiff1d(np.arange(entities, dtype=np.int64), shared,
+                                     assume_unique=False)
+            ranked_cohort_support[cohort] = (shared, available)
+        shared, available = ranked_cohort_support[cohort]
+        residual_count = rank_count - shared_rank_count
+        residual = rng.choice(available, size=residual_count, replace=False)
+        ranked_entities[cell] = rng.permutation(np.concatenate((shared, residual)))
     ranked_position = np.broadcast_to(np.arange(rank_count, dtype=np.int32),
                                       (cells, rank_count)).copy()
 
@@ -295,8 +415,13 @@ def make_scaled_fixture(
         np.full(cells, events_per_cell * 10, dtype=np.int64)))
     rank_offsets = np.arange(cells + 1, dtype=np.int64) * rank_count
     edge_condition_indptr = np.arange(edges + 1, dtype=np.int64) * 2
-    edge_condition_predicate_id = np.column_stack((module_gate_a[module_id],
-                                                    module_gate_b[module_id])).reshape(-1)
+    edge_observed_predicate_id = source.copy()
+    edge_latent_predicate_id = (entities + module_id.astype(np.int64))
+    edge_condition_predicate_id = np.column_stack((edge_observed_predicate_id,
+                                                    edge_latent_predicate_id)).reshape(-1)
+    window_event_indices_array = np.asarray(window_event_indices, dtype=np.int64)
+    event_window_observed_genes = source[event_edge[window_event_indices_array]]
+    event_window_observed_edges = event_edge[window_event_indices_array] + 1
     arrays: dict[str, np.ndarray] = {
         "logical_edge_id": edge_ord + 1,
         "edge_ids": edge_ord + 1,
@@ -306,6 +431,8 @@ def make_scaled_fixture(
         "participant_entity_id": participant,
         "destination_ids": participant,
         "edge_module_id": module_id.astype(np.int32),
+        "edge_observed_predicate_id": edge_observed_predicate_id,
+        "edge_latent_predicate_id": edge_latent_predicate_id,
         "source_edge_indptr": source_indptr,
         "source_edge_ids": source_ids + 1,
         "source_edge_ordinals": source_ids,
@@ -321,10 +448,19 @@ def make_scaled_fixture(
         "cell_cohort_id": cohort_ids,
         "cell_query_indptr": np.asarray(cell_query_indptr, dtype=np.int64),
         "cell_query_entities": np.asarray(cell_query_entities, dtype=np.int64),
+        "cell_query_terms": np.asarray(cell_query_entities, dtype=np.int64),
         "query_offsets": np.asarray(cell_query_indptr, dtype=np.int64),
         "query_terms": np.asarray(cell_query_entities, dtype=np.int64),
         "cell_value_seed": cell_value_seed,
         "cell_selected_values": np.concatenate(cell_selected_values),
+        "cell_observed_predicate_offsets": np.asarray(cell_query_indptr, dtype=np.int64),
+        "cell_observed_predicate_ids": np.asarray(cell_query_entities, dtype=np.int64),
+        "cell_observed_predicate_values": observed_predicate_values,
+        "cell_observed_predicate_view_id": np.zeros(cells, dtype=np.uint8),
+        "cell_query_candidate_counts": np.asarray([
+            int(source_degree[cell_query_entities[cell_query_indptr[cell]:
+                                                 cell_query_indptr[cell + 1]]].sum())
+            for cell in range(cells)], dtype=np.int64),
         "event_cell_id": event_cells,
         "event_edge_id": event_edge + 1,
         "event_offsets": event_offsets,
@@ -340,22 +476,46 @@ def make_scaled_fixture(
         "window_stop_ordinal_exclusive": np.tile(window_stop, cells),
         "window_event_indptr": np.asarray(window_indptr, dtype=np.int64),
         "window_event_indices": np.asarray(window_event_indices, dtype=np.int64),
-        "module_gate_a": module_gate_a,
-        "module_gate_b": module_gate_b,
-        "predicate_values": gate_initial,
+        "event_window_query_indptr": np.asarray(event_window_query_indptr, dtype=np.int64),
+        "event_window_query_indices": np.asarray(event_window_query_indices, dtype=np.int64),
+        "event_window_query_edge_ids": event_edge[np.asarray(
+            event_window_query_indices, dtype=np.int64)] + 1,
+        "event_window_observed_indptr": np.asarray(window_indptr, dtype=np.int64),
+        "event_window_observed_gene_ids": event_window_observed_genes,
+        "event_window_observed_edge_ids": event_window_observed_edges,
+        "event_window_observed_values": np.ones(window_event_indices_array.size,
+                                                 dtype=np.uint8),
+        "event_window_observed_view_id": np.full(2 * cells, 2, dtype=np.uint8),
+        "latent_predicate_values": latent_values,
+        "predicate_values": latent_values,
         "edge_condition_indptr": edge_condition_indptr,
         "edge_condition_predicate_id": edge_condition_predicate_id,
-        "gate_initial_state": gate_initial,
-        "gate_change_cell_id": gate_change_cell_a,
-        "gate_change_predicate_id": gate_change_id_a,
-        "gate_change_timestamp": gate_change_time_a,
-        "gate_change_value": gate_change_value_a,
-        "gate_change_group_id": gate_change_group_a,
+        "gate_initial_state": latent_values,
+        "local_gene_change_cell_id": local_change_cell_a,
+        "local_gene_change_gene_id": local_change_gene_a,
+        "local_gene_change_timestamp": local_change_time_a,
+        "local_gene_change_value": local_change_value_a,
+        "local_gene_change_group_id": local_change_group_a,
+        "latent_change_cell_id": latent_change_cell_a,
+        "latent_change_module_id": latent_change_module_a,
+        "latent_change_timestamp": latent_change_time_a,
+        "latent_change_value": latent_change_value_a,
+        "latent_change_group_id": latent_change_group_a,
+        # Compatibility aliases for the earlier gate-only loader.
+        "gate_change_cell_id": latent_change_cell_a,
+        "gate_change_predicate_id": latent_change_module_a,
+        "gate_change_timestamp": latent_change_time_a,
+        "gate_change_value": latent_change_value_a,
+        "gate_change_group_id": latent_change_group_a,
         "ranked_entity_id": ranked_entities,
         "ranked_position": ranked_position,
         "rank_offsets": rank_offsets,
         "rank_entity_ids": ranked_entities.reshape(-1),
         "rank_positions": ranked_position.reshape(-1),
+        "ranked_presence_offsets": rank_offsets,
+        "ranked_presence_entity_ids": ranked_entities.reshape(-1),
+        "ranked_presence_values": np.ones(cells * rank_count, dtype=np.uint8),
+        "ranked_presence_view_id": np.ones(cells, dtype=np.uint8),
         "logical_to_physical": logical_to_physical,
         "physical_to_logical": physical_to_logical,
         "layout_tag": np.asarray([0 if layout == "identity" else 1], dtype=np.uint8),
@@ -363,7 +523,22 @@ def make_scaled_fixture(
         "physical_source_entity_id": source[physical_to_logical],
         "physical_participant_entity_id": participant[physical_to_logical],
     }
-    degree = np.diff(source_indptr)
+    degree = source_degree
+    local_change_fanout = np.zeros(cells, dtype=np.int64)
+    latent_change_fanout = np.zeros(cells, dtype=np.int64)
+    for cell in range(cells):
+        local_genes = local_change_gene_a[local_change_cell_a == cell]
+        local_change_fanout[cell] = source_degree[local_genes].sum()
+        changed_modules = np.unique(
+            latent_change_module_a[latent_change_cell_a == cell])
+        latent_change_fanout[cell] = np.count_nonzero(np.isin(module_id, changed_modules))
+    arrays["local_gene_change_edge_fanout"] = local_change_fanout
+    arrays["latent_change_edge_fanout"] = latent_change_fanout
+    arrays["query_case_candidate_counts"] = np.diff(query_edge_indptr)
+    arrays["event_window_unique_edge_count"] = np.asarray([
+        np.unique(event_edge[cell * events_per_cell + events_per_cell // 2:
+                             (cell + 1) * events_per_cell]).size
+        for cell in range(cells)], dtype=np.int64)
     hist_edges = np.unique(np.concatenate((
         np.asarray([0, 1, 2], dtype=np.int64),
         np.ceil(np.geomspace(2, max(3, int(degree.max(initial=0)) + 1), 33))
@@ -373,27 +548,19 @@ def make_scaled_fixture(
     degree_hist_counts, degree_hist_edges = np.histogram(degree, bins=hist_edges)
     arrays["source_degree_histogram_edges"] = degree_hist_edges.astype(np.int64)
     arrays["source_degree_histogram_counts"] = degree_hist_counts.astype(np.int64)
-    changed_edge_est = np.zeros(edges, dtype=np.bool_)
-    per_cell_changed_fractions: list[float] = []
-    if gate_change_id_a.size:
-        changed_gates = np.unique(gate_change_id_a)
-        changed_modules = np.flatnonzero(np.isin(module_gate_a, changed_gates)
-                                         | np.isin(module_gate_b, changed_gates))
-        changed_edge_est = np.isin(module_id, changed_modules)
-        for cell in range(cells):
-            cell_gates = np.unique(gate_change_id_a[gate_change_cell_a == cell])
-            cell_modules = np.flatnonzero(np.isin(module_gate_a, cell_gates)
-                                          | np.isin(module_gate_b, cell_gates))
-            per_cell_changed_fractions.append(
-                float(np.isin(module_id, cell_modules).mean()))
-    total_bytes = sum(value.nbytes for value in arrays.values())
+    latent_changed_fraction = latent_change_fanout / max(1, edges)
+    local_changed_fraction = local_change_fanout / max(1, edges)
+    total_bytes = sum(value.nbytes for value in {id(value): value
+                                                  for value in arrays.values()}.values())
     source_digest = _digest_arrays(arrays, (
         "logical_edge_id", "source_entity_id", "participant_entity_id", "edge_module_id"))
+    local_module_edge_count = int(np.count_nonzero((source % modules) == (participant % modules)))
     metadata: dict[str, Any] = {
         "schema": "cellerator.scaled_sparse_fixture.v1",
         "seed": int(seed), "edges": int(edges), "entities": int(entities),
-        "cells": int(cells), "modules": int(modules), "gates": int(gates),
+        "cells": int(cells), "modules": int(modules),
         "events_per_cell": int(events_per_cell), "layout": layout,
+        "max_source_degree_cap": int(min(max_source_degree, entities - 1)),
         "source_role": 0,
         "query_case_names": query_case_names,
         "topology_sha256": source_digest,
@@ -411,16 +578,40 @@ def make_scaled_fixture(
             "histogram_edges": degree_hist_edges.tolist(),
             "histogram_counts": degree_hist_counts.tolist(),
         },
+        "unique_directed_endpoint_pairs": int(edges),
+        "duplicate_directed_endpoint_pairs": 0,
+        "module_local_edge_count": local_module_edge_count,
+        "cross_module_edge_count": int(edges - local_module_edge_count),
+        "module_local_edge_fraction": float(local_module_edge_count / edges),
+        "query_case_candidate_counts": np.diff(query_edge_indptr).tolist(),
+        "cell_query_candidate_counts": arrays["cell_query_candidate_counts"].tolist(),
         "cohort_support_reuse_fraction": 1.0,
         "cell_state_values_independent": True,
-        "gate_change_count": int(gate_change_id_a.size),
-        "gate_change_correlated_cohort_groups": int(np.unique(gate_change_group_a).size),
-        "gate_changed_edge_fraction_union_estimate": float(changed_edge_est.mean()),
-        "gate_changed_edge_fraction_per_cell_mean_estimate": float(
-            np.mean(per_cell_changed_fractions) if per_cell_changed_fractions else 0.0),
+        "edge_predicate_participants_per_edge": 2,
+        "observed_gene_predicate_count": int(entities),
+        "shared_latent_predicate_count": int(modules),
+        "local_gene_change_count": int(local_change_gene_a.size),
+        "local_gene_changed_edge_fraction_per_cell_mean": float(local_changed_fraction.mean()),
+        "local_gene_change_edge_fanout_per_cell": local_change_fanout.tolist(),
+        "latent_change_count": int(latent_change_module_a.size),
+        "latent_change_correlated_cohort_groups": int(np.unique(latent_change_group_a).size),
+        "latent_changed_edge_fraction_per_cell_mean": float(latent_changed_fraction.mean()),
+        "latent_change_edge_fanout_per_cell": latent_change_fanout.tolist(),
+        "event_window_unique_edge_count_per_cell": arrays["event_window_unique_edge_count"].tolist(),
+        "event_window_query_occurrences": int(len(event_window_query_indices)),
+        "event_window_query_occurrences_per_window": np.diff(
+            event_window_query_indptr).tolist(),
         "event_occurrences": int(event_edge.size),
         "event_unique_edge_fraction": float(np.unique(event_edge).size / max(1, event_edge.size)),
         "ranked_identity_and_position_separate": True,
+        "rank_count_per_cell": int(rank_count),
+        "ranked_cohort_support_overlap_fraction": float(
+            shared_rank_count / rank_count),
+        "observed_view_labels": {
+            "0": "generic_query_state",
+            "1": "ranked_presence",
+            "2": "event_window_history",
+        },
     }
     return ScaledSparseFixture(arrays, metadata)
 
@@ -429,33 +620,33 @@ def profile(name: str, *, seed: int = 20261027, layout: str = "identity") -> Sca
     """Construct a documented small oracle or indexing/numerical-scale fixture."""
     if name == "small":
         return make_scaled_fixture(edges=96, entities=64, cells=8, modules=8,
-                                   gates=8, events_per_cell=16, cohort_size=4,
+                                   events_per_cell=16, cohort_size=4,
                                    seed=seed, layout=layout,
                                    query_sizes=(0, 1, 8, 32))
     if name == "large-indexing":
         return make_scaled_fixture(edges=1_000_000, entities=20_000, cells=512,
-                                   modules=256, gates=64, events_per_cell=64,
+                                   modules=256, events_per_cell=64,
                                    cohort_size=16, seed=seed, layout=layout)
     if name == "large-indexing-2m":
         return make_scaled_fixture(edges=2_000_000, entities=20_000, cells=1024,
-                                   modules=256, gates=64, events_per_cell=64,
+                                   modules=256, events_per_cell=64,
                                    cohort_size=16, seed=seed, layout=layout)
     if name == "large-retrieval":
         return make_scaled_fixture(edges=1_000_000, entities=20_000, cells=32,
-                                   modules=256, gates=64, events_per_cell=64,
+                                   modules=256, events_per_cell=64,
                                    cohort_size=8, seed=seed, layout=layout)
     if name == "large-numerical":
         # Starts within the bounded dense B*N*D envelope used by the campaign.
         return make_scaled_fixture(edges=262_144, entities=8_192, cells=128,
-                                   modules=128, gates=64, events_per_cell=64,
+                                   modules=128, events_per_cell=64,
                                    cohort_size=8, seed=seed, layout=layout)
     if name == "large-ranked":
         return make_scaled_fixture(edges=262_144, entities=4_096, cells=32,
-                                   modules=128, gates=64, events_per_cell=64,
+                                   modules=128, events_per_cell=64, rank_count=512,
                                    cohort_size=8, seed=seed, layout=layout)
     if name == "large-events":
         return make_scaled_fixture(edges=1_280_000, entities=20_000, cells=8,
-                                   modules=256, gates=64, events_per_cell=512,
+                                   modules=256, events_per_cell=512,
                                    cohort_size=4, seed=seed, layout=layout)
     raise ValueError(f"unknown fixture profile: {name}")
 
