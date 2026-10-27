@@ -618,6 +618,12 @@ torch::autograd::variable_list sparse_relation_backward(
         torch::TensorOptions().device(input.device()).dtype(torch::kFloat32));
     auto grad_weights = torch::zeros_like(edge_values);
     auto grad_gates = torch::zeros_like(probabilities);
+    // The native VJP emits one gate derivative per derivative work item, in
+    // derivative-list order. Worksets can be sparse and can reuse one gate
+    // candidate across cells, so collect in that compact order then reduce
+    // into the full probability tensor using the explicit item->gate map.
+    auto grad_derivative_gates = torch::zeros_like(derivative_gate_indices,
+        torch::TensorOptions().device(input.device()).dtype(torch::kFloat32));
     auto weights_half = edge_values.to(torch::kFloat16).contiguous();
     const auto cells = static_cast<std::uint32_t>(input.size(0));
     const auto epoch = handle->structure_epoch();
@@ -639,8 +645,9 @@ torch::autograd::variable_list sparse_relation_backward(
         handle->source_count(), handle->destination_count(),
         reinterpret_cast<const std::uint16_t*>(weights_half.data_ptr<at::Half>()),
         grad_output.data_ptr<float>(), grad_input.data_ptr<float>(),
-        grad_weights.data_ptr<float>(), grad_gates.data_ptr<float>(), stream.stream());
+        grad_weights.data_ptr<float>(), grad_derivative_gates.data_ptr<float>(), stream.stream());
     check_status(status, "sparse relation backward");
+    grad_gates.index_add_(0, derivative_gate_indices, grad_derivative_gates);
     const auto retired = handle->support()->retire_forward_tape(epoch);
     TORCH_CHECK(retired == cellerator::compute::support::adaptive_support_status_v1::success,
                 "could not retire sparse support structure tape");
@@ -649,6 +656,10 @@ torch::autograd::variable_list sparse_relation_backward(
     c10::cuda::CUDACachingAllocator::recordStream(grad_input.storage().data_ptr(), stream);
     c10::cuda::CUDACachingAllocator::recordStream(grad_weights.storage().data_ptr(), stream);
     c10::cuda::CUDACachingAllocator::recordStream(grad_gates.storage().data_ptr(), stream);
+    c10::cuda::CUDACachingAllocator::recordStream(
+        grad_derivative_gates.storage().data_ptr(), stream);
+    c10::cuda::CUDACachingAllocator::recordStream(
+        derivative_gate_indices.storage().data_ptr(), stream);
     torch::autograd::variable_list result(20);
     result[0] = grad_input.to(input.scalar_type());
     result[1] = grad_weights;

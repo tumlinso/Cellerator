@@ -1,0 +1,33 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.11, pytest-9.1.1, pluggy-1.6.0 -- /home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python
+cachedir: .pytest_cache
+rootdir: /home/tumlinson/Cellerator
+configfile: pyproject.toml
+collecting ... collected 26 items
+tests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_checkpoint_continues_after_promotion_and_revocation PASSED [  3%]
+tests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_live_tape_freezes_structure_but_not_parameter_generation PASSED [  7%]
+tests/test_cuda_lifecycle_extra.py::SparseSupportCudaLifecycleExtraTest::test_parameter_update_published_on_one_stream_is_visible_on_another PASSED [ 11%]
+tests/test_cuda_training.py::SparseSupportCudaTrainingTest::test_adaptive_publication_rebinds_support_without_replacing_owner_leaf PASSED [ 15%]
+tests/test_cuda_training.py::SparseSupportCudaTrainingTest::test_checkpoint_continuation_restores_native_owner_and_adam_state PASSED [ 19%]
+tests/test_cuda_training.py::SparseSupportCudaTrainingTest::test_dropped_training_graph_retires_parameter_reader PASSED [ 23%]
+tests/test_cuda_training.py::SparseSupportCudaTrainingTest::test_exception_in_pinned_forward_retires_parameter_reader PASSED [ 26%]
+tests/test_cuda_training.py::SparseSupportCudaTrainingTest::test_gate_sampler_keeps_all_positive_and_masks_unsampled_closed_gradients PASSED [ 30%]
+tests/test_cuda_training.py::SparseSupportCudaTrainingTest::test_latent_transition_and_recurrent_vjp_match_torch_reference PASSED [ 34%]
+tests/test_cuda_training.py::SparseSupportCudaTrainingTest::test_no_grad_scoring_completes_parameter_reader_before_publication PASSED [ 38%]
+tests/test_cuda_training.py::SparseSupportCudaTrainingTest::test_prepared_ce_geo_forward_and_simt_vjp_match_same_torch_reference PASSED [ 42%]
+tests/test_cuda_training.py::SparseSupportCudaTrainingTest::test_relation_forward_and_ste_vjp_match_torch_reference PASSED [ 46%]
+tests/test_fixtures_and_gates.py::SparseFixtureAndGateTest::test_event_fixture_is_deterministic_and_contains_repeated_occurrences PASSED [ 50%]
+tests/test_fixtures_and_gates.py::SparseFixtureAndGateTest::test_parameter_layout_is_shared_and_scalar_ids_are_stable PASSED [ 53%]
+tests/test_fixtures_and_gates.py::SparseFixtureAndGateTest::test_pruned_gate_has_hard_forward_and_explicit_ste_gradient PASSED [ 57%]
+tests/test_fixtures_and_gates.py::SparseFixtureAndGateTest::test_ranked_fixture_keeps_identity_rank_and_mask_separate PASSED [ 61%]
+tests/test_fixtures_and_gates.py::SparseFixtureAndGateTest::test_support_spec_preserves_sorted_identity_and_rejects_bad_inputs PASSED [ 65%]
+tests/test_indexing_bindings.py::NativeIndexingBindingsTest::test_native_condition_worksets_and_bounded_proposals PASSED [ 69%]
+tests/test_indexing_bindings.py::NativeIndexingBindingsTest::test_native_rotating_derivative_sample_preserves_admitted PASSED [ 73%]
+tests/test_indexing_bindings.py::NativeIndexingBindingsTest::test_native_support_publication_and_reverse_index PASSED [ 76%]
+tests/test_indexing_bindings.py::NativeIndexingBindingsTest::test_native_temporal_window_keeps_occurrence_identity PASSED [ 80%]
+tests/test_native_owner_protocol.py::NativeOwnerProtocolTest::test_guarded_step_preserves_one_sparse_owner_leaf_and_publishes_once PASSED [ 84%]
+tests/test_native_owner_protocol.py::NativeOwnerProtocolTest::test_sparse_checkpoint_restores_owner_optimizer_and_window PASSED [ 88%]
+tests/test_synthetic_driver.py::SyntheticDriverTest::test_event_count_and_time_bounds_are_independent_and_prefix_clipped PASSED [ 92%]
+tests/test_synthetic_driver.py::SyntheticDriverTest::test_event_stream_chunk_retains_absolute_windows_for_checkpoint_restore PASSED [ 96%]
+tests/test_synthetic_driver.py::SyntheticDriverTest::test_proposed_support_is_seeded_sparse_and_shuffled_control_changes_routes PASSED [100%]
+============================== 26 passed in 4.59s ==============================
