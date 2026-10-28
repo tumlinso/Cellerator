@@ -1,0 +1,7 @@
+Validation record
+
+- Standalone host test compiled with GCC 13.3, C++20, `-O3 -Wall -Wextra -Werror` and passed.
+- The CTest host target configured with GCC 12.4 + CUDA 12.9.86 and passed (1/1).
+- `cellerator_indexed_mechanism` compiled successfully in that isolated CMake build, including the edited `training.cu` translation unit.
+- No GPU kernels were executed.
+- Scaled validation output and source/test/binary hashes are in `host_results.txt` and `identities.sha256`.

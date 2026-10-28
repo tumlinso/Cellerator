@@ -1,0 +1,50 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+    "-u",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/qualification/v13-owner-validation/run_regressions.py"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "timeout_seconds": 600,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-sparse-v13-owner-regression-20261028-2",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 6442450944
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator.sparse_support.v13_qualification"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package:/home/tumlinson/Cellerator",
+    "CELLERATOR_RUN_CUDA_TESTS": "1"
+  },
+  "interruption": {
+    "restart_safe": true,
+    "cancellation_supported": true
+  },
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ]
+}

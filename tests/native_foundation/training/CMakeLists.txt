@@ -31,6 +31,16 @@ target_compile_features(ce_ml2_native_training PRIVATE cxx_std_20)
 set_target_properties(ce_ml2_native_training PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 add_test(NAME ce_ml2_native_training COMMAND ce_ml2_native_training)
 set_tests_properties(ce_ml2_native_training PROPERTIES LABELS "ml2;cuda;native;sm70" TIMEOUT 180)
+add_executable(ce_ml2_parameter_identity_validation parameter_identity_validation_test.cc)
+target_include_directories(ce_ml2_parameter_identity_validation PRIVATE
+  "${CE_ROOT}/include"
+  "${CE_ROOT}/src/compute/operation/indexed_mechanism")
+target_compile_features(ce_ml2_parameter_identity_validation PRIVATE cxx_std_20)
+target_compile_options(ce_ml2_parameter_identity_validation PRIVATE -UNDEBUG)
+add_test(NAME ce_ml2_parameter_identity_validation
+  COMMAND ce_ml2_parameter_identity_validation)
+set_tests_properties(ce_ml2_parameter_identity_validation PROPERTIES
+  LABELS "ml2;host;validation" TIMEOUT 60)
 get_filename_component(_ml2_cuda_bin "${CMAKE_CUDA_COMPILER}" DIRECTORY)
 get_filename_component(_ml2_cuda_root "${_ml2_cuda_bin}" DIRECTORY)
 set(_ml2_compute_sanitizer "${_ml2_cuda_root}/compute-sanitizer/compute-sanitizer")
