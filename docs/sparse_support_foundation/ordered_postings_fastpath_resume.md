@@ -70,23 +70,34 @@ Production source identities at pause:
 - Current probe candidate binary: `5e220a8f0bed868cc184ffb00ee1a94624dcfaa0ad70a3f0877105d3ab4e52d3`
 - q2048 harness binary: `912f7365bf3af18aacf49ea57ae9ea5049d0014b350fcb193720901c63daed11`
 
-## Pending after computer restart
+## Resumed validation
 
-- Compute Sanitizer memcheck and racecheck were not run because the root paused
-  new GPU jobs for the restart. No task GPU job is queued or running; all four
-  jobs above are terminal with cleanup verified. No local build command is
-  still active.
-- At checkpoint time a read-only job-list audit found zero nonterminal jobs
-  targeting GPU3, and the exact resource was available with zero visible
-  processes and 0% utilization. See `job_records/nonterminal_gpu3_audit.json`
-  and `job_records/resource_list_final.json`. Four retained job-get records
-  report verified cleanup. The initial benchmark job
-  (`5d895583-f52c-49fe-bf8e-a2b8239d1828`) had expired from scheduler history
-  and now returns `not_found`; its terminal success and cleanup were observed
-  during the run, and its spec/raw benchmark output remain preserved. This
-  missing archive record is noted in `job_records/bench_initial_expired.txt`.
-- Resume by rebuilding the latest source, rerunning the focused test, then
-  running memcheck and racecheck through Device Scheduler on the confirmed
-  GPU3 UUID `GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a`. Keep the measured
-  fallback limits above explicit; do not launch new jobs until the pause is
-  lifted.
+After the user resumed work, the latest source was rebuilt in the separate
+directory `/tmp/cellerator_ordered_postings_resume_build` with CUDA 12.9.86 and
+`CMAKE_CUDA_ARCHITECTURES=70`; target `cellerator_sparse_support_cuda_worksets`
+compiled successfully. The focused test passed on GPU3 with exit code 0:
+`e6531eec-0397-47e7-a228-ac53832805fb`.
+
+The focused binary also passed all requested Compute Sanitizer checks, each
+with exit code 0 and `cleanup_verified: true`:
+
+- memcheck: `cf4b66ab-948c-412b-aeea-933fc9e34f20`, 0 errors
+- racecheck: `9b288b3c-c592-4106-ac44-0039a376bee0`, 0 hazards, 0 errors,
+  and 0 warnings
+- synccheck: `dfc428d3-abe0-4595-be6b-ee4bf6b93f5b`, 0 errors
+
+Their scheduler specs, full `job get` records, and logs are retained under
+`bench/sparse_support/evidence/experiments/ordered_postings_fastpath_checkpoint/`.
+`job_records/resume_final_gpu3_audit.json` records a final live audit showing
+the exact GPU3 UUID available, 0% observed utilization, and no nonterminal jobs
+targeting it. Every job launched for this resumed validation is terminal and
+cleanup verified. The test binary and current source hashes are in
+`resume_source_identities.sha256`.
+
+The earlier performance evidence remains scoped to its recorded fixtures. In
+particular, the ordered concatenation precondition is deliberately strict;
+duplicate or unsorted query terms and overlapping/non-monotonic posting ranges
+fall back to exact k-way merge, where the duplicate-heavy q32 case was much
+slower than full scan. The q2048 speed comparison used the concat prototype;
+the old serial merge was not timed at that size. Sanitizers validate the focused
+test paths, not every possible input size or long-running workload.
