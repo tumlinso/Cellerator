@@ -185,6 +185,23 @@ def learned_gates(scores: Tensor, *, temperature: float, threshold: float,
     return p, admitted, q
 
 
+def _logical_values_for_ordinals(embedding: Tensor, scorer: Tensor,
+                                 source_indices: Tensor, destination_indices: Tensor,
+                                 ordinals: Tensor, edge_count: int, *,
+                                 normalize: bool = True) -> Tensor:
+    """CPU-testable logical E-vector assembly with differentiable sparse scatter."""
+    ordinals = ordinals.to(dtype=torch.int64)
+    if normalize:
+        ordinals = torch.unique(ordinals, sorted=True)
+    source = embedding.index_select(0, source_indices.index_select(0, ordinals))
+    destination = embedding.index_select(0, destination_indices.index_select(0, ordinals))
+    values = (source * destination * scorer).sum(dim=-1) / (embedding.shape[-1] ** 0.5)
+    if ordinals.numel() == edge_count:
+        return values
+    return embedding.new_zeros((edge_count,), dtype=torch.float32).index_copy(
+        0, ordinals, values)
+
+
 class _ParameterReadLease:
     """Complete a native reader ticket when its autograd graph is abandoned."""
 
@@ -463,13 +480,42 @@ class SparseSupportModule(nn.Module):
             gates.state_generation, self._native,
         )
 
-    def logical_edge_values(self) -> Tensor:
-        """Derive values from shared endpoint/scorer blocks, never per-edge slots."""
+    def logical_edge_values(self, *, policy: str = "all",
+                            primal: Optional[PerCellWorkset] = None,
+                            derivative: Optional[PerCellWorkset] = None,
+                            cells: Optional[int] = None) -> Tensor:
+        """Derive shared-parameter edge values, optionally for P∪D only.
+
+        ``workset_union`` still returns the canonical logical E-vector expected
+        by the native relation op. Edges outside the supplied primal and
+        derivative worksets are zero and receive no value-path gradient. No
+        result is cached across parameter publication.
+        """
+        if policy not in ("all", "workset_union"):
+            raise ValueError("edge value policy must be 'all' or 'workset_union'")
         embedding = self.block("entity_embedding")
         scorer = self.block("scorer").reshape(-1)
-        source = embedding.index_select(0, self._source_endpoint_indices)
-        destination = embedding.index_select(0, self._destination_endpoint_indices)
-        return (source * destination * scorer).sum(dim=-1) / (embedding.shape[-1] ** 0.5)
+        if policy == "all":
+            # Preserve the original default route's direct gathers and arithmetic.
+            source = embedding.index_select(0, self._source_endpoint_indices)
+            destination = embedding.index_select(0, self._destination_endpoint_indices)
+            return (source * destination * scorer).sum(dim=-1) / (embedding.shape[-1] ** 0.5)
+        if primal is None or derivative is None or cells is None:
+            raise ValueError("workset_union requires primal, derivative, and cells")
+        edge_count = len(self.support.edge_ids)
+        primal.validate(cells=cells, edge_count=edge_count,
+                        structure_epoch=self.structure_epoch)
+        derivative.validate(cells=cells, edge_count=edge_count,
+                            structure_epoch=self.structure_epoch)
+        ordinals = torch.unique(torch.cat((primal.edge_ordinals,
+                                           derivative.edge_ordinals)), sorted=True)
+        # Native relation application remains authoritative for ordinal/ID
+        # consistency. Avoid a host identity read or device synchronization
+        # on the steady forward path.
+        return _logical_values_for_ordinals(
+            embedding, scorer, self._source_endpoint_indices,
+            self._destination_endpoint_indices, ordinals, len(self.support.edge_ids),
+            normalize=False)
 
     def _refresh_mechanism_route_postings(self) -> None:
         """Compile a small learned entity→mechanism posting index.
@@ -930,19 +976,22 @@ class RankedGeneSlice(SparseSupportModule):
                 derivative: PerCellWorkset, gates: Optional[GateValues] = None, *,
                 temperature: float = 1.0, threshold: float = 0.5,
                 prune: bool = False, derivative_seed: int = 0,
-                window_counter: Optional[int] = None) -> Tensor:
+                window_counter: Optional[int] = None,
+                edge_value_policy: str = "all") -> Tensor:
         self.reset_gate_diagnostics()
         with self._pinned_forward():
             return self._forward_pinned(genes, ranks, primal, derivative, gates,
                                         temperature=temperature, threshold=threshold,
                                         prune=prune, derivative_seed=derivative_seed,
-                                        window_counter=window_counter)
+                                        window_counter=window_counter,
+                                        edge_value_policy=edge_value_policy)
 
     def _forward_pinned(self, genes: Tensor, ranks: Tensor, primal: PerCellWorkset,
                         derivative: PerCellWorkset, gates: Optional[GateValues] = None, *,
                         temperature: float = 1.0, threshold: float = 0.5,
                         prune: bool = False, derivative_seed: int = 0,
-                        window_counter: Optional[int] = None) -> Tensor:
+                        window_counter: Optional[int] = None,
+                        edge_value_policy: str = "all") -> Tensor:
         if genes.shape != ranks.shape or genes.ndim != 2:
             raise ValueError("ranked token input requires matching [cells, selected genes] arrays")
         if genes.dtype not in (torch.int32, torch.int64) or ranks.dtype not in (torch.int32, torch.int64):
@@ -982,7 +1031,9 @@ class RankedGeneSlice(SparseSupportModule):
                                           threshold=threshold, prune=prune)
         primal, derivative = self.select_gate_worksets(
             derivative, gates, seed=derivative_seed, window_counter=window_counter)
-        edge_values = self.logical_edge_values()
+        edge_values = self.logical_edge_values(
+            policy=edge_value_policy, primal=primal, derivative=derivative,
+            cells=batch)
         return self.relation(source.to(torch.float16), edge_values, gates, primal, derivative)
 
     def masked_gene_logits(self, encoded: Tensor) -> Tensor:
@@ -998,27 +1049,75 @@ class RankedGeneSlice(SparseSupportModule):
         return torch.nn.functional.cross_entropy(self.masked_gene_logits(encoded), targets.long())
 
 
+def _sum_history_sources(embeddings: Tensor, history_sources, *, cells: int) -> Tensor:
+    """Sum eligible source occurrences per cell, retaining repeated IDs."""
+    entities, width = embeddings.shape
+    if len(history_sources) != cells:
+        raise ValueError("event context rows must match the cell batch")
+    history_input = embeddings.new_zeros((cells, entities, width))
+    for cell, source_row in enumerate(history_sources):
+        source_indices = torch.as_tensor(source_row, device=embeddings.device,
+                                         dtype=torch.int64).reshape(-1)
+        if source_indices.numel() == 0:
+            continue
+        history_input[cell].index_add_(
+            0, source_indices, embeddings.index_select(0, source_indices))
+    return history_input
+
+
+def _validate_relation_input_policy(application_state: dict[str, object],
+                                    requested: str) -> None:
+    if requested not in ("current_event", "eligible_history"):
+        raise ValueError("relation_input must be 'current_event' or 'eligible_history'")
+    position = int(application_state.get("event_position", 0))
+    previous = application_state.get("relation_input_policy")
+    if position and previous is None:
+        # Pre-policy checkpoints used current-event relation inputs.
+        previous = "current_event"
+    if position and previous != requested:
+        raise ValueError("cannot change relation_input policy during a live event stream")
+
+
+def _relation_source_inputs(current_inputs: Tensor, history_inputs: Optional[Tensor],
+                           policy: str) -> Tensor:
+    if policy == "current_event":
+        return current_inputs
+    if policy == "eligible_history":
+        if history_inputs is None:
+            raise ValueError(
+                "eligible_history relation input requires provider work[4] history rows")
+        return history_inputs
+    raise ValueError("relation_input must be 'current_event' or 'eligible_history'")
+
+
 class KaryoplastEventSlice(SparseSupportModule):
     """Ordered positive-event consumer preserving repeated occurrences."""
 
     def forward(self, event_ids: Tensor, event_worksets, *, timestamps: Optional[Tensor] = None,
                 windows: Optional[Tensor] = None, temperature: float = 1.0,
                 threshold: float = 0.5, prune: bool = False,
-                derivative_seed: int = 0) -> Tensor:
+                derivative_seed: int = 0,
+                relation_input: str = "current_event",
+                edge_value_policy: str = "all") -> Tensor:
         self.reset_gate_diagnostics()
         with self._pinned_forward():
             return self._forward_pinned(event_ids, event_worksets, timestamps=timestamps,
                                         windows=windows, temperature=temperature,
                                         threshold=threshold, prune=prune,
-                                        derivative_seed=derivative_seed)
+                                        derivative_seed=derivative_seed,
+                                        relation_input=relation_input,
+                                        edge_value_policy=edge_value_policy)
 
     def _forward_pinned(self, event_ids: Tensor, event_worksets, *,
                         timestamps: Optional[Tensor] = None,
                         windows: Optional[Tensor] = None, temperature: float = 1.0,
                         threshold: float = 0.5, prune: bool = False,
-                        derivative_seed: int = 0) -> Tensor:
+                        derivative_seed: int = 0,
+                        relation_input: str = "current_event",
+                        edge_value_policy: str = "all") -> Tensor:
         if event_ids.ndim != 2 or event_ids.dtype not in (torch.int32, torch.int64):
             raise ValueError("event IDs must be integer [cells, occurrences]")
+        _validate_relation_input_policy(self.application_state, relation_input)
         if timestamps is not None and timestamps.shape != event_ids.shape:
             raise ValueError("timestamps must preserve the event occurrence shape")
         if windows is not None and (windows.ndim != 2 or windows.shape[0] != event_ids.shape[0]):
@@ -1032,6 +1131,7 @@ class KaryoplastEventSlice(SparseSupportModule):
         transition_b = self.block("transition_B")
         transition_bias = self.block("transition_bias")
         cells = event_ids.shape[0]
+        position_offset = int(self.application_state.get("event_position", 0))
         mechanisms, state_width, _ = transition_a.shape
         state = embeddings.new_zeros((cells, mechanisms, state_width))
         self._ensure_mechanism_route_index()
@@ -1043,7 +1143,6 @@ class KaryoplastEventSlice(SparseSupportModule):
                 raise ValueError("restored Karyoplast latent state does not match this batch shape")
             state = previous_state
         output = None
-        position_offset = int(self.application_state.get("event_position", 0))
         # Each position is a distinct event occurrence, even when gene IDs repeat.
         for position in range(event_ids.shape[1]):
             if provider is not None:
@@ -1065,19 +1164,12 @@ class KaryoplastEventSlice(SparseSupportModule):
             inputs = embeddings.new_zeros((cells, embeddings.shape[0], embeddings.shape[1]))
             inputs.scatter_add_(1, event[:, None, None].expand(-1, 1, embeddings.shape[1]),
                                 event_input.unsqueeze(1))
-            # Current latent mechanism state conditions candidate scoring while
-            # the ordered event occurrence remains the relation input.
+            # Current latent mechanism state conditions candidate scoring.
+            history_input = None
             if len(work) == 5:
                 history_sources = work[4]
-                if len(history_sources) != cells:
-                    raise ValueError("event context rows must match the cell batch")
-                history_input = torch.zeros_like(inputs)
-                for cell, source_row in enumerate(history_sources):
-                    if source_row:
-                        source_index = torch.as_tensor(
-                            source_row, device=embeddings.device, dtype=torch.int64)
-                        history_input[cell].index_add_(
-                            0, source_index, embeddings.index_select(0, source_index))
+                history_input = _sum_history_sources(embeddings, history_sources,
+                                                     cells=cells)
                 context = history_input + state.float().mean(dim=1, keepdim=True)
             else:
                 context = inputs + state.float().mean(dim=1, keepdim=True)
@@ -1087,10 +1179,16 @@ class KaryoplastEventSlice(SparseSupportModule):
             primal, derivative = self.select_gate_worksets(
                 derivative, gates, seed=derivative_seed,
                 window_counter=primal.state_generation)
-            output = self.relation(inputs.to(torch.float16), self.logical_edge_values(),
-                                   gates, primal, derivative)
+            relation_sources = _relation_source_inputs(inputs, history_input, relation_input)
+            output = self.relation(
+                relation_sources.to(torch.float16),
+                self.logical_edge_values(policy=edge_value_policy, primal=primal,
+                                         derivative=derivative, cells=cells),
+                gates, primal, derivative)
         self.application_state["latent_state"] = state.detach()
         self.application_state["event_position"] = position_offset + int(event_ids.shape[1])
+        if event_ids.shape[1]:
+            self.application_state["relation_input_policy"] = relation_input
         if event_ids.shape[1]:
             self.application_state["last_event_ids"] = event_ids[:, -1].detach()
         if timestamps is not None and timestamps.shape[1]:

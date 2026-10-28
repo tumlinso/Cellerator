@@ -1,0 +1,228 @@
+{
+  "schema": "cellerator.sparse_support_mechanism_catalog.v1",
+  "selection_policy": "Retain every family. Synthetic or fixture results describe only their measured workloads and never automatically remove a mechanism.",
+  "families": [
+    {
+      "id": "reverse_postings",
+      "area": "indexing",
+      "status": "native",
+      "gpu_status": "GPU-measured",
+      "summary": "Exact role-aware reverse postings and capacity-checked variable-size retrieval.",
+      "sources": [
+        "src/compute/indexing/reverse_postings.cc",
+        "src/compute/indexing/cuda_postings.cu",
+        "include/Cellerator/compute/indexing/reverse_postings.hh"
+      ],
+      "evidence": [
+        "bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/REPORT.md",
+        "bench/sparse_support/evidence/experiments/posting_singleton_v1/REPORT.md"
+      ]
+    },
+    {
+      "id": "temporal_occurrences",
+      "area": "indexing",
+      "status": "native",
+      "gpu_status": "GPU-unmeasured as an independent index",
+      "summary": "Per-cell occurrence identities with separate ordinal and timestamp window predicates.",
+      "sources": [
+        "src/compute/indexing/temporal_occurrences.cc",
+        "include/Cellerator/compute/indexing/temporal_occurrences.hh"
+      ],
+      "evidence": [
+        "tests/sparse_support/indexing_support_gating_test.cc",
+        "bench/sparse_support/scaled_fixtures.py"
+      ]
+    },
+    {
+      "id": "conditional_worksets",
+      "area": "gating",
+      "status": "native",
+      "gpu_status": "GPU-correctness and sanitizer evidence; workload win is conditional",
+      "summary": "Shared condition DAGs, cross-cell bitmaps, sparse state updates, and separate primal/derivative worksets.",
+      "sources": [
+        "src/compute/gating/condition_program.cc",
+        "src/compute/gating/cuda_worksets.cu",
+        "include/Cellerator/compute/gating/condition_program.hh"
+      ],
+      "evidence": [
+        "bench/sparse_support/experiments/shared_conditions/evidence/timing_20261027_02/summary.json",
+        "bench/sparse_support/experiments/shared_conditions/scaled/evidence/runs/gpu1_20261027_02/REPORT.md"
+      ]
+    },
+    {
+      "id": "bounded_support_discovery",
+      "area": "support",
+      "status": "native, bounded proposal API",
+      "gpu_status": "GPU-unmeasured",
+      "summary": "Seeded proposals from pools/postings/coactivation; proposal coverage is reported and is not complete retrieval.",
+      "sources": [
+        "src/compute/support/proposal_discovery.cc",
+        "include/Cellerator/compute/support/proposal_discovery.hh"
+      ],
+      "evidence": [
+        "tests/sparse_support/indexing_support_gating_test.cc"
+      ]
+    },
+    {
+      "id": "incremental_support_delta",
+      "area": "support",
+      "status": "native",
+      "gpu_status": "GPU lifecycle tested; publication is window-boundary work",
+      "summary": "Stable base plus sparse promotion/revocation delta with logical identity, epochs, tombstones, and snapshot restore.",
+      "sources": [
+        "src/compute/support/adaptive_support.cc",
+        "bindings/sparse_support/indexing_bindings.cc"
+      ],
+      "evidence": [
+        "bench/sparse_support/evidence/qualification/lifecycle/v11-snapshot-restore/REPORT.md"
+      ]
+    },
+    {
+      "id": "learned_latent_gates",
+      "area": "gating and state",
+      "status": "experimental Torch training adapter over native numerics",
+      "gpu_status": "GPU-validated on controlled synthetic fixtures",
+      "summary": "Shared trainable entity/mechanism parameters, latent transitions, sigmoid gates, pruning STE, and bounded derivative candidates.",
+      "sources": [
+        "python/cellerator/torch/sparse_support.py",
+        "src/compute/operation/sparse_support/training.cu"
+      ],
+      "evidence": [
+        "bench/sparse_support/evidence/qualification/learning/v9_corrected/REPORT.md",
+        "bench/sparse_support/evidence/qualification/lifecycle/v9-gradient-scatter/REPORT.md"
+      ]
+    },
+    {
+      "id": "simt_relation",
+      "area": "execution",
+      "status": "native trainable execution path",
+      "gpu_status": "GPU-measured and gradient-validated",
+      "summary": "Irregular per-cell sparse relation forward and SIMT VJP; exact fallback for less regular work.",
+      "sources": [
+        "src/compute/operation/sparse_support/training.cu",
+        "include/Cellerator/compute/operation/sparse_support/training.hh"
+      ],
+      "evidence": [
+        "bench/sparse_support/evidence/qualification/lifecycle/v9-gradient-scatter/REPORT.md"
+      ]
+    },
+    {
+      "id": "ce_geo_n64",
+      "area": "geometry and execution",
+      "status": "native prepared projection",
+      "gpu_status": "GPU-measured at width 64; current backward uses SIMT VJP",
+      "summary": "CE-GEO tiled forward with residual routing and direct logical/physical maps. Width 64 is a physical anchor, not a logical input-size limit.",
+      "sources": [
+        "src/compute/operation/sparse_support/training.cu",
+        "include/Cellerator/compute/operation/sparse_support/training.hh"
+      ],
+      "evidence": [
+        "bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/run_001/REPORT.md",
+        "bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028_v13_retry1/paired_layout_metrics.json",
+        "bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028_v13_retry1/kda_campaign/kda_result.json"
+      ]
+    },
+    {
+      "id": "indexed_shared_edge_values",
+      "area": "value computation",
+      "status": "experimental adapter path",
+      "gpu_status": "GPU-measured on small, sparse-event, and dense-ranked fixtures",
+      "summary": "Computes shared edge values on unique P union D ordinals and scatters into logical edge order; full-E remains available.",
+      "sources": [
+        "bench/sparse_support/experiments/indexed_values/probe.py"
+      ],
+      "evidence": [
+        "bench/sparse_support/experiments/indexed_values/evidence/qualification/v13/REPORT.md"
+      ]
+    },
+    {
+      "id": "csr_union_bitmap",
+      "area": "indexing",
+      "status": "experimental, retained",
+      "gpu_status": "GPU-measured; not a universal winner",
+      "summary": "CSR union with bitmap marking for candidate discovery. Keep for workloads where measured shape and reuse justify it.",
+      "sources": [
+        "bench/sparse_support/experiments/csr_union_bitmap/csr_union_bitmap_bench.cu",
+        "bench/sparse_support/experiments/csr_union_bitmap/run_experiment.py"
+      ],
+      "evidence": [
+        "bench/sparse_support/experiments/csr_union_bitmap/REPORT.md"
+      ]
+    },
+    {
+      "id": "ordered_posting_concatenation",
+      "area": "indexing",
+      "status": "native specialized path, retained",
+      "gpu_status": "GPU-measured on ordered posting workloads",
+      "summary": "Exact concatenation/prefix construction for disjoint ordered postings under checked preconditions; exact merge remains the fallback.",
+      "sources": [
+        "src/compute/indexing/cuda_postings.cu",
+        "include/Cellerator/compute/indexing/cuda_postings.cuh"
+      ],
+      "evidence": [
+        "bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/REPORT.md"
+      ]
+    },
+    {
+      "id": "counted_flat_conditions",
+      "area": "gating",
+      "status": "experimental CPU-only probe, retained",
+      "gpu_status": "GPU-unmeasured",
+      "summary": "Per-cell satisfaction counters for flat all-of rules, with repeated participants and signed requirements; not a replacement for the general nested condition DAG.",
+      "sources": [
+        "bench/sparse_support/experiments/counted_conditions/counted_condition_probe.cc",
+        "bench/sparse_support/experiments/counted_conditions/README.md"
+      ],
+      "evidence": [
+        "bench/sparse_support/experiments/counted_conditions/evidence/results-20261027.jsonl",
+        "bench/sparse_support/experiments/counted_conditions/evidence/results-repeat-20261027.jsonl"
+      ]
+    },
+    {
+      "id": "shared_condition_pair_cache",
+      "area": "gating",
+      "status": "experimental binary-condition specialization, retained",
+      "gpu_status": "GPU-correctness, memcheck, and synccheck measured; workload win depends on shared roots",
+      "summary": "Caches repeated two-predicate AND roots and updates affected roots/edges through prepared postings; retains general DAG evaluation as fallback.",
+      "sources": [
+        "bench/sparse_support/experiments/shared_conditions/shared_condition_probe.cu",
+        "bench/sparse_support/experiments/shared_conditions/scaled/scaled_condition_probe.cu"
+      ],
+      "evidence": [
+        "bench/sparse_support/experiments/shared_conditions/scaled/evidence/runs/gpu1_20261027_02/REPORT.md",
+        "bench/sparse_support/experiments/shared_conditions/evidence/timing_20261027_02/summary.json"
+      ]
+    },
+    {
+      "id": "parallel_workset_compaction",
+      "area": "execution and gating",
+      "status": "experimental CUDA probe, retained",
+      "gpu_status": "GPU-unmeasured; admitted timing attempt did not run",
+      "summary": "CTA-per-cell tiled prefix/scatter candidate with a host oracle and capacity checks; no timing evidence yet.",
+      "sources": [
+        "bench/sparse_support/experiments/parallel_workset/parallel_workset_probe.cu",
+        "bench/sparse_support/experiments/parallel_workset/README.md"
+      ],
+      "evidence": [
+        "bench/sparse_support/experiments/parallel_workset/evidence/host_oracle.jsonl",
+        "bench/sparse_support/experiments/parallel_workset/evidence/manifest.json"
+      ]
+    },
+    {
+      "id": "prepared_bitmap_retrieval",
+      "area": "indexing",
+      "status": "experimental retrieval representation, retained",
+      "gpu_status": "GPU-measured; row-CTA path wins only for some measured shapes",
+      "summary": "Prepared term-to-edge bitmap OR and compaction compared with exact CUDA reverse postings; retains skew and large-edge counterexamples.",
+      "sources": [
+        "bench/sparse_support/experiments/bitmap_retrieval/bitmap_retrieval_bench.cu",
+        "bench/sparse_support/experiments/bitmap_retrieval/analysis.md"
+      ],
+      "evidence": [
+        "bench/sparse_support/experiments/bitmap_retrieval/evidence/paired_v3/manifest.json",
+        "bench/sparse_support/experiments/bitmap_retrieval/evidence/paired_v3/results.jsonl",
+        "bench/sparse_support/experiments/bitmap_retrieval/evidence/memcheck_v100_20261027.json"
+      ]
+    }
+  ]
+}

@@ -98,6 +98,26 @@ are refreshed after parameter publication. Those costs are separate from the
 allocation-free numerical launch contract; these examples do not establish a
 fully device-resident training pipeline.
 
+Both consumers retain full-support value evaluation and offer
+`edge_value_policy="workset_union"` to derive shared values only for the
+unique primal/derivative union. This preserves dormant candidates needed by
+gate gradients and recomputes values after parameter publication. The native
+logical-order value vector and parameter owner remain the same.
+
+The event consumer retains `relation_input="current_event"` and also accepts
+`"eligible_history"`, which sums the provider's window-eligible occurrences,
+including repetitions. Recurrent updates still consume the current event;
+gate context and window predicates are unchanged. The checkpoint records the
+choice. A history stream must explicitly request the same option when resumed;
+legacy checkpoints retain their current-event meaning.
+
+The [evaluation intake](sparse_support_foundation/evaluation.md) accepts
+caller-supplied ranked or event records, emits exact CPU candidate views and
+reversible native identity maps, and catalogs 15 retained mechanism families.
+Its raw-bundle compatibility is a preparation boundary; an admitted GPU adapter
+still binds relation identity, epochs, roles, and timestamp units. Synthetic
+timings do not automatically remove a mechanism or fix a runtime policy.
+
 See the [benchmark protocol](../bench/sparse_support/README.md) and
 [implementation contract](sparse_support_foundation/draft.md). Retained
 qualification distinguishes host tests, admitted GPU correctness, numerical
@@ -119,6 +139,18 @@ The [final snapshot-restoration suite](../bench/sparse_support/evidence/qualific
 passes 28 tests, including loading into a fresh model after a novel edge was
 promoted and later revoked. Saved base/delta ownership, epochs, tombstones, and
 promotion evidence are restored directly while retaining the parameter leaf.
+The [v14 integration](../bench/sparse_support/evidence/qualification/v14-optional-policies/REPORT.md)
+passes 83 tests and two subtests across the optional policies, intake, and
+existing Torch bindings, plus the native CUDA workset test.
+
+The [controlled event readout experiment](../bench/sparse_support/experiments/event_learning_diagnostic/README.md)
+retains both input choices. On one fixed synthetic task, history input reached
+509/512 pruned held-out predictions versus 122/512 for current-event input,
+with matched support, initialization, and training. The task depends directly
+on recent participant sets; it does not establish behavior on order-sensitive
+or biological tasks. The [indexed-value experiment](../bench/sparse_support/experiments/indexed_values/evidence/qualification/v13/REPORT.md)
+measured a 2.935× complete-step gain for its sparse event workload, with a small
+regression and a nearly neutral ranked case. Both value paths remain available.
 
 The [balanced V100 comparison](../bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/run_001/REPORT.md)
 found no reliable complete-cost advantage for packed execution on its two

@@ -4,6 +4,17 @@ The retained evidence separates exact indexing, numerical/gradient checks,
 fixture learning, and complete-cost timing. CUDA runs require a finite admitted
 Device Scheduler job; the commands below describe CPU-only work.
 
+All mechanism families remain available for continued development and
+real-input evaluation. The [intake guide](../../docs/sparse_support_foundation/evaluation.md)
+describes the 15-family catalog and CPU preparation of caller-supplied ranked
+or event records, including reversible native identity maps. Synthetic timing
+results describe their declared workloads and do not remove families or set
+an automatic runtime policy.
+
+```sh
+python -m bench.sparse_support.evaluation catalog
+```
+
 - `evidence/qualification/` contains native, Torch lifecycle, and synthetic
   learning receipts and source identities. The corrected v9 learning report
   supersedes the invalid sampled-gradient v8 result.
@@ -24,6 +35,16 @@ Device Scheduler job; the commands below describe CPU-only work.
   and loses to full scanning for dense predicate changes.
 - `experiments/parallel_workset/` has a host oracle and CUDA build, with no GPU
   timing: the admitted probe never began. Its performance remains unknown.
+- The [large native comparison](evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/REPORT.md)
+  measures ordered posting discovery plus conditional worksets against serial
+  merge and full rescan, with preparation and memory kept explicit.
+- The [geometry comparison](experiments/geometry_layout/V13_RESULTS.md) retains
+  canonical, reordered, and hybrid physical images. Exact forward/VJP checks
+  pass; the measured synthetic steps favored SIMT. All layouts remain available.
+- The [indexed-value probe](experiments/indexed_values/evidence/qualification/v13/REPORT.md)
+  and [event readout trial](experiments/event_learning_diagnostic/README.md)
+  motivate explicit optional policies. The [v14 integration](evidence/qualification/v14-optional-policies/REPORT.md)
+  checks those options and the broader intake without changing existing defaults.
 
 ## Host indexing benchmark
 

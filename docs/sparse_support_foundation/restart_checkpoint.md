@@ -1,5 +1,10 @@
 # Restart checkpoint — 2026-10-27
 
+Historical pause record. Work resumed on 2026-10-28. Subsequent
+[v14 qualification](../../bench/sparse_support/evidence/qualification/v14-optional-policies/REPORT.md)
+and the [broad evaluation intake](evaluation.md) record the resumed delivery;
+the unrun/pending statements below describe the original pause boundary.
+
 Paused at the user's request for a computer restart. Do not launch further jobs
 until the user resumes the work. All agents reported no active commands or
 queued/running jobs; the Cellerator scheduler audit found zero nonterminal jobs.
