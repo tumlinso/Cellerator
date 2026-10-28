@@ -3,7 +3,7 @@ import unittest
 from examples.sparse_support.train_synthetic import (
     clipped_event_windows, event_fixture_slice, pair_support, shuffled_support,
 )
-from cellerator.torch.sparse_support import make_next_event_fixture
+from cellerator.torch.testing import make_next_event_fixture
 
 
 class SyntheticDriverTest(unittest.TestCase):

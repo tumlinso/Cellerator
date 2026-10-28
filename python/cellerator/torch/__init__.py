@@ -20,15 +20,24 @@ _MECHANISM_EXPORTS = {
 _SPARSE_SUPPORT_EXPORTS = {
     "GateValues", "KaryoplastEventSlice", "ParameterBlock", "PerCellWorkset",
     "RankedGeneSlice", "SparseSupportModule", "SupportSpec", "learned_gates",
-    "make_masked_gene_fixture", "make_next_event_fixture", "prepare_sparse_slice",
-    "sparse_parameter_layout",
+    "prepare_sparse_slice", "sparse_parameter_layout",
 }
 
 
 def __getattr__(name: str):
     if name in _SPARSE_SUPPORT_EXPORTS:
-        from . import sparse_support
-        return getattr(sparse_support, name)
+        if name in {"SupportSpec", "ParameterBlock", "PerCellWorkset", "GateValues",
+                    "sparse_parameter_layout"}:
+            from . import structure
+            return getattr(structure, name)
+        if name == "learned_gates":
+            from .gating import learned_gates
+            return learned_gates
+        if name == "SparseSupportModule":
+            from .execution import SparseSupportModule
+            return SparseSupportModule
+        from . import routing
+        return getattr(routing, name)
     if name not in _MECHANISM_EXPORTS:
         raise AttributeError(name)
     try:

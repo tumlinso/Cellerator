@@ -22,11 +22,12 @@ import torch
 from cellerator.torch.mechanism import (
     guarded_step, load_checkpoint, save_checkpoint,
 )
-from cellerator.torch.sparse_support import (
-    KaryoplastEventSlice, PerCellWorkset, RankedGeneSlice, SupportSpec,
-    compile_sparse_support_ce_geo, make_masked_gene_fixture,
-    make_next_event_fixture, prepare_sparse_slice,
+from cellerator.torch.structure import PerCellWorkset, SupportSpec
+from cellerator.torch.routing import (
+    KaryoplastEventSlice, RankedGeneSlice, compile_sparse_support_ce_geo,
+    prepare_sparse_slice,
 )
+from cellerator.torch.testing import make_masked_gene_fixture, make_next_event_fixture
 from cellerator.torch import _torch
 
 

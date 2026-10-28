@@ -1,9 +1,12 @@
 import unittest
 import torch
 
-from cellerator.torch.sparse_support import (  # noqa: E402
-    SupportSpec, _stable_scalar_ids, learned_gates, make_masked_gene_fixture,
-    make_next_event_fixture, sparse_parameter_layout,
+from cellerator.torch.structure import (  # noqa: E402
+    SupportSpec, _stable_scalar_ids, sparse_parameter_layout,
+)
+from cellerator.torch.gating import learned_gates  # noqa: E402
+from cellerator.torch.testing import (  # noqa: E402
+    make_masked_gene_fixture, make_next_event_fixture,
 )
 
 
