@@ -58,7 +58,7 @@ _LIB = None
 def _library():
     global _LIB
     if _LIB is None:
-        source = Path(__file__).with_name('transport.cc')
+        source = Path(__file__).resolve().parents[4] / 'src/ops/process/ports_provider.cc'
         source_bytes = source.read_bytes()
         flags = ['-std=c++17', '-O2', '-shared', '-fPIC', '-ffp-contract=off']
         compiler = os.environ.get('CXX', 'c++')

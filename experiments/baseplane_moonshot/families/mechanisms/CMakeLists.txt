@@ -9,7 +9,10 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 endif()
 add_library(ce_moonshot_mechanisms INTERFACE)
 add_library(Cellerator::moonshot_mechanisms ALIAS ce_moonshot_mechanisms)
-target_include_directories(ce_moonshot_mechanisms INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+get_filename_component(CE_MOON_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../.." ABSOLUTE)
+target_include_directories(ce_moonshot_mechanisms INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CE_MOON_ROOT}/include)
 target_compile_features(ce_moonshot_mechanisms INTERFACE cxx_std_17)
 add_executable(ce_moon_mechanisms_probe probe.cpp)
 target_link_libraries(ce_moon_mechanisms_probe PRIVATE Cellerator::moonshot_mechanisms)

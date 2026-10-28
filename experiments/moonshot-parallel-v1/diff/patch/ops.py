@@ -18,7 +18,7 @@ _LIB = None
 def _lib():
     global _LIB
     if _LIB is None:
-        source = Path(__file__).with_name('native.cc')
+        source = Path(__file__).resolve().parents[4] / 'src/ops/matrix/patch_provider.cc'
         compiler = os.environ.get('CXX', 'c++')
         version = subprocess.check_output([compiler, '--version'])
         key = hashlib.sha256(source.read_bytes() + version + b'-std=c++17 -O2 -ffp-contract=off').hexdigest()
