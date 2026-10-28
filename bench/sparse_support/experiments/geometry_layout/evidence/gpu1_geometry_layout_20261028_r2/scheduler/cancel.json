@@ -1,0 +1,110 @@
+{
+  "attempt_count": 1,
+  "attempt_id": "5c523a20-538e-4211-9e9b-547db82328ab",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-28T12:56:45.580200Z",
+  "decision_id": "3f81f5ee-3596-4eaf-a1b5-de94052ba6f1",
+  "id": "46491975-fdc9-4123-a6ce-f4b7c28c74a8",
+  "job_id": "46491975-fdc9-4123-a6ce-f4b7c28c74a8",
+  "lease_binding": null,
+  "lease_fencing_token": 1009,
+  "lease_id": "d94dde81-2938-4550-acf6-3932233dea8f",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "cancellation_reason": "caller",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-aabe4fd5f3d2acd3d7446636c910a85d.service",
+      "invocation_id": "80aa91930bfa40059705e4ac6fd6570e",
+      "post_stop_unit_state": "not-found",
+      "unit_description": "Device Scheduler attempt 5c523a20-538e-4211-9e9b-547db82328ab"
+    },
+    "invocation_id": "80aa91930bfa40059705e4ac6fd6570e",
+    "operation_id": "cancel:5c523a20-538e-4211-9e9b-547db82328ab",
+    "reason": "unit was unloaded after systemd acknowledged stop",
+    "state": "unknown",
+    "stop_requested": true,
+    "unit_name": "device-scheduler-attempt-aabe4fd5f3d2acd3d7446636c910a85d.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/run_geometry_campaign.py",
+      "--output-dir",
+      "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028_r2",
+      "--workspace",
+      "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/kda_workspace",
+      "--task",
+      "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/kda_task.json"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CELLERATOR_SPARSE_PACKAGE_ROOT": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v12-validator/package",
+      "CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED": "1",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "OPENBLAS_NUM_THREADS": "2",
+      "PATH": "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin:/home/tumlinson/Software/miniconda3/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/compilers/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin:/usr/local/bin:/usr/bin:/bin",
+      "PYTHONPATH": "/home/tumlinson/kda:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v12-validator/package",
+      "PYTHONUNBUFFERED": "1"
+    },
+    "event_trigger": null,
+    "idempotency_key": "cellerator-cegeo-geometry-layout-gpu1-20261028-r2",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 8589934592.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "kda.experiment",
+      "cellerator.sparse_support.geometry_layout",
+      "gpu.exclusive"
+    ],
+    "timeout_seconds": 3600.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "cancelled",
+  "updated_at": "2026-10-28T13:06:42.055205Z"
+}

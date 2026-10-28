@@ -1,0 +1,66 @@
+{
+  "compute_sanitizer": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+  "compute_sanitizer_sha256": "979adf037f4e3434a976b7f0912b0a05ce3b062e31b2a73397a1bf1cd5f57547",
+  "device_scheduler_admitted": true,
+  "memcheck": [
+    {
+      "candidate": "hybrid8",
+      "checks": {
+        "derivative_only_probability_grad_nonzero": {
+          "packed": 519961,
+          "simt": 519961
+        },
+        "inference_output_allclose_atol_5e-3_rtol_5e-3": true,
+        "loss_close_abs_5e-4_rel_5e-3": true,
+        "max_parameter_difference_after_measured_training": 2.9802322387695312e-08,
+        "remaining_read_tickets": 0,
+        "training_parameter_gradient_allclose_atol_6e-3_rtol_6e-3": true
+      },
+      "command": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "1",
+        "--target-processes",
+        "all",
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/geometry_training_benchmark.py",
+        "--case",
+        "large_ranked",
+        "--candidate",
+        "hybrid8",
+        "--output",
+        "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028_r2/memcheck/large-ranked-hybrid8.json",
+        "--warmup",
+        "1",
+        "--rounds",
+        "1",
+        "--iterations",
+        "1",
+        "--setup-pairs",
+        "1",
+        "--seed",
+        "20261027"
+      ],
+      "correctness_passed": true,
+      "exit_code": 0,
+      "image": {
+        "host_compile_ms": 210.8197339985054,
+        "image_path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/large-ranked/hybrid8.cegeo",
+        "image_sha256": "5283fe30383d09713383f82e4580781c50688025857d998868be4e1fd77ad924",
+        "mma_edge_count": 165425,
+        "residual_edge_count": 96719,
+        "residual_region_count": 256,
+        "tile_count": 7687
+      },
+      "log": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028_r2/memcheck/large-ranked-hybrid8.log",
+      "log_sha256": "1b75c63226da3f2a6c1a097f117e49ef14761267947da1792554e3555de46afd",
+      "result": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028_r2/memcheck/large-ranked-hybrid8.json",
+      "result_sha256": "d8c04ab6d6ac662c9ee7715fae08e44fd833431b3ebd8b0ac86b1c7745b776e9"
+    }
+  ],
+  "package_identity_sha256": "99da528db6f4ba14bec983b6dfe31f12a065dbdc8b39c0dfb224ed0e969fca07",
+  "package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v12-validator/package",
+  "schema_version": 1
+}

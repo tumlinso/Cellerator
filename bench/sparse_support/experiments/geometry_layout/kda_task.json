@@ -47,16 +47,16 @@
   ],
   "commands": {
     "build": {
-      "argv": ["/home/tumlinson/Software/miniconda3/bin/python3", "bench/sparse_support/experiments/geometry_layout/geometry_kda_adapter.py", "build", "{request}", "{result}"],
+      "argv": ["/home/tumlinson/Software/miniconda3/bin/python3", "geometry_kda_adapter.py", "build", "{request}", "{result}"],
       "cpu_only": true,
       "timeout_seconds": 120
     },
     "validate": {
-      "argv": ["/home/tumlinson/Software/miniconda3/bin/python3", "bench/sparse_support/experiments/geometry_layout/geometry_kda_adapter.py", "validate", "{request}", "{result}"],
+      "argv": ["/home/tumlinson/Software/miniconda3/bin/python3", "geometry_kda_adapter.py", "validate", "{request}", "{result}"],
       "timeout_seconds": 2400
     },
     "benchmark": {
-      "argv": ["/home/tumlinson/Software/miniconda3/bin/python3", "bench/sparse_support/experiments/geometry_layout/geometry_kda_adapter.py", "benchmark", "{request}", "{result}"],
+      "argv": ["/home/tumlinson/Software/miniconda3/bin/python3", "geometry_kda_adapter.py", "benchmark", "{request}", "{result}"],
       "timeout_seconds": 2400
     }
   },
@@ -80,8 +80,8 @@
     "repetitions": 21,
     "iterations": 2,
     "setup_pairs": 5,
-    "rounds": 1,
-    "confirmation_rounds": 1,
+    "rounds": 2,
+    "confirmation_rounds": 2,
     "seed": 20261027
   },
   "promotion": {"min_improvement": 0.0, "max_regression": 0.9, "confidence": 0.95, "bootstrap_samples": 1000},
@@ -93,6 +93,9 @@
   "execution": {"mode": "direct"},
   "trusted_inputs": [
     {"id": "geometry_adapter", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/geometry_kda_adapter.py", "role": "harness"},
+    {"id": "geometry_campaign_runner", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/run_geometry_campaign.py", "role": "harness"},
+    {"id": "geometry_kda_runner", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/run_geometry_kda.py", "role": "harness"},
+    {"id": "compute_sanitizer", "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer", "role": "toolchain"},
     {"id": "geometry_torch_driver", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/geometry_training_benchmark.py", "role": "benchmark"},
     {"id": "training_oracle_driver", "path": "/home/tumlinson/Cellerator/bench/sparse_support/packed_training_benchmark.py", "role": "validator"},
     {"id": "image_manifest", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/prepared_images.json", "role": "reference"},

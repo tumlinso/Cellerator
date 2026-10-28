@@ -1,0 +1,1299 @@
+{
+  "cases": [
+    {
+      "candidates": {
+        "ordered_fastpath": {
+          "binary_sha256": "e08c17f5142363ada4d5de298d146570efeff1669c2327d9e7f3bc681502e393",
+          "counts": {
+            "derivative_candidates": 244,
+            "derivative_only_work_items": 0,
+            "derivative_output_capacity_upper_bound": 244,
+            "derivative_union_work_items": 76,
+            "derivative_workset_capacity_upper_bound": 488,
+            "iterations_per_sample": 3,
+            "postings_records": 192,
+            "postings_terms": 113,
+            "primal_candidates": 244,
+            "primal_output_capacity_upper_bound": 244,
+            "primal_work_items": 76,
+            "samples": 21,
+            "warmup": 5
+          },
+          "fixture_manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+          "host_setup_ms": {
+            "fixture_load_and_validation": 0.2927075,
+            "prepared_condition_root_map": 0.00081,
+            "state_and_condition_program_prepare": 0.0245
+          },
+          "memory_bytes": {
+            "condition_and_query_state": 15208,
+            "device_allocations_requested": 104551,
+            "full_rescan_workspace_and_outputs": 33551,
+            "gate_workset_workspace_and_outputs": 23840,
+            "posting_projection": 5792,
+            "posting_workspace_and_outputs": 20400,
+            "prepared_condition_root_map": 384,
+            "structure": 5376
+          },
+          "reuse_amortization_ms": {
+            "postings_setup_plus_pipeline_reuse_1": 0.15847099850000002,
+            "postings_setup_plus_pipeline_reuse_16": 0.1409444365
+          },
+          "rounds": {
+            "confirmation/round-000": {
+              "cuda_complete_postings_bitmap_workset": 0.139605328,
+              "cuda_complete_rescan_bitmap_workset": 0.119125336,
+              "cuda_condition_bitmap_dirty_local_gene": 0.0570026673,
+              "cuda_condition_bitmap_dirty_shared_latent": 0.0576853342,
+              "cuda_condition_bitmap_full_batch": 0.0566613339,
+              "cuda_full_rescan_pair_discovery": 0.0228693336,
+              "cuda_gate_worksets_after_postings": 0.0406186655,
+              "cuda_gate_worksets_after_rescan": 0.040959999,
+              "cuda_reverse_posting_pair_discovery": 0.0436906666,
+              "host_device_projection_prepare": 0.000565,
+              "host_exact_oracle_and_capacity_reservation": 0.177494,
+              "host_posting_index_build": 0.005761,
+              "posting_and_root_map_setup_h2d_stream_complete": 0.018793,
+              "prepared_condition_root_map_h2d_only": 0.00307200011,
+              "projection_h2d_only": 0.0071680001
+            },
+            "confirmation/round-001": {
+              "cuda_complete_postings_bitmap_workset": 0.139946669,
+              "cuda_complete_rescan_bitmap_workset": 0.119125336,
+              "cuda_condition_bitmap_dirty_local_gene": 0.0570026673,
+              "cuda_condition_bitmap_dirty_shared_latent": 0.0576853342,
+              "cuda_condition_bitmap_full_batch": 0.0570026673,
+              "cuda_full_rescan_pair_discovery": 0.0228693336,
+              "cuda_gate_worksets_after_postings": 0.0406186655,
+              "cuda_gate_worksets_after_rescan": 0.040959999,
+              "cuda_reverse_posting_pair_discovery": 0.0436906666,
+              "host_device_projection_prepare": 0.000594,
+              "host_exact_oracle_and_capacity_reservation": 0.210757,
+              "host_posting_index_build": 0.005948,
+              "posting_and_root_map_setup_h2d_stream_complete": 0.018597,
+              "prepared_condition_root_map_h2d_only": 0.00307200011,
+              "projection_h2d_only": 0.00812800042
+            },
+            "exploration/round-000": {
+              "cuda_complete_postings_bitmap_workset": 0.139605328,
+              "cuda_complete_rescan_bitmap_workset": 0.118784003,
+              "cuda_condition_bitmap_dirty_local_gene": 0.0570026673,
+              "cuda_condition_bitmap_dirty_shared_latent": 0.0576853342,
+              "cuda_condition_bitmap_full_batch": 0.0566613339,
+              "cuda_full_rescan_pair_discovery": 0.0228693336,
+              "cuda_gate_worksets_after_postings": 0.0406186655,
+              "cuda_gate_worksets_after_rescan": 0.0406186655,
+              "cuda_reverse_posting_pair_discovery": 0.0436693318,
+              "host_device_projection_prepare": 0.000524,
+              "host_exact_oracle_and_capacity_reservation": 0.167494,
+              "host_posting_index_build": 0.005896,
+              "posting_and_root_map_setup_h2d_stream_complete": 0.017169,
+              "prepared_condition_root_map_h2d_only": 0.00307200011,
+              "projection_h2d_only": 0.0071680001
+            },
+            "exploration/round-001": {
+              "cuda_complete_postings_bitmap_workset": 0.162133336,
+              "cuda_complete_rescan_bitmap_workset": 0.137898669,
+              "cuda_condition_bitmap_dirty_local_gene": 0.0662186667,
+              "cuda_condition_bitmap_dirty_shared_latent": 0.0672426671,
+              "cuda_condition_bitmap_full_batch": 0.0658773333,
+              "cuda_full_rescan_pair_discovery": 0.0262826663,
+              "cuda_gate_worksets_after_postings": 0.047104001,
+              "cuda_gate_worksets_after_rescan": 0.0474453308,
+              "cuda_reverse_posting_pair_discovery": 0.0501759984,
+              "host_device_projection_prepare": 0.000565,
+              "host_exact_oracle_and_capacity_reservation": 0.175401,
+              "host_posting_index_build": 0.00624,
+              "posting_and_root_map_setup_h2d_stream_complete": 0.018542,
+              "prepared_condition_root_map_h2d_only": 0.00307200011,
+              "projection_h2d_only": 0.0071680001
+            }
+          },
+          "timings_ms": {
+            "cuda_complete_postings_bitmap_workset": {
+              "median": 0.140970662,
+              "n": 84,
+              "p10": 0.139264002,
+              "p90": 0.162133336
+            },
+            "cuda_complete_rescan_bitmap_workset": {
+              "median": 0.119125336,
+              "n": 84,
+              "p10": 0.118784003,
+              "p90": 0.137898669
+            },
+            "cuda_condition_bitmap_dirty_local_gene": {
+              "median": 0.05701866745,
+              "n": 84,
+              "p10": 0.05698773559999999,
+              "p90": 0.0662186667
+            },
+            "cuda_condition_bitmap_dirty_shared_latent": {
+              "median": 0.0576853342,
+              "n": 84,
+              "p10": 0.057674665,
+              "p90": 0.0672426671
+            },
+            "cuda_condition_bitmap_full_batch": {
+              "median": 0.0570026673,
+              "n": 84,
+              "p10": 0.0566613339,
+              "p90": 0.06611946522
+            },
+            "cuda_full_rescan_pair_discovery": {
+              "median": 0.0228693336,
+              "n": 84,
+              "p10": 0.0225280002,
+              "p90": 0.0262826663
+            },
+            "cuda_gate_worksets_after_postings": {
+              "median": 0.0406186655,
+              "n": 84,
+              "p10": 0.0402773358,
+              "p90": 0.04710400099999999
+            },
+            "cuda_gate_worksets_after_rescan": {
+              "median": 0.040959999,
+              "n": 84,
+              "p10": 0.0406186655,
+              "p90": 0.0474453308
+            },
+            "cuda_reverse_posting_pair_discovery": {
+              "median": 0.0436906666,
+              "n": 84,
+              "p10": 0.0433493368,
+              "p90": 0.0501759984
+            },
+            "host_device_projection_prepare": {
+              "median": 0.0005665,
+              "n": 84,
+              "p10": 0.000524,
+              "p90": 0.0005978000000000001
+            },
+            "host_exact_oracle_and_capacity_reservation": {
+              "median": 0.1764475,
+              "n": 4,
+              "p10": 0.16986610000000002,
+              "p90": 0.20077810000000001
+            },
+            "host_posting_index_build": {
+              "median": 0.005933,
+              "n": 84,
+              "p10": 0.0057504999999999995,
+              "p90": 0.0062524
+            },
+            "posting_and_root_map_setup_h2d_stream_complete": {
+              "median": 0.018494499999999997,
+              "n": 84,
+              "p10": 0.0170853,
+              "p90": 0.025554400000000005
+            },
+            "prepared_condition_root_map_h2d_only": {
+              "median": 0.00307200011,
+              "n": 84,
+              "p10": 0.00307200011,
+              "p90": 0.004086400056
+            },
+            "projection_h2d_only": {
+              "median": 0.0071680001,
+              "n": 84,
+              "p10": 0.0071680001,
+              "p90": 0.00819199998
+            }
+          }
+        },
+        "serial_frozen": {
+          "binary_sha256": "a628a22579a576d51f942f91d3c0f279ec7c371fdec36f0b454a956e7a44ae7f",
+          "counts": {
+            "derivative_candidates": 244,
+            "derivative_only_work_items": 0,
+            "derivative_output_capacity_upper_bound": 244,
+            "derivative_union_work_items": 76,
+            "derivative_workset_capacity_upper_bound": 488,
+            "iterations_per_sample": 3,
+            "postings_records": 192,
+            "postings_terms": 113,
+            "primal_candidates": 244,
+            "primal_output_capacity_upper_bound": 244,
+            "primal_work_items": 76,
+            "samples": 21,
+            "warmup": 5
+          },
+          "fixture_manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+          "host_setup_ms": {
+            "fixture_load_and_validation": 0.307481,
+            "prepared_condition_root_map": 0.0009055000000000001,
+            "state_and_condition_program_prepare": 0.024781499999999998
+          },
+          "memory_bytes": {
+            "condition_and_query_state": 15208,
+            "device_allocations_requested": 98407,
+            "full_rescan_workspace_and_outputs": 33551,
+            "gate_workset_workspace_and_outputs": 23840,
+            "posting_projection": 5792,
+            "posting_workspace_and_outputs": 14256,
+            "prepared_condition_root_map": 384,
+            "structure": 5376
+          },
+          "reuse_amortization_ms": {
+            "postings_setup_plus_pipeline_reuse_1": 0.7881156405,
+            "postings_setup_plus_pipeline_reuse_16": 0.7713372030000001
+          },
+          "rounds": {
+            "confirmation/round-000": {
+              "cuda_complete_postings_bitmap_workset": 0.710293353,
+              "cuda_complete_rescan_bitmap_workset": 0.119125336,
+              "cuda_condition_bitmap_dirty_local_gene": 0.0570026673,
+              "cuda_condition_bitmap_dirty_shared_latent": 0.0576853342,
+              "cuda_condition_bitmap_full_batch": 0.0570026673,
+              "cuda_full_rescan_pair_discovery": 0.0228693336,
+              "cuda_gate_worksets_after_postings": 0.0413013324,
+              "cuda_gate_worksets_after_rescan": 0.040959999,
+              "cuda_reverse_posting_pair_discovery": 0.614058673,
+              "host_device_projection_prepare": 0.000512,
+              "host_exact_oracle_and_capacity_reservation": 0.189012,
+              "host_posting_index_build": 0.00519,
+              "posting_and_root_map_setup_h2d_stream_complete": 0.0177,
+              "prepared_condition_root_map_h2d_only": 0.00307200011,
+              "projection_h2d_only": 0.00819199998
+            },
+            "confirmation/round-001": {
+              "cuda_complete_postings_bitmap_workset": 0.83012265,
+              "cuda_complete_rescan_bitmap_workset": 0.138239995,
+              "cuda_condition_bitmap_dirty_local_gene": 0.0665600002,
+              "cuda_condition_bitmap_dirty_shared_latent": 0.0672426671,
+              "cuda_condition_bitmap_full_batch": 0.0662186667,
+              "cuda_full_rescan_pair_discovery": 0.0262826663,
+              "cuda_gate_worksets_after_postings": 0.0477866679,
+              "cuda_gate_worksets_after_rescan": 0.0477759987,
+              "cuda_reverse_posting_pair_discovery": 0.717823982,
+              "host_device_projection_prepare": 0.000537,
+              "host_exact_oracle_and_capacity_reservation": 0.190672,
+              "host_posting_index_build": 0.005175,
+              "posting_and_root_map_setup_h2d_stream_complete": 0.017943,
+              "prepared_condition_root_map_h2d_only": 0.00307200011,
+              "projection_h2d_only": 0.00819199998
+            },
+            "exploration/round-000": {
+              "cuda_complete_postings_bitmap_workset": 0.829781294,
+              "cuda_complete_rescan_bitmap_workset": 0.138239995,
+              "cuda_condition_bitmap_dirty_local_gene": 0.0662186667,
+              "cuda_condition_bitmap_dirty_shared_latent": 0.0672426671,
+              "cuda_condition_bitmap_full_batch": 0.0662186667,
+              "cuda_full_rescan_pair_discovery": 0.0262826663,
+              "cuda_gate_worksets_after_postings": 0.0477866679,
+              "cuda_gate_worksets_after_rescan": 0.0477866679,
+              "cuda_reverse_posting_pair_discovery": 0.717482626,
+              "host_device_projection_prepare": 0.00056,
+              "host_exact_oracle_and_capacity_reservation": 0.227632,
+              "host_posting_index_build": 0.005633,
+              "posting_and_root_map_setup_h2d_stream_complete": 0.017959,
+              "prepared_condition_root_map_h2d_only": 0.00307200011,
+              "projection_h2d_only": 0.0071680001
+            },
+            "exploration/round-001": {
+              "cuda_complete_postings_bitmap_workset": 0.710655987,
+              "cuda_complete_rescan_bitmap_workset": 0.118784003,
+              "cuda_condition_bitmap_dirty_local_gene": 0.0570026673,
+              "cuda_condition_bitmap_dirty_shared_latent": 0.0576853342,
+              "cuda_condition_bitmap_full_batch": 0.0570026673,
+              "cuda_full_rescan_pair_discovery": 0.0225280002,
+              "cuda_gate_worksets_after_postings": 0.0413013324,
+              "cuda_gate_worksets_after_rescan": 0.040959999,
+              "cuda_reverse_posting_pair_discovery": 0.614058673,
+              "host_device_projection_prepare": 0.000512,
+              "host_exact_oracle_and_capacity_reservation": 0.185781,
+              "host_posting_index_build": 0.00505,
+              "posting_and_root_map_setup_h2d_stream_complete": 0.017835,
+              "prepared_condition_root_map_h2d_only": 0.00307200011,
+              "projection_h2d_only": 0.00819199998
+            }
+          },
+          "timings_ms": {
+            "cuda_complete_postings_bitmap_workset": {
+              "median": 0.7338719965,
+              "n": 84,
+              "p10": 0.7099765357000001,
+              "p90": 0.8303615571999999
+            },
+            "cuda_complete_rescan_bitmap_workset": {
+              "median": 0.1291840005,
+              "n": 84,
+              "p10": 0.118784003,
+              "p90": 0.138581336
+            },
+            "cuda_condition_bitmap_dirty_local_gene": {
+              "median": 0.06178133375,
+              "n": 84,
+              "p10": 0.05700266729999999,
+              "p90": 0.0665600002
+            },
+            "cuda_condition_bitmap_dirty_shared_latent": {
+              "median": 0.06365866585,
+              "n": 84,
+              "p10": 0.0576853342,
+              "p90": 0.0672426671
+            },
+            "cuda_condition_bitmap_full_batch": {
+              "median": 0.0638293326,
+              "n": 84,
+              "p10": 0.0566613339,
+              "p90": 0.0662186667
+            },
+            "cuda_full_rescan_pair_discovery": {
+              "median": 0.024917333399999998,
+              "n": 84,
+              "p10": 0.0225280002,
+              "p90": 0.0262826663
+            },
+            "cuda_gate_worksets_after_postings": {
+              "median": 0.044373331599999996,
+              "n": 84,
+              "p10": 0.0412799977,
+              "p90": 0.04802559876
+            },
+            "cuda_gate_worksets_after_rescan": {
+              "median": 0.04454399835,
+              "n": 84,
+              "p10": 0.040959999,
+              "p90": 0.0477866679
+            },
+            "cuda_reverse_posting_pair_discovery": {
+              "median": 0.665946692,
+              "n": 84,
+              "p10": 0.613717318,
+              "p90": 0.717823982
+            },
+            "host_device_projection_prepare": {
+              "median": 0.000527,
+              "n": 84,
+              "p10": 0.000508,
+              "p90": 0.0006188000000000001
+            },
+            "host_exact_oracle_and_capacity_reservation": {
+              "median": 0.189842,
+              "n": 4,
+              "p10": 0.1867503,
+              "p90": 0.21654400000000001
+            },
+            "host_posting_index_build": {
+              "median": 0.0051885,
+              "n": 84,
+              "p10": 0.0050276,
+              "p90": 0.005671300000000001
+            },
+            "posting_and_root_map_setup_h2d_stream_complete": {
+              "median": 0.017916,
+              "n": 84,
+              "p10": 0.0174494,
+              "p90": 0.0185213
+            },
+            "prepared_condition_root_map_h2d_only": {
+              "median": 0.00307200011,
+              "n": 84,
+              "p10": 0.00307200011,
+              "p90": 0.0030720001099999996
+            },
+            "projection_h2d_only": {
+              "median": 0.00817599986,
+              "n": 84,
+              "p10": 0.0071680001,
+              "p90": 0.00819199998
+            }
+          }
+        }
+      },
+      "case_id": "small_v3",
+      "fastpath_rescan_over_postings_ratio": 0.845036366502982,
+      "kda_per_case_decision": {
+        "ci_high": 5.931707099080722,
+        "ci_low": 5.0878670834110284,
+        "eligible": true,
+        "score": 5.510302267667221
+      },
+      "pooled_serial_over_fastpath_ratio": 5.205849118449908
+    },
+    {
+      "candidates": {
+        "ordered_fastpath": {
+          "binary_sha256": "e08c17f5142363ada4d5de298d146570efeff1669c2327d9e7f3bc681502e393",
+          "counts": {
+            "derivative_candidates": 46704,
+            "derivative_only_work_items": 0,
+            "derivative_output_capacity_upper_bound": 46704,
+            "derivative_union_work_items": 11442,
+            "derivative_workset_capacity_upper_bound": 93408,
+            "iterations_per_sample": 3,
+            "postings_records": 524288,
+            "postings_terms": 8192,
+            "primal_candidates": 46704,
+            "primal_output_capacity_upper_bound": 46704,
+            "primal_work_items": 11442,
+            "samples": 21,
+            "warmup": 5
+          },
+          "fixture_manifest_sha256": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32",
+          "host_setup_ms": {
+            "fixture_load_and_validation": 57.103746,
+            "prepared_condition_root_map": 0.8306545,
+            "state_and_condition_program_prepare": 31.288487500000002
+          },
+          "memory_bytes": {
+            "condition_and_query_state": 7708712,
+            "device_allocations_requested": 308133775,
+            "full_rescan_workspace_and_outputs": 270081295,
+            "gate_workset_workspace_and_outputs": 4485152,
+            "posting_projection": 8585224,
+            "posting_workspace_and_outputs": 1544752,
+            "prepared_condition_root_map": 1048576,
+            "structure": 14680064
+          },
+          "reuse_amortization_ms": {
+            "postings_setup_plus_pipeline_reuse_1": 72.54246485,
+            "postings_setup_plus_pipeline_reuse_16": 10.11518405
+          },
+          "rounds": {
+            "confirmation/round-000": {
+              "cuda_complete_postings_bitmap_workset": 5.95421839,
+              "cuda_complete_rescan_bitmap_workset": 9.58941841,
+              "cuda_condition_bitmap_dirty_local_gene": 3.35974407,
+              "cuda_condition_bitmap_dirty_shared_latent": 3.50310397,
+              "cuda_condition_bitmap_full_batch": 3.91406918,
+              "cuda_full_rescan_pair_discovery": 2.81941319,
+              "cuda_gate_worksets_after_postings": 1.98348796,
+              "cuda_gate_worksets_after_rescan": 1.98382938,
+              "cuda_reverse_posting_pair_discovery": 0.0580266677,
+              "host_device_projection_prepare": 1.810835,
+              "host_exact_oracle_and_capacity_reservation": 1377.15627,
+              "host_posting_index_build": 60.762779,
+              "posting_and_root_map_setup_h2d_stream_complete": 65.263768,
+              "prepared_condition_root_map_h2d_only": 0.247840002,
+              "projection_h2d_only": 1.51919997
+            },
+            "confirmation/round-001": {
+              "cuda_complete_postings_bitmap_workset": 5.95251226,
+              "cuda_complete_rescan_bitmap_workset": 9.58668804,
+              "cuda_condition_bitmap_dirty_local_gene": 3.36008549,
+              "cuda_condition_bitmap_dirty_shared_latent": 3.50242138,
+              "cuda_condition_bitmap_full_batch": 3.91406918,
+              "cuda_full_rescan_pair_discovery": 2.83101869,
+              "cuda_gate_worksets_after_postings": 1.98213339,
+              "cuda_gate_worksets_after_rescan": 1.98382938,
+              "cuda_reverse_posting_pair_discovery": 0.0580266677,
+              "host_device_projection_prepare": 1.677758,
+              "host_exact_oracle_and_capacity_reservation": 1328.91281,
+              "host_posting_index_build": 56.042005,
+              "posting_and_root_map_setup_h2d_stream_complete": 67.914431,
+              "prepared_condition_root_map_h2d_only": 0.247327998,
+              "projection_h2d_only": 1.52787197
+            },
+            "exploration/round-000": {
+              "cuda_complete_postings_bitmap_workset": 5.95217085,
+              "cuda_complete_rescan_bitmap_workset": 9.58737087,
+              "cuda_condition_bitmap_dirty_local_gene": 3.35971189,
+              "cuda_condition_bitmap_dirty_shared_latent": 3.50207996,
+              "cuda_condition_bitmap_full_batch": 3.92977071,
+              "cuda_full_rescan_pair_discovery": 2.95457077,
+              "cuda_gate_worksets_after_postings": 1.98246396,
+              "cuda_gate_worksets_after_rescan": 1.98348796,
+              "cuda_reverse_posting_pair_discovery": 0.0614400022,
+              "host_device_projection_prepare": 1.681291,
+              "host_exact_oracle_and_capacity_reservation": 1262.196,
+              "host_posting_index_build": 53.030752,
+              "posting_and_root_map_setup_h2d_stream_complete": 60.658221,
+              "prepared_condition_root_map_h2d_only": 0.245056003,
+              "projection_h2d_only": 1.52694404
+            },
+            "exploration/round-001": {
+              "cuda_complete_postings_bitmap_workset": 5.9531951,
+              "cuda_complete_rescan_bitmap_workset": 9.59044266,
+              "cuda_condition_bitmap_dirty_local_gene": 3.35974407,
+              "cuda_condition_bitmap_dirty_shared_latent": 3.50310397,
+              "cuda_condition_bitmap_full_batch": 3.92840552,
+              "cuda_full_rescan_pair_discovery": 2.94877887,
+              "cuda_gate_worksets_after_postings": 1.98314667,
+              "cuda_gate_worksets_after_rescan": 1.98485327,
+              "cuda_reverse_posting_pair_discovery": 0.0614400022,
+              "host_device_projection_prepare": 1.667865,
+              "host_exact_oracle_and_capacity_reservation": 1267.67506,
+              "host_posting_index_build": 58.577136,
+              "posting_and_root_map_setup_h2d_stream_complete": 68.090556,
+              "prepared_condition_root_map_h2d_only": 0.245056003,
+              "projection_h2d_only": 1.52512002
+            }
+          },
+          "timings_ms": {
+            "cuda_complete_postings_bitmap_workset": {
+              "median": 5.95285368,
+              "n": 84,
+              "p10": 5.95182943,
+              "p90": 5.95490122
+            },
+            "cuda_complete_rescan_bitmap_workset": {
+              "median": 9.588730810000001,
+              "n": 84,
+              "p10": 9.5856638,
+              "p90": 9.591364476999999
+            },
+            "cuda_condition_bitmap_dirty_local_gene": {
+              "median": 3.35974407,
+              "n": 84,
+              "p10": 3.3594026600000007,
+              "p90": 3.3604202250000004
+            },
+            "cuda_condition_bitmap_dirty_shared_latent": {
+              "median": 3.502751945,
+              "n": 84,
+              "p10": 3.50207996,
+              "p90": 3.50446916
+            },
+            "cuda_condition_bitmap_full_batch": {
+              "median": 3.91441059,
+              "n": 84,
+              "p10": 3.913728,
+              "p90": 3.93079472
+            },
+            "cuda_full_rescan_pair_discovery": {
+              "median": 2.94673061,
+              "n": 84,
+              "p10": 2.81940269,
+              "p90": 2.956083251
+            },
+            "cuda_gate_worksets_after_postings": {
+              "median": 1.98280537,
+              "n": 84,
+              "p10": 1.98212278,
+              "p90": 1.98417056
+            },
+            "cuda_gate_worksets_after_rescan": {
+              "median": 1.98382938,
+              "n": 84,
+              "p10": 1.98348796,
+              "p90": 1.98508483
+            },
+            "cuda_reverse_posting_pair_discovery": {
+              "median": 0.061098665,
+              "n": 84,
+              "p10": 0.0576853342,
+              "p90": 0.061678932990000004
+            },
+            "host_device_projection_prepare": {
+              "median": 1.6818545,
+              "n": 84,
+              "p10": 1.6500329999999999,
+              "p90": 1.8317464
+            },
+            "host_exact_oracle_and_capacity_reservation": {
+              "median": 1298.2939350000001,
+              "n": 4,
+              "p10": 1263.839718,
+              "p90": 1362.6832319999999
+            },
+            "host_posting_index_build": {
+              "median": 57.254422500000004,
+              "n": 84,
+              "p10": 52.9683533,
+              "p90": 61.7465652
+            },
+            "posting_and_root_map_setup_h2d_stream_complete": {
+              "median": 65.249261,
+              "n": 84,
+              "p10": 60.3385253,
+              "p90": 70.2675849
+            },
+            "prepared_condition_root_map_h2d_only": {
+              "median": 0.247327998,
+              "n": 84,
+              "p10": 0.244672,
+              "p90": 0.2497311996
+            },
+            "projection_h2d_only": {
+              "median": 1.52520001,
+              "n": 84,
+              "p10": 1.518185606,
+              "p90": 1.544374387
+            }
+          }
+        },
+        "serial_frozen": {
+          "binary_sha256": "a628a22579a576d51f942f91d3c0f279ec7c371fdec36f0b454a956e7a44ae7f",
+          "counts": {
+            "derivative_candidates": 46704,
+            "derivative_only_work_items": 0,
+            "derivative_output_capacity_upper_bound": 46704,
+            "derivative_union_work_items": 11442,
+            "derivative_workset_capacity_upper_bound": 93408,
+            "iterations_per_sample": 3,
+            "postings_records": 524288,
+            "postings_terms": 8192,
+            "primal_candidates": 46704,
+            "primal_output_capacity_upper_bound": 46704,
+            "primal_work_items": 11442,
+            "samples": 21,
+            "warmup": 5
+          },
+          "fixture_manifest_sha256": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32",
+          "host_setup_ms": {
+            "fixture_load_and_validation": 57.789028,
+            "prepared_condition_root_map": 0.775008,
+            "state_and_condition_program_prepare": 28.4206885
+          },
+          "memory_bytes": {
+            "condition_and_query_state": 7708712,
+            "device_allocations_requested": 308109199,
+            "full_rescan_workspace_and_outputs": 270081295,
+            "gate_workset_workspace_and_outputs": 4485152,
+            "posting_projection": 8585224,
+            "posting_workspace_and_outputs": 1520176,
+            "prepared_condition_root_map": 1048576,
+            "structure": 14680064
+          },
+          "reuse_amortization_ms": {
+            "postings_setup_plus_pipeline_reuse_1": 95.2971247,
+            "postings_setup_plus_pipeline_reuse_16": 36.0488694
+          },
+          "rounds": {
+            "confirmation/round-000": {
+              "cuda_complete_postings_bitmap_workset": 32.1010323,
+              "cuda_complete_rescan_bitmap_workset": 9.5856638,
+              "cuda_condition_bitmap_dirty_local_gene": 3.3600533,
+              "cuda_condition_bitmap_dirty_shared_latent": 3.50242138,
+              "cuda_condition_bitmap_full_batch": 3.91441059,
+              "cuda_full_rescan_pair_discovery": 2.81941319,
+              "cuda_gate_worksets_after_postings": 1.98178136,
+              "cuda_gate_worksets_after_rescan": 1.98382938,
+              "cuda_reverse_posting_pair_discovery": 26.202795,
+              "host_device_projection_prepare": 1.639439,
+              "host_exact_oracle_and_capacity_reservation": 1333.43063,
+              "host_posting_index_build": 55.147264,
+              "posting_and_root_map_setup_h2d_stream_complete": 64.65384,
+              "prepared_condition_root_map_h2d_only": 0.250272006,
+              "projection_h2d_only": 1.51916802
+            },
+            "confirmation/round-001": {
+              "cuda_complete_postings_bitmap_workset": 32.0969391,
+              "cuda_complete_rescan_bitmap_workset": 9.58905602,
+              "cuda_condition_bitmap_dirty_local_gene": 3.36042666,
+              "cuda_condition_bitmap_dirty_shared_latent": 3.50207996,
+              "cuda_condition_bitmap_full_batch": 3.91406918,
+              "cuda_full_rescan_pair_discovery": 2.8197546,
+              "cuda_gate_worksets_after_postings": 1.98144007,
+              "cuda_gate_worksets_after_rescan": 1.98314667,
+              "cuda_reverse_posting_pair_discovery": 26.2034779,
+              "host_device_projection_prepare": 1.68937,
+              "host_exact_oracle_and_capacity_reservation": 1300.76279,
+              "host_posting_index_build": 58.200269,
+              "posting_and_root_map_setup_h2d_stream_complete": 61.742438,
+              "prepared_condition_root_map_h2d_only": 0.252959996,
+              "projection_h2d_only": 1.53833604
+            },
+            "exploration/round-000": {
+              "cuda_complete_postings_bitmap_workset": 32.1034241,
+              "cuda_complete_rescan_bitmap_workset": 9.58702946,
+              "cuda_condition_bitmap_dirty_local_gene": 3.35943484,
+              "cuda_condition_bitmap_dirty_shared_latent": 3.50174928,
+              "cuda_condition_bitmap_full_batch": 3.913728,
+              "cuda_full_rescan_pair_discovery": 2.81907201,
+              "cuda_gate_worksets_after_postings": 1.98178136,
+              "cuda_gate_worksets_after_rescan": 1.98382938,
+              "cuda_reverse_posting_pair_discovery": 26.2106457,
+              "host_device_projection_prepare": 1.623019,
+              "host_exact_oracle_and_capacity_reservation": 1333.24021,
+              "host_posting_index_build": 55.14469,
+              "posting_and_root_map_setup_h2d_stream_complete": 61.535543,
+              "prepared_condition_root_map_h2d_only": 0.244608,
+              "projection_h2d_only": 1.51712
+            },
+            "exploration/round-001": {
+              "cuda_complete_postings_bitmap_workset": 32.1095695,
+              "cuda_complete_rescan_bitmap_workset": 9.58941841,
+              "cuda_condition_bitmap_dirty_local_gene": 3.35974407,
+              "cuda_condition_bitmap_dirty_shared_latent": 3.50242138,
+              "cuda_condition_bitmap_full_batch": 3.91441059,
+              "cuda_full_rescan_pair_discovery": 2.82760525,
+              "cuda_gate_worksets_after_postings": 1.98451197,
+              "cuda_gate_worksets_after_rescan": 1.98690128,
+              "cuda_reverse_posting_pair_discovery": 26.2099628,
+              "host_device_projection_prepare": 1.796526,
+              "host_exact_oracle_and_capacity_reservation": 1343.53389,
+              "host_posting_index_build": 58.634419,
+              "posting_and_root_map_setup_h2d_stream_complete": 66.343719,
+              "prepared_condition_root_map_h2d_only": 0.25206399,
+              "projection_h2d_only": 1.52444804
+            }
+          },
+          "timings_ms": {
+            "cuda_complete_postings_bitmap_workset": {
+              "median": 32.1032448,
+              "n": 84,
+              "p10": 32.09181175,
+              "p90": 32.1109352
+            },
+            "cuda_complete_rescan_bitmap_workset": {
+              "median": 9.58839512,
+              "n": 84,
+              "p10": 9.58532238,
+              "p90": 9.592633343
+            },
+            "cuda_condition_bitmap_dirty_local_gene": {
+              "median": 3.35974407,
+              "n": 84,
+              "p10": 3.3594026600000007,
+              "p90": 3.3610070739999998
+            },
+            "cuda_condition_bitmap_dirty_shared_latent": {
+              "median": 3.502256155,
+              "n": 84,
+              "p10": 3.50173855,
+              "p90": 3.502784987
+            },
+            "cuda_condition_bitmap_full_batch": {
+              "median": 3.91406918,
+              "n": 84,
+              "p10": 3.913728,
+              "p90": 3.9154346
+            },
+            "cuda_full_rescan_pair_discovery": {
+              "median": 2.81941855,
+              "n": 84,
+              "p10": 2.81838918,
+              "p90": 2.827844237
+            },
+            "cuda_gate_worksets_after_postings": {
+              "median": 1.98178136,
+              "n": 84,
+              "p10": 1.98144007,
+              "p90": 1.98475088
+            },
+            "cuda_gate_worksets_after_rescan": {
+              "median": 1.98382938,
+              "n": 84,
+              "p10": 1.98314667,
+              "p90": 1.9871317739999999
+            },
+            "cuda_reverse_posting_pair_discovery": {
+              "median": 26.20705605,
+              "n": 84,
+              "p10": 26.199707600000004,
+              "p90": 26.21315556
+            },
+            "host_device_projection_prepare": {
+              "median": 1.672606,
+              "n": 84,
+              "p10": 1.6068086,
+              "p90": 1.8123318
+            },
+            "host_exact_oracle_and_capacity_reservation": {
+              "median": 1333.3354199999999,
+              "n": 4,
+              "p10": 1310.5060159999998,
+              "p90": 1340.502912
+            },
+            "host_posting_index_build": {
+              "median": 57.1420575,
+              "n": 84,
+              "p10": 53.9930657,
+              "p90": 60.5723056
+            },
+            "posting_and_root_map_setup_h2d_stream_complete": {
+              "median": 64.258537,
+              "n": 84,
+              "p10": 61.34731239999999,
+              "p90": 67.0715987
+            },
+            "prepared_condition_root_map_h2d_only": {
+              "median": 0.25028800949999996,
+              "n": 84,
+              "p10": 0.24454080490000002,
+              "p90": 0.25877760060000005
+            },
+            "projection_h2d_only": {
+              "median": 1.524192035,
+              "n": 84,
+              "p10": 1.51686394,
+              "p90": 1.546319978
+            }
+          }
+        }
+      },
+      "case_id": "large_ranked_v3",
+      "fastpath_rescan_over_postings_ratio": 1.6107788508586358,
+      "kda_per_case_decision": {
+        "ci_high": 5.392166819325459,
+        "ci_low": 5.391309185755276,
+        "eligible": true,
+        "score": 5.3917379410946875
+      },
+      "pooled_serial_over_fastpath_ratio": 5.39291683043686
+    },
+    {
+      "candidates": {
+        "ordered_fastpath": {
+          "binary_sha256": "e08c17f5142363ada4d5de298d146570efeff1669c2327d9e7f3bc681502e393",
+          "counts": {
+            "derivative_candidates": 11812,
+            "derivative_only_work_items": 0,
+            "derivative_output_capacity_upper_bound": 11812,
+            "derivative_union_work_items": 3267,
+            "derivative_workset_capacity_upper_bound": 23624,
+            "iterations_per_sample": 3,
+            "postings_records": 2560000,
+            "postings_terms": 40000,
+            "primal_candidates": 11812,
+            "primal_output_capacity_upper_bound": 11812,
+            "primal_work_items": 3267,
+            "samples": 21,
+            "warmup": 5
+          },
+          "fixture_manifest_sha256": "910a4c742b795a2a827cb21e62c510a3bc5039e6878ae75d4826fc0d33234be8",
+          "host_setup_ms": {
+            "fixture_load_and_validation": 282.35177050000004,
+            "prepared_condition_root_map": 4.1183675,
+            "state_and_condition_program_prepare": 137.6191235
+          },
+          "memory_bytes": {
+            "condition_and_query_state": 25408424,
+            "device_allocations_requested": 473895311,
+            "full_rescan_workspace_and_outputs": 328241935,
+            "gate_workset_workspace_and_outputs": 1134368,
+            "posting_projection": 41920008,
+            "posting_workspace_and_outputs": 390576,
+            "prepared_condition_root_map": 5120000,
+            "structure": 71680000
+          },
+          "reuse_amortization_ms": {
+            "postings_setup_plus_pipeline_reuse_1": 395.6490285,
+            "postings_setup_plus_pipeline_reuse_16": 47.6983029
+          },
+          "rounds": {
+            "confirmation/round-000": {
+              "cuda_complete_postings_bitmap_workset": 24.4991989,
+              "cuda_complete_rescan_bitmap_workset": 27.8534832,
+              "cuda_condition_bitmap_dirty_local_gene": 16.2641926,
+              "cuda_condition_bitmap_dirty_shared_latent": 16.7635632,
+              "cuda_condition_bitmap_full_batch": 22.8160858,
+              "cuda_full_rescan_pair_discovery": 3.41947746,
+              "cuda_gate_worksets_after_postings": 1.49128532,
+              "cuda_gate_worksets_after_rescan": 1.48990929,
+              "cuda_reverse_posting_pair_discovery": 0.0505173355,
+              "host_device_projection_prepare": 18.963212,
+              "host_exact_oracle_and_capacity_reservation": 1712.39694,
+              "host_posting_index_build": 338.76644,
+              "posting_and_root_map_setup_h2d_stream_complete": 370.622597,
+              "prepared_condition_root_map_h2d_only": 0.936384022,
+              "projection_h2d_only": 7.24246407
+            },
+            "confirmation/round-001": {
+              "cuda_complete_postings_bitmap_workset": 24.5012493,
+              "cuda_complete_rescan_bitmap_workset": 27.856554,
+              "cuda_condition_bitmap_dirty_local_gene": 16.2645321,
+              "cuda_condition_bitmap_dirty_shared_latent": 16.764246,
+              "cuda_condition_bitmap_full_batch": 22.8150616,
+              "cuda_full_rescan_pair_discovery": 3.41708779,
+              "cuda_gate_worksets_after_postings": 1.49128532,
+              "cuda_gate_worksets_after_rescan": 1.48957872,
+              "cuda_reverse_posting_pair_discovery": 0.0505173355,
+              "host_device_projection_prepare": 20.869789,
+              "host_exact_oracle_and_capacity_reservation": 1850.59372,
+              "host_posting_index_build": 338.345205,
+              "posting_and_root_map_setup_h2d_stream_complete": 381.032312,
+              "prepared_condition_root_map_h2d_only": 0.943647981,
+              "projection_h2d_only": 7.26624012
+            },
+            "exploration/round-000": {
+              "cuda_complete_postings_bitmap_workset": 24.5022717,
+              "cuda_complete_rescan_bitmap_workset": 27.8589458,
+              "cuda_condition_bitmap_dirty_local_gene": 16.2655582,
+              "cuda_condition_bitmap_dirty_shared_latent": 16.7622299,
+              "cuda_condition_bitmap_full_batch": 22.8140392,
+              "cuda_full_rescan_pair_discovery": 3.41674685,
+              "cuda_gate_worksets_after_postings": 1.49162674,
+              "cuda_gate_worksets_after_rescan": 1.49060261,
+              "cuda_reverse_posting_pair_discovery": 0.0505173355,
+              "host_device_projection_prepare": 19.362673,
+              "host_exact_oracle_and_capacity_reservation": 1623.97447,
+              "host_posting_index_build": 310.996627,
+              "posting_and_root_map_setup_h2d_stream_complete": 338.330117,
+              "prepared_condition_root_map_h2d_only": 0.928575993,
+              "projection_h2d_only": 7.15897608
+            },
+            "exploration/round-001": {
+              "cuda_complete_postings_bitmap_workset": 24.5039768,
+              "cuda_complete_rescan_bitmap_workset": 27.8589458,
+              "cuda_condition_bitmap_dirty_local_gene": 16.2669239,
+              "cuda_condition_bitmap_dirty_shared_latent": 16.7662945,
+              "cuda_condition_bitmap_full_batch": 22.8171082,
+              "cuda_full_rescan_pair_discovery": 3.41708779,
+              "cuda_gate_worksets_after_postings": 1.49128532,
+              "cuda_gate_worksets_after_rescan": 1.49026144,
+              "cuda_reverse_posting_pair_discovery": 0.0505173355,
+              "host_device_projection_prepare": 19.178449,
+              "host_exact_oracle_and_capacity_reservation": 1763.0667,
+              "host_posting_index_build": 328.291326,
+              "posting_and_root_map_setup_h2d_stream_complete": 371.672284,
+              "prepared_condition_root_map_h2d_only": 0.939455986,
+              "projection_h2d_only": 7.20643187
+            }
+          },
+          "timings_ms": {
+            "cuda_complete_postings_bitmap_workset": {
+              "median": 24.50193025,
+              "n": 84,
+              "p10": 24.497594819999996,
+              "p90": 24.5073929
+            },
+            "cuda_complete_rescan_bitmap_workset": {
+              "median": 27.85774995,
+              "n": 84,
+              "p10": 27.8525726,
+              "p90": 27.862693200000002
+            },
+            "cuda_condition_bitmap_dirty_local_gene": {
+              "median": 16.265386550000002,
+              "n": 84,
+              "p10": 16.26394675,
+              "p90": 16.26920948
+            },
+            "cuda_condition_bitmap_dirty_shared_latent": {
+              "median": 16.7635632,
+              "n": 84,
+              "p10": 16.7621975,
+              "p90": 16.7673168
+            },
+            "cuda_condition_bitmap_full_batch": {
+              "median": 22.8160858,
+              "n": 84,
+              "p10": 22.8119888,
+              "p90": 22.82123988
+            },
+            "cuda_full_rescan_pair_discovery": {
+              "median": 3.41708779,
+              "n": 84,
+              "p10": 3.41606402,
+              "p90": 3.4217300669999995
+            },
+            "cuda_gate_worksets_after_postings": {
+              "median": 1.49128532,
+              "n": 84,
+              "p10": 1.490698598,
+              "p90": 1.4919680399999997
+            },
+            "cuda_gate_worksets_after_rescan": {
+              "median": 1.49026144,
+              "n": 84,
+              "p10": 1.48923731,
+              "p90": 1.490826582
+            },
+            "cuda_reverse_posting_pair_discovery": {
+              "median": 0.0505173355,
+              "n": 84,
+              "p10": 0.0501759984,
+              "p90": 0.05285333096000001
+            },
+            "host_device_projection_prepare": {
+              "median": 19.3610385,
+              "n": 84,
+              "p10": 18.7567307,
+              "p90": 20.929481300000003
+            },
+            "host_exact_oracle_and_capacity_reservation": {
+              "median": 1737.73182,
+              "n": 4,
+              "p10": 1650.501211,
+              "p90": 1824.335614
+            },
+            "host_posting_index_build": {
+              "median": 330.321045,
+              "n": 84,
+              "p10": 310.07357379999996,
+              "p90": 353.2671888
+            },
+            "posting_and_root_map_setup_h2d_stream_complete": {
+              "median": 370.6433335,
+              "n": 84,
+              "p10": 337.797125,
+              "p90": 403.09371849999997
+            },
+            "prepared_condition_root_map_h2d_only": {
+              "median": 0.93769601,
+              "n": 84,
+              "p10": 0.9284800290000002,
+              "p90": 0.9487519922000001
+            },
+            "projection_h2d_only": {
+              "median": 7.22399998,
+              "n": 84,
+              "p10": 7.155974528,
+              "p90": 7.316390371000001
+            }
+          }
+        },
+        "serial_frozen": {
+          "binary_sha256": "a628a22579a576d51f942f91d3c0f279ec7c371fdec36f0b454a956e7a44ae7f",
+          "counts": {
+            "derivative_candidates": 11812,
+            "derivative_only_work_items": 0,
+            "derivative_output_capacity_upper_bound": 11812,
+            "derivative_union_work_items": 3267,
+            "derivative_workset_capacity_upper_bound": 23624,
+            "iterations_per_sample": 3,
+            "postings_records": 2560000,
+            "postings_terms": 40000,
+            "primal_candidates": 11812,
+            "primal_output_capacity_upper_bound": 11812,
+            "primal_work_items": 3267,
+            "samples": 21,
+            "warmup": 5
+          },
+          "fixture_manifest_sha256": "910a4c742b795a2a827cb21e62c510a3bc5039e6878ae75d4826fc0d33234be8",
+          "host_setup_ms": {
+            "fixture_load_and_validation": 296.90233950000004,
+            "prepared_condition_root_map": 4.0296520000000005,
+            "state_and_condition_program_prepare": 132.9309385
+          },
+          "memory_bytes": {
+            "condition_and_query_state": 25408424,
+            "device_allocations_requested": 473889167,
+            "full_rescan_workspace_and_outputs": 328241935,
+            "gate_workset_workspace_and_outputs": 1134368,
+            "posting_projection": 41920008,
+            "posting_workspace_and_outputs": 384432,
+            "prepared_condition_root_map": 5120000,
+            "structure": 71680000
+          },
+          "reuse_amortization_ms": {
+            "postings_setup_plus_pipeline_reuse_1": 402.6390225,
+            "postings_setup_plus_pipeline_reuse_16": 68.60125930000001
+          },
+          "rounds": {
+            "confirmation/round-000": {
+              "cuda_complete_postings_bitmap_workset": 46.3271217,
+              "cuda_complete_rescan_bitmap_workset": 27.852457,
+              "cuda_condition_bitmap_dirty_local_gene": 16.2648754,
+              "cuda_condition_bitmap_dirty_shared_latent": 16.764246,
+              "cuda_condition_bitmap_full_batch": 22.8096008,
+              "cuda_full_rescan_pair_discovery": 3.41777062,
+              "cuda_gate_worksets_after_postings": 1.49230945,
+              "cuda_gate_worksets_after_rescan": 1.48957872,
+              "cuda_reverse_posting_pair_discovery": 21.809494,
+              "host_device_projection_prepare": 20.208629,
+              "host_exact_oracle_and_capacity_reservation": 1663.95842,
+              "host_posting_index_build": 328.180006,
+              "posting_and_root_map_setup_h2d_stream_complete": 349.710644,
+              "prepared_condition_root_map_h2d_only": 0.940352023,
+              "projection_h2d_only": 7.27292824
+            },
+            "confirmation/round-001": {
+              "cuda_complete_postings_bitmap_workset": 46.3329277,
+              "cuda_complete_rescan_bitmap_workset": 27.8534832,
+              "cuda_condition_bitmap_dirty_local_gene": 16.2641926,
+              "cuda_condition_bitmap_dirty_shared_latent": 16.7632217,
+              "cuda_condition_bitmap_full_batch": 22.8126736,
+              "cuda_full_rescan_pair_discovery": 3.42903447,
+              "cuda_gate_worksets_after_postings": 1.49367464,
+              "cuda_gate_worksets_after_rescan": 1.49026144,
+              "cuda_reverse_posting_pair_discovery": 21.8166599,
+              "host_device_projection_prepare": 18.725965,
+              "host_exact_oracle_and_capacity_reservation": 1788.93924,
+              "host_posting_index_build": 330.39742,
+              "posting_and_root_map_setup_h2d_stream_complete": 356.099378,
+              "prepared_condition_root_map_h2d_only": 0.971391976,
+              "projection_h2d_only": 7.35996819
+            },
+            "exploration/round-000": {
+              "cuda_complete_postings_bitmap_workset": 46.3489685,
+              "cuda_complete_rescan_bitmap_workset": 27.8589458,
+              "cuda_condition_bitmap_dirty_local_gene": 16.2652149,
+              "cuda_condition_bitmap_dirty_shared_latent": 16.7628803,
+              "cuda_condition_bitmap_full_batch": 22.8133335,
+              "cuda_full_rescan_pair_discovery": 3.41742921,
+              "cuda_gate_worksets_after_postings": 1.49401605,
+              "cuda_gate_worksets_after_rescan": 1.49026144,
+              "cuda_reverse_posting_pair_discovery": 21.8245106,
+              "host_device_projection_prepare": 18.379946,
+              "host_exact_oracle_and_capacity_reservation": 1741.99182,
+              "host_posting_index_build": 311.809795,
+              "posting_and_root_map_setup_h2d_stream_complete": 359.626478,
+              "prepared_condition_root_map_h2d_only": 0.929632008,
+              "projection_h2d_only": 7.16976023
+            },
+            "exploration/round-001": {
+              "cuda_complete_postings_bitmap_workset": 46.3312225,
+              "cuda_complete_rescan_bitmap_workset": 27.8589458,
+              "cuda_condition_bitmap_dirty_local_gene": 16.2676048,
+              "cuda_condition_bitmap_dirty_shared_latent": 16.7631893,
+              "cuda_condition_bitmap_full_batch": 22.8130131,
+              "cuda_full_rescan_pair_discovery": 3.41845322,
+              "cuda_gate_worksets_after_postings": 1.49299192,
+              "cuda_gate_worksets_after_rescan": 1.48957872,
+              "cuda_reverse_posting_pair_discovery": 21.8234882,
+              "host_device_projection_prepare": 19.320943,
+              "host_exact_oracle_and_capacity_reservation": 1687.05894,
+              "host_posting_index_build": 320.227948,
+              "posting_and_root_map_setup_h2d_stream_complete": 356.514516,
+              "prepared_condition_root_map_h2d_only": 0.943776011,
+              "projection_h2d_only": 7.2736001
+            }
+          },
+          "timings_ms": {
+            "cuda_complete_postings_bitmap_workset": {
+              "median": 46.3329277,
+              "n": 84,
+              "p10": 46.32528992,
+              "p90": 46.3499947
+            },
+            "cuda_complete_rescan_bitmap_workset": {
+              "median": 27.85554125,
+              "n": 84,
+              "p10": 27.8507519,
+              "p90": 27.86191238
+            },
+            "cuda_condition_bitmap_dirty_local_gene": {
+              "median": 16.2648754,
+              "n": 84,
+              "p10": 16.2638512,
+              "p90": 16.26955088
+            },
+            "cuda_condition_bitmap_dirty_shared_latent": {
+              "median": 16.7632217,
+              "n": 84,
+              "p10": 16.7625389,
+              "p90": 16.766634
+            },
+            "cuda_condition_bitmap_full_batch": {
+              "median": 22.8123302,
+              "n": 84,
+              "p10": 22.809018520000002,
+              "p90": 22.816324780000002
+            },
+            "cuda_full_rescan_pair_discovery": {
+              "median": 3.41811204,
+              "n": 84,
+              "p10": 3.41674685,
+              "p90": 3.429512451
+            },
+            "cuda_gate_worksets_after_postings": {
+              "median": 1.49349332,
+              "n": 84,
+              "p10": 1.49230945,
+              "p90": 1.49435723
+            },
+            "cuda_gate_worksets_after_rescan": {
+              "median": 1.48992002,
+              "n": 84,
+              "p10": 1.48923731,
+              "p90": 1.4906026099999998
+            },
+            "cuda_reverse_posting_pair_discovery": {
+              "median": 21.8207569,
+              "n": 84,
+              "p10": 21.80764904,
+              "p90": 21.82907581
+            },
+            "host_device_projection_prepare": {
+              "median": 18.8098955,
+              "n": 84,
+              "p10": 18.3746491,
+              "p90": 20.3720832
+            },
+            "host_exact_oracle_and_capacity_reservation": {
+              "median": 1714.52538,
+              "n": 4,
+              "p10": 1670.8885759999998,
+              "p90": 1774.8550139999998
+            },
+            "host_posting_index_build": {
+              "median": 326.4010435,
+              "n": 84,
+              "p10": 311.1556808,
+              "p90": 346.22481350000004
+            },
+            "posting_and_root_map_setup_h2d_stream_complete": {
+              "median": 356.2591575,
+              "n": 84,
+              "p10": 342.55648970000004,
+              "p90": 383.31158300000004
+            },
+            "prepared_condition_root_map_h2d_only": {
+              "median": 0.943904012,
+              "n": 84,
+              "p10": 0.9295104203,
+              "p90": 0.9758111895999999
+            },
+            "projection_h2d_only": {
+              "median": 7.2717440149999995,
+              "n": 84,
+              "p10": 7.1554815739999995,
+              "p90": 7.415011265
+            }
+          }
+        }
+      },
+      "case_id": "large_events_v3",
+      "fastpath_rescan_over_postings_ratio": 1.1369614420480199,
+      "kda_per_case_decision": {
+        "ci_high": 1.8910434783421426,
+        "ci_low": 1.8909647572190618,
+        "eligible": true,
+        "score": 1.8910041194276255
+      },
+      "pooled_serial_over_fastpath_ratio": 1.8909909230518684
+    }
+  ],
+  "comparison_group": "cmp-6c366b76253bc5442f59eb0f",
+  "environment": {
+    "architecture": "sm_70",
+    "compute_capability": "7.0",
+    "device": {
+      "index": 0,
+      "name": "Tesla V100-SXM2-16GB",
+      "total_memory_bytes": 16928342016,
+      "uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+    },
+    "device_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+    "driver_version": "580.178.04",
+    "kind": "cuda",
+    "runtime_version": "12.6",
+    "tools": {
+      "cellerator_torch_extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24",
+      "python": "3.13.11",
+      "torch": "2.7.0+cu126",
+      "torch_cuda_runtime": "12.6"
+    }
+  },
+  "kda_decision": {
+    "candidate_id": "ordered_fastpath",
+    "ci_high": 3.9253782391108905,
+    "ci_low": 3.7293900712967707,
+    "eligible": true,
+    "per_case": {
+      "large_events_v3": {
+        "ci_high": 1.8910434783421426,
+        "ci_low": 1.8909647572190618,
+        "eligible": true,
+        "score": 1.8910041194276255
+      },
+      "large_ranked_v3": {
+        "ci_high": 5.392166819325459,
+        "ci_low": 5.391309185755276,
+        "eligible": true,
+        "score": 5.3917379410946875
+      },
+      "small_v3": {
+        "ci_high": 5.931707099080722,
+        "ci_low": 5.0878670834110284,
+        "eligible": true,
+        "score": 5.510302267667221
+      }
+    },
+    "reason": "confirmed",
+    "score": 3.8300010330927283
+  },
+  "kda_run_id": "c43195bc-b656-43b1-a752-e78e9b0e6bd2",
+  "kda_task_contract_sha256": "bf278986e8e94b5f2ac78941e26c48d880bb9c1c7c6f8b239685b763e28b6943",
+  "kda_task_id": "cellerator-native-ordered-postings-v3-sm70-20261028",
+  "promoted_within_kda_workspace": true,
+  "promotion_status": "applied",
+  "schema": "cellerator.native_ordered_postings_kda_aggregate.v1",
+  "worker_summary_status": "worker_complete"
+}

@@ -1,0 +1,59 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/run_geometry_kda.py",
+    "--output-dir",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028_v13_retry1/kda_campaign",
+    "--workspace",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/kda_workspace_v13_retry1",
+    "--task",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/kda_task_v13_retry1.json"
+  ],
+  "environment": {
+    "CELLERATOR_SPARSE_PACKAGE_ROOT": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package",
+    "CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED": "1",
+    "MKL_NUM_THREADS": "2",
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "PATH": "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin:/home/tumlinson/Software/miniconda3/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/compilers/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin:/usr/local/bin:/usr/bin:/bin",
+    "PYTHONPATH": "/home/tumlinson/kda:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "idempotency_key": "cellerator-cegeo-geometry-layout-gpu1-20261028-v13-kda-retry1",
+  "interruption": {
+    "cancellation_supported": true,
+    "restart_safe": false
+  },
+  "max_attempts": 1,
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "parameters": {
+        "consecutive_samples": 3,
+        "interval_seconds": 1,
+        "max_utilization_percent": 0,
+        "timeout_seconds": 60
+      },
+      "schema_version": 1
+    }
+  ],
+  "resources": [
+    {
+      "kind": "gpu",
+      "mode": "exclusive",
+      "quantities": {
+        "memory_bytes": 8589934592
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+      }
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator.sparse_support.geometry_layout",
+    "kda.experiment"
+  ],
+  "timeout_seconds": 3600,
+  "working_directory": "/home/tumlinson/Cellerator"
+}

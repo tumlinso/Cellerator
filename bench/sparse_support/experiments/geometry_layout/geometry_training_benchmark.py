@@ -80,7 +80,7 @@ def image_for(candidate: str, case_name: str):
         "host_compile_ms": float(row["host_compile_ms"]),
         "source_group_members": row["source_group_members"],
         "destination_group_members": row["destination_group_members"],
-        "geometry_edge_ids": row["geometry_edge_ids_in_support_order"],
+        "geometry_edge_ids_in_support_order": row["geometry_edge_ids_in_support_order"],
         "projection_id": int(row["projection_id"]),
         "tile_count": int(row["tile_count"]),
         "residual_region_count": int(row["residual_region_count"]),

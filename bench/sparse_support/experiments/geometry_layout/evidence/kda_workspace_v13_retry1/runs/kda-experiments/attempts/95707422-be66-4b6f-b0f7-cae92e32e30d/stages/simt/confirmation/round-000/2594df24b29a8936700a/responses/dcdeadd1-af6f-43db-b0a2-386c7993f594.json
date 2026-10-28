@@ -1,0 +1,780 @@
+{
+  "candidate": "simt",
+  "case_id": "event_local",
+  "checks": {
+    "derivative_only_probability_grad_nonzero": {
+      "packed": 8,
+      "simt": 8
+    },
+    "inference_output_allclose_atol_5e-3_rtol_5e-3": true,
+    "loss_close_abs_5e-4_rel_5e-3": true,
+    "max_parameter_difference_after_measured_training": 2.9802322387695312e-08,
+    "remaining_read_tickets": 0,
+    "training_parameter_gradient_allclose_atol_6e-3_rtol_6e-3": true
+  },
+  "diagnostic_paired_ratios": {
+    "raw_pairs": [
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 5.804031848907471,
+          "peak_allocated_delta_bytes": 495616,
+          "round": 0,
+          "synchronized_wall_ms_per_step": 5.81896450057684
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9853563980819158,
+        "paired_wall_ratio_simt_over_packed": 0.9853272861345759,
+        "round": 0,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.7190399169921875,
+          "peak_allocated_delta_bytes": 495616,
+          "round": 0,
+          "synchronized_wall_ms_per_step": 5.733584499466815
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 5.790207862854004,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 1,
+          "synchronized_wall_ms_per_step": 5.80542349962343
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9932797197648742,
+        "paired_wall_ratio_simt_over_packed": 0.9934840240106745,
+        "round": 1,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.751296043395996,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 1,
+          "synchronized_wall_ms_per_step": 5.7675954994920176
+        }
+      },
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.0293121337890625,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 2,
+          "synchronized_wall_ms_per_step": 6.045769499905873
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9627207620394952,
+        "paired_wall_ratio_simt_over_packed": 0.9627343549866116,
+        "round": 2,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.804543972015381,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 2,
+          "synchronized_wall_ms_per_step": 5.82046999988961
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.038527965545654,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 3,
+          "synchronized_wall_ms_per_step": 6.05515350071073
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9674410605232542,
+        "paired_wall_ratio_simt_over_packed": 0.9674706015603636,
+        "round": 3,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.841919898986816,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 3,
+          "synchronized_wall_ms_per_step": 5.858182999872952
+        }
+      },
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.221312046051025,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 4,
+          "synchronized_wall_ms_per_step": 6.238190499061602
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9428853463050653,
+        "paired_wall_ratio_simt_over_packed": 0.9417678896092133,
+        "round": 4,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.865983963012695,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 4,
+          "synchronized_wall_ms_per_step": 5.8749275012814905
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 5.638144016265869,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 5,
+          "synchronized_wall_ms_per_step": 5.6552655005361885
+        },
+        "paired_cuda_ratio_simt_over_packed": 1.0303305679232446,
+        "paired_wall_ratio_simt_over_packed": 1.0302108713986402,
+        "round": 5,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.809152126312256,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 5,
+          "synchronized_wall_ms_per_step": 5.826115999298054
+        }
+      },
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 5.947904109954834,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 6,
+          "synchronized_wall_ms_per_step": 5.964120500721037
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9740896396157696,
+        "paired_wall_ratio_simt_over_packed": 0.9741875604060635,
+        "round": 6,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.793791770935059,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 6,
+          "synchronized_wall_ms_per_step": 5.810172000565217
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 5.983232021331787,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 7,
+          "synchronized_wall_ms_per_step": 6.000527499054442
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.962005848539981,
+        "paired_wall_ratio_simt_over_packed": 0.9620655019317259,
+        "round": 7,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.755904197692871,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 7,
+          "synchronized_wall_ms_per_step": 5.772900500232936
+        }
+      },
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 5.9699201583862305,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 8,
+          "synchronized_wall_ms_per_step": 5.9865769999305485
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9423670289452812,
+        "paired_wall_ratio_simt_over_packed": 0.9440590174530954,
+        "round": 8,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.625855922698975,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 8,
+          "synchronized_wall_ms_per_step": 5.651682000461733
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 5.9161601066589355,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 9,
+          "synchronized_wall_ms_per_step": 5.932966500040493
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9737775676111564,
+        "paired_wall_ratio_simt_over_packed": 0.9740157812714265,
+        "round": 9,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.761023998260498,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 9,
+          "synchronized_wall_ms_per_step": 5.7788030007941416
+        }
+      },
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 5.519872188568115,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 10,
+          "synchronized_wall_ms_per_step": 5.537248000109685
+        },
+        "paired_cuda_ratio_simt_over_packed": 1.0003710259086658,
+        "paired_wall_ratio_simt_over_packed": 1.000213553654337,
+        "round": 10,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 5.521920204162598,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 10,
+          "synchronized_wall_ms_per_step": 5.538430499655078
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 5.865983963012695,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 11,
+          "synchronized_wall_ms_per_step": 5.882776000362355
+        },
+        "paired_cuda_ratio_simt_over_packed": 1.040499241578103,
+        "paired_wall_ratio_simt_over_packed": 1.0405743818208801,
+        "round": 11,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 6.103551864624023,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 11,
+          "synchronized_wall_ms_per_step": 6.121465999967768
+        }
+      },
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.206975936889648,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 12,
+          "synchronized_wall_ms_per_step": 6.230674500329769
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9739338764806439,
+        "paired_wall_ratio_simt_over_packed": 0.972961434399087,
+        "round": 12,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 6.045184135437012,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 12,
+          "synchronized_wall_ms_per_step": 6.062205999114667
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.203392028808594,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 13,
+          "synchronized_wall_ms_per_step": 6.219749999218038
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9706999278063587,
+        "paired_wall_ratio_simt_over_packed": 0.9708860485916115,
+        "round": 13,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 6.021632194519043,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 13,
+          "synchronized_wall_ms_per_step": 6.03866849996848
+        }
+      },
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.198272228240967,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 14,
+          "synchronized_wall_ms_per_step": 6.2160124998627
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9721625646342535,
+        "paired_wall_ratio_simt_over_packed": 0.9722510212935572,
+        "round": 14,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 6.025728225708008,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 14,
+          "synchronized_wall_ms_per_step": 6.043524501365027
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.209023952484131,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 15,
+          "synchronized_wall_ms_per_step": 6.232560499483952
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9725406137513346,
+        "paired_wall_ratio_simt_over_packed": 0.9715463653329908,
+        "round": 15,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 6.038527965545654,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 15,
+          "synchronized_wall_ms_per_step": 6.055221499991603
+        }
+      },
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.177792072296143,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 16,
+          "synchronized_wall_ms_per_step": 6.194644000061089
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9743079704493033,
+        "paired_wall_ratio_simt_over_packed": 0.9744885259444407,
+        "round": 16,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 6.01907205581665,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 16,
+          "synchronized_wall_ms_per_step": 6.036609500370105
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.425600051879883,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 17,
+          "synchronized_wall_ms_per_step": 6.444824501159019
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9761752845542935,
+        "paired_wall_ratio_simt_over_packed": 0.9759673049232495,
+        "round": 17,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 6.272511959075928,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 17,
+          "synchronized_wall_ms_per_step": 6.289937999099493
+        }
+      },
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.469120025634766,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 18,
+          "synchronized_wall_ms_per_step": 6.486860500444891
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9686584709297629,
+        "paired_wall_ratio_simt_over_packed": 0.968820818678734,
+        "round": 18,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 6.2663679122924805,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 18,
+          "synchronized_wall_ms_per_step": 6.284605500695761
+        }
+      },
+      {
+        "order": [
+          "packed",
+          "simt"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.445568084716797,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 19,
+          "synchronized_wall_ms_per_step": 6.4632379999238765
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9758518986285464,
+        "paired_wall_ratio_simt_over_packed": 0.9759611204299482,
+        "round": 19,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 6.289919853210449,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 19,
+          "synchronized_wall_ms_per_step": 6.307869000011124
+        }
+      },
+      {
+        "order": [
+          "simt",
+          "packed"
+        ],
+        "packed": {
+          "candidate": "packed",
+          "cuda_event_ms_per_step": 6.4389119148254395,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 20,
+          "synchronized_wall_ms_per_step": 6.457451001551817
+        },
+        "paired_cuda_ratio_simt_over_packed": 0.9864026606085278,
+        "paired_wall_ratio_simt_over_packed": 0.9866407038397794,
+        "round": 20,
+        "simt": {
+          "candidate": "simt",
+          "cuda_event_ms_per_step": 6.351359844207764,
+          "peak_allocated_delta_bytes": 352768,
+          "round": 20,
+          "synchronized_wall_ms_per_step": 6.371184001181973
+        }
+      }
+    ],
+    "simt_over_packed_cuda_ratio_bootstrap_95pct": [
+      0.9706999278063587,
+      0.9761752845542935
+    ],
+    "simt_over_packed_cuda_ratio_median": 0.9739338764806439,
+    "simt_over_packed_wall_ratio_bootstrap_95pct": [
+      0.9708860485916115,
+      0.9759673049232495
+    ],
+    "simt_over_packed_wall_ratio_median": 0.9740157812714265
+  },
+  "driver_output": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/kda_workspace_v13_retry1/runs/kda-experiments/attempts/95707422-be66-4b6f-b0f7-cae92e32e30d/stages/simt/confirmation/round-000/2594df24b29a8936700a/requests/dcdeadd1-af6f-43db-b0a2-386c7993f594-event_local-simt-driver.json",
+  "geometry_image": {
+    "host_compile_ms": 3.209353999409359,
+    "image_path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/event_local/canonical.cegeo",
+    "image_sha256": "69fae72f3bab5b05d1657f5646ac84485f369e00e1b6101d7242341ed9590746",
+    "mma_edge_count": 64,
+    "residual_edge_count": 0,
+    "residual_region_count": 0,
+    "tile_count": 1
+  },
+  "metric": "training_step_wall_ms",
+  "phase_medians": {
+    "global_edge_value_refresh_fwd_plus_ones_vjp": {
+      "packed": 1.484494499891298,
+      "simt": 1.476310000725789
+    },
+    "inference": {
+      "packed": 1.1026079992006999,
+      "simt": 1.0201924997090828
+    },
+    "training": {
+      "packed": 6.05515350071073,
+      "simt": 5.8749275012814905
+    }
+  },
+  "repetitions": 21,
+  "request_id": "dcdeadd1-af6f-43db-b0a2-386c7993f594",
+  "samples": [
+    5.733584499466815,
+    5.7675954994920176,
+    5.82046999988961,
+    5.858182999872952,
+    5.8749275012814905,
+    5.826115999298054,
+    5.810172000565217,
+    5.772900500232936,
+    5.651682000461733,
+    5.7788030007941416,
+    5.538430499655078,
+    6.121465999967768,
+    6.062205999114667,
+    6.03866849996848,
+    6.043524501365027,
+    6.055221499991603,
+    6.036609500370105,
+    6.289937999099493,
+    6.284605500695761,
+    6.307869000011124,
+    6.371184001181973
+  ],
+  "schema_version": 1,
+  "setup": {
+    "balanced_module_setup_order": [
+      [
+        "simt",
+        "packed"
+      ],
+      [
+        "packed",
+        "simt"
+      ],
+      [
+        "simt",
+        "packed"
+      ],
+      [
+        "packed",
+        "simt"
+      ],
+      [
+        "simt",
+        "packed"
+      ]
+    ],
+    "balanced_module_setup_pair_count": 5,
+    "break_even": {
+      "inference_cuda_event": {
+        "break_even_steps": null,
+        "median_step_saving_ms": -0.08294403553009033,
+        "packed_extra_cold_setup_ms": 3.2982449993141927,
+        "positive_extra_setup_cost": true,
+        "positive_step_saving_supported_by_paired_ci": false
+      },
+      "inference_synchronized_wall": {
+        "break_even_steps": null,
+        "median_step_saving_ms": -0.08241549949161708,
+        "packed_extra_cold_setup_ms": 3.2982449993141927,
+        "positive_extra_setup_cost": true,
+        "positive_step_saving_supported_by_paired_ci": false
+      },
+      "training_cuda_event": {
+        "break_even_steps": null,
+        "median_step_saving_ms": -0.17254400253295898,
+        "packed_extra_cold_setup_ms": 3.2982449993141927,
+        "positive_extra_setup_cost": true,
+        "positive_step_saving_supported_by_paired_ci": false
+      },
+      "training_synchronized_wall": {
+        "break_even_steps": null,
+        "median_step_saving_ms": -0.1802259994292399,
+        "packed_extra_cold_setup_ms": 3.2982449993141927,
+        "positive_extra_setup_cost": true,
+        "positive_step_saving_supported_by_paired_ci": false
+      }
+    },
+    "common_cuda_torch_initialization_ms": 236.25343499952578,
+    "fixture_owner_prepare_ms": 91.94583000135026,
+    "hard_gate_freeze_and_primal_workset_ms": 157.06694400068955,
+    "module_setup_priming_order": [
+      [
+        "simt",
+        "packed"
+      ],
+      [
+        "packed",
+        "simt"
+      ]
+    ],
+    "packed": {
+      "allocated_delta_bytes": {
+        "count": 5,
+        "mean": 66560.0,
+        "median": 66560.0,
+        "p10": 66560.0,
+        "p90": 66560.0,
+        "stdev": 0.0
+      },
+      "raw_samples": [
+        {
+          "allocated_delta_bytes": 66560,
+          "candidate": "packed",
+          "order": [
+            "simt",
+            "packed"
+          ],
+          "pair": 0,
+          "wall_ms": 41.706428997713374
+        },
+        {
+          "allocated_delta_bytes": 66560,
+          "candidate": "packed",
+          "order": [
+            "packed",
+            "simt"
+          ],
+          "pair": 1,
+          "wall_ms": 41.406960001040716
+        },
+        {
+          "allocated_delta_bytes": 66560,
+          "candidate": "packed",
+          "order": [
+            "simt",
+            "packed"
+          ],
+          "pair": 2,
+          "wall_ms": 41.884891001245705
+        },
+        {
+          "allocated_delta_bytes": 66560,
+          "candidate": "packed",
+          "order": [
+            "packed",
+            "simt"
+          ],
+          "pair": 3,
+          "wall_ms": 41.653091000625864
+        },
+        {
+          "allocated_delta_bytes": 66560,
+          "candidate": "packed",
+          "order": [
+            "simt",
+            "packed"
+          ],
+          "pair": 4,
+          "wall_ms": 41.15626899874769
+        }
+      ],
+      "wall_ms": {
+        "count": 5,
+        "mean": 41.56152799987467,
+        "median": 41.653091000625864,
+        "p10": 41.15626899874769,
+        "p90": 41.884891001245705,
+        "stdev": 0.2837559854852709
+      }
+    },
+    "packed_extra_cold_setup_ms_including_geometry_compile": 3.2982449993141927,
+    "packed_extra_module_setup_ms_median": 0.08889099990483373,
+    "shared_geometry_compile_host_ms": 3.209353999409359,
+    "shared_workset_and_input_prep_ms": 99.73379700022633,
+    "simt": {
+      "allocated_delta_bytes": {
+        "count": 5,
+        "mean": 1536.0,
+        "median": 1536.0,
+        "p10": 1536.0,
+        "p90": 1536.0,
+        "stdev": 0.0
+      },
+      "raw_samples": [
+        {
+          "allocated_delta_bytes": 1536,
+          "candidate": "simt",
+          "order": [
+            "simt",
+            "packed"
+          ],
+          "pair": 0,
+          "wall_ms": 41.68325399950845
+        },
+        {
+          "allocated_delta_bytes": 1536,
+          "candidate": "simt",
+          "order": [
+            "packed",
+            "simt"
+          ],
+          "pair": 1,
+          "wall_ms": 41.34262899970054
+        },
+        {
+          "allocated_delta_bytes": 1536,
+          "candidate": "simt",
+          "order": [
+            "simt",
+            "packed"
+          ],
+          "pair": 2,
+          "wall_ms": 41.56420000072103
+        },
+        {
+          "allocated_delta_bytes": 1536,
+          "candidate": "simt",
+          "order": [
+            "packed",
+            "simt"
+          ],
+          "pair": 3,
+          "wall_ms": 43.43601800064789
+        },
+        {
+          "allocated_delta_bytes": 1536,
+          "candidate": "simt",
+          "order": [
+            "simt",
+            "packed"
+          ],
+          "pair": 4,
+          "wall_ms": 41.24766200038721
+        }
+      ],
+      "wall_ms": {
+        "count": 5,
+        "mean": 41.854752600193024,
+        "median": 41.56420000072103,
+        "p10": 41.24766200038721,
+        "p90": 43.43601800064789,
+        "stdev": 0.9007028406092606
+      }
+    }
+  },
+  "status": "ok",
+  "timing_scope": "zero_grad+gate_score_and_ste+all_edge_values+relation_forward+loss+backward_including_derivative_only_gate_gradient+guarded_adam; synchronized wall",
+  "unit": "ms",
+  "warmup": 3,
+  "workload_sha256": "efc060531d3a669f8afebf438be4c92fe174362a04ceb68c5bb97f05fd8d0107"
+}

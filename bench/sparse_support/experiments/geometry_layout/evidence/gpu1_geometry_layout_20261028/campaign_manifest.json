@@ -1,0 +1,45 @@
+{
+  "compute_sanitizer": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+  "compute_sanitizer_sha256": "979adf037f4e3434a976b7f0912b0a05ce3b062e31b2a73397a1bf1cd5f57547",
+  "device_scheduler_admitted": true,
+  "memcheck": [
+    {
+      "candidate": "hybrid8",
+      "command": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "1",
+        "--target-processes",
+        "all",
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/geometry_training_benchmark.py",
+        "--case",
+        "large_ranked",
+        "--candidate",
+        "hybrid8",
+        "--output",
+        "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028/memcheck/large-ranked-hybrid8.json",
+        "--warmup",
+        "1",
+        "--rounds",
+        "1",
+        "--iterations",
+        "1",
+        "--setup-pairs",
+        "1",
+        "--seed",
+        "20261027"
+      ],
+      "correctness_passed": false,
+      "exit_code": 1,
+      "log": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028/memcheck/large-ranked-hybrid8.log",
+      "log_sha256": "888808e10c680a06cbcb5740ff61d2ec6f7faae58fad00e3becf384041b9ec5c",
+      "result": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028/memcheck/large-ranked-hybrid8.json"
+    }
+  ],
+  "package_identity_sha256": "99da528db6f4ba14bec983b6dfe31f12a065dbdc8b39c0dfb224ed0e969fca07",
+  "package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v12-validator/package",
+  "schema_version": 1
+}

@@ -1,0 +1,56 @@
+{
+  "build_errors": {},
+  "comparison_group": "cmp-9ca237d7fd818705815a4339",
+  "decision": {
+    "candidate_id": "packed",
+    "ci_high": 0.9481887829410334,
+    "ci_low": 0.9013126729559737,
+    "eligible": false,
+    "per_case": {
+      "event_local": {
+        "ci_high": 1.102667314416229,
+        "ci_low": 0.9150320227968394,
+        "eligible": true,
+        "score": 1.004121668613309
+      },
+      "large_events": {
+        "ci_high": 0.9539349592344806,
+        "ci_low": 0.9336776394396166,
+        "eligible": true,
+        "score": 0.9437160042919946
+      },
+      "large_ranked": {
+        "ci_high": 0.841494920781603,
+        "ci_low": 0.8414261780831257,
+        "eligible": true,
+        "score": 0.8414605393062244
+      },
+      "ranked_batch": {
+        "ci_high": 0.9180210499043371,
+        "ci_low": 0.9131970254556485,
+        "eligible": true,
+        "score": 0.9156425606960875
+      }
+    },
+    "reason": "minimum_improvement_not_supported",
+    "score": 0.9243721370049703
+  },
+  "engine_status": "complete",
+  "promoted": false,
+  "promotion_status": "initialized",
+  "rankings": [
+    {
+      "candidate_id": "simt",
+      "score": 1.0
+    },
+    {
+      "candidate_id": "packed",
+      "score": 0.9509480816940321
+    }
+  ],
+  "request_id": "913de5f3-f5b1-49f1-a547-656d0e90ab7d",
+  "run_id": "c70c526c-3452-40fd-9fca-a4c6066d7f68",
+  "schema_version": 1,
+  "status": "ok",
+  "summary_path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/torch_v13_complete_cost_20261028/workspace/runs/kda-experiments/attempts/c70c526c-3452-40fd-9fca-a4c6066d7f68/summary.json"
+}

@@ -1,0 +1,30 @@
+COMMAND: ["/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer", "--tool", "memcheck", "--error-exitcode", "1", "--target-processes", "all", "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python", "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/geometry_training_benchmark.py", "--case", "large_ranked", "--candidate", "hybrid8", "--output", "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/gpu1_geometry_layout_20261028/memcheck/large-ranked-hybrid8.json", "--warmup", "1", "--rounds", "1", "--iterations", "1", "--setup-pairs", "1", "--seed", "20261027"]
+
+STDOUT:
+========= COMPUTE-SANITIZER
+========= Target application returned an error
+========= ERROR SUMMARY: 0 errors
+
+STDERR:
+Traceback (most recent call last):
+  File "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/geometry_training_benchmark.py", line 184, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/geometry_training_benchmark.py", line 150, in main
+    result = bench.benchmark_case(
+        torch, package, support, case_name, args.seed, benchmark_args, compiled)
+  File "/home/tumlinson/Cellerator/bench/sparse_support/packed_training_benchmark.py", line 714, in benchmark_case
+    module, _ = prepare_module(
+                ~~~~~~~~~~~~~~^
+        torch, package.prepare_sparse_slice, module_type, support,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        device=torch.cuda.current_device(), seed=seed, packed=(label == "packed"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        compiled=compiled, cells=cells, entities=entities,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        rank_count=rank_count, primal_capacity=derivative.capacity)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tumlinson/Cellerator/bench/sparse_support/packed_training_benchmark.py", line 549, in prepare_module
+    "geometry_edge_ids": compiled["geometry_edge_ids_in_support_order"],
+                         ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'geometry_edge_ids_in_support_order'

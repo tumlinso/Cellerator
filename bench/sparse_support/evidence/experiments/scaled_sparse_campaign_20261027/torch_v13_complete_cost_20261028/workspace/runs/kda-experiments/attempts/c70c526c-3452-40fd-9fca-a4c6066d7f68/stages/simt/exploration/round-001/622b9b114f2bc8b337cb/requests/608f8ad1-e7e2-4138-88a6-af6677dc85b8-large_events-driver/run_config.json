@@ -1,0 +1,71 @@
+{
+  "backend_control": "same frozen Torch binary; handle projection toggles SIMT vs CE-GEO N64",
+  "benchmark_id": "cellerator-packed-vs-simt-training",
+  "cases": [
+    "large_events"
+  ],
+  "dataset_tier": "small_and_scaled",
+  "device": {
+    "compute_capability": [
+      7,
+      0
+    ],
+    "index": 0,
+    "name": "Tesla V100-SXM2-16GB",
+    "total_memory_bytes": 16928342016
+  },
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "python": "3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]",
+  "scaled_fixture_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+  "scheduler": {
+    "admitted_marker": "1",
+    "attempt_id": null,
+    "job_id": null
+  },
+  "source_identities": {
+    "benchmark_driver": "a1d29ecabb79591556ee1b0bc7dc1381d52e11ab5561357733aa8dd60c0d547e",
+    "frozen_torch_identity.json": "4d3b6f0e1a63ea20785975597849bfad0b0f081221c47d9b858d6581b487afd4",
+    "package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24",
+    "package/cellerator/torch/mechanism.py": "51b79de02496f72997e90d3ee8e00911afc8b81aa21483c0fe8b157e87dbd7b3",
+    "package/cellerator/torch/sparse_support.py": "b81d5dcd555e850cd76e68f35a574f420db3e2c6516c7c9cc3e38fdcb1f9026f",
+    "scaled_fixture_generator": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+    "tests/test_cuda_training.py": "d84db2796940a370c9094f576e817e665938319c348682d40dcb1284c2d8df7a"
+  },
+  "support": {
+    "compiled_geometry_by_case": {
+      "large_events": {
+        "host_compile_ms": 2064.861340997595,
+        "image_sha256": "d7a8b441e814bb999bdf4137bf9a3230cb3d4620f1435ab733feadc844147a1c",
+        "projection_id": 91,
+        "residual_region_count": 0,
+        "structure_epoch": 1,
+        "structure_identity": 14398682398869924853,
+        "tile_count": 579229,
+        "value_map_count": 1280000
+      }
+    },
+    "edge_count_by_case": {
+      "large_events": 1280000
+    },
+    "topology_sha256_by_case": {
+      "large_events": "4d34d686656c0aa4bb1d89368993d9d31476ca568cd8b5d87f8231783efa9a38"
+    }
+  },
+  "timing": {
+    "balanced_setup_pairs": 5,
+    "common_cuda_torch_initialization_ms": 213.14484100003028,
+    "cuda_event": "events enclose each candidate sample; synchronized before/after",
+    "iterations_per_sample": 3,
+    "optimizer": "torch.optim.Adam through guarded_step, lr=1e-3, foreach/fused=false",
+    "paired_order": "alternates SIMT-first and packed-first",
+    "paired_rounds": 21,
+    "setup_order": "primes both backends, then alternates setup order across paired samples",
+    "wall": "perf_counter around submitted sample through final CUDA sync",
+    "warmup_steps_per_candidate": 5
+  },
+  "torch_cuda_version": "12.6",
+  "torch_package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package",
+  "torch_package_source": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py",
+  "torch_version": "2.7.0+cu126",
+  "workload_family": "sparse_support_relation_training"
+}

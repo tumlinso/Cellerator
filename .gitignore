@@ -183,5 +183,26 @@ cuda_profile*.log
 /bench/sparse_support/**/validator_scaling_probe
 /bench/sparse_support/**/scaled_condition_probe
 /bench/sparse_support/**/trusted-inputs/frozen_torch_extension
+/bench/sparse_support/**/trusted-inputs/image_manifest
 /docs/sparse_support_foundation/evaluation.html
 /docs/sparse_support_foundation/evaluation_files/
+
+# Opaque KDA copies of generated binary inputs remain local with pinned hashes.
+/bench/sparse_support/**/trusted-inputs/canonical_event_image
+/bench/sparse_support/**/trusted-inputs/canonical_ranked_image
+/bench/sparse_support/**/trusted-inputs/canonical_small_image
+/bench/sparse_support/**/trusted-inputs/compute_sanitizer
+/bench/sparse_support/**/trusted-inputs/fastpath_binary
+/bench/sparse_support/**/trusted-inputs/frozen_v12_torch_extension
+/bench/sparse_support/**/trusted-inputs/frozen_v13_torch_extension
+/bench/sparse_support/**/trusted-inputs/hybrid16_event_image
+/bench/sparse_support/**/trusted-inputs/hybrid16_ranked_image
+/bench/sparse_support/**/trusted-inputs/hybrid16_small_image
+/bench/sparse_support/**/trusted-inputs/hybrid8_event_image
+/bench/sparse_support/**/trusted-inputs/hybrid8_ranked_image
+/bench/sparse_support/**/trusted-inputs/hybrid8_small_image
+/bench/sparse_support/**/trusted-inputs/reordered_event_image
+/bench/sparse_support/**/trusted-inputs/reordered_ranked_image
+/bench/sparse_support/**/trusted-inputs/reordered_small_image
+/bench/sparse_support/**/trusted-inputs/serial_baseline_binary
+/bench/sparse_support/**/trusted-inputs/v13_probe_extension

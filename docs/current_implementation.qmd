@@ -18,6 +18,15 @@ passes 83 tests and two subtests plus the native CUDA workset test. Its native
 extension is unchanged from v13. The separate synthetic learning and timing
 reports establish tested regimes without removing alternative mechanisms.
 
+The [large native index measurements](../bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/REPORT.md)
+compare complete discovery/workset regions with serial and rescan controls.
+Separate [packed training](../bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/torch_v13_complete_cost_20261028/REPORT.md)
+and [layout measurements](../bench/sparse_support/experiments/geometry_layout/V13_RESULTS.md)
+include setup and memory, preserve all candidates, and apply only to their
+synthetic workloads. The training harness's memory preflight was subsequently
+corrected and host-tested; retained frozen timing records identify the earlier
+estimate and measured peaks separately.
+
 ## Large-workload preparation — 2026-10-28
 
 Large sparse workloads exposed a quadratic duplicate-identity check in the

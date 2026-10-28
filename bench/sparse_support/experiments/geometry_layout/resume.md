@@ -87,7 +87,7 @@ prototype. The graph reorder gains are modest on the large ranked case and
 reverse direction on the event-local case; hybrid thresholding is the main
 unmeasured candidate.
 
-## Staged GPU comparison, not yet run
+## Staged GPU comparison at the restart checkpoint
 
 `geometry_training_benchmark.py`, `geometry_kda_adapter.py`, `run_geometry_kda.py`,
 `kda_task.json`, and five candidate config/manifests are staged. They are not
@@ -112,5 +112,35 @@ Remaining authorized work after the restart:
    repay preparation and residual costs, retain this as negative/limited
    experimental evidence and do not add a production packer policy.
 
-No KDA candidate registrations, scheduler job specs, job IDs, or results exist
-for this geometry comparison at this checkpoint.
+At this checkpoint no KDA candidate registrations, scheduler job specs, job
+IDs, or results existed for this geometry comparison. The postrestart v12
+attempt and its current boundary are recorded below.
+
+## 2026-10-28 postrestart v12 partial result
+
+The five candidate selectors were registered and prepared in the isolated KDA
+workspace using the immutable Torch v12 validator package. Their images and
+fixture hashes matched the prepared manifest. A task-relative adapter path
+error in the first CPU prepare was corrected; the failed prepare evidence is
+preserved in that workspace.
+
+The first GPU attempt stopped at a local logical-ID key mismatch before
+candidate validation. The key was fixed and checked on CPU for all four packed
+image mappings. The corrected GPU attempt passed hybrid8 large-ranked
+forward/VJP checks and Compute Sanitizer memcheck with zero sanitizer errors.
+The root then identified a quadratic v12 host setup path and directed
+cancellation before hybrid16 or the candidate timing matrix began.
+
+See the [source-bound partial v12 report](evidence/gpu1_geometry_layout_20261028_r2/PARTIAL_V12.md)
+for exact image, package, fixture, scheduler job, cleanup, and guidance hashes.
+The canceled job's scheduler receipt has `cleanup_verified: true`; a post-stop
+inventory found no process and all GPU1 memory free. No v12 geometry winner,
+regression, complete-cost result, or break-even is established. The prepared
+KDA workspace remains bound to v12; a new package identity requires a fresh
+comparison workspace.
+
+## 2026-10-28 v13 GPU geometry-layout result
+
+The corrected v13 KDA campaign completed on GPU1. All five candidates passed exact forward/VJP/loss validation on small, large-ranked and event-local fixtures. Hybrid8 and hybrid16 passed large-ranked memcheck with zero errors. The two-round exploratory ranking briefly favored hybrid16, but its two-round confirmation failed the improvement gate; SIMT remained preferred. Primary same-process paired training timings showed all packed layouts slower than SIMT on all three fixtures, with a larger penalty on the large-ranked case. Hybrid thresholds reduced large-image setup allocation and image size, but neither showed positive step savings or a finite break-even. This synthetic result does not remove any mechanism family; retain the candidate paths for real-input evaluation.
+
+See [V13_RESULTS.md](V13_RESULTS.md) for measurements, variance, setup costs, memory, image structure, exact job identities, and artifact hashes. Raw evidence is under `evidence/gpu1_geometry_layout_20261028_v13/` and `evidence/gpu1_geometry_layout_20261028_v13_retry1/`; the v12 partial report above remains intact.

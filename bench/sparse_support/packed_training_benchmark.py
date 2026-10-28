@@ -599,6 +599,41 @@ def measure_module_setup_pairs(torch, package, module_type, support, compiled,
     return summaries
 
 
+def estimate_scaled_case_memory_bytes(
+    *,
+    candidate_items: int,
+    candidate_workset_bytes: int,
+    cells: int,
+    entities: int,
+    support_edges: int,
+    width: int,
+    tile_count: int,
+) -> dict[str, int]:
+    """Estimate the explicitly modeled workspace for a scaled sparse case.
+
+    Keep this calculation independent of the nested report metadata. In
+    particular, include the full logical-edge value refresh even when the
+    event-window candidate union is small.
+    """
+    if min(candidate_items, candidate_workset_bytes, cells, entities,
+           support_edges, width, tile_count) < 0:
+        raise ValueError("memory estimate inputs must be nonnegative")
+    candidate_features = candidate_items * width * 4 * 8
+    dense_context = cells * entities * width * 4 * 6
+    all_edge_values = support_edges * width * 4 * 3
+    numerical = candidate_features + dense_context + all_edge_values + candidate_workset_bytes
+    active_tiles = min(candidate_items, cells * tile_count) * 256 * 2
+    return {
+        "candidate_feature_workspace_bytes": candidate_features,
+        "dense_context_and_output_bytes": dense_context,
+        "global_edge_value_refresh_bytes": all_edge_values,
+        "candidate_workset_bytes": candidate_workset_bytes,
+        "estimated_numerical_workspace_bytes_before_ce_geo": numerical,
+        "estimated_packed_active_tile_workspace_bytes": active_tiles,
+        "estimated_peak_bytes_before_admission": numerical + active_tiles,
+    }
+
+
 def benchmark_case(torch, package, support, case_name, seed, args, compiled):
     from cellerator.torch.mechanism import guarded_step
     from cellerator.torch.sparse_support import (
@@ -639,22 +674,28 @@ def benchmark_case(torch, package, support, case_name, seed, args, compiled):
             primal.gate_value_indices, derivative.cell_offsets,
             derivative.edge_ordinals, derivative.logical_edge_ids,
             derivative.gate_value_indices)))
-    shape_meta["estimated_numerical_workspace_bytes_before_ce_geo"] = int(
-        shape_meta.get("estimated_numerical_workspace_bytes_before_ce_geo", 0)
-        + shape_meta["candidate_workset_bytes"])
     if fixture_arrays is not None:
         free_bytes, total_bytes = torch.cuda.mem_get_info(torch.cuda.current_device())
         tile_count = int(compiled["tile_count"])
         candidate_count = int(derivative.edge_ordinals.numel())
-        packed_active_tile_workspace = min(candidate_count, cells * tile_count) * 256 * 2
-        estimated_peak = (shape_meta["estimated_numerical_workspace_bytes_before_ce_geo"]
-                          + packed_active_tile_workspace)
+        shape_estimate = shape_meta["shape"]
+        estimate = estimate_scaled_case_memory_bytes(
+            candidate_items=candidate_count,
+            candidate_workset_bytes=shape_meta["candidate_workset_bytes"],
+            cells=cells,
+            entities=entities,
+            support_edges=len(edge_ids_np),
+            width=int(shape_estimate["relation_width"]),
+            tile_count=tile_count,
+        )
+        shape_meta["estimated_numerical_workspace_bytes_before_ce_geo"] = estimate[
+            "estimated_numerical_workspace_bytes_before_ce_geo"]
+        estimated_peak = estimate["estimated_peak_bytes_before_admission"]
         shape_meta["gpu_memory_preflight"] = {
             "free_bytes_before_candidate_scoring": int(free_bytes),
             "total_device_bytes": int(total_bytes),
-            "estimated_packed_active_tile_workspace_bytes": int(packed_active_tile_workspace),
-            "estimated_peak_bytes_before_admission": int(estimated_peak),
-        "estimate_formula": "8 x candidate_count x width x fp32_bytes + 6 x B x N x width x fp32_bytes + 3 x E x width x fp32_bytes for autograd-saved full logical_edge_values gathers/product + min(candidate_count,B*tile_count) x 256 x fp16_bytes + workset tensors",
+            **estimate,
+            "estimate_formula": "8 x candidate_count x width x fp32_bytes + 6 x B x N x width x fp32_bytes + 3 x E x width x fp32_bytes for autograd-saved full logical_edge_values gathers/product + workset tensors + min(candidate_count,B*tile_count) x 256 x fp16_bytes",
         }
         if estimated_peak > free_bytes * 0.85:
             raise RuntimeError(

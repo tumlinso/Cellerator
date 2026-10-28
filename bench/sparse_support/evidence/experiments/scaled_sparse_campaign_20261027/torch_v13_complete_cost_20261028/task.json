@@ -1,0 +1,237 @@
+{
+  "budgets": {
+    "max_build_jobs": 1,
+    "max_candidates": 2,
+    "max_seconds": 3300
+  },
+  "cases": [
+    {
+      "id": "event_local",
+      "input": {
+        "cells": 4,
+        "entities": 32,
+        "fixture": "make_next_event_fixture",
+        "observed_occurrence": "last positive event",
+        "seed": 20261027,
+        "steps": 6
+      },
+      "parameters": {
+        "active_events_per_cell": 1,
+        "support_edges": 64,
+        "width": 64
+      },
+      "weight": 1.0
+    },
+    {
+      "id": "ranked_batch",
+      "input": {
+        "cells": 32,
+        "entities": 32,
+        "fixture": "make_masked_gene_fixture",
+        "seed": 20261027,
+        "selected_genes": 8
+      },
+      "parameters": {
+        "rank_count": 8,
+        "support_edges": 64,
+        "width": 64
+      },
+      "weight": 1.0
+    },
+    {
+      "id": "large_ranked",
+      "input": {
+        "cells": 32,
+        "entities": 4096,
+        "fixture_manifest_sha256": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32",
+        "fixture_profile": "large-ranked",
+        "fixture_root": "/tmp/cellerator_scaled_sparse_fixtures_887437fc",
+        "rank_count": 512,
+        "seed": 20261027,
+        "support_edges": 262144
+      },
+      "parameters": {
+        "cohort_shared_identity_fraction": 0.75,
+        "ranked_identity_count": 512,
+        "relation_width": 64
+      },
+      "weight": 1.0
+    },
+    {
+      "id": "large_events",
+      "input": {
+        "cells": 8,
+        "entities": 20000,
+        "filter_before_scoring": true,
+        "fixture_manifest_sha256": "910a4c742b795a2a827cb21e62c510a3bc5039e6878ae75d4826fc0d33234be8",
+        "fixture_profile": "large-events",
+        "fixture_root": "/tmp/cellerator_scaled_sparse_fixtures_887437fc",
+        "seed": 20261027,
+        "support_edges": 1280000,
+        "window_intersection": "count and timestamp bounds"
+      },
+      "parameters": {
+        "event_history_per_cell": 512,
+        "filtered_occurrence_window_per_cell": 256,
+        "relation_width": 64,
+        "repeated_occurrences_preserved": true
+      },
+      "weight": 1.0
+    }
+  ],
+  "commands": {
+    "benchmark": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3",
+        "/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py",
+        "benchmark",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 2400
+    },
+    "build": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3",
+        "/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py",
+        "build",
+        "{request}",
+        "{result}"
+      ],
+      "cpu_only": true,
+      "timeout_seconds": 60
+    },
+    "validate": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3",
+        "/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py",
+        "validate",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 1800
+    }
+  },
+  "execution": {
+    "mode": "direct"
+  },
+  "numerical_requirements": {
+    "inference_output": {
+      "atol": 0.005,
+      "reference": "paired native SIMT sparse relation path",
+      "rtol": 0.005
+    },
+    "loss": {
+      "atol": 0.0005,
+      "rtol": 0.005
+    },
+    "ste": "verify finite nonzero probability gradients for hard-pruned derivative-only candidates",
+    "training_parameter_gradient": {
+      "atol": 0.006,
+      "reference": "paired native SIMT sparse relation path",
+      "rtol": 0.006
+    }
+  },
+  "probe": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python3",
+      "/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py",
+      "probe",
+      "{request}",
+      "{result}"
+    ],
+    "timeout_seconds": 60
+  },
+  "promotion": {
+    "bootstrap_samples": 1000,
+    "confidence": 0.95,
+    "max_regression": 0.9,
+    "min_improvement": 0.0
+  },
+  "schema_version": 1,
+  "target": {
+    "architecture": "sm_70",
+    "compiler_target": "sm_70",
+    "kind": "cuda"
+  },
+  "task_id": "cellerator-scaled-sparse-packed-vs-simt-20261028-v13-owner-validation",
+  "timing": {
+    "confirmation_rounds": 2,
+    "direction": "minimize",
+    "iterations": 3,
+    "metric": "training_step_wall_ms",
+    "repetitions": 21,
+    "rounds": 2,
+    "scope": "zero_grad+gate_score_and_ste+all_edge_values+relation_forward+loss+backward_including_derivative_only_gate_gradient+guarded_adam; synchronized wall",
+    "seed": 20261027,
+    "setup_pairs": 5,
+    "unit": "ms",
+    "warmup": 5
+  },
+  "toolchain": {
+    "compiler_target_probe_argv": [
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "--list-gpu-code"
+    ],
+    "runtime": "frozen v13 owner-validation Torch extension; Volta kernels; Torch CUDA runtime 12.6"
+  },
+  "trusted_inputs": [
+    {
+      "id": "benchmark_driver",
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/packed_training_benchmark.py",
+      "role": "benchmark"
+    },
+    {
+      "id": "kda_adapter",
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/kda_adapter.py",
+      "role": "harness"
+    },
+    {
+      "id": "kda_runner",
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/run_packed_training_kda.py",
+      "role": "harness"
+    },
+    {
+      "id": "frozen_torch_v13_identity",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/identity.json",
+      "role": "reference",
+      "sha256": "4d3b6f0e1a63ea20785975597849bfad0b0f081221c47d9b858d6581b487afd4"
+    },
+    {
+      "id": "frozen_v13_sparse_support_python",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py",
+      "role": "reference"
+    },
+    {
+      "id": "frozen_v13_mechanism_python",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/mechanism.py",
+      "role": "reference"
+    },
+    {
+      "id": "frozen_v13_cuda_training_test",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/tests/test_cuda_training.py",
+      "role": "validator"
+    },
+    {
+      "id": "frozen_v13_torch_extension",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+      "role": "toolchain",
+      "sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24"
+    },
+    {
+      "id": "scaled_fixture_generator",
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/scaled_fixtures.py",
+      "role": "reference"
+    },
+    {
+      "id": "large_ranked_v3_manifest",
+      "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-ranked/manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "large_events_v3_manifest",
+      "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-events/manifest.json",
+      "role": "reference"
+    }
+  ]
+}
