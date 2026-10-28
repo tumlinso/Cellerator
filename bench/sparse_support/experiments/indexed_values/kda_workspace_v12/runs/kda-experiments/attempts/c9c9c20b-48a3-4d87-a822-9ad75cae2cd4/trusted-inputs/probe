@@ -1,0 +1,419 @@
+#!/usr/bin/env python3
+"""Measure workset-indexed shared edge values against the full support scan.
+
+This is an isolated probe: it monkey-patches no installed files and does not
+change Cellerator's native relation ABI. Run only in an admitted scheduler job.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import statistics
+import sys
+import time
+
+import numpy as np
+
+
+ROOT = Path(__file__).resolve().parents[4]
+TORCH_IDENTITY = "99da528db6f4ba14bec983b6dfe31f12a065dbdc8b39c0dfb224ed0e969fca07"
+TORCH_EXTENSION = "6a85eebb37d26bf7ddc94a74026a67723d5592470a30b3a55349f2fa95b6071c"
+FIXTURE_GENERATOR = "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b"
+
+
+def digest_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def helper_module():
+    path = ROOT / "bench/sparse_support/packed_training_benchmark.py"
+    spec = importlib.util.spec_from_file_location("cellerator_sparse_benchmark_helpers", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec and spec.loader
+    spec.loader.exec_module(module)
+    return module
+
+
+def percentile_summary(samples):
+    xs = sorted(float(x) for x in samples)
+    return {
+        "count": len(xs), "median_ms": statistics.median(xs),
+        "p10_ms": xs[int(0.10 * (len(xs) - 1))],
+        "p90_ms": xs[int(np.ceil(0.90 * (len(xs) - 1)))],
+        "samples_ms": xs,
+    }
+
+
+def paired_steps(torch, full_fn, indexed_fn, warmup, repetitions, seed):
+    for i in range(warmup):
+        pair = ((full_fn, indexed_fn) if (seed + i) % 2
+                else (indexed_fn, full_fn))
+        for fn in pair:
+            fn()
+    torch.cuda.synchronize()
+    wall = {"full_E": [], "indexed_U": []}
+    event = {"full_E": [], "indexed_U": []}
+    functions = {"full_E": full_fn, "indexed_U": indexed_fn}
+    for i in range(repetitions):
+        order = ("full_E", "indexed_U") if (seed + i) % 2 else ("indexed_U", "full_E")
+        for label in order:
+            start, stop = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+            wall_start = time.perf_counter()
+            start.record()
+            functions[label]()
+            stop.record()
+            torch.cuda.synchronize()
+            wall[label].append((time.perf_counter() - wall_start) * 1000.0)
+            event[label].append(start.elapsed_time(stop))
+    return {
+        label: {**percentile_summary(wall[label]),
+                "cuda_event_samples_ms": event[label],
+                "cuda_event_median_ms": statistics.median(event[label])}
+        for label in wall
+    }
+
+
+def indexed_values(module, ordinals):
+    embedding = module.block("entity_embedding")
+    scorer = module.block("scorer").reshape(-1)
+    source_rows = module._source_endpoint_indices.index_select(0, ordinals)
+    destination_rows = module._destination_endpoint_indices.index_select(0, ordinals)
+    source = embedding.index_select(0, source_rows)
+    destination = embedding.index_select(0, destination_rows)
+    selected = (source * destination * scorer).sum(dim=-1) / (embedding.shape[-1] ** 0.5)
+    full = selected.new_zeros((len(module.support.edge_ids),))
+    return full.index_copy(0, ordinals, selected)
+
+
+def active_union(torch, primal, derivative):
+    # D includes every primal candidate under the declared STE; explicitly
+    # union P and D so the experiment remains correct if a caller supplies
+    # non-nested worksets in a future fixture.
+    return torch.unique(torch.cat((primal.edge_ordinals, derivative.edge_ordinals)),
+                        sorted=True)
+
+
+def install_indexed_value_path(module, torch, primal, derivative):
+    # Rebuild U on every relation step so the complete comparison includes
+    # the candidate-union work, even though these frozen worksets make it safe
+    # to cache U for the whole event window.
+    module.logical_edge_values = lambda: indexed_values(
+        module, active_union(torch, primal, derivative))
+
+
+def count_value_refreshes(module):
+    original = module.logical_edge_values
+    count = {"calls": 0}
+
+    def counted():
+        count["calls"] += 1
+        return original()
+
+    module.logical_edge_values = counted
+    return count
+
+
+def time_cuda(torch, fn, warmup, repetitions):
+    for _ in range(warmup):
+        fn()
+    torch.cuda.synchronize()
+    samples = []
+    for _ in range(repetitions):
+        start, stop = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+        wall_start = time.perf_counter()
+        start.record()
+        fn()
+        stop.record()
+        torch.cuda.synchronize()
+        samples.append((time.perf_counter() - wall_start) * 1000.0)
+    return percentile_summary(samples)
+
+
+def edge_value_refresh_with_vjp(module):
+    module.parameters_flat.grad = None
+    with module._pinned_forward():
+        values = module.logical_edge_values()
+        values.sum().backward()
+    module.parameters_flat.grad = None
+
+
+def workload(torch, helpers, package, case, fixture_root, device, seed):
+    from cellerator.torch.sparse_support import (
+        KaryoplastEventSlice, PerCellWorkset, RankedGeneSlice, SupportSpec,
+    )
+
+    arrays = None
+    if case in ("large_events", "ranked512"):
+        bundle = fixture_root / ("large-events" if case == "large_events" else "large-ranked")
+        names = ["edge_ids", "source_entity_id", "participant_entity_id",
+                 "source_edge_indptr", "source_edge_ordinals"]
+        if case == "large_events":
+            names += ["event_offsets", "event_entity_ids", "event_timestamps", "event_ordinals",
+                      "count_window_bounds", "time_window_bounds", "event_window_observed_indptr",
+                      "event_window_observed_gene_ids", "event_window_observed_view_id",
+                      "window_cell_id", "window_id", "window_start_ordinal",
+                      "window_stop_ordinal_exclusive"]
+        else:
+            names += ["ranked_entity_id", "ranked_position", "ranked_presence_offsets",
+                      "ranked_presence_entity_ids", "ranked_presence_values", "ranked_presence_view_id"]
+        arrays, manifest, manifest_hash = helpers.load_raw_bundle(bundle, tuple(names))
+        expected_manifest = ("910a4c742b795a2a827cb21e62c510a3bc5039e6878ae75d4826fc0d33234be8"
+                             if case == "large_events" else
+                             "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32")
+        if manifest_hash != expected_manifest:
+            raise RuntimeError(f"fixture manifest changed: {manifest_hash}")
+        meta = manifest["metadata"]
+        ids = arrays["edge_ids"].astype(np.int64, copy=False)
+        sources = arrays["source_entity_id"].astype(np.int64, copy=False)
+        destinations = arrays["participant_entity_id"].astype(np.int64, copy=False)
+        entities = int(meta["entities"])
+        support = SupportSpec(tuple(map(int, ids)), tuple(map(int, sources)),
+                              tuple(map(int, destinations)), 1)
+        args = argparse.Namespace(fixture_arrays=arrays, fixture_manifest=manifest)
+        module_type = KaryoplastEventSlice if case == "large_events" else RankedGeneSlice
+        rank_count = int(arrays["ranked_entity_id"].shape[1]) if case == "ranked512" else 8
+        cells = int(meta["cells"])
+        kind = "large_events" if case == "large_events" else "large_ranked"
+    else:
+        support = helpers.make_support(SupportSpec)
+        entities, cells, rank_count = 32, 4, 8
+        module_type = KaryoplastEventSlice
+        args = argparse.Namespace(fixture_arrays=None, fixture_manifest=None)
+        kind = "event_local"
+    # This probe isolates the shared edge-value discovery path with the native
+    # SIMT consumer. Physical CE-GEO compilation is intentionally excluded;
+    # packed-consumer follow-up is only useful if the indexed edge-value
+    # reduction first shows a material end-to-end win.
+    compiled = None
+    module, setup = helpers.prepare_module(
+        torch, package.prepare_sparse_slice, module_type, support, device=device,
+        seed=seed, packed=False, compiled=compiled, cells=cells, entities=entities,
+        rank_count=rank_count, primal_capacity=1)
+    context, inputs, target, candidate_rows, shape = helpers.make_case(
+        torch, module, support, device, kind, seed, fixture_arrays=args.fixture_arrays,
+        entities=entities, rank_count=rank_count)
+    edge_ids = np.asarray(support.edge_ids, dtype=np.int64)
+    primal, derivative, _ = helpers.make_worksets(
+        torch, PerCellWorkset, support, edge_ids, candidate_rows, device, seed)
+    with torch.no_grad(), module._pinned_forward():
+        initial = module.score_candidates(context, derivative, temperature=1.0,
+                                          threshold=0.5, prune=False)
+        threshold = float(torch.quantile(initial.probabilities.float(), 0.5).cpu())
+        mask = initial.probabilities >= threshold
+        primal = helpers.workset_with_mask(torch, PerCellWorkset, support, edge_ids,
+                                           candidate_rows, derivative, mask, device)
+    return {
+        "support": support, "compiled": compiled, "module": module, "setup": setup,
+        "module_type": module_type, "entities": entities, "cells": cells,
+        "rank_count": rank_count, "context": context, "inputs": inputs, "target": target,
+        "candidate_rows": candidate_rows, "shape": shape, "primal": primal,
+        "derivative": derivative, "hard_mask": mask, "threshold": threshold,
+        "args": args,
+    }
+
+
+def run_case(torch, helpers, package, mechanism, case, fixture_root, device,
+             warmup, repetitions, seed):
+    from cellerator.torch.sparse_support import GateValues
+
+    data = workload(torch, helpers, package, case, fixture_root, device, seed)
+    full = data["module"]
+    indexed, _ = helpers.prepare_module(
+        torch, package.prepare_sparse_slice, data["module_type"], data["support"],
+        device=device, seed=seed, packed=False, compiled=data["compiled"],
+        cells=data["cells"], entities=data["entities"], rank_count=data["rank_count"],
+        primal_capacity=int(data["derivative"].edge_ordinals.numel()))
+    if not torch.equal(full.parameters_flat.detach(), indexed.parameters_flat.detach()):
+        raise RuntimeError("full and indexed-value parameter owners are not initialized identically")
+    used = active_union(torch, data["primal"], data["derivative"])
+    install_indexed_value_path(indexed, torch, data["primal"], data["derivative"])
+    u = int(used.numel())
+    e = len(data["support"].edge_ids)
+    if not u or u > e:
+        raise RuntimeError(f"invalid active edge union U={u} of E={e}")
+    optimizer_full = helpers.make_optimizer(torch, full)
+    optimizer_indexed = helpers.make_optimizer(torch, indexed)
+    common = (data["context"], data["inputs"], data["target"], data["primal"],
+              data["derivative"], data["hard_mask"], data["threshold"])
+
+    # Paired one-step VJP oracle on equal parameters/worksets.
+    def checked(module, optimizer):
+        return helpers.training_step(
+            torch, GateValues, mechanism.guarded_step, module, optimizer,
+            *common, capture=True)
+    check_full = checked(full, optimizer_full)
+    check_indexed = checked(indexed, optimizer_indexed)
+    max_grad = float((check_full["parameter_grad"] -
+                      check_indexed["parameter_grad"]).abs().max().cpu())
+    max_output = float((check_full["output"] - check_indexed["output"]).abs().max().cpu())
+    if max_grad > 2e-5 or max_output > 2e-5:
+        raise AssertionError(f"indexed value VJP mismatch: max_grad={max_grad} max_output={max_output}")
+
+    # Reset both canonical owners and Adam moments to their identical seeds for
+    # timed training. A complete iteration contains gate scoring, U gather or
+    # full gather, native relation, MSE, backward, and guarded Adam publication.
+    # U is a frozen workset property within this benchmark window; candidate
+    # parameter-derived values are recomputed after every optimizer publication.
+    full, full_setup = helpers.prepare_module(
+        torch, package.prepare_sparse_slice, data["module_type"], data["support"],
+        device=device, seed=seed, packed=False, compiled=data["compiled"],
+        cells=data["cells"], entities=data["entities"], rank_count=data["rank_count"],
+        primal_capacity=int(data["derivative"].edge_ordinals.numel()))
+    indexed, indexed_setup = helpers.prepare_module(
+        torch, package.prepare_sparse_slice, data["module_type"], data["support"],
+        device=device, seed=seed, packed=False, compiled=data["compiled"],
+        cells=data["cells"], entities=data["entities"], rank_count=data["rank_count"],
+        primal_capacity=int(data["derivative"].edge_ordinals.numel()))
+    used = active_union(torch, data["primal"], data["derivative"])
+    install_indexed_value_path(indexed, torch, data["primal"], data["derivative"])
+    refresh_count_full = count_value_refreshes(full)
+    refresh_count_indexed = count_value_refreshes(indexed)
+    opt_full, opt_indexed = helpers.make_optimizer(torch, full), helpers.make_optimizer(torch, indexed)
+    full_step = lambda: helpers.training_step(
+        torch, GateValues, mechanism.guarded_step, full, opt_full, *common)
+    indexed_step = lambda: helpers.training_step(
+        torch, GateValues, mechanism.guarded_step, indexed, opt_indexed, *common)
+
+    # Alternate order by case seed to reduce directional warm-cache bias.
+    order = (full_step, indexed_step) if seed % 2 else (indexed_step, full_step)
+    for fn in order:
+        for _ in range(warmup):
+            fn()
+        torch.cuda.synchronize(device)
+    # The untimed warmup above is deliberately excluded from generation
+    # accounting below. Reset refresh counters at the same boundary so each
+    # counted value refresh is paired with one counted guarded publication.
+    refresh_count_full["calls"] = 0
+    refresh_count_indexed["calls"] = 0
+    generation_start = {
+        "full_E": int(full._torch_native.sparse_generation(full._native)),
+        "indexed_U": int(indexed._torch_native.sparse_generation(indexed._native)),
+    }
+    peak_base = torch.cuda.memory_allocated(device)
+    torch.cuda.reset_peak_memory_stats(device)
+    paired_stats = paired_steps(torch, full_step, indexed_step, warmup,
+                                repetitions, seed)
+    peak_extra = int(torch.cuda.max_memory_allocated(device) - peak_base)
+    timed_steps = warmup + repetitions
+    generation_end = {
+        "full_E": int(full._torch_native.sparse_generation(full._native)),
+        "indexed_U": int(indexed._torch_native.sparse_generation(indexed._native)),
+    }
+    refresh_calls = {"full_E": refresh_count_full["calls"],
+                     "indexed_U": refresh_count_indexed["calls"]}
+    generation_delta = {key: generation_end[key] - generation_start[key]
+                        for key in generation_start}
+    if refresh_calls != generation_delta or any(v != timed_steps for v in refresh_calls.values()):
+        raise RuntimeError(
+            "value refreshes did not occur once per parameter publication: "
+            f"calls={refresh_calls}, generations={generation_delta}, expected={timed_steps}")
+
+    # Isolated value refresh cost is diagnostic. It is reported beside, never
+    # substituted for, complete training-step cost.
+    refresh_full = time_cuda(torch, lambda: edge_value_refresh_with_vjp(full),
+                             max(1, warmup // 2), repetitions)
+    refresh_indexed = time_cuda(torch, lambda: edge_value_refresh_with_vjp(indexed),
+                                max(1, warmup // 2), repetitions)
+    bytes_full = (e * 64 * 4 * 3)
+    bytes_indexed = (u * 64 * 4 * 3) + (e * 4)
+    free, total = torch.cuda.mem_get_info(device)
+    output = {
+        "case": case, "shape": data["shape"], "support_edges_E": e,
+        "active_union_U": u, "U_over_E": u / e,
+        "workset_items_P": int(data["primal"].edge_ordinals.numel()),
+        "workset_items_D": int(data["derivative"].edge_ordinals.numel()),
+        "threshold": data["threshold"],
+        "correctness": {"parameter_vjp_max_abs": max_grad, "output_max_abs": max_output,
+                        "matched_full_torch_vjp": True},
+        "workset_digest": helpers.tensor_digest([
+            data["primal"].cell_offsets, data["primal"].edge_ordinals,
+            data["primal"].logical_edge_ids, data["derivative"].cell_offsets,
+            data["derivative"].edge_ordinals, data["derivative"].logical_edge_ids]),
+        "complete_step": {**paired_stats,
+                           "indexed_over_full_median_ratio": (
+                               paired_stats["indexed_U"]["median_ms"] /
+                               paired_stats["full_E"]["median_ms"])},
+        "edge_value_refresh_diagnostic": {"full_E": refresh_full,
+                                           "indexed_U": refresh_indexed},
+        "estimated_gather_product_saved_bytes_per_forward": bytes_full - bytes_indexed,
+        "device_memory_after_probe": {"free_bytes": int(free), "total_bytes": int(total)},
+        "peak_temporary_bytes_above_resident_models_and_inputs": peak_extra,
+        "cache_boundary": {
+            "edge_value_refresh_calls_during_warmup_and_timing": refresh_calls,
+            "parameter_generation_delta": generation_delta,
+            "values_recomputed_after_each_guarded_publication": True,
+            "cross_step_value_cache": False,
+        },
+        "module_setup": {"full_E": full_setup, "indexed_U": indexed_setup},
+        "consumer": "native SIMT sparse relation forward/VJP",
+        "notes": ["U was rebuilt for each step in this primary comparison; values were recomputed after each Adam publication.",
+                  "Torch index_copy materializes an E-length value vector because the native relation ABI is unchanged.",
+                  "No per-edge optimizer parameters were introduced."],
+    }
+    for module in (full, indexed, data["module"]):
+        del module
+    torch.cuda.synchronize(device)
+    return output
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--package-root", type=Path, required=True)
+    parser.add_argument("--fixture-root", type=Path,
+                        default=Path("/tmp/cellerator_scaled_sparse_fixtures_887437fc"))
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--cases", nargs="+", choices=("small", "large_events", "ranked512"),
+                        default=("small", "large_events", "ranked512"))
+    parser.add_argument("--warmup", type=int, default=3)
+    parser.add_argument("--repetitions", type=int, default=9)
+    parser.add_argument("--seed", type=int, default=20261027)
+    args = parser.parse_args()
+    if os.environ.get("CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED") != "1":
+        parser.error("run only inside the admitted Device Scheduler/KDA job")
+    if not args.package_root.is_dir():
+        parser.error("--package-root must name a frozen Cellerator Torch package")
+    sys.path.insert(0, str(args.package_root))
+
+    import torch
+    from cellerator.torch import _torch
+    package = __import__("cellerator.torch.sparse_support", fromlist=["*"])
+    mechanism = __import__("cellerator.torch.mechanism", fromlist=["*"])
+    if not torch.cuda.is_available():
+        raise RuntimeError("scheduler-admitted run has no CUDA device")
+    if digest_file(args.package_root.parent / "identity.json") != TORCH_IDENTITY:
+        raise RuntimeError("frozen Torch package identity is not the persisted v12 validator")
+    if digest_file(Path(_torch.__file__)) != TORCH_EXTENSION:
+        raise RuntimeError("Torch extension hash does not match the persisted v12 validator")
+    if digest_file(ROOT / "bench/sparse_support/scaled_fixtures.py") != FIXTURE_GENERATOR:
+        raise RuntimeError("scaled fixture source identity changed")
+    torch.set_num_threads(2)
+    device = torch.cuda.current_device()
+    helpers = helper_module()
+    results = [run_case(torch, helpers, package, mechanism, case, args.fixture_root,
+                        device, args.warmup, args.repetitions, args.seed + i)
+               for i, case in enumerate(args.cases)]
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schema": "cellerator.indexed_edge_values_probe.v1",
+        "torch_identity": TORCH_IDENTITY, "extension_sha256": TORCH_EXTENSION,
+        "fixture_generator_sha256": FIXTURE_GENERATOR,
+        "device": {"name": torch.cuda.get_device_name(device),
+                   "uuid": torch.cuda.get_device_properties(device).uuid,
+                   "compute_capability": torch.cuda.get_device_capability(device)},
+        "warmup": args.warmup, "repetitions": args.repetitions,
+        "cases": results,
+    }
+    args.output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+    print(json.dumps(payload, indent=2, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

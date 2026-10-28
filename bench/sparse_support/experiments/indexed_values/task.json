@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "task_id": "cellerator-indexed-shared-edge-values-sm70-20261027",
+  "task_id": "cellerator-indexed-shared-edge-values-sm70-v12-validator-20261028",
   "cases": [
     {
       "id": "small",
@@ -68,9 +68,9 @@
     {"id": "small_fixture_manifest", "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/small/manifest.json", "role": "reference"},
     {"id": "event_fixture_manifest", "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-events/manifest.json", "role": "reference"},
     {"id": "ranked_fixture_manifest", "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-ranked/manifest.json", "role": "reference"},
-    {"id": "frozen_torch_identity", "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v11/identity.json", "role": "toolchain"},
-    {"id": "frozen_torch_sparse_module", "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v11/package/cellerator/torch/sparse_support.py", "role": "reference"},
-    {"id": "frozen_torch_extension", "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v11/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so", "role": "toolchain"}
+    {"id": "frozen_torch_identity", "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v12-validator/identity.json", "role": "toolchain"},
+    {"id": "frozen_torch_sparse_module", "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v12-validator/package/cellerator/torch/sparse_support.py", "role": "reference"},
+    {"id": "frozen_torch_extension", "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v12-validator/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so", "role": "toolchain"}
   ],
   "numerical_requirements": {
     "value_vector": "indexed path preserves values on P union D and zeroes all unused ordinals",
@@ -96,7 +96,7 @@
   },
   "promotion": {"min_improvement": 0.0, "max_regression": 0.95, "confidence": 0.95, "bootstrap_samples": 1000},
   "target": {"kind": "cuda", "architecture": "sm_70", "compiler_target": "sm_70"},
-  "toolchain": {"runtime": "Torch 2.7.0+cu126 and frozen Cellerator Torch v11; Volta SM70", "compiler_target_probe_argv": ["/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc", "--list-gpu-code"]},
+  "toolchain": {"runtime": "Torch 2.7.0+cu126 and persisted Cellerator Torch v12 validator; Volta SM70", "compiler_target_probe_argv": ["/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc", "--list-gpu-code"]},
   "execution": {"mode": "direct"},
   "budgets": {"max_seconds": 3300, "max_candidates": 2, "max_build_jobs": 1}
 }

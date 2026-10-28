@@ -1,0 +1,53 @@
+{
+  "experiment": "event_history_relation_readout_v1",
+  "status": "complete_successful_v13_run_after_preserved_cleaned_up_dtype_failure",
+  "hypothesis": "Passing the existing count/time-window occurrence aggregate to the sparse relation improves event learning because direct current-last-event routes to the target are absent on some examples.",
+  "package_selection": "The GPU driver requires explicit CELLERATOR_SPARSE_SUPPORT_SNAPSHOT and CELLERATOR_SPARSE_SUPPORT_EXPECTED_IDENTITY_SHA256 values; it verifies the identity digest plus the frozen runner, module, and extension hashes. No snapshot metadata is edited.",
+  "intended_snapshot": "build-sparse-support/evidence/torch-v13-owner-validation",
+  "intended_snapshot_identity_sha256": "4d3b6f0e1a63ea20785975597849bfad0b0f081221c47d9b858d6581b487afd4",
+  "intended_extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24",
+  "qualification_job_must_complete_before_training": true,
+  "successful_scheduler_job_id": "b83b39e2-bfe3-4633-abd0-8ee05e6e6f7a",
+  "successful_scheduler_attempt_id": "696b6632-0c78-422e-bb01-ee849fbde6a1",
+  "initial_failed_job_id": "8e1b662b-19d0-4f62-9dcb-4395e9492c74",
+  "initial_failure": "Prototype-only history accumulator used FP16 zeros with FP32 embedding sources in index_add_. Failed before epoch 0 completed; cleanup_verified=true. Retried after changing only accumulator dtype to embedding dtype.",
+  "cpu_coverage_snapshot": "build-sparse-support/evidence/torch-v13-owner-validation",
+  "cpu_coverage_package_identity_sha256": "4d3b6f0e1a63ea20785975597849bfad0b0f081221c47d9b858d6581b487afd4",
+  "v12_cpu_coverage_identity_sha256": "99da528db6f4ba14bec983b6dfe31f12a065dbdc8b39c0dfb224ed0e969fca07",
+  "train_seed": 41027,
+  "heldout_seed": 241027,
+  "epochs": 50,
+  "soft_warmup_epochs": 10,
+  "train_cells_per_epoch": 32,
+  "heldout_cells": 512,
+  "event_steps": 12,
+  "learning_rate": 0.02,
+  "gate_threshold": 0.5,
+  "readout_logit_count": 24,
+  "loss_and_accuracy_use_all_readout_logits": true,
+  "support_edges": 96,
+  "support_growth_or_adaptation": 0,
+  "controls": [
+    "learned_support_pruned_after_warmup",
+    "learned_support_soft_only",
+    "degree_preserving_shuffled_support_pruned_after_warmup"
+  ],
+  "paired_readout_conditions": [
+    "current_event_entity_only",
+    "existing_count_time_window_occurrence_sum"
+  ],
+  "pairing": "Within each support/control condition, both readout models use identical initial parameter vectors, exact same fixture tensors, gate context and threshold, optimizer and update schedule.",
+  "history_relation_input": "Reconstruct from provider work[4], the per-cell source occurrence rows already filtered by the fixture's public count/time window and already used to build gate context. Duplicate occurrences are summed, matching existing history_input semantics.",
+  "validator_only_fields_accessed": false,
+  "primary_metric": "Unmasked top-1 accuracy over all 24 logits on the fixed 512-cell held-out fixture; report all-24 CE, prediction counts, confusion rows and target ranks.",
+  "prior_reporting": "Report held-out target class counts and empirical majority-class constant predictor; preserve the full 24-logit training/evaluation domain and do not target-mask.",
+  "cpu_coverage_512": {
+    "learned_support_current_input_routes": 392,
+    "learned_support_window_history_routes": 512,
+    "shuffled_support_current_input_routes": 274,
+    "shuffled_support_window_history_routes": 489,
+    "target_counts_16_to_19": [127, 123, 136, 126],
+    "empirical_majority_accuracy": 0.265625,
+    "heldout_only_current_source_conditional_majority_accuracy": 0.3203125
+  }
+}

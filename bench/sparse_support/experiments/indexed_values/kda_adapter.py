@@ -55,7 +55,7 @@ def run_probe(request_path, request, *, validation=False):
     output = output_dir / "probe.json"
     package_root = os.environ.get("CELLERATOR_SPARSE_PACKAGE_ROOT")
     if not package_root:
-        raise RuntimeError("CELLERATOR_SPARSE_PACKAGE_ROOT must identify frozen Torch v11")
+        raise RuntimeError("CELLERATOR_SPARSE_PACKAGE_ROOT must identify frozen Torch v12 validator")
     command = [sys.executable, str(DRIVER), "--package-root", package_root,
                "--output", str(output), "--cases", case["id"],
                "--seed", str(int(case["input"].get("seed", 20261027))),
@@ -82,9 +82,14 @@ def probe(request):
     device = torch.cuda.current_device()
     props = torch.cuda.get_device_properties(device)
     inventory = subprocess.run(
-        ["nvidia-smi", "--query-gpu=uuid", "--format=csv,noheader,nounits"],
+        ["nvidia-smi", "--query-gpu=uuid,driver_version", "--format=csv,noheader,nounits"],
         text=True, capture_output=True, check=True)
-    uuids = [line.strip() for line in inventory.stdout.splitlines() if line.strip()]
+    gpu_rows = []
+    for line in inventory.stdout.splitlines():
+        fields = [field.strip() for field in line.split(",", maxsplit=1)]
+        if len(fields) == 2:
+            gpu_rows.append({"uuid": fields[0], "driver_version": fields[1]})
+    uuids = [row["uuid"] for row in gpu_rows]
     visible = [item.strip() for item in os.environ.get("CUDA_VISIBLE_DEVICES", "").split(",")
                if item.strip()]
     visible_token = visible[device] if device < len(visible) else None
@@ -99,12 +104,16 @@ def probe(request):
         device_uuid = uuids[0]
     else:
         raise RuntimeError("could not determine scheduler-admitted GPU UUID")
+    selected_row = next((row for row in gpu_rows if row["uuid"] == device_uuid), None)
+    if selected_row is None:
+        raise RuntimeError("scheduler-admitted GPU UUID is absent from driver inventory")
     return {
         "schema_version": 1, "request_id": request["request_id"], "status": "ok",
         "environment": {
             "kind": "cuda", "architecture": f"sm_{props.major}{props.minor}",
             "compute_capability": f"{props.major}.{props.minor}",
             "device_uuid": device_uuid,
+            "driver_version": selected_row["driver_version"],
             "runtime_version": str(torch.version.cuda),
             "device": {"index": device, "name": props.name,
                        "total_memory_bytes": props.total_memory,

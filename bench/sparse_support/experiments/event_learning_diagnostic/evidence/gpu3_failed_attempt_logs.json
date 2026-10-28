@@ -1,0 +1,21 @@
+{
+  "attempt_id": "77bc289b-c236-4049-89e8-51e4001d645c",
+  "cleanup_verified": true,
+  "job_id": "8e1b662b-19d0-4f62-9dcb-4395e9492c74",
+  "stderr": {
+    "omitted_lines": 0,
+    "original_bytes": 0,
+    "returned_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": "",
+    "truncated": false
+  },
+  "stdout": {
+    "omitted_lines": 0,
+    "original_bytes": 3002,
+    "returned_bytes": 3002,
+    "sha256": "a8ffd5ca6e2da60d6b750a1fdceb328d825453b9dea75629729f4cc998d03549",
+    "text": "Traceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 301, in <module>\n    main()\n    ~~~~^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 227, in main\n    loss, admission = train_events(\n                      ~~~~~~~~~~~~^\n        models[key], indexes[key], fixture, device, optimizers[key],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        prune=(prune if prune_after_warmup else False),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        history_readout=(readout == \"history\"))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 98, in train_events\n    output = module(fixture[\"events\"], provider,\n                    timestamps=fixture[\"timestamps\"],\n                    windows=fixture[\"count_windows\"], prune=prune,\n                    threshold=THRESHOLD,\n                    derivative_seed=int(fixture[\"seed\"]))\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1751, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1762, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py\", line 1010, in forward\n    return self._forward_pinned(event_ids, event_worksets, timestamps=timestamps,\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                windows=windows, temperature=temperature,\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                threshold=threshold, prune=prune,\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                derivative_seed=derivative_seed)\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py\", line 1090, in _forward_pinned\n    output = self.relation(inputs.to(torch.float16), self.logical_edge_values(),\n                           gates, primal, derivative)\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 85, in relation\n    history[cell].index_add_(\n    ~~~~~~~~~~~~~~~~~~~~~~~~^\n        0, indices, embedding.index_select(0, indices))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: index_add_(): self (Half) and source (Float) must have the same scalar type\n",
+    "truncated": false
+  }
+}

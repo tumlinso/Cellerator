@@ -1,0 +1,6 @@
+{
+  "error": "RuntimeError: probe failed (1)\n\nTraceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/probe.py\", line 419, in <module>\n    main()\n    ~~~~^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/probe.py\", line 414, in main\n    args.output.write_text(json.dumps(payload, indent=2, sort_keys=True) + \"\\n\")\n                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/json/__init__.py\", line 242, in dumps\n    **kw).encode(obj)\n          ~~~~~~^^^^^\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/json/encoder.py\", line 202, in encode\n    chunks = self.iterencode(o, _one_shot=True)\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/json/encoder.py\", line 263, in iterencode\n    return _iterencode(o, 0)\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/json/encoder.py\", line 182, in default\n    raise TypeError(f'Object of type {o.__class__.__name__} '\n                    f'is not JSON serializable')\nTypeError: Object of type _CUuuid is not JSON serializable\n",
+  "request_id": "92fef3bf-c803-4bc6-89b2-a029a1d032a3",
+  "schema_version": 1,
+  "status": "error"
+}

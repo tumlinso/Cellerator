@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "task_id": "cellerator-indexed-shared-edge-values-sm70-v13-owner-validation-20261028",
+  "cases": [
+    {
+      "id": "small",
+      "input": {
+        "seed": 20261027,
+        "support_edges": 64,
+        "cells": 4,
+        "entities": 32
+      },
+      "parameters": {
+        "relation_width": 64,
+        "workload": "small control"
+      },
+      "weight": 1.0
+    },
+    {
+      "id": "large_events",
+      "input": {
+        "seed": 20261028,
+        "fixture_root": "/tmp/cellerator_scaled_sparse_fixtures_887437fc",
+        "fixture_profile": "large-events",
+        "fixture_manifest_sha256": "910a4c742b795a2a827cb21e62c510a3bc5039e6878ae75d4826fc0d33234be8",
+        "support_edges": 1280000,
+        "entities": 20000,
+        "cells": 8,
+        "window_intersection": "count and timestamp bounds"
+      },
+      "parameters": {
+        "relation_width": 64,
+        "repeated_occurrences_preserved": true
+      },
+      "weight": 1.0
+    },
+    {
+      "id": "ranked512",
+      "input": {
+        "seed": 20261029,
+        "fixture_root": "/tmp/cellerator_scaled_sparse_fixtures_887437fc",
+        "fixture_profile": "large-ranked",
+        "fixture_manifest_sha256": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32",
+        "support_edges": 262144,
+        "entities": 4096,
+        "cells": 32,
+        "rank_count": 512
+      },
+      "parameters": {
+        "relation_width": 64,
+        "rank_is_feature_position": true
+      },
+      "weight": 1.0
+    }
+  ],
+  "commands": {
+    "probe": {
+      "argv": [
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/kda_adapter.py",
+        "probe",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 60
+    },
+    "build": {
+      "argv": [
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/kda_adapter.py",
+        "build",
+        "{request}",
+        "{result}"
+      ],
+      "cpu_only": true,
+      "timeout_seconds": 60
+    },
+    "validate": {
+      "argv": [
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/kda_adapter.py",
+        "validate",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 600
+    },
+    "benchmark": {
+      "argv": [
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/kda_adapter.py",
+        "benchmark",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 1200
+    }
+  },
+  "trusted_inputs": [
+    {
+      "id": "probe",
+      "path": "probe.py",
+      "role": "benchmark"
+    },
+    {
+      "id": "adapter",
+      "path": "kda_adapter.py",
+      "role": "harness"
+    },
+    {
+      "id": "full_candidate",
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/candidates_v13/full_scan/backend.json",
+      "role": "other"
+    },
+    {
+      "id": "indexed_candidate",
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/candidates_v13/indexed_union/backend.json",
+      "role": "other"
+    },
+    {
+      "id": "shared_sparse_benchmark_helpers",
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/packed_training_benchmark.py",
+      "role": "reference"
+    },
+    {
+      "id": "fixture_generator",
+      "path": "/home/tumlinson/Cellerator/bench/sparse_support/scaled_fixtures.py",
+      "role": "reference"
+    },
+    {
+      "id": "small_fixture_manifest",
+      "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/small/manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "event_fixture_manifest",
+      "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-events/manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "ranked_fixture_manifest",
+      "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-ranked/manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "frozen_torch_identity",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/identity.json",
+      "role": "toolchain"
+    },
+    {
+      "id": "frozen_torch_sparse_module",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py",
+      "role": "reference"
+    },
+    {
+      "id": "frozen_torch_extension",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+      "role": "toolchain"
+    }
+  ],
+  "numerical_requirements": {
+    "value_vector": "indexed path preserves values on P union D and zeroes all unused ordinals",
+    "parameter_vjp": {
+      "atol": 2e-05,
+      "rtol": 2e-05,
+      "reference": "full support Torch edge-value vector and native SIMT relation VJP"
+    },
+    "native_operation": "Cellerator native SIMT sparse relation and existing shared parameter owner",
+    "ste": "all admitted P and selected derivative D candidates retain their shared value and gate gradients"
+  },
+  "probe": {
+    "argv": [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/kda_adapter.py",
+      "probe",
+      "{request}",
+      "{result}"
+    ],
+    "timeout_seconds": 60
+  },
+  "timing": {
+    "direction": "minimize",
+    "metric": "complete_training_step_wall_ms",
+    "unit": "ms",
+    "scope": "zero_grad+gate scoring/STE+candidate union construction+shared edge values+native relation forward+MSE+backward+guarded Adam publication; synchronized wall",
+    "warmup": 1,
+    "repetitions": 3,
+    "rounds": 2,
+    "confirmation_rounds": 2,
+    "iterations": 1,
+    "seed": 20261027
+  },
+  "promotion": {
+    "min_improvement": 0.0,
+    "max_regression": 0.95,
+    "confidence": 0.95,
+    "bootstrap_samples": 1000
+  },
+  "target": {
+    "kind": "cuda",
+    "architecture": "sm_70",
+    "compiler_target": "sm_70"
+  },
+  "toolchain": {
+    "runtime": "Torch 2.7.0+cu126 and persisted Cellerator Torch v13 owner-validation package; Volta SM70",
+    "compiler_target_probe_argv": [
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "--list-gpu-code"
+    ]
+  },
+  "execution": {
+    "mode": "direct"
+  },
+  "budgets": {
+    "max_seconds": 3300,
+    "max_candidates": 2,
+    "max_build_jobs": 1
+  }
+}

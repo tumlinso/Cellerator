@@ -20,8 +20,8 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[4]
-V11_IDENTITY = "887f8a27b2e8c1e858690291401919f7cec6898a401798377c31294326a07a5b"
-V11_EXTENSION = "430646858b79724b2eee8129e5a7ec57df6fa9632d89d798fd03d80b67324c5a"
+TORCH_IDENTITY = "4d3b6f0e1a63ea20785975597849bfad0b0f081221c47d9b858d6581b487afd4"
+TORCH_EXTENSION = "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24"
 FIXTURE_GENERATOR = "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b"
 
 
@@ -109,6 +109,18 @@ def install_indexed_value_path(module, torch, primal, derivative):
         module, active_union(torch, primal, derivative))
 
 
+def count_value_refreshes(module):
+    original = module.logical_edge_values
+    count = {"calls": 0}
+
+    def counted():
+        count["calls"] += 1
+        return original()
+
+    module.logical_edge_values = counted
+    return count
+
+
 def time_cuda(torch, fn, warmup, repetitions):
     for _ in range(warmup):
         fn()
@@ -123,6 +135,14 @@ def time_cuda(torch, fn, warmup, repetitions):
         torch.cuda.synchronize()
         samples.append((time.perf_counter() - wall_start) * 1000.0)
     return percentile_summary(samples)
+
+
+def edge_value_refresh_with_vjp(module):
+    module.parameters_flat.grad = None
+    with module._pinned_forward():
+        values = module.logical_edge_values()
+        values.sum().backward()
+    module.parameters_flat.grad = None
 
 
 def workload(torch, helpers, package, case, fixture_root, device, seed):
@@ -254,6 +274,8 @@ def run_case(torch, helpers, package, mechanism, case, fixture_root, device,
         primal_capacity=int(data["derivative"].edge_ordinals.numel()))
     used = active_union(torch, data["primal"], data["derivative"])
     install_indexed_value_path(indexed, torch, data["primal"], data["derivative"])
+    refresh_count_full = count_value_refreshes(full)
+    refresh_count_indexed = count_value_refreshes(indexed)
     opt_full, opt_indexed = helpers.make_optimizer(torch, full), helpers.make_optimizer(torch, indexed)
     full_step = lambda: helpers.training_step(
         torch, GateValues, mechanism.guarded_step, full, opt_full, *common)
@@ -266,17 +288,39 @@ def run_case(torch, helpers, package, mechanism, case, fixture_root, device,
         for _ in range(warmup):
             fn()
         torch.cuda.synchronize(device)
+    # The untimed warmup above is deliberately excluded from generation
+    # accounting below. Reset refresh counters at the same boundary so each
+    # counted value refresh is paired with one counted guarded publication.
+    refresh_count_full["calls"] = 0
+    refresh_count_indexed["calls"] = 0
+    generation_start = {
+        "full_E": int(full._torch_native.sparse_generation(full._native)),
+        "indexed_U": int(indexed._torch_native.sparse_generation(indexed._native)),
+    }
     peak_base = torch.cuda.memory_allocated(device)
     torch.cuda.reset_peak_memory_stats(device)
     paired_stats = paired_steps(torch, full_step, indexed_step, warmup,
                                 repetitions, seed)
     peak_extra = int(torch.cuda.max_memory_allocated(device) - peak_base)
+    timed_steps = warmup + repetitions
+    generation_end = {
+        "full_E": int(full._torch_native.sparse_generation(full._native)),
+        "indexed_U": int(indexed._torch_native.sparse_generation(indexed._native)),
+    }
+    refresh_calls = {"full_E": refresh_count_full["calls"],
+                     "indexed_U": refresh_count_indexed["calls"]}
+    generation_delta = {key: generation_end[key] - generation_start[key]
+                        for key in generation_start}
+    if refresh_calls != generation_delta or any(v != timed_steps for v in refresh_calls.values()):
+        raise RuntimeError(
+            "value refreshes did not occur once per parameter publication: "
+            f"calls={refresh_calls}, generations={generation_delta}, expected={timed_steps}")
 
     # Isolated value refresh cost is diagnostic. It is reported beside, never
     # substituted for, complete training-step cost.
-    refresh_full = time_cuda(torch, lambda: full.logical_edge_values(),
+    refresh_full = time_cuda(torch, lambda: edge_value_refresh_with_vjp(full),
                              max(1, warmup // 2), repetitions)
-    refresh_indexed = time_cuda(torch, lambda: indexed.logical_edge_values(),
+    refresh_indexed = time_cuda(torch, lambda: edge_value_refresh_with_vjp(indexed),
                                 max(1, warmup // 2), repetitions)
     bytes_full = (e * 64 * 4 * 3)
     bytes_indexed = (u * 64 * 4 * 3) + (e * 4)
@@ -301,7 +345,13 @@ def run_case(torch, helpers, package, mechanism, case, fixture_root, device,
                                            "indexed_U": refresh_indexed},
         "estimated_gather_product_saved_bytes_per_forward": bytes_full - bytes_indexed,
         "device_memory_after_probe": {"free_bytes": int(free), "total_bytes": int(total)},
-        "peak_temporary_bytes_above_two_live_modules": peak_extra,
+        "peak_temporary_bytes_above_resident_models_and_inputs": peak_extra,
+        "cache_boundary": {
+            "edge_value_refresh_calls_during_warmup_and_timing": refresh_calls,
+            "parameter_generation_delta": generation_delta,
+            "values_recomputed_after_each_guarded_publication": True,
+            "cross_step_value_cache": False,
+        },
         "module_setup": {"full_E": full_setup, "indexed_U": indexed_setup},
         "consumer": "native SIMT sparse relation forward/VJP",
         "notes": ["U was rebuilt for each step in this primary comparison; values were recomputed after each Adam publication.",
@@ -338,10 +388,10 @@ def main():
     mechanism = __import__("cellerator.torch.mechanism", fromlist=["*"])
     if not torch.cuda.is_available():
         raise RuntimeError("scheduler-admitted run has no CUDA device")
-    if digest_file(args.package_root.parent / "identity.json") != V11_IDENTITY:
-        raise RuntimeError("frozen Torch package identity is not qualified v11")
-    if digest_file(Path(_torch.__file__)) != V11_EXTENSION:
-        raise RuntimeError("Torch extension hash is not qualified v11")
+    if digest_file(args.package_root.parent / "identity.json") != TORCH_IDENTITY:
+        raise RuntimeError("frozen Torch package identity is not the persisted v13 owner validator")
+    if digest_file(Path(_torch.__file__)) != TORCH_EXTENSION:
+        raise RuntimeError("Torch extension hash does not match the persisted v13 owner validator")
     if digest_file(ROOT / "bench/sparse_support/scaled_fixtures.py") != FIXTURE_GENERATOR:
         raise RuntimeError("scaled fixture source identity changed")
     torch.set_num_threads(2)
@@ -353,10 +403,12 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "schema": "cellerator.indexed_edge_values_probe.v1",
-        "v11_identity": V11_IDENTITY, "extension_sha256": V11_EXTENSION,
+        "torch_identity": TORCH_IDENTITY, "extension_sha256": TORCH_EXTENSION,
         "fixture_generator_sha256": FIXTURE_GENERATOR,
         "device": {"name": torch.cuda.get_device_name(device),
-                   "uuid": torch.cuda.get_device_properties(device).uuid,
+                   # Newer PyTorch builds expose CUDA UUID as a wrapper type,
+                   # which json.dumps cannot encode directly.
+                   "uuid": str(torch.cuda.get_device_properties(device).uuid),
                    "compute_capability": torch.cuda.get_device_capability(device)},
         "warmup": args.warmup, "repetitions": args.repetitions,
         "cases": results,

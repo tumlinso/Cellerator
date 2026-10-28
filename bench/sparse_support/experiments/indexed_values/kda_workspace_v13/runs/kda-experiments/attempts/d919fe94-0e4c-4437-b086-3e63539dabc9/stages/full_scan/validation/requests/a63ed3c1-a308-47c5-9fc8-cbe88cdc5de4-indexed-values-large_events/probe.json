@@ -1,0 +1,259 @@
+{
+  "cases": [
+    {
+      "U_over_E": 0.0550515625,
+      "active_union_U": 70466,
+      "cache_boundary": {
+        "cross_step_value_cache": false,
+        "edge_value_refresh_calls_during_warmup_and_timing": {
+          "full_E": 2,
+          "indexed_U": 2
+        },
+        "parameter_generation_delta": {
+          "full_E": 2,
+          "indexed_U": 2
+        },
+        "values_recomputed_after_each_guarded_publication": true
+      },
+      "case": "large_events",
+      "complete_step": {
+        "full_E": {
+          "count": 1,
+          "cuda_event_median_ms": 14.871552467346191,
+          "cuda_event_samples_ms": [
+            14.871552467346191
+          ],
+          "median_ms": 14.906395997968502,
+          "p10_ms": 14.906395997968502,
+          "p90_ms": 14.906395997968502,
+          "samples_ms": [
+            14.906395997968502
+          ]
+        },
+        "indexed_U": {
+          "count": 1,
+          "cuda_event_median_ms": 4.66431999206543,
+          "cuda_event_samples_ms": [
+            4.66431999206543
+          ],
+          "median_ms": 4.72390199865913,
+          "p10_ms": 4.72390199865913,
+          "p90_ms": 4.72390199865913,
+          "samples_ms": [
+            4.72390199865913
+          ]
+        },
+        "indexed_over_full_median_ratio": 0.3169043677159067
+      },
+      "consumer": "native SIMT sparse relation forward/VJP",
+      "correctness": {
+        "matched_full_torch_vjp": true,
+        "output_max_abs": 0.0,
+        "parameter_vjp_max_abs": 9.947598300641403e-14
+      },
+      "device_memory_after_probe": {
+        "free_bytes": 14280556544,
+        "total_bytes": 16928342016
+      },
+      "edge_value_refresh_diagnostic": {
+        "full_E": {
+          "count": 1,
+          "median_ms": 12.0844320008473,
+          "p10_ms": 12.0844320008473,
+          "p90_ms": 12.0844320008473,
+          "samples_ms": [
+            12.0844320008473
+          ]
+        },
+        "indexed_U": {
+          "count": 1,
+          "median_ms": 2.0057190013176296,
+          "p10_ms": 2.0057190013176296,
+          "p90_ms": 2.0057190013176296,
+          "samples_ms": [
+            2.0057190013176296
+          ]
+        }
+      },
+      "estimated_gather_product_saved_bytes_per_forward": 923802112,
+      "module_setup": {
+        "full_E": {
+          "allocated_delta_bytes": 20480000,
+          "wall_ms": 2608.0528990023595
+        },
+        "indexed_U": {
+          "allocated_delta_bytes": 20480000,
+          "wall_ms": 2460.1462249993347
+        }
+      },
+      "notes": [
+        "U was rebuilt for each step in this primary comparison; values were recomputed after each Adam publication.",
+        "Torch index_copy materializes an E-length value vector because the native relation ABI is unchanged.",
+        "No per-edge optimizer parameters were introduced."
+      ],
+      "peak_temporary_bytes_above_resident_models_and_inputs": 1790083072,
+      "shape": {
+        "case": "large_events",
+        "fixture_identity": {
+          "active_query_counts": [
+            85,
+            73,
+            76,
+            77,
+            72,
+            80,
+            70,
+            81
+          ],
+          "candidate_ids_sha256": "3b705d336a94b491c459946f9df5d439ada192a8906017419fdca7f238c79380",
+          "candidate_ordinals_sha256": "1e87c7828a38b391823757d1ff9a5cc934ade44fe28628c7782074e2979e698f",
+          "count_bounds": [
+            [
+              256,
+              512
+            ],
+            [
+              256,
+              512
+            ],
+            [
+              256,
+              512
+            ],
+            [
+              256,
+              512
+            ],
+            [
+              256,
+              512
+            ],
+            [
+              256,
+              512
+            ],
+            [
+              256,
+              512
+            ],
+            [
+              256,
+              512
+            ]
+          ],
+          "count_bounds_sha256": "4b2e272bba53aefe82f2d5e5ad269358b7970e6b26dc2eba023f9a7b4ccd622d",
+          "event_occurrences_sha256": "304bfdba9e1f7916a71a5c80eb109498a0e3a03f163999794c13741c0ec0d624",
+          "event_timestamps_sha256": "f51b6f2277d7025cd030bb6dbcdce2c4dcbb91f43a048c09ec8fce14cf488062",
+          "filtered_event_counts": [
+            256,
+            256,
+            256,
+            256,
+            256,
+            256,
+            256,
+            256
+          ],
+          "fixture_profile": "large-events",
+          "repeated_occurrences_preserved_in_context": true,
+          "time_bounds": [
+            [
+              2560,
+              5120
+            ],
+            [
+              2560,
+              5120
+            ],
+            [
+              2560,
+              5120
+            ],
+            [
+              2560,
+              5120
+            ],
+            [
+              2560,
+              5120
+            ],
+            [
+              2560,
+              5120
+            ],
+            [
+              2560,
+              5120
+            ],
+            [
+              2560,
+              5120
+            ]
+          ],
+          "time_bounds_sha256": "63bd3692945973f8baa9ed70dc6a01dba46f63f111e39369a6bb7ccbb5f10ec1",
+          "window_filter": "fixture count and timestamp half-open intersection before candidate construction"
+        },
+        "shape": {
+          "active_entities_per_cell": [
+            85,
+            73,
+            76,
+            77,
+            72,
+            80,
+            70,
+            81
+          ],
+          "candidate_feature_workspace_estimate_bytes": 169900032,
+          "candidate_items": 82959,
+          "cells": 8,
+          "dense_context_and_output_estimate_bytes": 245760000,
+          "entities": 20000,
+          "estimated_numerical_workspace_bytes_before_ce_geo": 1398700032,
+          "event_occurrences_after_both_windows": [
+            256,
+            256,
+            256,
+            256,
+            256,
+            256,
+            256,
+            256
+          ],
+          "events_per_cell_in_full_declared_window": [
+            256,
+            256,
+            256,
+            256,
+            256,
+            256,
+            256,
+            256
+          ],
+          "global_edge_value_refresh_intermediate_estimate_bytes": 983040000,
+          "max_candidate_items_per_cell": 13280,
+          "relation_width": 64
+        }
+      },
+      "support_edges_E": 1280000,
+      "threshold": 0.5000032186508179,
+      "workset_digest": "a2d64948bd7b7bb7a414e43937adf4694bf7b9b21d2ab9aca47ac94195f0f24d",
+      "workset_items_D": 82959,
+      "workset_items_P": 41480
+    }
+  ],
+  "device": {
+    "compute_capability": [
+      7,
+      0
+    ],
+    "name": "Tesla V100-SXM2-16GB",
+    "uuid": "6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+  },
+  "extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24",
+  "fixture_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+  "repetitions": 1,
+  "schema": "cellerator.indexed_edge_values_probe.v1",
+  "torch_identity": "4d3b6f0e1a63ea20785975597849bfad0b0f081221c47d9b858d6581b487afd4",
+  "warmup": 1
+}

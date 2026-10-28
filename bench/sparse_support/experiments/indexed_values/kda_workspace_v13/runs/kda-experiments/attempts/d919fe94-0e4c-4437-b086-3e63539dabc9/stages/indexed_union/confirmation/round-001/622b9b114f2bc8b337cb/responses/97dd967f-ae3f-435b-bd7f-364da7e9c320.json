@@ -1,0 +1,56 @@
+{
+  "candidate_strategy": "indexed_U",
+  "case_id": "large_events",
+  "metric": "complete_training_step_wall_ms",
+  "paired_diagnostic": {
+    "full_E": {
+      "count": 3,
+      "cuda_event_median_ms": 14.145536422729492,
+      "cuda_event_samples_ms": [
+        14.138336181640625,
+        14.145536422729492,
+        14.168031692504883
+      ],
+      "median_ms": 14.17962199775502,
+      "p10_ms": 14.172593997500371,
+      "p90_ms": 14.200738001818536,
+      "samples_ms": [
+        14.172593997500371,
+        14.17962199775502,
+        14.200738001818536
+      ]
+    },
+    "indexed_U": {
+      "count": 3,
+      "cuda_event_median_ms": 4.942848205566406,
+      "cuda_event_samples_ms": [
+        4.766719818115234,
+        4.942848205566406,
+        4.959231853485107
+      ],
+      "median_ms": 4.975785999704385,
+      "p10_ms": 4.824176998226903,
+      "p90_ms": 4.99197199678747,
+      "samples_ms": [
+        4.824176998226903,
+        4.975785999704385,
+        4.99197199678747
+      ]
+    },
+    "indexed_over_full_median_ratio": 0.3509110468877219
+  },
+  "probe_output_dir": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/kda_workspace_v13/runs/kda-experiments/attempts/d919fe94-0e4c-4437-b086-3e63539dabc9/stages/indexed_union/confirmation/round-001/622b9b114f2bc8b337cb/requests/97dd967f-ae3f-435b-bd7f-364da7e9c320-indexed-values-large_events",
+  "repetitions": 3,
+  "request_id": "97dd967f-ae3f-435b-bd7f-364da7e9c320",
+  "samples": [
+    4.824176998226903,
+    4.975785999704385,
+    4.99197199678747
+  ],
+  "schema_version": 1,
+  "status": "ok",
+  "timing_scope": "zero_grad+gate scoring/STE+candidate union construction+shared edge values+native relation forward+MSE+backward+guarded Adam publication; synchronized wall",
+  "unit": "ms",
+  "warmup": 1,
+  "workload_sha256": "7800da554815af5c60ea533fd0e1fd6c0a915df6d2481e9a14c58aab5f931c5f"
+}
