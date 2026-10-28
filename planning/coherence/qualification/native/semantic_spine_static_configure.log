@@ -1,0 +1,12 @@
+$ cmake -S /tmp/cellerator-coherence -B /tmp/cellerator-coherence-spine-static-build -DCELLERATOR_ENABLE_CUDA=ON -DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF -DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF -DCMAKE_CUDA_ARCHITECTURES=70 -DCELLERATOR_BUILD_TESTS=ON -DCELLERATOR_ENABLE_TORCH=OFF -DCELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1=ON -DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane
+-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) 
+-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) 
+-- Cellerator providers: selection=baseline, tuning=precise
+-- Cellerator default real: storage=f16, compute=f32, accum=f32
+-- Cellerator compatibility sparse fallback: blocked_ell (operation projections remain planner-selected)
+-- Cellerator host vector level: avx2
+-- Cellerator hardware probe disabled
+-- Cellerator CUDA mode: generic
+-- Configuring done (0.8s)
+-- Generating done (1.1s)
+-- Build files have been written to: /tmp/cellerator-coherence-spine-static-build

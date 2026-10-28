@@ -1,0 +1,63 @@
+$ python3 -B tests/substrate/install/check.py --build-dir /tmp/cellerator-coherence-install --prefix /tmp/cellerator-coherence-installed --require-integrated
+$ cmake -S /tmp/cellerator-coherence/cmake/substrate -B /tmp/cellerator-coherence-install -DCMAKE_INSTALL_PREFIX=/tmp/cellerator-coherence-installed -DCELLERATOR_SUBSTRATE_REQUIRE_INTEGRATED=ON -DCELLERATOR_SUBSTRATE_ENABLE_SM70=OFF
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-coherence-install
+$ cmake --build /tmp/cellerator-coherence-install --parallel 2
+[ 22%] Built target cellerator_substrate_executable_program
+[ 29%] Built target cellerator_substrate_ops_numeric
+[ 40%] Built target cellerator_substrate_cellpack
+[ 48%] Built target cellerator_substrate_indexed_incidence
+[ 55%] Built target cellerator_substrate_structured_state
+[ 66%] Built target cellerator_substrate_matrix_patch
+[ 77%] Built target cellerator_substrate_private_ports
+[ 85%] Built target cellerator_substrate_native_numeric
+[ 92%] Built target cellerator_substrate_packing_strategy
+[100%] Built target cellerator_substrate_local_differential
+$ cmake --install /tmp/cellerator-coherence-install
+-- Up-to-date: /tmp/cellerator-coherence-installed/include/Cellerator/memory/generation_marks.hh
+-- Up-to-date: /tmp/cellerator-coherence-installed/include/Cellerator/memory/workspace.hh
+-- Up-to-date: /tmp/cellerator-coherence-installed/include/Cellerator/structure
+-- Up-to-date: /tmp/cellerator-coherence-installed/include/Cellerator/structure/identity.hh
+-- Up-to-date: /tmp/cellerator-coherence-installed/include/Cellerator/structure/identity_registry.hh
+-- Up-to-date: /tmp/cellerator-coherence-installed/include/ce_moon/reference.hpp
+-- Up-to-date: /tmp/cellerator-coherence-installed/include/ce_moon/effects.hpp
+-- Up-to-date: /tmp/cellerator-coherence-installed/include/ce_moon/mechanisms.hpp
+-- Up-to-date: /tmp/cellerator-coherence-installed/include/learning.hpp
+-- Installing: /tmp/cellerator-coherence-installed/lib/cmake/Cellerator/CelleratorConfig.cmake
+Unavailable full indexed_mechanism correctly rejected
+$ cmake -S /tmp/cellerator-coherence/examples/substrate/install -B /tmp/cellerator-coherence-install/consumer-baseline -DCMAKE_PREFIX_PATH=/tmp/ce-substrate-relocated-dzvpgclo/sdk -DCE_REQUIRE_INTEGRATED=ON -DCE_EFFECTS_ONLY=OFF
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-coherence-install/consumer-baseline
+$ cmake --build /tmp/cellerator-coherence-install/consumer-baseline --parallel 2
+[ 33%] Building CXX object CMakeFiles/ce_installed_consumer.dir/consumer.cc.o
+[ 66%] Building CXX object CMakeFiles/ce_installed_consumer.dir/integrated.cc.o
+[100%] Linking CXX executable ce_installed_consumer
+[100%] Built target ce_installed_consumer
+$ ctest --test-dir /tmp/cellerator-coherence-install/consumer-baseline --output-on-failure
+Internal ctest changing into directory: /tmp/cellerator-coherence-install/consumer-baseline
+Test project /tmp/cellerator-coherence-install/consumer-baseline
+    Start 1: ce_installed_consumer
+1/1 Test #1: ce_installed_consumer ............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+$ cmake -S /tmp/cellerator-coherence/examples/substrate/install -B /tmp/cellerator-coherence-install/consumer-effects-only -DCMAKE_PREFIX_PATH=/tmp/ce-substrate-relocated-dzvpgclo/sdk -DCE_REQUIRE_INTEGRATED=OFF -DCE_EFFECTS_ONLY=ON
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-coherence-install/consumer-effects-only
+$ cmake --build /tmp/cellerator-coherence-install/consumer-effects-only --parallel 2
+[ 50%] Building CXX object CMakeFiles/ce_installed_consumer.dir/effects_only.cc.o
+[100%] Linking CXX executable ce_installed_consumer
+[100%] Built target ce_installed_consumer
+$ ctest --test-dir /tmp/cellerator-coherence-install/consumer-effects-only --output-on-failure
+Internal ctest changing into directory: /tmp/cellerator-coherence-install/consumer-effects-only
+Test project /tmp/cellerator-coherence-install/consumer-effects-only
+    Start 1: ce_installed_consumer
+1/1 Test #1: ce_installed_consumer ............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec

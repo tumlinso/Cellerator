@@ -1,0 +1,69 @@
+{
+  "scope": "final documentation render and source-map route verification",
+  "quarto": {
+    "command": "XDG_CACHE_HOME=/tmp/cellerator-quarto-cache XDG_DATA_HOME=/tmp/cellerator-quarto-data quarto render docs --to html",
+    "exit_code": 0,
+    "format": "html",
+    "pages_rendered": 27,
+    "output": "docs/_book/index.html"
+  },
+  "local_link_scan": {
+    "command": "Python stdlib HTMLParser scan over docs/_book/**/*.html; local href/src targets only",
+    "html_pages": 27,
+    "local_links_checked": 1497,
+    "broken_local_links": 0,
+    "generated_source_map_csv_copied": true,
+    "generated_source_map_rules_copied": true,
+    "scope_page_rendered": true
+  },
+  "source_map_routes": {
+    "planning/coherence/qualification/**": "checkpoint-bound source/build/test qualification evidence; logs are not current source status",
+    "planning/coherence/workflow-repairs/**": "revision-bound workflow/runtime repair evidence; receipts do not prove current authority/runtime state or authorize replay"
+  },
+  "source_map_lifecycle": {
+    "command": "python tools/maintenance/source_map/lifecycle_test.py",
+    "exit_code": 0,
+    "cases": [
+      "generate-stage-commit-validate self-reference lifecycle",
+      "source edit invalidation",
+      "unknown path rejected until explicit rule",
+      "rule edit invalidation and regeneration",
+      "source move invalidation and regeneration",
+      "generated output corruption detection and regeneration"
+    ]
+  },
+  "diff_check": {
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  "generated_map_note": "The checked-in/staged generated map predates the two latest routing-rule additions; regenerate and validate after final source moves/staging. The rendered map pages resolve; no final source-map refresh was performed.",
+  "prepared_routing_update": {
+    "source_report": "bench/sparse_support/experiments/prepared_routing/REPORT.md",
+    "binary_sha256": "8db8763e1b440b3efba569de82b616ff3fc09d28001d269b7bbee3b25b5df8be",
+    "qualification": "16-test suite, exact prepared CUDA correctness, memcheck, racecheck, synccheck, cleanup verified",
+    "performance_scope": "V100 owner-cold lifecycle estimate at horizon 64: ranked [32,8] +9.21% vs Python, paired bootstrap 95% CI 7.79\u201310.36%; event [32,12] inconclusive (-0.87%, CI -2.47\u20132.10%); dense Torch faster on larger stress shapes. Prepared remains opt-in; no full-model, training, or biological speed claim."
+  },
+  "final_docs_render": {
+    "command": "XDG_CACHE_HOME=/tmp/cellerator-quarto-cache XDG_DATA_HOME=/tmp/cellerator-quarto-data quarto render docs --to html",
+    "exit_code": 0,
+    "format": "html",
+    "pages_rendered": 27,
+    "output": "docs/_book/index.html"
+  },
+  "final_link_check": {
+    "command": "Python stdlib HTMLParser scan over docs/_book/**/*.html; local href/src targets only",
+    "html_pages": 27,
+    "local_links_checked": 1497,
+    "broken_local_links": 0,
+    "external_links_seen": 45,
+    "new_external_links": [
+      "prepared-routing REPORT on codex/cellerator-coherence branch",
+      "IS1 reconciliation proposal on codex/cellerator-coherence branch"
+    ],
+    "corresponding_local_files_exist": true
+  },
+  "prose_diff_check": {
+    "command": "git diff --check -- docs/current_implementation.qmd docs/operations.qmd docs/layout_execution.qmd docs/development/python-bindings.md docs/development/routing.md docs/experiments_and_history.qmd",
+    "exit_code": 0
+  }
+}

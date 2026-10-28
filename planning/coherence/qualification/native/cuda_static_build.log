@@ -1,0 +1,95 @@
+$ cmake --build /tmp/cellerator-coherence-cuda-build --target cellerator_ops_numeric cellerator_native_numeric cellerator_local_differential cellerator_sparse_support_cuda cellerator_identity_registry cellerator_layout cellerator_semantic_projection_layout cellerator_feature_major_projection cellerator_transpose_projection -j 4
+-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) 
+-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) 
+-- Cellerator providers: selection=baseline, tuning=precise
+-- Cellerator default real: storage=f16, compute=f32, accum=f32
+-- Cellerator compatibility sparse fallback: blocked_ell (operation projections remain planner-selected)
+-- Cellerator host vector level: avx2
+-- Cellerator hardware probe disabled
+-- Cellerator CUDA mode: generic
+-- Configuring done (0.4s)
+-- Generating done (0.4s)
+-- Build files have been written to: /tmp/cellerator-coherence-cuda-build
+[100%] Built target cellerator_ops_numeric
+[ 33%] Built target cellerator_relation_semantics
+[ 66%] Built target cellerator_ops_numeric
+[100%] Built target cellerator_native_numeric
+[  2%] Built target cellerator_ops_numeric
+[  5%] Built target cellerator_relation_semantics
+[  7%] Built target cellerator_runtime
+[ 12%] Built target cellpack
+[ 15%] Built target cellerator_compute_sampling
+[ 17%] Built target cellerator_support
+[ 17%] Built target cellerator_operation_core
+[ 20%] Built target cellerator_native_numeric
+[ 23%] Built target cellerator_layout
+[ 23%] Built target cellpack_semantic_geometry
+[ 23%] Built target cellpack_local_cell_ordering
+[ 25%] Built target cellpack_apply_plan
+[ 28%] Built target cellerator_indexing
+[ 28%] Built target cellpack_statistical_validation
+[ 46%] Built target cellerator_semantic_geometry_v1
+[ 53%] Built target cellerator_relation_algebra
+[ 53%] Built target cellpack_warp_tiles
+[ 53%] Built target cellerator_gating
+[ 53%] Built target cellerator_cusparse_csr_candidate
+[ 53%] Built target cellpack_record_statistical_validation
+[ 53%] Built target cellpack_feature_weighted_row_reduction
+[ 58%] Built target cellerator_fusion_training
+[ 58%] Built target cellpack_alternating_refinement
+[ 58%] Built target cellpack_feature_weighted_row_reduction_cuda
+[ 58%] Built target cellpack_persistent_packing_payload
+[ 61%] Built target cellerator_planner
+[ 61%] Built target cellerator_row_masked_n1_candidate
+[ 61%] Built target cellerator_csr_fallback_candidate
+[ 64%] Built target cellpack_execution_image_v2
+[ 64%] Built target cellerator_feature_major_projection
+[ 64%] Built target cellerator_semantic_projection_layout
+[ 66%] Built target cellerator_provider_common
+[ 69%] Built target cellerator_provider_sm70
+[ 71%] Built target cellerator_transpose_projection
+[ 74%] Built target cellerator_feature_major_small_n_candidate
+[ 74%] Built target cellerator_projection_activation
+[ 74%] Built target cellerator_transpose_backward_candidate
+[ 87%] Built target cellerator_architecture_provider
+[ 89%] Built target cellerator_builtin_candidate_catalog
+[ 89%] Built target cellerator_ce_geo_catalog
+[ 92%] Built target cellerator_ce_exop_operation_portfolio
+[ 94%] Built target cellerator_preparation_factory
+[ 97%] Built target cellerator_executable_program
+[100%] Built target cellerator_local_differential
+[ 50%] Built target cellerator_support
+[100%] Built target cellerator_indexing
+[100%] Built target cellerator_gating
+[100%] Built target cellerator_sparse_support_cuda
+Built target cellerator_identity_registry
+[ 50%] Built target cellerator_support
+[100%] Built target cellerator_layout
+[  7%] Built target cellerator_support
+[ 14%] Built target cellerator_compute_sampling
+[ 28%] Built target cellpack
+[ 35%] Built target cellerator_layout
+[ 85%] Built target cellerator_semantic_geometry_v1
+[ 85%] Built target cellpack_local_cell_ordering
+[ 92%] Built target cellpack_apply_plan
+[ 92%] Built target cellpack_semantic_geometry
+[ 92%] Built target cellpack_warp_tiles
+[ 92%] Built target cellpack_feature_weighted_row_reduction
+[ 92%] Built target cellpack_persistent_packing_payload
+[100%] Built target cellpack_execution_image_v2
+[100%] Built target cellerator_semantic_projection_layout
+[ 66%] Built target cellpack
+[ 66%] Built target cellpack_local_cell_ordering
+[100%] Built target cellpack_apply_plan
+[100%] Built target cellpack_warp_tiles
+[100%] Built target cellpack_feature_weighted_row_reduction
+[100%] Built target cellpack_persistent_packing_payload
+[100%] Built target cellerator_feature_major_projection
+[ 50%] Built target cellpack
+[ 50%] Built target cellpack_local_cell_ordering
+[ 75%] Built target cellpack_apply_plan
+[ 75%] Built target cellpack_warp_tiles
+[ 75%] Built target cellpack_feature_weighted_row_reduction
+[ 75%] Built target cellpack_persistent_packing_payload
+[ 75%] Built target cellerator_feature_major_projection
+[100%] Built target cellerator_transpose_projection

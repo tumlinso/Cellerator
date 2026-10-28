@@ -5,6 +5,10 @@ The captured branch inventory is [`live-branches.tsv`](live-branches.tsv), SHA-2
 `3f41d22324ca1c0c0ef8564fe6db995d4cdb0889bf99a32975eb4500da1e23a8`; its
 remote-tracking tips match the refs inspected in this checkout.
 
+The original branch-by-branch comparison is preserved in [`branches.json`](branches.json).
+Its disposition records describe the audit at the baseline above; closure was
+performed later and is recorded separately in [`branch-closure.json`](branch-closure.json).
+
 ## Disposition
 
 No production source needs to be merged before ordinary remote working refs can
@@ -32,8 +36,15 @@ contains an older workspace snapshot; it is retained as backup, not merged as
 current source. The IS1 branch tip is already an ancestor of main, but the
 managed worktree remains protected because supported cleanup is unavailable.
 
-The full tip-by-tip record, blob comparisons, exact archive tags, and closure
-list are in [branches.json](branches.json). No refs were changed. Project
-Control rejected plan apply with `native_operation_rejected`; its authority
-revision remained 10, so branch closure and subsequent cleanup remain pending
-the supported workflow.
+The full tip-by-tip record, blob comparisons, exact archive tags, and audit-time
+closure list are in [branches.json](branches.json). After that audit, 23 ordinary
+remote working refs were archived locally and deleted remotely using exact
+expected-tip leases. The exact command result, closed tips, retained remote
+heads, and durable bundle identity are in [branch-closure.json](branch-closure.json).
+The bundle is stored at
+`/mnt/block/cellerator/preservation/20261028T204231Z/branch-reconciliation/audited-working-refs.bundle`
+with SHA-256
+`f5b85451f05133290161a6c283c535b7b484dd78a338fe01ecb533b784f8bd2f`.
+Both backup refs, all archive refs, `main`, and the managed IS1 worktree/branch
+remain preserved. The supported workflow is still required to close the IS1
+worktree and reconcile its registered obligation.

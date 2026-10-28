@@ -47,6 +47,9 @@ communication or lineage frameworks. Preserve and route existing implementations
    work; retain newer fixes. Archive tips and bundles before closing local and
    remote working branches. Preserve backup refs and authority integration refs.
    Close the IS1 worktree through supported workflow when available.
+   The completed ordinary remote-ref closure and retained history are recorded
+   in [branch reconciliation](branches.md); remaining archive and workflow holds
+   are listed in [archive disposition](archive-disposition.md).
 3. Give every source/artifact a role, owner, destination and disposition. Create
    an agent routing guide and machine-readable map; make gaps and maturity visible.
 4. Consolidate source and packaging in complete units: implementation, headers,
