@@ -1,0 +1,111 @@
+{
+  "format": "cellerator-is1-reconciliation-v1",
+  "source": {
+    "workspace": "/tmp/cellerator-coherence",
+    "integrated_native_checkpoint": "7663aa5e",
+    "integrated_source_checkpoint": "937a78a54572b7f175fa3bda7e0100fb069919af",
+    "workflow_read": {
+      "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+      "semantic_revision": 19,
+      "observed_at": "2026-10-28T23:27:02Z",
+      "status": "five CE-IS1 tasks remain blocked; this document is a proposal, not native acceptance"
+    }
+  },
+  "policy": {
+    "purpose": "Reconcile old IS1 scope into the approved CE-COHERE outcomes while preserving evidence and explicit gaps.",
+    "authority": "Root applies task supersession/carry-forward through supported Project Control preview/apply. This file does not accept, complete, release, supersede, or alter any native task.",
+    "evidence_rule": "An ancestry relation, planning record, build log, prior test report, or agent summary is not by itself native task acceptance. Reuse source-bound evidence only within its recorded source, binary, input, device, and test scope.",
+    "unknown_legacy_effects": "Remain unverified and must not be replayed or represented as accepted."
+  },
+  "reconciliation": [
+    {
+      "old_task": "CE-IS1-TORCH",
+      "old_outcome": "Expose native mathematics through the existing framework adapter",
+      "old_acceptance_summary": [
+        "Native forward, input VJP, parameter VJP, and requested JVP paths through supported framework calls.",
+        "Explicit parameter update ownership; tested shape, dtype, device, alias, and stale-tape failures; core remains buildable without Torch."
+      ],
+      "current_evidence": [
+        {"claim": "The package has a real CPU FP32 Product2 Torch Module with first-order input and coefficient gradients, composed with ordinary Torch modules/autograd/optimizers.", "refs": ["docs/current_implementation.qmd:15-18", "docs/getting_started.qmd:7-43", "python/cellerator/nn", "tests"]},
+        {"claim": "Sparse support, indexed mechanisms, and prepared routing have concrete Torch adapters and bounded passing adapter or integration checks; these are separate facilities with their own contracts.", "refs": ["docs/current_implementation.qmd:21-42", "python/cellerator/torch", "bindings/torch", "tests/prepared_routing", "tests/sparse_support"]},
+        {"claim": "The current documented Torch API does not promise every native operator family, general JVP access, or uniform device/precision coverage.", "refs": ["docs/development/python-bindings.md", "docs/operations.qmd", "docs/current_implementation.qmd:15-42"]}
+      ],
+      "recommendation": "Supersede the blanket task with its implemented package/module slice carried into CE-COHERE-04 and the sparse/mechanism parameter-owner work in CE-COHERE-05/06. Retain feature-specific Torch gaps as future work only when a concrete consumer and acceptance contract are named. Do not require wrapping all native families as a package-closure criterion.",
+      "unresolved_gaps": ["Native JVP is not established through the general Torch API.", "Not all native operation families have Torch wrappers; no uniform wrapper claim.", "Recheck only changed interfaces against old shape/dtype/device/alias/stale-tape acceptance where applicable."],
+      "native_acceptance": "not asserted"
+    },
+    {
+      "old_task": "CE-IS1-QUALIFY",
+      "old_outcome": "Measure complete-path performance and extension friction",
+      "old_acceptance_summary": [
+        "Cold/warm/training/changing-structure comparisons include bytes, launches, and quality.",
+        "Add a custom packer and new operator without central rewrites or mandatory hot-path abstraction overhead.",
+        "Select only from comparable measured evidence and retain fallbacks."
+      ],
+      "current_evidence": [
+        {"claim": "Main sparse performance records compare bounded regimes and complete relevant regions; they preserve alternatives and do not justify one universal sparse-format/strategy choice.", "refs": ["docs/current_implementation.qmd:129-149", "bench/sparse_support/experiments/posting_singleton_v1/REPORT.md", "bench/sparse_support/experiments/csr_union_bitmap/REPORT.md", "docs/performance_validation.qmd"]},
+        {"claim": "Prepared routing has a source/binary-bound final 16-test pass, exact prepared CUDA correctness, and separate memcheck/racecheck/synccheck passes; its owner-cold lifecycle benchmark compares prepared, Python, and dense routes over four shapes/horizons.", "refs": ["bench/sparse_support/experiments/prepared_routing/REPORT.md:1-94", "bench/sparse_support/experiments/prepared_routing/evidence/paired-route-paths.json"]},
+        {"claim": "Prepared-routing evidence supports only its measured synthetic route-table reuse regimes; score refresh is shared/excluded, one query synchronization remains, and it is not biological or full-model training evidence.", "refs": ["bench/sparse_support/experiments/prepared_routing/REPORT.md:34-94"]},
+        {"claim": "The integrated native qualification receipt covers CPU/static builds and host/installed SDK consumers only; it explicitly says no device execution was performed by those commands.", "refs": ["planning/coherence/qualification/native/receipt.json", "planning/coherence/qualification/native/installed_sdk.log", "planning/coherence/qualification/native/native_operators.log", "planning/coherence/qualification/native/native_effects.log"]}
+      ],
+      "recommendation": "Supersede the broad campaign task by carrying mechanism-specific performance boundaries into CE-COHERE-06 and final source/package qualification into CE-COHERE-09. Retain the custom-packer/new-operator friction exercise only if a concrete next extension is selected; do not make it a universal package gate.",
+      "unresolved_gaps": ["No single integrated cold/warm/training/changing-structure campaign is evidenced here.", "The prepared-routing benchmark is not a full training/model campaign; it excludes shared score refresh and measures synthetic route-table reuse.", "The dated current-implementation summary says route performance is pending and should be reconciled with the later source-bound REPORT.md.", "Prior measurements remain workload- and source-specific; no universal winner follows."],
+      "native_acceptance": "not asserted"
+    },
+    {
+      "old_task": "CE-IS1-DOCS",
+      "old_outcome": "Make the library legible to users and future implementers",
+      "old_acceptance_summary": [
+        "Human overview and runnable minimal examples; distinct agent, developer, live-status, and historical records.",
+        "Remove stale status claims and duplicated ledgers while preserving raw evidence."
+      ],
+      "current_evidence": [
+        {"claim": "Current implementation, package boundary, user entry, development route map, and operation limits are documented with explicit maturity boundaries.", "refs": ["README.md", "scope.md", "docs/current_implementation.qmd", "docs/getting_started.qmd", "docs/development/routing.md", "docs/development/python-bindings.md", "planning/coherence/README.md"]},
+        {"claim": "The routing guide separates the standalone CelleraTorch documentation experiment from the actual python/cellerator/torch package.", "refs": ["docs/development/routing.md:46-51"]}
+      ],
+      "recommendation": "Carry remaining docs and package-identity acceptance into CE-COHERE-08; reserve cross-check of final docs against installed behavior, source map, and archived evidence for CE-COHERE-09. Supersede the old standalone task only after root verifies the actual requested doc gates and external metadata state.",
+      "unresolved_gaps": ["This audit did not verify rendered documentation/link checks.", "GitHub repository description update is not evidenced by the files inspected.", "Do not infer that every legacy status fossil was found or removed from the docs alone."],
+      "native_acceptance": "not asserted"
+    },
+    {
+      "old_task": "CE-IS1-INTEGRATE",
+      "old_outcome": "Publish the installed numerical capability handoff",
+      "old_acceptance_summary": [
+        "Installed native and framework consumers pass supported shape/precision/derivative checks.",
+        "Publish source/build-bound provider.json with capabilities and hashed real test evidence; reject fixture/reference-only receipts."
+      ],
+      "current_evidence": [
+        {"claim": "Extracted native matrix-patch/process-port sources have actual integrated/effects-only installed SDK consumer checks, and native operation/effect checks are recorded.", "refs": ["planning/coherence/extraction-map.json", "planning/coherence/qualification/native/native_operators.log", "planning/coherence/qualification/native/native_effects.log", "planning/coherence/qualification/native/native_frontier.log"]},
+        {"claim": "Installed SDK check is a recorded command against a temporary install prefix; qualification/native/receipt.json binds source checkpoint and logs.", "refs": ["planning/coherence/qualification/native/receipt.json", "planning/coherence/qualification/native/installed_sdk.log", "tests/substrate/install/README.md"]},
+        {"claim": "The current evidence is not a claim that all operations have framework adapters, nor that a required integrated-substrate provider.json was published.", "refs": ["docs/current_implementation.qmd:15-42", "planning/integrated-substrate-v1/tasks/CE-IS1-INTEGRATE.md"]}
+      ],
+      "recommendation": "Reconcile the native installed-consumer portion into CE-COHERE-03 and the extant Torch consumer portion into CE-COHERE-04/05/06. Carry a current source/build/capability receipt and precise unsupported-case list into CE-COHERE-09 if that format remains needed. Supersede the old generic handoff only when the root confirms the new accepted handoff does not imply a missing provider.json.",
+      "unresolved_gaps": ["No integrated-substrate provider.json receipt is identified in this reconciliation.", "A current installed Torch consumer matrix across supported operations, precisions, derivatives, and devices is not established.", "Temporary installed SDK proof does not imply a stable published package ABI or sibling-wide capability."],
+      "native_acceptance": "not asserted"
+    },
+    {
+      "old_task": "CE-IS1-CLOSE",
+      "old_outcome": "Accept the deliberate, extensible mathematical library",
+      "old_acceptance_summary": [
+        "Core slice, alternative packing, derivative/lifetime guarantees, and out-of-tree installation pass.",
+        "Preservation ledger has no unexplained loss/orphan; deferred work has an owner and trigger."
+      ],
+      "current_evidence": [
+        {"claim": "Private repository preservation was hash-verified and source/branch dispositions documented; this is preservation evidence only.", "refs": ["planning/coherence/preservation-validation.json", "planning/coherence/preservation.json", "planning/coherence/branches.md", "planning/coherence/archive-disposition.md"]},
+        {"claim": "A source disposition map and routing guide exist; native host operations and installed SDK checks have source-bound logs.", "refs": ["docs/development/source_map/path_map.jsonl", "docs/development/routing.md", "planning/coherence/qualification/native/receipt.json"]},
+        {"claim": "A broad product close is not justified: Torch coverage, integrated GPU performance, complete route performance, docs validation, and managed IS1 worktree lifecycle remain unclosed or unsupported.", "refs": ["docs/current_implementation.qmd:15-43", "planning/coherence/plan.json:545-605", "planning/coherence/workflow-registration.json"]}
+      ],
+      "recommendation": "Supersede the old close task with CE-COHERE-09 as the bounded final integration/qualification outcome, depending on CE-COHERE-07 and CE-COHERE-08 as registered. Preserve completed slices in CE-COHERE-00/01/02/03/04/05/06. Keep unsupported registered-workspace cleanup and any unverified legacy effects as explicit constraints; do not accept the old task as done by ancestry or archive proof.",
+      "unresolved_gaps": ["Final independent package/source-map/docs qualification remains a CE-COHERE-09 acceptance item.", "No universal strategy or complete biological validation is established.", "Managed IS1 worktree cleanup route is unavailable in the current compact workflow; preserve the worktree and records.", "Unknown legacy effects remain unverified and must not be replayed."],
+      "native_acceptance": "not asserted"
+    }
+  ],
+  "root_open_constraints": [
+    "Obtain a supported fresh plan preview and apply only the exact host-issued proposal; this proposal file is not itself a plan mutation.",
+    "Resolve each old task through supported supersession/carry-forward preserving its evidence references and unknown effects; do not mark all five complete.",
+    "Keep future Torch work feature-scoped; no requirement that every native mathematical family be wrapped.",
+    "Keep GPU and performance claims bound to source, binary, workload, and device; prepared-routing performance remains pending.",
+    "Retain explicit provider-receipt and installed Torch coverage gaps if CE-COHERE-09/04 do not consume them.",
+    "Do not close the managed IS1 worktree until a supported cleanup workflow exists."
+  ]
+}

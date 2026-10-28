@@ -1,0 +1,56 @@
+{
+  "owner_id": "cellerator",
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python",
+    "/tmp/cellerator-coherence/tests/prepared_routing/run_cuda_correctness.py",
+    "--device-index",
+    "0",
+    "--torch-module-file",
+    "/tmp/cellerator-gpu-qualification/837a5ce9b910f74412905ad1ee5661f0558c9b132111051e158595861e90a672/_torch.cpython-313-x86_64-linux-gnu.so"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "environment": {
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 4294967296
+      },
+      "selectors": {
+        "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": [
+    "gpu.exclusive"
+  ],
+  "priority_class": "normal",
+  "priority": 50,
+  "timeout_seconds": 900,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-coherence-prepared-correctness-837a5ce9b910-1",
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 0.5,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ],
+  "interruption": {
+    "cancellation_supported": true,
+    "restart_safe": false,
+    "checkpoint_supported": false,
+    "cooperative_yield": false
+  },
+  "schema_version": 1
+}

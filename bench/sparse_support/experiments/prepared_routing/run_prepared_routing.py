@@ -8,6 +8,7 @@ job before invoking it.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import random
@@ -134,6 +135,11 @@ def materialize(result) -> tuple[list[int], list[int]]:
     return offsets.cpu().tolist(), mechanisms.cpu().tolist()
 
 
+def input_digest(ids: torch.Tensor) -> str:
+    host = ids.detach().cpu().contiguous()
+    return hashlib.sha256(host.numpy().tobytes()).hexdigest()
+
+
 def synchronize(device: torch.device) -> None:
     torch.cuda.synchronize(device)
 
@@ -155,6 +161,27 @@ def timed_prepare(function, device: torch.device) -> float:
     synchronize(device)
     elapsed = time.perf_counter() - start
     del value
+    synchronize(device)
+    return elapsed
+
+
+def timed_cold_first_query(owner_factory, query, ids: torch.Tensor,
+                           device: torch.device) -> float:
+    """Time a fresh owner through its first complete query and completion.
+
+    This includes owner construction, device upload, first-query workspace
+    reservation, output construction, and all synchronization needed to make
+    the result usable. PyTorch, the extension, CUDA context, and route rows are
+    initialized before this measurement; it is not process-cold timing.
+    """
+    synchronize(device)
+    start = time.perf_counter()
+    owner = owner_factory()
+    result = query(owner, ids)
+    synchronize(device)
+    elapsed = time.perf_counter() - start
+    del result
+    del owner
     synchronize(device)
     return elapsed
 
@@ -234,11 +261,26 @@ def run_case(native, rows, name, cells, participants, device, seed,
     sparse = sparse_factory()
     dense = dense_factory()
     correctness_checks(native, rows, device, identity, sparse, inputs)
+    input_digests = [input_digest(ids) for ids in inputs]
 
-    prepare_sparse = [timed_prepare(sparse_factory, device) for _ in range(repeats)]
-    prepare_dense = [timed_prepare(dense_factory, device) for _ in range(repeats)]
+    # Keep constructor-only setup as a diagnostic. Lifecycle accounting below
+    # instead uses a fresh owner through its first complete query.
+    constructor_sparse = [timed_prepare(sparse_factory, device)
+                          for _ in range(repeats)]
+    constructor_dense = [timed_prepare(dense_factory, device)
+                         for _ in range(repeats)]
 
     warm_sparse = lambda ids: query_prepared(sparse, ids, identity)
+    cold_queries = {
+        "torch_dense": lambda ids: timed_cold_first_query(
+            dense_factory,
+            lambda owner, values: torch_dense_route_union(values, owner),
+            ids, device),
+        "prepared_postings": lambda ids: timed_cold_first_query(
+            sparse_factory,
+            lambda owner, values: query_prepared(owner, values, identity),
+            ids, device),
+    }
     functions = {
         "incumbent_python": lambda ids: incumbent_python(ids, rows),
         "torch_dense": lambda ids: torch_dense_route_union(ids, dense),
@@ -249,51 +291,88 @@ def run_case(native, rows, name, cells, participants, device, seed,
             fn(inputs[0])
             synchronize(device)
 
-    paired: dict[str, list[float]] = {name: [] for name in functions}
+    paired: dict[str, list[float]] = {
+        label: [0.0] * repeats for label in functions}
+    cold_first: dict[str, list[float]] = {
+        label: [0.0] * repeats for label in cold_queries}
+    repeat_records = {}
     order = list(range(repeats))
     random.Random(seed + 97).shuffle(order)
     timing_order = random.Random(seed + 193)
     for sample in order:
-        ids = inputs[sample % len(inputs)]
-        labels = list(functions)
+        ids = inputs[sample]
+        labels = ["cold:" + label for label in cold_queries]
+        labels.extend("warm:" + label for label in functions)
         timing_order.shuffle(labels)
+        warm_times = {}
+        cold_times = {}
         for label in labels:
-            fn = functions[label]
-            paired[label].append(timed_call(fn, ids, device))
+            phase, method = label.split(":", maxsplit=1)
+            if phase == "cold":
+                elapsed = cold_queries[method](ids)
+                cold_first[method][sample] = elapsed
+                cold_times[method] = elapsed
+            else:
+                elapsed = timed_call(functions[method], ids, device)
+                paired[method][sample] = elapsed
+                warm_times[method] = elapsed
+        repeat_records[sample] = {
+            "repeat_id": f"{name}-{sample:03d}",
+            "input_sample_id": sample,
+            "input_sha256": input_digests[sample],
+            "measurement_order": labels,
+            "cold_first_query_ms": {
+                method: elapsed * 1000.0
+                for method, elapsed in cold_times.items()},
+            "warm_query_ms": {
+                method: elapsed * 1000.0
+                for method, elapsed in warm_times.items()},
+        }
 
     query_ms = {label: median_ms(values) for label, values in paired.items()}
-    prepare_ms = {
+    cold_first_ms = {
         "incumbent_python": 0.0,
-        "torch_dense": median_ms(prepare_dense),
-        "prepared_postings": median_ms(prepare_sparse),
+        "torch_dense": median_ms(cold_first["torch_dense"]),
+        "prepared_postings": median_ms(cold_first["prepared_postings"]),
+    }
+    constructor_setup_ms = {
+        "incumbent_python": 0.0,
+        "torch_dense": median_ms(constructor_dense),
+        "prepared_postings": median_ms(constructor_sparse),
     }
     lifecycle = {}
     paired_comparison = {}
     for horizon in HORIZONS:
         lifecycle[horizon] = {}
+        lifecycle_samples = {
+            "incumbent_python": [
+                horizon * sample for sample in paired["incumbent_python"]],
+            "torch_dense": [cold_first["torch_dense"][i]
+                            + (horizon - 1) * paired["torch_dense"][i]
+                            for i in range(repeats)],
+            "prepared_postings": [cold_first["prepared_postings"][i]
+                                  + (horizon - 1)
+                                  * paired["prepared_postings"][i]
+                                  for i in range(repeats)],
+        }
         for label in functions:
-            total = prepare_ms[label] + horizon * query_ms[label]
+            total = median_ms(lifecycle_samples[label])
             lifecycle[horizon][label] = {
                 "total_ms": total,
                 "per_step_ms": total / horizon,
             }
-        baseline_samples = {
-            "incumbent_python": [horizon * sample
-                                  for sample in paired["incumbent_python"]],
-            "torch_dense": [prepare_dense[i] + horizon * paired["torch_dense"][i]
-                            for i in range(repeats)],
-        }
         paired_comparison[horizon] = {}
         for candidate in ("torch_dense", "prepared_postings"):
-            candidate_samples = [prepare_sparse[i]
-                                 + horizon * paired[candidate][i]
-                                 for i in range(repeats)] if candidate == "prepared_postings" else baseline_samples[candidate]
             paired_comparison[horizon][candidate] = {
-                baseline: paired_improvement(values, candidate_samples,
+                baseline: paired_improvement(values, lifecycle_samples[candidate],
                     seed + horizon * 31 + index)
-                for index, (baseline, values) in enumerate(baseline_samples.items())
+                for index, (baseline, values) in enumerate(lifecycle_samples.items())
                 if baseline != candidate
             }
+        for sample, record in repeat_records.items():
+            record.setdefault("lifecycle_ms", {})[str(horizon)] = {
+                label: lifecycle_samples[label][sample] * 1000.0
+                for label in functions}
     return {
         "case": name,
         "cells": cells,
@@ -301,18 +380,26 @@ def run_case(native, rows, name, cells, participants, device, seed,
         "entity_count": ENTITY_COUNT,
         "mechanism_count": MECHANISM_COUNT,
         "reuse_horizons": list(HORIZONS),
-        "prepare_ms_median": prepare_ms,
+        "constructor_setup_ms_median": constructor_setup_ms,
+        "cold_first_query_ms_median": cold_first_ms,
         "complete_route_query_ms_median": query_ms,
         "lifecycle": lifecycle,
         "paired_lifecycle_improvement": paired_comparison,
+        "paired_repeat_records": [repeat_records[i] for i in range(repeats)],
         "samples_per_query": repeats,
         "warmups_per_query": warmups,
         "timing_note": (
             "Each complete query is wall-clock timed through CUDA completion. "
             "Prepared query includes term adaptation, reverse-posting kernels, "
             "the explicit status/count synchronization, and exact-ID emission. "
-            "Lifecycle total is cold preparation plus horizon times paired "
-            "complete-query median; no latent transition compute is included."
+            "Lifecycle total is fresh-owner construction plus its first "
+            "complete query, then horizon-1 warm complete queries. The first "
+            "prepared query includes workspace reservation; the first dense "
+            "query includes dense matrix construction and upload. Incumbent "
+            "lifecycle is horizon complete queries. PyTorch, the extension, "
+            "CUDA context, route rows, and correctness checks are already "
+            "initialized; cold is owner-cold, not process-cold. No latent "
+            "transition compute is included."
         ),
     }
 
@@ -342,6 +429,11 @@ def main():
         "seed": args.seed,
         "device_index": args.device_index,
         "torch_version": torch.__version__,
+        "initialization_scope": (
+            "PyTorch, extension, CUDA context, route rows, and correctness "
+            "checks are initialized before timing; cold_first_query means a "
+            "fresh route owner through its first complete query, not a "
+            "process-cold measurement."),
         "results": results,
     }
     args.output_json.parent.mkdir(parents=True, exist_ok=True)

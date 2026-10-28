@@ -26,7 +26,28 @@ Tests and admitted GPU job scripts:
 fa0a0b51eb502bba4e2f3f6c11d77bf25a727329cf10723a56825645759d5f16 tests/prepared_routing/test_prepared_routing.py
 f097452d241dd853da2693c7f1b6e578180e27e725430a6ff27bead6a8004ff3 tests/prepared_routing/test_module_route_strategy.py
 31a09078a1c49cda5308822c1280438305598cf3d559974883fbed92d3b5cb9e tests/prepared_routing/run_cuda_correctness.py
-93b354fd1fdbbb8d71c822d6c153e20fdfae507802b8dfb14e52da63e751850c bench/sparse_support/experiments/prepared_routing/run_prepared_routing.py
+b91b252f46a2ab6c87cb28625a54c0e3de979a3f4004aae7443f26cc5613177a bench/sparse_support/experiments/prepared_routing/run_prepared_routing.py
 
 KDA draft SHA-256:
-  3d05d74088f15e11840bd855d828ed3fcd73979adc8608540b3ae0d1aa8340ee bench/sparse_support/experiments/prepared_routing/kda/docs/draft.md
+  58c939c50d6578d8d2e198efc3dbbb04b96f4a16301d923510e31446392ccbb7 bench/sparse_support/experiments/prepared_routing/kda/docs/draft.md
+
+Final GPU qualification source identities:
+8db8763e1b440b3efba569de82b616ff3fc09d28001d269b7bbee3b25b5df8be /tmp/cellerator-final-installed/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so
+2c5debd7142ca93886ec54405c27419b19b1281b639ea71cf03b67b9c82f4d5e python/cellerator/torch/routing.py
+334038cdcbc2587bb991e0fe4c7a1bcc08a5b80560d6eb4280f3380dd46dc134 tests/sparse_support/test_cuda_training.py
+be0929766723e504601e2aa7fe6ef9ef4e2ee002b3757067b11641d394daa0f3 tests/sparse_support/test_transition_routing_tail.py
+a954f25cf3657f8921d32fbd8d8fdc058b48e064c4fbf2bd6a9c0e2730b5fda7 tests/prepared_routing/test_sparse_module_prepared_route.py
+953c6828761ae38b88efe1b27a4ff9f951d882008091b32e44564e547134034e tools/validation/run_coherence_cuda.py
+
+Qualified evidence identities:
+57cbdcae7e954876ac980427c625dcff802ffc1b826697ec2968c66c62f07dac bench/sparse_support/experiments/prepared_routing/REPORT.md
+4bca4e2b11794a1f52926a5002acf16e35704960b0a6e344f5e9871e9e6e1783 bench/sparse_support/experiments/prepared_routing/evidence/paired-route-paths.json
+
+Final qualification jobs (all final-source results cleanup-verified):
+16-test suite plus exact prepared CUDA oracle: 85ba8634-7761-4eb5-a376-52137d79d040
+Compute-Sanitizer memcheck: 9ae53356-9256-40ff-9bb8-0dc795f3e950
+Compute-Sanitizer racecheck: ca486ff7-6b02-4008-96a3-15f62b7830ee
+Compute-Sanitizer synccheck retry: ed28c4ea-641c-4b17-9c25-752b107c840d
+Paired lifecycle timing: 09d3e070-c6ca-4db6-8114-3b51354c14f9
+Superseded synccheck submission (precondition blocked; zero executions): 95004b71-a8ad-494f-9bcf-9b0dbc8ede43
+Earlier correctness snapshot with superseded test assertion: e28037c3-49f9-469b-8b09-e822ac985994

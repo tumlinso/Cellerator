@@ -77,16 +77,25 @@
   training example). Include stress shapes `[256,64]` and `[1024,128]`, with
   entities `4096`, mechanisms `16`, and the existing maximum route degree of 2.
   Synthetic data is plumbing/performance evidence only, not a biological claim.
-- **Evaluation horizons:** cold index construction plus upload, one warm query
-  (ranked forward horizon 1), event-sequence horizons 12 and 16, and 64 repeated
-  queries as an explicit reuse sensitivity. Time full cold preparation and
-  complete warm calls. The prepared call includes query conversion, posting
-  kernels, count/status synchronization, final-ID emission, allocator activity,
-  and returned CSR tensors. Substage times are not isolated because doing so
-  would instrument the hot path; no kernel-only timing is used for a decision.
-  Keep both baselines end-to-end on the same fixed inputs, including current
-  input materialization and output upload. Compute paired lifecycle improvements
-  at each horizon and bootstrap a 95% interval from 21 paired samples.
+- **Evaluation horizons:** one fresh-owner first query (ranked forward horizon
+  1), event-sequence horizons 12 and 16, and 64 repeated queries as an explicit
+  reuse sensitivity. A prepared lifecycle is fresh native index construction
+  and upload plus its first complete query, then `H-1` warm complete queries.
+  This includes the first query's workspace reservation, status/count
+  synchronization, exact-ID emission, output allocation, and returned CSR
+  tensors. The dense baseline includes route-matrix construction and upload
+  plus its first query, then `H-1` warm queries. The incumbent is `H` complete
+  Python-route calls, including input materialization and output upload.
+  Constructor-only timings are retained as diagnostics and do not substitute
+  for first-query lifecycle cost. Before timing, independent-oracle checks run
+  on the frozen inputs. Every paired repeat uses the same input tensor for
+  cold and warm paths across all strategies; JSON records repeat ID, input
+  SHA-256, measurement order, cold-first and warm timings, and lifecycle cost
+  for each horizon. PyTorch, the extension, CUDA context, route rows, and
+  correctness state are initialized before timing; cold means a fresh route
+  owner, not a process-cold run. Five query warmups and 21 paired samples are
+  used. Compute paired lifecycle improvements at each horizon and bootstrap a
+  95% interval from the paired repeat costs.
 - **Success target:** exact semantics and no sanitizer failures are mandatory.
   Keep the candidate opt-in. Claim a useful regime only if paired complete-path
   timings show a positive improvement with 95% confidence for that regime after
@@ -137,9 +146,11 @@ fallback.
 4. After correctness, one finite exclusive V100 job performs paired complete
    path timings for incumbent Python, dense Torch, and prepared postings at
    horizons `1,12,16,64`, using identical fixed route tables and entity inputs,
-   5 warmups and 21 paired samples. Measure cold preparation separately and
-   calculate full lifecycle cost and paired 95% intervals at each horizon. Do
-   not overlap benchmark and sanitizer samples.
+   5 warmups and 21 paired samples. Measure fresh-owner first-query cost for
+   both candidates, plus constructor-only diagnostics, and calculate paired
+   full lifecycle costs with `first_query + (H-1)*warm_query` at each horizon.
+   Preserve the actual repeat IDs, input digests, order, and costs in the JSON
+   receipt. Do not overlap benchmark and sanitizer samples.
 
 ## Local implementation evidence
 

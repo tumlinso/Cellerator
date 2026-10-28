@@ -1,0 +1,161 @@
+{
+  "attempt": {
+    "attempt_id": "f626b6c7-a830-4b94-99c7-54650c4c5d2c",
+    "cleanup_verified": false,
+    "created_at": "2026-10-28T23:03:02.125885Z",
+    "error": {},
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 4294967296.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "claim_id": "1576a813-5b38-4d58-b232-32e2233a09e2",
+      "fencing_token": 1072,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 3,
+            "inventory_observed_at": "2026-10-28T23:02:58.035282+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:84:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-28T23:02:58.035282+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          },
+          "capabilities": [
+            "shared-admission",
+            "whole-device-exclusive-admission",
+            "nvidia-smi-compute-process-telemetry",
+            "memory-accounting-only"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+          "schema_version": 1,
+          "topology": {
+            "links": [],
+            "pci_bus_id": "00000000:84:00.0",
+            "topology_state": "partial"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": null,
+    "finished_at": null,
+    "id": "f626b6c7-a830-4b94-99c7-54650c4c5d2c",
+    "job_id": "4f35e7c3-aeab-400d-82ad-2246ac57ea54",
+    "operation_id": "start:f626b6c7-a830-4b94-99c7-54650c4c5d2c",
+    "result": {},
+    "started_at": null,
+    "state": "starting"
+  },
+  "attempt_count": 1,
+  "attempt_id": "f626b6c7-a830-4b94-99c7-54650c4c5d2c",
+  "blocked_reason": null,
+  "cleanup_verified": false,
+  "created_at": "2026-10-28T23:03:00.932424Z",
+  "decision_id": "2e923e7a-acd6-42ba-98cf-8cd6a4c68ad5",
+  "id": "4f35e7c3-aeab-400d-82ad-2246ac57ea54",
+  "job_id": "4f35e7c3-aeab-400d-82ad-2246ac57ea54",
+  "lease_binding": null,
+  "lease_fencing_token": 1072,
+  "lease_id": "1576a813-5b38-4d58-b232-32e2233a09e2",
+  "lease_state": "active",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": null,
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python",
+      "-m",
+      "unittest",
+      "-v",
+      "test_cuda_training",
+      "test_transition_routing_tail"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CELLERATOR_RUN_CUDA_TESTS": "1",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "/tmp/cellerator-transition-fixed-install:/tmp/cellerator-coherence/tests/sparse_support"
+    },
+    "event_trigger": null,
+    "idempotency_key": "cellerator-coherence-transition-correctness-5be4fef31047-2",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 0.5,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 4294967296.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "gpu.exclusive"
+    ],
+    "timeout_seconds": 900.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "running",
+  "updated_at": "2026-10-28T23:03:02.125885Z"
+}

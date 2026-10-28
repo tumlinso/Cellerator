@@ -1,0 +1,70 @@
+{
+  "owner_id": "cellerator",
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python",
+    "/tmp/cellerator-coherence/bench/sparse_support/experiments/prepared_routing/run_prepared_routing.py",
+    "--device-index",
+    "0",
+    "--torch-module-file",
+    "/tmp/cellerator-final-installed/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+    "--warmups",
+    "5",
+    "--repeats",
+    "21",
+    "--output-json",
+    "/tmp/cellerator-prepared-routing-results/paired-route-paths.json"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "environment": {
+    "PYTHONPATH": "/tmp/cellerator-final-installed",
+    "CELLERATOR_RUN_CUDA_TESTS": "1",
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 4294967296
+      },
+      "selectors": {
+        "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": [
+    "gpu.exclusive"
+  ],
+  "priority_class": "normal",
+  "priority": 50,
+  "timeout_seconds": 1200,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-coherence-prepared-timing-b91b252f-8db8763e-1",
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 0.5,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ],
+  "interruption": {
+    "cancellation_supported": true,
+    "restart_safe": false,
+    "checkpoint_supported": false,
+    "cooperative_yield": false
+  },
+  "schema_version": 1,
+  "dependencies": [
+    "85ba8634-7761-4eb5-a376-52137d79d040",
+    "9ae53356-9256-40ff-9bb8-0dc795f3e950",
+    "ca486ff7-6b02-4008-96a3-15f62b7830ee",
+    "ed28c4ea-641c-4b17-9c25-752b107c840d"
+  ]
+}
