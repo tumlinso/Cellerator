@@ -3,61 +3,75 @@ project(cellerator_i02_tests LANGUAGES CXX)
 enable_testing()
 set(CMAKE_CXX_STANDARD 17)
 get_filename_component(CELLERATOR_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
-add_executable(ce_ccp1_i02_001 implement_cellerator_syntax_completion_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_cellerator_syntax_completion.cc)
-target_include_directories(ce_ccp1_i02_001 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_001 COMMAND ce_ccp1_i02_001)
-add_executable(ce_ccp1_i02_002 implement_biological_type_and_relation_hover_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_biological_type_and_relation_hover.cc)
-target_include_directories(ce_ccp1_i02_002 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_002 COMMAND ce_ccp1_i02_002)
-add_executable(ce_ccp1_i02_003 implement_field_ownership_and_effect_views_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_field_ownership_and_effect_views.cc)
-target_include_directories(ce_ccp1_i02_003 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_003 COMMAND ce_ccp1_i02_003)
-add_executable(ce_ccp1_i02_004 implement_profile_state_at_cursor_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_profile_state_at_cursor.cc)
-target_include_directories(ce_ccp1_i02_004 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_004 COMMAND ce_ccp1_i02_004)
-add_executable(ce_ccp1_i02_005 implement_generation_and_staleness_queries_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_generation_and_staleness_queries.cc)
-target_include_directories(ce_ccp1_i02_005 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_005 COMMAND ce_ccp1_i02_005)
-add_executable(ce_ccp1_i02_006 implement_semantic_ir_at_cursor_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_semantic_ir_at_cursor.cc)
-target_include_directories(ce_ccp1_i02_006 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_006 COMMAND ce_ccp1_i02_006)
-add_executable(ce_ccp1_i02_007 implement_planning_ir_and_candidate_views_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_planning_ir_and_candidate_views.cc)
-target_include_directories(ce_ccp1_i02_007 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_007 COMMAND ce_ccp1_i02_007)
-add_executable(ce_ccp1_i02_008 implement_realization_and_decomposition_visualization_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_realization_and_decomposition_visualization.cc)
-target_include_directories(ce_ccp1_i02_008 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_008 COMMAND ce_ccp1_i02_008)
-add_executable(ce_ccp1_i02_009 implement_why_did_this_candidate_win_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_why_did_this_candidate_win.cc)
-target_include_directories(ce_ccp1_i02_009 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_009 COMMAND ce_ccp1_i02_009)
-add_executable(ce_ccp1_i02_010 implement_opaque_barrier_and_missed_optimization_actions_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_opaque_barrier_and_missed_optimization_actions.cc)
-target_include_directories(ce_ccp1_i02_010 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_010 COMMAND ce_ccp1_i02_010)
-add_executable(ce_ccp1_i02_011 implement_source_to_native_navigation_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_source_to_native_navigation.cc)
-target_include_directories(ce_ccp1_i02_011 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_011 COMMAND ce_ccp1_i02_011)
-add_executable(ce_ccp1_i02_012 implement_inline_ceir_diagnostics_and_completion_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_inline_ceir_diagnostics_and_completion.cc)
-target_include_directories(ce_ccp1_i02_012 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_012 COMMAND ce_ccp1_i02_012)
-add_executable(ce_ccp1_i02_013 benchmark_advanced_semantic_queries_test.cc
+add_executable(cellerator_cellerator_syntax_completion_test cellerator_syntax_completion_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/cellerator_syntax_completion.cc)
+target_include_directories(cellerator_cellerator_syntax_completion_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_001 ALIAS cellerator_cellerator_syntax_completion_test)
+add_test(NAME ce_ccp1_i02_001 COMMAND cellerator_cellerator_syntax_completion_test)
+add_executable(cellerator_biological_type_and_relation_hover_test biological_type_and_relation_hover_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/biological_type_and_relation_hover.cc)
+target_include_directories(cellerator_biological_type_and_relation_hover_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_002 ALIAS cellerator_biological_type_and_relation_hover_test)
+add_test(NAME ce_ccp1_i02_002 COMMAND cellerator_biological_type_and_relation_hover_test)
+add_executable(cellerator_field_ownership_and_effect_views_test field_ownership_and_effect_views_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/field_ownership_and_effect_views.cc)
+target_include_directories(cellerator_field_ownership_and_effect_views_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_003 ALIAS cellerator_field_ownership_and_effect_views_test)
+add_test(NAME ce_ccp1_i02_003 COMMAND cellerator_field_ownership_and_effect_views_test)
+add_executable(cellerator_profile_state_at_cursor_test profile_state_at_cursor_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/profile_state_at_cursor.cc)
+target_include_directories(cellerator_profile_state_at_cursor_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_004 ALIAS cellerator_profile_state_at_cursor_test)
+add_test(NAME ce_ccp1_i02_004 COMMAND cellerator_profile_state_at_cursor_test)
+add_executable(cellerator_generation_and_staleness_queries_test generation_and_staleness_queries_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/generation_and_staleness_queries.cc)
+target_include_directories(cellerator_generation_and_staleness_queries_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_005 ALIAS cellerator_generation_and_staleness_queries_test)
+add_test(NAME ce_ccp1_i02_005 COMMAND cellerator_generation_and_staleness_queries_test)
+add_executable(cellerator_semantic_ir_at_cursor_test semantic_ir_at_cursor_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/semantic_ir_at_cursor.cc)
+target_include_directories(cellerator_semantic_ir_at_cursor_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_006 ALIAS cellerator_semantic_ir_at_cursor_test)
+add_test(NAME ce_ccp1_i02_006 COMMAND cellerator_semantic_ir_at_cursor_test)
+add_executable(cellerator_planning_ir_and_candidate_views_test planning_ir_and_candidate_views_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/planning_ir_and_candidate_views.cc)
+target_include_directories(cellerator_planning_ir_and_candidate_views_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_007 ALIAS cellerator_planning_ir_and_candidate_views_test)
+add_test(NAME ce_ccp1_i02_007 COMMAND cellerator_planning_ir_and_candidate_views_test)
+add_executable(cellerator_realization_and_decomposition_visualization_test realization_and_decomposition_visualization_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/realization_and_decomposition_visualization.cc)
+target_include_directories(cellerator_realization_and_decomposition_visualization_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_008 ALIAS cellerator_realization_and_decomposition_visualization_test)
+add_test(NAME ce_ccp1_i02_008 COMMAND cellerator_realization_and_decomposition_visualization_test)
+add_executable(cellerator_candidate_rationale_view_test candidate_rationale_view_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/candidate_rationale_view.cc)
+target_include_directories(cellerator_candidate_rationale_view_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_009 ALIAS cellerator_candidate_rationale_view_test)
+add_test(NAME ce_ccp1_i02_009 COMMAND cellerator_candidate_rationale_view_test)
+add_executable(cellerator_opaque_barrier_and_missed_optimization_actions_test opaque_barrier_and_missed_optimization_actions_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/opaque_barrier_and_missed_optimization_actions.cc)
+target_include_directories(cellerator_opaque_barrier_and_missed_optimization_actions_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_010 ALIAS cellerator_opaque_barrier_and_missed_optimization_actions_test)
+add_test(NAME ce_ccp1_i02_010 COMMAND cellerator_opaque_barrier_and_missed_optimization_actions_test)
+add_executable(cellerator_source_to_native_navigation_test source_to_native_navigation_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/source_to_native_navigation.cc)
+target_include_directories(cellerator_source_to_native_navigation_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_011 ALIAS cellerator_source_to_native_navigation_test)
+add_test(NAME ce_ccp1_i02_011 COMMAND cellerator_source_to_native_navigation_test)
+add_executable(cellerator_inline_ceir_diagnostics_and_completion_test inline_ceir_diagnostics_and_completion_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/inline_ceir_diagnostics_and_completion.cc)
+target_include_directories(cellerator_inline_ceir_diagnostics_and_completion_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_012 ALIAS cellerator_inline_ceir_diagnostics_and_completion_test)
+add_test(NAME ce_ccp1_i02_012 COMMAND cellerator_inline_ceir_diagnostics_and_completion_test)
+add_executable(cellerator_benchmark_advanced_semantic_queries_test benchmark_advanced_semantic_queries_test.cc
   ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/benchmark_advanced_semantic_queries.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_cellerator_syntax_completion.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_profile_state_at_cursor.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_why_did_this_candidate_win.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_semantic_ir_at_cursor.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_realization_and_decomposition_visualization.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_source_to_native_navigation.cc)
-target_include_directories(ce_ccp1_i02_013 PRIVATE ${CELLERATOR_ROOT})
-add_test(NAME ce_ccp1_i02_013 COMMAND ce_ccp1_i02_013)
-add_executable(ce_ccp1_i02_014 freeze_cellerator_aware_celleratord_acceptance_test.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/freeze_cellerator_aware_celleratord_acceptance.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_cellerator_syntax_completion.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_biological_type_and_relation_hover.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_profile_state_at_cursor.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_generation_and_staleness_queries.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_semantic_ir_at_cursor.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_why_did_this_candidate_win.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_realization_and_decomposition_visualization.cc
-  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_source_to_native_navigation.cc)
-target_include_directories(ce_ccp1_i02_014 PRIVATE ${CELLERATOR_ROOT} ${CELLERATOR_ROOT}/include)
-add_test(NAME ce_ccp1_i02_014 COMMAND ce_ccp1_i02_014)
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/cellerator_syntax_completion.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/profile_state_at_cursor.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/candidate_rationale_view.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/semantic_ir_at_cursor.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/realization_and_decomposition_visualization.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/source_to_native_navigation.cc)
+target_include_directories(cellerator_benchmark_advanced_semantic_queries_test PRIVATE ${CELLERATOR_ROOT})
+add_executable(ce_ccp1_i02_013 ALIAS cellerator_benchmark_advanced_semantic_queries_test)
+add_test(NAME ce_ccp1_i02_013 COMMAND cellerator_benchmark_advanced_semantic_queries_test)
+add_executable(cellerator_celleratord_compatibility_acceptance_test celleratord_compatibility_acceptance_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/celleratord_compatibility_acceptance.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/cellerator_syntax_completion.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/biological_type_and_relation_hover.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/profile_state_at_cursor.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/generation_and_staleness_queries.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/semantic_ir_at_cursor.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/candidate_rationale_view.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/realization_and_decomposition_visualization.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/source_to_native_navigation.cc)
+target_include_directories(cellerator_celleratord_compatibility_acceptance_test PRIVATE ${CELLERATOR_ROOT} ${CELLERATOR_ROOT}/include)
+add_executable(ce_ccp1_i02_014 ALIAS cellerator_celleratord_compatibility_acceptance_test)
+add_test(NAME ce_ccp1_i02_014 COMMAND cellerator_celleratord_compatibility_acceptance_test)

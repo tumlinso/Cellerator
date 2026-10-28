@@ -1,5 +1,5 @@
 #pragma once
-#include <Cellerator/compiler/lto/freeze_the_ceir_companion_object_artifact_contract_v1.hh>
+#include <Cellerator/compiler/lto/ceir_companion_object_artifact_contract_v1.hh>
 #include <cstdint>
 #include <string>
 #include <vector>

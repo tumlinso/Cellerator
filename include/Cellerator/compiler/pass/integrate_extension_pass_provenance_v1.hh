@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Cellerator/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy_v1.hh>
-#include <Cellerator/compiler/pass/implement_pass_manager_and_analysis_invalidation_v1.hh>
-#include <Cellerator/compiler/pass/implement_transform_sandbox_policy_as_opt_in_not_authori_v1.hh>
+#include <Cellerator/compiler/pass/pass_pipeline_stage_taxonomy_v1.hh>
+#include <Cellerator/compiler/pass/pass_manager_and_analysis_invalidation_v1.hh>
+#include <Cellerator/compiler/pass/transform_sandbox_policy_v1.hh>
 
 #include <cstdint>
 #include <string>

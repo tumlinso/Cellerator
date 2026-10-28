@@ -3,96 +3,107 @@ project(cellerator_compiler_pass_tests LANGUAGES CXX)
 enable_testing()
 get_filename_component(CELLERATOR_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../.." ABSOLUTE)
 
-add_executable(ce_ccp1_g02_001
-  freeze_the_pass_pipeline_stage_taxonomy_test.cc
-  ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy.cc)
-target_include_directories(ce_ccp1_g02_001 PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(ce_ccp1_g02_001 PRIVATE cxx_std_17)
-target_compile_options(ce_ccp1_g02_001 PRIVATE -Wall -Wextra -Werror)
-add_test(NAME ce_ccp1_g02_001 COMMAND ce_ccp1_g02_001)
+add_executable(cellerator_pass_pipeline_stage_taxonomy_test
+  pass_pipeline_stage_taxonomy_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/pass_pipeline_stage_taxonomy.cc)
+target_include_directories(cellerator_pass_pipeline_stage_taxonomy_test PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(cellerator_pass_pipeline_stage_taxonomy_test PRIVATE cxx_std_17)
+target_compile_options(cellerator_pass_pipeline_stage_taxonomy_test PRIVATE -Wall -Wextra -Werror)
+add_executable(ce_ccp1_g02_001 ALIAS cellerator_pass_pipeline_stage_taxonomy_test)
+add_test(NAME ce_ccp1_g02_001 COMMAND cellerator_pass_pipeline_stage_taxonomy_test)
 
-add_executable(ce_ccp1_g02_002
-  implement_pass_manager_and_analysis_invalidation_test.cc
-  ${CELLERATOR_ROOT}/src/compiler/pass/implement_pass_manager_and_analysis_invalidation.cc
-  ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy.cc)
-target_include_directories(ce_ccp1_g02_002 PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(ce_ccp1_g02_002 PRIVATE cxx_std_17)
-target_compile_options(ce_ccp1_g02_002 PRIVATE -Wall -Wextra -Werror)
-add_test(NAME ce_ccp1_g02_002 COMMAND ce_ccp1_g02_002)
+add_executable(cellerator_pass_manager_and_analysis_invalidation_test
+  pass_manager_and_analysis_invalidation_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/pass_manager_and_analysis_invalidation.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/pass_pipeline_stage_taxonomy.cc)
+target_include_directories(cellerator_pass_manager_and_analysis_invalidation_test PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(cellerator_pass_manager_and_analysis_invalidation_test PRIVATE cxx_std_17)
+target_compile_options(cellerator_pass_manager_and_analysis_invalidation_test PRIVATE -Wall -Wextra -Werror)
+add_executable(ce_ccp1_g02_002 ALIAS cellerator_pass_manager_and_analysis_invalidation_test)
+add_test(NAME ce_ccp1_g02_002 COMMAND cellerator_pass_manager_and_analysis_invalidation_test)
 
-add_executable(ce_ccp1_g02_003
-  implement_pipeline_configuration_syntax_and_apis_test.cc
-  ${CELLERATOR_ROOT}/src/compiler/pass/implement_pipeline_configuration_syntax_and_apis.cc
-  ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy.cc)
-target_include_directories(ce_ccp1_g02_003 PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(ce_ccp1_g02_003 PRIVATE cxx_std_17)
-target_compile_options(ce_ccp1_g02_003 PRIVATE -Wall -Wextra -Werror)
-add_test(NAME ce_ccp1_g02_003 COMMAND ce_ccp1_g02_003)
+add_executable(cellerator_pipeline_configuration_syntax_and_apis_test
+  pipeline_configuration_syntax_and_apis_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/pipeline_configuration_syntax_and_apis.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/pass_pipeline_stage_taxonomy.cc)
+target_include_directories(cellerator_pipeline_configuration_syntax_and_apis_test PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(cellerator_pipeline_configuration_syntax_and_apis_test PRIVATE cxx_std_17)
+target_compile_options(cellerator_pipeline_configuration_syntax_and_apis_test PRIVATE -Wall -Wextra -Werror)
+add_executable(ce_ccp1_g02_003 ALIAS cellerator_pipeline_configuration_syntax_and_apis_test)
+add_test(NAME ce_ccp1_g02_003 COMMAND cellerator_pipeline_configuration_syntax_and_apis_test)
 
-add_executable(ce_ccp1_g02_004
-  implement_custom_semantic_pass_api_test.cc
-  ${CELLERATOR_ROOT}/src/compiler/pass/implement_custom_semantic_pass_api.cc)
-target_include_directories(ce_ccp1_g02_004 PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(ce_ccp1_g02_004 PRIVATE cxx_std_17)
-target_compile_options(ce_ccp1_g02_004 PRIVATE -Wall -Wextra -Werror)
-target_compile_definitions(ce_ccp1_g02_004 PRIVATE
+add_executable(cellerator_custom_semantic_pass_api_test
+  custom_semantic_pass_api_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/custom_semantic_pass_api.cc)
+target_include_directories(cellerator_custom_semantic_pass_api_test PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(cellerator_custom_semantic_pass_api_test PRIVATE cxx_std_17)
+target_compile_options(cellerator_custom_semantic_pass_api_test PRIVATE -Wall -Wextra -Werror)
+target_compile_definitions(cellerator_custom_semantic_pass_api_test PRIVATE
   CELLERATOR_TEST_INCLUDE_ROOT="${CELLERATOR_ROOT}/include")
-target_link_libraries(ce_ccp1_g02_004 PRIVATE dl)
-add_test(NAME ce_ccp1_g02_004 COMMAND ce_ccp1_g02_004)
+target_link_libraries(cellerator_custom_semantic_pass_api_test PRIVATE dl)
+add_executable(ce_ccp1_g02_004 ALIAS cellerator_custom_semantic_pass_api_test)
+add_test(NAME ce_ccp1_g02_004 COMMAND cellerator_custom_semantic_pass_api_test)
 
-add_executable(ce_ccp1_g02_005
-  implement_custom_planning_pass_api_test.cc
-  ${CELLERATOR_ROOT}/src/compiler/pass/implement_custom_planning_pass_api.cc)
-target_include_directories(ce_ccp1_g02_005 PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(ce_ccp1_g02_005 PRIVATE cxx_std_17)
-target_compile_options(ce_ccp1_g02_005 PRIVATE -Wall -Wextra -Werror)
-target_compile_definitions(ce_ccp1_g02_005 PRIVATE
+add_executable(cellerator_custom_planning_pass_api_test
+  custom_planning_pass_api_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/custom_planning_pass_api.cc)
+target_include_directories(cellerator_custom_planning_pass_api_test PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(cellerator_custom_planning_pass_api_test PRIVATE cxx_std_17)
+target_compile_options(cellerator_custom_planning_pass_api_test PRIVATE -Wall -Wextra -Werror)
+target_compile_definitions(cellerator_custom_planning_pass_api_test PRIVATE
   CELLERATOR_TEST_INCLUDE_ROOT="${CELLERATOR_ROOT}/include")
-target_link_libraries(ce_ccp1_g02_005 PRIVATE dl)
-add_test(NAME ce_ccp1_g02_005 COMMAND ce_ccp1_g02_005)
+target_link_libraries(cellerator_custom_planning_pass_api_test PRIVATE dl)
+add_executable(ce_ccp1_g02_005 ALIAS cellerator_custom_planning_pass_api_test)
+add_test(NAME ce_ccp1_g02_005 COMMAND cellerator_custom_planning_pass_api_test)
 
-add_executable(ce_ccp1_g02_006
-  implement_custom_realization_pass_api_test.cc
-  ${CELLERATOR_ROOT}/src/compiler/pass/implement_custom_realization_pass_api.cc)
-target_include_directories(ce_ccp1_g02_006 PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(ce_ccp1_g02_006 PRIVATE cxx_std_17)
-target_compile_options(ce_ccp1_g02_006 PRIVATE -Wall -Wextra -Werror)
-target_compile_definitions(ce_ccp1_g02_006 PRIVATE
+add_executable(cellerator_custom_realization_pass_api_test
+  custom_realization_pass_api_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/custom_realization_pass_api.cc)
+target_include_directories(cellerator_custom_realization_pass_api_test PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(cellerator_custom_realization_pass_api_test PRIVATE cxx_std_17)
+target_compile_options(cellerator_custom_realization_pass_api_test PRIVATE -Wall -Wextra -Werror)
+target_compile_definitions(cellerator_custom_realization_pass_api_test PRIVATE
   CELLERATOR_TEST_INCLUDE_ROOT="${CELLERATOR_ROOT}/include")
-target_link_libraries(ce_ccp1_g02_006 PRIVATE dl)
-add_test(NAME ce_ccp1_g02_006 COMMAND ce_ccp1_g02_006)
+target_link_libraries(cellerator_custom_realization_pass_api_test PRIVATE dl)
+add_executable(ce_ccp1_g02_006 ALIAS cellerator_custom_realization_pass_api_test)
+add_test(NAME ce_ccp1_g02_006 COMMAND cellerator_custom_realization_pass_api_test)
 
-add_executable(ce_ccp1_g02_007
-    implement_complete_built_in_stage_replacement_test.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/implement_complete_built_in_stage_replacement.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy.cc)
-target_include_directories(ce_ccp1_g02_007 PRIVATE ${CELLERATOR_ROOT}/include)
-add_test(NAME ce_ccp1_g02_007 COMMAND ce_ccp1_g02_007)
+add_executable(cellerator_built_in_stage_replacement_test
+    built_in_stage_replacement_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/built_in_stage_replacement.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/pass_pipeline_stage_taxonomy.cc)
+target_include_directories(cellerator_built_in_stage_replacement_test PRIVATE ${CELLERATOR_ROOT}/include)
+add_executable(ce_ccp1_g02_007 ALIAS cellerator_built_in_stage_replacement_test)
+add_test(NAME ce_ccp1_g02_007 COMMAND cellerator_built_in_stage_replacement_test)
 
-add_executable(ce_ccp1_g02_008
-    define_extensible_operation_type_and_attribute_registrat_test.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/define_extensible_operation_type_and_attribute_registrat.cc)
-target_include_directories(ce_ccp1_g02_008 PRIVATE ${CELLERATOR_ROOT}/include)
-add_test(NAME ce_ccp1_g02_008 COMMAND ce_ccp1_g02_008)
+add_executable(cellerator_operation_attribute_registration_test
+    operation_attribute_registration_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/operation_attribute_registration.cc)
+target_include_directories(cellerator_operation_attribute_registration_test PRIVATE ${CELLERATOR_ROOT}/include)
+add_executable(ce_ccp1_g02_008 ALIAS cellerator_operation_attribute_registration_test)
+add_test(NAME ce_ccp1_g02_008 COMMAND cellerator_operation_attribute_registration_test)
 
-add_executable(ce_ccp1_g02_009
-    implement_unknown_extension_preservation_and_forwarding_test.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/implement_unknown_extension_preservation_and_forwarding.cc)
-target_include_directories(ce_ccp1_g02_009 PRIVATE ${CELLERATOR_ROOT}/include)
-add_test(NAME ce_ccp1_g02_009 COMMAND ce_ccp1_g02_009)
+add_executable(cellerator_unknown_extension_preservation_and_forwarding_test
+    unknown_extension_preservation_and_forwarding_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/unknown_extension_preservation_and_forwarding.cc)
+target_include_directories(cellerator_unknown_extension_preservation_and_forwarding_test PRIVATE ${CELLERATOR_ROOT}/include)
+add_executable(ce_ccp1_g02_009 ALIAS cellerator_unknown_extension_preservation_and_forwarding_test)
+add_test(NAME ce_ccp1_g02_009 COMMAND cellerator_unknown_extension_preservation_and_forwarding_test)
 
-add_executable(ce_ccp1_g02_010
-    implement_extension_capability_negotiation_test.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/implement_extension_capability_negotiation.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/implement_unknown_extension_preservation_and_forwarding.cc)
-target_include_directories(ce_ccp1_g02_010 PRIVATE ${CELLERATOR_ROOT}/include)
-add_test(NAME ce_ccp1_g02_010 COMMAND ce_ccp1_g02_010)
+add_executable(cellerator_extension_capability_negotiation_test
+    extension_capability_negotiation_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/extension_capability_negotiation.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/unknown_extension_preservation_and_forwarding.cc)
+target_include_directories(cellerator_extension_capability_negotiation_test PRIVATE ${CELLERATOR_ROOT}/include)
+add_executable(ce_ccp1_g02_010 ALIAS cellerator_extension_capability_negotiation_test)
+add_test(NAME ce_ccp1_g02_010 COMMAND cellerator_extension_capability_negotiation_test)
 
-add_executable(ce_ccp1_g02_011
-    implement_compiler_prelude_regions_test.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/implement_compiler_prelude_regions.cc)
-target_include_directories(ce_ccp1_g02_011 PRIVATE ${CELLERATOR_ROOT}/include)
-add_test(NAME ce_ccp1_g02_011 COMMAND ce_ccp1_g02_011)
+add_executable(cellerator_compiler_prelude_regions_test
+    compiler_prelude_regions_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/compiler_prelude_regions.cc)
+target_include_directories(cellerator_compiler_prelude_regions_test PRIVATE ${CELLERATOR_ROOT}/include)
+add_executable(ce_ccp1_g02_011 ALIAS cellerator_compiler_prelude_regions_test)
+add_test(NAME ce_ccp1_g02_011 COMMAND cellerator_compiler_prelude_regions_test)
 
 add_executable(ce_ccp1_g02_012
     compile_same_translation_unit_transforms_in_an_early_hos_test.cc
@@ -101,11 +112,12 @@ target_include_directories(ce_ccp1_g02_012 PRIVATE ${CELLERATOR_ROOT}/include)
 target_link_libraries(ce_ccp1_g02_012 PRIVATE dl)
 add_test(NAME ce_ccp1_g02_012 COMMAND ce_ccp1_g02_012)
 
-add_executable(ce_ccp1_g02_013
-    implement_bounded_meta_generation_and_staging_test.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/implement_bounded_meta_generation_and_staging.cc)
-target_include_directories(ce_ccp1_g02_013 PRIVATE ${CELLERATOR_ROOT}/include)
-add_test(NAME ce_ccp1_g02_013 COMMAND ce_ccp1_g02_013)
+add_executable(cellerator_bounded_meta_generation_and_staging_test
+    bounded_meta_generation_and_staging_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/bounded_meta_generation_and_staging.cc)
+target_include_directories(cellerator_bounded_meta_generation_and_staging_test PRIVATE ${CELLERATOR_ROOT}/include)
+add_executable(ce_ccp1_g02_013 ALIAS cellerator_bounded_meta_generation_and_staging_test)
+add_test(NAME ce_ccp1_g02_013 COMMAND cellerator_bounded_meta_generation_and_staging_test)
 
 add_executable(ce_ccp1_g02_014
     cache_compiled_transforms_safely_test.cc
@@ -113,32 +125,35 @@ add_executable(ce_ccp1_g02_014
 target_include_directories(ce_ccp1_g02_014 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_g02_014 COMMAND ce_ccp1_g02_014)
 
-add_executable(ce_ccp1_g02_015
-    implement_transform_sandbox_policy_as_opt_in_not_authori_test.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/implement_transform_sandbox_policy_as_opt_in_not_authori.cc)
-target_include_directories(ce_ccp1_g02_015 PRIVATE ${CELLERATOR_ROOT}/include)
-add_test(NAME ce_ccp1_g02_015 COMMAND ce_ccp1_g02_015)
+add_executable(cellerator_transform_sandbox_policy_test
+    transform_sandbox_policy_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/transform_sandbox_policy.cc)
+target_include_directories(cellerator_transform_sandbox_policy_test PRIVATE ${CELLERATOR_ROOT}/include)
+add_executable(ce_ccp1_g02_015 ALIAS cellerator_transform_sandbox_policy_test)
+add_test(NAME ce_ccp1_g02_015 COMMAND cellerator_transform_sandbox_policy_test)
 
 add_executable(ce_ccp1_g02_016
     integrate_extension_pass_provenance_test.cc
     ${CELLERATOR_ROOT}/src/compiler/pass/integrate_extension_pass_provenance.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy.cc)
+    ${CELLERATOR_ROOT}/src/compiler/pass/pass_pipeline_stage_taxonomy.cc)
 target_include_directories(ce_ccp1_g02_016 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_g02_016 COMMAND ce_ccp1_g02_016)
 
-add_executable(ce_ccp1_g02_017
-    deliver_same_compilation_self_transformation_test.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/deliver_same_compilation_self_transformation.cc
+add_executable(cellerator_same_compilation_self_transformation_test
+    same_compilation_self_transformation_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/same_compilation_self_transformation.cc
     ${CELLERATOR_ROOT}/src/compiler/pass/cache_compiled_transforms_safely.cc
     ${CELLERATOR_ROOT}/src/compiler/pass/compile_same_translation_unit_transforms_in_an_early_hos.cc)
-target_include_directories(ce_ccp1_g02_017 PRIVATE ${CELLERATOR_ROOT}/include)
-target_link_libraries(ce_ccp1_g02_017 PRIVATE dl)
-add_test(NAME ce_ccp1_g02_017 COMMAND ce_ccp1_g02_017)
+target_include_directories(cellerator_same_compilation_self_transformation_test PRIVATE ${CELLERATOR_ROOT}/include)
+target_link_libraries(cellerator_same_compilation_self_transformation_test PRIVATE dl)
+add_executable(ce_ccp1_g02_017 ALIAS cellerator_same_compilation_self_transformation_test)
+add_test(NAME ce_ccp1_g02_017 COMMAND cellerator_same_compilation_self_transformation_test)
 
-add_executable(ce_ccp1_g02_018
-    freeze_the_open_compiler_extension_surface_test.cc
-    ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_open_compiler_extension_surface.cc)
-target_include_directories(ce_ccp1_g02_018 PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_definitions(ce_ccp1_g02_018 PRIVATE
+add_executable(cellerator_open_compiler_extension_surface_test
+    open_compiler_extension_surface_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/open_compiler_extension_surface.cc)
+target_include_directories(cellerator_open_compiler_extension_surface_test PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_definitions(cellerator_open_compiler_extension_surface_test PRIVATE
     CELLERATOR_TEST_INCLUDE_ROOT="${CELLERATOR_ROOT}/include")
-add_test(NAME ce_ccp1_g02_018 COMMAND ce_ccp1_g02_018)
+add_executable(ce_ccp1_g02_018 ALIAS cellerator_open_compiler_extension_surface_test)
+add_test(NAME ce_ccp1_g02_018 COMMAND cellerator_open_compiler_extension_surface_test)

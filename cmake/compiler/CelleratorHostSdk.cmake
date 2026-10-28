@@ -2,8 +2,8 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 add_library(libCellerator STATIC
-    src/compiler/driver/deliver_the_driver_passthrough_milestone.cc
-    src/compiler/tooling/freeze_the_celleratord_architecture.cc)
+    src/compiler/driver/driver_passthrough_milestone.cc
+    src/compiler/tooling/celleratord_architecture.cc)
 add_library(Cellerator::libCellerator ALIAS libCellerator)
 target_include_directories(libCellerator PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -11,9 +11,9 @@ target_include_directories(libCellerator PUBLIC
 target_compile_features(libCellerator PUBLIC cxx_std_17)
 set_target_properties(libCellerator PROPERTIES OUTPUT_NAME Cellerator)
 
-add_executable(cellerator tools/cellerator/deliver_the_driver_passthrough_milestone.cc)
+add_executable(cellerator tools/cellerator/driver_passthrough.cc)
 target_link_libraries(cellerator PRIVATE libCellerator)
-add_executable(celleratord tools/celleratord/freeze_the_celleratord_architecture.cc)
+add_executable(celleratord tools/celleratord/celleratord_architecture.cc)
 target_link_libraries(celleratord PRIVATE libCellerator)
 
 install(TARGETS libCellerator cellerator celleratord

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compiler/profile/define_named_profile_environments_and_alternatives_v1.hh>
+#include <Cellerator/compiler/profile/named_profile_environments_and_alternatives_v1.hh>
 #include <Cellerator/compiler/profile/represent_domain_axis_relation_and_support_evidence_v1.hh>
 #include <Cellerator/compiler/profile/represent_mutability_recurrence_and_reuse_evidence_v1.hh>
 #include <Cellerator/compiler/profile/represent_value_and_numerical_evidence_v1.hh>

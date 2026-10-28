@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compiler/frontend/cxx/freeze_the_upstream_clang_adapter_boundary_v1.hh>
+#include <Cellerator/compiler/frontend/cxx/upstream_clang_adapter_boundary_v1.hh>
 
 #include <cstdint>
 #include <limits>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/compiler/composition/define_the_concrete_cellshard_materialization_request_se_v1.hh>
-#include <Cellerator/compiler/composition/deliver_the_profile_to_portable_ruleset_slice_v1.hh>
+#include <Cellerator/compiler/composition/concrete_cellshard_materialization_request_se_v1.hh>
+#include <Cellerator/compiler/composition/profile_to_portable_ruleset_slice_v1.hh>
 #include <Cellerator/compiler/composition/import_cross_operation_rewrite_and_fusion_search_v1.hh>
 #include <Cellerator/compiler/composition/import_global_operation_graph_ir_v1.hh>
 #include <Cellerator/compiler/composition/import_portable_schedule_ruleset_representation_v1.hh>

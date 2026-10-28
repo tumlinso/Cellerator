@@ -1,5 +1,5 @@
-#include <Cellerator/compiler/sema/implement_operation_kind_resolution_v1.hh>
-#include <Cellerator/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op_v1.hh>
+#include <Cellerator/compiler/sema/operation_kind_resolution_v1.hh>
+#include <Cellerator/compiler/ir/semantic/bundle_chain_moments_hierarchy_and_exchange_op_v1.hh>
 #include <cassert>
 
 using namespace cellerator::compiler::sema::v1;

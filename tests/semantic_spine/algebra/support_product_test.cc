@@ -1,6 +1,6 @@
 #include <Cellerator/compute/decomposition/support_embedding_v1.hh>
 
-#include <Cellerator/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio_v1.hh>
+#include <Cellerator/compiler/ir/semantic/contraction_segment_normalization_v1.hh>
 
 #include <cassert>
 #include <cstdint>

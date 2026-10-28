@@ -49,16 +49,16 @@ foreach(name lowering source_slice diagnostic numeric_transport)
     target_link_libraries(ceSpineFrontend_${name} PRIVATE cellerator_spine_frontend)
 endforeach()
 target_sources(ceSpineFrontend_numeric_transport PRIVATE src/compute/operation/operation_core_v2/schema.cc)
-spine_test(ceSpineFrontend_legacy tests/compiler/semantic_ir/implement_relation_apply_and_transpose_operations_test.cc)
+spine_test(ceSpineFrontend_legacy tests/compiler/semantic_ir/relation_apply_and_transpose_operations_test.cc)
 target_link_libraries(ceSpineFrontend_legacy PRIVATE cellerator_spine_frontend)
 spine_suite(ceSpineFrontendTest 0 ceSpineFrontend_lowering ceSpineFrontend_source_slice ceSpineFrontend_diagnostic ceSpineFrontend_numeric_transport ceSpineFrontend_legacy)
 
 add_library(cellerator_spine_algebra STATIC
     src/compute/decomposition/support_embedding_v1.cc
     src/compute/operation/operation_core_v2/schema.cc
-    src/compiler/sema/implement_operation_kind_resolution.cc
-    src/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op.cc
-    src/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio.cc)
+    src/compiler/sema/operation_kind_resolution.cc
+    src/compiler/ir/semantic/bundle_chain_moments_hierarchy_and_exchange_op.cc
+    src/compiler/ir/semantic/contraction_segment_normalization.cc)
 target_include_directories(cellerator_spine_algebra PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_compile_features(cellerator_spine_algebra PUBLIC cxx_std_17)
 foreach(name support_product classification)
@@ -66,9 +66,9 @@ foreach(name support_product classification)
     target_link_libraries(ceSpineAlgebra_${name} PRIVATE cellerator_spine_algebra)
 endforeach()
 spine_test(ceSpineAlgebra_legacy_support tests/jbc/decomposition/test_support_embedding_v1.cc)
-spine_test(ceSpineAlgebra_legacy_classification tests/compiler/sema/implement_operation_kind_resolution_test.cc)
-spine_test(ceSpineAlgebra_legacy_graph tests/compiler/semantic_ir/implement_bundle_chain_moments_hierarchy_and_exchange_op_test.cc)
-spine_test(ceSpineAlgebra_legacy_aggregate tests/compiler/semantic_ir/implement_contraction_segment_and_normalization_operatio_test.cc)
+spine_test(ceSpineAlgebra_legacy_classification tests/compiler/sema/operation_kind_resolution_test.cc)
+spine_test(ceSpineAlgebra_legacy_graph tests/compiler/semantic_ir/bundle_chain_moments_hierarchy_and_exchange_op_test.cc)
+spine_test(ceSpineAlgebra_legacy_aggregate tests/compiler/semantic_ir/contraction_segment_normalization_test.cc)
 foreach(name legacy_support legacy_classification legacy_graph legacy_aggregate)
     target_link_libraries(ceSpineAlgebra_${name} PRIVATE cellerator_spine_algebra)
 endforeach()

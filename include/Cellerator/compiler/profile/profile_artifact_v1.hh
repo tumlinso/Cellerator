@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compiler/profile/implement_sectioned_binary_profile_storage_v1.hh>
+#include <Cellerator/compiler/profile/sectioned_binary_profile_storage_v1.hh>
 #include <Cellerator/compiler/profile/represent_evidence_provenance_and_revision_v1.hh>
 
 #include <cstdint>

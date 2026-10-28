@@ -1,7 +1,7 @@
-#include <Cellerator/compiler/planning/implement_planning_cache_and_invalidation_v1.hh>
+#include <Cellerator/compiler/planning/planning_cache_and_invalidation_v1.hh>
 #include <Cellerator/compute/support/adaptive_support.hh>
-#include <Cellerator/compiler/backend/implement_generic_cpu_relation_apply_v1.hh>
-#include <Cellerator/compiler/backend/implement_cpu_segment_gate_update_bundle_and_chain_paths_v1.hh>
+#include <Cellerator/compiler/backend/generic_cpu_relation_apply_v1.hh>
+#include <Cellerator/compiler/backend/cpu_segment_gate_update_bundle_and_chain_paths_v1.hh>
 #include <Cellerator/compute/operation/relation_algebra.hh>
 #include <cassert>
 #include <cstdint>
