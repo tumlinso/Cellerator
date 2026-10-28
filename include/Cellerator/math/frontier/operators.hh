@@ -1,6 +1,7 @@
 #pragma once
 #include <Cellerator/math/matrix/contracts.hh>
-#include <Cellerator/math/effects/providers.hh>
+#include <Cellerator/ops/iterative/coarse_correction.hh>
+#include <Cellerator/ops/process/condensed_ports.hh>
 namespace cellerator::math::frontier {
 namespace mx=matrix;
 namespace ex=execution;

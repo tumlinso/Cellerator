@@ -5,7 +5,7 @@ get_filename_component(CELLERATOR_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../.." A
 
 add_executable(bitmap_retrieval_bench
     bitmap_retrieval_bench.cu
-    "${CELLERATOR_ROOT}/src/compute/indexing/cuda_postings.cu")
+    "${CELLERATOR_ROOT}/src/indexing/cuda_postings.cu")
 target_include_directories(bitmap_retrieval_bench PRIVATE
     "${CELLERATOR_ROOT}/include")
 target_compile_options(bitmap_retrieval_bench PRIVATE

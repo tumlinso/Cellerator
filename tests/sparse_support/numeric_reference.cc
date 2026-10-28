@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/sparse_support/training.hh>
+#include <Cellerator/ops/sparse_support/training.hh>
 
 #define main ce_geo_mma_projection_roundtrip_regression
 #include "../ce_geo/projection/mma_projection_roundtrip_test.cc"
@@ -108,5 +108,113 @@ int main() {
         && state_grad[4] == 1.0f && state_grad[5] == 1.0f);
     assert(std::abs(state_grad[2] - (1.0f - next[2] * next[2])) < 1e-6f);
     assert(std::abs(state_grad[3] - (1.0f - next[3] * next[3])) < 1e-6f);
+
+    // Independent double-precision scalar oracle for the additive transition
+    // modes API, including all parameter and identity-path derivatives.
+    const latent_transition_shape_v1 mode_shape{2, 3, 2, 2};
+    const std::vector<std::uint64_t> mode_offsets{0, 2, 4};
+    const std::vector<std::uint32_t> mode_affected{0, 2, 1, 2};
+    std::vector<float> mode_state{.2f, -.4f, .5f, .1f, -.3f, .7f,
+                                  .6f, -.2f, .4f, .3f, -.5f, .8f};
+    std::vector<float> mode_input{.25f, -.75f, .5f, .125f};
+    std::vector<float> mode_a(3 * 2 * 2), mode_b(3 * 2 * 2), mode_bias(3 * 2);
+    for (std::size_t i = 0; i < mode_a.size(); ++i)
+        mode_a[i] = .08f * static_cast<float>(i + 1) - .31f;
+    for (std::size_t i = 0; i < mode_b.size(); ++i)
+        mode_b[i] = .06f * static_cast<float>(i + 1) - .2f;
+    for (std::size_t i = 0; i < mode_bias.size(); ++i)
+        mode_bias[i] = .035f * static_cast<float>(i + 1) - .08f;
+    std::vector<float> mode_upstream(mode_state.size());
+    for (std::size_t i = 0; i < mode_upstream.size(); ++i)
+        mode_upstream[i] = .17f * static_cast<float>(i + 1) - .6f;
+
+    const auto scalar_objective = [&](latent_parameter_mode_v2 mode,
+        const std::vector<float>& z, const std::vector<float>& u,
+        const std::vector<float>& a_values, const std::vector<float>& b_values,
+        const std::vector<float>& bias_values) {
+        std::vector<double> y(z.begin(), z.end());
+        for (std::uint32_t c = 0; c < mode_shape.cells; ++c)
+            for (auto row = mode_offsets[c]; row < mode_offsets[c + 1]; ++row) {
+                const auto m = mode_affected[row];
+                const std::size_t block = mode == latent_parameter_mode_v2::shared ? 0 : m;
+                for (std::uint32_t o = 0; o < mode_shape.state_width; ++o) {
+                    double v = bias_values[block * 2 + o];
+                    for (std::uint32_t i = 0; i < mode_shape.state_width; ++i)
+                        v += static_cast<double>(a_values[block * 4 + o * 2 + i])
+                            * z[(c * 3 + m) * 2 + i];
+                    for (std::uint32_t i = 0; i < mode_shape.input_width; ++i)
+                        v += static_cast<double>(b_values[block * 4 + o * 2 + i])
+                            * u[c * 2 + i];
+                    y[(c * 3 + m) * 2 + o] = std::tanh(v);
+                }
+            }
+        double result = 0;
+        for (std::size_t i = 0; i < y.size(); ++i) result += y[i] * mode_upstream[i];
+        return result;
+    };
+    const auto check_finite_difference = [](const std::vector<float>& values,
+        const std::vector<float>& analytic, auto perturb) {
+        constexpr float epsilon = 1.0e-3f;
+        assert(values.size() == analytic.size());
+        for (std::size_t i = 0; i < values.size(); ++i) {
+            auto plus = values, minus = values;
+            plus[i] += epsilon;
+            minus[i] -= epsilon;
+            const double expected = (perturb(plus) - perturb(minus)) / (2.0 * epsilon);
+            assert(std::abs(static_cast<double>(analytic[i]) - expected) < 1.5e-3);
+        }
+    };
+    const auto validate_mode = [&](latent_parameter_mode_v2 mode) {
+        const std::size_t blocks = mode == latent_parameter_mode_v2::shared ? 1 : 3;
+        const std::vector<float> a_values(mode_a.begin(), mode_a.begin() + blocks * 4);
+        const std::vector<float> b_values(mode_b.begin(), mode_b.begin() + blocks * 4);
+        const std::vector<float> bias_values(mode_bias.begin(), mode_bias.begin() + blocks * 2);
+        std::vector<float> mode_next(mode_state.size()), zg(mode_state.size()),
+            ug(mode_input.size()), ag(a_values.size()), bg(b_values.size()),
+            biasg(bias_values.size());
+        assert(latent_transition_f32_reference_v2(mode_shape, mode, mode_offsets,
+            mode_affected, mode_state, mode_input, a_values, b_values,
+            bias_values, mode_next) == status_v1::success);
+        const double objective = scalar_objective(mode, mode_state, mode_input,
+            a_values, b_values, bias_values);
+        double actual_objective = 0;
+        for (std::size_t i = 0; i < mode_next.size(); ++i)
+            actual_objective += static_cast<double>(mode_next[i]) * mode_upstream[i];
+        assert(std::abs(actual_objective - objective) < 2.0e-7);
+        assert(latent_transition_vjp_f32_reference_v2(mode_shape, mode,
+            mode_offsets, mode_affected, mode_state, mode_input, a_values,
+            b_values, bias_values, mode_next, mode_upstream, zg, ug, ag, bg,
+            biasg) == status_v1::success);
+        check_finite_difference(mode_state, zg, [&](const auto& values) {
+            return scalar_objective(mode, values, mode_input, a_values, b_values, bias_values);
+        });
+        check_finite_difference(mode_input, ug, [&](const auto& values) {
+            return scalar_objective(mode, mode_state, values, a_values, b_values, bias_values);
+        });
+        check_finite_difference(a_values, ag, [&](const auto& values) {
+            return scalar_objective(mode, mode_state, mode_input, values, b_values, bias_values);
+        });
+        check_finite_difference(b_values, bg, [&](const auto& values) {
+            return scalar_objective(mode, mode_state, mode_input, a_values, values, bias_values);
+        });
+        check_finite_difference(bias_values, biasg, [&](const auto& values) {
+            return scalar_objective(mode, mode_state, mode_input, a_values, b_values, values);
+        });
+        // Cell 0/mechanism 1 and cell 1/mechanism 0 are untouched.
+        assert(zg[2] == mode_upstream[2] && zg[3] == mode_upstream[3]);
+        assert(zg[6] == mode_upstream[6] && zg[7] == mode_upstream[7]);
+        return true;
+    };
+    assert(validate_mode(latent_parameter_mode_v2::shared));
+    assert(validate_mode(latent_parameter_mode_v2::per_mechanism));
+    std::vector<float> invalid_next(mode_state.size());
+    assert(latent_transition_f32_reference_v2(mode_shape,
+        static_cast<latent_parameter_mode_v2>(99), mode_offsets, mode_affected,
+        mode_state, mode_input, mode_a, mode_b, mode_bias, invalid_next)
+        == status_v1::invalid_argument);
+    assert(latent_transition_f32_reference_v2(mode_shape,
+        latent_parameter_mode_v2::shared, mode_offsets, mode_affected,
+        mode_state, mode_input, mode_a, mode_b, mode_bias, invalid_next)
+        == status_v1::invalid_argument);
     return 0;
 }

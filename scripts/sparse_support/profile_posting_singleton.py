@@ -44,7 +44,7 @@ def main() -> int:
     binary_copy = harness / binary.name
     binary_copy.write_bytes(binary.read_bytes())
     binary_copy.chmod(binary.stat().st_mode & 0o777)
-    source = Path("/home/tumlinson/Cellerator/src/compute/indexing/cuda_postings.cu")
+    source = Path("/home/tumlinson/Cellerator/src/indexing/cuda_postings.cu")
     source_copy = harness / "cuda_postings.cu"
     source_copy.write_bytes(source.read_bytes())
 

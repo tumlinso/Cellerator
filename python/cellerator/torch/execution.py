@@ -15,6 +15,46 @@ from .structure import (GateValues, ParameterBlock, PerCellWorkset, SupportSpec,
 from .gating import learned_gates
 from .layout import _logical_values_for_ordinals
 
+_TRANSITION_STORAGE_LAYOUT = "stacked_fp32_blocks_v1"
+_TRANSITION_ROUTING_POLICY = "all_transition_B_blocks_v1"
+
+
+def transition_parameter_views(matrix_a: Tensor, matrix_b: Tensor, bias: Tensor,
+                               mode: str) -> tuple[Tensor, Tensor, Tensor]:
+    """Return semantic transition views without creating another parameter owner."""
+    if mode not in ("shared", "per_mechanism"):
+        raise ValueError("transition_mode must be 'shared' or 'per_mechanism'")
+    if (matrix_a.ndim != 3 or matrix_b.ndim != 3 or bias.ndim != 2
+            or matrix_a.shape[0] <= 0 or matrix_a.shape[0] != matrix_b.shape[0]
+            or matrix_a.shape[0] != bias.shape[0]
+            or matrix_a.shape[1] != matrix_a.shape[2]
+            or matrix_b.shape[1] != matrix_a.shape[1]
+            or bias.shape[1] != matrix_a.shape[1]):
+        raise ValueError("stacked transition blocks must have aligned [M,W,W], [M,W,I], [M,W] shapes")
+    if mode == "shared":
+        return matrix_a[0], matrix_b[0], bias[0]
+    return matrix_a, matrix_b, bias
+
+
+def _validate_transition_checkpoint_state(state: dict[str, object],
+                                          target_mode: str) -> None:
+    tags = ("transition_mode", "transition_storage_layout",
+            "transition_routing_policy")
+    present = tuple(tag in state for tag in tags)
+    if any(present) and not all(present):
+        raise ValueError("checkpoint transition mode metadata is incomplete")
+    saved_mode = state.get("transition_mode", "shared")
+    saved_layout = state.get("transition_storage_layout", _TRANSITION_STORAGE_LAYOUT)
+    saved_routing = state.get("transition_routing_policy", _TRANSITION_ROUTING_POLICY)
+    if saved_mode not in ("shared", "per_mechanism"):
+        raise ValueError("checkpoint transition mode is invalid")
+    if saved_mode != target_mode:
+        raise ValueError("checkpoint transition mode does not match the target module")
+    if saved_layout != _TRANSITION_STORAGE_LAYOUT:
+        raise ValueError("checkpoint transition storage layout is unsupported")
+    if saved_routing != _TRANSITION_ROUTING_POLICY:
+        raise ValueError("checkpoint transition routing policy is unsupported")
+
 
 class _ParameterReadLease:
     """Complete a native reader ticket when its autograd graph is abandoned."""
@@ -63,8 +103,12 @@ class SparseSupportModule(nn.Module):
     def __init__(self, handle: object, support: SupportSpec, *,
                  parameter_names: Iterable[str] = (),
                  parameter_blocks: Optional[dict[str, tuple[int, ...]]] = None,
-                 support_index: object = None):
+                 support_index: object = None,
+                 transition_mode: str = "shared"):
         super().__init__()
+        if transition_mode not in ("shared", "per_mechanism"):
+            raise ValueError("transition_mode must be 'shared' or 'per_mechanism'")
+        self._transition_mode = transition_mode
         import importlib
         torch_native = importlib.import_module("._torch", "cellerator.torch")
         from .mechanism import attach_native_owner
@@ -88,6 +132,9 @@ class SparseSupportModule(nn.Module):
         # that forward/backward tape.
         self._mechanism_route_generation = -1
         self._mechanism_route_postings: tuple[tuple[int, ...], ...] = ()
+        self._prepared_mechanism_route_cache = None
+        self._mechanism_route_relation_identity: Optional[tuple[int, int]] = None
+        self._mechanism_route_relation_epoch = -1
         self._gate_admitted_total: Optional[Tensor] = None
         self._gate_candidate_total: Optional[Tensor] = None
         self.application_state: dict[str, object] = {}
@@ -118,6 +165,21 @@ class SparseSupportModule(nn.Module):
         if parameters is None:
             raise RuntimeError("sparse parameter blocks may only be read inside a pinned forward window")
         return parameters.narrow(0, block.offset, block.numel).view(block.shape)
+
+    @property
+    def transition_mode(self) -> str:
+        """Immutable mathematical interpretation of the stacked transition blocks."""
+        return self._transition_mode
+
+    def transition_parameters(self) -> tuple[Tensor, Tensor, Tensor]:
+        """Return compact block-zero views or per-mechanism stacks by mode."""
+        return transition_parameter_views(
+            self.block("transition_A"), self.block("transition_B"),
+            self.block("transition_bias"), self.transition_mode)
+
+    def routing_parameters(self) -> Tensor:
+        """Return all B blocks used by the separate legacy detached route index."""
+        return self.block("transition_B")
 
     def _complete_read(self, lease: _ParameterReadLease) -> None:
         if lease.completed:
@@ -227,12 +289,14 @@ class SparseSupportModule(nn.Module):
             self.structure_epoch = next_epoch
             (self._source_endpoint_indices,
              self._destination_endpoint_indices) = self._torch_native.sparse_endpoint_indices(self._native)
+            self._invalidate_prepared_mechanism_routes(clear_relation=True)
             self._pending_promotions.clear()
             self._pending_revocations.clear()
             self.application_state["support_publish_seconds"] = (
                 float(self.application_state.get("support_publish_seconds", 0.0))
                 + time.perf_counter() - started_at)
         except Exception:
+            self._invalidate_prepared_mechanism_routes(clear_relation=True)
             self._poisoned = True
             raise
 
@@ -331,7 +395,7 @@ class SparseSupportModule(nn.Module):
             self._destination_endpoint_indices, ordinals, len(self.support.edge_ids),
             normalize=False)
 
-    def _refresh_mechanism_route_postings(self) -> None:
+    def _refresh_mechanism_route_postings(self) -> int:
         """Compile a small learned entity→mechanism posting index.
 
         Compatibility is scored once per parameter generation from the shared
@@ -343,10 +407,11 @@ class SparseSupportModule(nn.Module):
         started_at = time.perf_counter()
         generation = int(self._torch_native.sparse_generation(self._native))
         if generation == self._mechanism_route_generation:
-            return
+            return generation
+        self._invalidate_prepared_mechanism_routes()
         with torch.no_grad():
             entities = self.block("entity_embedding").detach().float()
-            transition_b = self.block("transition_B").detach().float()
+            transition_b = self.routing_parameters().detach().float()
             # This full compatibility evaluation happens once at a window
             # boundary, not once per event. It is bounded by entities × the
             # small prepared mechanism table; event-time retrieval uses only
@@ -370,12 +435,92 @@ class SparseSupportModule(nn.Module):
         self.application_state["route_cache_refresh_seconds"] = (
             float(self.application_state.get("route_cache_refresh_seconds", 0.0))
             + time.perf_counter() - started_at)
+        return generation
 
-    def affected_mechanism_workset(self, entity_ids: Tensor) -> tuple[Tensor, Tensor]:
-        """Retrieve the union of prepared mechanism postings for each cell."""
+    def _invalidate_prepared_mechanism_routes(self, *,
+                                              clear_relation: bool = False) -> None:
+        cache = getattr(self, "_prepared_mechanism_route_cache", None)
+        if cache is not None:
+            cache.invalidate()
+        if clear_relation:
+            self._mechanism_route_relation_identity = None
+            self._mechanism_route_relation_epoch = -1
+
+    def _prepared_mechanism_route_index(self, route_generation: int):
+        parameter = self.parameters_flat
+        device = parameter.device
+        if device.type != "cuda" or device.index is None:
+            raise RuntimeError(
+                "prepared mechanism routing requires a fixed CUDA parameter binding")
+        if self._prepared_mechanism_route_cache is None:
+            from .prepared_routing import _PreparedRouteIndexCache
+
+            self._prepared_mechanism_route_cache = _PreparedRouteIndexCache()
+        cache = self._prepared_mechanism_route_cache
+        binding_generation = cache.observe_binding(
+            device.index, parameter.data_ptr(), id(self._native))
+
+        if (self._mechanism_route_relation_identity is None
+                or self._mechanism_route_relation_epoch != self.structure_epoch):
+            snapshot = self._support_index.snapshot()
+            base = snapshot["base"]
+            if (int(snapshot["structure_epoch"]) != self.structure_epoch
+                    or int(base["structure_epoch"]) != self.structure_epoch):
+                raise RuntimeError("prepared mechanism route support identity is stale")
+            self._mechanism_route_relation_identity = (
+                int(base["relation_id"]), int(base["structure_id"]))
+            self._mechanism_route_relation_epoch = self.structure_epoch
+
+        relation_id, structure_id = self._mechanism_route_relation_identity
+        from .prepared_routing import PreparedRoutingIdentity
+
+        identity = PreparedRoutingIdentity(
+            id(self), relation_id, structure_id, self.structure_epoch,
+            route_generation, binding_generation)
+        if not hasattr(self._torch_native, "PreparedEntityMechanismRouting"):
+            raise RuntimeError(
+                "prepared mechanism routing requires rebuilding the optional Torch extension")
+        started_at = time.perf_counter()
+        router, did_prepare = cache.get(
+            self._torch_native, self._mechanism_route_postings,
+            int(self._blocks["transition_A"].shape[0]), identity, device.index)
+        if did_prepare:
+            self.application_state["prepared_route_prepare_count"] = (
+                int(self.application_state.get("prepared_route_prepare_count", 0)) + 1)
+            self.application_state["prepared_route_prepare_seconds"] = (
+                float(self.application_state.get("prepared_route_prepare_seconds", 0.0))
+                + time.perf_counter() - started_at)
+        return router, identity
+
+    def affected_mechanism_workset(self, entity_ids: Tensor, *,
+                                   strategy: str = "python") -> tuple[Tensor, Tensor]:
+        """Return per-cell mechanism unions using Python or prepared CUDA routing.
+
+        The prepared strategy reuses an immutable projection while owner,
+        structure, route/value generation, and device binding remain fixed.
+        Route rows still come from the existing detached all-B policy. Cold
+        preparation includes host index construction and device upload. Each
+        nonempty query performs one explicit current-stream synchronization to
+        read its dynamic result count before allocating the exact-length output;
+        this strategy has no asynchronous count contract. The default Python
+        path preserves the existing transfer and materialization behavior.
+        """
         if entity_ids.ndim != 2 or entity_ids.dtype not in (torch.int32, torch.int64):
             raise ValueError("mechanism-route lookup requires [cells, participants] integer IDs")
-        self._refresh_mechanism_route_postings()
+        if strategy not in ("python", "prepared"):
+            raise ValueError("strategy must be 'python' or 'prepared'")
+        route_generation = self._refresh_mechanism_route_postings()
+        if strategy == "prepared":
+            router, identity = self._prepared_mechanism_route_index(route_generation)
+            offsets, mechanisms = router.query(
+                entity_ids.contiguous(), identity=identity)
+            if entity_ids.shape[0] > 0:
+                self.application_state["prepared_route_query_count"] = (
+                    int(self.application_state.get("prepared_route_query_count", 0)) + 1)
+                self.application_state["prepared_route_count_syncs"] = (
+                    int(self.application_state.get("prepared_route_count_syncs", 0)) + 1)
+            return offsets, mechanisms
+
         rows: list[list[int]] = []
         for entity_row in entity_ids.detach().cpu().tolist():
             mechanisms = set()
@@ -582,11 +727,15 @@ class SparseSupportModule(nn.Module):
             "support_snapshot": support_snapshot,
             "gate_policy": dict(self.gate_policy),
             "application_state": self.application_state,
+            "transition_mode": self.transition_mode,
+            "transition_storage_layout": _TRANSITION_STORAGE_LAYOUT,
+            "transition_routing_policy": _TRANSITION_ROUTING_POLICY,
         }
 
     def _prepare_sparse_checkpoint_state(self, state):
         if state is None or int(state.get("structure_epoch", -1)) <= 0:
             raise ValueError("checkpoint sparse support state is missing or malformed")
+        _validate_transition_checkpoint_state(state, self.transition_mode)
         import numpy as np
 
         if self._read_tickets:
@@ -687,6 +836,7 @@ class SparseSupportModule(nn.Module):
              self._destination_endpoint_indices) = (
                 self._torch_native.sparse_endpoint_indices(self._native))
             self._mechanism_route_generation = -1
+            self._invalidate_prepared_mechanism_routes(clear_relation=True)
             self._pending_promotions.clear()
             self._pending_revocations.clear()
             self.application_state = dict(state.get("application_state", {}))
@@ -694,5 +844,6 @@ class SparseSupportModule(nn.Module):
         except Exception:
             # Restore may have replaced the manager before an allocation or
             # projection rebind fails. Refuse future execution in that case.
+            self._invalidate_prepared_mechanism_routes(clear_relation=True)
             self._poisoned = True
             raise

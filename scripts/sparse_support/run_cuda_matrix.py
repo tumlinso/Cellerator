@@ -26,15 +26,15 @@ SOURCE_INPUTS = [
     "bench/sparse_support/CMakeLists.txt",
     "bench/sparse_support/cuda_indexing_bench.cu",
     "include/Cellerator/compute/support/logical_support.hh",
-    "src/compute/support/logical_support.cc",
+    "src/support/logical_support.cc",
     "include/Cellerator/compute/indexing/reverse_postings.hh",
     "include/Cellerator/compute/indexing/cuda_postings.cuh",
-    "src/compute/indexing/reverse_postings.cc",
-    "src/compute/indexing/cuda_postings.cu",
+    "src/indexing/reverse_postings.cc",
+    "src/indexing/cuda_postings.cu",
     "include/Cellerator/compute/gating/condition_program.hh",
     "include/Cellerator/compute/gating/cuda_worksets.cuh",
-    "src/compute/gating/condition_program.cc",
-    "src/compute/gating/cuda_worksets.cu",
+    "src/gating/condition_program.cc",
+    "src/gating/cuda_worksets.cu",
 ]
 
 
@@ -124,7 +124,7 @@ def main() -> int:
     artifacts = {
         "benchmark_binary_sha256": sha256(binary),
         "sparse_support_host_library_sha256": sha256(
-            build_dir / "src/compute/support/libcellerator_sparse_support.a"
+            build_dir / "src/support/libcellerator_sparse_support.a"
         ),
         "sparse_support_cuda_library_sha256": sha256(
             build_dir / "libcellerator_sparse_support_cuda.a"

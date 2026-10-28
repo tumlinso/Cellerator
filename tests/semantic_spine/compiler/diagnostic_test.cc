@@ -1,6 +1,7 @@
 #include <Cellerator/compiler/sema/relation_spine_bridge.hh>
 #include <cassert>
 #include <iostream>
+#include <limits>
 using namespace Cellerator::compiler::ir::semantic;
 using namespace Cellerator::compiler::sema;
 using cellerator::execution::numeric_type;
@@ -103,6 +104,8 @@ int main() {
     assert(lower_relation_apply_operation_v1(bad, &changed) == code::invalid_update);
     auto cpp_bad = initial.semantic;
     cpp_bad.update = canonical::output_update::affine_accumulate;
+    assert(canonical::validate(cpp_bad));
+    cpp_bad.input_scale = std::numeric_limits<double>::infinity();
     assert(!canonical::validate(cpp_bad));
     bad = op;
     bad.relation_storage = numeric_type::invalid;

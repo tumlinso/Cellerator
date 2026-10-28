@@ -21,6 +21,7 @@ _SPARSE_SUPPORT_EXPORTS = {
     "GateValues", "KaryoplastEventSlice", "ParameterBlock", "PerCellWorkset",
     "RankedGeneSlice", "SparseSupportModule", "SupportSpec", "learned_gates",
     "prepare_sparse_slice", "sparse_parameter_layout",
+    "PreparedEntityMechanismRouting", "PreparedRoutingIdentity",
 }
 
 
@@ -36,6 +37,9 @@ def __getattr__(name: str):
         if name == "SparseSupportModule":
             from .execution import SparseSupportModule
             return SparseSupportModule
+        if name in {"PreparedEntityMechanismRouting", "PreparedRoutingIdentity"}:
+            from . import prepared_routing
+            return getattr(prepared_routing, name)
         from . import routing
         return getattr(routing, name)
     if name not in _MECHANISM_EXPORTS:

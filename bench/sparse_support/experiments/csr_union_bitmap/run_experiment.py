@@ -87,9 +87,9 @@ def main() -> int:
         root / "include/Cellerator/compute/indexing/cuda_postings.cuh",
         root / "include/Cellerator/compute/indexing/reverse_postings.hh",
         root / "include/Cellerator/compute/support/logical_support.hh",
-        root / "src/compute/indexing/cuda_postings.cu",
-        root / "src/compute/indexing/reverse_postings.cc",
-        root / "src/compute/support/logical_support.cc",
+        root / "src/indexing/cuda_postings.cu",
+        root / "src/indexing/reverse_postings.cc",
+        root / "src/support/logical_support.cc",
     ]
     command = [
         str(binary), "--input-root", str(input_root),

@@ -18,10 +18,10 @@ ROOT = Path(__file__).resolve().parents[2]
 TARGET = "cellerator_sparse_support_indexing_bench"
 SOURCE_INPUTS = [
     "cmake/CelleratorSparseSupport.cmake",
-    "src/compute/support/CMakeLists.txt",
-    "src/compute/support/logical_support.cc",
-    "src/compute/indexing/reverse_postings.cc",
-    "src/compute/gating/condition_program.cc",
+    "src/support/CMakeLists.txt",
+    "src/support/logical_support.cc",
+    "src/indexing/reverse_postings.cc",
+    "src/gating/condition_program.cc",
     "include/Cellerator/compute/support/logical_support.hh",
     "include/Cellerator/compute/indexing/reverse_postings.hh",
     "include/Cellerator/compute/gating/condition_program.hh",
@@ -156,7 +156,7 @@ def main() -> int:
         },
         "benchmark_binary_sha256": sha256(executable),
         "linked_sparse_support_library_sha256": sha256(
-            build_dir / "src/compute/support/libcellerator_sparse_support.a"
+            build_dir / "src/support/libcellerator_sparse_support.a"
         ),
         "binary_path": str(executable),
         "platform": platform.platform(),

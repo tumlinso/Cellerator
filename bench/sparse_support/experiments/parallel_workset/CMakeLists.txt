@@ -6,11 +6,11 @@ get_filename_component(CELLERATOR_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../.." A
 
 add_executable(parallel_workset_probe
     parallel_workset_probe.cu
-    "${CELLERATOR_ROOT}/src/compute/gating/cuda_worksets.cu"
-    "${CELLERATOR_ROOT}/src/compute/gating/condition_program.cc"
-    "${CELLERATOR_ROOT}/src/compute/indexing/cuda_postings.cu"
-    "${CELLERATOR_ROOT}/src/compute/indexing/reverse_postings.cc"
-    "${CELLERATOR_ROOT}/src/compute/support/logical_support.cc")
+    "${CELLERATOR_ROOT}/src/gating/cuda_worksets.cu"
+    "${CELLERATOR_ROOT}/src/gating/condition_program.cc"
+    "${CELLERATOR_ROOT}/src/indexing/cuda_postings.cu"
+    "${CELLERATOR_ROOT}/src/indexing/reverse_postings.cc"
+    "${CELLERATOR_ROOT}/src/support/logical_support.cc")
 target_include_directories(parallel_workset_probe PRIVATE
     "${CELLERATOR_ROOT}/include")
 target_link_libraries(parallel_workset_probe PRIVATE CUDA::cudart)

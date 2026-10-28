@@ -31,11 +31,11 @@ records report these limits; no allocation-free/capture claim is made.
 
 | Card | Callable owner or preserved alternative | Current boundary |
 | --- | --- | --- |
-| M01 patch | `matrix/patch.hh`; original `experiments/moonshot-parallel-v1/diff/patch/native.cc` | FP32 contiguous square nonlinear patch, forward/VJP/JVP; no arbitrary sparse lowering or decay interpretation. Plain LXR is a distinct restricted family. |
+| M01 patch | `matrix/patch.hh`; original `src/ops/matrix/patch_provider.cc` | FP32 contiguous square nonlinear patch, forward/VJP/JVP; no arbitrary sparse lowering or decay interpretation. Plain LXR is a distinct restricted family. |
 | M02 polynomial | `experiments/moonshot-parallel-v1/trajectory/polynomial.py`; `trajectory/test_polynomial.py` | Existing Torch polynomial forward/state+factor derivatives retained; native promotion belongs to MATH/DIFF. No new native polynomial claim. |
 | M03 Sylvester | `experiments/moonshot-parallel-v1/trajectory/flow.py`; `trajectory/test_flow.py` | Existing differentiable Torch exponential route retained; CE MATH owns future generator/dt/cache integration. No detached generator or stale-cache shortcut. |
 | M04 micro-MMA | `experiments/moonshot-parallel-v1/mma/quad/quad_mma.cuh`, `quad_mma.cu`; `quad_test.cu` | Existing checked SM70 FP16-input/FP32-output provider retained; no CUDA execution or derivative grant from this host gate. |
-| M05 private ports | `process/ports.hh`; original `experiments/moonshot-parallel-v1/diff/ports/transport.cc` | Ragged contiguous FP32 transport, forward/VJP/JVP; local nonlinear law and scientific port interpretation stay with caller. |
+| M05 private ports | `process/ports.hh`; original `src/ops/process/ports_provider.cc` | Ragged contiguous FP32 transport, forward/VJP/JVP; local nonlinear law and scientific port interpretation stay with caller. |
 | M06 process product | `process/product.hh` aliases existing `compute/operation/product2/product2.hh` | Existing typed native prepared owner, FP32 forward/VJP/JVP, ordered/repeated arguments, canonical coefficients and generation admission. Link `Cellerator::product2`; no duplicate owner or new optimizer. Original SM70 process-packet candidate remains at `mma/product/product.cu` with its narrower receipt. |
 
 Existing SM70 patch provider `mma/patch16/patch16.cuh` and product2 native CUDA

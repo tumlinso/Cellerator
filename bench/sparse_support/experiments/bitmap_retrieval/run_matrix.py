@@ -29,7 +29,7 @@ def main() -> int:
         pathlib.Path(__file__).with_name("CMakeLists.txt"),
         pathlib.Path(__file__),
         pathlib.Path(__file__).with_name("gpu_job.json"),
-        root / "src/compute/indexing/cuda_postings.cu",
+        root / "src/indexing/cuda_postings.cu",
         root / "include/Cellerator/compute/indexing/cuda_postings.cuh",
         root / "bench/sparse_support/evidence/cuda_indexing_v100_qualification_20261027.jsonl",
     ]

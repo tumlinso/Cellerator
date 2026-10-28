@@ -39,8 +39,8 @@ def run_host_support_trace(cxx: str, artifacts: Path) -> tuple[dict, dict]:
     source = HERE / "support_trace.cc"
     header = REPO_ROOT / "include/Cellerator/compute/support/adaptive_support.hh"
     logical_header = REPO_ROOT / "include/Cellerator/compute/support/logical_support.hh"
-    adaptive_source = REPO_ROOT / "src/compute/support/adaptive_support.cc"
-    logical_source = REPO_ROOT / "src/compute/support/logical_support.cc"
+    adaptive_source = REPO_ROOT / "src/support/adaptive_support.cc"
+    logical_source = REPO_ROOT / "src/support/logical_support.cc"
     executable = artifacts / "support_trace"
     command = [cxx, "-std=c++17", "-O2", "-I", str(REPO_ROOT / "include"),
                str(source), str(adaptive_source), str(logical_source),

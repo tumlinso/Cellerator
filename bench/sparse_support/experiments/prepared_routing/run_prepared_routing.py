@@ -1,0 +1,352 @@
+#!/usr/bin/env python3
+"""Admitted-device correctness and complete-route-path comparison.
+
+This script is intentionally not run by ordinary tests: it performs CUDA
+allocations, launches, and synchronizations. Root must admit the finite device
+job before invoking it.
+"""
+from __future__ import annotations
+
+import argparse
+import importlib.util
+import json
+import random
+import statistics
+import sys
+import time
+from pathlib import Path
+
+import torch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[4]
+                      / "python" / "cellerator" / "torch"))
+from prepared_routing import (
+    PreparedEntityMechanismRouting,
+    PreparedRoutingIdentity,
+)
+
+
+SHAPES = (
+    ("ranked_32x8", 32, 8),
+    ("event_32x12", 32, 12),
+    ("stress_256x64", 256, 64),
+    ("stress_1024x128", 1024, 128),
+)
+HORIZONS = (1, 12, 16, 64)
+ENTITY_COUNT = 4096
+MECHANISM_COUNT = 16
+
+
+def route_rows() -> tuple[tuple[int, ...], ...]:
+    rows = []
+    for entity in range(ENTITY_COUNT):
+        if entity % 17 == 0:
+            rows.append(())
+            continue
+        first = (entity * 7 + 3) % MECHANISM_COUNT
+        second = (entity * 13 + 5) % MECHANISM_COUNT
+        routes = {first}
+        if entity % 3 != 0:
+            routes.add(second)
+        rows.append(tuple(sorted(routes)))
+    return tuple(rows)
+
+
+def oracle(rows: tuple[tuple[int, ...], ...], entity_ids) -> tuple[list[int], list[int]]:
+    offsets = [0]
+    mechanisms: list[int] = []
+    for row in entity_ids:
+        active = set()
+        for entity in row:
+            if entity < 0:
+                continue
+            if entity >= len(rows):
+                raise ValueError("mechanism-route entity is outside the prepared domain")
+            active.update(rows[entity])
+        mechanisms.extend(sorted(active))
+        offsets.append(len(mechanisms))
+    return offsets, mechanisms
+
+
+def incumbent_python(ids: torch.Tensor, rows) -> tuple[torch.Tensor, torch.Tensor]:
+    """Current affected_mechanism_workset path, including both transfers."""
+    output_rows: list[list[int]] = []
+    for entity_row in ids.detach().cpu().tolist():
+        active = set()
+        for entity in entity_row:
+            if entity >= 0:
+                if entity >= len(rows):
+                    raise ValueError("mechanism-route entity is outside the prepared domain")
+                active.update(rows[entity])
+        output_rows.append(sorted(active))
+    offsets = [0]
+    mechanisms: list[int] = []
+    for row in output_rows:
+        mechanisms.extend(row)
+        offsets.append(len(mechanisms))
+    return (torch.tensor(offsets, dtype=torch.int64, device=ids.device),
+            torch.tensor(mechanisms, dtype=torch.int32, device=ids.device))
+
+
+def make_dense_route_matrix(rows, device: torch.device) -> torch.Tensor:
+    dense = torch.zeros((len(rows), MECHANISM_COUNT), dtype=torch.bool)
+    entities: list[int] = []
+    mechanisms: list[int] = []
+    for entity, row in enumerate(rows):
+        for mechanism in row:
+            entities.append(entity)
+            mechanisms.append(mechanism)
+    if entities:
+        dense[torch.tensor(entities), torch.tensor(mechanisms)] = True
+    return dense.to(device=device)
+
+
+def torch_dense_route_union(ids: torch.Tensor,
+                            dense_routes: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    visible = ids >= 0
+    route_rows = dense_routes[ids.clamp_min(0).to(torch.int64)]
+    selected = (route_rows & visible.unsqueeze(-1)).any(dim=1)
+    counts = selected.sum(dim=1, dtype=torch.int64)
+    offsets = torch.cat((counts.new_zeros((1,)), counts.cumsum(0)))
+    mechanisms = selected.nonzero(as_tuple=False)[:, 1].to(torch.int32)
+    return offsets, mechanisms
+
+
+def make_inputs(cells: int, participants: int, seed: int,
+                device: torch.device, count: int) -> list[torch.Tensor]:
+    generator = torch.Generator(device="cpu").manual_seed(seed)
+    inputs = []
+    for sample in range(count):
+        ids = torch.randint(0, ENTITY_COUNT, (cells, participants),
+                            generator=generator, dtype=torch.int64)
+        if participants:
+            padding = torch.rand((cells, participants), generator=generator) < 0.1
+            ids[padding] = -1
+            if participants >= 3:
+                ids[0, 1] = ids[0, 0]  # duplicate term
+                ids[0, 2] = 0          # fixed low ordinal; order stays arbitrary
+        inputs.append(ids.to(device=device))
+    return inputs
+
+
+def materialize(result) -> tuple[list[int], list[int]]:
+    offsets, mechanisms = result
+    return offsets.cpu().tolist(), mechanisms.cpu().tolist()
+
+
+def synchronize(device: torch.device) -> None:
+    torch.cuda.synchronize(device)
+
+
+def timed_call(function, ids: torch.Tensor, device: torch.device) -> float:
+    synchronize(device)
+    start = time.perf_counter()
+    result = function(ids)
+    synchronize(device)
+    elapsed = time.perf_counter() - start
+    del result
+    return elapsed
+
+
+def timed_prepare(function, device: torch.device) -> float:
+    synchronize(device)
+    start = time.perf_counter()
+    value = function()
+    synchronize(device)
+    elapsed = time.perf_counter() - start
+    del value
+    synchronize(device)
+    return elapsed
+
+
+def query_prepared(router, ids, identity):
+    return router.query(ids, identity=identity)
+
+
+def correctness_checks(native, rows, device, identity, router, input_samples):
+    dense_routes = make_dense_route_matrix(rows, device)
+    for ids in input_samples:
+        expected = oracle(rows, ids.cpu().tolist())
+        for actual in (incumbent_python(ids, rows),
+                       torch_dense_route_union(ids, dense_routes),
+                       query_prepared(router, ids, identity)):
+            if materialize(actual) != expected:
+                raise AssertionError("route union differs from the independent Python oracle")
+
+    empty = torch.empty((3, 0), dtype=torch.int64, device=device)
+    if materialize(query_prepared(router, empty, identity)) != ([0, 0, 0, 0], []):
+        raise AssertionError("empty participant rows did not produce empty unions")
+    all_padding = torch.full((3, 5), -1, dtype=torch.int64, device=device)
+    if materialize(query_prepared(router, all_padding, identity)) != ([0, 0, 0, 0], []):
+        raise AssertionError("all-padding input did not produce empty unions")
+    invalid = torch.tensor([[ENTITY_COUNT]], dtype=torch.int64, device=device)
+    try:
+        query_prepared(router, invalid, identity)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("out-of-domain nonnegative ID did not fail closed")
+
+
+def median_ms(samples: list[float]) -> float:
+    return statistics.median(samples) * 1000.0
+
+
+def paired_improvement(base: list[float], candidate: list[float], seed: int):
+    if len(base) != len(candidate) or not base:
+        raise ValueError("paired performance samples have mismatched lengths")
+    samples = [(left - right) / left for left, right in zip(base, candidate)
+               if left > 0.0]
+    if len(samples) != len(base):
+        raise ValueError("paired performance sample contains a nonpositive baseline")
+    rng = random.Random(seed)
+    bootstrap = sorted(statistics.median(
+        [samples[rng.randrange(len(samples))] for _ in samples])
+        for _ in range(5000))
+    low = bootstrap[int(0.025 * (len(bootstrap) - 1))]
+    high = bootstrap[int(0.975 * (len(bootstrap) - 1))]
+    return {
+        "median_percent": 100.0 * statistics.median(samples),
+        "bootstrap_95_percent_interval": [100.0 * low, 100.0 * high],
+    }
+
+
+def load_native_module(path: Path):
+    spec = importlib.util.spec_from_file_location("_torch", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"could not load Torch extension from {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def run_case(native, rows, name, cells, participants, device, seed,
+             warmups, repeats):
+    identity = PreparedRoutingIdentity(
+        owner_identity=1, relation_id=2, structure_id=3,
+        structure_epoch=4, route_generation=5, binding_generation=6)
+    inputs = make_inputs(cells, participants, seed, device, max(repeats, warmups, 1))
+    sparse_factory = lambda: PreparedEntityMechanismRouting(
+        native, rows, MECHANISM_COUNT, identity, device.index)
+    dense_factory = lambda: make_dense_route_matrix(rows, device)
+
+    # Initialize the context outside all measurements, then prove output identity.
+    sparse = sparse_factory()
+    dense = dense_factory()
+    correctness_checks(native, rows, device, identity, sparse, inputs)
+
+    prepare_sparse = [timed_prepare(sparse_factory, device) for _ in range(repeats)]
+    prepare_dense = [timed_prepare(dense_factory, device) for _ in range(repeats)]
+
+    warm_sparse = lambda ids: query_prepared(sparse, ids, identity)
+    functions = {
+        "incumbent_python": lambda ids: incumbent_python(ids, rows),
+        "torch_dense": lambda ids: torch_dense_route_union(ids, dense),
+        "prepared_postings": warm_sparse,
+    }
+    for _ in range(warmups):
+        for fn in functions.values():
+            fn(inputs[0])
+            synchronize(device)
+
+    paired: dict[str, list[float]] = {name: [] for name in functions}
+    order = list(range(repeats))
+    random.Random(seed + 97).shuffle(order)
+    timing_order = random.Random(seed + 193)
+    for sample in order:
+        ids = inputs[sample % len(inputs)]
+        labels = list(functions)
+        timing_order.shuffle(labels)
+        for label in labels:
+            fn = functions[label]
+            paired[label].append(timed_call(fn, ids, device))
+
+    query_ms = {label: median_ms(values) for label, values in paired.items()}
+    prepare_ms = {
+        "incumbent_python": 0.0,
+        "torch_dense": median_ms(prepare_dense),
+        "prepared_postings": median_ms(prepare_sparse),
+    }
+    lifecycle = {}
+    paired_comparison = {}
+    for horizon in HORIZONS:
+        lifecycle[horizon] = {}
+        for label in functions:
+            total = prepare_ms[label] + horizon * query_ms[label]
+            lifecycle[horizon][label] = {
+                "total_ms": total,
+                "per_step_ms": total / horizon,
+            }
+        baseline_samples = {
+            "incumbent_python": [horizon * sample
+                                  for sample in paired["incumbent_python"]],
+            "torch_dense": [prepare_dense[i] + horizon * paired["torch_dense"][i]
+                            for i in range(repeats)],
+        }
+        paired_comparison[horizon] = {}
+        for candidate in ("torch_dense", "prepared_postings"):
+            candidate_samples = [prepare_sparse[i]
+                                 + horizon * paired[candidate][i]
+                                 for i in range(repeats)] if candidate == "prepared_postings" else baseline_samples[candidate]
+            paired_comparison[horizon][candidate] = {
+                baseline: paired_improvement(values, candidate_samples,
+                    seed + horizon * 31 + index)
+                for index, (baseline, values) in enumerate(baseline_samples.items())
+                if baseline != candidate
+            }
+    return {
+        "case": name,
+        "cells": cells,
+        "participants": participants,
+        "entity_count": ENTITY_COUNT,
+        "mechanism_count": MECHANISM_COUNT,
+        "reuse_horizons": list(HORIZONS),
+        "prepare_ms_median": prepare_ms,
+        "complete_route_query_ms_median": query_ms,
+        "lifecycle": lifecycle,
+        "paired_lifecycle_improvement": paired_comparison,
+        "samples_per_query": repeats,
+        "warmups_per_query": warmups,
+        "timing_note": (
+            "Each complete query is wall-clock timed through CUDA completion. "
+            "Prepared query includes term adaptation, reverse-posting kernels, "
+            "the explicit status/count synchronization, and exact-ID emission. "
+            "Lifecycle total is cold preparation plus horizon times paired "
+            "complete-query median; no latent transition compute is included."
+        ),
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--device-index", type=int, required=True)
+    parser.add_argument("--torch-module-file", type=Path, required=True)
+    parser.add_argument("--seed", type=int, default=14491)
+    parser.add_argument("--warmups", type=int, default=5)
+    parser.add_argument("--repeats", type=int, default=21)
+    parser.add_argument("--output-json", type=Path, required=True)
+    args = parser.parse_args()
+    if args.warmups < 0 or args.repeats < 1:
+        parser.error("warmups must be nonnegative and repeats must be positive")
+
+    device = torch.device("cuda", args.device_index)
+    torch.cuda.set_device(device)
+    native = load_native_module(args.torch_module_file)
+    rows = route_rows()
+    results = []
+    for ordinal, (name, cells, participants) in enumerate(SHAPES):
+        results.append(run_case(native, rows, name, cells, participants,
+                                device, args.seed + ordinal,
+                                args.warmups, args.repeats))
+    report = {
+        "seed": args.seed,
+        "device_index": args.device_index,
+        "torch_version": torch.__version__,
+        "results": results,
+    }
+    args.output_json.parent.mkdir(parents=True, exist_ok=True)
+    args.output_json.write_text(json.dumps(report, indent=2) + "\n")
+
+
+if __name__ == "__main__":
+    main()

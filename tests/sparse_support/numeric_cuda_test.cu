@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/sparse_support/training.hh>
+#include <Cellerator/ops/sparse_support/training.hh>
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
 
 #include <cuda_fp16.h>

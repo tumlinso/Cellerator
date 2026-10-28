@@ -114,6 +114,11 @@ endif()
 # dependency boundary from the CUDA mechanism Torch adapters below.
 include(cmake/CelleratorTokenization.cmake)
 include(cmake/CelleratorSparseSupport.cmake)
+# Native arithmetic families are host-capable and independent of adapters.
+add_subdirectory(src/ops/numeric)
+add_subdirectory(src/ops/matrix)
+add_subdirectory(src/ops/process)
+add_subdirectory(src/structure)
 # Build the linked NF1 numerical foundation and its host reference consumer.
 # CUDA relation/value tests are enabled only with the semantic spine owner.
 option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 numerical foundation tests" OFF)
@@ -396,7 +401,7 @@ endif()
 message(STATUS "Cellerator CUDA mode: ${CELLERATOR_CUDA_MODE}")
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/support/cuda_mode.hh.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/cuda_mode.hh.in
     ${CMAKE_CURRENT_BINARY_DIR}/generated/cellerator_cuda_mode.hh
     @ONLY
 )

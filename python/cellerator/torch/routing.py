@@ -7,15 +7,17 @@ import torch
 from torch import Tensor
 
 from .structure import (GateValues, PerCellWorkset, SupportSpec,
-                        _stable_scalar_ids)
+                        _stable_scalar_ids, sparse_parameter_layout)
 from .execution import SparseSupportModule
 from .geometry import compile_sparse_support_ce_geo
+from .ops import sparse_latent_transition
 
 
 def prepare_sparse_slice(module_type, support: SupportSpec, *, entities: int,
                          mechanisms: int, rank_count: int, device: int,
                          parameter_axis_words: tuple[int, ...], seed: int = 0,
                          reader_capacity: int = 32, ce_geo_image: Optional[bytes] = None,
+                         transition_mode: str = "shared",
                          source_group_members: Iterable[int] = (),
                          destination_group_members: Iterable[int] = (),
                          geometry_edge_ids: Optional[Iterable[int]] = None,
@@ -31,6 +33,8 @@ def prepare_sparse_slice(module_type, support: SupportSpec, *, entities: int,
 
     if module_type not in (RankedGeneSlice, KaryoplastEventSlice):
         raise TypeError("module_type must be RankedGeneSlice or KaryoplastEventSlice")
+    if transition_mode not in ("shared", "per_mechanism"):
+        raise ValueError("transition_mode must be 'shared' or 'per_mechanism'")
     if device < 0 or not torch.cuda.is_available():
         raise RuntimeError("sparse trainable slices require the optional CUDA Torch extension")
     if len(support.sources) and max(support.sources + support.destinations) >= entities:
@@ -70,7 +74,7 @@ def prepare_sparse_slice(module_type, support: SupportSpec, *, entities: int,
         device, reader_capacity, support_handle)
     module = module_type(handle, support, parameter_blocks={
         entry["name"]: tuple(entry["shape"]) for entry in blocks},
-        support_index=support_handle)
+        support_index=support_handle, transition_mode=transition_mode)
     if ce_geo_image is not None:
         native.sparse_prepare_ce_geo_n64(
             handle, ce_geo_image, list(source_group_members),
@@ -125,12 +129,11 @@ class RankedGeneSlice(SparseSupportModule):
         visible_count = is_visible.sum(dim=1).clamp_min(1).to(torch.float32)
         prior = gene_embedding.float().sum(dim=1) / visible_count[:, None]
         state = prior[:, None, :].expand(-1, mechanisms, -1).contiguous()
-        transition = self._torch_native.sparse_latent_transition(
+        transition = sparse_latent_transition(
+            self,
             state.to(torch.float16),
             (gene_embedding + rank_embedding).float().sum(dim=1).to(torch.float16),
-            affected_offsets, affected_mechanisms,
-            self.block("transition_A"), self.block("transition_B"),
-            self.block("transition_bias"), self._native)
+            affected_offsets, affected_mechanisms)
         latent_context = transition.float().mean(dim=1)
         source_count = self.block("entity_embedding").shape[0]
         source = gene_embedding.new_zeros((batch, source_count, width), dtype=torch.float32)
@@ -238,12 +241,10 @@ class KaryoplastEventSlice(SparseSupportModule):
             raise ValueError("temporal inputs require a provider that window-filters occurrences before gate scoring")
         event_worksets = None if provider is not None else iter(event_worksets)
         embeddings = self.block("entity_embedding")
-        transition_a = self.block("transition_A")
-        transition_b = self.block("transition_B")
-        transition_bias = self.block("transition_bias")
         cells = event_ids.shape[0]
         position_offset = int(self.application_state.get("event_position", 0))
-        mechanisms, state_width, _ = transition_a.shape
+        transition_shape = self.block("transition_A").shape
+        mechanisms, state_width = transition_shape[:2]
         state = embeddings.new_zeros((cells, mechanisms, state_width))
         self._ensure_mechanism_route_index()
         previous_state = self.application_state.get("latent_state")
@@ -267,10 +268,10 @@ class KaryoplastEventSlice(SparseSupportModule):
             primal, derivative, affected_offsets, affected_mechanisms = work[:4]
             event = event_ids[:, position].to(device=embeddings.device, dtype=torch.int64)
             event_input = embeddings[event]
-            state = self._torch_native.sparse_latent_transition(
+            state = sparse_latent_transition(
+                self,
                 state.to(torch.float16), event_input.to(torch.float16),
                 affected_offsets, affected_mechanisms.to(torch.int32).contiguous(),
-                transition_a, transition_b, transition_bias, self._native,
             )
             inputs = embeddings.new_zeros((cells, embeddings.shape[0], embeddings.shape[1]))
             inputs.scatter_add_(1, event[:, None, None].expand(-1, 1, embeddings.shape[1]),

@@ -9,8 +9,8 @@
       "gpu_status": "GPU-measured",
       "summary": "Exact role-aware reverse postings and capacity-checked variable-size retrieval.",
       "sources": [
-        "src/compute/indexing/reverse_postings.cc",
-        "src/compute/indexing/cuda_postings.cu",
+        "src/indexing/reverse_postings.cc",
+        "src/indexing/cuda_postings.cu",
         "include/Cellerator/compute/indexing/reverse_postings.hh"
       ],
       "evidence": [
@@ -25,7 +25,7 @@
       "gpu_status": "GPU-unmeasured as an independent index",
       "summary": "Per-cell occurrence identities with separate ordinal and timestamp window predicates.",
       "sources": [
-        "src/compute/indexing/temporal_occurrences.cc",
+        "src/indexing/temporal_occurrences.cc",
         "include/Cellerator/compute/indexing/temporal_occurrences.hh"
       ],
       "evidence": [
@@ -40,8 +40,8 @@
       "gpu_status": "GPU-correctness and sanitizer evidence; workload win is conditional",
       "summary": "Shared condition DAGs, cross-cell bitmaps, sparse state updates, and separate primal/derivative worksets.",
       "sources": [
-        "src/compute/gating/condition_program.cc",
-        "src/compute/gating/cuda_worksets.cu",
+        "src/gating/condition_program.cc",
+        "src/gating/cuda_worksets.cu",
         "include/Cellerator/compute/gating/condition_program.hh"
       ],
       "evidence": [
@@ -56,7 +56,7 @@
       "gpu_status": "GPU-unmeasured",
       "summary": "Seeded proposals from pools/postings/coactivation; proposal coverage is reported and is not complete retrieval.",
       "sources": [
-        "src/compute/support/proposal_discovery.cc",
+        "src/support/proposal_discovery.cc",
         "include/Cellerator/compute/support/proposal_discovery.hh"
       ],
       "evidence": [
@@ -70,7 +70,7 @@
       "gpu_status": "GPU lifecycle tested; publication is window-boundary work",
       "summary": "Stable base plus sparse promotion/revocation delta with logical identity, epochs, tombstones, and snapshot restore.",
       "sources": [
-        "src/compute/support/adaptive_support.cc",
+        "src/support/adaptive_support.cc",
         "bindings/sparse_support/indexing_bindings.cc"
       ],
       "evidence": [
@@ -156,7 +156,7 @@
       "gpu_status": "GPU-measured on ordered posting workloads",
       "summary": "Exact concatenation/prefix construction for disjoint ordered postings under checked preconditions; exact merge remains the fallback.",
       "sources": [
-        "src/compute/indexing/cuda_postings.cu",
+        "src/indexing/cuda_postings.cu",
         "include/Cellerator/compute/indexing/cuda_postings.cuh"
       ],
       "evidence": [

@@ -1,9 +1,20 @@
 #pragma once
-#include <ce_moon/reference.hpp>
-#include <ce_moon/effects.hpp>
-#include <ce_moon/mechanisms.hpp>
+#include <Cellerator/ops/automata/dfa32.hh>
+#include <Cellerator/ops/affine/monomial.hh>
+#include <Cellerator/ops/sequence/lifting.hh>
+#include <Cellerator/ops/reduction/residual_tree.hh>
+#include <Cellerator/ops/relation/fixed16.hh>
+#include <Cellerator/ops/numeric/weighted_relations.hh>
+#include <Cellerator/ops/affine/block.hh>
+#include <Cellerator/ops/response/quadratic_jet.hh>
+#include <Cellerator/ops/sequence/monomial_checkpoints.hh>
+#include <Cellerator/ops/numeric/precision_interval.hh>
+#include <Cellerator/ops/matrix/host_reference.hh>
+#include <Cellerator/ops/process/condensed_ports.hh>
+#include <Cellerator/ops/iterative/coarse_correction.hh>
 namespace cellerator::math::effects {
-// These are the original CE types/functions, not copies of their implementations.
+// Compatibility aliases retain the historical names while numerical ownership
+// lives in operation-family headers under Cellerator/ops.
 using ce_moon::Dfa32;
 using ce_moon::CountedDfa32;
 using ce_moon::MonomialAffine;

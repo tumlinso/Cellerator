@@ -16,9 +16,9 @@ ROOT = HERE.parents[5]
 CUDA_DEFAULT = Path("/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9")
 SOURCES = (
     HERE / "indexer_bridge.cu",
-    ROOT / "src/compute/indexing/cuda_postings.cu",
-    ROOT / "src/compute/indexing/reverse_postings.cc",
-    ROOT / "src/compute/support/logical_support.cc",
+    ROOT / "src/indexing/cuda_postings.cu",
+    ROOT / "src/indexing/reverse_postings.cc",
+    ROOT / "src/support/logical_support.cc",
 )
 
 

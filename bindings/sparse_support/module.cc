@@ -2,8 +2,9 @@
 
 #include "geometry_bindings.hh"
 #include "indexing_bindings.hh"
+#include "prepared_routing.hh"
 
-#include <Cellerator/compute/operation/sparse_support/training.hh>
+#include <Cellerator/ops/sparse_support/training.hh>
 
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDACachingAllocator.h>
@@ -800,6 +801,8 @@ torch::autograd::variable_list sparse_latent_backward(
     check_status(status, "sparse latent transition backward");
     for (const auto* tensor : {&grad_next, &grad_state, &grad_input, &grad_a, &grad_b, &grad_bias})
         c10::cuda::CUDACachingAllocator::recordStream(tensor->storage().data_ptr(), stream);
+    // Function::apply arguments are state, input, offsets, affected, A, B,
+    // bias, handle.
     torch::autograd::variable_list result(8);
     result[0] = grad_state.to(state.scalar_type());
     result[1] = grad_input.to(input.scalar_type());
@@ -824,6 +827,166 @@ public:
             torch::autograd::AutogradContext* ctx,
             torch::autograd::variable_list grad_outputs) {
         return sparse_latent_backward(ctx, std::move(grad_outputs));
+    }
+};
+
+std::int64_t parse_latent_parameter_mode_v2(const std::string& mode) {
+    if (mode == "shared")
+        return static_cast<std::int64_t>(ss::latent_parameter_mode_v2::shared);
+    if (mode == "per_mechanism")
+        return static_cast<std::int64_t>(ss::latent_parameter_mode_v2::per_mechanism);
+    TORCH_CHECK(false, "transition_mode must be 'shared' or 'per_mechanism'");
+    return -1;
+}
+
+torch::Tensor sparse_latent_forward_v2(torch::autograd::AutogradContext* ctx,
+    std::int64_t mode_value, torch::Tensor state, torch::Tensor input,
+    torch::Tensor affected_offsets, torch::Tensor affected_mechanisms,
+    torch::Tensor matrix_a, torch::Tensor matrix_b, torch::Tensor bias,
+    SparseHandlePtr handle) {
+    TORCH_CHECK(handle, "sparse support handle is null");
+    TORCH_CHECK(mode_value == static_cast<std::int64_t>(ss::latent_parameter_mode_v2::shared)
+                || mode_value == static_cast<std::int64_t>(ss::latent_parameter_mode_v2::per_mechanism),
+                "transition_mode must be 'shared' or 'per_mechanism'");
+    const auto mode = static_cast<ss::latent_parameter_mode_v2>(mode_value);
+    const auto device = handle->device();
+    validate_dense_cuda(state, "latent state", torch::kFloat16, device, 3);
+    validate_dense_cuda(input, "latent input", torch::kFloat16, device, 2);
+    validate_dense_cuda(affected_offsets, "affected offsets", torch::kInt64, device, 1);
+    validate_dense_cuda(affected_mechanisms, "affected mechanisms", torch::kInt32, device, 1);
+    const bool shared = mode == ss::latent_parameter_mode_v2::shared;
+    validate_dense_cuda(matrix_a, "latent matrix A", torch::kFloat32, device,
+                        shared ? 2 : 3);
+    validate_dense_cuda(matrix_b, "latent matrix B", torch::kFloat32, device,
+                        shared ? 2 : 3);
+    validate_dense_cuda(bias, "latent bias", torch::kFloat32, device,
+                        shared ? 1 : 2);
+    const auto mechanisms = state.size(1);
+    const auto width = state.size(2);
+    const auto input_width = input.size(1);
+    if (shared) {
+        TORCH_CHECK(matrix_a.size(0) == width && matrix_a.size(1) == width
+                    && matrix_b.size(0) == width && matrix_b.size(1) == input_width
+                    && bias.size(0) == width,
+                    "shared transition expects A[W,W], B[W,I], and bias[W]");
+    } else {
+        TORCH_CHECK(matrix_a.size(0) == mechanisms && matrix_a.size(1) == width
+                    && matrix_a.size(2) == width
+                    && matrix_b.size(0) == mechanisms && matrix_b.size(1) == width
+                    && matrix_b.size(2) == input_width
+                    && bias.size(0) == mechanisms && bias.size(1) == width,
+                    "per_mechanism transition expects A[M,W,W], B[M,W,I], and bias[M,W]");
+    }
+    TORCH_CHECK(state.size(0) == input.size(0),
+                "latent state and input cell dimensions must match");
+    TORCH_CHECK(affected_offsets.numel() == state.size(0) + 1,
+                "affected offsets must have cells + 1 entries");
+    const auto cells = static_cast<std::uint32_t>(state.size(0));
+    const auto affected_count = static_cast<std::uint64_t>(affected_mechanisms.numel());
+    ss::latent_transition_shape_v1 shape{cells,
+        static_cast<std::uint32_t>(mechanisms), static_cast<std::uint32_t>(width),
+        static_cast<std::uint32_t>(input_width)};
+    auto a_half = matrix_a.to(torch::kFloat16).contiguous();
+    auto b_half = matrix_b.to(torch::kFloat16).contiguous();
+    auto bias_half = bias.to(torch::kFloat16).contiguous();
+    auto output = state.to(torch::kFloat32).contiguous();
+    auto stream = at::cuda::getCurrentCUDAStream(device);
+    const auto status = ss::latent_transition_cuda_v2(shape, mode,
+        reinterpret_cast<const std::uint64_t*>(affected_offsets.data_ptr<std::int64_t>()),
+        reinterpret_cast<const std::uint32_t*>(affected_mechanisms.data_ptr<std::int32_t>()),
+        affected_count, reinterpret_cast<const std::uint16_t*>(state.data_ptr<at::Half>()),
+        reinterpret_cast<const std::uint16_t*>(input.data_ptr<at::Half>()),
+        reinterpret_cast<const std::uint16_t*>(a_half.data_ptr<at::Half>()),
+        reinterpret_cast<const std::uint16_t*>(b_half.data_ptr<at::Half>()),
+        reinterpret_cast<const std::uint16_t*>(bias_half.data_ptr<at::Half>()),
+        output.data_ptr<float>(), stream.stream());
+    check_status(status, "sparse latent transition v2 forward");
+    ctx->save_for_backward({state, input, affected_offsets, affected_mechanisms,
+                            matrix_a, matrix_b, bias, output});
+    ctx->saved_data["mode"] = mode_value;
+    ctx->saved_data["handle"] = c10::IValue::make_capsule(
+        c10::make_intrusive<SparseHandleCapsule>(handle));
+    for (const auto* tensor : {&state, &input, &affected_offsets, &affected_mechanisms,
+                               &matrix_a, &matrix_b, &bias, &output,
+                               &a_half, &b_half, &bias_half})
+        c10::cuda::CUDACachingAllocator::recordStream(tensor->storage().data_ptr(), stream);
+    return output;
+}
+
+torch::autograd::variable_list sparse_latent_backward_v2(
+        torch::autograd::AutogradContext* ctx,
+        torch::autograd::variable_list grad_outputs) {
+    TORCH_CHECK(grad_outputs.size() == 1 && grad_outputs.front().defined(),
+                "sparse latent transition expects one output gradient");
+    TORCH_CHECK(!torch::autograd::GradMode::is_enabled(),
+                "sparse latent transition supports first-order gradients only");
+    auto saved = ctx->get_saved_variables();
+    auto state = saved[0], input = saved[1], offsets = saved[2], affected = saved[3];
+    auto matrix_a = saved[4], matrix_b = saved[5], bias = saved[6], next_state = saved[7];
+    const auto mode = static_cast<ss::latent_parameter_mode_v2>(
+        ctx->saved_data.at("mode").toInt());
+    auto handle_state = c10::static_intrusive_pointer_cast<SparseHandleCapsule>(
+        ctx->saved_data.at("handle").toCapsule());
+    auto handle = handle_state->handle;
+    auto grad_next = grad_outputs.front().contiguous();
+    TORCH_CHECK(grad_next.scalar_type() == torch::kFloat32,
+                "latent state cotangent must be FP32");
+    ss::latent_transition_shape_v1 shape{
+        static_cast<std::uint32_t>(state.size(0)),
+        static_cast<std::uint32_t>(state.size(1)),
+        static_cast<std::uint32_t>(state.size(2)),
+        static_cast<std::uint32_t>(input.size(1))};
+    auto a_half = matrix_a.to(torch::kFloat16).contiguous();
+    auto b_half = matrix_b.to(torch::kFloat16).contiguous();
+    auto grad_state = grad_next.clone();
+    auto grad_input = torch::zeros_like(input, torch::TensorOptions().dtype(torch::kFloat32));
+    auto grad_a = torch::zeros_like(matrix_a);
+    auto grad_b = torch::zeros_like(matrix_b);
+    auto grad_bias = torch::zeros_like(bias);
+    auto stream = at::cuda::getCurrentCUDAStream(state.get_device());
+    const auto status = ss::latent_transition_vjp_cuda_v2(shape, mode,
+        reinterpret_cast<const std::uint64_t*>(offsets.data_ptr<std::int64_t>()),
+        reinterpret_cast<const std::uint32_t*>(affected.data_ptr<std::int32_t>()),
+        static_cast<std::uint64_t>(affected.numel()),
+        reinterpret_cast<const std::uint16_t*>(state.data_ptr<at::Half>()),
+        reinterpret_cast<const std::uint16_t*>(input.data_ptr<at::Half>()),
+        reinterpret_cast<const std::uint16_t*>(a_half.data_ptr<at::Half>()),
+        reinterpret_cast<const std::uint16_t*>(b_half.data_ptr<at::Half>()),
+        next_state.data_ptr<float>(), grad_next.data_ptr<float>(),
+        grad_state.data_ptr<float>(), grad_input.data_ptr<float>(),
+        grad_a.data_ptr<float>(), grad_b.data_ptr<float>(),
+        grad_bias.data_ptr<float>(), stream.stream());
+    check_status(status, "sparse latent transition v2 backward");
+    for (const auto* tensor : {&state, &input, &offsets, &affected, &grad_next,
+                               &grad_state, &grad_input, &grad_a, &grad_b,
+                               &grad_bias, &a_half, &b_half})
+        c10::cuda::CUDACachingAllocator::recordStream(tensor->storage().data_ptr(), stream);
+    // Function::apply arguments are mode, state, input, offsets, affected,
+    // A, B, bias, handle.
+    torch::autograd::variable_list result(9);
+    result[1] = grad_state.to(state.scalar_type());
+    result[2] = grad_input.to(input.scalar_type());
+    result[5] = grad_a;
+    result[6] = grad_b;
+    result[7] = grad_bias;
+    return result;
+}
+
+class SparseLatentModeAutograd final
+    : public torch::autograd::Function<SparseLatentModeAutograd> {
+public:
+    static torch::Tensor forward(torch::autograd::AutogradContext* ctx,
+            std::int64_t mode, torch::Tensor state, torch::Tensor input,
+            torch::Tensor offsets, torch::Tensor affected, torch::Tensor matrix_a,
+            torch::Tensor matrix_b, torch::Tensor bias, SparseHandlePtr handle) {
+        return sparse_latent_forward_v2(ctx, mode, std::move(state), std::move(input),
+            std::move(offsets), std::move(affected), std::move(matrix_a),
+            std::move(matrix_b), std::move(bias), std::move(handle));
+    }
+    static torch::autograd::variable_list backward(
+            torch::autograd::AutogradContext* ctx,
+            torch::autograd::variable_list grad_outputs) {
+        return sparse_latent_backward_v2(ctx, std::move(grad_outputs));
     }
 };
 
@@ -1308,10 +1471,22 @@ torch::Tensor sparse_latent_transition(
         affected_mechanisms, matrix_a, matrix_b, bias, handle);
 }
 
+torch::Tensor sparse_latent_transition_v2(
+        const std::string& transition_mode, const torch::Tensor& state,
+        const torch::Tensor& input, const torch::Tensor& affected_offsets,
+        const torch::Tensor& affected_mechanisms, const torch::Tensor& matrix_a,
+        const torch::Tensor& matrix_b, const torch::Tensor& bias,
+        const SparseHandlePtr& handle) {
+    return SparseLatentModeAutograd::apply(parse_latent_parameter_mode_v2(transition_mode),
+        state, input, affected_offsets, affected_mechanisms,
+        matrix_a, matrix_b, bias, handle);
+}
+
 } // namespace
 
 void bind_sparse_support(py::module_& module) {
     ::bind_sparse_support_indexing(module);
+    ::bind_sparse_support_prepared_routing(module);
     ::bind_sparse_support_geometry(module);
     py::class_<SparseHandle, SparseHandlePtr>(module, "SparseTorchHandle")
         .def_property_readonly("support", &SparseHandle::support);
@@ -1365,4 +1540,9 @@ void bind_sparse_support(py::module_& module) {
         py::arg("state"), py::arg("input"), py::arg("affected_offsets"),
         py::arg("affected_mechanisms"), py::arg("matrix_a"), py::arg("matrix_b"),
         py::arg("bias"), py::arg("handle"));
+    module.def("sparse_latent_transition_v2", &sparse_latent_transition_v2,
+        py::arg("transition_mode"), py::arg("state"), py::arg("input"),
+        py::arg("affected_offsets"), py::arg("affected_mechanisms"),
+        py::arg("matrix_a"), py::arg("matrix_b"), py::arg("bias"),
+        py::arg("handle"));
 }

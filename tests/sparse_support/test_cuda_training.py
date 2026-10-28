@@ -52,12 +52,12 @@ class SparseSupportCudaTrainingTest(unittest.TestCase):
             [1, 2, 3, 4, 5, 6, 7, 8], ids, initial, blocks,
             self.device, 8, support)
 
-    def _module(self, support=None):
+    def _module(self, support=None, transition_mode="shared"):
         support = support or SupportSpec((10, 11), (0, 1), (2, 2), 1)
         return prepare_sparse_slice(
             RankedGeneSlice, support, entities=3, mechanisms=2, rank_count=4,
             device=self.device, parameter_axis_words=(31, 32, 41, 42, 51, 52, 61, 62),
-            seed=29)
+            seed=29, transition_mode=transition_mode)
 
     def _publish_route(self, module):
         module.stage_promotion(12, 0, 1, discovery_round_id=9,
@@ -214,6 +214,93 @@ class SparseSupportCudaTrainingTest(unittest.TestCase):
         self.assertTrue(torch.allclose(b.grad, b_ref.grad, atol=5e-3, rtol=5e-3))
         self.assertTrue(torch.allclose(bias.grad, bias_ref.grad, atol=5e-3, rtol=5e-3))
 
+    def test_transition_modes_full_forward_and_vjp_match_independent_torch_oracle(self):
+        handle = self._handle()
+        device = torch.device("cuda", self.device)
+        generator = torch.Generator(device=device).manual_seed(1271)
+        state = (torch.randn(2, 3, 4, generator=generator, device=device) * 0.2)
+        state = state.to(torch.float16).requires_grad_()
+        inputs = (torch.randn(2, 2, generator=generator, device=device) * 0.3)
+        inputs = inputs.to(torch.float16).requires_grad_()
+        matrix_a = (torch.randn(3, 4, 4, generator=generator, device=device) * 0.12)
+        matrix_a.requires_grad_()
+        matrix_b = (torch.randn(3, 4, 2, generator=generator, device=device) * 0.16)
+        matrix_b.requires_grad_()
+        bias = (torch.randn(3, 4, generator=generator, device=device) * 0.08)
+        bias.requires_grad_()
+        offsets = torch.tensor([0, 2, 4], device=device, dtype=torch.int64)
+        affected = torch.tensor([0, 2, 1, 2], device=device, dtype=torch.int32)
+        upstream = torch.randn(2, 3, 4, generator=generator, device=device)
+
+        for mode in ("shared", "per_mechanism"):
+            for value in (state, inputs, matrix_a, matrix_b, bias):
+                value.grad = None
+            transition_a, transition_b, transition_bias = (
+                (matrix_a[0], matrix_b[0], bias[0]) if mode == "shared"
+                else (matrix_a, matrix_b, bias))
+            actual = self.native.sparse_latent_transition_v2(
+                mode, state, inputs, offsets, affected,
+                transition_a, transition_b, transition_bias, handle)
+
+            state_ref = state.detach().clone().requires_grad_()
+            input_ref = inputs.detach().clone().requires_grad_()
+            a_ref = matrix_a.detach().clone().requires_grad_()
+            b_ref = matrix_b.detach().clone().requires_grad_()
+            bias_ref = bias.detach().clone().requires_grad_()
+            expected = state_ref.float().clone()
+            affected_rows = ((0, 0), (0, 2), (1, 1), (1, 2))
+            for cell, mechanism in affected_rows:
+                block = 0 if mode == "shared" else mechanism
+                z = state_ref[cell, mechanism].half().float()
+                u = input_ref[cell].half().float()
+                expected[cell, mechanism] = torch.tanh(
+                    torch.mv(a_ref[block].half().float(), z)
+                    + torch.mv(b_ref[block].half().float(), u)
+                    + bias_ref[block].half().float())
+            self.assertTrue(torch.allclose(actual, expected, atol=7e-3, rtol=7e-3))
+            (actual * upstream).sum().backward()
+            (expected * upstream).sum().backward()
+            self.assertTrue(torch.allclose(state.grad, state_ref.grad, atol=8e-3, rtol=8e-3))
+            self.assertTrue(torch.allclose(inputs.grad, input_ref.grad, atol=8e-3, rtol=8e-3))
+            self.assertTrue(torch.allclose(matrix_a.grad, a_ref.grad, atol=8e-3, rtol=8e-3))
+            self.assertTrue(torch.allclose(matrix_b.grad, b_ref.grad, atol=8e-3, rtol=8e-3))
+            self.assertTrue(torch.allclose(bias.grad, bias_ref.grad, atol=8e-3, rtol=8e-3))
+            self.assertTrue(torch.equal(state.grad[0, 1], upstream[0, 1].half()))
+            self.assertTrue(torch.equal(state.grad[1, 0], upstream[1, 0].half()))
+            if mode == "shared":
+                self.assertTrue(torch.count_nonzero(matrix_a.grad[1:]) == 0)
+                self.assertTrue(torch.count_nonzero(matrix_b.grad[1:]) == 0)
+                self.assertTrue(torch.count_nonzero(bias.grad[1:]) == 0)
+
+    def test_transition_mode_shape_and_name_validation(self):
+        device = torch.device("cuda", self.device)
+        state = torch.zeros((1, 2, 4), device=device, dtype=torch.float16)
+        inputs = torch.zeros((1, 3), device=device, dtype=torch.float16)
+        offsets = torch.tensor([0, 0], device=device, dtype=torch.int64)
+        affected = torch.empty((0,), device=device, dtype=torch.int32)
+        a = torch.zeros((2, 4, 4), device=device, dtype=torch.float32)
+        b = torch.zeros((2, 4, 3), device=device, dtype=torch.float32)
+        bias = torch.zeros((2, 4), device=device, dtype=torch.float32)
+        handle = self._handle()
+        with self.assertRaisesRegex(RuntimeError, "transition_mode"):
+            self.native.sparse_latent_transition_v2(
+                "implicit", state, inputs, offsets, affected, a, b, bias, handle)
+        shared_a_wrong_shape = torch.zeros((4, 3), device=device, dtype=torch.float32)
+        with self.assertRaisesRegex(RuntimeError, "shared transition expects"):
+            self.native.sparse_latent_transition_v2(
+                "shared", state, inputs, offsets, affected,
+                shared_a_wrong_shape, b[0], bias[0], handle)
+        per_mechanism_a_wrong_shape = torch.zeros((1, 4, 4), device=device,
+                                                   dtype=torch.float32)
+        with self.assertRaisesRegex(RuntimeError, "per_mechanism transition expects"):
+            self.native.sparse_latent_transition_v2(
+                "per_mechanism", state, inputs, offsets, affected,
+                per_mechanism_a_wrong_shape, b, bias, handle)
+        with self.assertRaisesRegex(RuntimeError, "latent state has invalid dtype"):
+            self.native.sparse_latent_transition_v2(
+                "shared", state.float(), inputs, offsets, affected,
+                a[0], b[0], bias[0], handle)
+
     def test_gate_sampler_keeps_all_positive_and_masks_unsampled_closed_gradients(self):
         module = self._module(SupportSpec(
             (10, 11, 12, 13), (0, 1, 0, 1), (2, 2, 1, 0), 1))
@@ -351,6 +438,14 @@ class SparseSupportCudaTrainingTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "sparse-native.pt"
             save_checkpoint(path, source, source_optimizer)
+            saved = torch.load(path, map_location="cpu", weights_only=False)
+            saved_sparse = next(record for record in saved["native_owners"]
+                                if record["kind"] == "sparse_support")
+            self.assertEqual(saved_sparse["module_state"]["transition_mode"], "shared")
+            self.assertEqual(saved_sparse["module_state"]["transition_storage_layout"],
+                             "stacked_fp32_blocks_v1")
+            self.assertEqual(saved_sparse["module_state"]["transition_routing_policy"],
+                             "all_transition_B_blocks_v1")
             target = self._module()
             target_optimizer = torch.optim.Adam([target.parameters_flat], lr=0.5)
             target_leaf = target.parameters_flat
@@ -366,6 +461,95 @@ class SparseSupportCudaTrainingTest(unittest.TestCase):
         self.assertTrue(torch.equal(
             target_optimizer.state[target.parameters_flat]["exp_avg"],
             source_optimizer.state[source.parameters_flat]["exp_avg"]))
+
+    def test_per_mechanism_checkpoint_continuation_and_mode_mismatch_preflight(self):
+        source = self._module(transition_mode="per_mechanism")
+        source_optimizer = torch.optim.Adam([source.parameters_flat], lr=0.01)
+        source.parameters_flat.square().sum().backward()
+        self.assertTrue(guarded_step(source, source_optimizer))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "per-mechanism.pt"
+            save_checkpoint(path, source, source_optimizer)
+            target = self._module(transition_mode="per_mechanism")
+            target_optimizer = torch.optim.Adam([target.parameters_flat], lr=0.5)
+            target_leaf = target.parameters_flat
+            load_checkpoint(path, target, target_optimizer)
+            self.assertIs(target.parameters_flat, target_leaf)
+            self.assertEqual(target.transition_mode, "per_mechanism")
+            self.assertTrue(torch.equal(target.parameters_flat, source.parameters_flat))
+            self.assertEqual(target_optimizer.param_groups[0]["lr"], 0.01)
+            self.assertTrue(torch.equal(
+                target_optimizer.state[target_leaf]["exp_avg"],
+                source_optimizer.state[source.parameters_flat]["exp_avg"]))
+
+            mismatched = self._module(transition_mode="shared")
+            mismatched_optimizer = torch.optim.Adam([mismatched.parameters_flat], lr=0.75)
+            before = mismatched.parameters_flat.detach().clone()
+            before_epoch = mismatched.structure_epoch
+            with self.assertRaisesRegex(ValueError, "transition mode does not match"):
+                load_checkpoint(path, mismatched, mismatched_optimizer)
+            self.assertTrue(torch.equal(mismatched.parameters_flat, before))
+            self.assertEqual(mismatched.structure_epoch, before_epoch)
+            self.assertEqual(mismatched_optimizer.param_groups[0]["lr"], 0.75)
+            self.assertEqual(mismatched_optimizer.state, {})
+
+        source_optimizer.zero_grad(set_to_none=True)
+        target_optimizer.zero_grad(set_to_none=True)
+        continuation_gradient = torch.linspace(
+            -0.2, 0.2, source.parameters_flat.numel(), device=source.parameters_flat.device)
+        source.parameters_flat.grad = continuation_gradient.clone()
+        target.parameters_flat.grad = continuation_gradient.clone()
+        self.assertTrue(guarded_step(source, source_optimizer))
+        self.assertTrue(guarded_step(target, target_optimizer))
+        self.assertTrue(torch.equal(source.parameters_flat, target.parameters_flat))
+        self.assertTrue(torch.equal(
+            source_optimizer.state[source.parameters_flat]["exp_avg"],
+            target_optimizer.state[target.parameters_flat]["exp_avg"]))
+
+    def test_untagged_legacy_checkpoint_continues_as_shared_without_storage_migration(self):
+        source = self._module(transition_mode="shared")
+        optimizer = torch.optim.Adam([source.parameters_flat], lr=0.02)
+        source.parameters_flat.square().sum().backward()
+        self.assertTrue(guarded_step(source, optimizer))
+        with tempfile.TemporaryDirectory() as directory:
+            modern = Path(directory) / "modern.pt"
+            legacy = Path(directory) / "legacy.pt"
+            save_checkpoint(modern, source, optimizer)
+            payload = torch.load(modern, map_location="cpu", weights_only=False)
+            sparse = next(record for record in payload["native_owners"]
+                          if record["kind"] == "sparse_support")
+            for key in ("transition_mode", "transition_storage_layout",
+                        "transition_routing_policy"):
+                del sparse["module_state"][key]
+            torch.save(payload, legacy)
+
+            target = self._module()  # default is the legacy shared interpretation
+            target_optimizer = torch.optim.Adam([target.parameters_flat], lr=0.5)
+            target_leaf = target.parameters_flat
+            target_handle_data_ptr = self.native.sparse_parameters(target._native).data_ptr()
+            load_checkpoint(legacy, target, target_optimizer)
+            self.assertIs(target.parameters_flat, target_leaf)
+            self.assertEqual(target.transition_mode, "shared")
+            self.assertTrue(torch.equal(target.parameters_flat, source.parameters_flat))
+            self.assertEqual(self.native.sparse_parameters(target._native).data_ptr(),
+                             target_handle_data_ptr)
+            self.assertEqual(target_optimizer.param_groups[0]["lr"], 0.02)
+            self.assertTrue(torch.equal(
+                target_optimizer.state[target_leaf]["exp_avg"],
+                optimizer.state[source.parameters_flat]["exp_avg"]))
+
+        optimizer.zero_grad(set_to_none=True)
+        target_optimizer.zero_grad(set_to_none=True)
+        continuation_gradient = torch.linspace(
+            -0.15, 0.15, source.parameters_flat.numel(), device=source.parameters_flat.device)
+        source.parameters_flat.grad = continuation_gradient.clone()
+        target.parameters_flat.grad = continuation_gradient.clone()
+        self.assertTrue(guarded_step(source, optimizer))
+        self.assertTrue(guarded_step(target, target_optimizer))
+        self.assertTrue(torch.equal(source.parameters_flat, target.parameters_flat))
+        self.assertTrue(torch.equal(
+            optimizer.state[source.parameters_flat]["exp_avg"],
+            target_optimizer.state[target.parameters_flat]["exp_avg"]))
 
     def test_checkpoint_restores_promoted_then_revoked_identity_at_exact_epoch(self):
         source = self._module()

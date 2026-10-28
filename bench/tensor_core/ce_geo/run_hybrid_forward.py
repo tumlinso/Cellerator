@@ -37,7 +37,7 @@ def main() -> int:
         "src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu",
         "src/compute/architecture/providers/nvidia/sm70/residual.cu",
         "src/compute/architecture/providers/nvidia/sm70/value_pack.cu",
-        "src/compute/projection/mma_residual_builder.cc",
+        "src/layout/mma_residual_builder.cc",
         "-lcusparse", "-lcudart", "-o", str(BINARY),
     ])
     run([str(BINARY), "--output", str(output), "--warmups", "3",
