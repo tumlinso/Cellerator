@@ -1,0 +1,22 @@
+{
+  "format": "cellerator-baseline-validation-v1",
+  "observed_utc": "2026-10-28T21:02:18.867039+00:00",
+  "source_commit": "11245b73a09723403575eb438e189b992241033b",
+  "working_tree_status": [],
+  "configure_arguments": [
+    "-DCELLERATOR_ENABLE_CUDA=OFF",
+    "-DCELLERATOR_ENABLE_TORCH=OFF",
+    "-DCELLERATOR_ENABLE_SPARSE_SUPPORT=ON",
+    "-DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF",
+    "-DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF",
+    "-DCELLERATOR_BUILD_TESTS=ON"
+  ],
+  "build": "cmake --build build-coherence-host -j 4",
+  "checks": "ctest --test-dir build-coherence-host --output-on-failure",
+  "result": {
+    "passed": 16,
+    "failed": 0
+  },
+  "coverage": "13 compiler integration/status fixtures and 3 native sparse support/indexing/gating/image/derivative host checks. No CUDA, Torch, biological validation or performance qualification.",
+  "test_log_sha256": "57d5c7d139fa7dcaaacc717df1676b23cf9df7afd50fc0b82d25c06f5271112a"
+}

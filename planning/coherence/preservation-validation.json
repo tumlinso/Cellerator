@@ -1,0 +1,20 @@
+{
+  "format": "cellerator-preservation-validation-v1",
+  "baseline_commit": "2f851ddb9719a85064f7140864c614245424f4cc",
+  "archive_manifest": "planning/coherence/preservation.json",
+  "restored_regular_files_verified": 107449,
+  "git_connectivity_verified": true,
+  "symlinks_preserved": true,
+  "external_payloads": "Targets are preserved in place; see external-payloads.json. One pre-existing dataset.csh5 target was absent.",
+  "authority_backup": "Full physical database and empty WAL were restored and byte-verified. The compact host exposes no logical backup/restore endpoint; original authority remains in place and no raw restore was activated.",
+  "registered_plan_commit_revision": 11,
+  "run_open_revision": 12,
+  "source_and_validation_record": [
+    "planning/coherence/preservation.json",
+    "planning/coherence/external-payloads.json",
+    "planning/coherence/registration-accepted.json",
+    "planning/coherence/baseline-validation.json",
+    "planning/coherence/workflow-repairs/"
+  ],
+  "scope": "Preservation outcome only; no claim that package cleanup, numerical extensions or GPU qualification is complete."
+}
