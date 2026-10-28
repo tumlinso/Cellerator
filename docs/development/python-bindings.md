@@ -6,6 +6,10 @@ an optional adapter in `cellerator.torch`; it borrows native topology and
 parameter owners. The sparse-support adapter exposes a bounded CE-GEO
 projection builder; the general compiler remains a native API.
 
+AnnData is a required Python dependency. The current numerical entry points
+still accept explicit arrays and tensors; requiring AnnData does not yet add
+an AnnData preparation adapter or automatic layer selection.
+
 The resident CUDA bindings are available from `cellerator.cuda` when the
 Python/CUDA native capability is built. This module remains Torch-free and owns
 the resident streams, buffers, prepared CSR values, and native FP32 kernels.
