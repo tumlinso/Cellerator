@@ -1,0 +1,17 @@
+{
+  "experiment_group": "adaptive-fields CPU E1-E3",
+  "frozen_at": "2026-10-28",
+  "repository_head": "c63f591d04ef74b7566937d161c80936dcc4cf05",
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "torch": "2.7.0+cu126 (CPU operation dispatch only)",
+  "sources_sha256": {
+    "probe.cc": "58694701a320d7a8909f8c4ea7b3c76bf99904baf7f00b5a28a435217a2adaca",
+    "e2_probe.py": "fcd3342444946bf244e60a2f6055503faf545a5529c9a13bbb272a869c2b77e9",
+    "e2_cpp_helper.cc": "d0949248b10f8117a0da640c74cde92ef0d8fd7a8cfbc1ab3624fc91e9579544",
+    "e3_probe.cc": "c06d18b9fbb38110011b6334feb487f80b4035aac026ff4c149f441420fe6ef3",
+    "jit_probe.cc": "f01f00315a10cc13e0752733cf077453186b8f0b4d888337b1cf0ae25100c15b",
+    "runtime/lifetime_probe.cc": "7574f7bf7f88b830d1f7372e22870ec9e5faf4c34b0141ccda6adf7abf4148b8"
+  },
+  "fixture": "E1 CSR offsets [0,2,2,5,6], columns [0,2,1,0,2,1], segments [0,1,4], state [2,3,4], three deterministic signed-value variants",
+  "timing": "No performance claims or timing campaign in E1-E3"
+}

@@ -1,0 +1,27 @@
+{
+  "E1": {
+    "decision": "supported",
+    "evidence": ["results/e1.json", "probe.cc", "artifacts/probe"],
+    "limitation": "Typed vector-field bridge and nested semantic inlining are experiment-local; production semantic IR does not express this connected vector region."
+  },
+  "E2": {
+    "decision": "supported",
+    "evidence": ["results/e2.json", "e2_probe.py", "e2_cpp_helper.cc", "artifacts/libe2_cpp_helper.so"],
+    "limitation": "Descriptor registry, rewrite selector, and Torch CPU adapter are local prototypes; only the selected add overload is supported."
+  },
+  "E3": {
+    "decision": "unresolved",
+    "evidence": ["results/e3.json", "e3_probe.cc", "artifacts/e3_probe", "artifacts/indexing_support_gating_test"],
+    "limitation": "Materialized dependency counters/stale checks are local and not production cache hooks; full generation-specific artifact lifecycle remains unproven."
+  },
+  "E4": {
+    "decision": "supported",
+    "evidence": ["results/e4.json", "jit_probe.cc", "artifacts/e4final/65950742007273841.manifest", "artifacts/e4final/65950742007273841.so"],
+    "limitation": "CPU source/object/shared-library route only; generic topology contract is not CSR-pattern code specialization; system headers are represented by toolchain identity, not individual hashes."
+  },
+  "E6_cpu": {
+    "decision": "supported",
+    "evidence": ["runtime/E6_cpu.json", "runtime/E6_CPU_REPORT.md", "runtime/lifetime_probe.cc", "../verification/lifetime/REPORT.md"],
+    "limitation": "CPU single-consumer lease and one-worker/one-pending-slot prototype; CUDA stream/tape lifetimes remain unqualified."
+  }
+}

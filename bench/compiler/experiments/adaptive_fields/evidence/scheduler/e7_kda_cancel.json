@@ -1,0 +1,121 @@
+{
+  "attempt_count": 1,
+  "attempt_id": "9835a5f8-a9ed-43dc-b45a-e5cfe189e9d9",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-28T17:29:26.953921Z",
+  "decision_id": "a8994155-6868-40d3-8492-81163b10154a",
+  "id": "54ecf5db-410e-4e12-98a5-bb9c644b05b5",
+  "job_id": "54ecf5db-410e-4e12-98a5-bb9c644b05b5",
+  "lease_binding": null,
+  "lease_fencing_token": 1058,
+  "lease_id": "95ed0dc0-d289-412e-8608-b7d373c24c89",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "failed",
+    "cancellation_reason": "caller",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-5acb8ee1dc2e6fa2963efcf37596fd38.service",
+      "invocation_id": "a2165bd3e8eb4b1d89b48ad906e0fa30",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt 9835a5f8-a9ed-43dc-b45a-e5cfe189e9d9"
+    },
+    "exit_code": 143,
+    "invocation_id": "a2165bd3e8eb4b1d89b48ad906e0fa30",
+    "logs": "",
+    "logs_error": null,
+    "logs_truncated": false,
+    "operation_id": "cancel:9835a5f8-a9ed-43dc-b45a-e5cfe189e9d9",
+    "result": "exit-code",
+    "state": "failed",
+    "stop_requested": true,
+    "substate": "failed",
+    "unit_name": "device-scheduler-attempt-5acb8ee1dc2e6fa2963efcf37596fd38.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "-m",
+      "kda_experiments",
+      "--task",
+      "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/kda/task.json",
+      "--workspace",
+      "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/kda/workspace",
+      "evaluate",
+      "--candidates",
+      "portfolio_collector",
+      "--incumbent",
+      "portfolio_collector"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "ADAPTIVE_FIELDS_RUN_KEY": "adaptive-fields-e7-kda-portfolio-92ce6468-ee66-4e61-b8af-29b7fdfb4786",
+      "CELLERATOR_SPARSE_PACKAGE_ROOT": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+      "CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED": "1",
+      "LD_LIBRARY_PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/home/tumlinson/Software/miniconda3/bin:/usr/local/bin:/usr/bin:/bin",
+      "PYTHONPATH": "/home/tumlinson/kda:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+      "PYTHONUNBUFFERED": "1"
+    },
+    "event_trigger": null,
+    "idempotency_key": "adaptive-fields-e7-kda-portfolio-92ce6468-ee66-4e61-b8af-29b7fdfb4786",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 6442450944.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "gpu.exclusive",
+      "cellerator.adaptive_fields",
+      "e7-kda-portfolio"
+    ],
+    "timeout_seconds": 3300.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "cancelled",
+  "updated_at": "2026-10-28T17:42:05.651412Z"
+}

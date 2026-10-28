@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "commands": [
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3.13",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/prepare_nvcc.py",
+        "--output-dir",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_clean/artifacts",
+        "--arch",
+        "sm_70"
+      ],
+      "returncode": 0,
+      "stdout": "{\"compile_wall_ms\": 449.8389930013218, \"fatbin_sha256\": \"0ddd15f2c389c75e5454f7d46665696144bb38c67a7b7d35c584fbb24ef7ac8f\", \"gpu_execution_performed\": false, \"manifest\": \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_clean/artifacts/nvcc_artifact_manifest.json\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3.13",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/run_nvrtc_compare.py",
+        "--manifest",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_clean/artifacts/nvcc_artifact_manifest.json",
+        "--output",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_clean/comparison.json"
+      ],
+      "returncode": 0,
+      "stdout": "{\"nvrtc_compile_ms\": 18.997566, \"output\": \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_clean/comparison.json\", \"paired_count\": 84}\n",
+      "stderr": ""
+    }
+  ],
+  "run_key": "adaptive-fields-runtime-compiler-clean-d1d12129-6b73-4b3f-b4ab-1ab2b7c07600",
+  "scope": "Same experimental region; compiler/load overhead and execution, not application training speedup"
+}

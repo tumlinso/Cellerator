@@ -1,0 +1,22 @@
+{
+  "label": "validation",
+  "argv": [
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "--tool",
+    "memcheck",
+    "--error-exitcode",
+    "99",
+    "/home/tumlinson/Software/miniconda3/bin/python3.13",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py",
+    "--case",
+    "small",
+    "--output",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/memcheck/validation.json",
+    "--validate-only"
+  ],
+  "returncode": 0,
+  "stdout": "========= COMPUTE-SANITIZER\n{\"candidate\": \"scan_simt_full\", \"case\": \"small\", \"mode\": \"validate-only\", \"output\": \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/memcheck/validation.json\", \"samples_per_candidate\": 0}\n========= ERROR SUMMARY: 0 errors\n",
+  "stderr": "",
+  "decision": "supported",
+  "performance_evidence": false
+}

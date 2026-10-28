@@ -1,0 +1,49 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "tool": "memcheck",
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3.13",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/e7_validate.py",
+        "--sanitizer",
+        "memcheck",
+        "--output-dir",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_sanitizers/memcheck"
+      ],
+      "returncode": 0,
+      "stdout": "validation/memcheck: exit 0\nprotocol_smoke/memcheck: exit 0\n",
+      "stderr": ""
+    },
+    {
+      "tool": "racecheck",
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3.13",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/e7_validate.py",
+        "--sanitizer",
+        "racecheck",
+        "--output-dir",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_sanitizers/racecheck"
+      ],
+      "returncode": 0,
+      "stdout": "validation/racecheck: exit 0\nprotocol_smoke/racecheck: exit 0\n",
+      "stderr": ""
+    },
+    {
+      "tool": "synccheck",
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3.13",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/e7_validate.py",
+        "--sanitizer",
+        "synccheck",
+        "--output-dir",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_sanitizers/synccheck"
+      ],
+      "returncode": 0,
+      "stdout": "validation/synccheck: exit 0\nprotocol_smoke/synccheck: exit 0\n",
+      "stderr": ""
+    }
+  ],
+  "performance_evidence": false,
+  "run_key": "adaptive-fields-e7-sanitizers-7925c5e0-0fd2-4ba3-a4f2-c249d59ed125"
+}

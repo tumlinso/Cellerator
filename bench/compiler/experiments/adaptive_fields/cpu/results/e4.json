@@ -1,0 +1,23 @@
+{
+  "decision": "supported",
+  "scope": "CPU runtime source/object compilation prototype",
+  "source_revision": "c63f591d04ef74b7566937d161c80936dcc4cf05",
+  "toolchain": "g++ 13.3.0; object compilation reused compile_generated_cpp_object_v1; C++20 harness",
+  "source_sha256": "f01f00315a10cc13e0752733cf077453186b8f0b4d888337b1cf0ae25100c15b",
+  "checks": [
+    "generated generic CSR apply plus segmented softmax source compiled to object using existing object compiler, linked to shared library, dlopened and invoked",
+    "numerical values rebound through runtime pointers changed output without compilation",
+    "artifact identity includes generated source, compiler command/version, flags, numerical contract and topology contract; manifest validates actual generated source and shared-object hashes",
+    "cold compile/link/load: compile 153.0 ms, link 35.8 ms, load 0.06 ms; cold preparation total 189.2 ms in one unpaired probe",
+    "same-process manifest reuse performed zero additional compiles/links; second process invocation warm hit had 0.26 ms prepare lookup and 0.08 ms load",
+    "compiler identity c++ versus g++, fast versus ordered FP32 numerical contract, and changed CSR topology each invalidated to a new key/artifact"
+  ],
+  "repro": "Compile jit_probe.cc with src/compiler/backend/compile_generated_c_into_ordinary_objects.cc and -ldl, then invoke artifacts/jit_probe <cache-dir> [compiler] [contract] [topology]. Cold/warm and changed-key output is preserved in the task run transcript; manifests and .so files are under artifacts/e4clean/.",
+  "limitations": [
+    "generated vector lowering and artifact cache are experiment-local; production planner, artifact cache, and prepared-relation caches are not reused",
+    "topology appears in the source contract and is passed as runtime structure; this does not specialize the loops for each CSR pattern",
+    "the dependency file records generated source but -MMD omits system header contents; standard header identity is represented by compiler command/version rather than per-header hashes",
+    "only the host g++/c++ route is exercised; no CUDA/NVRTC or LLVM ORC",
+    "timings are single probes, not a performance campaign; no net benefit claim over eager compile"
+  ]
+}

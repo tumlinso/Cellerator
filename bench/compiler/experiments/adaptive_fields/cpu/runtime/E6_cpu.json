@@ -1,0 +1,28 @@
+{
+  "decision": "supported",
+  "scope": "experiment-local CPU executable lifetime protocol",
+  "source_revision": "c63f591d04ef74b7566937d161c80936dcc4cf05",
+  "source_sha256": "7574f7bf7f88b830d1f7372e22870ec9e5faf4c34b0141ccda6adf7abf4148b8",
+  "toolchain": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; generated source compile via existing API uses -std=c++17, -fPIC; shared link; host harness C++20",
+  "artifact": "artifacts/modules/worker/*.so generated in this run, loaded with dlopen and invoked",
+  "checks": {
+    "in_flight_old_module": "held by shared lease across publication; actual code returned expected output; dlclose after completion",
+    "background_compiler": "one worker, one pending slot; deterministic condition-variable gates",
+    "duplicate_request": "same in-flight key returned original request id",
+    "pending_capacity": "one distinct request admitted; next request rejected",
+    "cancellation": "pending item cancelled and its completion consumed; no module was compiled",
+    "stale_structure": "epoch 7 compilation completed after current epoch became 8 and publication rejected",
+    "value_generation": "generation advanced 4 to 5 while compilation was held; structure-compatible replacement published",
+    "failure": "invalid generated C++ failed compile and fallback stayed callable",
+    "fallback": "host generic callable used after structure change; stale specialized module did not run",
+    "duplicate_key_lifecycle": "completion consumption removes coalescing key; explicit retries after success, cancellation, and failure received new IDs and executed again"
+  },
+  "trace": "old_call_result=3 old_code_retired_after_completion=1 replacement_published=1 stale_rejected=1 failed_rejected=1 value_generation_now=5 structural_epoch_now=8 duplicate_coalesced=1 pending_capacity_rejected=1 pending_cancelled=2 retry_after_success_cancel_failure=pass generic_fallback_callable=1 module_close_count=3",
+  "evidence": ["lifetime_probe.cc", "E6_CPU_REPORT.md", "artifacts/lifetime_probe"],
+  "limitations": [
+    "CPU only; no CUDA stream/event lifetime or device race/synchronization qualification",
+    "single consumer lease and one pending slot only",
+    "generated module body is a tiny scalar callable, not the E4 connected CSR computation",
+    "production API, cache policy, process interruption, and multi-consumer tape semantics remain undecided"
+  ]
+}

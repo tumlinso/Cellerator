@@ -1,0 +1,105 @@
+{
+  "attempt_count": 1,
+  "attempt_id": "a424972d-be33-48f0-8dc3-7f7d0feaaaae",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-28T16:59:12.695404Z",
+  "decision_id": "ddbced9e-a6c3-4224-b3c3-3d0b6d6ce664",
+  "id": "81de9963-f128-4915-a956-4282acf9ff19",
+  "job_id": "81de9963-f128-4915-a956-4282acf9ff19",
+  "lease_binding": null,
+  "lease_fencing_token": 1040,
+  "lease_id": "1aae0df7-0835-4293-93d7-29e3e9bf8f7c",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "cancellation_reason": "caller",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-bde955473dbdd1d65ca325d4d04e6390.service",
+      "invocation_id": "10eb5c0da3ca488d95140eea27498f1c",
+      "post_stop_unit_state": "not-found",
+      "unit_description": "Device Scheduler attempt a424972d-be33-48f0-8dc3-7f7d0feaaaae"
+    },
+    "invocation_id": "10eb5c0da3ca488d95140eea27498f1c",
+    "operation_id": "cancel:a424972d-be33-48f0-8dc3-7f7d0feaaaae",
+    "reason": "unit was unloaded after systemd acknowledged stop",
+    "state": "unknown",
+    "stop_requested": true,
+    "unit_name": "device-scheduler-attempt-bde955473dbdd1d65ca325d4d04e6390.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python3",
+      "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/runtime_sanitizers.py"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "ADAPTIVE_FIELDS_RUN_KEY": "adaptive-fields-runtime-sanitizers-v2-d540e81f-6f8e-48ac-a6bb-29ef5099f3d1",
+      "CELLERATOR_SPARSE_PACKAGE_ROOT": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+      "CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED": "1",
+      "LD_LIBRARY_PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/home/tumlinson/Software/miniconda3/bin:/usr/local/bin:/usr/bin:/bin",
+      "PYTHONPATH": "/home/tumlinson/kda:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+      "PYTHONUNBUFFERED": "1"
+    },
+    "event_trigger": null,
+    "idempotency_key": "adaptive-fields-runtime-sanitizers-v2-d540e81f-6f8e-48ac-a6bb-29ef5099f3d1",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 6442450944.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "runtime-sanitizers-v2",
+      "cellerator.adaptive_fields",
+      "gpu.exclusive"
+    ],
+    "timeout_seconds": 3000.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "cancelled",
+  "updated_at": "2026-10-28T17:01:10.159493Z"
+}

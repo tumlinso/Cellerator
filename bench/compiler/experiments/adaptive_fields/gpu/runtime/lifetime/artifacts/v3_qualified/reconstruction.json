@@ -1,0 +1,23 @@
+{
+  "build_command": [
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "--std=c++17",
+    "-arch=sm_70",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/lifetime_runner.cu",
+    "-L",
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/lib",
+    "-lnvrtc",
+    "-lcuda",
+    "-Xlinker",
+    "-rpath",
+    "-Xlinker",
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/lib",
+    "-o",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/lifetime_runner"
+  ],
+  "exact_qualified_hash_reproduced": true,
+  "expected_qualified_runner_sha256": "8d2e90be851c7e87b8292f8716a34e6ed961a3a8e83e6772999d22b8df9c7806",
+  "gpu_execution_performed": false,
+  "runner_sha256": "8d2e90be851c7e87b8292f8716a34e6ed961a3a8e83e6772999d22b8df9c7806",
+  "source_sha256": "02305c68cc4e245f7e5c1787cc0dce7bcfa10e04ea0c7b908b3dff2871b14888"
+}

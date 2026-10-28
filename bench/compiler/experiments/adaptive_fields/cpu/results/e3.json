@@ -1,0 +1,19 @@
+{
+  "decision": "unresolved",
+  "source_revision": "c63f591d04ef74b7566937d161c80936dcc4cf05",
+  "toolchain": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, C++20, -O2",
+  "sources": {
+    "e3_probe.cc": "c06d18b9fbb38110011b6334feb487f80b4035aac026ff4c149f441420fe6ef3"
+  },
+  "checks": [
+    "existing planning cache validator reuses key unchanged by external value and active-support counters",
+    "structure epoch, physical order, and toolchain change invalidate at the existing declared resumption point",
+    "real adaptive support manager staged logical edge 30 promotion and edge 10 revocation, published epoch 5, and restored checkpoint with stable IDs",
+    "local materialized value operands are rebuilt from active primal/derivative union; rebind changes numeric output while compile/index/projection counters stay unchanged",
+    "local materialized dependency adapters reject stale structure/order projection handles",
+    "local gate close/reopen regenerates distinct primal and derivative worksets, preserving a sampled derivative-only ID",
+    "existing indexing_support_gating_test passed, including workset, proposal, publication, and restoration assertions"
+  ],
+  "evidence": ["e3_probe.cc", "artifacts/e3_probe stdout: compile=1 index=3 projection=3 workset=3 value_operand=4 rebind=1 pack=0", "artifacts/indexing_support_gating_test"],
+  "missing_capability": "The dependency graph, counters, and handle validity are experiment-local adapters, not hooks into production caches. Numeric execution uses existing CPU relation and segment callbacks, but the materialization lifecycle is not wired to production caches. Existing planning keys omit value/active-support generations. Thus the prototype demonstrates a viable dependency split but does not establish production artifact dependencies or complete native execution lifecycle."
+}

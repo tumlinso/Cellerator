@@ -1,0 +1,18 @@
+{
+  "schema": "cellerator.adaptive_fields.e6_gpu_lifetime_sanitizers.v1",
+  "status": "commands_only_waiting_for_root_scheduler_window",
+  "binary": "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/lifetime_runner",
+  "source": "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/lifetime_kernels.cu",
+  "output_directory": "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/sanitizers",
+  "commands": [
+    ["/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer", "--tool", "memcheck", "--error-exitcode", "99", "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/lifetime_runner", "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/lifetime_kernels.cu", "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/sanitizers/memcheck.json"],
+    ["/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer", "--tool", "racecheck", "--error-exitcode", "99", "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/lifetime_runner", "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/lifetime_kernels.cu", "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/sanitizers/racecheck.json"],
+    ["/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer", "--tool", "synccheck", "--error-exitcode", "99", "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/lifetime_runner", "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/lifetime_kernels.cu", "bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/sanitizers/synccheck.json"]
+  ],
+  "admission": "root task owner submits each check in a finite exclusive UUID-bound Device Scheduler job; runner requires experiment marker, one UUID route, and JobSpec correlation key; external JobSpec/submission/terminal/cleanup receipts are authority",
+  "notes": [
+    "The runner's second argument is a result JSON filename, not parsed input; the sanitizer commands above pass a distinct output path.",
+    "One stream-barrier scenario uses a host callback that waits on a condition variable; all CUDA API calls occur outside that callback.",
+    "The tests use actual CUmodule/CUfunction handles loaded from NVRTC PTX and explicit CUDA events."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "label": "protocol_smoke",
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python3.13",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py",
+    "--case",
+    "small",
+    "--output",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_final_qualification_v2/normal/protocol_smoke.json",
+    "--benchmark",
+    "--warmup",
+    "1",
+    "--samples",
+    "1",
+    "--rounds",
+    "1",
+    "--seed",
+    "20261027"
+  ],
+  "returncode": 0,
+  "stdout": "{\"candidate\": \"ordered_postings_cegeo_union\", \"case\": \"small\", \"mode\": \"benchmark-all-six\", \"output\": \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_final_qualification_v2/normal/protocol_smoke.json\", \"samples_per_candidate\": 1}\n",
+  "stderr": "",
+  "decision": "supported",
+  "performance_evidence": false
+}

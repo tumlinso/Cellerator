@@ -1,0 +1,62 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "probe": "lifetime",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/lifetime_runner",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/lifetime_kernels.cu",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_lifetime_v3/lifetime_memcheck.json"
+      ],
+      "returncode": 0,
+      "stdout": "========= COMPUTE-SANITIZER\nlifetime_result=/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_lifetime_v3/lifetime_memcheck.json\n========= ERROR SUMMARY: 0 errors\n",
+      "stderr": "E6_STAGE t_ms=0 module_load_begin key=generic-fallback\nE6_STAGE t_ms=0 module_load_end key=generic-fallback elapsed_ms=0\nE6_STAGE t_ms=23 module_load_begin key=initial-e1-contract-v1\nE6_STAGE t_ms=23 module_load_end key=initial-e1-contract-v1 elapsed_ms=0\nE6_STAGE t_ms=24 callback_enqueue_begin\nE6_STAGE t_ms=24 callback_enqueue_end\nE6_STAGE callback_entered\nE6_STAGE t_ms=38 module_load_begin key=replacement-e1-contract-v1\nE6_STAGE callback_watchdog_expired timeout_seconds=10\nE6_STAGE t_ms=10025 module_load_end key=replacement-e1-contract-v1 elapsed_ms=9987\nE6_STAGE t_ms=10025 callback_barrier_release_and_sync_begin\nE6_STAGE t_ms=10026 callback_barrier_release_and_sync_end\nE6_STAGE t_ms=10060 module_load_begin key=stale-structure-epoch-1\nE6_STAGE t_ms=10061 module_load_end key=stale-structure-epoch-1 elapsed_ms=0\nE6_STAGE t_ms=10077 module_load_begin key=value-compatible-structure-epoch-2\nE6_STAGE t_ms=10078 module_load_end key=value-compatible-structure-epoch-2 elapsed_ms=0\n",
+      "result_path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_lifetime_v3/lifetime_memcheck.json"
+    },
+    {
+      "probe": "lifetime",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/lifetime_runner",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/lifetime_kernels.cu",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_lifetime_v3/lifetime_racecheck.json"
+      ],
+      "returncode": 0,
+      "stdout": "========= COMPUTE-SANITIZER\nlifetime_result=/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_lifetime_v3/lifetime_racecheck.json\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n",
+      "stderr": "E6_STAGE t_ms=0 module_load_begin key=generic-fallback\nE6_STAGE t_ms=0 module_load_end key=generic-fallback elapsed_ms=0\nE6_STAGE t_ms=20 module_load_begin key=initial-e1-contract-v1\nE6_STAGE t_ms=21 module_load_end key=initial-e1-contract-v1 elapsed_ms=0\nE6_STAGE t_ms=22 callback_enqueue_begin\nE6_STAGE t_ms=22 callback_enqueue_end\nE6_STAGE callback_entered\nE6_STAGE t_ms=39 module_load_begin key=replacement-e1-contract-v1\nE6_STAGE callback_watchdog_expired timeout_seconds=10\nE6_STAGE t_ms=10023 module_load_end key=replacement-e1-contract-v1 elapsed_ms=9983\nE6_STAGE t_ms=10023 callback_barrier_release_and_sync_begin\nE6_STAGE t_ms=10023 callback_barrier_release_and_sync_end\nE6_STAGE t_ms=10067 module_load_begin key=stale-structure-epoch-1\nE6_STAGE t_ms=10067 module_load_end key=stale-structure-epoch-1 elapsed_ms=0\nE6_STAGE t_ms=10087 module_load_begin key=value-compatible-structure-epoch-2\nE6_STAGE t_ms=10087 module_load_end key=value-compatible-structure-epoch-2 elapsed_ms=0\n",
+      "result_path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_lifetime_v3/lifetime_racecheck.json"
+    },
+    {
+      "probe": "lifetime",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/artifacts/lifetime_runner",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/lifetime/lifetime_kernels.cu",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_lifetime_v3/lifetime_synccheck.json"
+      ],
+      "returncode": 0,
+      "stdout": "========= COMPUTE-SANITIZER\nlifetime_result=/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_lifetime_v3/lifetime_synccheck.json\n========= ERROR SUMMARY: 0 errors\n",
+      "stderr": "E6_STAGE t_ms=0 module_load_begin key=generic-fallback\nE6_STAGE t_ms=0 module_load_end key=generic-fallback elapsed_ms=0\nE6_STAGE t_ms=16 module_load_begin key=initial-e1-contract-v1\nE6_STAGE t_ms=17 module_load_end key=initial-e1-contract-v1 elapsed_ms=0\nE6_STAGE t_ms=17 callback_enqueue_begin\nE6_STAGE t_ms=17 callback_enqueue_end\nE6_STAGE callback_entered\nE6_STAGE t_ms=29 module_load_begin key=replacement-e1-contract-v1\nE6_STAGE callback_watchdog_expired timeout_seconds=10\nE6_STAGE t_ms=10018 module_load_end key=replacement-e1-contract-v1 elapsed_ms=9988\nE6_STAGE t_ms=10018 callback_barrier_release_and_sync_begin\nE6_STAGE t_ms=10019 callback_barrier_release_and_sync_end\nE6_STAGE t_ms=10046 module_load_begin key=stale-structure-epoch-1\nE6_STAGE t_ms=10046 module_load_end key=stale-structure-epoch-1 elapsed_ms=0\nE6_STAGE t_ms=10058 module_load_begin key=value-compatible-structure-epoch-2\nE6_STAGE t_ms=10058 module_load_end key=value-compatible-structure-epoch-2 elapsed_ms=0\n",
+      "result_path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_lifetime_v3/lifetime_synccheck.json"
+    }
+  ],
+  "timings_are_performance_evidence": false,
+  "scheduler_correlation_key": "adaptive-fields-runtime-lifetime-v3-7882e3b4-fb86-47fa-a75a-88fd1ca08f53",
+  "admission_evidence": "External JobSpec, submission and terminal receipt"
+}

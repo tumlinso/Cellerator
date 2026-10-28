@@ -1,0 +1,88 @@
+{
+  "attempt_id": null,
+  "blocked_reason": null,
+  "cleanup_verified": false,
+  "created_at": "2026-10-28T17:18:29.659533Z",
+  "id": "b98a5338-08d0-4a5f-b658-e03845498eaa",
+  "job_id": "b98a5338-08d0-4a5f-b658-e03845498eaa",
+  "lease_binding": null,
+  "lease_fencing_token": null,
+  "lease_id": null,
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "result": null,
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/e7_validate.py",
+      "--output-dir",
+      "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_protocol_validation"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "ADAPTIVE_FIELDS_RUN_KEY": "adaptive-fields-e7-protocol-validation-917df0b2-8c6a-45cb-a1fd-1cada4e612fe",
+      "CELLERATOR_SPARSE_PACKAGE_ROOT": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+      "CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED": "1",
+      "LD_LIBRARY_PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/home/tumlinson/Software/miniconda3/bin:/usr/local/bin:/usr/bin:/bin",
+      "PYTHONPATH": "/home/tumlinson/kda:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+      "PYTHONUNBUFFERED": "1"
+    },
+    "event_trigger": null,
+    "idempotency_key": "adaptive-fields-e7-protocol-validation-917df0b2-8c6a-45cb-a1fd-1cada4e612fe",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 6442450944.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "e7-protocol-validation",
+      "cellerator.adaptive_fields",
+      "gpu.exclusive"
+    ],
+    "timeout_seconds": 1500.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "queued",
+  "updated_at": "2026-10-28T17:18:29.659533Z"
+}

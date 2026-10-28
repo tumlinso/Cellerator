@@ -1,0 +1,21 @@
+{
+  "attempt_id": "683435e9-0142-453e-a47f-202a2cf479aa",
+  "cleanup_verified": true,
+  "job_id": "d7da4665-62cb-4422-908c-af293e5c2ed4",
+  "stderr": {
+    "omitted_lines": 0,
+    "original_bytes": 0,
+    "returned_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": "",
+    "truncated": false
+  },
+  "stdout": {
+    "omitted_lines": 0,
+    "original_bytes": 948,
+    "returned_bytes": 948,
+    "sha256": "2de14f830e9fd2af5dc8e652e2c6e8d6a23cc64aa5454f659c7f53667af3aea0",
+    "text": "Traceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 938, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 924, in main\n    result = run(args)\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 505, in run\n    entity = primary_module.block(\"entity_embedding\").detach()\n             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package/cellerator/torch/sparse_support.py\", line 305, in block\n    raise RuntimeError(\"sparse parameter blocks may only be read inside a pinned forward window\")\nRuntimeError: sparse parameter blocks may only be read inside a pinned forward window\n",
+    "truncated": false
+  }
+}

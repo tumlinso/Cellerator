@@ -1,0 +1,21 @@
+{
+  "attempt_id": "ead197ab-b27e-4807-b31a-9604a6a18a0b",
+  "cleanup_verified": true,
+  "job_id": "584887a4-6983-4227-93b4-ed08059bdc34",
+  "stderr": {
+    "omitted_lines": 0,
+    "original_bytes": 0,
+    "returned_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": "",
+    "truncated": false
+  },
+  "stdout": {
+    "omitted_lines": 0,
+    "original_bytes": 862,
+    "returned_bytes": 862,
+    "sha256": "97ee322d7c82f23ecd465db1bd25e7e6a0b7fea6a90e5f2e1639914e8c61a102",
+    "text": "Traceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 978, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 964, in main\n    result = run(args)\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 636, in run\n    \"baseline\": diagnostics_summary(base_diag),\n                ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 423, in diagnostics_summary\n    \"output_sha256\": array_sha256(diag[\"output_values\"]),\n                     ^^^^^^^^^^^^\nNameError: name 'array_sha256' is not defined\n",
+    "truncated": false
+  }
+}

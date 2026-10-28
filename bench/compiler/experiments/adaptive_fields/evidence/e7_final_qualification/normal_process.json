@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python3.13",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/e7_validate.py",
+    "--output-dir",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_final_qualification/normal"
+  ],
+  "returncode": 1,
+  "stdout": "reset_protocol/none: exit 1\n Traceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 1512, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 1492, in main\n    result = run(args)\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 963, in run\n    reset_protocol_validation, baseline_snapshot = validate_fixed_structure_reset(\n                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        torch, sparse_support, fixture,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<11 lines>...\n        primary_values=primary_values, threshold=threshold,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        seed=args.seed)\n        ^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 804, in validate_fixed_structure_reset\n    \"stale_structure_epoch_before\": stale_snapshot.structure_epoch,\n                                    ^^^^^^^^^^^^^^\nUnboundLocalError: cannot access local variable 'stale_snapshot' where it is not associated with a value\n\n",
+  "stderr": ""
+}
