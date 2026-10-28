@@ -101,3 +101,14 @@ fall back to exact k-way merge, where the duplicate-heavy q32 case was much
 slower than full scan. The q2048 speed comparison used the concat prototype;
 the old serial merge was not timed at that size. Sanitizers validate the focused
 test paths, not every possible input size or long-running workload.
+
+After those GPU jobs, a final API review found a theoretical uint64 aggregate
+count overflow for shapes where `cell_count * index.item_count` is not
+representable. The query now rejects such nonempty shapes before scheduling
+kernels; this conservative bound is documented in the public header. Its
+host-only preflight test and updated hashes are recorded in
+`bench/sparse_support/evidence/experiments/ordered_postings_fastpath_checkpoint/overflow_bound_host_preflight.txt`
+and `overflow_bound_source_identities.sha256`. The updated target rebuilt and
+the no-allocation preflight test passed locally; the full GPU suite and
+sanitizers were not rerun on this final source version because GPU3 was handed
+to the indexed-values worker.

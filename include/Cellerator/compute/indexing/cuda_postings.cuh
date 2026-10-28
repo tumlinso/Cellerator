@@ -90,7 +90,11 @@ struct cuda_posting_scratch_v1 {
 // binary term lookup, then a k-way merge of only matching posting slices. It
 // returns sorted unique logical edge IDs, with no global edge/entity scan.
 // If capacity is insufficient, no output rows are written and status reports
-// the exact total required count. The operation is asynchronous on `stream`.
+// the exact total required count. Before launch, the operation rejects any
+// nonempty query shape for which cell_count * index.item_count cannot be
+// represented as uint64; this conservative bound guarantees that device-side
+// required-count atomics and offset prefix sums cannot overflow. The operation
+// is asynchronous on `stream`.
 cudaError_t cuda_query_reverse_postings_any_v1(
     const cuda_reverse_posting_view_v1 &index,
     std::uint64_t expected_structure_epoch, std::uint64_t cell_count,

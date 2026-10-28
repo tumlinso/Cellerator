@@ -477,6 +477,14 @@ cudaError_t cuda_query_reverse_postings_any_v1(
     if (index.relation_id == 0 || index.structure_id == 0
         || index.structure_epoch == 0 || index.structure_epoch != expected_epoch)
         return cudaErrorInvalidValue;
+    // Both status.required's atomic total and the output-offset prefix sum
+    // aggregate all cell counts in uint64. A cell can emit at most every
+    // indexed posting item, so reject launch shapes whose conservative bound
+    // cannot be represented. This is deliberately checked before scheduling
+    // any kernels (and without adding hot-path device arithmetic).
+    if (cells != 0 && query_count != 0 && index.item_count != 0
+        && index.item_count > std::numeric_limits<std::uint64_t>::max() / cells)
+        return cudaErrorInvalidValue;
     if ((index.term_count && (index.terms == nullptr || index.term_offsets == nullptr))
         || (index.item_count && index.items == nullptr)
         || (cells && query_offsets == nullptr)

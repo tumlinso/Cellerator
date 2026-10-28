@@ -5,9 +5,12 @@
 
 #include <cassert>
 #include <cstdint>
+#include <cstring>
+#include <limits>
 #include <vector>
 
 using namespace cellerator::compute::gating;
+using namespace cellerator::compute::indexing;
 using cellerator::compute::indexing::indexed_work_item_v1;
 
 namespace {
@@ -29,7 +32,19 @@ template <class T> std::vector<T> host_copy(const T *src, std::size_t n) {
 template <class T> void release(T *ptr) { if (ptr) assert(cudaFree(ptr) == cudaSuccess); }
 }
 
-int main() {
+int main(int argc, char **argv) {
+    // Reject a nonrepresentable conservative all-cells cardinality bound
+    // before touching device pointers or scheduling kernels.
+    cuda_reverse_posting_view_v1 impossible_bound{};
+    impossible_bound.relation_id = 1;
+    impossible_bound.structure_id = 1;
+    impossible_bound.structure_epoch = 7;
+    impossible_bound.item_count = std::numeric_limits<std::uint64_t>::max();
+    assert(cuda_query_reverse_postings_any_v1(impossible_bound, 7, 2,
+        nullptr, nullptr, 1, {}, {}, nullptr) == cudaErrorInvalidValue);
+    if (argc == 2 && std::strcmp(argv[1], "--bound-preflight-only") == 0)
+        return 0;
+
     // Edge 0 requires predicate 0, edge 1 is unbound, edge 2 requires NOT
     // predicate 0. The cell-major bitmap therefore changes across cells.
     const condition_node_v1 nodes[] = {
