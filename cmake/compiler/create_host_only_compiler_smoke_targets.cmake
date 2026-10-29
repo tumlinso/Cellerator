@@ -1,7 +1,7 @@
 include_guard(GLOBAL)
 
 function(cellerator_create_host_only_compiler_smoke_targets)
-    set(smoke_source "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../tests/compiler/b01/host_only_compiler_smoke_targets_test.cc")
+    set(smoke_source "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../tests/compiler/build/host_only_compiler_smoke_targets_test.cc")
     foreach(component IN ITEMS ceir profile source diagnostics daemon_protocol)
         set(target "cellerator_compiler_smoke_${component}")
         add_executable(${target} "${smoke_source}")

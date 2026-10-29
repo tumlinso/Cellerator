@@ -21,12 +21,12 @@ common=(
 "$nvcc" "${common[@]}" -c "$repo_root/src/execution/training_program.cu" \
     -o "$build_dir/training_program.o"
 "$nvcc" "${common[@]}" -c \
-    "$repo_root/tests/execution/ce_live_concurrency_test.cu" \
-    -o "$build_dir/ce_live_concurrency_test.o"
+    "$repo_root/tests/execution/training_program_concurrency_test.cu" \
+    -o "$build_dir/training_program_concurrency_test.o"
 
 /usr/bin/c++ "$build_dir/training_program.o" \
-    "$build_dir/ce_live_concurrency_test.o" \
-    -o "$build_dir/ce_live_concurrency_test" \
+    "$build_dir/training_program_concurrency_test.o" \
+    -o "$build_dir/training_program_concurrency_test" \
     -L"$configured_build" \
     -L"$configured_build/src/geometry" \
     -L"$cuda_root/targets/x86_64-linux/lib" \
@@ -46,5 +46,5 @@ common=(
     -lcudadevrt -lcudart_static -lrt -lpthread -ldl
 
 if [[ ${1:-} != --build-only ]]; then
-    "$build_dir/ce_live_concurrency_test"
+    "$build_dir/training_program_concurrency_test"
 fi

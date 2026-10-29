@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Cellerator/compiler/discovery/temporary_cellshard_compiler_adapter_v1.hh>
-#include <Cellerator/compiler/discovery/import_atom_envelope_and_typed_ports_v1.hh>
-#include <Cellerator/compiler/discovery/import_atom_plane_separation_v1.hh>
-#include <Cellerator/compiler/discovery/import_atom_requirement_affordance_matching_v1.hh>
-#include <Cellerator/compiler/discovery/import_scalable_certification_indexes_v1.hh>
+#include <Cellerator/compiler/discovery/atom_envelope_and_typed_ports_v1.hh>
+#include <Cellerator/compiler/discovery/atom_plane_separation_v1.hh>
+#include <Cellerator/compiler/discovery/atom_requirement_affordance_matching_v1.hh>
+#include <Cellerator/compiler/discovery/scalable_certification_indexes_v1.hh>
 
 #include <cstdint>
 #include <vector>

@@ -9,7 +9,7 @@ namespace cb = cellerator::compiler::backend::v1;
 
 int main() {
     const auto directory = std::filesystem::temp_directory_path()
-        / "ce_ccp1_f02_009";
+        / "cellerator_compile_generated_c_into_ordinary_objects";
     std::filesystem::create_directories(directory);
     const auto source = directory / "generated.cc";
     const auto caller = directory / "caller.cc";

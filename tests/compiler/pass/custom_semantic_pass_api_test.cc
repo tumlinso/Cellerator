@@ -18,7 +18,7 @@ bool validate(const cp::semantic_pass_context_v1& context) noexcept {
 
 int main() {
     const auto directory = std::filesystem::temp_directory_path()
-        / "ce_ccp1_g02_004";
+        / "cellerator_custom_semantic_pass_api";
     std::filesystem::create_directories(directory);
     const auto source = directory / "external_pass.cc";
     const auto library = directory / "external_pass.so";

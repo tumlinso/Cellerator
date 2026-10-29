@@ -16,7 +16,7 @@ add_custom_target(celleratorNoProductionFileIoCheck ALL
 # benchmark or empirical-promotion work. The companion runner executes this
 # concrete list directly because Cellerator does not use CTest as its primary
 # test runner.
-function(cellerator_add_ce_geo_foundation_test target source)
+function(cellerator_add_geometry_foundation_test target source)
     add_executable(${target} ${source})
     target_link_libraries(${target} PRIVATE ${ARGN})
     set_target_properties(${target} PROPERTIES
@@ -28,50 +28,50 @@ function(cellerator_add_ce_geo_foundation_test target source)
     )
 endfunction()
 
-cellerator_add_ce_geo_foundation_test(ceGeoCapabilityTest
-    tests/ce_geo/hardware/capability_test.cc
+cellerator_add_geometry_foundation_test(geometry_capability_test
+    tests/geometry/providers/capability_test.cc
     Cellerator::architecture_provider)
-cellerator_add_ce_geo_foundation_test(ceGeoProviderRegistryTest
-    tests/ce_geo/hardware/provider_registry_test.cc
+cellerator_add_geometry_foundation_test(geometry_provider_registry_test
+    tests/geometry/providers/provider_registry_test.cc
     Cellerator::architecture_provider)
-cellerator_add_ce_geo_foundation_test(ceGeoProviderContractTest
-    "tests/ce_geo/hardware/provider_contract_test.cu;tests/ce_geo/hardware/fake_provider.cc"
+cellerator_add_geometry_foundation_test(geometry_provider_contract_test
+    "tests/geometry/providers/provider_contract_test.cu;tests/geometry/providers/fake_provider.cc"
     Cellerator::architecture_provider CUDA::cudart)
 
-cellerator_add_ce_geo_foundation_test(ceGeoCatalogContractTest
-    tests/ce_geo/catalog/catalog_contract_test.cc
+cellerator_add_geometry_foundation_test(geometry_catalog_contract_test
+    tests/geometry/catalog/catalog_contract_test.cc
     Cellerator::operation_core)
-cellerator_add_ce_geo_foundation_test(ceGeoProjectionReferenceV2Test
-    tests/ce_geo/catalog/projection_reference_v2_test.cc
+cellerator_add_geometry_foundation_test(geometry_projection_reference_v2_test
+    tests/geometry/catalog/projection_reference_v2_test.cc
     Cellerator::operation_core)
-cellerator_add_ce_geo_foundation_test(ceGeoBuiltinFragmentTest
-    tests/ce_geo/catalog/builtin_fragment_test.cu
+cellerator_add_geometry_foundation_test(geometry_builtin_fragment_test
+    tests/geometry/catalog/builtin_fragment_test.cu
     Cellerator::builtin_candidate_catalog CUDA::cudart)
-cellerator_add_ce_geo_foundation_test(ceGeoRelationCatalogTest
+cellerator_add_geometry_foundation_test(relation_catalog_test
     tests/relation_algebra/catalog_integration_test.cu
     Cellerator::relation_algebra CUDA::cudart)
 
-cellerator_add_ce_geo_foundation_test(ceGeoSemanticCompilerTest
-    tests/geometry/ce_geo/semantic_compiler_property_test.cc
+cellerator_add_geometry_foundation_test(geometry_semantic_compiler_test
+    tests/geometry/contracts/semantic_compiler_property_test.cc
     Cellerator::semantic_geometry_v1)
-cellerator_add_ce_geo_foundation_test(ceGeoCsg1Test
-    tests/geometry/ce_geo/csg1_test.cc
+cellerator_add_geometry_foundation_test(geometry_csg1_test
+    tests/geometry/contracts/csg1_test.cc
     Cellerator::semantic_geometry_v1)
-cellerator_add_ce_geo_foundation_test(ceGeoCsg1SupportSectionsTest
-    tests/geometry/ce_geo/csg1_support_sections_test.cc
+cellerator_add_geometry_foundation_test(geometry_csg1_support_sections_test
+    tests/geometry/contracts/csg1_support_sections_test.cc
     Cellerator::semantic_geometry_v1)
-cellerator_add_ce_geo_foundation_test(ceGeoCpe2CapabilityManifestTest
-    tests/geometry/ce_geo/cpe2_capability_manifest_test.cc
+cellerator_add_geometry_foundation_test(geometry_cpe2_capability_manifest_test
+    tests/geometry/contracts/cpe2_capability_manifest_test.cc
     Cellerator::semantic_geometry_v1 CellPack::execution_image_v2)
-cellerator_add_ce_geo_foundation_test(ceGeoPreboundProjectionV2Test
-    tests/geometry/ce_geo/prebound_projection_v2_test.cc
+cellerator_add_geometry_foundation_test(geometry_prebound_projection_v2_test
+    tests/geometry/contracts/prebound_projection_v2_test.cc
     Cellerator::geometry_acquisition)
 
-cellerator_add_ce_geo_foundation_test(ceGeoGeometryAcquisitionContractTest
-    tests/ce_geo/persistence/geometry_acquisition_contract_test.cc
+cellerator_add_geometry_foundation_test(geometry_acquisition_contract_test
+    tests/geometry/acquisition/geometry_acquisition_contract_test.cc
     Cellerator::geometry_acquisition)
-cellerator_add_ce_geo_foundation_test(ceGeoAcquisitionCostMappingTest
-    tests/ce_geo/persistence/acquisition_cost_mapping_test.cc
+cellerator_add_geometry_foundation_test(geometry_acquisition_cost_mapping_test
+    tests/geometry/acquisition/acquisition_cost_mapping_test.cc
     Cellerator::geometry_acquisition)
 
 add_executable(celleratorIdentityRegistryTest
@@ -111,7 +111,7 @@ set_target_properties(celleratorExecutionSessionTest PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
-# CE-LIVE-19: keep the runtime-only value-generation readiness contract in the
+# Keep the runtime-only value-generation readiness contract in the
 # native build and validate same-stream/cross-stream ordering without making
 # event state part of persistent biological identity.
 add_executable(celleratorValueReadinessTest
@@ -183,14 +183,14 @@ set_target_properties(celleratorTrainingProgramTest PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
-add_executable(celleratorCeLiveConcurrencyTest
-    tests/execution/ce_live_concurrency_test.cu
+add_executable(celleratorTrainingProgramConcurrencyTest
+    tests/execution/training_program_concurrency_test.cu
 )
-target_link_libraries(celleratorCeLiveConcurrencyTest PRIVATE
+target_link_libraries(celleratorTrainingProgramConcurrencyTest PRIVATE
     Cellerator::training_program
     CUDA::cudart
 )
-set_target_properties(celleratorCeLiveConcurrencyTest PROPERTIES
+set_target_properties(celleratorTrainingProgramConcurrencyTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17
@@ -198,16 +198,16 @@ set_target_properties(celleratorCeLiveConcurrencyTest PROPERTIES
 )
 
 if(TARGET CellShard::inspect)
-    add_executable(celleratorCeLiveProgramReplayTest
-        tests/persistence/ce_live_program_replay_test.cu
+    add_executable(celleratorExecutableProgramReplayTest
+        tests/persistence/executable_program_replay_test.cu
     )
-    target_link_libraries(celleratorCeLiveProgramReplayTest PRIVATE
+    target_link_libraries(celleratorExecutableProgramReplayTest PRIVATE
         Cellerator::executable_program
         Cellerator::opaque_execution_artifact
         CellShard::inspect
         CUDA::cudart
     )
-    set_target_properties(celleratorCeLiveProgramReplayTest PROPERTIES
+    set_target_properties(celleratorExecutableProgramReplayTest PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED YES
         CUDA_STANDARD 17

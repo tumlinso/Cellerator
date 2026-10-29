@@ -11,8 +11,13 @@ Each operation should state accepted identities and shapes, output and
 derivative behavior, precision, backend, preparation and reuse rules, and
 complete-cost evidence.
 
-The Python `cellerator.ops` module currently exposes a native CPU Product2
-operation and forward/JVP/VJP entry points. The optional Torch package exposes
+Product2 computes one output for each declared input pair:
+
+\[ y_i = c_i x_{a_i} x_{b_i} \]
+
+There is no reduction across pairs. The “2” names the operation arity (two indexed
+state inputs), not a version. The Python `cellerator.ops` module currently
+exposes native CPU Product2 and forward/JVP/VJP entry points. The optional Torch package exposes
 the same operation through `product2` and `Product2Module`; its current
 autograd implementation is first-order and CPU FP32. The native Product2
 implementation still lives under the current `src/compute` and `src/execution`

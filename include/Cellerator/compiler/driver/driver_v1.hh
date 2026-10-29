@@ -5,7 +5,7 @@
 #include <Cellerator/compiler/driver/compilation_database_and_dependency_file_behavior_v1.hh>
 #include <Cellerator/compiler/driver/temporary_artifact_and_cache_policy_v1.hh>
 #include <Cellerator/compiler/driver/compiler_invocation_and_action_graph_v1.hh>
-#include <Cellerator/compiler/driver/driver_passthrough_milestone_v1.hh>
+#include <Cellerator/compiler/driver/downstream_compiler_invocation_v1.hh>
 #include <Cellerator/compiler/driver/forward_and_remap_downstream_diagnostics_v1.hh>
 #include <Cellerator/compiler/driver/plain_c_passthrough_planning_v1.hh>
 #include <Cellerator/compiler/driver/response_file_and_argv_normalization_contracts_v1.hh>

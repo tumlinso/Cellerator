@@ -8,7 +8,7 @@ repeats=${2:-3}
 if [[ $mode != --run-only ]]; then
     bash "$repo_root/bench/ce_live/forward/run_quantitative_forward_test.sh" --build-only
     bash "$repo_root/bench/ce_live/training/run_training_program_test.sh" --build-only
-    bash "$repo_root/bench/ce_live/replay/run_ce_live_program_replay_test.sh" --build-only
+    bash "$repo_root/bench/ce_live/replay/run_executable_program_replay_test.sh" --build-only
     bash "$repo_root/bench/ce_live/concurrency/run_concurrency_test.sh" --build-only
 fi
 

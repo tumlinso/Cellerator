@@ -13,8 +13,7 @@ target_compile_features(cellerator_semantic_ir_module_and_symbol_scopes_test PRI
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_semantic_ir_module_and_symbol_scopes_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_001 ALIAS cellerator_semantic_ir_module_and_symbol_scopes_test)
-add_test(NAME ce_ccp1_d02_001 COMMAND cellerator_semantic_ir_module_and_symbol_scopes_test)
+add_test(NAME cellerator_semantic_ir_module_and_symbol_scopes_test COMMAND cellerator_semantic_ir_module_and_symbol_scopes_test)
 
 add_executable(cellerator_domain_and_axis_ir_types_test
     domain_and_axis_ir_types_test.cc
@@ -24,8 +23,7 @@ target_compile_features(cellerator_domain_and_axis_ir_types_test PRIVATE cxx_std
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_domain_and_axis_ir_types_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_002 ALIAS cellerator_domain_and_axis_ir_types_test)
-add_test(NAME ce_ccp1_d02_002 COMMAND cellerator_domain_and_axis_ir_types_test)
+add_test(NAME cellerator_domain_and_axis_ir_types_test COMMAND cellerator_domain_and_axis_ir_types_test)
 
 add_executable(cellerator_state_and_value_plane_ir_types_test
     state_and_value_plane_ir_types_test.cc
@@ -35,8 +33,7 @@ target_compile_features(cellerator_state_and_value_plane_ir_types_test PRIVATE c
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_state_and_value_plane_ir_types_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_003 ALIAS cellerator_state_and_value_plane_ir_types_test)
-add_test(NAME ce_ccp1_d02_003 COMMAND cellerator_state_and_value_plane_ir_types_test)
+add_test(NAME cellerator_state_and_value_plane_ir_types_test COMMAND cellerator_state_and_value_plane_ir_types_test)
 
 add_executable(cellerator_relation_ir_types_test
     relation_ir_types_test.cc
@@ -47,8 +44,7 @@ target_compile_features(cellerator_relation_ir_types_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_relation_ir_types_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_004 ALIAS cellerator_relation_ir_types_test)
-add_test(NAME ce_ccp1_d02_004 COMMAND cellerator_relation_ir_types_test)
+add_test(NAME cellerator_relation_ir_types_test COMMAND cellerator_relation_ir_types_test)
 
 add_executable(cellerator_execution_field_regions_test
     execution_field_regions_test.cc
@@ -59,8 +55,7 @@ target_compile_features(cellerator_execution_field_regions_test PRIVATE cxx_std_
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_execution_field_regions_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_005 ALIAS cellerator_execution_field_regions_test)
-add_test(NAME ce_ccp1_d02_005 COMMAND cellerator_execution_field_regions_test)
+add_test(NAME cellerator_execution_field_regions_test COMMAND cellerator_execution_field_regions_test)
 
 add_executable(cellerator_relation_apply_and_transpose_operations_test
     relation_apply_and_transpose_operations_test.cc
@@ -74,8 +69,7 @@ target_compile_features(cellerator_relation_apply_and_transpose_operations_test 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_relation_apply_and_transpose_operations_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_006 ALIAS cellerator_relation_apply_and_transpose_operations_test)
-add_test(NAME ce_ccp1_d02_006 COMMAND cellerator_relation_apply_and_transpose_operations_test)
+add_test(NAME cellerator_relation_apply_and_transpose_operations_test COMMAND cellerator_relation_apply_and_transpose_operations_test)
 
 add_executable(cellerator_contraction_segment_normalization_test
     contraction_segment_normalization_test.cc
@@ -85,8 +79,7 @@ target_compile_features(cellerator_contraction_segment_normalization_test PRIVAT
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_contraction_segment_normalization_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_007 ALIAS cellerator_contraction_segment_normalization_test)
-add_test(NAME ce_ccp1_d02_007 COMMAND cellerator_contraction_segment_normalization_test)
+add_test(NAME cellerator_contraction_segment_normalization_test COMMAND cellerator_contraction_segment_normalization_test)
 
 add_executable(cellerator_edge_map_gate_support_mask_and_sparse_update_o_test
     edge_map_gate_support_mask_and_sparse_update_o_test.cc
@@ -97,8 +90,7 @@ target_compile_features(cellerator_edge_map_gate_support_mask_and_sparse_update_
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_edge_map_gate_support_mask_and_sparse_update_o_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_008 ALIAS cellerator_edge_map_gate_support_mask_and_sparse_update_o_test)
-add_test(NAME ce_ccp1_d02_008 COMMAND cellerator_edge_map_gate_support_mask_and_sparse_update_o_test)
+add_test(NAME cellerator_edge_map_gate_support_mask_and_sparse_update_o_test COMMAND cellerator_edge_map_gate_support_mask_and_sparse_update_o_test)
 
 add_executable(cellerator_bundle_chain_moments_hierarchy_and_exchange_op_test
     bundle_chain_moments_hierarchy_and_exchange_op_test.cc
@@ -108,8 +100,7 @@ target_compile_features(cellerator_bundle_chain_moments_hierarchy_and_exchange_o
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_bundle_chain_moments_hierarchy_and_exchange_op_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_009 ALIAS cellerator_bundle_chain_moments_hierarchy_and_exchange_op_test)
-add_test(NAME ce_ccp1_d02_009 COMMAND cellerator_bundle_chain_moments_hierarchy_and_exchange_op_test)
+add_test(NAME cellerator_bundle_chain_moments_hierarchy_and_exchange_op_test COMMAND cellerator_bundle_chain_moments_hierarchy_and_exchange_op_test)
 
 add_executable(cellerator_gradient_and_publication_operations_test
     gradient_and_publication_operations_test.cc
@@ -121,8 +112,7 @@ target_compile_features(cellerator_gradient_and_publication_operations_test PRIV
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_gradient_and_publication_operations_test PRIVATE -UNDEBUG -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_010 ALIAS cellerator_gradient_and_publication_operations_test)
-add_test(NAME ce_ccp1_d02_010 COMMAND cellerator_gradient_and_publication_operations_test)
+add_test(NAME cellerator_gradient_and_publication_operations_test COMMAND cellerator_gradient_and_publication_operations_test)
 
 add_executable(cellerator_native_and_opaque_c_call_operations_test
     native_and_opaque_c_call_operations_test.cc
@@ -132,8 +122,7 @@ target_compile_features(cellerator_native_and_opaque_c_call_operations_test PRIV
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_native_and_opaque_c_call_operations_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_011 ALIAS cellerator_native_and_opaque_c_call_operations_test)
-add_test(NAME ce_ccp1_d02_011 COMMAND cellerator_native_and_opaque_c_call_operations_test)
+add_test(NAME cellerator_native_and_opaque_c_call_operations_test COMMAND cellerator_native_and_opaque_c_call_operations_test)
 
 add_executable(cellerator_control_flow_and_loop_semantics_test
     control_flow_and_loop_semantics_test.cc
@@ -143,8 +132,7 @@ target_compile_features(cellerator_control_flow_and_loop_semantics_test PRIVATE 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_control_flow_and_loop_semantics_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_012 ALIAS cellerator_control_flow_and_loop_semantics_test)
-add_test(NAME ce_ccp1_d02_012 COMMAND cellerator_control_flow_and_loop_semantics_test)
+add_test(NAME cellerator_control_flow_and_loop_semantics_test COMMAND cellerator_control_flow_and_loop_semantics_test)
 
 add_executable(cellerator_generation_and_epoch_transition_operations_test
     generation_and_epoch_transition_operations_test.cc
@@ -154,8 +142,7 @@ target_compile_features(cellerator_generation_and_epoch_transition_operations_te
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_generation_and_epoch_transition_operations_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_013 ALIAS cellerator_generation_and_epoch_transition_operations_test)
-add_test(NAME ce_ccp1_d02_013 COMMAND cellerator_generation_and_epoch_transition_operations_test)
+add_test(NAME cellerator_generation_and_epoch_transition_operations_test COMMAND cellerator_generation_and_epoch_transition_operations_test)
 
 add_executable(cellerator_semantic_ir_inlining_and_composition_test
     semantic_ir_inlining_and_composition_test.cc
@@ -165,8 +152,7 @@ target_compile_features(cellerator_semantic_ir_inlining_and_composition_test PRI
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_semantic_ir_inlining_and_composition_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_014 ALIAS cellerator_semantic_ir_inlining_and_composition_test)
-add_test(NAME ce_ccp1_d02_014 COMMAND cellerator_semantic_ir_inlining_and_composition_test)
+add_test(NAME cellerator_semantic_ir_inlining_and_composition_test COMMAND cellerator_semantic_ir_inlining_and_composition_test)
 
 add_executable(cellerator_semantic_canonicalization_and_equivalence_test
     semantic_canonicalization_and_equivalence_test.cc
@@ -177,8 +163,7 @@ target_compile_features(cellerator_semantic_canonicalization_and_equivalence_tes
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_semantic_canonicalization_and_equivalence_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_015 ALIAS cellerator_semantic_canonicalization_and_equivalence_test)
-add_test(NAME ce_ccp1_d02_015 COMMAND cellerator_semantic_canonicalization_and_equivalence_test)
+add_test(NAME cellerator_semantic_canonicalization_and_equivalence_test COMMAND cellerator_semantic_canonicalization_and_equivalence_test)
 
 add_executable(cellerator_source_to_semantic_ir_vertical_slice_test
     source_to_semantic_ir_vertical_slice_test.cc
@@ -188,5 +173,4 @@ target_compile_features(cellerator_source_to_semantic_ir_vertical_slice_test PRI
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_source_to_semantic_ir_vertical_slice_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_d02_016 ALIAS cellerator_source_to_semantic_ir_vertical_slice_test)
-add_test(NAME ce_ccp1_d02_016 COMMAND cellerator_source_to_semantic_ir_vertical_slice_test)
+add_test(NAME cellerator_source_to_semantic_ir_vertical_slice_test COMMAND cellerator_source_to_semantic_ir_vertical_slice_test)

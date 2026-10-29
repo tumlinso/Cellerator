@@ -96,34 +96,34 @@ target_sources(cellerator_architecture_provider PRIVATE
     src/compute/architecture/providers/nvidia/sm70/transpose/transpose_value_map_v1.cc
 )
 
-add_library(cellerator_ce_exop_operation_portfolio STATIC
-    src/compute/operation/ce_exop_operation_portfolio.cc
+add_library(cellerator_compute_candidate_inventory STATIC
+    src/compute/operation/compute_candidate_inventory.cc
     src/compute/operation/candidate_catalog/catalog_v3.cc
     src/planner/end_to_end_planner/resource_cost_v1.cc)
-add_library(Cellerator::ce_exop_operation_portfolio ALIAS
-    cellerator_ce_exop_operation_portfolio)
-target_include_directories(cellerator_ce_exop_operation_portfolio PUBLIC
+add_library(Cellerator::compute_candidate_inventory ALIAS
+    cellerator_compute_candidate_inventory)
+target_include_directories(cellerator_compute_candidate_inventory PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
-target_link_libraries(cellerator_ce_exop_operation_portfolio PUBLIC
+target_link_libraries(cellerator_compute_candidate_inventory PUBLIC
     Cellerator::architecture_provider)
-target_compile_features(cellerator_ce_exop_operation_portfolio PUBLIC cxx_std_17)
+target_compile_features(cellerator_compute_candidate_inventory PUBLIC cxx_std_17)
 
-add_executable(cellerator_ce_exop_operation_portfolio_test
-    src/compute/operation/ce_exop_operation_portfolio_test.cc)
-target_link_libraries(cellerator_ce_exop_operation_portfolio_test PRIVATE
-    Cellerator::ce_exop_operation_portfolio)
-target_compile_features(cellerator_ce_exop_operation_portfolio_test PRIVATE cxx_std_17)
-target_compile_options(cellerator_ce_exop_operation_portfolio_test PRIVATE -UNDEBUG)
+add_executable(cellerator_compute_candidate_inventory_test
+    src/compute/operation/compute_candidate_inventory_test.cc)
+target_link_libraries(cellerator_compute_candidate_inventory_test PRIVATE
+    Cellerator::compute_candidate_inventory)
+target_compile_features(cellerator_compute_candidate_inventory_test PRIVATE cxx_std_17)
+target_compile_options(cellerator_compute_candidate_inventory_test PRIVATE -UNDEBUG)
 
-set(CELLERATOR_CE_EXOP_OPERATION_FOCUSED_TESTS
+set(CELLERATOR_OPERATION_FOCUSED_TESTS
     residual_portfolio_v1_test
     transpose_candidates_v1_test
     transpose_cover_v1_test
     transpose_integration_v1_test
     transpose_validation_v1_test
     transpose_value_map_v1_test)
-foreach(test_name IN LISTS CELLERATOR_CE_EXOP_OPERATION_FOCUSED_TESTS)
+foreach(test_name IN LISTS CELLERATOR_OPERATION_FOCUSED_TESTS)
     if(test_name STREQUAL "residual_portfolio_v1_test")
         set(test_source
             src/compute/architecture/providers/nvidia/sm70/residual/portfolio_v1_test.cc)
@@ -131,23 +131,23 @@ foreach(test_name IN LISTS CELLERATOR_CE_EXOP_OPERATION_FOCUSED_TESTS)
         set(test_source
             src/compute/architecture/providers/nvidia/sm70/transpose/${test_name}.cc)
     endif()
-    add_executable(cellerator_ce_exop_${test_name} ${test_source})
-    target_link_libraries(cellerator_ce_exop_${test_name} PRIVATE
-        Cellerator::ce_exop_operation_portfolio)
-    target_compile_features(cellerator_ce_exop_${test_name} PRIVATE cxx_std_17)
-    target_compile_options(cellerator_ce_exop_${test_name} PRIVATE -UNDEBUG)
+    add_executable(cellerator_operation_${test_name} ${test_source})
+    target_link_libraries(cellerator_operation_${test_name} PRIVATE
+        Cellerator::compute_candidate_inventory)
+    target_compile_features(cellerator_operation_${test_name} PRIVATE cxx_std_17)
+    target_compile_options(cellerator_operation_${test_name} PRIVATE -UNDEBUG)
 endforeach()
 
-add_executable(cellerator_ce_exop_relation_apply_v1_test
+add_executable(cellerator_operation_relation_apply_v1_test
     src/compute/architecture/providers/nvidia/sm70/relation_apply/tests/relation_apply_v1_test.cu)
-target_link_libraries(cellerator_ce_exop_relation_apply_v1_test PRIVATE
-    Cellerator::ce_exop_operation_portfolio)
-set_target_properties(cellerator_ce_exop_relation_apply_v1_test PROPERTIES
+target_link_libraries(cellerator_operation_relation_apply_v1_test PRIVATE
+    Cellerator::compute_candidate_inventory)
+set_target_properties(cellerator_operation_relation_apply_v1_test PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17
     CUDA_STANDARD_REQUIRED YES)
-target_compile_options(cellerator_ce_exop_relation_apply_v1_test PRIVATE
+target_compile_options(cellerator_operation_relation_apply_v1_test PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:-UNDEBUG>
     $<$<COMPILE_LANGUAGE:CUDA>:-UNDEBUG>)
 
@@ -189,7 +189,7 @@ set_target_properties(cellerator_relation_algebra PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
-target_link_libraries(cellerator_ce_exop_operation_portfolio PUBLIC
+target_link_libraries(cellerator_compute_candidate_inventory PUBLIC
     Cellerator::relation_algebra)
 
 # CE-EXOP-278: exact fusion and generic training-program fan-in. Optimizer,
@@ -222,61 +222,61 @@ set_target_properties(cellerator_fusion_training PROPERTIES
     CUDA_STANDARD_REQUIRED YES
     CUDA_ARCHITECTURES 70)
 
-target_link_libraries(cellerator_ce_exop_operation_portfolio PUBLIC
+target_link_libraries(cellerator_compute_candidate_inventory PUBLIC
     Cellerator::fusion_training)
 
-add_executable(cellerator_ce_exop_fusion_training_integration_test
+add_executable(cellerator_operation_fusion_training_integration_test
     src/compute/operation/fusion_training_integration_test.cc)
-target_link_libraries(cellerator_ce_exop_fusion_training_integration_test PRIVATE
-    Cellerator::ce_exop_operation_portfolio)
-target_compile_features(cellerator_ce_exop_fusion_training_integration_test
+target_link_libraries(cellerator_operation_fusion_training_integration_test PRIVATE
+    Cellerator::compute_candidate_inventory)
+target_compile_features(cellerator_operation_fusion_training_integration_test
     PRIVATE cxx_std_17)
-target_compile_options(cellerator_ce_exop_fusion_training_integration_test
+target_compile_options(cellerator_operation_fusion_training_integration_test
     PRIVATE -UNDEBUG)
 
-set(CELLERATOR_CE_EXOP_TRAINING_TESTS
+set(CELLERATOR_OPERATION_TRAINING_TESTS
     generation_readiness
     relation_closure
     value_modes)
-foreach(test_name IN LISTS CELLERATOR_CE_EXOP_TRAINING_TESTS)
-    add_executable(cellerator_ce_exop_training_${test_name}_test
+foreach(test_name IN LISTS CELLERATOR_OPERATION_TRAINING_TESTS)
+    add_executable(cellerator_operation_training_${test_name}_test
         src/compute/training/v2/${test_name}_test.cc)
-    target_link_libraries(cellerator_ce_exop_training_${test_name}_test PRIVATE
+    target_link_libraries(cellerator_operation_training_${test_name}_test PRIVATE
         Cellerator::fusion_training)
-    target_compile_features(cellerator_ce_exop_training_${test_name}_test
+    target_compile_features(cellerator_operation_training_${test_name}_test
         PRIVATE cxx_std_17)
-    target_compile_options(cellerator_ce_exop_training_${test_name}_test
+    target_compile_options(cellerator_operation_training_${test_name}_test
         PRIVATE -UNDEBUG)
 endforeach()
 
-set(CELLERATOR_CE_EXOP_TRAINING_PROGRAM_TESTS
+set(CELLERATOR_OPERATION_TRAINING_PROGRAM_TESTS
     graph_capture
     program)
-foreach(test_name IN LISTS CELLERATOR_CE_EXOP_TRAINING_PROGRAM_TESTS)
-    add_executable(cellerator_ce_exop_training_${test_name}_test
+foreach(test_name IN LISTS CELLERATOR_OPERATION_TRAINING_PROGRAM_TESTS)
+    add_executable(cellerator_operation_training_${test_name}_test
         src/execution/training_program_v2/${test_name}_test.cc)
-    target_link_libraries(cellerator_ce_exop_training_${test_name}_test PRIVATE
+    target_link_libraries(cellerator_operation_training_${test_name}_test PRIVATE
         Cellerator::fusion_training)
-    target_compile_features(cellerator_ce_exop_training_${test_name}_test
+    target_compile_features(cellerator_operation_training_${test_name}_test
         PRIVATE cxx_std_17)
-    target_compile_options(cellerator_ce_exop_training_${test_name}_test
+    target_compile_options(cellerator_operation_training_${test_name}_test
         PRIVATE -UNDEBUG)
 endforeach()
 
-add_library(cellerator_ce_exop_fusion_sm70_compile OBJECT
+add_library(cellerator_operation_fusion_sm70_compile OBJECT
     src/compute/candidate/fusion/bundle_moments_v1.cu
     src/compute/candidate/fusion/contract_compositions_v1.cu
     src/compute/candidate/fusion/mma_same_owner_residual_v1.cu
     src/compute/candidate/fusion/pack_apply_epilogue_v1.cu
     src/compute/candidate/fusion/sparse_exchange_v1.cu)
-target_include_directories(cellerator_ce_exop_fusion_sm70_compile PRIVATE
+target_include_directories(cellerator_operation_fusion_sm70_compile PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
-set_target_properties(cellerator_ce_exop_fusion_sm70_compile PROPERTIES
+set_target_properties(cellerator_operation_fusion_sm70_compile PROPERTIES
     CUDA_STANDARD 17
     CUDA_STANDARD_REQUIRED YES
     CUDA_ARCHITECTURES 70)
 
-set(CELLERATOR_CE_EXOP_RELATION_HOST_TEST_SOURCES
+set(CELLERATOR_OPERATION_RELATION_HOST_TEST_SOURCES
     src/compute/candidate/relation_bundle/moments_test.cc
     src/compute/candidate/relation_bundle/plan_validation_test.cc
     src/compute/candidate/relation_bundle/portfolio_validation_test.cc
@@ -284,39 +284,39 @@ set(CELLERATOR_CE_EXOP_RELATION_HOST_TEST_SOURCES
     src/compute/candidate/relation_bundle/shared_owner_test.cc
     src/compute/candidate/relation_chain/two_hop_test.cc
     ${CELLERATOR_RELATION_SEGMENT_TEST_SOURCES})
-foreach(test_source IN LISTS CELLERATOR_CE_EXOP_RELATION_HOST_TEST_SOURCES)
+foreach(test_source IN LISTS CELLERATOR_OPERATION_RELATION_HOST_TEST_SOURCES)
     get_filename_component(test_stem ${test_source} NAME_WE)
     get_filename_component(test_parent ${test_source} DIRECTORY)
     string(MD5 test_parent_hash ${test_parent})
-    set(test_target cellerator_ce_exop_relation_${test_parent_hash}_${test_stem})
+    set(test_target cellerator_operation_relation_${test_parent_hash}_${test_stem})
     add_executable(${test_target} ${test_source})
     target_link_libraries(${test_target} PRIVATE Cellerator::relation_algebra)
     target_compile_features(${test_target} PRIVATE cxx_std_17)
     target_compile_options(${test_target} PRIVATE -UNDEBUG)
-    list(APPEND CELLERATOR_CE_EXOP_RELATION_HOST_TEST_TARGETS ${test_target})
+    list(APPEND CELLERATOR_OPERATION_RELATION_HOST_TEST_TARGETS ${test_target})
 endforeach()
 
-add_library(cellerator_ce_exop_relation_sm70_compile OBJECT
+add_library(cellerator_operation_relation_sm70_compile OBJECT
     src/compute/candidate/relation_bundle/sm70_compile_test.cu)
-target_include_directories(cellerator_ce_exop_relation_sm70_compile PRIVATE
+target_include_directories(cellerator_operation_relation_sm70_compile PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
-set_target_properties(cellerator_ce_exop_relation_sm70_compile PROPERTIES
+set_target_properties(cellerator_operation_relation_sm70_compile PROPERTIES
     CUDA_STANDARD 17
     CUDA_STANDARD_REQUIRED YES)
 
 # Final CE-GEO source catalog fan-in. This cold target only validates and
 # exposes immutable provider/relation fragments; it never owns selection,
 # preparation, device queries, or execution resources.
-add_library(cellerator_ce_geo_catalog STATIC
-    src/compute/operation/ce_geo_catalog_assembly.cc)
-add_library(Cellerator::ce_geo_catalog ALIAS cellerator_ce_geo_catalog)
-target_include_directories(cellerator_ce_geo_catalog PUBLIC
+add_library(cellerator_relation_catalog STATIC
+    src/compute/operation/relation_catalog_readiness.cc)
+add_library(Cellerator::relation_catalog ALIAS cellerator_relation_catalog)
+target_include_directories(cellerator_relation_catalog PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
-target_link_libraries(cellerator_ce_geo_catalog PUBLIC
+target_link_libraries(cellerator_relation_catalog PUBLIC
     Cellerator::architecture_provider
     Cellerator::relation_algebra)
-target_compile_features(cellerator_ce_geo_catalog PUBLIC cxx_std_17)
+target_compile_features(cellerator_relation_catalog PUBLIC cxx_std_17)
 add_library(Cellerator::row_masked_n1_candidate ALIAS
     cellerator_row_masked_n1_candidate)
 target_include_directories(cellerator_row_masked_n1_candidate PUBLIC
@@ -553,10 +553,10 @@ add_library(Cellerator::executable_core ALIAS cellerator_executable_core)
 target_link_libraries(cellerator_executable_core INTERFACE
     Cellerator::projection_activation
     Cellerator::builtin_candidate_catalog
-    Cellerator::ce_geo_catalog
+    Cellerator::relation_catalog
     Cellerator::cusparse_csr_candidate
     Cellerator::preparation_factory
-    Cellerator::ce_exop_operation_portfolio
+    Cellerator::compute_candidate_inventory
 )
 
 # CE-LIVE-43: publish the CE-LIVE-30 host orchestration layer as a normal

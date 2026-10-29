@@ -4,13 +4,13 @@
   "campaign_id": "ce-live-34-cpe2-replay-correctness",
   "recipe": "baseline",
   "paths": [
-    "tests/persistence/ce_live_program_replay_test.cu",
+    "tests/persistence/executable_program_replay_test.cu",
     "bench/ce_live/replay",
     "include/Cellerator/execution/opaque_artifact.hh",
     "include/Cellerator/execution/program.hh"
   ],
   "argv": [
-    "bash", "bench/ce_live/replay/run_ce_live_program_replay_test.sh"
+    "bash", "bench/ce_live/replay/run_executable_program_replay_test.sh"
   ],
   "timeout": 300,
   "quiescence": {

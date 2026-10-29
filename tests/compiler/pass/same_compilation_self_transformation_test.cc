@@ -6,7 +6,7 @@
 namespace cp = cellerator::compiler::pass::v1;
 
 int main() {
-    const auto directory = std::filesystem::temp_directory_path() / "ce_ccp1_g02_017";
+    const auto directory = std::filesystem::temp_directory_path() / "cellerator_same_compilation_self_transformation";
     std::filesystem::remove_all(directory);
     const cp::same_compilation_transform_request_v1 request{
         "#include <cstdint>\nextern \"C\" bool cellerator_self_transform(std::uint64_t* field) noexcept { *field *= 3; return true; }\n",

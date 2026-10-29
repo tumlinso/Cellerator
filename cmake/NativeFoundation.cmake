@@ -201,9 +201,9 @@ if(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS AND CELLERATOR_BUILD_TESTS)
         "ss1_algebra|ceSpineAlgebraTest"
         "ss1_contract|ceSpineContractProbes"
         "program|celleratorExecutableProgramTest"
-        "gate|ceGeoEdgeMapOrGateTest"
-        "segment_reduce|ceGeoSegmentReduceTest"
-        "segment_normalize|ceGeoSegmentNormalizeTest")
+        "gate|edge_map_or_gate_test"
+        "segment_reduce|segment_reduce_test"
+        "segment_normalize|segment_normalize_test")
     foreach(_nf_pair IN LISTS _nf_retained_pairs)
         string(REPLACE "|" ";" _nf_parts "${_nf_pair}")
         list(GET _nf_parts 0 _nf_name)

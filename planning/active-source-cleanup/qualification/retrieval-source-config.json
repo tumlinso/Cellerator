@@ -1,0 +1,28 @@
+{
+  "purpose": "Source-owned retrieval configuration prepared before canonical index generation; no semantic index or observer cutover is claimed here.",
+  "files": [
+    {
+      "path": ".ctxpp.toml",
+      "sha256": "4255dac4342567759953ae2333ee422d25b3b6f1cb2903027c6d0ce3a527be68"
+    },
+    {
+      "path": ".project-context.json",
+      "sha256": "2047807a591f5f91844c2e7f4626ec06944259ff4130119a1c9322357ecc68ef"
+    }
+  ],
+  "compilation_database": "build-ctxpp/compile_commands.json",
+  "guidance_declarations": 4,
+  "validation": {
+    "toml_json_parse": "passed",
+    "matched_active_source_files": 3081,
+    "binding_example_test_sources_included": true,
+    "excluded_paths_matched": 0,
+    "ctxpp_doctor_configured": true,
+    "ctxpp_doctor_parse_failures": []
+  },
+  "pending": [
+    "Canonical CMake compilation database generation",
+    "Fresh semantic scan/export",
+    "Configured HTTP/stdio observer retrieval verification"
+  ]
+}

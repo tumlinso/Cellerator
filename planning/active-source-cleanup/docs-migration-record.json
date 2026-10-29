@@ -1,0 +1,514 @@
+{
+  "baseline_commit": "c65df803 (origin/main at task creation)",
+  "task_workspace": "/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-03dabc12572bb2a2f4b8e90bd7946bb7904a331451e1042bc93e5f339dd64225",
+  "archive_checkpoint": {
+    "directory": "/mnt/block/cellerator/preservation/cleanup-checkpoint-20261029T061426Z",
+    "ignored_docs_archive": "ignored-docs-20261029T062411Z.tar.zst",
+    "sha256": "5850e74ed53998cbe79868c04f01c78ff5560d12223f0f44313ff256d32e7bef",
+    "ignored_non_generated_document_count": 12,
+    "canonical_ignored_files_deleted": false
+  },
+  "preserved_ignored_documents": [
+    {
+      "path": "docs/archive/README.md",
+      "disposition": "replaced by docs/history/README.md and docs/experiments_and_history.qmd"
+    },
+    {
+      "path": "docs/design/overview.md",
+      "disposition": "consolidated into docs/architecture.qmd"
+    },
+    {
+      "path": "docs/design/program.md",
+      "disposition": "preserved only in the verified backup; cross-project narrative is not current Cellerator guidance"
+    },
+    {
+      "path": "docs/development/source-map.md",
+      "disposition": "superseded by maintained docs/development/routing.md and generated map; routing file owned by peer"
+    },
+    {
+      "path": "docs/development/start.md",
+      "disposition": "superseded by docs/getting_started.qmd and docs/developer_reference.qmd"
+    },
+    {
+      "path": "docs/draft.md",
+      "disposition": "superseded by docs/tokenization.qmd and docs/tokenization_qualification.qmd"
+    },
+    {
+      "path": "docs/index.md",
+      "disposition": "superseded by docs/index.qmd and docs/README.md"
+    },
+    {
+      "path": "docs/language/._cellerator-language-specification.md",
+      "disposition": "AppleDouble metadata artifact; preserved in backup"
+    },
+    {
+      "path": "docs/language/._cellerator-programming-guide.md",
+      "disposition": "AppleDouble metadata artifact; preserved in backup"
+    },
+    {
+      "path": "docs/language/cellerator-ir-programming-guide.md",
+      "disposition": "historical/experimental IR guide preserved in backup; not promoted as current API guidance"
+    },
+    {
+      "path": "docs/results/index.md",
+      "disposition": "superseded by docs/performance_validation.qmd and docs/experiments_and_history.qmd"
+    },
+    {
+      "path": "docs/status/current.md",
+      "disposition": "superseded by concise docs/current_implementation.qmd"
+    }
+  ],
+  "program_and_snapshot_moves": [
+    {
+      "from": "docs/CE_EXOP_PROFILING_HANDOFF.md",
+      "to": "deferred_operation_profiling_handoff.md"
+    },
+    {
+      "from": "docs/CE_EXOP_PROGRAM.md",
+      "to": "operation_execution_program.md"
+    },
+    {
+      "from": "docs/CE_GEO_PROGRAM.md",
+      "to": "biological_geometry_program.md"
+    },
+    {
+      "from": "docs/CE_LIVE_BASELINE.md",
+      "to": "live_execution_baseline.md"
+    },
+    {
+      "from": "docs/CE_LIVE_CANDIDATE_CATALOG.md",
+      "to": "candidate_projection_inventory.md"
+    },
+    {
+      "from": "docs/CE_LIVE_CELLERATORCH_RESULTS.md",
+      "to": "torch_adapter_quantitative_results.md"
+    },
+    {
+      "from": "docs/CE_LIVE_CONCURRENCY.md",
+      "to": "training_concurrency_acceptance.md"
+    },
+    {
+      "from": "docs/CE_LIVE_EVIDENCE.md",
+      "to": "end_to_end_evidence.md"
+    },
+    {
+      "from": "docs/CE_LIVE_EXECUTABLE_PROGRAM.md",
+      "to": "executable_program_contract.md"
+    },
+    {
+      "from": "docs/CE_LIVE_FINAL_AUDIT.md",
+      "to": "live_execution_final_audit.md"
+    },
+    {
+      "from": "docs/CE_LIVE_FORWARD_RESULTS.md",
+      "to": "quantitative_forward_results.md"
+    },
+    {
+      "from": "docs/CE_LIVE_PLANNER_INPUTS.md",
+      "to": "planner_inputs_record.md"
+    },
+    {
+      "from": "docs/CE_LIVE_PROGRAM.md",
+      "to": "live_execution_program.md"
+    },
+    {
+      "from": "docs/CE_LIVE_QUANTITATIVE_EXECUTION.md",
+      "to": "quantitative_execution_adapter.md"
+    },
+    {
+      "from": "docs/CE_LIVE_QUANTITATIVE_FIXTURE.md",
+      "to": "quantitative_fixture_contract.md"
+    },
+    {
+      "from": "docs/CE_LIVE_RELATION_ORIENTATION.md",
+      "to": "logical_relation_orientation.md"
+    },
+    {
+      "from": "docs/CE_LIVE_REPLAY.md",
+      "to": "image_replay_validation.md"
+    },
+    {
+      "from": "docs/CE_LIVE_TENSOR_CORE.md",
+      "to": "tensor_core_candidate_contract.md"
+    },
+    {
+      "from": "docs/CE_LIVE_TRAINING_RESULTS.md",
+      "to": "native_training_results.md"
+    },
+    {
+      "from": "docs/CE_LIVE_VALUE_READINESS.md",
+      "to": "value_readiness_contract.md"
+    },
+    {
+      "from": "docs/CE_PTR_INVENTORY.md",
+      "to": "production_source_inventory.md"
+    },
+    {
+      "from": "docs/CE_PTR_POLICY.md",
+      "to": "production_structure_policy.md"
+    },
+    {
+      "from": "docs/JBC/CE_JBC_B01_AUTHORITY_BASELINE.md",
+      "to": "joint_bootstrap_authority_observation.md"
+    },
+    {
+      "from": "docs/JBC/CE_JBC_B02_TRANSITION_MAP.md",
+      "to": "source_transition_map.md"
+    },
+    {
+      "from": "docs/JBC/CE_JBC_B03_PRIVILEGED_COMPONENT_CHARTER.md",
+      "to": "component_boundary_charter.md"
+    },
+    {
+      "from": "docs/JBC/CE_JBC_B04_BUILD_BASELINES.md",
+      "to": "build_configuration_baselines.md"
+    },
+    {
+      "from": "docs/JBC/CE_JBC_B05_FROZEN_ABI_BASELINE.md",
+      "to": "frozen_interface_compatibility_baseline.md"
+    },
+    {
+      "from": "docs/JBC/CE_JBC_B06_INTEGRATION_OWNERSHIP.md",
+      "to": "integration_path_ownership_reservation.md"
+    },
+    {
+      "from": "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md",
+      "to": "repository_consolidation_plan.md"
+    }
+  ],
+  "current_implementation": {
+    "old_baseline_path": "docs/current_implementation.qmd",
+    "baseline_sha256": "21c66d3e313f2a0da7c493b01bb220733487a134f19fbe296476ab1e6b3213ad",
+    "current_path": "docs/current_implementation.qmd",
+    "historical_detail_path": "docs/history/current_implementation_2026-10-28.qmd",
+    "historical_gpu_statement": "opening note identifies and supersedes the earlier 14-gated-check statement with the final 16-test frozen receipt"
+  },
+  "quarto": {
+    "navigation_chapters": 19,
+    "main_navigation_reduction_from_baseline": 8,
+    "render_command": "PYTHONDONTWRITEBYTECODE=1 quarto render docs --to html --output-dir /tmp/cellerator-docs-cleanup-render-final",
+    "render_output": "/tmp/cellerator-docs-cleanup-render-final",
+    "rendered_html_count": 19,
+    "broken_local_rendered_links": 0,
+    "render_warning": "Quarto warned that the external /tmp output directory is outside the project and refused to remove its prior site_libs directory; render completed successfully."
+  },
+  "compatibility": "No numerical/runtime source behavior changed. Historical document URLs and filenames moved; docs/history/programs/README.md and the rendered history index map old paths to new purpose-based names. Canonical ignored source files remain until root adoption.",
+  "workflow": "No Project Control lifecycle calls and no commit/push by this docs owner.",
+  "program_records_moved": 29,
+  "follow_up_path_freeze": {
+    "source_owner_routes": [
+      "tests/ops/product2",
+      "tests/fixtures/planner",
+      "tests/fixtures/model_execution",
+      "tests/geometry/{baseline,catalog,providers,acquisition,projection,validation,suites,contracts,partitioning}",
+      "tests/operation_execution/{cuda,host}",
+      "tests/profiling/operations",
+      "examples/biology"
+    ],
+    "active_doc_scan": "No stale references to old tests/ce_geo, tests/ce_exop, tests/live, or bench/ce_live/runtime_fixture/planner source paths were found outside archived history/evidence.",
+    "added_routes": [
+      "docs/developer_reference.qmd",
+      "docs/getting_started.qmd"
+    ],
+    "validation": "Quarto rendered 19 HTML pages; rendered local-link audit found zero broken links; git diff --check passed."
+  },
+  "contract_document_moves": [
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_cellerator_ownership_of_atom_semantics.md",
+      "to": "docs/history/compiler/migration/atom_semantics_ownership.md",
+      "baseline_sha256": "951e2b3a080e970ae48b42cde708e059dd91ddc6cb81e922fec017335583a650",
+      "target_sha256": "951e2b3a080e970ae48b42cde708e059dd91ddc6cb81e922fec017335583a650",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_cellerator_ownership_of_basis_selection.md",
+      "to": "docs/history/compiler/migration/basis_selection_ownership.md",
+      "baseline_sha256": "fa70b5142fb4e5f1137819825c88182dcef2fc95dd75bbe774acc605e477fbf6",
+      "target_sha256": "fa70b5142fb4e5f1137819825c88182dcef2fc95dd75bbe774acc605e477fbf6",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_cellerator_ownership_of_evidence_and_proposal_dis.md",
+      "to": "docs/history/compiler/migration/evidence_proposal_discovery_ownership.md",
+      "baseline_sha256": "06db00e55fadc13d4ced642a464072ce6dc74efdd5f2c06f99455cad87a49b4b",
+      "target_sha256": "06db00e55fadc13d4ced642a464072ce6dc74efdd5f2c06f99455cad87a49b4b",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_cellerator_ownership_of_exact_certification.md",
+      "to": "docs/history/compiler/migration/exact_certification_ownership.md",
+      "baseline_sha256": "5483618dfbc5b879d948004f8f8c532fcbf303c0d96c3129ad15c4271e597072",
+      "target_sha256": "5483618dfbc5b879d948004f8f8c532fcbf303c0d96c3129ad15c4271e597072",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_cellerator_ownership_of_global_operation_program.md",
+      "to": "docs/history/compiler/migration/global_operation_program_ir_ownership.md",
+      "baseline_sha256": "0e3cf4799b194afeefc10084b7b6367e551d8538041513fb5807de4141bfc88a",
+      "target_sha256": "0e3cf4799b194afeefc10084b7b6367e551d8538041513fb5807de4141bfc88a",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_cellerator_ownership_of_portable_schedule_compila.md",
+      "to": "docs/history/compiler/migration/portable_schedule_compilation_ownership.md",
+      "baseline_sha256": "ca8d7991920d5a017d06f8c6c1b19f5573c9bb664058702f64ea4d695add3380",
+      "target_sha256": "ca8d7991920d5a017d06f8c6c1b19f5573c9bb664058702f64ea4d695add3380",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_cellerator_ownership_of_superatom_promotion.md",
+      "to": "docs/history/compiler/migration/superatom_promotion_ownership.md",
+      "baseline_sha256": "7f53eddc480b108fc16076f4719cbc085e6d03ef101bf9f628d19f2d642bf2f1",
+      "target_sha256": "7f53eddc480b108fc16076f4719cbc085e6d03ef101bf9f628d19f2d642bf2f1",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_cellerator_ownership_of_typed_composition_and_gra.md",
+      "to": "docs/history/compiler/migration/typed_composition_grammar_ownership.md",
+      "baseline_sha256": "f6c027641f7e605f605f78a6bdd6458873f1ad501b4b009f9a5051fbd6d56dd3",
+      "target_sha256": "f6c027641f7e605f605f78a6bdd6458873f1ad501b4b009f9a5051fbd6d56dd3",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_cellerator_ruleset_export_consumed_by_cellshard.md",
+      "to": "docs/history/compiler/migration/cellshard_ruleset_export_ownership.md",
+      "baseline_sha256": "35ad166bb0cb04492241ff1b18972d1834d39d0fcf021bfc3f7fbabac4943313",
+      "target_sha256": "35ad166bb0cb04492241ff1b18972d1834d39d0fcf021bfc3f7fbabac4943313",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_temporary_compiler_to_cellshard_migration_adapter.md",
+      "to": "docs/history/compiler/migration/compiler_cellshard_migration_adapter.md",
+      "baseline_sha256": "f6035d906383b5ad9065592b62a8c332983ef3ef5b0e5517ae9b55618343fdcd",
+      "target_sha256": "f6035d906383b5ad9065592b62a8c332983ef3ef5b0e5517ae9b55618343fdcd",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/define_the_retained_cellshard_concrete_application_bound.md",
+      "to": "docs/history/compiler/migration/cellshard_application_boundary.md",
+      "baseline_sha256": "b6cc25a4e9b290786ee03eb01e5fa9b9dacf791eaecebc7cea67b95358d6fcf4",
+      "target_sha256": "b6cc25a4e9b290786ee03eb01e5fa9b9dacf791eaecebc7cea67b95358d6fcf4",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/migration/freeze_the_compiler_ownership_rehoming_contract.md",
+      "to": "docs/history/compiler/migration/compiler_ownership_rehoming_contract.md",
+      "baseline_sha256": "5a97eaf9c8a9fd95a4340877f571f593b3397760710be3b7095e10f47ba4b5f2",
+      "target_sha256": "5a97eaf9c8a9fd95a4340877f571f593b3397760710be3b7095e10f47ba4b5f2",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/performance/freeze_compiler_benchmark_methodology.md",
+      "to": "docs/history/compiler/performance/benchmark_methodology.md",
+      "baseline_sha256": "88cafd0ba1341050132be928f404631fc5ac72c90b2c724da08f20db5770469d",
+      "target_sha256": "88cafd0ba1341050132be928f404631fc5ac72c90b2c724da08f20db5770469d",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/performance/freeze_the_part_one_performance_and_milestone_receipt.md",
+      "to": "docs/history/compiler/performance/part_one_performance_milestone_receipt.md",
+      "baseline_sha256": "951c60bdb0766143347b6d14ee5bb98edca94746c7e5bff75f8c0a3820740f8e",
+      "target_sha256": "951c60bdb0766143347b6d14ee5bb98edca94746c7e5bff75f8c0a3820740f8e",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/define_agents_and_ownership_inheritance.md",
+      "to": "docs/history/compiler/source-layout/agent_ownership.md",
+      "baseline_sha256": "aca50e8bc686b31948a5efcd133d3384d9a6c56ff46a9490660820edaeaf99a9",
+      "target_sha256": "aca50e8bc686b31948a5efcd133d3384d9a6c56ff46a9490660820edaeaf99a9",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/define_central_registry_and_generated_manifest_ownership.md",
+      "to": "docs/history/compiler/source-layout/registry_manifest_ownership.md",
+      "baseline_sha256": "8c8a4ffd46c218ab4a9c2f2a5469200c44f4733d4e0b4a05eb29cb5acbe6c290",
+      "target_sha256": "8c8a4ffd46c218ab4a9c2f2a5469200c44f4733d4e0b4a05eb29cb5acbe6c290",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/define_generated_source_and_build_tree_boundaries.md",
+      "to": "docs/history/compiler/source-layout/generated_source_build_boundary.md",
+      "baseline_sha256": "12d7fdaa5114d04d8a8bd5835f4ce786217802764797bdd534794c53e84d616f",
+      "target_sha256": "12d7fdaa5114d04d8a8bd5835f4ce786217802764797bdd534794c53e84d616f",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/freeze_compiler_executable_locations.md",
+      "to": "docs/history/compiler/source-layout/compiler_executable_locations.md",
+      "baseline_sha256": "7664cf8f402d889f82bdd116942d70611ca977eb46d4ebb70cfc133c5aec1c86",
+      "target_sha256": "7664cf8f402d889f82bdd116942d70611ca977eb46d4ebb70cfc133c5aec1c86",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/freeze_compiler_test_and_benchmark_locations.md",
+      "to": "docs/history/compiler/source-layout/test_benchmark_locations.md",
+      "baseline_sha256": "a7dd4c531ff990b419a63bb27e781d0629858632a098e44ffc1591e837c1c21c",
+      "target_sha256": "a7dd4c531ff990b419a63bb27e781d0629858632a098e44ffc1591e837c1c21c",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/freeze_standard_library_and_resource_locations.md",
+      "to": "docs/history/compiler/source-layout/standard_library_resource_locations.md",
+      "baseline_sha256": "461689f9065b063805da8b244a6970dd0c6b52eb22eddcf7f9474bd76f97ca2f",
+      "target_sha256": "461689f9065b063805da8b244a6970dd0c6b52eb22eddcf7f9474bd76f97ca2f",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/freeze_the_compiler_implementation_tree.md",
+      "to": "docs/history/compiler/source-layout/compiler_implementation_tree.md",
+      "baseline_sha256": "17760f26fd1e837142f0f34ea222ad2d9cdab6a13d6ff15ab640d5005275b90a",
+      "target_sha256": "17760f26fd1e837142f0f34ea222ad2d9cdab6a13d6ff15ab640d5005275b90a",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/freeze_the_public_compiler_header_tree.md",
+      "to": "docs/history/compiler/source-layout/public_compiler_header_tree.md",
+      "baseline_sha256": "306a70c4711c57b29b898666c46fce764d6ef837088f1aa1aafc9318afae2550",
+      "target_sha256": "306a70c4711c57b29b898666c46fce764d6ef837088f1aa1aafc9318afae2550",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/freeze_the_source_layout_and_ownership_map.md",
+      "to": "docs/history/compiler/source-layout/source_layout_receipt.md",
+      "baseline_sha256": "b25a6034b4e03608f3fe737497f786101144d80d46c215e4f030b6d1a8a1cf57",
+      "target_sha256": "b25a6034b4e03608f3fe737497f786101144d80d46c215e4f030b6d1a8a1cf57",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/SOURCE_LAYOUT_V1.md",
+      "to": "docs/history/compiler/source-layout/source_layout_contract_v1.md",
+      "baseline_sha256": "75132357047cd3b13a23c6195406700ecef113befa1c3fcf02827d86bb4f5f33",
+      "target_sha256": "75132357047cd3b13a23c6195406700ecef113befa1c3fcf02827d86bb4f5f33",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/compiler/source-layout/split_umbrella_headers_and_public_component_imports.md",
+      "to": "docs/history/compiler/source-layout/component_import_policy.md",
+      "baseline_sha256": "9cf149def80f3c0352bc8bcf3572f6c3a4e9aeb70ec0b7ca6d276be0f249502e",
+      "target_sha256": "9cf149def80f3c0352bc8bcf3572f6c3a4e9aeb70ec0b7ca6d276be0f249502e",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/freeze_cellerator_aware_celleratord_acceptance.md",
+      "to": "docs/celleratord/query_surface_acceptance.md",
+      "baseline_sha256": "80b1a8bb2baa468523921ccf3948851537ba21ddf19949bb6cb7dd23913474ee",
+      "target_sha256": "006ce997166eefad9b36719563cf9d514a57e2565410b547f7c63b9a7a851bf5",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_biological_type_and_relation_hover.md",
+      "to": "docs/celleratord/biological_type_relation_hover.md",
+      "baseline_sha256": "6645d3c4165bf34268b4431a2f6495747b42d68274dca3866ed8a24b842d7b0d",
+      "target_sha256": "71c436ab6b3dce7d5bdd9ecea5bf5b70c42ccdd5c091a1e25f9609559e75a423",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_cellerator_syntax_completion.md",
+      "to": "docs/celleratord/syntax_completion_contract.md",
+      "baseline_sha256": "05c4978513ec66516e396bfb76ad4297acc8bfc11d387a905b79ab7c1011a384",
+      "target_sha256": "749e84ee46dcc40057c71007ae6332d67ba439c4786d4ac4ec4aafb07d9c9dfd",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_field_ownership_and_effect_views.md",
+      "to": "docs/celleratord/field_ownership_effect_views.md",
+      "baseline_sha256": "03f25239f787ec06b6ebd261cf6d93fa7bcbf1e7717c5b27d8642c6562bdd354",
+      "target_sha256": "5b7de3953ad14f0e2b8637503bab2cedbbf99ad9d6ef01e0e7888c2702aab371",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_generation_and_staleness_queries.md",
+      "to": "docs/celleratord/generation_invalidation_queries.md",
+      "baseline_sha256": "70c3b8b0a748d5e3ed7006c4160faa1236efa1596d7d82465f8c4112423212f7",
+      "target_sha256": "c867a5d24b3127dc0972b522525ca2dc3e3a62fa0f1b6bc9c5c3a9f4dfc490c6",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_inline_ceir_diagnostics_and_completion.md",
+      "to": "docs/celleratord/inline_ceir_assistance.md",
+      "baseline_sha256": "ce9d7db0a0be19206bd55a7a0906ecab955979084dd9a32761365d82d547e4b6",
+      "target_sha256": "475a0430423c62d40ef606013b530fb2b135da9ae95d4be1ecf4fe349e80cd42",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_opaque_barrier_and_missed_optimization_actions.md",
+      "to": "docs/celleratord/opaque_barrier_actions.md",
+      "baseline_sha256": "1087a445f140dcc2ecb3dfc9582ca0e48e1c42a1297b4976c18ff6eee47a1d77",
+      "target_sha256": "87edebf07c65e575bbae834b9a2a0574d17d498262c718201cafec336b7e0909",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_planning_ir_and_candidate_views.md",
+      "to": "docs/celleratord/planning_ir_candidate_views.md",
+      "baseline_sha256": "5d4546941d5003b215d9a0576db7c828ab0256db935ab7002426888bb85c68e8",
+      "target_sha256": "b16b4607ca293ef3fd8d32a9fdd71763e7e94aabc3dc7ea48690aad96f71d964",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_profile_state_at_cursor.md",
+      "to": "docs/celleratord/profile_state_query.md",
+      "baseline_sha256": "12343d9c0ed0bf258d80693d8fb0b3f465c8d3adeef01f782796bb8c23aa1247",
+      "target_sha256": "f3b2000e8d7a12a61d3c467f5cb25ce3d22657052ccdffd4229c6a105122e5d6",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_realization_and_decomposition_visualization.md",
+      "to": "docs/celleratord/realization_decomposition_view.md",
+      "baseline_sha256": "978773dd1d9eb3f915454ef80039377a91ee5c2d2843240133b3bc21f96a0f02",
+      "target_sha256": "0b8a0f09382071176655acb65ba1abc6328726902904f8d20761d2ff98c2f93b",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_semantic_ir_at_cursor.md",
+      "to": "docs/celleratord/semantic_ir_query.md",
+      "baseline_sha256": "e5c56334f5591b0e2ed01f455488dd5f2af0c1150952db2a0abe87897820b312",
+      "target_sha256": "608e01e292021aff043953b032394a962dda00f699c3889011066bb90969476e",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_source_to_native_navigation.md",
+      "to": "docs/celleratord/source_to_native_navigation.md",
+      "baseline_sha256": "ad3f9d686e34c4c77424b60cf18afb6ef4044fde58ef33c09b8192f7e1f65039",
+      "target_sha256": "2b845a50b46dbd6d55bc166fae6628ea04d32573ff0b726234b877ba351653e5",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "docs/celleratord/implement_why_did_this_candidate_win.md",
+      "to": "docs/celleratord/candidate_selection_explanation.md",
+      "baseline_sha256": "610e2dedf86686e7a1bab8419a03ba427f52ea129ffaa11242007d8123dbbe20",
+      "target_sha256": "a9271a9c5886dab5f9b2a78ae2c597975b8a016afd1316763ac795079b21bc0b",
+      "exact_bytes_preserved": false
+    },
+    {
+      "from_baseline_c65": "profiles/define_named_profile_environments_and_alternatives.md",
+      "to": "profiles/named_profile_environments.md",
+      "baseline_sha256": "8eb0fc95ce12dda5d1c1391fb49ed3694738e5c950f0530a289f56b6bce78851",
+      "target_sha256": "8eb0fc95ce12dda5d1c1391fb49ed3694738e5c950f0530a289f56b6bce78851",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "style_hint.md",
+      "to": "docs/development/implementation_style.md",
+      "baseline_sha256": "c76f37a1fe778c062f54073ee15a1b7f7db48b26e3af103633ca0d773cfdf42f",
+      "target_sha256": "c76f37a1fe778c062f54073ee15a1b7f7db48b26e3af103633ca0d773cfdf42f",
+      "exact_bytes_preserved": true
+    },
+    {
+      "from_baseline_c65": "custom_torch_ops.md",
+      "to": "docs/development/operation_registry.md",
+      "baseline_sha256": "909f012241369f02c31bbd01f098a8f466abfd410529dcb9bdfae3f95b9dafc1",
+      "target_sha256": "8cf084e7fe3869b5dece0c2964a444b95337b768e3d432dd750adacb8605ff3f",
+      "exact_bytes_preserved": false
+    }
+  ],
+  "contract_document_move_count": 41,
+  "contract_document_exact_archive_hash_mismatches": [],
+  "final_follow_up_validation": {
+    "quarto_render": "success; 20 HTML pages",
+    "rendered_local_links": "0 broken",
+    "active_source_relative_links": "0 broken",
+    "active_task_prefix_files": "0",
+    "git_diff_check": "passed",
+    "product2_definition": "Added y_i = c_i x_{a_i} x_{b_i}; one output per declared pair, no reduction, 2 is input arity."
+  }
+}

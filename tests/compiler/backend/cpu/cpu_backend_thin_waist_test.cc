@@ -15,7 +15,7 @@ int main() {
         && receipt.deterministic_fallbacks);
 
     const auto directory = std::filesystem::temp_directory_path()
-        / "ce_ccp1_f02_014_install";
+        / "cellerator_cpu_backend_thin_waist";
     const auto installed = directory / "include" / "Cellerator";
     std::filesystem::create_directories(installed.parent_path());
     std::filesystem::copy(CELLERATOR_TEST_INCLUDE_ROOT "/Cellerator", installed,

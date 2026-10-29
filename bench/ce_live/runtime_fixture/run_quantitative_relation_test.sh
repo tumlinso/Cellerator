@@ -7,7 +7,7 @@ binary="${TMPDIR:-/tmp}/ce-live-24-quantitative-relation-test"
 cd "$repo_root"
 nvcc -std=c++17 -arch=sm_70 -lineinfo -Iinclude -I. \
     tests/live/quantitative_relation_test.cu \
-    bench/ce_live/runtime_fixture/quantitative_fixture.cc \
+    tests/fixtures/model_execution/quantitative_relation_fixture.cc \
     src/structure/identity_registry.cc \
     -o "$binary"
 "$binary"

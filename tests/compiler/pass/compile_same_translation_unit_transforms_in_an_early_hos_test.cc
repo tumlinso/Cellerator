@@ -7,7 +7,7 @@
 namespace cp = cellerator::compiler::pass::v1;
 
 int main() {
-    const auto directory = std::filesystem::temp_directory_path() / "ce_ccp1_g02_012";
+    const auto directory = std::filesystem::temp_directory_path() / "cellerator_compile_same_translation_unit_transforms_in_an_early_hos";
     const cp::early_host_transform_request_v1 request{
         "extern \"C\" int same_unit_transform(int value) { return value + 7; }\n",
         "g++", "cellerator-pass-api-v1", "", directory.string()};

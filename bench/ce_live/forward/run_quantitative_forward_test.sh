@@ -52,7 +52,7 @@ if [[ ${1:-} != --run-only ]]; then
         -lcellerator_planner \
         -lcellerator_runtime \
         -lcellerator_identity_registry \
-        -lcellerator_live_runtime_fixture \
+        -lcellerator_quantitative_relation_fixtures \
         -lcellpack_persistent_packing_payload \
         -lcellpack_feature_weighted_row_reduction \
         -lcellpack_feature_weighted_row_reduction_cuda \

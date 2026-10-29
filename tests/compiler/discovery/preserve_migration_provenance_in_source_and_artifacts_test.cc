@@ -25,17 +25,16 @@ int main() {
     for (const auto& directory : directories) {
         for (const auto& entry : std::filesystem::directory_iterator(directory)) {
             const auto name = entry.path().filename().string();
-            if (name.rfind("import_", 0) != 0) {
+            if (find_jbc_migration_provenance_v1(name) == nullptr) {
                 continue;
             }
-            assert(find_jbc_migration_provenance_v1(name) != nullptr);
             ++moved_files;
         }
     }
     assert(moved_files == 39);
 
     const auto* trajectory = find_jbc_migration_provenance_v1(
-        "src/compiler/discovery/import_trajectory_and_lineage_pattern_discovery.cc");
+        "src/compiler/discovery/trajectory_and_lineage_pattern_discovery.cc");
     assert(trajectory != nullptr);
     assert(trajectory->cellerator_todo == "CE-CCP1-E02-006");
     assert(find_jbc_migration_provenance_v1("unrelated_runtime.cc") == nullptr);

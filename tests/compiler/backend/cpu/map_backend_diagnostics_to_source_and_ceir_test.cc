@@ -9,7 +9,7 @@
 namespace cb = cellerator::compiler::backend::v1;
 
 int main() {
-    const auto dir = std::filesystem::temp_directory_path() / "ce_ccp1_f02_011";
+    const auto dir = std::filesystem::temp_directory_path() / "cellerator_map_backend_diagnostics_to_source_and_ceir";
     std::filesystem::create_directories(dir);
     const auto source = dir / "generated.cc";
     const auto errors = dir / "errors.txt";

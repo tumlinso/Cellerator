@@ -6,7 +6,7 @@ function(cellerator_create_accelerator_compiler_smoke_target)
     endif()
     find_package(CUDAToolkit REQUIRED)
     add_executable(cellerator_compiler_smoke_accelerator
-        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../tests/compiler/b01/accelerator_enabled_compiler_smoke_targets_test.cc")
+        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../tests/compiler/build/accelerator_enabled_compiler_smoke_targets_test.cc")
     target_link_libraries(cellerator_compiler_smoke_accelerator PRIVATE
         Cellerator::CompilerRealization CUDA::cudart)
     if(TARGET Cellerator::runtime)

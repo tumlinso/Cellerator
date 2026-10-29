@@ -2,7 +2,7 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 add_library(libCellerator STATIC
-    src/compiler/driver/driver_passthrough_milestone.cc
+    src/compiler/driver/downstream_compiler_invocation.cc
     src/compiler/tooling/celleratord_architecture.cc)
 add_library(Cellerator::libCellerator ALIAS libCellerator)
 target_include_directories(libCellerator PUBLIC

@@ -1,0 +1,33 @@
+---
+title: "Compiler design and source-layout history"
+---
+
+This archive preserves completed compiler migration decisions, ownership contracts, performance records, and source-layout freeze notes from baseline `c65df803`. Their captured content remains unchanged; names now describe the subject. Old path strings are provenance, not current routing. The companion [archive README](compiler/README.md) records the complete baseline-to-archive mapping.
+
+- `docs/compiler/migration/define_cellerator_ownership_of_atom_semantics.md` → [atom_semantics_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/atom_semantics_ownership.md)
+- `docs/compiler/migration/define_cellerator_ownership_of_basis_selection.md` → [basis_selection_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/basis_selection_ownership.md)
+- `docs/compiler/migration/define_cellerator_ownership_of_evidence_and_proposal_dis.md` → [evidence_proposal_discovery_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/evidence_proposal_discovery_ownership.md)
+- `docs/compiler/migration/define_cellerator_ownership_of_exact_certification.md` → [exact_certification_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/exact_certification_ownership.md)
+- `docs/compiler/migration/define_cellerator_ownership_of_global_operation_program.md` → [global_operation_program_ir_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/global_operation_program_ir_ownership.md)
+- `docs/compiler/migration/define_cellerator_ownership_of_portable_schedule_compila.md` → [portable_schedule_compilation_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/portable_schedule_compilation_ownership.md)
+- `docs/compiler/migration/define_cellerator_ownership_of_superatom_promotion.md` → [superatom_promotion_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/superatom_promotion_ownership.md)
+- `docs/compiler/migration/define_cellerator_ownership_of_typed_composition_and_gra.md` → [typed_composition_grammar_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/typed_composition_grammar_ownership.md)
+- `docs/compiler/migration/define_cellerator_ruleset_export_consumed_by_cellshard.md` → [cellshard_ruleset_export_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/cellshard_ruleset_export_ownership.md)
+- `docs/compiler/migration/define_temporary_compiler_to_cellshard_migration_adapter.md` → [compiler_cellshard_migration_adapter.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/compiler_cellshard_migration_adapter.md)
+- `docs/compiler/migration/define_the_retained_cellshard_concrete_application_bound.md` → [cellshard_application_boundary.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/cellshard_application_boundary.md)
+- `docs/compiler/migration/freeze_the_compiler_ownership_rehoming_contract.md` → [compiler_ownership_rehoming_contract.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/migration/compiler_ownership_rehoming_contract.md)
+- `docs/compiler/performance/freeze_compiler_benchmark_methodology.md` → [benchmark_methodology.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/performance/benchmark_methodology.md)
+- `docs/compiler/performance/freeze_the_part_one_performance_and_milestone_receipt.md` → [part_one_performance_milestone_receipt.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/performance/part_one_performance_milestone_receipt.md)
+- `docs/compiler/source-layout/define_agents_and_ownership_inheritance.md` → [agent_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/agent_ownership.md)
+- `docs/compiler/source-layout/define_central_registry_and_generated_manifest_ownership.md` → [registry_manifest_ownership.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/registry_manifest_ownership.md)
+- `docs/compiler/source-layout/define_generated_source_and_build_tree_boundaries.md` → [generated_source_build_boundary.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/generated_source_build_boundary.md)
+- `docs/compiler/source-layout/freeze_compiler_executable_locations.md` → [compiler_executable_locations.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/compiler_executable_locations.md)
+- `docs/compiler/source-layout/freeze_compiler_test_and_benchmark_locations.md` → [test_benchmark_locations.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/test_benchmark_locations.md)
+- `docs/compiler/source-layout/freeze_standard_library_and_resource_locations.md` → [standard_library_resource_locations.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/standard_library_resource_locations.md)
+- `docs/compiler/source-layout/freeze_the_compiler_implementation_tree.md` → [compiler_implementation_tree.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/compiler_implementation_tree.md)
+- `docs/compiler/source-layout/freeze_the_public_compiler_header_tree.md` → [public_compiler_header_tree.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/public_compiler_header_tree.md)
+- `docs/compiler/source-layout/freeze_the_source_layout_and_ownership_map.md` → [source_layout_receipt.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/source_layout_receipt.md)
+- `docs/compiler/source-layout/SOURCE_LAYOUT_V1.md` → [source_layout_contract_v1.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/source_layout_contract_v1.md)
+- `docs/compiler/source-layout/split_umbrella_headers_and_public_component_imports.md` → [component_import_policy.md](https://github.com/tumlinso/Cellerator/blob/main/docs/history/compiler/source-layout/component_import_policy.md)
+
+Related source-layout test snapshots are also preserved at `docs/history/compiler/source_layout_freeze_tests/`; they retain old path assertions as part of the historical record. Use the current [contributor routing guide](../development/routing.md), [developer reference](../developer_reference.qmd), and [implementation boundary](../current_implementation.qmd) for current interpretation.

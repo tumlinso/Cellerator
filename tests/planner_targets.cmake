@@ -35,8 +35,8 @@ add_executable(celleratorPreparationFactoryTest
 add_executable(celleratorQuantitativeRelationTest
     tests/live/quantitative_relation_test.cu
 )
-add_executable(celleratorLivePlannerFeaturesTest
-    tests/planner/ce_live_planner_features_test.cc
+add_executable(celleratorPlannerInputFixtureTest
+    tests/planner/planner_input_fixture_test.cc
 )
 add_executable(celleratorExecutableCoreIntegrationTest
     tests/live/integration/executable_core_integration_test.cc
@@ -68,17 +68,17 @@ target_link_libraries(celleratorPreparationFactoryTest PRIVATE
     CUDA::cudart
 )
 target_link_libraries(celleratorQuantitativeRelationTest PRIVATE
-    cellerator_live_runtime_fixture
+    cellerator_quantitative_relation_fixtures
     CUDA::cudart
 )
-target_link_libraries(celleratorLivePlannerFeaturesTest PRIVATE
-    cellerator_live_planner_inputs
+target_link_libraries(celleratorPlannerInputFixtureTest PRIVATE
+    cellerator_planner_input_fixtures
 )
 target_link_libraries(celleratorExecutableCoreIntegrationTest PRIVATE
     Cellerator::executable_core
     Cellerator::planner
-    cellerator_live_planner_inputs
-    cellerator_live_runtime_fixture
+    cellerator_planner_input_fixtures
+    cellerator_quantitative_relation_fixtures
 )
 set_target_properties(
     celleratorProjectionActivationTest
@@ -93,7 +93,7 @@ set_target_properties(
 )
 set_target_properties(
     celleratorBuiltinCatalogTest
-    celleratorLivePlannerFeaturesTest
+    celleratorPlannerInputFixtureTest
     celleratorExecutableCoreIntegrationTest
     PROPERTIES
         CXX_STANDARD 17

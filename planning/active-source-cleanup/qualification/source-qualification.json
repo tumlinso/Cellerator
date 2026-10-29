@@ -1,0 +1,68 @@
+{
+  "source_baseline": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+  "path_migrations": 543,
+  "composed_previous_destinations": 943,
+  "retired_payload_count": 32,
+  "unmapped_deletions": [],
+  "package": {
+    "wheel_filename": "cellerator-0.1.0-cp313-cp313-linux_x86_64.whl",
+    "sha256": "841f82d626e80b78452d4dc54f3c2acada0cfcc3faf1bfb084b173a9189f5bf8",
+    "installed_path": "/tmp/cellerator-active-cleanup-installed",
+    "cpu_tests": "18 passed in 2.72s",
+    "python_sources_unchanged": true,
+    "snapshot_note": "Wheel at this source qualification checkpoint; final canonical publication wheel and metadata will be rebuilt under CE-CLEAN-03."
+  },
+  "root_corrections": [
+    {
+      "path": "include/Cellerator/compiler/profile/profile_artifact_v1.hh",
+      "problem": "Undefined profile_revision_v1 left a public descriptor uncompilable.",
+      "resolution": "Use existing CELLPRF1 uint64 evidence-revision counter contract; no wire format or numerical behavior change.",
+      "validation": "Standalone source and installed C++17 compile/runtime checks; existing sectioned artifact regression rebuilt/passed with descriptor included and counter type equality asserted.",
+      "supersedes_reported_gap": "compiler-migration-record.json sdk_facade_validation.remaining_header_gap"
+    },
+    {
+      "path": "bench/compiler/profile/profile_aware_compile_benchmark.cc",
+      "problem": "Current benchmark included removed first_profile_aware_compile_benchmark_v1.hh.",
+      "resolution": "Include the purpose-named current header; rename/update current benchmark instructions.",
+      "validation": "C++17 syntax-only compile passed; no timing or performance claim."
+    }
+  ],
+  "logs": [
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-active-cleanup-wheel-build.log",
+      "sha256": "ec402440b8d596f3884c3ef2a91c85b18d4a136df4f7dbb7600c05008ab76b8c"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-active-cleanup-wheel-install.log",
+      "sha256": "747ebf2370937a579d2d77a2f84cf75d3ae23c730d479bd030025f609f50a1df"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-active-cleanup-installed-tests.log",
+      "sha256": "9aac478871b693db6e05de3ddf76d0c348dca1afb9777f5b31f622d1e2bb3eb3"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-profile-artifact-regression-build.log",
+      "sha256": "211e6b755591e43722e4f0ffcdfea5354fc2e3b48daf510079cf31237751fdbd"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-profile-artifact-regression-test.log",
+      "sha256": "9c9a23db6a472ef895285b3dcf4a974fd4a071f50f0e0140a7707e0bb6a832b7"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-profile-artifact-reinstall.log",
+      "sha256": "7ddf3af1761d932385f57b8c55c60398e78e223b73d043feca075ff2a15595e2"
+    }
+  ],
+  "coverage_limits": [
+    "CUDA tests were compiled where affected; no GPU runtime workload ran in this cleanup.",
+    "Host ASan/UBSan passed with leak detection disabled for ptrace; LeakSanitizer is not verified.",
+    "One local quantitative fixture test skipped because the optional PBMC3K input is absent.",
+    "The NVCC plan test hardcodes the incompatible system CUDA12.0 toolchain; generated object compile passed with CUDA12.9.",
+    "Project Control/C++ retrieval remains a separate pending outcome until canonical source integration."
+  ],
+  "numerical_owner_identity": {
+    "record": "planning/active-source-cleanup/qualification/numerical-owner-identity.json",
+    "checked_files": 45,
+    "changed_files": []
+  }
+}

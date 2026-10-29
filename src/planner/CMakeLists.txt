@@ -17,29 +17,29 @@ target_link_libraries(cellerator_planner PUBLIC
 )
 target_compile_features(cellerator_planner PUBLIC cxx_std_17)
 
-add_library(cellerator_live_planner_inputs STATIC
-    bench/ce_live/planner/live_planner_inputs.cc
+add_library(cellerator_planner_input_fixtures STATIC
+    tests/fixtures/planner/live_planner_inputs.cc
 )
-target_include_directories(cellerator_live_planner_inputs PUBLIC
+target_include_directories(cellerator_planner_input_fixtures PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(cellerator_live_planner_inputs PUBLIC
+target_link_libraries(cellerator_planner_input_fixtures PUBLIC
     Cellerator::planner
 )
-target_compile_features(cellerator_live_planner_inputs PUBLIC cxx_std_17)
+target_compile_features(cellerator_planner_input_fixtures PUBLIC cxx_std_17)
 
-add_library(cellerator_live_runtime_fixture STATIC
-    bench/ce_live/runtime_fixture/quantitative_fixture.cc
+add_library(cellerator_quantitative_relation_fixtures STATIC
+    tests/fixtures/model_execution/quantitative_relation_fixture.cc
 )
-target_include_directories(cellerator_live_runtime_fixture PUBLIC
+target_include_directories(cellerator_quantitative_relation_fixtures PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(cellerator_live_runtime_fixture PUBLIC
+target_link_libraries(cellerator_quantitative_relation_fixtures PUBLIC
     Cellerator::identity_registry
 )
-target_compile_features(cellerator_live_runtime_fixture PUBLIC cxx_std_17)
+target_compile_features(cellerator_quantitative_relation_fixtures PUBLIC cxx_std_17)
 
 add_library(cellerator_candidate_measurement STATIC
     src/planner/candidate_measurement.cu

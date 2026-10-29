@@ -14,47 +14,47 @@ function(cellerator_add_relation_algebra_test target source)
     )
 endfunction()
 
-cellerator_add_relation_algebra_test(ceGeoRelationCatalogIntegrationTest
+cellerator_add_relation_algebra_test(relation_catalog_integration_test
     tests/relation_algebra/catalog_integration_test.cu)
-cellerator_add_relation_algebra_test(ceGeoRelationContractTest
+cellerator_add_relation_algebra_test(relation_contract_test
     tests/relation_algebra/contract_test.cc)
-cellerator_add_relation_algebra_test(ceGeoEdgeMapOrGateTest
+cellerator_add_relation_algebra_test(edge_map_or_gate_test
     tests/relation_algebra/edge_map_or_gate_test.cu)
-cellerator_add_relation_algebra_test(ceGeoRelationInterfaceTest
+cellerator_add_relation_algebra_test(relation_interface_test
     tests/relation_algebra/interface_test.cu)
-cellerator_add_relation_algebra_test(ceGeoRelationCompatibilityTest
+cellerator_add_relation_algebra_test(relation_compatibility_test
     tests/relation_algebra/relation_apply_compatibility_test.cu)
-cellerator_add_relation_algebra_test(ceGeoRelationBundleTest
+cellerator_add_relation_algebra_test(relation_bundle_test
     tests/relation_algebra/relation_bundle_test.cu)
-cellerator_add_relation_algebra_test(ceGeoSegmentNormalizeTest
+cellerator_add_relation_algebra_test(segment_normalize_test
     tests/relation_algebra/segment_normalize_test.cu)
-cellerator_add_relation_algebra_test(ceGeoSegmentReduceTest
+cellerator_add_relation_algebra_test(segment_reduce_test
     tests/relation_algebra/segment_reduce_test.cu)
 
-cellerator_add_relation_algebra_test(ceGeoSm70AdvancedOpsTest
+cellerator_add_relation_algebra_test(geometry_sm70_advanced_ops_test
     tests/tensor_core/sm70/advanced_operations_test.cu)
-cellerator_add_relation_algebra_test(ceGeoSm70EdgeValueGradientTest
+cellerator_add_relation_algebra_test(geometry_sm70_edge_value_gradient_test
     tests/tensor_core/sm70/edge_value_gradient_test.cu)
-cellerator_add_relation_algebra_test(ceGeoSm70SegmentBackwardTest
+cellerator_add_relation_algebra_test(geometry_sm70_segment_backward_test
     tests/tensor_core/sm70/segment_backward_integration_test.cu)
-cellerator_add_relation_algebra_test(ceGeoSm70CoverNormalizeTest
+cellerator_add_relation_algebra_test(geometry_sm70_cover_normalize_test
     tests/tensor_core/sm70/cover_native_normalize_test.cu)
-cellerator_add_relation_algebra_test(ceGeoSm70TransposeApplyTest
+cellerator_add_relation_algebra_test(geometry_sm70_transpose_apply_test
     tests/tensor_core/sm70/transpose_relation_apply_test.cu)
 
-add_custom_target(ceGeoBiologyTests DEPENDS
-    ceGeoRelationCatalogIntegrationTest
-    ceGeoRelationContractTest
-    ceGeoEdgeMapOrGateTest
-    ceGeoRelationInterfaceTest
-    ceGeoRelationCompatibilityTest
-    ceGeoRelationBundleTest
-    ceGeoSegmentNormalizeTest
-    ceGeoSegmentReduceTest
-    ceGeoSm70AdvancedOpsTest
-    ceGeoSm70EdgeValueGradientTest
-    ceGeoSm70SegmentBackwardTest
-    ceGeoSm70CoverNormalizeTest
-    ceGeoSm70TransposeApplyTest
-    ceGeoBiologicalRelationsExample
+add_custom_target(biological_relation_tests DEPENDS
+    relation_catalog_integration_test
+    relation_contract_test
+    edge_map_or_gate_test
+    relation_interface_test
+    relation_compatibility_test
+    relation_bundle_test
+    segment_normalize_test
+    segment_reduce_test
+    geometry_sm70_advanced_ops_test
+    geometry_sm70_edge_value_gradient_test
+    geometry_sm70_segment_backward_test
+    geometry_sm70_cover_normalize_test
+    geometry_sm70_transpose_apply_test
+    biological_relations_example
 )

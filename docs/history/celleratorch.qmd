@@ -1,0 +1,9 @@
+---
+title: "CelleraTorch history"
+---
+
+The archive preserves two different historical threads. The former component notes record an earlier adapter split; a later documentation-only proposal explored a simplified Torch-facing runtime. The paused proposal did not implement a package, build target, or runtime and is not the current product plan.
+
+The original proposal documents are preserved without rewriting: [workspace note](https://github.com/tumlinso/Cellerator/blob/main/docs/history/celleratorch/paused_runtime_workspace.md) and [design note](https://github.com/tumlinso/Cellerator/blob/main/docs/history/celleratorch/paused_runtime_design.md). The former component record begins in the [archive README](https://github.com/tumlinso/Cellerator/blob/main/docs/history/celleratorch/README.md). Its preserved subsystem notes cover [autograd operations](https://github.com/tumlinso/Cellerator/blob/main/docs/history/celleratorch/autograd_ops.md), [native views](https://github.com/tumlinso/Cellerator/blob/main/docs/history/celleratorch/native_views.md), [program operations](https://github.com/tumlinso/Cellerator/blob/main/docs/history/celleratorch/program_ops.md), [Python mechanisms](https://github.com/tumlinso/Cellerator/blob/main/docs/history/celleratorch/python_mechanisms.md), [Torch bindings](https://github.com/tumlinso/Cellerator/blob/main/docs/history/celleratorch/torch_bindings.md), and [C++ mechanism checkpoints](https://github.com/tumlinso/Cellerator/blob/main/docs/history/celleratorch/cpp_mechanism_checkpoints.md).
+
+Cellerator remains a PyTorch extension: it owns reusable native operations and structure-aware execution, while Torch supplies its general framework facilities. See [architecture](../architecture.qmd), [scope](../scope.qmd), and [Python bindings](../development/python-bindings.md).

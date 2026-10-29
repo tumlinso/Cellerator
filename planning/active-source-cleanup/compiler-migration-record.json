@@ -1,0 +1,1610 @@
+{
+  "workspace": "/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-03dabc12572bb2a2f4b8e90bd7946bb7904a331451e1042bc93e5f339dd64225",
+  "batch": "compiler purpose path and milestone naming",
+  "path_moves": [
+    {
+      "from": "tests/compiler/a01",
+      "to": "tests/compiler/migration/project_authority",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/a02",
+      "to": "tests/compiler/migration/inventory",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/a03",
+      "to": "tests/compiler/migration/ownership",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/a04",
+      "to": "tests/compiler/history/source_layout_freeze",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/b01",
+      "to": "tests/compiler/build",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/b02",
+      "to": "tests/compiler/driver",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/d01",
+      "to": "tests/compiler/ir/ceir",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/e03",
+      "to": "tests/compiler/composition",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/h02",
+      "to": "tests/compiler/sdk",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/h03",
+      "to": "tests/compiler/package",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/i01",
+      "to": "tests/compiler/tooling",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/j02",
+      "to": "tests/compiler/benchmark",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/j03",
+      "to": "tests/compiler/release",
+      "basis": "behavioral suite contents"
+    },
+    {
+      "from": "tests/compiler/d03/*",
+      "to": "tests/compiler/profile/",
+      "basis": "profile artifact and semantic evidence tests merged with existing profile owner"
+    }
+  ],
+  "purpose_renames": [
+    {
+      "from": "first_cpu_object_milestone",
+      "to": "profile_bound_cpu_object",
+      "basis": "generates profile-bound C++ and invokes CPU object compiler"
+    },
+    {
+      "from": "first_nvcc_object_milestone",
+      "to": "nvcc_object_compile_plan",
+      "basis": "constructs CUDA source and NVCC compile/link argument plan; does not invoke compiler"
+    },
+    {
+      "from": "driver_passthrough_milestone",
+      "to": "downstream_compiler_invocation",
+      "basis": "invokes configured downstream compiler"
+    },
+    {
+      "from": "c_semantic_bridge_milestone",
+      "to": "cxx_semantic_analysis_bridge",
+      "basis": "binds C++ captures, types, templates, and constexpr values"
+    },
+    {
+      "from": "pragma_aware_source_milestone",
+      "to": "pragma_aware_source_transformation",
+      "basis": "transforms sources with Cellerator pragmas"
+    },
+    {
+      "from": "celleratord_c_parity_milestone",
+      "to": "celleratord_c_parity",
+      "basis": "checks C/C++ language server parity receipt"
+    }
+  ],
+  "validation": {
+    "cpu_configure_build_test": "passed at /tmp/cellerator-compiler-cpu-cleanup, target cellerator_profile_bound_cpu_object_test",
+    "nvcc_plan_configure_build": "passed at /tmp/cellerator-compiler-nvcc-cleanup, target cellerator_nvcc_object_compile_plan_test",
+    "nvcc_plan_runtime_test": "failed because /usr/bin/nvcc host compilation hit system header type errors; no GPU execution",
+    "git_diff_check": "passed",
+    "sdk_closure_suite": "passed 16/16 at /tmp/cellerator-sdk-closure; corrected pass/reflection test target source dependency on operation_attribute_registration.cc",
+    "installed_sdk_header_smoke": "passed 34/34 installed compiler API and SDK C++ headers individually, including compiler.hpp; installed C API facade passed C11 syntax-only",
+    "public_compiler_header_smoke": "478/479 compiler C++ headers passed individual syntax-only; profile_artifact_v1.hh incomplete profile_revision_v1 declaration remains recorded gap",
+    "root_host_only_followup": "passed configure/build/CTest 16/16 and install at /tmp/cellerator-compiler-closure-install",
+    "compiler_sdk_literal_include_closure": "0 missing targets in compiler/SDK include subtrees; global scan shows 5 unrelated compute compatibility paths plus generated Cellerator/config.cuh"
+  },
+  "semantic_rename_method": "clangd and clang-rename unavailable; exact declarations, definitions, callers, and tests were inspected canonically; substitutions were limited to active compiler/build/test paths",
+  "exact_old_to_new_paths": [
+    {
+      "from": "cmake/package/build_minimal_reference_profile_artifacts.cmake",
+      "to": "cmake/package/minimal_reference_profile_artifacts.cmake"
+    },
+    {
+      "from": "cmake/package/build_package_manifest_and_resource_hashes.cmake",
+      "to": "cmake/package/resource_manifest.cmake"
+    },
+    {
+      "from": "cmake/package/create_cmake_compiler_integration_helpers.cmake",
+      "to": "cmake/package/cmake_compiler_integration.cmake"
+    },
+    {
+      "from": "cmake/package/create_cmake_package_exports.cmake",
+      "to": "cmake/package/cmake_package_exports.cmake"
+    },
+    {
+      "from": "cmake/package/create_package_upgrade_and_coexistence_tests.cmake",
+      "to": "cmake/package/package_compatibility.cmake"
+    },
+    {
+      "from": "cmake/package/create_pkg_config_or_equivalent_lightweight_metadata.cmake",
+      "to": "cmake/package/pkg_config_metadata.cmake"
+    },
+    {
+      "from": "cmake/package/define_installation_layout_and_rpath_policy.cmake",
+      "to": "cmake/package/installation_layout_policy.cmake"
+    },
+    {
+      "from": "cmake/package/define_reference_species_profile_policy.cmake",
+      "to": "cmake/package/reference_species_policy.cmake"
+    },
+    {
+      "from": "cmake/package/define_standard_library_package_structure.cmake",
+      "to": "cmake/package/standard_library_package_structure.cmake"
+    },
+    {
+      "from": "cmake/package/freeze_installable_sdk_and_standard_library_foundation.cmake",
+      "to": "cmake/package/sdk_resource_contract.cmake"
+    },
+    {
+      "from": "cmake/package/freeze_the_language_versus_standard_library_boundary.cmake",
+      "to": "cmake/package/language_standard_library_boundary.cmake"
+    },
+    {
+      "from": "cmake/package/implement_compiler_resource_discovery.cmake",
+      "to": "cmake/package/compiler_resource_discovery.cmake"
+    },
+    {
+      "from": "cmake/package/implement_operation_wrappers_in_cellerator_source.cmake",
+      "to": "cmake/package/standard_library_operations.cmake"
+    },
+    {
+      "from": "cmake/package/implement_planning_and_expert_control_helpers.cmake",
+      "to": "cmake/package/standard_library_planning.cmake"
+    },
+    {
+      "from": "cmake/package/implement_profile_and_persistence_helpers.cmake",
+      "to": "cmake/package/standard_library_profiles.cmake"
+    },
+    {
+      "from": "cmake/package/implement_reflection_and_inline_ir_helper_library.cmake",
+      "to": "cmake/package/standard_library_reflection.cmake"
+    },
+    {
+      "from": "cmake/package/implement_relation_and_state_construction_helpers.cmake",
+      "to": "cmake/package/standard_library_builders.cmake"
+    },
+    {
+      "from": "cmake/package/implement_the_minimal_core_cell_library.cmake",
+      "to": "cmake/package/standard_library_core.cmake"
+    },
+    {
+      "from": "include/Cellerator/compiler/backend/first_cpu_object_milestone_v1.hh",
+      "to": "include/Cellerator/compiler/backend/profile_bound_cpu_object_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/backend/nvcc/first_nvcc_object_milestone_v1.hh",
+      "to": "include/Cellerator/compiler/backend/nvcc/nvcc_object_compile_plan_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_basis_manifest_semantics_v1.hh",
+      "to": "include/Cellerator/compiler/composition/basis_manifest_semantics_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_cross_operation_rewrite_and_fusion_search_v1.hh",
+      "to": "include/Cellerator/compiler/composition/cross_operation_rewrite_and_fusion_search_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_explicit_grammar_compilation_v1.hh",
+      "to": "include/Cellerator/compiler/composition/explicit_grammar_compilation_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_global_operation_graph_ir_v1.hh",
+      "to": "include/Cellerator/compiler/composition/global_operation_graph_ir_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_induced_grammar_as_experimental_search_v1.hh",
+      "to": "include/Cellerator/compiler/composition/experimental_induced_grammar_search_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_multi_parent_derivation_dags_v1.hh",
+      "to": "include/Cellerator/compiler/composition/multi_parent_derivation_dags_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_persistent_partial_compiler_semantics_v1.hh",
+      "to": "include/Cellerator/compiler/composition/persistent_partial_compiler_semantics_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_portable_schedule_ruleset_representation_v1.hh",
+      "to": "include/Cellerator/compiler/composition/portable_schedule_ruleset_representation_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_superatom_promotion_v1.hh",
+      "to": "include/Cellerator/compiler/composition/superatom_promotion_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_typed_composition_production_contracts_v1.hh",
+      "to": "include/Cellerator/compiler/composition/typed_composition_production_contracts_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/composition/import_workload_family_representation_v1.hh",
+      "to": "include/Cellerator/compiler/composition/workload_family_representation_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_atom_envelope_and_typed_ports_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/atom_envelope_and_typed_ports_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_atom_plane_separation_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/atom_plane_separation_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_atom_requirement_affordance_matching_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/atom_requirement_affordance_matching_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_co_support_and_overlap_discovery_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/co_support_and_overlap_discovery_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_exact_rescan_and_proposal_certification_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/exact_rescan_and_proposal_certification_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_factor_bicluster_and_signature_proposal_strategie_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/factor_bicluster_and_signature_proposal_strategy_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_multimodal_and_identity_spine_discovery_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/multimodal_and_identity_spine_discovery_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_relation_motif_and_operation_trace_discovery_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/relation_motif_and_operation_trace_discovery_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_scalable_certification_indexes_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/scalable_certification_indexes_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_support_signature_discovery_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/support_signature_discovery_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_the_common_jbc_atom_identity_adapters_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/common_jbc_atom_identity_adapters_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_the_overlapping_evidence_atlas_core_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/overlapping_evidence_atlas_core_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/discovery/import_trajectory_and_lineage_pattern_discovery_v1.hh",
+      "to": "include/Cellerator/compiler/discovery/trajectory_and_lineage_pattern_discovery_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/driver/driver_passthrough_milestone_v1.hh",
+      "to": "include/Cellerator/compiler/driver/downstream_compiler_invocation_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/frontend/cxx/c_semantic_bridge_milestone_v1.hh",
+      "to": "include/Cellerator/compiler/frontend/cxx/cxx_semantic_analysis_bridge_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/frontend/source/pragma_aware_source_milestone_v1.hh",
+      "to": "include/Cellerator/compiler/frontend/source/pragma_aware_source_transformation_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/ir/planning/first_inspectable_candidate_search_space_v1.hh",
+      "to": "include/Cellerator/compiler/ir/planning/candidate_search_space_inspection_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/profile/first_profile_aware_compile_benchmark_v1.hh",
+      "to": "include/Cellerator/compiler/profile/profile_aware_compile_benchmark_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/program/import_basis_manifest_semantics_v1.hh",
+      "to": "include/Cellerator/compiler/program/basis_manifest_semantics_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/program/import_cross_operation_rewrite_and_fusion_search_v1.hh",
+      "to": "include/Cellerator/compiler/program/cross_operation_rewrite_and_fusion_search_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/program/import_explicit_grammar_compilation_v1.hh",
+      "to": "include/Cellerator/compiler/program/explicit_grammar_compilation_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/program/import_global_operation_graph_ir_v1.hh",
+      "to": "include/Cellerator/compiler/program/global_operation_graph_ir_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/program/import_multi_parent_derivation_dags_v1.hh",
+      "to": "include/Cellerator/compiler/program/multi_parent_derivation_dags_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/program/import_persistent_partial_compiler_semantics_v1.hh",
+      "to": "include/Cellerator/compiler/program/persistent_partial_compiler_semantics_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/program/import_portable_schedule_ruleset_representation_v1.hh",
+      "to": "include/Cellerator/compiler/program/portable_schedule_ruleset_representation_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/program/import_superatom_promotion_v1.hh",
+      "to": "include/Cellerator/compiler/program/superatom_promotion_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/program/import_typed_composition_production_contracts_v1.hh",
+      "to": "include/Cellerator/compiler/program/typed_composition_production_contracts_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/program/import_workload_family_representation_v1.hh",
+      "to": "include/Cellerator/compiler/program/workload_family_representation_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/reflection/first_source_defined_inline_rewrite_v1.hh",
+      "to": "include/Cellerator/compiler/reflection/source_defined_inline_rewrite_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/compiler/sema/field/first_profile_required_semantic_field_slice_v1.hh",
+      "to": "include/Cellerator/compiler/sema/field/profile_required_semantic_field_slice_v1.hh"
+    },
+    {
+      "from": "profiles/reference/build_minimal_reference_profile_artifacts.ceprofile",
+      "to": "profiles/reference/minimal_reference_profile_artifacts.ceprofile"
+    },
+    {
+      "from": "profiles/reference/build_package_manifest_and_resource_hashes.ceprofile",
+      "to": "profiles/reference/resource_manifest.ceprofile"
+    },
+    {
+      "from": "profiles/reference/create_cmake_compiler_integration_helpers.ceprofile",
+      "to": "profiles/reference/cmake_compiler_integration.ceprofile"
+    },
+    {
+      "from": "profiles/reference/create_cmake_package_exports.ceprofile",
+      "to": "profiles/reference/cmake_package_exports.ceprofile"
+    },
+    {
+      "from": "profiles/reference/create_package_upgrade_and_coexistence_tests.ceprofile",
+      "to": "profiles/reference/package_compatibility.ceprofile"
+    },
+    {
+      "from": "profiles/reference/create_pkg_config_or_equivalent_lightweight_metadata.ceprofile",
+      "to": "profiles/reference/pkg_config_metadata.ceprofile"
+    },
+    {
+      "from": "profiles/reference/define_installation_layout_and_rpath_policy.ceprofile",
+      "to": "profiles/reference/installation_layout_policy.ceprofile"
+    },
+    {
+      "from": "profiles/reference/define_reference_species_profile_policy.ceprofile",
+      "to": "profiles/reference/reference_species_policy.ceprofile"
+    },
+    {
+      "from": "profiles/reference/define_standard_library_package_structure.ceprofile",
+      "to": "profiles/reference/standard_library_package_structure.ceprofile"
+    },
+    {
+      "from": "profiles/reference/freeze_installable_sdk_and_standard_library_foundation.ceprofile",
+      "to": "profiles/reference/sdk_resource_contract.ceprofile"
+    },
+    {
+      "from": "profiles/reference/freeze_the_language_versus_standard_library_boundary.ceprofile",
+      "to": "profiles/reference/language_standard_library_boundary.ceprofile"
+    },
+    {
+      "from": "profiles/reference/implement_compiler_resource_discovery.ceprofile",
+      "to": "profiles/reference/compiler_resource_discovery.ceprofile"
+    },
+    {
+      "from": "profiles/reference/implement_operation_wrappers_in_cellerator_source.ceprofile",
+      "to": "profiles/reference/standard_library_operations.ceprofile"
+    },
+    {
+      "from": "profiles/reference/implement_planning_and_expert_control_helpers.ceprofile",
+      "to": "profiles/reference/standard_library_planning.ceprofile"
+    },
+    {
+      "from": "profiles/reference/implement_profile_and_persistence_helpers.ceprofile",
+      "to": "profiles/reference/standard_library_profiles.ceprofile"
+    },
+    {
+      "from": "profiles/reference/implement_reflection_and_inline_ir_helper_library.ceprofile",
+      "to": "profiles/reference/standard_library_reflection.ceprofile"
+    },
+    {
+      "from": "profiles/reference/implement_relation_and_state_construction_helpers.ceprofile",
+      "to": "profiles/reference/standard_library_builders.ceprofile"
+    },
+    {
+      "from": "profiles/reference/implement_the_minimal_core_cell_library.ceprofile",
+      "to": "profiles/reference/standard_library_core.ceprofile"
+    },
+    {
+      "from": "src/compiler/backend/first_cpu_object_milestone.cc",
+      "to": "src/compiler/backend/profile_bound_cpu_object.cc"
+    },
+    {
+      "from": "src/compiler/backend/nvcc/first_nvcc_object_milestone.cc",
+      "to": "src/compiler/backend/nvcc/nvcc_object_compile_plan.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_basis_manifest_semantics.cc",
+      "to": "src/compiler/composition/basis_manifest_semantics.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_cross_operation_rewrite_and_fusion_search.cc",
+      "to": "src/compiler/composition/cross_operation_rewrite_and_fusion_search.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_explicit_grammar_compilation.cc",
+      "to": "src/compiler/composition/explicit_grammar_compilation.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_global_operation_graph_ir.cc",
+      "to": "src/compiler/composition/global_operation_graph_ir.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_induced_grammar_as_experimental_search.cc",
+      "to": "src/compiler/composition/experimental_induced_grammar_search.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_multi_parent_derivation_dags.cc",
+      "to": "src/compiler/composition/multi_parent_derivation_dags.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_persistent_partial_compiler_semantics.cc",
+      "to": "src/compiler/composition/persistent_partial_compiler_semantics.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_portable_schedule_ruleset_representation.cc",
+      "to": "src/compiler/composition/portable_schedule_ruleset_representation.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_superatom_promotion.cc",
+      "to": "src/compiler/composition/superatom_promotion.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_typed_composition_production_contracts.cc",
+      "to": "src/compiler/composition/typed_composition_production_contracts.cc"
+    },
+    {
+      "from": "src/compiler/composition/import_workload_family_representation.cc",
+      "to": "src/compiler/composition/workload_family_representation.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_atom_envelope_and_typed_ports.cc",
+      "to": "src/compiler/discovery/atom_envelope_and_typed_ports.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_atom_plane_separation.cc",
+      "to": "src/compiler/discovery/atom_plane_separation.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_atom_requirement_affordance_matching.cc",
+      "to": "src/compiler/discovery/atom_requirement_affordance_matching.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_co_support_and_overlap_discovery.cc",
+      "to": "src/compiler/discovery/co_support_and_overlap_discovery.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_exact_rescan_and_proposal_certification.cc",
+      "to": "src/compiler/discovery/exact_rescan_and_proposal_certification.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_factor_bicluster_and_signature_proposal_strategie.cc",
+      "to": "src/compiler/discovery/factor_bicluster_and_signature_proposal_strategy.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_multimodal_and_identity_spine_discovery.cc",
+      "to": "src/compiler/discovery/multimodal_and_identity_spine_discovery.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_relation_motif_and_operation_trace_discovery.cc",
+      "to": "src/compiler/discovery/relation_motif_and_operation_trace_discovery.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_scalable_certification_indexes.cc",
+      "to": "src/compiler/discovery/scalable_certification_indexes.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_support_signature_discovery.cc",
+      "to": "src/compiler/discovery/support_signature_discovery.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_the_common_jbc_atom_identity_adapters.cc",
+      "to": "src/compiler/discovery/common_jbc_atom_identity_adapters.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_the_overlapping_evidence_atlas_core.cc",
+      "to": "src/compiler/discovery/overlapping_evidence_atlas_core.cc"
+    },
+    {
+      "from": "src/compiler/discovery/import_trajectory_and_lineage_pattern_discovery.cc",
+      "to": "src/compiler/discovery/trajectory_and_lineage_pattern_discovery.cc"
+    },
+    {
+      "from": "src/compiler/driver/driver_passthrough_milestone.cc",
+      "to": "src/compiler/driver/downstream_compiler_invocation.cc"
+    },
+    {
+      "from": "src/compiler/frontend/cxx/c_semantic_bridge_milestone.cc",
+      "to": "src/compiler/frontend/cxx/cxx_semantic_analysis_bridge.cc"
+    },
+    {
+      "from": "src/compiler/frontend/source/pragma_aware_source_milestone.cc",
+      "to": "src/compiler/frontend/source/pragma_aware_source_transformation.cc"
+    },
+    {
+      "from": "src/compiler/ir/planning/first_inspectable_candidate_search_space.cc",
+      "to": "src/compiler/ir/planning/candidate_search_space_inspection.cc"
+    },
+    {
+      "from": "src/compiler/profile/first_profile_aware_compile_benchmark.cc",
+      "to": "src/compiler/profile/profile_aware_compile_benchmark.cc"
+    },
+    {
+      "from": "src/compiler/reflection/first_source_defined_inline_rewrite.cc",
+      "to": "src/compiler/reflection/source_defined_inline_rewrite.cc"
+    },
+    {
+      "from": "src/compiler/sema/field/first_profile_required_semantic_field_slice.cc",
+      "to": "src/compiler/sema/field/profile_required_semantic_field_slice.cc"
+    },
+    {
+      "from": "src/compiler/tooling/celleratord_c_parity_milestone.cc",
+      "to": "src/compiler/tooling/celleratord_c_parity.cc"
+    },
+    {
+      "from": "stdlib/build_minimal_reference_profile_artifacts.md",
+      "to": "stdlib/minimal_reference_profile_artifacts.md"
+    },
+    {
+      "from": "stdlib/build_package_manifest_and_resource_hashes.md",
+      "to": "stdlib/resource_manifest.md"
+    },
+    {
+      "from": "stdlib/create_cmake_compiler_integration_helpers.md",
+      "to": "stdlib/cmake_compiler_integration.md"
+    },
+    {
+      "from": "stdlib/create_cmake_package_exports.md",
+      "to": "stdlib/cmake_package_exports.md"
+    },
+    {
+      "from": "stdlib/create_package_upgrade_and_coexistence_tests.md",
+      "to": "stdlib/package_compatibility.md"
+    },
+    {
+      "from": "stdlib/create_pkg_config_or_equivalent_lightweight_metadata.md",
+      "to": "stdlib/pkg_config_metadata.md"
+    },
+    {
+      "from": "stdlib/define_installation_layout_and_rpath_policy.md",
+      "to": "stdlib/installation_layout_policy.md"
+    },
+    {
+      "from": "stdlib/define_reference_species_profile_policy.md",
+      "to": "stdlib/reference_species_policy.md"
+    },
+    {
+      "from": "stdlib/define_standard_library_package_structure.md",
+      "to": "stdlib/standard_library_package_structure.md"
+    },
+    {
+      "from": "stdlib/freeze_installable_sdk_and_standard_library_foundation.md",
+      "to": "stdlib/sdk_resource_contract.md"
+    },
+    {
+      "from": "stdlib/freeze_the_language_versus_standard_library_boundary.md",
+      "to": "stdlib/language_standard_library_boundary.md"
+    },
+    {
+      "from": "stdlib/implement_compiler_resource_discovery.md",
+      "to": "stdlib/compiler_resource_discovery.md"
+    },
+    {
+      "from": "stdlib/implement_operation_wrappers_in_cellerator_source.md",
+      "to": "stdlib/standard_library_operations.md"
+    },
+    {
+      "from": "stdlib/implement_planning_and_expert_control_helpers.md",
+      "to": "stdlib/standard_library_planning.md"
+    },
+    {
+      "from": "stdlib/implement_profile_and_persistence_helpers.md",
+      "to": "stdlib/standard_library_profiles.md"
+    },
+    {
+      "from": "stdlib/implement_reflection_and_inline_ir_helper_library.md",
+      "to": "stdlib/standard_library_reflection.md"
+    },
+    {
+      "from": "stdlib/implement_relation_and_state_construction_helpers.md",
+      "to": "stdlib/standard_library_builders.md"
+    },
+    {
+      "from": "stdlib/implement_the_minimal_core_cell_library.md",
+      "to": "stdlib/standard_library_core.md"
+    },
+    {
+      "from": "tests/compiler/a01/architecture_reconciliation_receipt_test.cc",
+      "to": "tests/compiler/migration/project_authority/architecture_reconciliation_receipt_test.cc"
+    },
+    {
+      "from": "tests/compiler/a01/audit_accepted_todo_plan_schemas_and_live_precedents_test.cc",
+      "to": "tests/compiler/migration/project_authority/audit_accepted_todo_plan_schemas_and_live_precedents_test.cc"
+    },
+    {
+      "from": "tests/compiler/a01/audit_program_identifier_and_artifact_name_collisions_test.cc",
+      "to": "tests/compiler/migration/project_authority/audit_program_identifier_and_artifact_name_collisions_test.cc"
+    },
+    {
+      "from": "tests/compiler/a01/capture_cellerator_and_embedded_cellshard_git_identities_test.cc",
+      "to": "tests/compiler/migration/project_authority/capture_cellerator_and_embedded_cellshard_git_identities_test.cc"
+    },
+    {
+      "from": "tests/compiler/a01/capture_the_reconciled_project_control_authority_cursor_test.cc",
+      "to": "tests/compiler/migration/project_authority/capture_the_reconciled_project_control_authority_cursor_test.cc"
+    },
+    {
+      "from": "tests/compiler/a01/discover_and_preserve_exact_todo_cli_help_test.cc",
+      "to": "tests/compiler/migration/project_authority/discover_and_preserve_exact_todo_cli_help_test.cc"
+    },
+    {
+      "from": "tests/compiler/a01/hash_and_index_every_language_and_ir_authority_document_test.cc",
+      "to": "tests/compiler/migration/project_authority/hash_and_index_every_language_and_ir_authority_document_test.cc"
+    },
+    {
+      "from": "tests/compiler/a01/publish_the_part_one_compiler_charter_test.cc",
+      "to": "tests/compiler/migration/project_authority/publish_the_part_one_compiler_charter_test.cc"
+    },
+    {
+      "from": "tests/compiler/a01/supersede_obsolete_jbc_compiler_ownership_test.cc",
+      "to": "tests/compiler/migration/project_authority/supersede_obsolete_jbc_compiler_ownership_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/audit_licenses_generated_files_and_repository_local_assu_test.cc",
+      "to": "tests/compiler/migration/inventory/audit_licenses_generated_files_and_repository_local_assu_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/choose_the_cross_repository_provenance_method_test.cc",
+      "to": "tests/compiler/migration/inventory/choose_the_cross_repository_provenance_method_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/classify_cellshard_jbc_files_by_semantic_ownership_test.cc",
+      "to": "tests/compiler/migration/inventory/classify_cellshard_jbc_files_by_semantic_ownership_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/detect_duplicated_compiler_mechanisms_across_repositorie_test.cc",
+      "to": "tests/compiler/migration/inventory/detect_duplicated_compiler_mechanisms_across_repositorie_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/determine_migration_order_and_thin_waist_dependencies_test.cc",
+      "to": "tests/compiler/migration/inventory/determine_migration_order_and_thin_waist_dependencies_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/inventory_all_cellshard_jbc_branch_tips_and_worktrees_test.cc",
+      "to": "tests/compiler/migration/inventory/inventory_all_cellshard_jbc_branch_tips_and_worktrees_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/inventory_integrated_cellerator_jbc_contracts_test.cc",
+      "to": "tests/compiler/migration/inventory/inventory_integrated_cellerator_jbc_contracts_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/jbc_provenance_and_migration_inventory_test.cc",
+      "to": "tests/compiler/migration/inventory/jbc_provenance_and_migration_inventory_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/map_jbc_implementation_status_by_subsystem_test.cc",
+      "to": "tests/compiler/migration/inventory/map_jbc_implementation_status_by_subsystem_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/map_jbc_interfaces_and_hidden_assumptions_test.cc",
+      "to": "tests/compiler/migration/inventory/map_jbc_interfaces_and_hidden_assumptions_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/map_jbc_tests_and_benchmarks_to_preserved_behavior_test.cc",
+      "to": "tests/compiler/migration/inventory/map_jbc_tests_and_benchmarks_to_preserved_behavior_test.cc"
+    },
+    {
+      "from": "tests/compiler/a02/no_code_loss_migration_matrix_test.cc",
+      "to": "tests/compiler/migration/inventory/no_code_loss_migration_matrix_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/cellerator_ownership_of_atom_semantics_test.cc",
+      "to": "tests/compiler/migration/ownership/cellerator_ownership_of_atom_semantics_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/cellerator_ownership_of_basis_selection_test.cc",
+      "to": "tests/compiler/migration/ownership/cellerator_ownership_of_basis_selection_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/cellerator_ownership_of_evidence_and_proposal_dis_test.cc",
+      "to": "tests/compiler/migration/ownership/cellerator_ownership_of_evidence_and_proposal_dis_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/cellerator_ownership_of_exact_certification_test.cc",
+      "to": "tests/compiler/migration/ownership/cellerator_ownership_of_exact_certification_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/cellerator_ownership_of_global_operation_program_test.cc",
+      "to": "tests/compiler/migration/ownership/cellerator_ownership_of_global_operation_program_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/cellerator_ownership_of_portable_schedule_compila_test.cc",
+      "to": "tests/compiler/migration/ownership/cellerator_ownership_of_portable_schedule_compila_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/cellerator_ownership_of_superatom_promotion_test.cc",
+      "to": "tests/compiler/migration/ownership/cellerator_ownership_of_superatom_promotion_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/cellerator_ownership_of_typed_composition_and_gra_test.cc",
+      "to": "tests/compiler/migration/ownership/cellerator_ownership_of_typed_composition_and_gra_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/cellerator_ruleset_export_consumed_by_cellshard_test.cc",
+      "to": "tests/compiler/migration/ownership/cellerator_ruleset_export_consumed_by_cellshard_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/compiler_ownership_rehoming_contract_test.cc",
+      "to": "tests/compiler/migration/ownership/compiler_ownership_rehoming_contract_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/reconcile_old_jbc_documentation_and_active_run_status_test.cc",
+      "to": "tests/compiler/migration/ownership/reconcile_old_jbc_documentation_and_active_run_status_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/retained_cellshard_concrete_application_bound_test.cc",
+      "to": "tests/compiler/migration/ownership/retained_cellshard_concrete_application_bound_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/split_persistent_partial_semantics_from_partial_storage_test.cc",
+      "to": "tests/compiler/migration/ownership/split_persistent_partial_semantics_from_partial_storage_test.cc"
+    },
+    {
+      "from": "tests/compiler/a03/temporary_compiler_to_cellshard_migration_adapter_test.cc",
+      "to": "tests/compiler/migration/ownership/temporary_compiler_to_cellshard_migration_adapter_test.cc"
+    },
+    {
+      "from": "tests/compiler/a04/agents_and_ownership_inheritance_test.cc",
+      "to": "tests/compiler/history/source_layout_freeze/agents_and_ownership_inheritance_test.cc"
+    },
+    {
+      "from": "tests/compiler/a04/central_registry_and_generated_manifest_ownership_test.cc",
+      "to": "tests/compiler/history/source_layout_freeze/central_registry_and_generated_manifest_ownership_test.cc"
+    },
+    {
+      "from": "tests/compiler/a04/compiler_executable_locations_test.cc",
+      "to": "tests/compiler/history/source_layout_freeze/compiler_executable_locations_test.cc"
+    },
+    {
+      "from": "tests/compiler/a04/compiler_implementation_tree_test.cc",
+      "to": "tests/compiler/history/source_layout_freeze/compiler_implementation_tree_test.cc"
+    },
+    {
+      "from": "tests/compiler/a04/compiler_test_and_benchmark_locations_test.cc",
+      "to": "tests/compiler/history/source_layout_freeze/compiler_test_and_benchmark_locations_test.cc"
+    },
+    {
+      "from": "tests/compiler/a04/generated_source_and_build_tree_boundaries_test.cc",
+      "to": "tests/compiler/history/source_layout_freeze/generated_source_and_build_tree_boundaries_test.cc"
+    },
+    {
+      "from": "tests/compiler/a04/public_compiler_header_tree_test.cc",
+      "to": "tests/compiler/history/source_layout_freeze/public_compiler_header_tree_test.cc"
+    },
+    {
+      "from": "tests/compiler/a04/source_layout_and_ownership_map_test.cc",
+      "to": "tests/compiler/history/source_layout_freeze/source_layout_and_ownership_map_test.cc"
+    },
+    {
+      "from": "tests/compiler/a04/split_umbrella_headers_and_public_component_imports_test.cc",
+      "to": "tests/compiler/history/source_layout_freeze/split_umbrella_headers_and_public_component_imports_test.cc"
+    },
+    {
+      "from": "tests/compiler/a04/standard_library_and_resource_locations_test.cc",
+      "to": "tests/compiler/history/source_layout_freeze/standard_library_and_resource_locations_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/accelerator_enabled_compiler_smoke_targets_test.cc",
+      "to": "tests/compiler/build/accelerator_enabled_compiler_smoke_targets_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/backend_resource_discovery_manifests_test.cc",
+      "to": "tests/compiler/build/backend_resource_discovery_manifests_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/build_presets_and_ci_matrix_test.cc",
+      "to": "tests/compiler/build/build_presets_and_ci_matrix_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/build_tree_generated_header_ownership_test.cc",
+      "to": "tests/compiler/build/build_tree_generated_header_ownership_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/compiler_component_target_boundaries_test.cc",
+      "to": "tests/compiler/build/compiler_component_target_boundaries_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/compiler_target_graph_test.cc",
+      "to": "tests/compiler/build/compiler_target_graph_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/host_only_compiler_smoke_targets_test.cc",
+      "to": "tests/compiler/build/host_only_compiler_smoke_targets_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/host_only_root_project_contract_test.cc",
+      "to": "tests/compiler/build/host_only_root_project_contract_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/isolate_legacy_cuda_target_requirements_test.cc",
+      "to": "tests/compiler/build/isolate_legacy_cuda_target_requirements_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/optional_llvm_and_clang_library_discovery_test.cc",
+      "to": "tests/compiler/build/optional_llvm_and_clang_library_discovery_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/set_modern_compiler_tooling_language_standards_test.cc",
+      "to": "tests/compiler/build/set_modern_compiler_tooling_language_standards_test.cc"
+    },
+    {
+      "from": "tests/compiler/b01/tri_state_cuda_backend_configuration_test.cc",
+      "to": "tests/compiler/build/tri_state_cuda_backend_configuration_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/compilation_database_and_dependency_file_behavior_test.cc",
+      "to": "tests/compiler/driver/compilation_database_and_dependency_file_behavior_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/compiler_invocation_and_action_graph_test.cc",
+      "to": "tests/compiler/driver/compiler_invocation_and_action_graph_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/discover_clang_cuda_and_llvm_nvptx_toolchains_test.cc",
+      "to": "tests/compiler/driver/discover_clang_cuda_and_llvm_nvptx_toolchains_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/discover_host_clang_toolchains_test.cc",
+      "to": "tests/compiler/driver/discover_host_clang_toolchains_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/discover_host_gcc_toolchains_test.cc",
+      "to": "tests/compiler/driver/discover_host_gcc_toolchains_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/discover_nvcc_toolchains_test.cc",
+      "to": "tests/compiler/driver/discover_nvcc_toolchains_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/driver_passthrough_milestone_test.cc",
+      "to": "tests/compiler/driver/downstream_compiler_invocation_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/fingerprint_toolchains_for_artifacts_and_resumption_test.cc",
+      "to": "tests/compiler/driver/fingerprint_toolchains_for_artifacts_and_resumption_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/forward_and_remap_downstream_diagnostics_test.cc",
+      "to": "tests/compiler/driver/forward_and_remap_downstream_diagnostics_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/plain_c_passthrough_planning_test.cc",
+      "to": "tests/compiler/driver/plain_c_passthrough_planning_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/response_file_and_argv_normalization_contracts_test.cc",
+      "to": "tests/compiler/driver/response_file_and_argv_normalization_contracts_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/temporary_artifact_and_cache_policy_test.cc",
+      "to": "tests/compiler/driver/temporary_artifact_and_cache_policy_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/toolchain_override_precedence_test.cc",
+      "to": "tests/compiler/driver/toolchain_override_precedence_test.cc"
+    },
+    {
+      "from": "tests/compiler/b02/track_downstream_c_language_and_abi_mode_test.cc",
+      "to": "tests/compiler/driver/track_downstream_c_language_and_abi_mode_test.cc"
+    },
+    {
+      "from": "tests/compiler/backend/cpu/first_cpu_object_milestone_test.cc",
+      "to": "tests/compiler/backend/cpu/profile_bound_cpu_object_test.cc"
+    },
+    {
+      "from": "tests/compiler/backend/nvcc/first_nvcc_object_milestone_test.cc",
+      "to": "tests/compiler/backend/nvcc/nvcc_object_compile_plan_test.cc"
+    },
+    {
+      "from": "tests/compiler/cxx_bridge/c_semantic_bridge_milestone_test.cc",
+      "to": "tests/compiler/cxx_bridge/cxx_semantic_analysis_bridge_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/CMakeLists.txt",
+      "to": "tests/compiler/ir/ceir/CMakeLists.txt"
+    },
+    {
+      "from": "tests/compiler/d01/arena_and_ownership_model_test.cc",
+      "to": "tests/compiler/ir/ceir/arena_and_ownership_model_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/ceir_common_lexical_conventions_test.cc",
+      "to": "tests/compiler/ir/ceir/ceir_common_lexical_conventions_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/ceir_common_round_trip_and_artifact_compatibility_test.cc",
+      "to": "tests/compiler/ir/ceir/ceir_common_round_trip_and_artifact_compatibility_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/ceir_text_lexer_and_parser_framework_test.cc",
+      "to": "tests/compiler/ir/ceir/ceir_text_lexer_and_parser_framework_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/common_operation_and_extension_records_test.cc",
+      "to": "tests/compiler/ir/ceir/common_operation_and_extension_records_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/common_type_and_attribute_interning_test.cc",
+      "to": "tests/compiler/ir/ceir/common_type_and_attribute_interning_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/deterministic_canonical_printing_test.cc",
+      "to": "tests/compiler/ir/ceir/deterministic_canonical_printing_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/expose_the_public_ceir_c_api_test.cc",
+      "to": "tests/compiler/ir/ceir/expose_the_public_ceir_c_api_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/persistent_and_transient_identity_layers_test.cc",
+      "to": "tests/compiler/ir/ceir/persistent_and_transient_identity_layers_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/regions_blocks_values_and_use_def_chains_test.cc",
+      "to": "tests/compiler/ir/ceir/regions_blocks_values_and_use_def_chains_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/removable_provenance_sidecars_test.cc",
+      "to": "tests/compiler/ir/ceir/removable_provenance_sidecars_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/sectioned_binary_ceir_serialization_test.cc",
+      "to": "tests/compiler/ir/ceir/sectioned_binary_ceir_serialization_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/standalone_ceir_compiler_input_detection_test.cc",
+      "to": "tests/compiler/ir/ceir/standalone_ceir_compiler_input_detection_test.cc"
+    },
+    {
+      "from": "tests/compiler/d01/validation_mode_plumbing_test.cc",
+      "to": "tests/compiler/ir/ceir/validation_mode_plumbing_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/bounded_branch_alternatives_and_joins_test.cc",
+      "to": "tests/compiler/profile/bounded_branch_alternatives_and_joins_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/build_pointer_plus_count_profile_ingestion_apis_test.cc",
+      "to": "tests/compiler/profile/build_pointer_plus_count_profile_ingestion_apis_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/expose_profile_inspection_and_diff_tooling_test.cc",
+      "to": "tests/compiler/profile/expose_profile_inspection_and_diff_tooling_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/first_profile_aware_compile_benchmark_test.cc",
+      "to": "tests/compiler/profile/profile_aware_compile_benchmark_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/named_profile_environments_and_alternatives_test.cc",
+      "to": "tests/compiler/profile/named_profile_environments_and_alternatives_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/profile_artifact_charter_and_name_test.cc",
+      "to": "tests/compiler/profile/profile_artifact_charter_and_name_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/profile_selection_and_binding_test.cc",
+      "to": "tests/compiler/profile/profile_selection_and_binding_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/profile_state_attachment_to_semantic_ir_test.cc",
+      "to": "tests/compiler/profile/profile_state_attachment_to_semantic_ir_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/represent_domain_axis_relation_and_support_evidence_test.cc",
+      "to": "tests/compiler/profile/represent_domain_axis_relation_and_support_evidence_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/represent_evidence_provenance_and_revision_test.cc",
+      "to": "tests/compiler/profile/represent_evidence_provenance_and_revision_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/represent_mutability_recurrence_and_reuse_evidence_test.cc",
+      "to": "tests/compiler/profile/represent_mutability_recurrence_and_reuse_evidence_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/represent_value_and_numerical_evidence_test.cc",
+      "to": "tests/compiler/profile/represent_value_and_numerical_evidence_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/sectioned_binary_profile_storage_test.cc",
+      "to": "tests/compiler/profile/sectioned_binary_profile_storage_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/semantic_transfer_functions_test.cc",
+      "to": "tests/compiler/profile/semantic_transfer_functions_test.cc"
+    },
+    {
+      "from": "tests/compiler/d03/streaming_profile_builders_test.cc",
+      "to": "tests/compiler/profile/streaming_profile_builders_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_atom_envelope_and_typed_ports_test.cc",
+      "to": "tests/compiler/discovery/atom_envelope_and_typed_ports_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_atom_plane_separation_test.cc",
+      "to": "tests/compiler/discovery/atom_plane_separation_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_atom_requirement_affordance_matching_test.cc",
+      "to": "tests/compiler/discovery/atom_requirement_affordance_matching_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_co_support_and_overlap_discovery_test.cc",
+      "to": "tests/compiler/discovery/co_support_and_overlap_discovery_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_exact_rescan_and_proposal_certification_test.cc",
+      "to": "tests/compiler/discovery/exact_rescan_and_proposal_certification_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_factor_bicluster_and_signature_proposal_strategie_test.cc",
+      "to": "tests/compiler/discovery/factor_bicluster_and_signature_proposal_strategy_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_multimodal_and_identity_spine_discovery_test.cc",
+      "to": "tests/compiler/discovery/multimodal_and_identity_spine_discovery_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_relation_motif_and_operation_trace_discovery_test.cc",
+      "to": "tests/compiler/discovery/relation_motif_and_operation_trace_discovery_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_scalable_certification_indexes_test.cc",
+      "to": "tests/compiler/discovery/scalable_certification_indexes_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_support_signature_discovery_test.cc",
+      "to": "tests/compiler/discovery/support_signature_discovery_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_the_common_jbc_atom_identity_adapters_test.cc",
+      "to": "tests/compiler/discovery/common_jbc_atom_identity_adapters_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_the_overlapping_evidence_atlas_core_test.cc",
+      "to": "tests/compiler/discovery/overlapping_evidence_atlas_core_test.cc"
+    },
+    {
+      "from": "tests/compiler/discovery/import_trajectory_and_lineage_pattern_discovery_test.cc",
+      "to": "tests/compiler/discovery/trajectory_and_lineage_pattern_discovery_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/cellerator_owned_global_compiler_migration_test.cc",
+      "to": "tests/compiler/composition/cellerator_owned_global_compiler_migration_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/concrete_cellshard_materialization_request_se_test.cc",
+      "to": "tests/compiler/composition/concrete_cellshard_materialization_request_se_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_basis_manifest_semantics_test.cc",
+      "to": "tests/compiler/composition/basis_manifest_semantics_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_cross_operation_rewrite_and_fusion_search_test.cc",
+      "to": "tests/compiler/composition/cross_operation_rewrite_and_fusion_search_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_explicit_grammar_compilation_test.cc",
+      "to": "tests/compiler/composition/explicit_grammar_compilation_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_global_operation_graph_ir_test.cc",
+      "to": "tests/compiler/composition/global_operation_graph_ir_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_induced_grammar_as_experimental_search_test.cc",
+      "to": "tests/compiler/composition/experimental_induced_grammar_search_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_multi_parent_derivation_dags_test.cc",
+      "to": "tests/compiler/composition/multi_parent_derivation_dags_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_persistent_partial_compiler_semantics_test.cc",
+      "to": "tests/compiler/composition/persistent_partial_compiler_semantics_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_portable_schedule_ruleset_representation_test.cc",
+      "to": "tests/compiler/composition/portable_schedule_ruleset_representation_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_superatom_promotion_test.cc",
+      "to": "tests/compiler/composition/superatom_promotion_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_typed_composition_production_contracts_test.cc",
+      "to": "tests/compiler/composition/typed_composition_production_contracts_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/import_workload_family_representation_test.cc",
+      "to": "tests/compiler/composition/workload_family_representation_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/no_basis_and_multiple_basis_outcomes_test.cc",
+      "to": "tests/compiler/composition/no_basis_and_multiple_basis_outcomes_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/port_composition_basis_graph_and_schedule_tests_test.cc",
+      "to": "tests/compiler/composition/port_composition_basis_graph_and_schedule_tests_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/profile_to_portable_ruleset_slice_test.cc",
+      "to": "tests/compiler/composition/profile_to_portable_ruleset_slice_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/retire_cellshard_compiler_authority_in_documentation_and_test.cc",
+      "to": "tests/compiler/composition/retire_cellshard_compiler_authority_in_documentation_and_test.cc"
+    },
+    {
+      "from": "tests/compiler/e03/semantic_differential_adapters_test.cc",
+      "to": "tests/compiler/composition/semantic_differential_adapters_test.cc"
+    },
+    {
+      "from": "tests/compiler/fields/first_profile_required_semantic_field_slice_test.cc",
+      "to": "tests/compiler/fields/profile_required_semantic_field_slice_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/abi_version_and_feature_queries_test.cc",
+      "to": "tests/compiler/sdk/abi_version_and_feature_queries_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/c_compiler_session_api_test.cc",
+      "to": "tests/compiler/sdk/c_compiler_session_api_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/expose_ceir_ownership_and_mutation_apis_test.cc",
+      "to": "tests/compiler/sdk/expose_ceir_ownership_and_mutation_apis_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/expose_parse_and_semantic_analysis_apis_test.cc",
+      "to": "tests/compiler/sdk/expose_parse_and_semantic_analysis_apis_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/expose_pass_reflection_and_extension_apis_test.cc",
+      "to": "tests/compiler/sdk/expose_pass_reflection_and_extension_apis_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/expose_planning_and_candidate_apis_test.cc",
+      "to": "tests/compiler/sdk/expose_planning_and_candidate_apis_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/expose_profile_build_load_query_apis_test.cc",
+      "to": "tests/compiler/sdk/expose_profile_build_load_query_apis_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/expose_realization_and_backend_apis_test.cc",
+      "to": "tests/compiler/sdk/expose_realization_and_backend_apis_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/expose_structured_diagnostics_and_explainability_apis_test.cc",
+      "to": "tests/compiler/sdk/expose_structured_diagnostics_and_explainability_apis_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/installed_sdk_examples_test.cc",
+      "to": "tests/compiler/sdk/installed_sdk_examples_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/libcellerator_component_architecture_test.cc",
+      "to": "tests/compiler/sdk/libcellerator_component_architecture_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/libcellerator_sdk_acceptance_test.cc",
+      "to": "tests/compiler/sdk/libcellerator_sdk_acceptance_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/narrow_public_runtime_facades_test.cc",
+      "to": "tests/compiler/sdk/narrow_public_runtime_facades_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/preserve_direct_runtime_execution_access_test.cc",
+      "to": "tests/compiler/sdk/preserve_direct_runtime_execution_access_test.cc"
+    },
+    {
+      "from": "tests/compiler/h02/thread_safety_and_context_isolation_test.cc",
+      "to": "tests/compiler/sdk/thread_safety_and_context_isolation_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/CMakeLists.txt",
+      "to": "tests/compiler/package/CMakeLists.txt"
+    },
+    {
+      "from": "tests/compiler/h03/build_minimal_reference_profile_artifacts_test.cc",
+      "to": "tests/compiler/package/minimal_reference_profile_artifacts_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/build_package_manifest_and_resource_hashes_test.cc",
+      "to": "tests/compiler/package/resource_manifest_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/cmake_compiler_integration_helpers_test.cc",
+      "to": "tests/compiler/package/cmake_compiler_integration_helpers_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/cmake_package_exports_test.cc",
+      "to": "tests/compiler/package/cmake_package_exports_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/compiler_resource_discovery_test.cc",
+      "to": "tests/compiler/package/compiler_resource_discovery_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/installable_sdk_and_standard_library_foundation_test.cc",
+      "to": "tests/compiler/package/sdk_installation_contract_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/installation_layout_and_rpath_policy_test.cc",
+      "to": "tests/compiler/package/installation_layout_and_rpath_policy_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/language_versus_standard_library_boundary_test.cc",
+      "to": "tests/compiler/package/language_versus_standard_library_boundary_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/minimal_core_cell_library_test.cc",
+      "to": "tests/compiler/package/minimal_core_cell_library_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/operation_wrappers_in_cellerator_source_test.cc",
+      "to": "tests/compiler/package/operation_wrappers_in_cellerator_source_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/package_upgrade_and_coexistence_tests_test.cc",
+      "to": "tests/compiler/package/package_upgrade_and_coexistence_tests_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/pkg_config_or_equivalent_lightweight_metadata_test.cc",
+      "to": "tests/compiler/package/pkg_config_or_equivalent_lightweight_metadata_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/planning_and_expert_control_helpers_test.cc",
+      "to": "tests/compiler/package/planning_and_expert_control_helpers_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/profile_and_persistence_helpers_test.cc",
+      "to": "tests/compiler/package/profile_and_persistence_helpers_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/reference_species_profile_policy_test.cc",
+      "to": "tests/compiler/package/reference_species_profile_policy_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/reflection_and_inline_ir_helper_library_test.cc",
+      "to": "tests/compiler/package/reflection_and_inline_ir_helper_library_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/relation_and_state_construction_helpers_test.cc",
+      "to": "tests/compiler/package/relation_and_state_construction_helpers_test.cc"
+    },
+    {
+      "from": "tests/compiler/h03/standard_library_package_structure_test.cc",
+      "to": "tests/compiler/package/standard_library_package_structure_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/benchmark_baseline_editor_latency_test.cc",
+      "to": "tests/compiler/tooling/benchmark_baseline_editor_latency_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/celleratord_architecture_test.cc",
+      "to": "tests/compiler/tooling/celleratord_architecture_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/celleratord_c_parity_milestone_test.cc",
+      "to": "tests/compiler/tooling/celleratord_c_parity_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/clangd_worker_discovery_and_lifecycle_test.cc",
+      "to": "tests/compiler/tooling/clangd_worker_discovery_and_lifecycle_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/compile_command_and_project_configuration_test.cc",
+      "to": "tests/compiler/tooling/compile_command_and_project_configuration_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/document_scheduling_and_cancellation_test.cc",
+      "to": "tests/compiler/tooling/document_scheduling_and_cancellation_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/expose_reusable_tooling_snapshot_apis_test.cc",
+      "to": "tests/compiler/tooling/expose_reusable_tooling_snapshot_apis_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/forward_completion_hover_navigation_and_rename_test.cc",
+      "to": "tests/compiler/tooling/forward_completion_hover_navigation_and_rename_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/host_only_no_profile_editing_behavior_test.cc",
+      "to": "tests/compiler/tooling/host_only_no_profile_editing_behavior_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/incremental_source_and_ast_snapshots_test.cc",
+      "to": "tests/compiler/tooling/incremental_source_and_ast_snapshots_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/json_rpc_and_lsp_transport_test.cc",
+      "to": "tests/compiler/tooling/json_rpc_and_lsp_transport_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/merge_ordinary_c_and_cellerator_diagnostics_test.cc",
+      "to": "tests/compiler/tooling/merge_ordinary_c_and_cellerator_diagnostics_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/virtual_shadow_document_mapping_test.cc",
+      "to": "tests/compiler/tooling/virtual_shadow_document_mapping_test.cc"
+    },
+    {
+      "from": "tests/compiler/i01/workspace_symbol_and_indexing_foundations_test.cc",
+      "to": "tests/compiler/tooling/workspace_symbol_and_indexing_foundations_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/CMakeLists.txt",
+      "to": "tests/compiler/benchmark/CMakeLists.txt"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_ceir_construction_and_serialization_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_ceir_construction_and_serialization_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_cross_tu_lto_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_cross_tu_lto_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_discovery_and_certification_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_discovery_and_certification_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_generated_cpu_execution_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_generated_cpu_execution_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_generated_nvidia_execution_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_generated_nvidia_execution_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_libcellerator_and_celleratord_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_libcellerator_and_celleratord_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_plain_c_passthrough_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_plain_c_passthrough_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_planning_and_complete_costs_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_planning_and_complete_costs_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_realization_ir_and_backend_generation_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_realization_ir_and_backend_generation_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_representative_profiles_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_representative_profiles_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/benchmark_source_frontend_and_c_bridge_test.cc",
+      "to": "tests/compiler/benchmark/benchmark_source_frontend_and_c_bridge_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/compiler_benchmark_methodology_test.cc",
+      "to": "tests/compiler/benchmark/compiler_benchmark_methodology_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/execute_progressive_vertical_milestone_campaign_test.cc",
+      "to": "tests/compiler/benchmark/progressive_benchmark_campaign_test.cc"
+    },
+    {
+      "from": "tests/compiler/j02/part_one_performance_and_milestone_receipt_test.cc",
+      "to": "tests/compiler/benchmark/compiler_performance_receipt_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/audit_deferred_part_two_separation_test.cc",
+      "to": "tests/compiler/release/audit_deferred_part_two_separation_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/integrate_central_compiler_targets_and_registries_test.cc",
+      "to": "tests/compiler/release/integrate_central_compiler_targets_and_registries_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/integrate_jbc_migration_and_cellshard_compatibility_test.cc",
+      "to": "tests/compiler/release/integrate_jbc_migration_and_cellshard_compatibility_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/part_one_completion_checkpoint_test.cc",
+      "to": "tests/compiler/release/part_one_completion_checkpoint_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/publish_architecture_and_migration_completion_records_test.cc",
+      "to": "tests/compiler/release/publish_architecture_and_migration_completion_records_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/reconcile_ir_specification_with_implementation_test.cc",
+      "to": "tests/compiler/release/reconcile_ir_specification_with_implementation_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/reconcile_language_specification_with_implementation_test.cc",
+      "to": "tests/compiler/release/reconcile_language_specification_with_implementation_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/reconcile_programming_guides_and_examples_test.cc",
+      "to": "tests/compiler/release/reconcile_programming_guides_and_examples_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/release_and_bootstrap_reproducibility_bundle_test.cc",
+      "to": "tests/compiler/release/release_and_bootstrap_reproducibility_bundle_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/run_clean_host_only_sdk_acceptance_test.cc",
+      "to": "tests/compiler/release/run_clean_host_only_sdk_acceptance_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/run_clean_nvidia_sdk_acceptance_test.cc",
+      "to": "tests/compiler/release/run_clean_nvidia_sdk_acceptance_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/run_final_performance_and_regression_review_test.cc",
+      "to": "tests/compiler/release/run_final_performance_and_regression_review_test.cc"
+    },
+    {
+      "from": "tests/compiler/j03/validate_all_final_part_one_capabilities_test.cc",
+      "to": "tests/compiler/release/validate_all_final_part_one_capabilities_test.cc"
+    },
+    {
+      "from": "tests/compiler/planning_ir/first_inspectable_candidate_search_space_test.cc",
+      "to": "tests/compiler/planning_ir/candidate_search_space_inspection_test.cc"
+    },
+    {
+      "from": "tests/compiler/reflection/first_source_defined_inline_rewrite_test.cc",
+      "to": "tests/compiler/reflection/source_defined_inline_rewrite_test.cc"
+    },
+    {
+      "from": "tests/compiler/source/pragma_aware_source_milestone_test.cc",
+      "to": "tests/compiler/source/pragma_aware_source_transformation_test.cc"
+    }
+  ],
+  "renamed_file_count": 346,
+  "affected_targets": [
+    "cellerator_profile_bound_cpu_object_test",
+    "cellerator_nvcc_object_compile_plan_test",
+    "compiler discovery/profile/planning_ir/package standalone test suites",
+    "root host-only Cellerator CLI and Celleratord targets"
+  ],
+  "additional_validation": {
+    "host_only_root_configure_build": "passed: /tmp/cellerator-compiler-root-cleanup",
+    "host_only_root_ctest": "16/16 passed",
+    "cpu_suite": "14/14 passed",
+    "discovery_suite": "18/18 passed",
+    "profile_suite": "15/15 passed",
+    "planning_ir_suite": "16/16 passed",
+    "package_suite": "18/18 passed",
+    "renamed_field_reflection_driver_source_pairs": "C++20 syntax-only passed",
+    "nvcc_cuda12_9_object_only": "passed: generated source compiled with /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc; no GPU execution",
+    "nvcc_ctest_note": "test hardcodes /usr/bin/nvcc 12.0, whose generated-source compile fails on host _Float32 headers; original baseline showed same incompatibility"
+  },
+  "additional_closure_paths": [
+    {
+      "from": "Cellerator/compiler/program/experimental_induced_grammar_search_v1.hh",
+      "to": "Cellerator/compiler/program/induced_grammar_as_experimental_search_v1.hh",
+      "kind": "include_target_repair"
+    },
+    {
+      "from": "include/Cellerator/sdk/create_installed_sdk_examples_v1.hh",
+      "to": "include/Cellerator/sdk/installed_sdk_examples_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/sdk/create_narrow_public_runtime_facades_v1.hh",
+      "to": "include/Cellerator/sdk/narrow_public_runtime_facades_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/sdk/define_abi_version_and_feature_queries_v1.hh",
+      "to": "include/Cellerator/sdk/abi_version_and_feature_queries_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/sdk/define_c_compiler_session_api_v1.hh",
+      "to": "include/Cellerator/sdk/c_compiler_session_api_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/sdk/define_cpp_compiler_session_api_v1.hh",
+      "to": "include/Cellerator/sdk/cpp_compiler_session_api_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/sdk/define_thread_safety_and_context_isolation_v1.hh",
+      "to": "include/Cellerator/sdk/thread_safety_and_context_isolation_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/sdk/freeze_libcellerator_component_architecture_v1.hh",
+      "to": "include/Cellerator/sdk/libcellerator_component_architecture_v1.hh"
+    },
+    {
+      "from": "include/Cellerator/sdk/freeze_libcellerator_sdk_acceptance_v1.hh",
+      "to": "include/Cellerator/sdk/libcellerator_sdk_acceptance_v1.hh"
+    },
+    {
+      "from": "profiles/freeze_the_profile_artifact_charter_and_name.md",
+      "to": "profiles/profile_artifact_charter.md"
+    },
+    {
+      "from": "profiles/implement_bounded_branch_alternatives_and_joins.md",
+      "to": "profiles/bounded_profile_alternatives.md"
+    },
+    {
+      "from": "profiles/implement_profile_selection_and_binding.md",
+      "to": "profiles/profile_selection_and_binding.md"
+    },
+    {
+      "from": "profiles/implement_profile_state_attachment_to_semantic_ir.md",
+      "to": "profiles/semantic_ir_profile_attachments.md"
+    },
+    {
+      "from": "profiles/implement_sectioned_binary_profile_storage.md",
+      "to": "profiles/sectioned_profile_storage.md"
+    },
+    {
+      "from": "profiles/implement_semantic_transfer_functions.md",
+      "to": "profiles/semantic_profile_transfers.md"
+    },
+    {
+      "from": "profiles/implement_streaming_profile_builders.md",
+      "to": "profiles/streaming_profile_builders.md"
+    },
+    {
+      "from": "tests/compiler/history/source_layout_freeze/",
+      "to": "docs/history/compiler/source_layout_freeze_tests/",
+      "kind": "archived_unregistered_obsolete_tests"
+    },
+    {
+      "from": "tests/sdk/define_c_compiler_session_api_test.c",
+      "to": "tests/sdk/c_compiler_session_api_c_test.c"
+    }
+  ],
+  "sdk_facade_validation": {
+    "sdk_test_suite": "passed: cmake -S tests/sdk -B /tmp/cellerator-sdk-closure; cmake --build /tmp/cellerator-sdk-closure -j4; ctest --test-dir /tmp/cellerator-sdk-closure --output-on-failure (16/16)",
+    "installed_sdk_cpp_headers": "passed: 34 installed SDK/compiler API C++ headers individually compiled with g++ -std=c++17 -fsyntax-only; includes the compiler.hpp umbrella and all SDK facades",
+    "installed_c_api": "passed: C11 syntax-only consumer includes installed Cellerator/compiler/api/cellerator_compiler.h",
+    "all_public_compiler_headers": "478/479 individually compiled with C++20; profile/profile_artifact_v1.hh remains a pre-existing incomplete declaration referencing undefined profile_revision_v1; no callers found",
+    "literal_include_closure": "0 missing literal Cellerator include targets within include/Cellerator/compiler and include/Cellerator/sdk; global include/Cellerator scan finds 5 missing compute/math/compat/cp_math_v1 includes and generated Cellerator/config.cuh, all outside compiler/SDK subtree",
+    "root_host_only": "passed: cmake --build /tmp/cellerator-compiler-closure -j4; ctest --test-dir /tmp/cellerator-compiler-closure --output-on-failure (16/16); cmake --install to /tmp/cellerator-compiler-closure-install",
+    "remaining_header_gap": "profile_artifact_v1.hh was not changed because defining or removing its missing revision member would invent/alter API semantics outside this path-closure cleanup"
+  }
+}

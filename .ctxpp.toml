@@ -6,11 +6,11 @@ source_write = false
 preserve_public_api = true
 preserve_abi = true
 allow_cuda = true
-sources = ["include/**/*.h", "include/**/*.hh", "include/**/*.hpp", "src/**/*.cc", "src/**/*.cpp", "src/**/*.cxx", "src/**/*.cu", "src/**/*.cuh", "tests/**/*.cpp"]
-exclude = ["build/**", "cmake-build-*/**", "third_party/**", "vendor/**", "generated/**", ".git/**", ".ctxpp/**"]
+sources = ["include/**/*.cuh","include/**/*.h","include/**/*.hh","include/**/*.hpp","include/**/*.hxx","src/**/*.cc","src/**/*.cpp","src/**/*.cu","src/**/*.cuh","src/**/*.cxx","src/**/*.h","src/**/*.hh","src/**/*.hpp","src/**/*.hxx","bindings/**/*.cc","bindings/**/*.cpp","bindings/**/*.cu","bindings/**/*.cuh","bindings/**/*.cxx","bindings/**/*.h","bindings/**/*.hh","bindings/**/*.hpp","bindings/**/*.hxx","examples/**/*.cc","examples/**/*.cpp","examples/**/*.cu","examples/**/*.cuh","examples/**/*.cxx","examples/**/*.h","examples/**/*.hh","examples/**/*.hpp","examples/**/*.hxx","tests/**/*.cc","tests/**/*.cpp","tests/**/*.cu","tests/**/*.cuh","tests/**/*.cxx","tests/**/*.h","tests/**/*.hh","tests/**/*.hpp","tests/**/*.hxx","bench/**/*.cc","bench/**/*.cpp","bench/**/*.cu","bench/**/*.cuh","bench/**/*.cxx","bench/**/*.h","bench/**/*.hh","bench/**/*.hpp","bench/**/*.hxx","compat/**/*.cc","compat/**/*.cpp","compat/**/*.cu","compat/**/*.cuh","compat/**/*.cxx","compat/**/*.h","compat/**/*.hh","compat/**/*.hpp","compat/**/*.hxx","modules/**/*.cc","modules/**/*.cpp","modules/**/*.cu","modules/**/*.cuh","modules/**/*.cxx","modules/**/*.h","modules/**/*.hh","modules/**/*.hpp","modules/**/*.hxx","tools/**/*.cc","tools/**/*.cpp","tools/**/*.cu","tools/**/*.cuh","tools/**/*.cxx","tools/**/*.h","tools/**/*.hh","tools/**/*.hpp","tools/**/*.hxx","experiments/**/*.cc","experiments/**/*.cpp","experiments/**/*.cu","experiments/**/*.cuh","experiments/**/*.cxx","experiments/**/*.h","experiments/**/*.hh","experiments/**/*.hpp","experiments/**/*.hxx"]
+exclude = ["build/**","build-*/**","cmake-build-*/**","**/build/**","**/build-*/**","third_party/**","external/**","vendor/**","**/vendor/**","generated/**","**/generated/**",".git/**",".ctxpp/**",".todo-orchestrator/**","docs/**","planning/**","todos/**","history/**","**/history/**","archive/**","archives/**","**/archive/**","**/archives/**","**/archived/**","debug_out/**","data/**",".codex/**",".project-control/**"]
 
 [tool]
-compilation_database = "build-ss1/compile_commands.json"
+compilation_database = "build-ctxpp/compile_commands.json"
 max_workers = 4
 
 [budgets]

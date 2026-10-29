@@ -18,9 +18,7 @@ contract. The next forward or guarded update rejects that replaced storage.
 The native snapshot restore path rebuilds the FP32 master and derived precision
 plane while keeping the prepared owner authoritative.
 
-The installed-consumer fixture in
-[`tests/mechanism_test.cc`](../tests/mechanism_test.cc) demonstrates this split:
-it archives the ordinary `pre` and `post` layers, saves Adam state separately,
-and stores the mechanism values through `snapshot()`. Reload constructs a new
-prepared owner, loads only the dense layer archives, restores native values,
-then checks predictions and the next optimizer step.
+The current native handle test in
+[`tests/bindings/native/mechanism_handle_test.cc`](../../../tests/bindings/native/mechanism_handle_test.cc) covers the native snapshot/restore part of this split:
+it checks native owner snapshot and restore. It does not cover composite-module
+serialization, dense-layer archive handling, or optimizer-state restoration.

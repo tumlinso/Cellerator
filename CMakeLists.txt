@@ -651,14 +651,14 @@ if(CELLERATOR_BUILD_TESTS)
             NAME ${cellerator_compiler_smoke_target}
             COMMAND ${cellerator_compiler_smoke_target})
         set_tests_properties(${cellerator_compiler_smoke_target}
-            PROPERTIES LABELS "ce_ccp1_m10")
+            PROPERTIES LABELS "compiler_smoke")
     endforeach()
     if(TARGET cellerator_compiler_smoke_accelerator)
         add_test(
             NAME cellerator_compiler_smoke_accelerator
             COMMAND cellerator_compiler_smoke_accelerator)
         set_tests_properties(cellerator_compiler_smoke_accelerator
-            PROPERTIES LABELS "ce_ccp1_m10")
+            PROPERTIES LABELS "compiler_smoke")
     endif()
 
     # The storage-boundary scanner predates the compiler driver and treats
@@ -675,26 +675,26 @@ if(CELLERATOR_BUILD_TESTS)
     # profiler-fixture validation, and CUDA compile validation explicit. The
     # CUDA target compiles sm_70 binaries only; device execution remains under
     # Project Control resource authority.
-    add_custom_target(cellerator_ce_exop_host_acceptance
+    add_custom_target(cellerator_operation_host_acceptance
         COMMAND ${CMAKE_COMMAND} -E env
             CXX=${CMAKE_CXX_COMPILER}
-            ${CMAKE_CURRENT_SOURCE_DIR}/tests/ce_exop/host/run_host_acceptance.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/operation_execution/host/run_host_acceptance.sh
             ${CMAKE_CURRENT_SOURCE_DIR}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         USES_TERMINAL)
 
-    add_custom_target(cellerator_ce_exop_profiler_acceptance
+    add_custom_target(cellerator_operation_profiler_acceptance
         COMMAND ${CMAKE_COMMAND} -E env
             CXX=${CMAKE_CXX_COMPILER}
             CUDA_ROOT=${CUDAToolkit_ROOT}
-            ${CMAKE_CURRENT_SOURCE_DIR}/tests/profiling/ce_exop/run_fixture_validation.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/profiling/operations/run_fixture_validation.sh
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         USES_TERMINAL)
 
-    add_custom_target(cellerator_ce_exop_cuda_compile_acceptance
+    add_custom_target(cellerator_operation_cuda_compile_acceptance
         COMMAND ${CMAKE_COMMAND} -E env
             PATH=${CUDAToolkit_BIN_DIR}:$ENV{PATH}
-            ${CMAKE_CURRENT_SOURCE_DIR}/tests/ce_exop/cuda/run_cuda_validation.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/operation_execution/cuda/run_cuda_validation.sh
             ${CMAKE_CURRENT_SOURCE_DIR}
             ${CMAKE_CURRENT_BINARY_DIR}/ce-exop-cuda-validation
             --build-only

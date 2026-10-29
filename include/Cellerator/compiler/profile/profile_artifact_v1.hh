@@ -18,7 +18,8 @@ struct profile_artifact_v1 {
     profile_identity_v1 artifact{};
     profile_identity_v1 semantic_subject{};
     profile_identity_v1 environment{};
-    profile_revision_v1 revision{};
+    // CELLPRF1 stores its evidence revision as an unsigned 64-bit counter.
+    std::uint64_t revision = 0u;
     std::uint64_t byte_count = 0u;
     std::uint64_t section_count = 0u;
     std::uint64_t content_fingerprint = 0u;

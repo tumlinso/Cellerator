@@ -1,0 +1,753 @@
+---
+title: "Historical implementation snapshot — 2026-10-28"
+---
+
+> Historical snapshot captured before the 2026-10-29 documentation reconciliation. Its implementation detail and evidence links are preserved for provenance. The opening package boundary contains one superseded GPU-check statement: the final prepared-routing frozen receipt records 16 passing tests and sanitizer checks; see the corrected [current implementation](../current_implementation.qmd).
+
+## Package boundary — 2026-10-28
+
+Cellerator is an early high-performance PyTorch extension for cellular model
+building. This repository contains native numerical operations, Python and
+Torch adapters, identity/structure work, sparse support and indexing, layout
+and execution experiments, optional tokenization, and a large compiler/runtime
+history. They do not share one maturity level or imply one stable general API.
+The [routing map](../development/routing.md) identifies the current owner and
+disposition for each path; the architecture page describes target ownership.
+
+The current host Python package exposes native CPU Product2 plus a Torch
+`Product2Module` with CPU FP32 inputs and first-order gradients. It composes
+with normal Torch modules, autograd, and optimizers. Optional CUDA indexed
+mechanisms, sparse-support consumers, resident CUDA, and ATen tokenization are
+separate facilities with their own build and runtime requirements. AnnData is
+a required dependency, but no direct AnnData preparation adapter exists.
+Classical single-cell analysis is an upstream workflow and repository testbed.
+
+Sparse support, indexing, routing, and gating are promising early
+capabilities, not a complete adaptive runtime or a universal performance
+result. Current mode-extension evidence includes five passing CPU checks; its
+fourteen GPU checks are gated and unrun in this work (`tests/sparse_support/test_transition_modes.py`).
+The experimental `ExecutionField` in `python/cellerator/experimental/fields.py`
+composes prepared Product2 with explicit structure rebinding; five installed
+CPU tests are reported passing (`tests/experimental/test_fields.py`). It has
+no JIT or live recompilation.
+
+An opt-in prepared entity-to-mechanism routing operation is now present in
+`include/Cellerator/ops/sparse_support/prepared_routing.hh` and
+`src/ops/sparse_support/prepared_routing.{cc,cu}`, with a Torch binding and a
+Python adapter. It builds an identity- and generation-keyed reverse-posting
+projection and returns an exact route union for a query. Host/native and Python
+adapter checks pass. The frozen binary passed the 16-test suite, exact CUDA
+correctness check, and memcheck, racecheck, and synccheck. The
+[source-bound GPU report](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/bench/sparse_support/experiments/prepared_routing/REPORT.md)
+measured a 9.21% median lifecycle improvement over the Python route at horizon
+64 for synthetic ranked `[32,8]` inputs (95% paired interval 7.79–10.36%). The
+event `[32,12]` result was inconclusive; dense Torch was faster on the larger
+stress shapes. Prepared routing has a substantial cold-first cost and remains
+opt-in; the established Python route remains the default. This is bounded
+route-query evidence, not a full-model, training, or biological speedup claim.
+See `tests/prepared_routing/` and the report for source, binary, workload, and
+qualification details.
+
+## Visible package gaps
+
+The package remains open to new model operations. Add reusable operations under
+the native family that owns their math and add a Torch `nn.Module` only when a
+real consumer needs module composition, parameter ownership, or a stable
+model-facing interface. The current namespaces are not a catalogue of future
+layers.
+
+AnnData is a required dependency, but preparation currently accepts explicit
+arrays or tensors. A direct AnnData adapter is a visible gap; any later adapter
+belongs at the Python interoperability boundary and must state the accepted
+AnnData layers/metadata rather than choosing them implicitly.
+
+Execution fields currently demonstrate narrow CPU composition and explicit
+structure rebinding. Broader adaptive execution, a general compiler/runtime,
+JIT, and live recompilation remain research gaps. Continue them through the
+existing experimental fields and compiler owners, with concrete operation
+consumers and runtime invalidation contracts; do not add empty package APIs.
+
+There is no package-wide, full-model, training, or biological GPU speedup claim
+in this summary. See each linked source-bound qualification for its hardware,
+input, build, and measured scope. Correctness, scientific validity, package
+usability, and performance remain separate evidence claims. This page
+preserves older dated records below; read their stated source identity and
+date rather than treating historical status as current package status.
+
+## Broad sparse evaluation and optional policies — 2026-10-28
+
+The [evaluation intake](../sparse_support_foundation/evaluation.md) accepts
+already-tokenized ranked or event observations, preserves external identities,
+and exports reversible native maps with exact sparse CPU candidates. Its
+catalog retains 15 native and experimental families, including paths with
+limited or unmeasured GPU evidence. Real-input GPU execution still needs an
+explicit adapter; no real-data qualification is asserted.
+
+The Torch slices now expose full-support or P∪D value evaluation and current
+event or eligible-history relation inputs as explicit choices. Existing
+defaults remain. The [v14 integration](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/v14-optional-policies/REPORT.md)
+passes 83 tests and two subtests plus the native CUDA workset test. Its native
+extension is unchanged from v13. The separate synthetic learning and timing
+reports establish tested regimes without removing alternative mechanisms.
+
+The [large native index measurements](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/REPORT.md)
+compare complete discovery/workset regions with serial and rescan controls.
+Separate [packed training](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/torch_v13_complete_cost_20261028/REPORT.md)
+and [layout measurements](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/experiments/geometry_layout/V13_RESULTS.md)
+include setup and memory, preserve all candidates, and apply only to their
+synthetic workloads. The training harness's memory preflight was subsequently
+corrected and host-tested; retained frozen timing records identify the earlier
+estimate and measured peaks separately.
+
+## Large-workload preparation — 2026-10-28
+
+Large sparse workloads exposed a quadratic duplicate-identity check in the
+canonical native parameter owner's constructor. Exact validation now sorts a
+temporary copy, preserving parameter order and the original validation error
+precedence. The focused host differential check passes, including 1.3 million
+identities. The [v13 qualification](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/v13-owner-validation/REPORT.md)
+passes 63 sparse-support and existing Torch binding tests plus the rebuilt
+native CUDA workset test. This preparation change does not alter numerical
+kernels, parameter identity, or optimizer ownership.
+
+## Sparse support foundation — 2026-10-27
+
+The additive [sparse support facility](../sparse_support_foundation.qmd) provides
+Torch-free logical support, exact reverse/temporal indexes, shared condition
+programs, capacity-checked primal/derivative worksets, bounded seeded proposals,
+and publication between pinned training windows. Ordered participant roles,
+occurrence identities, structure epochs, and parameter generations remain
+separate. The optional Torch adapter uses one canonical native parameter owner
+and the existing guarded Adam lifecycle.
+
+Width-64 numerical operations include indexed recurrent latent transitions,
+gated sparse relations, and explicit first-order VJPs. The first packed route
+executes the existing CE-GEO WMMA cover plus its residual and a separate
+adaptation delta; backward currently uses sparse SIMT kernels. Learned values
+and per-cell gates remain mutable. Compilation does not make routes permanently
+active. The event and ranked-gene consumers are controlled synthetic training
+fixtures, without biological validation.
+
+Native host reference/index/image tests pass. Native CUDA correctness and
+Compute Sanitizer memcheck, racecheck, and synccheck pass on the frozen v5
+numerical binary. Integrated Torch checks establish packed forward, surrogate
+gate VJP, recurrent VJP, and support/owner lifecycle behavior. Source-bound
+qualification records distinguish these checks from learning and performance
+measurements; see the facility's evidence map.
+
+The final sampled-gradient integration run passes 26 tests, including a complete
+Torch surrogate-VJP comparison and accumulation for repeated gate indices.
+A separate 29-test run covers existing mechanism and owner lifecycle behavior.
+The final 28-test suite adds exact cold snapshot restoration after promotion
+and revocation, including retired-ID history and base/delta ownership. Five
+CPU binding tests also pass. Numerical and learning measurements retain their
+earlier frozen identities; the final snapshot change does not alter kernels.
+The corrected 50-epoch ranked fixture reaches 56.25% pruned held-out accuracy
+versus 34.38% for shuffled support. The event fixture's 28.12% on 64 held-out
+cells remains close to four-class chance; it is a weak learning result. Earlier
+post-pruning results with an incorrect derivative-to-gate scatter are retained
+as invalid estimator evidence, alongside the correction and regression.
+
+The retained singleton-posting optimization improves posting plus bitmap/workset
+time by 1.26× on the ordinary synthetic anchor and 1.71× under source skew in
+five paired V100 rounds. Construction costs can outweigh these steady-state
+gains. This is an indexing result, not a complete model-training speedup or a
+universal sparse-format selection rule. The [experiment record](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/posting_singleton_v1/REPORT.md)
+retains the rescan control, numerical checks, profiles, and negative results.
+
+The [balanced packed/SIMT confirmation](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/run_001/REPORT.md)
+uses five confirmation rounds with 21 paired samples and explicit initialization
+and preparation costs. Same-process paired training favors SIMT by about 2.5%
+on both small relation fixtures. The separate-request KDA aggregate interval
+crosses parity; no packed performance regime is promoted. These relation-stage
+measurements exclude application discovery and recurrent sequence maintenance.
+
+## ATen tokenization addition — 2026-10-26
+
+The optional [tokenization facility](../tokenization.qmd) adds ATen-owned tensor
+contracts for vocabularies, ragged/padded sequences, ranked features and supplied
+event streams. Separate numerical operations provide normalization,
+deterministic selection and exact blocked nonzero per-feature median fitting.
+Explicit-capacity sequence buffers provide CPU and CUDA append with aligned
+attributes, reusable status storage and overflow reporting. This is additive;
+existing runtime buffers have not been migrated to ATen.
+
+The Geneformer-style profile consumes caller-supplied totals, medians and
+vocabulary. Event inference, intervention and lifecycle meanings, model state
+and population execution remain downstream decisions. The examples use
+synthetic, already-defined biological inputs rather than reconstructed histories.
+
+Build, correctness, profiling and bounded timing qualification are recorded
+with their source and environment identities under `bench/tokenization/evidence/`.
+These checks establish software behavior in the tested configurations and do
+not establish biological validity or a universal performance advantage.
+
+## Historical implementation audit — 2026-09-06
+
+This detailed snapshot predates the 2026-09-29 documentation refresh, subsequent learning work, and the current Python binding consolidation. References below to the former CelleraTorch component and its paths describe the audited historical state only. For the current binding surface, see [Python bindings](../development/python-bindings.md). The material below remains useful as a source-linked record for its stated date and campaign scope.
+
+Relation Update Spine v1 extends the retained Semantic Spine witness to a
+bounded N16 forward/transpose/VJP/update cycle on one prepared relation. Native
+C++ and an independently parsed/lowered closure use shared calculus and execute
+real sm70 kernels. One physical f16 value plane supports full-f32 or explicitly
+half-rounded gradient arithmetic, caller delta and FMA gradient-step updates,
+event-backed next-generation publication, and one external const read lease.
+The N1 read-only graph path remains supported.
+
+The exact rectangular WMMA route, extraction and sparse residual execute and
+pass independent references, but the measured synthetic lifetimes show no
+hybrid crossover. Automatic dispatch remains sparse. Retained fused
+bias/ReLU/RMS training and Torch consumers remain connected; they share the
+core N16 transpose arithmetic.
+
+The [RU1 capability record](../relation_update_spine_v1/capabilities.md),
+[completion evidence](../relation_update_spine_v1/completion.json), and
+[performance analysis](../relation_update_spine_v1/evidence/performance_analysis.md)
+record the accepted scope. Full `.cell` compilation/module loading, arbitrary N,
+a general optimizer framework, graph-wide planning and mutable-cycle graph
+capture remain deferred. The earlier
+[Semantic Spine acceptance](../semantic_spine_v1/completion.json) remains historical
+evidence for the preserved N1 path. No follow-on epic is activated by RU1.
+
+## Retained CE-ARCH/CE-LIVE snapshot
+
+This page records the validated CE-ARCH/CE-LIVE semantic baseline and the
+completed physical repository consolidation against baseline commit:
+
+```text
+e02054fa103551c27f6a41907c49c6d923ce5777
+```
+
+Audit date:
+
+```text
+2026-08-28
+```
+
+The original 2026-08-21 audit remains useful historical context. CE-ARCH and
+CE-LIVE are complete through native training, replay, concurrency, Tensor Core
+non-promotion, and the CelleraTorch validation audit. The 2026-08-28 remap
+changes physical ownership and build organization without changing those
+semantic contracts.
+
+The bounded post-remap completion pass then removed the CellShard reverse
+runtime dependency, promoted the remaining fleet/reduction machinery into
+`runtime/multi_gpu`, narrowed CellShard-backed public adapters under
+`interop/cellshard`, and localized CMake target ownership. Compatibility names
+remain available, but normal native targets no longer depend on the historical
+`cellerator_compute_runtime` name.
+
+## Repository-wide state
+
+The repository now gives those generations distinct physical roles:
+
+1. current execution, runtime, geometry, compute, planner, and interop
+   implementation under canonical `include/Cellerator/` and `src/`
+   ownership;
+2. retained CP-Math v1 and legacy sparse evidence under `compat/`;
+3. model and trajectory orchestration under `examples/` and Torch adaptation
+   under `components/CelleraTorch`.
+
+The documentation before this replacement described the first generation as the durable architecture, especially through Blocked-ELL-first and CellShard-backed sparse-ML language. That description is superseded.
+
+### CE-LIVE activation state
+
+CE-LIVE does not replace the completed CE-ARCH architecture. It now activates
+one planner-backed quantitative path over it. The checksum-pinned PBMC3K
+computational fixture runs through the executable program for widths 1, 16,
+17, 31, 32, 48, and 64, three reuse horizons, and two mutable generations. The
+bounded N=16 training program, CPE2/CPEXEC01 replay, event-based readiness,
+fixed-transition CUDA Graph capture, and adversarial concurrency acceptance
+are complete. Wave C evidence is recorded in
+`bench/ce_live/evidence/ce_live_evidence_v1.json` and
+`docs/history/programs/end_to_end_evidence.md`.
+
+The quantitative forward catalog currently offers exactly one legal FMP1 SpMM
+schedule for each tested request. Its reported zero planner regret is therefore
+complete over the legal set, but is not evidence of a universal win over
+cuSPARSE. Training remains a small-module N=16 slice. The PBMC3K fixture is
+computational evidence only. Tensor Core evaluation ended in measured
+non-promotion. CelleraTorch is implemented as a thin optional native adapter;
+its quantitative PBMC3K parity and bounded native autograd/readiness checks are
+complete.
+
+The retained CP-Math v1 surface is not the operation-core authority. Its
+request, structural planner, prepared lifetime, and private runtime remain
+migration-held compatibility evidence. New operations use the CE-ARCH
+operation core and sole execution session.
+
+### Default build boundary
+
+The default CMake configure builds native Cellerator without entering the
+CelleraTorch subdirectory or discovering Torch. The compatibility adapter is
+available only through `-DCELLERATOR_ENABLE_TORCH_MODELS=ON`. This changes no
+source ownership and deletes no legacy implementation.
+
+`CELLERATOR_DEFAULT_SPARSE_LAYOUT` names only the fallback used by older
+unspecified sparse surfaces. It is not a universal layout decision and does not
+bypass operation-core candidate enumeration or complete-cost planning.
+
+## CP-BP v1
+
+CP-BP-01 through CP-BP-13 are implemented and closed.
+
+### Construction pipeline
+
+The source tree contains:
+
+- deterministic sampling and sampled support;
+- feature-major support bitsets;
+- MinHash or related candidate discovery;
+- exact merge-cost scoring;
+- a constrained deterministic optimizer;
+- frozen packing plans;
+- full-partition plan application;
+- compact cell-block records;
+- bounded local cell ordering;
+- host and CUDA warp-tile construction;
+- alternating refinement;
+- statistical validation;
+- a hardware-cost model;
+- persistent payload construction and rebinding.
+
+### Native execution
+
+The implemented direct CUDA operation is feature-weighted row reduction:
+
+\[
+y_r = \sum_f X_{r,f} w_f
+\]
+
+The kernel consumes device-resident CP-BP tiles directly.
+
+Its v1 contract provides:
+
+- one launch;
+- no scratch;
+- no allocation;
+- no transfer;
+- no device-wide synchronization;
+- no CSR or BELL reconstruction;
+- canonical-feature recovery;
+- canonical partition-local output rows.
+
+The last property is correct for the v1 API but should not become the future internal default.
+
+### Operation-core activation
+
+CE-ARCH-71 registers that preserved direct path as the
+`cpbp-cpk1-row-masked-n1` operation-core candidate. The adapter is deliberately
+narrow: it accepts only configured-precision, single-vector weighted relation
+reduction over a prevalidated and device-rebound CPK1 row-masked projection.
+Prepared state aliases immutable CPK1 geometry and canonical-row recovery
+metadata. Relation values, feature weights, output storage, value generation,
+stream, and zero-byte transient workspace remain launch bindings.
+
+The candidate is deterministic and graph-capture compatible. It allocates,
+copies, reconstructs, and synchronizes nothing, and calls the existing CP-BP
+CUDA consumer directly. Its canonical row output preserves the v1 compatibility
+contract; it is not a declaration that row-masked execution or canonical output
+is the universal planner default.
+
+CE-ARCH-72 registers the existing f16-value/f32-vector CSR path as the
+`cellerator-csr-fallback-n1-f16-f32` conventional candidate under the same
+operation-core contract. Preparation requires an already constructed,
+device-resident CSR projection in packed feature order and aliases only its row
+offsets and feature indices. Mutable relation values, dense input, output,
+value generation, caller stream, and zero-byte workspace remain launch-bound.
+
+The activated row-masked and CSR paths now have direct regression coverage for
+multiple mutable value generations over one immutable relation structure and
+one prepared structural execution. The proof keeps structure epoch, projection
+geometry, and prepared state stable while changing value-plane generation and
+allocation address; stale generations and real structure-epoch mismatches are
+rejected before dispatch. Projection-kind mismatches remain explicit
+preparation failures rather than triggering conversion or reconstruction.
+
+The adapter launches the existing validated CSR kernel definition directly; it
+does not construct CSR, allocate, copy, canonicalize, or synchronize in the hot
+path. Projection construction and transfer remain explicit planner costs. The
+candidate is deterministic but does not claim graph-capture support, and its
+presence does not make CSR canonical or create another runtime.
+
+CE-ARCH-73 connects real prepared candidates to the planner's empirical hook.
+Each shortlisted candidate supplies a disposable output and a complete launch
+binding on the caller/session stream. An untimed pipeline plus a neutral referee
+establishes correctness before bounded warmup and sampling. CUDA events record
+dynamic input packing, prepared execution, epilogue, output-order work, and
+communication without device-wide synchronization or synchronization between
+phases. Persistent semantic packing, projection construction, backend
+preparation, static value packing, transfers, required synchronization, and
+memory costs are recorded separately and amortized by their actual reuse keys.
+The robust result is a median with median-absolute-deviation spread; planner
+cache reuse still requires matching device-performance, runtime/build,
+structure, geometry, projection, policy, and evidence-revision identities.
+Autotuning never writes the caller-visible output, and unsupported or incorrect
+candidates are rejected before their timings can affect selection.
+
+CE-ARCH-75 adds `FMP1`, the first feature-major small-`N` physical projection
+of the same frozen CP-BP structure. Projection construction transposes the
+existing 32-row/32-feature mask grammar into per-tile packed-feature records,
+participating-row masks, compact value offsets, and an exact source-value
+position map. The pointer-free payload carries the persistent structure epoch,
+`ProjectionId`, geometry identity, and execution-order identity and can be
+stored as an ordinary CPE2 `native_feature_major` projection section. Mutable
+generations are packed explicitly into FMP1-local order outside prepared
+execution; neither geometry nor prepared state changes when a generation or
+allocation address changes.
+
+The registered `cpbp-feature-major-small-n-f16-f32` candidate accepts only
+row-major packed f32 dense RHS/output with f16 relation values, f32 multiply and
+accumulation, and `1 <= N <= 16`. One warp owns a row group, loads each
+feature's `N`-wide dense vector once, and applies it to the masked participating
+rows. Both output axes remain in their declared execution order, output is an
+overwrite, and transient workspace is zero. Construction, value packing,
+allocation, conversion, canonicalization, and synchronization are absent from
+the run path. Correctness coverage includes partial tiles, irregular occupancy,
+an empty row, both `N` boundaries, two value generations, identity/staleness
+rejection, CPE2 prebinding, and the independent SpMM referee. Comparative
+selection evidence remains owned by CE-ARCH-76.
+
+### Historical V100 evidence
+
+The recorded benchmark used:
+
+- 65,536 rows;
+- 32,768 features;
+- 2,097,152 f16 nonzeros;
+- resident input and output;
+- three warmups;
+- eleven repeats.
+
+Median direct-tile times for high, medium, and low sharing were approximately:
+
+```text
+0.017 ms
+0.041 ms
+0.117 ms
+```
+
+The existing Cellerator CSR path measured approximately:
+
+```text
+0.075 ms
+0.079 ms
+0.095 ms
+```
+
+The result proves regime-dependent value:
+
+- large win at high sharing;
+- useful win at medium sharing;
+- loss at low sharing.
+
+No low-occupancy specialization met the recorded five-percent retention threshold. Low-sharing tiles therefore remain a measured fallback regime.
+
+### Hardware cost model
+
+The CP-BP-12 campaign measured 60 configurations and 120 paired direct-tile and CSR observations on V100.
+
+Recorded held-out mean absolute percentage error was approximately:
+
+```text
+5.15 percent for direct tiles
+5.88 percent for CSR
+```
+
+This is useful calibration evidence. The campaign used regular synthetic structures and the `N=1` operation, so it is not a complete core planner model.
+
+### Persistence
+
+CP-BP-13 adds:
+
+- a 64-byte-aligned CPK1 pointer-free image;
+- frozen plan maps;
+- row order;
+- warp tiles;
+- semantic validation;
+- host-to-device rebinding;
+- direct runtime handoff.
+
+CellShard wraps the opaque image in a versioned execution envelope and owns publication, compatibility checks, fetch, and contiguous upload.
+
+CPK1 tightly reflects the v1 operation and projection. CPE2 provides the
+sectioned execution-image container, projection directory, relocation, and
+device prebinding around it and newer projections. CE-ARCH-82 completed Phase 4
+by proving one unified CPK1-compatible, multi-value-plane, schema-extensible
+path through direct prepared execution.
+
+## Legacy CP-Math v1
+
+This section describes the retained first-generation adapter surface. Its gaps
+do not describe the CE-ARCH operation core completed below.
+
+CP-Math v1 evidence now lives under:
+
+```text
+compat/cp_math_v1/include/Cellerator/compat/cp_math_v1/
+compat/cp_math_v1/src/
+tests/math_*.cc and tests/math_*.cu
+bench/math/
+```
+
+### Implemented contracts
+
+The public headers define:
+
+- `spmm_request`;
+- `spmm_bindings`;
+- `math_request`;
+- feature-order identity;
+- sparse-structure identity;
+- numeric storage, compute, and accumulation fields;
+- transpose and dense layout;
+- determinism;
+- workspace policy;
+- expected reuse;
+- epilogue;
+- operation signature;
+- backend capability;
+- pointer-free execution plan;
+- backend registry;
+- structural planner;
+- device capabilities and fingerprint;
+- device math context and workspace;
+- prepared execution.
+
+### Implemented physical and backend work
+
+The tree contains:
+
+- native tile adaptation;
+- physical CSR lowering;
+- physical BELL lowering;
+- cuSPARSE CSR or BELL execution experiments;
+- generic unfused epilogues;
+- packed dense operand support;
+- a CPU referee;
+- contract, planner, runtime, lowering, execution, and epilogue tests.
+
+### Compatibility build integration
+
+The compatibility build exposes explicit evidence targets and the retained
+packed-dense-operand benchmark. Historical include paths are forwarding
+surfaces only; current implementation and current tests use canonical or
+explicit compatibility paths. CP-Math v1 is not the execution owner for the
+repository's sparse systems.
+
+### Legacy adapter gaps
+
+#### Prepared execution captures per-run state
+
+`PreparedExecution` currently owns a `DeviceMathContext`, copies the full `math_request`, and retains current bindings. New dense input, output, bias, or stream generally implies a new preparation path.
+
+The target architecture separates prepared immutable state from launch bindings.
+
+#### Runtime context is duplicated
+
+`DeviceMathContext` owns:
+
+- an execution context;
+- a CUDA stream;
+- cuBLAS and cuSPARSE caches;
+- one workspace allocation;
+- device capabilities;
+- device fingerprint.
+
+Cellerator already has older runtime and sparse-operation contexts. These responsibilities must be unified.
+
+#### Workspace is one reusable allocation
+
+The current `WorkspacePool` is one resizable scratch arena with an allocation count and high watermark. It is not yet a concurrent stream-ordered pool with separate persistent and transient lifetimes.
+
+#### Planning is structural
+
+The planner enumerates legal backend candidates and performs inexpensive structural pruning. Its own comments defer measured selection and persistence to an external autotuner or cache owner.
+
+The target core requires one integrated cost and measurement system.
+
+#### Operation scope is narrow
+
+The operation enum currently contains SpMM. The future core must also represent reductions, graph propagation, sequence-conditioned operations, sparse-to-dense projections, recurrent updates, and fused programs.
+
+#### Identity is partial
+
+Feature-order and sparse-structure identities are useful beginnings. They do not yet provide universal domain, row order, geometry, partition, structure epoch, and value-generation identity.
+
+#### Numeric policy is incomplete
+
+The request distinguishes storage, compute, and accumulation codes, but current scalar, bias, backend, and legal-tuple behavior does not yet form a complete mixed-precision contract.
+
+#### Padded BELL risk
+
+The physical BELL view records logical and padded dimensions. The vendor descriptor may use padded dimensions while generic bindings expose logical-sized dense input and output buffers.
+
+Until the backend owns padded B and C buffers with explicit pack and crop, or rejects mismatched padded dimensions, this is a correctness risk.
+
+Aligned tests do not establish safety for unaligned logical dimensions.
+
+## Existing sparse and model systems
+
+The repository also contains useful existing systems:
+
+- CSR and compressed sparse operations;
+- Blocked-ELL;
+- SELL and sliced execution;
+- quantized Blocked-ELL;
+- generic sparse row transforms and column moments used by downstream BioPrep;
+- exact neighbor search;
+- trajectory logic;
+- native model implementations;
+- distributed and NCCL paths;
+- CelleraTorch adapters.
+
+These systems are not discarded.
+
+They should become:
+
+- planner candidates;
+- fallback projections;
+- reference implementations;
+- realistic benchmark workloads;
+- migration adapters.
+
+Their current ownership and assumptions do not define the final core.
+
+## Baseplane
+
+Baseplane currently provides:
+
+- two-bit nucleotide packing;
+- packed-word and 32-base plane representations;
+- reverse complements;
+- mismatch and motif-window operations;
+- exact count and compact emit;
+- resident plane streams;
+- base, GC, and CpG masks;
+- CPU, SIMD, and CUDA paths;
+- allocation-free hot APIs with caller-owned output.
+
+The following were the integration limitations at the original audit:
+
+- validity and ambiguous-base policy must be mandatory and explicit;
+- tail validity must travel with plane streams;
+- local and global coordinate widths need a stable chunk contract;
+- motif plans must be normalized and immutable;
+- output ordering and overflow semantics need stronger contracts;
+- the shared predicate ABI and operand identities do not yet constitute the
+  complete direct relation-builder contract required by Phase 10;
+- CE-ARCH-78 records a fused-versus-reused-materialization crossover, but the
+  complete-cost choice is not yet integrated across the full relation-builder
+  and repeated-state program.
+
+## Documentation state before replacement
+
+Previous repository documentation contained several conflicting claims:
+
+- Blocked-ELL as the universal preferred sparse layout;
+- CellShard as the owner of layout derivation;
+- Cellerator as primarily sparse ML over CellShard matrices;
+- Baseplane as an external provider of bit primitives;
+- root strategy files as architecture authority;
+- closed TODO ledgers as pickup guidance.
+
+Several root documents also referenced missing files such as `pointer_migration_plan.md`.
+
+The replacement documentation removes those assumptions from the active guidance.
+
+## CE-ARCH completion state
+
+### Closed continuation
+
+CE-ARCH-81 through CE-ARCH-92 close roadmap Phases 4 through 11 and the final
+evidence audit:
+
+- CE-ARCH-81: truthful roadmap and executable status matrix;
+- CE-ARCH-82: unified Execution Image v2 compatibility/runtime closure;
+- CE-ARCH-83: representative instrumentation and benchmark corpus;
+- CE-ARCH-84: missing low-sharing/tail and CTA-scale forward regimes;
+- CE-ARCH-85: transpose projection and native backward;
+- CE-ARCH-86: connected-operation planning;
+- CE-ARCH-87: full Objective V2 CP-BP refinement integration;
+- CE-ARCH-88: native sparse-to-dense training vertical slice;
+- CE-ARCH-89: complete Baseplane relation/fusion integration;
+- CE-ARCH-90: hierarchy and scale-out readiness;
+- CE-ARCH-91: opaque CellShard artifact delivery across the existing
+  CSPACK/CPEXEC01 compatibility boundary;
+- CE-ARCH-92: real-data regime evidence and migration-completion audit.
+
+The CE-ARCH-92 campaign compares row-masked, CSR, feature-major warp, and
+feature-major CTA execution over full GSE147520 and PBMC3K support traces, a
+checksum-pinned high-sharing slice derived from GSE147520, and an adversarial
+partial-block trace at N=1/16/32. It records 36 correct candidate results with
+at most 2.05% median-absolute-deviation spread. At the declared eight-use
+horizon, row-masked wins the real high-sharing N=1 slice, CSR wins the full real
+supports at N=1, and feature-major wins every N=16/32 cell. The canonical
+summary is `bench/architecture_evidence/ce_arch_92_v100_summary.json`; CUDA
+controller evidence `490d2ba1-99ce-4d3e-ba1c-65db915a42d1` preserves the
+serialized V100 run and exact source/binary identity.
+
+The completion statement is deliberately bounded. It does not complete the
+independent CS-FOUND roadmap, claim future Tensor Core or distributed candidate
+families, or turn the current Objective V2 calibration into a permanent law.
+Empirical measurement remains authoritative for uncertain and novel regimes.
+
+The phase-by-phase canonical evidence matrix and exact completion definition are
+in `migration_roadmap.qmd`.
+
+## CE-PTR integrated state
+
+The 2026-08-29 CE-PTR integration adds the frozen memory substrate and explicit
+session/image/workspace contracts, CPI1 frozen plans, exact geometry build
+relations, prepared optimizer slabs and journals, deterministic sampling and
+statistical images, a resident support-to-candidate pipeline, flattened graph
+relations, capacity-specialized exact search, caller-owned forward-neighbor
+views, and exact projection-construction workspaces. Native forward-neighbor
+targets no longer link CellShard runtime ownership; index persistence, staging,
+and workflow policy remain downstream.
+
+The final production inventory is intentionally transitional: 169 controlled
+owning-family spellings remain under exact non-increasing ceilings, plus live
+`host_buffer` and trajectory batch compatibility helpers not covered by the
+lexical families. The legacy `device_buffer` still offers blocking helpers.
+Those surfaces are not evidence that prepared execution may allocate or
+synchronize; only the tested sealed/session APIs carry that promise. The
+authoritative final counts, dispositions, and direct validation commands are in
+`docs/history/programs/production_source_inventory.md` and `bench/ce_ptr/final/acceptance.md`.
+
+## CE-GEO integrated implementation
+
+The normal build now owns the common NVIDIA physical realization, `sm_70`
+provider manifest, N=64 value pack/MMA/residual/epilogue path, relation catalog
+assembly, generic segment primitives, transpose relation apply, support
+contraction, logical-edge gradients, and prepared biological exchange
+composition. A 4-binary vertical suite and 14-binary biology suite are part of
+the normal build graph. The final validation rebuilt native Release `sm_70`
+and explicit Torch-compatibility configurations and passed all 22 acceptance
+commands. Compute Sanitizer passed 22/22 runs after fixing a real shared-scratch
+reuse race in segment normalization.
+
+The implementation remains intentionally bounded. Whole-exchange fusion is
+`evaluated_not_promoted`; width sweeps outside the promoted N=64 exact-cover
+regime are calibration evidence; profiler cache/stall counters were unavailable
+for that sweep; and the preprint ablations are synthetic mechanism controls,
+not biological performance claims.
+
+## CE-EXOP integrated source surface
+
+The CE-EXOP source portfolio is integrated through operation core v2,
+scalable semantic geometry and chunked physical projections, planner-owned
+candidate selection, the geometry optimizer portfolio, relation apply and
+transpose, contraction, segment/map/gate/update operations, bundles and
+chains, prepared fusion graphs, and generic training program v2. The public
+umbrella exposes the complete compute surface and the training-program v2
+interface. The root build provides explicit host, profiler-fixture, and
+compile-only sm_70 acceptance targets.
+
+The integrated profiler fixtures establish deterministic candidate, stage,
+symbol, correlation, marker, and generic partition-export identities. Their
+resource receipts explicitly record that no device query occurred. They do
+not contain hardware measurements and do not promote an experimental
+candidate. Deep Nsight profiling, biological-data campaigns, performance
+promotion, preprint claims, distributed CellShard orchestration, and CE-AMP
+remain deferred and separately authorized.
