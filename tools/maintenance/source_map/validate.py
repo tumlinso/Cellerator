@@ -4,14 +4,17 @@ import argparse
 import csv
 import hashlib
 import json
+import subprocess
 import sys
 from pathlib import Path
+sys.dont_write_bytecode = True
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from common import snapshot, OUTPUT_NAMES
 
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--repo",required=True,help="Cellerator repository checkout")
 parser.add_argument("--output",default="docs/development/source_map",help="Map directory relative to --repo")
+parser.add_argument("--migration-manifest",help="Audit declared existing destinations in this source-migrations.json")
 args=parser.parse_args()
 repo=Path(args.repo).resolve()
 out=Path(args.output)
@@ -20,6 +23,44 @@ manifest=json.loads((out/"manifest.json").read_text())
 rules=json.loads((out/"routing_rules.json").read_text())
 rows=list(csv.DictReader((out/"path_map.csv").open()))
 errors=[]
+
+def migration_destinations(manifest_path: str) -> list[str]:
+    candidate=Path(manifest_path)
+    candidate=(repo/candidate).resolve() if not candidate.is_absolute() else candidate.resolve()
+    try:
+        candidate.relative_to(repo)
+    except ValueError as exc:
+        raise ValueError("migration manifest must be inside the repository") from exc
+    data=json.loads(candidate.read_text())
+    destinations=[]
+    for section in ("path_migrations","source_extractions","compatibility_facades"):
+        rows=data.get(section,[])
+        if not isinstance(rows,list):
+            raise ValueError(f"{section} must be a list")
+        for row in rows:
+            if not isinstance(row,dict) or row.get("target_path_exists",True) is False:
+                continue
+            value=row.get("new_path")
+            if not value:
+                continue
+            path=Path(value)
+            if path.is_absolute() or ".." in path.parts:
+                raise ValueError(f"unsafe migration destination: {value}")
+            destinations.append(path.as_posix())
+    return sorted(set(destinations))
+
+def tracked_path(path: str) -> bool:
+    result=subprocess.run(["git","ls-files","--error-unmatch","--",path],cwd=repo,
+                          stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    return result.returncode==0
+
+if args.migration_manifest:
+    try:
+        for destination in migration_destinations(args.migration_manifest):
+            if not tracked_path(destination):
+                errors.append(f"intended migration destination is not tracked: {destination}")
+    except (OSError,ValueError,json.JSONDecodeError) as exc:
+        errors.append(f"migration manifest audit failed: {exc}")
 
 payload=dict(manifest)
 recorded_manifest_hash=payload.pop("manifest_sha256",None)
@@ -101,7 +142,7 @@ report={
     "source_identity":current["source_identity"],
     "capture_head_provenance_only":manifest["capture_head_provenance_only"],
     "errors":errors,
-    "scope":"path coverage, explicit route, source/index/worktree identity, and generated-output integrity; not semantic, build, test, biological, or performance acceptance",
+    "scope":"path coverage, explicit route, source/index/worktree identity, generated-output integrity, and optional migration-destination tracking audit; not semantic, build, test, biological, or performance acceptance",
 }
 print(json.dumps(report,indent=2))
 sys.exit(bool(errors))

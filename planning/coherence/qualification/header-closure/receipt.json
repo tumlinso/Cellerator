@@ -1,0 +1,75 @@
+{
+  "baseline_commit": "346208330fbdbb3f7488c2ff52a41a60fc5acd9d",
+  "checks": [
+    {
+      "command": "cmake -S . -B /tmp/cellerator-header-source-closure-fresh-build -DCELLERATOR_ENABLE_CUDA=OFF -DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF -DCELLERATOR_BUILD_TESTS=ON",
+      "name": "fresh_cpu_configure",
+      "result": "passed"
+    },
+    {
+      "command": "cmake --build /tmp/cellerator-header-source-closure-fresh-build -j 4",
+      "name": "cpu_build",
+      "result": "passed"
+    },
+    {
+      "command": "cmake --install /tmp/cellerator-header-source-closure-fresh-build --prefix /tmp/cellerator-header-source-closure-fresh-sdk",
+      "name": "fresh_install",
+      "result": "passed"
+    },
+    {
+      "name": "b01_host_only_smoke",
+      "result": "compiled and ran successfully with C++17, -Wall -Wextra -Werror",
+      "source": "tests/compiler/b01/host_only_compiler_smoke_targets_test.cc"
+    },
+    {
+      "name": "b01_compiler_target_graph",
+      "result": "compiled and ran successfully with C++17, -Wall -Wextra -Werror",
+      "source": "tests/compiler/b01/compiler_target_graph_test.cc"
+    },
+    {
+      "name": "installed_sdk_consumer",
+      "result": "find_package(Cellerator) configure/build and ctest passed; includes all 10 restored compiler/build headers from installed prefix",
+      "source": "temporary consumer under /tmp; no repository proposal files included"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -B tools/maintenance/source_map/lifecycle_test.py",
+      "name": "source_map_lifecycle",
+      "result": "passed all 8 lifecycle cases"
+    }
+  ],
+  "execution_boundary": "CUDA disabled and hardware probing disabled; no GPU execution or device probe.",
+  "logs": "planning/coherence/qualification/header-closure/logs/",
+  "migration_audit": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -B tools/maintenance/source_map/validate.py --repo . --migration-manifest planning/coherence/source-migrations.json",
+    "result": "passed after source closure and source map regeneration",
+    "scope": "checks tracked existence of declared destinations only; no historical content freezing"
+  },
+  "preservation": {
+    "directory": "/mnt/block/cellerator/preservation/20261028T204231Z/qualification/header-closure-preserve",
+    "header_count": 10,
+    "headers_verified_against_target_worktree_blob_oid": true,
+    "manifest": "planning/coherence/source-migrations.json",
+    "manifest_sha256": "9fab11ecae72241de781f53864b36819df085b5c710dc16770d44ba8e76f82e4",
+    "verified_against_durable_copy": true
+  },
+  "result": "passed",
+  "schema": "cellerator-header-source-closure-qualification-v1",
+  "source_audit": {
+    "all_were_intended_compiler_build_headers": true,
+    "ignored_source_looking_paths_after_fix_under_roots": 0,
+    "ignored_source_looking_paths_before_fix": 10,
+    "manifest_record_count": 943,
+    "other_ignored_source_looking_paths_found": [],
+    "roots": [
+      "include",
+      "src",
+      "tests",
+      "tools",
+      "cmake",
+      "bindings",
+      "python",
+      "modules"
+    ],
+    "unique_declared_destinations": 941
+  }
+}

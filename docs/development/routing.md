@@ -131,4 +131,12 @@ science, or performance.
 
 The [source migration record](https://github.com/tumlinso/Cellerator/blob/9665fcaf34f5e1a1725c78bc7c352e99e72957fc/planning/coherence/source-migrations.json) maps preserved original blobs to current native, header, test, and tool destinations. Use it when a source-bound report or older plan names a translation unit that has moved. Compatibility facades and extracted experiment implementations retain explicit provenance.
 
+For a one-time closure check of the record's declared existing destinations,
+run `python tools/maintenance/source_map/validate.py --repo . --migration-manifest planning/coherence/source-migrations.json`.
+This opt-in audit checks that each declared destination is tracked; it does not
+compare future file contents or make this historical record a permanent path
+policy. Ordinary source-map validation continues to check the current Git
+index, worktree, routes, and generated outputs without consulting migration
+history.
+
 A required native evidence name needs a configured producer that records that passing fact. Committed reports, scheduler receipts, and external test runs belong in source references and reviewed assertions; their presence alone does not create a native passing fact. Live task state remains in Project Control.
