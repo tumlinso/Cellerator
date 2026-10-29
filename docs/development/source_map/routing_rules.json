@@ -11869,6 +11869,16 @@
     "role": "distributed execution API or architecture",
     "tests_or_evidence": "tests/distributed candidate; qualification unresolved"
   },
+  "af6caa70f623": {
+    "archive_reference": "preserve declarations as source configuration; mutate only with corresponding documentation changes",
+    "consumers": "Project Control/Codex context loader resolves the four declared repository documents",
+    "current_owner": ".project-context.json",
+    "disposition": "retain_project_context_guidance_declaration",
+    "intended_destination": "retain as the repository-facing pointer set for agent source/workflow, architecture, routing, and developer-reference contracts",
+    "maturity": "tracked guidance metadata; it is not Todo authority, task status, or generated workflow state",
+    "role": "Project Control source-guidance declaration",
+    "tests_or_evidence": "validate that each declared target exists and keep target names aligned with maintained docs"
+  },
   "af80dc076735": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -13128,6 +13138,16 @@
     "maturity": "implementation present; prepared execution and runtime qualification are operation-specific; ExecutionField live recompilation remains experimental",
     "role": "prepared execution opaque_artifact.cc contract",
     "tests_or_evidence": "tests/execution or tests/runtime family checks when registered; source presence does not establish runtime qualification"
+  },
+  "c3ecbcc9ae6b": {
+    "archive_reference": "preserve source-write/API/ABI protection settings and explicit source/exclusion patterns",
+    "consumers": "cpp-context-compiler reads this file; generated database resolves to build-ctxpp/compile_commands.json",
+    "current_owner": ".ctxpp.toml",
+    "disposition": "retain_context_compiler_configuration",
+    "intended_destination": "retain as the context-compaction tool configuration for C++/CUDA source roots, exclusions, budgets, and build/test commands",
+    "maturity": "tracked developer-tool config; compilation database path and configured commands are not evidence that they ran",
+    "role": "C++ context compiler source and build configuration",
+    "tests_or_evidence": "config syntax/tool checks and declared compiler/test commands only; actual builds and tests need separate receipts"
   },
   "c42d919915e8": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
