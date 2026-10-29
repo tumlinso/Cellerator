@@ -94,3 +94,10 @@ choices with the user before committing to them.
 Use the [developer reference](docs/developer_reference.qmd) for build and test commands. Run affected source/build/tests after code moves. For prose-only changes check links, status boundaries and rendered pages. Keep scientific claims scoped; record what was not run. Benchmarks require the existing assigned resources and clean timing interval. Include setup/transfer/routing when the claim needs them; no benchmark is launched by document generation.
 
 Current work belongs in live status tools; experimental findings stay with their source-bound records and the dated [implementation record](docs/current_implementation.qmd); durable rationale belongs in design/development docs; superseded plans stay in the archive. Do not recreate the same mutable status table in all four places.
+
+<!-- agent-interface:autobench:start -->
+This repository has a canonical Autobench interface.
+Route benchmark registration, background measurements and profiling, and registered benchmark evidence requests through `autobench`.
+Consider installing the [Autobench skill](https://github.com/tumlinso/autobench)
+to simplify development; if installed, read its `SKILL.md` before use.
+<!-- agent-interface:autobench:end -->

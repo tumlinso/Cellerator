@@ -4,25 +4,28 @@ title: "Architecture"
 
 ## Product direction
 
-Cellerator is a high-performance PyTorch extension for building cellular
-dynamical models. It adds reusable model operations and execution semantics
-designed around biological structure. Shared relationships, stable identities,
-conditional activity, and repeated work can guide both the mathematical
-contract and its realization on CPU or GPU hardware. A model that represents
-the system more directly can be easier to interpret and may expose work that
-does not need to happen. Performance remains a measured property of each
-operation and workload.
+Cellerator is a general computational and machine-learning framework for
+biological modeling, especially cellular dynamics. It makes state, dynamical
+updates, observations, events, and structured interactions expressible and
+provides its own native numerical operations, data layouts, and specialized
+CPU/GPU computation. The biological structure of a model can shape its
+mathematical contract and its execution geometry.
 
-PyTorch provides general tensors, ordinary numerical operations,
-`torch.nn.Module`, autograd, optimizers, and composition. Cellerator specializes
-the parts where cellular structure changes the operation or its useful
-execution. It is neither a Torch replacement nor a scientific model. Karyoplast,
-Cytoplast, Blastback, and future consumers own their scientific assumptions;
-Cellerator supplies reusable computational machinery.
+PyTorch is an optional and useful integration route for learned modules,
+autograd, and ordinary tensor computation. It is not Cellerator's definition
+or limit: state may be sparse, ragged, event based, relational, externally
+owned, custom, or hybrid. Cellerator provides reusable computational machinery;
+Karyoplast, Cytoplast, Blastback, and future consumers own application-specific
+biological assumptions and scientific validation.
 
 The library is early and not near complete. The target architecture is a
 direction for organizing new work and moving complete units, not a claim that
 all target packages or APIs exist.
+
+For the user facing modeling vocabulary and the new Python packages, see the
+[biological modeling framework](biological_framework.qmd). Its APIs are in
+rapid development; package presence does not imply scientific validation or
+accelerated backend support.
 
 ## Core concepts and ownership
 
@@ -53,7 +56,7 @@ boundaries per operation.
 | Scientific interpretation and model assumptions | Karyoplast, Cytoplast, Blastback, other consumers | Consumers choose biological meaning and validate their models. |
 | Sequence-grounded representations | Baseplane | Cellerator consumes sequence-specific results without taking ownership of sequence semantics. |
 | Persistence, sharding, transport, delivery | CellShard and owning systems | Integrate across explicit data boundaries. |
-| Classical single-cell analysis | AnnData ecosystem, Scanpy, RAPIDS-singlecell | Remains upstream; AnnData is a required dependency, but direct preparation is not implemented. |
+| Classical single-cell analysis | AnnData ecosystem, Scanpy, RAPIDS-singlecell | Remains upstream; `cellerator.adapters.anndata` offers explicit identity-aligned exchange without preprocessing or layer guessing. |
 
 ## Proposed package shape
 
@@ -73,8 +76,10 @@ src/                                 # native implementations, grouped by owner
   ops/<family>/                     # numeric, matrix, process, sparse, etc.
 bindings/                            # thin Python and optional Torch adapters
 python/cellerator/                   # installed Python package
-  ops/ nn/ structure/ layout/         # public API grows with real contracts
-  torch/ experimental/               # framework and research boundaries
+  modeling/ state/ events/            # model instances, state and trajectories
+  interactions/ dynamics/ execution/  # relations, updates, population mechanics
+  inference/ adapters/ ops/            # inference, data/framework adapters, ops
+  nn/ torch/ experimental/             # Torch and research integrations
 bench/ experiments/                  # candidates and bounded evidence
 ```
 

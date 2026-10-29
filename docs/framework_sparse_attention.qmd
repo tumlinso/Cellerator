@@ -1,0 +1,55 @@
+---
+title: "Sparse relation attention"
+---
+
+# Sparse relation attention
+
+`cellerator::modeling::cuda::sparse_attention_fp16` and
+`sparse_attention_fp32` implement scaled dot-product attention over an explicit
+CSR relation. For query row `i`, only keys in
+`key_ids[offsets[i]:offsets[i+1]]` participate. An empty row yields a zero
+output. The scale is supplied by the caller; channel semantics and the meaning
+of a relation remain model-owned.
+
+The API takes query `[Q,D]`, key `[N,D]`, value `[N,V]`, and output `[Q,V]`
+row-major buffers. It performs stable segmented softmax and accumulates in
+FP32, including FP16 storage variants. Caller-owned `SparseAttentionWorkspace`
+holds edge logits/probabilities and per-query backward reductions. No dense
+adjacency, automatic mask, allocation, or stream synchronization is introduced.
+
+The first-order VJP computes query, key, and value gradients into FP32 buffers.
+`GradientWriteMode::zero` asynchronously clears buffers before applying the
+gradient; `accumulate` adds into them. Repeated keys in different query rows
+are reduced with FP32 atomics, so key/value gradient reduction order depends on
+device scheduling. Backward consumes the probabilities written by a preceding
+forward call and requires the same inputs, scale, and CSR plan; keep that
+workspace unmodified and order the calls on the same stream or with an explicit
+stream dependency. CSR indices are discrete and have no gradient here.
+
+The caller must ensure monotone CSR offsets with `offsets[0] == 0` and
+`offsets[Q] == edge_count`, in-range key IDs, non-overlapping workspace and
+payload/gradient buffers, matching device residency, and sufficient capacities.
+Plan data remains live until stream completion. These contracts are not checked
+by copying device metadata back to the host. The current implementation is a
+correctness-oriented baseline; compilation alone provides no performance or
+runtime-correctness qualification.
+
+`tests/framework/cuda/attention_smoke.cu` contains an independent host
+reference and an API compile/link fixture. Device tests require a separately
+admitted CUDA run.
+
+## Optional fused small-row path
+
+`sparse_attention_fused_small_fp16` and
+`sparse_attention_fused_small_fp32` are explicit experimental entrypoints.
+Rows with at most 32 edges keep scoring, softmax, and value aggregation within
+one warp, avoiding a materialized logits round trip for those rows. They still
+write edge probabilities for the existing backward API. Larger rows use the
+staged path; the original forward entrypoints retain their existing behavior.
+
+The design draws on KernelBender's producer/consumer ownership guidance in
+`references/compositions/ownership-fragments.md`. It is an alternative to
+measure, not an automatically selected optimization. SM70 compilation and the
+host reference fixture pass; neither device correctness nor a speedup has been
+established. Compare the complete forward/backward path, including workspace
+and preparation costs, before choosing it for a workload.

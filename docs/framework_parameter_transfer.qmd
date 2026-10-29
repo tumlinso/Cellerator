@@ -1,0 +1,69 @@
+---
+title: "Revision-pinned CUDA parameter transfer"
+---
+
+`Cellerator::framework_parameter_transfer` bridges the native conditional
+`ParameterStore` and CUDA runtime. It transfers the exact caller-selected
+`ExpertKey` using an immutable `ParameterLease`; a newer published revision or a
+cache miss cannot substitute another payload. The public header is
+`Cellerator/modeling/cuda/parameter_transfer.hh`.
+
+`ParameterTransfer::upload(store, key, stream)` acquires that exact revision,
+copies its execution-parameter bytes into an owned `PinnedBuffer`, enqueues a
+real `cudaMemcpyAsync` H2D through `DeviceBuffer`, and records an `Event` on the
+supplied stream. It also accepts a lease from `ParameterStore::snapshot`.
+Source buffers must explicitly name `device="host"`. Storage types are opaque:
+FP16, FP32 and packed bytes are copied unchanged, without numerical conversion.
+This bridge does not transfer master parameters, gradients or optimizer state.
+
+The copyable transfer ticket owns the source revision, staging allocation,
+device buffer and readiness event. `ready()` queries transfer completion;
+`wait()` waits for it. `view()` returns a borrowed immutable device view only
+after upload completion. The last owner drains upload before releasing its
+resources. Host copying and allocations happen synchronously during submission;
+only the staged H2D copy is asynchronously enqueued.
+
+For asynchronous downstream use, acquire a separate execution lease:
+
+```cpp
+auto transfer = ParameterTransfer::upload(store, selected_key, upload_stream);
+auto execution = transfer.acquire_on(compute_stream);
+auto parameters = execution.view();
+// Launch consumers of parameters on compute_stream.
+execution.finish();  // Record completion after every consumer was enqueued.
+// Poll execution.ready(), or execution.wait().
+```
+
+`acquire_on` inserts a device-side stream wait for upload and retains the
+transfer's entire ownership. Destroying the transfer ticket therefore cannot
+invalidate an active execution lease. `finish()` seals the lease and records a
+completion event; view access after sealing is rejected. Multiple streams may
+hold independent execution leases for the same immutable transfer. The caller
+must retain each borrowed stream until `finish()` records its event and must not
+enqueue additional consumers after sealing. Backward that reads parameters needs
+its own retained execution lease or must precede the existing lease's finish.
+
+Lease destruction waits for its completion event, or drains the consumer stream
+if `finish()` was omitted, before releasing parameter storage. Explicit `wait()`
+surfaces CUDA errors. A destructor that cannot establish completion terminates
+rather than release potentially active storage; destructors may block and are
+not a nonblocking reclamation service. An exception between copy enqueue and
+event recording also drains the stream before resources unwind.
+
+`required_memory(lease)` validates the source and reports memory without CUDA
+calls. New allocations are one execution-parameter-sized pinned host buffer and
+one equally sized device buffer. The source revision remains retained, including
+its master/gradient/optimizer buffers; `retained_source_bytes` conservatively
+sums all declared buffer lengths, counting aliases separately. Existing source
+bytes are retained, not newly allocated. Staging remains owned until the last
+transfer/execution lease is destroyed. Account these explicit costs when using
+the [native placement planner](native_scheduling.qmd); this bridge does not reserve
+a budget, discover devices, evict a cache or perform multi-GPU/network movement.
+
+The [smoke source](../tests/framework/cuda/parameter_transfer_smoke.cu) has a
+`--host-only` path for exact-revision retention, byte accounting, missing-source
+and non-host rejection without CUDA calls. Its GPU path independently compares
+downloaded bytes, destroys an upload ticket before consumer completion, publishes
+and retires a revision while executing, and checks the fallback destruction
+drain. This change was compiled for SM70 and host contracts were run; the GPU path
+was not executed and performance is unmeasured.

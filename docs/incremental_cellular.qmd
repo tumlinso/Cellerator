@@ -1,0 +1,179 @@
+---
+title: "Incremental cellular computation"
+---
+
+The native `IncrementalInteractions<State, Output>` class evaluates pure
+interaction callbacks from declared state dependencies and caches their
+results. A localized state update invalidates only incident interactions.
+Parameter or context epoch changes invalidate the whole cache. An explicit
+eligibility worklist determines which invalid results may be recomputed now.
+This is reusable computation machinery; a consumer supplies the biological
+interpretation, equations, event semantics, and scientific validation.
+
+## Dependency and cache contract
+
+An immutable `SparseRelation` declares callback **read dependencies**. Its
+stable edge IDs identify interactions; each participant identifies a source by
+`(role, entity_id)`. Role is part of source identity. A destination that is only
+written by the consumer does not need to be a read dependency. Repeated
+participants remain repeated callback inputs, even though reverse postings
+deduplicate them for invalidation. The relation's structure epoch remains
+separate from source generations and parameter/context epochs.
+
+The cache is exact under these requirements:
+
+- Every state read, including a state-dependent eligibility decision performed
+  inside the callback, appears in the declared dependencies.
+- Every changed source is submitted with a strictly increasing generation.
+  Updates are explicit; the cache does not compare values or infer changes.
+- The callback is pure. External parameter or context changes use a different
+  `EvaluationEpochs` value. Time, random draws, hidden mutable state and external
+  I/O are not implicit dependencies. A stochastic consumer must include its
+  random state or explicit realization in declared inputs/context.
+- `State` and `Output` behave as immutable values once published. Copying a
+  pointer to mutable external storage does not make that storage immutable.
+
+There is no built-in tolerance, hysteresis, approximate change suppression,
+dtype conversion, or automatic numerical precision selection. Template types
+make storage/output choices explicit; callback arithmetic determines multiply
+and accumulation precision. A consumer introducing tolerance-based updates
+owns the approximation and its validation.
+
+`SourceReadSnapshot` records each input's role, stable entity ID, generation,
+and immutable value in original participant order. Each cached record owns its
+snapshot and output. Retaining a `cached(id).record` keeps an old evaluation
+inspectable after subsequent steps. `result(id)` returns a reference valid
+until its record is replaced; retain the record when a longer lifetime is
+needed.
+
+## State change, events, and publication
+
+`step(updates, epochs)` recomputes all dirty interactions. Its optional
+`ActiveWorklist` restricts eligibility. A null eligibility pointer means all
+dirty work; an empty worklist means no work. `event_eligibility(event_sources)`
+forms a worklist through the existing native reverse-posting query. A clean
+interaction receiving an event remains cached; an event that changes the
+callback's mathematical inputs must also update a source or context epoch.
+
+Ineligible dirty interactions stay dirty across steps. `cached(id)` exposes
+their last record together with `valid == false`; `result(id)` rejects stale or
+absent output. Reopening eligibility eventually reevaluates the latest source
+values. Consumers must not treat an old cached record as a current output.
+
+The class stages source updates and all selected callback results before
+publishing any of them. Invalid updates, allocation failures, or thrown
+callbacks leave the previously committed sources, epochs, dirty work and
+cached results intact. External callback side effects cannot be rolled back
+and violate the purity requirement. The engine is single-owner host code;
+concurrent mutation is unsupported.
+
+Eligibility must retain the same immutable relation object as the cache.
+Changes to dependency structure require a new cache for the new snapshot;
+cross-epoch cache migration and dependency discovery are not implemented.
+
+## Native usage
+
+```cpp
+#include <Cellerator/modeling/incremental.hh>
+namespace m = cellerator::modeling;
+
+auto reads = std::make_shared<m::SparseRelation>(
+    std::vector<m::RelationEdge>{
+        {10, {{0,0,100}, {0,0,200}}},
+        {20, {{0,0,200}, {0,0,300}}},
+        {30, {{0,0,400}}}});
+
+m::IncrementalInteractions<float,float> cache(reads,
+    {{{0,0,100},0,1}, {{0,0,200},0,2},
+     {{0,0,300},0,3}, {{0,0,400},0,4}},
+    [](auto interaction_id, const auto& snapshot, auto epochs) {
+        float total = 0;
+        for (std::size_t i = 0; i < snapshot.size(); ++i)
+            total += snapshot.at(i).value;
+        return total;
+    });
+
+cache.step({}, {}); // three callbacks; results 3, 5, 4
+auto changed = cache.step({{{0,0,100},1,8}}, {});
+// changed.evaluated_ids == {10}; results 10, 5, 4
+
+auto no_events = cache.event_eligibility({});
+cache.step({{{0,0,200},1,7}}, {}, &no_events);
+// 10 and 20 are dirty; prior records are inspectable but invalid.
+auto event = cache.event_eligibility({{0,0,100}});
+cache.step({}, {}, &event); // evaluates 10; 20 remains dirty
+cache.step({}, {});         // evaluates 20 from latest sources
+```
+
+The executable [native test](../tests/framework/native/incremental_test.cc)
+uses an independent full-recompute loop to verify identical outputs after a
+localized update while observing one callback instead of three. It also checks
+repeated incidences, role identity, source snapshots, epoch invalidation,
+eligibility, malformed updates and callback-failure rollback. Callback-count
+reduction is not a measured elapsed-time speedup.
+
+## CUDA changed-source frontier
+
+`DependencyIncidence` prepares a source-key CSR projection through the existing
+native reverse-posting implementation. It exposes stable source keys, CSR
+offsets and dense interaction ordinals. Upload the offsets/ordinals and map
+changed keys with `source_ordinal`; never cast biological entity IDs directly
+to dense slots. The caller retains the associated immutable relation snapshot.
+
+`cuda::build_changed_frontier` visits those changed-source posting rows and
+forms a compact, deduplicated interaction worklist. A warp processes a changed
+source row; device-wide atomic claims handle duplicates across rows. It uses
+no numerical arithmetic, dense all-pairs scan, allocation, device switch,
+implicit synchronization or host status copy. Its output order is unspecified;
+sort separately when a consumer requires stable edge order.
+
+The borrowed device buffers, explicit CUDA stream, scratch capacity and output
+capacity are part of the call. Scratch/status storage cannot be used
+concurrently; sequential reuse on one stream is supported. Each call clears
+one claim per interaction, so its work includes **O(number of interactions)**
+scratch initialization plus changed rows and their postings. It is not a claim
+of total cost proportional only to the active frontier. Host source preparation,
+upload, allocation, output ordering and synchronization also belong in any
+complete-path measurement.
+
+The function returns launch or argument errors immediately. After stream
+completion, `FrontierStatus.flags` reports invalid source indices, malformed
+selected posting ranges/ordinals, or insufficient output capacity. On any flag,
+`written` is zero and output storage must not be consumed. `required` reports
+the exact union size when no input-content error occurred, including an
+overflow-only result. Retry overflow with adequate capacity; do not execute a
+partial frontier. Output storage may have been touched before a flag was set.
+
+This primitive produces **invalidations**. A later eligibility decision must
+preserve dirty interactions it excludes. The host cache and CUDA frontier are
+composable primitives, not an automatically synchronized device cache: the
+caller owns transfers and GPU callback dispatch.
+
+## Validation boundary
+
+The focused native check passed with C++17, `-Wall -Wextra -Werror`:
+
+```sh
+g++ -std=c++17 -Wall -Wextra -Werror -Iinclude \
+  tests/framework/native/incremental_test.cc src/modeling/sparse_relation.cc \
+  src/support/logical_support.cc src/support/adaptive_support.cc \
+  src/indexing/reverse_postings.cc -o /tmp/cellerator-incremental-test
+/tmp/cellerator-incremental-test
+```
+
+The CUDA frontier and its [smoke test](../tests/framework/cuda/frontier_smoke.cu)
+compiled and linked with CUDA 12.9 for `sm_70`. The smoke test contains a host
+set-union oracle, duplicate/empty rows, output capacity boundaries and malformed
+source/posting cases. **It has not been executed on a GPU**, and device
+correctness, Compute Sanitizer checks and performance remain unqualified.
+GPU execution must use the repository's existing admitted execution route.
+
+```sh
+nvcc -std=c++17 -arch=sm_70 -Iinclude \
+  tests/framework/cuda/frontier_smoke.cu src/modeling/cuda/frontier.cu \
+  -o /tmp/cellerator-frontier-smoke
+```
+
+The scoped [implementation draft](incremental_cellular/draft.md) records the
+design alternatives and consumed KDA/KernelWiki guidance. No biological
+validity, generalized adaptive execution, or measured acceleration is implied.

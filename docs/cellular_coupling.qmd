@@ -1,0 +1,96 @@
+---
+title: "Conservative cell and environment coupling"
+---
+
+`cellerator.spatial.coupling` and the C++17 header
+`Cellerator/modeling/coupling.hh` provide a concrete host exchange operator.
+It couples arbitrary cell identities to finite environment compartments through
+sparse weighted incidence. It assumes no tissue, cell-type or species ontology.
+Its numerical state is explicitly **amount**, with concentration calculated
+from caller-supplied positive volumes. This reference mechanism has no CUDA,
+Torch, autograd, or scientific-validation claim.
+
+## Contract
+
+`ExchangePlan` keeps cell, compartment, species and link identities separate
+from mutable amount and volume values. Python identities may be arbitrary
+hashable values; native layouts use the existing `EntityLayout` persistent
+integer IDs. The cell and compartment namespaces are distinct. Species share
+an explicit order across both sides. Reordering the native arrays requires an
+explicit matching layout; an array has no implicit identity lookup.
+
+For link $e=(i,j)$ and species $s$, the requested signed amount is
+
+$$q_{es}=\Delta t\,w_e\,[P_s(a_{is}/V_i-b_{js}/W_j)+r_{es}].$$
+
+Positive transfer moves material from cell to environment; negative transfer
+implements uptake. $P_s$ has volume/time units and $r_{es}$ has amount/time
+units. The dimensionless weights are explicit and **never normalized**. A
+species can have zero permeability and still have active secretion or uptake.
+Distinct links may share endpoints, and their contributions add.
+
+The operator first calculates every request from a single immutable snapshot,
+then aggregates donor demand, then applies equal/opposite transfers to fresh
+output state. Incoming material cannot finance another outgoing transfer in
+the same step. This removes traversal-order dependence from the update law;
+floating-point summation can still vary with order at roundoff scale.
+
+The default `donor_policy="reject"` rejects aggregate demand exceeding any
+donor/species amount. `donor_policy="limit"` proportionally scales **all**
+outgoing requests sharing that donor/species. This changes the requested flux
+law when resources run out; `ExchangeResult.limited` exposes that fact.
+The signed transfer ledger exposes what actually moved. Material is conserved
+per species to floating-point accuracy. No nonnegative clipping, material
+creation, degradation or infinite reservoir is hidden in the operator.
+An explicitly finite reservoir can be modeled as an ordinary compartment.
+
+## Timestep and precision
+
+`passive_dt_limit` returns the sufficient nonnegative explicit-Euler bound
+$\min_{v,s} V_v/\sum_{e\ni v}w_eP_s$, ignoring zero sums. The default step
+checks this bound. Active rates remain subject to the simultaneous donor budget;
+the passive bound alone cannot guarantee them. Setting
+`enforce_stability=False` explicitly permits steps above this bound, and usually
+requires limiting. Such a step is not a claim of temporal accuracy or faithful
+passive relaxation. Reduce the timestep to resolve actual dynamics.
+
+Python is an explicit FP64 reference. Native `ExchangeState<Scalar>` supports
+standard floating-point storage, using long-double multiply and accumulation
+and returning the selected `Scalar` storage type. Transfer diagnostics retain
+long-double precision. This particular host reference does not provide an FP16
+implementation. Both routes reject invalid shapes, volumes, negative amounts,
+nonfinite values and exhausted budgets under rejection mode; unrepresentable
+outputs fail without mutating the input.
+
+## Using the operator
+
+```python
+from cellerator.spatial.coupling import ExchangeLink, ExchangePlan, ExchangeState
+
+plan = ExchangePlan(["cell"], ["bath"], ["signal"],
+                    [ExchangeLink("contact", "cell", "bath")])
+state = ExchangeState({"cell": [4.]}, {"bath": [0.]})
+result = plan.step(state, cell_volumes={"cell": 2.},
+                   compartment_volumes={"bath": 4.},
+                   permeability=[1.], dt=.1)
+# 0.2 amount leaves the cell and enters the bath.
+assert abs(result.state.cells["cell"][0] - 3.8) < 1e-12
+```
+
+The [multicellular example](../examples/framework/extracellular_coupling.py)
+uses `Model` and `StepContext` to coordinate one producer, two receivers and a
+finite bath across two species. Active rates read the old bath concentration,
+so receivers do not observe another cell's newly secreted material until the
+next step. The run checks conserved species totals.
+
+Existing `cellerator.spatial.diffuse` remains the graph diffusion primitive.
+When composing it with exchange, callers must declare the splitting order and
+choose a suitable timestep; sequential diffusion/exchange is a split method,
+not a simultaneous coupled solver. In particular its scalar values are not
+an unequal-volume concentration solver. No duplicate diffusion implementation
+is introduced here.
+
+Host checks live in `tests/framework/test_coupling.py` and
+`tests/framework/native/coupling_test.cc`. They exercise concentration equilibrium,
+unequal volumes, shared-donor capacity, simultaneous snapshots, persistent
+identity reordering, species conservation and rejected invalid inputs.

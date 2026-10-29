@@ -7,14 +7,13 @@ and completion evidence.
 
 ## Product boundary
 
-Cellerator is a high-performance PyTorch extension for cellular model building.
-PyTorch supplies general tensors, ordinary operations, `torch.nn.Module`,
-autograd and optimizers. Cellerator adds operations and execution semantics
-that account for structure shared by the biological dynamical system being
-modeled. That structure may improve interpretability and performance, but each
-performance claim must be measured for the full relevant operation and workload.
-Cellerator enables scientific models; it does not supply their scientific
-assumptions.
+Cellerator is a general computational and machine-learning framework for
+biological modeling, especially cellular dynamics. Its native numerical
+machinery, modeling interfaces, structured layouts, and specialized kernels
+can express and exploit biological identities, relations, state changes, and
+interaction geometry. PyTorch is useful optional integration for learned
+modules, autograd, and tensor operations; it does not define the framework's
+scope. Consumers retain their scientific assumptions and validation.
 
 Keep entity and relation identity, structural order, activity/eligibility,
 values and parameters, logical/physical layout, and runtime bindings distinct.
@@ -27,9 +26,12 @@ facilities with operation-specific maturity. The `nn` surface should grow as
 real `torch.nn.Module` compositions are implemented; this guide does not imply a
 standard biological layer catalogue. Execution fields, compiler/IR integration,
 JIT and live recompilation remain experimental and are not prerequisites for
-ordinary model use. Classical single-cell analysis remains a useful upstream
-interface, consumer and testbed. AnnData is a required Python dependency, but
-a direct AnnData preparation adapter does not currently exist.
+ordinary model use. New backend-neutral modeling interfaces, state/event
+representations, interaction mechanisms, dynamics, and adapters have been
+added in rapid development; their implementation maturity and validated
+backends differ. Classical single-cell analysis remains useful upstream. The
+AnnData adapter performs caller-directed data exchange and does not preprocess
+or select scientific meaning automatically.
 
 ## Source routing
 
@@ -45,6 +47,8 @@ validity, or task completion.
 
 | Change | Current source route | Intended owner | Routing notes |
 |---|---|---|---|
+| Backend-neutral model instances and dynamics | `python/cellerator/modeling`, `state`, `events`, `dynamics`, `interactions`, `execution`, and `inference` | Distinct open Python package boundaries for model rules, opaque state, event histories, numerical updates, sparse relations, population execution, and inference | These are model-facing interfaces and reference mechanisms under rapid development. Preserve arbitrary state representations. Do not place consumer biological semantics in general packages or assume package presence qualifies a native/GPU backend. See the [biological framework](../biological_framework.qmd). |
+| Learned/data adapters | `python/cellerator/adapters` | Optional bridges to general learning libraries and explicit AnnData boundaries | Keep optional dependencies lazy. AnnData identity/layer selection is caller supplied; preserve sparse inputs and exact row/column identities. Do not make Torch the core state contract. |
 | Native mathematical or model operation | `src/ops/{numeric,matrix,process,sparse_support}` and the still-active `src/compute/<family>` operations, with matching public headers | Keep ownership with the concrete operation family (`Cellerator::ops_numeric`, `Cellerator::op_matrix_patch`, `Cellerator::op_process_ports`, or the named `src/compute/operation/<family>` target) | `src/ops/numeric`, `matrix`, `process` have explicit CMake owners and Substrate SDK consumers. `src/compute` still owns Product2, native numeric and differential operations, indexed mechanisms, model ops, candidate portfolios, operators, tokenization and training families. The source map records the actual family and evidence boundary; it does not imply each file is built or qualified. Keep derivatives, precision, build registration, and callers together. |
 | Identity, support, indexing, and gating | `src/structure`, `src/support`, `src/indexing`, `src/gating`; public identity headers under `include/Cellerator/structure` and support/indexing/gating under `include/Cellerator/compute` | Distinct structure identity, logical eligibility, lookup, and conditional-work owners | CMake currently defines `Cellerator::identity_registry`, `::support`, `::indexing`, and `::gating`, with a compatibility `::sparse_support` umbrella. Host checks include `tests/biological_abi/biological_abi_host_test.cc`, `tests/execution_identity/identity_registry_test.cc`, and focused `tests/sparse_support/*`; CUDA workset checks are separately gated. |
 | Prepared model routing | `include/Cellerator/ops/sparse_support/prepared_routing.hh`, `src/ops/sparse_support/prepared_routing.{cc,cu}`, its sparse-support Torch binding and Python adapter | Opt-in prepared entity-to-mechanism route query; current Python query remains the default | Frozen binary passed 16 tests, exact CUDA correctness, and memcheck/racecheck/synccheck. V100 lifecycle timing found a bounded long-reuse win for ranked `[32,8]`, an inconclusive event shape, and dense Torch wins on larger stress shapes. Preserve caller-supplied route and binding generations; see the [qualification report](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/bench/sparse_support/experiments/prepared_routing/REPORT.md). |

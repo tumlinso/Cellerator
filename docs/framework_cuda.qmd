@@ -1,0 +1,285 @@
+---
+title: "Framework CUDA runtime"
+---
+
+The optional `Cellerator::framework_cuda` library supplies resource ownership,
+sparse dispatch and compact numerical state for the biological modeling
+framework. It is independent of Torch and the compiler's experimental runtime.
+It does not choose models, experts, scientific state semantics or GPU placement.
+
+## Build and evidence boundary
+
+Enable `CELLERATOR_ENABLE_FRAMEWORK_CUDA=ON`. Add
+`CELLERATOR_ENABLE_FRAMEWORK_CUDA_PYTHON=ON` for the optional
+`cellerator._modeling_cuda` extension and
+`CELLERATOR_BUILD_FRAMEWORK_CUDA_SMOKE=ON` to compile the smoke executables.
+The native target links CUDA Runtime and cuBLAS. The Python option requires
+Python development headers and pybind11.
+
+The 2026-10-29 implementation was compiled with CUDA 12.9, GCC 12 and SM70 in
+a focused CMake harness, including the C++ library, Python module and CUDA smoke
+executables. Host-only resource-contract and binding checks ran, along with
+attention and grouped-linear host references. **No device test body was
+executed.** Numerical CUDA correctness, sanitizers and
+performance remain unqualified. No tests are automatically registered that
+would launch GPU work; execution requires the host scheduler's admission.
+
+```sh
+cmake -S /tmp/cellerator-framework-cuda-harness \
+  -B /tmp/cellerator-framework-cuda-build \
+  -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
+  -DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc \
+  -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-12 \
+  -DCMAKE_CUDA_ARCHITECTURES=70 \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -Dpybind11_DIR="$(python -m pybind11 --cmakedir)" \
+  -DCELLERATOR_ENABLE_FRAMEWORK_CUDA=ON \
+  -DCELLERATOR_ENABLE_FRAMEWORK_CUDA_PYTHON=ON \
+  -DCELLERATOR_BUILD_FRAMEWORK_CUDA_SMOKE=ON
+cmake --build /tmp/cellerator-framework-cuda-build -j4
+```
+
+The focused harness is a CMake project containing
+`include(/path/to/Cellerator/cmake/CelleratorFrameworkCUDA.cmake)`. The normal
+repository includes the same target definition. A CUDA toolkit is sufficient
+for compilation; these configuration flags do not grant execution authority.
+
+## Resources, ownership and ordering
+
+`Cellerator/modeling/cuda/runtime.hh` defines:
+
+- `Stream`: move-only owned or explicitly borrowed stream; owned destruction
+  synchronizes pending stream work before destruction. Borrowed destruction
+  leaves the external stream untouched. `synchronize()` reports asynchronous
+  errors; destructors cannot report them.
+- `Event`: move-only dependency or timing event, with record, readiness,
+  synchronization and elapsed-time operations. Unrecorded events cannot be
+  waited on through this interface.
+- `DeviceBuffer`: move-only allocation with byte extent and device ordinal,
+  checked subviews, device copies, zeroing and explicit host transfers.
+- `PinnedBuffer`: move-only portable pinned host storage. Retain it until all
+  asynchronous transfers complete; freeing a host owner early is invalid.
+- `DeviceView` and `ConstDeviceView`: borrowed pointers with extent and declared
+  device, without hidden ownership or device migration.
+
+Resource operations restore the calling thread's previous CUDA device. Device
+ordinals and raw pointers supplied for borrowed resources are caller assertions;
+the runtime does not infer placement or authorize hardware use. Buffer and plan
+launches require a matching stream device. Async inputs, outputs and plans must
+remain valid until their last use completes. Use events for dependencies between
+streams; a pointer's presence does not establish readiness. Native destruction
+can block while freeing allocations with outstanding work.
+
+## Immutable dispatch plans
+
+`Cellerator/modeling/cuda/plans.hh` provides `DispatchPlan`, an immutable owning
+device projection of `cellerator::execution::conditional::DispatchPlan`. The
+constructor uploads and validates expert-major origin slots, FP32 occurrence
+weights and the reverse occurrence lists. Host double weights are explicitly
+converted to FP32: finite rounding and underflow to zero are accepted, while
+overflow and nonfinite results are rejected. This is a chosen precision
+contract, not equivalence to float64 host reductions. The reverse lists retain the host
+plan's logical selection order. Features are invocation parameters, so one
+structure serves multiple compatible value widths.
+
+Native callers may construct directly from a host plan:
+
+```cpp
+namespace gpu = cellerator::modeling::cuda;
+gpu::Stream stream(device);
+gpu::DispatchPlan device_plan(host_dispatch_plan, stream);
+gpu::DeviceBuffer gathered(
+    gpu::checked_bytes(gpu::checked_bytes(device_plan.selection_count(), features), 2), device);
+device_plan.gather(input.view(), gathered.view(), features,
+                   gpu::DType::float16, stream);
+// Apply each chosen expert to its contiguous expert_offsets() range.
+// The caller retains exact module identity and revision from the host plan.
+device_plan.combine(expert_output.view(), output.view(), features,
+                    gpu::DType::float16, stream);
+```
+
+Inputs are `[origin, feature]`; gathered/expert values are
+`[dispatch_occurrence, feature]`; combined outputs are `[origin, feature]`.
+Repeated selections remain repeated. Signed and zero weights remain explicit;
+there is no implicit normalization. Each origin-feature reduction has one
+writer and accumulates in logical order with FP32 arithmetic. Empty selections
+produce zero combined rows. FP16 and FP32 storage are explicit alternatives.
+
+`gather_backward` accumulates repeated selections without floating-point
+atomics. `combine_backward` returns gradients of expert outputs and occurrence
+weights; its weight gradients use FP32 feature dot products. Discrete routing
+indexes do not have gradients. These are explicit derivative primitives, not
+a registered Torch autograd operation. Native launches reject overlapping
+input and output storage and undersized buffers.
+
+## Reusable quantization profiles
+
+`QuantizationProfile` owns finite, strictly increasing FP32 per-feature
+codebooks with 1, 2, 4 or 8 code bits. A separate feature map connects physical
+columns to profile columns. Profile construction checks host arrays before
+upload. Converting a higher-precision codebook to FP32 can merge levels; such
+profiles are rejected rather than silently changing their interpretation.
+
+`QuantizedState` retains its profile and owns packed words, validation status
+and optional exact overrides. Encoding chooses the nearest codebook level;
+ties choose the lower level. Exact masks store selected values in an FP32
+sidecar indexed by logical position. A mask currently requires capacity for
+every state value even when few are selected. This is an allocation limit,
+not a claim of efficient sparse-sidecar packing. Decoding to FP16 rounds the
+FP32 sidecar; choose FP32 output when that conversion is unwanted.
+
+Status bit 0 reports malformed profile/data indexing, bit 1 sidecar overflow,
+and bit 2 nonfinite state values. `status(stream)` synchronizes to retrieve the
+bits. The Python wrapper checks by default; `check=False` permits deferred
+validation, which the caller must perform before trusting numerical results.
+
+The lower-level `quantization.hh` API additionally supports sparse code edits
+with compare/exchange on packed words. Distinct edited indexes may share a
+word safely; duplicate edited indexes in one launch are forbidden. Edits do
+not update exact sidecars. These routines borrow all storage and require
+caller validation and explicit status management.
+
+## Python interoperability
+
+`cellerator.adapters.cuda` imports without loading a GPU or requiring Torch.
+`available()` tests extension importability only, not device accessibility.
+Creating a stream or allocating memory initializes CUDA as needed.
+
+```python
+import numpy as np
+from cellerator.adapters.cuda import (
+    Stream, DeviceArray, CudaDispatchPlan, CudaGroupedLinear,
+)
+
+stream = Stream(device=0)
+x = DeviceArray.from_numpy(host_values, stream=stream, dtype=np.float16)
+plan = CudaDispatchPlan(native_host_plan, stream=stream)
+gathered = plan.gather(x)
+# Each caller-supplied weight array is [output_features, input_features].
+linear = CudaGroupedLinear(expert_weights, plan.expert_offsets, stream=stream)
+expert_outputs = linear(gathered)
+combined = plan.combine(expert_outputs)
+result = combined.to_numpy()
+```
+
+`DeviceArray.borrow(pointer, shape, dtype=..., device=..., stream=..., owner=...)`
+retains an explicit external owner. The caller asserts contiguous extent,
+correct device and readiness on that stream. This can connect CUDA arrays
+from another provider without requiring Torch or copying through NumPy.
+`on_stream(other)` inserts an event dependency. NumPy uploads/downloads are
+explicit synchronizing transfers; asynchronous pinned transfers are available
+through the low-level native resource classes. They return a transfer ticket
+that retains the pinned allocation, device allocation and stream. `wait()`
+reports completion errors; destroying the ticket waits before releasing its
+owners. Retain the ticket to overlap other work; discarding it makes that call
+synchronous. Never modify a pinned input or read a pinned output before its
+transfer completes.
+
+`CudaQuantizationProfile` accepts a Python state `QuantizationProfile`, preserving
+its feature identities and explicit physical order. Its `encode` consumes a
+`DeviceArray` and optional same-shaped uint8 mask; `decode(dtype=...)` returns
+a device array. The CUDA packed representation uses uint32 words and is not a
+serialized replacement for the NumPy profile/state persistence format.
+
+The sibling `memory.hh` kernels apply sparse impulses to lazy decaying event
+traces and read selected traces without changing anchors. They expose borrowed
+native views and explicit timing/index preconditions. Their scientific meaning
+comes from the caller; they are separate from dispatch and quantization.
+
+`frontier.hh` builds deduplicated interaction worklists from changed-source CSR
+postings with explicit workspace and overflow status. Its device output order
+is unspecified; consumers that require canonical order must sort explicitly.
+A flagged result reports zero written entries and must not be consumed.
+Eligibility filtering remains separate from dependency invalidation.
+
+## Native ML operations
+
+[Grouped expert linear maps](framework_grouped_linear.qmd) provide cuBLAS
+forward and backward matrix operations over the dispatch plan's ragged
+expert-major row ranges. Empty expert segments produce zero weight gradients
+in overwrite mode. Input and weight gradients retain the chosen FP16 or FP32
+storage dtype, with FP32 GEMM accumulation. `CudaGroupedLinear` exposes these
+operations over `DeviceArray`, retaining parameter owners and ordering all
+operations on its constructor stream.
+
+The primitives can form an explicit derivative chain without requiring Torch:
+
+```python
+grad_expert, grad_gate = plan.combine_backward(grad_output, expert_outputs)
+grad_gathered, grad_weights = linear.backward(gathered, grad_expert)
+grad_input = plan.gather_backward(grad_gathered)
+```
+
+This computes derivatives for fixed routing, with separate gate-weight
+gradients. It does not update parameters or register an automatic autograd
+graph. Accumulation mode requires initialized caller-supplied gradient arrays.
+
+[Sparse relation attention](framework_sparse_attention.qmd) supplies native
+forward and first-order backward over caller-defined CSR neighborhoods, with
+FP32 accumulation and FP32 gradients. Backward consumes the matching forward
+probabilities; callers retain them and establish stream ordering. Shared-key
+gradients use floating-point atomics and are not bitwise deterministic. The
+native attention API is included in the compiled target; this pass does not
+add a Python attention wrapper.
+
+## Sparse cellular state kernels
+
+[Packed embedding bags](framework_packed_embedding.qmd) read selected logical
+state positions directly from 1/2/4/8-bit codes, consult the shared feature map,
+and reduce learned embedding rows into caller-defined bags. Backward accumulates
+FP32 embedding-table gradients and can return occurrence-weight gradients.
+Exact overrides interpolate between adjacent codebook embeddings. The low-level
+encoder's override append order is unspecified, so callers must sort paired
+logical indexes and values before supplying exact sidecars to this kernel.
+Passing an empty sidecar deliberately selects bits-only semantics.
+
+[Reaction-event application](reaction_networks.qmd#native-cuda-application-of-supplied-events)
+applies supplied, ordered sparse stoichiometric changes to independent int64
+cell-count rows. It checks each event before committing that event, reports a
+per-cell committed prefix on failure, and can emit changed-source logs for the
+frontier builder. It does not select reaction channels or sample event times.
+
+`regulatory_gates.hh` supplies a shared sparse word-mask rule bank and private
+per-instance input/accessibility bits. The kernel evaluates only explicitly
+supplied `(instance, rule)` occurrences, returning eligibility bits and optional
+compact occurrence indexes. Repeated occurrences remain distinct; compact order
+is unspecified. A status flag invalidates both outputs, including partially
+written storage. Rule identities and structure epochs stay with the immutable
+host bank rather than being inferred from physical bit positions.
+
+These operations expose native borrowed-buffer APIs. No Python wrappers or
+GPU correctness/performance qualification are added for them in this pass.
+
+## Revision-pinned parameter transfers
+
+[Parameter transfer](framework_parameter_transfer.qmd) is a separate
+`Cellerator::framework_parameter_transfer` target linked to
+`Cellerator::framework_cuda` and `Cellerator::conditional`. Enable
+`CELLERATOR_ENABLE_FRAMEWORK_PARAMETER_TRANSFER=ON` after enabling the host
+conditional target; the option defaults on when that target already exists.
+The base CUDA numerical library remains independently usable.
+
+The bridge stages the exact selected immutable parameter revision in pinned
+host memory, enqueues a byte-exact H2D transfer and retains its source lease.
+A separate execution lease waits on upload, retains device storage through
+consumers and records their completion. Upload readiness and downstream-use
+completion are distinct. Memory accounting is explicit; the bridge neither
+selects a revision nor owns placement/admission decisions. Its export file is
+`CelleratorFrameworkParameterTransferTargets.cmake`; standalone installed
+consumers load the conditional and framework CUDA exports before that file.
+
+## Opt-in experimental alternatives
+
+Sparse attention also exposes `sparse_attention_fused_small_fp16` and `_fp32`:
+neighborhoods of at most 32 edges use a fused score/softmax/aggregation path;
+larger neighborhoods use the staged path. Forward probabilities remain
+available for backward. The original staged entrypoints remain the default.
+
+`evaluate_regulatory_bitplanes` uses a separate feature-major layout with
+32 cells per uint32 word, explicit tail-validity masks and packed output. It
+requires explicit preparation; it does not automatically replace or convert
+the occurrence-based rule evaluation API.
+
+Both alternatives have compile and host-oracle evidence only. No GPU numerical
+validation, speedup, conversion-cost advantage or automatic selection policy
+has been established for either candidate.

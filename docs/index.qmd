@@ -2,17 +2,16 @@
 title: "Cellerator"
 ---
 
-Cellerator is an early high-performance PyTorch extension for building
-cellular dynamical models. Biology can guide both the operations a model uses
-and the way those operations are organized for hardware. PyTorch remains the
-foundation for ordinary tensors, standard neural layers, autograd, optimizers,
-and composition.
+Cellerator is a general computational framework for biological modeling,
+especially cellular dynamics. It provides its own modeling interfaces,
+structured state and interaction machinery, numerical operations, and
+specialized native computation. Biology can guide the algorithms, layouts, and
+kernels. PyTorch is optional for neural modules, autograd, and ecosystem
+composition; the framework is not limited to Torch or dense tensors.
 
-Cellerator is designed to extend Torch where modeled structure changes the
-mathematical or execution contract. It enables scientific work without
-choosing the consumer's scientific assumptions. It is not a replacement for
-PyTorch, Scanpy, or RAPIDS-singlecell. AnnData is required by the Python
-package, but a direct AnnData preparation adapter is not yet implemented.
+Cellerator enables scientific models without choosing each consumer's
+biological assumptions. AnnData, Scanpy, and RAPIDS-singlecell remain valuable
+upstream tools for established data preparation and analysis.
 
 The library is early and not near complete. The dated
 [implementation record](current_implementation.qmd) explains current
@@ -21,14 +20,16 @@ ownership boundaries and target organization.
 
 ## Begin here
 
-1. [Getting started](getting_started.qmd) installs and exercises the current
-   host Product2 path.
-2. [Model building](model_building.qmd) describes Torch composition and
-   scientific ownership.
-3. [Operations](operations.qmd) describes current operation families.
-4. [Layout and execution](layout_execution.qmd) explains identity, support,
+1. [Biological framework](biological_framework.qmd) introduces state,
+   dynamics, context, observations, events, and interactions.
+2. [Getting started](getting_started.qmd) installs and exercises a current
+   host operation.
+3. [Model building](model_building.qmd) describes composition and scientific
+   ownership.
+4. [Operations](operations.qmd) describes current operation families.
+5. [Layout and execution](layout_execution.qmd) explains identity, support,
    routing, gates, preparation, and runtime boundaries.
-5. [Developer reference](developer_reference.qmd) and [source routing](development/routing.md)
+6. [Developer reference](developer_reference.qmd) and [source routing](development/routing.md)
    direct contributors to current source owners.
 
 Subsystem contracts, experimental research, and historical source-bound

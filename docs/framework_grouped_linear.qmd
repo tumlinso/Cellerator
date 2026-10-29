@@ -1,0 +1,56 @@
+---
+title: "Grouped Linear CUDA Executor"
+format: html
+---
+
+`cellerator::modeling::cuda::GroupedLinear` applies one linear transform per
+expert to an expert-major ragged batch. Each expert owns a row-major weight
+matrix `W[e]` with shape `[output_features, input_features]`. A monotonic host
+offset array assigns rows to experts; repeated offsets represent empty experts.
+The activation and result buffers are contiguous row-major arrays whose first
+dimension is the total number of routed rows.
+
+The executor calls cuBLAS once for each nonempty segment. It does not evaluate
+inactive experts, gather rows, allocate scratch storage, or synchronize. This
+simple implementation establishes the mathematical and buffer contract; it
+does not claim the launch efficiency of a fused grouped-GEMM implementation.
+
+## Forward and reverse mode
+
+For each expert segment, forward computes
+
+```text
+Y[e] = X[e] W[e]^T
+```
+
+Reverse mode computes `dX[e] = dY[e] W[e]` and `dW[e] = dY[e]^T X[e]`.
+Each output gradient has an explicit `GradientMode`: overwrite uses beta zero,
+and accumulate uses beta one. Empty activation segments need no forward or
+input-gradient work. An empty expert's weight gradient is zeroed in overwrite
+mode and left unchanged in accumulate mode.
+
+FP16 input, weights, output, and gradient buffers use FP32 accumulation through
+cuBLAS. Tensor Op math is enabled for the executor's owned handle, while cuBLAS
+selects whether a given shape uses Tensor Cores. FP32 buffers use FP32 math.
+
+## Ownership and execution
+
+The executor borrows its expert weight views and retains their addresses and
+extents; the caller must keep the underlying parameter allocations alive and
+unchanged while operations use them. Activations and result buffers are also
+borrowed. Operations accept an explicit `Stream` and return after enqueueing
+work. Separate executors can submit concurrently to independent streams. A
+single executor is not safe for simultaneous host-thread calls because its
+cuBLAS handle is rebound to each supplied stream.
+
+The host row offsets and per-expert weight views are validated when the
+executor is constructed. Feature dimensions and expert segment lengths must fit
+cuBLAS's integer dimensions. No model lifecycle, expert identity, routing
+policy, placement, or parameter ownership is prescribed here.
+
+## Validation boundary
+
+The compile/link smoke fixture includes a small host reference for a ragged
+three-expert layout (including an empty expert), forward products, and gradient
+products. It does not launch a GPU kernel. Runtime GPU validation and numerical
+comparison against cuBLAS execution require the repository's device scheduler.

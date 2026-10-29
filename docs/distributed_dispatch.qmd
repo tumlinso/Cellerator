@@ -1,0 +1,145 @@
+---
+title: "Distributed sparse experts"
+---
+
+`cellerator.adapters.distributed.DistributedSparseExpertBank` executes one
+logical bank of Torch modules whose parameters are sharded across process
+ranks. It is an optional Torch adapter for explicit sparse work, independent
+of any transformer or biological ontology. It transports assigned activations
+to parameter owners and returns contributions to the origin; individual cell
+state and the model's routing decisions remain at the origin.
+
+## Define logical routing and physical ownership separately
+
+```python
+import torch
+from torch import nn
+from cellerator.adapters.torch import SparseRouting
+from cellerator.adapters.distributed import DistributedSparseExpertBank
+
+# Single-rank example; every logical expert is owned by group rank zero.
+bank = DistributedSparseExpertBank(
+    {0: nn.Linear(4, 3), 1: nn.Linear(4, 3)},
+    expert_owners=[0, 0], output_size=3,
+)
+x = torch.randn(2, 4, requires_grad=True)
+gates = torch.tensor([[0.8, 0.2], [0.4, 0.6]], requires_grad=True)
+route = SparseRouting.from_dense(torch.tensor([[0, 1], [1, 1]]), gates)
+y, plan = bank(x, route, return_plan=True)
+y.square().sum().backward()
+```
+
+Expert IDs are contiguous logical integers indexing `expert_owners`. A rank
+registers **exactly** its owned experts through `local_experts`; modules remain
+ordinary registered Torch modules with local `parameters()` and `state_dict()`.
+The optimizer for that rank updates those parameters. Ownership values are
+**process-group ranks**; they are neither global device IDs nor implicit CUDA
+ordinals. Pass a caller-created `group` for subgroup operation. Without
+distributed initialization the adapter uses a single local rank.
+
+The source routing object contains expert IDs and ragged row offsets, with
+optional differentiable gates. A row can visit zero, one, several, or repeated
+experts. Every assignment survives transport. Placement never replaces a model
+selection, drops assignments, or normalizes gates implicitly. A learnable
+`SparseExpertBank` router can produce a `SparseRouting` object, but its
+parameters and any synchronization policy remain caller-owned.
+
+The execution planner can supply placement independently: translate each
+chosen execution device into a group rank using an explicit mapping, then
+construct the corresponding owner vector and rank-local modules. This adapter
+executes the supplied map; it does not perform weight transfers, asynchronous
+residency changes, replicas, topology discovery, or capacity planning.
+
+## Execute, restore order, and differentiate
+
+Each call performs these steps:
+
+1. Validate local routes and pack assignments by owner, then expert identity.
+2. Exchange assignment counts, then variable-size activation batches and
+   expert IDs with `torch.distributed.all_to_all_single`.
+3. Run each active registered local expert on its received assignments.
+4. Exchange results back with reversed split counts and restore logical
+   assignment order through an inverse permutation.
+5. Multiply by origin-local gates and scatter contributions to origin rows.
+
+`combine="sum"` adds gated contributions. `combine="mean"` divides by the
+sum of nonnegative gates per row; zero total gate returns zero. A positive
+denominator is used directly, including very small gates. Missing gates mean
+unit weight. Both selected gate values and floating activations retain
+first-order gradients. The collective VJP reverses its split counts, so local
+expert parameters accumulate contributions from losses on all origin ranks.
+There is no DDP averaging or automatic synchronization of replicated model
+parameters. Higher-order autograd is explicitly unsupported.
+
+Inputs have shape `[rows, *input_shape]`; arbitrary common trailing feature
+shapes are supported. Each expert returns `[assignments, *output_shape]`.
+`output_shape` declares that trailing shape, including scalar `()` if desired.
+Alternatively, `output_size` preserves input intermediate dimensions and
+replaces the final feature width. The declaration also defines outputs for
+empty routing. Expert outputs must use the input dtype and device. Activations
+and expert outputs preserve that caller dtype; gates are converted to it for
+multiplication and the weighted-mean denominator, with autograd returning
+gradients to the original gates. No automatic mixed-precision policy is
+imposed. Ordinary Torch module/autocast policy must satisfy that output contract.
+
+`bank.plan(x, routing)` validates and returns a local `ExpertDispatchPlan`
+without collectives or expert computation. `return_plan=True` additionally
+reports receive counts from the executed call. The plan records packed expert
+IDs, origin rows, assignment permutation and its inverse, and split counts.
+Its tensors are inspection records and must not be mutated.
+
+## Collective participation and supported boundary
+
+All ranks must agree on ownership, output trailing shape, input trailing shape,
+input dtype, and collective call order. Local row and assignment counts may
+differ, including zero. Every rank must enter backward through its returned
+output in the same sequence, even when that rank has no local observations,
+originating assignments, trainable inputs, or active experts. For an otherwise
+unused result, include `output.sum() * 0` in the local objective. Empty ranks
+retain autograd dependencies so both reverse collectives are entered. Skipping
+a rank's backward can hang peers, as can mismatched process-group contracts.
+Local validation does not coordinate exceptions across ranks; production job
+supervision should terminate all peers on an error.
+
+Gloo operates on CPU tensors; NCCL requires caller-initialized GPU processes
+and correctly placed modules/activations. Use one process per allocated GPU
+and the host's execution admission controls. The adapter does not initialize
+process groups, select devices, or grant GPU execution permission. It uses
+Torch's synchronous API boundary and current stream semantics; it does not
+claim overlap, complete-cost speedups, fault recovery, `torch.compile`
+compatibility, or weight/state checkpoint redistribution.
+
+See the [PyTorch collective reference](https://docs.pytorch.org/docs/2.7/distributed.html#torch.distributed.all_to_all_single)
+for split semantics, and the runnable
+[example](https://github.com/tumlinso/Cellerator/blob/main/examples/framework/distributed_experts.py).
+
+## Focused validation
+
+The independent CPU oracle uses direct assignment loops, separate modules,
+and nonuniform cotangents. Tests compare outputs, source input gradients,
+gate gradients, and owner-local parameter gradients. The optional two-process
+test covers uneven traffic, repeated experts, a rank with no origin rows,
+an inactive parameter owner, a rank owning no experts, fully empty routing,
+and sum/weighted mean.
+
+```sh
+PYTHONPATH=python python -m unittest discover \
+  -s tests/framework -p test_distributed_dispatch.py -v
+
+CELLERATOR_TEST_DISTRIBUTED=1 PYTHONPATH=python python -m unittest discover \
+  -s tests/framework -p test_distributed_dispatch.py -v
+
+PYTHONPATH=python torchrun --standalone --nproc-per-node=2 \
+  examples/framework/distributed_experts.py
+```
+
+On 2026-10-29 the six focused checks passed, including the actual two-process
+Gloo oracle (five traffic cases with both combination rules). The standalone
+single-process example also executed successfully. Restricted-sandbox socket
+creation required the CPU loopback test to use the permitted host execution
+route with `GLOO_SOCKET_IFNAME=lo`.
+
+The distributed checks use CPU Gloo with FP64 reference arithmetic. GPU/NCCL,
+multi-host execution, FP16 numerical behavior, performance, and biological
+validity require separate validation; no such claim follows from the CPU
+oracle.

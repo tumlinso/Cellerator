@@ -114,6 +114,10 @@ endif()
 # dependency boundary from the CUDA mechanism Torch adapters below.
 include(cmake/CelleratorTokenization.cmake)
 include(cmake/CelleratorSparseSupport.cmake)
+include(cmake/CelleratorModeling.cmake)
+include(cmake/CelleratorConditional.cmake)
+include(cmake/CelleratorGGML.cmake)
+include(cmake/CelleratorFrameworkCUDA.cmake)
 # Native arithmetic families are host-capable and independent of adapters.
 add_subdirectory(src/ops/numeric)
 add_subdirectory(src/ops/matrix)

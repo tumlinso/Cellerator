@@ -1,17 +1,49 @@
-"""Python interface to Cellerator's native numerical capabilities."""
+"""Structured biological modeling and optional native numerical capabilities."""
 from __future__ import annotations
 
 import weakref
 import operator
+import importlib
 from typing import Any
 
 import numpy as np
 
-from . import _native
 from ._declarations import (
     Axis, Identity, Incidence, Mechanism, MechanismSpec, OutputContribution,
     SharedSupportSpec, constructor_data,
 )
+from .modeling import Cell, Experiment, ExperimentResult, Model, StepContext, StepResult, simulate
+
+_FRAMEWORK_PACKAGES = frozenset({
+    "modeling", "state", "events", "interactions", "dynamics", "execution",
+    "inference", "adapters", "spatial", "experimental",
+})
+
+
+def __getattr__(name: str):
+    if name in _FRAMEWORK_PACKAGES:
+        module = importlib.import_module(f".{name}", __name__)
+        globals()[name] = module
+        return module
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__():
+    return sorted(set(globals()) | _FRAMEWORK_PACKAGES)
+
+
+def _require_native():
+    """Load native operations on demand, leaving model-only imports usable."""
+    try:
+        return importlib.import_module("._native", __name__)
+    except ModuleNotFoundError as exc:
+        if exc.name != f"{__name__}._native":
+            raise
+        raise ImportError(
+            "This operation requires Cellerator's optional native extension. "
+            "Build the Python native component to use it; modeling, state, "
+            "events and reference dynamics work without that component."
+        ) from exc
 
 _handles: weakref.WeakSet[Any] = weakref.WeakSet()
 
@@ -31,29 +63,35 @@ def _index(value: object, name: str, maximum: int) -> int:
 def prepare_product2(a: np.ndarray, b: np.ndarray, input_count: int, *,
                      structure_generation: int = 0):
     """Prepare a reusable native CPU FP32 product packet topology."""
-    return _native.prepare_product2(
+    return _require_native().prepare_product2(
         a, b, _index(input_count, "input_count", (1 << 64) - 1),
         _index(structure_generation, "structure_generation", (1 << 64) - 1),
     )
 
 
 def product2_forward(x: np.ndarray, k: np.ndarray, a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    return _native.product2_forward(x, k, a, b)
+    return _require_native().product2_forward(x, k, a, b)
 
 
 def product2_vjp(x: np.ndarray, k: np.ndarray, a: np.ndarray, b: np.ndarray,
                  cotangent: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    return _native.product2_vjp(x, k, a, b, cotangent)
+    return _require_native().product2_vjp(x, k, a, b, cotangent)
 
 
 def product2_jvp(x: np.ndarray, k: np.ndarray, a: np.ndarray, b: np.ndarray,
                  dx: np.ndarray, dk: np.ndarray) -> np.ndarray:
-    return _native.product2_jvp(x, k, a, b, dx, dk)
+    return _require_native().product2_jvp(x, k, a, b, dx, dk)
 
 
 def mechanisms_available() -> bool:
     """Return whether this installation contains CUDA indexed mechanisms."""
-    return _native.mechanisms_available()
+    try:
+        native = importlib.import_module("._native", __name__)
+    except ModuleNotFoundError as exc:
+        if exc.name != f"{__name__}._native":
+            raise
+        return False
+    return native.mechanisms_available()
 
 
 def prepare_mechanism(spec: MechanismSpec, initial_coefficients: np.ndarray, *,
@@ -89,7 +127,7 @@ def prepare_mechanism(spec: MechanismSpec, initial_coefficients: np.ndarray, *,
         raise ValueError("mixed coefficients must remain finite after FP16 conversion")
     if not mechanisms_available():
         raise RuntimeError("CUDA indexed mechanisms are unavailable in this Cellerator build")
-    handle = _native.MechanismHandle(
+    handle = _require_native().MechanismHandle(
         values, *constructor_data(spec), max_batch, max_live_forwards,
         0 if precision == "f32" else 1, device,
     )
@@ -103,6 +141,7 @@ def _known_mechanism_handles():
 
 
 __all__ = [
+    "Cell", "Experiment", "ExperimentResult", "Model", "StepContext", "StepResult", "simulate",
     "Axis", "Identity", "Incidence", "Mechanism", "MechanismSpec",
     "OutputContribution", "SharedSupportSpec", "prepare_mechanism",
     "prepare_product2", "product2_forward", "product2_vjp", "product2_jvp",

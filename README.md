@@ -1,20 +1,30 @@
 # Cellerator
 
-**A high-performance PyTorch extension for building cellular models.**
+**A computational framework for biological machine learning and cellular dynamics.**
 
-Cellerator adds model operations and execution tools shaped around biological
-structure. Repeated relationships, stable identities, sparse support and
-conditional activity can guide both the mathematics and the way work is
-organized for CPU and GPU hardware. The goal is to make cellular dynamical
-models easier to inspect and more efficient by representing them closer to the
-systems they describe.
+Cellerator makes biological state, dynamics, observations, events, and
+interactions computationally expressible. It aims to represent biological
+structure directly and organize computations around a system's identities,
+relationships, conditional activity, and geometry. The framework includes its
+own native numerical machinery, specialized operations, and layouts; dense
+tensor APIs are one option among several.
 
-Cellerator builds on PyTorch. PyTorch supplies tensors, ordinary numerical
-operations, `torch.nn.Module`, autograd, optimizers and model composition.
-Cellerator supplies specialized operations and execution semantics where the
-structure of a cellular model changes the useful computation. It is an
-extension to Torch, not a replacement for it, and it enables scientific work
-without choosing a consumer's scientific assumptions.
+Cellerator can compose with PyTorch for learned modules, autograd, and familiar
+training workflows. Torch is optional integration infrastructure, not the
+definition or limit of the framework. Cellerator supports model-native dense,
+sparse, ragged, relational, event-based, and hybrid state, including specialized
+native execution. Consumer projects own their scientific hypotheses and
+application-specific biological interpretation.
+
+The new [biological modeling framework](docs/biological_framework.qmd)
+describes the shared state/dynamics/context vocabulary and current package
+entry points.
+
+For an executable example of a persistent cell, changing inputs, observations,
+and an emitted event stream, see
+[`trajectory_experiment.py`](examples/framework/trajectory_experiment.py).
+The [framework examples index](examples/framework/README.md) links additional
+state, interaction, stochastic, Torch, population, and inference examples.
 
 The library is early and not near complete. Native operations, Python/Torch
 adapters, sparse indexing and support, tokenization, layout work, and execution
@@ -25,14 +35,18 @@ boundaries and evidence.
 
 ## Start here
 
-- [Getting started](docs/getting_started.qmd): install and exercise the current
-  CPU Python/Torch operation.
+- [Getting started](docs/getting_started.qmd): install and exercise a current
+  CPU operation.
+- [Biological framework](docs/biological_framework.qmd): state, dynamics,
+  observations, events, interactions, and composition.
 - [Architecture](docs/architecture.qmd): product boundaries, core concepts,
   and current versus proposed source organization.
 - [Scope](scope.md): what belongs in Cellerator and what remains with Torch,
   scientific consumers, or adjacent libraries.
 - [Model building](docs/model_building.qmd): composing real operations and
   modules.
+- [Optional ggml quantization](docs/ggml.qmd): the separately enabled CPU
+  block-quantization bridge.
 - [Operations](docs/operations.qmd): current operation families and their
   maturity.
 - [Layout and execution](docs/layout_execution.qmd): identity, support,
@@ -46,12 +60,10 @@ boundaries and evidence.
 - [Implementation style](docs/development/implementation_style.md): maintained
   contributor conventions.
 
-Projects such as Karyoplast, Cytoplast, and Blastback own their models and
-scientific interpretation. AnnData remains a required Python dependency and a
-standard scientific data interface, but Cellerator does not yet provide a
-direct AnnData preparation adapter. Scanpy and RAPIDS-singlecell remain the
-upstream home for established single-cell analysis workflows; their routines
-in this repository have served as testbeds and consumers.
+Karyoplast, Cytoplast, and Blastback motivate demanding reusable capabilities
+for learned cellular dynamics, interacting populations, and reconstruction
+from incomplete observations. They remain independent scientific consumers.
+AnnData, Scanpy, and RAPIDS-singlecell remain important upstream tools for
+established single-cell analysis.
 
-The name joins “cell” and “accelerator,” with a “cell-torch” pun:
-cell-(ara)-tor(ch).
+The name joins “cell” and “accelerator.”

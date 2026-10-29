@@ -2,15 +2,24 @@
 title: "Model building"
 ---
 
-## Compose a model from Torch and Cellerator
+## Define a biological model
 
-Use PyTorch for ordinary tensors, standard layers, autograd, optimizers, and
-training control. Add a Cellerator operation where the cellular model's
-identity, relations, support, or repeated work changes the operation's
-contract or execution. The intended model is a composition of these pieces;
-Cellerator is not a second general-purpose deep-learning framework.
+Start from the system of interest: what state the model carries, how it changes,
+which context influences an update, and what observations it produces.
+`cellerator.modeling.Model` accepts caller-defined dynamics and observation
+functions; `Cell` associates a persistent identity with model-native state and
+an independent time. `StepContext` carries time, step size, inputs, parameters,
+random source, and metadata. `StepResult` carries updated state and optional
+events/effects. State is opaque to this interface.
 
-The current module surface is intentionally small. `Product2Module` is a real
+Then add the representation and computational mechanisms appropriate to the
+model. Cellerator supports model-native structures, sparse relations, events,
+continuous numerical changes, stochastic updates, learned components, and
+compositions. Choose Torch modules where their parameter ownership and
+autograd help. Use Cellerator native operations and layouts where modeled
+identity, geometry, or dependency structure changes useful computation.
+
+The existing Torch module surface is intentionally small. `Product2Module` is a real
 `torch.nn.Module` with trainable coefficients, persistent indices, native
 preparation, and first-order gradients. The optional CUDA `MechanismModule`
 owns a specific native indexed-mechanism handle and lifecycle. Sparse support
@@ -26,13 +35,15 @@ meaning to an input by convention. A scientific consumer defines how an entity,
 relation, feature, event, or state is interpreted and validates that
 interpretation. A numerical API should state the accepted identities, ordering,
 value types, update behavior, and derivative contract without silently
-inventing a domain ontology.
+inventing a domain ontology. The broader Cellerator framework can still provide
+natural modeling objects: `Cell` denotes a persistent model instance, while
+the model defines the meaning of its state, behavior, and observation.
 
-AnnData is required by the Python package and remains a standard interface in
-the ecosystem. Current operations accept explicit arrays or tensors; there is
-not yet a direct adapter that chooses AnnData layers, derives model structure,
-or prepares a scientific model automatically. Classical data analysis and
-preprocessing remain upstream in AnnData, Scanpy, or RAPIDS-singlecell.
+The AnnData adapter makes matrix selection explicit and preserves cell/feature
+identities and sparse values. It does not select a layer, normalize, infer
+events, or create biological meaning without the caller's instruction.
+Established preprocessing remains upstream in AnnData, Scanpy, or
+RAPIDS-singlecell.
 
 ## Parameters, state, and structure
 
@@ -43,10 +54,13 @@ explicit support or invalidation path. A layout reorder must preserve the
 mapping back to logical entities, outputs, and gradients. See
 [layout and execution](layout_execution.qmd).
 
-Use `torch.nn.Module` when it gives a useful owner for parameters, buffers,
-composition, or checkpoint behavior. Otherwise a callable operation or native
-API may be the better interface. New module types should follow from real
-operations rather than a speculative catalog of biological layer names.
+Shared parameters belong to reusable model components; evolving private state
+belongs to each cell instance. Relations describe possible interactions,
+activity gates decide which are relevant now, and physical layout maps logical
+identity into an execution representation. Cellerator's data structures may
+be sparse, ragged, relational, event-based, tensor backed, or custom. Choose
+`torch.nn.Module` when it usefully owns learned parameters, buffers, or
+composition; a callable dynamics rule or native API can express other work.
 
 ## Execution fields are experimental
 

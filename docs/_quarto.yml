@@ -5,9 +5,10 @@ project:
 
 book:
   title: "Cellerator"
-  subtitle: "A high-performance PyTorch extension for cellular model building"
+  subtitle: "A computational framework for biological modeling and cellular dynamics"
   chapters:
     - index.qmd
+    - biological_framework.qmd
     - getting_started.qmd
     - architecture.qmd
     - scope.qmd
@@ -21,6 +22,21 @@ book:
     - development/routing.md
     - part: "Subsystem references and research history"
       chapters:
+        - distributed_dispatch.qmd
+        - distributed_execution.qmd
+        - framework_cuda.qmd
+        - response_precision.qmd
+        - incremental_cellular.qmd
+        - cellular_coupling.qmd
+        - reaction_networks.qmd
+        - native_scheduling.qmd
+        - framework_sparse_attention.qmd
+        - framework_grouped_linear.qmd
+        - framework_packed_embedding.qmd
+        - framework_parameter_transfer.qmd
+        - framework_regulatory_gates.qmd
+        - trajectory_training.qmd
+        - ggml.qmd
         - experiments_and_history.qmd
         - sparse_support_foundation.qmd
         - tokenization.qmd

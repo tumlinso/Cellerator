@@ -1,0 +1,48 @@
+---
+title: "Packed State Embedding Bags"
+format: html
+---
+
+`packed_embedding_bag_forward` gathers learned feature-specific embeddings
+directly from a bit-packed state for an explicit list of active `(row, feature)`
+occurrences. It never decodes the full dense state. Caller-supplied segment
+offsets group occurrences into ragged bags, such as a cell/module's selected
+genes. Each feature has its own contiguous table range, sized to its codebook
+levels and the common embedding dimension.
+
+The implementation reuses Cellerator's 1/2/4/8-bit packed code layout and
+physical-feature to profile-feature mapping. Each bag result is a weighted sum
+of its occurrence embeddings. FP16 or FP32 tables/outputs are supported, with
+FP32 accumulation.
+
+## Exact state values
+
+An exact-value override has a meaningful lookup interpretation: the value is
+located between adjacent feature codebook levels, and its embedding is linearly
+interpolated between those learned rows. Values beyond the codebook range use
+the nearest endpoint. Override indices must be sorted by logical state index
+for device binary search. The quantization encoder's append order is not sorted;
+callers should sort the paired index/value entries before passing them. Indices
+must also be unique. An empty sidecar explicitly means lookup is based on
+packed codes only.
+
+The profile codebooks, feature map, table offsets, packed words, occurrence
+lists, weights, output buffers, and status storage are borrowed. Device offsets
+and contents remain the caller's responsibility; malformed state positions,
+segments, feature mappings, table ranges, and nonfinite sidecar/weights set the
+device status bits. Reset status on the supplied stream before work. Calls are
+asynchronous and allocate no hidden buffers.
+
+## Gradients
+
+Backward uses the same active occurrences. It atomically adds embedding
+gradients into a caller-owned FP32 table-gradient buffer; zero that buffer
+before backward when overwrite behavior is desired. Optional occurrence-weight
+gradients are assigned per occurrence. Packed codes, occurrence selection,
+feature mappings, and exact values are conditioning inputs and receive no
+gradients.
+
+The compile/link smoke fixture checks a host oracle for ragged weighted bags,
+an exact-value interpolation, and first-order gradients. It does not launch the
+GPU implementation; numerical GPU validation remains pending scheduler
+admission.

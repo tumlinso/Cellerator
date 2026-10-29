@@ -1,0 +1,361 @@
+---
+title: "Biological modeling framework"
+---
+
+Cellerator is a general machine-learning and computational framework for
+biological modeling, with particular emphasis on cellular dynamics. It provides
+native numerical machinery, specialized operations, and model interfaces that
+can express biological structure directly. Its work includes sparse relations,
+state-dependent interactions, event-driven updates, and layouts organized for
+the geometry and dependencies of the modeled system.
+
+Cellerator is not defined by a tensor library or a particular cell ontology.
+State may be dense, sparse, ragged, relational, event based, latent, externally
+owned, or composed from several representations. Native CPU/GPU facilities and
+specialized kernels are first-class parts of the framework. PyTorch is a useful
+optional route for learned modules, autograd, and ecosystem composition; it does
+not define the scope of Cellerator.
+
+## A modeling vocabulary
+
+A model relates persistent state to the changes that can act on it, the context
+that influences those changes, and the observations a model can produce. These
+are useful common questions rather than a universal biological schema:
+
+| Concept | Modeling question |
+|---|---|
+| State | What information does this model retain about the system now? |
+| Dynamics | Which deterministic, stochastic, learned, or event-driven changes can occur? |
+| Context | Which external signals, selected history, neighbors, or interventions affect an update? |
+| Observation | How does modeled state produce a measurement or derived output? |
+| Interaction | Which entities may jointly affect another state, and when is that relation active? |
+| Trajectory | What sequence of states, events, and branches follows, or remains possible? |
+
+The Python `cellerator.modeling` entry point provides `Model`, `Cell`,
+`StepContext`, `StepResult`, `Experiment`, and `simulate`. A `Cell` is an
+identified persistent model instance with model-native state. Models carry
+reusable behavior and shared parameters; cell instances carry separate state
+and time. `Experiment` advances a cell in place through requested observation
+times, samples model observations, and records state snapshots and emitted
+events. Its input schedule can change at absolute times or be computed from
+time and state. Snapshot copying is an explicit policy for nonstandard state
+types.
+
+```python
+from cellerator.events import Event
+from cellerator.modeling import Cell, Model, StepResult, simulate
+
+def update(state, context):
+    expression = state["expression"] + context.dt * context.inputs["production"]
+    event = Event("transcription", time=context.time + context.dt,
+                  target="gene-a", payload=expression)
+    return StepResult({"expression": expression}, events=(event,))
+
+model = Model(update, observation=lambda state, context: state["expression"])
+cell = Cell(model, {"expression": 0.0}, id="cell-17")
+result = simulate(cell, times=(1.0, 2.0),
+                  input_schedule={0.0: {"production": 1.0},
+                                  1.0: {"production": 0.25}})
+```
+
+The runnable [trajectory experiment example](../examples/framework/trajectory_experiment.py)
+adds shared parameters, smaller integration steps, and printed observations.
+`ExperimentResult` exposes requested times, observations, an event-bearing
+trajectory, the complete emitted event list, final state and time, and the
+advanced cell. See the [framework examples index](../examples/framework/README.md)
+for runnable sparse, stochastic, spatial, reaction, population, and learned
+model examples.
+
+For NumPy or Torch vectors, a model can use ordinary numeric operations. A
+structured state can provide its own algebra or update operation. Stochastic
+rules can use the supplied random source; event driven rules can return events
+and effects with the resulting state. The state owner decides which information
+is retained and how changes are represented.
+
+## State, change, and history
+
+An event stream can act as an operational representation of change: an event
+occurs, the model applies its meaning to state, and subsequent updates depend
+on state and selected context. Cellerator's event tokenizer preserves caller
+identities, event order, repeats, and attributes. It does not decide which
+biological events occurred or what an event means. A stream of events and a
+persistent gene-addressed state can therefore be alternative or complementary
+modeling choices.
+
+`cellerator.state` provides named structured state, identity keyed sparse
+state, logical/physical layout mappings, ragged segments, state references,
+and shallow snapshots with separate structure/value generations.
+`SoAStateStore` is an optional NumPy reference store for populations with
+named per-entity fields and independently evolving records. Stable logical
+handles survive capacity growth and row compaction; incarnation numbers make a
+handle stale after an identity is removed and later inserted again. Physical
+row indices are explicitly ephemeral. The store is not substituted for
+caller-owned tensor or custom state.
+It also provides explicitly opt-in state quantization for callers who want a
+packed representation for numerical state values. `quantize_state` is a NumPy
+reference implementation supporting 1, 2, 4, and 8 bits: 1-bit binary
+thresholding, uniform quantization, or caller-supplied per-feature codebooks.
+The final axis carries feature identities, which remain attached to the packed
+state and govern ordering on decode or sparse feature updates. Quantization
+reports reconstruction error and packed size; its diagnostics are marked stale
+after incremental updates. It never happens implicitly. This operation
+quantizes modeled state values, not learned model weights.
+
+`QuantizationProfile` reuses feature-specific codebooks and calibration
+metadata across encoded states. Profiles can be calibrated from supplied
+samples using quantile or Lloyd methods, or constructed from caller-supplied
+per-feature codebooks. Namespace, species, measurement, transform, and version
+metadata contribute to the profile's compatibility identity; this records the
+chosen assay and transform, not a universal gene threshold. A full-shape
+`exact_mask` lets a model preserve state-dependent important values as exact
+overrides while quantizing the rest. Codebooks are shared across encoded
+payloads in memory.
+
+```python
+from cellerator.state import QuantizationProfile
+
+profile = QuantizationProfile.calibrate(
+    calibration_values, gene_ids,
+    namespace="gene", species="species-x",
+    measurement_id="rna-counts-v1", transform_id="log1p",
+    method="quantile", levels=16, bits=4,
+)
+encoded = profile.encode(cell_values, exact_mask=importance_mask)
+restored = encoded.dequantize(feature_ids=gene_ids)
+```
+
+Here `importance_mask` has the same shape as the values and marks entries the
+caller wants stored as overrides; it can vary by cell and update. The model
+defines that importance rule and its precision needs. `storage_bytes_for`
+estimates packed state arrays, shared codebooks, and a caller-supplied exact
+override budget, excluding Python object and identity metadata. Profiles can
+be saved and loaded without Python object deserialization; built-in string,
+integer, `None`, and tuple identities round-trip directly, while custom
+identity types need paired encoder/decoder functions.
+
+```python
+from cellerator.state import quantize_state
+
+packed = quantize_state(
+    state_values, bits=4, feature_ids=gene_ids,
+    value_range=(per_gene_min, per_gene_max),
+)
+state_values = packed.dequantize(feature_ids=gene_ids)
+packed = packed.update_at("gene-a", updated_value, leading_index=(cell_index,))
+```
+
+`cellerator.events` provides caller-defined events, histories, trajectories,
+explicit history ejection, and branching lineage records. Copying snapshots or
+branching state requires an explicit policy because state representations have
+different ownership and copy semantics.
+
+Context ejection and execution suspension answer different questions. Removing
+an old event from a model's active context does not automatically erase effects
+already incorporated into persistent state. Suspending a cell's computation
+retains its logical state while the containing system decides when to resume
+it. Model rules determine whether biological state changes over elapsed time.
+Neither operation alone implies that a cell has reached a stable biological
+state.
+
+## Relations and dynamics
+
+`cellerator.interactions` represents ordered directed, bipartite, and
+multi-input relations without dense all-pairs storage. It distinguishes
+structurally possible interactions from state-gated active work, builds a
+sparse worklist, evaluates joint participant callbacks against a shared
+snapshot, and requires an explicit output reduction policy.
+
+For cached pure callbacks, the native
+[incremental interaction engine](incremental_cellular.qmd) separately tracks
+declared source dependencies and marks affected relations dirty after source
+updates. Its CUDA changed-source frontier compiles for SM70 but has not been
+executed on a GPU. Invalidation and eligibility are distinct: a dirty relation
+excluded from the current eligibility worklist remains dirty until selected.
+
+`cellerator.spatial.SpatialIndex` is an incremental uniform-grid neighbor
+index for arbitrary stable identities in one to three Euclidean dimensions.
+Queries exact-filter nearby occupied bins without building an all-pairs
+distance matrix. The index can materialize a snapshot interaction graph and
+includes a reference scalar graph-diffusion step. Rebuild a graph after moving
+entities; the diffusion helper is not a continuous-space solver and does not
+guarantee stability for a chosen time step.
+
+The separate [cell/environment exchange operator](cellular_coupling.qmd)
+models sparse weighted transfer between arbitrary cell identities and finite
+compartments, with explicit amount and volume semantics and a conservation
+ledger. It is a host reference operator; composing it with graph diffusion
+requires the caller to choose a splitting order and timestep.
+
+`cellerator.dynamics` contains discrete updates, Euler and Runge-Kutta reference
+integrators, explicit state algebra hooks, event composition, and stochastic
+jump channels. These mechanisms supply executable mathematical forms while
+leaving units, state meaning, event semantics, and model validity to the
+scientific model.
+
+As one concrete model family, the host
+[reaction-network implementation](reaction_networks.qmd) keeps species counts
+and identities separate from observations, uses sparse stoichiometric updates
+and dependency-aware hazard refresh, and offers stochastic event simulation.
+Rates, units, and measurement assumptions remain the model author's choices.
+The native CUDA extension applies supplied sparse events to many private count
+states sharing one reaction bank and can emit changed-source records for a
+separate incremental frontier. It does not evaluate propensities, sample
+events, or run GPU SSA, and its smoke fixture has not been executed on a GPU.
+Thus discrete reaction state can compose with learned or spatial components
+through explicit observations and events without requiring them to share a
+numeric state representation.
+
+The experimental `cellerator.experimental.accessibility` package adds compact
+caller-defined open/closed rules with required or forbidden inputs. An
+`AccessibilityState` can gate an `InteractionGraph`, record state provenance,
+and fork into independent eligibility states while sharing rule structure.
+It supplies conditional eligibility machinery; users still define what each
+input or rule means biologically.
+
+The native [worklist regulatory gate](framework_regulatory_gates.qmd) evaluates
+caller-authored required/forbidden-input and accessibility programs for sparse
+`(instance, rule)` occurrences. It can consume ordinals from an explicit
+frontier-to-rule mapping but does not infer biological bits, update model
+state, or synchronize its device projection. Its SM70 smoke was compiled and
+host-oracle path checked; the CUDA device path has not been executed.
+
+`cellerator.inference` offers reusable observation and trajectory operations
+for explicit candidate models and supplied event hypotheses. These tools
+support model comparison and reconstruction tasks; they do not infer a unique
+biological mechanism by construction.
+
+## From a state change to planned work
+
+`cellerator.execution` supplies population-level identity, context, lifecycle,
+and local execution mechanisms. A `Population` can deliver events or values,
+retain and eject active context, suspend and resume cells, and apply explicit
+create/remove/fork effects. Its `LocalExecutor` runs selected work sequentially
+as a reference. Population orchestration does not decide which biological
+interactions or experts are appropriate.
+
+The modeling pieces can be connected as a caller-owned sequence. For example,
+a model may interpret an event as a state change; the caller identifies the
+changed features; `InteractionGraph.candidates` finds relations that read
+those features and its gated `worklist` filters active relations against a
+state snapshot. For cached native callbacks, the separate
+`IncrementalInteractions` path records dependencies, marks invalidated
+relations dirty, and uses explicit eligibility to decide which dirty callbacks
+may run now. A consumer can map the eligible interaction workload to selected
+parameter revisions. `ExpertWorklist` preserves every selected occurrence and
+row identity, while `PlacementPlanner` uses caller-supplied topology,
+placement, and cost estimates to propose where the work could run. A placement
+decision does not change the selected computation. This is an assembly path
+for model authors; Cellerator does not infer a universal mapping from event
+names to active relations or experts. The incremental cache and CUDA frontier
+are composable primitives, not an automatically synchronized device cache.
+
+`ExecutionEngine` binds a placement plan to an immutable worklist revision,
+pins exact parameter versions through `ParameterStore` and `ResidencyManager`,
+and invokes a caller-supplied numerical backend. It can await a supplied
+completion future and restore occurrence order. The caller still owns state
+updates, reductions, actual activation movement, device launches, and biological
+meaning. Topology transfer costs and memory reservations are estimates;
+the Python planner and residency callbacks do not provide an autonomous
+multi-GPU scheduler. `RollingDemandPredictor` is advisory and cannot remove
+work selected by the model.
+
+The separate [native conditional scheduler](native_scheduling.qmd) is a C++17
+host planner and bounded callback queue over the existing dispatch identities
+and parameter store. It keeps exact revisions, selections, residency snapshots,
+and replica dependencies explicit. Its costs use caller estimates; snapshots
+do not reserve memory. The queue itself supplies no transport, CUDA event
+poller, kernels, thread pool, or collective runtime.
+
+The native [revision-pinned CUDA parameter transfer](framework_parameter_transfer.qmd)
+adds an explicit asynchronous H2D copy for a selected immutable parameter
+revision, with staging, readiness, and consumer-lifetime leases. It is a
+device-transfer primitive; it does not reserve planner budgets, discover
+devices, evict residency, or provide network movement. Its GPU smoke path was
+not executed, so runtime correctness and performance remain unqualified.
+
+The optional Torch distributed adapter
+[`DistributedSparseExpertBank`](distributed_dispatch.qmd) transports selected
+expert activations to explicit process-group owners and returns their
+contributions. Logical expert routing and per-cell state remain with the
+caller; the adapter does not allocate replicas or turn placement estimates
+into transfers. Focused CPU Gloo collective checks have run; GPU/NCCL,
+multi-host execution, and performance remain separate validation questions.
+The [revisioned execution guide](distributed_execution.qmd) documents how
+planning, exact parameter versions, and the caller's numerical endpoint fit
+together. The source package's [population and resource execution reference](../python/cellerator/execution/README.md)
+lists the current `Population`, topology, residency, and worklist interfaces.
+
+The optional native [`Cellerator::framework_cuda` runtime](framework_cuda.qmd)
+provides resource ownership, immutable sparse dispatch plans, and packed state
+operations independent of Torch. Its C++ library, Python extension, and smoke
+executables compiled for SM70; the GPU smoke programs were not executed, so
+CUDA correctness and performance are not yet demonstrated.
+
+The native [sparse relation attention](framework_sparse_attention.qmd) and
+[grouped linear](framework_grouped_linear.qmd) operators are specialized
+building blocks for explicit CSR neighborhoods and expert-major ragged work.
+They provide FP16 and FP32 storage paths with their declared accumulation and
+gradient contracts, but GPU numerical behavior has not been validated. They do
+not decide what a relation or expert means, how work is selected, or where
+parameters are placed. The native [packed-state embedding bag](framework_packed_embedding.qmd)
+gathers embeddings for explicit active `(cell, feature)` occurrences directly
+from packed state codes and supports interpolated lookup for exact overrides;
+callers own the occurrences and state-to-feature mapping.
+
+The optional `cellerator.adapters.torch` package includes `SparseExpertBank`:
+shared `torch.nn.Module` experts process only the rows assigned to them, with
+routes supplied explicitly or selected by a learned router. This is a
+model-level routing choice; it does not decide device placement or scheduling.
+The adapter does not require other state or dynamics to use Torch tensors.
+
+The optional [ggml adapter](ggml.qmd) supplies a separate CPU block-quantization
+bridge for selected numeric arrays. It has block-width requirements and is
+distinct from identity-aware quantization of modeled state values.
+
+The experimental
+[response-sensitive precision tools](response_precision.qmd) use supplied
+model probes to test which current-state values need exact per-payload
+overrides under a chosen response tolerance. They do not establish universal
+biological thresholds or guarantee behavior outside those finite probes.
+
+For learned dynamics, the optional Torch
+[trajectory training adapter](trajectory_training.qmd) runs ragged, bounded
+backpropagation windows across independent stateful trajectories sharing one
+trainable model. Callers supply schedules, differentiable dynamics, observation
+losses, and the optimizer. Discrete stochastic simulation does not become
+differentiable through this runner; sampling estimators and scientific
+interpretation remain model-specific.
+
+The new package surfaces are in rapid development. Their presence does not
+establish optimized performance, GPU execution, biological validation, or a
+stable compatibility contract. See the dated
+[implementation record](current_implementation.qmd) for the current delivery
+and evidence boundary.
+
+## Consumers and boundaries
+
+Karyoplast's learned cellular dynamics, Cytoplast's interacting population,
+and Blastback's trajectory reconstruction are demanding consumers of general
+Cellerator capabilities. Each project owns its scientific assumptions and
+application-level decisions. Cellerator develops reusable state, numerical,
+interaction, dynamics, and inference machinery; no consumer's token format,
+expert topology, event semantics, or population policy is mandatory for every
+model.
+
+Cytoplast or another population runtime may own distributed orchestration,
+environment simulation, lifecycle policy, device allocation, and physical
+placement. Model routing chooses relevant learned computation. Scheduling can
+group compatible work to reuse parameters, while placement maps that work to
+available hardware. These decisions have different owners and should remain
+separately inspectable.
+
+Established single-cell analysis remains upstream in AnnData, Scanpy, and
+RAPIDS-singlecell. Cellerator provides an explicit AnnData adapter for selected
+observations where installed; it does not silently preprocess or select a
+scientific layer. Sequence-specific meaning remains with Baseplane, and data
+persistence/delivery remains with its owning system.
+
+For subsystem entry points, see [architecture](architecture.qmd),
+[model building](model_building.qmd), and the
+[developer source routing guide](development/routing.md). Current code and
+evidence are indexed in the [implementation record](current_implementation.qmd).

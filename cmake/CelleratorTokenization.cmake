@@ -204,6 +204,9 @@ set_target_properties(cellerator_aten_ops PROPERTIES POSITION_INDEPENDENT_CODE O
 
 add_library(cellerator_tokenization STATIC
     src/compute/tokenization/tokenization.cc
+    src/compute/tokenization/gene_annotation.cc
+    src/compute/tokenization/gene_vocabulary.cc
+    src/compute/tokenization/gene_tokenizer.cc
     src/compute/tokenization/sequence_buffer.cc)
 add_library(Cellerator::tokenization ALIAS cellerator_tokenization)
 target_include_directories(cellerator_tokenization PUBLIC
@@ -297,7 +300,8 @@ if(CELLERATOR_ENABLE_PYTHON)
             "from the Torch installation selected by Python")
     endif()
     pybind11_add_module(cellerator_python_tokenization MODULE
-        bindings/tokenization/module.cc)
+        bindings/tokenization/module.cc
+        bindings/tokenization/gene_tokenization.cc)
     set_target_properties(cellerator_python_tokenization PROPERTIES
         OUTPUT_NAME _tokenization
         CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
@@ -337,4 +341,12 @@ if(CELLERATOR_BUILD_TESTS)
                 COMMAND cellerator_tokenization_${test_name}_test)
         endif()
     endforeach()
+    if(EXISTS "${PROJECT_SOURCE_DIR}/tests/tokenization/gene_vocabulary_test.cc")
+        add_executable(cellerator_gene_vocabulary_test
+            tests/tokenization/gene_vocabulary_test.cc)
+        target_link_libraries(cellerator_gene_vocabulary_test PRIVATE
+            Cellerator::tokenization)
+        add_test(NAME cellerator_gene_vocabulary
+            COMMAND cellerator_gene_vocabulary_test)
+    endif()
 endif()

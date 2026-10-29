@@ -1,0 +1,200 @@
+---
+title: "Training independent cell trajectories"
+---
+
+The optional `cellerator.adapters.training` module runs an explicit truncated
+backpropagation-through-time window for many privately stateful cells sharing
+one trainable model. It preserves each cell's identity, time, state structure,
+and history. Different cells can have different numbers of steps, time
+increments, feature counts, or state types; no padded population tensor is
+required.
+
+This is a bounded Torch adapter. The supplied model and observation callbacks
+choose the biological meaning, differentiable operations, and observation
+likelihood. The runner supplies graph boundaries, loss reduction, and optimizer
+ordering. It does not supply a scientific model or a general training service.
+
+## A shared model and independent trajectories
+
+Use `TorchModel` or `TorchDynamics` directly, or their `as_model()` result. A
+backend-neutral `Model` used here must expose its owning Torch module through
+`Model.parameters`, so shared trainable parameters have one owner and ordinary
+in-place parameter updates can be detected during a graph window.
+
+```python
+import torch
+from torch import nn
+from cellerator.adapters.torch import TorchModel
+from cellerator.adapters.training import (
+    TrainingStep, TrainingTrajectory, TrajectoryWindowRunner,
+)
+
+class Dynamics(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.rate = nn.Parameter(torch.tensor(0.1))
+
+    def forward(self, state, context):
+        return {"genes": state["genes"] + context.dt * self.rate,
+                "gene_ids": state["gene_ids"]}
+
+model = TorchModel(Dynamics(), lambda state, context: state["genes"])
+cells = (
+    TrainingTrajectory("a", {"genes": torch.tensor([0.2, 0.4]),
+                             "gene_ids": ("g1", "g2")}),
+    TrainingTrajectory("b", {"genes": torch.tensor([0.7]),
+                             "gene_ids": ("g3",)}),
+)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+runner = TrajectoryWindowRunner(model, max_steps=2, reduction="mean_trajectories")
+result = runner.run_window(
+    cells,
+    {"a": [TrainingStep(dt=0.2),
+           TrainingStep(dt=0.3, target=torch.tensor([0.3, 0.5]))],
+     "b": [TrainingStep(dt=0.4, target=torch.tensor([0.8]))]},
+    lambda prediction, target, context: (prediction - target).square().mean(),
+    optimizer=optimizer,
+)
+cells = result.trajectories
+```
+
+`TrainingTrajectory` is an immutable version wrapper around caller-owned state;
+it does not copy or make arbitrary mutable payloads immutable. Supply distinct
+state storage for independent cells and use the returned trajectories for the
+next window. `TrainingTrajectory.from_cell(cell)` captures a `Cell`'s identity,
+state reference and time. It leaves the original cell unchanged; the caller
+must choose one state owner and must not advance that original cell concurrently.
+The runner uses its own shared model for all supplied trajectories.
+
+The [runnable CPU example](https://github.com/tumlinso/Cellerator/blob/main/examples/framework/trajectory_training.py)
+uses a small continuous production/decay surrogate, two unequal feature sets and
+unequal schedule lengths. It verifies the joint parameter gradient against the
+sum of separate cell contributions and continues one cell while the other is
+inactive.
+
+## Time, observations, and losses
+
+Each `TrainingStep` supplies `dt`, optional `inputs`, RNG, metadata, target and
+nonnegative weight. Dynamics receive a `StepContext` at the starting time.
+`StepResult.time`, when present, determines the next time; otherwise the runner
+adds `dt`. Times must be finite and nondecreasing. The runner does not impose an
+ODE integrator, force the realized increment to equal `dt`, or split a step to
+hit an observation. Supply a suitable transition and explicit schedule.
+
+An observation is evaluated after its transition, with the context time set to
+the resulting time. `TrainingStep(dt=0, advance=False, target=...)` observes the
+current state without a transition. Missing or empty cell schedules leave time,
+step count and history unchanged. Their state still crosses the window's
+explicit detachment boundary. A schedule longer than `max_steps` is rejected,
+so truncation is never hidden.
+
+An omitted target skips the observation and loss. `None` is a valid explicit
+target; `weight=0` also skips observation and loss. The loss callback receives
+`(prediction, target, LossContext)`, whose fields include trajectory identity,
+absolute step index, post-transition context and the original `StepResult`.
+It must return a finite real scalar floating Tensor. The final objective must
+have an autograd graph; a disconnected constant is not reported as a successful
+training loss.
+
+The reductions make unequal lengths explicit:
+
+| Reduction | Objective before `loss_scale` |
+|---|---|
+| `sum` | Sum of each observed loss times its step weight. |
+| `mean` | Weighted sum divided by the sum of positive observation weights across all cells. |
+| `mean_trajectories` | Mean of the weighted mean for each cell with at least one positive-weight observation. |
+
+Feature reduction is the callback's responsibility. Missing observations and
+inactive cells do not enter a denominator. `TrainingWindowResult.loss` is the
+scaled detached objective; each history record stores its unweighted detached
+scalar loss, start/end times, requested increment, events, effects and transition
+metadata. State snapshots and predictions are not retained automatically.
+
+## Graph lifetime and optimizer ownership
+
+A call builds one graph across all participating cells and all their supplied
+steps, and invokes backward once on the reduced objective. A supplied native
+operation, conditional expert, or custom autograd function retains its original
+graph; the forward path does not convert, pack, clone, or detach its state.
+
+At the boundary, the runner prepares detached retained state/history, completes
+backward, and only then calls the caller-owned optimizer when
+`step_optimizer=True`. Preparing detached references before backward does not
+alter the original graph. Returned states carry values produced by that window's
+parameters; the subsequent window starts from those values and uses the updated
+parameters. Gradients do not flow across this explicit boundary. Keep all steps
+in one sufficiently large window when full temporal differentiation is needed.
+
+`step_optimizer=False` completes backward and detachment without updating the
+parameters. `optimizer=None, step_optimizer=False` supports backward-only use;
+with `zero_grad=True`, it clears the owning module's gradients first. With an
+optimizer, only that optimizer's parameter gradients are cleared. Set
+`zero_grad=False` to accumulate completed windows. `loss_scale` makes global
+normalization explicit: averaging already-averaged windows is generally not a
+sample-weighted average when their observation counts differ. A window with no
+losses neither clears gradients nor steps the optimizer, including when an
+optimizer has momentum or weight decay. No optimizer closure/replay is provided.
+
+The runner detects ordinary parameter version/registration changes during a
+window and rejects them before an update. It does not freeze parameter buffers,
+guard `.data`/external native writes, or coordinate separate runners. The caller
+must guarantee exclusive parameter ownership until the window returns, and must
+not step another optimizer while its graph is live. State must not alias mutable
+parameter storage. Custom native resources must stay alive through backward;
+when using revisioned execution leases, that lifetime belongs to the callable's
+owner. See the [distributed execution contract](distributed_execution.qmd).
+
+This sequential ragged runner does **not** make unequal per-rank collective
+sequences safe. Distributed collective models require a caller-coordinated
+identical collective order and backward participation on every rank. This
+adapter has CPU single-process evidence only.
+
+## State and failure policies
+
+The default `detach_state` policy recursively handles Tensor leaves, plain
+dict/list/tuple, namedtuple and dataclass containers, and immutable scalar
+metadata. Sparse tensors remain sparse. Tensor detachment shares storage rather
+than cloning it; future transitions must be functional and avoid in-place
+mutation of retained state. Cycles and unsupported opaque leaves are rejected.
+Dataclasses with non-init fields need a custom policy.
+
+Pass `detach=callable` for custom structures or native state handles. The policy
+is called for the trajectory state and each retained `TrainingRecord`, must be
+pure, and must detach every graph-bearing retained leaf while preserving the
+state's identity/layout semantics. It may delegate known containers to
+`detach_state`; it must explicitly handle opaque objects, including any opaque
+event payloads. The runner cannot inspect an arbitrary native handle to prove
+that its policy severed every graph. A caller can intentionally clone tensor
+storage in that policy when snapshot isolation is needed.
+
+Functional callback failures before backward leave input trajectory wrappers
+and existing gradients unchanged. No partial trajectory result is returned.
+This is **not a transaction** over caller-owned objects: in-place state changes,
+RNG consumption, external effects and callback parameter mutations are not
+rolled back. A failed backward may leave partial gradients; a failed optimizer
+step may partially change parameters or optimizer state. Restore/checkpoint
+state and clear gradients as appropriate before retrying; do not blindly replay
+side-effecting transitions. Physical effects returned in `StepResult.effects`
+are recorded, not applied by this runner.
+
+## Scientific and validation boundaries
+
+Continuous surrogates, differentiable rates, event-logit likelihoods, score
+estimators and pathwise estimators have different meanings. The callback chooses
+them explicitly. Sampling discrete SSA events does not become differentiable
+because a runner surrounds the simulation. A likelihood of an observed event
+can be trained from differentiable rates without claiming a derivative through
+the sampled event history. Biological interpretation, approximation validity,
+and inference assumptions remain with the application.
+
+The focused CPU suite covers analytic shared gradients, heterogeneous shapes,
+window truncation, weighted reductions, accumulation, irregular time,
+observation-only and inactive cells, sparse/custom state, custom first-order
+autograd, parameter mutation detection and callback failures. These checks do
+not qualify a native kernel, GPU training, distributed training, biological
+accuracy or performance.
+
+```sh
+PYTHONPATH=python python -m unittest discover -s tests/framework -p test_trajectory_training.py -v
+PYTHONPATH=python python examples/framework/trajectory_training.py
+```

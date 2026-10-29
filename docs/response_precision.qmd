@@ -1,0 +1,83 @@
+---
+title: "Response-sensitive state precision"
+---
+
+# Response-sensitive state precision
+
+`QuantizationProfile` shares a calibrated codebook for each stable feature
+identity. A codebook can be useful across many cells, while the consequence of
+approximating one value can depend on the cell's current state and future
+inputs. The experimental `cellerator.experimental.response_precision` module
+asks a model-specific question: **which values in this state change the
+responses we care to preserve under these probes?**
+
+The caller supplies a finite collection of `ResponseProbe`s and a callback
+`response(state_copy, probe)`. The callback may run a discrete, continuous,
+stochastic, learned, or coupled model and returns the observation to compare.
+For a stateful `Cell` or `Experiment`, create a transient instance from the
+provided state copy on every call; do not advance a caller-owned live cell or
+mutate the shared model parameters.
+The tool computes reference observations from the original state, evaluates
+the profile reconstruction, and greedily restores exact source values that
+reduce weighted response error. These exact values become per-payload
+`exact_mask` overrides; the shared feature codebooks remain unchanged.
+
+```python
+import numpy as np
+
+from cellerator.experimental.response_precision import (
+    ResponseProbe,
+    calibrate_response_precision,
+)
+from cellerator.state.quantization_profiles import QuantizationProfile
+
+profile = QuantizationProfile.from_codebooks(
+    ("regulator", "buffer"), ((0.0, 1.0), (0.0, 1.0)), bits=1)
+state = np.asarray([[0.49, 0.2], [0.49, 0.8]], dtype=np.float32)
+
+def predicted_activation(state, probe):
+    return ((state[:, 0] + probe.inputs) >= 0.5).astype(np.float32)
+
+result = calibrate_response_precision(
+    state,
+    profile,
+    (ResponseProbe("local-signal", inputs=np.asarray([0.05, 0.0]), horizon=2.0),),
+    predicted_activation,
+    response_tolerance=0.0,
+    max_overrides=1,
+)
+```
+
+The returned result includes the encoded `QuantizedState`, a read-only exact
+mask, selected feature identities and leading indices, before/after errors for
+each probe, a greedy selection trace, and consumed evaluation and override
+budgets. The default error metric is maximum absolute response error; callers
+can provide another metric for probabilities, distributions, counts, or other
+observables. Candidate search can be restricted with a `candidate_mask`. Both
+candidate evaluations and exact-value storage are bounded explicitly.
+
+For stochastic dynamics, put a replayable random stream or seed in the probe
+and use it for both full-state and quantized evaluations. Otherwise, the
+measured difference can include simulation noise instead of only the state
+representation change. The greedy search tests one coordinate restoration at
+a time, so it can miss effects that appear only after a particular combination
+of multiple exact values is restored.
+
+## Scientific scope
+
+This is a **finite-probe experiment**, not a guarantee over future inputs or
+entire trajectories. The result applies only to the supplied state, model
+callback, probes, metric, and model version. A profile shared within a species
+may provide reusable feature-specific codebooks, but this mechanism does not
+establish a universal per-gene quantization threshold. State-dependent exact
+overrides are one way to test whether a reusable coarse representation can
+preserve selected downstream behavior at bounded storage cost.
+
+The synthetic example is runnable with the source package:
+
+```bash
+PYTHONPATH=python python examples/framework/response_precision.py
+```
+
+It demonstrates a threshold crossing in a toy response and deliberately makes
+no biological claim about real regulatory thresholds.

@@ -5,7 +5,9 @@ the shared host requires scheduler admission for every GPU execution.
 """
 
 import os
+import tempfile
 import unittest
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -32,6 +34,121 @@ def make_vocab(identities, tokens=None, policy=tok.UnknownIdentityPolicy.error):
 
 
 class TokenizationCpuTests(unittest.TestCase):
+    def test_gene_vocabulary_gtf_build_aliases_and_roundtrip(self):
+        with tempfile.TemporaryDirectory(prefix="cellerator-gene-vocabulary-") as directory:
+            annotation = Path(directory) / "genes.gtf"
+            saved = Path(directory) / "genes.vocab"
+            annotation.write_text(
+                'chr1\ttest\tgene\t1\t9\t.\t+\t.\tgene_id "ID_B"; gene_name "BETA"; level 2; tag "basic"; tag "appris_principal_1";\n'
+                'chr1\ttest\tgene\t1\t9\t.\t+\t.\tgene_id "ID_A"; gene_name "ALPHA"; gene_synonym "A";\n'
+                'chr1\ttest\tgene\t2\t9\t.\t+\t.\tgene_id "ID_B"; gene_name "BETA"; gene_alias "Bee";\n',
+                encoding="utf-8",
+            )
+            options = tok.GeneAnnotationOptions()
+            options.metadata.organism = "human"
+            options.metadata.assembly = "GRCh38"
+            vocab = tok.GeneVocabulary.from_annotation(
+                str(annotation), tok.GeneAnnotationFormat.gtf, options
+            )
+            self.assertEqual([gene.gene_id for gene in vocab.genes], ["ID_A", "ID_B"])
+            self.assertEqual(vocab.resolve_identity("A"), 0)
+            self.assertEqual(vocab.resolve_identity("Bee"), 1)
+            self.assertEqual(vocab.metadata.organism, "human")
+            genes_snapshot = vocab.genes
+            genes_snapshot[0].gene_id = "CORRUPTED"
+            genes_snapshot[0].token_id = 999
+            metadata_snapshot = vocab.metadata
+            metadata_snapshot.source = "CORRUPTED"
+            self.assertEqual(vocab.resolve_identity("ID_A"), 0)
+            self.assertEqual(vocab.metadata.source, str(annotation))
+            self.assertEqual(vocab.integer_vocabulary().token_ids.tolist(), [0, 1])
+            vocab.save(str(saved))
+            restored = tok.GeneVocabulary.load(str(saved))
+            self.assertEqual(restored.resolve_identity("ID_B"), 1)
+            self.assertEqual(restored.metadata.assembly, "GRCh38")
+
+    def test_gene_vocabulary_ambiguous_alias_and_tokens(self):
+        records = [
+            tok.GeneRecord("ID_B", "BETA", ["ID_A", "COMMON"], 29),
+            tok.GeneRecord("ID_A", "ALPHA", ["COMMON"], 11),
+        ]
+        vocab = tok.GeneVocabulary.from_records(records)
+        self.assertEqual(vocab.resolve_identity("ID_A"), 0)
+        self.assertEqual(vocab.resolve_identity("ID_B"), 1)
+        self.assertEqual(vocab.integer_vocabulary().token_ids.tolist(), [11, 29])
+        with self.assertRaises(ValueError):
+            vocab.resolve_identity("COMMON")
+
+        # Mutating a returned ATen object must not mutate stored mapping state.
+        returned = vocab.integer_vocabulary()
+        returned.token_ids.fill_(99)
+        self.assertEqual(vocab.integer_vocabulary().token_ids.tolist(), [11, 29])
+
+    def test_gene_tokenizer_classes_match_existing_operations(self):
+        vocab = tok.GeneVocabulary.from_records([
+            tok.GeneRecord("ID_A", "ALPHA", [], 50),
+            tok.GeneRecord("ID_B", "BETA", [], 60),
+            tok.GeneRecord("ID_C", "GAMMA", [], 70),
+        ])
+        events = tok.EventStreamGeneTokenizer(vocab)
+        self.assertIsInstance(events, tok.GeneTokenizer)
+        self.assertEqual(events.gene_vocabulary.resolve_identity("ID_A"), 0)
+        encoded = events.tokenize_names(
+            ["BETA", "ID_A", "BETA"], cpu_tensor([0, 3, 3], torch.int64),
+            {"time": cpu_tensor([1.0, 2.0, 3.0])},
+        )
+        self.assertEqual(ragged(encoded), [[60, 50, 60], []])
+        self.assertEqual(encoded.attributes["time"].tolist(), [1.0, 2.0, 3.0])
+
+        options = tok.RankedFeatureOptions()
+        options.max_per_row = 2
+        options.retain_measurements = True
+        options.scores = cpu_tensor([[1.0, 8.0, 3.0], [4.0, 0.0, 2.0]])
+        ranked = tok.RankedGeneTokenizer(vocab, options)
+        options.scores.fill_(0)
+        options_snapshot = ranked.options
+        torch.testing.assert_close(
+            options_snapshot.scores, cpu_tensor([[1.0, 8.0, 3.0], [4.0, 0.0, 2.0]])
+        )
+        options_snapshot.scores.fill_(0)
+        effective_options = tok.RankedFeatureOptions()
+        effective_options.max_per_row = 2
+        effective_options.retain_measurements = True
+        effective_options.scores = cpu_tensor([[1.0, 8.0, 3.0], [4.0, 0.0, 2.0]])
+        values = cpu_tensor([[1.0, 4.0, 4.0], [2.0, 0.0, 1.0]])
+        ids = vocab.identity_tensor()
+        output = ranked.tokenize(values, ids)
+        reference = tok.ranked_feature(
+            values, ids, vocab.integer_vocabulary(), effective_options
+        )
+        self.assertEqual(ragged(output), ragged(reference))
+        torch.testing.assert_close(
+            output.attributes["measurement"], reference.attributes["measurement"]
+        )
+        totals = cpu_tensor([9.0, 3.0])
+        medians = cpu_tensor([1.0, 4.0, 2.0])
+        geneformer = ranked.geneformer_style(values, totals, medians, ids)
+        geneformer_reference = tok.geneformer_style(
+            values, totals, medians, ids, vocab.integer_vocabulary(), 2
+        )
+        self.assertEqual(ragged(geneformer), ragged(geneformer_reference))
+
+        csr = torch.sparse_csr_tensor(
+            cpu_tensor([0, 2, 3], torch.int64),
+            cpu_tensor([0, 2, 1], torch.int64),
+            cpu_tensor([1.0, 4.0, 2.0]),
+            size=(2, 3),
+        )
+        sparse_options = tok.RankedFeatureOptions()
+        sparse_options.max_per_row = 2
+        sparse_options.retain_measurements = True
+        sparse_ranked = tok.RankedGeneTokenizer(vocab, sparse_options)
+        sparse_output = sparse_ranked.tokenize(csr, ids)
+        sparse_reference = tok.ranked_feature(
+            csr, ids, vocab.integer_vocabulary(), sparse_options
+        )
+        self.assertEqual(ragged(sparse_output), ragged(sparse_reference))
+
     def test_vocabulary_mapping_preserves_repeated_events_and_attributes(self):
         vocab = make_vocab([3, 5, 9], [300, 500, 900])
         events = cpu_tensor([9, 3, 9, 5, 3], torch.int64)

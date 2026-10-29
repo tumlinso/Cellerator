@@ -145,6 +145,113 @@ inference/storage and rejects gradient-tracked payloads. CUDA operations use the
 current stream on the tensor's device; callers establish ordering across
 streams and must not concurrently mutate the same buffer.
 
+## Gene-tokenizer classes {#gene-tokenizer-design}
+
+The gene-aware C++ interface adds shared vocabulary ownership around the
+existing tokenization operations:
+
+### Vocabulary and mechanism ownership
+
+The class hierarchy is:
+
+```text
+GeneTokenizer                    abstract C++ mechanism contract
+  EventStreamGeneTokenizer       preserve supplied gene occurrences and order
+  RankedGeneTokenizer            select and order genes from measurements
+```
+
+Each tokenizer holds a shared, read-only
+`GeneVocabulary`, associating stable gene identifiers and aliases with model
+token IDs. Optional metadata records the annotation source, organism, assembly
+and release. The existing integer `Vocabulary` remains the mapping machinery.
+Vocabulary construction belongs to `GeneVocabulary`; mechanisms consume a
+completed vocabulary. No organism-specific reference annotation is bundled.
+
+Include `<Cellerator/compute/tokenization/gene_tokenizer.hh>` and link
+`Cellerator::tokenization`:
+
+```cpp
+using namespace cellerator::tokenization;
+
+auto vocabulary = std::make_shared<GeneVocabulary>(
+    GeneVocabulary::from_annotation("genes.gtf", GeneAnnotationFormat::gtf));
+EventStreamGeneTokenizer events(vocabulary);
+RankedGeneTokenizer ranked(vocabulary);
+```
+
+`GeneTokenizer` is abstract through a pure virtual destructor. Its shared
+vocabulary contract is available through `gene_vocabulary()`. Concrete classes
+retain typed execution methods while the common input representation and
+virtual execution signature remain deferred. There is no tagged universal
+`GeneInput` or implicit conversion of measurements into biological events.
+
+### Building and preserving a gene vocabulary
+
+`GeneVocabulary::from_annotation(path, format, options)` accepts uncompressed
+GTF or GFF3 with an explicit `GeneAnnotationFormat`. The default
+`GeneAnnotationOptions.feature_type` is `"gene"`. GTF reads `gene_id` and
+`gene_name`; GFF3 reads `ID`, `Name` and `Alias`. This is an identifier-table
+builder, not a complete annotation validator or a transcript-to-gene inference
+engine. GTF attribute conventions follow the
+[GENCODE format](https://www.gencodegenes.org/pages/data_format.html), and GFF3
+attribute escaping follows the
+[GFF3 specification](https://github.com/the-sequence-ontology/specifications/blob/master/gff3.md).
+
+Records are ordered by canonical gene identifier, and internal integer
+identities follow that order. Repeated records for a gene merge compatible
+aliases; conflicting symbols or explicit token assignments are errors.
+Identifier versions are retained. Canonical identifiers take precedence over
+aliases, and ambiguous alias lookup raises an error. Gene symbols are not
+assumed unique.
+
+`from_records` accepts caller-created `GeneRecord` entries. Token IDs default
+to the canonical identity order; an existing model's assignments can be supplied
+explicitly for every gene. Annotation contents alone do not determine which
+genes a model represents or its required token assignments. `save` and `load`
+preserve the exact mapping and metadata in a versioned Cellerator text format.
+The annotation source path is metadata, not a content hash.
+
+`resolve_identity` and `resolve_identities` translate gene names into internal
+integer identities on the host. These name lookups are strict: unknown names
+raise even when the numerical vocabulary uses a drop or unknown-token policy.
+`identity_tensor(device)` returns all canonical identities in vocabulary order;
+use resolved identities in the actual matrix-column order when columns differ.
+`integer_vocabulary(device)` returns independent tensors so mutation of a
+returned mapping cannot change the shared vocabulary.
+
+### Typed execution and Python bindings
+
+`EventStreamGeneTokenizer::tokenize` accepts integer gene identities, offsets
+and attributes. `tokenize_names` additionally resolves host strings. Both retain
+the `event_stream` order, repeats and attribute contract.
+`RankedGeneTokenizer::tokenize` accepts dense/CSR measurements, aligned gene
+identities and attributes, using `RankedFeatureOptions` supplied at construction.
+Its `geneformer_style` method uses the existing normalization profile and the
+configured maximum length; its other scoring and eligibility rules come from
+that profile. Both mechanisms return `TokenBatch` and retain existing numerical
+precision and identity tie-breaking rules.
+
+`SequenceBuffer` separately owns mutable history storage. Event inference,
+lifecycle behavior and special-token semantics remain with callers. The Python
+module exposes the C++ classes directly without Python virtual overrides; the
+existing function API remains available.
+
+### Broader feature vocabularies considered
+
+A more extensive biological feature vocabulary, including chromatin regions,
+was considered. A large reference catalogue of regulatory elements does not
+establish a practical model token vocabulary or justify one token per region.
+Feature selection, grouping, sequence encoding and other representations require
+their own contracts and evidence. Reference feature identity, model token
+assignment and measured activity are distinct decisions.
+
+The current direction is to try gene tokenization first. Broader
+sequence-grounded chromatin representation is a possible later Baseplane design
+topic, consistent with the [ownership model](architecture.qmd#core-concepts-and-ownership).
+This does not commit to a universal `FeatureVocabulary`, a chromatin-token
+catalogue or a particular encoding. Shared Cellerator mapping, numerical and
+sequence-storage operations remain reusable by future consumers.
+
 ## Scientific ownership and qualification
 
 Karyoplast determines what an event means and how observations produce it.

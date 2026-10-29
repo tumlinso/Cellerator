@@ -1,0 +1,193 @@
+---
+title: "Revisioned conditional execution"
+---
+
+Cellerator keeps model selection, logical parameter versions, physical placement,
+and actual execution separate. The execution endpoint connects these layers
+without changing the selected experts to make placement easier. Native and
+Python reference paths are available; transport and numerical backends retain
+explicit responsibilities.
+
+## From selected work to an executed result
+
+The [runnable CPU example](../examples/framework/scheduled_experts.py) follows
+one complete path:
+
+1. Caller-owned `Cell` state supplies inputs. The caller selects sparse
+   `SelectedWork` occurrences, each carrying an exact `ParameterKey`, origin,
+   original row identity, and weight.
+2. `ExpertWorklist` groups those occurrences without dropping duplicates,
+   signed weights, or overlapping selections. `PlacementPlanner` chooses a
+   physical execution strategy using explicit topology and cost metadata.
+3. `BoundExecution(plan, work, work_revision)` binds the resource proposal to
+   that immutable worklist. `ExecutionEngine.submit(..., work_revision=...)`
+   rejects a changed work revision, omitted or substituted rows, infeasible
+   candidates, and invalid dependency order before launching work.
+4. `ParameterStore` pins exact registered revisions. The engine materializes
+   the planned execution copy through `ResidencyManager`, using the selected
+   parameter source. The numerical callback receives an `ExecutionRequest`
+   with exact selections, original occurrence indices, resident parameters,
+   inputs, and the placement decision.
+5. A callback returns one unweighted output per selected occurrence, or a
+   `concurrent.futures.Future` that resolves after all dependent parameter reads
+   finish. The engine restores original selection order and releases pins
+   before reporting successful completion. Replica dependencies retain their
+   producer's pin through the run.
+6. The caller performs its explicit weighted reduction and commits each result
+   to its original state owner. The example uses `Cell.advance` for that commit.
+
+```bash
+PYTHONPATH=python python examples/framework/scheduled_experts.py
+```
+
+The example prints `{'cell-a': 3.25, 'cell-b': 10.0}` and then publishes a new
+parameter revision. The old bound work still identifies its old revision;
+there is no implicit switch to the latest model while a run is in progress.
+
+A failed callback raises `PlanExecutionError` with completed decision indices
+and partial occurrence outputs. Arbitrary backend side effects cannot be
+rolled back. The engine never replays failed work automatically. A missing or
+evicted planned source fails explicitly rather than substituting an expert or
+silently claiming the original communication estimate.
+
+## One logical parameter lifecycle
+
+`ParameterRevision` separates execution parameters, master parameters,
+gradients, and optimizer state. Every role can hold arbitrary backend-owned
+objects. The Python `ParameterStore` owns canonical revision registration and
+current-version selection above its residency manager. Register and publish
+logical versions through the store; direct external removal of its residency
+registrations is unsupported.
+
+`publish(expected, next_revision)` checks the exact expected current version.
+`update(expected, backend)` runs a caller-supplied update and publishes with the
+same comparison, so a concurrent stale updater cannot overwrite a newer
+version. Published buffers are immutable by contract: an optimizer must
+allocate replacement storage when an older revision can still be read. The
+store does not infer aliasing or clone arbitrary buffers.
+
+`prune(expert_id)` removes old versions only after residency confirms that no
+execution or transfer pins remain. Old snapshot objects retain their Python
+object references; retired revision identities cannot be reused. The store's
+`nbytes` counts execution parameter storage. Master, gradient, and optimizer
+allocations remain separately owned and must be included in the caller's
+complete resource budget.
+
+The native `cellerator::execution::conditional::ParameterStore` in
+[`parameter_store.hh`](../include/Cellerator/execution/conditional/parameter_store.hh)
+uses the same `ExpertKey` as native conditional dispatch. Opaque buffers carry
+shared ownership, byte size, explicit dtype, and device identity. Its
+`ParameterLease` pins an immutable `ParameterRevision`; `snapshot(keys)` takes
+all exact revisions under one lock. Updates run backend callbacks outside that
+lock and compare-and-publish monotonically increasing numeric revisions.
+Retiring a noncurrent version removes lookup availability while existing RAII
+leases retain its storage. Backend deleters for retired versions run outside
+the store lock.
+
+[`execute_parameterized`](../include/Cellerator/execution/conditional/parameter_dispatch.hh)
+connects native `DispatchPlan` and `ParameterStore`: it snapshots every exact
+expert version before reading inputs and passes the corresponding revision to
+each numerical callback. This is synchronous host orchestration. A CUDA caller
+must retain leases independently through device completion and any backward
+reads. The Python store is an explicit reference counterpart, not a binding to
+the C++ store.
+
+## Explicit collective phases
+
+`DistributedSparseExpertBank` uses a coordinated SPMD collective sequence.
+Every process-group rank must call forward and backward in compatible order,
+including ranks with empty local work. It cannot safely be called as an
+independent per-expert scheduler callback.
+
+`ExecutionEngine.submit_collective(keys, device, launch, inputs)` provides a
+separate phase for that contract. It pins the exact local parameter keys and
+passes their resident payload mapping to `launch`. The returned
+`CollectiveExecution` intentionally retains its pins beyond forward. Close it
+only after backward and all device reads finish; use its context manager when
+forward and backward are completed inside that scope.
+
+`TorchCollectiveBinding(bank, key_to_expert, routing)` is a concrete optional
+bridge. Each revision payload is a complete module state mapping. The bridge
+uses `torch.func.functional_call` to bind these exact tensors to every local
+bank expert and preserve autograd to the supplied parameters. It does not
+mutate the logical revision or choose routing. Do not overlap functional calls
+using the same bank. The transport adapter owns all-to-all redistribution and
+reverse redistribution; the execution engine does not create process groups or
+turn placement estimates into an autonomous distributed runtime.
+
+## Resource and evidence boundary
+
+The engine runs placement decisions sequentially using one worker by default.
+A numerical callback owns activation movement, allocations, streams, numerical
+precision, and completion signaling. Returning a tensor after enqueueing a
+CUDA kernel does not establish completion: return a completion future or use an
+explicit retained collective scope. Planner `activation_reservations` and
+transfer costs remain estimates; they are not automatically allocated or
+charged by this endpoint. Residency accounts registered parameter copies and
+in-flight transfers against caller-supplied managed device budgets.
+
+Focused checks on 2026-10-29 cover native revision lifetime and a concurrent
+compare-and-publish race, native dispatch/store integration, eight Python engine
+cases, and the runnable CPU example. The Python checks cover exact work and
+parameter identities, asynchronous transfer and execution completion, failure
+cleanup, retained collective pins, and single-process Torch forward/backward
+with functional parameter binding. This page makes no multi-GPU correctness,
+performance, or biological-validity claim. The distributed adapter's separate
+transport tests and evidence have their own scope.
+
+## Python plans using the native dispatcher
+
+The [native CPU example](../examples/framework/scheduled_native_experts.py)
+connects the Python placement/residency engine to the existing C++ conditional
+module through `cellerator.adapters.conditional.NativeConditionalBackend`.
+It uses a caller-supplied `NativeIdentityMap`, rather than converting Python
+hashes into persistent native identities:
+
+- `ParameterKey(expert_id, revision)` maps explicitly to the existing native
+  `ExpertKey(uint64 expert_id, uint64 revision)`. All revisions of one logical
+  expert retain one native expert ID. Collisions are rejected.
+- `(SelectedWork.origin, SelectedWork.row_id)` maps explicitly to the existing
+  `Origin(uint32 rank, uint64 instance, uint64 row)`. That row is a logical
+  identity, not an array offset. Native origin order determines the temporary
+  input-array order, and the bridge retains the inverse identity mapping.
+- `execute_occurrences` uses native expert-major dispatch and returns unweighted
+  outputs in original selection order. The execution result is reduced exactly
+  once using the model's weights. This avoids applying a native weighted
+  combine and then applying the Python weights again.
+
+The numerical callback receives the exact logical key, the residency-pinned
+parameter payload, a native-gathered contiguous batch, and original whole-worklist
+occurrence indices. FP16 storage uses the existing CPU adapter's explicit FP32
+callback/output policy; FP32 and FP64 inputs retain their respective policies.
+This bridge uses the CPU module, not CUDA. The same native `ExpertKey` and
+`Origin` types remain the identity contract for native CUDA dispatch consumers;
+device allocation, transfer, streams and completion still require that backend's
+explicit runtime bindings. No CPU Python buffer is implicitly a device pointer.
+
+With the optional native extension installed:
+
+```bash
+PYTHONPATH=python python examples/framework/scheduled_native_experts.py
+```
+
+The example retains an older explicitly selected revision after a newer one is
+published and returns `{'cell-a': [4.0], 'cell-b': [15.0]}`. It includes a negative
+weight and duplicate selections for the same original owner.
+
+For an already admitted CUDA runtime, the identity bridge can also construct the
+host plan accepted by the existing CUDA projection:
+
+```python
+host_plan = identities.dispatch_plan(work.selections)
+# stream is a caller-owned, admitted CUDA stream; this line uploads metadata.
+from cellerator.adapters.cuda import CudaDispatchPlan
+device_plan = CudaDispatchPlan(host_plan, stream=stream)
+```
+
+This is a source-verified connection to `adapters/cuda.py` and native
+`modeling/cuda/plans.hh`, not an executed GPU example. `CudaDispatchPlan` retains
+`host_plan` with its logical expert revisions and origins while its device
+projection contains gather/combine indexes and FP32 route weights. Device
+expert callbacks must continue to bind the exact host keys to pinned parameter
+buffers. This conversion alone does not provide that numerical dispatch or
+its asynchronous completion scope.

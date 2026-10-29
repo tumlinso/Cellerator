@@ -7,10 +7,28 @@ backend and maturity boundaries. See the [source routing map](routing.md) and
 [current implementation record](../current_implementation.qmd) before relying
 on a capability.
 
-AnnData is a required dependency (`anndata>=0.10`), but current numerical entry
-points accept explicit arrays or tensors. There is no direct AnnData
-preparation adapter or automatic layer selection. Scanpy and RAPIDS-singlecell
-remain upstream for classical analysis and preprocessing workflows.
+AnnData is a required dependency (`anndata>=0.10`). The
+`cellerator.adapters.anndata` adapter selects explicit `X`, layer, or raw inputs,
+preserves sparse data, and aligns cells and output observations by identity.
+Numerical entry points retain their explicit array/tensor contracts. Scanpy and
+RAPIDS-singlecell remain upstream for classical analysis and preprocessing.
+
+## Modeling without a native extension
+
+`Cell`, `Model`, `StepContext`, `StepResult`, and `simulate` are available from
+`cellerator` without loading the compiled numerical extension or Torch. The
+`state`, `events`, `interactions`, `dynamics`, `execution`, `inference`, and
+`spatial` packages provide model-independent reference mechanisms. State can be
+an arbitrary object or an external state reference; observations and update
+rules are supplied separately. See the [framework guide](../biological_framework.qmd)
+for examples and the boundary between these mechanisms and native execution.
+
+Optional adapters are explicit imports: `cellerator.adapters.torch`,
+`cellerator.adapters.distributed`, `cellerator.adapters.cuda`, and
+`cellerator.adapters.ggml`. A native host build additionally provides
+`_modeling_native` and `_conditional_native`; the new CUDA runtime and ggml
+bridge are opt-in CMake components. Importing a modeling package does not imply
+that those compiled components are installed.
 
 ## Host Python and Product2
 
@@ -103,7 +121,10 @@ Tokenization is an optional ATen facility, separately selected with
 `CELLERATOR_ENABLE_TOKENIZATION=ON`. It provides caller-driven tensor and
 sequence operations; it does not define downstream event interpretation or a
 general model loader. It can be CPU-only and does not require the CUDA
-mechanism Torch adapter. See [tokenization](../tokenization.qmd).
+mechanism Torch adapter. The native `GeneTokenizer` base, concrete ranked-gene
+and event-stream classes, and annotation-built `GeneVocabulary` are exposed
+through thin bindings. Their execution inputs remain separately typed. See
+[tokenization](../tokenization.qmd#gene-tokenizer-design).
 
 Resident CUDA buffers and numeric operations have a distinct native owner and
 optional thin Torch view. Their contracts cover stream, buffer lifetime,

@@ -1,0 +1,38 @@
+---
+title: "Optional ggml quantization"
+---
+
+Cellerator can opt into a pinned [ggml](https://github.com/ggml-org/ggml)
+CPU bridge for block quantization. The default build and modeling imports do
+not fetch or require ggml. Configure with `-DCELLERATOR_ENABLE_GGML=ON` to
+fetch upstream commit `facdc44a67da17df4433adcc468b424f48e9ded2` and build the
+bridge. This upstream dependency is distributed under its MIT license; retain
+the upstream [license notice](https://github.com/ggml-org/ggml/blob/facdc44a67da17df4433adcc468b424f48e9ded2/LICENSE).
+
+The Python API is `cellerator.adapters.ggml.quantize(values, format)` and
+`dequantize(packed)`. It operates on explicitly supplied CPU numeric arrays,
+retains array shape, and reports the supported ggml block formats. Row widths
+must satisfy the selected format's block size. This is a low-level conversion
+primitive, not a learned gene threshold or a biological on/off interpretation.
+It is non-differentiable and does not mutate a cell or model automatically.
+
+ggml is a plausible source of compact numeric formats and mature quantized
+operations. Its block formats have row-granularity requirements, which may not
+fit arbitrary gene-axis lengths or sparse/event states directly. Cellerator's
+own per-gene quantization policies remain a closer match where thresholds,
+identity, and biological feature structure must remain explicit. State
+quantization and shared model-weight quantization are separate choices.
+
+In particular, ggml's `q1_0` format stores a sign bit and a shared positive
+scale for each block, then reconstructs each value as either `-scale` or
+`+scale`. A zero-valued gene therefore does not decode to zero, and the format
+does not define biological OFF and ON levels. A one-bit state representation
+needs explicit per-feature thresholds and decode levels, which belong to the
+state quantization API. The details are in upstream's
+[q1_0 quantizer](https://github.com/ggml-org/ggml/blob/facdc44a67da17df4433adcc468b424f48e9ded2/src/ggml-quants.c).
+
+The C++ API, pybind module, and row-major round trip were built in a focused
+CMake harness against the pinned upstream source. The complete Cellerator
+package and wheel integration have not yet been validated. Normal package
+builds do not need network access; enabling this adapter requires access to the
+pinned source when it is not already in the FetchContent cache.

@@ -9,6 +9,8 @@
 namespace py = pybind11;
 namespace ce = cellerator;
 
+void register_gene_tokenization(pybind11::module_& module);
+
 namespace {
 std::optional<at::ScalarType> compute_type_from_name(
     const std::optional<std::string>& name) {
@@ -40,6 +42,23 @@ PYBIND11_MODULE(_tokenization, module) {
             &ce::tokenization::Vocabulary::unknown_policy)
         .def_readonly("unknown_token_id",
             &ce::tokenization::Vocabulary::unknown_token_id);
+
+    py::class_<ce::tokenization::RankedFeatureOptions>(
+        module, "RankedFeatureOptions")
+        .def(py::init<>())
+        .def_readwrite("max_per_row",
+            &ce::tokenization::RankedFeatureOptions::max_per_row)
+        .def_readwrite("eligibility",
+            &ce::tokenization::RankedFeatureOptions::eligibility)
+        .def_readwrite("scores",
+            &ce::tokenization::RankedFeatureOptions::scores)
+        .def_readwrite("retain_measurements",
+            &ce::tokenization::RankedFeatureOptions::retain_measurements)
+        .def_readwrite("retain_scores",
+            &ce::tokenization::RankedFeatureOptions::retain_scores);
+
+    register_gene_tokenization(module);
+
     py::class_<ce::tokenization::TokenBatch>(module, "TokenBatch")
         .def(py::init([](const at::Tensor& token_ids,
                          const at::Tensor& offsets,
@@ -67,20 +86,6 @@ PYBIND11_MODULE(_tokenization, module) {
         .def_readonly("lengths", &ce::tokenization::PaddedBatch::lengths)
         .def_readonly("valid", &ce::tokenization::PaddedBatch::valid)
         .def_readonly("attributes", &ce::tokenization::PaddedBatch::attributes);
-
-    py::class_<ce::tokenization::RankedFeatureOptions>(
-        module, "RankedFeatureOptions")
-        .def(py::init<>())
-        .def_readwrite("max_per_row",
-            &ce::tokenization::RankedFeatureOptions::max_per_row)
-        .def_readwrite("eligibility",
-            &ce::tokenization::RankedFeatureOptions::eligibility)
-        .def_readwrite("scores",
-            &ce::tokenization::RankedFeatureOptions::scores)
-        .def_readwrite("retain_measurements",
-            &ce::tokenization::RankedFeatureOptions::retain_measurements)
-        .def_readwrite("retain_scores",
-            &ce::tokenization::RankedFeatureOptions::retain_scores);
 
     py::class_<ce::tokenization::AppendResult>(module, "AppendResult")
         .def_readonly("succeeded", &ce::tokenization::AppendResult::succeeded)

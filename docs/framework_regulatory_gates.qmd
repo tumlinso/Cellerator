@@ -1,0 +1,187 @@
+---
+title: "Worklist regulatory gates"
+---
+
+`PackedRegulatoryRules`, `PackedRegulatoryState`, and
+`cuda::evaluate_regulatory_gates` implement caller-authored boolean eligibility
+programs. The rule bank is shared; input and accessibility bits are private to
+each instance. The CUDA kernel evaluates only an explicit list of
+`(instance, rule)` occurrences. It does not construct a dense gene-by-module
+matrix or infer a biological ontology from bit positions.
+
+For an occurrence with instance state `x`, rule `r` is eligible exactly when:
+
+```text
+accessible(instance, r)
+    AND every required input bit of r is active in x
+    AND no forbidden input bit of r is active in x
+```
+
+Empty required/forbidden sets form a true conjunction; accessibility still
+applies. Repeated worklist occurrences remain distinct output occurrences.
+This is the same conjunction/open-flag semantics as the native
+`AccessibilityState` class. These programs are model gates, not a claim that
+the caller's biological rules are correct.
+
+## Shared structure and private state
+
+`PackedRegulatoryRules` takes explicit stable rule IDs and required/forbidden
+input **bit positions**. It sorts rules by stable ID, rejects duplicate IDs,
+out-of-domain bits, duplicate inputs and required/forbidden contradictions, and
+stores sparse `(word, required_mask, forbidden_mask)` records. CSR offsets give
+each rule's touched words. A rule that mentions two words occupies two mask
+records regardless of the full input domain size.
+
+`rule_ordinal(id)` resolves a stable ID to its dense bank position. The
+`structure_epoch()` and caller's input-ID-to-bit map identify the projection.
+The borrowed device view does not check or preserve external metadata: retain
+the bank, its epoch, and the exact identity map for the lifetime of device
+execution. Changing the rule bank requires rebuilding its projection and
+updating dependent worklists. Never cast an entity ID or rule ID directly to a
+dense bit/ordinal.
+
+`PackedRegulatoryState` owns input words and accessibility words for one
+instance. A C++ copy explicitly inherits the current bits and subsequent
+mutations are independent. `set_input(bit, value)` changes an input;
+`set_accessible(rule_ordinal, value)` changes permission to evaluate a rule.
+The CUDA state view lays multiple instances out with explicit word strides,
+which may include padding. Tail input bits beyond the declared domain cannot
+be referenced by a rule.
+
+Accessibility is a modeled permission. It does not mean that a physical cache
+line, parameter block or numerical output is resident or valid. Physical
+placement and the [incremental cache](incremental_cellular.qmd) retain their
+separate ownership and invalidation contracts.
+
+## Converting inherited native accessibility
+
+The caller retains its original `AccessibilityProgram<Id>` definitions and
+an ordered `input_ids` mapping. Translate `required_inputs` and
+`forbidden_inputs` through that mapping to populate `RegulatoryRule` bit
+positions. Native program IDs must have an explicit reversible encoding if
+they are not already `uint64_t`; this CUDA-facing bank does not invent one.
+
+The following conversion reads an inherited native state without changing it:
+
+```cpp
+// bank contains the translated programs; input_ids is the exact bit mapping.
+// inherited is an AccessibilityState<uint64_t>, possibly returned by fork().
+cellerator::modeling::cuda::PackedRegulatoryState packed(
+    input_ids.size(), bank.rule_ids().size(), false);
+for (std::size_t bit = 0; bit < input_ids.size(); ++bit)
+    packed.set_input(bit, inherited.input_active(input_ids[bit]));
+for (std::size_t rule = 0; rule < bank.rule_ids().size(); ++rule)
+    packed.set_accessible(rule, inherited.is_open(bank.rule_ids()[rule]));
+```
+
+Record the native structure revision, program revisions, state generation,
+bank structure epoch and input mapping alongside the uploaded projection.
+Provenance and copy-on-write ancestry remain with the native owner; uploading
+packed words does not transfer or automatically synchronize that history.
+An external threshold or hysteresis policy may update native accessibility,
+but no numeric threshold or approximation is built into this boolean kernel.
+
+## Sparse execution and outputs
+
+Construct `RegulatoryOccurrence` entries from the caller's active worklist.
+The changed-source [frontier primitive](incremental_cellular.qmd#cuda-changed-source-frontier)
+provides invalidated interaction ordinals; map those through the retained
+interaction-to-rule mapping and the affected instance identity. These are
+different identity spaces and are not assumed to share dense ordinals.
+
+Upload the bank's offsets/masks and each instance's input/accessibility words,
+then call `evaluate_regulatory_gates` with the borrowed views, explicit stream,
+worklist and output storage. The function performs no allocation, implicit
+synchronization, device switch, dependency discovery, or host status copy.
+Callers retain all buffers through stream completion and prevent overlapping
+mutations of inputs or outputs. The function evaluates the supplied input
+snapshot; it does not update state or numerical interaction caches.
+
+Output eligibility is packed by **worklist occurrence position**, not by a
+dense instance-by-rule matrix. For occurrence `i`, inspect bit `i % 64` of
+output word `i / 64`. Unused bits of the final output word are zeroed. Optional
+compaction returns eligible occurrence indices; use each index to recover its
+original instance and rule. Compaction order is unspecified. It preserves
+duplicate occurrences and does not deduplicate their downstream contributions.
+
+The synchronous CUDA return reports argument/launch errors. After completion,
+`RegulatoryGateStatus` reports device-content errors and bounded compaction
+overflow. On any status flag, neither output is publishable; storage can have
+partial writes and `compact_written` is zero. Overflow alone retains the exact
+`eligible_count`, allowing a retry with sufficient capacity. Without compaction,
+`eligible_count` is still reported and `compact_written` remains zero.
+Caller-supplied pointer extents and non-aliasing remain caller obligations;
+the kernel checks selected instance/rule indices, CSR ranges, word indices,
+overlapping required/forbidden masks and referenced tail bits.
+
+The execution cost is output-bit initialization plus the sum of touched rule
+words over supplied occurrences. The representation uses shared sparse rule
+masks and private packed bitsets; it does not promise faster execution than
+another implementation. Preparation, upload, worklist construction, output
+consumption and synchronization belong in a complete-path measurement.
+
+## Validation boundary
+
+The [smoke fixture](../tests/framework/cuda/regulatory_gates_smoke.cu) compiled
+and linked with CUDA 12.9 for `sm_70`. Its `--host-only` path was executed and
+passed; that branch returns before device discovery, allocation or kernel
+launch. An independent scalar boolean oracle
+matched the packed representation over 70 occurrences, including required and
+forbidden bits crossing input word boundaries, accessibility beyond rule 63,
+empty conjunctions, duplicate occurrences and independently mutated inherited
+state. Host construction also checks malformed rules.
+
+```sh
+nvcc -std=c++17 -arch=sm_70 -Iinclude \
+  tests/framework/cuda/regulatory_gates_smoke.cu \
+  src/modeling/cuda/regulatory_gates.cu \
+  -o /tmp/cellerator-regulatory-gates-smoke
+/tmp/cellerator-regulatory-gates-smoke --host-only
+```
+
+The fixture's device path additionally checks packed output against that
+oracle, compaction, capacity overflow, guard words, invalid occurrences and
+malformed sparse masks. **The device path has not been executed.** GPU
+correctness, sanitizer qualification, performance and biological validity are
+unestablished. GPU execution continues to require the repository's admitted
+execution route. The optional CMake smoke target is build-only and is not
+registered as an automatically executed CTest.
+
+## Experimental independent-cell bitplanes
+
+`evaluate_regulatory_bitplanes` is a separate experimental entrypoint. A
+`uint32_t` stores one bit for each of 32 independent cells; feature planes use
+`features[feature * instance_word_count + instance_word]`. Shared rules contain
+sparse required/forbidden **feature indices**, with separate CSR offsets.
+The caller supplies `(rule, instance_word)` work items and a validity mask for
+every instance word, including its tail. Optional accessibility planes use
+`accessibility[rule * instance_word_count + instance_word]`; a null pointer
+explicitly means all cells are accessible.
+
+For each work item, the kernel starts with validity/accessibility and applies
+AND for each required feature plane and ANDNOT for each forbidden plane. It
+returns one packed eligibility word per item. Empty conjunctions return the
+valid accessible cells. The output can feed subsequent Boolean transitions
+without extracting cells; separate buffers are required for input and next
+state. Duplicate work items remain duplicate words. No compaction, conversion,
+representation selection or numerical approximation is implicit.
+
+The design is an experimental **probe**, alongside the arbitrary-occurrence
+implementation. KernelBender's
+`references/bridges/bitplanes.md` (recognition, construction and first
+discriminator) motivates keeping independent Boolean states in word bits;
+`references/compositions/discrete-state.md` (construction and representation
+and lifetime) motivates retaining planes across transitions. These references
+were read from
+`/home/tumlinson/kda/skills/KernelBender/skills/kernelbender/`.
+They also warn that conversion, extraction, tails and changed routing can
+dominate. This entrypoint does not implement carry-save counts, thresholds or
+cross-word neighboring-cell transitions.
+
+The CPU fixture exhausts three-feature truth assignments distributed over
+32 cells, checks a second word with nine valid tail cells against scalar gates,
+and consumes the resulting plane in a second Boolean transition. CUDA source
+is compiled for `sm_70`; the bitplane kernel has not been run. No performance
+advantage or automatic dispatch preference is established. A future decision
+requires comparing both representations over identical work, including cold
+conversion, state updates, repeated transitions, extraction and compaction.

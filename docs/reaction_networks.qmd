@@ -1,0 +1,213 @@
+---
+title: "Sparse stochastic reaction networks"
+---
+
+Cellerator has a host reference reaction-network implementation in
+`cellerator.dynamics.reactions` and a header-only C++ counterpart in
+`Cellerator/modeling/reactions.hh`. They express discrete species counts,
+identity-preserving storage, sparse stoichiometric changes, and explicit
+propensity dependencies. They compose with the
+[biological modeling framework](biological_framework.qmd), without requiring
+Torch or converting a cell into a dense feature tensor.
+
+## A model with separate observation
+
+```python
+import random
+from cellerator.dynamics.reactions import Reaction, ReactionNetwork
+from cellerator.modeling import Cell, Model
+
+network = ReactionNetwork(["inactive", "active"], [
+    Reaction.mass_action("activate", {"inactive": 1}, {"active": 1}, 0.6),
+    Reaction.mass_action("deactivate", {"active": 1}, {"inactive": 1}, 0.3),
+])
+model = Model(network, observation=lambda counts, ctx: counts["active"])
+cell = Cell(model, network.state({"inactive": 20}))
+result = cell.advance(0.5, rng=random.Random(13))
+assert sum(cell.state.values()) == 20
+print(cell.observe(), result.events)
+```
+
+The runnable `examples/framework/reaction_network.py` adds a caller-defined
+noisy fluorescence observation, uses separate process and measurement RNGs,
+and reports hazard evaluations. Measurement assumptions are independent of the
+reaction dynamics. The example is illustrative, not a validated biological model.
+
+`SpeciesLayout` maps stable hashable identities to physical slots.
+`ReactionState` holds immutable nonnegative integer counts and exposes mapping
+access by identity. Omitted counts start at zero; unknown identities are rejected.
+States from another network must be explicitly reconstructed by identity.
+Python counts use arbitrary-precision integers; native counts use checked
+signed 64-bit integers. Counts are never cast to FP16. Hazards and physical time
+use binary64; native conservation diagnostics use `long double`.
+
+## Sparse structure and hazard work
+
+A `Reaction` declares a name, sparse **net** count changes, a propensity
+callable `(state, context) -> nonnegative finite rate`, and its dependency IDs.
+Mechanistic and learned hazards use the same interface. Simulation converts
+hazards to scalar rates and does not propagate gradients through sampled events.
+Callback reads must
+match declared dependencies. `dependencies=None` safely treats all species as
+read; an empty tuple declares state independence. Every consumed species is
+also indexed because feasibility depends on its count.
+
+```python
+from cellerator.modeling import StepContext
+context = StepContext(time=cell.time)
+work = network.workspace(cell.state)
+work.refresh(context)
+rates = work.rates
+changed_species = work.fire("activate")
+print(work.pending)               # only dependent reaction indices
+work.refresh(context)
+state_after_event = work.snapshot()
+```
+
+The workspace owns a private count copy. Applying one event checks its complete
+sparse change before changing any count. Negative counts are rejected;
+native overflow is rejected. The propensity cache becomes dirty for affected
+channels. Failed refreshes leave the cache inaccessible until a successful
+refresh. `network.affected(species_ids)` exposes the deduplicated worklist.
+Manual `apply`/`fire` validates net count changes; it does not assert that the
+selected event has positive propensity. SSA selects only positive-hazard events.
+
+Workspace objects belong to individual trajectories. Python callbacks receive
+a borrowed mapping view and must not retain or mutate it. Native workspaces
+borrow their network, which must outlive them. Do not change external model
+parameters during a simulation interval. Between intervals, create a fresh
+workspace or explicitly invalidate all hazards after parameter changes.
+
+The implementation avoids reevaluating unrelated hazards after an event.
+Direct-method hazard summation and event selection still scan the reaction
+array; state snapshots copy the count array. This is a concrete sparse execution
+mechanism, not a benchmark or a general speedup claim. There is no GPU backend
+or native Python binding for this new reaction primitive yet; the Python and
+C++ implementations are independently usable host implementations.
+
+## Exactness and numerical limits
+
+`network.simulate(state, context)` implements the direct stochastic simulation
+algorithm (SSA). `ReactionNetwork` itself is callable with the framework
+`(state, context)` contract. It emits the existing `JumpOccurrence` records.
+`network.channels()` adapts the same network to existing generic `JumpChannel`
+and `gillespie` machinery for full hazard refresh and reference comparisons.
+
+Exact SSA semantics require hazards to be constant between events. Callbacks
+must be pure functions of the declared discrete state and parameters held fixed
+for the interval. They must not depend on continuously evolving time, `dt`,
+external mutable state, or callback evaluation count. Reactions declared
+`time_dependent=True` are rejected by both SSA entry routes; arbitrary callback
+time dependence cannot be detected automatically. Time-varying rates need an
+integrated-hazard or thinning algorithm and are not silently approximated here.
+
+The event horizon is half-open: a proposed event at or beyond `time + dt` does
+not change state. Absorbing states advance to the requested end time without
+an event. Each accepted event must advance representable time. Zero waiting
+uniforms or intervals too small to advance binary64 time raise an explicit
+precision error rather than silently looping. The finite event budget raises
+only if another event actually falls inside the interval. Returned event times
+and counts follow these semantics; floating-point hazards/time still impose
+ordinary finite-precision limitations.
+
+`Reaction.mass_action` uses the discrete-count convention
+`rate * product(comb(count, reactant_order))`. For example, a two-molecule
+reactant uses `n*(n-1)/2`, not `n*n`. Catalysts can appear on both sides and remain
+hazard dependencies even when their net change is zero. The supplied rate is a
+stochastic per-combination rate; volume, concentration conversions, factorial
+conventions in published constants, and physical units belong to the caller.
+No concentration interpretation is inferred from counts.
+
+## Conservation and complete-history density
+
+`network.conservation_residuals(weights)` returns the weighted net change for
+each reaction. All-zero residuals establish a structural conserved linear
+quantity for the supplied weights. Python diagnostics use exact integer
+arithmetic. Native `long double` diagnostics may round very large integer
+weights/products; these are diagnostics, not an arbitrary-precision proof.
+
+`network.score_history(initial_state, events, context)` replays a fully observed
+history of channel/time events and returns a `ReactionHistoryScore` with
+terminal state, log hazard terms, integrated total hazard, and log density:
+
+```text
+log density = sum(log(hazard of each fired channel)) - integral(total hazard)
+```
+
+The survival term includes the event-free tail to the horizon. An event with
+zero hazard has negative-infinite density. Impossible count updates and
+malformed event order are rejected. This method does not marginalize hidden
+events, perform inference, or provide an observation likelihood. It evaluates
+supplied hypotheses under supplied hazards.
+
+## Focused checks
+
+The native fixture `tests/framework/native/reactions_test.cc` exercises species
+ordering, sparse hazard invalidation, conservation, nonnegative transactional
+updates, overflow rollback, and horizon-safe simulation. Python
+`tests/framework/test_reactions.py` additionally compares the sparse simulator
+against the existing generic Gillespie implementation with the same random
+stream, checks combinatorial catalyst hazards, and verifies complete-history
+survival scoring. These are host semantic checks; no performance or scientific
+validation is claimed.
+
+## Native CUDA application of supplied events
+
+`Cellerator/modeling/cuda/reactions.hh` provides `apply_reaction_events` for
+many private cell count states sharing one sparse `ReactionBank`. This device
+operation applies caller-supplied events. It does **not** evaluate propensities,
+sample events, integrate physical time, or implement GPU SSA.
+
+The bank is CSR: reaction offsets, strictly increasing unique species slots per
+reaction, and nonzero signed-64-bit deltas. Convert identity-keyed host changes
+to these slots explicitly and retain the layout identity. Rows of nonnegative
+int64 counts are cell-private, with an explicit stride at least the species
+count. One CUDA thread owns a cell and runs its events serially; cells run
+independently and reuse the bank. No atomics or dense reaction evaluation is
+needed. Wide reaction rows or strongly imbalanced event counts may favor another
+ownership choice; no measured crossover is claimed.
+
+`ReactionEventWorklist` uses ragged cell offsets and reaction IDs. An optional
+index array refers into event-major reaction-ID storage, so the caller can
+preserve that storage while supplying ordered per-cell references. The caller
+owns grouping and event order. Physical time is absent from this operation.
+
+Each event validates its entire sparse delta before changing any counts.
+Negative results, signed overflow, invalid channels, malformed sparse rows,
+and duplicate or unsorted slots produce a per-cell `ReactionCellStatus` with
+the failing worklist position. The cell stops on its first failure. Earlier
+events remain committed, the failing event has no count writes, and later
+events are skipped. `events_applied` identifies the accepted prefix; retry only
+the unapplied suffix after resolving the cause. Initial logical counts must be
+nonnegative: the sparse kernel checks touched slots, not a dense scan of all
+species. Unrelated padding is untouched.
+
+Optional `ReactionChangeOutput` emits compact per-cell changed-source logs.
+Repeated species across events remain repeated, suitable as input to the
+existing `build_changed_frontier` deduplication operation. Supply an explicit
+`source_ordinals[cell,species_slot]` map for that frontier's retained relation;
+without this map, output values are local species slots and require caller
+translation. Capacities are fixed per cell, which avoids cross-cell contention.
+The kernel checks capacity before committing an event. On insufficient capacity,
+`changed_written` is still a complete log for the committed prefix and
+`changed_required` reports the prefix plus the rejected event's requirement
+(saturating only if that sum cannot fit uint64). It does not silently drop an
+invalidation. `changed_written` resides in the device status; a caller scheduling
+the existing host-count frontier launch must retrieve that count or provide a
+separate device-count consumer. This API does not hide that synchronization.
+
+All arrays use the existing borrowed `DeviceView`/`ConstDeviceView` runtime
+contracts. The launch validates host shapes, extents, alignment, and device
+metadata; the kernel checks selected device content. The caller keeps arrays
+live and nonaliasing until the supplied `Stream` completes, and prevents
+concurrent writes to the same cell rows, statuses, or output logs. The wrapper
+allocates no memory and performs no implicit synchronization. Device content
+statuses must be inspected after completion. Immutable banks and worklists can
+be shared across independent calls.
+
+`tests/framework/cuda/reactions_smoke.cu` contains runtime assertions for ordered
+updates, event-major index indirection, failure rollback, int64 overflow,
+frontier-capacity rejection, duplicate stoichiometry, and invalid host shapes.
+The implementation and fixture were compiled and linked for SM70. **They have
+not been executed on a GPU or checked by Compute Sanitizer in this delivery.**
+Compile/link evidence does not establish device correctness or performance.

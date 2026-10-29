@@ -1,0 +1,112 @@
+---
+title: "Native conditional placement and scheduling"
+---
+
+`Cellerator::conditional` provides a C++17 host planner and event-driven execution
+queue for already selected conditional work. The public headers are
+`Cellerator/execution/conditional/topology.hh` and `scheduler.hh`. They reuse the
+existing `ExpertKey`, `Origin`, `Selection`, `DispatchPlan`, and `ParameterStore`;
+there is no second routing or parameter identity system.
+
+## Logical demand and physical placement
+
+`PlacementPlanner::plan` takes a `DispatchPlan`, an explicit mapping from logical
+origins to device IDs, input/output bytes per occurrence, and a caller-defined
+work revision. Every duplicate, signed or zero-weight selection survives with
+its original occurrence index. Demands group exact expert revision and origin
+device; the original `DispatchPlan` retains cell, rank and row provenance and the
+weighted inverse combine. Placement does not select different experts when a
+revision is unavailable.
+
+`HardwareTopology` consumes device budgets and directed links with bandwidth and
+latency. It chooses a deterministic shortest transfer route for the actual
+message size, charging every store-and-forward hop. Missing links remain
+unreachable; zero-byte transfers have zero cost. Topology is supplied metadata,
+not hardware discovery or a claim about measured bandwidth or contention.
+
+`ResidencySnapshot` names immutable expert revisions and records resident and
+pending copies, their bytes, execution eligibility, pins and readiness events.
+All copies, including pinned old revisions and in-flight reservations, consume
+capacity. `other_usage` adds all remaining allocations, such as state,
+activation staging, master parameters and optimizer storage. Do not count copy
+bytes in both places. A zero device budget means zero capacity. Planning does not
+evict copies, so no pinned or pending allocation can be reclaimed implicitly.
+
+For each selected demand the planner compares:
+
+- Local execution against an exact ready or explicitly pending copy.
+- Remote activation transfer, execution and return of outputs.
+- Temporary weight transfer to the origin, released after that decision.
+- A retained replica at the origin, usable by later demands through an explicit
+  producer-decision dependency.
+
+Candidate enumeration and exact-cost ties are deterministic. Optional repeat
+hints amortize transfer cost when choosing a retained replica; they do not alter
+logical selection. Proposed replicas remain proposals and cannot be reported as
+actual ready residency. Existing pending sources attach their caller-supplied
+completion events to candidates. A failed plan reports the rejected candidates
+and the exact demand; it never falls back to another revision.
+
+## Costs and memory boundary
+
+The optional cost callback supplies compute, preparation, allocation and
+synchronization seconds for a whole demand on a candidate device. Without it,
+compute uses `ExpertSpec::compute_seconds_per_use` and device compute scale; the
+other components are explicitly zero. Link estimates add parameter movement,
+activation movement and output return. Retention penalty is separately supplied
+in seconds per retained byte. These are estimates for a sequential horizon, not
+a measured distributed makespan or an overlap model. Repeat hints describe a
+forecast horizon; estimates with overlapping hints should not be interpreted as
+unique observed work.
+
+The planner accounts for parameter copies, execution input/output workspace,
+and return-output storage at the origin. Retained replicas affect subsequent
+decisions. `projected_memory` excludes temporary workspace;
+`peak_memory` records component-wise high-water marks, which need not coincide;
+`peak_total_bytes` records the actual maximum total in this sequential model.
+Caller allocations and any intermediate-hop transport staging must be included
+in `other_usage`. The backend still admits real allocations and residency pins
+against current resources before launching work. A snapshot is not a resource
+reservation, and the planner does not implement a mutable residency manager.
+
+## Event-driven native execution
+
+`PlannedExecution` binds a plan to the exact work revision and residency snapshot
+generation. It validates occurrence identities/order and replica dependencies,
+checks parameter byte sizes, and acquires `ParameterStore` leases for all exact
+selected revisions. Publishing and retiring a newer revision cannot substitute
+the queued parameters. The caller must supply current generation values and
+serialize changes between snapshot admission and backend resource reservation.
+
+The queue has a caller-chosen maximum decision count. `advance(callback, budget)`
+runs at most `budget` callbacks and schedules decisions sequentially, matching
+the memory model. Each task reports ready, running, yielded, completed or failed.
+An unsignaled source-readiness event prevents any callback. A callback returns
+`TaskPoll::yield(event)` after starting asynchronous work, then resumes the same
+decision after `signal(event)`. The callback must retain its own phase/state and
+must not replay transfers or kernels on resume. Signal only events that actually
+completed; event identities must not be reused for unrelated in-flight work.
+
+Callbacks receive the original worklist, the decision and an exact immutable
+parameter lease. They own physical residency pins, allocations, transfers,
+streams, numerical work and output placement. A successful completion means
+all device reads/writes are finished and any promised replica is usable.
+CUDA/Cytoplast backends can use the same host queue with their own event polling
+and device launch adapters. No transport, CUDA copy, CUDA kernel, device event
+poller, thread pool or collective implementation is supplied by this queue.
+
+Leases remain until `close()` after completion. On failure, the queue stops
+without replay and preserves the completed prefix; the caller drains already
+submitted device/transport work before `close(true)`. Keep the queue alive while
+asynchronous work or backward still reads its leases. The queue is single-owner
+and not thread-safe; synchronize external event delivery. Its destructor is
+ordinary C++ lifetime release, not a device synchronization operation.
+
+The runnable [host example](../examples/framework/native/scheduler_example.cc)
+uses synthetic completion events and CPU callbacks, then combines results in
+original selection order. It demonstrates lifecycle and identity preservation,
+not hardware execution or speedup. The focused
+[native test](../tests/framework/native/scheduler_test.cc) covers directed
+message-size routing, exact revisions, replica dependencies, complete cost
+callbacks, pinned/in-flight capacity, stale snapshots, queue bounds and failure
+drain. Build target registration is in `cmake/CelleratorConditional.cmake`.
