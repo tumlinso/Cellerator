@@ -131,7 +131,7 @@ science, or performance.
 
 ## Current source migration closure
 
-The [active source-cleanup migration manifest](../../planning/active-source-cleanup/source-migrations.json) records path moves, retained destinations, and retired payloads for this cleanup. Use it to resolve old source-bound paths and to verify that every current destination exists. It is the current path-closure record; Project Control remains the authority for live task status.
+The [active source-cleanup migration manifest](https://github.com/tumlinso/Cellerator/blob/main/planning/active-source-cleanup/source-migrations.json) records path moves, retained destinations, and retired payloads for this cleanup. Use it to resolve old source-bound paths and to verify that every current destination exists. It is the current path-closure record; Project Control remains the authority for live task status.
 
 Run the closure audit with:
 
@@ -140,6 +140,12 @@ python tools/maintenance/source_map/validate.py --repo . \
   --migration-manifest planning/active-source-cleanup/source-migrations.json
 ```
 
-The earlier [coherence migration snapshot](../../planning/coherence/source-migrations.json) remains immutable historical context for its original baseline. It is not the current destination-closure policy after these later moves. Do not edit or use that snapshot for the active-tree closure audit. The source-map migration check verifies declared destinations and retirement accounting; it does not compare file contents or establish capability, build, test, science, or performance status.
+The earlier [coherence migration snapshot](https://github.com/tumlinso/Cellerator/blob/9a0353c/planning/coherence/source-migrations.json) remains immutable historical context for its original baseline. It is not the current destination-closure policy after these later moves. Do not edit or use that snapshot for the active-tree closure audit. The source-map migration check verifies declared destinations and retirement accounting; it does not compare file contents or establish capability, build, test, science, or performance status.
 
 A required native evidence name needs a configured producer that records that passing fact. Committed reports, scheduler receipts, and external test runs belong in source references and reviewed assertions; their presence alone does not create a native passing fact. Live task state remains in Project Control.
+
+## C++ retrieval maintenance
+
+`build-ctxpp/compile_commands.json` is the compilation database selected by `.ctxpp.toml`. The `.ctxpp/` index and `.ctxpp/observer-export.json` are generated local artifacts. Use the installed [C++ Context Compiler skill](https://github.com/tumlinso/skills/blob/main/cpp-context-compiler/SKILL.md) to scan and export after source-path, include-root, build-flag, or configuration changes. Preserve the previous generation until the replacement passes freshness and representative lookup checks; never hand-edit generated index state.
+
+Project Control consumes the export through operator-managed `PROJECT_CONTROL_CPP_EXPORTS` configuration. Keep repository guidance declarations in `.project-context.json`. The [dated retrieval qualification](https://github.com/tumlinso/Cellerator/blob/main/planning/active-source-cleanup/qualification/retrieval-qualification.json) records the tested configuration and semantic versus lexical coverage. The source map supplies ownership and path routing; semantic coverage comes from the generated index and observer checks.
