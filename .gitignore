@@ -1,66 +1,29 @@
-# Docs
-docs/*
-!docs/README.md
-!docs/_quarto.yml
-!docs/*.qmd
-!docs/preamble.tex
-!docs/development/
-docs/development/*
-!docs/development/python-bindings.md
-!docs/development/experimental-fields.md
-!docs/development/fp64.md
-!docs/development/routing.md
-!docs/development/source_map/
-docs/development/source_map/*
-!docs/development/source_map/*.csv
-!docs/development/source_map/*.json
-!docs/development/source_map/*.jsonl
-!docs/semantic_spine_v1/
-!docs/semantic_spine_v1/**
-!docs/sparse_support_foundation/
-!docs/sparse_support_foundation/**
-!docs/pipeline/
-docs/pipeline/*
-!docs/pipeline/README.md
-!docs/pipeline/config/
-docs/pipeline/config/*
-!docs/pipeline/config/README.md
-!docs/pipeline/config/*.example
-!docs/pipeline/config/*.example.tsv
-!docs/pipeline/download/
-docs/pipeline/download/*
-!docs/pipeline/download/README.md
-!docs/pipeline/download/*.sh
-!docs/pipeline/preprocess/
-docs/pipeline/preprocess/*
-!docs/pipeline/preprocess/README.md
-!docs/pipeline/preprocess/*.sh
-docs/_book/
+# Documentation sources are tracked normally; ignore generated render outputs.
+/docs/_book/
+/docs/.quarto/
+/docs/**/.ipynb_checkpoints/
+/docs/sparse_support_foundation/evaluation.html
+/docs/sparse_support_foundation/evaluation_files/
+._*
 
-# Build directories
-build/
-# This directory is a source-header namespace; keep other payloads ignored.
-!include/Cellerator/compiler/build/
-include/Cellerator/compiler/build/*
-!include/Cellerator/compiler/build/accelerator_enabled_compiler_smoke_targets_v1.hh
-!include/Cellerator/compiler/build/backend_resource_discovery_manifests_v1.hh
-!include/Cellerator/compiler/build/build_presets_and_ci_matrix_v1.hh
-!include/Cellerator/compiler/build/build_tree_generated_header_ownership_v1.hh
-!include/Cellerator/compiler/build/compiler_component_target_boundaries_v1.hh
-!include/Cellerator/compiler/build/compiler_target_graph_v1.hh
-!include/Cellerator/compiler/build/host_only_compiler_smoke_targets_v1.hh
-!include/Cellerator/compiler/build/host_only_root_project_contract_v1.hh
-!include/Cellerator/compiler/build/optional_llvm_and_clang_library_discovery_v1.hh
-!include/Cellerator/compiler/build/tri_state_cuda_backend_configuration_v1.hh
-build-*/
-cmake-build-*/
-out/
-bin/
-lib/
-lib64/
-dist/
-!include/Cellerator/dist/
-!include/Cellerator/dist/**
+# Generated build trees. Anchor root outputs so public build/resource
+# namespaces remain ordinary source; experiment-local outputs are explicit.
+/build/
+/build-*/
+/cmake-build-*/
+/out/
+/bin/
+/lib/
+/lib64/
+/dist/
+/bench/**/build/
+/bench/**/build-*/
+/bench/**/build_*/
+/experiments/**/build/
+/experiments/**/build-*/
+/experiments/**/build_*/
+/tests/**/build/
+/tests/**/build-*/
 
 # CMake / make / ninja output
 CMakeCache.txt
@@ -114,6 +77,7 @@ __pycache__/
 *.cpp4.ii
 
 # Debugger / crash output
+/debug_out/
 /core
 /core.[0-9]*
 !include/Cellerator/core/
@@ -142,7 +106,6 @@ cuda_profile_*
 cuda_profile*.log
 
 # Generated local state
-.ctxpp.toml
 .DS_Store
 
 # Generated agent artifacts
