@@ -58,7 +58,7 @@ validity, or task completion.
 | Product, package, operation, and contributor guides | Root `README.md`, `scope.md`; `docs/{index,architecture,scope,getting_started,model_building,operations,layout_execution,current_implementation,developer_reference}.qmd`; `docs/development/{operation_registry,implementation_style,python-bindings,routing}.md` | Maintained product and developer documentation | Keep product direction concise; distinguish current API/evidence from proposed ownership and preserve the small, implemented `nn` surface. Former root guide pointers are preserved in `docs/history/repository-notes`; use the maintained operation registry and implementation style guide directly. |
 | Experimental and historical design pages | `docs/experiments_and_history.qmd`, retained subsystem chapters, `docs/development/experimental-fields.md` | Exact subsystem owner and evidence record | Keep useful history accessible with currentness and maturity labels. Never rewrite immutable source-bound report bytes to fit a new product description. |
 | Source map and agent routing | `docs/development/routing.md`, `tools/maintenance/source_map/`, generated `docs/development/source_map/` | Documentation/maintenance owner with source owners | Generated map gives per-path role, current owner, destination, disposition, maturity, consumers, tests/evidence, and archive reference. Regenerate after source or routing-rule changes; Project Control remains live task status. |
-| Plans, Todo state, and repository metadata | `planning`, including `planning/archive/legacy-plans`; `todos`, `.todo-orchestrator`, `.project-control` | Approved plan, supported Project Control authority, or preserved history | Plans record intent; Project Control owns live status. Historical root plans live in the planning archive with exact hashes and former-path mappings. Never hand-edit SQLite, generated Todo projections, recovery snapshots, or task ledgers to mimic completion. |
+| Plans, Todo state, and repository metadata | `planning`, including `planning/archive/legacy-plans` and `planning/archive/legacy-todo`; current `.todo-orchestrator/project.json` and authority database; `.project-control` | Approved plan, supported Project Control authority, or preserved history | Plans record intent; Project Control owns live status. The [legacy Todo archive index](https://github.com/tumlinso/Cellerator/blob/main/planning/archive/legacy-todo/README.md) resolves archived projections, snapshots, plan inputs and runtime artifacts by former path and content identity. The live project metadata and authority database remain under `.todo-orchestrator`; never hand-edit them or any generated Todo projections to mimic completion. |
 
 One specific preservation constraint: the reusable host patch and ragged-port
 providers now live at `src/ops/matrix/patch_provider.cc` and
@@ -82,6 +82,11 @@ resolve the former root files. Their original bytes and managed historical
 references are preserved; archive placement does not make them current guidance.
 The older archive-disposition record retains its original path holds as dated
 history. Use these newer archive indexes for the reconciled locations.
+
+The [legacy Todo archive index](https://github.com/tumlinso/Cellerator/blob/main/planning/archive/legacy-todo/README.md)
+resolves retired Todo projections and runtime artifacts. The current
+`.todo-orchestrator/project.json` and authority database remain live workflow
+state and are not part of that archive.
 
 Local generated output has a different lifecycle from source history. Keep only
 build trees with a current configured consumer in the checkout. Retired builds,

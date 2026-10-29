@@ -14067,5 +14067,29 @@
   ],
   "retired_payloads": "planning/active-source-cleanup/retired-payloads.json",
   "unmapped_deletions": [],
-  "note": "Current destination closure composed from preserved historical records and the final purpose-name cleanup. Intermediate old paths identify original_source_commit explicitly. Target hashes document this source checkpoint, not a permanent freeze; original planning/evidence records remain unchanged. Later checkout decluttering preserves fourteen additional source files byte-for-byte from a3bcdde0, and restores six historical CelleraTorch source/test/package files from the recorded historical Git tree. Archive indexes resolve former paths; original source-bound reports and managed workflow records remain unchanged."
+  "note": "Current destination closure composed from preserved historical records and the final purpose-name cleanup. Intermediate old paths identify original_source_commit explicitly. Target hashes document this source checkpoint, not a permanent freeze; original planning/evidence records remain unchanged. Later checkout decluttering preserves fourteen additional source files byte-for-byte from a3bcdde0, and restores six historical CelleraTorch source/test/package files from the recorded historical Git tree. Archive indexes resolve former paths; original source-bound reports and managed workflow records remain unchanged.",
+  "external_archive_relocations": [
+    {
+      "source_commit": "82286165ff6ce2846dd30358bb819cc3ab13c080",
+      "archive_index": "planning/archive/legacy-todo/manifest.json",
+      "retired_roots": [
+        "todos",
+        "todos.md",
+        "todo-status.md",
+        ".todo-orchestrator/state.snapshot.json",
+        ".todo-orchestrator/ce-ptr-plan.json",
+        ".todo-orchestrator/runtime",
+        ".git/todo-orchestrator"
+      ],
+      "formerly_tracked_files": 1345,
+      "archive": "/mnt/block/cellerator/preservation/legacy-todo-20261029T132818Z/legacy-todo.tar.zst",
+      "archive_sha256": "9264dc1f1faaaa7acfb31d7e9190e550ec809b5baef57bd34cde20a374d55aa9",
+      "current_authority_excluded": [
+        ".todo-orchestrator/authority.sqlite3",
+        ".todo-orchestrator/authority.sqlite3-wal",
+        ".todo-orchestrator/authority.sqlite3-shm",
+        ".todo-orchestrator/project.json"
+      ]
+    }
+  ]
 }
