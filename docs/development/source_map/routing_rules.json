@@ -1029,16 +1029,6 @@
     "role": "subsystem-local engineering or test documentation",
     "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
   },
-  "108d77cb0ffa": {
-    "archive_reference": "retain original tracked bytes and provenance; no speculative deletion",
-    "consumers": "historical readers and specific research owners",
-    "current_owner": "optimization.md",
-    "disposition": "preserve_historical_root_research",
-    "intended_destination": "preserve as dated research/history and point readers to current scope/architecture; do not update its conclusions as if it were current authority",
-    "maturity": "dated or superseded; linked evidence remains source-bound",
-    "role": "historical architecture, research, performance, or scope note",
-    "tests_or_evidence": "page-specific tests/evidence must be read at their recorded source identity"
-  },
   "108fe9f3ee9f": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
     "consumers": "tests/substrate/integration contributors and maintainers of linked implementations",
@@ -1469,16 +1459,6 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/semantic_ir/contraction_segment_normalization_test.cc; registration and run evidence are operation- and environment-specific"
   },
-  "16ee993bf75c": {
-    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
-    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
-    "current_owner": "tests/architecture/test_migration_status.py",
-    "disposition": "retain_in_named_test_suite",
-    "intended_destination": "retain under tests/architecture beside its subject; move only with implementation and registration",
-    "maturity": "test source present; execution status and assertion coverage are not established by this map",
-    "role": "test, fixture, or validation tool",
-    "tests_or_evidence": "tests/architecture/test_migration_status.py; registration and run evidence are operation- and environment-specific"
-  },
   "16fe6b99a252": {
     "archive_reference": "preserve prepared topology, first-order gradient, and precision contracts",
     "consumers": "cellerator_python_extensions depends on product2; consumers are cellerator.ops, Product2Module, and direct native package callers",
@@ -1698,16 +1678,6 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/benchmark/benchmark_ceir_construction_and_serialization_test.cc; registration and run evidence are operation- and environment-specific"
-  },
-  "1a7536c121ed": {
-    "archive_reference": "retain exact bytes and provenance; never hand-edit to simulate completion",
-    "consumers": "planning history and recovery context only; do not execute its gates as current authority",
-    "current_owner": "ce-geo-plan.json",
-    "disposition": "preserve_historical_plan_snapshot",
-    "intended_destination": "preserve this historical snapshot at ce-geo-plan.json; current task status and accepted changes belong to the supported Project Control authority",
-    "maturity": "historical intent, not implementation or current workflow state",
-    "role": "legacy machine-readable plan snapshot",
-    "tests_or_evidence": "no current capability evidence; follow source refs only after checking their recorded revision"
   },
   "1a81d7a99047": {
     "archive_reference": "preserve managed AGENTS workflow block and all accepted project instructions",
@@ -2148,16 +2118,6 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/jbc/fragment/external_persistent_order_v1_test.cc; registration and run evidence are operation- and environment-specific"
-  },
-  "20d116f1630f": {
-    "archive_reference": "retain original tracked bytes and provenance; no speculative deletion",
-    "consumers": "historical readers and specific research owners",
-    "current_owner": "planning_strategy.md",
-    "disposition": "preserve_historical_root_research",
-    "intended_destination": "preserve as dated research/history and point readers to current scope/architecture; do not update its conclusions as if it were current authority",
-    "maturity": "dated or superseded; linked evidence remains source-bound",
-    "role": "historical architecture, research, performance, or scope note",
-    "tests_or_evidence": "page-specific tests/evidence must be read at their recorded source identity"
   },
   "20fb8f3f4908": {
     "archive_reference": "preserve eligibility and derivative semantics; do not infer complete adaptive execution",
@@ -2648,16 +2608,6 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/geometry/validation/numerical_referee_test.cc; registration and run evidence are operation- and environment-specific"
-  },
-  "278a84798cb5": {
-    "archive_reference": "retain exact bytes and provenance; never hand-edit to simulate completion",
-    "consumers": "planning history and recovery context only; do not execute its gates as current authority",
-    "current_owner": "ce-live-plan.json",
-    "disposition": "preserve_historical_plan_snapshot",
-    "intended_destination": "preserve this historical snapshot at ce-live-plan.json; current task status and accepted changes belong to the supported Project Control authority",
-    "maturity": "historical intent, not implementation or current workflow state",
-    "role": "legacy machine-readable plan snapshot",
-    "tests_or_evidence": "no current capability evidence; follow source refs only after checking their recorded revision"
   },
   "2795231dc943": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -3849,16 +3799,6 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/relation_algebra/segment_normalize_test.cu; registration and run evidence are operation- and environment-specific"
   },
-  "39c40ef3b1c5": {
-    "archive_reference": "retain original tracked bytes and provenance; no speculative deletion",
-    "consumers": "historical readers and specific research owners",
-    "current_owner": "ARCHITECTURE_FOLLOWUPS.md",
-    "disposition": "preserve_historical_root_research",
-    "intended_destination": "preserve as dated research/history and point readers to current scope/architecture; do not update its conclusions as if it were current authority",
-    "maturity": "dated or superseded; linked evidence remains source-bound",
-    "role": "historical architecture, research, performance, or scope note",
-    "tests_or_evidence": "page-specific tests/evidence must be read at their recorded source identity"
-  },
   "39d2c9726ffa": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -5039,6 +4979,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/composition/multi_parent_derivation_dags_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "4bc01ee9d023": {
+    "archive_reference": "preserve original source bytes and distinguish earlier component implementation from the separate paused runtime proposal",
+    "consumers": "archive README links the original manifest, source revision and former paths for future review",
+    "current_owner": "docs/history/celleratorch/python_source",
+    "disposition": "preserve_historical_torch_source",
+    "intended_destination": "retain one provenance-marked copy of the earlier adapter source and tests recovered from generated copies or Git history",
+    "maturity": "historical source and evidence identity; not part of the installed cellerator API or a newly qualified model operation",
+    "role": "preserved historical CelleraTorch Python source snapshot",
+    "tests_or_evidence": "byte hashes and Python AST parsing establish preservation only; archived test snapshots are not collected by pytest"
+  },
   "4bd0948aff6d": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -6129,6 +6079,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/math_execution_csr_test.cu; registration and run evidence are operation- and environment-specific"
   },
+  "5cca43dd4445": {
+    "archive_reference": "preserve original bytes and interpret original relative links in their recorded repository-root context",
+    "consumers": "docs/history/repository-notes/README.md resolves former root paths and links current guidance",
+    "current_owner": "docs/history/repository-notes",
+    "disposition": "preserve_archived_repository_note",
+    "intended_destination": "retain byte-identical historical material with its former-path index; maintained guidance lives in the current product and development docs",
+    "maturity": "historical source context; archived tests are not current regressions",
+    "role": "archived repository note, former guide, or historical assertion",
+    "tests_or_evidence": "archive hashes and original Git blobs establish preservation; do not execute old completion assertions as current package checks"
+  },
   "5cd1c0863bc2": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -6999,16 +6959,6 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/native_foundation/values/epoch_fixture.cuh; registration and run evidence are operation- and environment-specific"
   },
-  "698045923174": {
-    "archive_reference": "preserve the pointer while historical references remain; maintain style content only in the developer guide",
-    "consumers": "historical plan readers and links",
-    "current_owner": "style_hint.md",
-    "disposition": "retain_legacy_style_pointer",
-    "intended_destination": "retain as a short pointer to docs/development/implementation_style.md for preserved plans that use the old filename",
-    "maturity": "compatibility stub; not active contributor policy",
-    "role": "legacy implementation-style compatibility pointer",
-    "tests_or_evidence": "docs/development/implementation_style.md and the repository contributor contract are maintained guidance"
-  },
   "69a2650250bc": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -7698,16 +7648,6 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/sparse_support/physical_image_builder_test.cc; registration and run evidence are operation- and environment-specific"
-  },
-  "7270b6a5f22d": {
-    "archive_reference": "preserve incident/source details; do not turn historical notes into package requirements",
-    "consumers": "local contributors and operators",
-    "current_owner": "ENVIRONMENT_NOTES.md",
-    "disposition": "retain_local_environment_snapshot",
-    "intended_destination": "retain as local setup/history; verify machine and host details before reusing",
-    "maturity": "date-bound operational guidance",
-    "role": "dated local environment and operational notes",
-    "tests_or_evidence": "verify against current toolchain/host state before execution"
   },
   "72ae164d6546": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
@@ -11749,16 +11689,6 @@
     "role": "semantic geometry packing_plan.cc",
     "tests_or_evidence": "tests/geometry contracts, acquisition, projection, providers, catalog, and validation suites by subject; no blanket pass claim"
   },
-  "ae75a4a517c5": {
-    "archive_reference": "retain exact bytes and provenance; never hand-edit to simulate completion",
-    "consumers": "planning history and recovery context only; do not execute its gates as current authority",
-    "current_owner": "cellerator-post-remap-plan.json",
-    "disposition": "preserve_historical_plan_snapshot",
-    "intended_destination": "preserve this historical snapshot at cellerator-post-remap-plan.json; current task status and accepted changes belong to the supported Project Control authority",
-    "maturity": "historical intent, not implementation or current workflow state",
-    "role": "legacy machine-readable plan snapshot",
-    "tests_or_evidence": "no current capability evidence; follow source refs only after checking their recorded revision"
-  },
   "aebada72e87e": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -11858,16 +11788,6 @@
     "maturity": "implementation present; prepared execution and runtime qualification are operation-specific; ExecutionField live recompilation remains experimental",
     "role": "prepared execution projection_activation_v2.cc contract",
     "tests_or_evidence": "tests/execution or tests/runtime family checks when registered; source presence does not establish runtime qualification"
-  },
-  "af96ce1f304a": {
-    "archive_reference": "retain original tracked bytes and provenance; no speculative deletion",
-    "consumers": "historical readers and specific research owners",
-    "current_owner": "out_of_scope_inventory.md",
-    "disposition": "preserve_historical_root_research",
-    "intended_destination": "preserve as dated research/history and point readers to current scope/architecture; do not update its conclusions as if it were current authority",
-    "maturity": "dated or superseded; linked evidence remains source-bound",
-    "role": "historical architecture, research, performance, or scope note",
-    "tests_or_evidence": "page-specific tests/evidence must be read at their recorded source identity"
   },
   "af973b215f1c": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -12579,16 +12499,6 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/package/Makefile.consumer; registration and run evidence are operation- and environment-specific"
   },
-  "bb657ac44d77": {
-    "archive_reference": "retain exact bytes and provenance; never hand-edit to simulate completion",
-    "consumers": "planning history and recovery context only; do not execute its gates as current authority",
-    "current_owner": "cellerator-remap-plan.json",
-    "disposition": "preserve_historical_plan_snapshot",
-    "intended_destination": "preserve this historical snapshot at cellerator-remap-plan.json; current task status and accepted changes belong to the supported Project Control authority",
-    "maturity": "historical intent, not implementation or current workflow state",
-    "role": "legacy machine-readable plan snapshot",
-    "tests_or_evidence": "no current capability evidence; follow source refs only after checking their recorded revision"
-  },
   "bb8f51dc714a": {
     "archive_reference": "preserve identity, precision, layout, and derivative contracts; move only with its real callers and build entries",
     "consumers": "src/compute/CMakeLists.txt and nested family CMake files name the built source set; an existing file alone is not proof of target registration",
@@ -13078,6 +12988,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/geometry/contracts/cpe2_capability_manifest_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "c325df61844a": {
+    "archive_reference": "preserve original plan bytes and managed historical references; use the archive index to resolve their recorded root paths",
+    "consumers": "archive README and historical readers; geometry interlock verifier resolves the archived geometry plan explicitly",
+    "current_owner": "planning/archive/legacy-plans",
+    "disposition": "preserve_archived_legacy_plan",
+    "intended_destination": "retain exact historical plan bytes and former-path mapping; current work belongs to the supported workflow authority",
+    "maturity": "historical intent, not current execution state or capability",
+    "role": "archived legacy plan snapshot or archive index",
+    "tests_or_evidence": "archive hashes, JSON parsing and verifier path checks only; do not replay historical gates as current authority"
   },
   "c35c88b789b1": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -15959,16 +15879,6 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/math_core/csr_fallback_candidate_test.cu; registration and run evidence are operation- and environment-specific"
   },
-  "ed9761cadf2b": {
-    "archive_reference": "retain original tracked bytes and provenance; no speculative deletion",
-    "consumers": "historical readers and specific research owners",
-    "current_owner": "ARCHITECTURE_INVESTIGATION.md",
-    "disposition": "preserve_historical_root_research",
-    "intended_destination": "preserve as dated research/history and point readers to current scope/architecture; do not update its conclusions as if it were current authority",
-    "maturity": "dated or superseded; linked evidence remains source-bound",
-    "role": "historical architecture, research, performance, or scope note",
-    "tests_or_evidence": "page-specific tests/evidence must be read at their recorded source identity"
-  },
   "ed9ced1c6ac9": {
     "archive_reference": "preserve identity, precision, layout, and derivative contracts; move only with its real callers and build entries",
     "consumers": "public header interface under include/Cellerator/compute/operation/edge; verify installed/exported headers and actual include callers per API",
@@ -16068,16 +15978,6 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/geometry/providers/provider_contract_test.cu; registration and run evidence are operation- and environment-specific"
-  },
-  "ef2922fd1755": {
-    "archive_reference": "preserve the pointer while historical references remain; maintain capability content only in the developer guide",
-    "consumers": "historical plan readers and links",
-    "current_owner": "custom_torch_ops.md",
-    "disposition": "retain_legacy_operation_registry_pointer",
-    "intended_destination": "retain as a short pointer to docs/development/operation_registry.md for preserved plans that use the old filename",
-    "maturity": "compatibility stub; not an operation inventory or API contract",
-    "role": "legacy operation registry compatibility pointer",
-    "tests_or_evidence": "docs/development/operation_registry.md is the maintained inventory; concrete support is verified against each implementation and consumer"
   },
   "ef51f973e2dc": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -16618,16 +16518,6 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/semantic_spine/native/run_suite.py; registration and run evidence are operation- and environment-specific"
-  },
-  "f8820f4c0667": {
-    "archive_reference": "retain exact bytes and provenance; never hand-edit to simulate completion",
-    "consumers": "planning history and recovery context only; do not execute its gates as current authority",
-    "current_owner": "ce-exop-plan.json",
-    "disposition": "preserve_historical_plan_snapshot",
-    "intended_destination": "preserve this historical snapshot at ce-exop-plan.json; current task status and accepted changes belong to the supported Project Control authority",
-    "maturity": "historical intent, not implementation or current workflow state",
-    "role": "legacy machine-readable plan snapshot",
-    "tests_or_evidence": "no current capability evidence; follow source refs only after checking their recorded revision"
   },
   "f8d6850887d7": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",

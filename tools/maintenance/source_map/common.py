@@ -79,8 +79,14 @@ def snapshot(repo: Path, output: Path, generator: Path, validator: Path) -> dict
     }
     identity_material = {"index_sha256": index_hash, "worktree_sha256": worktree_hash, "toolchain_sha256": tool_hashes}
     identity = hashlib.sha256(json.dumps(identity_material, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
-    status_rows = git(repo, "status", "--porcelain=v1", "-z", "--untracked-files=no").decode().split("\0")
-    dirty = sorted({item[3:] for item in status_rows if item} - generated)
+    status_rows = iter(split0(git(repo, "status", "--porcelain=v1", "-z", "--untracked-files=no")))
+    dirty_paths = set()
+    for item in status_rows:
+        dirty_paths.add(item[3:])
+        # In porcelain -z, rename/copy records have a second, unprefixed path.
+        if "R" in item[:2] or "C" in item[:2]:
+            dirty_paths.add(next(status_rows))
+    dirty = sorted(dirty_paths - generated)
     return {
         "generated_paths": generated, "tracked": tracked, "tracked_source": tracked_source,
         "untracked_source": untracked, "source_rows": source_rows,

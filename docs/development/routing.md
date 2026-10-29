@@ -55,10 +55,10 @@ validity, or task completion.
 | Model fixtures and single-cell workflows | `examples`, `include/Cellerator/examples`, `docs/pipeline` | Examples, testbeds, or consumer-owned applications | Keep useful fixtures and operations. Keep scientific assumptions with Karyoplast, Cytoplast, GlassHelix, or the relevant consumer. |
 | Performance, correctness, and research evidence | `bench/**`, qualification records, dated implementation docs | Source-bound evidence index and operation owner | Preserve original reports and rejected alternatives. Scope correctness, biological validation, and performance separately. Some code under an experiment path is linked into installed targets; audit targets and consumers before moving or archiving it. |
 | CellPack, compatibility, and sibling interfaces | `include/CellPack`, `compat`, `components`, `modules`, `interop`, and actual sibling callsites | CellPack public contracts stay owned by the CellPack subsystem implemented through `src/geometry` targets; compatibility and sibling APIs retain their concrete native owner | `src/geometry/CMakeLists.txt` and `owned_targets.cmake` provide the implementation and target evidence. Preserve unique code, identifiers, ABI/schema versions, checkpoint behavior, and real sibling users. Do not infer an owner from a planned directory name. |
-| Product, package, operation, and contributor guides | Root `README.md`, `scope.md`; `docs/{index,architecture,scope,getting_started,model_building,operations,layout_execution,current_implementation,developer_reference}.qmd`; `docs/development/{operation_registry,implementation_style,python-bindings,routing}.md` | Maintained product and developer documentation | Keep product direction concise; distinguish current API/evidence from proposed ownership and preserve the small, implemented `nn` surface. Root `custom_torch_ops.md` and `style_hint.md` remain compatibility pointers only. |
+| Product, package, operation, and contributor guides | Root `README.md`, `scope.md`; `docs/{index,architecture,scope,getting_started,model_building,operations,layout_execution,current_implementation,developer_reference}.qmd`; `docs/development/{operation_registry,implementation_style,python-bindings,routing}.md` | Maintained product and developer documentation | Keep product direction concise; distinguish current API/evidence from proposed ownership and preserve the small, implemented `nn` surface. Former root guide pointers are preserved in `docs/history/repository-notes`; use the maintained operation registry and implementation style guide directly. |
 | Experimental and historical design pages | `docs/experiments_and_history.qmd`, retained subsystem chapters, `docs/development/experimental-fields.md` | Exact subsystem owner and evidence record | Keep useful history accessible with currentness and maturity labels. Never rewrite immutable source-bound report bytes to fit a new product description. |
 | Source map and agent routing | `docs/development/routing.md`, `tools/maintenance/source_map/`, generated `docs/development/source_map/` | Documentation/maintenance owner with source owners | Generated map gives per-path role, current owner, destination, disposition, maturity, consumers, tests/evidence, and archive reference. Regenerate after source or routing-rule changes; Project Control remains live task status. |
-| Plans, Todo state, and repository metadata | `planning`, `todos`, `.todo-orchestrator`, `.project-control`, root plan snapshots | Approved plan, supported Project Control authority, or preserved history | Plans record intent; Project Control owns live status. Never hand-edit SQLite, generated Todo projections, recovery snapshots, or task ledgers to mimic completion. |
+| Plans, Todo state, and repository metadata | `planning`, including `planning/archive/legacy-plans`; `todos`, `.todo-orchestrator`, `.project-control` | Approved plan, supported Project Control authority, or preserved history | Plans record intent; Project Control owns live status. Historical root plans live in the planning archive with exact hashes and former-path mappings. Never hand-edit SQLite, generated Todo projections, recovery snapshots, or task ledgers to mimic completion. |
 
 One specific preservation constraint: the reusable host patch and ragged-port
 providers now live at `src/ops/matrix/patch_provider.cc` and
@@ -75,6 +75,22 @@ Historical branch closure and artifact holds are documented in the
 and its linked [branch-closure receipt](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/planning/coherence/branch-closure.json).
 These explain preserved refs, bundles, and held historical paths; they do not
 replace per-path disposition in the generated source map.
+
+The [legacy plan archive](https://github.com/tumlinso/Cellerator/blob/main/planning/archive/legacy-plans/README.md)
+and [repository-note archive](https://github.com/tumlinso/Cellerator/blob/main/docs/history/repository-notes/README.md)
+resolve the former root files. Their original bytes and managed historical
+references are preserved; archive placement does not make them current guidance.
+The older archive-disposition record retains its original path holds as dated
+history. Use these newer archive indexes for the reconciled locations.
+
+Local generated output has a different lifecycle from source history. Keep only
+build trees with a current configured consumer in the checkout. Retired builds,
+local source captures, test receipts and profiler output belong in one verified
+durable archive with original-path and content manifests. Historical reports
+retain their recorded build paths; recover their original bytes from the archive
+instead of keeping every old build live. The configured `build/` verification
+tree and `build-ctxpp/` compilation database remain local outputs; this repository
+cleanup does not change shared retrieval state or its tooling configuration.
 
 ## Editing and claim rules
 

@@ -53,7 +53,8 @@ def main() -> int:
     args = parser.parse_args()
 
     root = args.repo_root.resolve()
-    plan_path = root / "ce-geo-plan.json"
+    plan_relative_path = Path("planning/archive/legacy-plans/ce-geo-plan.json")
+    plan_path = root / plan_relative_path
     with plan_path.open(encoding="utf-8") as stream:
         plan = json.load(stream)
 
@@ -155,7 +156,7 @@ def main() -> int:
             "capabilities": capability_count,
             "started_tasks": 0,
         },
-        "plan": {"path": "ce-geo-plan.json", "sha256": sha256(plan_path)},
+        "plan": {"path": plan_relative_path.as_posix(), "sha256": sha256(plan_path)},
     }
     output = (root / args.output).resolve()
     output.parent.mkdir(parents=True, exist_ok=True)

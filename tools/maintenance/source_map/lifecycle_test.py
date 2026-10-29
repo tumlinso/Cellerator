@@ -62,8 +62,11 @@ def main()->None:
 
         # Source moves change both the path set and bound source identity.
         run(["git","mv","src/compute/model.py","src/compute/model-renamed.py"],repo)
-        run(["git","commit","-qm","source move"],repo); validate(ok=False)
-        generate(); validate()
+        validate(ok=False); generate()
+        dirty = json.loads((repo/out/"manifest.json").read_text())["dirty_tracked_paths"]
+        if set(dirty) != {"src/compute/model.py", "src/compute/model-renamed.py"}:
+            raise RuntimeError(f"rename paths were not preserved in the dirty inventory: {dirty}")
+        validate(); run(["git","commit","-qm","source move"],repo); validate()
         run(["git","add","."],repo); run(["git","commit","-qm","move and refreshed map"],repo); validate()
 
         # Any generated output edit is detected and can be reproduced.

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "celleratorch"
+version = "0.1.0"
+description = "Biology-shaped PyTorch adapters for prepared Cellerator mechanisms"
+requires-python = ">=3.10"
+dependencies = ["torch>=2.7,<2.8"]
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
