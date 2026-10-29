@@ -169,8 +169,17 @@ The earlier [coherence migration snapshot](https://github.com/tumlinso/Cellerato
 
 A required native evidence name needs a configured producer that records that passing fact. Committed reports, scheduler receipts, and external test runs belong in source references and reviewed assertions; their presence alone does not create a native passing fact. Live task state remains in Project Control.
 
-## C++ retrieval maintenance
+## Optional C++ retrieval maintenance
 
-`build-ctxpp/compile_commands.json` is the compilation database selected by `.ctxpp.toml`. The `.ctxpp/` index and `.ctxpp/observer-export.json` are generated local artifacts. Use the installed [C++ Context Compiler skill](https://github.com/tumlinso/skills/blob/main/cpp-context-compiler/SKILL.md) to scan and export after source-path, include-root, build-flag, or configuration changes. Preserve the previous generation until the replacement passes freshness and representative lookup checks; never hand-edit generated index state. After file renames or deletions, qualify a clean generation from validated TU caches and audit file/translation-unit references and diagnostic freshness. Incremental retention alone is insufficient evidence of current path coverage.
+[ctxpp](https://github.com/tumlinso/ctxpp) is an optional standalone C++ context tool. Ordinary source navigation and coding do not require it or a globally installed skill. `build-ctxpp/compile_commands.json` is the compilation database selected by `.ctxpp.toml`. The generated `.ctxpp/index.sqlite` holds the graph; `.ctxpp/observer-export.json` is a small descriptor for the optional reader. Canonical source files remain authoritative.
 
-Project Control consumes the export through operator-managed `PROJECT_CONTROL_CPP_EXPORTS` configuration. Keep repository guidance declarations in `.project-context.json`. The [dated retrieval qualification](https://github.com/tumlinso/Cellerator/blob/main/planning/active-source-cleanup/qualification/retrieval-qualification.json) records the tested configuration and semantic versus lexical coverage. The source map supplies ownership and path routing; semantic coverage comes from the generated index and observer checks.
+When maintaining this index, refresh and export through the CLI:
+
+```sh
+ctxpp scan
+ctxpp export > .ctxpp/observer-export.json
+```
+
+Scanning reuses validated translation-unit contributions. Refresh after source-path, include-root, build-flag, or configuration changes; preserve the previous generation until freshness, source coverage, and representative lookups pass. Never hand-edit the database or generated projections. Coverage may remain partial where compilation commands or supported parsers are unavailable; an indexed relationship does not prove runtime behavior.
+
+Project Control uses this provider only for repositories explicitly listed in operator-managed `PROJECT_CONTROL_CPP_EXPORTS` configuration. Without that opt-in, its source retrieval works independently of ctxpp. Keep repository guidance declarations in `.project-context.json`. Historical [retrieval qualification](https://github.com/tumlinso/Cellerator/blob/main/planning/active-source-cleanup/qualification/retrieval-qualification.json) describes the earlier generation and its semantic versus lexical coverage; it is not a claim about the current index.
