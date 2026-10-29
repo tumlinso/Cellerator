@@ -4,7 +4,6 @@ import argparse
 import csv
 import hashlib
 import json
-import subprocess
 import sys
 from pathlib import Path
 sys.dont_write_bytecode = True
@@ -32,6 +31,8 @@ def migration_destinations(manifest_path: str) -> list[str]:
     except ValueError as exc:
         raise ValueError("migration manifest must be inside the repository") from exc
     data=json.loads(candidate.read_text())
+    if not isinstance(data,dict):
+        raise ValueError("migration manifest must contain an object")
     destinations=[]
     for section in ("path_migrations","source_extractions","compatibility_facades"):
         rows=data.get(section,[])
@@ -49,16 +50,10 @@ def migration_destinations(manifest_path: str) -> list[str]:
             destinations.append(path.as_posix())
     return sorted(set(destinations))
 
-def tracked_path(path: str) -> bool:
-    result=subprocess.run(["git","ls-files","--error-unmatch","--",path],cwd=repo,
-                          stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-    return result.returncode==0
-
+destinations_to_audit=[]
 if args.migration_manifest:
     try:
-        for destination in migration_destinations(args.migration_manifest):
-            if not tracked_path(destination):
-                errors.append(f"intended migration destination is not tracked: {destination}")
+        destinations_to_audit=migration_destinations(args.migration_manifest)
     except (OSError,ValueError,json.JSONDecodeError) as exc:
         errors.append(f"migration manifest audit failed: {exc}")
 
@@ -73,6 +68,11 @@ def resolve_tool(value):
     return candidate if candidate.is_absolute() else repo/candidate
 tools=manifest["toolchain_paths"]
 current=snapshot(repo,out,resolve_tool(tools["generator"]),resolve_tool(tools["validator"]))
+if destinations_to_audit:
+    tracked_paths={entry["path"] for entry in current["tracked_source"]}
+    for destination in destinations_to_audit:
+        if destination not in tracked_paths:
+            errors.append(f"intended migration destination is not tracked: {destination}")
 if current["source_identity"]!=manifest["source_identity"]:
     errors.append("authoritative source identity changed; regenerate the map")
 if current["source_index_sha256"]!=manifest["source_index_sha256"]:

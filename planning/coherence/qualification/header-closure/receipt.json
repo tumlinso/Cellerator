@@ -34,14 +34,15 @@
     {
       "command": "PYTHONDONTWRITEBYTECODE=1 python -B tools/maintenance/source_map/lifecycle_test.py",
       "name": "source_map_lifecycle",
-      "result": "passed all 8 lifecycle cases"
+      "result": "passed all 9 lifecycle cases, including exact literal filename membership with a pathspec decoy"
     }
   ],
   "execution_boundary": "CUDA disabled and hardware probing disabled; no GPU execution or device probe.",
   "logs": "planning/coherence/qualification/header-closure/logs/",
   "migration_audit": {
     "command": "PYTHONDONTWRITEBYTECODE=1 python -B tools/maintenance/source_map/validate.py --repo . --migration-manifest planning/coherence/source-migrations.json",
-    "result": "passed after source closure and source map regeneration",
+    "regression": "a tracked literalb.hh does not satisfy missing literal[bracket].hh; exact bracketed tracked filename passes",
+    "result": "passed after exact index-path membership fix; 941 declared destinations checked using the validator snapshot set",
     "scope": "checks tracked existence of declared destinations only; no historical content freezing"
   },
   "preservation": {
