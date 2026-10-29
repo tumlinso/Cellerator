@@ -1,0 +1,141 @@
+WARNING: The directory '/home/tumlinson/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /tmp/cellerator-coherence
+  Preparing metadata (pyproject.toml): started
+  Running command Preparing metadata (pyproject.toml)
+  *** scikit-build-core 1.1.1 using CMake 3.28.3 (metadata_wheel)
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: cellerator
+  Building wheel for cellerator (pyproject.toml): started
+  Running command Building wheel for cellerator (pyproject.toml)
+  *** scikit-build-core 1.1.1 using CMake 3.28.3 (wheel)
+  *** Configuring CMake...
+  loading initial cache file /tmp/cellerator-transition-cuda-build/CMakeInit.txt
+  -- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version "12.9.86")
+  -- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES)
+  -- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES)
+  -- Found pybind11: /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/pybind11/include (found version "3.0.3")
+  -- Cellerator providers: selection=baseline, tuning=precise
+  -- Cellerator default real: storage=f16, compute=f32, accum=f32
+  -- Cellerator compatibility sparse fallback: blocked_ell (operation projections remain planner-selected)
+  -- Cellerator host vector level: avx2
+  -- Cellerator hardware probe disabled
+  -- Cellerator CUDA mode: generic
+  -- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include (found version "12.9.86")
+  -- PyTorch: CUDA detected: 12.9
+  -- PyTorch: CUDA nvcc is: /usr/local/cuda/bin/nvcc
+  -- PyTorch: CUDA toolkit directory: /usr/local/cuda
+  -- PyTorch: Header version is: 12.9
+  -- Found Python: /home/tumlinson/Software/miniconda3/bin/python (found version "3.13.11") found components: Interpreter
+  CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:140 (message):
+    Failed to compute shorthash for libnvrtc.so
+  Call Stack (most recent call first):
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+    bindings/torch/CMakeLists.txt:75 (find_package)
+
+
+  CMake Warning (dev) at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:438 (message):
+    The package name passed to `find_package_handle_standard_args` (nvtx3) does
+    not match the name of the calling package (Caffe2).  This can lead to
+    problems in calling code that expects `find_package` result variables
+    (e.g., `_FOUND`) to follow a certain pattern.
+  Call Stack (most recent call first):
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:178 (find_package_handle_standard_args)
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+    bindings/torch/CMakeLists.txt:75 (find_package)
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+  -- Could NOT find nvtx3 (missing: nvtx3_dir)
+  CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:184 (message):
+    Cannot find NVTX3, find old NVTX instead
+  Call Stack (most recent call first):
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+    bindings/torch/CMakeLists.txt:75 (find_package)
+
+
+  -- USE_CUDNN is set to 0. Compiling without cuDNN support
+  -- USE_CUSPARSELT is set to 0. Compiling without cuSPARSELt support
+  -- USE_CUDSS is set to 0. Compiling without cuDSS support
+  -- USE_CUFILE is set to 0. Compiling without cuFile support
+  -- Added CUDA NVCC flags for: -gencode;arch=compute_70,code=sm_70
+  -- Configuring done (2.5s)
+  -- Generating done (0.4s)
+  -- Build files have been written to: /tmp/cellerator-transition-cuda-build
+  *** Building project with Unix Makefiles...
+  [  0%] Built target cellerator_model_ops
+  [  2%] Built target cellerator_torch_model_ops
+  [  7%] Built target cellerator_runtime
+  [ 10%] Built target cellerator_operation_core
+  [ 12%] Built target cellpack
+  [ 15%] Built target cellpack_local_cell_ordering
+  [ 15%] Built target cellpack_warp_tiles
+  [ 15%] Built target cellpack_apply_plan
+  [ 15%] Built target cellpack_feature_weighted_row_reduction
+  [ 15%] Built target cellpack_feature_weighted_row_reduction_cuda
+  [ 15%] Built target cellpack_persistent_packing_payload
+  [ 15%] Built target cellerator_row_masked_n1_candidate
+  [ 15%] Built target cellerator_compute_sampling
+  [ 15%] Built target cellpack_semantic_geometry
+  [ 17%] Built target cellpack_execution_image_v2
+  [ 20%] Built target cellerator_support
+  [ 22%] Built target cellerator_layout
+  [ 40%] Built target cellerator_semantic_geometry_v1
+  [ 40%] Built target cellerator_semantic_projection_layout
+  [ 42%] Built target cellerator_provider_common
+  [ 45%] Built target cellerator_provider_sm70
+  [ 47%] Built target cellerator_indexing
+  [ 50%] Built target cellerator_gating
+  [ 62%] Built target cellerator_architecture_provider
+  [ 72%] Built target cellerator_relation_algebra
+  [ 77%] Built target cellerator_fusion_training
+  [ 80%] Built target cellerator_ce_exop_operation_portfolio
+  [ 80%] Built target cellerator_ce_geo_catalog
+  [ 82%] Built target cellerator_csr_fallback_candidate
+  [ 82%] Built target cellerator_feature_major_projection
+  [ 82%] Built target cellerator_transpose_projection
+  [ 82%] Built target cellerator_feature_major_small_n_candidate
+  [ 85%] Built target cellerator_transpose_backward_candidate
+  [ 85%] Built target cellerator_native_training_slice
+  [ 85%] Built target cellerator_projection_activation
+  [ 87%] Built target cellerator_builtin_candidate_catalog
+  [ 87%] Built target cellerator_cusparse_csr_candidate
+  [ 90%] Built target cellerator_preparation_factory
+  [ 90%] Built target cellpack_statistical_validation
+  [ 90%] Built target cellpack_record_statistical_validation
+  [ 92%] Built target cellpack_alternating_refinement
+  [ 95%] Built target cellerator_planner
+  [ 97%] Built target cellerator_executable_program
+  [ 97%] Built target cellerator_training_program
+  [ 97%] Built target cellerator_sparse_support_cuda
+  [ 97%] Built target cellerator_indexed_mechanism
+  [ 97%] Built target cellerator_ops_sparse_support
+  [ 97%] Built target cellerator_torch_native_views
+  [ 97%] Built target cellerator_torch_program_ops
+  [ 97%] Built target cellerator_torch_autograd_ops
+  [ 97%] Built target cellerator_torch_mechanism
+  [100%] Built target cellerator_python_torch
+  [100%] Building CXX object CMakeFiles/cellerator_product2.dir/src/compute/operation/product2/product2.cc.o
+  [100%] Building CXX object CMakeFiles/cellerator_product2.dir/src/execution/program/program_v2.cc.o
+  [100%] Building CUDA object CMakeFiles/cellerator_product2.dir/src/compute/operation/product2/product2.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [100%] Linking CXX shared library libcellerator_product2.so
+  [100%] Built target cellerator_product2
+  [100%] Building CXX object CMakeFiles/cellerator_python_native.dir/bindings/python/module.cc.o
+  [100%] Linking CXX shared module _native.cpython-313-x86_64-linux-gnu.so
+  [100%] Built target cellerator_python_native
+  [100%] Built target cellerator_python_extensions
+  *** Installing project into wheel...
+  -- Install configuration: "Release"
+  -- Installing: /tmp/tmpqblteim_/wheel/platlib/cellerator/.libs/libcellerator_product2.so
+  -- Set non-toolchain portion of runtime path of "/tmp/tmpqblteim_/wheel/platlib/cellerator/.libs/libcellerator_product2.so" to ""
+  -- Installing: /tmp/tmpqblteim_/wheel/platlib/cellerator/_native.cpython-313-x86_64-linux-gnu.so
+  -- Set non-toolchain portion of runtime path of "/tmp/tmpqblteim_/wheel/platlib/cellerator/_native.cpython-313-x86_64-linux-gnu.so" to "$ORIGIN/.libs"
+  -- Installing: /tmp/tmpqblteim_/wheel/platlib/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so
+  *** Making wheel...
+  *** Created cellerator-0.1.0-cp313-cp313-linux_x86_64.whl
+  Building wheel for cellerator (pyproject.toml): finished with status 'done'
+  Created wheel for cellerator: filename=cellerator-0.1.0-cp313-cp313-linux_x86_64.whl size=1029098 sha256=a244aff63354c3320d9bb5abed979947ed23f23cddf25a4669f47b6d3dd1c7e0
+  Stored in directory: /tmp/pip-ephem-wheel-cache-v8g7p0tz/wheels/41/40/6c/9902d78e3a7c5827ede143a87131399b7cb18f4ec6e3bb790e
+Successfully built cellerator

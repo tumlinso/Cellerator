@@ -178,3 +178,9 @@ Acceptance requires every file routed, unique work usable, purpose-based names,
 a coherent native/Torch path, tested and measured strategy boundaries with
 fallbacks, visible gaps, and agreement between docs, registered state, installed
 package and GitHub metadata. A move and a tidy tree alone do not finish this plan.
+
+## Final adoption provenance
+
+The [adoption record](workflow-adoption/README.md) preserves the original
+step breakdown and explains the final registered source-adoption contract.
+Current execution and review state remain in Project Control.

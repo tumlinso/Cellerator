@@ -1,0 +1,47 @@
+{
+  "status": "preview",
+  "action": "validate",
+  "authority_revision": 20,
+  "preview": {
+    "format": "todo-orchestrator.plan-preview",
+    "version": 1,
+    "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "authority_id": "c4f019fe-f445-51c2-b444-a7cf24d6be34",
+    "expected_authority_revision": 20,
+    "expected_plan_revision_id": "accepted-e0b61e6ded2aeab64182f7ec98252fa02fdf2da040f6a0ede24e90acda2507f8",
+    "proposed_revision_id": "plan-7399a68acff519df840c4f6cf546fa2317986a6b96f1228a8b1d4053ec01f878",
+    "package_digest": "34d661745fa0101e81d6ec2c975de722ce95218d8299904ae9f8f33d58e6276e",
+    "change_digest": "20b2f25671c350c180bc548658549afebab26680808f044008f950e502048050",
+    "operations": [
+      {
+        "kind": "revise",
+        "entity_kind": "plan_metadata",
+        "entity_id": "source_manifests",
+        "before": null,
+        "after": null,
+        "relation": "source_manifests",
+        "related_before": null,
+        "related_after": null
+      },
+      {
+        "kind": "create",
+        "entity_kind": "work_item",
+        "entity_id": "CE-COHERE-10",
+        "before": null,
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-10",
+          "definition_revision_id": "definition-ae6c0f36cacc18a21d30d812dfb84610add46fc44335aef43533d40806650bb2",
+          "incarnation_id": null
+        },
+        "relation": null,
+        "related_before": null,
+        "related_after": null
+      }
+    ],
+    "conflicts": [],
+    "warnings": [],
+    "has_conflicts": false
+  }
+}

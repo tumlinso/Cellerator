@@ -1,0 +1,173 @@
+{
+  "source_root": "/tmp/cellerator-coherence",
+  "source_python_file_count": 27,
+  "source_python_sha256": {
+    "__init__.py": "495b64a7b47a9307b72bf801e4dca4b252f7c148f9c8c5b80104d64495282237",
+    "_declarations.py": "605b0cb70415454224303d43b3ff52e2580bbc1813eff8079161f6031d253d93",
+    "cuda.py": "f8b4dae91523bb1c71613a972f58c8c400cf9c5608cb89c710ee6849d35d080b",
+    "experimental/__init__.py": "3f13730170f2986c5062fba1c1ebba8886b85f864aba417777815a8066e47482",
+    "experimental/fields.py": "8fb7d2a8e1a7e79156f18d25bfd3d0c90d9f8d2802698b9e499e9283de394a2c",
+    "nn.py": "1ffa00673a74aca19ec51ceeaa361b49a3266d2a88ada18a6874e52c5f118334",
+    "ops.py": "c5a54ad68204adbdc1aaa78fb5af3d100f5f223d886b07f1b5b78ce86c18351f",
+    "tokenization.py": "146b4cc50a6a8b689e0801490f296e8f5a029202acf7423f713c6e694669cfbd",
+    "torch/__init__.py": "b02c263c0f0fada0a7a5ecfe8a9905a6b300296ed5269260153c413114ed053c",
+    "torch/biology.py": "f70c90e2e980429bff9cb2442e8e9378479dd5420b4ce05c8d2c250dfe3d4741",
+    "torch/cuda.py": "2ac23764680a8e128c02be088faca8e9e13e07b3d1e28f9c762ba0cfe8e3142e",
+    "torch/execution.py": "98b995c18b5382c48968d91a813c7ec3ec193cf9ce580574c95f8a33cf87d107",
+    "torch/gating.py": "75e0e8729667660ea8a2528a94fbea29cab0cd7ee59ad2a2b06e7626a70fd0e5",
+    "torch/geometry.py": "4b79e47d958fe13ef2969c4a0fcffaa0d28f1b4a62243451f5e670d2be4ae893",
+    "torch/indexing.py": "420bca4fd587ffa4940de8e4db2cf5c8e523bf50ce8de2dc8043aa6f6f8173de",
+    "torch/interop.py": "5fa48dd5d2b83394da7cd0adf622f80308f510c652d32bc33a2b78cf052d82b9",
+    "torch/layout.py": "92ce643d8e4ff9621bc052a5cc283d38bee05a25f08e09324fce41579313efeb",
+    "torch/mechanism.py": "51b79de02496f72997e90d3ee8e00911afc8b81aa21483c0fe8b157e87dbd7b3",
+    "torch/nn.py": "f07d83f06469a365242a2ea6e15ad7df03d5b94d0c355d6e075da40ebb5b8114",
+    "torch/ops.py": "23b3b0466cfb31c5e9e81af8dfedc7ae751aa88b35d761dbefe2a0f20ccc0609",
+    "torch/prepared_routing.py": "3079ffc0330a0d46da130af323ccc9de64727013da93186e6094133fe92392cd",
+    "torch/product2.py": "3aeb83378643ae90827e514be4db04546df5124549f1fec8b335bbfed0de4a72",
+    "torch/routing.py": "2c5debd7142ca93886ec54405c27419b19b1281b639ea71cf03b67b9c82f4d5e",
+    "torch/sparse_support.py": "3adbbb140e7880d936a6c10989a657212a6561e8d44689123d647f9554cf80f7",
+    "torch/structure.py": "302ac7a7a80d595a0ade3a53d0cb69acfef1375b015e5827857ffbecb64059f5",
+    "torch/support.py": "56ba138694c894534e7084e9c4c7330b7b395d2e18ff18a7e57dbb6cda2c03d4",
+    "torch/testing.py": "8432369b8591a01ae3e0ec88e1e03f65d18aaf7ea9698af95c0dd3a2c7a6e5f9"
+  },
+  "build": {
+    "interpreter": "/home/tumlinson/Software/miniconda3/bin/python",
+    "python": "3.13.11",
+    "torch": "2.7.0+cu126",
+    "scikit_build_core": "1.1.1",
+    "cmake": "3.28.3",
+    "cuda_toolkit": "12.9.86",
+    "host_compiler": "/usr/bin/c++ (g++ 12)",
+    "cmake_cache": {
+      "CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES": "OFF",
+      "CELLERATOR_ENABLE_CUDA": "ON",
+      "CELLERATOR_ENABLE_HARDWARE_PROBE": "OFF",
+      "CELLERATOR_ENABLE_PYTHON": "ON",
+      "CELLERATOR_ENABLE_SPARSE_SUPPORT": "ON",
+      "CELLERATOR_ENABLE_TOKENIZATION": "ON",
+      "CELLERATOR_ENABLE_TORCH": "ON",
+      "CMAKE_CUDA_ARCHITECTURES": "70"
+    },
+    "command": "/home/tumlinson/Software/miniconda3/bin/python -m pip wheel '.[tokenization]' --no-deps --no-build-isolation --wheel-dir /tmp/cellerator-wheel-final-tokenization --config-settings=build-dir=/tmp/cellerator-transition-cuda-build --config-settings=cmake.define.CELLERATOR_ENABLE_CUDA=ON --config-settings=cmake.define.CELLERATOR_ENABLE_TORCH=ON --config-settings=cmake.define.CELLERATOR_ENABLE_PYTHON=ON --config-settings=cmake.define.CELLERATOR_ENABLE_SPARSE_SUPPORT=ON --config-settings=cmake.define.CELLERATOR_ENABLE_TOKENIZATION=ON --config-settings=cmake.define.CELLERATOR_BUILD_PRODUCT2=ON --config-settings=cmake.define.CELLERATOR_ENABLE_HARDWARE_PROBE=OFF --config-settings=cmake.define.CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF --config-settings=cmake.define.CMAKE_CUDA_ARCHITECTURES=70 -v",
+    "log": "/tmp/cellerator-wheel-final-tokenization-build.log",
+    "optional_extra": ".[tokenization] (same wheel metadata also advertises [torch], both extras require torch>=2.7,<2.8)"
+  },
+  "wheel": {
+    "path": "/tmp/cellerator-wheel-final-tokenization/cellerator-0.1.0-cp313-cp313-linux_x86_64.whl",
+    "sha256": "a9100e88d68312245ffd22a6f6779eb6318902a70e9cf2629b30afec51d5c5b4",
+    "installed_root": "/tmp/cellerator-wheel-final-tokenization-installed",
+    "metadata": [
+      "Name: cellerator",
+      "Version: 0.1.0",
+      "Requires-Python: >=3.10",
+      "Requires-Dist: numpy>=1.24",
+      "Requires-Dist: anndata>=0.10",
+      "Provides-Extra: torch",
+      "Requires-Dist: torch<2.8,>=2.7; extra == \"torch\"",
+      "Provides-Extra: tokenization",
+      "Requires-Dist: torch<2.8,>=2.7; extra == \"tokenization\""
+    ],
+    "members": [
+      "cellerator/.libs/libcellerator_product2.so",
+      "cellerator/__init__.py",
+      "cellerator/_declarations.py",
+      "cellerator/_native.cpython-313-x86_64-linux-gnu.so",
+      "cellerator/_tokenization.cpython-313-x86_64-linux-gnu.so",
+      "cellerator/cuda.py",
+      "cellerator/experimental/__init__.py",
+      "cellerator/experimental/fields.py",
+      "cellerator/nn.py",
+      "cellerator/ops.py",
+      "cellerator/tokenization.py",
+      "cellerator/torch/__init__.py",
+      "cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+      "cellerator/torch/biology.py",
+      "cellerator/torch/cuda.py",
+      "cellerator/torch/execution.py",
+      "cellerator/torch/gating.py",
+      "cellerator/torch/geometry.py",
+      "cellerator/torch/indexing.py",
+      "cellerator/torch/interop.py",
+      "cellerator/torch/layout.py",
+      "cellerator/torch/mechanism.py",
+      "cellerator/torch/nn.py",
+      "cellerator/torch/ops.py",
+      "cellerator/torch/prepared_routing.py",
+      "cellerator/torch/product2.py",
+      "cellerator/torch/routing.py",
+      "cellerator/torch/sparse_support.py",
+      "cellerator/torch/structure.py",
+      "cellerator/torch/support.py",
+      "cellerator/torch/testing.py",
+      "cellerator-0.1.0.dist-info/METADATA",
+      "cellerator-0.1.0.dist-info/WHEEL",
+      "cellerator-0.1.0.dist-info/RECORD"
+    ],
+    "python_source_byte_match": true,
+    "native_artifacts": {
+      "_native.cpython-313-x86_64-linux-gnu.so": {
+        "path": "/tmp/cellerator-wheel-final-tokenization-installed/cellerator/_native.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "0b5b10bc1a6773336661daf1a0148e64fa67fee20ad8c485154d816f7cc303d6"
+      },
+      "_tokenization.cpython-313-x86_64-linux-gnu.so": {
+        "path": "/tmp/cellerator-wheel-final-tokenization-installed/cellerator/_tokenization.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "2197e46fcb230819623f5e8d13dcba41de2a85b2f40102d41e99ae0f9fa5129b"
+      },
+      "torch/_torch.cpython-313-x86_64-linux-gnu.so": {
+        "path": "/tmp/cellerator-wheel-final-tokenization-installed/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "8db8763e1b440b3efba569de82b616ff3fc09d28001d269b7bbee3b25b5df8be"
+      },
+      ".libs/libcellerator_product2.so": {
+        "path": "/tmp/cellerator-wheel-final-tokenization-installed/cellerator/.libs/libcellerator_product2.so",
+        "sha256": "53aaadb6dc6839385168d0783dd6418ff761391dc4c4050970b9201e8447f7eb"
+      }
+    }
+  },
+  "previous_torch_wheel": {
+    "path": "/tmp/cellerator-wheel-final/cellerator-0.1.0-cp313-cp313-linux_x86_64.whl",
+    "sha256": "a244aff63354c3320d9bb5abed979947ed23f23cddf25a4669f47b6d3dd1c7e0"
+  },
+  "equivalence": {
+    "torch_extension_sha256_matches_frozen_install": "8db8763e1b440b3efba569de82b616ff3fc09d28001d269b7bbee3b25b5df8be",
+    "native_python_extension_sha256_matches_frozen_install": "0b5b10bc1a6773336661daf1a0148e64fa67fee20ad8c485154d816f7cc303d6",
+    "product2_wheel_library_code_sections_sha256": {
+      ".text": "8227ab71b17fa991b462908538375393e86265cbd9dc2298e35d2d3c0d629dd3",
+      ".rodata": "ece3dd8fb9ae808a47b230d736d629554187ba869ff01bb06b915ee886e9a1b9",
+      ".nv_fatbin": "595ac70ffb6e634053371a66d7863c1b1b6a9a5a2b21cef825f23e9275481c25",
+      ".nvFatBinSegment": "a08e5641ad87f080c938025664a9ad66e1c1f71b89782fa35206e86a9f285a0f"
+    },
+    "product2_wheel_library_install_difference": "wheel strips build-tree CUDA RUNPATH; .text/.rodata/.nv_fatbin/.nvFatBinSegment sections are byte-identical; no GPU execution"
+  },
+  "checks": {
+    "commands": {
+      "wheel_build": "/home/tumlinson/Software/miniconda3/bin/python -m pip wheel '.[tokenization]' --no-deps --no-build-isolation --wheel-dir /tmp/cellerator-wheel-final-tokenization --config-settings=build-dir=/tmp/cellerator-transition-cuda-build --config-settings=cmake.define.CELLERATOR_ENABLE_CUDA=ON --config-settings=cmake.define.CELLERATOR_ENABLE_TORCH=ON --config-settings=cmake.define.CELLERATOR_ENABLE_PYTHON=ON --config-settings=cmake.define.CELLERATOR_ENABLE_SPARSE_SUPPORT=ON --config-settings=cmake.define.CELLERATOR_ENABLE_TOKENIZATION=ON --config-settings=cmake.define.CELLERATOR_BUILD_PRODUCT2=ON --config-settings=cmake.define.CELLERATOR_ENABLE_HARDWARE_PROBE=OFF --config-settings=cmake.define.CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF --config-settings=cmake.define.CMAKE_CUDA_ARCHITECTURES=70 -v",
+      "wheel_install": "/home/tumlinson/Software/miniconda3/bin/python -m pip install --no-deps --no-index --target /tmp/cellerator-wheel-final-tokenization-installed /tmp/cellerator-wheel-final-tokenization/cellerator-0.1.0-cp313-cp313-linux_x86_64.whl",
+      "import_smoke": "PYTHONPATH=/tmp/cellerator-wheel-final-tokenization-installed /home/tumlinson/Software/miniconda3/bin/python /tmp/cellerator-wheel-import-smoke.py",
+      "tokenization_cpu": "PYTHONPATH=/tmp/cellerator-wheel-final-tokenization-installed /home/tumlinson/Software/miniconda3/bin/python -m unittest discover -s tests/tokenization -p 'test_tokenization.py' -v",
+      "transition_cpu": "PYTHONPATH=/tmp/cellerator-wheel-final-tokenization-installed /home/tumlinson/Software/miniconda3/bin/python -m unittest discover -s tests/sparse_support -p 'test_transition_modes.py' -v",
+      "prepared_routing_cpu": "PYTHONPATH=/tmp/cellerator-wheel-final-tokenization-installed /home/tumlinson/Software/miniconda3/bin/python -m unittest discover -s tests/prepared_routing -p 'test_prepared_routing.py' -v",
+      "route_strategy_cpu": "PYTHONPATH=/tmp/cellerator-wheel-final-tokenization-installed /home/tumlinson/Software/miniconda3/bin/python -m unittest discover -s tests/prepared_routing -p 'test_module_route_strategy.py' -v",
+      "field_example": "PYTHONPATH=/tmp/cellerator-wheel-final-tokenization-installed /home/tumlinson/Software/miniconda3/bin/python examples/experimental/prepared_field.py"
+    },
+    "imports": "15/15 installed modules imported; package and native origins were the installed target; PreparedEntityMechanismRouting and sparse_latent_transition_v2 symbols present",
+    "tests": {
+      "tokenization": "20 passed, 6 CUDA tests skipped by scheduler opt-in guard",
+      "transition_modes": "5 passed",
+      "prepared_routing": "4 passed",
+      "route_strategy": "2 passed",
+      "prepared_field_example": "completed and produced tensor([-30.])"
+    },
+    "logs": {
+      "first_wheel_build": "/tmp/cellerator-wheel-final-build.log",
+      "tokenization_wheel_build": "/tmp/cellerator-wheel-final-tokenization-build.log",
+      "import_smoke": "/tmp/cellerator-wheel-import-smoke.log",
+      "tokenization_tests": "/tmp/cellerator-wheel-tokenization-tests.log",
+      "transition_tests": "/tmp/cellerator-wheel-transition-tests.log",
+      "prepared_routing_tests": "/tmp/cellerator-wheel-prepared-routing-tests.log",
+      "route_strategy_tests": "/tmp/cellerator-wheel-route-strategy-tests.log",
+      "field_example": "/tmp/cellerator-wheel-field-example.log"
+    },
+    "gpu_execution": "none; device probes and CUDA tests were not run",
+    "tokenization_cuda_skips": "6 skipped because CELLERATOR_RUN_CUDA_TESTS was unset; no device probing or execution performed"
+  }
+}

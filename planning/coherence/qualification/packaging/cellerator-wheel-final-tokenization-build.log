@@ -1,0 +1,407 @@
+WARNING: The directory '/home/tumlinson/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /tmp/cellerator-coherence
+  Preparing metadata (pyproject.toml): started
+  Running command Preparing metadata (pyproject.toml)
+  *** scikit-build-core 1.1.1 using CMake 3.28.3 (metadata_wheel)
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: cellerator
+  Building wheel for cellerator (pyproject.toml): started
+  Running command Building wheel for cellerator (pyproject.toml)
+  *** scikit-build-core 1.1.1 using CMake 3.28.3 (wheel)
+  *** Configuring CMake...
+  loading initial cache file /tmp/cellerator-transition-cuda-build/CMakeInit.txt
+  -- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version "12.9.86")
+  -- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES)
+  -- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES)
+  -- Found Python: /home/tumlinson/Software/miniconda3/bin/python (found version "3.13.11") found components: Interpreter Development.Module
+  -- Found pybind11: /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/pybind11/include (found version "3.0.3")
+  -- Found Python: /home/tumlinson/Software/miniconda3/bin/python (found version "3.13.11") found components: Interpreter
+  -- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include (found version "12.9.86")
+  -- PyTorch: CUDA detected: 12.9
+  -- PyTorch: CUDA nvcc is: /usr/local/cuda/bin/nvcc
+  -- PyTorch: CUDA toolkit directory: /usr/local/cuda
+  -- PyTorch: Header version is: 12.9
+  CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:140 (message):
+    Failed to compute shorthash for libnvrtc.so
+  Call Stack (most recent call first):
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+    cmake/CelleratorTokenization.cmake:132 (find_package)
+    CMakeLists.txt:115 (include)
+
+
+  CMake Warning (dev) at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:438 (message):
+    The package name passed to `find_package_handle_standard_args` (nvtx3) does
+    not match the name of the calling package (Caffe2).  This can lead to
+    problems in calling code that expects `find_package` result variables
+    (e.g., `_FOUND`) to follow a certain pattern.
+  Call Stack (most recent call first):
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:178 (find_package_handle_standard_args)
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+    cmake/CelleratorTokenization.cmake:132 (find_package)
+    CMakeLists.txt:115 (include)
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+  -- Could NOT find nvtx3 (missing: nvtx3_dir)
+  CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:184 (message):
+    Cannot find NVTX3, find old NVTX instead
+  Call Stack (most recent call first):
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+    /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+    cmake/CelleratorTokenization.cmake:132 (find_package)
+    CMakeLists.txt:115 (include)
+
+
+  -- USE_CUDNN is set to 0. Compiling without cuDNN support
+  -- USE_CUSPARSELT is set to 0. Compiling without cuSPARSELt support
+  -- USE_CUDSS is set to 0. Compiling without cuDSS support
+  -- USE_CUFILE is set to 0. Compiling without cuFile support
+  -- Added CUDA NVCC flags for: -gencode;arch=compute_70,code=sm_70
+  -- Found Torch: /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libtorch.so
+  -- Cellerator providers: selection=baseline, tuning=precise
+  -- Cellerator default real: storage=f16, compute=f32, accum=f32
+  -- Cellerator compatibility sparse fallback: blocked_ell (operation projections remain planner-selected)
+  -- Cellerator host vector level: avx2
+  -- Cellerator hardware probe disabled
+  -- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version "12.9.86")
+  -- Cellerator CUDA mode: generic
+  -- Configuring done (6.2s)
+  -- Generating done (0.4s)
+  -- Build files have been written to: /tmp/cellerator-transition-cuda-build
+  *** Building project with Unix Makefiles...
+  [  0%] Building CUDA object src/compute/operation/model_ops/CMakeFiles/cellerator_model_ops.dir/model_ops.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [  0%] Linking CUDA static library libcellerator_model_ops.a
+  [  0%] Built target cellerator_model_ops
+  [  2%] Building CUDA object bindings/torch/CMakeFiles/cellerator_torch_model_ops.dir/src/model_ops.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  In static member function ‘static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = long unsigned int; _Up = long unsigned int; bool _IsMove = false]’,
+      inlined from ‘_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:500:141,
+      inlined from ‘_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:528:40,
+      inlined from ‘_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:535:25,
+      inlined from ‘_OI std::copy(_II, _II, _OI) [with _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:625:64,
+      inlined from ‘std::vector<bool, _Alloc>::iterator std::vector<bool, _Alloc>::_M_copy_aligned(const_iterator, const_iterator, iterator) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:1293:32,
+      inlined from ‘void std::vector<bool, _Alloc>::_M_reallocate(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/vector.tcc:845:34,
+      inlined from ‘void std::vector<bool, _Alloc>::reserve(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:1081:14,
+      inlined from ‘static std::enable_if_t<is_same_v<X, T>, decltype (X::forward(nullptr, (declval<Args>)()...))> torch::autograd::Function<T>::apply(Args&& ...) [with X = cellerator::bindings::torch::model_ops::_GLOBAL__N__8df725e2_12_model_ops_cu_05b1f341::DevelopmentalStageBucketLossFunction; Args = {const at::Tensor&, const at::Tensor&, double&, double&, bool&, long int&}; T = cellerator::bindings::torch::model_ops::_GLOBAL__N__8df725e2_12_model_ops_cu_05b1f341::DevelopmentalStageBucketLossFunction]’ at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/autograd/custom_function.h:480:35:
+  /usr/include/c++/12/bits/stl_algobase.h:434:25: warning: ‘void* __builtin_memmove(void*, const void*, long unsigned int)’ writing between 9 and 9223372036854775807 bytes into a region of size 8 overflows the destination [-Wstringop-overflow=]
+    434 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+        |             ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  In member function ‘_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = long unsigned int]’,
+      inlined from ‘static _Tp* std::allocator_traits<std::allocator<_Tp1> >::allocate(allocator_type&, size_type) [with _Tp = long unsigned int]’ at /usr/include/c++/12/bits/alloc_traits.h:464:22,
+      inlined from ‘std::_Bvector_base<_Alloc>::_Bit_pointer std::_Bvector_base<_Alloc>::_M_allocate(std::size_t) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:631:47,
+      inlined from ‘void std::vector<bool, _Alloc>::_M_reallocate(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/vector.tcc:843:37,
+      inlined from ‘void std::vector<bool, _Alloc>::reserve(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:1081:14,
+      inlined from ‘static std::enable_if_t<is_same_v<X, T>, decltype (X::forward(nullptr, (declval<Args>)()...))> torch::autograd::Function<T>::apply(Args&& ...) [with X = cellerator::bindings::torch::model_ops::_GLOBAL__N__8df725e2_12_model_ops_cu_05b1f341::DevelopmentalStageBucketLossFunction; Args = {const at::Tensor&, const at::Tensor&, double&, double&, bool&, long int&}; T = cellerator::bindings::torch::model_ops::_GLOBAL__N__8df725e2_12_model_ops_cu_05b1f341::DevelopmentalStageBucketLossFunction]’ at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/autograd/custom_function.h:480:35:
+  /usr/include/c++/12/bits/new_allocator.h:148:49: note: destination object of size 8 allocated by ‘operator new’
+    148 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+        |                                   ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+  In static member function ‘static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = long unsigned int; _Up = long unsigned int; bool _IsMove = false]’,
+      inlined from ‘_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:500:141,
+      inlined from ‘_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:528:40,
+      inlined from ‘_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:535:25,
+      inlined from ‘_OI std::copy(_II, _II, _OI) [with _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:625:64,
+      inlined from ‘std::vector<bool, _Alloc>::iterator std::vector<bool, _Alloc>::_M_copy_aligned(const_iterator, const_iterator, iterator) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:1293:32,
+      inlined from ‘void std::vector<bool, _Alloc>::_M_reallocate(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/vector.tcc:845:34,
+      inlined from ‘void std::vector<bool, _Alloc>::reserve(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:1081:14,
+      inlined from ‘static std::enable_if_t<is_same_v<X, T>, decltype (X::forward(nullptr, (declval<Args>)()...))> torch::autograd::Function<T>::apply(Args&& ...) [with X = cellerator::bindings::torch::model_ops::_GLOBAL__N__8df725e2_12_model_ops_cu_05b1f341::DenseReducePairLossFunction; Args = {const at::Tensor&, const at::Tensor&, const at::Tensor&, const at::Tensor&, double&, double&, double&}; T = cellerator::bindings::torch::model_ops::_GLOBAL__N__8df725e2_12_model_ops_cu_05b1f341::DenseReducePairLossFunction]’ at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/autograd/custom_function.h:480:35:
+  /usr/include/c++/12/bits/stl_algobase.h:434:25: warning: ‘void* __builtin_memmove(void*, const void*, long unsigned int)’ writing between 9 and 9223372036854775807 bytes into a region of size 8 overflows the destination [-Wstringop-overflow=]
+    434 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+        |             ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  In member function ‘_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = long unsigned int]’,
+      inlined from ‘static _Tp* std::allocator_traits<std::allocator<_Tp1> >::allocate(allocator_type&, size_type) [with _Tp = long unsigned int]’ at /usr/include/c++/12/bits/alloc_traits.h:464:22,
+      inlined from ‘std::_Bvector_base<_Alloc>::_Bit_pointer std::_Bvector_base<_Alloc>::_M_allocate(std::size_t) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:631:47,
+      inlined from ‘void std::vector<bool, _Alloc>::_M_reallocate(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/vector.tcc:843:37,
+      inlined from ‘void std::vector<bool, _Alloc>::reserve(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:1081:14,
+      inlined from ‘static std::enable_if_t<is_same_v<X, T>, decltype (X::forward(nullptr, (declval<Args>)()...))> torch::autograd::Function<T>::apply(Args&& ...) [with X = cellerator::bindings::torch::model_ops::_GLOBAL__N__8df725e2_12_model_ops_cu_05b1f341::DenseReducePairLossFunction; Args = {const at::Tensor&, const at::Tensor&, const at::Tensor&, const at::Tensor&, double&, double&, double&}; T = cellerator::bindings::torch::model_ops::_GLOBAL__N__8df725e2_12_model_ops_cu_05b1f341::DenseReducePairLossFunction]’ at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/autograd/custom_function.h:480:35:
+  /usr/include/c++/12/bits/new_allocator.h:148:49: note: destination object of size 8 allocated by ‘operator new’
+    148 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+        |                                   ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+  [  2%] Linking CUDA static library libcellerator_torch_model_ops.a
+  [  2%] Built target cellerator_torch_model_ops
+  [  2%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/runtime.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [  2%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/device_descriptor.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [  2%] Building CXX object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/allocation.cc.o
+  [  4%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/copy.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [  4%] Building CXX object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/generation_marks.cc.o
+  [  4%] Building CXX object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/image.cc.o
+  [  4%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/session_memory.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [  4%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/value_readiness.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [  4%] Linking CXX static library libcellerator_runtime.a
+  [  4%] Built target cellerator_runtime
+  [  7%] Built target cellerator_operation_core
+  [  9%] Built target cellpack
+  [  9%] Building CXX object CMakeFiles/cellpack_local_cell_ordering.dir/src/geometry/local_cell_ordering.cc.o
+  [  9%] Building CUDA object CMakeFiles/cellpack_local_cell_ordering.dir/src/geometry/local_cell_ordering_cuda.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 11%] Linking CXX static library libcellpack_local_cell_ordering.a
+  [ 11%] Built target cellpack_local_cell_ordering
+  [ 11%] Built target cellpack_warp_tiles
+  [ 11%] Building CXX object CMakeFiles/cellpack_apply_plan.dir/src/geometry/apply_plan.cc.o
+  [ 11%] Building CUDA object CMakeFiles/cellpack_apply_plan.dir/src/geometry/apply_plan_cuda.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 11%] Linking CXX static library libcellpack_apply_plan.a
+  [ 11%] Built target cellpack_apply_plan
+  [ 11%] Built target cellpack_feature_weighted_row_reduction
+  [ 11%] Building CUDA object src/geometry/CMakeFiles/cellpack_feature_weighted_row_reduction_cuda.dir/feature_weighted_row_reduction_cuda.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 14%] Linking CXX static library libcellpack_feature_weighted_row_reduction_cuda.a
+  [ 14%] Built target cellpack_feature_weighted_row_reduction_cuda
+  [ 14%] Built target cellpack_persistent_packing_payload
+  [ 14%] Building CUDA object CMakeFiles/cellerator_row_masked_n1_candidate.dir/src/compute/candidate/row_masked_n1_candidate.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 14%] Linking CXX static library libcellerator_row_masked_n1_candidate.a
+  [ 14%] Built target cellerator_row_masked_n1_candidate
+  [ 14%] Built target cellerator_compute_sampling
+  [ 14%] Built target cellpack_semantic_geometry
+  [ 14%] Built target cellpack_execution_image_v2
+  [ 14%] Built target cellerator_support
+  [ 14%] Built target cellerator_layout
+  [ 30%] Built target cellerator_semantic_geometry_v1
+  [ 30%] Built target cellerator_semantic_projection_layout
+  [ 33%] Built target cellerator_provider_common
+  [ 33%] Building CXX object CMakeFiles/cellerator_provider_sm70.dir/src/compute/architecture/providers/nvidia/sm70/catalog_fragment.cc.o
+  [ 33%] Building CXX object CMakeFiles/cellerator_provider_sm70.dir/src/compute/architecture/providers/nvidia/sm70/provider.cc.o
+  [ 33%] Building CUDA object CMakeFiles/cellerator_provider_sm70.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 33%] Building CUDA object CMakeFiles/cellerator_provider_sm70.dir/src/compute/architecture/providers/nvidia/sm70/value_pack.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 33%] Building CUDA object CMakeFiles/cellerator_provider_sm70.dir/src/compute/architecture/providers/nvidia/sm70/residual.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 33%] Building CUDA object CMakeFiles/cellerator_provider_sm70.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 35%] Linking CXX static library libcellerator_provider_sm70.a
+  [ 35%] Built target cellerator_provider_sm70
+  [ 38%] Built target cellerator_indexing
+  [ 38%] Built target cellerator_gating
+  [ 38%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/provider_registry.cc.o
+  [ 38%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/residual/degree_partition.cc.o
+  [ 40%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/residual/feature_major_residual.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 40%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/residual/portfolio_v1.cc.o
+  [ 40%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/residual/residual_kernels.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 40%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/residual/same_owner_fused.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 40%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/residual/separate_residual.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 40%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_inventory_v1.cc.o
+  [ 42%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_n16_n32_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 42%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_n64_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 42%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_ptx_m8n8k4_experiment_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 42%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_reference_v1.cc.o
+  [ 42%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_registration_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 42%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_wide_panels_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 42%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_wmma_shapes_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 45%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/contract/contract_catalog_v1.cc.o
+  [ 45%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/contract/exact_validation_v1.cc.o
+  [ 45%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/contract/rectangular_mma_contract_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 45%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/contract/sparse_contract_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 45%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/direct_edge_gradient_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 45%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/transpose/transpose_candidates_v1.cc.o
+  [ 45%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/transpose/transpose_candidates_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 47%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/transpose/transpose_cover_v1.cc.o
+  [ 47%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/transpose/transpose_integration_v1.cc.o
+  [ 47%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/transpose/transpose_validation_v1.cc.o
+  [ 47%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/transpose/transpose_value_map_v1.cc.o
+  [ 47%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/target_cover/contract.cc.o
+  [ 47%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/target_cover/strategy_registry.cc.o
+  [ 50%] Linking CXX static library libcellerator_architecture_provider.a
+  [ 50%] Built target cellerator_architecture_provider
+  [ 50%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/operation/relation_algebra_catalog.cc.o
+  [ 50%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/operation/relation_algebra_assembly.cc.o
+  [ 52%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/operation/relation_apply_compatibility.cc.o
+  [ 52%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/edge_map_or_gate.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 52%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/relation_bundle.cc.o
+  [ 52%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/edge/dynamic_support_mask_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 52%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/edge/gate_update_validation_v1.cc.o
+  [ 52%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/edge/general_edge_map_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 52%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/edge/indexed_gates_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 54%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/sparse_axis_update/sparse_axis_update_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 54%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/cover_v2.cc.o
+  [ 54%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/mechanism_v2.cc.o
+  [ 54%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/normalize.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 54%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/normalize_v2.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 54%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/normalize_v2_reference.cc.o
+  [ 57%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/portfolio_v2.cc.o
+  [ 57%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/reduce.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 57%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/reduce_v2.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 57%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/reduce_v2_reference.cc.o
+  [ 57%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/segment_v2.cc.o
+  [ 57%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/operation/active_projection/active_projection_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 57%] Linking CXX static library libcellerator_relation_algebra.a
+  [ 57%] Built target cellerator_relation_algebra
+  [ 57%] Building CUDA object CMakeFiles/cellerator_fusion_training.dir/src/compute/candidate/fusion/bundle_moments_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 57%] Building CUDA object CMakeFiles/cellerator_fusion_training.dir/src/compute/candidate/fusion/contract_compositions_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 59%] Building CXX object CMakeFiles/cellerator_fusion_training.dir/src/compute/candidate/fusion/fusion_validation_v1.cc.o
+  [ 59%] Building CUDA object CMakeFiles/cellerator_fusion_training.dir/src/compute/candidate/fusion/mma_same_owner_residual_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 59%] Building CUDA object CMakeFiles/cellerator_fusion_training.dir/src/compute/candidate/fusion/pack_apply_epilogue_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 59%] Building CXX object CMakeFiles/cellerator_fusion_training.dir/src/compute/candidate/fusion/prepared_stage_graph_v1.cc.o
+  [ 59%] Building CUDA object CMakeFiles/cellerator_fusion_training.dir/src/compute/candidate/fusion/sparse_exchange_v1.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 59%] Building CXX object CMakeFiles/cellerator_fusion_training.dir/src/compute/training/v2/generation_readiness.cc.o
+  [ 59%] Building CXX object CMakeFiles/cellerator_fusion_training.dir/src/compute/training/v2/relation_closure.cc.o
+  [ 61%] Building CXX object CMakeFiles/cellerator_fusion_training.dir/src/compute/training/v2/value_modes.cc.o
+  [ 61%] Building CXX object CMakeFiles/cellerator_fusion_training.dir/src/execution/training_program_v2/graph_capture.cc.o
+  [ 61%] Building CXX object CMakeFiles/cellerator_fusion_training.dir/src/execution/training_program_v2/program.cc.o
+  [ 61%] Linking CXX static library libcellerator_fusion_training.a
+  [ 61%] Built target cellerator_fusion_training
+  [ 64%] Built target cellerator_ce_exop_operation_portfolio
+  [ 64%] Built target cellerator_ce_geo_catalog
+  [ 64%] Building CUDA object CMakeFiles/cellerator_csr_fallback_candidate.dir/src/compute/candidate/csr_fallback_candidate.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 66%] Linking CXX static library libcellerator_csr_fallback_candidate.a
+  [ 66%] Built target cellerator_csr_fallback_candidate
+  [ 69%] Built target cellerator_feature_major_projection
+  [ 69%] Built target cellerator_transpose_projection
+  [ 69%] Building CUDA object CMakeFiles/cellerator_feature_major_small_n_candidate.dir/src/compute/candidate/feature_major_small_n_candidate.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 69%] Linking CXX static library libcellerator_feature_major_small_n_candidate.a
+  [ 69%] Built target cellerator_feature_major_small_n_candidate
+  [ 69%] Building CUDA object CMakeFiles/cellerator_transpose_backward_candidate.dir/src/compute/candidate/transpose_backward_candidate.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 69%] Building CUDA object CMakeFiles/cellerator_transpose_backward_candidate.dir/src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 69%] Linking CXX static library libcellerator_transpose_backward_candidate.a
+  [ 69%] Built target cellerator_transpose_backward_candidate
+  [ 71%] Building CUDA object CMakeFiles/cellerator_native_training_slice.dir/src/compute/training/native_training_slice.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 71%] Linking CXX static library libcellerator_native_training_slice.a
+  [ 71%] Built target cellerator_native_training_slice
+  [ 73%] Built target cellerator_projection_activation
+  [ 76%] Built target cellerator_builtin_candidate_catalog
+  [ 76%] Building CUDA object CMakeFiles/cellerator_cusparse_csr_candidate.dir/src/compute/candidate/cusparse_csr_candidate.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 76%] Linking CXX static library libcellerator_cusparse_csr_candidate.a
+  [ 76%] Built target cellerator_cusparse_csr_candidate
+  [ 76%] Built target cellerator_preparation_factory
+  [ 76%] Built target cellpack_statistical_validation
+  [ 78%] Built target cellpack_record_statistical_validation
+  [ 80%] Built target cellpack_alternating_refinement
+  [ 85%] Built target cellerator_planner
+  [ 85%] Built target cellerator_executable_program
+  [ 85%] Building CUDA object CMakeFiles/cellerator_training_program.dir/src/execution/training_program.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 88%] Linking CXX static library libcellerator_training_program.a
+  [ 88%] Built target cellerator_training_program
+  [ 88%] Building CUDA object CMakeFiles/cellerator_sparse_support_cuda.dir/src/gating/cuda_worksets.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 88%] Building CUDA object CMakeFiles/cellerator_sparse_support_cuda.dir/src/indexing/cuda_postings.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 88%] Linking CXX static library libcellerator_sparse_support_cuda.a
+  [ 88%] Built target cellerator_sparse_support_cuda
+  [ 90%] Building CXX object src/compute/operation/indexed_mechanism/CMakeFiles/cellerator_indexed_mechanism.dir/incidence.cc.o
+  [ 90%] Building CXX object src/compute/operation/indexed_mechanism/CMakeFiles/cellerator_indexed_mechanism.dir/evaluators.cc.o
+  [ 90%] Building CUDA object src/compute/operation/indexed_mechanism/CMakeFiles/cellerator_indexed_mechanism.dir/evaluators.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 90%] Building CUDA object src/compute/operation/indexed_mechanism/CMakeFiles/cellerator_indexed_mechanism.dir/training.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 90%] Linking CXX static library libcellerator_indexed_mechanism.a
+  [ 90%] Built target cellerator_indexed_mechanism
+  [ 90%] Building CXX object src/ops/sparse_support/CMakeFiles/cellerator_ops_sparse_support.dir/training.cc.o
+  [ 90%] Building CUDA object src/ops/sparse_support/CMakeFiles/cellerator_ops_sparse_support.dir/training.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 92%] Building CXX object src/ops/sparse_support/CMakeFiles/cellerator_ops_sparse_support.dir/prepared_routing.cc.o
+  [ 92%] Building CUDA object src/ops/sparse_support/CMakeFiles/cellerator_ops_sparse_support.dir/prepared_routing.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 92%] Linking CXX static library libcellerator_ops_sparse_support.a
+  [ 92%] Built target cellerator_ops_sparse_support
+  [ 92%] Built target cellerator_torch_native_views
+  [ 92%] Building CUDA object bindings/torch/CMakeFiles/cellerator_torch_program_ops.dir/src/program_ops.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 92%] Linking CXX static library libcellerator_torch_program_ops.a
+  [ 92%] Built target cellerator_torch_program_ops
+  [ 92%] Building CUDA object bindings/torch/CMakeFiles/cellerator_torch_autograd_ops.dir/src/autograd_ops.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  In static member function ‘static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = long unsigned int; _Up = long unsigned int; bool _IsMove = false]’,
+      inlined from ‘_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:500:141,
+      inlined from ‘_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:528:40,
+      inlined from ‘_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:535:25,
+      inlined from ‘_OI std::copy(_II, _II, _OI) [with _II = long unsigned int*; _OI = long unsigned int*]’ at /usr/include/c++/12/bits/stl_algobase.h:625:64,
+      inlined from ‘std::vector<bool, _Alloc>::iterator std::vector<bool, _Alloc>::_M_copy_aligned(const_iterator, const_iterator, iterator) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:1293:32,
+      inlined from ‘void std::vector<bool, _Alloc>::_M_reallocate(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/vector.tcc:845:34,
+      inlined from ‘void std::vector<bool, _Alloc>::reserve(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:1081:14,
+      inlined from ‘static std::enable_if_t<is_same_v<X, T>, decltype (X::forward(nullptr, (declval<Args>)()...))> torch::autograd::Function<T>::apply(Args&& ...) [with X = cellerator::bindings::torch::autograd::native_training_autograd_function; Args = {const at::Tensor&, const at::Tensor&, const at::Tensor&, const at::Tensor&, const std::shared_ptr<cellerator::bindings::torch::autograd::native_training_binding>&}; T = cellerator::bindings::torch::autograd::native_training_autograd_function]’ at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/autograd/custom_function.h:480:35:
+  /usr/include/c++/12/bits/stl_algobase.h:434:25: warning: ‘void* __builtin_memmove(void*, const void*, long unsigned int)’ writing between 9 and 9223372036854775807 bytes into a region of size 8 overflows the destination [-Wstringop-overflow=]
+    434 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+        |             ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  In member function ‘_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = long unsigned int]’,
+      inlined from ‘static _Tp* std::allocator_traits<std::allocator<_Tp1> >::allocate(allocator_type&, size_type) [with _Tp = long unsigned int]’ at /usr/include/c++/12/bits/alloc_traits.h:464:22,
+      inlined from ‘std::_Bvector_base<_Alloc>::_Bit_pointer std::_Bvector_base<_Alloc>::_M_allocate(std::size_t) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:631:47,
+      inlined from ‘void std::vector<bool, _Alloc>::_M_reallocate(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/vector.tcc:843:37,
+      inlined from ‘void std::vector<bool, _Alloc>::reserve(size_type) [with _Alloc = std::allocator<bool>]’ at /usr/include/c++/12/bits/stl_bvector.h:1081:14,
+      inlined from ‘static std::enable_if_t<is_same_v<X, T>, decltype (X::forward(nullptr, (declval<Args>)()...))> torch::autograd::Function<T>::apply(Args&& ...) [with X = cellerator::bindings::torch::autograd::native_training_autograd_function; Args = {const at::Tensor&, const at::Tensor&, const at::Tensor&, const at::Tensor&, const std::shared_ptr<cellerator::bindings::torch::autograd::native_training_binding>&}; T = cellerator::bindings::torch::autograd::native_training_autograd_function]’ at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/autograd/custom_function.h:480:35:
+  /usr/include/c++/12/bits/new_allocator.h:148:49: note: destination object of size 8 allocated by ‘operator new’
+    148 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+        |                                   ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+  [ 92%] Linking CXX static library libcellerator_torch_autograd_ops.a
+  [ 92%] Built target cellerator_torch_autograd_ops
+  [ 92%] Built target cellerator_torch_mechanism
+  [ 92%] Linking CXX shared module _torch.cpython-313-x86_64-linux-gnu.so
+  [ 95%] Built target cellerator_python_torch
+  [ 95%] Building CXX object CMakeFiles/cellerator_product2.dir/src/compute/operation/product2/product2.cc.o
+  [ 95%] Building CXX object CMakeFiles/cellerator_product2.dir/src/execution/program/program_v2.cc.o
+  [ 97%] Building CUDA object CMakeFiles/cellerator_product2.dir/src/compute/operation/product2/product2.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [ 97%] Linking CXX shared library libcellerator_product2.so
+  [ 97%] Built target cellerator_product2
+  [ 97%] Linking CXX shared module _native.cpython-313-x86_64-linux-gnu.so
+  [ 97%] Built target cellerator_python_native
+  [ 97%] Building CXX object CMakeFiles/cellerator_aten_ops.dir/src/compute/operators/aten_ops.cc.o
+  [ 97%] Linking CXX static library libcellerator_aten_ops.a
+  [ 97%] Built target cellerator_aten_ops
+  [ 97%] Building CXX object CMakeFiles/cellerator_tokenization.dir/src/compute/tokenization/tokenization.cc.o
+  [ 97%] Building CXX object CMakeFiles/cellerator_tokenization.dir/src/compute/tokenization/sequence_buffer.cc.o
+  [100%] Building CUDA object CMakeFiles/cellerator_tokenization.dir/src/compute/tokenization/append.cu.o
+  nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+  [100%] Linking CXX static library libcellerator_tokenization.a
+  [100%] Built target cellerator_tokenization
+  [100%] Building CXX object CMakeFiles/cellerator_python_tokenization.dir/bindings/tokenization/module.cc.o
+  [100%] Linking CXX shared module _tokenization.cpython-313-x86_64-linux-gnu.so
+  [100%] Built target cellerator_python_tokenization
+  [100%] Built target cellerator_python_extensions
+  *** Installing project into wheel...
+  -- Install configuration: "Release"
+  -- Installing: /tmp/tmp_mw3whzb/wheel/platlib/cellerator/.libs/libcellerator_product2.so
+  -- Set non-toolchain portion of runtime path of "/tmp/tmp_mw3whzb/wheel/platlib/cellerator/.libs/libcellerator_product2.so" to ""
+  -- Installing: /tmp/tmp_mw3whzb/wheel/platlib/cellerator/_native.cpython-313-x86_64-linux-gnu.so
+  -- Set non-toolchain portion of runtime path of "/tmp/tmp_mw3whzb/wheel/platlib/cellerator/_native.cpython-313-x86_64-linux-gnu.so" to "$ORIGIN/.libs"
+  -- Installing: /tmp/tmp_mw3whzb/wheel/platlib/cellerator/_tokenization.cpython-313-x86_64-linux-gnu.so
+  -- Set non-toolchain portion of runtime path of "/tmp/tmp_mw3whzb/wheel/platlib/cellerator/_tokenization.cpython-313-x86_64-linux-gnu.so" to "$ORIGIN/../torch/lib"
+  -- Installing: /tmp/tmp_mw3whzb/wheel/platlib/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so
+  *** Making wheel...
+  *** Created cellerator-0.1.0-cp313-cp313-linux_x86_64.whl
+  Building wheel for cellerator (pyproject.toml): finished with status 'done'
+  Created wheel for cellerator: filename=cellerator-0.1.0-cp313-cp313-linux_x86_64.whl size=1299737 sha256=a9100e88d68312245ffd22a6f6779eb6318902a70e9cf2629b30afec51d5c5b4
+  Stored in directory: /tmp/pip-ephem-wheel-cache-bshushao/wheels/41/40/6c/9902d78e3a7c5827ede143a87131399b7cb18f4ec6e3bb790e
+Successfully built cellerator

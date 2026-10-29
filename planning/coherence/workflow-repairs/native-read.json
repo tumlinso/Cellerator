@@ -1,0 +1,105 @@
+{
+  "format": "cellerator-workflow-repair-validation-v1",
+  "repair": "Wire existing mutator native reader into public information surface",
+  "candidate": {
+    "todo_commit": "abc0d409e26e8dd579a9172373d4c9b4bd5aeb36",
+    "wheel": "/tmp/cellerator-workflow-repair/wheels-handoff/todo_orchestrator-0.2.1-py3-none-any.whl",
+    "wheel_sha256": "0557657e039925e6955776a6795cb05fce8e07a8d1e906de23e2c64d0b50e561",
+    "todo_package_fingerprint": "c9c639a33e9c574fcac5ef9ec0f0a648ab1caa9161eeee90f8a6f24ddc3b2638",
+    "project_control_wheel": "/tmp/cellerator-workflow-repair/wheels-pc-native-read/project_control-0.5.2-py3-none-any.whl",
+    "project_control_wheel_sha256": "96b245e0aa19303c9180b538e72ae97680507760800a87f256d21078749bfb97",
+    "project_control_package_fingerprint": "faa27ac805da65bb3d1f86ce70f3b9e619cbd2532953b51158e9c56ffe3bd283",
+    "project_control_commit": "9b8f31cd78ab6f59cb1cc4bd358c4200571e9a19",
+    "candidate": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-native-read-20261028T234637Z",
+    "old_release": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-report-host-20261028T231936Z",
+    "release_manifest_sha256": "e667e9be43a256430325c0e7c8cde7c7d53602bf3a95efff13da44b1ee725b44",
+    "unchanged_packages": [
+      "device_scheduler_adapters",
+      "device_scheduler_core",
+      "device_scheduler_mcp",
+      "project_evidence",
+      "project_source",
+      "todo_orchestrator"
+    ],
+    "third_party_versions_unchanged": true,
+    "authority_migration": false,
+    "activation_performed": false
+  },
+  "source_runtime_change": "SurfaceComposition passes existing control.native_read to InformationService.native_reader when the control composition exists.",
+  "checks": [
+    {
+      "name": "required PC core source smoke",
+      "result": "pass",
+      "tests": 44,
+      "subtests": 6,
+      "seconds": 3.36,
+      "log": "native-read-core.log"
+    },
+    {
+      "name": "public native-context surface and credential-routing source regression",
+      "result": "pass",
+      "tests": 6,
+      "seconds": 1.32,
+      "log": "native-read-focused.log"
+    },
+    {
+      "name": "installed native-context surface and credential-routing regression",
+      "result": "pass",
+      "tests": 6,
+      "seconds": 2.72,
+      "package_origins_asserted": true,
+      "log": "native-read-installed-tests.log"
+    },
+    {
+      "name": "sealed official help and pairing",
+      "result": "pass",
+      "log": "candidate-native-read-help.txt"
+    },
+    {
+      "name": "real native exact-ref public MCP witness",
+      "result": "pass",
+      "transport": "in-memory MCP SDK",
+      "all_candidate_package_fingerprints_verified": true,
+      "summary": {
+        "journey": "native_context_read_passed",
+        "manifest_definition_revision_id": "definition-427271403167ff712887fdc882c5507a8bb8355b8f103366fbb51faa86ac679b",
+        "manifest_work_item": "CE-SMOKE-00",
+        "native_context_search": "resolved",
+        "plan_apply": "passed",
+        "plan_preview": "passed",
+        "transport": "in_memory_public_mcp"
+      }
+    }
+  ],
+  "baseline_limits": {
+    "selection": "tests/test_mcp_server.py",
+    "baseline_PC_commit": "062b669779d3c4e9b3b0309da572a21347509dd8",
+    "result": "Same four broader failures reproduced against baseline; three other tests passed.",
+    "log": "native-read-baseline-adjacent.log",
+    "failures": [
+      "Observer overview.detail schema expectation",
+      "Missing app.SkillsObserverAnalysisProvider attribute",
+      "Nested sandbox denies socket creation",
+      "Old todo_read_port_factory call expectation"
+    ],
+    "no_assertions_weakened_or_skips_added": true
+  },
+  "invariants": [
+    "Only PC package bytes changed; Todoabc and exact non-PC packages/dependency versions unchanged.",
+    "No new API/credential/grant/profile authority; existing mutator workspace and native authorization guards retained.",
+    "Observer/coder without existing control keep prior native-reader availability.",
+    "No registered authority reads/writes or native lifecycle calls during this source/candidate qualification.",
+    "No broad task-graph/snapshot repair or authority restore."
+  ],
+  "limits": [
+    "Actual live activation and fifteen native-ref reads remain root-owned.",
+    "The real MCP witness used a fully disposable authority and in-memory transport, not the live service/stdin-stdout."
+  ],
+  "artifact_sha256": {
+    "project-control-native-read-fix.bundle": "f4984f262f313acfcb97e1f6bd1ff2f91f34aaacb45e99c36f821d040ce24787",
+    "project-control-native-read-fix.patch": "4cd654e25be0cc1609dfbd2cde846aaa2b7a14835db53120d0a56c0dacf51c80",
+    "ACTIVATION-native-read.md": "aab7d3bd42112b7f0e6d073126ccef33ac88839d702b9732205aa29593b6621b",
+    "native-read-mcp-witness.json": "9175bc04507f0d4bfe3bf7ab671a995878fa8b1919dd43cdc76d7c6d438b2e9d"
+  },
+  "activation_performed_by_this_agent": false
+}
