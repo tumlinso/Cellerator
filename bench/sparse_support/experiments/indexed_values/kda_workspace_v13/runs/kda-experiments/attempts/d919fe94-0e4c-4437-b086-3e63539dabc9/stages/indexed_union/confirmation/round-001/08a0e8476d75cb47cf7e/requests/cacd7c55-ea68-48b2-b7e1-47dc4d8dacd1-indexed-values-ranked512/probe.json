@@ -1,0 +1,219 @@
+{
+  "cases": [
+    {
+      "U_over_E": 0.7830848693847656,
+      "active_union_U": 205281,
+      "cache_boundary": {
+        "cross_step_value_cache": false,
+        "edge_value_refresh_calls_during_warmup_and_timing": {
+          "full_E": 4,
+          "indexed_U": 4
+        },
+        "parameter_generation_delta": {
+          "full_E": 4,
+          "indexed_U": 4
+        },
+        "values_recomputed_after_each_guarded_publication": true
+      },
+      "case": "ranked512",
+      "complete_step": {
+        "full_E": {
+          "count": 3,
+          "cuda_event_median_ms": 13.526016235351562,
+          "cuda_event_samples_ms": [
+            13.66528034210205,
+            13.526016235351562,
+            13.462528228759766
+          ],
+          "median_ms": 13.559389000874944,
+          "p10_ms": 13.495754999894416,
+          "p90_ms": 13.738198002101853,
+          "samples_ms": [
+            13.495754999894416,
+            13.559389000874944,
+            13.738198002101853
+          ]
+        },
+        "indexed_U": {
+          "count": 3,
+          "cuda_event_median_ms": 13.629440307617188,
+          "cuda_event_samples_ms": [
+            13.629440307617188,
+            13.602815628051758,
+            13.65401554107666
+          ],
+          "median_ms": 13.667237999470672,
+          "p10_ms": 13.636399002280086,
+          "p90_ms": 13.685824000276625,
+          "samples_ms": [
+            13.636399002280086,
+            13.667237999470672,
+            13.685824000276625
+          ]
+        },
+        "indexed_over_full_median_ratio": 1.0079538243639716
+      },
+      "consumer": "native SIMT sparse relation forward/VJP",
+      "correctness": {
+        "matched_full_torch_vjp": true,
+        "output_max_abs": 0.0,
+        "parameter_vjp_max_abs": 1.9984014443252818e-14
+      },
+      "device_memory_after_probe": {
+        "free_bytes": 14750318592,
+        "total_bytes": 16928342016
+      },
+      "edge_value_refresh_diagnostic": {
+        "full_E": {
+          "count": 3,
+          "median_ms": 2.557898002123693,
+          "p10_ms": 2.551160996517865,
+          "p90_ms": 2.571467000962002,
+          "samples_ms": [
+            2.551160996517865,
+            2.557898002123693,
+            2.571467000962002
+          ]
+        },
+        "indexed_U": {
+          "count": 3,
+          "median_ms": 2.684342998691136,
+          "p10_ms": 2.6699109985202085,
+          "p90_ms": 2.6868640015891287,
+          "samples_ms": [
+            2.6699109985202085,
+            2.684342998691136,
+            2.6868640015891287
+          ]
+        }
+      },
+      "estimated_gather_product_saved_bytes_per_forward": 42622208,
+      "module_setup": {
+        "full_E": {
+          "allocated_delta_bytes": 4194304,
+          "wall_ms": 643.6714010014839
+        },
+        "indexed_U": {
+          "allocated_delta_bytes": 4331520,
+          "wall_ms": 569.9155049987894
+        }
+      },
+      "notes": [
+        "U was rebuilt for each step in this primary comparison; values were recomputed after each Adam publication.",
+        "Torch index_copy materializes an E-length value vector because the native relation ABI is unchanged.",
+        "No per-edge optimizer parameters were introduced."
+      ],
+      "peak_temporary_bytes_above_resident_models_and_inputs": 1171123712,
+      "shape": {
+        "case": "large_ranked",
+        "fixture_identity": {
+          "active_query_counts": [
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512
+          ],
+          "candidate_ids_sha256": "32883b1a8ef1bc425b938c799d2a69055b5cc251a693ac1c932cc747f14a90bc",
+          "candidate_ordinals_sha256": "ee6550c005d5526b63885fedb136d277c3d95d0d0cd270872b2ffb14d9b6ec95",
+          "fixture_profile": "large-ranked",
+          "rank_is_feature_position": true,
+          "rank_positions_sha256": "e9258ff4786cc3eb68316b3adfc0b5d26bea3333986d3d2b50b6b4bbb626956e",
+          "token_ids_sha256": "fe1cc754342e3c70456cd49a8781de514c9cbb3ee28a230450375fb79f47fc57"
+        },
+        "shape": {
+          "active_entities_per_cell": [
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512
+          ],
+          "candidate_feature_workspace_estimate_bytes": 2129813504,
+          "candidate_items": 1039948,
+          "cells": 32,
+          "dense_context_and_output_estimate_bytes": 201326592,
+          "entities": 4096,
+          "estimated_numerical_workspace_bytes_before_ce_geo": 2532466688,
+          "global_edge_value_refresh_intermediate_estimate_bytes": 201326592,
+          "max_candidate_items_per_cell": 35268,
+          "relation_width": 64,
+          "selected_genes_per_cell": 512
+        }
+      },
+      "support_edges_E": 262144,
+      "threshold": 0.4999978542327881,
+      "workset_digest": "6db1e26efb393d251954dddde5d481c97624e70cef3d0ebbe96f5ed4811654e3",
+      "workset_items_D": 1039948,
+      "workset_items_P": 519999
+    }
+  ],
+  "device": {
+    "compute_capability": [
+      7,
+      0
+    ],
+    "name": "Tesla V100-SXM2-16GB",
+    "uuid": "6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+  },
+  "extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24",
+  "fixture_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+  "repetitions": 3,
+  "schema": "cellerator.indexed_edge_values_probe.v1",
+  "torch_identity": "4d3b6f0e1a63ea20785975597849bfad0b0f081221c47d9b858d6581b487afd4",
+  "warmup": 1
+}

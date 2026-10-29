@@ -1,0 +1,109 @@
+{
+  "attempt_count": 0,
+  "attempt_id": "74b358f0-9151-4ed9-a254-d6398be76d55",
+  "blocked_reason": null,
+  "blocked_reason_code": "blocked",
+  "cleanup_verified": true,
+  "created_at": "2026-10-27T19:31:44.864658Z",
+  "decision_id": "70e515d4-f649-4e14-b275-ecf582c6cf5d",
+  "id": "2ddca49c-3bf7-4d6e-bd7e-d020ce7b006d",
+  "job_id": "2ddca49c-3bf7-4d6e-bd7e-d020ce7b006d",
+  "lease_binding": null,
+  "lease_fencing_token": null,
+  "lease_id": null,
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "cleanup_verified": true,
+    "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-bae5bec2f866cc1c1cb979453af31a34.service",
+    "execution_may_have_started": true,
+    "execution_outcome": "unknown_but_inactive_and_fenced",
+    "fence": "systemd-runtime-mask",
+    "fenced": true,
+    "observation": {
+      "ActiveState": "inactive",
+      "ControlGroup": "",
+      "Description": "device-scheduler-attempt-bae5bec2f866cc1c1cb979453af31a34.service",
+      "ExecMainCode": "0",
+      "ExecMainStatus": "0",
+      "Id": "device-scheduler-attempt-bae5bec2f866cc1c1cb979453af31a34.service",
+      "InvocationID": "",
+      "LoadState": "masked",
+      "NRestarts": "0",
+      "Restart": "no",
+      "Result": "success",
+      "SubState": "dead"
+    },
+    "state": "cancelled",
+    "unit_name": "device-scheduler-attempt-bae5bec2f866cc1c1cb979453af31a34.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/pytest",
+      "-v",
+      "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu2-v2/tests/test_cuda_lifecycle_extra.py",
+      "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu2-v2/tests/test_mechanism.py"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CELLERATOR_REQUIRE_NATIVE": "1",
+      "CELLERATOR_RUN_CUDA_TESTS": "1",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "PYTHONPATH": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v3/package:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu2-v2"
+    },
+    "event_trigger": null,
+    "idempotency_key": "cellerator-sparse-lifecycle-gpu2-v2-20261027",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": true
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 6442450944.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "gpu.exclusive"
+    ],
+    "timeout_seconds": 300.0,
+    "working_directory": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu2-v2"
+  },
+  "state": "cancelled",
+  "updated_at": "2026-10-27T20:03:09.797527Z"
+}

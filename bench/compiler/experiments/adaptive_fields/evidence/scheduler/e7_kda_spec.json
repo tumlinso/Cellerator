@@ -1,0 +1,73 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+    "-m",
+    "kda_experiments",
+    "--task",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/kda/task.json",
+    "--workspace",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/kda/workspace",
+    "evaluate",
+    "--candidates",
+    "portfolio_collector",
+    "--incumbent",
+    "portfolio_collector"
+  ],
+  "dependencies": [],
+  "environment": {
+    "ADAPTIVE_FIELDS_RUN_KEY": "adaptive-fields-e7-kda-portfolio-92ce6468-ee66-4e61-b8af-29b7fdfb4786",
+    "CELLERATOR_SPARSE_PACKAGE_ROOT": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+    "CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED": "1",
+    "LD_LIBRARY_PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64",
+    "MKL_NUM_THREADS": "2",
+    "OMP_NUM_THREADS": "2",
+    "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/home/tumlinson/Software/miniconda3/bin:/usr/local/bin:/usr/bin:/bin",
+    "PYTHONPATH": "/home/tumlinson/kda:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "idempotency_key": "adaptive-fields-e7-kda-portfolio-92ce6468-ee66-4e61-b8af-29b7fdfb4786",
+  "interruption": {
+    "cancellation_supported": true,
+    "checkpoint_supported": false,
+    "cooperative_yield": false,
+    "restart_safe": false
+  },
+  "max_attempts": 1,
+  "owner_id": "cellerator",
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "parameters": {
+        "consecutive_samples": 3,
+        "interval_seconds": 1,
+        "max_utilization_percent": 0,
+        "timeout_seconds": 60
+      },
+      "schema_version": 1
+    }
+  ],
+  "resources": [
+    {
+      "kind": "gpu",
+      "mode": "exclusive",
+      "quantities": {
+        "memory_bytes": 6442450944
+      },
+      "same_host": true,
+      "schema_version": 1,
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      },
+      "topology_constraints": {}
+    }
+  ],
+  "schema_version": 1,
+  "secret_refs": [],
+  "tags": [
+    "cellerator.adaptive_fields",
+    "e7-kda-portfolio",
+    "gpu.exclusive"
+  ],
+  "timeout_seconds": 3300,
+  "working_directory": "/home/tumlinson/Cellerator"
+}

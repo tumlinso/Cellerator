@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.20)
+project(CelleratorTokenizationConsumer LANGUAGES CXX)
+
+find_package(Cellerator CONFIG REQUIRED COMPONENTS tokenization)
+add_executable(tokenization_consumer consumer.cc)
+target_link_libraries(tokenization_consumer PRIVATE Cellerator::tokenization)
+target_compile_features(tokenization_consumer PRIVATE cxx_std_17)

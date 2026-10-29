@@ -1,5 +1,5 @@
 #include <Cellerator/compiler/sema/relation_update_spine_bridge.hh>
-#include <Cellerator/compiler/frontend/source/build_a_lossless_raw_token_stream_v1.hh>
+#include <Cellerator/compiler/frontend/source/raw_token_stream_v1.hh>
 #include <Cellerator/compiler/frontend/parser/parse_relation_application_v1.hh>
 #include <algorithm>
 #include <cctype>

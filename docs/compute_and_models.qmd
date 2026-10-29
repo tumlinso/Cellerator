@@ -2,6 +2,13 @@
 title: "Compute And Models"
 ---
 
+::: {.callout-warning}
+This page preserves an earlier source-ownership description. Read it for the
+specific compute and consumer contexts it records; current Cellerator
+ownership is in [architecture](architecture.qmd) and the
+[source-routing map](development/routing.md).
+:::
+
 ## Reusable Compute First
 
 `src/compute/` is the authoritative home for reusable sparse ML math. That includes sparse linalg, reductions, transforms, selection, neighbor scoring/search math, sparse operator contexts and kernels, generic masked row transforms and column moments, and other fleet or shard-scoped numerical building blocks.

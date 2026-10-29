@@ -5,10 +5,10 @@
 add_library(cellerator_math_v1_evidence STATIC EXCLUDE_FROM_ALL
     compat/cp_math_v1/src/operation.cc
     compat/cp_math_v1/src/operation_signature.cc
-    src/compute/projection/physical_csr.cc
+    src/layout/physical_csr.cc
     compat/cp_math_v1/src/physical_bell.cc
     compat/cp_math_v1/src/physical_bell_candidates.cc
-    src/compute/projection/native_tile_view.cc
+    src/layout/native_tile_view.cc
     compat/cp_math_v1/src/referee.cc
 )
 target_include_directories(cellerator_math_v1_evidence PUBLIC

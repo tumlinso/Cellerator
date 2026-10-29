@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "argv": [
+    "/home/tumlinson/Cellerator/build-sparse-support-diagnostic/evidence/native-cuda-v5/numeric-cuda-test"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "timeout_seconds": 180,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-sig1-native-cuda-v5-20261027-1910",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 2147483648
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": [
+    "gpu.exclusive"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "2"
+  },
+  "interruption": {
+    "restart_safe": true,
+    "cancellation_supported": true
+  },
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ]
+}

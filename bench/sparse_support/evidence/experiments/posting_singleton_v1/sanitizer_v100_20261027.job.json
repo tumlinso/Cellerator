@@ -1,0 +1,55 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+    "/home/tumlinson/Cellerator/scripts/sparse_support/run_cuda_sanitizers.py",
+    "--binary",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/candidate/cellerator_sparse_support_cuda_indexing_bench",
+    "--sanitizer",
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/compilers/bin/compute-sanitizer",
+    "--output",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/posting_singleton_v1/sanitizer_v100_20261027.json"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "timeout_seconds": 600,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-posting-singleton-sanitizers-v100-20261027-r1",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 2147483648
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator.sparse_support.indexing",
+    "sanitizer.memcheck",
+    "sanitizer.racecheck"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "2",
+    "PYTHONUNBUFFERED": "1",
+    "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/compilers/bin:/usr/local/bin:/usr/bin:/bin"
+  },
+  "interruption": {
+    "restart_safe": true,
+    "cancellation_supported": true
+  },
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ]
+}

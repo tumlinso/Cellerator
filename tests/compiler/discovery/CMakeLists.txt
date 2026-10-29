@@ -145,19 +145,20 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 add_test(NAME ce_ccp1_e02_014 COMMAND ce_ccp1_e02_014)
 
-add_executable(ce_ccp1_e02_015
-    create_temporary_cellshard_compiler_compatibility_adapte_test.cc
-    create_temporary_cellshard_compiler_compatibility_adapte_old_consumer.cc
-    create_temporary_cellshard_compiler_compatibility_adapte_new_consumer.cc
-    "${CELLERATOR_ROOT}/src/compiler/discovery/create_temporary_cellshard_compiler_compatibility_adapte.cc"
+add_executable(cellerator_temporary_cellshard_compiler_adapter_test
+    temporary_cellshard_compiler_adapter_test.cc
+    temporary_cellshard_compiler_adapter_old_consumer.cc
+    temporary_cellshard_compiler_adapter_new_consumer.cc
+    "${CELLERATOR_ROOT}/src/compiler/discovery/temporary_cellshard_compiler_adapter.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/import_atom_envelope_and_typed_ports.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/import_the_common_jbc_atom_identity_adapters.cc")
-target_include_directories(ce_ccp1_e02_015 PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(ce_ccp1_e02_015 PRIVATE cxx_std_17)
+target_include_directories(cellerator_temporary_cellshard_compiler_adapter_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_temporary_cellshard_compiler_adapter_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_e02_015 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_temporary_cellshard_compiler_adapter_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_e02_015 COMMAND ce_ccp1_e02_015)
+add_executable(ce_ccp1_e02_015 ALIAS cellerator_temporary_cellshard_compiler_adapter_test)
+add_test(NAME ce_ccp1_e02_015 COMMAND cellerator_temporary_cellshard_compiler_adapter_test)
 
 add_executable(ce_ccp1_e02_016
     port_discovery_tests_and_evidence_fixtures_test.cc
@@ -179,20 +180,21 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 add_test(NAME ce_ccp1_e02_017 COMMAND ce_ccp1_e02_017)
 
-add_executable(ce_ccp1_e02_018
-    freeze_the_migrated_discovery_and_atom_compiler_slice_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/discovery/freeze_the_migrated_discovery_and_atom_compiler_slice.cc"
+add_executable(cellerator_migrated_discovery_and_atom_compiler_slice_test
+    migrated_discovery_and_atom_compiler_slice_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/discovery/migrated_discovery_and_atom_compiler_slice.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/import_atom_envelope_and_typed_ports.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/import_exact_rescan_and_proposal_certification.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/import_support_signature_discovery.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/import_the_common_jbc_atom_identity_adapters.cc"
-    "${CELLERATOR_ROOT}/src/compiler/discovery/create_temporary_cellshard_compiler_compatibility_adapte.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/temporary_cellshard_compiler_adapter.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/port_discovery_tests_and_evidence_fixtures.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/preserve_migration_provenance_in_source_and_artifacts.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/validate_no_compiler_discovery_remains_authoritative_in.cc")
-target_include_directories(ce_ccp1_e02_018 PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(ce_ccp1_e02_018 PRIVATE cxx_std_17)
+target_include_directories(cellerator_migrated_discovery_and_atom_compiler_slice_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_migrated_discovery_and_atom_compiler_slice_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_e02_018 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_migrated_discovery_and_atom_compiler_slice_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_e02_018 COMMAND ce_ccp1_e02_018)
+add_executable(ce_ccp1_e02_018 ALIAS cellerator_migrated_discovery_and_atom_compiler_slice_test)
+add_test(NAME ce_ccp1_e02_018 COMMAND cellerator_migrated_discovery_and_atom_compiler_slice_test)

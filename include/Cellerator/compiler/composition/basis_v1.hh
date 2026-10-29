@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compiler/composition/implement_no_basis_and_multiple_basis_outcomes_v1.hh>
+#include <Cellerator/compiler/composition/no_basis_and_multiple_basis_outcomes_v1.hh>
 #include <Cellerator/compiler/composition/import_basis_manifest_semantics_v1.hh>
 #include <Cellerator/compiler/composition/import_persistent_partial_compiler_semantics_v1.hh>
 #include <Cellerator/compiler/composition/import_workload_family_representation_v1.hh>

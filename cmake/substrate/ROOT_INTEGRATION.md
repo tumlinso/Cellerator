@@ -26,7 +26,7 @@ real prerequisites have been created, separately from this standalone SDK projec
 
 ```cmake
 add_subdirectory(src/state)
-add_subdirectory(src/packing/core) # native_numeric + selected indexed_incidence/full indexed_mechanism + cellpack
+add_subdirectory(src/layout/packing/core) # native_numeric + selected indexed_incidence/full indexed_mechanism + cellpack
 add_subdirectory(src/math/matrix)
 add_subdirectory(src/math/process)
 add_subdirectory(src/math/effects)

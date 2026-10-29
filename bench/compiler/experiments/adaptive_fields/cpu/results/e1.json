@@ -1,0 +1,26 @@
+{
+  "decision": "supported",
+  "scope": "experiment-local composition path",
+  "source_revision": "c63f591d04ef74b7566937d161c80936dcc4cf05",
+  "toolchain": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, C++20, -O2",
+  "sources": {
+    "probe.cc": "58694701a320d7a8909f8c4ea7b3c76bf99904baf7f00b5a28a435217a2adaca"
+  },
+  "checks": [
+    "real anonymous, named, and nested field parser results normalize to same two-node graph",
+    "parsed graph operand names select runtime binding and invoke existing CPU relation and segment callbacks",
+    "three deterministic fixtures pass independent FP64 comparisons; signed weights, empty relation row, singleton softmax segment included",
+    "source operand x changed to z changes graph and dispatches against z binding with changed result",
+    "existing scalar semantic IR lower/write/read roundtrip executes and altered dependency changes IR"
+  ],
+  "evidence": [
+    "probe.cc",
+    "artifacts/probe",
+    "stdout: E1 parsed graph drives existing CPU primitive dispatch, FP64 oracle, altered dependency PASS"
+  ],
+  "limitations": [
+    "nested field semantic inlining and typed vector operation bridge are experiment-local",
+    "production semantic IR slice does not express this vector computation; scalar IR check is separate",
+    "no general dependency grammar, type inference, or source-to-prepared-runtime integration demonstrated"
+  ]
+}

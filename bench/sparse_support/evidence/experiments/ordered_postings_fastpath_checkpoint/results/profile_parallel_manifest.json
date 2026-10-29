@@ -1,0 +1,70 @@
+{
+  "binary": "/tmp/cellerator_ordered_postings_probe_build_v2/csr_union_bitmap_bench",
+  "binary_sha256": "5e220a8f0bed868cc184ffb00ee1a94624dcfaa0ad70a3f0877105d3ab4e52d3",
+  "command": [
+    "/tmp/cellerator_ordered_postings_probe_build_v2/csr_union_bitmap_bench",
+    "--input-root",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/csr_union_bitmap/input/large-retrieval-a17c73f2",
+    "--warmups",
+    "1",
+    "--samples",
+    "21"
+  ],
+  "completed_cases": [
+    "q1_unique",
+    "q32_unique",
+    "q128_unique",
+    "q1024_unique",
+    "q2048_unique",
+    "q32_duplicate4"
+  ],
+  "completed_unix_ns": 1793135527218039350,
+  "fixture_generator_sha256": "a17c73f2f1e9e8d10e9c73abf4599f6a0df21b86812d59d8665cb6ee13eeee89",
+  "fixture_manifest_sha256": "3e433776b818916bb8650b9ef71a09cef5c8dccb6e9b55e39ac9052d5c9a7091",
+  "input_root": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/csr_union_bitmap/input/large-retrieval-a17c73f2",
+  "query_cases": [
+    "q1024_duplicate4",
+    "q1024_unique",
+    "q128_duplicate4",
+    "q128_unique",
+    "q1_unique",
+    "q2048_duplicate4",
+    "q2048_unique",
+    "q32_duplicate4",
+    "q32_unique"
+  ],
+  "results": [
+    "q1_unique",
+    "q32_unique",
+    "q128_unique",
+    "q1024_unique",
+    "q2048_unique",
+    "q32_duplicate4"
+  ],
+  "returncode": 0,
+  "schema": "cellerator.csr_union_bitmap_run.v1",
+  "setup_ms": {
+    "baseline_cuda_projection": 16.525707,
+    "baseline_host_postings": 162.509962,
+    "device_alloc_upload": 14.713353,
+    "direct_csr_build": 8.528007,
+    "total": 485.47005
+  },
+  "source_sha256": {
+    "bench/sparse_support/experiments/csr_union_bitmap/CMakeLists.txt": "56e3b3c5ce4618d8ff3f766c8dc7aafbdf2c8bec58b74d74141b6d5f6df4d025",
+    "bench/sparse_support/experiments/csr_union_bitmap/csr_union_bitmap_bench.cu": "4a407ff064e1c46cd9cd461e348f24b0e318eaf0dc885a739f87fca2ecd736b8",
+    "bench/sparse_support/experiments/csr_union_bitmap/gpu_job.json": "c64c249e0b45e141c1bfa796a7cf210d9f52fa7ffe6079a031b41cd5dc72f2ee",
+    "bench/sparse_support/experiments/csr_union_bitmap/prepare_fixture.py": "d46e50838f10f31e841028773206d1b930910b5d7a9dc8114e37138f98cd19f8",
+    "bench/sparse_support/experiments/csr_union_bitmap/run_experiment.py": "3c0eff4570574624e8b110bfc374e81c1a84414812d987a150c1ce5b7adfe75b",
+    "bench/sparse_support/scaled_fixtures.py": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+    "include/Cellerator/compute/indexing/cuda_postings.cuh": "55fb929f0ce96427253bc2a4132624b503d1f13ce315ee2642dc17cbd0db1bc2",
+    "include/Cellerator/compute/indexing/reverse_postings.hh": "bbabcc387ca3f3428ddd3973b45616ce3a293e097111bd200993b7fcf836a414",
+    "include/Cellerator/compute/support/logical_support.hh": "9344fc65e6984b61651e42018e8cbd302b9182c473e5ea685e8b94bfa416b3e4",
+    "src/compute/indexing/cuda_postings.cu": "3a6df1882e7feb318aa44b2fc4ba66c42a619f8afa7b452612c1a84fd0f14381",
+    "src/compute/indexing/reverse_postings.cc": "aae47682995442ede9fd9d91754c5006f07c5983b27f1d761e17da55d4645830",
+    "src/compute/support/logical_support.cc": "926504f78f7d0e6064777250f7b9fbb926a5317a25a2fc6bae3b3aec3a40eced"
+  },
+  "started_unix_ns": 1793135524159452458,
+  "state": "succeeded",
+  "topology_sha256": "5ec1f6bbc958ba62112fcd26a88d4912e5812806bfe0617a1e3df7abc7582bc3"
+}

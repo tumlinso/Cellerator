@@ -1,0 +1,381 @@
+{
+  "event_local": {
+    "backend_scope": {
+      "derivative_only_candidates": "included in VJP and reported in case metadata",
+      "gate_probabilities": "recomputed from trainable shared state per step",
+      "hard_support_and_admission_mask": "frozen and byte-identical across candidates",
+      "packed": "CE-GEO N64 packed forward plus the same SIMT native VJP",
+      "simt": "SIMT native sparse relation forward and VJP"
+    },
+    "case": {
+      "active_source_counts": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "candidate_items": 16,
+      "candidate_rows": [
+        [
+          44,
+          45,
+          46,
+          47
+        ],
+        [
+          48,
+          49,
+          50,
+          51
+        ],
+        [
+          52,
+          53,
+          54,
+          55
+        ],
+        [
+          56,
+          57,
+          58,
+          59
+        ]
+      ],
+      "case": "event_local",
+      "derivative_items": 16,
+      "derivative_only_work_fraction": 0.5,
+      "fixture_identity": {
+        "cells": 4,
+        "entities": 32,
+        "fixture": "make_next_event_fixture",
+        "seed": 20261027,
+        "selected_occurrences": "last observed event per cell",
+        "steps": 6
+      },
+      "frozen_input_digest": "904b436d252c2a0a9b5bb6be793b58581f10f5bbed8a481d34f93fcb89ce1337",
+      "frozen_tensor_bytes": 82592,
+      "hard_admitted_items": 8,
+      "hard_derivative_only_items": 8,
+      "hard_gate_freeze_and_primal_workset_ms": 154.91161799945985,
+      "hard_mask_provisional_admitted_items": 8,
+      "hard_mask_provisional_derivative_only_items": 8,
+      "primal_items": 8,
+      "shape": {
+        "cells": 4,
+        "event_occurrences_per_cell": 1,
+        "relation_width": 64,
+        "selected_entities_per_cell": 1
+      },
+      "shared_workset_and_input_prep_ms": 106.8835490004858,
+      "threshold": 0.49955546855926514,
+      "workset_digest": "c0054f9e749a26e670c4f4ebfbff501d1289ee4cb8ed0baf02898ec8a7c37618"
+    },
+    "checks": {
+      "derivative_only_probability_grad_nonzero": {
+        "packed": 8,
+        "simt": 8
+      },
+      "inference_output_allclose_atol_5e-3_rtol_5e-3": true,
+      "loss_close_abs_5e-4_rel_5e-3": true,
+      "max_parameter_difference_after_measured_training": 2.9802322387695312e-08,
+      "remaining_read_tickets": 0,
+      "training_parameter_gradient_allclose_atol_6e-3_rtol_6e-3": true
+    },
+    "parameters": {
+      "adam_state_initialized": true,
+      "shared_fp32_parameter_count": 35648
+    },
+    "phases": {
+      "inference": {
+        "packed": {
+          "cuda_event_ms_per_step": {
+            "count": 2,
+            "mean": 1.1463680267333984,
+            "median": 1.1463680267333984,
+            "p10": 1.1422719955444336,
+            "p90": 1.1504640579223633,
+            "stdev": 0.0057926628593372755
+          },
+          "max_peak_allocated_delta_bytes": 66560,
+          "raw_samples": [
+            {
+              "candidate": "packed",
+              "cuda_event_ms_per_step": 1.1504640579223633,
+              "peak_allocated_delta_bytes": 66560,
+              "round": 0,
+              "synchronized_wall_ms_per_step": 1.1586885011638515
+            },
+            {
+              "candidate": "packed",
+              "cuda_event_ms_per_step": 1.1422719955444336,
+              "peak_allocated_delta_bytes": 66560,
+              "round": 1,
+              "synchronized_wall_ms_per_step": 1.1499675001687137
+            }
+          ],
+          "synchronized_wall_ms_per_step": {
+            "count": 2,
+            "mean": 1.1543280006662826,
+            "median": 1.1543280006662826,
+            "p10": 1.1499675001687137,
+            "p90": 1.1586885011638515,
+            "stdev": 0.006166678942396517
+          }
+        },
+        "paired": {
+          "raw_pairs": [
+            {
+              "order": [
+                "simt",
+                "packed"
+              ],
+              "packed": {
+                "candidate": "packed",
+                "cuda_event_ms_per_step": 1.1504640579223633,
+                "peak_allocated_delta_bytes": 66560,
+                "round": 0,
+                "synchronized_wall_ms_per_step": 1.1586885011638515
+              },
+              "paired_cuda_ratio_simt_over_packed": 0.8905206950890663,
+              "paired_wall_ratio_simt_over_packed": 0.8901741054029655,
+              "round": 0,
+              "simt": {
+                "candidate": "simt",
+                "cuda_event_ms_per_step": 1.0245120525360107,
+                "peak_allocated_delta_bytes": 66560,
+                "round": 0,
+                "synchronized_wall_ms_per_step": 1.0314344999642344
+              }
+            },
+            {
+              "order": [
+                "packed",
+                "simt"
+              ],
+              "packed": {
+                "candidate": "packed",
+                "cuda_event_ms_per_step": 1.1422719955444336,
+                "peak_allocated_delta_bytes": 66560,
+                "round": 1,
+                "synchronized_wall_ms_per_step": 1.1499675001687137
+              },
+              "paired_cuda_ratio_simt_over_packed": 0.9282832564814791,
+              "paired_wall_ratio_simt_over_packed": 0.9284175425771296,
+              "round": 1,
+              "simt": {
+                "candidate": "simt",
+                "cuda_event_ms_per_step": 1.0603519678115845,
+                "peak_allocated_delta_bytes": 66560,
+                "round": 1,
+                "synchronized_wall_ms_per_step": 1.067650000550202
+              }
+            }
+          ],
+          "simt_over_packed_cuda_ratio_bootstrap_95pct": [
+            0.8905206950890663,
+            0.9282832564814791
+          ],
+          "simt_over_packed_cuda_ratio_median": 0.9094019757852727,
+          "simt_over_packed_wall_ratio_bootstrap_95pct": [
+            0.8901741054029655,
+            0.9284175425771296
+          ],
+          "simt_over_packed_wall_ratio_median": 0.9092958239900475
+        },
+        "simt": {
+          "cuda_event_ms_per_step": {
+            "count": 2,
+            "mean": 1.0424320101737976,
+            "median": 1.0424320101737976,
+            "p10": 1.0245120525360107,
+            "p90": 1.0603519678115845,
+            "stdev": 0.025342647128509515
+          },
+          "max_peak_allocated_delta_bytes": 66560,
+          "raw_samples": [
+            {
+              "candidate": "simt",
+              "cuda_event_ms_per_step": 1.0245120525360107,
+              "peak_allocated_delta_bytes": 66560,
+              "round": 0,
+              "synchronized_wall_ms_per_step": 1.0314344999642344
+            },
+            {
+              "candidate": "simt",
+              "cuda_event_ms_per_step": 1.0603519678115845,
+              "peak_allocated_delta_bytes": 66560,
+              "round": 1,
+              "synchronized_wall_ms_per_step": 1.067650000550202
+            }
+          ],
+          "synchronized_wall_ms_per_step": {
+            "count": 2,
+            "mean": 1.0495422502572183,
+            "median": 1.0495422502572183,
+            "p10": 1.0314344999642344,
+            "p90": 1.067650000550202,
+            "stdev": 0.02560822604840313
+          }
+        }
+      },
+      "training": {
+        "packed": {
+          "cuda_event_ms_per_step": {
+            "count": 2,
+            "mean": 4.522239923477173,
+            "median": 4.522239923477173,
+            "p10": 4.420095920562744,
+            "p90": 4.624383926391602,
+            "stdev": 0.14445343423666204
+          },
+          "max_peak_allocated_delta_bytes": 352768,
+          "raw_samples": [
+            {
+              "candidate": "packed",
+              "cuda_event_ms_per_step": 4.420095920562744,
+              "peak_allocated_delta_bytes": 352768,
+              "round": 0,
+              "synchronized_wall_ms_per_step": 4.427917499924661
+            },
+            {
+              "candidate": "packed",
+              "cuda_event_ms_per_step": 4.624383926391602,
+              "peak_allocated_delta_bytes": 352768,
+              "round": 1,
+              "synchronized_wall_ms_per_step": 4.631559500921867
+            }
+          ],
+          "synchronized_wall_ms_per_step": {
+            "count": 2,
+            "mean": 4.529738500423264,
+            "median": 4.529738500423264,
+            "p10": 4.427917499924661,
+            "p90": 4.631559500921867,
+            "stdev": 0.14399663983952218
+          }
+        },
+        "paired": {
+          "raw_pairs": [
+            {
+              "order": [
+                "simt",
+                "packed"
+              ],
+              "packed": {
+                "candidate": "packed",
+                "cuda_event_ms_per_step": 4.420095920562744,
+                "peak_allocated_delta_bytes": 352768,
+                "round": 0,
+                "synchronized_wall_ms_per_step": 4.427917499924661
+              },
+              "paired_cuda_ratio_simt_over_packed": 0.8655160684701724,
+              "paired_wall_ratio_simt_over_packed": 0.8657530318999022,
+              "round": 0,
+              "simt": {
+                "candidate": "simt",
+                "cuda_event_ms_per_step": 3.8256640434265137,
+                "peak_allocated_delta_bytes": 352768,
+                "round": 0,
+                "synchronized_wall_ms_per_step": 3.83348300056241
+              }
+            },
+            {
+              "order": [
+                "packed",
+                "simt"
+              ],
+              "packed": {
+                "candidate": "packed",
+                "cuda_event_ms_per_step": 4.624383926391602,
+                "peak_allocated_delta_bytes": 352768,
+                "round": 1,
+                "synchronized_wall_ms_per_step": 4.631559500921867
+              },
+              "paired_cuda_ratio_simt_over_packed": 1.0220328115919552,
+              "paired_wall_ratio_simt_over_packed": 1.0224996566812066,
+              "round": 1,
+              "simt": {
+                "candidate": "simt",
+                "cuda_event_ms_per_step": 4.726272106170654,
+                "peak_allocated_delta_bytes": 352768,
+                "round": 1,
+                "synchronized_wall_ms_per_step": 4.735767999591189
+              }
+            }
+          ],
+          "simt_over_packed_cuda_ratio_bootstrap_95pct": [
+            0.8655160684701724,
+            1.0220328115919552
+          ],
+          "simt_over_packed_cuda_ratio_median": 0.9437744400310638,
+          "simt_over_packed_wall_ratio_bootstrap_95pct": [
+            0.8657530318999022,
+            1.0224996566812066
+          ],
+          "simt_over_packed_wall_ratio_median": 0.9441263442905543
+        },
+        "simt": {
+          "cuda_event_ms_per_step": {
+            "count": 2,
+            "mean": 4.275968074798584,
+            "median": 4.275968074798584,
+            "p10": 3.8256640434265137,
+            "p90": 4.726272106170654,
+            "stdev": 0.6368260683576615
+          },
+          "max_peak_allocated_delta_bytes": 352768,
+          "raw_samples": [
+            {
+              "candidate": "simt",
+              "cuda_event_ms_per_step": 3.8256640434265137,
+              "peak_allocated_delta_bytes": 352768,
+              "round": 0,
+              "synchronized_wall_ms_per_step": 3.83348300056241
+            },
+            {
+              "candidate": "simt",
+              "cuda_event_ms_per_step": 4.726272106170654,
+              "peak_allocated_delta_bytes": 352768,
+              "round": 1,
+              "synchronized_wall_ms_per_step": 4.735767999591189
+            }
+          ],
+          "synchronized_wall_ms_per_step": {
+            "count": 2,
+            "mean": 4.2846255000768,
+            "median": 4.2846255000768,
+            "p10": 3.83348300056241,
+            "p90": 4.735767999591189,
+            "stdev": 0.6380118413761475
+          }
+        }
+      }
+    },
+    "setup": {
+      "break_even": {
+        "cuda_event": {
+          "break_even_steps": null,
+          "extra_cold_setup_ms": -41.38267600137624,
+          "training_step_saving_ms": -0.24627184867858887
+        },
+        "synchronized_wall": {
+          "break_even_steps": null,
+          "extra_cold_setup_ms": -41.38267600137624,
+          "training_step_saving_ms": -0.2451130003464641
+        }
+      },
+      "hard_gate_freeze_and_primal_workset_ms": 154.91161799945985,
+      "packed": {
+        "allocated_delta_bytes": 72704,
+        "ce_geo_compile_shared_host_ms": 0.13962799857836217,
+        "wall_ms": 471.1135990000912
+      },
+      "packed_extra_cold_setup_ms_including_geometry_compile": -41.38267600137624,
+      "shared_workset_and_input_prep_ms": 106.8835490004858,
+      "simt": {
+        "allocated_delta_bytes": 1536,
+        "wall_ms": 512.6359030000458
+      }
+    }
+  }
+}

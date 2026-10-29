@@ -1,0 +1,1569 @@
+{
+  "candidates": {
+    "ordered_postings_cegeo_union": {
+      "baseline": "scan_simt_full",
+      "candidate": "ordered_postings_cegeo_union",
+      "candidate_components": {
+        "edge_value_policy": "union",
+        "indexer": "ordered_postings",
+        "numerical_backend": "cegeo"
+      },
+      "correctness": {
+        "candidate_and_baseline_initial_owner_equal": true,
+        "exact_ordered_posting_fallback": {
+          "status": "covered by separate validate-only run"
+        },
+        "first_pair_diagnostics": {
+          "baseline": {
+            "backend": "simt",
+            "cuda_event_ms": 116.71427154541016,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "23dbff01bf73bedca3b0b2bb45812d6bc3207ca89e8391175713b615c3c8019f",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "5e94c3d333910753e9bc9fa53cd6ab6c94242e83def5db9b46b72eabf3f59a51",
+              "parameters_after_update_sha256": "a91c60b68ed91a7582901e1e06779ce2f9a4706d0c845aadd9eb9681e223b686",
+              "primal_items": 124,
+              "probability_gradient_sha256": "05ad61e3f73579e3f1a4e69e5f0fed7611b22e53d7f1a704f0429aa448d5a653",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "scan",
+            "loss": 0.010051345452666283,
+            "value_policy": "full",
+            "wall_ms": 116.87757199979387
+          },
+          "candidate": {
+            "backend": "cegeo",
+            "cuda_event_ms": 897.2665405273438,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "33a855e8d311cddce865407f1f5726e97ec75872e275b99f06731f202ad339e0",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "f018b7300e08d9663c74238250f2e44acc6e94af12e51d29a970bb549a70bce3",
+              "parameters_after_update_sha256": "e7627297e7ec0ddde3e4567ad096942276826df107e44f35f3f46a8e94a3ccb2",
+              "primal_items": 124,
+              "probability_gradient_sha256": "afe6bd090df96b06156ac3e162c3d41cbaf397d93a6c8eb4cffc7ceb87b59a0c",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "ordered_postings",
+            "loss": 0.010051345452666283,
+            "value_policy": "union",
+            "wall_ms": 897.4107269968954
+          }
+        },
+        "gate_threshold": 0.5001092553138733,
+        "indexer_against_independent_host_oracle": {
+          "ordered_postings": {
+            "exact_fallback_rows": 0,
+            "item_count": 244,
+            "ordered_fast_path_rows": 8,
+            "path_diagnostics_valid": true,
+            "workset_sha256": "854c7ced07708a1298d0ab1ecfa787e869abb61a2a53458b0150ccdeaefbe271"
+          }
+        },
+        "mask_and_workset_identity": "captured from paired warmup; timings use same frozen queries",
+        "raw_first_pair_artifact": {
+          "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.ordered_postings_cegeo_union.raw.npz",
+          "sha256": "a674cae5ed4f9345f287f483e8819d79e9cda74a2e77340e0a8c7e1e81f56dbb"
+        }
+      },
+      "decision": "supported",
+      "device_memory": {
+        "estimated": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 65536,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1464080,
+          "free_device_bytes_before_module_prepare": 16476274688,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "joint_comparison_peak_allocated_bytes": 25852928,
+        "joint_comparison_peak_reserved_bytes": 27262976,
+        "scope": "baseline and candidate modules coexist in one process; not per-candidate peaks"
+      },
+      "experiment": "E7",
+      "fixture": {
+        "context_entities_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "fixture": "small",
+        "manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+        "query_offsets_sha256": "d203a0a1fff28048849567a2513ad6eb08d57d48f9e2c069b0bf05b2708c2139",
+        "query_rows_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "topology_sha256": "3755cf50273d5a8012cf036058f8c3ab77ded7bcc72f20254369e775d10b3b3b"
+      },
+      "gpu_execution_performed": true,
+      "host_peak_rss_bytes": 2653990912,
+      "runtime": {
+        "device_uuid_routing": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+        "python": "3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]",
+        "run_key_correlation": "adaptive-fields-e7-hardgated-sanitizers-be6fe209-5936-47ad-a167-f41118429f8d",
+        "scheduler_authority": "external JobSpec, submission record, terminal receipt, cleanup verification",
+        "scheduler_ids_if_injected": {
+          "attempt_id": null,
+          "job_id": null
+        },
+        "torch": "2.7.0+cu126",
+        "torch_cuda": "12.6"
+      },
+      "schema": "cellerator.adaptive_fields.e7_relation_portfolio.v1",
+      "scope": "relation-only sparse candidate discovery + trainable relation; no latent transition",
+      "setup": {
+        "baseline_cold_setup_ms": 46.485748993291054,
+        "baseline_native_module_prepare_ms": 45.6384290009737,
+        "baseline_specific_setup_ms": 45.6384290009737,
+        "candidate_cold_setup_ms": 46.200152988603804,
+        "candidate_native_module_prepare_ms": 45.15045000152895,
+        "candidate_specific_setup_ms": 45.35283299628645,
+        "ce_geo_host_geometry_compile_ms": 0.09579899779055268,
+        "device_memory_preflight": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 65536,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1464080,
+          "free_device_bytes_before_module_prepare": 16476274688,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "initial_candidate_baseline_state": "same fixture seed and exact owner values; benchmark pair starts are restored from the same full training checkpoint",
+        "joint_comparison_setup_ms": 91.8385819895775,
+        "native_support_projection_prepare_ms": 0.4972059978172183,
+        "optional_ordered_posting_projection_prepare_ms": 0.10658399696694687,
+        "optional_ordered_postings_prepared": true,
+        "pair_checkpoint_capture_ms": 1.5268509960151277,
+        "pair_checkpoint_path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.ordered_postings_cegeo_union.initial_checkpoint.pt",
+        "pair_checkpoint_sha256": "d0189bcdd6c0a2b58575039a7434503058564070cd8051699d83cc41eb05b35f",
+        "peak_memory_scope": "joint comparison process holding baseline and candidate preparations",
+        "reusable_indexer_output_buffer_prepare_ms": 0.020849998691119254,
+        "reusable_indexer_output_buffers": {
+          "allocated_now": true,
+          "cells": 8,
+          "host_buffer_bytes": 18504,
+          "item_capacity": 768
+        },
+        "reusable_indexer_query_buffer_prepare_ms": 0.3292639958090149,
+        "reusable_indexer_query_buffers": {
+          "cells": 8,
+          "query_buffer_bytes": 3144,
+          "query_terms": 192
+        },
+        "scan_cold_setup_excludes_unused_postings": true,
+        "setup_cost_accounting": "candidate and baseline cold costs share relation/indexer projection and host binding setup; candidate-only postings, CE-GEO geometry, and candidate module preparation are charged only to candidate; baseline module preparation is charged only to baseline",
+        "setup_total_ms": 91.8385819895775,
+        "shared_indexer_setup_ms": 0.8473199923173524
+      },
+      "sources": {
+        "experiment_driver_sha256": "8c93644cb02bd8942c713dfa2c5bb90428d9203883cd3f8bbedcd67cfe0734e3",
+        "fixture_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+        "fixture_loader_sha256": "74648f5ef15b5fa12d488c492cb31d80232cb591237346d917ac918c3449b964",
+        "indexer_binding_sha256": "05f9ab2eeac0b352ab8d9e7ad0399c31f414453b640473c982d9bfef0c377318",
+        "indexer_bridge_header_sha256": "baec78587df1275f4d4356e0bb13b4408bb5d0679dceed1648ad727907a760fa",
+        "indexer_bridge_source_sha256": "a68701b8ef365e07fe770b23c763a03902560308965f1b355d54f26e385cf22c",
+        "indexer_build_manifest": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/build_manifest.json",
+        "indexer_build_manifest_sha256": "5d0df37999f533b0633cc8a2c0cd17a1209eec928c706f1534df45df9b14c156",
+        "native_indexer_library": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/libadaptive_fields_indexer.so",
+        "native_indexer_library_sha256": "ee59ae7306830df9cb879ba66cb27f77d8d98fa0b3d17a281eaf7758aaa2c20c",
+        "package_identity_sha256": "696b15c916d782666565be0f36c09b4e4958046eaac46350cf137435876a0bc9",
+        "package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+        "sparse_support_sha256": "0fbdcbdb9cea80d73cf628c90e9b45c747ff58fe9c8330aaf1baa46d90f80e85",
+        "torch_extension_path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+        "torch_extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24"
+      },
+      "timing": {
+        "actual_reuse_horizons": {},
+        "baseline_wall_ms": {
+          "mean": 116.39811500208452,
+          "median": 116.39811500208452,
+          "n": 1,
+          "p10": 116.39811500208452,
+          "p90": 116.39811500208452,
+          "stdev": 0.0
+        },
+        "candidate_wall_ms": {
+          "mean": 899.0588140004547,
+          "median": 899.0588140004547,
+          "n": 1,
+          "p10": 899.0588140004547,
+          "p90": 899.0588140004547,
+          "stdev": 0.0
+        },
+        "checkpoint_restore_warmup_ms_excluded": [
+          8.855532003508415
+        ],
+        "cold_setup_ms_by_execution": {
+          "baseline": 46.485748993291054,
+          "candidate": 46.200152988603804,
+          "joint_comparison": 91.8385819895775
+        },
+        "cold_setup_plus_horizon_cost_ms": {},
+        "cuda_event": "per-step query through guarded Adam; synchronized wall includes wrapper and transfers",
+        "paired_delta_ms": {
+          "mean": 782.6606989983702,
+          "median": 782.6606989983702,
+          "n": 1,
+          "p10": 782.6606989983702,
+          "p90": 782.6606989983702,
+          "stdev": 0.0
+        },
+        "paired_order": "alternates baseline-first and candidate-first",
+        "paired_samples": [
+          {
+            "baseline": {
+              "backend": "simt",
+              "cuda_event_ms": 116.28921508789062,
+              "index_mode": "scan",
+              "loss": 0.010051345452666283,
+              "value_policy": "full",
+              "wall_ms": 116.39811500208452
+            },
+            "candidate": {
+              "backend": "cegeo",
+              "cuda_event_ms": 898.9674072265625,
+              "index_mode": "ordered_postings",
+              "loss": 0.010051345452666283,
+              "value_policy": "union",
+              "wall_ms": 899.0588140004547
+            },
+            "checkpoint_restore_ms_excluded": 9.003971994388849,
+            "order": [
+              "baseline",
+              "candidate"
+            ],
+            "pair": 0,
+            "paired_wall_ms_delta_candidate_minus_baseline": 782.6606989983702
+          }
+        ],
+        "paired_samples_per_round": 1,
+        "rounds": 1,
+        "warmups": 1
+      }
+    },
+    "ordered_postings_simt_full": {
+      "baseline": "scan_simt_full",
+      "candidate": "ordered_postings_simt_full",
+      "candidate_components": {
+        "edge_value_policy": "full",
+        "indexer": "ordered_postings",
+        "numerical_backend": "simt"
+      },
+      "correctness": {
+        "candidate_and_baseline_initial_owner_equal": true,
+        "exact_ordered_posting_fallback": {
+          "status": "covered by separate validate-only run"
+        },
+        "first_pair_diagnostics": {
+          "baseline": {
+            "backend": "simt",
+            "cuda_event_ms": 116.93545532226562,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "7406a8137c5da9bfd90c92593b2b76a0513e7ec48683435f40e7dd994831a674",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "5e94c3d333910753e9bc9fa53cd6ab6c94242e83def5db9b46b72eabf3f59a51",
+              "parameters_after_update_sha256": "395fe622c5f706fb44491b33ea6f9d5367471900d312a695938e919b724ba752",
+              "primal_items": 124,
+              "probability_gradient_sha256": "05ad61e3f73579e3f1a4e69e5f0fed7611b22e53d7f1a704f0429aa448d5a653",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "scan",
+            "loss": 0.010051345452666283,
+            "value_policy": "full",
+            "wall_ms": 117.0166399970185
+          },
+          "candidate": {
+            "backend": "simt",
+            "cuda_event_ms": 114.37564849853516,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "23dbff01bf73bedca3b0b2bb45812d6bc3207ca89e8391175713b615c3c8019f",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "5e94c3d333910753e9bc9fa53cd6ab6c94242e83def5db9b46b72eabf3f59a51",
+              "parameters_after_update_sha256": "a91c60b68ed91a7582901e1e06779ce2f9a4706d0c845aadd9eb9681e223b686",
+              "primal_items": 124,
+              "probability_gradient_sha256": "05ad61e3f73579e3f1a4e69e5f0fed7611b22e53d7f1a704f0429aa448d5a653",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "ordered_postings",
+            "loss": 0.010051345452666283,
+            "value_policy": "full",
+            "wall_ms": 114.45899899990764
+          }
+        },
+        "gate_threshold": 0.5001092553138733,
+        "indexer_against_independent_host_oracle": {
+          "ordered_postings": {
+            "exact_fallback_rows": 0,
+            "item_count": 244,
+            "ordered_fast_path_rows": 8,
+            "path_diagnostics_valid": true,
+            "workset_sha256": "854c7ced07708a1298d0ab1ecfa787e869abb61a2a53458b0150ccdeaefbe271"
+          }
+        },
+        "mask_and_workset_identity": "captured from paired warmup; timings use same frozen queries",
+        "raw_first_pair_artifact": {
+          "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.ordered_postings_simt_full.raw.npz",
+          "sha256": "42aeffc645a2bdf6a5bf3d4edc25d4f7ca067523e38ac98bf8a45e8c52d691f8"
+        }
+      },
+      "decision": "supported",
+      "device_memory": {
+        "estimated": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 0,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1398544,
+          "free_device_bytes_before_module_prepare": 16488857600,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "joint_comparison_peak_allocated_bytes": 17042944,
+        "joint_comparison_peak_reserved_bytes": 18874368,
+        "scope": "baseline and candidate modules coexist in one process; not per-candidate peaks"
+      },
+      "experiment": "E7",
+      "fixture": {
+        "context_entities_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "fixture": "small",
+        "manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+        "query_offsets_sha256": "d203a0a1fff28048849567a2513ad6eb08d57d48f9e2c069b0bf05b2708c2139",
+        "query_rows_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "topology_sha256": "3755cf50273d5a8012cf036058f8c3ab77ded7bcc72f20254369e775d10b3b3b"
+      },
+      "gpu_execution_performed": true,
+      "host_peak_rss_bytes": 2653990912,
+      "runtime": {
+        "device_uuid_routing": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+        "python": "3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]",
+        "run_key_correlation": "adaptive-fields-e7-hardgated-sanitizers-be6fe209-5936-47ad-a167-f41118429f8d",
+        "scheduler_authority": "external JobSpec, submission record, terminal receipt, cleanup verification",
+        "scheduler_ids_if_injected": {
+          "attempt_id": null,
+          "job_id": null
+        },
+        "torch": "2.7.0+cu126",
+        "torch_cuda": "12.6"
+      },
+      "schema": "cellerator.adaptive_fields.e7_relation_portfolio.v1",
+      "scope": "relation-only sparse candidate discovery + trainable relation; no latent transition",
+      "setup": {
+        "baseline_cold_setup_ms": 47.44455600302899,
+        "baseline_native_module_prepare_ms": 46.75354600476567,
+        "baseline_specific_setup_ms": 46.75354600476567,
+        "candidate_cold_setup_ms": 47.385877995111514,
+        "candidate_native_module_prepare_ms": 46.5840559991193,
+        "candidate_specific_setup_ms": 46.69486799684819,
+        "ce_geo_host_geometry_compile_ms": 0.0,
+        "device_memory_preflight": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 0,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1398544,
+          "free_device_bytes_before_module_prepare": 16488857600,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "initial_candidate_baseline_state": "same fixture seed and exact owner values; benchmark pair starts are restored from the same full training checkpoint",
+        "joint_comparison_setup_ms": 94.13942399987718,
+        "native_support_projection_prepare_ms": 0.43104799988213927,
+        "optional_ordered_posting_projection_prepare_ms": 0.11081199772888795,
+        "optional_ordered_postings_prepared": true,
+        "pair_checkpoint_capture_ms": 1.7118100004154257,
+        "pair_checkpoint_path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.ordered_postings_simt_full.initial_checkpoint.pt",
+        "pair_checkpoint_sha256": "708493df703279bd687680810f315eb05f6e1af400ba07c356e0d0f502487f61",
+        "peak_memory_scope": "joint comparison process holding baseline and candidate preparations",
+        "reusable_indexer_output_buffer_prepare_ms": 0.01794700074242428,
+        "reusable_indexer_output_buffers": {
+          "allocated_now": true,
+          "cells": 8,
+          "host_buffer_bytes": 18504,
+          "item_capacity": 768
+        },
+        "reusable_indexer_query_buffer_prepare_ms": 0.242014997638762,
+        "reusable_indexer_query_buffers": {
+          "cells": 8,
+          "query_buffer_bytes": 3144,
+          "query_terms": 192
+        },
+        "scan_cold_setup_excludes_unused_postings": true,
+        "setup_cost_accounting": "candidate and baseline cold costs share relation/indexer projection and host binding setup; candidate-only postings, CE-GEO geometry, and candidate module preparation are charged only to candidate; baseline module preparation is charged only to baseline",
+        "setup_total_ms": 94.13942399987718,
+        "shared_indexer_setup_ms": 0.6910099982633255
+      },
+      "sources": {
+        "experiment_driver_sha256": "8c93644cb02bd8942c713dfa2c5bb90428d9203883cd3f8bbedcd67cfe0734e3",
+        "fixture_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+        "fixture_loader_sha256": "74648f5ef15b5fa12d488c492cb31d80232cb591237346d917ac918c3449b964",
+        "indexer_binding_sha256": "05f9ab2eeac0b352ab8d9e7ad0399c31f414453b640473c982d9bfef0c377318",
+        "indexer_bridge_header_sha256": "baec78587df1275f4d4356e0bb13b4408bb5d0679dceed1648ad727907a760fa",
+        "indexer_bridge_source_sha256": "a68701b8ef365e07fe770b23c763a03902560308965f1b355d54f26e385cf22c",
+        "indexer_build_manifest": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/build_manifest.json",
+        "indexer_build_manifest_sha256": "5d0df37999f533b0633cc8a2c0cd17a1209eec928c706f1534df45df9b14c156",
+        "native_indexer_library": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/libadaptive_fields_indexer.so",
+        "native_indexer_library_sha256": "ee59ae7306830df9cb879ba66cb27f77d8d98fa0b3d17a281eaf7758aaa2c20c",
+        "package_identity_sha256": "696b15c916d782666565be0f36c09b4e4958046eaac46350cf137435876a0bc9",
+        "package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+        "sparse_support_sha256": "0fbdcbdb9cea80d73cf628c90e9b45c747ff58fe9c8330aaf1baa46d90f80e85",
+        "torch_extension_path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+        "torch_extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24"
+      },
+      "timing": {
+        "actual_reuse_horizons": {},
+        "baseline_wall_ms": {
+          "mean": 115.8803380021709,
+          "median": 115.8803380021709,
+          "n": 1,
+          "p10": 115.8803380021709,
+          "p90": 115.8803380021709,
+          "stdev": 0.0
+        },
+        "candidate_wall_ms": {
+          "mean": 114.87682699953439,
+          "median": 114.87682699953439,
+          "n": 1,
+          "p10": 114.87682699953439,
+          "p90": 114.87682699953439,
+          "stdev": 0.0
+        },
+        "checkpoint_restore_warmup_ms_excluded": [
+          8.426001004409045
+        ],
+        "cold_setup_ms_by_execution": {
+          "baseline": 47.44455600302899,
+          "candidate": 47.385877995111514,
+          "joint_comparison": 94.13942399987718
+        },
+        "cold_setup_plus_horizon_cost_ms": {},
+        "cuda_event": "per-step query through guarded Adam; synchronized wall includes wrapper and transfers",
+        "paired_delta_ms": {
+          "mean": -1.0035110026365146,
+          "median": -1.0035110026365146,
+          "n": 1,
+          "p10": -1.0035110026365146,
+          "p90": -1.0035110026365146,
+          "stdev": 0.0
+        },
+        "paired_order": "alternates baseline-first and candidate-first",
+        "paired_samples": [
+          {
+            "baseline": {
+              "backend": "simt",
+              "cuda_event_ms": 115.8034896850586,
+              "index_mode": "scan",
+              "loss": 0.010051345452666283,
+              "value_policy": "full",
+              "wall_ms": 115.8803380021709
+            },
+            "candidate": {
+              "backend": "simt",
+              "cuda_event_ms": 114.79478454589844,
+              "index_mode": "ordered_postings",
+              "loss": 0.010051345452666283,
+              "value_policy": "full",
+              "wall_ms": 114.87682699953439
+            },
+            "checkpoint_restore_ms_excluded": 8.370935000129975,
+            "order": [
+              "baseline",
+              "candidate"
+            ],
+            "pair": 0,
+            "paired_wall_ms_delta_candidate_minus_baseline": -1.0035110026365146
+          }
+        ],
+        "paired_samples_per_round": 1,
+        "rounds": 1,
+        "warmups": 1
+      }
+    },
+    "ordered_postings_simt_union": {
+      "baseline": "scan_simt_full",
+      "candidate": "ordered_postings_simt_union",
+      "candidate_components": {
+        "edge_value_policy": "union",
+        "indexer": "ordered_postings",
+        "numerical_backend": "simt"
+      },
+      "correctness": {
+        "candidate_and_baseline_initial_owner_equal": true,
+        "exact_ordered_posting_fallback": {
+          "status": "covered by separate validate-only run"
+        },
+        "first_pair_diagnostics": {
+          "baseline": {
+            "backend": "simt",
+            "cuda_event_ms": 116.8318099975586,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "8f1eef4f680e1b2dd43ba4169f9ce319e61546937e728ba2254ef940f3e05105",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "5e94c3d333910753e9bc9fa53cd6ab6c94242e83def5db9b46b72eabf3f59a51",
+              "parameters_after_update_sha256": "a91c60b68ed91a7582901e1e06779ce2f9a4706d0c845aadd9eb9681e223b686",
+              "primal_items": 124,
+              "probability_gradient_sha256": "05ad61e3f73579e3f1a4e69e5f0fed7611b22e53d7f1a704f0429aa448d5a653",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "scan",
+            "loss": 0.010051345452666283,
+            "value_policy": "full",
+            "wall_ms": 116.91046499618096
+          },
+          "candidate": {
+            "backend": "simt",
+            "cuda_event_ms": 500.73468017578125,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "e63268a78fb57c73efb66c9cf96d45c147a6064917abd30856723745026980eb",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "5e94c3d333910753e9bc9fa53cd6ab6c94242e83def5db9b46b72eabf3f59a51",
+              "parameters_after_update_sha256": "a91c60b68ed91a7582901e1e06779ce2f9a4706d0c845aadd9eb9681e223b686",
+              "primal_items": 124,
+              "probability_gradient_sha256": "05ad61e3f73579e3f1a4e69e5f0fed7611b22e53d7f1a704f0429aa448d5a653",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "ordered_postings",
+            "loss": 0.010051345452666283,
+            "value_policy": "union",
+            "wall_ms": 500.8650040035718
+          }
+        },
+        "gate_threshold": 0.5001092553138733,
+        "indexer_against_independent_host_oracle": {
+          "ordered_postings": {
+            "exact_fallback_rows": 0,
+            "item_count": 244,
+            "ordered_fast_path_rows": 8,
+            "path_diagnostics_valid": true,
+            "workset_sha256": "854c7ced07708a1298d0ab1ecfa787e869abb61a2a53458b0150ccdeaefbe271"
+          }
+        },
+        "mask_and_workset_identity": "captured from paired warmup; timings use same frozen queries",
+        "raw_first_pair_artifact": {
+          "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.ordered_postings_simt_union.raw.npz",
+          "sha256": "b1abfa338890ee93a8b995e465a228f327708335581cbf45210c514c25b6b9e9"
+        }
+      },
+      "decision": "supported",
+      "device_memory": {
+        "estimated": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 0,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1398544,
+          "free_device_bytes_before_module_prepare": 16482566144,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "joint_comparison_peak_allocated_bytes": 21018624,
+        "joint_comparison_peak_reserved_bytes": 23068672,
+        "scope": "baseline and candidate modules coexist in one process; not per-candidate peaks"
+      },
+      "experiment": "E7",
+      "fixture": {
+        "context_entities_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "fixture": "small",
+        "manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+        "query_offsets_sha256": "d203a0a1fff28048849567a2513ad6eb08d57d48f9e2c069b0bf05b2708c2139",
+        "query_rows_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "topology_sha256": "3755cf50273d5a8012cf036058f8c3ab77ded7bcc72f20254369e775d10b3b3b"
+      },
+      "gpu_execution_performed": true,
+      "host_peak_rss_bytes": 2653990912,
+      "runtime": {
+        "device_uuid_routing": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+        "python": "3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]",
+        "run_key_correlation": "adaptive-fields-e7-hardgated-sanitizers-be6fe209-5936-47ad-a167-f41118429f8d",
+        "scheduler_authority": "external JobSpec, submission record, terminal receipt, cleanup verification",
+        "scheduler_ids_if_injected": {
+          "attempt_id": null,
+          "job_id": null
+        },
+        "torch": "2.7.0+cu126",
+        "torch_cuda": "12.6"
+      },
+      "schema": "cellerator.adaptive_fields.e7_relation_portfolio.v1",
+      "scope": "relation-only sparse candidate discovery + trainable relation; no latent transition",
+      "setup": {
+        "baseline_cold_setup_ms": 46.430848000454716,
+        "baseline_native_module_prepare_ms": 45.82941899570869,
+        "baseline_specific_setup_ms": 45.82941899570869,
+        "candidate_cold_setup_ms": 45.275689008121844,
+        "candidate_native_module_prepare_ms": 44.565891003003344,
+        "candidate_specific_setup_ms": 44.67426000337582,
+        "ce_geo_host_geometry_compile_ms": 0.0,
+        "device_memory_preflight": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 0,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1398544,
+          "free_device_bytes_before_module_prepare": 16482566144,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "initial_candidate_baseline_state": "same fixture seed and exact owner values; benchmark pair starts are restored from the same full training checkpoint",
+        "joint_comparison_setup_ms": 91.10510800383054,
+        "native_support_projection_prepare_ms": 0.3574189977371134,
+        "optional_ordered_posting_projection_prepare_ms": 0.10836900037247688,
+        "optional_ordered_postings_prepared": true,
+        "pair_checkpoint_capture_ms": 1.435005004168488,
+        "pair_checkpoint_path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.ordered_postings_simt_union.initial_checkpoint.pt",
+        "pair_checkpoint_sha256": "376b44709d38f2fbbc8b2c984df3a834a0bca1c53dd539f099628620c77f331f",
+        "peak_memory_scope": "joint comparison process holding baseline and candidate preparations",
+        "reusable_indexer_output_buffer_prepare_ms": 0.01842000347096473,
+        "reusable_indexer_output_buffers": {
+          "allocated_now": true,
+          "cells": 8,
+          "host_buffer_bytes": 18504,
+          "item_capacity": 768
+        },
+        "reusable_indexer_query_buffer_prepare_ms": 0.22559000353794545,
+        "reusable_indexer_query_buffers": {
+          "cells": 8,
+          "query_buffer_bytes": 3144,
+          "query_terms": 192
+        },
+        "scan_cold_setup_excludes_unused_postings": true,
+        "setup_cost_accounting": "candidate and baseline cold costs share relation/indexer projection and host binding setup; candidate-only postings, CE-GEO geometry, and candidate module preparation are charged only to candidate; baseline module preparation is charged only to baseline",
+        "setup_total_ms": 91.10510800383054,
+        "shared_indexer_setup_ms": 0.6014290047460236
+      },
+      "sources": {
+        "experiment_driver_sha256": "8c93644cb02bd8942c713dfa2c5bb90428d9203883cd3f8bbedcd67cfe0734e3",
+        "fixture_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+        "fixture_loader_sha256": "74648f5ef15b5fa12d488c492cb31d80232cb591237346d917ac918c3449b964",
+        "indexer_binding_sha256": "05f9ab2eeac0b352ab8d9e7ad0399c31f414453b640473c982d9bfef0c377318",
+        "indexer_bridge_header_sha256": "baec78587df1275f4d4356e0bb13b4408bb5d0679dceed1648ad727907a760fa",
+        "indexer_bridge_source_sha256": "a68701b8ef365e07fe770b23c763a03902560308965f1b355d54f26e385cf22c",
+        "indexer_build_manifest": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/build_manifest.json",
+        "indexer_build_manifest_sha256": "5d0df37999f533b0633cc8a2c0cd17a1209eec928c706f1534df45df9b14c156",
+        "native_indexer_library": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/libadaptive_fields_indexer.so",
+        "native_indexer_library_sha256": "ee59ae7306830df9cb879ba66cb27f77d8d98fa0b3d17a281eaf7758aaa2c20c",
+        "package_identity_sha256": "696b15c916d782666565be0f36c09b4e4958046eaac46350cf137435876a0bc9",
+        "package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+        "sparse_support_sha256": "0fbdcbdb9cea80d73cf628c90e9b45c747ff58fe9c8330aaf1baa46d90f80e85",
+        "torch_extension_path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+        "torch_extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24"
+      },
+      "timing": {
+        "actual_reuse_horizons": {},
+        "baseline_wall_ms": {
+          "mean": 116.36355699738488,
+          "median": 116.36355699738488,
+          "n": 1,
+          "p10": 116.36355699738488,
+          "p90": 116.36355699738488,
+          "stdev": 0.0
+        },
+        "candidate_wall_ms": {
+          "mean": 504.08179799705977,
+          "median": 504.08179799705977,
+          "n": 1,
+          "p10": 504.08179799705977,
+          "p90": 504.08179799705977,
+          "stdev": 0.0
+        },
+        "checkpoint_restore_warmup_ms_excluded": [
+          8.138452998537105
+        ],
+        "cold_setup_ms_by_execution": {
+          "baseline": 46.430848000454716,
+          "candidate": 45.275689008121844,
+          "joint_comparison": 91.10510800383054
+        },
+        "cold_setup_plus_horizon_cost_ms": {},
+        "cuda_event": "per-step query through guarded Adam; synchronized wall includes wrapper and transfers",
+        "paired_delta_ms": {
+          "mean": 387.7182409996749,
+          "median": 387.7182409996749,
+          "n": 1,
+          "p10": 387.7182409996749,
+          "p90": 387.7182409996749,
+          "stdev": 0.0
+        },
+        "paired_order": "alternates baseline-first and candidate-first",
+        "paired_samples": [
+          {
+            "baseline": {
+              "backend": "simt",
+              "cuda_event_ms": 116.27283477783203,
+              "index_mode": "scan",
+              "loss": 0.010051345452666283,
+              "value_policy": "full",
+              "wall_ms": 116.36355699738488
+            },
+            "candidate": {
+              "backend": "simt",
+              "cuda_event_ms": 503.93878173828125,
+              "index_mode": "ordered_postings",
+              "loss": 0.010051345452666283,
+              "value_policy": "union",
+              "wall_ms": 504.08179799705977
+            },
+            "checkpoint_restore_ms_excluded": 8.336355997016653,
+            "order": [
+              "baseline",
+              "candidate"
+            ],
+            "pair": 0,
+            "paired_wall_ms_delta_candidate_minus_baseline": 387.7182409996749
+          }
+        ],
+        "paired_samples_per_round": 1,
+        "rounds": 1,
+        "warmups": 1
+      }
+    },
+    "scan_cegeo_union": {
+      "baseline": "scan_simt_full",
+      "candidate": "scan_cegeo_union",
+      "candidate_components": {
+        "edge_value_policy": "union",
+        "indexer": "scan",
+        "numerical_backend": "cegeo"
+      },
+      "correctness": {
+        "candidate_and_baseline_initial_owner_equal": true,
+        "exact_ordered_posting_fallback": {
+          "status": "covered by separate validate-only run"
+        },
+        "first_pair_diagnostics": {
+          "baseline": {
+            "backend": "simt",
+            "cuda_event_ms": 116.90643310546875,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "46d68ac31247f3de6ebbf71bf86beb7f02004cc70e3b83714256cfb5c13956b5",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "5e94c3d333910753e9bc9fa53cd6ab6c94242e83def5db9b46b72eabf3f59a51",
+              "parameters_after_update_sha256": "3a67ebb4b1caecd697d34243ddec4bdccefec15a7e829c5f2670ecd9463bb565",
+              "primal_items": 124,
+              "probability_gradient_sha256": "05ad61e3f73579e3f1a4e69e5f0fed7611b22e53d7f1a704f0429aa448d5a653",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "scan",
+            "loss": 0.010051345452666283,
+            "value_policy": "full",
+            "wall_ms": 117.03171000408474
+          },
+          "candidate": {
+            "backend": "cegeo",
+            "cuda_event_ms": 915.077880859375,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "33a855e8d311cddce865407f1f5726e97ec75872e275b99f06731f202ad339e0",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "f018b7300e08d9663c74238250f2e44acc6e94af12e51d29a970bb549a70bce3",
+              "parameters_after_update_sha256": "e7627297e7ec0ddde3e4567ad096942276826df107e44f35f3f46a8e94a3ccb2",
+              "primal_items": 124,
+              "probability_gradient_sha256": "afe6bd090df96b06156ac3e162c3d41cbaf397d93a6c8eb4cffc7ceb87b59a0c",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "scan",
+            "loss": 0.010051345452666283,
+            "value_policy": "union",
+            "wall_ms": 915.2009720055503
+          }
+        },
+        "gate_threshold": 0.5001092553138733,
+        "indexer_against_independent_host_oracle": {
+          "scan": {
+            "exact_fallback_rows": 0,
+            "item_count": 244,
+            "ordered_fast_path_rows": 0,
+            "path_diagnostics_valid": true,
+            "workset_sha256": "854c7ced07708a1298d0ab1ecfa787e869abb61a2a53458b0150ccdeaefbe271"
+          }
+        },
+        "mask_and_workset_identity": "captured from paired warmup; timings use same frozen queries",
+        "raw_first_pair_artifact": {
+          "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.scan_cegeo_union.raw.npz",
+          "sha256": "4e6f9c946a811c07f4c2ec648f2523d9bd6ff6659eff6df069e75812cec568d0"
+        }
+      },
+      "decision": "supported",
+      "device_memory": {
+        "estimated": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 65536,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1464080,
+          "free_device_bytes_before_module_prepare": 16495149056,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "joint_comparison_peak_allocated_bytes": 13077504,
+        "joint_comparison_peak_reserved_bytes": 14680064,
+        "scope": "baseline and candidate modules coexist in one process; not per-candidate peaks"
+      },
+      "experiment": "E7",
+      "fixture": {
+        "context_entities_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "fixture": "small",
+        "manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+        "query_offsets_sha256": "d203a0a1fff28048849567a2513ad6eb08d57d48f9e2c069b0bf05b2708c2139",
+        "query_rows_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "topology_sha256": "3755cf50273d5a8012cf036058f8c3ab77ded7bcc72f20254369e775d10b3b3b"
+      },
+      "gpu_execution_performed": true,
+      "host_peak_rss_bytes": 2653990912,
+      "runtime": {
+        "device_uuid_routing": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+        "python": "3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]",
+        "run_key_correlation": "adaptive-fields-e7-hardgated-sanitizers-be6fe209-5936-47ad-a167-f41118429f8d",
+        "scheduler_authority": "external JobSpec, submission record, terminal receipt, cleanup verification",
+        "scheduler_ids_if_injected": {
+          "attempt_id": null,
+          "job_id": null
+        },
+        "torch": "2.7.0+cu126",
+        "torch_cuda": "12.6"
+      },
+      "schema": "cellerator.adaptive_fields.e7_relation_portfolio.v1",
+      "scope": "relation-only sparse candidate discovery + trainable relation; no latent transition",
+      "setup": {
+        "baseline_cold_setup_ms": 55.58725001174025,
+        "baseline_native_module_prepare_ms": 54.906557001231704,
+        "baseline_specific_setup_ms": 54.906557001231704,
+        "candidate_cold_setup_ms": 61.12377501267474,
+        "candidate_native_module_prepare_ms": 60.32021099963458,
+        "candidate_specific_setup_ms": 60.44308200216619,
+        "ce_geo_host_geometry_compile_ms": 0.12287100253161043,
+        "device_memory_preflight": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 65536,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1464080,
+          "free_device_bytes_before_module_prepare": 16495149056,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "initial_candidate_baseline_state": "same fixture seed and exact owner values; benchmark pair starts are restored from the same full training checkpoint",
+        "joint_comparison_setup_ms": 116.03033201390645,
+        "native_support_projection_prepare_ms": 0.422622004407458,
+        "optional_ordered_posting_projection_prepare_ms": 0.0,
+        "optional_ordered_postings_prepared": false,
+        "pair_checkpoint_capture_ms": 1.7668520013103262,
+        "pair_checkpoint_path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.scan_cegeo_union.initial_checkpoint.pt",
+        "pair_checkpoint_sha256": "83c0ea78f1c38b34bfcfa16685b8cb0644d83280d561a9bf354faa96d5f14b16",
+        "peak_memory_scope": "joint comparison process holding baseline and candidate preparations",
+        "reusable_indexer_output_buffer_prepare_ms": 0.01638600224396214,
+        "reusable_indexer_output_buffers": {
+          "allocated_now": true,
+          "cells": 8,
+          "host_buffer_bytes": 18504,
+          "item_capacity": 768
+        },
+        "reusable_indexer_query_buffer_prepare_ms": 0.24168500385712832,
+        "reusable_indexer_query_buffers": {
+          "cells": 8,
+          "query_buffer_bytes": 3144,
+          "query_terms": 192
+        },
+        "scan_cold_setup_excludes_unused_postings": true,
+        "setup_cost_accounting": "candidate and baseline cold costs share relation/indexer projection and host binding setup; candidate-only postings, CE-GEO geometry, and candidate module preparation are charged only to candidate; baseline module preparation is charged only to baseline",
+        "setup_total_ms": 116.03033201390645,
+        "shared_indexer_setup_ms": 0.6806930105085485
+      },
+      "sources": {
+        "experiment_driver_sha256": "8c93644cb02bd8942c713dfa2c5bb90428d9203883cd3f8bbedcd67cfe0734e3",
+        "fixture_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+        "fixture_loader_sha256": "74648f5ef15b5fa12d488c492cb31d80232cb591237346d917ac918c3449b964",
+        "indexer_binding_sha256": "05f9ab2eeac0b352ab8d9e7ad0399c31f414453b640473c982d9bfef0c377318",
+        "indexer_bridge_header_sha256": "baec78587df1275f4d4356e0bb13b4408bb5d0679dceed1648ad727907a760fa",
+        "indexer_bridge_source_sha256": "a68701b8ef365e07fe770b23c763a03902560308965f1b355d54f26e385cf22c",
+        "indexer_build_manifest": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/build_manifest.json",
+        "indexer_build_manifest_sha256": "5d0df37999f533b0633cc8a2c0cd17a1209eec928c706f1534df45df9b14c156",
+        "native_indexer_library": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/libadaptive_fields_indexer.so",
+        "native_indexer_library_sha256": "ee59ae7306830df9cb879ba66cb27f77d8d98fa0b3d17a281eaf7758aaa2c20c",
+        "package_identity_sha256": "696b15c916d782666565be0f36c09b4e4958046eaac46350cf137435876a0bc9",
+        "package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+        "sparse_support_sha256": "0fbdcbdb9cea80d73cf628c90e9b45c747ff58fe9c8330aaf1baa46d90f80e85",
+        "torch_extension_path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+        "torch_extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24"
+      },
+      "timing": {
+        "actual_reuse_horizons": {},
+        "baseline_wall_ms": {
+          "mean": 115.83082200377248,
+          "median": 115.83082200377248,
+          "n": 1,
+          "p10": 115.83082200377248,
+          "p90": 115.83082200377248,
+          "stdev": 0.0
+        },
+        "candidate_wall_ms": {
+          "mean": 901.9472870058962,
+          "median": 901.9472870058962,
+          "n": 1,
+          "p10": 901.9472870058962,
+          "p90": 901.9472870058962,
+          "stdev": 0.0
+        },
+        "checkpoint_restore_warmup_ms_excluded": [
+          9.438241999305319
+        ],
+        "cold_setup_ms_by_execution": {
+          "baseline": 55.58725001174025,
+          "candidate": 61.12377501267474,
+          "joint_comparison": 116.03033201390645
+        },
+        "cold_setup_plus_horizon_cost_ms": {},
+        "cuda_event": "per-step query through guarded Adam; synchronized wall includes wrapper and transfers",
+        "paired_delta_ms": {
+          "mean": 786.1164650021237,
+          "median": 786.1164650021237,
+          "n": 1,
+          "p10": 786.1164650021237,
+          "p90": 786.1164650021237,
+          "stdev": 0.0
+        },
+        "paired_order": "alternates baseline-first and candidate-first",
+        "paired_samples": [
+          {
+            "baseline": {
+              "backend": "simt",
+              "cuda_event_ms": 115.75679779052734,
+              "index_mode": "scan",
+              "loss": 0.010051345452666283,
+              "value_policy": "full",
+              "wall_ms": 115.83082200377248
+            },
+            "candidate": {
+              "backend": "cegeo",
+              "cuda_event_ms": 901.822509765625,
+              "index_mode": "scan",
+              "loss": 0.010051345452666283,
+              "value_policy": "union",
+              "wall_ms": 901.9472870058962
+            },
+            "checkpoint_restore_ms_excluded": 8.989494999696035,
+            "order": [
+              "baseline",
+              "candidate"
+            ],
+            "pair": 0,
+            "paired_wall_ms_delta_candidate_minus_baseline": 786.1164650021237
+          }
+        ],
+        "paired_samples_per_round": 1,
+        "rounds": 1,
+        "warmups": 1
+      }
+    },
+    "scan_simt_full": {
+      "baseline": "scan_simt_full",
+      "candidate": "scan_simt_full",
+      "candidate_components": {
+        "edge_value_policy": "full",
+        "indexer": "scan",
+        "numerical_backend": "simt"
+      },
+      "correctness": {
+        "candidate_and_baseline_initial_owner_equal": true,
+        "exact_ordered_posting_fallback": {
+          "status": "covered by separate validate-only run"
+        },
+        "first_pair_diagnostics": {
+          "baseline": {
+            "backend": "simt",
+            "cuda_event_ms": 629.2947998046875,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "58939f73dfc3de8a0d930ba8975ae176f6014dfc6c07b3a11767c026d7894907",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "5e94c3d333910753e9bc9fa53cd6ab6c94242e83def5db9b46b72eabf3f59a51",
+              "parameters_after_update_sha256": "a91c60b68ed91a7582901e1e06779ce2f9a4706d0c845aadd9eb9681e223b686",
+              "primal_items": 124,
+              "probability_gradient_sha256": "05ad61e3f73579e3f1a4e69e5f0fed7611b22e53d7f1a704f0429aa448d5a653",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "scan",
+            "loss": 0.010051345452666283,
+            "value_policy": "full",
+            "wall_ms": 629.399456003739
+          },
+          "candidate": {
+            "backend": "simt",
+            "cuda_event_ms": 116.66799926757812,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "8f1eef4f680e1b2dd43ba4169f9ce319e61546937e728ba2254ef940f3e05105",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "5e94c3d333910753e9bc9fa53cd6ab6c94242e83def5db9b46b72eabf3f59a51",
+              "parameters_after_update_sha256": "a91c60b68ed91a7582901e1e06779ce2f9a4706d0c845aadd9eb9681e223b686",
+              "primal_items": 124,
+              "probability_gradient_sha256": "05ad61e3f73579e3f1a4e69e5f0fed7611b22e53d7f1a704f0429aa448d5a653",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "scan",
+            "loss": 0.010051345452666283,
+            "value_policy": "full",
+            "wall_ms": 116.78645199572202
+          }
+        },
+        "gate_threshold": 0.5001092553138733,
+        "indexer_against_independent_host_oracle": {
+          "scan": {
+            "exact_fallback_rows": 0,
+            "item_count": 244,
+            "ordered_fast_path_rows": 0,
+            "path_diagnostics_valid": true,
+            "workset_sha256": "854c7ced07708a1298d0ab1ecfa787e869abb61a2a53458b0150ccdeaefbe271"
+          }
+        },
+        "mask_and_workset_identity": "captured from paired warmup; timings use same frozen queries",
+        "raw_first_pair_artifact": {
+          "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.scan_simt_full.raw.npz",
+          "sha256": "251d72976b5f8251178dccd894970e8a1af0e601bbb081f97fa72398db30e36b"
+        }
+      },
+      "decision": "supported",
+      "device_memory": {
+        "estimated": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 0,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1398544,
+          "free_device_bytes_before_module_prepare": 16516120576,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "joint_comparison_peak_allocated_bytes": 4267520,
+        "joint_comparison_peak_reserved_bytes": 6291456,
+        "scope": "baseline and candidate modules coexist in one process; not per-candidate peaks"
+      },
+      "experiment": "E7",
+      "fixture": {
+        "context_entities_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "fixture": "small",
+        "manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+        "query_offsets_sha256": "d203a0a1fff28048849567a2513ad6eb08d57d48f9e2c069b0bf05b2708c2139",
+        "query_rows_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "topology_sha256": "3755cf50273d5a8012cf036058f8c3ab77ded7bcc72f20254369e775d10b3b3b"
+      },
+      "gpu_execution_performed": true,
+      "host_peak_rss_bytes": 2592018432,
+      "runtime": {
+        "device_uuid_routing": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+        "python": "3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]",
+        "run_key_correlation": "adaptive-fields-e7-hardgated-sanitizers-be6fe209-5936-47ad-a167-f41118429f8d",
+        "scheduler_authority": "external JobSpec, submission record, terminal receipt, cleanup verification",
+        "scheduler_ids_if_injected": {
+          "attempt_id": null,
+          "job_id": null
+        },
+        "torch": "2.7.0+cu126",
+        "torch_cuda": "12.6"
+      },
+      "schema": "cellerator.adaptive_fields.e7_relation_portfolio.v1",
+      "scope": "relation-only sparse candidate discovery + trainable relation; no latent transition",
+      "setup": {
+        "baseline_cold_setup_ms": 115.35253498732345,
+        "baseline_native_module_prepare_ms": 112.21120599657297,
+        "baseline_specific_setup_ms": 112.21120599657297,
+        "candidate_cold_setup_ms": 50.99470899585867,
+        "candidate_native_module_prepare_ms": 47.85338000510819,
+        "candidate_specific_setup_ms": 47.85338000510819,
+        "ce_geo_host_geometry_compile_ms": 0.0,
+        "device_memory_preflight": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 0,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1398544,
+          "free_device_bytes_before_module_prepare": 16516120576,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "initial_candidate_baseline_state": "same fixture seed and exact owner values; benchmark pair starts are restored from the same full training checkpoint",
+        "joint_comparison_setup_ms": 163.20591499243164,
+        "native_support_projection_prepare_ms": 2.58707699686056,
+        "optional_ordered_posting_projection_prepare_ms": 0.0,
+        "optional_ordered_postings_prepared": false,
+        "pair_checkpoint_capture_ms": 3.436019003856927,
+        "pair_checkpoint_path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.scan_simt_full.initial_checkpoint.pt",
+        "pair_checkpoint_sha256": "672c2e7e6ef2ad2ddb345c8922f26736aa23de736ff250b56d8eb189877b524b",
+        "peak_memory_scope": "joint comparison process holding baseline and candidate preparations",
+        "reusable_indexer_output_buffer_prepare_ms": 0.11074799840571359,
+        "reusable_indexer_output_buffers": {
+          "allocated_now": true,
+          "cells": 8,
+          "host_buffer_bytes": 18504,
+          "item_capacity": 768
+        },
+        "reusable_indexer_query_buffer_prepare_ms": 0.4435039954842068,
+        "reusable_indexer_query_buffers": {
+          "cells": 8,
+          "query_buffer_bytes": 3144,
+          "query_terms": 192
+        },
+        "scan_cold_setup_excludes_unused_postings": true,
+        "setup_cost_accounting": "candidate and baseline cold costs share relation/indexer projection and host binding setup; candidate-only postings, CE-GEO geometry, and candidate module preparation are charged only to candidate; baseline module preparation is charged only to baseline",
+        "setup_total_ms": 163.20591499243164,
+        "shared_indexer_setup_ms": 3.1413289907504804
+      },
+      "sources": {
+        "experiment_driver_sha256": "8c93644cb02bd8942c713dfa2c5bb90428d9203883cd3f8bbedcd67cfe0734e3",
+        "fixture_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+        "fixture_loader_sha256": "74648f5ef15b5fa12d488c492cb31d80232cb591237346d917ac918c3449b964",
+        "indexer_binding_sha256": "05f9ab2eeac0b352ab8d9e7ad0399c31f414453b640473c982d9bfef0c377318",
+        "indexer_bridge_header_sha256": "baec78587df1275f4d4356e0bb13b4408bb5d0679dceed1648ad727907a760fa",
+        "indexer_bridge_source_sha256": "a68701b8ef365e07fe770b23c763a03902560308965f1b355d54f26e385cf22c",
+        "indexer_build_manifest": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/build_manifest.json",
+        "indexer_build_manifest_sha256": "5d0df37999f533b0633cc8a2c0cd17a1209eec928c706f1534df45df9b14c156",
+        "native_indexer_library": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/libadaptive_fields_indexer.so",
+        "native_indexer_library_sha256": "ee59ae7306830df9cb879ba66cb27f77d8d98fa0b3d17a281eaf7758aaa2c20c",
+        "package_identity_sha256": "696b15c916d782666565be0f36c09b4e4958046eaac46350cf137435876a0bc9",
+        "package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+        "sparse_support_sha256": "0fbdcbdb9cea80d73cf628c90e9b45c747ff58fe9c8330aaf1baa46d90f80e85",
+        "torch_extension_path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+        "torch_extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24"
+      },
+      "timing": {
+        "actual_reuse_horizons": {},
+        "baseline_wall_ms": {
+          "mean": 115.6438959951629,
+          "median": 115.6438959951629,
+          "n": 1,
+          "p10": 115.6438959951629,
+          "p90": 115.6438959951629,
+          "stdev": 0.0
+        },
+        "candidate_wall_ms": {
+          "mean": 116.71238300186815,
+          "median": 116.71238300186815,
+          "n": 1,
+          "p10": 116.71238300186815,
+          "p90": 116.71238300186815,
+          "stdev": 0.0
+        },
+        "checkpoint_restore_warmup_ms_excluded": [
+          11.251078001805581
+        ],
+        "cold_setup_ms_by_execution": {
+          "baseline": 115.35253498732345,
+          "candidate": 50.99470899585867,
+          "joint_comparison": 163.20591499243164
+        },
+        "cold_setup_plus_horizon_cost_ms": {},
+        "cuda_event": "per-step query through guarded Adam; synchronized wall includes wrapper and transfers",
+        "paired_delta_ms": {
+          "mean": 1.0684870067052543,
+          "median": 1.0684870067052543,
+          "n": 1,
+          "p10": 1.0684870067052543,
+          "p90": 1.0684870067052543,
+          "stdev": 0.0
+        },
+        "paired_order": "alternates baseline-first and candidate-first",
+        "paired_samples": [
+          {
+            "baseline": {
+              "backend": "simt",
+              "cuda_event_ms": 115.56816101074219,
+              "index_mode": "scan",
+              "loss": 0.010051345452666283,
+              "value_policy": "full",
+              "wall_ms": 115.6438959951629
+            },
+            "candidate": {
+              "backend": "simt",
+              "cuda_event_ms": 116.58761596679688,
+              "index_mode": "scan",
+              "loss": 0.010051345452666283,
+              "value_policy": "full",
+              "wall_ms": 116.71238300186815
+            },
+            "checkpoint_restore_ms_excluded": 8.272194994788151,
+            "order": [
+              "baseline",
+              "candidate"
+            ],
+            "pair": 0,
+            "paired_wall_ms_delta_candidate_minus_baseline": 1.0684870067052543
+          }
+        ],
+        "paired_samples_per_round": 1,
+        "rounds": 1,
+        "warmups": 1
+      }
+    },
+    "scan_simt_union": {
+      "baseline": "scan_simt_full",
+      "candidate": "scan_simt_union",
+      "candidate_components": {
+        "edge_value_policy": "union",
+        "indexer": "scan",
+        "numerical_backend": "simt"
+      },
+      "correctness": {
+        "candidate_and_baseline_initial_owner_equal": true,
+        "exact_ordered_posting_fallback": {
+          "status": "covered by separate validate-only run"
+        },
+        "first_pair_diagnostics": {
+          "baseline": {
+            "backend": "simt",
+            "cuda_event_ms": 117.91085052490234,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "7406a8137c5da9bfd90c92593b2b76a0513e7ec48683435f40e7dd994831a674",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "5e94c3d333910753e9bc9fa53cd6ab6c94242e83def5db9b46b72eabf3f59a51",
+              "parameters_after_update_sha256": "395fe622c5f706fb44491b33ea6f9d5367471900d312a695938e919b724ba752",
+              "primal_items": 124,
+              "probability_gradient_sha256": "05ad61e3f73579e3f1a4e69e5f0fed7611b22e53d7f1a704f0429aa448d5a653",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "scan",
+            "loss": 0.010051345452666283,
+            "value_policy": "full",
+            "wall_ms": 118.02086100215092
+          },
+          "candidate": {
+            "backend": "simt",
+            "cuda_event_ms": 607.0926513671875,
+            "diagnostics": {
+              "derivative_items": 156,
+              "derivative_only_items": 32,
+              "eligible_candidate_items": 244,
+              "gradient_sha256": "421967c0177037a98181d3e008c149839528386be1a5ee7a96c28627cd8ecfa3",
+              "hard_admitted_candidate_items": 124,
+              "loss": 0.010051345452666283,
+              "output_sha256": "5e94c3d333910753e9bc9fa53cd6ab6c94242e83def5db9b46b72eabf3f59a51",
+              "parameters_after_update_sha256": "a91c60b68ed91a7582901e1e06779ce2f9a4706d0c845aadd9eb9681e223b686",
+              "primal_items": 124,
+              "probability_gradient_sha256": "05ad61e3f73579e3f1a4e69e5f0fed7611b22e53d7f1a704f0429aa448d5a653",
+              "selected_dormant_items": 32
+            },
+            "index_mode": "scan",
+            "loss": 0.010051345452666283,
+            "value_policy": "union",
+            "wall_ms": 607.2201370043331
+          }
+        },
+        "gate_threshold": 0.5001092553138733,
+        "indexer_against_independent_host_oracle": {
+          "scan": {
+            "exact_fallback_rows": 0,
+            "item_count": 244,
+            "ordered_fast_path_rows": 0,
+            "path_diagnostics_valid": true,
+            "workset_sha256": "854c7ced07708a1298d0ab1ecfa787e869abb61a2a53458b0150ccdeaefbe271"
+          }
+        },
+        "mask_and_workset_identity": "captured from paired warmup; timings use same frozen queries",
+        "raw_first_pair_artifact": {
+          "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.scan_simt_union.raw.npz",
+          "sha256": "6c95589d5efc0b912280d2cc07c6ea77d6cc438be95a74d5495c0ccccda02cd0"
+        }
+      },
+      "decision": "supported",
+      "device_memory": {
+        "estimated": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 0,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1398544,
+          "free_device_bytes_before_module_prepare": 16497246208,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "joint_comparison_peak_allocated_bytes": 8243200,
+        "joint_comparison_peak_reserved_bytes": 8388608,
+        "scope": "baseline and candidate modules coexist in one process; not per-candidate peaks"
+      },
+      "experiment": "E7",
+      "fixture": {
+        "context_entities_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "fixture": "small",
+        "manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+        "query_offsets_sha256": "d203a0a1fff28048849567a2513ad6eb08d57d48f9e2c069b0bf05b2708c2139",
+        "query_rows_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+        "topology_sha256": "3755cf50273d5a8012cf036058f8c3ab77ded7bcc72f20254369e775d10b3b3b"
+      },
+      "gpu_execution_performed": true,
+      "host_peak_rss_bytes": 2653990912,
+      "runtime": {
+        "device_uuid_routing": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+        "python": "3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]",
+        "run_key_correlation": "adaptive-fields-e7-hardgated-sanitizers-be6fe209-5936-47ad-a167-f41118429f8d",
+        "scheduler_authority": "external JobSpec, submission record, terminal receipt, cleanup verification",
+        "scheduler_ids_if_injected": {
+          "attempt_id": null,
+          "job_id": null
+        },
+        "torch": "2.7.0+cu126",
+        "torch_cuda": "12.6"
+      },
+      "schema": "cellerator.adaptive_fields.e7_relation_portfolio.v1",
+      "scope": "relation-only sparse candidate discovery + trainable relation; no latent transition",
+      "setup": {
+        "baseline_cold_setup_ms": 143.63657600188162,
+        "baseline_native_module_prepare_ms": 142.7851480038953,
+        "baseline_specific_setup_ms": 142.7851480038953,
+        "candidate_cold_setup_ms": 46.9026259961538,
+        "candidate_native_module_prepare_ms": 46.05119799816748,
+        "candidate_specific_setup_ms": 46.05119799816748,
+        "ce_geo_host_geometry_compile_ms": 0.0,
+        "device_memory_preflight": {
+          "candidate_count": 244,
+          "candidate_feature_workspace_bytes": 499712,
+          "ce_geo_active_tile_bytes_estimate": 0,
+          "dense_context_and_output_bytes": 786432,
+          "estimated_peak_workspace_bytes_before_allocator_overhead": 1398544,
+          "free_device_bytes_before_module_prepare": 16497246208,
+          "full_support_value_intermediates_bytes": 73728,
+          "memory_limit_fraction": 0.85,
+          "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+          "native_indexer_query_scratch_bytes_estimate": 30720,
+          "preflight_pass": true,
+          "total_device_bytes": 16928342016,
+          "workset_host_device_bytes_estimate": 7952
+        },
+        "initial_candidate_baseline_state": "same fixture seed and exact owner values; benchmark pair starts are restored from the same full training checkpoint",
+        "joint_comparison_setup_ms": 189.6877740000491,
+        "native_support_projection_prepare_ms": 0.49468799988972023,
+        "optional_ordered_posting_projection_prepare_ms": 0.0,
+        "optional_ordered_postings_prepared": false,
+        "pair_checkpoint_capture_ms": 1.9248109965701587,
+        "pair_checkpoint_path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_hardgated_sanitizers/racecheck/protocol_smoke.scan_simt_union.initial_checkpoint.pt",
+        "pair_checkpoint_sha256": "abae564b4cdbae2153f056152acf607b6c6a3cb6927320299c9f6dd0d78a20ed",
+        "peak_memory_scope": "joint comparison process holding baseline and candidate preparations",
+        "reusable_indexer_output_buffer_prepare_ms": 0.02914800279540941,
+        "reusable_indexer_output_buffers": {
+          "allocated_now": true,
+          "cells": 8,
+          "host_buffer_bytes": 18504,
+          "item_capacity": 768
+        },
+        "reusable_indexer_query_buffer_prepare_ms": 0.32759199530119076,
+        "reusable_indexer_query_buffers": {
+          "cells": 8,
+          "query_buffer_bytes": 3144,
+          "query_terms": 192
+        },
+        "scan_cold_setup_excludes_unused_postings": true,
+        "setup_cost_accounting": "candidate and baseline cold costs share relation/indexer projection and host binding setup; candidate-only postings, CE-GEO geometry, and candidate module preparation are charged only to candidate; baseline module preparation is charged only to baseline",
+        "setup_total_ms": 189.6877740000491,
+        "shared_indexer_setup_ms": 0.8514279979863204
+      },
+      "sources": {
+        "experiment_driver_sha256": "8c93644cb02bd8942c713dfa2c5bb90428d9203883cd3f8bbedcd67cfe0734e3",
+        "fixture_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+        "fixture_loader_sha256": "74648f5ef15b5fa12d488c492cb31d80232cb591237346d917ac918c3449b964",
+        "indexer_binding_sha256": "05f9ab2eeac0b352ab8d9e7ad0399c31f414453b640473c982d9bfef0c377318",
+        "indexer_bridge_header_sha256": "baec78587df1275f4d4356e0bb13b4408bb5d0679dceed1648ad727907a760fa",
+        "indexer_bridge_source_sha256": "a68701b8ef365e07fe770b23c763a03902560308965f1b355d54f26e385cf22c",
+        "indexer_build_manifest": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/build_manifest.json",
+        "indexer_build_manifest_sha256": "5d0df37999f533b0633cc8a2c0cd17a1209eec928c706f1534df45df9b14c156",
+        "native_indexer_library": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/libadaptive_fields_indexer.so",
+        "native_indexer_library_sha256": "ee59ae7306830df9cb879ba66cb27f77d8d98fa0b3d17a281eaf7758aaa2c20c",
+        "package_identity_sha256": "696b15c916d782666565be0f36c09b4e4958046eaac46350cf137435876a0bc9",
+        "package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+        "sparse_support_sha256": "0fbdcbdb9cea80d73cf628c90e9b45c747ff58fe9c8330aaf1baa46d90f80e85",
+        "torch_extension_path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+        "torch_extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24"
+      },
+      "timing": {
+        "actual_reuse_horizons": {},
+        "baseline_wall_ms": {
+          "mean": 115.63248899619794,
+          "median": 115.63248899619794,
+          "n": 1,
+          "p10": 115.63248899619794,
+          "p90": 115.63248899619794,
+          "stdev": 0.0
+        },
+        "candidate_wall_ms": {
+          "mean": 505.1752720028162,
+          "median": 505.1752720028162,
+          "n": 1,
+          "p10": 505.1752720028162,
+          "p90": 505.1752720028162,
+          "stdev": 0.0
+        },
+        "checkpoint_restore_warmup_ms_excluded": [
+          8.590657002059743
+        ],
+        "cold_setup_ms_by_execution": {
+          "baseline": 143.63657600188162,
+          "candidate": 46.9026259961538,
+          "joint_comparison": 189.6877740000491
+        },
+        "cold_setup_plus_horizon_cost_ms": {},
+        "cuda_event": "per-step query through guarded Adam; synchronized wall includes wrapper and transfers",
+        "paired_delta_ms": {
+          "mean": 389.54278300661827,
+          "median": 389.54278300661827,
+          "n": 1,
+          "p10": 389.54278300661827,
+          "p90": 389.54278300661827,
+          "stdev": 0.0
+        },
+        "paired_order": "alternates baseline-first and candidate-first",
+        "paired_samples": [
+          {
+            "baseline": {
+              "backend": "simt",
+              "cuda_event_ms": 115.56057739257812,
+              "index_mode": "scan",
+              "loss": 0.010051345452666283,
+              "value_policy": "full",
+              "wall_ms": 115.63248899619794
+            },
+            "candidate": {
+              "backend": "simt",
+              "cuda_event_ms": 505.060302734375,
+              "index_mode": "scan",
+              "loss": 0.010051345452666283,
+              "value_policy": "union",
+              "wall_ms": 505.1752720028162
+            },
+            "checkpoint_restore_ms_excluded": 8.385162000195123,
+            "order": [
+              "baseline",
+              "candidate"
+            ],
+            "pair": 0,
+            "paired_wall_ms_delta_candidate_minus_baseline": 389.54278300661827
+          }
+        ],
+        "paired_samples_per_round": 1,
+        "rounds": 1,
+        "warmups": 1
+      }
+    }
+  },
+  "decision": "supported",
+  "experiment": "E7",
+  "fixture": {
+    "context_entities_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+    "fixture": "small",
+    "manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+    "query_offsets_sha256": "d203a0a1fff28048849567a2513ad6eb08d57d48f9e2c069b0bf05b2708c2139",
+    "query_rows_sha256": "7ebf826d47267ca789947a6b1389d220d98aceed8177d137ee48d17e634611dd",
+    "topology_sha256": "3755cf50273d5a8012cf036058f8c3ab77ded7bcc72f20254369e775d10b3b3b"
+  },
+  "gpu_execution_performed": true,
+  "mode": "benchmark-all-six",
+  "schema": "cellerator.adaptive_fields.e7_portfolio_collector.v1",
+  "timing_protocol": {
+    "candidate_and_scan_simt_full_start_from_same_seed": true,
+    "candidate_ids": [
+      "scan_simt_full",
+      "scan_simt_union",
+      "scan_cegeo_union",
+      "ordered_postings_simt_full",
+      "ordered_postings_simt_union",
+      "ordered_postings_cegeo_union"
+    ],
+    "measured_candidate_pairs": 6,
+    "paired_samples_per_round_per_candidate": 1,
+    "reuse_horizons_included": false,
+    "rounds_per_candidate": 1,
+    "warmup_per_candidate": 1
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "architecture": "sm_70",
+  "compile_commands": [
+    [
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "-std=c++17",
+      "-arch=sm_70",
+      "-Xcompiler",
+      "-fPIC",
+      "-I",
+      "/home/tumlinson/Cellerator/include",
+      "-c",
+      "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/indexer_bridge.cu",
+      "-o",
+      "bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/indexer_0.o"
+    ],
+    [
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "-std=c++17",
+      "-arch=sm_70",
+      "-Xcompiler",
+      "-fPIC",
+      "-I",
+      "/home/tumlinson/Cellerator/include",
+      "-c",
+      "/home/tumlinson/Cellerator/src/compute/indexing/cuda_postings.cu",
+      "-o",
+      "bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/indexer_1.o"
+    ],
+    [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-fPIC",
+      "-I",
+      "/home/tumlinson/Cellerator/include",
+      "-c",
+      "/home/tumlinson/Cellerator/src/compute/indexing/reverse_postings.cc",
+      "-o",
+      "bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/indexer_2.o"
+    ],
+    [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-fPIC",
+      "-I",
+      "/home/tumlinson/Cellerator/include",
+      "-c",
+      "/home/tumlinson/Cellerator/src/compute/support/logical_support.cc",
+      "-o",
+      "bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/indexer_3.o"
+    ]
+  ],
+  "compile_wall_ms": [
+    6672.427347002667,
+    4918.94364500331,
+    235.75778400117997,
+    63.64417999429861
+  ],
+  "ctypes_binding_sha256": "05f9ab2eeac0b352ab8d9e7ad0399c31f414453b640473c982d9bfef0c377318",
+  "gpu_execution_performed": false,
+  "header_sha256": "baec78587df1275f4d4356e0bb13b4408bb5d0679dceed1648ad727907a760fa",
+  "library": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/libadaptive_fields_indexer.so",
+  "library_bytes": 1598520,
+  "library_sha256": "ee59ae7306830df9cb879ba66cb27f77d8d98fa0b3d17a281eaf7758aaa2c20c",
+  "link_command": [
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "--shared",
+    "-arch=sm_70",
+    "bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/indexer_0.o",
+    "bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/indexer_1.o",
+    "bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/indexer_2.o",
+    "bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/indexer_3.o",
+    "-L",
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/lib",
+    "-Xlinker",
+    "-rpath",
+    "-Xlinker",
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/lib",
+    "-o",
+    "bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/libadaptive_fields_indexer.so"
+  ],
+  "link_wall_ms": 116.17365200072527,
+  "nvcc": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+  "nvcc_sha256": "df9974db233a0b7a6c6d59c0e5d74e011566104098bcb3553495ff1b95bdeaf6",
+  "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0",
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "repository_head": "c63f591d04ef74b7566937d161c80936dcc4cf05",
+  "required_symbols": [
+    "af_index_create_v1",
+    "af_index_prepare_ordered_postings_v1",
+    "af_index_capacity_v1",
+    "af_index_run_v1",
+    "af_index_destroy_v1",
+    "af_index_last_error_v1"
+  ],
+  "schema": "cellerator.adaptive_fields.indexer_bridge_build.v1",
+  "sources": {
+    "bench/compiler/experiments/adaptive_fields/gpu/indexer/indexer_bridge.cu": "a68701b8ef365e07fe770b23c763a03902560308965f1b355d54f26e385cf22c",
+    "src/compute/indexing/cuda_postings.cu": "d034ac6815e070b356d08b3f8852cf03d7ab39a91d008ab12008bbf30c92f99c",
+    "src/compute/indexing/reverse_postings.cc": "aae47682995442ede9fd9d91754c5006f07c5983b27f1d761e17da55d4645830",
+    "src/compute/support/logical_support.cc": "926504f78f7d0e6064777250f7b9fbb926a5317a25a2fc6bae3b3aec3a40eced"
+  }
+}

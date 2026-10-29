@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compiler/frontend/parser/parse_compiler_semantic_declarations_v1.hh>
-#include <Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh>
+#include <Cellerator/compiler/ir/semantic/relation_apply_and_transpose_operations_v1.hh>
 #include <string>
 #include <string_view>
 #include <vector>

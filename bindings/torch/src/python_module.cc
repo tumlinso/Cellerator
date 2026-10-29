@@ -1,5 +1,9 @@
 #include <Cellerator/bindings/torch/mechanism.hh>
 
+#ifdef CELLERATOR_HAS_SPARSE_SUPPORT
+#include "../../sparse_support/module.hh"
+#endif
+
 #include <torch/csrc/utils/pybind.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -19,4 +23,10 @@ PYBIND11_MODULE(_torch, m) {
     m.def("begin_update", &ce::begin_update, py::arg("handle"));
     m.def("publish_update", &ce::publish_update, py::arg("handle"));
     m.def("synchronize_coefficients", &ce::synchronize_coefficients, py::arg("handle"));
+#ifdef CELLERATOR_HAS_SPARSE_SUPPORT
+    bind_sparse_support(m);
+    m.attr("has_sparse_support") = true;
+#else
+    m.attr("has_sparse_support") = false;
+#endif
 }

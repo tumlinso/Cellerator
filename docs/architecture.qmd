@@ -2,408 +2,177 @@
 title: "Architecture"
 ---
 
-## Verdict
+## Product direction
 
-Cellerator should be designed as a compiler and runtime for biological sparse programs.
+Cellerator is a high-performance PyTorch extension for building cellular
+dynamical models. It adds reusable model operations and execution semantics
+designed around biological structure. Shared relationships, stable identities,
+conditional activity, and repeated work can guide both the mathematical
+contract and its realization on CPU or GPU hardware. A model that represents
+the system more directly can be easier to interpret and may expose work that
+does not need to happen. Performance remains a measured property of each
+operation and workload.
 
-It should not be centered on:
+PyTorch provides general tensors, ordinary numerical operations,
+`torch.nn.Module`, autograd, optimizers, and composition. Cellerator specializes
+the parts where cellular structure changes the operation or its useful
+execution. It is neither a Torch replacement nor a scientific model. Karyoplast,
+Cytoplast, Blastback, and future consumers own their scientific assumptions;
+Cellerator supplies reusable computational machinery.
 
-- a matrix class;
-- Blocked-ELL;
-- a file format;
-- SpMM;
-- Torch;
-- CellShard;
-- one GPU generation.
+The library is early and not near complete. The target architecture is a
+direction for organizing new work and moving complete units, not a claim that
+all target packages or APIs exist.
 
-Matrices and sparse formats remain important mathematical and physical views. They are not the universal semantic object.
+## Core concepts and ownership
 
-## Architectural layers
+Keep these concepts related but distinct:
 
-```{mermaid}
-flowchart TB
-    A[Biological domains and typed relations]
-    B[Immutable structures and mutable value planes]
-    C[CellPack / CP-BP semantic geometry compiler]
-    D[Projection catalog]
-    E[Core planner and autotuner]
-    F[Prepared operations and execution programs]
-    G[Native, vendor, sequence-fused, and distributed kernels]
-    H[Expression, regulatory, latent, and downstream state]
+1. **Identity and structure:** which modeled entities and relations exist, with
+   stable domain and order identity.
+2. **Activity and eligibility:** which entities or relations participate in a
+   particular evaluation.
+3. **Values and parameters:** state, learned values, and their generations.
+4. **Logical and physical layout:** how logical identities map to storage and
+   execution representations, including the inverse mapping needed for values
+   and gradients.
+5. **Prepared execution and runtime state:** reusable operation preparation,
+   allocations, streams, device bindings, and actual execution lifetime.
 
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> H
-```
+A value update should not imply a structure rebuild unless the operation
+contract requires it. Discovering eligible work is not the same as choosing a
+physical layout, and neither alone proves adaptive execution. Keep biological
+identity separate from an ordering selected for physical efficiency. Record
+conversion, allocation, reuse, invalidation, stream, and complete-cost
+boundaries per operation.
 
-### Biological ABI
+| Concern | Owner | Cellerator boundary |
+|---|---|---|
+| Tensors, standard layers, autograd, optimizers | PyTorch | Compose Torch directly; add adapters only for specialized operations. |
+| Reusable cellular relations, support, and operations | Cellerator | Define model-neutral contracts and native entry points. |
+| Scientific interpretation and model assumptions | Karyoplast, Cytoplast, Blastback, other consumers | Consumers choose biological meaning and validate their models. |
+| Sequence-grounded representations | Baseplane | Cellerator consumes sequence-specific results without taking ownership of sequence semantics. |
+| Persistence, sharding, transport, delivery | CellShard and owning systems | Integrate across explicit data boundaries. |
+| Classical single-cell analysis | AnnData ecosystem, Scanpy, RAPIDS-singlecell | Remains upstream; AnnData is a required dependency, but direct preparation is not implemented. |
 
-The shared ABI defines:
+## Proposed package shape
 
-- domains;
-- axis identity;
-- order identity;
-- geometry identity;
-- partition identity;
-- relation identity;
-- structure epoch;
-- value generation;
-- dense, bit-plane, event, segment, and sparse-relation operand views;
-- stream and device binding contracts.
-
-This ABI must remain small enough for Baseplane and adapters to consume without importing the full core runtime.
-
-### Structure and value layer
-
-A logical relation separates topology from numbers.
-
-```cpp
-struct relation_structure {
-    structure_id identity;
-    std::uint64_t structure_epoch;
-
-    domain_id source_domain;
-    domain_id destination_domain;
-
-    order_id source_order;
-    order_id destination_order;
-
-    projection_catalog projections;
-};
-
-struct value_plane {
-    const relation_structure* structure;
-
-    void* values;
-    dtype storage_type;
-    dtype logical_type;
-
-    quantization_descriptor quantization;
-    std::uint64_t value_generation;
-};
-```
-
-Examples:
-
-- fixed enhancer-to-gene topology with changing accessibility or regulatory weights;
-- fixed GRN topology shared across cells;
-- fixed sparse neural topology with changing learned values;
-- fixed sequence-derived motif relation reused across state evaluations;
-- one structure with fp16, bf16, int8, and fp32 value planes.
-
-### CellPack and CP-BP compiler
-
-The compiler observes biological regularity and produces semantic execution geometry.
-
-It owns:
-
-- sampling;
-- support extraction;
-- candidate generation;
-- exact or calibrated cost;
-- row and feature ordering;
-- module and partition construction;
-- geometry validation;
-- scheduling statistics;
-- execution-image construction.
-
-It does not own canonical storage, network transport, or final kernel selection.
-
-### Projection catalog
-
-A semantic structure may have several physical projections:
+This layout shows durable ownership destinations. The current-source route map
+is maintained separately in [developer routing](development/routing.md); it
+records current paths, owner, consumers, evidence, disposition, and maturity.
+Until a unit has moved with its build targets, consumers, tests, and evidence,
+its current path remains authoritative.
 
 ```text
-row-masked warp tiles
-feature-major masked tiles
-CTA macro-tiles
-dense MMA fragments
-CSR
-SELL-C-sigma
-BSR
-Blocked-ELL
-transpose or backward views
-quantized value layouts
+include/Cellerator/                 # public native contracts
+  structure/ support/ indexing/     # identity and reusable work preparation
+  layout/                           # logical-to-physical mapping contracts
+  ops/<family>/                     # open-ended native operation families
+src/                                 # native implementations, grouped by owner
+  common/ structure/ support/ indexing/ gating/ layout/
+  ops/<family>/                     # numeric, matrix, process, sparse, etc.
+bindings/                            # thin Python and optional Torch adapters
+python/cellerator/                   # installed Python package
+  ops/ nn/ structure/ layout/         # public API grows with real contracts
+  torch/ experimental/               # framework and research boundaries
+bench/ experiments/                  # candidates and bounded evidence
 ```
 
-A projection is selected for an operation, device, precision, and reuse regime.
-
-### Core planner and autotuner
-
-The core planner:
-
-1. validates semantics and identities;
-2. enumerates legal projections and kernels;
-3. rejects incompatible candidates;
-4. estimates complete cost;
-5. benchmarks a bounded shortlist where necessary;
-6. caches measured results;
-7. chooses graph-wide orders and conversions;
-8. produces reusable prepared operations or programs.
-
-### Prepared execution
-
-A prepared operation binds long-lived state:
-
-- structure;
-- projection;
-- kernel;
-- backend descriptors;
-- persistent preprocessing;
-- workspace requirements;
-- graph-capture metadata.
-
-A launch binding supplies short-lived state:
-
-- current value plane;
-- dense input;
-- output;
-- bias;
-- scalar coefficients;
-- stream;
-- transient workspace.
-
-Changing a pointer or stream must not require structure planning again.
-
-### Execution program
-
-Several prepared operations may be composed into a graph with:
-
-- execution-order propagation;
-- fused producer-consumer boundaries;
-- explicit order transformations;
-- communication steps;
-- graph replay;
-- persistent work queues.
-
-The graph optimizer chooses a globally useful order rather than the fastest isolated kernel when local selection would create costly permutations.
-
-## Canonical order
-
-Canonical order is important for:
-
-- persistence;
-- interoperability;
-- user-facing output;
-- exact identity;
-- debugging;
-- reference validation.
-
-It is not the normal internal order.
-
-An internal operation should return canonical order only when:
-
-- an external consumer requires it;
-- the next operation is demonstrably faster after canonicalization;
-- canonical order is itself the selected execution order;
-- correctness or communication requires it.
-
-Every other canonicalization is a candidate performance defect.
-
-## Semantic geometry
-
-Semantic geometry is relatively stable organization:
-
-- which entities are grouped;
-- how entities are ordered;
-- how groups nest;
-- which partitions own them;
-- which cross-group edges exist;
-- how canonical identity is recovered.
-
-It may be workload- and deployment-aware. It is not required to be device-neutral.
-
-Two byte layouts with the same order and groups are physical projections of one geometry. Two different feature permutations or GPU partitions are different geometries.
-
-## Physical projections
-
-A physical projection is a concrete ingestion contract for a kernel.
-
-It specifies:
-
-- memory sections;
-- index widths;
-- mask encoding;
-- value order;
-- alignment;
-- tile shape;
-- orientation;
-- padding;
-- local scheduling summaries;
-- forward or transpose direction;
-- precision and quantization.
-
-Physical projections are disposable and replaceable. Semantic identities survive their replacement.
-
-## Hierarchy
-
-Biological hierarchy should be represented as overlapping relations and nested execution partitions, not as duplicated value trees.
-
-Possible views include:
-
-```text
-cell
-  → regulatory program
-      → module
-          → regulatory element group
-              → gene
-                  → transcript
-```
-
-Real biology is not a strict tree. Modules, pathways, enhancers, and genes overlap. Several hierarchy indices may refer to one underlying value plane.
-
-Hierarchy remains in the runtime image only when it enables:
-
-- module skipping;
-- local reductions;
-- cache reuse;
-- shared-memory staging;
-- kernel specialization;
-- quantization;
-- prefetching;
-- communication partitioning;
-- level-of-detail execution.
-
-Otherwise it stays compiler or interpretation metadata.
-
-## Execution image
-
-The successful CPK1 principle should evolve into a sectioned execution image.
-
-```text
-ExecutionImageHeader
-Domain table
-Order and partition table
-Relation and structure table
-Projection directory
-Optional physical projection sections
-Forward and transpose value maps
-Hierarchy and boundary-edge indices
-Compact scheduling summaries
-```
-
-The image uses:
-
-- explicit versions;
-- relative offsets;
-- lengths and capacities;
-- stable identities;
-- alignment;
-- independent section validation.
-
-CellShard may wrap and transport the image as opaque bytes. Cellerator owns its semantics and rebinding.
-
-## Core ownership
-
-### Cellerator
-
-Owns:
-
-- biological execution semantics;
-- shared ABI;
-- structure and values;
-- geometry and projections;
-- planner and kernels;
-- numerical state;
-- graph and order optimization.
-
-### Baseplane
-
-Owns sequence-specialized representations and primitives within the Cellerator umbrella.
-
-### CellShard
-
-Owns persistence, delivery, staging, generation, and distributed data movement.
-
-### Python and Torch adapters
-
-Cellerator owns the Python package and native numerical APIs. The optional `cellerator.torch` adapter supplies Torch modules, autograd integration, optimizer guards, and framework checkpoint serialization. It consumes Cellerator-owned native handles and does not create a second parameter or topology owner. A native-only build does not discover or link Torch.
-
-## Architecture-specific execution
-
-Stable contracts must support several NVIDIA generations.
-
-Portable across generations:
-
-- biological identities;
-- relation semantics;
-- structure and value lifetime;
-- semantic geometry;
-- projection kinds;
-- planner keys;
-- execution-image sections.
-
-Generation-specific:
-
-- tile dimensions;
-- shared-memory staging;
-- asynchronous copies;
-- MMA shape;
-- warp specialization;
-- persistent CTA policy;
-- cache operators;
-- launch parameters.
-
-Runtime dispatch selects the implementation.
-
-## Design constraints
-
-A new core design is acceptable only when:
-
-- identities remain exact;
-- structure and values remain separable;
-- conversion cost is visible;
-- multiple projections remain possible;
-- the hot path is allocation-free;
-- graph capture is not accidentally prohibited;
-- training and transpose needs are considered;
-- Baseplane can participate without a foreign tensor boundary;
-- CellShard remains storage and transport only;
-- performance can be falsified by a stronger baseline.
-
-## Non-goals
-
-The architecture does not require:
-
-- one universal kernel;
-- one universal format;
-- one universal semantic geometry;
-- a large dynamic C++ object hierarchy;
-- a general compiler frontend before the core ABI works;
-- biological labels in hot kernels;
-- Tensor Cores in every path;
-- custom kernels when vendor libraries are faster.
-
-A somewhat untidy hybrid is preferable to a beautiful system that moves more bytes.
-
-## CE-PTR ownership convergence
-
-CE-PTR establishes explicit memory images, prepared workspaces, flat domain
-relations, and typed non-owning views as the path for new core execution. It
-does not declare every transitional compatibility surface removed. Frozen CPI1
-plans, deterministic CPS1/SCR1 sampling images, flat optimizer and graph
-relations, resident candidate execution, and explicit FMP1/CTP1 construction
-workspaces preserve axis, order, structure-epoch, generation, and persistence
-identity while separating build ownership from repeated execution.
-
-The remaining standard-library ceilings and non-lexical compatibility buffers
-are classified in `CE_PTR_INVENTORY.md`. They are not architectural defaults:
-new prepared paths may not copy them, and allocation-free claims apply only to
-the sealed/session paths whose tests measure that contract. CellShard continues
-to persist and transport opaque images; it does not acquire projection meaning.
-BioPrep retains preprocessing policy. Python and Torch expose Cellerator-owned behavior through the root `cellerator` package and optional `cellerator.torch` adapter.
-
-## Integrated CE-GEO realization
-
-The Volta realization preserves the architecture described above: CSG1 is a
-portable pointer-free semantic image, while CPE2 may carry a target-specific
-exact cover with separate MMA and residual ownership. The source-linked
-`sm_70` provider advertises only Volta WMMA FP16 inputs with FP32 accumulation.
-The central catalog assembles immutable provider and relation fragments, and
-the executable core consumes them without taking selection authority from
-planner v2. Transpose covers retain logical-edge identity; mutable values and
-their gradients remain separate from immutable structure.
+Current code has begun to align with this structure. Native implementation
+families include `src/common`, `src/structure`, `src/support`, `src/indexing`,
+`src/gating`, `src/layout`, and several `src/ops` families. Their public
+headers do not all mirror those directory names: identity is under
+`include/Cellerator/structure`, while support, indexing, gating, and current
+projection contracts remain under `include/Cellerator/compute`; operation
+families are under `include/Cellerator/ops`. Python has `ops.py`, `nn.py`,
+`torch/`, and `experimental/`. Existing compiler, runtime, tokenization, model,
+and compatibility paths remain where their consumers and build contracts
+place them. The routing document is the exhaustive path-level source of truth;
+this architecture page avoids duplicating its changing inventory.
+
+### Operation families
+
+Group reusable computation by mathematical and model contract rather than by
+one downstream application. A family should specify its inputs, outputs,
+derivatives, precision, preparation/reuse behavior, supported backend, and
+required identity/layout mappings. Keep the family space open. Do not add
+placeholder modules for imagined future operations.
+
+The `nn` namespace stays small and concrete: compositions that benefit from
+Torch parameter ownership, model composition, or a stable module interface.
+Use normal Torch layers wherever they already express the operation. Do not
+build a second general layer catalog, tensor runtime, or optimizer framework.
+
+### Sparse indexing, routing, and gating
+
+Sparse indexing, support, routing, and gating are promising early capabilities.
+They help identify and execute only eligible work when the model's structure
+justifies it. These are separate concerns: identity-preserving structure,
+support selection, mapping work to mechanisms, and conditional execution each
+need explicit contracts and invalidation rules. The existence of one fast
+candidate does not establish a universal dispatcher or prove complete-model
+speedup. Preserve dense, sparse, and alternate candidates when evidence does
+not select one globally.
+
+### Layout and execution semantics
+
+Layout describes how logical model values are represented physically. It
+must retain mappings that allow values, outputs, and derivatives to return to
+their logical identities. Execution semantics state what is prepared, what is
+reused, what values or structure invalidate it, and who owns device resources.
+Separate discovery from physical realization and actual runtime state. Include
+conversion, setup, allocation, and synchronization in a performance comparison
+when those costs are part of the workload.
+
+Execution fields are an experimental composition layer, not a prerequisite for
+using operations. The current field composes a narrow prepared Product2 Torch
+module on CPU and exposes explicit structure rebinding. It has no JIT or live
+recompilation. Broader compiler and IR work remains available for research but
+does not define the stable package surface.
+
+### Experimental and upstream boundaries
+
+The compiler, adaptive fields, tokenization, and candidate layout work remain
+separately labeled by their actual maturity. An experimental implementation
+can still be useful and routed; its location does not promote it to a stable
+API. Classical single-cell analysis in the repository is a testbed or consumer,
+not a replacement for Scanpy or RAPIDS-singlecell. AnnData is required by the
+Python package, while numerical entry points currently accept explicit arrays
+or tensors.
+
+## Numerical policy
+
+FP16 is Cellerator's general computation default when an operation's contract
+supports it. It is a first-class arithmetic type for both SIMT and Tensor Core
+implementations; Tensor Core use is an implementation choice, not a condition
+for using FP16. FP32 and FP64 remain available as explicit alternatives, along
+with other types already supported by a particular operation. FP32
+accumulation is appropriate when it improves the operation's error behavior,
+but each operation declares its own policy for storage, multiplication,
+accumulation, and output.
+
+This is the design policy; it does not claim that every current algorithm or
+build configuration implements FP16 arithmetic. The source CMake defaults
+currently select FP16 storage, FP32 computation, and FP32 accumulation for new,
+unspecified real work. Author-reported tests on biological data support FP16
+as a reasonable approximation so far, but exhaustive scientific validation
+and a general error bound have not been established. Preserve per-operation
+evidence and compare against the upstream/native computation or a suitable
+higher-precision reference. See [Performance and Validation](performance_validation.qmd)
+for the evidence and reporting contract.
+
+Use templates when an algorithm is independent of numeric type; this keeps
+one implementation and one semantic contract across types. Add type-specific
+specialization only where arithmetic semantics, supported instructions, or
+measured performance require it, and keep the declared precision contract
+explicit.
+
+## Migration rule
+
+Move complete implementation units, not directory names. Before changing a
+route, identify its callers, build targets, installed API, tests, evidence
+records, and archived history. Keep unique native entry points and compatibility
+consumers until each is deliberately redirected. The [routing document](development/routing.md)
+shows current versus target placement; it is an inventory, not a mutable task
+status report. Cleanup is complete only when every current artifact has an
+explicit disposition and every gap is visible.

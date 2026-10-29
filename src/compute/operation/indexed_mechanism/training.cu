@@ -1,4 +1,5 @@
 #include <Cellerator/compute/operation/indexed_mechanism/training.hh>
+#include "parameter_identity_validation.hh"
 #include <Cellerator/memory/session_memory.cuh>
 #include <cuda.h>
 #include <cuda_fp16.h>
@@ -245,10 +246,11 @@ mechanism_parameter_owner::mechanism_parameter_owner(indexed_axis axis, std::vec
     require(execution::validate_persistent_axis_identity(axis.identity) == execution::biological_validation_code::ok,
             "invalid coefficient axis");
     require(axis.extent && ids.size() == axis.extent && initial.size() == axis.extent && capacity, "invalid coefficient capacity");
-    for (std::size_t i = 0; i < ids.size(); ++i) {
-        require(v2::valid_stable_id(ids[i]) && std::isfinite(initial[i]), "invalid coefficient identity/value");
-        for (std::size_t j = 0; j < i; ++j) require(!v2::same_stable_id(ids[i],ids[j]), "duplicate coefficient identity");
-    }
+    const auto input_validation = detail::validate_parameter_inputs(ids, initial);
+    require(input_validation != detail::parameter_input_validation::invalid_identity_or_value,
+            "invalid coefficient identity/value");
+    require(input_validation != detail::parameter_input_validation::duplicate_identity,
+            "duplicate coefficient identity");
     impl_ = std::make_unique<implementation>(axis,std::move(ids),device);
     auto bytes = checked_product(initial.size(),sizeof(float));
     impl_->values = static_cast<float*>(impl_->storage.reserve(bytes + checked_product(initial.size(),sizeof(std::uint16_t))));

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compiler/ir/semantic/implement_gradient_and_publication_operations_v1.hh>
+#include <Cellerator/compiler/ir/semantic/gradient_and_publication_operations_v1.hh>
 #include <Cellerator/compiler/frontend/parser/parse_compiler_semantic_declarations_v1.hh>
 #include <string>
 #include <string_view>

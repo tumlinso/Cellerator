@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "git_head": "d8f92616ec81afc47dde261e377d644c6ec4b568",
+  "scope": "Additive ATen tokenization and separate reusable numerical operators; no broad tensor migration or scientific event/lifecycle/intervention decisions.",
+  "installed": {
+    "python": "/home/tumlinson/Software/miniconda3/bin/python",
+    "cellerator": "0.1.0",
+    "torch": "2.7.0+cu126",
+    "wheel": "build/tokenization-evidence/cellerator-0.1.0-cp313-cp313-linux_x86_64.whl",
+    "wheel_sha256": "994a3d785c16e7b43b7a31ece6b69fb757fe06713c95fc22929cd107e60ba496"
+  },
+  "build": {
+    "cuda_compiler": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "cuda_compiler_version": "12.9.86",
+    "cuda_host_compiler": "/usr/bin/g++-12",
+    "cuda_architecture": "sm_70",
+    "lineinfo": true,
+    "cpu_torch": "2.7.0+cpu",
+    "cpp_tests_passed": 3,
+    "installed_cpp_consumer": "passed with explicitly selected CPU libtorch",
+    "default_off_configuration": "configured; tokenization targets absent"
+  },
+  "tests": {
+    "python_total": 26,
+    "python_cpu": 20,
+    "python_cuda": 6,
+    "result": {
+      "job_id": "e66810a7-8e87-4cc7-a97a-a8e08ddb59e4",
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "exit_code": 0
+    }
+  },
+  "memcheck": {
+    "errors": 0,
+    "tests": 26,
+    "result": {
+      "job_id": "31dad078-7686-4011-bd84-196fdeb02447",
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "exit_code": 0
+    },
+    "tool": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer"
+  },
+  "profilers": {
+    "nsys": {
+      "result": {
+        "job_id": "d1775cc2-11ea-49df-b202-3c3677352007",
+        "state": "succeeded",
+        "cleanup_verified": true,
+        "exit_code": 0
+      },
+      "report": "build/tokenization-evidence/hpc-nsys.nsys-rep",
+      "sha256": "84a84445ce5e1eb699f5e5b0fe3704be272316d5d06afe28975cfefafd44aefa"
+    },
+    "ncu": {
+      "result": {
+        "job_id": "9d8b5f03-77a9-4732-b796-782b0d73306d",
+        "state": "succeeded",
+        "cleanup_verified": true,
+        "exit_code": 0
+      },
+      "report": "build/tokenization-evidence/hpc-ncu.ncu-rep",
+      "sha256": "58939a3683a7bd5733d9b47adee1e5fae027b4a3b99799b6ffbe4f50aa3d6afc",
+      "kernel": "append_copy_bytes",
+      "replay_passes": 18
+    },
+    "capture_wheel_sha256": "c75fff43dab846a20f41dfa7bea50d20384f97f86fb531c84b4e6c9bf40fdbb4",
+    "append_cuda_source_sha256": "433a2b73f7e5dd43fc61af494c0e5fd99d31e48ce335ac141e057b449789f578",
+    "coverage_note": "Profiler captures precede the host-side implicit-device normalization fix; the CUDA append kernel source is unchanged. Final-wheel CUDA tests, memcheck and benchmark were rerun."
+  },
+  "benchmark": {
+    "gpu_result": {
+      "job_id": "fbca9ee9-108d-4290-9736-5d43735bec23",
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "exit_code": 0
+    },
+    "cpu_append": {
+      "append_steady_state": {
+        "append_calls": 32,
+        "device": "cpu",
+        "events_per_append": 8,
+        "phase": "append_steady_state",
+        "process_rss_highwater_bytes": 483577856,
+        "repeats": 5,
+        "rows": 32,
+        "rss_scope": "process_highwater_coarse_not_phase_precise",
+        "seconds_per_call": 5.347468686522916e-06,
+        "seed": 1729,
+        "sequence_length": 256,
+        "total_seconds": 0.0001711189979687333
+      },
+      "aten_preallocated_append_steady_state": {
+        "append_calls": 32,
+        "device": "cpu",
+        "events_per_append": 8,
+        "phase": "aten_preallocated_append_steady_state",
+        "process_rss_highwater_bytes": 483577856,
+        "repeats": 5,
+        "rows": 32,
+        "rss_scope": "process_highwater_coarse_not_phase_precise",
+        "seconds_per_call": 1.59359999543085e-05,
+        "seed": 1729,
+        "sequence_length": 256,
+        "total_seconds": 0.000509951998537872
+      }
+    },
+    "gpu_append": {
+      "append_steady_state": {
+        "allocation_counter": 58991,
+        "allocation_counter_delta": 0,
+        "append_calls": 32,
+        "baseline_allocated_bytes": 668672,
+        "baseline_reserved_bytes": 52428800,
+        "device": "cuda",
+        "events_per_append": 8,
+        "peak_allocated_bytes": 668672,
+        "peak_reserved_bytes": 52428800,
+        "phase": "append_steady_state",
+        "repeats": 5,
+        "rows": 32,
+        "seconds_per_call": 3.376587505954376e-05,
+        "seed": 1729,
+        "sequence_length": 256,
+        "total_seconds": 0.0010805080019054003
+      },
+      "aten_preallocated_append_steady_state": {
+        "allocation_counter": 59149,
+        "allocation_counter_delta": 0,
+        "append_calls": 32,
+        "baseline_allocated_bytes": 2050560,
+        "baseline_reserved_bytes": 52428800,
+        "device": "cuda",
+        "events_per_append": 8,
+        "peak_allocated_bytes": 2050560,
+        "peak_reserved_bytes": 52428800,
+        "phase": "aten_preallocated_append_steady_state",
+        "repeats": 5,
+        "rows": 32,
+        "seconds_per_call": 5.056109375800588e-05,
+        "seed": 1729,
+        "sequence_length": 256,
+        "total_seconds": 0.0016179550002561882
+      }
+    },
+    "rank_limit": "Cellerator ranked wrappers are slower than the simpler ATen compositions in the measured fixtures; no universal speedup is claimed.",
+    "scope": "Synthetic 32 observations x 20,000 features, density 1% and 10%, k=256; append 32 sequences x 8 events x 32 calls, five timing samples; CPU four threads; GPU Tesla V100-SXM2-16GB."
+  },
+  "workflow": {
+    "project_control": "next_task and supported plan preview rejected native_operation_rejected; no authority database or projections edited.",
+    "scheduler": "User-authorized Cellerator execution grant loaded by safe restart; existing credentials and pre-existing unresolved records preserved. All qualification GPU jobs used UUID-selected exclusive admission and gpu.quiescence. Obsolete Cellerator requests terminal with verified cleanup."
+  },
+  "limits": [
+    "Not biological validation.",
+    "No implementations of BPE, WordPiece, quantization, codebooks or patch/trajectory tokenizers in this release.",
+    "Profiler replay timings are not throughput timings.",
+    "CPU memory fields are process RSS high-water, not precise per-phase allocation counts."
+  ],
+  "source_hashes": "source-hashes.json"
+}

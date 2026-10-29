@@ -1,0 +1,55 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python3",
+    "/home/tumlinson/Cellerator/bench/sparse_support/run_packed_training_kda.py",
+    "--task",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/torch_v13_complete_cost_20261028/task.json",
+    "--workspace",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/torch_v13_complete_cost_20261028/workspace",
+    "--output-dir",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/torch_v13_complete_cost_20261028/run_001"
+  ],
+  "environment": {
+    "CELLERATOR_SPARSE_PACKAGE_ROOT": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package",
+    "CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED": "1",
+    "MKL_NUM_THREADS": "2",
+    "OMP_NUM_THREADS": "2",
+    "PATH": "/home/tumlinson/Software/miniconda3/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/usr/local/bin:/usr/bin:/bin",
+    "PYTHONPATH": "/home/tumlinson/kda:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "idempotency_key": "cellerator-scaled-sparse-kda-v13-small-large-gpu2-20261028",
+  "interruption": {"cancellation_supported": true, "restart_safe": false},
+  "max_attempts": 1,
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "parameters": {
+        "consecutive_samples": 3,
+        "interval_seconds": 1,
+        "max_utilization_percent": 0,
+        "timeout_seconds": 60
+      },
+      "schema_version": 1
+    }
+  ],
+  "resources": [
+    {
+      "kind": "gpu",
+      "mode": "exclusive",
+      "quantities": {"memory_bytes": 8589934592},
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      }
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator.sparse_support.packed_training",
+    "scaled.fixture.v3",
+    "kda.full_cost",
+    "torch.v13-owner-validation"
+  ],
+  "timeout_seconds": 3600,
+  "working_directory": "/home/tumlinson/Cellerator"
+}

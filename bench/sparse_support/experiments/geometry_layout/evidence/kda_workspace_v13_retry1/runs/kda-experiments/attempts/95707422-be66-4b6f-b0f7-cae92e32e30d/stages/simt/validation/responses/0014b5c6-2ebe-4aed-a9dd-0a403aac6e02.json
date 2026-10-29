@@ -1,0 +1,91 @@
+{
+  "cases": [
+    {
+      "case_id": "small",
+      "checks": {
+        "derivative_only_probability_grad_nonzero": {
+          "packed": 142,
+          "simt": 142
+        },
+        "inference_output_allclose_atol_5e-3_rtol_5e-3": true,
+        "loss_close_abs_5e-4_rel_5e-3": true,
+        "max_parameter_difference_after_measured_training": 5.960464477539063e-08,
+        "remaining_read_tickets": 0,
+        "training_parameter_gradient_allclose_atol_6e-3_rtol_6e-3": true
+      },
+      "driver_output": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/kda_workspace_v13_retry1/runs/kda-experiments/attempts/95707422-be66-4b6f-b0f7-cae92e32e30d/stages/simt/validation/requests/0014b5c6-2ebe-4aed-a9dd-0a403aac6e02-small-simt-driver.json",
+      "frozen_input_digest": "a782c142f222d18478e6e08804964b59c94150039f25afd3aa54eb5663944816",
+      "geometry_image": {
+        "host_compile_ms": 2.5335540049127303,
+        "image_path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/small/canonical.cegeo",
+        "image_sha256": "0d017cefac289bafc553d1021370ee7d30d6fb45f4b246a53537945c18221418",
+        "mma_edge_count": 96,
+        "residual_edge_count": 0,
+        "residual_region_count": 0,
+        "tile_count": 16
+      },
+      "status": "pass",
+      "workload_sha256": "56b5cb58f2c1b090968ca293e02e93fdd063b3f6602167b4b6f9935beb3ff100",
+      "workset_digest": "04a5b9c31dfa670b125ef89d6afffced43dce83018eac7a75816b33ba978aa42"
+    },
+    {
+      "case_id": "large_ranked",
+      "checks": {
+        "derivative_only_probability_grad_nonzero": {
+          "packed": 519961,
+          "simt": 519961
+        },
+        "inference_output_allclose_atol_5e-3_rtol_5e-3": true,
+        "loss_close_abs_5e-4_rel_5e-3": true,
+        "max_parameter_difference_after_measured_training": 2.9802322387695312e-08,
+        "remaining_read_tickets": 0,
+        "training_parameter_gradient_allclose_atol_6e-3_rtol_6e-3": true
+      },
+      "driver_output": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/kda_workspace_v13_retry1/runs/kda-experiments/attempts/95707422-be66-4b6f-b0f7-cae92e32e30d/stages/simt/validation/requests/0014b5c6-2ebe-4aed-a9dd-0a403aac6e02-large_ranked-simt-driver.json",
+      "frozen_input_digest": "7f14478073cf80603f0d59e0bafc88d32afd58fa3aec9869e096463a76a0040e",
+      "geometry_image": {
+        "host_compile_ms": 271.52683500025887,
+        "image_path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/large-ranked/canonical.cegeo",
+        "image_sha256": "8faa0af1094522b47575a401b91f3522a879f0af5ccc34d6488812609ac2090d",
+        "mma_edge_count": 262144,
+        "residual_edge_count": 0,
+        "residual_region_count": 0,
+        "tile_count": 58688
+      },
+      "status": "pass",
+      "workload_sha256": "a84be7097f2cb83497a744bac4f962cfae773a62317b17e258184cdc84220fdb",
+      "workset_digest": "dec0dd365bf99d01bc3ce4295715f31e8d66d99b939a67455046ffa7d4bd4ebc"
+    },
+    {
+      "case_id": "event_local",
+      "checks": {
+        "derivative_only_probability_grad_nonzero": {
+          "packed": 8,
+          "simt": 8
+        },
+        "inference_output_allclose_atol_5e-3_rtol_5e-3": true,
+        "loss_close_abs_5e-4_rel_5e-3": true,
+        "max_parameter_difference_after_measured_training": 1.4901161193847656e-08,
+        "remaining_read_tickets": 0,
+        "training_parameter_gradient_allclose_atol_6e-3_rtol_6e-3": true
+      },
+      "driver_output": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/kda_workspace_v13_retry1/runs/kda-experiments/attempts/95707422-be66-4b6f-b0f7-cae92e32e30d/stages/simt/validation/requests/0014b5c6-2ebe-4aed-a9dd-0a403aac6e02-event_local-simt-driver.json",
+      "frozen_input_digest": "904b436d252c2a0a9b5bb6be793b58581f10f5bbed8a481d34f93fcb89ce1337",
+      "geometry_image": {
+        "host_compile_ms": 3.209353999409359,
+        "image_path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/event_local/canonical.cegeo",
+        "image_sha256": "69fae72f3bab5b05d1657f5646ac84485f369e00e1b6101d7242341ed9590746",
+        "mma_edge_count": 64,
+        "residual_edge_count": 0,
+        "residual_region_count": 0,
+        "tile_count": 1
+      },
+      "status": "pass",
+      "workload_sha256": "efc060531d3a669f8afebf438be4c92fe174362a04ceb68c5bb97f05fd8d0107",
+      "workset_digest": "c0054f9e749a26e670c4f4ebfbff501d1289ee4cb8ed0baf02898ec8a7c37618"
+    }
+  ],
+  "request_id": "0014b5c6-2ebe-4aed-a9dd-0a403aac6e02",
+  "schema_version": 1,
+  "status": "ok"
+}

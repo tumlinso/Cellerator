@@ -68,25 +68,27 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 add_test(NAME ce_ccp1_e04_006 COMMAND ce_ccp1_e04_006)
 
-add_executable(ce_ccp1_e04_007
-    implement_custom_candidate_registration_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/planning/implement_custom_candidate_registration.cc")
-target_include_directories(ce_ccp1_e04_007 PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(ce_ccp1_e04_007 PRIVATE cxx_std_17)
+add_executable(cellerator_custom_candidate_registration_test
+    custom_candidate_registration_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/custom_candidate_registration.cc")
+target_include_directories(cellerator_custom_candidate_registration_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_custom_candidate_registration_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_e04_007 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_custom_candidate_registration_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_e04_007 COMMAND ce_ccp1_e04_007)
+add_executable(ce_ccp1_e04_007 ALIAS cellerator_custom_candidate_registration_test)
+add_test(NAME ce_ccp1_e04_007 COMMAND cellerator_custom_candidate_registration_test)
 
-add_executable(ce_ccp1_e04_008
-    implement_candidate_inclusion_exclusion_and_forcing_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/planning/implement_candidate_inclusion_exclusion_and_forcing.cc")
-target_include_directories(ce_ccp1_e04_008 PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(ce_ccp1_e04_008 PRIVATE cxx_std_17)
+add_executable(cellerator_candidate_inclusion_exclusion_and_forcing_test
+    candidate_inclusion_exclusion_and_forcing_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/candidate_inclusion_exclusion_and_forcing.cc")
+target_include_directories(cellerator_candidate_inclusion_exclusion_and_forcing_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_candidate_inclusion_exclusion_and_forcing_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_e04_008 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_candidate_inclusion_exclusion_and_forcing_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_e04_008 COMMAND ce_ccp1_e04_008)
+add_executable(ce_ccp1_e04_008 ALIAS cellerator_candidate_inclusion_exclusion_and_forcing_test)
+add_test(NAME ce_ccp1_e04_008 COMMAND cellerator_candidate_inclusion_exclusion_and_forcing_test)
 
 add_executable(ce_ccp1_e04_009
     adapt_external_global_cost_exchange_test.cc
@@ -99,15 +101,16 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 add_test(NAME ce_ccp1_e04_009 COMMAND ce_ccp1_e04_009)
 
-add_executable(ce_ccp1_e04_010
-    implement_complete_cost_normalization_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/planning/implement_complete_cost_normalization.cc")
-target_include_directories(ce_ccp1_e04_010 PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(ce_ccp1_e04_010 PRIVATE cxx_std_17)
+add_executable(cellerator_complete_cost_normalization_test
+    complete_cost_normalization_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/complete_cost_normalization.cc")
+target_include_directories(cellerator_complete_cost_normalization_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_complete_cost_normalization_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_e04_010 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_complete_cost_normalization_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_e04_010 COMMAND ce_ccp1_e04_010)
+add_executable(ce_ccp1_e04_010 ALIAS cellerator_complete_cost_normalization_test)
+add_test(NAME ce_ccp1_e04_010 COMMAND cellerator_complete_cost_normalization_test)
 
 add_executable(ce_ccp1_e04_011
     adapt_transition_and_connected_operation_costs_test.cc
@@ -119,35 +122,38 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 add_test(NAME ce_ccp1_e04_011 COMMAND ce_ccp1_e04_011)
 
-add_executable(ce_ccp1_e04_012
-    implement_planner_portfolio_dispatch_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/planning/implement_planner_portfolio_dispatch.cc")
-target_include_directories(ce_ccp1_e04_012 PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(ce_ccp1_e04_012 PRIVATE cxx_std_17)
+add_executable(cellerator_planner_portfolio_dispatch_test
+    planner_portfolio_dispatch_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/planner_portfolio_dispatch.cc")
+target_include_directories(cellerator_planner_portfolio_dispatch_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_planner_portfolio_dispatch_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_e04_012 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_planner_portfolio_dispatch_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_e04_012 COMMAND ce_ccp1_e04_012)
+add_executable(ce_ccp1_e04_012 ALIAS cellerator_planner_portfolio_dispatch_test)
+add_test(NAME ce_ccp1_e04_012 COMMAND cellerator_planner_portfolio_dispatch_test)
 
-add_executable(ce_ccp1_e04_013
-    implement_profile_family_plan_variants_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/planning/implement_profile_family_plan_variants.cc")
-target_include_directories(ce_ccp1_e04_013 PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(ce_ccp1_e04_013 PRIVATE cxx_std_17)
+add_executable(cellerator_profile_family_plan_variants_test
+    profile_family_plan_variants_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/profile_family_plan_variants.cc")
+target_include_directories(cellerator_profile_family_plan_variants_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_profile_family_plan_variants_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_e04_013 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_profile_family_plan_variants_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_e04_013 COMMAND ce_ccp1_e04_013)
+add_executable(ce_ccp1_e04_013 ALIAS cellerator_profile_family_plan_variants_test)
+add_test(NAME ce_ccp1_e04_013 COMMAND cellerator_profile_family_plan_variants_test)
 
-add_executable(ce_ccp1_e04_014
-    implement_planning_cache_and_invalidation_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/planning/implement_planning_cache_and_invalidation.cc")
-target_include_directories(ce_ccp1_e04_014 PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(ce_ccp1_e04_014 PRIVATE cxx_std_17)
+add_executable(cellerator_planning_cache_and_invalidation_test
+    planning_cache_and_invalidation_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/planning_cache_and_invalidation.cc")
+target_include_directories(cellerator_planning_cache_and_invalidation_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_planning_cache_and_invalidation_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_e04_014 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_planning_cache_and_invalidation_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_e04_014 COMMAND ce_ccp1_e04_014)
+add_executable(ce_ccp1_e04_014 ALIAS cellerator_planning_cache_and_invalidation_test)
+add_test(NAME ce_ccp1_e04_014 COMMAND cellerator_planning_cache_and_invalidation_test)
 
 add_executable(ce_ccp1_e04_015
     expose_complete_planning_reports_test.cc
@@ -182,19 +188,20 @@ else()
         "CE-CCP1-I19 planning_ir_v1.hh is required; set CELLERATOR_COMPILER_INTERFACE_ROOT for a contract-split lane build")
 endif()
 
-add_executable(ce_ccp1_e04_017
-    deliver_source_to_selected_plan_vertical_slice_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/planning/deliver_source_to_selected_plan_vertical_slice.cc"
+add_executable(cellerator_source_to_plan_pipeline_test
+    source_to_plan_pipeline_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/source_to_plan_pipeline.cc"
     "${CELLERATOR_ROOT}/src/compiler/planning/adapt_decomposition_portfolios_to_planning_ir.cc"
-    "${CELLERATOR_ROOT}/src/compiler/planning/implement_complete_cost_normalization.cc"
-    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/deliver_source_to_semantic_ir_vertical_slice.cc")
-target_include_directories(ce_ccp1_e04_017 PRIVATE
+    "${CELLERATOR_ROOT}/src/compiler/planning/complete_cost_normalization.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/source_to_semantic_ir_vertical_slice.cc")
+target_include_directories(cellerator_source_to_plan_pipeline_test PRIVATE
     "${CELLERATOR_ROOT}/include" "${CELLERATOR_PLANNING_INTERFACE_INCLUDE}")
-target_compile_features(ce_ccp1_e04_017 PRIVATE cxx_std_17)
+target_compile_features(cellerator_source_to_plan_pipeline_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_e04_017 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_source_to_plan_pipeline_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_e04_017 COMMAND ce_ccp1_e04_017)
+add_executable(ce_ccp1_e04_017 ALIAS cellerator_source_to_plan_pipeline_test)
+add_test(NAME ce_ccp1_e04_017 COMMAND cellerator_source_to_plan_pipeline_test)
 
 set(CELLERATOR_DISCOVERY_INTERFACE_ROOT "" CACHE PATH
     "Root containing frozen discovery interface headers from a contract-split lane")
@@ -225,16 +232,17 @@ else()
         "CE-CCP1-I21/I22 composition interfaces are required; set CELLERATOR_COMPOSITION_INTERFACE_ROOT for a contract-split lane build")
 endif()
 
-add_executable(ce_ccp1_e04_018
-    freeze_the_public_planning_compiler_interface_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/planning/freeze_the_public_planning_compiler_interface.cc")
-target_include_directories(ce_ccp1_e04_018 PRIVATE
+add_executable(cellerator_public_planning_compiler_interface_test
+    public_planning_compiler_interface_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/public_planning_compiler_interface.cc")
+target_include_directories(cellerator_public_planning_compiler_interface_test PRIVATE
     "${CELLERATOR_ROOT}/include"
     "${CELLERATOR_PLANNING_INTERFACE_INCLUDE}"
     "${CELLERATOR_DISCOVERY_INTERFACE_INCLUDE}"
     "${CELLERATOR_COMPOSITION_INTERFACE_INCLUDE}")
-target_compile_features(ce_ccp1_e04_018 PRIVATE cxx_std_17)
+target_compile_features(cellerator_public_planning_compiler_interface_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_e04_018 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_public_planning_compiler_interface_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_e04_018 COMMAND ce_ccp1_e04_018)
+add_executable(ce_ccp1_e04_018 ALIAS cellerator_public_planning_compiler_interface_test)
+add_test(NAME ce_ccp1_e04_018 COMMAND cellerator_public_planning_compiler_interface_test)

@@ -1,0 +1,11 @@
+--- bench/sparse_support/experiments/csr_union_bitmap/csr_union_bitmap_bench.cu	2026-10-27 20:54:12.961520831 +0000
++++ bench/sparse_support/evidence/experiments/ordered_postings_fastpath_checkpoint/source/csr_union_bitmap_bench.cu	2026-10-27 21:15:06.368184937 +0000
+@@ -1339,7 +1339,7 @@
+     double query_upload_ms = 0.0;
+     upload_query_case(ctx, in, stream, &query_upload_ms);
+ 
+-    const bool measure_postings = in.q_per_cell <= 128;
++    const bool measure_postings = true;
+     if (measure_postings) {
+         run_postings(ctx, in, in.output_capacity, stream);
+         CUDA_CHECK(cudaStreamSynchronize(stream));

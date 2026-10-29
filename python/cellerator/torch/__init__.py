@@ -17,9 +17,31 @@ _MECHANISM_EXPORTS = {
     "SharedSupportRelation", "guarded_step", "load_checkpoint",
     "prepare_mechanism", "save_checkpoint",
 }
+_SPARSE_SUPPORT_EXPORTS = {
+    "GateValues", "KaryoplastEventSlice", "ParameterBlock", "PerCellWorkset",
+    "RankedGeneSlice", "SparseSupportModule", "SupportSpec", "learned_gates",
+    "prepare_sparse_slice", "sparse_parameter_layout",
+    "PreparedEntityMechanismRouting", "PreparedRoutingIdentity",
+}
 
 
 def __getattr__(name: str):
+    if name in _SPARSE_SUPPORT_EXPORTS:
+        if name in {"SupportSpec", "ParameterBlock", "PerCellWorkset", "GateValues",
+                    "sparse_parameter_layout"}:
+            from . import structure
+            return getattr(structure, name)
+        if name == "learned_gates":
+            from .gating import learned_gates
+            return learned_gates
+        if name == "SparseSupportModule":
+            from .execution import SparseSupportModule
+            return SparseSupportModule
+        if name in {"PreparedEntityMechanismRouting", "PreparedRoutingIdentity"}:
+            from . import prepared_routing
+            return getattr(prepared_routing, name)
+        from . import routing
+        return getattr(routing, name)
     if name not in _MECHANISM_EXPORTS:
         raise AttributeError(name)
     try:
@@ -39,6 +61,6 @@ def __getattr__(name: str):
     return values[name]
 
 
-__all__ = sorted(_MECHANISM_EXPORTS | {
+__all__ = sorted(_MECHANISM_EXPORTS | _SPARSE_SUPPORT_EXPORTS | {
     "Product2Module", "SharedSupportSpec", "prepare_product2", "product2", "product2_jvp",
 })

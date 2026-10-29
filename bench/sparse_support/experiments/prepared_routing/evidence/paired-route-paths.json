@@ -1,0 +1,4536 @@
+{
+  "seed": 14491,
+  "device_index": 0,
+  "torch_version": "2.7.0+cu126",
+  "initialization_scope": "PyTorch, extension, CUDA context, route rows, and correctness checks are initialized before timing; cold_first_query means a fresh route owner through its first complete query, not a process-cold measurement.",
+  "results": [
+    {
+      "case": "ranked_32x8",
+      "cells": 32,
+      "participants": 8,
+      "entity_count": 4096,
+      "mechanism_count": 16,
+      "reuse_horizons": [
+        1,
+        12,
+        16,
+        64
+      ],
+      "constructor_setup_ms_median": {
+        "incumbent_python": 0.0,
+        "torch_dense": 2.164249002817087,
+        "prepared_postings": 2.3709700035396963
+      },
+      "cold_first_query_ms_median": {
+        "incumbent_python": 0.0,
+        "torch_dense": 2.434245005133562,
+        "prepared_postings": 2.5649070012150332
+      },
+      "complete_route_query_ms_median": {
+        "incumbent_python": 0.2230990066891536,
+        "torch_dense": 0.34309500188101083,
+        "prepared_postings": 0.16836299619171768
+      },
+      "lifecycle": {
+        "1": {
+          "incumbent_python": {
+            "total_ms": 0.2230990066891536,
+            "per_step_ms": 0.2230990066891536
+          },
+          "torch_dense": {
+            "total_ms": 2.434245005133562,
+            "per_step_ms": 2.434245005133562
+          },
+          "prepared_postings": {
+            "total_ms": 2.5649070012150332,
+            "per_step_ms": 2.5649070012150332
+          }
+        },
+        "12": {
+          "incumbent_python": {
+            "total_ms": 2.6771880802698433,
+            "per_step_ms": 0.2230990066891536
+          },
+          "torch_dense": {
+            "total_ms": 6.230910061276518,
+            "per_step_ms": 0.5192425051063765
+          },
+          "prepared_postings": {
+            "total_ms": 4.429483116837218,
+            "per_step_ms": 0.3691235930697682
+          }
+        },
+        "16": {
+          "incumbent_python": {
+            "total_ms": 3.569584107026458,
+            "per_step_ms": 0.2230990066891536
+          },
+          "torch_dense": {
+            "total_ms": 7.605937018524855,
+            "per_step_ms": 0.47537106365780346
+          },
+          "prepared_postings": {
+            "total_ms": 5.0983630935661495,
+            "per_step_ms": 0.31864769334788434
+          }
+        },
+        "64": {
+          "incumbent_python": {
+            "total_ms": 14.278336428105831,
+            "per_step_ms": 0.2230990066891536
+          },
+          "torch_dense": {
+            "total_ms": 24.028962332522497,
+            "per_step_ms": 0.375452536445664
+          },
+          "prepared_postings": {
+            "total_ms": 13.141243427526206,
+            "per_step_ms": 0.20533192855509697
+          }
+        }
+      },
+      "paired_lifecycle_improvement": {
+        "1": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": -998.390691020388,
+              "bootstrap_95_percent_interval": [
+                -1011.1427818787648,
+                -979.3802430646779
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": 5.390517322604919,
+              "bootstrap_95_percent_interval": [
+                3.8226814394021433,
+                7.072964300222691
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": -1040.1013647700775,
+              "bootstrap_95_percent_interval": [
+                -1060.4270522474055,
+                -1020.3290106543499
+              ]
+            },
+            "torch_dense": {
+              "median_percent": -5.697650140404866,
+              "bootstrap_95_percent_interval": [
+                -7.611309504236817,
+                -3.974618440826679
+              ]
+            }
+          }
+        },
+        "12": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": -131.29736713686435,
+              "bootstrap_95_percent_interval": [
+                -133.6803948104748,
+                -124.48388760514233
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": -41.755635401123705,
+              "bootstrap_95_percent_interval": [
+                -42.80853730857539,
+                -39.190621216487
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": -62.71870008380627,
+              "bootstrap_95_percent_interval": [
+                -66.33836251926904,
+                -61.278026955563604
+              ]
+            },
+            "torch_dense": {
+              "median_percent": 29.45606732527313,
+              "bootstrap_95_percent_interval": [
+                28.156078961335158,
+                29.976175175071145
+              ]
+            }
+          }
+        },
+        "16": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": -111.06821930750075,
+              "bootstrap_95_percent_interval": [
+                -114.18456428637151,
+                -105.14081626829146
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": -49.492899261930354,
+              "bootstrap_95_percent_interval": [
+                -51.54686610125078,
+                -47.07394400567824
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": -40.511428017185004,
+              "bootstrap_95_percent_interval": [
+                -43.32069305364249,
+                -39.48141368968209
+              ]
+            },
+            "torch_dense": {
+              "median_percent": 33.107190713595415,
+              "bootstrap_95_percent_interval": [
+                32.00699098941741,
+                34.01381198263218
+              ]
+            }
+          }
+        },
+        "64": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": -65.63780336307227,
+              "bootstrap_95_percent_interval": [
+                -70.61293492957536,
+                -61.29447707085571
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": -83.86522586076234,
+              "bootstrap_95_percent_interval": [
+                -86.29511317267566,
+                -78.70481239739448
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": 9.206536341019724,
+              "bootstrap_95_percent_interval": [
+                7.792291143909748,
+                10.362870810539334
+              ]
+            },
+            "torch_dense": {
+              "median_percent": 45.61233668201724,
+              "bootstrap_95_percent_interval": [
+                44.04179794687051,
+                46.321726696442816
+              ]
+            }
+          }
+        }
+      },
+      "paired_repeat_records": [
+        {
+          "repeat_id": "ranked_32x8-000",
+          "input_sample_id": 0,
+          "input_sha256": "ac7831b5d718b4bde2dea8159795188845a47a2f8a9ebd26d4c8615eab7d5931",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.434245005133562,
+            "prepared_postings": 2.5649070012150332
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.1615530054550618,
+            "incumbent_python": 0.21752799511887133,
+            "torch_dense": 0.3407479962334037
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.21752799511887133,
+              "torch_dense": 2.434245005133562,
+              "prepared_postings": 2.5649070012150332
+            },
+            "12": {
+              "incumbent_python": 2.610335941426456,
+              "torch_dense": 6.182472963701002,
+              "prepared_postings": 4.341990061220713
+            },
+            "16": {
+              "incumbent_python": 3.4804479219019413,
+              "torch_dense": 7.545464948634617,
+              "prepared_postings": 4.98820208304096
+            },
+            "64": {
+              "incumbent_python": 13.921791687607765,
+              "torch_dense": 23.901368767837994,
+              "prepared_postings": 12.742746344883926
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-001",
+          "input_sample_id": 1,
+          "input_sha256": "386f83e87d28d34482061a1167f6674d27950b0291d26320cbdab0991cd0ee8e",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.401576013653539,
+            "prepared_postings": 2.56348199036438
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.1669490011408925,
+            "incumbent_python": 0.24363500415347517,
+            "torch_dense": 0.35537600342649966
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.24363500415347517,
+              "torch_dense": 2.401576013653539,
+              "prepared_postings": 2.56348199036438
+            },
+            "12": {
+              "incumbent_python": 2.923620049841702,
+              "torch_dense": 6.310712051345035,
+              "prepared_postings": 4.399921002914198
+            },
+            "16": {
+              "incumbent_python": 3.8981600664556026,
+              "torch_dense": 7.732216065051034,
+              "prepared_postings": 5.067717007477768
+            },
+            "64": {
+              "incumbent_python": 15.59264026582241,
+              "torch_dense": 24.790264229523018,
+              "prepared_postings": 13.081269062240608
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-002",
+          "input_sample_id": 2,
+          "input_sha256": "b247ee7cdf4609085993765559d561a853e32f891ae8e1d528b8f7519eb8efe5",
+          "measurement_order": [
+            "warm:torch_dense",
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4726609990466386,
+            "prepared_postings": 2.5493419962003827
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.36995799746364355,
+            "prepared_postings": 0.16666400188114494,
+            "incumbent_python": 0.2230990066891536
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2230990066891536,
+              "torch_dense": 2.4726609990466386,
+              "prepared_postings": 2.5493419962003827
+            },
+            "12": {
+              "incumbent_python": 2.6771880802698433,
+              "torch_dense": 6.542198971146718,
+              "prepared_postings": 4.382646016892977
+            },
+            "16": {
+              "incumbent_python": 3.569584107026458,
+              "torch_dense": 8.022030961001292,
+              "prepared_postings": 5.049302024417557
+            },
+            "64": {
+              "incumbent_python": 14.278336428105831,
+              "torch_dense": 25.780014839256182,
+              "prepared_postings": 13.049174114712514
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-003",
+          "input_sample_id": 3,
+          "input_sha256": "ba87ddcd45ca5e8cac84576b17ff698bb32486945b891ed18ae10bac0ca9b1d4",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4461680004606023,
+            "prepared_postings": 2.547942000092007
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.1685049937805161,
+            "incumbent_python": 0.22742801229469478,
+            "torch_dense": 0.3345729928696528
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.22742801229469478,
+              "torch_dense": 2.4461680004606023,
+              "prepared_postings": 2.547942000092007
+            },
+            "12": {
+              "incumbent_python": 2.7291361475363374,
+              "torch_dense": 6.126470922026783,
+              "prepared_postings": 4.401496931677684
+            },
+            "16": {
+              "incumbent_python": 3.6388481967151165,
+              "torch_dense": 7.4647628935053945,
+              "prepared_postings": 5.0755169067997485
+            },
+            "64": {
+              "incumbent_python": 14.555392786860466,
+              "torch_dense": 23.52426655124873,
+              "prepared_postings": 13.16375660826452
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-004",
+          "input_sample_id": 4,
+          "input_sha256": "c5cd7a42d128ff40573aa78a7e288db7e6d2318e6da7c4cfcb18c988f595ebcb",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.5747109903022647,
+            "torch_dense": 2.476287991157733
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.22132799495011568,
+            "prepared_postings": 0.17189999925903976,
+            "torch_dense": 0.35190099151805043
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.22132799495011568,
+              "torch_dense": 2.476287991157733,
+              "prepared_postings": 2.5747109903022647
+            },
+            "12": {
+              "incumbent_python": 2.655935939401388,
+              "torch_dense": 6.347198897856288,
+              "prepared_postings": 4.465610982151702
+            },
+            "16": {
+              "incumbent_python": 3.541247919201851,
+              "torch_dense": 7.754802863928489,
+              "prepared_postings": 5.153210979187861
+            },
+            "64": {
+              "incumbent_python": 14.164991676807404,
+              "torch_dense": 24.64605045679491,
+              "prepared_postings": 13.40441094362177
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-005",
+          "input_sample_id": 5,
+          "input_sha256": "348b2af9cf92a1edaa6a82af65625c51b2d5e1a2183c11decd7b702195b9c445",
+          "measurement_order": [
+            "warm:torch_dense",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.425327998935245,
+            "prepared_postings": 2.533328006393276
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.34596200566738844,
+            "incumbent_python": 0.22220199753064662,
+            "prepared_postings": 0.16792799578979611
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.22220199753064662,
+              "torch_dense": 2.425327998935245,
+              "prepared_postings": 2.533328006393276
+            },
+            "12": {
+              "incumbent_python": 2.6664239703677595,
+              "torch_dense": 6.230910061276518,
+              "prepared_postings": 4.380535960081033
+            },
+            "16": {
+              "incumbent_python": 3.555231960490346,
+              "torch_dense": 7.614758083946072,
+              "prepared_postings": 5.052247943240218
+            },
+            "64": {
+              "incumbent_python": 14.220927841961384,
+              "torch_dense": 24.220934355980717,
+              "prepared_postings": 13.112791741150431
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-006",
+          "input_sample_id": 6,
+          "input_sha256": "39859aa18db43108b76babe7fa14964dc88bce54c6dbaace8dcd326f4e9ba490",
+          "measurement_order": [
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.5864119961624965,
+            "torch_dense": 2.403475999017246
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.32743500196374953,
+            "incumbent_python": 0.2183820033678785,
+            "prepared_postings": 0.1740750012686476
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2183820033678785,
+              "torch_dense": 2.403475999017246,
+              "prepared_postings": 2.5864119961624965
+            },
+            "12": {
+              "incumbent_python": 2.620584040414542,
+              "torch_dense": 6.005261020618491,
+              "prepared_postings": 4.50123701011762
+            },
+            "16": {
+              "incumbent_python": 3.494112053886056,
+              "torch_dense": 7.315001028473489,
+              "prepared_postings": 5.197537015192211
+            },
+            "64": {
+              "incumbent_python": 13.976448215544224,
+              "torch_dense": 23.031881122733466,
+              "prepared_postings": 13.553137076087296
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-007",
+          "input_sample_id": 7,
+          "input_sha256": "14644c465a025828fa72498e9988256f665939786d7978d587d4df53d8fa6440",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.524983006878756,
+            "torch_dense": 2.497101988410577
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.22370999795384705,
+            "torch_dense": 0.34058900200761855,
+            "prepared_postings": 0.16625899297650903
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.22370999795384705,
+              "torch_dense": 2.497101988410577,
+              "prepared_postings": 2.524983006878756
+            },
+            "12": {
+              "incumbent_python": 2.6845199754461646,
+              "torch_dense": 6.243581010494381,
+              "prepared_postings": 4.353831929620355
+            },
+            "16": {
+              "incumbent_python": 3.579359967261553,
+              "torch_dense": 7.605937018524855,
+              "prepared_postings": 5.0188679015263915
+            },
+            "64": {
+              "incumbent_python": 14.317439869046211,
+              "torch_dense": 23.954209114890546,
+              "prepared_postings": 12.999299564398825
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-008",
+          "input_sample_id": 8,
+          "input_sha256": "35c027acac763c525ee386bad4bd292e174ff24a3f4b756e62bad40b83702717",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "warm:prepared_postings",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.3752949928166345,
+            "prepared_postings": 2.510630991309881
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.22006100334692746,
+            "prepared_postings": 0.1604569988558069,
+            "torch_dense": 0.34370900539215654
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.22006100334692746,
+              "torch_dense": 2.3752949928166345,
+              "prepared_postings": 2.510630991309881
+            },
+            "12": {
+              "incumbent_python": 2.6407320401631296,
+              "torch_dense": 6.156094052130356,
+              "prepared_postings": 4.275657978723757
+            },
+            "16": {
+              "incumbent_python": 3.5209760535508394,
+              "torch_dense": 7.530930073698983,
+              "prepared_postings": 4.9174859741469845
+            },
+            "64": {
+              "incumbent_python": 14.083904214203358,
+              "torch_dense": 24.028962332522497,
+              "prepared_postings": 12.619421919225715
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-009",
+          "input_sample_id": 9,
+          "input_sha256": "e668393a694de75180ae5f7209165ccff2fc10096b4dfdc885961f6363f31b1f",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.440052994643338,
+            "prepared_postings": 2.6230640069115907
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.1668519980739802,
+            "torch_dense": 0.3285790007794276,
+            "incumbent_python": 0.22604299010708928
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.22604299010708928,
+              "torch_dense": 2.440052994643338,
+              "prepared_postings": 2.6230640069115907
+            },
+            "12": {
+              "incumbent_python": 2.7125158812850714,
+              "torch_dense": 6.0544220032170415,
+              "prepared_postings": 4.458435985725373
+            },
+            "16": {
+              "incumbent_python": 3.6166878417134285,
+              "torch_dense": 7.368738006334752,
+              "prepared_postings": 5.125843978021294
+            },
+            "64": {
+              "incumbent_python": 14.466751366853714,
+              "torch_dense": 23.140530043747276,
+              "prepared_postings": 13.134739885572344
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-010",
+          "input_sample_id": 10,
+          "input_sha256": "f58391d95039dbcb1c0fc0d61adb8c4d817d762419f1e08095fe4783fec78f80",
+          "measurement_order": [
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.413887996226549,
+            "prepared_postings": 2.641279003000818
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3654909960459918,
+            "prepared_postings": 0.16838900046423078,
+            "incumbent_python": 0.24966899945866317
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.24966899945866317,
+              "torch_dense": 2.413887996226549,
+              "prepared_postings": 2.641279003000818
+            },
+            "12": {
+              "incumbent_python": 2.996027993503958,
+              "torch_dense": 6.434288952732459,
+              "prepared_postings": 4.493558008107357
+            },
+            "16": {
+              "incumbent_python": 3.9947039913386106,
+              "torch_dense": 7.896252936916426,
+              "prepared_postings": 5.16711400996428
+            },
+            "64": {
+              "incumbent_python": 15.978815965354443,
+              "torch_dense": 25.43982074712403,
+              "prepared_postings": 13.249786032247357
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-011",
+          "input_sample_id": 11,
+          "input_sha256": "3e720786a2ae390d8c933d373e799734a690a8b56758db1f7836d6a891983027",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.6713639963418245,
+            "torch_dense": 2.4559900048188865
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.15982901095412672,
+            "incumbent_python": 0.21434799418784678,
+            "torch_dense": 0.3517900040606037
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.21434799418784678,
+              "torch_dense": 2.4559900048188865,
+              "prepared_postings": 2.6713639963418245
+            },
+            "12": {
+              "incumbent_python": 2.5721759302541614,
+              "torch_dense": 6.325680049485527,
+              "prepared_postings": 4.429483116837218
+            },
+            "16": {
+              "incumbent_python": 3.4295679070055485,
+              "torch_dense": 7.732840065727942,
+              "prepared_postings": 5.068799160653725
+            },
+            "64": {
+              "incumbent_python": 13.718271628022194,
+              "torch_dense": 24.61876026063692,
+              "prepared_postings": 12.740591686451808
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-012",
+          "input_sample_id": 12,
+          "input_sha256": "5f901defda14803b1ca6c74b57ca9db99cccb68cf987cef3eb67b5968444e3a4",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 3.0069310014368966,
+            "torch_dense": 2.471601008437574
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.32524099515285343,
+            "incumbent_python": 0.27427199529483914,
+            "prepared_postings": 0.17162699077744037
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.27427199529483914,
+              "torch_dense": 2.471601008437574,
+              "prepared_postings": 3.0069310014368966
+            },
+            "12": {
+              "incumbent_python": 3.2912639435380697,
+              "torch_dense": 6.049251955118962,
+              "prepared_postings": 4.894827899988741
+            },
+            "16": {
+              "incumbent_python": 4.388351924717426,
+              "torch_dense": 7.350215935730375,
+              "prepared_postings": 5.581335863098502
+            },
+            "64": {
+              "incumbent_python": 17.553407698869705,
+              "torch_dense": 22.96178370306734,
+              "prepared_postings": 13.81943142041564
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-013",
+          "input_sample_id": 13,
+          "input_sha256": "67ba33ed3a837ccfd65b2c416f65bbbbe7f5efd56aef25577a21a13a7b09d56a",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.52498198824469,
+            "torch_dense": 2.433166009723209
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.16368100477848202,
+            "incumbent_python": 0.2215209970017895,
+            "torch_dense": 0.3341249976074323
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2215209970017895,
+              "torch_dense": 2.433166009723209,
+              "prepared_postings": 2.52498198824469
+            },
+            "12": {
+              "incumbent_python": 2.658251964021474,
+              "torch_dense": 6.108540983404964,
+              "prepared_postings": 4.325473040807992
+            },
+            "16": {
+              "incumbent_python": 3.544335952028632,
+              "torch_dense": 7.445040973834693,
+              "prepared_postings": 4.98019705992192
+            },
+            "64": {
+              "incumbent_python": 14.177343808114529,
+              "torch_dense": 23.483040858991444,
+              "prepared_postings": 12.836885289289057
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-014",
+          "input_sample_id": 14,
+          "input_sha256": "77716c4a76c0cf98f09cc3bd5a56f17efb631ee5cc0b62ab6adf7e5d3558a643",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "cold:prepared_postings",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.3341580090345815,
+            "prepared_postings": 2.6086690049851313
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.24592400586698204,
+            "prepared_postings": 0.16836299619171768,
+            "torch_dense": 0.33812900073826313
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.24592400586698204,
+              "torch_dense": 2.3341580090345815,
+              "prepared_postings": 2.6086690049851313
+            },
+            "12": {
+              "incumbent_python": 2.9510880704037845,
+              "torch_dense": 6.053577017155476,
+              "prepared_postings": 4.460661963094026
+            },
+            "16": {
+              "incumbent_python": 3.9347840938717127,
+              "torch_dense": 7.406093020108528,
+              "prepared_postings": 5.134113947860897
+            },
+            "64": {
+              "incumbent_python": 15.73913637548685,
+              "torch_dense": 23.63628505554516,
+              "prepared_postings": 13.215537765063345
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-015",
+          "input_sample_id": 15,
+          "input_sha256": "05bb72367e8926d4586708ce9f100fda66e44416c6a2e467d1e9c8ac37e9f334",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.5188709987560287,
+            "torch_dense": 2.55090300925076
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.34309500188101083,
+            "incumbent_python": 0.23410101130139083,
+            "prepared_postings": 0.17663600738160312
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.23410101130139083,
+              "torch_dense": 2.55090300925076,
+              "prepared_postings": 2.5188709987560287
+            },
+            "12": {
+              "incumbent_python": 2.80921213561669,
+              "torch_dense": 6.324948029941879,
+              "prepared_postings": 4.461867079953663
+            },
+            "16": {
+              "incumbent_python": 3.7456161808222532,
+              "torch_dense": 7.6973280374659225,
+              "prepared_postings": 5.1684111094800755
+            },
+            "64": {
+              "incumbent_python": 14.982464723289013,
+              "torch_dense": 24.165888127754442,
+              "prepared_postings": 13.646939463797025
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-016",
+          "input_sample_id": 16,
+          "input_sha256": "5c6ed041b068621673252bc99b404135743ff8027e674ea94e726aec74e7b9f9",
+          "measurement_order": [
+            "warm:torch_dense",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "cold:prepared_postings",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4242290091933683,
+            "prepared_postings": 2.6378439943073317
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.354953997884877,
+            "incumbent_python": 0.2195069973822683,
+            "prepared_postings": 0.17048900190275162
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2195069973822683,
+              "torch_dense": 2.4242290091933683,
+              "prepared_postings": 2.6378439943073317
+            },
+            "12": {
+              "incumbent_python": 2.6340839685872197,
+              "torch_dense": 6.3287229859270155,
+              "prepared_postings": 4.5132230152376
+            },
+            "16": {
+              "incumbent_python": 3.512111958116293,
+              "torch_dense": 7.748538977466524,
+              "prepared_postings": 5.195179022848606
+            },
+            "64": {
+              "incumbent_python": 14.048447832465172,
+              "torch_dense": 24.78633087594062,
+              "prepared_postings": 13.378651114180684
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-017",
+          "input_sample_id": 17,
+          "input_sha256": "755e0606d345241072beca89cdccdb722b88ca92f8a3035c84a8dce783634a96",
+          "measurement_order": [
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4135019921232015,
+            "prepared_postings": 2.584962989203632
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3286620049038902,
+            "incumbent_python": 0.21720898803323507,
+            "prepared_postings": 0.16756000695750117
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.21720898803323507,
+              "torch_dense": 2.4135019921232015,
+              "prepared_postings": 2.584962989203632
+            },
+            "12": {
+              "incumbent_python": 2.606507856398821,
+              "torch_dense": 6.028784046065994,
+              "prepared_postings": 4.428123065736145
+            },
+            "16": {
+              "incumbent_python": 3.475343808531761,
+              "torch_dense": 7.343432065681554,
+              "prepared_postings": 5.0983630935661495
+            },
+            "64": {
+              "incumbent_python": 13.901375234127045,
+              "torch_dense": 23.119208301068284,
+              "prepared_postings": 13.141243427526206
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-018",
+          "input_sample_id": 18,
+          "input_sha256": "34a0c766244289e80a294e0041777b7498654e69eb868586c289a994df80bfac",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.504516000044532,
+            "torch_dense": 2.605146000860259
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3468729992164299,
+            "incumbent_python": 0.23121200501918793,
+            "prepared_postings": 0.16863799828570336
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.23121200501918793,
+              "torch_dense": 2.605146000860259,
+              "prepared_postings": 2.504516000044532
+            },
+            "12": {
+              "incumbent_python": 2.774544060230255,
+              "torch_dense": 6.420748992240988,
+              "prepared_postings": 4.359533981187269
+            },
+            "16": {
+              "incumbent_python": 3.699392080307007,
+              "torch_dense": 7.808240989106707,
+              "prepared_postings": 5.0340859743300825
+            },
+            "64": {
+              "incumbent_python": 14.797568321228027,
+              "torch_dense": 24.458144951495342,
+              "prepared_postings": 13.128709892043844
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-019",
+          "input_sample_id": 19,
+          "input_sha256": "8a9584ce03efcefbc2ec5b2bee90e7580906cb30b58808d13b4c8cd35f7522ad",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.554994003730826,
+            "torch_dense": 2.4677390028955415
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3566759987734258,
+            "incumbent_python": 0.2202100004069507,
+            "prepared_postings": 0.17895401106216013
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2202100004069507,
+              "torch_dense": 2.4677390028955415,
+              "prepared_postings": 2.554994003730826
+            },
+            "12": {
+              "incumbent_python": 2.6425200048834085,
+              "torch_dense": 6.3911749894032255,
+              "prepared_postings": 4.523488125414588
+            },
+            "16": {
+              "incumbent_python": 3.5233600065112114,
+              "torch_dense": 7.817878984496929,
+              "prepared_postings": 5.239304169663228
+            },
+            "64": {
+              "incumbent_python": 14.093440026044846,
+              "torch_dense": 24.938326925621368,
+              "prepared_postings": 13.829096700646915
+            }
+          }
+        },
+        {
+          "repeat_id": "ranked_32x8-020",
+          "input_sample_id": 20,
+          "input_sha256": "8f4acf10d43c27aabf447381edf3f3dc4227d9db4ebe18cfcab5f29f3b2233e1",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.355270989937708,
+            "prepared_postings": 2.6244629989378154
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.23072400654200464,
+            "prepared_postings": 0.16843900084495544,
+            "torch_dense": 0.33161799365188926
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.23072400654200464,
+              "torch_dense": 2.355270989937708,
+              "prepared_postings": 2.6244629989378154
+            },
+            "12": {
+              "incumbent_python": 2.7686880785040557,
+              "torch_dense": 6.00306892010849,
+              "prepared_postings": 4.477292008232325
+            },
+            "16": {
+              "incumbent_python": 3.6915841046720743,
+              "torch_dense": 7.329540894716047,
+              "prepared_postings": 5.151048011612147
+            },
+            "64": {
+              "incumbent_python": 14.766336418688297,
+              "torch_dense": 23.24720459000673,
+              "prepared_postings": 13.236120052170008
+            }
+          }
+        }
+      ],
+      "samples_per_query": 21,
+      "warmups_per_query": 5,
+      "timing_note": "Each complete query is wall-clock timed through CUDA completion. Prepared query includes term adaptation, reverse-posting kernels, the explicit status/count synchronization, and exact-ID emission. Lifecycle total is fresh-owner construction plus its first complete query, then horizon-1 warm complete queries. The first prepared query includes workspace reservation; the first dense query includes dense matrix construction and upload. Incumbent lifecycle is horizon complete queries. PyTorch, the extension, CUDA context, route rows, and correctness checks are already initialized; cold is owner-cold, not process-cold. No latent transition compute is included."
+    },
+    {
+      "case": "event_32x12",
+      "cells": 32,
+      "participants": 12,
+      "entity_count": 4096,
+      "mechanism_count": 16,
+      "reuse_horizons": [
+        1,
+        12,
+        16,
+        64
+      ],
+      "constructor_setup_ms_median": {
+        "incumbent_python": 0.0,
+        "torch_dense": 2.0404690003488213,
+        "prepared_postings": 2.3427510022884235
+      },
+      "cold_first_query_ms_median": {
+        "incumbent_python": 0.0,
+        "torch_dense": 2.4258409976027906,
+        "prepared_postings": 2.5975289900088683
+      },
+      "complete_route_query_ms_median": {
+        "incumbent_python": 0.2543849986977875,
+        "torch_dense": 0.34195900661870837,
+        "prepared_postings": 0.22263301070779562
+      },
+      "lifecycle": {
+        "1": {
+          "incumbent_python": {
+            "total_ms": 0.2543849986977875,
+            "per_step_ms": 0.2543849986977875
+          },
+          "torch_dense": {
+            "total_ms": 2.4258409976027906,
+            "per_step_ms": 2.4258409976027906
+          },
+          "prepared_postings": {
+            "total_ms": 2.5975289900088683,
+            "per_step_ms": 2.5975289900088683
+          }
+        },
+        "12": {
+          "incumbent_python": {
+            "total_ms": 3.0526199843734503,
+            "per_step_ms": 0.2543849986977875
+          },
+          "torch_dense": {
+            "total_ms": 6.227122037671506,
+            "per_step_ms": 0.5189268364726255
+          },
+          "prepared_postings": {
+            "total_ms": 5.091940125566907,
+            "per_step_ms": 0.42432834379724227
+          }
+        },
+        "16": {
+          "incumbent_python": {
+            "total_ms": 4.0701599791646,
+            "per_step_ms": 0.2543849986977875
+          },
+          "torch_dense": {
+            "total_ms": 7.612296802108176,
+            "per_step_ms": 0.475768550131761
+          },
+          "prepared_postings": {
+            "total_ms": 5.98247216839809,
+            "per_step_ms": 0.3739045105248806
+          }
+        },
+        "64": {
+          "incumbent_python": {
+            "total_ms": 16.2806399166584,
+            "per_step_ms": 0.2543849986977875
+          },
+          "torch_dense": {
+            "total_ms": 23.980554164154455,
+            "per_step_ms": 0.37469615881491336
+          },
+          "prepared_postings": {
+            "total_ms": 16.719145423849113,
+            "per_step_ms": 0.2612366472476424
+          }
+        }
+      },
+      "paired_lifecycle_improvement": {
+        "1": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": -835.9160890415861,
+              "bootstrap_95_percent_interval": [
+                -859.9390599903511,
+                -814.5592612535855
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": 7.504924201314471,
+              "bootstrap_95_percent_interval": [
+                6.0800474146244845,
+                8.488014915063363
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": -917.8061355665307,
+              "bootstrap_95_percent_interval": [
+                -924.9048005685237,
+                -887.0636814006966
+              ]
+            },
+            "torch_dense": {
+              "median_percent": -8.113863507338328,
+              "bootstrap_95_percent_interval": [
+                -9.275304111461718,
+                -6.4736483007671595
+              ]
+            }
+          }
+        },
+        "12": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": -100.4533137640556,
+              "bootstrap_95_percent_interval": [
+                -105.03124813370978,
+                -92.77892646653815
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": -22.843287309533782,
+              "bootstrap_95_percent_interval": [
+                -23.780374976829755,
+                -20.944713724667142
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": -64.65539350459909,
+              "bootstrap_95_percent_interval": [
+                -66.20542441047431,
+                -59.74137160594888
+              ]
+            },
+            "torch_dense": {
+              "median_percent": 18.595470546123146,
+              "bootstrap_95_percent_interval": [
+                17.317593369436686,
+                19.211749020215173
+              ]
+            }
+          }
+        },
+        "16": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": -83.85311125184985,
+              "bootstrap_95_percent_interval": [
+                -87.56659365829218,
+                -76.3387822889851
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": -27.368931947764537,
+              "bootstrap_95_percent_interval": [
+                -28.83724715043856,
+                -25.68395698109206
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": -45.11460366108731,
+              "bootstrap_95_percent_interval": [
+                -46.785509223851314,
+                -40.714137264489345
+              ]
+            },
+            "torch_dense": {
+              "median_percent": 21.487918230317618,
+              "bootstrap_95_percent_interval": [
+                20.435350380443516,
+                22.382694281542946
+              ]
+            }
+          }
+        },
+        "64": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": -44.42115124834445,
+              "bootstrap_95_percent_interval": [
+                -48.23343400927303,
+                -39.34845788949073
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": -43.78933689624697,
+              "bootstrap_95_percent_interval": [
+                -46.367027576638186,
+                -42.912578534203064
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": -0.8676949941716895,
+              "bootstrap_95_percent_interval": [
+                -2.467382841186189,
+                2.0971400037945958
+              ]
+            },
+            "torch_dense": {
+              "median_percent": 30.453813781646215,
+              "bootstrap_95_percent_interval": [
+                30.027152945066245,
+                31.678601625192044
+              ]
+            }
+          }
+        }
+      },
+      "paired_repeat_records": [
+        {
+          "repeat_id": "event_32x12-000",
+          "input_sample_id": 0,
+          "input_sha256": "e4f5e375e56d31e523a7b188ac73aa76ce3388bb2424449ae267e1623035f4f4",
+          "measurement_order": [
+            "cold:torch_dense",
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4406640004599467,
+            "prepared_postings": 2.667043008841574
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.26752300618682057,
+            "torch_dense": 0.34195900661870837,
+            "prepared_postings": 0.22373600222636014
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.26752300618682057,
+              "torch_dense": 2.4406640004599467,
+              "prepared_postings": 2.667043008841574
+            },
+            "12": {
+              "incumbent_python": 3.210276074241847,
+              "torch_dense": 6.202213073265739,
+              "prepared_postings": 5.128139033331536
+            },
+            "16": {
+              "incumbent_python": 4.280368098989129,
+              "torch_dense": 7.570049099740572,
+              "prepared_postings": 6.023083042236976
+            },
+            "64": {
+              "incumbent_python": 17.121472395956516,
+              "torch_dense": 23.984081417438574,
+              "prepared_postings": 16.762411149102263
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-001",
+          "input_sample_id": 1,
+          "input_sha256": "14971ef8b7fa9e4b14bbfb3eb4182e703dae22c7b8c51419d8cc3ac1693b27e2",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.968308996059932,
+            "torch_dense": 2.5351110089104623
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.239044995396398,
+            "torch_dense": 0.3486100031295791,
+            "prepared_postings": 0.24220100021921098
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.239044995396398,
+              "torch_dense": 2.5351110089104623,
+              "prepared_postings": 2.968308996059932
+            },
+            "12": {
+              "incumbent_python": 2.868539944756776,
+              "torch_dense": 6.369821043335833,
+              "prepared_postings": 5.632519998471253
+            },
+            "16": {
+              "incumbent_python": 3.824719926342368,
+              "torch_dense": 7.764261055854149,
+              "prepared_postings": 6.6013239993480965
+            },
+            "64": {
+              "incumbent_python": 15.298879705369473,
+              "torch_dense": 24.497541206073947,
+              "prepared_postings": 18.226972009870224
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-002",
+          "input_sample_id": 2,
+          "input_sha256": "37db47f43f787a9e0b4953fe77e30d38d74879b5cd4685d780dd507b0597bee8",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.464192992192693,
+            "prepared_postings": 2.587259004940279
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.252550991717726,
+            "torch_dense": 0.34071499248966575,
+            "prepared_postings": 0.2184369950555265
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.252550991717726,
+              "torch_dense": 2.464192992192693,
+              "prepared_postings": 2.587259004940279
+            },
+            "12": {
+              "incumbent_python": 3.030611900612712,
+              "torch_dense": 6.212057909579016,
+              "prepared_postings": 4.99006595055107
+            },
+            "16": {
+              "incumbent_python": 4.040815867483616,
+              "torch_dense": 7.574917879537679,
+              "prepared_postings": 5.863813930773176
+            },
+            "64": {
+              "incumbent_python": 16.163263469934464,
+              "torch_dense": 23.929237519041635,
+              "prepared_postings": 16.348789693438448
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-003",
+          "input_sample_id": 3,
+          "input_sha256": "44a6b4868493176daf7514602eeca70a7a7de72bfbf0114d907a42910ede4d8a",
+          "measurement_order": [
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.566292998380959,
+            "torch_dense": 2.393357004621066
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3413579979678616,
+            "incumbent_python": 0.2509780024411157,
+            "prepared_postings": 0.2238830056739971
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2509780024411157,
+              "torch_dense": 2.393357004621066,
+              "prepared_postings": 2.566292998380959
+            },
+            "12": {
+              "incumbent_python": 3.011736029293388,
+              "torch_dense": 6.148294982267544,
+              "prepared_postings": 5.029006060794927
+            },
+            "16": {
+              "incumbent_python": 4.015648039057851,
+              "torch_dense": 7.51372697413899,
+              "prepared_postings": 5.924538083490916
+            },
+            "64": {
+              "incumbent_python": 16.062592156231403,
+              "torch_dense": 23.898910876596346,
+              "prepared_postings": 16.670922355842777
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-004",
+          "input_sample_id": 4,
+          "input_sha256": "351251c284068c5fa3dc5d1beff3ce836881041d1e5d70b81d1b1a6bf7441cb7",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.889254014007747,
+            "torch_dense": 2.713586000027135
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.35796100564766675,
+            "torch_dense": 0.39825699059292674,
+            "prepared_postings": 0.22180900850798935
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.35796100564766675,
+              "torch_dense": 2.713586000027135,
+              "prepared_postings": 2.889254014007747
+            },
+            "12": {
+              "incumbent_python": 4.295532067772001,
+              "torch_dense": 7.094412896549329,
+              "prepared_postings": 5.32915310759563
+            },
+            "16": {
+              "incumbent_python": 5.727376090362668,
+              "torch_dense": 8.687440858921036,
+              "prepared_postings": 6.216389141627587
+            },
+            "64": {
+              "incumbent_python": 22.909504361450672,
+              "torch_dense": 27.80377640738152,
+              "prepared_postings": 16.863221550011076
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-005",
+          "input_sample_id": 5,
+          "input_sha256": "1de494e576575269f3bc54274a276909195b7eeab54a58baa333e08d7e1980b7",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.365278996876441,
+            "prepared_postings": 2.595158002804965
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.21614400611724705,
+            "incumbent_python": 0.2511369966669008,
+            "torch_dense": 0.35709599615074694
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2511369966669008,
+              "torch_dense": 2.365278996876441,
+              "prepared_postings": 2.595158002804965
+            },
+            "12": {
+              "incumbent_python": 3.0136439600028098,
+              "torch_dense": 6.293334954534657,
+              "prepared_postings": 4.972742070094682
+            },
+            "16": {
+              "incumbent_python": 4.018191946670413,
+              "torch_dense": 7.721718939137645,
+              "prepared_postings": 5.8373180945636705
+            },
+            "64": {
+              "incumbent_python": 16.072767786681652,
+              "torch_dense": 24.8623267543735,
+              "prepared_postings": 16.21223038819153
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-006",
+          "input_sample_id": 6,
+          "input_sha256": "93b92ef3632bad5a308e0f38d50d214e4f450b16b09054385047f793a8a7fa0c",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 8.842755007208325,
+            "torch_dense": 3.004076992510818
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.25668300804682076,
+            "prepared_postings": 0.22562300728168339,
+            "torch_dense": 0.32890499278437346
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.25668300804682076,
+              "torch_dense": 3.004076992510818,
+              "prepared_postings": 8.842755007208325
+            },
+            "12": {
+              "incumbent_python": 3.080196096561849,
+              "torch_dense": 6.622031913138926,
+              "prepared_postings": 11.324608087306842
+            },
+            "16": {
+              "incumbent_python": 4.106928128749132,
+              "torch_dense": 7.93765188427642,
+              "prepared_postings": 12.227100116433576
+            },
+            "64": {
+              "incumbent_python": 16.42771251499653,
+              "torch_dense": 23.725091537926346,
+              "prepared_postings": 23.05700446595438
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-007",
+          "input_sample_id": 7,
+          "input_sha256": "2b8bddb5131d6bfc764b76f29260b29009a735cb7d893cfd1c69c5859ade682e",
+          "measurement_order": [
+            "cold:torch_dense",
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.3736849980195984,
+            "prepared_postings": 2.640363003592938
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.25522499345242977,
+            "prepared_postings": 0.22376299602910876,
+            "torch_dense": 0.33583400363568217
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.25522499345242977,
+              "torch_dense": 2.3736849980195984,
+              "prepared_postings": 2.640363003592938
+            },
+            "12": {
+              "incumbent_python": 3.0626999214291573,
+              "torch_dense": 6.067859038012102,
+              "prepared_postings": 5.101755959913135
+            },
+            "16": {
+              "incumbent_python": 4.083599895238876,
+              "torch_dense": 7.411195052554831,
+              "prepared_postings": 5.99680794402957
+            },
+            "64": {
+              "incumbent_python": 16.334399580955505,
+              "torch_dense": 23.531227227067575,
+              "prepared_postings": 16.73743175342679
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-008",
+          "input_sample_id": 8,
+          "input_sha256": "0256c720792c8b704e1bb71817417157fd5d78789bb4f55c590ccb0a1870b24b",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.5656159996287897,
+            "torch_dense": 2.4541859893361107
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.22252100461628288,
+            "torch_dense": 0.3395630046725273,
+            "incumbent_python": 0.25136298791039735
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.25136298791039735,
+              "torch_dense": 2.4541859893361107,
+              "prepared_postings": 2.5656159996287897
+            },
+            "12": {
+              "incumbent_python": 3.016355854924768,
+              "torch_dense": 6.189379040733911,
+              "prepared_postings": 5.013347050407901
+            },
+            "16": {
+              "incumbent_python": 4.021807806566358,
+              "torch_dense": 7.54763105942402,
+              "prepared_postings": 5.903431068873033
+            },
+            "64": {
+              "incumbent_python": 16.08723122626543,
+              "torch_dense": 23.84665528370533,
+              "prepared_postings": 16.58443929045461
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-009",
+          "input_sample_id": 9,
+          "input_sha256": "8a86e42a24946af5126d12cb304244d5aeabf02019647b287aae2f2ac273ba4d",
+          "measurement_order": [
+            "warm:torch_dense",
+            "warm:prepared_postings",
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.5499050098005682,
+            "torch_dense": 2.406158993835561
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3256920026615262,
+            "prepared_postings": 0.21414601360447705,
+            "incumbent_python": 0.25290000485256314
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.25290000485256314,
+              "torch_dense": 2.406158993835561,
+              "prepared_postings": 2.5499050098005682
+            },
+            "12": {
+              "incumbent_python": 3.0348000582307577,
+              "torch_dense": 5.988771023112349,
+              "prepared_postings": 4.905511159449816
+            },
+            "16": {
+              "incumbent_python": 4.04640007764101,
+              "torch_dense": 7.291539033758454,
+              "prepared_postings": 5.762095213867724
+            },
+            "64": {
+              "incumbent_python": 16.18560031056404,
+              "torch_dense": 22.92475516151171,
+              "prepared_postings": 16.041103866882622
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-010",
+          "input_sample_id": 10,
+          "input_sha256": "415855257799f7f1676b1df0f14f0742f42efc99dc9bc5e4f76bf344b0773ad2",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.837573003489524,
+            "torch_dense": 2.5249190075555816
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.2416159986751154,
+            "incumbent_python": 0.29149600595701486,
+            "torch_dense": 0.3599500050768256
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.29149600595701486,
+              "torch_dense": 2.5249190075555816,
+              "prepared_postings": 2.837573003489524
+            },
+            "12": {
+              "incumbent_python": 3.4979520714841783,
+              "torch_dense": 6.484369063400663,
+              "prepared_postings": 5.495348988915794
+            },
+            "16": {
+              "incumbent_python": 4.663936095312238,
+              "torch_dense": 7.924169083707966,
+              "prepared_postings": 6.461812983616255
+            },
+            "64": {
+              "incumbent_python": 18.65574438124895,
+              "torch_dense": 25.201769327395596,
+              "prepared_postings": 18.059380920021795
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-011",
+          "input_sample_id": 11,
+          "input_sha256": "abd7f1fd11f52eeb4740058a54c33fdf03d5b2fb5280564c430891ac1608ec11",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.6493540062801912,
+            "torch_dense": 2.3745760117890313
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.23541100381407887,
+            "torch_dense": 0.36649900721386075,
+            "incumbent_python": 0.35412800207268447
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.35412800207268447,
+              "torch_dense": 2.3745760117890313,
+              "prepared_postings": 2.6493540062801912
+            },
+            "12": {
+              "incumbent_python": 4.249536024872214,
+              "torch_dense": 6.4060650911415,
+              "prepared_postings": 5.238875048235059
+            },
+            "16": {
+              "incumbent_python": 5.6660480331629515,
+              "torch_dense": 7.872061119996943,
+              "prepared_postings": 6.180519063491374
+            },
+            "64": {
+              "incumbent_python": 22.664192132651806,
+              "torch_dense": 25.46401346626226,
+              "prepared_postings": 17.48024724656716
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-012",
+          "input_sample_id": 12,
+          "input_sha256": "8a301ac1a865df0009b2228163740f4421bf1fde66959227d4aa3441f32cbdc4",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4258409976027906,
+            "prepared_postings": 2.57362901174929
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.22453200654126704,
+            "torch_dense": 0.3247819986427203,
+            "incumbent_python": 0.2652469993336126
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2652469993336126,
+              "torch_dense": 2.4258409976027906,
+              "prepared_postings": 2.57362901174929
+            },
+            "12": {
+              "incumbent_python": 3.1829639920033514,
+              "torch_dense": 5.998442982672714,
+              "prepared_postings": 5.043481083703227
+            },
+            "16": {
+              "incumbent_python": 4.243951989337802,
+              "torch_dense": 7.297570977243595,
+              "prepared_postings": 5.9416091098682955
+            },
+            "64": {
+              "incumbent_python": 16.975807957351208,
+              "torch_dense": 22.88710691209417,
+              "prepared_postings": 16.719145423849113
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-013",
+          "input_sample_id": 13,
+          "input_sha256": "adeda7435e1e3755a6c84a887b36ff862d0f0ae58e21b0d64949e1b6d4aba826",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4084360047709197,
+            "prepared_postings": 2.5948719994630665
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.2628880029078573,
+            "torch_dense": 0.3339160030009225,
+            "prepared_postings": 0.2375839976593852
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2628880029078573,
+              "torch_dense": 2.4084360047709197,
+              "prepared_postings": 2.5948719994630665
+            },
+            "12": {
+              "incumbent_python": 3.1546560348942876,
+              "torch_dense": 6.081512037781067,
+              "prepared_postings": 5.208295973716304
+            },
+            "16": {
+              "incumbent_python": 4.206208046525717,
+              "torch_dense": 7.417176049784757,
+              "prepared_postings": 6.1586319643538445
+            },
+            "64": {
+              "incumbent_python": 16.824832186102867,
+              "torch_dense": 23.445144193829037,
+              "prepared_postings": 17.562663852004334
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-014",
+          "input_sample_id": 14,
+          "input_sha256": "9b718e6d09727bf6a178f07f4ea972cca8490561bd15ce1788278c802b223466",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "cold:prepared_postings",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.356152006541379,
+            "prepared_postings": 2.5601499946787953
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.25311500940006226,
+            "prepared_postings": 0.21321300300769508,
+            "torch_dense": 0.3393070073798299
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.25311500940006226,
+              "torch_dense": 2.356152006541379,
+              "prepared_postings": 2.5601499946787953
+            },
+            "12": {
+              "incumbent_python": 3.037380112800747,
+              "torch_dense": 6.0885290877195075,
+              "prepared_postings": 4.905493027763441
+            },
+            "16": {
+              "incumbent_python": 4.049840150400996,
+              "torch_dense": 7.445757117238827,
+              "prepared_postings": 5.7583450397942215
+            },
+            "64": {
+              "incumbent_python": 16.199360601603985,
+              "torch_dense": 23.73249347147066,
+              "prepared_postings": 15.992569184163585
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-015",
+          "input_sample_id": 15,
+          "input_sha256": "7a6b8934421e7c67bdb2d06e36efc0f8572aed89a79ff0c6c27976d42045407d",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.603051994810812,
+            "torch_dense": 2.402640995569527
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3553239948814735,
+            "incumbent_python": 0.25029099197126925,
+            "prepared_postings": 0.22773598902858794
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.25029099197126925,
+              "torch_dense": 2.402640995569527,
+              "prepared_postings": 2.603051994810812
+            },
+            "12": {
+              "incumbent_python": 3.003491903655231,
+              "torch_dense": 6.3112049392657354,
+              "prepared_postings": 5.1081478741252795
+            },
+            "16": {
+              "incumbent_python": 4.004655871540308,
+              "torch_dense": 7.732500918791629,
+              "prepared_postings": 6.019091830239631
+            },
+            "64": {
+              "incumbent_python": 16.018623486161232,
+              "torch_dense": 24.788052673102356,
+              "prepared_postings": 16.950419303611852
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-016",
+          "input_sample_id": 16,
+          "input_sha256": "60c927b44e9eda3069fd17788993e906661b084ee513cbe01c39fe65ef80f403",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4645270023029298,
+            "prepared_postings": 2.5975289900088683
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.20881999807897955,
+            "torch_dense": 0.3456419944996014,
+            "incumbent_python": 0.25344100140500814
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.25344100140500814,
+              "torch_dense": 2.4645270023029298,
+              "prepared_postings": 2.5975289900088683
+            },
+            "12": {
+              "incumbent_python": 3.0412920168600976,
+              "torch_dense": 6.266588941798545,
+              "prepared_postings": 4.894548968877643
+            },
+            "16": {
+              "incumbent_python": 4.05505602248013,
+              "torch_dense": 7.649156919796951,
+              "prepared_postings": 5.7298289611935616
+            },
+            "64": {
+              "incumbent_python": 16.22022408992052,
+              "torch_dense": 24.23997265577782,
+              "prepared_postings": 15.75318886898458
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-017",
+          "input_sample_id": 17,
+          "input_sha256": "cf9510ef9fc5feaf71146318dad5bde3e1ce196df86cf9005a5036fa3259bda0",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "warm:incumbent_python",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.536776999477297,
+            "prepared_postings": 2.6429770077811554
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.22263301070779562,
+            "torch_dense": 0.3383679868420586,
+            "incumbent_python": 0.2543849986977875
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2543849986977875,
+              "torch_dense": 2.536776999477297,
+              "prepared_postings": 2.6429770077811554
+            },
+            "12": {
+              "incumbent_python": 3.0526199843734503,
+              "torch_dense": 6.258824854739942,
+              "prepared_postings": 5.091940125566907
+            },
+            "16": {
+              "incumbent_python": 4.0701599791646,
+              "torch_dense": 7.612296802108176,
+              "prepared_postings": 5.98247216839809
+            },
+            "64": {
+              "incumbent_python": 16.2806399166584,
+              "torch_dense": 23.85396017052699,
+              "prepared_postings": 16.66885668237228
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-018",
+          "input_sample_id": 18,
+          "input_sha256": "076aeadac5c3bab272e0ac625395e3831acaedd0654016637ddf2a0f51a8c625",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.562961002695374,
+            "torch_dense": 2.3835239990148693
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.2701379999052733,
+            "torch_dense": 0.34281000262126327,
+            "prepared_postings": 0.22245700529310852
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2701379999052733,
+              "torch_dense": 2.3835239990148693,
+              "prepared_postings": 2.562961002695374
+            },
+            "12": {
+              "incumbent_python": 3.24165599886328,
+              "torch_dense": 6.154434027848765,
+              "prepared_postings": 5.009988060919568
+            },
+            "16": {
+              "incumbent_python": 4.322207998484373,
+              "torch_dense": 7.525674038333818,
+              "prepared_postings": 5.899816082092002
+            },
+            "64": {
+              "incumbent_python": 17.288831993937492,
+              "torch_dense": 23.980554164154455,
+              "prepared_postings": 16.57775233616121
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-019",
+          "input_sample_id": 19,
+          "input_sha256": "983875d2f3b397a48b0334070829a1fc27cfc03bd423c61466c3785471ac56b7",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "warm:prepared_postings",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.806876989779994,
+            "torch_dense": 2.596222999272868
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.32330000249203295,
+            "torch_dense": 0.3913309919880703,
+            "prepared_postings": 0.2211199898738414
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.32330000249203295,
+              "torch_dense": 2.596222999272868,
+              "prepared_postings": 2.806876989779994
+            },
+            "12": {
+              "incumbent_python": 3.8796000299043953,
+              "torch_dense": 6.900863911141641,
+              "prepared_postings": 5.239196878392249
+            },
+            "16": {
+              "incumbent_python": 5.172800039872527,
+              "torch_dense": 8.466187879093923,
+              "prepared_postings": 6.123676837887615
+            },
+            "64": {
+              "incumbent_python": 20.69120015949011,
+              "torch_dense": 27.250075494521298,
+              "prepared_postings": 16.737436351832002
+            }
+          }
+        },
+        {
+          "repeat_id": "event_32x12-020",
+          "input_sample_id": 20,
+          "input_sha256": "8bfb71b00071b46d5b6ef9128a14787a284b84392eb087e3c8239d8d0d439d8a",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 2.586561007774435,
+            "torch_dense": 2.378453005803749
+          },
+          "warm_query_ms": {
+            "incumbent_python": 0.2541310095693916,
+            "prepared_postings": 0.22220199753064662,
+            "torch_dense": 0.34987900289706886
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 0.2541310095693916,
+              "torch_dense": 2.378453005803749,
+              "prepared_postings": 2.586561007774435
+            },
+            "12": {
+              "incumbent_python": 3.0495721148326993,
+              "torch_dense": 6.227122037671506,
+              "prepared_postings": 5.030782980611548
+            },
+            "16": {
+              "incumbent_python": 4.066096153110266,
+              "torch_dense": 7.626638049259782,
+              "prepared_postings": 5.919590970734134
+            },
+            "64": {
+              "incumbent_python": 16.264384612441063,
+              "torch_dense": 24.420830188319087,
+              "prepared_postings": 16.585286852205172
+            }
+          }
+        }
+      ],
+      "samples_per_query": 21,
+      "warmups_per_query": 5,
+      "timing_note": "Each complete query is wall-clock timed through CUDA completion. Prepared query includes term adaptation, reverse-posting kernels, the explicit status/count synchronization, and exact-ID emission. Lifecycle total is fresh-owner construction plus its first complete query, then horizon-1 warm complete queries. The first prepared query includes workspace reservation; the first dense query includes dense matrix construction and upload. Incumbent lifecycle is horizon complete queries. PyTorch, the extension, CUDA context, route rows, and correctness checks are already initialized; cold is owner-cold, not process-cold. No latent transition compute is included."
+    },
+    {
+      "case": "stress_256x64",
+      "cells": 256,
+      "participants": 64,
+      "entity_count": 4096,
+      "mechanism_count": 16,
+      "reuse_horizons": [
+        1,
+        12,
+        16,
+        64
+      ],
+      "constructor_setup_ms_median": {
+        "incumbent_python": 0.0,
+        "torch_dense": 2.012128010392189,
+        "prepared_postings": 2.324050001334399
+      },
+      "cold_first_query_ms_median": {
+        "incumbent_python": 0.0,
+        "torch_dense": 2.4668690020916983,
+        "prepared_postings": 3.1945179944159463
+      },
+      "complete_route_query_ms_median": {
+        "incumbent_python": 3.374644002178684,
+        "torch_dense": 0.34966399834956974,
+        "prepared_postings": 0.8462179976049811
+      },
+      "lifecycle": {
+        "1": {
+          "incumbent_python": {
+            "total_ms": 3.374644002178684,
+            "per_step_ms": 3.374644002178684
+          },
+          "torch_dense": {
+            "total_ms": 2.4668690020916983,
+            "per_step_ms": 2.4668690020916983
+          },
+          "prepared_postings": {
+            "total_ms": 3.1945179944159463,
+            "per_step_ms": 3.1945179944159463
+          }
+        },
+        "12": {
+          "incumbent_python": {
+            "total_ms": 40.49572802614421,
+            "per_step_ms": 3.374644002178684
+          },
+          "torch_dense": {
+            "total_ms": 6.259160014451481,
+            "per_step_ms": 0.5215966678709568
+          },
+          "prepared_postings": {
+            "total_ms": 12.50630286813248,
+            "per_step_ms": 1.0421919056777067
+          }
+        },
+        "16": {
+          "incumbent_python": {
+            "total_ms": 53.99430403485894,
+            "per_step_ms": 3.374644002178684
+          },
+          "torch_dense": {
+            "total_ms": 7.669012018595822,
+            "per_step_ms": 0.4793132511622389
+          },
+          "prepared_postings": {
+            "total_ms": 15.895576914772391,
+            "per_step_ms": 0.9934735571732745
+          }
+        },
+        "64": {
+          "incumbent_python": {
+            "total_ms": 215.97721613943577,
+            "per_step_ms": 3.374644002178684
+          },
+          "torch_dense": {
+            "total_ms": 24.465919894282706,
+            "per_step_ms": 0.3822799983481673
+          },
+          "prepared_postings": {
+            "total_ms": 56.58762317034416,
+            "per_step_ms": 0.8841816120366275
+          }
+        }
+      },
+      "paired_lifecycle_improvement": {
+        "1": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": 27.0820903055855,
+              "bootstrap_95_percent_interval": [
+                25.79512296639595,
+                27.42418863797937
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": 23.158451185748092,
+              "bootstrap_95_percent_interval": [
+                22.20200352114541,
+                23.898849539193115
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": 4.953967837021223,
+              "bootstrap_95_percent_interval": [
+                4.047580098629165,
+                6.280132293222065
+              ]
+            },
+            "torch_dense": {
+              "median_percent": -30.13792868976225,
+              "bootstrap_95_percent_interval": [
+                -31.404058144300123,
+                -28.53801450681303
+              ]
+            }
+          }
+        },
+        "12": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": 84.52091000229365,
+              "bootstrap_95_percent_interval": [
+                84.08335699859124,
+                84.6673792507736
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": 50.02527849381433,
+              "bootstrap_95_percent_interval": [
+                48.826682459877674,
+                50.76662839339852
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": 68.80552419796079,
+              "bootstrap_95_percent_interval": [
+                68.640721467048,
+                69.18410771872762
+              ]
+            },
+            "torch_dense": {
+              "median_percent": -100.10116512129517,
+              "bootstrap_95_percent_interval": [
+                -103.11426322586334,
+                -95.41433857907536
+              ]
+            }
+          }
+        },
+        "16": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": 85.7848979147988,
+              "bootstrap_95_percent_interval": [
+                85.45391245784236,
+                85.97691339441293
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": 51.98085307357591,
+              "bootstrap_95_percent_interval": [
+                50.75933389863221,
+                52.75916836593074
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": 70.25837995143206,
+              "bootstrap_95_percent_interval": [
+                70.10874740723932,
+                70.6310693701264
+              ]
+            },
+            "torch_dense": {
+              "median_percent": -108.25026349014908,
+              "bootstrap_95_percent_interval": [
+                -111.68128616914899,
+                -103.08417395113638
+              ]
+            }
+          }
+        },
+        "64": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": 88.6288707179354,
+              "bootstrap_95_percent_interval": [
+                88.43999298267448,
+                88.92083809331591
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": 57.16798318460129,
+              "bootstrap_95_percent_interval": [
+                55.700809075216604,
+                57.96093900171696
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": 73.62960064211508,
+              "bootstrap_95_percent_interval": [
+                73.41180577266984,
+                73.88673308577364
+              ]
+            },
+            "torch_dense": {
+              "median_percent": -133.4702109195302,
+              "bootstrap_95_percent_interval": [
+                -137.87400961235602,
+                -125.73775708407923
+              ]
+            }
+          }
+        }
+      },
+      "paired_repeat_records": [
+        {
+          "repeat_id": "stress_256x64-000",
+          "input_sample_id": 0,
+          "input_sha256": "411f994cecdb55a1fa9eb8da795bc14bde741b270735fbac436ff8b143c929b4",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 3.1867200013948604,
+            "torch_dense": 2.4836960074026138
+          },
+          "warm_query_ms": {
+            "incumbent_python": 3.258541997638531,
+            "prepared_postings": 0.8529920014552772,
+            "torch_dense": 0.34000999585259706
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.258541997638531,
+              "torch_dense": 2.4836960074026138,
+              "prepared_postings": 3.1867200013948604
+            },
+            "12": {
+              "incumbent_python": 39.10250397166237,
+              "torch_dense": 6.223805961781181,
+              "prepared_postings": 12.56963201740291
+            },
+            "16": {
+              "incumbent_python": 52.1366719622165,
+              "torch_dense": 7.58384594519157,
+              "prepared_postings": 15.981600023224019
+            },
+            "64": {
+              "incumbent_python": 208.546687848866,
+              "torch_dense": 23.90432574611623,
+              "prepared_postings": 56.925216093077324
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-001",
+          "input_sample_id": 1,
+          "input_sha256": "24d2fe46493ca61481ece1b07ba31bd3b5bef0edbb6be10e81d7f7266f6ab9fa",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 3.1761860009282827,
+            "torch_dense": 2.5230020110029727
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.8368679991690442,
+            "torch_dense": 0.32481300877407193,
+            "incumbent_python": 3.3890210033860058
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.3890210033860058,
+              "torch_dense": 2.5230020110029727,
+              "prepared_postings": 3.1761860009282827
+            },
+            "12": {
+              "incumbent_python": 40.66825204063207,
+              "torch_dense": 6.095945107517764,
+              "prepared_postings": 12.381733991787769
+            },
+            "16": {
+              "incumbent_python": 54.22433605417609,
+              "torch_dense": 7.395197142614052,
+              "prepared_postings": 15.729205988463946
+            },
+            "64": {
+              "incumbent_python": 216.89734421670437,
+              "torch_dense": 22.986221563769504,
+              "prepared_postings": 55.89886994857807
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-002",
+          "input_sample_id": 2,
+          "input_sha256": "ad69a54f3ebd8c07d80d00f9b690acbcb79c8fbbc06535e70bc00b519cb1cc55",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 3.168986993841827,
+            "torch_dense": 2.6173229998676106
+          },
+          "warm_query_ms": {
+            "incumbent_python": 3.3026650053216144,
+            "torch_dense": 0.35482499515637755,
+            "prepared_postings": 0.8417560020461679
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.3026650053216144,
+              "torch_dense": 2.6173229998676106,
+              "prepared_postings": 3.168986993841827
+            },
+            "12": {
+              "incumbent_python": 39.63198006385937,
+              "torch_dense": 6.520397946587764,
+              "prepared_postings": 12.428303016349673
+            },
+            "16": {
+              "incumbent_python": 52.84264008514583,
+              "torch_dense": 7.939697927213274,
+              "prepared_postings": 15.795327024534345
+            },
+            "64": {
+              "incumbent_python": 211.37056034058332,
+              "torch_dense": 24.971297694719397,
+              "prepared_postings": 56.1996151227504
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-003",
+          "input_sample_id": 3,
+          "input_sha256": "da7adf4d070da31758db51c959e202ef0772a235bbd48a46dd30b917d2e1f665",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4643479991937056,
+            "prepared_postings": 3.167623988701962
+          },
+          "warm_query_ms": {
+            "incumbent_python": 3.3545759943081066,
+            "prepared_postings": 0.8452740003122017,
+            "torch_dense": 0.3399819979676977
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.3545759943081066,
+              "torch_dense": 2.4643479991937056,
+              "prepared_postings": 3.167623988701962
+            },
+            "12": {
+              "incumbent_python": 40.25491193169728,
+              "torch_dense": 6.20414997683838,
+              "prepared_postings": 12.46563799213618
+            },
+            "16": {
+              "incumbent_python": 53.673215908929706,
+              "torch_dense": 7.564077968709171,
+              "prepared_postings": 15.846733993384987
+            },
+            "64": {
+              "incumbent_python": 214.69286363571882,
+              "torch_dense": 23.88321387115866,
+              "prepared_postings": 56.41988600837067
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-004",
+          "input_sample_id": 4,
+          "input_sha256": "951f1a116685e7232e157077727db8e47c5b2418d55909fc1bc73944d3c41149",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 3.1576729961670935,
+            "torch_dense": 2.521042013540864
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3627270052675158,
+            "incumbent_python": 3.4736670058919117,
+            "prepared_postings": 0.8348470000782982
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.4736670058919117,
+              "torch_dense": 2.521042013540864,
+              "prepared_postings": 3.1576729961670935
+            },
+            "12": {
+              "incumbent_python": 41.68400407070294,
+              "torch_dense": 6.5110390714835376,
+              "prepared_postings": 12.340989997028373
+            },
+            "16": {
+              "incumbent_python": 55.57867209427059,
+              "torch_dense": 7.961947092553601,
+              "prepared_postings": 15.680377997341566
+            },
+            "64": {
+              "incumbent_python": 222.31468837708235,
+              "torch_dense": 25.372843345394358,
+              "prepared_postings": 55.75303400109988
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-005",
+          "input_sample_id": 5,
+          "input_sha256": "231a745e0a4d0239e1b5b891ade656489206d99a4f0683ed3a15748b5ebad1cb",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "warm:prepared_postings",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.459408002323471,
+            "prepared_postings": 3.462671011220664
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3499129961710423,
+            "prepared_postings": 0.8700719918124378,
+            "incumbent_python": 3.274500006227754
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.274500006227754,
+              "torch_dense": 2.459408002323471,
+              "prepared_postings": 3.462671011220664
+            },
+            "12": {
+              "incumbent_python": 39.29400007473305,
+              "torch_dense": 6.308450960204937,
+              "prepared_postings": 13.03346292115748
+            },
+            "16": {
+              "incumbent_python": 52.392000099644065,
+              "torch_dense": 7.708102944889106,
+              "prepared_postings": 16.51375088840723
+            },
+            "64": {
+              "incumbent_python": 209.56800039857626,
+              "torch_dense": 24.503926761099137,
+              "prepared_postings": 58.27720649540424
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-006",
+          "input_sample_id": 6,
+          "input_sha256": "005731e985b681f38799701281a32cc724383c29ad1241ed63f89adeb310c5ab",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4217140016844496,
+            "prepared_postings": 3.266159998020157
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.8400129881920293,
+            "incumbent_python": 3.6317269987193868,
+            "torch_dense": 0.435382011346519
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.6317269987193868,
+              "torch_dense": 2.4217140016844496,
+              "prepared_postings": 3.266159998020157
+            },
+            "12": {
+              "incumbent_python": 43.58072398463264,
+              "torch_dense": 7.2109161264961585,
+              "prepared_postings": 12.50630286813248
+            },
+            "16": {
+              "incumbent_python": 58.10763197951019,
+              "torch_dense": 8.952444171882235,
+              "prepared_postings": 15.866354820900597
+            },
+            "64": {
+              "incumbent_python": 232.43052791804075,
+              "torch_dense": 29.850780716515146,
+              "prepared_postings": 56.186978254118
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-007",
+          "input_sample_id": 7,
+          "input_sha256": "de36ea9826194b4075f8e845204cc50b29302ca85715fc7dc16dc3afa75a26d5",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.6008610002463683,
+            "prepared_postings": 3.2636359974276274
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.8348560077138245,
+            "torch_dense": 0.35212999500799924,
+            "incumbent_python": 3.2679330033715814
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.2679330033715814,
+              "torch_dense": 2.6008610002463683,
+              "prepared_postings": 3.2636359974276274
+            },
+            "12": {
+              "incumbent_python": 39.21519604045898,
+              "torch_dense": 6.47429094533436,
+              "prepared_postings": 12.447052082279697
+            },
+            "16": {
+              "incumbent_python": 52.2869280539453,
+              "torch_dense": 7.882810925366357,
+              "prepared_postings": 15.786476113134995
+            },
+            "64": {
+              "incumbent_python": 209.1477122157812,
+              "torch_dense": 24.78505068575032,
+              "prepared_postings": 55.85956448339857
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-008",
+          "input_sample_id": 8,
+          "input_sha256": "f29df2ba64167d7c87fbc57bb02b31493b326d29ee7a68ed6a123a4e7c453d8b",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 3.3752870076568797,
+            "torch_dense": 2.619418009999208
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.8578250126447529,
+            "incumbent_python": 3.8533490005647764,
+            "torch_dense": 0.3578710020519793
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.8533490005647764,
+              "torch_dense": 2.619418009999208,
+              "prepared_postings": 3.3752870076568797
+            },
+            "12": {
+              "incumbent_python": 46.240188006777316,
+              "torch_dense": 6.5559990325709805,
+              "prepared_postings": 12.811362146749161
+            },
+            "16": {
+              "incumbent_python": 61.65358400903642,
+              "torch_dense": 7.987483040778898,
+              "prepared_postings": 16.242662197328173
+            },
+            "64": {
+              "incumbent_python": 246.6143360361457,
+              "torch_dense": 25.165291139273904,
+              "prepared_postings": 57.41826280427631
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-009",
+          "input_sample_id": 9,
+          "input_sha256": "ca68accdaa641a16f3b9b3b525a2c46a819ef5ad67b28244c214cae5eb98d6e2",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 3.1667169969296083,
+            "torch_dense": 2.4281890073325485
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3441260050749406,
+            "prepared_postings": 0.8600040018791333,
+            "incumbent_python": 3.3979250001721084
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.3979250001721084,
+              "torch_dense": 2.4281890073325485,
+              "prepared_postings": 3.1667169969296083
+            },
+            "12": {
+              "incumbent_python": 40.7751000020653,
+              "torch_dense": 6.213575063156895,
+              "prepared_postings": 12.626761017600074
+            },
+            "16": {
+              "incumbent_python": 54.366800002753735,
+              "torch_dense": 7.590079083456658,
+              "prepared_postings": 16.066777025116608
+            },
+            "64": {
+              "incumbent_python": 217.46720001101494,
+              "torch_dense": 24.108127327053808,
+              "prepared_postings": 57.346969115315005
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-010",
+          "input_sample_id": 10,
+          "input_sha256": "5e541f37d601a7b3a1e2d93925a72567457b22a3b1edf274fddf911a07d72335",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "cold:prepared_postings",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.478622001945041,
+            "prepared_postings": 3.2368620013585314
+          },
+          "warm_query_ms": {
+            "incumbent_python": 3.4055729920510203,
+            "prepared_postings": 0.870877003762871,
+            "torch_dense": 0.34118299663532525
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.4055729920510203,
+              "torch_dense": 2.478622001945041,
+              "prepared_postings": 3.2368620013585314
+            },
+            "12": {
+              "incumbent_python": 40.86687590461224,
+              "torch_dense": 6.231634964933619,
+              "prepared_postings": 12.816509042750113
+            },
+            "16": {
+              "incumbent_python": 54.489167872816324,
+              "torch_dense": 7.59636695147492,
+              "prepared_postings": 16.300017057801597
+            },
+            "64": {
+              "incumbent_python": 217.9566714912653,
+              "torch_dense": 23.973150789970532,
+              "prepared_postings": 58.102113238419406
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-011",
+          "input_sample_id": 11,
+          "input_sha256": "395048983d1a3e1e1043064b2f4ec2192db226452a031f1d6f6040f44d92e6b3",
+          "measurement_order": [
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 3.16267300513573,
+            "torch_dense": 2.4299200013047084
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3436199913267046,
+            "incumbent_python": 3.432110999710858,
+            "prepared_postings": 0.8420989906881005
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.432110999710858,
+              "torch_dense": 2.4299200013047084,
+              "prepared_postings": 3.16267300513573
+            },
+            "12": {
+              "incumbent_python": 41.185331996530294,
+              "torch_dense": 6.209739905898459,
+              "prepared_postings": 12.425761902704835
+            },
+            "16": {
+              "incumbent_python": 54.913775995373726,
+              "torch_dense": 7.584219871205278,
+              "prepared_postings": 15.794157865457237
+            },
+            "64": {
+              "incumbent_python": 219.6551039814949,
+              "torch_dense": 24.0779794548871,
+              "prepared_postings": 56.21490941848606
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-012",
+          "input_sample_id": 12,
+          "input_sha256": "ed630ae41c9a0b6b2208fa9c49ebab582bf7a2381d275357f61ed8ef011e3507",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.3820670030545443,
+            "prepared_postings": 3.173606004565954
+          },
+          "warm_query_ms": {
+            "incumbent_python": 3.323316006571986,
+            "torch_dense": 0.3524630010360852,
+            "prepared_postings": 0.8461050019832328
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.323316006571986,
+              "torch_dense": 2.3820670030545443,
+              "prepared_postings": 3.173606004565954
+            },
+            "12": {
+              "incumbent_python": 39.87979207886383,
+              "torch_dense": 6.259160014451481,
+              "prepared_postings": 12.480761026381515
+            },
+            "16": {
+              "incumbent_python": 53.17305610515177,
+              "torch_dense": 7.669012018595822,
+              "prepared_postings": 15.865181034314446
+            },
+            "64": {
+              "incumbent_python": 212.6922244206071,
+              "torch_dense": 24.58723606832791,
+              "prepared_postings": 56.47822112950962
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-013",
+          "input_sample_id": 13,
+          "input_sha256": "7a23113a2ecd082c2f8b88a37d2b595907a03c4491eb313046b7efcb9497d12e",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4598140007583424,
+            "prepared_postings": 3.2011509902076796
+          },
+          "warm_query_ms": {
+            "incumbent_python": 3.374644002178684,
+            "torch_dense": 0.3632809966802597,
+            "prepared_postings": 0.8573890081606805
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.374644002178684,
+              "torch_dense": 2.4598140007583424,
+              "prepared_postings": 3.2011509902076796
+            },
+            "12": {
+              "incumbent_python": 40.49572802614421,
+              "torch_dense": 6.455904964241199,
+              "prepared_postings": 12.632430079975165
+            },
+            "16": {
+              "incumbent_python": 53.99430403485894,
+              "torch_dense": 7.909028950962238,
+              "prepared_postings": 16.061986112617888
+            },
+            "64": {
+              "incumbent_python": 215.97721613943577,
+              "torch_dense": 25.346516791614704,
+              "prepared_postings": 57.21665850433055
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-014",
+          "input_sample_id": 14,
+          "input_sha256": "92dccda695875dca8768723088e7298ebb289d4cf766d1d47e8a7577449d16db",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.430412991088815,
+            "prepared_postings": 3.251367001212202
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.8623339963378385,
+            "incumbent_python": 3.333080996526405,
+            "torch_dense": 0.33656100276857615
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.333080996526405,
+              "torch_dense": 2.430412991088815,
+              "prepared_postings": 3.251367001212202
+            },
+            "12": {
+              "incumbent_python": 39.99697195831686,
+              "torch_dense": 6.132584021543153,
+              "prepared_postings": 12.737040960928425
+            },
+            "16": {
+              "incumbent_python": 53.32929594442248,
+              "torch_dense": 7.478828032617457,
+              "prepared_postings": 16.18637694627978
+            },
+            "64": {
+              "incumbent_python": 213.31718377768993,
+              "torch_dense": 23.633756165509112,
+              "prepared_postings": 57.578408770496026
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-015",
+          "input_sample_id": 15,
+          "input_sha256": "ecb07f56a1c3fb43d5ff16f7ce76dcf50f98d066ca09b2437255cfb9e48b013e",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4370879982598126,
+            "prepared_postings": 3.1689020106568933
+          },
+          "warm_query_ms": {
+            "incumbent_python": 3.3299210044788197,
+            "torch_dense": 0.34966399834956974,
+            "prepared_postings": 0.8484449936076999
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.3299210044788197,
+              "torch_dense": 2.4370879982598126,
+              "prepared_postings": 3.1689020106568933
+            },
+            "12": {
+              "incumbent_python": 39.959052053745836,
+              "torch_dense": 6.28339198010508,
+              "prepared_postings": 12.501796940341592
+            },
+            "16": {
+              "incumbent_python": 53.278736071661115,
+              "torch_dense": 7.682047973503359,
+              "prepared_postings": 15.895576914772391
+            },
+            "64": {
+              "incumbent_python": 213.11494428664446,
+              "torch_dense": 24.465919894282706,
+              "prepared_postings": 56.620936607941985
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-016",
+          "input_sample_id": 16,
+          "input_sha256": "1246b193a3de52539c64c29baf55959d446951ee7dcf6ef0393a278ab49d9be7",
+          "measurement_order": [
+            "warm:torch_dense",
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.483848002157174,
+            "prepared_postings": 3.185230991221033
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3300990065326914,
+            "prepared_postings": 0.8429409936070442,
+            "incumbent_python": 3.3358569926349446
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.3358569926349446,
+              "torch_dense": 2.483848002157174,
+              "prepared_postings": 3.185230991221033
+            },
+            "12": {
+              "incumbent_python": 40.030283911619335,
+              "torch_dense": 6.11493707401678,
+              "prepared_postings": 12.45758192089852
+            },
+            "16": {
+              "incumbent_python": 53.373711882159114,
+              "torch_dense": 7.435333100147545,
+              "prepared_postings": 15.829345895326696
+            },
+            "64": {
+              "incumbent_python": 213.49484752863646,
+              "torch_dense": 23.280085413716733,
+              "prepared_postings": 56.29051358846482
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-017",
+          "input_sample_id": 17,
+          "input_sha256": "1dadd6488e355f12d1fe548b8e26e91d5d68c3d3bd1137a4c471d8ae57f89954",
+          "measurement_order": [
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 3.2112710032379255,
+            "torch_dense": 2.441172007820569
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3327790036564693,
+            "incumbent_python": 3.289772997959517,
+            "prepared_postings": 0.8528570033377036
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.289772997959517,
+              "torch_dense": 2.441172007820569,
+              "prepared_postings": 3.2112710032379255
+            },
+            "12": {
+              "incumbent_python": 39.4772759755142,
+              "torch_dense": 6.101741048041731,
+              "prepared_postings": 12.592698039952666
+            },
+            "16": {
+              "incumbent_python": 52.63636796735227,
+              "torch_dense": 7.432857062667608,
+              "prepared_postings": 16.00412605330348
+            },
+            "64": {
+              "incumbent_python": 210.54547186940908,
+              "torch_dense": 23.406249238178134,
+              "prepared_postings": 56.941262213513255
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-018",
+          "input_sample_id": 18,
+          "input_sha256": "435bf836cc0701e0c835fbe5f4fd4ff8d792e7747c8ea7619b22536d723f5615",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:prepared_postings",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 3.1945179944159463,
+            "torch_dense": 2.472845997544937
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.8462179976049811,
+            "incumbent_python": 3.38107900461182,
+            "torch_dense": 0.3408840129850432
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.38107900461182,
+              "torch_dense": 2.472845997544937,
+              "prepared_postings": 3.1945179944159463
+            },
+            "12": {
+              "incumbent_python": 40.57294805534184,
+              "torch_dense": 6.222570140380412,
+              "prepared_postings": 12.502915968070738
+            },
+            "16": {
+              "incumbent_python": 54.09726407378912,
+              "torch_dense": 7.586106192320585,
+              "prepared_postings": 15.887787958490662
+            },
+            "64": {
+              "incumbent_python": 216.38905629515648,
+              "torch_dense": 23.94853881560266,
+              "prepared_postings": 56.50625184352975
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-019",
+          "input_sample_id": 19,
+          "input_sha256": "fe04378df6c1304e1a783f8030afa95003760fda71965714a3884cd834645046",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4668690020916983,
+            "prepared_postings": 3.412912003113888
+          },
+          "warm_query_ms": {
+            "prepared_postings": 0.8468419982818887,
+            "torch_dense": 0.38546101131942123,
+            "incumbent_python": 3.3865719888126478
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.3865719888126478,
+              "torch_dense": 2.4668690020916983,
+              "prepared_postings": 3.412912003113888
+            },
+            "12": {
+              "incumbent_python": 40.63886386575177,
+              "torch_dense": 6.706940126605332,
+              "prepared_postings": 12.728173984214664
+            },
+            "16": {
+              "incumbent_python": 54.185151821002364,
+              "torch_dense": 8.248784171883017,
+              "prepared_postings": 16.115541977342218
+            },
+            "64": {
+              "incumbent_python": 216.74060728400946,
+              "torch_dense": 26.750912715215236,
+              "prepared_postings": 56.763957894872874
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_256x64-020",
+          "input_sample_id": 20,
+          "input_sha256": "d2d9d727e3409c6bbbfdc5abc4a15291d6e84ad32c03a69bb9263632b1794070",
+          "measurement_order": [
+            "warm:torch_dense",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "cold:prepared_postings",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.574109996203333,
+            "prepared_postings": 3.3824849961092696
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3773890057345852,
+            "incumbent_python": 3.6206849908921868,
+            "prepared_postings": 0.8445260027656332
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 3.6206849908921868,
+              "torch_dense": 2.574109996203333,
+              "prepared_postings": 3.3824849961092696
+            },
+            "12": {
+              "incumbent_python": 43.44821989070624,
+              "torch_dense": 6.725389059283771,
+              "prepared_postings": 12.672271026531234
+            },
+            "16": {
+              "incumbent_python": 57.93095985427499,
+              "torch_dense": 8.234945082222112,
+              "prepared_postings": 16.050375037593767
+            },
+            "64": {
+              "incumbent_python": 231.72383941709995,
+              "torch_dense": 26.349617357482202,
+              "prepared_postings": 56.58762317034416
+            }
+          }
+        }
+      ],
+      "samples_per_query": 21,
+      "warmups_per_query": 5,
+      "timing_note": "Each complete query is wall-clock timed through CUDA completion. Prepared query includes term adaptation, reverse-posting kernels, the explicit status/count synchronization, and exact-ID emission. Lifecycle total is fresh-owner construction plus its first complete query, then horizon-1 warm complete queries. The first prepared query includes workspace reservation; the first dense query includes dense matrix construction and upload. Incumbent lifecycle is horizon complete queries. PyTorch, the extension, CUDA context, route rows, and correctness checks are already initialized; cold is owner-cold, not process-cold. No latent transition compute is included."
+    },
+    {
+      "case": "stress_1024x128",
+      "cells": 1024,
+      "participants": 128,
+      "entity_count": 4096,
+      "mechanism_count": 16,
+      "reuse_horizons": [
+        1,
+        12,
+        16,
+        64
+      ],
+      "constructor_setup_ms_median": {
+        "incumbent_python": 0.0,
+        "torch_dense": 2.1242950024316087,
+        "prepared_postings": 2.329270006157458
+      },
+      "cold_first_query_ms_median": {
+        "incumbent_python": 0.0,
+        "torch_dense": 2.469911996740848,
+        "prepared_postings": 5.643873999360949
+      },
+      "complete_route_query_ms_median": {
+        "incumbent_python": 23.26480799820274,
+        "torch_dense": 0.36361000093165785,
+        "prepared_postings": 3.2890050060814247
+      },
+      "lifecycle": {
+        "1": {
+          "incumbent_python": {
+            "total_ms": 23.26480799820274,
+            "per_step_ms": 23.26480799820274
+          },
+          "torch_dense": {
+            "total_ms": 2.469911996740848,
+            "per_step_ms": 2.469911996740848
+          },
+          "prepared_postings": {
+            "total_ms": 5.643873999360949,
+            "per_step_ms": 5.643873999360949
+          }
+        },
+        "12": {
+          "incumbent_python": {
+            "total_ms": 279.1776959784329,
+            "per_step_ms": 23.26480799820274
+          },
+          "torch_dense": {
+            "total_ms": 6.495509936939925,
+            "per_step_ms": 0.5412924947449937
+          },
+          "prepared_postings": {
+            "total_ms": 41.801191968261264,
+            "per_step_ms": 3.483432664021772
+          }
+        },
+        "16": {
+          "incumbent_python": {
+            "total_ms": 372.23692797124386,
+            "per_step_ms": 23.26480799820274
+          },
+          "torch_dense": {
+            "total_ms": 7.940806070109829,
+            "per_step_ms": 0.49630037938186433
+          },
+          "prepared_postings": {
+            "total_ms": 54.94492904108483,
+            "per_step_ms": 3.434058065067802
+          }
+        },
+        "64": {
+          "incumbent_python": {
+            "total_ms": 1488.9477118849754,
+            "per_step_ms": 23.26480799820274
+          },
+          "torch_dense": {
+            "total_ms": 25.472269582678564,
+            "per_step_ms": 0.39800421222935256
+          },
+          "prepared_postings": {
+            "total_ms": 212.79783439240418,
+            "per_step_ms": 3.3249661623813154
+          }
+        }
+      },
+      "paired_lifecycle_improvement": {
+        "1": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": 89.46041399655586,
+              "bootstrap_95_percent_interval": [
+                89.34550229169699,
+                89.59855160981
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": 56.43694822474927,
+              "bootstrap_95_percent_interval": [
+                55.767719741535394,
+                56.78622859337261
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": 75.72317675167497,
+              "bootstrap_95_percent_interval": [
+                75.56323692570204,
+                75.78920095571348
+              ]
+            },
+            "torch_dense": {
+              "median_percent": -129.55232915250562,
+              "bootstrap_95_percent_interval": [
+                -131.40771273822145,
+                -126.07923312039348
+              ]
+            }
+          }
+        },
+        "12": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": 97.69147105320184,
+              "bootstrap_95_percent_interval": [
+                97.65557307556794,
+                97.72846289018305
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": 84.62831306579459,
+              "bootstrap_95_percent_interval": [
+                84.4666964215141,
+                84.73611337210954
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": 85.00552560769691,
+              "bootstrap_95_percent_interval": [
+                84.90954763253343,
+                85.14830785442842
+              ]
+            },
+            "torch_dense": {
+              "median_percent": -550.546686437373,
+              "bootstrap_95_percent_interval": [
+                -555.1411343509204,
+                -543.7780572221805
+              ]
+            }
+          }
+        },
+        "16": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": 97.87540104055165,
+              "bootstrap_95_percent_interval": [
+                97.85504778614606,
+                97.91442816840153
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": 85.69989379382295,
+              "bootstrap_95_percent_interval": [
+                85.56848294716936,
+                85.78037392902978
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": 85.22044946593319,
+              "bootstrap_95_percent_interval": [
+                85.12229871939202,
+                85.36337179672248
+              ]
+            },
+            "torch_dense": {
+              "median_percent": -599.295505629211,
+              "bootstrap_95_percent_interval": [
+                -603.2533731963101,
+                -592.927844203224
+              ]
+            }
+          }
+        },
+        "64": {
+          "torch_dense": {
+            "incumbent_python": {
+              "median_percent": 98.30793879388372,
+              "bootstrap_95_percent_interval": [
+                98.28924351208873,
+                98.34077486791458
+              ]
+            },
+            "prepared_postings": {
+              "median_percent": 88.15983404507156,
+              "bootstrap_95_percent_interval": [
+                88.07545413630055,
+                88.31085789251262
+              ]
+            }
+          },
+          "prepared_postings": {
+            "incumbent_python": {
+              "median_percent": 85.6993654450597,
+              "bootstrap_95_percent_interval": [
+                85.59155735237852,
+                85.84726566688411
+              ]
+            },
+            "torch_dense": {
+              "median_percent": -744.5827565311721,
+              "bootstrap_95_percent_interval": [
+                -755.4947752405698,
+                -738.6063598817527
+              ]
+            }
+          }
+        }
+      },
+      "paired_repeat_records": [
+        {
+          "repeat_id": "stress_1024x128-000",
+          "input_sample_id": 0,
+          "input_sha256": "217113308c6dc4a52bac231581fd977a81187e496b975cad9235af4401f10934",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.643873999360949,
+            "torch_dense": 2.6500859967200086
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3514300042297691,
+            "prepared_postings": 3.2867370027815923,
+            "incumbent_python": 23.08191299380269
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.08191299380269,
+              "torch_dense": 2.6500859967200086,
+              "prepared_postings": 5.643873999360949
+            },
+            "12": {
+              "incumbent_python": 276.98295592563227,
+              "torch_dense": 6.515816043247469,
+              "prepared_postings": 41.797981029958464
+            },
+            "16": {
+              "incumbent_python": 369.310607900843,
+              "torch_dense": 7.921536060166545,
+              "prepared_postings": 54.94492904108483
+            },
+            "64": {
+              "incumbent_python": 1477.242431603372,
+              "torch_dense": 24.790176263195463,
+              "prepared_postings": 212.70830517460126
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-001",
+          "input_sample_id": 1,
+          "input_sha256": "5dfe1ded4859a43be75918d2775aabb572b5729e4494ae8cf97ca37c50ad3296",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.817633995320648,
+            "torch_dense": 2.6104150019818917
+          },
+          "warm_query_ms": {
+            "incumbent_python": 23.986226005945355,
+            "torch_dense": 0.37244199484121054,
+            "prepared_postings": 3.260273006162606
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.986226005945355,
+              "torch_dense": 2.6104150019818917,
+              "prepared_postings": 5.817633995320648
+            },
+            "12": {
+              "incumbent_python": 287.83471207134426,
+              "torch_dense": 6.707276945235208,
+              "prepared_postings": 41.680637063109316
+            },
+            "16": {
+              "incumbent_python": 383.7796160951257,
+              "torch_dense": 8.19704492460005,
+              "prepared_postings": 54.72172908775974
+            },
+            "64": {
+              "incumbent_python": 1535.1184643805027,
+              "torch_dense": 26.074260676978156,
+              "prepared_postings": 211.21483338356484
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-002",
+          "input_sample_id": 2,
+          "input_sha256": "2282c4f63f26997f5a2d5a6872717d8b5796de7c8e95ef22a8042675509d7782",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.678258006810211,
+            "torch_dense": 2.511622995370999
+          },
+          "warm_query_ms": {
+            "prepared_postings": 3.334519002237357,
+            "incumbent_python": 23.57335900887847,
+            "torch_dense": 0.365339990821667
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.57335900887847,
+              "torch_dense": 2.511622995370999,
+              "prepared_postings": 5.678258006810211
+            },
+            "12": {
+              "incumbent_python": 282.88030810654163,
+              "torch_dense": 6.530362894409336,
+              "prepared_postings": 42.35796703142114
+            },
+            "16": {
+              "incumbent_python": 377.1737441420555,
+              "torch_dense": 7.991722857696004,
+              "prepared_postings": 55.69604304037057
+            },
+            "64": {
+              "incumbent_python": 1508.694976568222,
+              "torch_dense": 25.52804241713602,
+              "prepared_postings": 215.7529551477637
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-003",
+          "input_sample_id": 3,
+          "input_sha256": "00c5a9c4400c704008ecb700b31211f63e6505a69103ef966d30f0e1a92cad45",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.319942999747582,
+            "prepared_postings": 5.637333000777289
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3799209953285754,
+            "incumbent_python": 23.069065995514393,
+            "prepared_postings": 3.2247009949060157
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.069065995514393,
+              "torch_dense": 2.319942999747582,
+              "prepared_postings": 5.637333000777289
+            },
+            "12": {
+              "incumbent_python": 276.8287919461727,
+              "torch_dense": 6.499073948361911,
+              "prepared_postings": 41.10904394474346
+            },
+            "16": {
+              "incumbent_python": 369.1050559282303,
+              "torch_dense": 8.018757929676212,
+              "prepared_postings": 54.007847924367525
+            },
+            "64": {
+              "incumbent_python": 1476.4202237129211,
+              "torch_dense": 26.25496570544783,
+              "prepared_postings": 208.79349567985628
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-004",
+          "input_sample_id": 4,
+          "input_sha256": "882457ce7ce7d8c86083497538686908a61e9025fa88165cb747ee0854170f9c",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "warm:prepared_postings",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.822246996103786,
+            "torch_dense": 2.624888002173975
+          },
+          "warm_query_ms": {
+            "incumbent_python": 23.997950993361883,
+            "torch_dense": 0.35217498952988535,
+            "prepared_postings": 3.42019900563173
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.997950993361883,
+              "torch_dense": 2.624888002173975,
+              "prepared_postings": 5.822246996103786
+            },
+            "12": {
+              "incumbent_python": 287.9754119203426,
+              "torch_dense": 6.498812887002714,
+              "prepared_postings": 43.444436058052815
+            },
+            "16": {
+              "incumbent_python": 383.9672158937901,
+              "torch_dense": 7.907512845122255,
+              "prepared_postings": 57.125232080579735
+            },
+            "64": {
+              "incumbent_python": 1535.8688635751605,
+              "torch_dense": 24.811912342556752,
+              "prepared_postings": 221.29478435090277
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-005",
+          "input_sample_id": 5,
+          "input_sha256": "2eab7c88c12c40cb46d3f84f2a91486bceaae0e4d0c31131deff25d7083a4b6c",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4399959947913885,
+            "prepared_postings": 5.804246990010142
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3565639926819131,
+            "incumbent_python": 23.34028900077101,
+            "prepared_postings": 3.2440049981232733
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.34028900077101,
+              "torch_dense": 2.4399959947913885,
+              "prepared_postings": 5.804246990010142
+            },
+            "12": {
+              "incumbent_python": 280.0834680092521,
+              "torch_dense": 6.362199914292432,
+              "prepared_postings": 41.48830196936615
+            },
+            "16": {
+              "incumbent_python": 373.44462401233613,
+              "torch_dense": 7.788455885020085,
+              "prepared_postings": 54.46432196185924
+            },
+            "64": {
+              "incumbent_python": 1493.7784960493445,
+              "torch_dense": 24.903527533751912,
+              "prepared_postings": 210.17656187177636
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-006",
+          "input_sample_id": 6,
+          "input_sha256": "950806f8041830586860f9a33f69fd30626c07e2065e8bda7f5077cb8ffe81e7",
+          "measurement_order": [
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "cold:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.4591260007582605,
+            "prepared_postings": 5.578779993811622
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3935410059057176,
+            "prepared_postings": 3.279945012764074,
+            "incumbent_python": 23.09726399835199
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.09726399835199,
+              "torch_dense": 2.4591260007582605,
+              "prepared_postings": 5.578779993811622
+            },
+            "12": {
+              "incumbent_python": 277.1671679802239,
+              "torch_dense": 6.788077065721154,
+              "prepared_postings": 41.658175134216435
+            },
+            "16": {
+              "incumbent_python": 369.55622397363186,
+              "torch_dense": 8.362241089344025,
+              "prepared_postings": 54.77795518527273
+            },
+            "64": {
+              "incumbent_python": 1478.2248958945274,
+              "torch_dense": 27.25220937281847,
+              "prepared_postings": 212.21531579794828
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-007",
+          "input_sample_id": 7,
+          "input_sha256": "f43b7a95b558d82c32d5dec181a5de5439988bd7bdf7fd8f63b437275f53a53f",
+          "measurement_order": [
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "cold:prepared_postings",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.3737399897072464,
+            "prepared_postings": 5.6255209929076955
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.3575040027499199,
+            "prepared_postings": 3.2520179956918582,
+            "incumbent_python": 23.007208001217805
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.007208001217805,
+              "torch_dense": 2.3737399897072464,
+              "prepared_postings": 5.6255209929076955
+            },
+            "12": {
+              "incumbent_python": 276.08649601461366,
+              "torch_dense": 6.306284019956365,
+              "prepared_postings": 41.397718945518136
+            },
+            "16": {
+              "incumbent_python": 368.1153280194849,
+              "torch_dense": 7.736300030956045,
+              "prepared_postings": 54.40579092828557
+            },
+            "64": {
+              "incumbent_python": 1472.4613120779395,
+              "torch_dense": 24.8964921629522,
+              "prepared_postings": 210.50265472149476
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-008",
+          "input_sample_id": 8,
+          "input_sha256": "197dabaf6f7d9c1afbf638e9022294a8934995fc838b45f2263c304e5d52c771",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "warm:prepared_postings",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.581978999543935,
+            "torch_dense": 2.419876997009851
+          },
+          "warm_query_ms": {
+            "incumbent_python": 23.26480799820274,
+            "torch_dense": 0.3659109934233129,
+            "prepared_postings": 3.281233992311172
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.26480799820274,
+              "torch_dense": 2.419876997009851,
+              "prepared_postings": 5.581978999543935
+            },
+            "12": {
+              "incumbent_python": 279.1776959784329,
+              "torch_dense": 6.444897924666293,
+              "prepared_postings": 41.67555291496683
+            },
+            "16": {
+              "incumbent_python": 372.23692797124386,
+              "torch_dense": 7.908541898359545,
+              "prepared_postings": 54.80048888421152
+            },
+            "64": {
+              "incumbent_python": 1488.9477118849754,
+              "torch_dense": 25.472269582678564,
+              "prepared_postings": 212.29972051514778
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-009",
+          "input_sample_id": 9,
+          "input_sha256": "c134cb5599f33d490574881ab9473dff7bb9542b6479ba7adc9351d0d0251fd2",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.716291998396628,
+            "torch_dense": 2.407687992672436
+          },
+          "warm_query_ms": {
+            "incumbent_python": 23.162529992987402,
+            "prepared_postings": 3.4266000002389774,
+            "torch_dense": 0.35014000604860485
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.162529992987402,
+              "torch_dense": 2.407687992672436,
+              "prepared_postings": 5.716291998396628
+            },
+            "12": {
+              "incumbent_python": 277.9503599158488,
+              "torch_dense": 6.259228059207089,
+              "prepared_postings": 43.40889200102538
+            },
+            "16": {
+              "incumbent_python": 370.60047988779843,
+              "torch_dense": 7.659788083401509,
+              "prepared_postings": 57.11529200198129
+            },
+            "64": {
+              "incumbent_python": 1482.4019195511937,
+              "torch_dense": 24.46650837373454,
+              "prepared_postings": 221.5920920134522
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-010",
+          "input_sample_id": 10,
+          "input_sha256": "f5d69914d16c6a1014bff6090f29e4ec483b5623a60aefb9a0a3393211ee9be5",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.658392998157069,
+            "torch_dense": 2.5119309866568074
+          },
+          "warm_query_ms": {
+            "incumbent_python": 25.674254007753916,
+            "prepared_postings": 3.2857089972821996,
+            "torch_dense": 0.3619250055635348
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 25.674254007753916,
+              "torch_dense": 2.5119309866568074,
+              "prepared_postings": 5.658392998157069
+            },
+            "12": {
+              "incumbent_python": 308.091048093047,
+              "torch_dense": 6.49310604785569,
+              "prepared_postings": 41.801191968261264
+            },
+            "16": {
+              "incumbent_python": 410.78806412406266,
+              "torch_dense": 7.940806070109829,
+              "prepared_postings": 54.94402795739006
+            },
+            "64": {
+              "incumbent_python": 1643.1522564962506,
+              "torch_dense": 25.3132063371595,
+              "prepared_postings": 212.65805982693564
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-011",
+          "input_sample_id": 11,
+          "input_sha256": "8754b384f1063ef397c145e04916bb8cc2942d90613900108212ac7d499a120a",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "warm:prepared_postings",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.590519009274431,
+            "torch_dense": 2.490218001184985
+          },
+          "warm_query_ms": {
+            "incumbent_python": 23.257129010744393,
+            "torch_dense": 0.38641999708488584,
+            "prepared_postings": 3.2890050060814247
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.257129010744393,
+              "torch_dense": 2.490218001184985,
+              "prepared_postings": 5.590519009274431
+            },
+            "12": {
+              "incumbent_python": 279.0855481289327,
+              "torch_dense": 6.740837969118729,
+              "prepared_postings": 41.7695740761701
+            },
+            "16": {
+              "incumbent_python": 372.1140641719103,
+              "torch_dense": 8.286517957458273,
+              "prepared_postings": 54.9255941004958
+            },
+            "64": {
+              "incumbent_python": 1488.4562566876411,
+              "torch_dense": 26.834677817532793,
+              "prepared_postings": 212.79783439240418
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-012",
+          "input_sample_id": 12,
+          "input_sha256": "ffd8f62387dbc7a56acb54b7f72a850aeba7d2b470a6f3e3d56576ce56a040ea",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "warm:torch_dense",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.605148995527998,
+            "torch_dense": 2.4334299960173666
+          },
+          "warm_query_ms": {
+            "prepared_postings": 3.3561320014996454,
+            "incumbent_python": 23.088478003046475,
+            "torch_dense": 0.3692799946293235
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.088478003046475,
+              "torch_dense": 2.4334299960173666,
+              "prepared_postings": 5.605148995527998
+            },
+            "12": {
+              "incumbent_python": 277.0617360365577,
+              "torch_dense": 6.495509936939925,
+              "prepared_postings": 42.5226010120241
+            },
+            "16": {
+              "incumbent_python": 369.4156480487436,
+              "torch_dense": 7.972629915457219,
+              "prepared_postings": 55.94712901802268
+            },
+            "64": {
+              "incumbent_python": 1477.6625921949744,
+              "torch_dense": 25.698069657664746,
+              "prepared_postings": 217.04146509000566
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-013",
+          "input_sample_id": 13,
+          "input_sha256": "6c0207ba4fa7a61f8f102d77b456a1b8bfdf8cbc5d66719eb2b03aed30e93fcb",
+          "measurement_order": [
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "warm:torch_dense",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.616820999421179,
+            "torch_dense": 2.4590279936091974
+          },
+          "warm_query_ms": {
+            "prepared_postings": 3.3415850048186257,
+            "incumbent_python": 23.14131300954614,
+            "torch_dense": 0.36199198802933097
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.14131300954614,
+              "torch_dense": 2.4590279936091974,
+              "prepared_postings": 5.616820999421179
+            },
+            "12": {
+              "incumbent_python": 277.69575611455366,
+              "torch_dense": 6.440939861931838,
+              "prepared_postings": 42.37425605242606
+            },
+            "16": {
+              "incumbent_python": 370.2610081527382,
+              "torch_dense": 7.888907814049162,
+              "prepared_postings": 55.740596071700566
+            },
+            "64": {
+              "incumbent_python": 1481.0440326109529,
+              "torch_dense": 25.26452323945705,
+              "prepared_postings": 216.1366763029946
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-014",
+          "input_sample_id": 14,
+          "input_sha256": "a26e0329f9d4af332f5b4a6263c849ddf3993435846a4003932a0c0ab9c70881",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "warm:prepared_postings",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.83002099301666,
+            "torch_dense": 2.6152570062549785
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.36361000093165785,
+            "prepared_postings": 3.4097589959856123,
+            "incumbent_python": 23.526270990259945
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.526270990259945,
+              "torch_dense": 2.6152570062549785,
+              "prepared_postings": 5.83002099301666
+            },
+            "12": {
+              "incumbent_python": 282.31525188311934,
+              "torch_dense": 6.614967016503215,
+              "prepared_postings": 43.337369948858395
+            },
+            "16": {
+              "incumbent_python": 376.4203358441591,
+              "torch_dense": 8.069407020229846,
+              "prepared_postings": 56.976405932800844
+            },
+            "64": {
+              "incumbent_python": 1505.6813433766365,
+              "torch_dense": 25.522687064949423,
+              "prepared_postings": 220.64483774011023
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-015",
+          "input_sample_id": 15,
+          "input_sha256": "608e497ca935ff17a54797274e38e47e82c046205a1bbe5bd4814ad2c71917e1",
+          "measurement_order": [
+            "warm:incumbent_python",
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.726288000005297,
+            "torch_dense": 2.474545006407425
+          },
+          "warm_query_ms": {
+            "incumbent_python": 23.572183010401204,
+            "torch_dense": 0.3428700001677498,
+            "prepared_postings": 3.351095991092734
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.572183010401204,
+              "torch_dense": 2.474545006407425,
+              "prepared_postings": 5.726288000005297
+            },
+            "12": {
+              "incumbent_python": 282.86619612481445,
+              "torch_dense": 6.246115008252673,
+              "prepared_postings": 42.58834390202537
+            },
+            "16": {
+              "incumbent_python": 377.15492816641927,
+              "torch_dense": 7.617595008923672,
+              "prepared_postings": 55.99272786639631
+            },
+            "64": {
+              "incumbent_python": 1508.619712665677,
+              "torch_dense": 24.075355016975664,
+              "prepared_postings": 216.84533543884754
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-016",
+          "input_sample_id": 16,
+          "input_sha256": "6189b56e25feb163f5a382258f2410117f33cd26741b748af78ec394c6d030e7",
+          "measurement_order": [
+            "cold:torch_dense",
+            "warm:torch_dense",
+            "warm:prepared_postings",
+            "cold:prepared_postings",
+            "warm:incumbent_python"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.469911996740848,
+            "prepared_postings": 5.788641006802209
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.38633299118373543,
+            "prepared_postings": 3.3451159979449585,
+            "incumbent_python": 23.403051993227564
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.403051993227564,
+              "torch_dense": 2.469911996740848,
+              "prepared_postings": 5.788641006802209
+            },
+            "12": {
+              "incumbent_python": 280.83662391873077,
+              "torch_dense": 6.719574899761938,
+              "prepared_postings": 42.58491698419675
+            },
+            "16": {
+              "incumbent_python": 374.448831891641,
+              "torch_dense": 8.26490686449688,
+              "prepared_postings": 55.965380975976586
+            },
+            "64": {
+              "incumbent_python": 1497.795327566564,
+              "torch_dense": 26.80889044131618,
+              "prepared_postings": 216.5309488773346
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-017",
+          "input_sample_id": 17,
+          "input_sha256": "8b8b3611c5ae77dc96fbf3d8b04174eb596cca6207a63f29087feb6640f20ab8",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "cold:torch_dense",
+            "warm:prepared_postings",
+            "warm:incumbent_python",
+            "warm:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.6261989957420155,
+            "torch_dense": 2.4034160014707595
+          },
+          "warm_query_ms": {
+            "prepared_postings": 3.370268997969106,
+            "incumbent_python": 23.137208991101943,
+            "torch_dense": 0.37438899744302034
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.137208991101943,
+              "torch_dense": 2.4034160014707595,
+              "prepared_postings": 5.6261989957420155
+            },
+            "12": {
+              "incumbent_python": 277.6465078932233,
+              "torch_dense": 6.521694973343983,
+              "prepared_postings": 42.69915797340218
+            },
+            "16": {
+              "incumbent_python": 370.1953438576311,
+              "torch_dense": 8.019250963116065,
+              "prepared_postings": 56.1802339652786
+            },
+            "64": {
+              "incumbent_python": 1480.7813754305243,
+              "torch_dense": 25.98992284038104,
+              "prepared_postings": 217.95314586779568
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-018",
+          "input_sample_id": 18,
+          "input_sha256": "45ab8983255287a22a5d9fdb3b7fabc22fabdc73c810b2402d5f3b2c8d566118",
+          "measurement_order": [
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "warm:prepared_postings",
+            "warm:torch_dense",
+            "cold:torch_dense"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.636205009068362,
+            "torch_dense": 2.486634999513626
+          },
+          "warm_query_ms": {
+            "incumbent_python": 23.180422009318136,
+            "prepared_postings": 3.2432739972136915,
+            "torch_dense": 0.3512499970383942
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.180422009318136,
+              "torch_dense": 2.486634999513626,
+              "prepared_postings": 5.636205009068362
+            },
+            "12": {
+              "incumbent_python": 278.1650641118176,
+              "torch_dense": 6.350384966935962,
+              "prepared_postings": 41.31221897841897
+            },
+            "16": {
+              "incumbent_python": 370.88675214909017,
+              "torch_dense": 7.755384955089539,
+              "prepared_postings": 54.285314967273735
+            },
+            "64": {
+              "incumbent_python": 1483.5470085963607,
+              "torch_dense": 24.61538481293246,
+              "prepared_postings": 209.96246683353093
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-019",
+          "input_sample_id": 19,
+          "input_sha256": "658803dd846055cc0249e8b2691dd287e4accefcd49b665f06a845abc2c3bf7d",
+          "measurement_order": [
+            "warm:torch_dense",
+            "cold:torch_dense",
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "torch_dense": 2.433710003970191,
+            "prepared_postings": 5.58663799893111
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.36745799297932535,
+            "incumbent_python": 24.89635800884571,
+            "prepared_postings": 3.420168999582529
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 24.89635800884571,
+              "torch_dense": 2.433710003970191,
+              "prepared_postings": 5.58663799893111
+            },
+            "12": {
+              "incumbent_python": 298.7562961061485,
+              "torch_dense": 6.47574792674277,
+              "prepared_postings": 43.20849699433893
+            },
+            "16": {
+              "incumbent_python": 398.34172814153135,
+              "torch_dense": 7.945579898660071,
+              "prepared_postings": 56.889172992669046
+            },
+            "64": {
+              "incumbent_python": 1593.3669125661254,
+              "torch_dense": 25.583563561667688,
+              "prepared_postings": 221.05728497263044
+            }
+          }
+        },
+        {
+          "repeat_id": "stress_1024x128-020",
+          "input_sample_id": 20,
+          "input_sha256": "54e9f4c60f1a9249d471bc17eadb371fbe4c3e9eddcc5074e9d166c41276469d",
+          "measurement_order": [
+            "warm:torch_dense",
+            "cold:prepared_postings",
+            "warm:incumbent_python",
+            "cold:torch_dense",
+            "warm:prepared_postings"
+          ],
+          "cold_first_query_ms": {
+            "prepared_postings": 5.72849900345318,
+            "torch_dense": 2.4863569997251034
+          },
+          "warm_query_ms": {
+            "torch_dense": 0.35863800439983606,
+            "incumbent_python": 23.6609249986941,
+            "prepared_postings": 3.2542619883315638
+          },
+          "lifecycle_ms": {
+            "1": {
+              "incumbent_python": 23.6609249986941,
+              "torch_dense": 2.4863569997251034,
+              "prepared_postings": 5.72849900345318
+            },
+            "12": {
+              "incumbent_python": 283.9310999843292,
+              "torch_dense": 6.4313750481233,
+              "prepared_postings": 41.52538087510038
+            },
+            "16": {
+              "incumbent_python": 378.5747999791056,
+              "torch_dense": 7.865927065722644,
+              "prepared_postings": 54.54242882842664
+            },
+            "64": {
+              "incumbent_python": 1514.2991999164224,
+              "torch_dense": 25.080551276914775,
+              "prepared_postings": 210.7470042683417
+            }
+          }
+        }
+      ],
+      "samples_per_query": 21,
+      "warmups_per_query": 5,
+      "timing_note": "Each complete query is wall-clock timed through CUDA completion. Prepared query includes term adaptation, reverse-posting kernels, the explicit status/count synchronization, and exact-ID emission. Lifecycle total is fresh-owner construction plus its first complete query, then horizon-1 warm complete queries. The first prepared query includes workspace reservation; the first dense query includes dense matrix construction and upload. Incumbent lifecycle is horizon complete queries. PyTorch, the extension, CUDA context, route rows, and correctness checks are already initialized; cold is owner-cold, not process-cold. No latent transition compute is included."
+    }
+  ]
+}

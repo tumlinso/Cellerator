@@ -1,32 +1,66 @@
 # Python bindings
 
-The Python distribution is named `cellerator`. It provides Torch-free identity
-and mechanism declarations plus native numerical entry points. Torch support is
-an optional adapter in `cellerator.torch`; it does not create another topology
-or parameter owner. No compiler API is exposed through this binding surface.
+The distribution is named `cellerator`. Python and Torch are adapters over
+specific Cellerator contracts; neither adapter is a general replacement for
+the native API. The package is early and exposes operations with different
+backend and maturity boundaries. See the [source routing map](routing.md) and
+[current implementation record](../current_implementation.qmd) before relying
+on a capability.
 
-The resident CUDA bindings are available from `cellerator.cuda` when the
-Python/CUDA native capability is built. This module remains Torch-free and owns
-the resident streams, buffers, prepared CSR values, and native FP32 kernels.
-The optional `cellerator.torch.cuda` adapter adds only tensor validation,
-storage borrowing, allocator stream recording, and DLPack conversion; it
-delegates every numeric operation to that same native owner. It does not require
-the separate libtorch `_torch` extension.
+AnnData is a required dependency (`anndata>=0.10`), but current numerical entry
+points accept explicit arrays or tensors. There is no direct AnnData
+preparation adapter or automatic layer selection. Scanpy and RAPIDS-singlecell
+remain upstream for classical analysis and preprocessing workflows.
 
-## Build and install
+## Host Python and Product2
 
-Native C++ consumers keep both binding options off by default. The host Python
-wheel enables Python and Product2 while leaving CUDA and Torch disabled. The root
-`pyproject.toml` configures a Python build with Torch disabled, so install the
-core distribution with:
+The default Python build enables the `_native` extension and native Product2,
+with CUDA and the compiled Torch adapters disabled. Install from the repository
+root with:
 
 ```sh
 python -m pip install .
 ```
 
-For the optional Torch adapter, install the distribution's Torch extra and
-configure both Torch and the CUDA backend. This is the only mode that discovers
-and links libtorch; the Torch adapter requires the CUDA indexed-mechanism owner:
+The `cellerator.ops` module exposes native CPU Product2 preparation, forward,
+JVP, and VJP using NumPy FP32 arrays. `cellerator.torch.product2` exposes
+`product2`, `product2_jvp`, and `Product2Module`. The module is a real
+`torch.nn.Module`: it owns coefficients as a Torch parameter, retains packet
+indices as buffers, prepares topology for the input extent, and supports
+first-order input/coefficient gradients. Inputs and outputs are CPU FP32
+vectors; packet indices are int64 in the Torch adapter. Higher-order gradients
+and a GPU Product2 path are not claimed.
+
+```python
+import torch
+from cellerator.nn import Product2Module
+
+op = Product2Module(
+    torch.tensor([0.5, 1.25], dtype=torch.float32),
+    torch.tensor([0, 1], dtype=torch.int64),
+    torch.tensor([1, 2], dtype=torch.int64),
+)
+x = torch.tensor([2.0, 3.0, 4.0], dtype=torch.float32)
+loss = op(x).square().mean()
+loss.backward()
+torch.optim.SGD(op.parameters(), lr=1e-3).step()
+```
+
+## Optional CUDA indexed-mechanism Torch adapter
+
+The native `cellerator.prepare_mechanism` path and compiled Torch
+`MechanismModule` require a CUDA indexed-mechanism build. `MechanismModule`
+accepts CUDA FP32 coefficients with a declared `MechanismSpec`, batch capacity,
+live-forward capacity, and `f32` or `mixed_f16` operation precision. It owns or
+shares one prepared native handle and uses the guarded update/checkpoint
+lifecycle. This is a specific mechanism contract, not a general Torch layer
+system. A CPU-only build can use Product2 without importing these optional
+symbols.
+
+Native and compiled adapters are off in ordinary C++ builds. A CUDA/Torch
+extension build must enable CUDA and Torch and use a compatible Torch/CUDA
+toolchain. The Python package declares its optional Torch extra; one supported
+build route is:
 
 ```sh
 python -m pip install '.[torch]' \
@@ -34,82 +68,61 @@ python -m pip install '.[torch]' \
   --config-settings=cmake.define.CELLERATOR_ENABLE_TORCH=ON
 ```
 
-For direct CMake builds, set `CELLERATOR_ENABLE_PYTHON=ON` to build the
-`_native` extension and configure `CELLERATOR_ENABLE_CUDA=ON` plus
-`CELLERATOR_ENABLE_TORCH=ON` to add the optional Torch adapters. Both binding
-options remain off for ordinary C++ builds.
+For direct CMake builds, enable `CELLERATOR_ENABLE_PYTHON=ON`,
+`CELLERATOR_ENABLE_CUDA=ON`, and `CELLERATOR_ENABLE_TORCH=ON`. The compiled
+Torch mechanism adapter depends on the native CUDA mechanism owner. Confirm the
+configure summary and resulting targets; do not infer availability from
+installed Torch alone.
 
-The selected native CPU or CUDA backend determines which mechanism capabilities
-are available. Python reports mechanism bindings as unavailable when their
-native targets are not part of the build. Core product2 remains CPU FP32.
+## Sparse support and model slices
 
-The resident CUDA API itself does not require the Torch build option. To use
-the Python-facing native CUDA API and its optional thin Torch view, enable the
-Python and CUDA capabilities while leaving `CELLERATOR_ENABLE_TORCH` off; then
-install/import Torch separately and use `cellerator.torch.cuda`. Borrowed
-Torch tensors must be contiguous CUDA FP32 tensors without `requires_grad`.
-Adapter calls must use PyTorch's current stream for that device, and borrowed
-storage is recorded on that stream before native work is queued. This protects
-the allocator lifetime; callers remain responsible for data readiness and
-exclusive mutation ordering. `as_tensor(native_buffer)` creates a zero-copy
-DLPack alias and transfers the native owner lease into Torch.
+The sparse-support Torch package provides explicit support, indexing, routing,
+gating, and selected model-slice interfaces, including `RankedGeneSlice` and
+`KaryoplastEventSlice`. These consumers use controlled fixtures; their API
+presence does not establish scientific validation or general support for
+arbitrary single-cell inputs. Native sparse-support contracts can be used
+without linking Torch. Consult the [sparse support foundation](../sparse_support_foundation.qmd)
+and its linked evidence for exact guarantees.
 
-Installed C++ consumers that need the adapter request it explicitly:
+An opt-in prepared entity-to-mechanism route query is exposed through the
+sparse-support Torch binding and `cellerator.torch.prepared_routing`. It
+consumes the caller's existing discrete route table and keys the prepared
+projection with owner, relation, structure, route, and binding generations.
+Its CPU adapter contract tests pass. The frozen binary also passed the 16-test
+suite, exact CUDA correctness, and memcheck, racecheck, and synccheck. Bounded
+V100 measurements found a long-reuse improvement for synthetic ranked `[32,8]`
+routes, an inconclusive event result, and faster dense Torch results at larger
+stress shapes. The current Python route query remains the default; prepared
+routing is opt-in and is not a biological route learner. See the
+[source-bound qualification report](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/bench/sparse_support/experiments/prepared_routing/REPORT.md)
+for exact performance and qualification scope.
 
-```cmake
-find_package(Cellerator CONFIG REQUIRED COMPONENTS torch)
-target_link_libraries(my_target PRIVATE Cellerator::torch)
+## Tokenization and resident CUDA
+
+Tokenization is an optional ATen facility, separately selected with
+`CELLERATOR_ENABLE_TOKENIZATION=ON`. It provides caller-driven tensor and
+sequence operations; it does not define downstream event interpretation or a
+general model loader. It can be CPU-only and does not require the CUDA
+mechanism Torch adapter. See [tokenization](../tokenization.qmd).
+
+Resident CUDA buffers and numeric operations have a distinct native owner and
+optional thin Torch view. Their contracts cover stream, buffer lifetime,
+borrowed-storage, and synchronization obligations. They are forward-only and
+do not imply a general Torch autograd API. Use the facility-specific docs and
+tests rather than treating all `cellerator.torch` submodules as one uniform
+backend.
+
+## Build a host Python extension directly
+
+```sh
+cmake -S . -B build-cpu \
+  -DCELLERATOR_ENABLE_CUDA=OFF \
+  -DCELLERATOR_ENABLE_PYTHON=ON \
+  -DCELLERATOR_ENABLE_TORCH=OFF
+cmake --build build-cpu --target cellerator_python_extensions
 ```
 
-Ordinary `find_package(Cellerator)` consumers do not discover or link Torch.
-
-## API shape
-
-Import identity and mechanism declarations from `cellerator`. Product2 accepts
-NumPy vectors through `cellerator._native.product2_forward`,
-`product2_vjp`, and `product2_jvp`; the operation retains its native FP32
-contract. Mechanism preparation takes a typed mechanism specification and contiguous
-NumPy FP32 initial coefficients, and returns a Cellerator-owned native handle. The
-Torch adapter accepts that handle with `MechanismModule.from_handle(handle)` or
-`SharedSupportRelation.from_handle(spec, handle)` and provides framework
-integration around the same owner.
-
-The resident CUDA surface is separate from the mechanism APIs. A
-`cellerator.cuda.Stream(device)` owns a native stream; `Stream.borrow(device,
-handle, owner)` wraps an external stream while retaining its owner. `Buffer(shape,
-stream)` allocates resident FP32 storage, and `Buffer.borrow(ptr, shape,
-capacity_bytes, stream, owner)` creates a caller-owned view. The declared
-capacity is a trusted caller precondition: it must describe the accessible
-allocation extent. The binding checks that the view fits the declared capacity
-and that the pointer is on the selected CUDA device, but cannot prove an
-arbitrary caller's extent claim. Keep the owner and borrowed view alive through
-completion of queued native work; arithmetic calls enqueue work without
-retaining borrowed views after return. A prepared CSR owner retains the buffer
-published as its current weights, while its per-call input and output views
-remain caller-managed through completion. `upload()` and `download()` are
-explicit blocking host-transfer boundaries. `multiply_into` and `axpby_into`
-enqueue the native FP32 kernels on the supplied stream.
-`PreparedCsr(indptr, indices, weights, source_count, feature_width, stream)`
-owns one prepared CSR topology and its current weight generation; `apply_into`
-uses caller-provided input/output buffers, and `publish_values` installs a new
-weight generation. Its CUDA workspaces and topology stay native-owned.
-
-For Torch programs, import `from cellerator.torch import cuda`. The adapter's
-`current_stream(device)` wraps PyTorch's current stream, while `borrow(tensor,
-stream)` creates a native view of existing contiguous CUDA FP32 storage.
-`multiply_into(a, b, out, stream)` and `axpby_into(alpha, a, beta, b, out,
-stream)` dispatch to the same native kernels. `PreparedCsr` accepts CPU NumPy
-`uint64` CSR arrays and a Torch FP32 weight tensor, then applies into Torch
-input/output tensors or publishes replacement weights through the same native
-owner. `as_tensor(native_buffer)` imports a native-owned buffer through DLPack
-without copying and uses DLPack's event handoff when the Torch consumer stream
-differs from the native producer stream. `record_stream` protects allocator
-lifetime; callers remain responsible for producer readiness and exclusive
-mutation ordering across streams. The arithmetic remains native FP32
-round-to-nearest; the existing prepared-relation candidate permits FMA and
-reassociation under its numeric contract. The adapter adds no precision mode.
-These operations are forward-only and reject `requires_grad` tensors.
-
-Installed consumers should locate artifacts through the Python distribution
-metadata and imported module paths. Do not set development-tree library loader
-variables to make an installed package work.
+The installed wheel is the supported way to locate extension artifacts. Avoid
+development-tree loader variables to make an installed package import. For
+source and target ownership see [developer reference](../developer_reference.qmd);
+for maturity and evidence see [current implementation](../current_implementation.qmd).

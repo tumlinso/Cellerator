@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "task_id": "cellerator-native-ordered-postings-v3-sm70-20261028",
+  "cases": [
+    {
+      "id": "small_v3",
+      "input": {
+        "cells": 8,
+        "entities": 64,
+        "edges": 96,
+        "fixture_root": "/tmp/cellerator_scaled_sparse_fixtures_887437fc",
+        "profile": "small",
+        "fixture_manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+        "query_terms_per_cell": 24
+      },
+      "parameters": {"width": 64, "candidate_mode": "exact_any_of"},
+      "weight": 1.0
+    },
+    {
+      "id": "large_ranked_v3",
+      "input": {
+        "cells": 32,
+        "entities": 4096,
+        "edges": 262144,
+        "fixture_root": "/tmp/cellerator_scaled_sparse_fixtures_887437fc",
+        "profile": "large-ranked",
+        "fixture_manifest_sha256": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32",
+        "query_terms_per_cell": 24,
+        "rank_presence_count": 512
+      },
+      "parameters": {"width": 64, "candidate_mode": "exact_any_of"},
+      "weight": 1.0
+    },
+    {
+      "id": "large_events_v3",
+      "input": {
+        "cells": 8,
+        "entities": 20000,
+        "edges": 1280000,
+        "fixture_root": "/tmp/cellerator_scaled_sparse_fixtures_887437fc",
+        "profile": "large-events",
+        "fixture_manifest_sha256": "910a4c742b795a2a827cb21e62c510a3bc5039e6878ae75d4826fc0d33234be8",
+        "query_terms_per_cell": 24,
+        "window_filter_before_scoring": true
+      },
+      "parameters": {"width": 64, "candidate_mode": "exact_any_of"},
+      "weight": 1.0
+    }
+  ],
+  "commands": {
+    "build": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3",
+        "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/bench/sparse_support/kda_native_index_adapter.py",
+        "build", "{request}", "{result}"
+      ],
+      "cpu_only": true,
+      "timeout_seconds": 60
+    },
+    "validate": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3",
+        "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/bench/sparse_support/kda_native_index_adapter.py",
+        "validate", "{request}", "{result}"
+      ],
+      "timeout_seconds": 1800
+    },
+    "benchmark": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3",
+        "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/bench/sparse_support/kda_native_index_adapter.py",
+        "benchmark", "{request}", "{result}"
+      ],
+      "timeout_seconds": 2400
+    }
+  },
+  "trusted_inputs": [
+    {"id": "native_adapter", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/bench/sparse_support/kda_native_index_adapter.py", "role": "harness"},
+    {"id": "kda_adapter", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/bench/sparse_support/kda_adapter.py", "role": "harness"},
+    {"id": "native_runner", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/bench/sparse_support/run_cuda_indexing_bench.py", "role": "benchmark"},
+    {"id": "cuda_benchmark_source", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/bench/sparse_support/cuda_indexing_bench.cu", "role": "benchmark"},
+    {"id": "fixture_generator", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/bench/sparse_support/scaled_fixtures.py", "role": "reference"},
+    {"id": "postings_cuda_source", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/src/compute/indexing/cuda_postings.cu", "role": "reference"},
+    {"id": "postings_cuda_header", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/include/Cellerator/compute/indexing/cuda_postings.cuh", "role": "reference"},
+    {"id": "workset_cuda_source", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/src/compute/gating/cuda_worksets.cu", "role": "reference"},
+    {"id": "workset_cuda_header", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/include/Cellerator/compute/gating/cuda_worksets.cuh", "role": "reference"},
+    {"id": "fastpath_binary", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/binaries/cellerator_sparse_support_cuda_indexing_bench", "role": "toolchain"},
+    {"id": "serial_baseline_binary", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/frozen_baseline/cellerator_sparse_support_cuda_indexing_bench", "role": "toolchain"},
+    {"id": "build_cache", "path": "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/toolchain/CMakeCache.txt", "role": "toolchain"},
+    {"id": "v13_probe_extension_identity", "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/identity.json", "role": "toolchain"},
+    {"id": "v13_probe_extension", "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so", "role": "toolchain"},
+    {"id": "small_fixture_manifest", "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/small/manifest.json", "role": "reference"},
+    {"id": "large_ranked_fixture_manifest", "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-ranked/manifest.json", "role": "reference"},
+    {"id": "large_events_fixture_manifest", "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-events/manifest.json", "role": "reference"}
+  ],
+  "numerical_requirements": {
+    "correctness": "exact host oracle pass for output candidate IDs, stable ordering, primal workset, derivative workset, and capacities",
+    "scope": "Compare the frozen serial posting baseline and current ordered-disjoint posting fastpath on byte-identical frozen fixture arrays; retain full-rescan as an in-binary control."
+  },
+  "probe": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python3",
+      "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/source_snapshot/bench/sparse_support/kda_native_index_adapter.py",
+      "probe", "{request}", "{result}"
+    ],
+    "timeout_seconds": 60
+  },
+  "timing": {
+    "direction": "minimize",
+    "metric": "cuda_complete_postings_bitmap_workset",
+    "unit": "ms",
+    "scope": "CUDA-event full posting-discovery plus conditional-bitmap workset path; host index, direct-root map, projection, transfer, rescan control, and allocation sizes are recorded separately.",
+    "warmup": 5,
+    "repetitions": 21,
+    "iterations": 3,
+    "rounds": 2,
+    "confirmation_rounds": 2,
+    "seed": 20261028
+  },
+  "promotion": {
+    "min_improvement": 0.0,
+    "max_regression": 0.9,
+    "confidence": 0.95,
+    "bootstrap_samples": 1000
+  },
+  "target": {
+    "kind": "cuda",
+    "architecture": "sm_70",
+    "compiler_target": "sm_70"
+  },
+  "toolchain": {
+    "compiler_target_probe_argv": [
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "--list-gpu-code"
+    ],
+    "runtime": "Native C++/CUDA benchmark compiled with CUDA 12.9 for SM70; job probe records the admitted V100 device and driver."
+  },
+  "execution": {"mode": "direct"},
+  "budgets": {
+    "max_candidates": 2,
+    "max_build_jobs": 1,
+    "max_seconds": 3300
+  }
+}

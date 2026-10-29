@@ -1,0 +1,35 @@
+{
+  "format": "cellerator-compiler-qualification-limits-v1",
+  "scope": "Compiler naming/build cleanup; separate from the successfully admitted numerical/PyTorch CUDA qualification.",
+  "unadmitted_driver_test_attempts": {
+    "tests": [
+      "ce_ccp1_f04_007",
+      "cellerator_direct_ptx_hot_path_demonstration_test",
+      "ce_ccp1_f04_011"
+    ],
+    "result": "CUDA_ERROR_NO_DEVICE and assertion aborts; not passing GPU qualification",
+    "numerical_exit_codes": "not retained by the child runner",
+    "kernel_execution_proven": false,
+    "response": "Broad sweep stopped; subsequent validation used explicit CPU tests and static compilation only."
+  },
+  "retained_lock": {
+    "path": "/tmp/cuda_v100_benchmark.device0.lock",
+    "inode": 6961234,
+    "size_bytes": 0,
+    "mtime_utc": "2026-10-28T22:21:51Z",
+    "disposition": "untouched; presence is not allocation or cleanup evidence"
+  },
+  "legacy_nvcc_test": {
+    "test": "ce_ccp1_f03_013",
+    "compiler_argv": [
+      "/usr/bin/nvcc",
+      "-std=c++17",
+      "-arch=sm_70",
+      "-c",
+      "<generated relation.cu>"
+    ],
+    "result": "Host header _Float32/_Float128 declarations rejected; no successful runtime check",
+    "limits": "The generated temporary path and child PID were not retained; current package build uses qualified HPC SDK CUDA 12.9 and the explicitly selected compatible host compiler."
+  },
+  "passing_checks": "receipt.json records the exact CPU/static commands. Admitted numerical, transition, prepared-routing and sanitizer receipts are separate under ../cuda/."
+}

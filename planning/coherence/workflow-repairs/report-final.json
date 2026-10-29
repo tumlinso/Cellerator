@@ -1,0 +1,111 @@
+{
+  "format": "cellerator-workflow-repair-validation-v1",
+  "repair": "Use existing authorized host session for candidate report finalization",
+  "candidate": {
+    "todo_commit": "abc0d409e26e8dd579a9172373d4c9b4bd5aeb36",
+    "wheel": "/tmp/cellerator-workflow-repair/wheels-handoff/todo_orchestrator-0.2.1-py3-none-any.whl",
+    "wheel_sha256": "0557657e039925e6955776a6795cb05fce8e07a8d1e906de23e2c64d0b50e561",
+    "todo_package_fingerprint": "c9c639a33e9c574fcac5ef9ec0f0a648ab1caa9161eeee90f8a6f24ddc3b2638",
+    "project_control_wheel": "/tmp/cellerator-workflow-repair/wheels-pc-report-final/project_control-0.5.2-py3-none-any.whl",
+    "project_control_wheel_sha256": "507b8ecc6f409d9be39e0203e55ab6c2ee6decc1ad8610d75e89616aceb9cd83",
+    "project_control_package_fingerprint": "ccef63988118f74931723f9bbcff920c33a929e6adcc10c8b56f7ef02dc0efae",
+    "project_control_commit": "062b669779d3c4e9b3b0309da572a21347509dd8",
+    "candidate": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-report-host-20261028T231936Z",
+    "old_release": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-todo-abc0d40-20261028T230541Z",
+    "release_manifest_sha256": "998c9ab0691209cab833afc59c086236cfddea09a40d39fcf686670540b11026",
+    "unchanged_packages": [
+      "device_scheduler_adapters",
+      "device_scheduler_core",
+      "device_scheduler_mcp",
+      "project_evidence",
+      "project_source",
+      "todo_orchestrator"
+    ],
+    "third_party_versions_unchanged": true,
+    "authority_migration": false,
+    "activation_performed": false
+  },
+  "confirmed_diagnosis": {
+    "exception_class": "TodoAuthenticationError",
+    "site": "TodoApplication.open application.py461: session capability expired",
+    "trace": "finish-handoff-monitor-exception-class.txt",
+    "phase_chain": [
+      "provider exact source pin created",
+      "Todo handback receipt validated by facade; semantic no-op retains authority revision18",
+      "facade report_pending",
+      "report adapter attempted expired worker session before native report handler"
+    ],
+    "actual_live_registered_outcome_not_claimed": true
+  },
+  "checks": [
+    {
+      "name": "required PC core source smoke",
+      "result": "pass",
+      "tests": 44,
+      "subtests": 6,
+      "seconds": 4.34,
+      "log": "report-pc-core.log"
+    },
+    {
+      "name": "source credentials compact workflow and binding",
+      "result": "pass",
+      "tests": 32,
+      "seconds": 3.21,
+      "log": "report-pc-focused.log"
+    },
+    {
+      "name": "final installed credentials compact workflow and binding",
+      "result": "pass",
+      "tests": 32,
+      "seconds": 3.5,
+      "package_origins_asserted": true,
+      "log": "report-final-installed-tests.log"
+    },
+    {
+      "name": "sealed final official launcher and pairing",
+      "result": "pass",
+      "log": "candidate-report-final-help.txt"
+    },
+    {
+      "name": "disposable public MCP expired-session completion journey",
+      "result": "pass",
+      "transport": "SDK in-memory client/server",
+      "candidate_manifest_and_all_package_fingerprints_verified": true,
+      "summary": "report-mcp-journey.json",
+      "steps": {
+        "expired_attempt_session_rejected": true,
+        "finish_note_retained": true,
+        "finish_status": "review_pending",
+        "journey": "passed",
+        "plan_apply": "passed",
+        "plan_preview": "passed",
+        "run_open": "passed",
+        "task_claim": "passed",
+        "task_id": "CE-SMOKE-00",
+        "transport": "in_memory_public_mcp"
+      }
+    }
+  ],
+  "invariants": [
+    "Only Project Control package bytes changed; Todoabc and all other exact packages/dependency versions retained.",
+    "Existing host grant used; no credential or capability issuance/extension.",
+    "Native exact actor ownership, action authorization, source-fenced handoff and committed receipt guards remain.",
+    "Computation, verification, reservation and renewal retain attempt-scoped sessions and expired authority denial.",
+    "Host denial propagates without falling back to worker session or self-granting.",
+    "No authority restore, registry edit, lease revival or new registered claim/release/accept/integration by this child."
+  ],
+  "test_limits": [
+    "The complete MCP journey is an isolated fixture, not production/stdin-stdout/service execution.",
+    "Fixture clock alone advanced beyond two-minute lease; its synthetic owner credential and modeled empty ownership registry remained private.",
+    "Two fixture harness-only retries corrected missing attempt ID and provider composition for deliberate expired-session probe; final run passed.",
+    "Source core/focused checks preceded a comment-only correction; AST equivalence was asserted and final installed selection and complete public MCP journey ran against the final sealed candidate."
+  ],
+  "artifact_sha256": {
+    "project-control-report-final-fix.bundle": "668938d30a6268c6aa3a2904967e82e32f1a7d6ca081373fd6703ca49da15518",
+    "project-control-report-final-fix.patch": "b593c18c03c021370e47232d02f411cff4d8849b1e180bfec0a8e4706bd47e37",
+    "ACTIVATION-report-final.md": "4b51409020f25f083a93432c962e602fe38818c17e950ddf6503e90ad84a0933",
+    "report-mcp-journey.json": "83a0f6804af7348053c825c3ec5cff3cc8d23140bcd1f04fda87c3de609f9d85",
+    "finish-handoff-monitor-exception-class.txt": "b08b57198d8c215d4a86ffe65c00e364fef02b8ef2bb3938edf87b4ee2580c8b"
+  },
+  "activation_performed_by_this_agent": false
+}

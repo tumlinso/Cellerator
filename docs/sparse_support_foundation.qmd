@@ -1,0 +1,170 @@
+---
+title: "Sparse support, indexing, and gating"
+---
+
+This facility separates logical support, candidate retrieval, conditional
+activation, latent-state computation, and physical execution. Its first
+consumers are controlled event-stream and ranked-gene embedding examples.
+They are engineering fixtures and do not establish biological validity.
+
+## Native responsibilities
+
+`Cellerator::sparse_support` is a Torch-free host library. Public contracts live
+under `Cellerator/compute/support`, `indexing`, and `gating`.
+
+- Logical support retains stable relation and edge identities, ordered
+  participant roles and multiplicity, and immutable structure epochs.
+- Reverse postings implement exact any/all retrieval and sorted set
+  intersections. Temporal indexes preserve repeated occurrences and filter
+  ordinal or timestamp windows before returning candidates.
+- Condition programs share predicates across logical edges. Sparse dirty
+  updates and cross-cell bitmaps produce distinct primal and derivative work
+  sets. Capacity failures are explicit; query output is not silently truncated.
+- Bounded proposals use existing neighborhoods and seeded exploration. The
+  proposal budget bounds search effort, rather than fixing eligible degree.
+  A proposal is not evidence of a biological or causal relationship.
+
+The CUDA component supplies device posting retrieval, condition bitmaps, and
+work-set construction. Its initial sparse merge/compaction schedules are exact
+baselines; algorithm choice requires complete-cost evidence.
+
+## Latent state and learned gates
+
+The numerical operation layer provides indexed latent transitions
+`z_next = tanh(A z + B u + b)` and explicit VJPs. Cells have independent state
+over overlapping mechanisms, with model parameters shared across cells.
+There is no required chromatin annotation or predefined biological mechanism
+ontology. Event order, gene identity, rank, and event occurrence identity remain
+distinct.
+
+The initial gate uses `p = sigmoid(score / temperature)` and pruned forward
+`q = p * (p >= threshold)`. Soft training can precede fine-tuning with the
+declared estimator `q_train = p + stop_gradient(q - p)`. This estimator keeps
+sigmoid gradients for selected derivative candidates, including candidates
+omitted from the primal. It is a biased gradient estimator. Finite differences
+of the discontinuous pruned computation do not validate that estimator.
+
+The derivative candidate policy is part of the model contract and checkpoint.
+Scoring and derivative-only work must be included in training costs. Structural
+pruning, numerical gating, and physical packing are separate operations.
+The native cyclic sampler retains all admitted interactions and bounds only
+the additional dormant sample. Its seed, rotation counter, coverage counts,
+and biased estimator policy are explicit; unvisited candidates have no exact
+gradient claim.
+
+FP16 storage/multiplication and FP32 accumulation, gradients, and master
+parameters are the initial mixed-precision route. An explicit FP32 reference
+remains available. No BF16 or TF32 hardware support is assumed.
+
+## Geometry and the Torch boundary
+
+The initial packed numerical backend uses the existing CE-GEO physical cover,
+logical value maps, and width-64 consumer. A prepared projection binds logical
+IDs to physical slots; per-cell activity determines which tiles execute.
+Irregular support retains a sparse SIMT route. Physical packing is replaceable
+and does not redefine logical support or learned parameter identity.
+
+Compiled native operations participate in Torch training through explicit
+custom backward operations. One canonical native parameter owner exposes a
+stable Torch leaf and uses guarded Adam publication. Shared scorer parameters
+allow new support records without adding per-edge optimizer tensors.
+
+Support/projection epochs stay fixed while forward tapes are live. The
+adaptive support manager stages additions, revocations, and delta-to-base
+promotions, then publishes between training windows. A stable compiled base
+and adaptation delta have disjoint logical ownership. The adaptation delta is
+different from the CE-GEO physical MMA residual region.
+
+High-confidence compilation fixes routing and storage; state-dependent gates
+remain evaluable. Checkpoints retain logical support, owner and optimizer
+state, application/window state, proposal RNG, gate policy, and physical
+preparation metadata. Restore logical state before rebuilding physical views.
+
+## Applications and evidence
+
+The event consumer uses occurrence and window indexes before scoring and
+updates affected latent mechanisms in caller-defined order. Expiration changes
+temporal eligibility without reversing earlier recurrent updates. Timestamp
+windows do not impose a continuous-time transition law.
+
+The ranked consumer intersects selected gene identities with support and keeps
+rank as a separate feature. A masked token contributes neither an entity nor a
+rank embedding. Ranked position does not imply temporal order.
+
+Native pointer-based CUDA APIs use caller-owned reserved storage and streams.
+The synthetic Torch consumers currently build some worksets on the CPU and
+explicitly transfer gate decisions for host sampling. Their mechanism postings
+are refreshed after parameter publication. Those costs are separate from the
+allocation-free numerical launch contract; these examples do not establish a
+fully device-resident training pipeline.
+
+Both consumers retain full-support value evaluation and offer
+`edge_value_policy="workset_union"` to derive shared values only for the
+unique primal/derivative union. This preserves dormant candidates needed by
+gate gradients and recomputes values after parameter publication. The native
+logical-order value vector and parameter owner remain the same.
+
+The event consumer retains `relation_input="current_event"` and also accepts
+`"eligible_history"`, which sums the provider's window-eligible occurrences,
+including repetitions. Recurrent updates still consume the current event;
+gate context and window predicates are unchanged. The checkpoint records the
+choice. A history stream must explicitly request the same option when resumed;
+legacy checkpoints retain their current-event meaning.
+
+The [evaluation intake](sparse_support_foundation/evaluation.md) accepts
+caller-supplied ranked or event records, emits exact CPU candidate views and
+reversible native identity maps, and catalogs 15 retained mechanism families.
+Its raw-bundle compatibility is a preparation boundary; an admitted GPU adapter
+still binds relation identity, epochs, roles, and timestamp units. Synthetic
+timings do not automatically remove a mechanism or fix a runtime policy.
+
+See the [benchmark protocol](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/README.md) and
+[implementation contract](sparse_support_foundation/draft.md). Retained
+qualification distinguishes host tests, admitted GPU correctness, numerical
+and surrogate-gradient comparisons, learning behavior, sanitizers, profiling,
+and unprofiled timings. Preparation, discovery, gating, packing, backward,
+publication, and memory remain visible in complete-cost comparisons. No single
+layout or algorithm is the default winner for every workload.
+
+The source-bound [native qualification](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/native/README.md),
+[corrected gradient/lifecycle run](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/lifecycle/v9-gradient-scatter/REPORT.md),
+and [learning fixture report](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/learning/v9_corrected/REPORT.md)
+retain the exact tested snapshots. The corrected 50-epoch fixture reached
+56.25% ranked-gene accuracy with pruned execution versus 34.38% for shuffled
+support. Event accuracy was 28.12% on 64 held-out cells, close to the four-class
+chance rate of 25%; this is a weak result and does not establish recovery of the
+hidden mechanisms. The earlier run with incorrectly scattered sampled gate
+gradients remains diagnostic evidence and is excluded from those results.
+The [final snapshot-restoration suite](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/lifecycle/v11-snapshot-restore/REPORT.md)
+passes 28 tests, including loading into a fresh model after a novel edge was
+promoted and later revoked. Saved base/delta ownership, epochs, tombstones, and
+promotion evidence are restored directly while retaining the parameter leaf.
+The [v14 integration](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/v14-optional-policies/REPORT.md)
+passes 83 tests and two subtests across the optional policies, intake, and
+existing Torch bindings, plus the native CUDA workset test.
+
+The [controlled event readout experiment](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/experiments/event_learning_diagnostic/README.md)
+retains both input choices. On one fixed synthetic task, history input reached
+509/512 pruned held-out predictions versus 122/512 for current-event input,
+with matched support, initialization, and training. The task depends directly
+on recent participant sets; it does not establish behavior on order-sensitive
+or biological tasks. The [indexed-value experiment](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/experiments/indexed_values/evidence/qualification/v13/REPORT.md)
+measured a 2.935× complete-step gain for its sparse event workload, with a small
+regression and a nearly neutral ranked case. Both value paths remain available.
+
+The [balanced V100 comparison](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/run_001/REPORT.md)
+found no reliable complete-cost advantage for packed execution on its two
+small relation fixtures. Same-process paired training favored SIMT by about
+2.5%; the separate-request KDA comparison disagreed and its aggregate interval
+crossed parity. SIMT remains the measured fallback. Packed execution is a
+qualified trainable capability, without a promoted performance regime here.
+
+The [large native comparison](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/REPORT.md)
+measures ordered discovery plus conditional worksets against serial merge and
+full rescan, including preparation and reuse costs. The
+[large packed/SIMT comparison](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/torch_v13_complete_cost_20261028/REPORT.md)
+and [physical layout comparison](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/experiments/geometry_layout/V13_RESULTS.md)
+retain canonical, reordered, and hybrid candidates with exact gradient checks.
+Those synthetic steps generally favored SIMT; they neither remove packed
+mechanisms nor predict the result on biological data. All candidate families
+remain available through their native or experimental entry points.

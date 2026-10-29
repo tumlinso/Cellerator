@@ -32,6 +32,6 @@ cellerator_add_part_one_acceptance(010
 cellerator_add_part_one_acceptance(011
     tests/compiler/j03/run_final_performance_and_regression_review_test.cc)
 cellerator_add_part_one_acceptance(012
-    tests/compiler/j03/create_release_and_bootstrap_reproducibility_bundle_test.cc)
+    tests/compiler/j03/release_and_bootstrap_reproducibility_bundle_test.cc)
 cellerator_add_part_one_acceptance(013
-    tests/compiler/j03/freeze_part_one_completion_checkpoint_test.cc)
+    tests/compiler/j03/part_one_completion_checkpoint_test.cc)

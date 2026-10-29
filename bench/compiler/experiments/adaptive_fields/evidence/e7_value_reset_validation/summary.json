@@ -1,0 +1,28 @@
+{
+  "passed": false,
+  "commands": [
+    {
+      "label": "reset_protocol",
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3.13",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py",
+        "--case",
+        "small",
+        "--output",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_value_reset_validation/reset_protocol.json",
+        "--validate-reset-protocol",
+        "--candidate",
+        "scan_simt_full",
+        "--seed",
+        "20261027"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "{\"decision\": \"rejected\", \"error\": \"E7 result did not satisfy its correctness checks\", \"output\": \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_value_reset_validation/reset_protocol.json\"}\n",
+      "decision": null,
+      "performance_evidence": false
+    }
+  ],
+  "performance_evidence": false,
+  "run_key": "adaptive-fields-e7-value-reset-validation-ab22c640-6e02-44e4-85c6-613628b31edf"
+}

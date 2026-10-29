@@ -1,0 +1,57 @@
+---
+title: "Model building"
+---
+
+## Compose a model from Torch and Cellerator
+
+Use PyTorch for ordinary tensors, standard layers, autograd, optimizers, and
+training control. Add a Cellerator operation where the cellular model's
+identity, relations, support, or repeated work changes the operation's
+contract or execution. The intended model is a composition of these pieces;
+Cellerator is not a second general-purpose deep-learning framework.
+
+The current module surface is intentionally small. `Product2Module` is a real
+`torch.nn.Module` with trainable coefficients, persistent indices, native
+preparation, and first-order gradients. The optional CUDA `MechanismModule`
+owns a specific native indexed-mechanism handle and lifecycle. Sparse support
+modules model explicit ranked-gene and event-slice consumers. These components
+have distinct backend, data, and maturity boundaries; they are not a uniform
+layer stack. See [operations](operations.qmd) and the
+[Python binding guide](development/python-bindings.md) for details.
+
+## Keep scientific meaning with the model owner
+
+Cellerator should expose reusable contracts without assigning biological
+meaning to an input by convention. A scientific consumer defines how an entity,
+relation, feature, event, or state is interpreted and validates that
+interpretation. A numerical API should state the accepted identities, ordering,
+value types, update behavior, and derivative contract without silently
+inventing a domain ontology.
+
+AnnData is required by the Python package and remains a standard interface in
+the ecosystem. Current operations accept explicit arrays or tensors; there is
+not yet a direct adapter that chooses AnnData layers, derives model structure,
+or prepares a scientific model automatically. Classical data analysis and
+preprocessing remain upstream in AnnData, Scanpy, or RAPIDS-singlecell.
+
+## Parameters, state, and structure
+
+Treat model structure, current activity, state values, and learned parameters
+as separate things. A parameter update should not rebuild immutable structure
+when an operation permits reuse, and a change of activity should have an
+explicit support or invalidation path. A layout reorder must preserve the
+mapping back to logical entities, outputs, and gradients. See
+[layout and execution](layout_execution.qmd).
+
+Use `torch.nn.Module` when it gives a useful owner for parameters, buffers,
+composition, or checkpoint behavior. Otherwise a callable operation or native
+API may be the better interface. New module types should follow from real
+operations rather than a speculative catalog of biological layer names.
+
+## Execution fields are experimental
+
+The current `ExecutionField` composes a prepared Product2 module and makes
+structure rebinding explicit. It is experimental, CPU FP32, and has no JIT or
+live recompilation. Ordinary model use does not depend on an execution field.
+The [experimental fields note](development/experimental-fields.md) documents
+its exact boundary.

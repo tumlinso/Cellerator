@@ -1,0 +1,53 @@
+{
+  "schema": "cellerator.adaptive_fields.e5_contract_boundary.v1",
+  "experiment": "E5",
+  "gpu_execution_performed": true,
+  "overall_decision": "unresolved",
+  "smoke_decision_scope": "direct-native versus experiment-local field-stage path parity only",
+  "recurrent_semantics_decision": "unresolved pending owner resolution of native ABI/storage mismatch",
+  "native_contract_evidence": {
+    "header": {
+      "path": "include/Cellerator/compute/operation/sparse_support/training.hh",
+      "sha256": "308c1c7713a1346db11359f633a676c533e88221785ee83f4bc0681317231bf1",
+      "statement": "latent transition A/B/bias are shared parameter matrices"
+    },
+    "cuda_implementation": {
+      "path": "src/compute/operation/sparse_support/training.cu",
+      "sha256": "4dec815882d3b85e61f5ec70234690c8186030bcb7ec15546c5d81ba17efcc76",
+      "observation": "forward and VJP index shared width-by-width matrices without a mechanism stride"
+    },
+    "cpu_reference": {
+      "path": "src/compute/operation/sparse_support/training.cc",
+      "sha256": "505a57cade9a5b398d097fb7fe7befbd6f4dcf8fa523e3f87a7fa6a2bc0e9b7b",
+      "observation": "reference uses the same shared matrix contract"
+    },
+    "python_storage": {
+      "path": "python/cellerator/torch/sparse_support.py",
+      "sha256": "0fbdcbdb9cea80d73cf628c90e9b45c747ff58fe9c8330aaf1baa46d90f80e85",
+      "statement": "sparse_parameter_layout stores per-mechanism transition blocks shaped [mechanisms,width,width] and [mechanisms,width]"
+    }
+  },
+  "independent_replay": {
+    "verifier": "bench/compiler/experiments/adaptive_fields/verification/estimator/verify_estimator_oracle.py",
+    "shared_block_zero_replay_final_output_max_abs": 3.05e-7,
+    "shared_block_zero_replay_loss_abs": 2.38e-7,
+    "shared_block_zero_replay_owner_gradient_max_abs": 3.13e-8,
+    "per_step_transition_max_abs": 5.27e-4,
+    "per_mechanism_matrix_interpretation": "does not reproduce the native shared-matrix result",
+    "interpretation": "This evidence establishes an API/storage contract mismatch; it does not establish a native kernel arithmetic defect."
+  },
+  "retained_smoke": {
+    "report": "bench/compiler/experiments/adaptive_fields/gpu/evidence/e5_smoke.json",
+    "report_sha256": "384991499d8429ea59d800339af0d8a1f7495a278e6dd76e39d3eeb605380282",
+    "raw_arrays": "bench/compiler/experiments/adaptive_fields/gpu/evidence/raw/e5_seed20261027_current_event_all.npz",
+    "raw_arrays_sha256": "39d8b2702750862991efaf7f8aeb0a05af19289db2bbe6b6147f593a4b6752ce"
+  },
+  "stopped_expansions": [
+    "ranked recurrent E5",
+    "eligible-history recurrent E5",
+    "full-support versus indexed-union recurrent E5",
+    "structural publication and continuation E5",
+    "checkpoint restoration continuation E5"
+  ],
+  "no_production_semantics_or_kernel_changed": true
+}

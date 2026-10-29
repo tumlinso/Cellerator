@@ -1,0 +1,502 @@
+{
+  "attempt": {
+    "attempt_id": "8e9736ff-971a-4876-9cca-9ec7917e3cb5",
+    "cleanup_verified": true,
+    "created_at": "2026-10-27T21:13:02.586027Z",
+    "error": {},
+    "evidence": [
+      {
+        "adapter_errors": [],
+        "kind": "execution_preconditions",
+        "operation_id": "preconditions:8e9736ff-971a-4876-9cca-9ec7917e3cb5",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 3,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-27T21:13:05.075950+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T21:13:07.479798+00:00",
+                            "required_free_bytes": 4831838208,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 3
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T21:13:05.075950+00:00",
+                        "process_observed_at": "2026-10-27T21:13:07.479798+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                        "state": "busy"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-27T21:13:10.955274+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T21:13:13.384156+00:00",
+                            "required_free_bytes": 4831838208,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 3
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T21:13:10.955274+00:00",
+                        "process_observed_at": "2026-10-27T21:13:13.384156+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                        "state": "busy"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-27T21:13:16.875455+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T21:13:19.275434+00:00",
+                            "required_free_bytes": 4831838208,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T21:13:16.875455+00:00",
+                        "process_observed_at": "2026-10-27T21:13:19.275434+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-27T21:13:22.746333+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T21:13:25.156432+00:00",
+                            "required_free_bytes": 4831838208,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T21:13:22.746333+00:00",
+                        "process_observed_at": "2026-10-27T21:13:25.156432+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-27T21:13:28.639605+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T21:13:31.021698+00:00",
+                            "required_free_bytes": 4831838208,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T21:13:28.639605+00:00",
+                        "process_observed_at": "2026-10-27T21:13:31.021698+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 3,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      4831838208
+                    ],
+                    "timeout_seconds": 60.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      }
+    ],
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 4294967296.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "claim_id": "a0ba63f3-ca51-4b40-b0a9-2931c39b2a51",
+      "fencing_token": 990,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 3,
+            "inventory_observed_at": "2026-10-27T21:12:59.202472+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:84:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-27T21:12:59.202472+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          },
+          "capabilities": [
+            "shared-admission",
+            "whole-device-exclusive-admission",
+            "memory-accounting-only",
+            "nvidia-smi-compute-process-telemetry"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+          "schema_version": 1,
+          "topology": {
+            "links": [],
+            "pci_bus_id": "00000000:84:00.0",
+            "topology_state": "partial"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-e3afc5f8b2509fac31574011be255f88.service",
+      "identity": "8e9736ff-971a-4876-9cca-9ec7917e3cb5",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-e3afc5f8b2509fac31574011be255f88.service",
+        "description": "Device Scheduler attempt 8e9736ff-971a-4876-9cca-9ec7917e3cb5",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "96f0b8c57ff24785bab9dd89215c9025",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-10-27T21:13:31.101949Z"
+    },
+    "finished_at": "2026-10-27T21:13:38.498972Z",
+    "id": "8e9736ff-971a-4876-9cca-9ec7917e3cb5",
+    "job_id": "7ae33c76-83e8-4913-8a81-41b9ffd0154c",
+    "operation_id": "start:8e9736ff-971a-4876-9cca-9ec7917e3cb5",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:8e9736ff-971a-4876-9cca-9ec7917e3cb5",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "observation": {
+                  "consecutive_samples": 3,
+                  "samples": [
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-27T21:13:05.075950+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T21:13:07.479798+00:00",
+                          "required_free_bytes": 4831838208,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 3
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T21:13:05.075950+00:00",
+                      "process_observed_at": "2026-10-27T21:13:07.479798+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                      "state": "busy"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-27T21:13:10.955274+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T21:13:13.384156+00:00",
+                          "required_free_bytes": 4831838208,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 3
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T21:13:10.955274+00:00",
+                      "process_observed_at": "2026-10-27T21:13:13.384156+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                      "state": "busy"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-27T21:13:16.875455+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T21:13:19.275434+00:00",
+                          "required_free_bytes": 4831838208,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T21:13:16.875455+00:00",
+                      "process_observed_at": "2026-10-27T21:13:19.275434+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-27T21:13:22.746333+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T21:13:25.156432+00:00",
+                          "required_free_bytes": 4831838208,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T21:13:22.746333+00:00",
+                      "process_observed_at": "2026-10-27T21:13:25.156432+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-27T21:13:28.639605+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T21:13:31.021698+00:00",
+                          "required_free_bytes": 4831838208,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T21:13:28.639605+00:00",
+                      "process_observed_at": "2026-10-27T21:13:31.021698+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    }
+                  ],
+                  "state": "observed"
+                },
+                "parameters": {
+                  "consecutive_samples": 3,
+                  "interval_seconds": 1.0,
+                  "max_utilization_percent": 0,
+                  "minimum_free_bytes": [
+                    4831838208
+                  ],
+                  "timeout_seconds": 60.0
+                },
+                "precondition_index": 0
+              },
+              "name": "gpu.quiescence",
+              "resource_ids": [
+                "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+              ],
+              "schema_version": 1,
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "state": "verified"
+    },
+    "result": {
+      "active_state": "active",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-e3afc5f8b2509fac31574011be255f88.service",
+        "invocation_id": "96f0b8c57ff24785bab9dd89215c9025",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt 8e9736ff-971a-4876-9cca-9ec7917e3cb5"
+      },
+      "exit_code": 0,
+      "invocation_id": "96f0b8c57ff24785bab9dd89215c9025",
+      "logs": "{\"schema\":\"cellerator.csr_union_bitmap_v1\",\"case_id\":\"q2048_unique\",\"edges\":1000000,\"entities\":20000,\"cells\":32,\"q_per_cell\":2048,\"query_terms_total\":65536,\"candidate_required_total\":3287262,\"raw_posting_upper_bound\":3287262,\"correctness\":\"cpu_oracle_exact\",\"device\":{\"name\":\"Tesla V100-SXM2-16GB\",\"uuid\":\"6c1cac7f-a360-0aef-ba98-2828bfd1db1a\",\"sm\":\"70\",\"runtime\":\"CUDA 12.9\"},\"overflow_check\":\"exact_required_no_partial_write\",\"postings_status\":\"measured_exact\",\"postings_operation_proxy_q_times_eligible\":6732312576,\"postings_overflow_check\":\"exact_required_no_partial_write\",\"count_scan_concat_status\":\"measured_exact\",\"query_upload_ms\":0.345854,\"postings_p50_ms\":0.250880003,\"postings_p10_ms\":0.249855995,\"postings_p90_ms\":0.251904011,\"postings_samples_ms\":[0.253952,0.249856,0.249856,0.25088,0.25088,0.249856,0.25088,0.25907201,0.25088,0.25088,0.248832,0.248832,0.249856,0.249856,0.25088,0.249856,0.249856,0.25190401,0.25088,0.25088,0.25088],\"fullscan_p50_ms\":0.66252798,\"fullscan_p10_ms\":0.66048002,\"fullscan_p90_ms\":0.66457599,\"fullscan_samples_ms\":[0.66048002,0.66457599,0.66457599,0.66048002,0.66150397,0.66150397,0.66150397,0.66252798,0.66150397,0.66044801,0.66252798,0.66249597,0.65945601,0.66457599,0.66150397,0.66252798,0.66457599,0.66252798,0.66457599,0.67481601,0.66252798],\"csr_bitmap_p50_ms\":0.68710399,\"csr_bitmap_p10_ms\":0.68403202,\"csr_bitmap_p90_ms\":0.69120002,\"csr_bitmap_samples_ms\":[0.68710399,0.69120002,0.68710399,0.68403202,0.68505597,0.69324797,0.69427198,0.69120002,0.68198401,0.68505597,0.68607998,0.68607998,0.68607998,0.69120002,0.68710399,0.689152,0.69017601,0.68812799,0.68607998,0.68198401,0.68607998],\"count_scan_concat_p50_ms\":0.25088,\"count_scan_concat_samples_ms\":[0.25088,0.25088,0.250848,0.249856,0.25190401,0.25088,0.25088,0.25292799,0.25910401,0.249856,0.249856,0.25289601,0.25190401,0.25292799,0.249856,0.249856,0.25088,0.248832,0.25190401,0.25088,0.25190401],\"count_scan_concat_stage_p50_us\":{\"term_count\":9.2160003,\"scan_and_capacity\":17.408,\"scatter\":228.352},\"csr_bitmap_stage_p50_us\":{\"zero\":12.288,\"posting_scatter\":107.52,\"popcount\":16.384,\"cub_scan\":27.648,\"capacity_finalize\":15.36,\"emit\":522.23998},\"fullscan_stage_p50_us\":{\"zero\":7.1680001,\"query_membership\":6.1440002,\"edge_count\":242.688,\"tile_scan_finalize\":19.455999,\"emit\":392.19201},\"memory_bytes\":{\"baseline_index\":16480008,\"baseline_scratch_ex_output\":2097424,\"baseline_total_resident\":72225880,\"candidate_index\":16160008,\"candidate_scratch_ex_output\":20018703,\"candidate_total_resident\":89302871,\"count_scan_concat_index\":16160008,\"count_scan_concat_scratch_ex_output\":1050639,\"count_scan_concat_total_resident\":70334807,\"fullscan_index\":12000000,\"fullscan_scratch_ex_output\":2083471,\"fullscan_total_resident\":67207631,\"common_output\":52599344,\"common_offsets\":528,\"baseline_posting_query_bytes\":1048576,\"candidate_entity_query_bytes\":524288,\"candidate_scan_temp_bytes\":18687,\"concat_scan_temp_bytes\":2047,\"fullscan_scan_temp_bytes\":3071,\"output_offsets\":264}}\n{\"setup_ms\":{\"direct_csr_build\":7.901072,\"baseline_host_postings\":143.390262,\"baseline_cuda_projection\":15.548837,\"device_alloc_upload\":13.949405,\"total\":1858.74486}}\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "success",
+      "state": "succeeded",
+      "stdout": "{\"schema\":\"cellerator.csr_union_bitmap_v1\",\"case_id\":\"q2048_unique\",\"edges\":1000000,\"entities\":20000,\"cells\":32,\"q_per_cell\":2048,\"query_terms_total\":65536,\"candidate_required_total\":3287262,\"raw_posting_upper_bound\":3287262,\"correctness\":\"cpu_oracle_exact\",\"device\":{\"name\":\"Tesla V100-SXM2-16GB\",\"uuid\":\"6c1cac7f-a360-0aef-ba98-2828bfd1db1a\",\"sm\":\"70\",\"runtime\":\"CUDA 12.9\"},\"overflow_check\":\"exact_required_no_partial_write\",\"postings_status\":\"measured_exact\",\"postings_operation_proxy_q_times_eligible\":6732312576,\"postings_overflow_check\":\"exact_required_no_partial_write\",\"count_scan_concat_status\":\"measured_exact\",\"query_upload_ms\":0.345854,\"postings_p50_ms\":0.250880003,\"postings_p10_ms\":0.249855995,\"postings_p90_ms\":0.251904011,\"postings_samples_ms\":[0.253952,0.249856,0.249856,0.25088,0.25088,0.249856,0.25088,0.25907201,0.25088,0.25088,0.248832,0.248832,0.249856,0.249856,0.25088,0.249856,0.249856,0.25190401,0.25088,0.25088,0.25088],\"fullscan_p50_ms\":0.66252798,\"fullscan_p10_ms\":0.66048002,\"fullscan_p90_ms\":0.66457599,\"fullscan_samples_ms\":[0.66048002,0.66457599,0.66457599,0.66048002,0.66150397,0.66150397,0.66150397,0.66252798,0.66150397,0.66044801,0.66252798,0.66249597,0.65945601,0.66457599,0.66150397,0.66252798,0.66457599,0.66252798,0.66457599,0.67481601,0.66252798],\"csr_bitmap_p50_ms\":0.68710399,\"csr_bitmap_p10_ms\":0.68403202,\"csr_bitmap_p90_ms\":0.69120002,\"csr_bitmap_samples_ms\":[0.68710399,0.69120002,0.68710399,0.68403202,0.68505597,0.69324797,0.69427198,0.69120002,0.68198401,0.68505597,0.68607998,0.68607998,0.68607998,0.69120002,0.68710399,0.689152,0.69017601,0.68812799,0.68607998,0.68198401,0.68607998],\"count_scan_concat_p50_ms\":0.25088,\"count_scan_concat_samples_ms\":[0.25088,0.25088,0.250848,0.249856,0.25190401,0.25088,0.25088,0.25292799,0.25910401,0.249856,0.249856,0.25289601,0.25190401,0.25292799,0.249856,0.249856,0.25088,0.248832,0.25190401,0.25088,0.25190401],\"count_scan_concat_stage_p50_us\":{\"term_count\":9.2160003,\"scan_and_capacity\":17.408,\"scatter\":228.352},\"csr_bitmap_stage_p50_us\":{\"zero\":12.288,\"posting_scatter\":107.52,\"popcount\":16.384,\"cub_scan\":27.648,\"capacity_finalize\":15.36,\"emit\":522.23998},\"fullscan_stage_p50_us\":{\"zero\":7.1680001,\"query_membership\":6.1440002,\"edge_count\":242.688,\"tile_scan_finalize\":19.455999,\"emit\":392.19201},\"memory_bytes\":{\"baseline_index\":16480008,\"baseline_scratch_ex_output\":2097424,\"baseline_total_resident\":72225880,\"candidate_index\":16160008,\"candidate_scratch_ex_output\":20018703,\"candidate_total_resident\":89302871,\"count_scan_concat_index\":16160008,\"count_scan_concat_scratch_ex_output\":1050639,\"count_scan_concat_total_resident\":70334807,\"fullscan_index\":12000000,\"fullscan_scratch_ex_output\":2083471,\"fullscan_total_resident\":67207631,\"common_output\":52599344,\"common_offsets\":528,\"baseline_posting_query_bytes\":1048576,\"candidate_entity_query_bytes\":524288,\"candidate_scan_temp_bytes\":18687,\"concat_scan_temp_bytes\":2047,\"fullscan_scan_temp_bytes\":3071,\"output_offsets\":264}}\n{\"setup_ms\":{\"direct_csr_build\":7.901072,\"baseline_host_postings\":143.390262,\"baseline_cuda_projection\":15.548837,\"device_alloc_upload\":13.949405,\"total\":1858.74486}}\n",
+      "substate": "exited",
+      "unit_name": "device-scheduler-attempt-e3afc5f8b2509fac31574011be255f88.service"
+    },
+    "started_at": "2026-10-27T21:13:31.102101Z",
+    "state": "succeeded"
+  },
+  "attempt_count": 1,
+  "attempt_id": "8e9736ff-971a-4876-9cca-9ec7917e3cb5",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-27T21:12:57.996153Z",
+  "decision_id": "837560d0-14a2-485a-a357-584daaf6dd45",
+  "id": "7ae33c76-83e8-4913-8a81-41b9ffd0154c",
+  "job_id": "7ae33c76-83e8-4913-8a81-41b9ffd0154c",
+  "lease_binding": null,
+  "lease_fencing_token": 990,
+  "lease_id": "a0ba63f3-ca51-4b40-b0a9-2931c39b2a51",
+  "lease_state": "released",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "active",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-e3afc5f8b2509fac31574011be255f88.service",
+      "invocation_id": "96f0b8c57ff24785bab9dd89215c9025",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt 8e9736ff-971a-4876-9cca-9ec7917e3cb5"
+    },
+    "exit_code": 0,
+    "invocation_id": "96f0b8c57ff24785bab9dd89215c9025",
+    "logs": "{\"schema\":\"cellerator.csr_union_bitmap_v1\",\"case_id\":\"q2048_unique\",\"edges\":1000000,\"entities\":20000,\"cells\":32,\"q_per_cell\":2048,\"query_terms_total\":65536,\"candidate_required_total\":3287262,\"raw_posting_upper_bound\":3287262,\"correctness\":\"cpu_oracle_exact\",\"device\":{\"name\":\"Tesla V100-SXM2-16GB\",\"uuid\":\"6c1cac7f-a360-0aef-ba98-2828bfd1db1a\",\"sm\":\"70\",\"runtime\":\"CUDA 12.9\"},\"overflow_check\":\"exact_required_no_partial_write\",\"postings_status\":\"measured_exact\",\"postings_operation_proxy_q_times_eligible\":6732312576,\"postings_overflow_check\":\"exact_required_no_partial_write\",\"count_scan_concat_status\":\"measured_exact\",\"query_upload_ms\":0.345854,\"postings_p50_ms\":0.250880003,\"postings_p10_ms\":0.249855995,\"postings_p90_ms\":0.251904011,\"postings_samples_ms\":[0.253952,0.249856,0.249856,0.25088,0.25088,0.249856,0.25088,0.25907201,0.25088,0.25088,0.248832,0.248832,0.249856,0.249856,0.25088,0.249856,0.249856,0.25190401,0.25088,0.25088,0.25088],\"fullscan_p50_ms\":0.66252798,\"fullscan_p10_ms\":0.66048002,\"fullscan_p90_ms\":0.66457599,\"fullscan_samples_ms\":[0.66048002,0.66457599,0.66457599,0.66048002,0.66150397,0.66150397,0.66150397,0.66252798,0.66150397,0.66044801,0.66252798,0.66249597,0.65945601,0.66457599,0.66150397,0.66252798,0.66457599,0.66252798,0.66457599,0.67481601,0.66252798],\"csr_bitmap_p50_ms\":0.68710399,\"csr_bitmap_p10_ms\":0.68403202,\"csr_bitmap_p90_ms\":0.69120002,\"csr_bitmap_samples_ms\":[0.68710399,0.69120002,0.68710399,0.68403202,0.68505597,0.69324797,0.69427198,0.69120002,0.68198401,0.68505597,0.68607998,0.68607998,0.68607998,0.69120002,0.68710399,0.689152,0.69017601,0.68812799,0.68607998,0.68198401,0.68607998],\"count_scan_concat_p50_ms\":0.25088,\"count_scan_concat_samples_ms\":[0.25088,0.25088,0.250848,0.249856,0.25190401,0.25088,0.25088,0.25292799,0.25910401,0.249856,0.249856,0.25289601,0.25190401,0.25292799,0.249856,0.249856,0.25088,0.248832,0.25190401,0.25088,0.25190401],\"count_scan_concat_stage_p50_us\":{\"term_count\":9.2160003,\"scan_and_capacity\":17.408,\"scatter\":228.352},\"csr_bitmap_stage_p50_us\":{\"zero\":12.288,\"posting_scatter\":107.52,\"popcount\":16.384,\"cub_scan\":27.648,\"capacity_finalize\":15.36,\"emit\":522.23998},\"fullscan_stage_p50_us\":{\"zero\":7.1680001,\"query_membership\":6.1440002,\"edge_count\":242.688,\"tile_scan_finalize\":19.455999,\"emit\":392.19201},\"memory_bytes\":{\"baseline_index\":16480008,\"baseline_scratch_ex_output\":2097424,\"baseline_total_resident\":72225880,\"candidate_index\":16160008,\"candidate_scratch_ex_output\":20018703,\"candidate_total_resident\":89302871,\"count_scan_concat_index\":16160008,\"count_scan_concat_scratch_ex_output\":1050639,\"count_scan_concat_total_resident\":70334807,\"fullscan_index\":12000000,\"fullscan_scratch_ex_output\":2083471,\"fullscan_total_resident\":67207631,\"common_output\":52599344,\"common_offsets\":528,\"baseline_posting_query_bytes\":1048576,\"candidate_entity_query_bytes\":524288,\"candidate_scan_temp_bytes\":18687,\"concat_scan_temp_bytes\":2047,\"fullscan_scan_temp_bytes\":3071,\"output_offsets\":264}}\n{\"setup_ms\":{\"direct_csr_build\":7.901072,\"baseline_host_postings\":143.390262,\"baseline_cuda_projection\":15.548837,\"device_alloc_upload\":13.949405,\"total\":1858.74486}}\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "success",
+    "state": "succeeded",
+    "stdout": "{\"schema\":\"cellerator.csr_union_bitmap_v1\",\"case_id\":\"q2048_unique\",\"edges\":1000000,\"entities\":20000,\"cells\":32,\"q_per_cell\":2048,\"query_terms_total\":65536,\"candidate_required_total\":3287262,\"raw_posting_upper_bound\":3287262,\"correctness\":\"cpu_oracle_exact\",\"device\":{\"name\":\"Tesla V100-SXM2-16GB\",\"uuid\":\"6c1cac7f-a360-0aef-ba98-2828bfd1db1a\",\"sm\":\"70\",\"runtime\":\"CUDA 12.9\"},\"overflow_check\":\"exact_required_no_partial_write\",\"postings_status\":\"measured_exact\",\"postings_operation_proxy_q_times_eligible\":6732312576,\"postings_overflow_check\":\"exact_required_no_partial_write\",\"count_scan_concat_status\":\"measured_exact\",\"query_upload_ms\":0.345854,\"postings_p50_ms\":0.250880003,\"postings_p10_ms\":0.249855995,\"postings_p90_ms\":0.251904011,\"postings_samples_ms\":[0.253952,0.249856,0.249856,0.25088,0.25088,0.249856,0.25088,0.25907201,0.25088,0.25088,0.248832,0.248832,0.249856,0.249856,0.25088,0.249856,0.249856,0.25190401,0.25088,0.25088,0.25088],\"fullscan_p50_ms\":0.66252798,\"fullscan_p10_ms\":0.66048002,\"fullscan_p90_ms\":0.66457599,\"fullscan_samples_ms\":[0.66048002,0.66457599,0.66457599,0.66048002,0.66150397,0.66150397,0.66150397,0.66252798,0.66150397,0.66044801,0.66252798,0.66249597,0.65945601,0.66457599,0.66150397,0.66252798,0.66457599,0.66252798,0.66457599,0.67481601,0.66252798],\"csr_bitmap_p50_ms\":0.68710399,\"csr_bitmap_p10_ms\":0.68403202,\"csr_bitmap_p90_ms\":0.69120002,\"csr_bitmap_samples_ms\":[0.68710399,0.69120002,0.68710399,0.68403202,0.68505597,0.69324797,0.69427198,0.69120002,0.68198401,0.68505597,0.68607998,0.68607998,0.68607998,0.69120002,0.68710399,0.689152,0.69017601,0.68812799,0.68607998,0.68198401,0.68607998],\"count_scan_concat_p50_ms\":0.25088,\"count_scan_concat_samples_ms\":[0.25088,0.25088,0.250848,0.249856,0.25190401,0.25088,0.25088,0.25292799,0.25910401,0.249856,0.249856,0.25289601,0.25190401,0.25292799,0.249856,0.249856,0.25088,0.248832,0.25190401,0.25088,0.25190401],\"count_scan_concat_stage_p50_us\":{\"term_count\":9.2160003,\"scan_and_capacity\":17.408,\"scatter\":228.352},\"csr_bitmap_stage_p50_us\":{\"zero\":12.288,\"posting_scatter\":107.52,\"popcount\":16.384,\"cub_scan\":27.648,\"capacity_finalize\":15.36,\"emit\":522.23998},\"fullscan_stage_p50_us\":{\"zero\":7.1680001,\"query_membership\":6.1440002,\"edge_count\":242.688,\"tile_scan_finalize\":19.455999,\"emit\":392.19201},\"memory_bytes\":{\"baseline_index\":16480008,\"baseline_scratch_ex_output\":2097424,\"baseline_total_resident\":72225880,\"candidate_index\":16160008,\"candidate_scratch_ex_output\":20018703,\"candidate_total_resident\":89302871,\"count_scan_concat_index\":16160008,\"count_scan_concat_scratch_ex_output\":1050639,\"count_scan_concat_total_resident\":70334807,\"fullscan_index\":12000000,\"fullscan_scratch_ex_output\":2083471,\"fullscan_total_resident\":67207631,\"common_output\":52599344,\"common_offsets\":528,\"baseline_posting_query_bytes\":1048576,\"candidate_entity_query_bytes\":524288,\"candidate_scan_temp_bytes\":18687,\"concat_scan_temp_bytes\":2047,\"fullscan_scan_temp_bytes\":3071,\"output_offsets\":264}}\n{\"setup_ms\":{\"direct_csr_build\":7.901072,\"baseline_host_postings\":143.390262,\"baseline_cuda_projection\":15.548837,\"device_alloc_upload\":13.949405,\"total\":1858.74486}}\n",
+    "substate": "exited",
+    "unit_name": "device-scheduler-attempt-e3afc5f8b2509fac31574011be255f88.service"
+  },
+  "spec": {
+    "argv": [
+      "/tmp/cellerator_ordered_postings_highq_build/csr_union_bitmap_highq",
+      "--input-root",
+      "/home/tumlinson/Cellerator/bench/sparse_support/experiments/csr_union_bitmap/input/large-retrieval-a17c73f2",
+      "--case",
+      "q2048_unique",
+      "--warmups",
+      "1",
+      "--samples",
+      "21"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "OMP_NUM_THREADS": "2",
+      "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/usr/local/bin:/usr/bin:/bin"
+    },
+    "event_trigger": null,
+    "idempotency_key": "cellerator-ordered-disjoint-postings-q2048-v1-20261027",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": true
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 4294967296.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "kda.experiment",
+      "gpu.exclusive",
+      "cellerator.sparse_support.indexing"
+    ],
+    "timeout_seconds": 300.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "succeeded",
+  "updated_at": "2026-10-27T21:13:38.498972Z"
+}

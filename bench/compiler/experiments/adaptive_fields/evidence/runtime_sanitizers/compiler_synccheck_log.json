@@ -1,0 +1,20 @@
+{
+  "probe": "compiler",
+  "tool": "synccheck",
+  "argv": [
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "--tool",
+    "synccheck",
+    "--error-exitcode",
+    "99",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/artifacts/nvrtc_compare",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/region.cu",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/runtime/artifacts/cellerator_region.fatbin",
+    "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_sanitizers/compiler_synccheck.json",
+    "compute_70"
+  ],
+  "returncode": 0,
+  "stdout": "========= COMPUTE-SANITIZER\nresult=/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_sanitizers/compiler_synccheck.json nvrtc_compile_ms=18.1565\n========= ERROR SUMMARY: 0 errors\n",
+  "stderr": "",
+  "result_path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/runtime_sanitizers/compiler_synccheck.json"
+}

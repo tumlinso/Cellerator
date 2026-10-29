@@ -2,9 +2,12 @@
 title: "Performance and Validation"
 ---
 
-## Performance is the product
+## Performance is a measured goal
 
-Cellerator succeeds only when biological organization produces a measurable end-to-end advantage.
+Cellerator aims to use biological organization to improve interpretability and
+performance. The ambition does not imply that every current operation is
+faster or biologically validated. Measure each implementation against the
+complete relevant workload and report the limits of the evidence.
 
 A representation is not successful because it is compact. A kernel is not successful because its isolated launch is fast. A planner is not successful because its decision is deterministic.
 
@@ -43,6 +46,24 @@ A realistic biological or model workload is measured end to end, including data 
 Only this level supports broad architectural claims.
 
 Every result should state its evidence level.
+
+## Numerical policy and evidence
+
+FP16 is the general computation default when the operation supports it. FP32,
+FP64, and other supported types remain explicit alternatives. Select an
+implementation by its complete cost and the operation's numerical contract;
+FP16 SIMT and Tensor Core paths are both valid candidates. Declare storage,
+multiplication, accumulation, and output types, including conversions, and
+use FP32 accumulation where it is appropriate for the operation. Compare
+against the upstream/native computation or a suitable higher-precision
+reference, and report the tolerance and tested input domain.
+
+Biological-data tests reported so far support FP16 as a reasonable
+approximation, but this observation is provisional: it does not establish an
+exhaustive scientific validation, a universal tolerance, or a global error
+bound. Report measured error and workload coverage as evidence for that
+operation. A finite test set characterizes those cases only; do not generalize
+it beyond the tested data and computation.
 
 ## Required benchmark context
 

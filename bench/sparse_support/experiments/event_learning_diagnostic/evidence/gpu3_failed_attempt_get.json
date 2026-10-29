@@ -1,0 +1,419 @@
+{
+  "attempt": {
+    "attempt_id": "77bc289b-c236-4049-89e8-51e4001d645c",
+    "cleanup_verified": true,
+    "created_at": "2026-10-28T13:20:25.168568Z",
+    "error": {},
+    "evidence": [
+      {
+        "adapter_errors": [],
+        "kind": "execution_preconditions",
+        "operation_id": "preconditions:77bc289b-c236-4049-89e8-51e4001d645c",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 3,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-28T13:20:25.276555+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-28T13:20:25.318440+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-28T13:20:25.276555+00:00",
+                        "process_observed_at": "2026-10-28T13:20:25.318440+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-28T13:20:26.396985+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-28T13:20:26.437048+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-28T13:20:26.396985+00:00",
+                        "process_observed_at": "2026-10-28T13:20:26.437048+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-28T13:20:27.640087+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-28T13:20:27.683029+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-28T13:20:27.640087+00:00",
+                        "process_observed_at": "2026-10-28T13:20:27.683029+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 3,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      6979321856
+                    ],
+                    "timeout_seconds": 60.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      }
+    ],
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 6442450944.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "claim_id": "f29191ab-7b3f-4c24-a4af-81498a30d66a",
+      "fencing_token": 1026,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 3,
+            "inventory_observed_at": "2026-10-28T13:20:21.098450+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:84:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-28T13:20:21.098450+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          },
+          "capabilities": [
+            "shared-admission",
+            "whole-device-exclusive-admission",
+            "nvidia-smi-compute-process-telemetry",
+            "memory-accounting-only"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+          "schema_version": 1,
+          "topology": {
+            "links": [],
+            "pci_bus_id": "00000000:84:00.0",
+            "topology_state": "partial"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-0b30697760f096f9b55563fa14e189d1.service",
+      "identity": "77bc289b-c236-4049-89e8-51e4001d645c",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-0b30697760f096f9b55563fa14e189d1.service",
+        "description": "Device Scheduler attempt 77bc289b-c236-4049-89e8-51e4001d645c",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "516aec6d8c89474295b260287b65575c",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-10-28T13:20:27.758223Z"
+    },
+    "finished_at": "2026-10-28T13:20:32.908724Z",
+    "id": "77bc289b-c236-4049-89e8-51e4001d645c",
+    "job_id": "8e1b662b-19d0-4f62-9dcb-4395e9492c74",
+    "operation_id": "start:77bc289b-c236-4049-89e8-51e4001d645c",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:77bc289b-c236-4049-89e8-51e4001d645c",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "observation": {
+                  "consecutive_samples": 3,
+                  "samples": [
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-28T13:20:25.276555+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-28T13:20:25.318440+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-28T13:20:25.276555+00:00",
+                      "process_observed_at": "2026-10-28T13:20:25.318440+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-28T13:20:26.396985+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-28T13:20:26.437048+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-28T13:20:26.396985+00:00",
+                      "process_observed_at": "2026-10-28T13:20:26.437048+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-28T13:20:27.640087+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-28T13:20:27.683029+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-28T13:20:27.640087+00:00",
+                      "process_observed_at": "2026-10-28T13:20:27.683029+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    }
+                  ],
+                  "state": "observed"
+                },
+                "parameters": {
+                  "consecutive_samples": 3,
+                  "interval_seconds": 1.0,
+                  "max_utilization_percent": 0,
+                  "minimum_free_bytes": [
+                    6979321856
+                  ],
+                  "timeout_seconds": 60.0
+                },
+                "precondition_index": 0
+              },
+              "name": "gpu.quiescence",
+              "resource_ids": [
+                "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+              ],
+              "schema_version": 1,
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "state": "verified"
+    },
+    "result": {
+      "active_state": "failed",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-0b30697760f096f9b55563fa14e189d1.service",
+        "invocation_id": "516aec6d8c89474295b260287b65575c",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt 77bc289b-c236-4049-89e8-51e4001d645c"
+      },
+      "exit_code": 1,
+      "invocation_id": "516aec6d8c89474295b260287b65575c",
+      "logs": "Traceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 301, in <module>\n    main()\n    ~~~~^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 227, in main\n    loss, admission = train_events(\n                      ~~~~~~~~~~~~^\n        models[key], indexes[key], fixture, device, optimizers[key],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        prune=(prune if prune_after_warmup else False),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        history_readout=(readout == \"history\"))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 98, in train_events\n    output = module(fixture[\"events\"], provider,\n                    timestamps=fixture[\"timestamps\"],\n                    windows=fixture[\"count_windows\"], prune=prune,\n                    threshold=THRESHOLD,\n                    derivative_seed=int(fixture[\"seed\"]))\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1751, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1762, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py\", line 1010, in forward\n    return self._forward_pinned(event_ids, event_worksets, timestamps=timestamps,\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                windows=windows, temperature=temperature,\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                threshold=threshold, prune=prune,\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                derivative_seed=derivative_seed)\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py\", line 1090, in _forward_pinned\n    output = self.relation(inputs.to(torch.float16), self.logical_edge_values(),\n                           gates, primal, derivative)\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 85, in relation\n    history[cell].index_add_(\n    ~~~~~~~~~~~~~~~~~~~~~~~~^\n        0, indices, embedding.index_select(0, indices))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: index_add_(): self (Half) and source (Float) must have the same scalar type\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "exit-code",
+      "state": "failed",
+      "stdout": "Traceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 301, in <module>\n    main()\n    ~~~~^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 227, in main\n    loss, admission = train_events(\n                      ~~~~~~~~~~~~^\n        models[key], indexes[key], fixture, device, optimizers[key],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        prune=(prune if prune_after_warmup else False),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        history_readout=(readout == \"history\"))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 98, in train_events\n    output = module(fixture[\"events\"], provider,\n                    timestamps=fixture[\"timestamps\"],\n                    windows=fixture[\"count_windows\"], prune=prune,\n                    threshold=THRESHOLD,\n                    derivative_seed=int(fixture[\"seed\"]))\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1751, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1762, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py\", line 1010, in forward\n    return self._forward_pinned(event_ids, event_worksets, timestamps=timestamps,\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                windows=windows, temperature=temperature,\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                threshold=threshold, prune=prune,\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                derivative_seed=derivative_seed)\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py\", line 1090, in _forward_pinned\n    output = self.relation(inputs.to(torch.float16), self.logical_edge_values(),\n                           gates, primal, derivative)\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 85, in relation\n    history[cell].index_add_(\n    ~~~~~~~~~~~~~~~~~~~~~~~~^\n        0, indices, embedding.index_select(0, indices))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: index_add_(): self (Half) and source (Float) must have the same scalar type\n",
+      "substate": "failed",
+      "unit_name": "device-scheduler-attempt-0b30697760f096f9b55563fa14e189d1.service"
+    },
+    "started_at": "2026-10-28T13:20:27.758368Z",
+    "state": "failed"
+  },
+  "attempt_count": 1,
+  "attempt_id": "77bc289b-c236-4049-89e8-51e4001d645c",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-28T13:20:21.998642Z",
+  "decision_id": "10401c47-1dae-493a-82f2-f0f2db999f12",
+  "id": "8e1b662b-19d0-4f62-9dcb-4395e9492c74",
+  "job_id": "8e1b662b-19d0-4f62-9dcb-4395e9492c74",
+  "lease_binding": null,
+  "lease_fencing_token": 1026,
+  "lease_id": "f29191ab-7b3f-4c24-a4af-81498a30d66a",
+  "lease_state": "released",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "failed",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-0b30697760f096f9b55563fa14e189d1.service",
+      "invocation_id": "516aec6d8c89474295b260287b65575c",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt 77bc289b-c236-4049-89e8-51e4001d645c"
+    },
+    "exit_code": 1,
+    "invocation_id": "516aec6d8c89474295b260287b65575c",
+    "logs": "Traceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 301, in <module>\n    main()\n    ~~~~^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 227, in main\n    loss, admission = train_events(\n                      ~~~~~~~~~~~~^\n        models[key], indexes[key], fixture, device, optimizers[key],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        prune=(prune if prune_after_warmup else False),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        history_readout=(readout == \"history\"))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 98, in train_events\n    output = module(fixture[\"events\"], provider,\n                    timestamps=fixture[\"timestamps\"],\n                    windows=fixture[\"count_windows\"], prune=prune,\n                    threshold=THRESHOLD,\n                    derivative_seed=int(fixture[\"seed\"]))\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1751, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1762, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py\", line 1010, in forward\n    return self._forward_pinned(event_ids, event_worksets, timestamps=timestamps,\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                windows=windows, temperature=temperature,\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                threshold=threshold, prune=prune,\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                derivative_seed=derivative_seed)\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py\", line 1090, in _forward_pinned\n    output = self.relation(inputs.to(torch.float16), self.logical_edge_values(),\n                           gates, primal, derivative)\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 85, in relation\n    history[cell].index_add_(\n    ~~~~~~~~~~~~~~~~~~~~~~~~^\n        0, indices, embedding.index_select(0, indices))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: index_add_(): self (Half) and source (Float) must have the same scalar type\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "exit-code",
+    "state": "failed",
+    "stdout": "Traceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 301, in <module>\n    main()\n    ~~~~^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 227, in main\n    loss, admission = train_events(\n                      ~~~~~~~~~~~~^\n        models[key], indexes[key], fixture, device, optimizers[key],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        prune=(prune if prune_after_warmup else False),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        history_readout=(readout == \"history\"))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 98, in train_events\n    output = module(fixture[\"events\"], provider,\n                    timestamps=fixture[\"timestamps\"],\n                    windows=fixture[\"count_windows\"], prune=prune,\n                    threshold=THRESHOLD,\n                    derivative_seed=int(fixture[\"seed\"]))\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1751, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1762, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py\", line 1010, in forward\n    return self._forward_pinned(event_ids, event_worksets, timestamps=timestamps,\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                windows=windows, temperature=temperature,\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                threshold=threshold, prune=prune,\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                derivative_seed=derivative_seed)\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package/cellerator/torch/sparse_support.py\", line 1090, in _forward_pinned\n    output = self.relation(inputs.to(torch.float16), self.logical_edge_values(),\n                           gates, primal, derivative)\n  File \"/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py\", line 85, in relation\n    history[cell].index_add_(\n    ~~~~~~~~~~~~~~~~~~~~~~~~^\n        0, indices, embedding.index_select(0, indices))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: index_add_(): self (Half) and source (Float) must have the same scalar type\n",
+    "substate": "failed",
+    "unit_name": "device-scheduler-attempt-0b30697760f096f9b55563fa14e189d1.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "-u",
+      "/home/tumlinson/Cellerator/bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CELLERATOR_SPARSE_SUPPORT_EXPECTED_IDENTITY_SHA256": "4d3b6f0e1a63ea20785975597849bfad0b0f081221c47d9b858d6581b487afd4",
+      "CELLERATOR_SPARSE_SUPPORT_SNAPSHOT": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v13-owner-validation/package:/home/tumlinson/Cellerator"
+    },
+    "event_trigger": null,
+    "idempotency_key": "cellerator-event-history-readout-v13-512-seed41027-20261028",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": true
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 6442450944.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "cellerator.event_learning_history_readout",
+      "gpu.exclusive"
+    ],
+    "timeout_seconds": 3600.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "failed",
+  "updated_at": "2026-10-28T13:20:32.908724Z"
+}

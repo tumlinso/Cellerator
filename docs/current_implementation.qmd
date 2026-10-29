@@ -2,6 +2,184 @@
 title: "Current Implementation"
 ---
 
+## Package boundary — 2026-10-28
+
+Cellerator is an early high-performance PyTorch extension for cellular model
+building. This repository contains native numerical operations, Python and
+Torch adapters, identity/structure work, sparse support and indexing, layout
+and execution experiments, optional tokenization, and a large compiler/runtime
+history. They do not share one maturity level or imply one stable general API.
+The [routing map](development/routing.md) identifies the current owner and
+disposition for each path; the architecture page describes target ownership.
+
+The current host Python package exposes native CPU Product2 plus a Torch
+`Product2Module` with CPU FP32 inputs and first-order gradients. It composes
+with normal Torch modules, autograd, and optimizers. Optional CUDA indexed
+mechanisms, sparse-support consumers, resident CUDA, and ATen tokenization are
+separate facilities with their own build and runtime requirements. AnnData is
+a required dependency, but no direct AnnData preparation adapter exists.
+Classical single-cell analysis is an upstream workflow and repository testbed.
+
+Sparse support, indexing, routing, and gating are promising early
+capabilities, not a complete adaptive runtime or a universal performance
+result. Current mode-extension evidence includes five passing CPU checks; its
+fourteen GPU checks are gated and unrun in this work (`tests/sparse_support/test_transition_modes.py`).
+The experimental `ExecutionField` in `python/cellerator/experimental/fields.py`
+composes prepared Product2 with explicit structure rebinding; five installed
+CPU tests are reported passing (`tests/experimental/test_fields.py`). It has
+no JIT or live recompilation.
+
+An opt-in prepared entity-to-mechanism routing operation is now present in
+`include/Cellerator/ops/sparse_support/prepared_routing.hh` and
+`src/ops/sparse_support/prepared_routing.{cc,cu}`, with a Torch binding and a
+Python adapter. It builds an identity- and generation-keyed reverse-posting
+projection and returns an exact route union for a query. Host/native and Python
+adapter checks pass. The frozen binary passed the 16-test suite, exact CUDA
+correctness check, and memcheck, racecheck, and synccheck. The
+[source-bound GPU report](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/bench/sparse_support/experiments/prepared_routing/REPORT.md)
+measured a 9.21% median lifecycle improvement over the Python route at horizon
+64 for synthetic ranked `[32,8]` inputs (95% paired interval 7.79–10.36%). The
+event `[32,12]` result was inconclusive; dense Torch was faster on the larger
+stress shapes. Prepared routing has a substantial cold-first cost and remains
+opt-in; the established Python route remains the default. This is bounded
+route-query evidence, not a full-model, training, or biological speedup claim.
+See `tests/prepared_routing/` and the report for source, binary, workload, and
+qualification details.
+
+## Visible package gaps
+
+The package remains open to new model operations. Add reusable operations under
+the native family that owns their math and add a Torch `nn.Module` only when a
+real consumer needs module composition, parameter ownership, or a stable
+model-facing interface. The current namespaces are not a catalogue of future
+layers.
+
+AnnData is a required dependency, but preparation currently accepts explicit
+arrays or tensors. A direct AnnData adapter is a visible gap; any later adapter
+belongs at the Python interoperability boundary and must state the accepted
+AnnData layers/metadata rather than choosing them implicitly.
+
+Execution fields currently demonstrate narrow CPU composition and explicit
+structure rebinding. Broader adaptive execution, a general compiler/runtime,
+JIT, and live recompilation remain research gaps. Continue them through the
+existing experimental fields and compiler owners, with concrete operation
+consumers and runtime invalidation contracts; do not add empty package APIs.
+
+There is no package-wide, full-model, training, or biological GPU speedup claim
+in this summary. See each linked source-bound qualification for its hardware,
+input, build, and measured scope. Correctness, scientific validity, package
+usability, and performance remain separate evidence claims. This page
+preserves older dated records below; read their stated source identity and
+date rather than treating historical status as current package status.
+
+## Broad sparse evaluation and optional policies — 2026-10-28
+
+The [evaluation intake](sparse_support_foundation/evaluation.md) accepts
+already-tokenized ranked or event observations, preserves external identities,
+and exports reversible native maps with exact sparse CPU candidates. Its
+catalog retains 15 native and experimental families, including paths with
+limited or unmeasured GPU evidence. Real-input GPU execution still needs an
+explicit adapter; no real-data qualification is asserted.
+
+The Torch slices now expose full-support or P∪D value evaluation and current
+event or eligible-history relation inputs as explicit choices. Existing
+defaults remain. The [v14 integration](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/v14-optional-policies/REPORT.md)
+passes 83 tests and two subtests plus the native CUDA workset test. Its native
+extension is unchanged from v13. The separate synthetic learning and timing
+reports establish tested regimes without removing alternative mechanisms.
+
+The [large native index measurements](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/REPORT.md)
+compare complete discovery/workset regions with serial and rescan controls.
+Separate [packed training](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/torch_v13_complete_cost_20261028/REPORT.md)
+and [layout measurements](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/experiments/geometry_layout/V13_RESULTS.md)
+include setup and memory, preserve all candidates, and apply only to their
+synthetic workloads. The training harness's memory preflight was subsequently
+corrected and host-tested; retained frozen timing records identify the earlier
+estimate and measured peaks separately.
+
+## Large-workload preparation — 2026-10-28
+
+Large sparse workloads exposed a quadratic duplicate-identity check in the
+canonical native parameter owner's constructor. Exact validation now sorts a
+temporary copy, preserving parameter order and the original validation error
+precedence. The focused host differential check passes, including 1.3 million
+identities. The [v13 qualification](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/v13-owner-validation/REPORT.md)
+passes 63 sparse-support and existing Torch binding tests plus the rebuilt
+native CUDA workset test. This preparation change does not alter numerical
+kernels, parameter identity, or optimizer ownership.
+
+## Sparse support foundation — 2026-10-27
+
+The additive [sparse support facility](sparse_support_foundation.qmd) provides
+Torch-free logical support, exact reverse/temporal indexes, shared condition
+programs, capacity-checked primal/derivative worksets, bounded seeded proposals,
+and publication between pinned training windows. Ordered participant roles,
+occurrence identities, structure epochs, and parameter generations remain
+separate. The optional Torch adapter uses one canonical native parameter owner
+and the existing guarded Adam lifecycle.
+
+Width-64 numerical operations include indexed recurrent latent transitions,
+gated sparse relations, and explicit first-order VJPs. The first packed route
+executes the existing CE-GEO WMMA cover plus its residual and a separate
+adaptation delta; backward currently uses sparse SIMT kernels. Learned values
+and per-cell gates remain mutable. Compilation does not make routes permanently
+active. The event and ranked-gene consumers are controlled synthetic training
+fixtures, without biological validation.
+
+Native host reference/index/image tests pass. Native CUDA correctness and
+Compute Sanitizer memcheck, racecheck, and synccheck pass on the frozen v5
+numerical binary. Integrated Torch checks establish packed forward, surrogate
+gate VJP, recurrent VJP, and support/owner lifecycle behavior. Source-bound
+qualification records distinguish these checks from learning and performance
+measurements; see the facility's evidence map.
+
+The final sampled-gradient integration run passes 26 tests, including a complete
+Torch surrogate-VJP comparison and accumulation for repeated gate indices.
+A separate 29-test run covers existing mechanism and owner lifecycle behavior.
+The final 28-test suite adds exact cold snapshot restoration after promotion
+and revocation, including retired-ID history and base/delta ownership. Five
+CPU binding tests also pass. Numerical and learning measurements retain their
+earlier frozen identities; the final snapshot change does not alter kernels.
+The corrected 50-epoch ranked fixture reaches 56.25% pruned held-out accuracy
+versus 34.38% for shuffled support. The event fixture's 28.12% on 64 held-out
+cells remains close to four-class chance; it is a weak learning result. Earlier
+post-pruning results with an incorrect derivative-to-gate scatter are retained
+as invalid estimator evidence, alongside the correction and regression.
+
+The retained singleton-posting optimization improves posting plus bitmap/workset
+time by 1.26× on the ordinary synthetic anchor and 1.71× under source skew in
+five paired V100 rounds. Construction costs can outweigh these steady-state
+gains. This is an indexing result, not a complete model-training speedup or a
+universal sparse-format selection rule. The [experiment record](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/posting_singleton_v1/REPORT.md)
+retains the rescan control, numerical checks, profiles, and negative results.
+
+The [balanced packed/SIMT confirmation](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/run_001/REPORT.md)
+uses five confirmation rounds with 21 paired samples and explicit initialization
+and preparation costs. Same-process paired training favors SIMT by about 2.5%
+on both small relation fixtures. The separate-request KDA aggregate interval
+crosses parity; no packed performance regime is promoted. These relation-stage
+measurements exclude application discovery and recurrent sequence maintenance.
+
+## ATen tokenization addition — 2026-10-26
+
+The optional [tokenization facility](tokenization.qmd) adds ATen-owned tensor
+contracts for vocabularies, ragged/padded sequences, ranked features and supplied
+event streams. Separate numerical operations provide normalization,
+deterministic selection and exact blocked nonzero per-feature median fitting.
+Explicit-capacity sequence buffers provide CPU and CUDA append with aligned
+attributes, reusable status storage and overflow reporting. This is additive;
+existing runtime buffers have not been migrated to ATen.
+
+The Geneformer-style profile consumes caller-supplied totals, medians and
+vocabulary. Event inference, intervention and lifecycle meanings, model state
+and population execution remain downstream decisions. The examples use
+synthetic, already-defined biological inputs rather than reconstructed histories.
+
+Build, correctness, profiling and bounded timing qualification are recorded
+with their source and environment identities under `bench/tokenization/evidence/`.
+These checks establish software behavior in the tested configurations and do
+not establish biological validity or a universal performance advantage.
+
 ## Historical implementation audit — 2026-09-06
 
 This detailed snapshot predates the 2026-09-29 documentation refresh, subsequent learning work, and the current Python binding consolidation. References below to the former CelleraTorch component and its paths describe the audited historical state only. For the current binding surface, see [Python bindings](development/python-bindings.md). The material below remains useful as a source-linked record for its stated date and campaign scope.

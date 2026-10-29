@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "bench/sparse_support/experiments/bitmap_retrieval/run_matrix.py",
+    "--binary",
+    "/tmp/cellerator_bitmap_retrieval_build_2/bitmap_retrieval_bench",
+    "--output-dir",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/bitmap_retrieval/evidence/paired_v3"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "timeout_seconds": 600,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-bitmap-retrieval-v3-gpu3-20261027",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {"memory_bytes": 2147483648},
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": ["gpu.exclusive", "cellerator.sparse_support.bitmap_retrieval"],
+  "environment": {
+    "OMP_NUM_THREADS": "2",
+    "PYTHONUNBUFFERED": "1",
+    "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/compilers/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin:/usr/local/bin:/usr/bin:/bin"
+  },
+  "interruption": {"restart_safe": true, "cancellation_supported": true},
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ]
+}

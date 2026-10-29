@@ -1,0 +1,791 @@
+{
+  "format": "todo-orchestrator.plan",
+  "schema_version": 1,
+  "package_id": "cellerator-coherence-20261028",
+  "project": {
+    "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "authority_id": "c4f019fe-f445-51c2-b444-a7cf24d6be34"
+  },
+  "provenance": {
+    "source": "planning/coherence/README.md",
+    "producer": "user-approved Cellerator consolidation plan"
+  },
+  "work_items": [
+    {
+      "id": "CE-COHERE-00",
+      "title": "Preserve the approved plan and recoverable repository baseline",
+      "objective": "Preserve the approved plan and recoverable repository baseline",
+      "outcome": "Full private checkout/archive restoration verified; Approved plan preserved; authority backup limitation explicit",
+      "scope": {
+        "paths": [
+          {
+            "path": "planning/coherence",
+            "access": "write"
+          }
+        ],
+        "concepts": [
+          "biological execution geometry",
+          "preservation-first consolidation"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Full private checkout/archive restoration verified",
+          "Approved plan preserved; authority backup limitation explicit"
+        ],
+        "required_evidence": [
+          "source-and-validation-record"
+        ],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved plan",
+          "uri": "planning/coherence/README.md"
+        }
+      ]
+    },
+    {
+      "id": "CE-COHERE-01",
+      "title": "Reconcile and close superseded working branches",
+      "objective": "Reconcile and close superseded working branches",
+      "outcome": "Live tips archived and content-equivalence recorded; Missing work integrated; protected managed state retained on unsupported cleanup",
+      "scope": {
+        "paths": [
+          {
+            "path": "planning/coherence",
+            "access": "write"
+          }
+        ],
+        "concepts": [
+          "biological execution geometry",
+          "preservation-first consolidation"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Live tips archived and content-equivalence recorded",
+          "Missing work integrated; protected managed state retained on unsupported cleanup"
+        ],
+        "required_evidence": [
+          "source-and-validation-record"
+        ],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved plan",
+          "uri": "planning/coherence/README.md"
+        }
+      ]
+    },
+    {
+      "id": "CE-COHERE-02",
+      "title": "Route every source, artifact and future operation",
+      "objective": "Route every source, artifact and future operation",
+      "outcome": "Exhaustive source disposition manifest and validator; Agent routing distinguishes source/evidence/experiments and visible gaps",
+      "scope": {
+        "paths": [
+          {
+            "path": "docs/development",
+            "access": "write"
+          },
+          {
+            "path": "tools/maintenance",
+            "access": "write"
+          },
+          {
+            "path": "planning/coherence",
+            "access": "write"
+          },
+          {
+            "path": ".gitignore",
+            "access": "write"
+          },
+          {
+            "path": "AGENTS.md",
+            "access": "write"
+          }
+        ],
+        "concepts": [
+          "biological execution geometry",
+          "preservation-first consolidation"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Exhaustive source disposition manifest and validator",
+          "Agent routing distinguishes source/evidence/experiments and visible gaps"
+        ],
+        "required_evidence": [
+          "source-and-validation-record"
+        ],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved plan",
+          "uri": "planning/coherence/README.md"
+        }
+      ]
+    },
+    {
+      "id": "CE-COHERE-03",
+      "title": "Consolidate native structure, operations, layouts and purpose names",
+      "objective": "Consolidate native structure, operations, layouts and purpose names",
+      "outcome": "Native numerical capabilities and consumers preserved; Build and affected checks pass after moves and purpose renames",
+      "scope": {
+        "paths": [
+          {
+            "path": "src",
+            "access": "write"
+          },
+          {
+            "path": "include",
+            "access": "write"
+          },
+          {
+            "path": "cmake",
+            "access": "write"
+          },
+          {
+            "path": "tests",
+            "access": "write"
+          },
+          {
+            "path": "CMakeLists.txt",
+            "access": "write"
+          },
+          {
+            "path": "bench",
+            "access": "write"
+          },
+          {
+            "path": "tools",
+            "access": "write"
+          },
+          {
+            "path": "examples",
+            "access": "write"
+          },
+          {
+            "access": "write",
+            "path": "scripts"
+          }
+        ],
+        "concepts": [
+          "biological execution geometry",
+          "preservation-first consolidation"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Native numerical capabilities and consumers preserved",
+          "Build and affected checks pass after moves and purpose renames"
+        ],
+        "required_evidence": [
+          "source-and-validation-record"
+        ],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved plan",
+          "uri": "planning/coherence/README.md"
+        }
+      ]
+    },
+    {
+      "id": "CE-COHERE-04",
+      "title": "Expose a coherent Torch extension package",
+      "objective": "Expose a coherent Torch extension package",
+      "outcome": "Public ownership modules compose existing source with one parameter owner; Installed-package and optimizer/autograd checks pass",
+      "scope": {
+        "paths": [
+          {
+            "path": "python",
+            "access": "write"
+          },
+          {
+            "path": "bindings",
+            "access": "write"
+          },
+          {
+            "path": "tests/python",
+            "access": "write"
+          },
+          {
+            "path": "pyproject.toml",
+            "access": "write"
+          },
+          {
+            "path": "examples",
+            "access": "write"
+          },
+          {
+            "access": "write",
+            "path": "tests/package"
+          },
+          {
+            "access": "write",
+            "path": "tests/bindings"
+          },
+          {
+            "access": "write",
+            "path": "tests/sparse_support"
+          }
+        ],
+        "concepts": [
+          "biological execution geometry",
+          "preservation-first consolidation"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Public ownership modules compose existing source with one parameter owner",
+          "Installed-package and optimizer/autograd checks pass"
+        ],
+        "required_evidence": [
+          "source-and-validation-record"
+        ],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved plan",
+          "uri": "planning/coherence/README.md"
+        }
+      ]
+    },
+    {
+      "id": "CE-COHERE-05",
+      "title": "Make native transition sharing explicit and legacy-safe",
+      "objective": "Make native transition sharing explicit and legacy-safe",
+      "outcome": "Shared and per-mechanism modes implement complete state and parameter gradients; Legacy checkpoint computation and optimizer-state values preserved",
+      "scope": {
+        "paths": [
+          {
+            "path": "src/compute/operation",
+            "access": "write"
+          },
+          {
+            "path": "src/ops",
+            "access": "write"
+          },
+          {
+            "path": "include",
+            "access": "write"
+          },
+          {
+            "path": "bindings/torch",
+            "access": "write"
+          },
+          {
+            "path": "python/cellerator/torch/mechanism.py",
+            "access": "write"
+          },
+          {
+            "path": "tests",
+            "access": "write"
+          },
+          {
+            "path": "bindings/sparse_support",
+            "access": "write"
+          },
+          {
+            "path": "python/cellerator/torch/sparse_support.py",
+            "access": "write"
+          },
+          {
+            "path": "python/cellerator/_torch",
+            "access": "write"
+          },
+          {
+            "access": "write",
+            "path": "python/cellerator/torch/execution.py"
+          },
+          {
+            "access": "write",
+            "path": "python/cellerator/torch/routing.py"
+          },
+          {
+            "access": "write",
+            "path": "python/cellerator/torch/ops.py"
+          },
+          {
+            "access": "write",
+            "path": "bench/sparse_support/experiments/transition_modes"
+          }
+        ],
+        "concepts": [
+          "biological execution geometry",
+          "preservation-first consolidation"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Shared and per-mechanism modes implement complete state and parameter gradients",
+          "Legacy checkpoint computation and optimizer-state values preserved"
+        ],
+        "required_evidence": [
+          "source-and-validation-record"
+        ],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved plan",
+          "uri": "planning/coherence/README.md"
+        }
+      ]
+    },
+    {
+      "id": "CE-COHERE-06",
+      "title": "Strengthen reusable structural execution and layout dependencies",
+      "objective": "Strengthen reusable structural execution and layout dependencies",
+      "outcome": "Dependency-specific reuse and bounded workset contracts validated; Native alternatives retain correctness fallbacks and bounded complete-cost evidence",
+      "scope": {
+        "paths": [
+          {
+            "path": "src",
+            "access": "write"
+          },
+          {
+            "path": "include",
+            "access": "write"
+          },
+          {
+            "path": "python",
+            "access": "write"
+          },
+          {
+            "path": "bindings",
+            "access": "write"
+          },
+          {
+            "path": "tests",
+            "access": "write"
+          },
+          {
+            "path": "bench",
+            "access": "write"
+          }
+        ],
+        "concepts": [
+          "biological execution geometry",
+          "preservation-first consolidation"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Dependency-specific reuse and bounded workset contracts validated",
+          "Native alternatives retain correctness fallbacks and bounded complete-cost evidence"
+        ],
+        "required_evidence": [
+          "source-and-validation-record"
+        ],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved plan",
+          "uri": "planning/coherence/README.md"
+        }
+      ]
+    },
+    {
+      "id": "CE-COHERE-07",
+      "title": "Connect experimental fields to prepared native execution",
+      "objective": "Connect experimental fields to prepared native execution",
+      "outcome": "Bounded non-JIT field witness reuses existing operations/contracts; Field maturity and lack of live-recompile guarantee explicit",
+      "scope": {
+        "paths": [
+          {
+            "path": "python/cellerator/experimental",
+            "access": "write"
+          },
+          {
+            "path": "src/compiler",
+            "access": "write"
+          },
+          {
+            "path": "tests",
+            "access": "write"
+          },
+          {
+            "path": "examples",
+            "access": "write"
+          },
+          {
+            "access": "write",
+            "path": "docs/development/experimental-fields.md"
+          }
+        ],
+        "concepts": [
+          "biological execution geometry",
+          "preservation-first consolidation"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Bounded non-JIT field witness reuses existing operations/contracts",
+          "Field maturity and lack of live-recompile guarantee explicit"
+        ],
+        "required_evidence": [
+          "source-and-validation-record"
+        ],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved plan",
+          "uri": "planning/coherence/README.md"
+        }
+      ]
+    },
+    {
+      "id": "CE-COHERE-08",
+      "title": "Rewrite human documentation and publish package identity",
+      "objective": "Rewrite human documentation and publish package identity",
+      "outcome": "Documentation accurately maps implementation, evidence and gaps; Affected docs render/links validate; GitHub description updated with gh",
+      "scope": {
+        "paths": [
+          {
+            "path": "docs",
+            "access": "write"
+          },
+          {
+            "path": "README.md",
+            "access": "write"
+          },
+          {
+            "path": "scope.md",
+            "access": "write"
+          },
+          {
+            "path": "AGENTS.md",
+            "access": "write"
+          },
+          {
+            "path": "planning/coherence",
+            "access": "write"
+          },
+          {
+            "path": ".gitignore",
+            "access": "write"
+          },
+          {
+            "access": "write",
+            "path": "CONTRIBUTING.md"
+          },
+          {
+            "access": "write",
+            "path": "custom_torch_ops.md"
+          }
+        ],
+        "concepts": [
+          "biological execution geometry",
+          "preservation-first consolidation"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Documentation accurately maps implementation, evidence and gaps",
+          "Affected docs render/links validate; GitHub description updated with gh"
+        ],
+        "required_evidence": [
+          "source-and-validation-record"
+        ],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved plan",
+          "uri": "planning/coherence/README.md"
+        }
+      ]
+    },
+    {
+      "id": "CE-COHERE-09",
+      "title": "Archive redundant scaffolding and qualify final integration",
+      "objective": "Archive redundant scaffolding and qualify final integration",
+      "outcome": "Extract linked code before recoverable archival; Independent numerical/build/package/docs/source-map qualification and publication complete; unsupported host lifecycle remains explicit",
+      "scope": {
+        "paths": [
+          {
+            "path": "planning",
+            "access": "write"
+          },
+          {
+            "path": "bench",
+            "access": "write"
+          },
+          {
+            "path": "experiments",
+            "access": "write"
+          },
+          {
+            "path": "tools",
+            "access": "write"
+          },
+          {
+            "path": "tests",
+            "access": "write"
+          },
+          {
+            "path": "docs",
+            "access": "write"
+          }
+        ],
+        "concepts": [
+          "biological execution geometry",
+          "preservation-first consolidation"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Extract linked code before recoverable archival",
+          "Independent numerical/build/package/docs/source-map qualification and publication complete; unsupported host lifecycle remains explicit"
+        ],
+        "required_evidence": [
+          "source-and-validation-record"
+        ],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved plan",
+          "uri": "planning/coherence/README.md"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-COHERE-01"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-00"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-COHERE-02"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-01"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-COHERE-03"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-02"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-COHERE-04"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-02"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-COHERE-05"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-03"
+          }
+        },
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-04"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-COHERE-06"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-05"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-COHERE-07"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-06"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-COHERE-08"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-03"
+          }
+        },
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-04"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-COHERE-09"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-07"
+          }
+        },
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-COHERE-08"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,428 @@
+{
+  "attempt": {
+    "attempt_id": "fc7666dd-627f-4011-8e05-abf3e1f780db",
+    "cleanup_verified": true,
+    "created_at": "2026-10-27T19:55:56.510147Z",
+    "error": {},
+    "evidence": [
+      {
+        "adapter_errors": [],
+        "kind": "execution_preconditions",
+        "operation_id": "preconditions:fc7666dd-627f-4011-8e05-abf3e1f780db",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 3,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-27T19:55:56.611131+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T19:55:56.650946+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T19:55:56.611131+00:00",
+                        "process_observed_at": "2026-10-27T19:55:56.650946+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-27T19:55:57.739517+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T19:55:57.783025+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T19:55:57.739517+00:00",
+                        "process_observed_at": "2026-10-27T19:55:57.783025+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-27T19:55:58.862360+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T19:55:58.901689+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T19:55:58.862360+00:00",
+                        "process_observed_at": "2026-10-27T19:55:58.901689+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 3,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      6979321856
+                    ],
+                    "timeout_seconds": 60.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      }
+    ],
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 6442450944.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "claim_id": "2798d0b8-fcb9-4a21-a275-148d7d4faa4b",
+      "fencing_token": 956,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 1,
+            "inventory_observed_at": "2026-10-27T19:55:51.665866+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:03:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-27T19:55:51.665866+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          "capabilities": [
+            "shared-admission",
+            "whole-device-exclusive-admission",
+            "memory-accounting-only",
+            "nvidia-smi-compute-process-telemetry"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "schema_version": 1,
+          "topology": {
+            "links": [],
+            "pci_bus_id": "00000000:03:00.0",
+            "topology_state": "partial"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-9c068018be229df551b0ddf1f826837e.service",
+      "identity": "fc7666dd-627f-4011-8e05-abf3e1f780db",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-9c068018be229df551b0ddf1f826837e.service",
+        "description": "Device Scheduler attempt fc7666dd-627f-4011-8e05-abf3e1f780db",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "e09f524df7374721b938fbaae809d2ae",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-10-27T19:55:58.972123Z"
+    },
+    "finished_at": "2026-10-27T19:56:31.561933Z",
+    "id": "fc7666dd-627f-4011-8e05-abf3e1f780db",
+    "job_id": "2b7608f5-ac63-419d-94a3-435d4d72c5d0",
+    "operation_id": "start:fc7666dd-627f-4011-8e05-abf3e1f780db",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:fc7666dd-627f-4011-8e05-abf3e1f780db",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "observation": {
+                  "consecutive_samples": 3,
+                  "samples": [
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-27T19:55:56.611131+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T19:55:56.650946+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T19:55:56.611131+00:00",
+                      "process_observed_at": "2026-10-27T19:55:56.650946+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-27T19:55:57.739517+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T19:55:57.783025+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T19:55:57.739517+00:00",
+                      "process_observed_at": "2026-10-27T19:55:57.783025+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-27T19:55:58.862360+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T19:55:58.901689+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T19:55:58.862360+00:00",
+                      "process_observed_at": "2026-10-27T19:55:58.901689+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    }
+                  ],
+                  "state": "observed"
+                },
+                "parameters": {
+                  "consecutive_samples": 3,
+                  "interval_seconds": 1.0,
+                  "max_utilization_percent": 0,
+                  "minimum_free_bytes": [
+                    6979321856
+                  ],
+                  "timeout_seconds": 60.0
+                },
+                "precondition_index": 0
+              },
+              "name": "gpu.quiescence",
+              "resource_ids": [
+                "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+              ],
+              "schema_version": 1,
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "state": "verified"
+    },
+    "result": {
+      "active_state": "active",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-9c068018be229df551b0ddf1f826837e.service",
+        "invocation_id": "e09f524df7374721b938fbaae809d2ae",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt fc7666dd-627f-4011-8e05-abf3e1f780db"
+      },
+      "exit_code": 0,
+      "invocation_id": "e09f524df7374721b938fbaae809d2ae",
+      "logs": "preparation geometry_compile_seconds=0.001357 slice_prepare_seconds=3.032750\nepoch=000 prune=0 gate_threshold=0.50 ranked_loss=3.177912 ranked_admission=1.0000 event_loss=3.178043 event_admission=1.0000 epoch_seconds=0.854\nepoch=001 prune=0 gate_threshold=0.50 ranked_loss=3.174299 ranked_admission=1.0000 event_loss=3.177930 event_admission=1.0000 epoch_seconds=0.340\nepoch=002 prune=0 gate_threshold=0.50 ranked_loss=3.164652 ranked_admission=1.0000 event_loss=3.177756 event_admission=1.0000 epoch_seconds=0.362\nepoch=003 prune=0 gate_threshold=0.50 ranked_loss=3.154274 ranked_admission=1.0000 event_loss=3.177442 event_admission=1.0000 epoch_seconds=0.351\nepoch=004 prune=0 gate_threshold=0.50 ranked_loss=3.141456 ranked_admission=1.0000 event_loss=3.177210 event_admission=1.0000 epoch_seconds=0.357\nepoch=005 prune=0 gate_threshold=0.50 ranked_loss=3.137738 ranked_admission=1.0000 event_loss=3.176765 event_admission=1.0000 epoch_seconds=0.363\nepoch=006 prune=0 gate_threshold=0.50 ranked_loss=3.104659 ranked_admission=1.0000 event_loss=3.176257 event_admission=1.0000 epoch_seconds=0.353\nepoch=007 prune=0 gate_threshold=0.50 ranked_loss=3.065496 ranked_admission=1.0000 event_loss=3.175027 event_admission=1.0000 epoch_seconds=0.361\nepoch=008 prune=0 gate_threshold=0.50 ranked_loss=3.013444 ranked_admission=1.0000 event_loss=3.173706 event_admission=1.0000 epoch_seconds=0.361\nepoch=009 prune=0 gate_threshold=0.50 ranked_loss=2.844292 ranked_admission=1.0000 event_loss=3.169462 event_admission=1.0000 epoch_seconds=0.355\nepoch=010 prune=1 gate_threshold=0.50 ranked_loss=3.063546 ranked_admission=0.3787 event_loss=3.171069 event_admission=0.6764 epoch_seconds=0.387\nepoch=011 prune=1 gate_threshold=0.50 ranked_loss=3.031009 ranked_admission=0.3772 event_loss=3.162524 event_admission=0.6392 epoch_seconds=0.382\nepoch=012 prune=1 gate_threshold=0.50 ranked_loss=2.999605 ranked_admission=0.3854 event_loss=3.162969 event_admission=0.6059 epoch_seconds=0.357\nepoch=013 prune=1 gate_threshold=0.50 ranked_loss=3.047640 ranked_admission=0.3891 event_loss=3.162426 event_admission=0.6177 epoch_seconds=0.356\nepoch=014 prune=1 gate_threshold=0.50 ranked_loss=2.914965 ranked_admission=0.3817 event_loss=3.154434 event_admission=0.6094 epoch_seconds=0.350\nepoch=015 prune=1 gate_threshold=0.50 ranked_loss=2.662743 ranked_admission=0.3743 event_loss=3.136390 event_admission=0.6003 epoch_seconds=0.351\nepoch=016 prune=1 gate_threshold=0.50 ranked_loss=2.992714 ranked_admission=0.3676 event_loss=3.116014 event_admission=0.5826 epoch_seconds=0.353\nepoch=017 prune=1 gate_threshold=0.50 ranked_loss=2.966055 ranked_admission=0.3616 event_loss=3.090166 event_admission=0.5757 epoch_seconds=0.356\nepoch=018 prune=1 gate_threshold=0.50 ranked_loss=2.824945 ranked_admission=0.3557 event_loss=3.073067 event_admission=0.5240 epoch_seconds=0.352\nepoch=019 prune=1 gate_threshold=0.50 ranked_loss=2.927089 ranked_admission=0.3504 event_loss=3.082844 event_admission=0.5344 epoch_seconds=0.356\nproposal=ranked proposal_count=4 attempts=72 candidate_upper_bound=2304 upper_bound_saturated=0 missed_lower_bound=2048 missed_exact=1 sampled_coverage_lower_bound=0.027778\npromotion=ranked source=5 destination=20 score=0.106770 edges=97 epoch=2\nproposal=events proposal_count=6 attempts=72 candidate_upper_bound=2304 upper_bound_saturated=0 missed_lower_bound=2048 missed_exact=1 sampled_coverage_lower_bound=0.027778\npromotion=events source=3 destination=23 score=0.030045 edges=97 epoch=2\nepoch=020 prune=1 gate_threshold=0.50 ranked_loss=3.037353 ranked_admission=0.3549 event_loss=2.980800 event_admission=0.5854 epoch_seconds=0.361\nepoch=021 prune=1 gate_threshold=0.50 ranked_loss=2.924961 ranked_admission=0.3447 event_loss=2.945666 event_admission=0.6245 epoch_seconds=0.357\nepoch=022 prune=1 gate_threshold=0.50 ranked_loss=2.635046 ranked_admission=0.3501 event_loss=2.993178 event_admission=0.6332 epoch_seconds=0.352\nepoch=023 prune=1 gate_threshold=0.50 ranked_loss=2.803108 ranked_admission=0.3405 event_loss=2.819265 event_admission=0.6050 epoch_seconds=0.351\nepoch=024 prune=1 gate_threshold=0.50 ranked_loss=2.672505 ranked_admission=0.3400 event_loss=2.654012 event_admission=0.6366 epoch_seconds=0.385\nepoch=025 prune=1 gate_threshold=0.50 ranked_loss=2.938400 ranked_admission=0.3343 event_loss=2.611626 event_admission=0.5821 epoch_seconds=0.356\nepoch=026 prune=1 gate_threshold=0.50 ranked_loss=2.378395 ranked_admission=0.3304 event_loss=2.920653 event_admission=0.6113 epoch_seconds=0.350\nepoch=027 prune=1 gate_threshold=0.50 ranked_loss=2.241338 ranked_admission=0.3405 event_loss=2.763924 event_admission=0.5819 epoch_seconds=0.472\nepoch=028 prune=1 gate_threshold=0.50 ranked_loss=2.667463 ranked_admission=0.3191 event_loss=2.358244 event_admission=0.5283 epoch_seconds=0.359\nepoch=029 prune=1 gate_threshold=0.50 ranked_loss=2.723439 ranked_admission=0.3080 event_loss=2.525567 event_admission=0.6143 epoch_seconds=0.362\nepoch=030 prune=1 gate_threshold=0.50 ranked_loss=2.498551 ranked_admission=0.3074 event_loss=3.012842 event_admission=0.5252 epoch_seconds=0.350\nepoch=031 prune=1 gate_threshold=0.50 ranked_loss=2.794073 ranked_admission=0.3101 event_loss=2.841031 event_admission=0.5189 epoch_seconds=0.350\nepoch=032 prune=1 gate_threshold=0.50 ranked_loss=2.765247 ranked_admission=0.2840 event_loss=2.955520 event_admission=0.5640 epoch_seconds=0.359\nepoch=033 prune=1 gate_threshold=0.50 ranked_loss=2.377863 ranked_admission=0.2942 event_loss=2.769268 event_admission=0.5631 epoch_seconds=0.351\nepoch=034 prune=1 gate_threshold=0.50 ranked_loss=2.580115 ranked_admission=0.3122 event_loss=2.517018 event_admission=0.6235 epoch_seconds=0.352\nepoch=035 prune=1 gate_threshold=0.50 ranked_loss=2.344928 ranked_admission=0.3215 event_loss=2.798968 event_admission=0.5198 epoch_seconds=0.362\nepoch=036 prune=1 gate_threshold=0.50 ranked_loss=2.661292 ranked_admission=0.3198 event_loss=2.605730 event_admission=0.5316 epoch_seconds=0.353\nepoch=037 prune=1 gate_threshold=0.50 ranked_loss=2.623709 ranked_admission=0.3202 event_loss=2.671805 event_admission=0.4921 epoch_seconds=0.382\nepoch=038 prune=1 gate_threshold=0.50 ranked_loss=2.536809 ranked_admission=0.3550 event_loss=2.794472 event_admission=0.6045 epoch_seconds=0.359\nepoch=039 prune=1 gate_threshold=0.50 ranked_loss=2.521484 ranked_admission=0.3392 event_loss=2.663632 event_admission=0.6053 epoch_seconds=0.354\nepoch=040 prune=1 gate_threshold=0.50 ranked_loss=2.366885 ranked_admission=0.3597 event_loss=2.407065 event_admission=0.5209 epoch_seconds=0.352\nepoch=041 prune=1 gate_threshold=0.50 ranked_loss=2.884555 ranked_admission=0.3235 event_loss=2.440477 event_admission=0.6328 epoch_seconds=0.363\nepoch=042 prune=1 gate_threshold=0.50 ranked_loss=2.689824 ranked_admission=0.3762 event_loss=2.678788 event_admission=0.5869 epoch_seconds=0.352\nepoch=043 prune=1 gate_threshold=0.50 ranked_loss=2.404005 ranked_admission=0.3911 event_loss=2.484192 event_admission=0.5920 epoch_seconds=0.354\nepoch=044 prune=1 gate_threshold=0.50 ranked_loss=2.443631 ranked_admission=0.3596 event_loss=2.575461 event_admission=0.6023 epoch_seconds=0.354\nepoch=045 prune=1 gate_threshold=0.50 ranked_loss=1.892473 ranked_admission=0.4172 event_loss=2.296133 event_admission=0.5878 epoch_seconds=0.353\nepoch=046 prune=1 gate_threshold=0.50 ranked_loss=2.553467 ranked_admission=0.3638 event_loss=2.608396 event_admission=0.5588 epoch_seconds=0.357\nepoch=047 prune=1 gate_threshold=0.50 ranked_loss=2.366673 ranked_admission=0.3954 event_loss=3.022853 event_admission=0.6823 epoch_seconds=0.352\nepoch=048 prune=1 gate_threshold=0.50 ranked_loss=2.230106 ranked_admission=0.4158 event_loss=2.440373 event_admission=0.6718 epoch_seconds=0.359\nepoch=049 prune=1 gate_threshold=0.50 ranked_loss=1.977091 ranked_admission=0.4697 event_loss=2.646393 event_admission=0.5859 epoch_seconds=0.358\nheldout=ranked soft_loss=1.253947 soft_acc=0.6875 soft_admission=1.0000 pruned_loss=1.674484 pruned_acc=0.5625 pruned_admission=0.4624 dormant_sample=(256, 1453)\nheldout=ranked_soft_only soft_loss=0.602328 soft_acc=0.7812 soft_admission=1.0000 pruned_loss=4.183590 pruned_acc=0.1719 pruned_admission=0.4249 dormant_sample=(256, 1546)\nheldout=ranked_shuffled soft_loss=1.792296 soft_acc=0.5156 soft_admission=1.0000 pruned_loss=2.429595 pruned_acc=0.3438 pruned_admission=0.3601 dormant_sample=(256, 1720)\ncheckpoint_continuation=ranked support_edges=97 ok=1\ncheckpoint_continuation=events support_edges=97 ok=1\nheldout=events soft_loss=2.349621 soft_acc=0.2812 soft_admission=1.0000 pruned_loss=2.556622 pruned_acc=0.2812 pruned_admission=0.5979 dormant_sample=(252, 784)\nheldout=events_soft_only soft_loss=2.083489 soft_acc=0.2500 soft_admission=1.0000 pruned_loss=2.705913 pruned_acc=0.2500 pruned_admission=0.6038 dormant_sample=(256, 795)\nheldout=events_shuffled soft_loss=2.923618 soft_acc=0.2188 soft_admission=1.0000 pruned_loss=2.975315 pruned_acc=0.1562 pruned_admission=0.7302 dormant_sample=(251, 522)\ncheckpoint_event_stream=events prefix=6 suffix=6 ok=1\ncosts route_cache_refresh_seconds=0.204705 support_publish_seconds=0.002031 peak_allocated_bytes=26968064\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "success",
+      "state": "succeeded",
+      "stdout": "preparation geometry_compile_seconds=0.001357 slice_prepare_seconds=3.032750\nepoch=000 prune=0 gate_threshold=0.50 ranked_loss=3.177912 ranked_admission=1.0000 event_loss=3.178043 event_admission=1.0000 epoch_seconds=0.854\nepoch=001 prune=0 gate_threshold=0.50 ranked_loss=3.174299 ranked_admission=1.0000 event_loss=3.177930 event_admission=1.0000 epoch_seconds=0.340\nepoch=002 prune=0 gate_threshold=0.50 ranked_loss=3.164652 ranked_admission=1.0000 event_loss=3.177756 event_admission=1.0000 epoch_seconds=0.362\nepoch=003 prune=0 gate_threshold=0.50 ranked_loss=3.154274 ranked_admission=1.0000 event_loss=3.177442 event_admission=1.0000 epoch_seconds=0.351\nepoch=004 prune=0 gate_threshold=0.50 ranked_loss=3.141456 ranked_admission=1.0000 event_loss=3.177210 event_admission=1.0000 epoch_seconds=0.357\nepoch=005 prune=0 gate_threshold=0.50 ranked_loss=3.137738 ranked_admission=1.0000 event_loss=3.176765 event_admission=1.0000 epoch_seconds=0.363\nepoch=006 prune=0 gate_threshold=0.50 ranked_loss=3.104659 ranked_admission=1.0000 event_loss=3.176257 event_admission=1.0000 epoch_seconds=0.353\nepoch=007 prune=0 gate_threshold=0.50 ranked_loss=3.065496 ranked_admission=1.0000 event_loss=3.175027 event_admission=1.0000 epoch_seconds=0.361\nepoch=008 prune=0 gate_threshold=0.50 ranked_loss=3.013444 ranked_admission=1.0000 event_loss=3.173706 event_admission=1.0000 epoch_seconds=0.361\nepoch=009 prune=0 gate_threshold=0.50 ranked_loss=2.844292 ranked_admission=1.0000 event_loss=3.169462 event_admission=1.0000 epoch_seconds=0.355\nepoch=010 prune=1 gate_threshold=0.50 ranked_loss=3.063546 ranked_admission=0.3787 event_loss=3.171069 event_admission=0.6764 epoch_seconds=0.387\nepoch=011 prune=1 gate_threshold=0.50 ranked_loss=3.031009 ranked_admission=0.3772 event_loss=3.162524 event_admission=0.6392 epoch_seconds=0.382\nepoch=012 prune=1 gate_threshold=0.50 ranked_loss=2.999605 ranked_admission=0.3854 event_loss=3.162969 event_admission=0.6059 epoch_seconds=0.357\nepoch=013 prune=1 gate_threshold=0.50 ranked_loss=3.047640 ranked_admission=0.3891 event_loss=3.162426 event_admission=0.6177 epoch_seconds=0.356\nepoch=014 prune=1 gate_threshold=0.50 ranked_loss=2.914965 ranked_admission=0.3817 event_loss=3.154434 event_admission=0.6094 epoch_seconds=0.350\nepoch=015 prune=1 gate_threshold=0.50 ranked_loss=2.662743 ranked_admission=0.3743 event_loss=3.136390 event_admission=0.6003 epoch_seconds=0.351\nepoch=016 prune=1 gate_threshold=0.50 ranked_loss=2.992714 ranked_admission=0.3676 event_loss=3.116014 event_admission=0.5826 epoch_seconds=0.353\nepoch=017 prune=1 gate_threshold=0.50 ranked_loss=2.966055 ranked_admission=0.3616 event_loss=3.090166 event_admission=0.5757 epoch_seconds=0.356\nepoch=018 prune=1 gate_threshold=0.50 ranked_loss=2.824945 ranked_admission=0.3557 event_loss=3.073067 event_admission=0.5240 epoch_seconds=0.352\nepoch=019 prune=1 gate_threshold=0.50 ranked_loss=2.927089 ranked_admission=0.3504 event_loss=3.082844 event_admission=0.5344 epoch_seconds=0.356\nproposal=ranked proposal_count=4 attempts=72 candidate_upper_bound=2304 upper_bound_saturated=0 missed_lower_bound=2048 missed_exact=1 sampled_coverage_lower_bound=0.027778\npromotion=ranked source=5 destination=20 score=0.106770 edges=97 epoch=2\nproposal=events proposal_count=6 attempts=72 candidate_upper_bound=2304 upper_bound_saturated=0 missed_lower_bound=2048 missed_exact=1 sampled_coverage_lower_bound=0.027778\npromotion=events source=3 destination=23 score=0.030045 edges=97 epoch=2\nepoch=020 prune=1 gate_threshold=0.50 ranked_loss=3.037353 ranked_admission=0.3549 event_loss=2.980800 event_admission=0.5854 epoch_seconds=0.361\nepoch=021 prune=1 gate_threshold=0.50 ranked_loss=2.924961 ranked_admission=0.3447 event_loss=2.945666 event_admission=0.6245 epoch_seconds=0.357\nepoch=022 prune=1 gate_threshold=0.50 ranked_loss=2.635046 ranked_admission=0.3501 event_loss=2.993178 event_admission=0.6332 epoch_seconds=0.352\nepoch=023 prune=1 gate_threshold=0.50 ranked_loss=2.803108 ranked_admission=0.3405 event_loss=2.819265 event_admission=0.6050 epoch_seconds=0.351\nepoch=024 prune=1 gate_threshold=0.50 ranked_loss=2.672505 ranked_admission=0.3400 event_loss=2.654012 event_admission=0.6366 epoch_seconds=0.385\nepoch=025 prune=1 gate_threshold=0.50 ranked_loss=2.938400 ranked_admission=0.3343 event_loss=2.611626 event_admission=0.5821 epoch_seconds=0.356\nepoch=026 prune=1 gate_threshold=0.50 ranked_loss=2.378395 ranked_admission=0.3304 event_loss=2.920653 event_admission=0.6113 epoch_seconds=0.350\nepoch=027 prune=1 gate_threshold=0.50 ranked_loss=2.241338 ranked_admission=0.3405 event_loss=2.763924 event_admission=0.5819 epoch_seconds=0.472\nepoch=028 prune=1 gate_threshold=0.50 ranked_loss=2.667463 ranked_admission=0.3191 event_loss=2.358244 event_admission=0.5283 epoch_seconds=0.359\nepoch=029 prune=1 gate_threshold=0.50 ranked_loss=2.723439 ranked_admission=0.3080 event_loss=2.525567 event_admission=0.6143 epoch_seconds=0.362\nepoch=030 prune=1 gate_threshold=0.50 ranked_loss=2.498551 ranked_admission=0.3074 event_loss=3.012842 event_admission=0.5252 epoch_seconds=0.350\nepoch=031 prune=1 gate_threshold=0.50 ranked_loss=2.794073 ranked_admission=0.3101 event_loss=2.841031 event_admission=0.5189 epoch_seconds=0.350\nepoch=032 prune=1 gate_threshold=0.50 ranked_loss=2.765247 ranked_admission=0.2840 event_loss=2.955520 event_admission=0.5640 epoch_seconds=0.359\nepoch=033 prune=1 gate_threshold=0.50 ranked_loss=2.377863 ranked_admission=0.2942 event_loss=2.769268 event_admission=0.5631 epoch_seconds=0.351\nepoch=034 prune=1 gate_threshold=0.50 ranked_loss=2.580115 ranked_admission=0.3122 event_loss=2.517018 event_admission=0.6235 epoch_seconds=0.352\nepoch=035 prune=1 gate_threshold=0.50 ranked_loss=2.344928 ranked_admission=0.3215 event_loss=2.798968 event_admission=0.5198 epoch_seconds=0.362\nepoch=036 prune=1 gate_threshold=0.50 ranked_loss=2.661292 ranked_admission=0.3198 event_loss=2.605730 event_admission=0.5316 epoch_seconds=0.353\nepoch=037 prune=1 gate_threshold=0.50 ranked_loss=2.623709 ranked_admission=0.3202 event_loss=2.671805 event_admission=0.4921 epoch_seconds=0.382\nepoch=038 prune=1 gate_threshold=0.50 ranked_loss=2.536809 ranked_admission=0.3550 event_loss=2.794472 event_admission=0.6045 epoch_seconds=0.359\nepoch=039 prune=1 gate_threshold=0.50 ranked_loss=2.521484 ranked_admission=0.3392 event_loss=2.663632 event_admission=0.6053 epoch_seconds=0.354\nepoch=040 prune=1 gate_threshold=0.50 ranked_loss=2.366885 ranked_admission=0.3597 event_loss=2.407065 event_admission=0.5209 epoch_seconds=0.352\nepoch=041 prune=1 gate_threshold=0.50 ranked_loss=2.884555 ranked_admission=0.3235 event_loss=2.440477 event_admission=0.6328 epoch_seconds=0.363\nepoch=042 prune=1 gate_threshold=0.50 ranked_loss=2.689824 ranked_admission=0.3762 event_loss=2.678788 event_admission=0.5869 epoch_seconds=0.352\nepoch=043 prune=1 gate_threshold=0.50 ranked_loss=2.404005 ranked_admission=0.3911 event_loss=2.484192 event_admission=0.5920 epoch_seconds=0.354\nepoch=044 prune=1 gate_threshold=0.50 ranked_loss=2.443631 ranked_admission=0.3596 event_loss=2.575461 event_admission=0.6023 epoch_seconds=0.354\nepoch=045 prune=1 gate_threshold=0.50 ranked_loss=1.892473 ranked_admission=0.4172 event_loss=2.296133 event_admission=0.5878 epoch_seconds=0.353\nepoch=046 prune=1 gate_threshold=0.50 ranked_loss=2.553467 ranked_admission=0.3638 event_loss=2.608396 event_admission=0.5588 epoch_seconds=0.357\nepoch=047 prune=1 gate_threshold=0.50 ranked_loss=2.366673 ranked_admission=0.3954 event_loss=3.022853 event_admission=0.6823 epoch_seconds=0.352\nepoch=048 prune=1 gate_threshold=0.50 ranked_loss=2.230106 ranked_admission=0.4158 event_loss=2.440373 event_admission=0.6718 epoch_seconds=0.359\nepoch=049 prune=1 gate_threshold=0.50 ranked_loss=1.977091 ranked_admission=0.4697 event_loss=2.646393 event_admission=0.5859 epoch_seconds=0.358\nheldout=ranked soft_loss=1.253947 soft_acc=0.6875 soft_admission=1.0000 pruned_loss=1.674484 pruned_acc=0.5625 pruned_admission=0.4624 dormant_sample=(256, 1453)\nheldout=ranked_soft_only soft_loss=0.602328 soft_acc=0.7812 soft_admission=1.0000 pruned_loss=4.183590 pruned_acc=0.1719 pruned_admission=0.4249 dormant_sample=(256, 1546)\nheldout=ranked_shuffled soft_loss=1.792296 soft_acc=0.5156 soft_admission=1.0000 pruned_loss=2.429595 pruned_acc=0.3438 pruned_admission=0.3601 dormant_sample=(256, 1720)\ncheckpoint_continuation=ranked support_edges=97 ok=1\ncheckpoint_continuation=events support_edges=97 ok=1\nheldout=events soft_loss=2.349621 soft_acc=0.2812 soft_admission=1.0000 pruned_loss=2.556622 pruned_acc=0.2812 pruned_admission=0.5979 dormant_sample=(252, 784)\nheldout=events_soft_only soft_loss=2.083489 soft_acc=0.2500 soft_admission=1.0000 pruned_loss=2.705913 pruned_acc=0.2500 pruned_admission=0.6038 dormant_sample=(256, 795)\nheldout=events_shuffled soft_loss=2.923618 soft_acc=0.2188 soft_admission=1.0000 pruned_loss=2.975315 pruned_acc=0.1562 pruned_admission=0.7302 dormant_sample=(251, 522)\ncheckpoint_event_stream=events prefix=6 suffix=6 ok=1\ncosts route_cache_refresh_seconds=0.204705 support_publish_seconds=0.002031 peak_allocated_bytes=26968064\n",
+      "substate": "exited",
+      "unit_name": "device-scheduler-attempt-9c068018be229df551b0ddf1f826837e.service"
+    },
+    "started_at": "2026-10-27T19:55:58.972243Z",
+    "state": "succeeded"
+  },
+  "attempt_count": 1,
+  "attempt_id": "fc7666dd-627f-4011-8e05-abf3e1f780db",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-27T19:55:50.771243Z",
+  "decision_id": "55ac4b35-4937-467d-ac44-d656ca51ebaf",
+  "id": "2b7608f5-ac63-419d-94a3-435d4d72c5d0",
+  "job_id": "2b7608f5-ac63-419d-94a3-435d4d72c5d0",
+  "lease_binding": null,
+  "lease_fencing_token": 956,
+  "lease_id": "2798d0b8-fcb9-4a21-a275-148d7d4faa4b",
+  "lease_state": "released",
+  "owner": "operator",
+  "owner_id": "operator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "active",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-9c068018be229df551b0ddf1f826837e.service",
+      "invocation_id": "e09f524df7374721b938fbaae809d2ae",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt fc7666dd-627f-4011-8e05-abf3e1f780db"
+    },
+    "exit_code": 0,
+    "invocation_id": "e09f524df7374721b938fbaae809d2ae",
+    "logs": "preparation geometry_compile_seconds=0.001357 slice_prepare_seconds=3.032750\nepoch=000 prune=0 gate_threshold=0.50 ranked_loss=3.177912 ranked_admission=1.0000 event_loss=3.178043 event_admission=1.0000 epoch_seconds=0.854\nepoch=001 prune=0 gate_threshold=0.50 ranked_loss=3.174299 ranked_admission=1.0000 event_loss=3.177930 event_admission=1.0000 epoch_seconds=0.340\nepoch=002 prune=0 gate_threshold=0.50 ranked_loss=3.164652 ranked_admission=1.0000 event_loss=3.177756 event_admission=1.0000 epoch_seconds=0.362\nepoch=003 prune=0 gate_threshold=0.50 ranked_loss=3.154274 ranked_admission=1.0000 event_loss=3.177442 event_admission=1.0000 epoch_seconds=0.351\nepoch=004 prune=0 gate_threshold=0.50 ranked_loss=3.141456 ranked_admission=1.0000 event_loss=3.177210 event_admission=1.0000 epoch_seconds=0.357\nepoch=005 prune=0 gate_threshold=0.50 ranked_loss=3.137738 ranked_admission=1.0000 event_loss=3.176765 event_admission=1.0000 epoch_seconds=0.363\nepoch=006 prune=0 gate_threshold=0.50 ranked_loss=3.104659 ranked_admission=1.0000 event_loss=3.176257 event_admission=1.0000 epoch_seconds=0.353\nepoch=007 prune=0 gate_threshold=0.50 ranked_loss=3.065496 ranked_admission=1.0000 event_loss=3.175027 event_admission=1.0000 epoch_seconds=0.361\nepoch=008 prune=0 gate_threshold=0.50 ranked_loss=3.013444 ranked_admission=1.0000 event_loss=3.173706 event_admission=1.0000 epoch_seconds=0.361\nepoch=009 prune=0 gate_threshold=0.50 ranked_loss=2.844292 ranked_admission=1.0000 event_loss=3.169462 event_admission=1.0000 epoch_seconds=0.355\nepoch=010 prune=1 gate_threshold=0.50 ranked_loss=3.063546 ranked_admission=0.3787 event_loss=3.171069 event_admission=0.6764 epoch_seconds=0.387\nepoch=011 prune=1 gate_threshold=0.50 ranked_loss=3.031009 ranked_admission=0.3772 event_loss=3.162524 event_admission=0.6392 epoch_seconds=0.382\nepoch=012 prune=1 gate_threshold=0.50 ranked_loss=2.999605 ranked_admission=0.3854 event_loss=3.162969 event_admission=0.6059 epoch_seconds=0.357\nepoch=013 prune=1 gate_threshold=0.50 ranked_loss=3.047640 ranked_admission=0.3891 event_loss=3.162426 event_admission=0.6177 epoch_seconds=0.356\nepoch=014 prune=1 gate_threshold=0.50 ranked_loss=2.914965 ranked_admission=0.3817 event_loss=3.154434 event_admission=0.6094 epoch_seconds=0.350\nepoch=015 prune=1 gate_threshold=0.50 ranked_loss=2.662743 ranked_admission=0.3743 event_loss=3.136390 event_admission=0.6003 epoch_seconds=0.351\nepoch=016 prune=1 gate_threshold=0.50 ranked_loss=2.992714 ranked_admission=0.3676 event_loss=3.116014 event_admission=0.5826 epoch_seconds=0.353\nepoch=017 prune=1 gate_threshold=0.50 ranked_loss=2.966055 ranked_admission=0.3616 event_loss=3.090166 event_admission=0.5757 epoch_seconds=0.356\nepoch=018 prune=1 gate_threshold=0.50 ranked_loss=2.824945 ranked_admission=0.3557 event_loss=3.073067 event_admission=0.5240 epoch_seconds=0.352\nepoch=019 prune=1 gate_threshold=0.50 ranked_loss=2.927089 ranked_admission=0.3504 event_loss=3.082844 event_admission=0.5344 epoch_seconds=0.356\nproposal=ranked proposal_count=4 attempts=72 candidate_upper_bound=2304 upper_bound_saturated=0 missed_lower_bound=2048 missed_exact=1 sampled_coverage_lower_bound=0.027778\npromotion=ranked source=5 destination=20 score=0.106770 edges=97 epoch=2\nproposal=events proposal_count=6 attempts=72 candidate_upper_bound=2304 upper_bound_saturated=0 missed_lower_bound=2048 missed_exact=1 sampled_coverage_lower_bound=0.027778\npromotion=events source=3 destination=23 score=0.030045 edges=97 epoch=2\nepoch=020 prune=1 gate_threshold=0.50 ranked_loss=3.037353 ranked_admission=0.3549 event_loss=2.980800 event_admission=0.5854 epoch_seconds=0.361\nepoch=021 prune=1 gate_threshold=0.50 ranked_loss=2.924961 ranked_admission=0.3447 event_loss=2.945666 event_admission=0.6245 epoch_seconds=0.357\nepoch=022 prune=1 gate_threshold=0.50 ranked_loss=2.635046 ranked_admission=0.3501 event_loss=2.993178 event_admission=0.6332 epoch_seconds=0.352\nepoch=023 prune=1 gate_threshold=0.50 ranked_loss=2.803108 ranked_admission=0.3405 event_loss=2.819265 event_admission=0.6050 epoch_seconds=0.351\nepoch=024 prune=1 gate_threshold=0.50 ranked_loss=2.672505 ranked_admission=0.3400 event_loss=2.654012 event_admission=0.6366 epoch_seconds=0.385\nepoch=025 prune=1 gate_threshold=0.50 ranked_loss=2.938400 ranked_admission=0.3343 event_loss=2.611626 event_admission=0.5821 epoch_seconds=0.356\nepoch=026 prune=1 gate_threshold=0.50 ranked_loss=2.378395 ranked_admission=0.3304 event_loss=2.920653 event_admission=0.6113 epoch_seconds=0.350\nepoch=027 prune=1 gate_threshold=0.50 ranked_loss=2.241338 ranked_admission=0.3405 event_loss=2.763924 event_admission=0.5819 epoch_seconds=0.472\nepoch=028 prune=1 gate_threshold=0.50 ranked_loss=2.667463 ranked_admission=0.3191 event_loss=2.358244 event_admission=0.5283 epoch_seconds=0.359\nepoch=029 prune=1 gate_threshold=0.50 ranked_loss=2.723439 ranked_admission=0.3080 event_loss=2.525567 event_admission=0.6143 epoch_seconds=0.362\nepoch=030 prune=1 gate_threshold=0.50 ranked_loss=2.498551 ranked_admission=0.3074 event_loss=3.012842 event_admission=0.5252 epoch_seconds=0.350\nepoch=031 prune=1 gate_threshold=0.50 ranked_loss=2.794073 ranked_admission=0.3101 event_loss=2.841031 event_admission=0.5189 epoch_seconds=0.350\nepoch=032 prune=1 gate_threshold=0.50 ranked_loss=2.765247 ranked_admission=0.2840 event_loss=2.955520 event_admission=0.5640 epoch_seconds=0.359\nepoch=033 prune=1 gate_threshold=0.50 ranked_loss=2.377863 ranked_admission=0.2942 event_loss=2.769268 event_admission=0.5631 epoch_seconds=0.351\nepoch=034 prune=1 gate_threshold=0.50 ranked_loss=2.580115 ranked_admission=0.3122 event_loss=2.517018 event_admission=0.6235 epoch_seconds=0.352\nepoch=035 prune=1 gate_threshold=0.50 ranked_loss=2.344928 ranked_admission=0.3215 event_loss=2.798968 event_admission=0.5198 epoch_seconds=0.362\nepoch=036 prune=1 gate_threshold=0.50 ranked_loss=2.661292 ranked_admission=0.3198 event_loss=2.605730 event_admission=0.5316 epoch_seconds=0.353\nepoch=037 prune=1 gate_threshold=0.50 ranked_loss=2.623709 ranked_admission=0.3202 event_loss=2.671805 event_admission=0.4921 epoch_seconds=0.382\nepoch=038 prune=1 gate_threshold=0.50 ranked_loss=2.536809 ranked_admission=0.3550 event_loss=2.794472 event_admission=0.6045 epoch_seconds=0.359\nepoch=039 prune=1 gate_threshold=0.50 ranked_loss=2.521484 ranked_admission=0.3392 event_loss=2.663632 event_admission=0.6053 epoch_seconds=0.354\nepoch=040 prune=1 gate_threshold=0.50 ranked_loss=2.366885 ranked_admission=0.3597 event_loss=2.407065 event_admission=0.5209 epoch_seconds=0.352\nepoch=041 prune=1 gate_threshold=0.50 ranked_loss=2.884555 ranked_admission=0.3235 event_loss=2.440477 event_admission=0.6328 epoch_seconds=0.363\nepoch=042 prune=1 gate_threshold=0.50 ranked_loss=2.689824 ranked_admission=0.3762 event_loss=2.678788 event_admission=0.5869 epoch_seconds=0.352\nepoch=043 prune=1 gate_threshold=0.50 ranked_loss=2.404005 ranked_admission=0.3911 event_loss=2.484192 event_admission=0.5920 epoch_seconds=0.354\nepoch=044 prune=1 gate_threshold=0.50 ranked_loss=2.443631 ranked_admission=0.3596 event_loss=2.575461 event_admission=0.6023 epoch_seconds=0.354\nepoch=045 prune=1 gate_threshold=0.50 ranked_loss=1.892473 ranked_admission=0.4172 event_loss=2.296133 event_admission=0.5878 epoch_seconds=0.353\nepoch=046 prune=1 gate_threshold=0.50 ranked_loss=2.553467 ranked_admission=0.3638 event_loss=2.608396 event_admission=0.5588 epoch_seconds=0.357\nepoch=047 prune=1 gate_threshold=0.50 ranked_loss=2.366673 ranked_admission=0.3954 event_loss=3.022853 event_admission=0.6823 epoch_seconds=0.352\nepoch=048 prune=1 gate_threshold=0.50 ranked_loss=2.230106 ranked_admission=0.4158 event_loss=2.440373 event_admission=0.6718 epoch_seconds=0.359\nepoch=049 prune=1 gate_threshold=0.50 ranked_loss=1.977091 ranked_admission=0.4697 event_loss=2.646393 event_admission=0.5859 epoch_seconds=0.358\nheldout=ranked soft_loss=1.253947 soft_acc=0.6875 soft_admission=1.0000 pruned_loss=1.674484 pruned_acc=0.5625 pruned_admission=0.4624 dormant_sample=(256, 1453)\nheldout=ranked_soft_only soft_loss=0.602328 soft_acc=0.7812 soft_admission=1.0000 pruned_loss=4.183590 pruned_acc=0.1719 pruned_admission=0.4249 dormant_sample=(256, 1546)\nheldout=ranked_shuffled soft_loss=1.792296 soft_acc=0.5156 soft_admission=1.0000 pruned_loss=2.429595 pruned_acc=0.3438 pruned_admission=0.3601 dormant_sample=(256, 1720)\ncheckpoint_continuation=ranked support_edges=97 ok=1\ncheckpoint_continuation=events support_edges=97 ok=1\nheldout=events soft_loss=2.349621 soft_acc=0.2812 soft_admission=1.0000 pruned_loss=2.556622 pruned_acc=0.2812 pruned_admission=0.5979 dormant_sample=(252, 784)\nheldout=events_soft_only soft_loss=2.083489 soft_acc=0.2500 soft_admission=1.0000 pruned_loss=2.705913 pruned_acc=0.2500 pruned_admission=0.6038 dormant_sample=(256, 795)\nheldout=events_shuffled soft_loss=2.923618 soft_acc=0.2188 soft_admission=1.0000 pruned_loss=2.975315 pruned_acc=0.1562 pruned_admission=0.7302 dormant_sample=(251, 522)\ncheckpoint_event_stream=events prefix=6 suffix=6 ok=1\ncosts route_cache_refresh_seconds=0.204705 support_publish_seconds=0.002031 peak_allocated_bytes=26968064\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "success",
+    "state": "succeeded",
+    "stdout": "preparation geometry_compile_seconds=0.001357 slice_prepare_seconds=3.032750\nepoch=000 prune=0 gate_threshold=0.50 ranked_loss=3.177912 ranked_admission=1.0000 event_loss=3.178043 event_admission=1.0000 epoch_seconds=0.854\nepoch=001 prune=0 gate_threshold=0.50 ranked_loss=3.174299 ranked_admission=1.0000 event_loss=3.177930 event_admission=1.0000 epoch_seconds=0.340\nepoch=002 prune=0 gate_threshold=0.50 ranked_loss=3.164652 ranked_admission=1.0000 event_loss=3.177756 event_admission=1.0000 epoch_seconds=0.362\nepoch=003 prune=0 gate_threshold=0.50 ranked_loss=3.154274 ranked_admission=1.0000 event_loss=3.177442 event_admission=1.0000 epoch_seconds=0.351\nepoch=004 prune=0 gate_threshold=0.50 ranked_loss=3.141456 ranked_admission=1.0000 event_loss=3.177210 event_admission=1.0000 epoch_seconds=0.357\nepoch=005 prune=0 gate_threshold=0.50 ranked_loss=3.137738 ranked_admission=1.0000 event_loss=3.176765 event_admission=1.0000 epoch_seconds=0.363\nepoch=006 prune=0 gate_threshold=0.50 ranked_loss=3.104659 ranked_admission=1.0000 event_loss=3.176257 event_admission=1.0000 epoch_seconds=0.353\nepoch=007 prune=0 gate_threshold=0.50 ranked_loss=3.065496 ranked_admission=1.0000 event_loss=3.175027 event_admission=1.0000 epoch_seconds=0.361\nepoch=008 prune=0 gate_threshold=0.50 ranked_loss=3.013444 ranked_admission=1.0000 event_loss=3.173706 event_admission=1.0000 epoch_seconds=0.361\nepoch=009 prune=0 gate_threshold=0.50 ranked_loss=2.844292 ranked_admission=1.0000 event_loss=3.169462 event_admission=1.0000 epoch_seconds=0.355\nepoch=010 prune=1 gate_threshold=0.50 ranked_loss=3.063546 ranked_admission=0.3787 event_loss=3.171069 event_admission=0.6764 epoch_seconds=0.387\nepoch=011 prune=1 gate_threshold=0.50 ranked_loss=3.031009 ranked_admission=0.3772 event_loss=3.162524 event_admission=0.6392 epoch_seconds=0.382\nepoch=012 prune=1 gate_threshold=0.50 ranked_loss=2.999605 ranked_admission=0.3854 event_loss=3.162969 event_admission=0.6059 epoch_seconds=0.357\nepoch=013 prune=1 gate_threshold=0.50 ranked_loss=3.047640 ranked_admission=0.3891 event_loss=3.162426 event_admission=0.6177 epoch_seconds=0.356\nepoch=014 prune=1 gate_threshold=0.50 ranked_loss=2.914965 ranked_admission=0.3817 event_loss=3.154434 event_admission=0.6094 epoch_seconds=0.350\nepoch=015 prune=1 gate_threshold=0.50 ranked_loss=2.662743 ranked_admission=0.3743 event_loss=3.136390 event_admission=0.6003 epoch_seconds=0.351\nepoch=016 prune=1 gate_threshold=0.50 ranked_loss=2.992714 ranked_admission=0.3676 event_loss=3.116014 event_admission=0.5826 epoch_seconds=0.353\nepoch=017 prune=1 gate_threshold=0.50 ranked_loss=2.966055 ranked_admission=0.3616 event_loss=3.090166 event_admission=0.5757 epoch_seconds=0.356\nepoch=018 prune=1 gate_threshold=0.50 ranked_loss=2.824945 ranked_admission=0.3557 event_loss=3.073067 event_admission=0.5240 epoch_seconds=0.352\nepoch=019 prune=1 gate_threshold=0.50 ranked_loss=2.927089 ranked_admission=0.3504 event_loss=3.082844 event_admission=0.5344 epoch_seconds=0.356\nproposal=ranked proposal_count=4 attempts=72 candidate_upper_bound=2304 upper_bound_saturated=0 missed_lower_bound=2048 missed_exact=1 sampled_coverage_lower_bound=0.027778\npromotion=ranked source=5 destination=20 score=0.106770 edges=97 epoch=2\nproposal=events proposal_count=6 attempts=72 candidate_upper_bound=2304 upper_bound_saturated=0 missed_lower_bound=2048 missed_exact=1 sampled_coverage_lower_bound=0.027778\npromotion=events source=3 destination=23 score=0.030045 edges=97 epoch=2\nepoch=020 prune=1 gate_threshold=0.50 ranked_loss=3.037353 ranked_admission=0.3549 event_loss=2.980800 event_admission=0.5854 epoch_seconds=0.361\nepoch=021 prune=1 gate_threshold=0.50 ranked_loss=2.924961 ranked_admission=0.3447 event_loss=2.945666 event_admission=0.6245 epoch_seconds=0.357\nepoch=022 prune=1 gate_threshold=0.50 ranked_loss=2.635046 ranked_admission=0.3501 event_loss=2.993178 event_admission=0.6332 epoch_seconds=0.352\nepoch=023 prune=1 gate_threshold=0.50 ranked_loss=2.803108 ranked_admission=0.3405 event_loss=2.819265 event_admission=0.6050 epoch_seconds=0.351\nepoch=024 prune=1 gate_threshold=0.50 ranked_loss=2.672505 ranked_admission=0.3400 event_loss=2.654012 event_admission=0.6366 epoch_seconds=0.385\nepoch=025 prune=1 gate_threshold=0.50 ranked_loss=2.938400 ranked_admission=0.3343 event_loss=2.611626 event_admission=0.5821 epoch_seconds=0.356\nepoch=026 prune=1 gate_threshold=0.50 ranked_loss=2.378395 ranked_admission=0.3304 event_loss=2.920653 event_admission=0.6113 epoch_seconds=0.350\nepoch=027 prune=1 gate_threshold=0.50 ranked_loss=2.241338 ranked_admission=0.3405 event_loss=2.763924 event_admission=0.5819 epoch_seconds=0.472\nepoch=028 prune=1 gate_threshold=0.50 ranked_loss=2.667463 ranked_admission=0.3191 event_loss=2.358244 event_admission=0.5283 epoch_seconds=0.359\nepoch=029 prune=1 gate_threshold=0.50 ranked_loss=2.723439 ranked_admission=0.3080 event_loss=2.525567 event_admission=0.6143 epoch_seconds=0.362\nepoch=030 prune=1 gate_threshold=0.50 ranked_loss=2.498551 ranked_admission=0.3074 event_loss=3.012842 event_admission=0.5252 epoch_seconds=0.350\nepoch=031 prune=1 gate_threshold=0.50 ranked_loss=2.794073 ranked_admission=0.3101 event_loss=2.841031 event_admission=0.5189 epoch_seconds=0.350\nepoch=032 prune=1 gate_threshold=0.50 ranked_loss=2.765247 ranked_admission=0.2840 event_loss=2.955520 event_admission=0.5640 epoch_seconds=0.359\nepoch=033 prune=1 gate_threshold=0.50 ranked_loss=2.377863 ranked_admission=0.2942 event_loss=2.769268 event_admission=0.5631 epoch_seconds=0.351\nepoch=034 prune=1 gate_threshold=0.50 ranked_loss=2.580115 ranked_admission=0.3122 event_loss=2.517018 event_admission=0.6235 epoch_seconds=0.352\nepoch=035 prune=1 gate_threshold=0.50 ranked_loss=2.344928 ranked_admission=0.3215 event_loss=2.798968 event_admission=0.5198 epoch_seconds=0.362\nepoch=036 prune=1 gate_threshold=0.50 ranked_loss=2.661292 ranked_admission=0.3198 event_loss=2.605730 event_admission=0.5316 epoch_seconds=0.353\nepoch=037 prune=1 gate_threshold=0.50 ranked_loss=2.623709 ranked_admission=0.3202 event_loss=2.671805 event_admission=0.4921 epoch_seconds=0.382\nepoch=038 prune=1 gate_threshold=0.50 ranked_loss=2.536809 ranked_admission=0.3550 event_loss=2.794472 event_admission=0.6045 epoch_seconds=0.359\nepoch=039 prune=1 gate_threshold=0.50 ranked_loss=2.521484 ranked_admission=0.3392 event_loss=2.663632 event_admission=0.6053 epoch_seconds=0.354\nepoch=040 prune=1 gate_threshold=0.50 ranked_loss=2.366885 ranked_admission=0.3597 event_loss=2.407065 event_admission=0.5209 epoch_seconds=0.352\nepoch=041 prune=1 gate_threshold=0.50 ranked_loss=2.884555 ranked_admission=0.3235 event_loss=2.440477 event_admission=0.6328 epoch_seconds=0.363\nepoch=042 prune=1 gate_threshold=0.50 ranked_loss=2.689824 ranked_admission=0.3762 event_loss=2.678788 event_admission=0.5869 epoch_seconds=0.352\nepoch=043 prune=1 gate_threshold=0.50 ranked_loss=2.404005 ranked_admission=0.3911 event_loss=2.484192 event_admission=0.5920 epoch_seconds=0.354\nepoch=044 prune=1 gate_threshold=0.50 ranked_loss=2.443631 ranked_admission=0.3596 event_loss=2.575461 event_admission=0.6023 epoch_seconds=0.354\nepoch=045 prune=1 gate_threshold=0.50 ranked_loss=1.892473 ranked_admission=0.4172 event_loss=2.296133 event_admission=0.5878 epoch_seconds=0.353\nepoch=046 prune=1 gate_threshold=0.50 ranked_loss=2.553467 ranked_admission=0.3638 event_loss=2.608396 event_admission=0.5588 epoch_seconds=0.357\nepoch=047 prune=1 gate_threshold=0.50 ranked_loss=2.366673 ranked_admission=0.3954 event_loss=3.022853 event_admission=0.6823 epoch_seconds=0.352\nepoch=048 prune=1 gate_threshold=0.50 ranked_loss=2.230106 ranked_admission=0.4158 event_loss=2.440373 event_admission=0.6718 epoch_seconds=0.359\nepoch=049 prune=1 gate_threshold=0.50 ranked_loss=1.977091 ranked_admission=0.4697 event_loss=2.646393 event_admission=0.5859 epoch_seconds=0.358\nheldout=ranked soft_loss=1.253947 soft_acc=0.6875 soft_admission=1.0000 pruned_loss=1.674484 pruned_acc=0.5625 pruned_admission=0.4624 dormant_sample=(256, 1453)\nheldout=ranked_soft_only soft_loss=0.602328 soft_acc=0.7812 soft_admission=1.0000 pruned_loss=4.183590 pruned_acc=0.1719 pruned_admission=0.4249 dormant_sample=(256, 1546)\nheldout=ranked_shuffled soft_loss=1.792296 soft_acc=0.5156 soft_admission=1.0000 pruned_loss=2.429595 pruned_acc=0.3438 pruned_admission=0.3601 dormant_sample=(256, 1720)\ncheckpoint_continuation=ranked support_edges=97 ok=1\ncheckpoint_continuation=events support_edges=97 ok=1\nheldout=events soft_loss=2.349621 soft_acc=0.2812 soft_admission=1.0000 pruned_loss=2.556622 pruned_acc=0.2812 pruned_admission=0.5979 dormant_sample=(252, 784)\nheldout=events_soft_only soft_loss=2.083489 soft_acc=0.2500 soft_admission=1.0000 pruned_loss=2.705913 pruned_acc=0.2500 pruned_admission=0.6038 dormant_sample=(256, 795)\nheldout=events_shuffled soft_loss=2.923618 soft_acc=0.2188 soft_admission=1.0000 pruned_loss=2.975315 pruned_acc=0.1562 pruned_admission=0.7302 dormant_sample=(251, 522)\ncheckpoint_event_stream=events prefix=6 suffix=6 ok=1\ncosts route_cache_refresh_seconds=0.204705 support_publish_seconds=0.002031 peak_allocated_bytes=26968064\n",
+    "substate": "exited",
+    "unit_name": "device-scheduler-attempt-9c068018be229df551b0ddf1f826837e.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "-u",
+      "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v9/examples/sparse_support/train_synthetic.py",
+      "--device",
+      "0",
+      "--epochs",
+      "50",
+      "--soft-epochs",
+      "10",
+      "--adapt-epoch",
+      "20",
+      "--support-growth-budget",
+      "16",
+      "--seed",
+      "41027"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v9/package:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v9"
+    },
+    "event_trigger": null,
+    "idempotency_key": "cellerator-sparse-train-v9-50epoch-gpu1-41027",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": true
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "operator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 6442450944.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "gpu.exclusive"
+    ],
+    "timeout_seconds": 3600.0,
+    "working_directory": "/home/tumlinson/device-scheduler"
+  },
+  "state": "succeeded",
+  "updated_at": "2026-10-27T19:56:31.561933Z"
+}

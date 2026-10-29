@@ -207,6 +207,17 @@ if(CELLERATOR_ENABLE_PYTHON)
         Cellerator::torch
         Cellerator::indexed_mechanism
         ${CELLERATOR_TORCH_PYTHON_LIBRARY})
+    if(CELLERATOR_ENABLE_SPARSE_SUPPORT)
+        target_sources(cellerator_python_torch PRIVATE
+            ${PROJECT_SOURCE_DIR}/bindings/sparse_support/module.cc
+            ${PROJECT_SOURCE_DIR}/bindings/sparse_support/indexing_bindings.cc
+            ${PROJECT_SOURCE_DIR}/bindings/sparse_support/geometry_bindings.cc
+            ${PROJECT_SOURCE_DIR}/bindings/sparse_support/prepared_routing.cc)
+        target_link_libraries(cellerator_python_torch PRIVATE
+            Cellerator::sparse_support Cellerator::sparse_support_numeric)
+        target_compile_definitions(cellerator_python_torch PRIVATE
+            CELLERATOR_HAS_SPARSE_SUPPORT=1)
+    endif()
     install(TARGETS cellerator_python_torch
         LIBRARY DESTINATION cellerator/torch COMPONENT Python
         RUNTIME DESTINATION cellerator/torch COMPONENT Python)

@@ -1,0 +1,1135 @@
+#!/usr/bin/env python3
+"""Relation-only E7 complete-step comparison.
+
+This runner deliberately excludes the recurrent latent transition because the
+current Python/native transition parameter layout has an unresolved contract
+mismatch. It invokes the experiment-local scan or ordered-postings C ABI on
+every measured training step; C ABI synchronization, D2H materialization, and
+host-to-device workset creation are inside the measured region.
+
+GPU execution is authorized only by an external Device Scheduler JobSpec and
+receipt. The environment marker and run key are accidental-launch guards and
+correlation metadata, not resource authority or proof of isolation.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib
+import json
+import os
+from pathlib import Path
+import platform
+import random
+import resource
+import statistics
+import sys
+import time
+
+import numpy as np
+
+from e7_fixtures import (FIXTURE_MANIFEST_SHA256, E7Fixture,
+                         host_scan_oracle, load_fixture)
+from indexer.ctypes_binding import Indexer, ORDERED_POSTINGS, SCAN
+
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[4]
+DEFAULT_PACKAGE = Path(
+    "/home/tumlinson/Cellerator/build-sparse-support/evidence/"
+    "torch-v14-optional-policies/package")
+DEFAULT_INDEXER = HERE / "indexer/artifacts/libadaptive_fields_indexer.so"
+WIDTH = 64
+MECHANISMS = 4
+PARAMETER_AXIS_WORDS = (31, 32, 41, 42, 51, 52, 61, 62)
+INDEX_MODES = {"scan": SCAN, "ordered_postings": ORDERED_POSTINGS}
+BACKENDS = {"simt": False, "cegeo": True}
+VALUE_POLICIES = {"full": "all", "union": "workset_union"}
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for block in iter(lambda: source.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def peak_rss_bytes() -> int:
+    # Linux reports ru_maxrss in KiB; the scheduled host is Linux/x86_64.
+    return int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024
+
+
+def array_sha256(values: np.ndarray | None) -> str | None:
+    if values is None:
+        return None
+    array = np.ascontiguousarray(values)
+    digest = hashlib.sha256()
+    digest.update(array.dtype.str.encode("ascii"))
+    digest.update(json.dumps(array.shape, separators=(",", ":")).encode("ascii"))
+    digest.update(memoryview(array).cast("B"))
+    return digest.hexdigest()
+
+
+def require_admission() -> dict[str, str | None]:
+    if os.environ.get("CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED") != "1":
+        raise RuntimeError("missing experiment guard marker; use parent scheduler job")
+    run_key = os.environ.get("ADAPTIVE_FIELDS_RUN_KEY")
+    if not run_key:
+        raise RuntimeError("missing ADAPTIVE_FIELDS_RUN_KEY correlation token")
+    visible = [part.strip() for part in
+               os.environ.get("CUDA_VISIBLE_DEVICES", "").split(",") if part.strip()]
+    if len(visible) != 1 or not visible[0].startswith("GPU-"):
+        raise RuntimeError("expected one UUID-routed GPU in CUDA_VISIBLE_DEVICES")
+    return {"run_key": run_key, "visible_uuid": visible[0],
+            "scheduler_job_id": os.environ.get("DEVICE_SCHEDULER_JOB_ID"),
+            "scheduler_attempt_id": os.environ.get("DEVICE_SCHEDULER_ATTEMPT_ID")}
+
+
+def build_context(torch, fixture: E7Fixture, entity_embedding, rank_embedding,
+                  device):
+    cells = fixture.cells
+    context = torch.zeros((cells, fixture.entities, WIDTH), dtype=torch.float32,
+                          device=device)
+    if fixture.name == "large_ranked":
+        ids = torch.as_tensor(fixture.arrays["ranked_entity_id"],
+                              dtype=torch.int64, device=device)
+        positions = torch.as_tensor(fixture.arrays["ranked_position"],
+                                    dtype=torch.int64, device=device)
+        features = entity_embedding.index_select(0, ids.reshape(-1)).view(
+            cells, ids.shape[1], WIDTH)
+        features = features + rank_embedding.index_select(
+            0, positions.reshape(-1)).view_as(features)
+        context.scatter_add_(1, ids.unsqueeze(-1).expand(-1, -1, WIDTH), features)
+    else:
+        for cell, row in enumerate(fixture.context_entities):
+            if row.size:
+                ids = torch.as_tensor(row, dtype=torch.int64, device=device)
+                features = entity_embedding.index_select(0, ids)
+                context[cell].index_add_(0, ids, features)
+    return context.contiguous()
+
+
+def memory_preflight(torch, fixture: E7Fixture, geometry,
+                     *, cegeo: bool) -> dict:
+    """Conservative complete-workspace estimate before large allocations."""
+    _, candidate_ids, _ = host_scan_oracle(fixture)
+    candidate_count = int(candidate_ids.size)
+    cells = fixture.cells
+    edges = int(fixture.edge_ids.size)
+    width = WIDTH
+    candidate_features = candidate_count * width * 4 * 8
+    dense_context_output = cells * fixture.entities * width * 4 * 6
+    all_edge_values = edges * width * 4 * 3
+    worksets = (cells + 1) * 2 * 8 + candidate_count * 4 * 8
+    # The isolated C ABI currently allocates query flags, prefix, item output,
+    # and CUB scratch per query. Bound the first three exactly at E*cells and
+    # reserve one extra uint64 per pair for scan temporary storage.
+    indexer_query_scratch = edges * cells * (8 + 8 + 16 + 8)
+    tile_count = int(geometry["tile_count"]) if cegeo else 0
+    packed_active_tiles = (min(candidate_count, cells * tile_count) * 256 * 2
+                           if cegeo else 0)
+    estimated = (candidate_features + dense_context_output + all_edge_values
+                 + worksets + indexer_query_scratch + packed_active_tiles)
+    free_bytes, total_bytes = torch.cuda.mem_get_info(torch.cuda.current_device())
+    details = {
+        "candidate_count": candidate_count,
+        "candidate_feature_workspace_bytes": candidate_features,
+        "dense_context_and_output_bytes": dense_context_output,
+        "full_support_value_intermediates_bytes": all_edge_values,
+        "workset_host_device_bytes_estimate": worksets,
+        "native_indexer_query_scratch_bytes_estimate": indexer_query_scratch,
+        "ce_geo_active_tile_bytes_estimate": packed_active_tiles,
+        "estimated_peak_workspace_bytes_before_allocator_overhead": estimated,
+        "free_device_bytes_before_module_prepare": int(free_bytes),
+        "total_device_bytes": int(total_bytes),
+        "memory_limit_fraction": 0.85,
+        "preflight_pass": estimated <= int(free_bytes * 0.85),
+        "method": "candidate/workset and full-value estimates from existing width64 formula, plus exact E*cells C ABI worst-case arrays and a CUB scratch allowance",
+    }
+    if not details["preflight_pass"]:
+        raise MemoryError(
+            "E7 complete-workspace estimate exceeds 85% of free device memory; "
+            f"estimated={estimated} free={free_bytes}")
+    return details
+
+
+def load_package(package_root: Path):
+    import torch
+
+    package_root = package_root.resolve(strict=True)
+    sys.path.insert(0, str(package_root))
+    from cellerator.torch import _torch
+    from cellerator.torch import sparse_support, mechanism
+    if not Path(sparse_support.__file__).resolve().is_relative_to(package_root):
+        raise RuntimeError("loaded sparse_support module escaped frozen package root")
+    identity_path = package_root.parent / "identity.json"
+    identity = json.loads(identity_path.read_text())
+    identity_files = identity.get("files", identity)
+    indexer_build_manifest = HERE / "indexer/artifacts/build_manifest.json"
+    package_rel = "package/cellerator/torch/sparse_support.py"
+    extension_rel = "package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so"
+    expected_package = identity_files.get(package_rel)
+    expected_extension = identity_files.get(extension_rel)
+    if not expected_package or sha256(Path(sparse_support.__file__)) != expected_package:
+        raise RuntimeError("frozen sparse_support source identity mismatch")
+    extension_path = Path(_torch.__file__).resolve()
+    if not expected_extension or sha256(extension_path) != expected_extension:
+        raise RuntimeError("frozen Torch extension identity mismatch")
+    return torch, sparse_support, mechanism, {
+        "package_root": str(package_root),
+        "package_identity_sha256": sha256(identity_path),
+        "sparse_support_sha256": expected_package,
+        "torch_extension_path": str(extension_path),
+        "torch_extension_sha256": expected_extension,
+        "experiment_driver_sha256": sha256(Path(__file__).resolve()),
+        "fixture_loader_sha256": sha256(HERE / "e7_fixtures.py"),
+        "indexer_binding_sha256": sha256(HERE / "indexer/ctypes_binding.py"),
+        "indexer_build_manifest_sha256": sha256(indexer_build_manifest),
+    }
+
+
+def make_terms(fixture: E7Fixture) -> tuple[tuple[int, ...],
+                                             tuple[tuple[int, int], ...]]:
+    offsets = [0]
+    terms: list[tuple[int, int]] = []
+    for row in fixture.query_rows:
+        # Inputs in the fixture are zero-based. The C ABI follows the native
+        # support protocol and uses one-based logical entity IDs.
+        terms.extend((0, int(entity) + 1) for entity in row)
+        offsets.append(len(terms))
+    return tuple(offsets), tuple(terms)
+
+
+def parse_candidate(candidate: str) -> tuple[str, str, str]:
+    for indexer_name in sorted(INDEX_MODES, key=len, reverse=True):
+        prefix = indexer_name + "_"
+        if candidate.startswith(prefix):
+            pieces = candidate[len(prefix):].split("_")
+            if len(pieces) == 2 and pieces[0] in BACKENDS \
+                    and pieces[1] in VALUE_POLICIES:
+                return indexer_name, pieces[0], pieces[1]
+    raise ValueError(
+        "candidate must be <scan|ordered_postings>_<simt|cegeo>_<full|union>")
+
+
+def portfolio_candidates() -> list[str]:
+    """The approved six candidates: omit CE-GEO/full-support values."""
+    return [f"{indexer}_{backend}_{values}"
+            for indexer in INDEX_MODES
+            for backend, values in (("simt", "full"),
+                                    ("simt", "union"),
+                                    ("cegeo", "union"))]
+
+
+def verify_index_result(indexer: Indexer, fixture: E7Fixture,
+                        mode: str, generation: int) -> dict:
+    result = indexer.query(INDEX_MODES[mode], *make_terms(fixture),
+                           state_generation=generation, verify=True)
+    offsets, ids, ordinals = host_scan_oracle(fixture)
+    expected_gate_indices = np.arange(ids.size, dtype=np.uint64)
+    if tuple(result.row_offsets) != tuple(map(int, offsets)):
+        raise AssertionError(f"{mode}: workset row offsets differ from host oracle")
+    if tuple(result.logical_edge_ids) != tuple(map(int, ids)):
+        raise AssertionError(f"{mode}: logical identities differ from host oracle")
+    if tuple(result.edge_ordinals) != tuple(map(int, ordinals)):
+        raise AssertionError(f"{mode}: ordinals differ from host oracle")
+    if tuple(result.gate_value_indices) != tuple(map(int, expected_gate_indices)):
+        raise AssertionError(f"{mode}: gate-value index mapping differs")
+    if result.structure_epoch != indexer.structure_epoch or result.state_generation != generation:
+        raise AssertionError(f"{mode}: workset generation metadata is stale")
+    return {
+        "item_count": result.item_count,
+        "workset_sha256": hashlib.sha256(
+            np.asarray(result.logical_edge_ids, dtype=np.uint64).tobytes()
+            + np.asarray(result.edge_ordinals, dtype=np.uint64).tobytes()
+            + np.asarray(result.row_offsets, dtype=np.uint64).tobytes()).hexdigest(),
+        "ordered_fast_path_rows": result.ordered_fast_path_rows,
+        "exact_fallback_rows": result.exact_fallback_rows,
+        "path_diagnostics_valid": result.ordered_fast_path_rows is not None,
+    }
+
+
+def verify_exact_fallback(indexer: Indexer, fixture: E7Fixture) -> dict:
+    """Inject one duplicate/unsorted query row and require exact fallback."""
+    offsets, terms = make_terms(fixture)
+    rows = []
+    for cell in range(fixture.cells):
+        begin, end = offsets[cell:cell + 2]
+        rows.append(list(terms[begin:end]))
+    if not rows[0]:
+        rows[0] = [(0, 1), (0, 1)]
+    else:
+        rows[0] = [rows[0][-1], rows[0][0], rows[0][0], *rows[0][1:-1]]
+    mutated_offsets = [0]
+    mutated_terms = []
+    for row in rows:
+        mutated_terms.extend(row)
+        mutated_offsets.append(len(mutated_terms))
+    result = indexer.query(
+        ORDERED_POSTINGS, tuple(mutated_offsets), tuple(mutated_terms),
+        state_generation=2, verify=True)
+    expected_offsets = [0]
+    expected_ids = []
+    expected_ordinals = []
+    sources = np.asarray(fixture.sources, dtype=np.uint64)
+    edge_ids = np.asarray(fixture.edge_ids, dtype=np.uint64)
+    for row in rows:
+        query = np.asarray([entity - 1 for role, entity in row if role == 0],
+                           dtype=np.uint64)
+        ordinals = np.flatnonzero(np.isin(sources, query))
+        expected_ids.extend(map(int, edge_ids[ordinals]))
+        expected_ordinals.extend(map(int, ordinals))
+        expected_offsets.append(len(expected_ids))
+    if tuple(result.row_offsets) != tuple(expected_offsets):
+        raise AssertionError("fallback row offsets differ from exact scan oracle")
+    if tuple(result.logical_edge_ids) != tuple(expected_ids):
+        raise AssertionError("fallback logical identities differ from exact scan oracle")
+    if tuple(result.edge_ordinals) != tuple(expected_ordinals):
+        raise AssertionError("fallback ordinals differ from exact scan oracle")
+    if result.exact_fallback_rows is None or result.exact_fallback_rows < 1:
+        raise AssertionError("ineligible ordered query did not take exact fallback")
+    return {"status": "pass", "ineligible_row": 0,
+            "exact_fallback_rows": result.exact_fallback_rows,
+            "ordered_fast_path_rows": result.ordered_fast_path_rows,
+            "exact_identity_match": True}
+
+
+def prepare_module(torch, sparse_support, fixture, seed: int,
+                   *, cegeo: bool, compiled_geometry,
+                   max_primal_items: int | None = None):
+    module_type = (sparse_support.RankedGeneSlice if fixture.name == "large_ranked"
+                   else sparse_support.KaryoplastEventSlice)
+    extra = {}
+    if cegeo:
+        extra = {
+            "ce_geo_image": compiled_geometry["image"],
+            "source_group_members": compiled_geometry["source_group_members"],
+            "destination_group_members": compiled_geometry["destination_group_members"],
+            "geometry_edge_ids": compiled_geometry["geometry_edge_ids_in_support_order"],
+            "projection_id": int(compiled_geometry["projection_id"]),
+            "max_cells": fixture.cells,
+            "max_primal_items": (int(max_primal_items)
+                                  if max_primal_items is not None
+                                  else int(host_scan_oracle(fixture)[1].size)),
+        }
+    return sparse_support.prepare_sparse_slice(
+        module_type,
+        sparse_support.SupportSpec(
+            tuple(map(int, fixture.edge_ids)), tuple(map(int, fixture.sources)),
+            tuple(map(int, fixture.destinations)), 1),
+        entities=fixture.entities, mechanisms=MECHANISMS,
+        rank_count=(int(fixture.arrays["ranked_position"].max()) + 1
+                    if fixture.name == "large_ranked" else 8),
+        device=torch.cuda.current_device(),
+        parameter_axis_words=PARAMETER_AXIS_WORDS,
+        seed=seed, reader_capacity=16, **extra)
+
+
+def guarded_adam_step(module, optimizer, guarded_step):
+    if module.parameters_flat.grad is None:
+        raise RuntimeError("shared parameter owner did not receive a gradient")
+    if not guarded_step(module, optimizer):
+        raise FloatingPointError("guarded Adam rejected a nonfinite gradient")
+
+
+def train_step(torch, fixture, module, optimizer, guarded_step, context,
+               inputs, target, indexer, index_mode: str, value_policy: str,
+               threshold: float, seed: int, *, diagnostic: bool = False):
+    optimizer.zero_grad(set_to_none=True)
+    with module._pinned_forward():
+        host_workset = indexer.query_prepared(
+            INDEX_MODES[index_mode], state_generation=1, verify=False)
+        derivative = host_workset.to_torch_workset(
+            torch, module.parameters_flat.device)
+        candidate_ids = derivative.logical_edge_ids.detach().cpu().tolist()
+        candidate_ordinals = derivative.edge_ordinals.detach().cpu().tolist()
+        gates = module.score_candidates(
+            context, derivative, temperature=1.0, threshold=threshold,
+            prune=True)
+        candidate_gate_mask = gates.admitted.detach().cpu().numpy().astype(
+            np.uint8, copy=True)
+        candidate_gate_probabilities = gates.probabilities.detach().float().cpu().numpy().copy()
+        if diagnostic and gates.probabilities.requires_grad:
+            gates.probabilities.retain_grad()
+        primal, derivative = module.select_gate_worksets(
+            derivative, gates, seed=seed, window_counter=0)
+        edge_values = module.logical_edge_values(
+            policy=VALUE_POLICIES[value_policy], primal=primal,
+            derivative=derivative, cells=fixture.cells)
+        output = module.relation(inputs, edge_values, gates,
+                                 primal, derivative)
+        loss = torch.nn.functional.mse_loss(output, target)
+    loss.backward()
+    if diagnostic:
+        diagnostics = {
+            "loss": float(loss.detach().cpu()),
+            "output_values": output.detach().contiguous().cpu().numpy().copy(),
+            "gradient_values": module.parameters_flat.grad.detach().contiguous().cpu().numpy().copy(),
+            "primal_logical_edge_ids": primal.logical_edge_ids.detach().cpu().tolist(),
+            "derivative_logical_edge_ids": derivative.logical_edge_ids.detach().cpu().tolist(),
+            "derivative_gate_value_indices": derivative.gate_value_indices.detach().cpu().tolist(),
+            "candidate_logical_edge_ids": candidate_ids,
+            "candidate_edge_ordinals": candidate_ordinals,
+            "candidate_gate_mask": candidate_gate_mask,
+            "candidate_gate_probabilities": candidate_gate_probabilities,
+            "eligible_dormant_counts": np.asarray(
+                module.application_state["derivative_sampler"]["eligible_dormant_counts"],
+                dtype=np.uint64),
+            "selected_dormant_counts": np.asarray(
+                module.application_state["derivative_sampler"]["selected_dormant_counts"],
+                dtype=np.uint64),
+            "remaining_dormant_counts": np.asarray(
+                module.application_state["derivative_sampler"]["remaining_dormant_counts"],
+                dtype=np.uint64),
+            "probability_gradient_values": (
+                None if gates.probabilities.grad is None else
+                gates.probabilities.grad.detach().contiguous().cpu().numpy().copy()),
+        }
+    else:
+        diagnostics = None
+    guarded_adam_step(module, optimizer, guarded_step)
+    if diagnostic:
+        diagnostics["parameters_after_update"] = (
+            module.parameters_flat.detach().contiguous().cpu().numpy().copy())
+    return float(loss.detach().cpu()), diagnostics
+
+
+def paired_sample(torch, fixture, primary, baseline, primary_optimizer,
+                  baseline_optimizer, guarded_step,
+                  context, inputs, target, primary_indexer, baseline_indexer,
+                  primary_mode, primary_backend, primary_values, baseline_mode,
+                  baseline_backend, baseline_values, threshold, seed, pair,
+                  *, capture=False):
+    """Run both complete steps from checkpoint-restored, identical owner state."""
+    labels = ("baseline", "candidate") if pair % 2 == 0 else ("candidate", "baseline")
+    observations = {}
+    for label in labels:
+        module, optimizer = ((baseline, baseline_optimizer)
+                             if label == "baseline" else
+                             (primary["module"], primary_optimizer))
+        if label == "baseline":
+            mode, values, indexer = baseline_mode, baseline_values, baseline_indexer
+            backend = baseline_backend
+        else:
+            mode, values, indexer = primary_mode, primary_values, primary_indexer
+            backend = primary_backend
+        torch.cuda.synchronize()
+        started = time.perf_counter()
+        start_event = torch.cuda.Event(enable_timing=True)
+        end_event = torch.cuda.Event(enable_timing=True)
+        start_event.record()
+        loss, diagnostics = train_step(
+            torch, fixture, module, optimizer, guarded_step,
+            context, inputs, target, indexer, mode, values, threshold, seed,
+            diagnostic=capture)
+        end_event.record()
+        torch.cuda.synchronize()
+        observations[label] = {
+            "wall_ms": (time.perf_counter() - started) * 1000.0,
+            "cuda_event_ms": float(start_event.elapsed_time(end_event)),
+            "loss": loss,
+            "backend": backend,
+            "index_mode": mode,
+            "value_policy": values,
+            "diagnostics": diagnostics,
+        }
+    return observations
+
+
+def summary(values: list[float]) -> dict:
+    ordered = sorted(values)
+    return {"n": len(values), "mean": statistics.mean(values),
+            "median": statistics.median(values),
+            "stdev": statistics.stdev(values) if len(values) > 1 else 0.0,
+            "p10": ordered[max(0, int((len(ordered) - 1) * 0.1))],
+            "p90": ordered[min(len(ordered) - 1, int((len(ordered) - 1) * 0.9))]}
+
+
+def diagnostics_summary(diag: dict) -> dict:
+    return {
+        "loss": diag["loss"],
+        "output_sha256": array_sha256(diag["output_values"]),
+        "gradient_sha256": array_sha256(diag["gradient_values"]),
+        "parameters_after_update_sha256": array_sha256(diag["parameters_after_update"]),
+        "probability_gradient_sha256": array_sha256(diag["probability_gradient_values"]),
+        "primal_items": len(diag["primal_logical_edge_ids"]),
+        "derivative_items": len(diag["derivative_logical_edge_ids"]),
+        "derivative_only_items": (len(diag["derivative_logical_edge_ids"])
+                                  - len(diag["primal_logical_edge_ids"])),
+        "eligible_candidate_items": len(diag["candidate_logical_edge_ids"]),
+        "hard_admitted_candidate_items": int(
+            np.asarray(diag["candidate_gate_mask"], dtype=np.uint8).sum()),
+        "selected_dormant_items": int(
+            np.asarray(diag["selected_dormant_counts"], dtype=np.uint64).sum()),
+    }
+
+
+def restore_pair_checkpoint(load_checkpoint, checkpoint_path: Path,
+                            primary_module, primary_optimizer,
+                            baseline_module, baseline_optimizer,
+                            torch) -> float:
+    """Restore owner values and Adam state outside all measured intervals."""
+    started = time.perf_counter()
+    load_checkpoint(checkpoint_path, primary_module, primary_optimizer,
+                    map_location="cpu")
+    load_checkpoint(checkpoint_path, baseline_module, baseline_optimizer,
+                    map_location="cpu")
+    torch.cuda.synchronize()
+    return (time.perf_counter() - started) * 1000.0
+
+
+def run(args) -> dict:
+    admission = require_admission()
+    package_root = Path(os.environ.get("CELLERATOR_SPARSE_PACKAGE_ROOT", DEFAULT_PACKAGE))
+    torch, sparse_support, mechanism, identities = load_package(package_root)
+    if not torch.cuda.is_available():
+        raise RuntimeError("admitted CUDA process cannot see an available GPU")
+    torch.manual_seed(args.seed)
+    torch.set_num_threads(2)
+    device = torch.cuda.current_device()
+    torch.cuda.init()
+    torch.cuda.synchronize(device)
+
+    fixture = load_fixture(args.case, args.fixture_root)
+    expected_ids = np.asarray(fixture.edge_ids, dtype=np.uint64)
+    expected_sources = np.asarray(fixture.sources, dtype=np.uint64)
+    expected_destinations = np.asarray(fixture.destinations, dtype=np.uint64)
+    if not (np.all(expected_ids[1:] > expected_ids[:-1])
+            and expected_sources.size == expected_ids.size
+            and expected_destinations.size == expected_ids.size):
+        raise RuntimeError("fixture support arrays are not canonical")
+    primary_mode, primary_backend, primary_values = parse_candidate(args.candidate)
+    if args.candidate not in portfolio_candidates():
+        raise ValueError(f"candidate is outside the approved six-way portfolio: {args.candidate}")
+
+    support = sparse_support.SupportSpec(
+        tuple(map(int, expected_ids)), tuple(map(int, expected_sources)),
+        tuple(map(int, expected_destinations)), 1)
+    geometry_setup_ms = 0.0
+    geometry = None
+    if args.validate_only or BACKENDS[primary_backend]:
+        setup_start = time.perf_counter()
+        geometry = sparse_support.compile_sparse_support_ce_geo(
+            support, source_count=fixture.entities,
+            destination_count=fixture.entities, projection_id=7301)
+        geometry_setup_ms = (time.perf_counter() - setup_start) * 1000.0
+
+    indexer_start = time.perf_counter()
+    with Indexer(args.indexer_library, expected_ids, expected_sources,
+                 expected_destinations, fixture.entities, 1,
+                 relation_id=7301, structure_id=7302) as indexer:
+        support_projection_ms = (time.perf_counter() - indexer_start) * 1000.0
+        output_buffer_start = time.perf_counter()
+        host_buffer_setup = indexer.prepare_output_buffers(fixture.cells)
+        output_buffer_setup_ms = (time.perf_counter() - output_buffer_start) * 1000.0
+        query_buffer_start = time.perf_counter()
+        query_buffer_setup = indexer.prepare_query(*make_terms(fixture))
+        query_buffer_setup_ms = (time.perf_counter() - query_buffer_start) * 1000.0
+        posting_prep_ms = 0.0
+        if args.validate_only or primary_mode == "ordered_postings":
+            posting_start = time.perf_counter()
+            indexer.prepare_ordered_postings()
+            posting_prep_ms = (time.perf_counter() - posting_start) * 1000.0
+        indexer_prep_ms = (support_projection_ms + output_buffer_setup_ms
+                           + query_buffer_setup_ms + posting_prep_ms)
+        # Timing runs validate only their selected indexer. This keeps fixed
+        # scan candidates from paying posting preparation; validate-only
+        # separately qualifies both modes and forced fallback.
+        modes_to_check = (("scan", "ordered_postings") if args.validate_only
+                          else (primary_mode,))
+        indexer_checks = {
+            name: verify_index_result(indexer, fixture, name, generation=1)
+            for name in modes_to_check
+        }
+        fallback_check = (verify_exact_fallback(indexer, fixture)
+                          if args.validate_only else
+                          {"status": "covered by separate validate-only run"})
+        memory = memory_preflight(
+            torch, fixture, geometry,
+            cegeo=(args.validate_only or BACKENDS[primary_backend]))
+        torch.cuda.reset_peak_memory_stats(device)
+        baseline_mode, baseline_backend, baseline_values = ("scan", "simt", "full")
+
+        baseline_setup_start = time.perf_counter()
+        baseline_module = prepare_module(
+            torch, sparse_support, fixture, args.seed,
+            cegeo=BACKENDS[baseline_backend], compiled_geometry=geometry)
+        baseline_module_setup_ms = (
+            time.perf_counter() - baseline_setup_start) * 1000.0
+        primary_setup_start = time.perf_counter()
+        primary_module = prepare_module(
+            torch, sparse_support, fixture, args.seed,
+            cegeo=BACKENDS[primary_backend], compiled_geometry=geometry,
+            max_primal_items=int(memory["candidate_count"]))
+        primary_module_setup_ms = (time.perf_counter() - primary_setup_start) * 1000.0
+        if not torch.equal(primary_module.parameters_flat.detach(),
+                           baseline_module.parameters_flat.detach()):
+            raise RuntimeError("candidate and baseline owner states differ")
+        # Native owner blocks are views that exist only within a pinned read
+        # window. Clone them before releasing the lease so fixture context
+        # construction cannot retain an unpinned owner view.
+        with torch.no_grad(), primary_module._pinned_forward():
+            entity = primary_module.block("entity_embedding").detach().clone()
+            rank = primary_module.block("rank_embedding").detach().clone()
+        context = build_context(torch, fixture, entity, rank,
+                                primary_module.parameters_flat.device)
+        inputs = context.to(torch.float16).contiguous()
+        target_cpu = torch.Generator(device="cpu").manual_seed(args.seed + 111)
+        target = (torch.randn((fixture.cells, fixture.entities, WIDTH),
+                              generator=target_cpu, dtype=torch.float32) * 0.1).to(device)
+        with torch.no_grad(), baseline_module._pinned_forward():
+            initial_workset_result = indexer.query_prepared(
+                SCAN, state_generation=1, verify=False)
+            initial_workset = initial_workset_result.to_torch_workset(torch, device)
+            initial_gate_values = baseline_module.score_candidates(
+                context, initial_workset, temperature=1.0, threshold=0.5,
+                prune=False).probabilities.float()
+            threshold = float(torch.quantile(initial_gate_values, 0.5).cpu())
+
+        from cellerator.torch.mechanism import (guarded_step, load_checkpoint,
+                                                save_checkpoint)
+        primary_optimizer = torch.optim.Adam(
+            [primary_module.parameters_flat], lr=1.0e-3,
+            foreach=False, fused=False)
+        baseline_optimizer = torch.optim.Adam(
+            [baseline_module.parameters_flat], lr=1.0e-3,
+            foreach=False, fused=False)
+        primary = {"module": primary_module}
+
+        checkpoint_path = args.output.with_suffix(".initial_checkpoint.pt")
+        checkpoint_capture_ms = 0.0
+        initial_checkpoint_sha256 = None
+        if not args.validate_only:
+            checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+            checkpoint_capture_start = time.perf_counter()
+            save_checkpoint(checkpoint_path, baseline_module, baseline_optimizer)
+            torch.cuda.synchronize()
+            checkpoint_capture_ms = (
+                time.perf_counter() - checkpoint_capture_start) * 1000.0
+            initial_checkpoint_sha256 = sha256(checkpoint_path)
+
+        if args.validate_only:
+            # The initial modules only provide common parameters/context and
+            # threshold calibration; release them before the six candidate
+            # pairs so large fixture validation stays within the admitted
+            # memory budget.
+            del primary, primary_optimizer, baseline_optimizer
+            del primary_module, baseline_module
+            torch.cuda.synchronize()
+            torch.cuda.empty_cache()
+            combinations = portfolio_candidates()
+            validation_rows = []
+            raw_arrays = {}
+            for combination in combinations:
+                index_mode, backend, value_policy = parse_candidate(combination)
+                module_start = time.perf_counter()
+                reference = prepare_module(
+                    torch, sparse_support, fixture, args.seed,
+                    cegeo=False, compiled_geometry=geometry,
+                    max_primal_items=int(memory["candidate_count"]))
+                module = prepare_module(
+                    torch, sparse_support, fixture, args.seed,
+                    cegeo=BACKENDS[backend], compiled_geometry=geometry,
+                    max_primal_items=int(memory["candidate_count"]))
+                module_setup = (time.perf_counter() - module_start) * 1000.0
+                ref_optimizer = torch.optim.Adam(
+                    [reference.parameters_flat], lr=1.0e-3,
+                    foreach=False, fused=False)
+                optimizer = torch.optim.Adam(
+                    [module.parameters_flat], lr=1.0e-3,
+                    foreach=False, fused=False)
+                if not torch.equal(module.parameters_flat.detach(),
+                                   reference.parameters_flat.detach()):
+                    raise RuntimeError(f"{combination}: initial owners differ")
+                _, base_diag = train_step(
+                    torch, fixture, reference, ref_optimizer,
+                    guarded_step, context, inputs, target, indexer,
+                    "scan", "full", threshold, args.seed, diagnostic=True)
+                _, candidate_diag = train_step(
+                    torch, fixture, module, optimizer, guarded_step,
+                    context, inputs, target, indexer, index_mode, value_policy,
+                    threshold, args.seed, diagnostic=True)
+                output_error = float(np.max(np.abs(
+                    candidate_diag["output_values"] - base_diag["output_values"]),
+                    initial=0.0))
+                gradient_error = float(np.max(np.abs(
+                    candidate_diag["gradient_values"] - base_diag["gradient_values"]),
+                    initial=0.0))
+                update_error = float(np.max(np.abs(
+                    candidate_diag["parameters_after_update"]
+                    - base_diag["parameters_after_update"]), initial=0.0))
+                workset_match = (
+                    candidate_diag["candidate_logical_edge_ids"]
+                    == base_diag["candidate_logical_edge_ids"]
+                    and candidate_diag["candidate_edge_ordinals"]
+                    == base_diag["candidate_edge_ordinals"]
+                    and candidate_diag["primal_logical_edge_ids"]
+                    == base_diag["primal_logical_edge_ids"]
+                    and candidate_diag["derivative_logical_edge_ids"]
+                    == base_diag["derivative_logical_edge_ids"]
+                    and candidate_diag["derivative_gate_value_indices"]
+                    == base_diag["derivative_gate_value_indices"])
+                gate_mask_match = np.array_equal(
+                    candidate_diag["candidate_gate_mask"],
+                    base_diag["candidate_gate_mask"])
+                derivative_only = (len(candidate_diag["derivative_logical_edge_ids"])
+                                   - len(candidate_diag["primal_logical_edge_ids"]))
+                probability_grad = candidate_diag["probability_gradient_values"]
+                probability_grad_nonzero = bool(
+                    probability_grad is not None and np.any(probability_grad != 0))
+                output_match = np.allclose(candidate_diag["output_values"],
+                                           base_diag["output_values"], atol=5e-3, rtol=5e-3)
+                gradient_match = np.allclose(candidate_diag["gradient_values"],
+                                             base_diag["gradient_values"], atol=6e-3, rtol=6e-3)
+                update_match = np.allclose(
+                    candidate_diag["parameters_after_update"],
+                    base_diag["parameters_after_update"], atol=6e-3, rtol=6e-3)
+                loss_match = np.isclose(candidate_diag["loss"], base_diag["loss"],
+                                        atol=5e-4, rtol=5e-3)
+                status = "pass" if all((output_match, gradient_match, update_match,
+                                        loss_match, workset_match, gate_mask_match,
+                                        derivative_only > 0,
+                                        probability_grad_nonzero)) else "fail"
+                validation_rows.append({
+                    "candidate": combination,
+                    "status": status,
+                    "prepare_ms": module_setup,
+                    "output_close_atol_5e-3_rtol_5e-3": bool(output_match),
+                    "output_max_abs_error": output_error,
+                    "gradient_close_atol_6e-3_rtol_6e-3": bool(gradient_match),
+                    "gradient_max_abs_error": gradient_error,
+                    "owner_update_close_atol_6e-3_rtol_6e-3": bool(update_match),
+                    "owner_update_max_abs_error": update_error,
+                    "loss_close_atol_5e-4_rtol_5e-3": bool(loss_match),
+                    "exact_candidate_primal_derivative_identity_match": bool(workset_match),
+                    "exact_hard_gate_mask_match": bool(gate_mask_match),
+                    "derivative_only_items": derivative_only,
+                    "probability_gradient_nonzero": probability_grad_nonzero,
+                    "baseline": diagnostics_summary(base_diag),
+                    "candidate_result": diagnostics_summary(candidate_diag),
+                })
+                raw_arrays[combination] = {
+                    "baseline_output": base_diag["output_values"],
+                    "candidate_output": candidate_diag["output_values"],
+                    "baseline_gradient": base_diag["gradient_values"],
+                    "candidate_gradient": candidate_diag["gradient_values"],
+                    "baseline_parameters_after_update": base_diag["parameters_after_update"],
+                    "candidate_parameters_after_update": candidate_diag["parameters_after_update"],
+                    "candidate_probability_gradient": (
+                        np.asarray([], dtype=np.float32) if probability_grad is None
+                        else probability_grad),
+                    "baseline_candidate_ids": np.asarray(
+                        base_diag["candidate_logical_edge_ids"], dtype=np.uint64),
+                    "baseline_candidate_ordinals": np.asarray(
+                        base_diag["candidate_edge_ordinals"], dtype=np.uint64),
+                    "baseline_candidate_gate_mask": np.asarray(
+                        base_diag["candidate_gate_mask"], dtype=np.uint8),
+                    "baseline_candidate_gate_probabilities": np.asarray(
+                        base_diag["candidate_gate_probabilities"], dtype=np.float32),
+                    "baseline_eligible_dormant_counts": base_diag[
+                        "eligible_dormant_counts"],
+                    "baseline_selected_dormant_counts": base_diag[
+                        "selected_dormant_counts"],
+                    "baseline_remaining_dormant_counts": base_diag[
+                        "remaining_dormant_counts"],
+                    "candidate_ids": np.asarray(
+                        candidate_diag["candidate_logical_edge_ids"], dtype=np.uint64),
+                    "candidate_ordinals": np.asarray(
+                        candidate_diag["candidate_edge_ordinals"], dtype=np.uint64),
+                    "candidate_gate_mask": np.asarray(
+                        candidate_diag["candidate_gate_mask"], dtype=np.uint8),
+                    "candidate_gate_probabilities": np.asarray(
+                        candidate_diag["candidate_gate_probabilities"], dtype=np.float32),
+                    "eligible_dormant_counts": candidate_diag[
+                        "eligible_dormant_counts"],
+                    "selected_dormant_counts": candidate_diag[
+                        "selected_dormant_counts"],
+                    "remaining_dormant_counts": candidate_diag[
+                        "remaining_dormant_counts"],
+                    "candidate_primal_ids": np.asarray(
+                        candidate_diag["primal_logical_edge_ids"], dtype=np.uint64),
+                    "candidate_derivative_ids": np.asarray(
+                        candidate_diag["derivative_logical_edge_ids"], dtype=np.uint64),
+                    "candidate_gate_indices": np.asarray(
+                        candidate_diag["derivative_gate_value_indices"], dtype=np.uint64),
+                }
+                del module, optimizer, reference, ref_optimizer
+                torch.cuda.synchronize()
+                torch.cuda.empty_cache()
+            raw_path = args.output.with_suffix(".raw.npz")
+            raw_path.parent.mkdir(parents=True, exist_ok=True)
+            np.savez_compressed(raw_path, **{
+                f"{candidate}__{name}": values
+                for candidate, arrays in raw_arrays.items()
+                for name, values in arrays.items()})
+            validation_setup = {
+                "ce_geo_host_geometry_compile_ms": geometry_setup_ms,
+                "native_support_projection_prepare_ms": support_projection_ms,
+                "host_output_buffers": host_buffer_setup,
+                "host_output_buffer_prepare_ms": output_buffer_setup_ms,
+                "host_query_buffers": query_buffer_setup,
+                "host_query_buffer_prepare_ms": query_buffer_setup_ms,
+                "ordered_posting_projection_prepare_ms": posting_prep_ms,
+                "threshold_reference_baseline_module_prepare_ms": baseline_module_setup_ms,
+                "threshold_reference_candidate_module_prepare_ms": primary_module_setup_ms,
+                "pair_checkpoint_capture_ms": checkpoint_capture_ms,
+                "pair_checkpoint_sha256": initial_checkpoint_sha256,
+                "note": "per-candidate reference and candidate module setup is reported in each validation row",
+            }
+            return {
+                "schema": "cellerator.adaptive_fields.e7_relation_validation.v1",
+                "experiment": "E7",
+                "decision": "supported" if all(
+                    row["status"] == "pass" for row in validation_rows) else "rejected",
+                "gpu_execution_performed": True,
+                "mode": "validate-only",
+                "scope": "small relation-only; no latent transition and no timing claim",
+                "fixture": fixture.identity(),
+                "setup": validation_setup,
+                "indexer_checks": indexer_checks,
+                "exact_ordered_posting_fallback": fallback_check,
+                "device_memory": {
+                    "estimated": memory,
+                    "peak_allocated_bytes": int(torch.cuda.max_memory_allocated(device)),
+                    "peak_reserved_bytes": int(torch.cuda.max_memory_reserved(device)),
+                },
+                "host_peak_rss_bytes": peak_rss_bytes(),
+                "candidates": validation_rows,
+                "raw_artifact": {"path": str(raw_path.resolve()),
+                                 "sha256": sha256(raw_path)},
+                "sources": identities | {
+                    "fixture_generator_sha256": sha256(ROOT / "bench/sparse_support/scaled_fixtures.py"),
+                    "indexer_library": str(Path(args.indexer_library).resolve()),
+                    "indexer_library_sha256": sha256(Path(args.indexer_library).resolve()),
+                    "indexer_build_manifest": str(
+                        (HERE / "indexer/artifacts/build_manifest.json").resolve()),
+                    "indexer_build_manifest_sha256": sha256(
+                        HERE / "indexer/artifacts/build_manifest.json"),
+                    "indexer_bridge_source_sha256": sha256(HERE / "indexer/indexer_bridge.cu"),
+                    "indexer_bridge_header_sha256": sha256(HERE / "indexer/indexer_bridge.h"),
+                },
+                "runtime": {
+                    "run_key_correlation": admission["run_key"],
+                    "device_uuid_routing": admission["visible_uuid"],
+                    "scheduler_authority": "external JobSpec, submission record, terminal receipt, cleanup verification",
+                },
+            }
+
+        shared_indexer_setup_ms = (
+            support_projection_ms + output_buffer_setup_ms + query_buffer_setup_ms)
+        baseline_specific_setup_ms = baseline_module_setup_ms
+        candidate_specific_setup_ms = (
+            geometry_setup_ms + posting_prep_ms + primary_module_setup_ms)
+        baseline_cold_setup_ms = shared_indexer_setup_ms + baseline_specific_setup_ms
+        candidate_cold_setup_ms = shared_indexer_setup_ms + candidate_specific_setup_ms
+        setup = {
+            "ce_geo_host_geometry_compile_ms": geometry_setup_ms,
+            "native_support_projection_prepare_ms": support_projection_ms,
+            "reusable_indexer_output_buffers": host_buffer_setup,
+            "reusable_indexer_output_buffer_prepare_ms": output_buffer_setup_ms,
+            "reusable_indexer_query_buffers": query_buffer_setup,
+            "reusable_indexer_query_buffer_prepare_ms": query_buffer_setup_ms,
+            "optional_ordered_posting_projection_prepare_ms": posting_prep_ms,
+            "optional_ordered_postings_prepared": bool(
+                args.validate_only or primary_mode == "ordered_postings"),
+            "baseline_native_module_prepare_ms": baseline_module_setup_ms,
+            "candidate_native_module_prepare_ms": primary_module_setup_ms,
+            "shared_indexer_setup_ms": shared_indexer_setup_ms,
+            "baseline_specific_setup_ms": baseline_specific_setup_ms,
+            "candidate_specific_setup_ms": candidate_specific_setup_ms,
+            "baseline_cold_setup_ms": baseline_cold_setup_ms,
+            "candidate_cold_setup_ms": candidate_cold_setup_ms,
+            "joint_comparison_setup_ms": (shared_indexer_setup_ms
+                                           + baseline_specific_setup_ms
+                                           + candidate_specific_setup_ms),
+            "pair_checkpoint_capture_ms": checkpoint_capture_ms,
+            "pair_checkpoint_path": (str(checkpoint_path.resolve())
+                                      if initial_checkpoint_sha256 is not None else None),
+            "pair_checkpoint_sha256": initial_checkpoint_sha256,
+            "device_memory_preflight": memory,
+            "setup_total_ms": shared_indexer_setup_ms + baseline_specific_setup_ms
+                              + candidate_specific_setup_ms,
+            "setup_cost_accounting": "candidate and baseline cold costs share relation/indexer projection and host binding setup; candidate-only postings, CE-GEO geometry, and candidate module preparation are charged only to candidate; baseline module preparation is charged only to baseline",
+            "peak_memory_scope": "joint comparison process holding baseline and candidate preparations",
+            "scan_cold_setup_excludes_unused_postings": True,
+            "initial_candidate_baseline_state": "same fixture seed and exact owner values; benchmark pair starts are restored from the same full training checkpoint",
+        }
+
+        # Warmups are paired and balanced. Each call performs the query, host
+        # output materialization, CUDA workset transfer, scoring, selection,
+        # value computation, relation, loss, VJP, and guarded Adam.
+        warmup_orders = []
+        warmup_checkpoint_restore_ms = []
+        first_pair = None
+        for i in range(args.warmup):
+            restore_ms = restore_pair_checkpoint(
+                load_checkpoint, checkpoint_path, primary_module,
+                primary_optimizer, baseline_module, baseline_optimizer, torch)
+            pair = paired_sample(
+                torch, fixture, primary, baseline_module, primary_optimizer,
+                baseline_optimizer, guarded_step,
+                context, inputs, target, indexer, indexer,
+                primary_mode, primary_backend, primary_values,
+                baseline_mode, baseline_backend, baseline_values,
+                threshold, args.seed, i, capture=(i == 0))
+            warmup_orders.append([pair["baseline"]["index_mode"],
+                                  pair["candidate"]["index_mode"]])
+            warmup_checkpoint_restore_ms.append(restore_ms)
+            if first_pair is None:
+                first_pair = pair
+        raw_path = args.output.with_suffix(".raw.npz")
+        raw_path.parent.mkdir(parents=True, exist_ok=True)
+        raw_pair = {}
+        for label in ("baseline", "candidate"):
+            diag = first_pair[label]["diagnostics"]
+            for name, value in diag.items():
+                if isinstance(value, np.ndarray):
+                    raw_pair[f"{label}__{name}"] = value
+                elif isinstance(value, list):
+                    raw_pair[f"{label}__{name}"] = np.asarray(value, dtype=np.uint64)
+        np.savez_compressed(raw_path, **raw_pair)
+        first_pair_summary = {
+            label: {key: value for key, value in row.items()
+                    if key != "diagnostics"}
+            | {"diagnostics": diagnostics_summary(row["diagnostics"])}
+            for label, row in first_pair.items()
+        }
+
+        rounds = []
+        for round_index in range(args.rounds):
+            sample_rows = []
+            for sample_index in range(args.repetitions):
+                pair_index = round_index * args.repetitions + sample_index
+                checkpoint_restore_ms = restore_pair_checkpoint(
+                    load_checkpoint, checkpoint_path, primary_module,
+                    primary_optimizer, baseline_module, baseline_optimizer, torch)
+                pair = paired_sample(
+                    torch, fixture, primary, baseline_module, primary_optimizer,
+                    baseline_optimizer, guarded_step,
+                    context, inputs, target, indexer, indexer,
+                    primary_mode, primary_backend, primary_values,
+                    baseline_mode, baseline_backend, baseline_values,
+                    threshold, args.seed, pair_index, capture=False)
+                sample_rows.append({
+                    "pair": pair_index,
+                    "order": (["baseline", "candidate"] if pair_index % 2 == 0
+                              else ["candidate", "baseline"]),
+                    "checkpoint_restore_ms_excluded": checkpoint_restore_ms,
+                    "baseline": {key: value for key, value in pair["baseline"].items()
+                                 if key != "diagnostics"},
+                    "candidate": {key: value for key, value in pair["candidate"].items()
+                                  if key != "diagnostics"},
+                    "paired_wall_ms_delta_candidate_minus_baseline":
+                        pair["candidate"]["wall_ms"] - pair["baseline"]["wall_ms"],
+                })
+            rounds.append({"round": round_index, "samples": sample_rows})
+        flat = [sample for row in rounds for sample in row["samples"]]
+        candidate_wall = [row["candidate"]["wall_ms"] for row in flat]
+        baseline_wall = [row["baseline"]["wall_ms"] for row in flat]
+        paired_delta = [row["paired_wall_ms_delta_candidate_minus_baseline"]
+                        for row in flat]
+
+        # Optional measured lifetimes start both candidates from the same
+        # checkpoint and reuse their prepared projections, modules, owners,
+        # and optimizers. Checkpoint restoration is reported outside timings.
+        horizons = {}
+        for horizon in ((1, 16, 256) if args.include_horizons else ()):
+            horizon_rows = {}
+            for label, module, optimizer, mode, backend, values in (
+                    ("baseline", baseline_module, baseline_optimizer,
+                     baseline_mode, baseline_backend, baseline_values),
+                    ("candidate", primary_module, primary_optimizer,
+                     primary_mode, primary_backend, primary_values)):
+                checkpoint_restore_ms = restore_pair_checkpoint(
+                    load_checkpoint, checkpoint_path, primary_module,
+                    primary_optimizer, baseline_module, baseline_optimizer, torch)
+                torch.cuda.synchronize()
+                start = time.perf_counter()
+                event_start = torch.cuda.Event(enable_timing=True)
+                event_end = torch.cuda.Event(enable_timing=True)
+                event_start.record()
+                losses = []
+                for step in range(horizon):
+                    loss, _ = train_step(
+                        torch, fixture, module, optimizer, guarded_step,
+                        context, inputs, target, indexer, mode, values,
+                        threshold, args.seed + step, diagnostic=False)
+                    losses.append(loss)
+                event_end.record()
+                torch.cuda.synchronize()
+                horizon_rows[label] = {
+                    "steps": horizon,
+                    "synchronized_wall_ms": (time.perf_counter() - start) * 1000.0,
+                    "cuda_event_ms": float(event_start.elapsed_time(event_end)),
+                    "wall_ms_per_step": (time.perf_counter() - start) * 1000.0 / horizon,
+                    "first_loss": losses[0], "last_loss": losses[-1],
+                    "checkpoint_restore_ms_excluded": checkpoint_restore_ms,
+                    "cold_setup_ms_required": (baseline_cold_setup_ms
+                                               if label == "baseline"
+                                               else candidate_cold_setup_ms),
+                }
+            horizons[str(horizon)] = horizon_rows
+
+        return {
+            "schema": "cellerator.adaptive_fields.e7_relation_portfolio.v1",
+            "experiment": "E7",
+            "decision": "supported" if all(
+                indexer_checks[mode]["item_count"] >= 0
+                for mode in indexer_checks) else "unresolved",
+            "scope": "relation-only sparse candidate discovery + trainable relation; no latent transition",
+            "gpu_execution_performed": True,
+            "fixture": fixture.identity(),
+            "candidate": args.candidate,
+            "baseline": "scan_simt_full",
+            "candidate_components": {"indexer": primary_mode,
+                                      "numerical_backend": primary_backend,
+                                      "edge_value_policy": primary_values},
+            "setup": setup,
+            "device_memory": {
+                "estimated": memory,
+                "joint_comparison_peak_allocated_bytes": int(
+                    torch.cuda.max_memory_allocated(device)),
+                "joint_comparison_peak_reserved_bytes": int(
+                    torch.cuda.max_memory_reserved(device)),
+                "scope": "baseline and candidate modules coexist in one process; not per-candidate peaks",
+            },
+            "host_peak_rss_bytes": peak_rss_bytes(),
+            "correctness": {
+                "indexer_against_independent_host_oracle": indexer_checks,
+                "exact_ordered_posting_fallback": fallback_check,
+                "candidate_and_baseline_initial_owner_equal": True,
+                "gate_threshold": threshold,
+                "mask_and_workset_identity": "captured from paired warmup; timings use same frozen queries",
+                "first_pair_diagnostics": first_pair_summary,
+                "raw_first_pair_artifact": {"path": str(raw_path.resolve()),
+                                            "sha256": sha256(raw_path)},
+            },
+            "timing": {
+                "warmups": args.warmup,
+                "paired_samples_per_round": args.repetitions,
+                "rounds": args.rounds,
+                "cuda_event": "per-step query through guarded Adam; synchronized wall includes wrapper and transfers",
+                "paired_order": "alternates baseline-first and candidate-first",
+                "candidate_wall_ms": summary(candidate_wall),
+                "baseline_wall_ms": summary(baseline_wall),
+                "paired_delta_ms": summary(paired_delta),
+                "paired_samples": flat,
+                "actual_reuse_horizons": horizons,
+                "checkpoint_restore_warmup_ms_excluded": warmup_checkpoint_restore_ms,
+                "cold_setup_ms_by_execution": {
+                    "baseline": baseline_cold_setup_ms,
+                    "candidate": candidate_cold_setup_ms,
+                    "joint_comparison": setup["setup_total_ms"],
+                },
+                "cold_setup_plus_horizon_cost_ms": {
+                    horizon: {label: values["cold_setup_ms_required"]
+                                      + values["synchronized_wall_ms"]
+                              for label, values in entries.items()}
+                    for horizon, entries in horizons.items()},
+            },
+            "sources": identities | {
+                "fixture_generator_sha256": sha256(ROOT / "bench/sparse_support/scaled_fixtures.py"),
+                "native_indexer_library": str(Path(args.indexer_library).resolve()),
+                "native_indexer_library_sha256": sha256(Path(args.indexer_library).resolve()),
+                "indexer_build_manifest": str(
+                    (HERE / "indexer/artifacts/build_manifest.json").resolve()),
+                "indexer_build_manifest_sha256": sha256(
+                    HERE / "indexer/artifacts/build_manifest.json"),
+                "indexer_bridge_source_sha256": sha256(HERE / "indexer/indexer_bridge.cu"),
+                "indexer_bridge_header_sha256": sha256(HERE / "indexer/indexer_bridge.h"),
+            },
+            "runtime": {
+                "python": sys.version,
+                "platform": platform.platform(),
+                "torch": str(torch.__version__),
+                "torch_cuda": str(torch.version.cuda),
+                "device_uuid_routing": admission["visible_uuid"],
+                "run_key_correlation": admission["run_key"],
+                "scheduler_ids_if_injected": {
+                    "job_id": admission["scheduler_job_id"],
+                    "attempt_id": admission["scheduler_attempt_id"],
+                },
+                "scheduler_authority": "external JobSpec, submission record, terminal receipt, cleanup verification",
+            },
+        }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--candidate", default="scan_simt_full")
+    parser.add_argument("--benchmark", action="store_true",
+                        help="run all six candidates paired with scan_simt_full")
+    parser.add_argument("--validate-only", action="store_true")
+    parser.add_argument("--include-horizons", action="store_true",
+                        help="measure actual 1/16/256-step reuse lifetimes")
+    parser.add_argument("--case", choices=tuple(FIXTURE_MANIFEST_SHA256), required=True)
+    parser.add_argument("--fixture-root", type=Path, default=Path(
+        "/tmp/cellerator_scaled_sparse_fixtures_887437fc"))
+    parser.add_argument("--package-root", type=Path, default=DEFAULT_PACKAGE)
+    parser.add_argument("--indexer-library", type=Path, default=DEFAULT_INDEXER)
+    parser.add_argument("--warmup", type=int, default=5)
+    parser.add_argument("--samples", "--repetitions", dest="repetitions",
+                        type=int, default=21)
+    parser.add_argument("--rounds", type=int, default=4)
+    parser.add_argument("--seed", type=int, default=20261027)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    if min(args.warmup, args.repetitions, args.rounds) <= 0:
+        parser.error("warmup, repetitions and rounds must be positive")
+    if args.benchmark and args.validate_only:
+        parser.error("choose either --benchmark or --validate-only")
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    if args.benchmark:
+        collector_output = args.output
+        candidates = portfolio_candidates()
+        candidate_results = {}
+        for candidate in candidates:
+            args.candidate = candidate
+            args.output = collector_output.with_name(
+                collector_output.stem + "." + candidate + collector_output.suffix)
+            candidate_results[candidate] = run(args)
+        result = {
+            "schema": "cellerator.adaptive_fields.e7_portfolio_collector.v1",
+            "experiment": "E7",
+            "decision": "supported" if all(
+                row.get("decision") == "supported"
+                for row in candidate_results.values()) else "rejected",
+            "gpu_execution_performed": True,
+            "mode": "benchmark-all-six",
+            "fixture": next(iter(candidate_results.values()))["fixture"],
+            "timing_protocol": {
+                "warmup_per_candidate": args.warmup,
+                "paired_samples_per_round_per_candidate": args.repetitions,
+                "rounds_per_candidate": args.rounds,
+                "measured_candidate_pairs": 6,
+                "candidate_ids": candidates,
+                "candidate_and_scan_simt_full_start_from_same_seed": True,
+                "reuse_horizons_included": args.include_horizons,
+            },
+            "candidates": candidate_results,
+        }
+        args.output = collector_output
+    else:
+        result = run(args)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(result, indent=2, sort_keys=True,
+                                      allow_nan=False) + "\n")
+    if result.get("decision") != "supported":
+        print(json.dumps({"output": str(args.output.resolve()),
+                          "decision": result.get("decision"),
+                          "error": "E7 result did not satisfy its correctness checks"},
+                         sort_keys=True), file=sys.stderr)
+        return 2
+    print(json.dumps({"output": str(args.output.resolve()),
+                      "candidate": args.candidate, "case": args.case,
+                      "mode": result.get("mode", "timing"),
+                      "samples_per_candidate": (0 if args.validate_only
+                                                else args.rounds * args.repetitions)},
+                     sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+

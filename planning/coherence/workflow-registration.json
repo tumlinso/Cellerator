@@ -1,0 +1,28 @@
+{
+  "format": "cellerator-workflow-registration-record-v1",
+  "observed_utc": "2026-10-28",
+  "project": "cellerator",
+  "authority_revision": 10,
+  "preview": "accepted by host; ten create operations; no conflicts/warnings",
+  "apply": "rejected: native_operation_rejected",
+  "claim": "rejected: native_operation_rejected; no workflow handle returned",
+  "registration_complete": false,
+  "authority_bytes_after_attempts": {
+    ".todo-orchestrator/authority.sqlite3": {
+      "matches_preserved_bytes": true,
+      "sha256": "35d8b09923a3434e3595ceedfc5ace916a6dabb400085126cbab75db1f574a29",
+      "bytes": 85065728
+    },
+    ".todo-orchestrator/authority.sqlite3-wal": {
+      "matches_preserved_bytes": true,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "resume": "Repair the registered host through its supported operator workflow, obtain a fresh preview for plan.json, apply that exact host-issued proposal, open a registered run and claim CE-COHERE-00. Do not use private APIs, standalone authority credentials, SQLite edits or fabricated completion to bypass the host.",
+  "limitations": [
+    "Current compact mutator exposes no full authority backup/restore endpoint. Physical database and zero-length WAL were preserved and restored byte-for-byte.",
+    "Current compact workflow exposes no managed workspace cleanup endpoint. Preserve the IS1 worktree and its managed records.",
+    "External payload symlinks are retained with their original targets; external bytes were not copied into the checkout archive. One pre-existing dataset.csh5 target is missing."
+  ]
+}

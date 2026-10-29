@@ -1,0 +1,56 @@
+{
+  "candidate_strategy": "indexed_U",
+  "case_id": "ranked512",
+  "metric": "complete_training_step_wall_ms",
+  "paired_diagnostic": {
+    "full_E": {
+      "count": 3,
+      "cuda_event_median_ms": 13.15123176574707,
+      "cuda_event_samples_ms": [
+        13.144031524658203,
+        13.193216323852539,
+        13.15123176574707
+      ],
+      "median_ms": 13.211050001700642,
+      "p10_ms": 13.185138999688206,
+      "p90_ms": 13.225582999439212,
+      "samples_ms": [
+        13.185138999688206,
+        13.211050001700642,
+        13.225582999439212
+      ]
+    },
+    "indexed_U": {
+      "count": 3,
+      "cuda_event_median_ms": 13.291520118713379,
+      "cuda_event_samples_ms": [
+        13.306879997253418,
+        13.286399841308594,
+        13.291520118713379
+      ],
+      "median_ms": 13.324298000952695,
+      "p10_ms": 13.321168997208588,
+      "p90_ms": 13.343236001674086,
+      "samples_ms": [
+        13.321168997208588,
+        13.324298000952695,
+        13.343236001674086
+      ]
+    },
+    "indexed_over_full_median_ratio": 1.0085722178961911
+  },
+  "probe_output_dir": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/indexed_values/kda_workspace_v13/runs/kda-experiments/attempts/d919fe94-0e4c-4437-b086-3e63539dabc9/stages/indexed_union/exploration/round-000/08a0e8476d75cb47cf7e/requests/98ecc2be-11c3-44b0-a6d5-48adcf60ed16-indexed-values-ranked512",
+  "repetitions": 3,
+  "request_id": "98ecc2be-11c3-44b0-a6d5-48adcf60ed16",
+  "samples": [
+    13.321168997208588,
+    13.324298000952695,
+    13.343236001674086
+  ],
+  "schema_version": 1,
+  "status": "ok",
+  "timing_scope": "zero_grad+gate scoring/STE+candidate union construction+shared edge values+native relation forward+MSE+backward+guarded Adam publication; synchronized wall",
+  "unit": "ms",
+  "warmup": 1,
+  "workload_sha256": "7ba7dcab0c32c558acb3a1672996102529260d09b9ee8377363a922a4f37c833"
+}

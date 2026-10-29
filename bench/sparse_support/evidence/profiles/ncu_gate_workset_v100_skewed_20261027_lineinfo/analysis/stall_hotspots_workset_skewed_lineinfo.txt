@@ -1,0 +1,278 @@
+===== Stall hotspots for workset_skewed_lineinfo =====
+Kernel: stage_worksets_kernel
+Source-line attribution: 297/297 sampled PCs mapped (available)
+
+===== By line in the kernel function (outermost inline frame, from --binary; SASS of 297/297 sampled PCs matched the report) =====
+Total distinct (file, line) entries: 39
+
+Rank      Total File                            Line  Breakdown (stall: count)
+------------------------------------------------------------------------------------------------------------------------------------------------------
+   0       3213 cuda_worksets.cu                 167  long_scoreboard: 2683, wait: 381, selected: 70, branch_resolving: 46, no_instructions: 33
+   1       1299 cuda_worksets.cu                 199  wait: 703, long_scoreboard: 411, selected: 147, branch_resolving: 22, no_instructions: 16
+   2       1216 cuda_worksets.cu                 201  wait: 685, long_scoreboard: 269, selected: 262
+   3       1107 cuda_worksets.cu                 194  wait: 479, long_scoreboard: 431, selected: 196, no_instructions: 1
+   4        797 cuda_worksets.cu                 168  long_scoreboard: 423, wait: 312, selected: 62
+   5        771 cuda_worksets.cu                 200  long_scoreboard: 406, wait: 291, selected: 74
+   6        727 cuda_worksets.cu                 193  long_scoreboard: 358, wait: 276, selected: 69, no_instructions: 14, branch_resolving: 10
+   7        669 cuda_worksets.cu                 170  long_scoreboard: 373, wait: 246, selected: 50
+   8        593 cuda_worksets.cu                 202  wait: 303, long_scoreboard: 181, selected: 62, branch_resolving: 31, no_instructions: 16
+   9        554 cuda_worksets.cu                 204  wait: 270, long_scoreboard: 172, selected: 112
+  10        481 cuda_worksets.cu                 208  long_scoreboard: 249, selected: 87, wait: 86, no_instructions: 31, branch_resolving: 26, imc_miss: 2
+  11        444 cuda_worksets.cu                 195  wait: 315, selected: 129
+  12        438 cuda_worksets.cu                 166  wait: 339, selected: 77, no_instructions: 22
+  13        419 cuda_worksets.cu                 169  wait: 371, selected: 48
+  14        417 cuda_worksets.cu                 207  wait: 183, long_scoreboard: 169, selected: 65
+  15        328 cuda_worksets.cu                 203  long_scoreboard: 167, wait: 134, selected: 27
+  16        271 cuda_worksets.cu                 192  wait: 135, long_scoreboard: 102, selected: 33, no_instructions: 1
+  17        202 cuda_worksets.cu                 205  wait: 90, selected: 58, branch_resolving: 28, no_instructions: 26
+  18        190 cuda_worksets.cu                 191  wait: 62, selected: 50, branch_resolving: 34, long_scoreboard: 25, no_instructions: 19
+  19         80 cuda_worksets.cu                 206  selected: 26, wait: 22, no_instructions: 16, branch_resolving: 16
+  20         72 cuda_worksets.cu                 176  wait: 58, selected: 14
+  21         52 cuda_worksets.cu                 177  long_scoreboard: 41, wait: 9, selected: 1, branch_resolving: 1
+  22         46 cuda_worksets.cu                 214  wait: 25, selected: 17, long_scoreboard: 2, no_instructions: 2
+  23         35 cuda_worksets.cu                 219  wait: 23, selected: 12
+  24         32 cuda_worksets.cu                 156  imc_miss: 22, long_scoreboard: 10
+  25         12 cuda_worksets.cu                 178  long_scoreboard: 6, wait: 4, selected: 2
+  26          9 cuda_worksets.cu                 180  long_scoreboard: 5, selected: 2, wait: 2
+  27          8 cuda_worksets.cu                 153  imc_miss: 5, wait: 1, no_instructions: 1, selected: 1
+  28          8 cuda_worksets.cu                 141  no_instructions: 8
+  29          2 cuda_worksets.cu                 187  wait: 1, selected: 1
+
+
+===== Per-stall-type top lines =====
+
+--- long_scoreboard ---
+      2683  cuda_worksets.cu:167
+       431  cuda_worksets.cu:194
+       423  cuda_worksets.cu:168
+       411  cuda_worksets.cu:199
+       406  cuda_worksets.cu:200
+       373  cuda_worksets.cu:170
+       358  cuda_worksets.cu:193
+       269  cuda_worksets.cu:201
+       249  cuda_worksets.cu:208
+       181  cuda_worksets.cu:202
+
+--- wait ---
+       703  cuda_worksets.cu:199
+       685  cuda_worksets.cu:201
+       479  cuda_worksets.cu:194
+       381  cuda_worksets.cu:167
+       371  cuda_worksets.cu:169
+       339  cuda_worksets.cu:166
+       315  cuda_worksets.cu:195
+       312  cuda_worksets.cu:168
+       303  cuda_worksets.cu:202
+       291  cuda_worksets.cu:200
+
+--- no_instructions ---
+        33  cuda_worksets.cu:167
+        31  cuda_worksets.cu:208
+        26  cuda_worksets.cu:205
+        22  cuda_worksets.cu:166
+        19  cuda_worksets.cu:191
+        16  cuda_worksets.cu:199
+        16  cuda_worksets.cu:202
+        16  cuda_worksets.cu:206
+        14  cuda_worksets.cu:193
+         8  cuda_worksets.cu:141
+
+--- selected ---
+       262  cuda_worksets.cu:201
+       196  cuda_worksets.cu:194
+       147  cuda_worksets.cu:199
+       129  cuda_worksets.cu:195
+       112  cuda_worksets.cu:204
+        87  cuda_worksets.cu:208
+        77  cuda_worksets.cu:166
+        74  cuda_worksets.cu:200
+        70  cuda_worksets.cu:167
+        69  cuda_worksets.cu:193
+
+--- branch_resolving ---
+        46  cuda_worksets.cu:167
+        34  cuda_worksets.cu:191
+        31  cuda_worksets.cu:202
+        28  cuda_worksets.cu:205
+        26  cuda_worksets.cu:208
+        22  cuda_worksets.cu:199
+        16  cuda_worksets.cu:206
+        10  cuda_worksets.cu:193
+         1  cuda_worksets.cu:177
+         1  cuda_worksets.cu:209
+
+--- imc_miss ---
+        22  cuda_worksets.cu:156
+         5  cuda_worksets.cu:153
+         2  cuda_worksets.cu:208
+
+
+===== Executed instructions per line (inst_executed, 3637471 warp-level) =====
+        525960   14.5%  cuda_worksets.cu:201
+        435654   12.0%  cuda_worksets.cu:194
+        314193    8.6%  cuda_worksets.cu:199
+        279748    7.7%  cuda_worksets.cu:195
+        206891    5.7%  cuda_worksets.cu:208
+        197244    5.4%  cuda_worksets.cu:167
+        195820    5.4%  cuda_worksets.cu:204
+        173583    4.8%  cuda_worksets.cu:193
+        164652    4.5%  cuda_worksets.cu:166
+        135864    3.7%  cuda_worksets.cu:202
+        131728    3.6%  cuda_worksets.cu:200
+        131496    3.6%  cuda_worksets.cu:168
+        131451    3.6%  cuda_worksets.cu:169
+        120071    3.3%  cuda_worksets.cu:205
+         98487    2.7%  cuda_worksets.cu:170
+         91777    2.5%  cuda_worksets.cu:191
+         82010    2.3%  cuda_worksets.cu:207
+         65748    1.8%  cuda_worksets.cu:192
+         55820    1.5%  cuda_worksets.cu:203
+         44696    1.2%  cuda_worksets.cu:206
+         34536    0.9%  cuda_worksets.cu:214
+          2886    0.1%  cuda_worksets.cu:177
+          2725    0.1%  cuda_worksets.cu:176
+          1924    0.1%  cuda_worksets.cu:178
+          1860    0.1%  cuda_worksets.cu:179
+          1251    0.0%  cuda_worksets.cu:180
+          1025    0.0%  cuda_worksets.cu:211
+           960    0.0%  cuda_worksets.cu:159
+           832    0.0%  cuda_worksets.cu:219
+           768    0.0%  cuda_worksets.cu:187
+
+
+===== By innermost source line (ncu's own attribution) =====
+Total distinct (file, line) entries: 41
+
+Rank      Total File                            Line  Breakdown (stall: count)
+------------------------------------------------------------------------------------------------------------------------------------------------------
+   0       3213 cuda_worksets.cu                 167  long_scoreboard: 2683, wait: 381, selected: 70, branch_resolving: 46, no_instructions: 33
+   1       1333 cuda_worksets.cu                  68  long_scoreboard: 872, wait: 253, selected: 208
+   2       1299 cuda_worksets.cu                 199  wait: 703, long_scoreboard: 411, selected: 147, branch_resolving: 22, no_instructions: 16
+   3        797 cuda_worksets.cu                 168  long_scoreboard: 423, wait: 312, selected: 62
+   4        771 cuda_worksets.cu                 200  long_scoreboard: 406, wait: 291, selected: 74
+   5        755 cuda_worksets.cu                 201  wait: 584, selected: 171
+   6        727 cuda_worksets.cu                 193  long_scoreboard: 358, wait: 276, selected: 69, no_instructions: 14, branch_resolving: 10
+   7        669 cuda_worksets.cu                 170  long_scoreboard: 373, wait: 246, selected: 50
+   8        593 cuda_worksets.cu                 202  wait: 303, long_scoreboard: 181, selected: 62, branch_resolving: 31, no_instructions: 16
+   9        481 cuda_worksets.cu                 208  long_scoreboard: 249, selected: 87, wait: 86, no_instructions: 31, branch_resolving: 26, imc_miss: 2
+  10        444 cuda_worksets.cu                 195  wait: 315, selected: 129
+  11        438 cuda_worksets.cu                 166  wait: 339, selected: 77, no_instructions: 22
+  12        419 cuda_worksets.cu                 169  wait: 371, selected: 48
+  13        417 cuda_worksets.cu                 207  wait: 183, long_scoreboard: 169, selected: 65
+  14        356 cuda_worksets.cu                  67  wait: 264, selected: 92
+  15        328 cuda_worksets.cu                 203  long_scoreboard: 167, wait: 134, selected: 27
+  16        287 cuda_worksets.cu                 204  wait: 219, selected: 68
+  17        271 cuda_worksets.cu                 192  wait: 135, long_scoreboard: 102, selected: 33, no_instructions: 1
+  18        202 cuda_worksets.cu                 205  wait: 90, selected: 58, branch_resolving: 28, no_instructions: 26
+  19        190 cuda_worksets.cu                 191  wait: 62, selected: 50, branch_resolving: 34, long_scoreboard: 25, no_instructions: 19
+  20        146 cuda_worksets.cu                 194  wait: 114, selected: 31, no_instructions: 1
+  21         80 cuda_worksets.cu                 206  selected: 26, wait: 22, no_instructions: 16, branch_resolving: 16
+  22         72 cuda_worksets.cu                 176  wait: 58, selected: 14
+  23         52 cuda_worksets.cu                 177  long_scoreboard: 41, wait: 9, selected: 1, branch_resolving: 1
+  24         46 cuda_worksets.cu                 214  wait: 25, selected: 17, long_scoreboard: 2, no_instructions: 2
+  25         35 cuda_worksets.cu                 219  wait: 23, selected: 12
+  26         32 cuda_worksets.cu                 156  imc_miss: 22, long_scoreboard: 10
+  27         12 cuda_worksets.cu                 178  long_scoreboard: 6, wait: 4, selected: 2
+  28          9 cuda_worksets.cu                 180  long_scoreboard: 5, selected: 2, wait: 2
+  29          8 cuda_worksets.cu                 153  imc_miss: 5, wait: 1, no_instructions: 1, selected: 1
+
+
+===== Per-stall-type top lines =====
+
+--- long_scoreboard ---
+      2683  cuda_worksets.cu:167
+       872  cuda_worksets.cu:68
+       423  cuda_worksets.cu:168
+       411  cuda_worksets.cu:199
+       406  cuda_worksets.cu:200
+       373  cuda_worksets.cu:170
+       358  cuda_worksets.cu:193
+       249  cuda_worksets.cu:208
+       181  cuda_worksets.cu:202
+       169  cuda_worksets.cu:207
+
+--- wait ---
+       703  cuda_worksets.cu:199
+       584  cuda_worksets.cu:201
+       381  cuda_worksets.cu:167
+       371  cuda_worksets.cu:169
+       339  cuda_worksets.cu:166
+       315  cuda_worksets.cu:195
+       312  cuda_worksets.cu:168
+       303  cuda_worksets.cu:202
+       291  cuda_worksets.cu:200
+       276  cuda_worksets.cu:193
+
+--- no_instructions ---
+        33  cuda_worksets.cu:167
+        31  cuda_worksets.cu:208
+        26  cuda_worksets.cu:205
+        22  cuda_worksets.cu:166
+        19  cuda_worksets.cu:191
+        16  cuda_worksets.cu:199
+        16  cuda_worksets.cu:202
+        16  cuda_worksets.cu:206
+        14  cuda_worksets.cu:193
+         8  cuda_worksets.cu:141
+
+--- selected ---
+       208  cuda_worksets.cu:68
+       171  cuda_worksets.cu:201
+       147  cuda_worksets.cu:199
+       129  cuda_worksets.cu:195
+        92  cuda_worksets.cu:67
+        87  cuda_worksets.cu:208
+        77  cuda_worksets.cu:166
+        74  cuda_worksets.cu:200
+        70  cuda_worksets.cu:167
+        69  cuda_worksets.cu:193
+
+--- branch_resolving ---
+        46  cuda_worksets.cu:167
+        34  cuda_worksets.cu:191
+        31  cuda_worksets.cu:202
+        28  cuda_worksets.cu:205
+        26  cuda_worksets.cu:208
+        22  cuda_worksets.cu:199
+        16  cuda_worksets.cu:206
+        10  cuda_worksets.cu:193
+         1  cuda_worksets.cu:177
+         1  cuda_worksets.cu:209
+
+--- imc_miss ---
+        22  cuda_worksets.cu:156
+         5  cuda_worksets.cu:153
+         2  cuda_worksets.cu:208
+
+
+===== Executed instructions per line (inst_executed, 3637471 warp-level) =====
+        413014   11.4%  cuda_worksets.cu:68
+        328368    9.0%  cuda_worksets.cu:201
+        314193    8.6%  cuda_worksets.cu:199
+        279748    7.7%  cuda_worksets.cu:195
+        229432    6.3%  cuda_worksets.cu:67
+        206891    5.7%  cuda_worksets.cu:208
+        197244    5.4%  cuda_worksets.cu:167
+        173583    4.8%  cuda_worksets.cu:193
+        164652    4.5%  cuda_worksets.cu:166
+        135864    3.7%  cuda_worksets.cu:202
+        131728    3.6%  cuda_worksets.cu:200
+        131496    3.6%  cuda_worksets.cu:168
+        131451    3.6%  cuda_worksets.cu:169
+        120071    3.3%  cuda_worksets.cu:205
+        112090    3.1%  cuda_worksets.cu:204
+         98487    2.7%  cuda_worksets.cu:170
+         91777    2.5%  cuda_worksets.cu:191
+         82010    2.3%  cuda_worksets.cu:207
+         74530    2.0%  cuda_worksets.cu:194
+         65748    1.8%  cuda_worksets.cu:192
+         55820    1.5%  cuda_worksets.cu:203
+         44696    1.2%  cuda_worksets.cu:206
+         34536    0.9%  cuda_worksets.cu:214
+          2886    0.1%  cuda_worksets.cu:177
+          2725    0.1%  cuda_worksets.cu:176
+          1924    0.1%  cuda_worksets.cu:178
+          1860    0.1%  cuda_worksets.cu:179
+          1251    0.0%  cuda_worksets.cu:180
+          1025    0.0%  cuda_worksets.cu:211
+           960    0.0%  cuda_worksets.cu:159

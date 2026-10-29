@@ -1,0 +1,705 @@
+{
+  "fixture_generation_ms": 2346.089710998058,
+  "fixture_metadata": {
+    "array_bytes": 152783326,
+    "cell_state_values_independent": true,
+    "cells": 32,
+    "cohort_support_reuse_fraction": 1.0,
+    "dense_cell_edge_state_bytes_if_materialized": 32000000,
+    "dense_entity_affinity_bytes_if_materialized": 1600000000,
+    "edges": 1000000,
+    "entities": 20000,
+    "event_occurrences": 2048,
+    "event_unique_edge_fraction": 0.49462890625,
+    "events_per_cell": 64,
+    "gate_change_correlated_cohort_groups": 32,
+    "gate_change_count": 256,
+    "gate_changed_edge_fraction_per_cell_mean_estimate": 0.21176675,
+    "gate_changed_edge_fraction_union_estimate": 0.590217,
+    "gates": 64,
+    "layout": "identity",
+    "modules": 256,
+    "physical_layout_sha256": "145395e1cf3e94fae02f6e98b7af5f54cc997d70e759305df1c7ecb717939127",
+    "query_case_names": [
+      "unique_1",
+      "unique_32",
+      "duplicate_32",
+      "unique_128",
+      "duplicate_128",
+      "unique_1024",
+      "duplicate_1024",
+      "unique_2048",
+      "duplicate_2048"
+    ],
+    "ranked_identity_and_position_separate": true,
+    "schema": "cellerator.scaled_sparse_fixture.v1",
+    "seed": 20261027,
+    "source_degree": {
+      "histogram_counts": [
+        4473,
+        5555,
+        3710,
+        3091,
+        632,
+        865,
+        395,
+        316,
+        264,
+        168,
+        109,
+        111,
+        53,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        32,
+        161,
+        28,
+        13,
+        6,
+        0,
+        0,
+        0,
+        8,
+        4,
+        1,
+        1,
+        1,
+        0,
+        1
+      ],
+      "histogram_edges": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        9,
+        12,
+        17,
+        25,
+        35,
+        49,
+        70,
+        100,
+        142,
+        203,
+        289,
+        413,
+        588,
+        839,
+        1196,
+        1706,
+        2434,
+        3471,
+        4952,
+        7063,
+        10075,
+        14371,
+        20500,
+        29242,
+        41712,
+        59501,
+        84875,
+        121070,
+        172700
+      ],
+      "max": 172699,
+      "one": 5555,
+      "p50": 1,
+      "p90": 7,
+      "p99": 1225,
+      "zero": 4473
+    },
+    "source_role": 0,
+    "topology_sha256": "d960df79b6d5a103156a33d5ae5fadf646822616c63636fe7808af91fa972a01"
+  },
+  "generator": "bench/sparse_support/scaled_fixtures.py",
+  "generator_sha256": "fd6e304a2ff48e2cb23255e8fab51253bdc01ff2861c1aa2fa621dc6174cb20e",
+  "query_cases": {
+    "q1024_duplicate4": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 14223448,
+        "sha256": "f21029ac53c7b496f45dc4e6e6f0cb6458f6a7810d51ceb24ca7e9e2fe45947a",
+        "shape": [
+          1777931
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "992a9b9315e14af30fc4ec09e613e4d25443ae62aa6ee51f745c1d7a8d5d884d",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "b28d1212fdf63d45a5823f66a0a65303eefd1f6a382b617072999c1370d54c2d",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 262144,
+        "sha256": "52ba4bd2b57e9cd482d7a700f30f1311dbd7f7354813ab8201c53a06a2ddd7ec",
+        "shape": [
+          32768
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "35fe7106edbd4dbbe1585aaeb256b97110495064bc8efa52449ece51cfc8ef72",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "485bc5a7a0108d25ef1c9bfd8bf126c80dfba09e32c8b7d3ec5a0c17edba063e",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q1024_unique": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 14226728,
+        "sha256": "9eaf64305cd85a9795808dd4c611fe3fd7cf49b3d1bf38c57b19a2b94a07c269",
+        "shape": [
+          1778341
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "2a14e875ca555478847b2c04c940a868f7464bcfd29dae436199a9903a03583d",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "b28d1212fdf63d45a5823f66a0a65303eefd1f6a382b617072999c1370d54c2d",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 262144,
+        "sha256": "94036dbd57dca11216ae7ef876c02baa55dad0dcc4a56e2678526e25b071717a",
+        "shape": [
+          32768
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "a6f1665620758818e7e377f7c98f4e8348e661cc60da13497820f8831cc103db",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "a6f1665620758818e7e377f7c98f4e8348e661cc60da13497820f8831cc103db",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q128_duplicate4": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 2184632,
+        "sha256": "4591d13222e54fec327e9485499671aa68100f761f0c2d225d97d0734bdbe89d",
+        "shape": [
+          273079
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "36d62f533c93492a6f9da2ea2edaee07ff3152bcf67a5311bc272642273c37ed",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "fa79624e78d049858a240f29426435609857e25aecf8b5a1b7830402fa2b3c2b",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 32768,
+        "sha256": "9c90fe80c227d9144e081d156ee491c52b8f9e644a30aed0a00bd7d5c81601ef",
+        "shape": [
+          4096
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "181be791254a8c73792f479bc02aa5ef33119b7e574f4703e7488891ccc8a499",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "7a4aba4911f674cdc5d8e595708064600407505ff3ec518270ec5a6b33d15145",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q128_unique": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 2253512,
+        "sha256": "952aba27f621242537c36cfd426eaab0e1b48ae0b537e25e144ba9167ce1a3b7",
+        "shape": [
+          281689
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "2b263a6120763256d93d9701d199c92fc9632a663012a2bee4d410b6cbebbdf5",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "fa79624e78d049858a240f29426435609857e25aecf8b5a1b7830402fa2b3c2b",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 32768,
+        "sha256": "a588a2c56094dee6d7129ae9625cd551d76221733ef39296c6e44f933afe73f3",
+        "shape": [
+          4096
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "b7652c588bf68af2f1b7ebc48c633345d005cd22cbe6e6812a83197c535ae7d2",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "b7652c588bf68af2f1b7ebc48c633345d005cd22cbe6e6812a83197c535ae7d2",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q1_unique": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 998464,
+        "sha256": "ccfcd8af33bb94f8fe621aee997e74e52768bd624b0a69f0765ae608932a7c0a",
+        "shape": [
+          124808
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "6d42cf25e8e042e7d5ccac41a7b0a3773908c2d21e1276d211ad621909fbd89d",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "4e8adfac993e338c03c60ea14fe73d9663ea5d66eac4c2a46125f5c8276bb96b",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 256,
+        "sha256": "7eb30bea363784e698384e3ee9f5b6c63d33810ce9a98fbd0da77b28860eb346",
+        "shape": [
+          32
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "55bfc3a5cb759e90f8ec1c6e061d295f3028d48257e33bbee4748aba06ee210d",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "55bfc3a5cb759e90f8ec1c6e061d295f3028d48257e33bbee4748aba06ee210d",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q2048_duplicate4": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 26475016,
+        "sha256": "6e6ef6115a6661e93ed46f0eec585031a0a07e5d5f7dc2f381ea094d7636bab7",
+        "shape": [
+          3309377
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "08b7a3e6c033df799504d11316d15cfcf40dfcb3800d098648d792045c74e26d",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "5872aa8d46927b4591a6a6b639b1a5fd0c5ac6e417f002f0b9c19ea1ac295d4d",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 524288,
+        "sha256": "b4731f00be4c07552335e4be8848ecf5984513c555c8bc1b14e627dc4e8d8974",
+        "shape": [
+          65536
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "9b4967a50d597791ad9f050c0e014479944fc65a7895584ba39c9255731538d9",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "af77658883869f7497d1cc43f6e9d6f6ee5af8e7402e62e98c8ea2df88eea6e9",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q2048_unique": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 26488576,
+        "sha256": "7015c34a1f4f850cd237e79df4707efa549446322eeab7dadb4ae53830144884",
+        "shape": [
+          3311072
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "67d489c9a021c5c0bfedacd794e017d9377582ffaafcb4707654eef587e26b16",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "5872aa8d46927b4591a6a6b639b1a5fd0c5ac6e417f002f0b9c19ea1ac295d4d",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 524288,
+        "sha256": "3eeaff0182b831ab49105828b0096713d18f2fb409218f0a5777c8058ddefcdc",
+        "shape": [
+          65536
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "ca4c40ea6b45ae542cd07f366c4a8e0281e67e2fccd34b6c798212b3dd354f4e",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "ca4c40ea6b45ae542cd07f366c4a8e0281e67e2fccd34b6c798212b3dd354f4e",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q32_duplicate4": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 1038136,
+        "sha256": "16c426279e8dd80617e6d7657b49d396985e71b889eddd3cad74be1be5ac5bec",
+        "shape": [
+          129767
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "6c0e8ef59d29b2c8d5cb6a1a73e93d7937d0599e4db8d5c3bc6100078cff3b25",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "7237dd33ec723a0b7c3a145667145a88558e46f477b63fdfcb865e6c7dcd6938",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 8192,
+        "sha256": "2d83422c03afa6a1f1e72e1e72f748eed4645eaf6522abdea013b7d72d092858",
+        "shape": [
+          1024
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "fabd0d5033df426f6362f77bfa327735fb04633587fc7bb13e967c08ed0d3acb",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "08adff38bfc549055d7bfebdca0bf66786cc5d5413e30f8508ff10364f6991ac",
+        "shape": [
+          32
+        ]
+      }
+    },
+    "q32_unique": {
+      "oracle_edge_ordinals": {
+        "dtype": "<u8",
+        "file": "oracle_edge_ordinals.bin",
+        "nbytes": 1070968,
+        "sha256": "2acb2d916c66691e41df7eabd8f9c710b4d4d481c4ee6cf625dc78af5f41e9ee",
+        "shape": [
+          133871
+        ]
+      },
+      "oracle_offsets": {
+        "dtype": "<i8",
+        "file": "oracle_offsets.bin",
+        "nbytes": 264,
+        "sha256": "8c04dd92cf2890367868498d27b89a1373f90a1058cc01adb494971074433784",
+        "shape": [
+          33
+        ]
+      },
+      "query_offsets": {
+        "dtype": "<i8",
+        "file": "query_offsets.bin",
+        "nbytes": 264,
+        "sha256": "7237dd33ec723a0b7c3a145667145a88558e46f477b63fdfcb865e6c7dcd6938",
+        "shape": [
+          33
+        ]
+      },
+      "query_terms": {
+        "dtype": "<i8",
+        "file": "query_terms.bin",
+        "nbytes": 8192,
+        "sha256": "b08aadaa216a667af404a0fcb3fddae289f12104ea6fd7358dc1283ee65f1d87",
+        "shape": [
+          1024
+        ]
+      },
+      "raw_posting_count_per_row": {
+        "dtype": "<u8",
+        "file": "raw_posting_count_per_row.bin",
+        "nbytes": 256,
+        "sha256": "17d783a2a1fb9d23d0cbe38231a8e49d63433a26504cbd6add864b6a74c70cd5",
+        "shape": [
+          32
+        ]
+      },
+      "required_per_row": {
+        "dtype": "<u8",
+        "file": "required_per_row.bin",
+        "nbytes": 256,
+        "sha256": "17d783a2a1fb9d23d0cbe38231a8e49d63433a26504cbd6add864b6a74c70cd5",
+        "shape": [
+          32
+        ]
+      }
+    }
+  },
+  "query_preparation_ms": 525.2290189964697,
+  "schema": "cellerator.csr_union_bitmap_fixture.v1",
+  "support_arrays": {
+    "cell_query_entities": {
+      "dtype": "<i8",
+      "file": "cell_query_entities.bin",
+      "nbytes": 6144,
+      "sha256": "4bf4b18c7141056b9194e8501afdd00d883dd68f6fbfdb23a3e0088bb6369fa0",
+      "shape": [
+        768
+      ]
+    },
+    "cell_query_indptr": {
+      "dtype": "<i8",
+      "file": "cell_query_indptr.bin",
+      "nbytes": 264,
+      "sha256": "4f5f9631ec769f2ff4b6fb46209136265e3a7ced3121a2a6adae2c03f25675fe",
+      "shape": [
+        33
+      ]
+    },
+    "logical_edge_id": {
+      "dtype": "<i8",
+      "file": "logical_edge_id.bin",
+      "nbytes": 8000000,
+      "sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+      "shape": [
+        1000000
+      ]
+    },
+    "participant_entity_id": {
+      "dtype": "<i8",
+      "file": "participant_entity_id.bin",
+      "nbytes": 8000000,
+      "sha256": "951ecee91eb8752cd8fec0fe5be1165c46d59279246fb5663012405d399a99f7",
+      "shape": [
+        1000000
+      ]
+    },
+    "physical_to_logical_ordinal": {
+      "dtype": "<i8",
+      "file": "physical_to_logical_ordinal.bin",
+      "nbytes": 8000000,
+      "sha256": "6f8f1531c1170336132e3a5cf9fde98aa28840393edd4387ab4d7c7e743586fb",
+      "shape": [
+        1000000
+      ]
+    },
+    "source_edge_indptr": {
+      "dtype": "<i8",
+      "file": "source_edge_indptr.bin",
+      "nbytes": 160008,
+      "sha256": "04fd47ee5da34ccd7d82c539f96a9d965c33dbbf019d157bb7029eb5f92967bc",
+      "shape": [
+        20001
+      ]
+    },
+    "source_edge_ordinals": {
+      "dtype": "<i8",
+      "file": "source_edge_ordinals.bin",
+      "nbytes": 8000000,
+      "sha256": "8fde405d7c76e8a14ccf704cca5012a609ae12dc6efc8724eed3125c69f112c3",
+      "shape": [
+        1000000
+      ]
+    },
+    "source_entity_id": {
+      "dtype": "<i8",
+      "file": "source_entity_id.bin",
+      "nbytes": 8000000,
+      "sha256": "4e23a27113c97c80bd46faf1bbe675441f49bc4d44532ebd271cab2cebdb2576",
+      "shape": [
+        1000000
+      ]
+    }
+  }
+}

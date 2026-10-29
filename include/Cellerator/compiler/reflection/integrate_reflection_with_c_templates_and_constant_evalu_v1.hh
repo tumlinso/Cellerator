@@ -1,5 +1,5 @@
 #pragma once
-#include <Cellerator/compiler/reflection/freeze_the_compile_time_ir_handle_model_v1.hh>
+#include <Cellerator/compiler/reflection/compile_time_ir_handle_model_v1.hh>
 #include <cstdint>
 #include <type_traits>
 namespace cellerator::compiler::reflection::v1 {

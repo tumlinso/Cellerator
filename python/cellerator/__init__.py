@@ -1,4 +1,4 @@
-"""Cellerator's thin Python bindings for native numerical operations."""
+"""Python interface to Cellerator's native numerical capabilities."""
 from __future__ import annotations
 
 import weakref

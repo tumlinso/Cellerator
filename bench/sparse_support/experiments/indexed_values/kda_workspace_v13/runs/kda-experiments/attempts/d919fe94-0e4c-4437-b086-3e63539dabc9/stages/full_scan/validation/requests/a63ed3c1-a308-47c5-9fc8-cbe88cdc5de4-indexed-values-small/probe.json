@@ -1,0 +1,140 @@
+{
+  "cases": [
+    {
+      "U_over_E": 0.25,
+      "active_union_U": 16,
+      "cache_boundary": {
+        "cross_step_value_cache": false,
+        "edge_value_refresh_calls_during_warmup_and_timing": {
+          "full_E": 2,
+          "indexed_U": 2
+        },
+        "parameter_generation_delta": {
+          "full_E": 2,
+          "indexed_U": 2
+        },
+        "values_recomputed_after_each_guarded_publication": true
+      },
+      "case": "small",
+      "complete_step": {
+        "full_E": {
+          "count": 1,
+          "cuda_event_median_ms": 4.1113600730896,
+          "cuda_event_samples_ms": [
+            4.1113600730896
+          ],
+          "median_ms": 4.173114997684024,
+          "p10_ms": 4.173114997684024,
+          "p90_ms": 4.173114997684024,
+          "samples_ms": [
+            4.173114997684024
+          ]
+        },
+        "indexed_U": {
+          "count": 1,
+          "cuda_event_median_ms": 4.636672019958496,
+          "cuda_event_samples_ms": [
+            4.636672019958496
+          ],
+          "median_ms": 4.6775940027146135,
+          "p10_ms": 4.6775940027146135,
+          "p90_ms": 4.6775940027146135,
+          "samples_ms": [
+            4.6775940027146135
+          ]
+        },
+        "indexed_over_full_median_ratio": 1.1208878751988773
+      },
+      "consumer": "native SIMT sparse relation forward/VJP",
+      "correctness": {
+        "matched_full_torch_vjp": true,
+        "output_max_abs": 0.0,
+        "parameter_vjp_max_abs": 0.0
+      },
+      "device_memory_after_probe": {
+        "free_bytes": 16534994944,
+        "total_bytes": 16928342016
+      },
+      "edge_value_refresh_diagnostic": {
+        "full_E": {
+          "count": 1,
+          "median_ms": 1.7296330006502103,
+          "p10_ms": 1.7296330006502103,
+          "p90_ms": 1.7296330006502103,
+          "samples_ms": [
+            1.7296330006502103
+          ]
+        },
+        "indexed_U": {
+          "count": 1,
+          "median_ms": 1.8207290013378952,
+          "p10_ms": 1.8207290013378952,
+          "p90_ms": 1.8207290013378952,
+          "samples_ms": [
+            1.8207290013378952
+          ]
+        }
+      },
+      "estimated_gather_product_saved_bytes_per_forward": 36608,
+      "module_setup": {
+        "full_E": {
+          "allocated_delta_bytes": 1536,
+          "wall_ms": 145.5572589984513
+        },
+        "indexed_U": {
+          "allocated_delta_bytes": 1536,
+          "wall_ms": 41.425349001656286
+        }
+      },
+      "notes": [
+        "U was rebuilt for each step in this primary comparison; values were recomputed after each Adam publication.",
+        "Torch index_copy materializes an E-length value vector because the native relation ABI is unchanged.",
+        "No per-edge optimizer parameters were introduced."
+      ],
+      "peak_temporary_bytes_above_resident_models_and_inputs": 352768,
+      "shape": {
+        "active_source_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "candidate_items": 16,
+        "case": "event_local",
+        "fixture_identity": {
+          "cells": 4,
+          "entities": 32,
+          "fixture": "make_next_event_fixture",
+          "seed": 20261027,
+          "selected_occurrences": "last observed event per cell",
+          "steps": 6
+        },
+        "shape": {
+          "cells": 4,
+          "event_occurrences_per_cell": 1,
+          "relation_width": 64,
+          "selected_entities_per_cell": 1
+        }
+      },
+      "support_edges_E": 64,
+      "threshold": 0.49955546855926514,
+      "workset_digest": "16fc40be3502ccfa3565d6e7286633e35c823c931109062b7eed6b19144efc16",
+      "workset_items_D": 16,
+      "workset_items_P": 8
+    }
+  ],
+  "device": {
+    "compute_capability": [
+      7,
+      0
+    ],
+    "name": "Tesla V100-SXM2-16GB",
+    "uuid": "6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+  },
+  "extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24",
+  "fixture_generator_sha256": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+  "repetitions": 1,
+  "schema": "cellerator.indexed_edge_values_probe.v1",
+  "torch_identity": "4d3b6f0e1a63ea20785975597849bfad0b0f081221c47d9b858d6581b487afd4",
+  "warmup": 1
+}

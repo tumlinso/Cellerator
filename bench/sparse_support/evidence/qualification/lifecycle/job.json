@@ -1,0 +1,50 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/pytest",
+    "-v",
+    "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu1/tests/test_cuda_lifecycle_extra.py",
+    "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu1/tests/test_mechanism.py"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu1",
+  "timeout_seconds": 300,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-sparse-lifecycle-gpu1-20261027-v1",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 6442450944
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": [
+    "gpu.exclusive"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "2",
+    "PYTHONPATH": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v3/package:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-lifecycle-gpu1",
+    "CELLERATOR_RUN_CUDA_TESTS": "1",
+    "CELLERATOR_REQUIRE_NATIVE": "1",
+    "MKL_NUM_THREADS": "2"
+  },
+  "interruption": {
+    "restart_safe": true,
+    "cancellation_supported": true
+  },
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ]
+}

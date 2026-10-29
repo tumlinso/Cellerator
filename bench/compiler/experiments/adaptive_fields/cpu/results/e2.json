@@ -1,0 +1,163 @@
+{
+  "decision": "supported",
+  "actual_torch": "2.7.0+cu126",
+  "actual_operation": "torch.add(..., alpha=1) on CPU contiguous same-shaped FP32 tensors",
+  "forward_and_autograd": "pass",
+  "ordinary_cpp_helper": {
+    "compiled_and_invoked": true,
+    "output": [
+      1.75,
+      -1.0
+    ]
+  },
+  "unsupported_broadcast": "rejected by local adapter",
+  "descriptors": {
+    "cpp_helper_add": {
+      "identity": "probe.math.add",
+      "version": 1,
+      "operands": [
+        "tensor<f32>[N]",
+        "tensor<f32>[N]"
+      ],
+      "result": "tensor<f32>[N]",
+      "effects": {
+        "reads": [
+          "lhs",
+          "rhs"
+        ],
+        "writes": []
+      },
+      "numerics": "IEEE FP32 componentwise add, preserving operation order",
+      "body": "lhs[i] + rhs[i]",
+      "actual_callable": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/cpu/artifacts/libe2_cpp_helper.so",
+      "lowering": "local relation epilogue callback"
+    },
+    "aten_add": {
+      "identity": "aten::add.Tensor",
+      "version": 1,
+      "overload": "same-shape contiguous CPU FP32, alpha=1, no broadcast",
+      "operands": [
+        "tensor<f32>[N]",
+        "tensor<f32>[N]"
+      ],
+      "result": "tensor<f32>[N]",
+      "effects": {
+        "reads": [
+          "lhs",
+          "rhs"
+        ],
+        "writes": []
+      },
+      "numerics": "selected ATen overload, same-shaped FP32 componentwise add",
+      "body": "lhs[i] + rhs[i]",
+      "lowering": "local relation epilogue callback"
+    }
+  },
+  "rewrite": {
+    "before": [
+      "relation_apply(A_vals,x)->y",
+      "aten_add(y,b)->u",
+      "segment_softmax(u,s)->p"
+    ],
+    "after": [
+      "relation_apply_epilogue(A_vals,x,b)->u",
+      "segment_softmax(u,s)->p"
+    ],
+    "local_callback": true
+  },
+  "rewrite_execution": {
+    "explicit": [
+      0.622459352016449,
+      0.3775406777858734,
+      1.0
+    ],
+    "fused": [
+      0.622459352016449,
+      0.3775406777858734,
+      1.0
+    ],
+    "max_abs_error": 0.0
+  },
+  "effects_only_native": {
+    "contract": {
+      "identity": "native.bump",
+      "effects": {
+        "reads": [
+          "x"
+        ],
+        "writes": [
+          "b"
+        ]
+      }
+    },
+    "ordering": [
+      {
+        "kind": "relation_apply",
+        "relation": "A_vals",
+        "state": "x",
+        "out": "y"
+      },
+      {
+        "kind": "add",
+        "lhs": "y",
+        "rhs": "b",
+        "out": "u"
+      },
+      {
+        "kind": "native.bump",
+        "reads": [
+          "x"
+        ],
+        "writes": [
+          "b"
+        ]
+      },
+      {
+        "kind": "segment_softmax",
+        "input": "u",
+        "out": "p"
+      }
+    ],
+    "fusion_across_write": false,
+    "actual_order_sensitive_values": {
+      "declared_order": 12.25,
+      "incorrect_moved_add": 2.25
+    }
+  },
+  "opaque_native": {
+    "contract": {
+      "identity": "opaque.native",
+      "effects": "unknown",
+      "barrier": true
+    },
+    "ordering": [
+      {
+        "kind": "relation_apply",
+        "relation": "A_vals",
+        "state": "x",
+        "out": "y"
+      },
+      {
+        "kind": "add",
+        "lhs": "y",
+        "rhs": "b",
+        "out": "u"
+      },
+      {
+        "kind": "opaque.native"
+      },
+      {
+        "kind": "segment_softmax",
+        "input": "u",
+        "out": "p"
+      }
+    ],
+    "barrier_preserved": true
+  },
+  "limitations": [
+    "registration, typed checks, rewrite selection, and epilogue callback are experiment-local",
+    "ATen was invoked through Python CPU dispatch; no Torch-to-Cellerator production adapter was exercised",
+    "the C++ helper body was manually declared in its experiment-local descriptor, not inferred from source",
+    "no general Torch module capture or arbitrary overload support"
+  ]
+}

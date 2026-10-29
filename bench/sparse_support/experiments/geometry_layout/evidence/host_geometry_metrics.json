@@ -1,0 +1,1314 @@
+{
+  "cases": {
+    "large-ranked": {
+      "case": "large-ranked",
+      "graph_neighbor_layout_prepare_ms_host": 1048.329413002648,
+      "grouping_algorithm": "undirected edge-neighbor greedy; max-degree seed, then max unplaced neighbors with degree tie-break",
+      "layouts": {
+        "fixture_label_oracle_upper_bound": {
+          "active_tile_histogram": {
+            "1": 13876,
+            "10": 166,
+            "11": 53,
+            "12": 30,
+            "13": 18,
+            "133": 1,
+            "14": 9,
+            "143": 1,
+            "147": 1,
+            "149": 2,
+            "15": 2,
+            "150": 1,
+            "151": 1,
+            "152": 3,
+            "153": 3,
+            "154": 1,
+            "155": 4,
+            "156": 6,
+            "157": 6,
+            "158": 2,
+            "159": 2,
+            "16": 3,
+            "160": 3,
+            "161": 2,
+            "162": 3,
+            "163": 3,
+            "164": 4,
+            "165": 3,
+            "166": 5,
+            "167": 7,
+            "168": 5,
+            "169": 8,
+            "17": 4,
+            "170": 8,
+            "171": 9,
+            "172": 6,
+            "173": 14,
+            "174": 4,
+            "175": 7,
+            "176": 8,
+            "177": 7,
+            "178": 10,
+            "179": 14,
+            "18": 9,
+            "180": 12,
+            "181": 8,
+            "182": 13,
+            "183": 13,
+            "184": 8,
+            "185": 7,
+            "186": 12,
+            "187": 19,
+            "188": 10,
+            "189": 11,
+            "19": 6,
+            "190": 11,
+            "191": 16,
+            "192": 9,
+            "193": 13,
+            "194": 8,
+            "195": 14,
+            "196": 17,
+            "197": 10,
+            "198": 5,
+            "199": 7,
+            "2": 14042,
+            "20": 4,
+            "200": 7,
+            "201": 8,
+            "202": 10,
+            "203": 6,
+            "204": 10,
+            "205": 8,
+            "206": 6,
+            "207": 9,
+            "208": 11,
+            "209": 7,
+            "21": 1,
+            "210": 2,
+            "211": 3,
+            "212": 6,
+            "213": 4,
+            "214": 1,
+            "215": 2,
+            "216": 2,
+            "217": 3,
+            "218": 5,
+            "219": 3,
+            "221": 4,
+            "222": 3,
+            "223": 1,
+            "224": 1,
+            "225": 1,
+            "226": 1,
+            "23": 1,
+            "237": 1,
+            "3": 11228,
+            "4": 7687,
+            "5": 4674,
+            "6": 2547,
+            "7": 1355,
+            "8": 652,
+            "9": 335
+          },
+          "active_tiles": 57214,
+          "edge_count": 262144,
+          "empty_tiles": 8322,
+          "group_count_per_axis": 256,
+          "max_edges_per_active_tile": 237,
+          "mean_edges_per_active_tile": 4.581815639528787,
+          "median_edges_per_active_tile": 3.0,
+          "p90_edges_per_active_tile": 5.0,
+          "thresholds": {
+            "16": {
+              "eligible_tiles": 540,
+              "mma_edge_fraction": 0.3677024841308594,
+              "mma_edges": 96391,
+              "residual_edges": 165753
+            },
+            "32": {
+              "eligible_tiles": 512,
+              "mma_edge_fraction": 0.3657341003417969,
+              "mma_edges": 95875,
+              "residual_edges": 166269
+            },
+            "4": {
+              "eligible_tiles": 18068,
+              "mma_edge_fraction": 0.7114410400390625,
+              "mma_edges": 186500,
+              "residual_edges": 75644
+            },
+            "8": {
+              "eligible_tiles": 1805,
+              "mma_edge_fraction": 0.4105186462402344,
+              "mma_edges": 107615,
+              "residual_edges": 154529
+            }
+          },
+          "tile_grid_capacity": 65536
+        },
+        "graph_neighbor_greedy": {
+          "active_tile_histogram": {
+            "1": 16211,
+            "10": 707,
+            "100": 3,
+            "101": 6,
+            "102": 4,
+            "103": 6,
+            "104": 2,
+            "105": 5,
+            "106": 4,
+            "107": 2,
+            "108": 6,
+            "109": 4,
+            "11": 623,
+            "110": 3,
+            "111": 5,
+            "112": 2,
+            "113": 2,
+            "114": 3,
+            "115": 3,
+            "116": 3,
+            "117": 7,
+            "118": 8,
+            "119": 2,
+            "12": 571,
+            "120": 5,
+            "121": 3,
+            "122": 4,
+            "123": 3,
+            "124": 3,
+            "125": 3,
+            "126": 6,
+            "127": 1,
+            "128": 6,
+            "129": 5,
+            "13": 516,
+            "130": 3,
+            "131": 2,
+            "132": 2,
+            "133": 2,
+            "134": 5,
+            "135": 3,
+            "136": 7,
+            "137": 2,
+            "138": 4,
+            "139": 2,
+            "14": 456,
+            "141": 2,
+            "142": 1,
+            "143": 2,
+            "144": 2,
+            "145": 4,
+            "146": 5,
+            "147": 2,
+            "149": 4,
+            "15": 448,
+            "150": 5,
+            "151": 1,
+            "152": 4,
+            "153": 2,
+            "154": 2,
+            "155": 3,
+            "156": 2,
+            "157": 1,
+            "158": 4,
+            "159": 2,
+            "16": 342,
+            "160": 3,
+            "161": 3,
+            "162": 4,
+            "163": 3,
+            "164": 6,
+            "165": 4,
+            "166": 4,
+            "167": 5,
+            "168": 3,
+            "169": 3,
+            "17": 325,
+            "170": 3,
+            "171": 2,
+            "172": 4,
+            "173": 2,
+            "175": 3,
+            "176": 1,
+            "177": 5,
+            "178": 2,
+            "179": 3,
+            "18": 282,
+            "181": 4,
+            "182": 2,
+            "183": 5,
+            "184": 5,
+            "185": 2,
+            "186": 3,
+            "187": 2,
+            "188": 3,
+            "189": 5,
+            "19": 190,
+            "190": 2,
+            "191": 2,
+            "192": 2,
+            "193": 5,
+            "194": 3,
+            "195": 3,
+            "196": 1,
+            "197": 4,
+            "198": 2,
+            "2": 10011,
+            "20": 164,
+            "200": 2,
+            "201": 2,
+            "202": 5,
+            "203": 1,
+            "204": 1,
+            "205": 2,
+            "206": 2,
+            "207": 2,
+            "208": 1,
+            "209": 1,
+            "21": 125,
+            "210": 3,
+            "211": 2,
+            "212": 1,
+            "213": 1,
+            "214": 1,
+            "215": 1,
+            "217": 3,
+            "219": 1,
+            "22": 107,
+            "220": 1,
+            "221": 2,
+            "222": 1,
+            "224": 1,
+            "23": 72,
+            "24": 73,
+            "25": 49,
+            "26": 41,
+            "27": 24,
+            "28": 41,
+            "29": 32,
+            "3": 5618,
+            "30": 29,
+            "31": 22,
+            "32": 18,
+            "33": 14,
+            "34": 15,
+            "35": 9,
+            "36": 10,
+            "37": 9,
+            "39": 4,
+            "4": 3393,
+            "40": 5,
+            "41": 4,
+            "42": 5,
+            "43": 4,
+            "44": 4,
+            "45": 3,
+            "46": 6,
+            "47": 3,
+            "48": 6,
+            "49": 2,
+            "5": 2352,
+            "50": 1,
+            "51": 7,
+            "53": 5,
+            "54": 1,
+            "55": 1,
+            "56": 5,
+            "57": 4,
+            "58": 7,
+            "59": 3,
+            "6": 1587,
+            "60": 4,
+            "61": 4,
+            "62": 1,
+            "63": 7,
+            "64": 3,
+            "65": 6,
+            "66": 1,
+            "67": 5,
+            "68": 7,
+            "69": 2,
+            "7": 1254,
+            "70": 4,
+            "71": 5,
+            "72": 7,
+            "73": 6,
+            "74": 4,
+            "75": 3,
+            "76": 5,
+            "77": 3,
+            "78": 3,
+            "79": 4,
+            "8": 964,
+            "80": 2,
+            "81": 6,
+            "82": 4,
+            "83": 3,
+            "85": 3,
+            "86": 4,
+            "87": 3,
+            "88": 1,
+            "89": 2,
+            "9": 829,
+            "90": 5,
+            "91": 1,
+            "92": 3,
+            "93": 3,
+            "94": 6,
+            "95": 4,
+            "96": 3,
+            "97": 5,
+            "98": 3,
+            "99": 1
+          },
+          "active_tiles": 48113,
+          "edge_count": 262144,
+          "empty_tiles": 17423,
+          "group_count_per_axis": 256,
+          "max_edges_per_active_tile": 224,
+          "mean_edges_per_active_tile": 5.448506640616881,
+          "median_edges_per_active_tile": 2.0,
+          "p90_edges_per_active_tile": 11.0,
+          "thresholds": {
+            "16": {
+              "eligible_tiles": 2573,
+              "mma_edge_fraction": 0.4183387756347656,
+              "mma_edges": 109665,
+              "residual_edges": 152479
+            },
+            "32": {
+              "eligible_tiles": 655,
+              "mma_edge_fraction": 0.2736968994140625,
+              "mma_edges": 71748,
+              "residual_edges": 190396
+            },
+            "4": {
+              "eligible_tiles": 16273,
+              "mma_edge_fraction": 0.7974891662597656,
+              "mma_edges": 209057,
+              "residual_edges": 53087
+            },
+            "8": {
+              "eligible_tiles": 7687,
+              "mma_edge_fraction": 0.6310462951660156,
+              "mma_edges": 165425,
+              "residual_edges": 96719
+            }
+          },
+          "tile_grid_capacity": 65536
+        },
+        "identity": {
+          "active_tile_histogram": {
+            "1": 12765,
+            "10": 407,
+            "11": 600,
+            "12": 925,
+            "13": 1135,
+            "14": 1220,
+            "15": 1186,
+            "16": 951,
+            "17": 690,
+            "18": 421,
+            "19": 271,
+            "2": 12815,
+            "20": 148,
+            "21": 86,
+            "22": 41,
+            "23": 19,
+            "24": 10,
+            "25": 4,
+            "26": 5,
+            "27": 3,
+            "28": 3,
+            "29": 1,
+            "3": 10126,
+            "4": 6643,
+            "5": 3923,
+            "6": 2101,
+            "7": 1160,
+            "8": 640,
+            "9": 389
+          },
+          "active_tiles": 58688,
+          "edge_count": 262144,
+          "empty_tiles": 6848,
+          "group_count_per_axis": 256,
+          "max_edges_per_active_tile": 29,
+          "mean_edges_per_active_tile": 4.4667393675027265,
+          "median_edges_per_active_tile": 3.0,
+          "p90_edges_per_active_tile": 13.0,
+          "thresholds": {
+            "16": {
+              "eligible_tiles": 2653,
+              "mma_edge_fraction": 0.17716217041015625,
+              "mma_edges": 46442,
+              "residual_edges": 215702
+            },
+            "32": {
+              "eligible_tiles": 0,
+              "mma_edge_fraction": 0.0,
+              "mma_edges": 0,
+              "residual_edges": 262144
+            },
+            "4": {
+              "eligible_tiles": 22982,
+              "mma_edge_fraction": 0.7376518249511719,
+              "mma_edges": 193371,
+              "residual_edges": 68773
+            },
+            "8": {
+              "eligible_tiles": 9155,
+              "mma_edge_fraction": 0.48239898681640625,
+              "mma_edges": 126458,
+              "residual_edges": 135686
+            }
+          },
+          "tile_grid_capacity": 65536
+        }
+      },
+      "logical_to_physical_order_sha256": "89682a72472c6c03bdd40db1e5292d9217182cb46f589baeb16d139694787e9f",
+      "manifest_sha256": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32",
+      "ranked_cell_query_tiles": {
+        "graph_neighbor_greedy": {
+          "mean_candidate_edges_per_cell": 32498.375,
+          "mean_mma_tiles_per_cell": 14377.125,
+          "mean_residual_edges_per_cell": 0.0,
+          "p90_candidate_edges_per_cell": 34025.2,
+          "rows": [
+            {
+              "candidate_edges": 31950,
+              "mma_tiles": 13914,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30571,
+              "mma_tiles": 13944,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30872,
+              "mma_tiles": 13716,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30792,
+              "mma_tiles": 13699,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 31608,
+              "mma_tiles": 14216,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30683,
+              "mma_tiles": 14066,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30819,
+              "mma_tiles": 14158,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30454,
+              "mma_tiles": 13829,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 34645,
+              "mma_tiles": 14605,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33193,
+              "mma_tiles": 14450,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 31493,
+              "mma_tiles": 14323,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32191,
+              "mma_tiles": 14536,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32374,
+              "mma_tiles": 14267,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33095,
+              "mma_tiles": 14409,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33307,
+              "mma_tiles": 14494,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32418,
+              "mma_tiles": 14364,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33865,
+              "mma_tiles": 15363,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32436,
+              "mma_tiles": 14648,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32548,
+              "mma_tiles": 14875,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33426,
+              "mma_tiles": 14811,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33443,
+              "mma_tiles": 14973,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 34113,
+              "mma_tiles": 14987,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 31922,
+              "mma_tiles": 14671,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 31517,
+              "mma_tiles": 14179,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32695,
+              "mma_tiles": 14481,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33030,
+              "mma_tiles": 14112,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 35268,
+              "mma_tiles": 14335,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 34043,
+              "mma_tiles": 14853,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33473,
+              "mma_tiles": 14739,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32499,
+              "mma_tiles": 13971,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32155,
+              "mma_tiles": 13772,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33050,
+              "mma_tiles": 14308,
+              "residual_edges": 0
+            }
+          ]
+        },
+        "graph_neighbor_hybrid_threshold_16": {
+          "mean_candidate_edges_per_cell": 32498.375,
+          "mean_mma_tiles_per_cell": 1851.3125,
+          "mean_residual_edges_per_cell": 18913.34375,
+          "p90_candidate_edges_per_cell": 34025.2,
+          "rows": [
+            {
+              "candidate_edges": 31950,
+              "mma_tiles": 1820,
+              "residual_edges": 18242
+            },
+            {
+              "candidate_edges": 30571,
+              "mma_tiles": 1710,
+              "residual_edges": 18037
+            },
+            {
+              "candidate_edges": 30872,
+              "mma_tiles": 1758,
+              "residual_edges": 17844
+            },
+            {
+              "candidate_edges": 30792,
+              "mma_tiles": 1757,
+              "residual_edges": 17951
+            },
+            {
+              "candidate_edges": 31608,
+              "mma_tiles": 1863,
+              "residual_edges": 18434
+            },
+            {
+              "candidate_edges": 30683,
+              "mma_tiles": 1795,
+              "residual_edges": 17994
+            },
+            {
+              "candidate_edges": 30819,
+              "mma_tiles": 1818,
+              "residual_edges": 17837
+            },
+            {
+              "candidate_edges": 30454,
+              "mma_tiles": 1872,
+              "residual_edges": 17523
+            },
+            {
+              "candidate_edges": 34645,
+              "mma_tiles": 2083,
+              "residual_edges": 19291
+            },
+            {
+              "candidate_edges": 33193,
+              "mma_tiles": 1977,
+              "residual_edges": 18927
+            },
+            {
+              "candidate_edges": 31493,
+              "mma_tiles": 1905,
+              "residual_edges": 18422
+            },
+            {
+              "candidate_edges": 32191,
+              "mma_tiles": 1987,
+              "residual_edges": 18818
+            },
+            {
+              "candidate_edges": 32374,
+              "mma_tiles": 1960,
+              "residual_edges": 18691
+            },
+            {
+              "candidate_edges": 33095,
+              "mma_tiles": 1789,
+              "residual_edges": 19809
+            },
+            {
+              "candidate_edges": 33307,
+              "mma_tiles": 1851,
+              "residual_edges": 19790
+            },
+            {
+              "candidate_edges": 32418,
+              "mma_tiles": 1790,
+              "residual_edges": 18919
+            },
+            {
+              "candidate_edges": 33865,
+              "mma_tiles": 1936,
+              "residual_edges": 20520
+            },
+            {
+              "candidate_edges": 32436,
+              "mma_tiles": 1678,
+              "residual_edges": 19433
+            },
+            {
+              "candidate_edges": 32548,
+              "mma_tiles": 1786,
+              "residual_edges": 19544
+            },
+            {
+              "candidate_edges": 33426,
+              "mma_tiles": 1929,
+              "residual_edges": 19559
+            },
+            {
+              "candidate_edges": 33443,
+              "mma_tiles": 1912,
+              "residual_edges": 19990
+            },
+            {
+              "candidate_edges": 34113,
+              "mma_tiles": 1858,
+              "residual_edges": 20185
+            },
+            {
+              "candidate_edges": 31922,
+              "mma_tiles": 1679,
+              "residual_edges": 19533
+            },
+            {
+              "candidate_edges": 31517,
+              "mma_tiles": 1709,
+              "residual_edges": 18669
+            },
+            {
+              "candidate_edges": 32695,
+              "mma_tiles": 1970,
+              "residual_edges": 18593
+            },
+            {
+              "candidate_edges": 33030,
+              "mma_tiles": 1918,
+              "residual_edges": 18662
+            },
+            {
+              "candidate_edges": 35268,
+              "mma_tiles": 1864,
+              "residual_edges": 19546
+            },
+            {
+              "candidate_edges": 34043,
+              "mma_tiles": 1938,
+              "residual_edges": 19493
+            },
+            {
+              "candidate_edges": 33473,
+              "mma_tiles": 1979,
+              "residual_edges": 19218
+            },
+            {
+              "candidate_edges": 32499,
+              "mma_tiles": 1728,
+              "residual_edges": 18600
+            },
+            {
+              "candidate_edges": 32155,
+              "mma_tiles": 1714,
+              "residual_edges": 18223
+            },
+            {
+              "candidate_edges": 33050,
+              "mma_tiles": 1909,
+              "residual_edges": 18930
+            }
+          ]
+        },
+        "graph_neighbor_hybrid_threshold_8": {
+          "mean_candidate_edges_per_cell": 32498.375,
+          "mean_mma_tiles_per_cell": 4848.40625,
+          "mean_residual_edges_per_cell": 11953.75,
+          "p90_candidate_edges_per_cell": 34025.2,
+          "rows": [
+            {
+              "candidate_edges": 31950,
+              "mma_tiles": 4864,
+              "residual_edges": 11119
+            },
+            {
+              "candidate_edges": 30571,
+              "mma_tiles": 4453,
+              "residual_edges": 11832
+            },
+            {
+              "candidate_edges": 30872,
+              "mma_tiles": 4711,
+              "residual_edges": 11069
+            },
+            {
+              "candidate_edges": 30792,
+              "mma_tiles": 4765,
+              "residual_edges": 10917
+            },
+            {
+              "candidate_edges": 31608,
+              "mma_tiles": 4960,
+              "residual_edges": 11488
+            },
+            {
+              "candidate_edges": 30683,
+              "mma_tiles": 4765,
+              "residual_edges": 11332
+            },
+            {
+              "candidate_edges": 30819,
+              "mma_tiles": 4729,
+              "residual_edges": 11705
+            },
+            {
+              "candidate_edges": 30454,
+              "mma_tiles": 4530,
+              "residual_edges": 11721
+            },
+            {
+              "candidate_edges": 34645,
+              "mma_tiles": 5186,
+              "residual_edges": 11870
+            },
+            {
+              "candidate_edges": 33193,
+              "mma_tiles": 4858,
+              "residual_edges": 12019
+            },
+            {
+              "candidate_edges": 31493,
+              "mma_tiles": 4906,
+              "residual_edges": 11779
+            },
+            {
+              "candidate_edges": 32191,
+              "mma_tiles": 5165,
+              "residual_edges": 12061
+            },
+            {
+              "candidate_edges": 32374,
+              "mma_tiles": 4835,
+              "residual_edges": 12138
+            },
+            {
+              "candidate_edges": 33095,
+              "mma_tiles": 4913,
+              "residual_edges": 12120
+            },
+            {
+              "candidate_edges": 33307,
+              "mma_tiles": 4903,
+              "residual_edges": 12207
+            },
+            {
+              "candidate_edges": 32418,
+              "mma_tiles": 5008,
+              "residual_edges": 11660
+            },
+            {
+              "candidate_edges": 33865,
+              "mma_tiles": 5283,
+              "residual_edges": 12825
+            },
+            {
+              "candidate_edges": 32436,
+              "mma_tiles": 4502,
+              "residual_edges": 12872
+            },
+            {
+              "candidate_edges": 32548,
+              "mma_tiles": 4727,
+              "residual_edges": 13004
+            },
+            {
+              "candidate_edges": 33426,
+              "mma_tiles": 4963,
+              "residual_edges": 12646
+            },
+            {
+              "candidate_edges": 33443,
+              "mma_tiles": 4931,
+              "residual_edges": 12702
+            },
+            {
+              "candidate_edges": 34113,
+              "mma_tiles": 5063,
+              "residual_edges": 12526
+            },
+            {
+              "candidate_edges": 31922,
+              "mma_tiles": 4621,
+              "residual_edges": 12695
+            },
+            {
+              "candidate_edges": 31517,
+              "mma_tiles": 4466,
+              "residual_edges": 12282
+            },
+            {
+              "candidate_edges": 32695,
+              "mma_tiles": 5092,
+              "residual_edges": 11551
+            },
+            {
+              "candidate_edges": 33030,
+              "mma_tiles": 4763,
+              "residual_edges": 11648
+            },
+            {
+              "candidate_edges": 35268,
+              "mma_tiles": 4806,
+              "residual_edges": 11881
+            },
+            {
+              "candidate_edges": 34043,
+              "mma_tiles": 5136,
+              "residual_edges": 12108
+            },
+            {
+              "candidate_edges": 33473,
+              "mma_tiles": 5258,
+              "residual_edges": 11697
+            },
+            {
+              "candidate_edges": 32499,
+              "mma_tiles": 4510,
+              "residual_edges": 11954
+            },
+            {
+              "candidate_edges": 32155,
+              "mma_tiles": 4535,
+              "residual_edges": 11505
+            },
+            {
+              "candidate_edges": 33050,
+              "mma_tiles": 4942,
+              "residual_edges": 11587
+            }
+          ]
+        },
+        "identity": {
+          "mean_candidate_edges_per_cell": 32498.375,
+          "mean_mma_tiles_per_cell": 19008.71875,
+          "mean_residual_edges_per_cell": 0.0,
+          "p90_candidate_edges_per_cell": 34025.2,
+          "rows": [
+            {
+              "candidate_edges": 31950,
+              "mma_tiles": 18235,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30571,
+              "mma_tiles": 18364,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30872,
+              "mma_tiles": 18057,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30792,
+              "mma_tiles": 18392,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 31608,
+              "mma_tiles": 18524,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30683,
+              "mma_tiles": 18373,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30819,
+              "mma_tiles": 18282,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 30454,
+              "mma_tiles": 18160,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 34645,
+              "mma_tiles": 19561,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33193,
+              "mma_tiles": 18802,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 31493,
+              "mma_tiles": 18402,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32191,
+              "mma_tiles": 18367,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32374,
+              "mma_tiles": 18651,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33095,
+              "mma_tiles": 18621,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33307,
+              "mma_tiles": 19544,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32418,
+              "mma_tiles": 18594,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33865,
+              "mma_tiles": 19556,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32436,
+              "mma_tiles": 19197,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32548,
+              "mma_tiles": 18748,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33426,
+              "mma_tiles": 19367,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33443,
+              "mma_tiles": 19900,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 34113,
+              "mma_tiles": 19523,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 31922,
+              "mma_tiles": 18769,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 31517,
+              "mma_tiles": 18510,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32695,
+              "mma_tiles": 19444,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33030,
+              "mma_tiles": 19442,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 35268,
+              "mma_tiles": 20020,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 34043,
+              "mma_tiles": 20422,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33473,
+              "mma_tiles": 20096,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32499,
+              "mma_tiles": 19548,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 32155,
+              "mma_tiles": 19256,
+              "residual_edges": 0
+            },
+            {
+              "candidate_edges": 33050,
+              "mma_tiles": 19552,
+              "residual_edges": 0
+            }
+          ]
+        }
+      },
+      "shape": {
+        "cells": 32,
+        "edges": 262144,
+        "entities": 4096,
+        "rank_count": 512
+      },
+      "topology_sha256": "2cadfde9b62b6e9bfc49cce9f44219e241fec21e7c68dfe685d90fe372aeabc5"
+    },
+    "small": {
+      "case": "small",
+      "graph_neighbor_layout_prepare_ms_host": 1.310736006416846,
+      "grouping_algorithm": "undirected edge-neighbor greedy; max-degree seed, then max unplaced neighbors with degree tie-break",
+      "layouts": {
+        "fixture_label_oracle_upper_bound": {
+          "active_tile_histogram": {
+            "1": 1,
+            "17": 1,
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "5": 3,
+            "6": 4,
+            "7": 3,
+            "9": 1
+          },
+          "active_tiles": 16,
+          "edge_count": 96,
+          "empty_tiles": 0,
+          "group_count_per_axis": 4,
+          "max_edges_per_active_tile": 17,
+          "mean_edges_per_active_tile": 6.0,
+          "median_edges_per_active_tile": 6.0,
+          "p90_edges_per_active_tile": 8.0,
+          "thresholds": {
+            "16": {
+              "eligible_tiles": 1,
+              "mma_edge_fraction": 0.17708333333333334,
+              "mma_edges": 17,
+              "residual_edges": 79
+            },
+            "32": {
+              "eligible_tiles": 0,
+              "mma_edge_fraction": 0.0,
+              "mma_edges": 0,
+              "residual_edges": 96
+            },
+            "4": {
+              "eligible_tiles": 13,
+              "mma_edge_fraction": 0.9375,
+              "mma_edges": 90,
+              "residual_edges": 6
+            },
+            "8": {
+              "eligible_tiles": 2,
+              "mma_edge_fraction": 0.2708333333333333,
+              "mma_edges": 26,
+              "residual_edges": 70
+            }
+          },
+          "tile_grid_capacity": 16
+        },
+        "graph_neighbor_greedy": {
+          "active_tile_histogram": {
+            "1": 2,
+            "15": 1,
+            "16": 1,
+            "2": 1,
+            "28": 1,
+            "3": 2,
+            "4": 2,
+            "5": 1,
+            "7": 2
+          },
+          "active_tiles": 13,
+          "edge_count": 96,
+          "empty_tiles": 3,
+          "group_count_per_axis": 4,
+          "max_edges_per_active_tile": 28,
+          "mean_edges_per_active_tile": 7.384615384615385,
+          "median_edges_per_active_tile": 4.0,
+          "p90_edges_per_active_tile": 15.8,
+          "thresholds": {
+            "16": {
+              "eligible_tiles": 2,
+              "mma_edge_fraction": 0.4583333333333333,
+              "mma_edges": 44,
+              "residual_edges": 52
+            },
+            "32": {
+              "eligible_tiles": 0,
+              "mma_edge_fraction": 0.0,
+              "mma_edges": 0,
+              "residual_edges": 96
+            },
+            "4": {
+              "eligible_tiles": 8,
+              "mma_edge_fraction": 0.8958333333333334,
+              "mma_edges": 86,
+              "residual_edges": 10
+            },
+            "8": {
+              "eligible_tiles": 3,
+              "mma_edge_fraction": 0.6145833333333334,
+              "mma_edges": 59,
+              "residual_edges": 37
+            }
+          },
+          "tile_grid_capacity": 16
+        },
+        "identity": {
+          "active_tile_histogram": {
+            "11": 1,
+            "3": 2,
+            "5": 4,
+            "6": 6,
+            "7": 1,
+            "8": 2
+          },
+          "active_tiles": 16,
+          "edge_count": 96,
+          "empty_tiles": 0,
+          "group_count_per_axis": 4,
+          "max_edges_per_active_tile": 11,
+          "mean_edges_per_active_tile": 6.0,
+          "median_edges_per_active_tile": 6.0,
+          "p90_edges_per_active_tile": 8.0,
+          "thresholds": {
+            "16": {
+              "eligible_tiles": 0,
+              "mma_edge_fraction": 0.0,
+              "mma_edges": 0,
+              "residual_edges": 96
+            },
+            "32": {
+              "eligible_tiles": 0,
+              "mma_edge_fraction": 0.0,
+              "mma_edges": 0,
+              "residual_edges": 96
+            },
+            "4": {
+              "eligible_tiles": 14,
+              "mma_edge_fraction": 0.9375,
+              "mma_edges": 90,
+              "residual_edges": 6
+            },
+            "8": {
+              "eligible_tiles": 3,
+              "mma_edge_fraction": 0.28125,
+              "mma_edges": 27,
+              "residual_edges": 69
+            }
+          },
+          "tile_grid_capacity": 16
+        }
+      },
+      "logical_to_physical_order_sha256": "4c04354cef74315b8c0fa2bc6e8817b5efa102639a2a6561921ba84573fedeab",
+      "manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+      "shape": {
+        "cells": 8,
+        "edges": 96,
+        "entities": 64,
+        "rank_count": 8
+      },
+      "topology_sha256": "3755cf50273d5a8012cf036058f8c3ab77ded7bcc72f20254369e775d10b3b3b"
+    }
+  },
+  "schema": "cellerator.geometry_layout_host_probe.v1"
+}

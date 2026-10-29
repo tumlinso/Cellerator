@@ -15,7 +15,7 @@ else()
     /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include REQUIRED)
   target_include_directories(ce_prepared_host PRIVATE "${CE_CUDA_HEADERS}")
   target_sources(ce_prepared_host PRIVATE
-    "${CE_ROOT}/src/compute/operation/native_numeric/local_arithmetic.cc"
+    "${CE_ROOT}/src/ops/numeric/local_arithmetic.cc"
     "${CE_ROOT}/src/compute/operation/differential/local_arithmetic.cc"
     "${CE_ROOT}/src/compute/operation/operation_core_v2/schema.cc"
     "${CE_ROOT}/src/execution/program/program_v2.cc")

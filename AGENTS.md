@@ -1,22 +1,30 @@
 # Repository work contract
 
 <!-- project-control:start -->
-## Project Control workflow
+## Project Control and Todo workflow
 
-For substantial repository work, use `project-control`. Start with `next_task`,
-use `inspect_task` for bounded current-task context, and use `coordinate_task`
-for typed synchronization. Rich Project Control reads are secondary escalation
-tools when bounded workflow context is insufficient.
+Use Project Control's existing `overview`, `search`, `delta`, `frontier`, `history`,
+`evidence`, and `impact` reads for registered-workspace context and migrated Todo
+status/history. The compact profile catalogs are observer 11, coder 12, and
+mutator 16 tools. Routine workflow begins with
+`next_task(project, repository?, task_id?, run_id?)`; pass its returned handle to
+`inspect_task`, `coordinate_task`, and `finish_task`. Use the live host manifest
+for exact schemas and profile permissions.
 
-Todo Orchestrator remains the transactional authority. First-class Codex agents
-receive lanes and roles. Use configured Codex subagents for bounded research,
-implementation, tests and review under the root claim. Local workers are reserved
-for Project Control observers for now; do not use `delegate_task` or
-`local-coding-worker` for implementation delegation. Subagents do not take over
-the root's task lifecycle or final acceptance.
+Project Control binds workflow handles to the registered workspace, identity,
+profile, credentials, and providers. Routine agents should not manage native
+Todo IDs, leases, credentials, or retry keys, and do not pass raw repository
+paths as selectors. Privileged plan changes, execution maintenance, and project
+metadata stay on their established routes. Observer reads need no task claim and
+cannot mutate. The standalone Todo API and CLI remain available for separately
+managed authorities. Imported completion is a source assertion, not native
+verification; unknown legacy effects require attention and are never replayed
+automatically. Existing non-Todo tools remain available for their own purposes.
 <!-- project-control:end -->
 
 Read the [architecture](docs/architecture.qmd) for intent, [current implementation record](docs/current_implementation.qmd) for its dated boundary, and [developer reference](docs/developer_reference.qmd) for entry points. The [Python binding guide](docs/development/python-bindings.md) covers the current package surface. For an edit, the current scoped task and inspected source—not a historical plan or README completion sentence—determine what exists and what is authorized.
+
+For source ownership, evidence boundaries, and path routing, see the [contributor routing guide](docs/development/routing.md). The source map linked there is not live task status or capability proof.
 
 ## Operate within the current authority
 
@@ -32,6 +40,22 @@ Use the installed Project Control/Codex front door and this repository's Todo au
 
 External compatibility is not an absolute constraint at this stage. A reviewed internal move may change names/interfaces if it improves development; repair real sibling consumers and relevant tests together. Frozen contracts and overlapping active work still require their owner's explicit reconciliation. Do not use a documentation task to rewrite numerical behavior, introduce another planner, or complete unrelated old epics.
 
+## Hardware and algorithm choice
+
+Use the [CUDA skill](/home/tumlinson/.agents/skills/cuda/SKILL.md) for GPU
+computation, porting, correctness, profiling and optimization. Follow its focused
+guidance for the actual operation and target hardware, including host execution
+rules when running GPU work.
+
+Aim to make full use of the hardware. Reflect on algorithm, representation and
+ownership choices before tuning a kernel: consider how layout, locality, reuse,
+fusion and precision can make the semantic operation native to the machine.
+Consider unconventional algorithms or encodings when they offer a sound fit.
+Choose wisely using an independent correctness oracle and complete workload
+costs, including preparation, conversion, memory and communication. Compare
+with the strongest conventional or library alternative and retain the evidence
+that supports or rejects each candidate.
+
 ## Software ports and design probes
 
 During active library development, any explicitly user-authorized software
@@ -43,14 +67,21 @@ friction. General numerical, state, graph, relation, statistical, and
 iterative mechanisms belong in Cellerator; Baseplane should own only
 intrinsically sequence-grounded functionality.
 
-Preserve native computation by default. An optional, opportunistic FP16 Tensor
-Core mode is the only permitted deliberate numerical deviation. Compare it
-with upstream/native computation. A higher-precision reference may supplement
-that comparison. Prefer FP32 accumulation where supported, and declare and
-qualify actual accumulation and output policy. Use the mode only within its
-demonstrated numerical envelope, retaining native fallback for unsupported or
-unsafe regimes. Existing Tensor Core documentation defines implementation
-requirements.
+Use FP16 as the general computation default, retaining FP32, FP64 and other
+supported precision types as explicit alternatives. FP16 execution may use
+ordinary CUDA arithmetic or Tensor Cores; choose the implementation by the
+operation's contract and measured complete cost. Declare storage, multiply,
+accumulation and output types separately, using FP32 accumulation where
+appropriate. Respect explicit caller precision and existing operation contracts.
+Compare approximate computation with upstream/native computation; a
+higher-precision reference may supplement that comparison. Keep numerical claims
+within demonstrated evidence and retain suitable alternatives for unsupported
+or unsafe regimes. See [Numerical policy](docs/architecture.qmd#numerical-policy)
+for the provisional evidence boundary and current implementation distinction.
+
+Prefer templates for algorithms whose behavior is independent of numeric type.
+Keep genuinely type-specific arithmetic, numerical constraints and hardware
+specializations explicit; do not force them into a shared implementation.
 
 When a basic reusable primitive appears missing or insufficient, report this
 promptly to the user. Include the concrete computation and evidence, current

@@ -1,0 +1,59 @@
+---
+title: "Operations"
+---
+
+## Operations define the reusable unit
+
+Cellerator grows through reusable mathematical operations and the structure,
+layout, preparation, and execution semantics that make those operations useful
+for cellular models. Group by operation contract, not by one application.
+Each operation should state accepted identities and shapes, output and
+derivative behavior, precision, backend, preparation and reuse rules, and
+complete-cost evidence.
+
+The Python `cellerator.ops` module currently exposes a native CPU Product2
+operation and forward/JVP/VJP entry points. The optional Torch package exposes
+the same operation through `product2` and `Product2Module`; its current
+autograd implementation is first-order and CPU FP32. The native Product2
+implementation still lives under the current `src/compute` and `src/execution`
+routes. The target operation-family layout does not change that current source
+ownership until a complete move is reviewed.
+
+Other native and Torch-backed operation families exist in sparse support,
+mechanism, matrix, process, tokenization, and related areas. Their existence
+does not make them one package-wide API with shared maturity. Consult each
+facility's own contract and evidence:
+
+- [Sparse support foundation](sparse_support_foundation.qmd) covers explicit
+  support/index/routing and synthetic ranked-gene/event operations.
+- [Tokenization](tokenization.qmd) covers optional ATen tensor and sequence
+  operations.
+- [Python bindings](development/python-bindings.md) describes native Product2,
+  optional Torch indexed-mechanism support, resident CUDA, sparse support, and
+  tokenization boundaries.
+- The [source routing map](development/routing.md) is the exhaustive current
+  path and consumer inventory.
+
+The opt-in prepared entity-to-mechanism route query now has a native host index,
+CUDA query implementation, and Python/Torch adapter. It reuses reverse postings
+and checks caller-supplied owner, relation, structure, route, and binding
+generations. The existing route policy is consumed as supplied. CPU/native and
+adapter checks pass, as do the 16-test suite, exact CUDA correctness check, and
+memcheck, racecheck, and synccheck for the frozen binary. A source-bound V100
+measurement found a 9.21% median horizon-64 lifecycle improvement over the
+Python route for synthetic ranked `[32,8]` inputs; the event result was
+inconclusive, and dense Torch won on the larger stress shapes. The prepared
+path remains opt-in, with Python as the default. See the
+[qualification report](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/bench/sparse_support/experiments/prepared_routing/REPORT.md)
+for its scope and limits before considering a model-level default.
+
+## How new families should fit
+
+Keep the operation contract model-neutral and compose it with Torch where
+Torch already supplies the surrounding machinery. Prefer a Cellerator module
+when users need a stable model-level composition, owned parameters, or
+operation-specific preparation. Keep the derivative implementation aligned
+with the forward operation and test repeated identities, invalidation, and
+layout conversions explicitly. Add an operation family as real source and
+consumers arrive; do not add placeholder modules or promise general backend
+support ahead of implementation.

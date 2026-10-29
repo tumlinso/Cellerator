@@ -1,4 +1,4 @@
-include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_the_host_only_root_project_contract.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/host_only_root_project_contract.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_tri_state_cuda_backend_configuration.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/create_compiler_component_target_boundaries.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/set_modern_compiler_tooling_language_standards.cmake)
@@ -9,7 +9,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_build_tree_generat
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/create_host_only_compiler_smoke_targets.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/create_accelerator_enabled_compiler_smoke_targets.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_build_presets_and_ci_matrix.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/freeze_the_compiler_target_graph.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/compiler_target_graph.cmake)
 
 get_filename_component(CELLERATOR_COMPILER_REPOSITORY_ROOT
     "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)

@@ -1,0 +1,424 @@
+{
+  "attempt": {
+    "attempt_id": "8271545e-9db2-47ff-b3bc-b102dca63408",
+    "cleanup_verified": true,
+    "created_at": "2026-10-27T20:18:04.049323Z",
+    "error": {},
+    "evidence": [
+      {
+        "adapter_errors": [],
+        "kind": "execution_preconditions",
+        "operation_id": "preconditions:8271545e-9db2-47ff-b3bc-b102dca63408",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 3,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-27T20:18:04.146005+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T20:18:04.183500+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T20:18:04.146005+00:00",
+                        "process_observed_at": "2026-10-27T20:18:04.183500+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-27T20:18:05.262520+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T20:18:05.302731+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T20:18:05.262520+00:00",
+                        "process_observed_at": "2026-10-27T20:18:05.302731+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-27T20:18:06.378863+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-27T20:18:06.418125+00:00",
+                            "required_free_bytes": 6979321856,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-27T20:18:06.378863+00:00",
+                        "process_observed_at": "2026-10-27T20:18:06.418125+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 3,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      6979321856
+                    ],
+                    "timeout_seconds": 60.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      }
+    ],
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 6442450944.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "claim_id": "79099e97-0b21-4ada-a6ec-b17a344d66f3",
+      "fencing_token": 964,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 1,
+            "inventory_observed_at": "2026-10-27T20:18:00.760653+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:03:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-27T20:18:00.760653+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          "capabilities": [
+            "shared-admission",
+            "whole-device-exclusive-admission",
+            "memory-accounting-only",
+            "nvidia-smi-compute-process-telemetry"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "schema_version": 1,
+          "topology": {
+            "links": [],
+            "pci_bus_id": "00000000:03:00.0",
+            "topology_state": "partial"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-a1cd337b62e77d83e92aeca94dd7a5aa.service",
+      "identity": "8271545e-9db2-47ff-b3bc-b102dca63408",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-a1cd337b62e77d83e92aeca94dd7a5aa.service",
+        "description": "Device Scheduler attempt 8271545e-9db2-47ff-b3bc-b102dca63408",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "e8f4a8efa90d4245867e65190e362339",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-10-27T20:18:06.490248Z"
+    },
+    "finished_at": "2026-10-27T20:18:14.130356Z",
+    "id": "8271545e-9db2-47ff-b3bc-b102dca63408",
+    "job_id": "34027c5b-2a17-4922-9eef-4bbc405340e7",
+    "operation_id": "start:8271545e-9db2-47ff-b3bc-b102dca63408",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:8271545e-9db2-47ff-b3bc-b102dca63408",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "observation": {
+                  "consecutive_samples": 3,
+                  "samples": [
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-27T20:18:04.146005+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T20:18:04.183500+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T20:18:04.146005+00:00",
+                      "process_observed_at": "2026-10-27T20:18:04.183500+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-27T20:18:05.262520+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T20:18:05.302731+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T20:18:05.262520+00:00",
+                      "process_observed_at": "2026-10-27T20:18:05.302731+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-27T20:18:06.378863+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-27T20:18:06.418125+00:00",
+                          "required_free_bytes": 6979321856,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-27T20:18:06.378863+00:00",
+                      "process_observed_at": "2026-10-27T20:18:06.418125+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    }
+                  ],
+                  "state": "observed"
+                },
+                "parameters": {
+                  "consecutive_samples": 3,
+                  "interval_seconds": 1.0,
+                  "max_utilization_percent": 0,
+                  "minimum_free_bytes": [
+                    6979321856
+                  ],
+                  "timeout_seconds": 60.0
+                },
+                "precondition_index": 0
+              },
+              "name": "gpu.quiescence",
+              "resource_ids": [
+                "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+              ],
+              "schema_version": 1,
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "state": "verified"
+    },
+    "result": {
+      "active_state": "active",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-a1cd337b62e77d83e92aeca94dd7a5aa.service",
+        "invocation_id": "e8f4a8efa90d4245867e65190e362339",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt 8271545e-9db2-47ff-b3bc-b102dca63408"
+      },
+      "exit_code": 0,
+      "invocation_id": "e8f4a8efa90d4245867e65190e362339",
+      "logs": "test_checkpoint_continues_after_promotion_and_revocation (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_checkpoint_continues_after_promotion_and_revocation) ... ok\ntest_live_tape_freezes_structure_but_not_parameter_generation (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_live_tape_freezes_structure_but_not_parameter_generation) ... ok\ntest_parameter_update_published_on_one_stream_is_visible_on_another (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_parameter_update_published_on_one_stream_is_visible_on_another) ... ok\ntest_adaptive_publication_rebinds_support_without_replacing_owner_leaf (test_cuda_training.SparseSupportCudaTrainingTest.test_adaptive_publication_rebinds_support_without_replacing_owner_leaf) ... ok\ntest_checkpoint_continuation_restores_native_owner_and_adam_state (test_cuda_training.SparseSupportCudaTrainingTest.test_checkpoint_continuation_restores_native_owner_and_adam_state) ... ok\ntest_checkpoint_restores_promoted_then_revoked_identity_at_exact_epoch (test_cuda_training.SparseSupportCudaTrainingTest.test_checkpoint_restores_promoted_then_revoked_identity_at_exact_epoch) ... ok\ntest_dropped_training_graph_retires_parameter_reader (test_cuda_training.SparseSupportCudaTrainingTest.test_dropped_training_graph_retires_parameter_reader) ... ok\ntest_exception_in_pinned_forward_retires_parameter_reader (test_cuda_training.SparseSupportCudaTrainingTest.test_exception_in_pinned_forward_retires_parameter_reader) ... ok\ntest_gate_sampler_keeps_all_positive_and_masks_unsampled_closed_gradients (test_cuda_training.SparseSupportCudaTrainingTest.test_gate_sampler_keeps_all_positive_and_masks_unsampled_closed_gradients) ... ok\ntest_latent_transition_and_recurrent_vjp_match_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_latent_transition_and_recurrent_vjp_match_torch_reference) ... ok\ntest_no_grad_scoring_completes_parameter_reader_before_publication (test_cuda_training.SparseSupportCudaTrainingTest.test_no_grad_scoring_completes_parameter_reader_before_publication) ... ok\ntest_prepared_ce_geo_forward_and_simt_vjp_match_same_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_prepared_ce_geo_forward_and_simt_vjp_match_same_torch_reference) ... ok\ntest_relation_forward_and_ste_vjp_match_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_relation_forward_and_ste_vjp_match_torch_reference) ... ok\ntest_event_fixture_is_deterministic_and_contains_repeated_occurrences (test_fixtures_and_gates.SparseFixtureAndGateTest.test_event_fixture_is_deterministic_and_contains_repeated_occurrences) ... ok\ntest_parameter_layout_is_shared_and_scalar_ids_are_stable (test_fixtures_and_gates.SparseFixtureAndGateTest.test_parameter_layout_is_shared_and_scalar_ids_are_stable) ... ok\ntest_pruned_gate_has_hard_forward_and_explicit_ste_gradient (test_fixtures_and_gates.SparseFixtureAndGateTest.test_pruned_gate_has_hard_forward_and_explicit_ste_gradient) ... ok\ntest_ranked_fixture_keeps_identity_rank_and_mask_separate (test_fixtures_and_gates.SparseFixtureAndGateTest.test_ranked_fixture_keeps_identity_rank_and_mask_separate) ... ok\ntest_support_spec_preserves_sorted_identity_and_rejects_bad_inputs (test_fixtures_and_gates.SparseFixtureAndGateTest.test_support_spec_preserves_sorted_identity_and_rejects_bad_inputs) ... ok\ntest_cold_snapshot_restore_preserves_partition_tombstones_and_evidence (test_indexing_bindings.NativeIndexingBindingsTest.test_cold_snapshot_restore_preserves_partition_tombstones_and_evidence) ... ok\ntest_native_condition_worksets_and_bounded_proposals (test_indexing_bindings.NativeIndexingBindingsTest.test_native_condition_worksets_and_bounded_proposals) ... ok\ntest_native_rotating_derivative_sample_preserves_admitted (test_indexing_bindings.NativeIndexingBindingsTest.test_native_rotating_derivative_sample_preserves_admitted) ... ok\ntest_native_support_publication_and_reverse_index (test_indexing_bindings.NativeIndexingBindingsTest.test_native_support_publication_and_reverse_index) ... ok\ntest_native_temporal_window_keeps_occurrence_identity (test_indexing_bindings.NativeIndexingBindingsTest.test_native_temporal_window_keeps_occurrence_identity) ... ok\ntest_guarded_step_preserves_one_sparse_owner_leaf_and_publishes_once (test_native_owner_protocol.NativeOwnerProtocolTest.test_guarded_step_preserves_one_sparse_owner_leaf_and_publishes_once) ... ok\ntest_sparse_checkpoint_restores_owner_optimizer_and_window (test_native_owner_protocol.NativeOwnerProtocolTest.test_sparse_checkpoint_restores_owner_optimizer_and_window) ... ok\ntest_event_count_and_time_bounds_are_independent_and_prefix_clipped (test_synthetic_driver.SyntheticDriverTest.test_event_count_and_time_bounds_are_independent_and_prefix_clipped) ... ok\ntest_event_stream_chunk_retains_absolute_windows_for_checkpoint_restore (test_synthetic_driver.SyntheticDriverTest.test_event_stream_chunk_retains_absolute_windows_for_checkpoint_restore) ... ok\ntest_proposed_support_is_seeded_sparse_and_shuffled_control_changes_routes (test_synthetic_driver.SyntheticDriverTest.test_proposed_support_is_seeded_sparse_and_shuffled_control_changes_routes) ... ok\n----------------------------------------------------------------------\nRan 28 tests in 3.204s\nOK\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "success",
+      "state": "succeeded",
+      "stdout": "test_checkpoint_continues_after_promotion_and_revocation (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_checkpoint_continues_after_promotion_and_revocation) ... ok\ntest_live_tape_freezes_structure_but_not_parameter_generation (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_live_tape_freezes_structure_but_not_parameter_generation) ... ok\ntest_parameter_update_published_on_one_stream_is_visible_on_another (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_parameter_update_published_on_one_stream_is_visible_on_another) ... ok\ntest_adaptive_publication_rebinds_support_without_replacing_owner_leaf (test_cuda_training.SparseSupportCudaTrainingTest.test_adaptive_publication_rebinds_support_without_replacing_owner_leaf) ... ok\ntest_checkpoint_continuation_restores_native_owner_and_adam_state (test_cuda_training.SparseSupportCudaTrainingTest.test_checkpoint_continuation_restores_native_owner_and_adam_state) ... ok\ntest_checkpoint_restores_promoted_then_revoked_identity_at_exact_epoch (test_cuda_training.SparseSupportCudaTrainingTest.test_checkpoint_restores_promoted_then_revoked_identity_at_exact_epoch) ... ok\ntest_dropped_training_graph_retires_parameter_reader (test_cuda_training.SparseSupportCudaTrainingTest.test_dropped_training_graph_retires_parameter_reader) ... ok\ntest_exception_in_pinned_forward_retires_parameter_reader (test_cuda_training.SparseSupportCudaTrainingTest.test_exception_in_pinned_forward_retires_parameter_reader) ... ok\ntest_gate_sampler_keeps_all_positive_and_masks_unsampled_closed_gradients (test_cuda_training.SparseSupportCudaTrainingTest.test_gate_sampler_keeps_all_positive_and_masks_unsampled_closed_gradients) ... ok\ntest_latent_transition_and_recurrent_vjp_match_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_latent_transition_and_recurrent_vjp_match_torch_reference) ... ok\ntest_no_grad_scoring_completes_parameter_reader_before_publication (test_cuda_training.SparseSupportCudaTrainingTest.test_no_grad_scoring_completes_parameter_reader_before_publication) ... ok\ntest_prepared_ce_geo_forward_and_simt_vjp_match_same_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_prepared_ce_geo_forward_and_simt_vjp_match_same_torch_reference) ... ok\ntest_relation_forward_and_ste_vjp_match_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_relation_forward_and_ste_vjp_match_torch_reference) ... ok\ntest_event_fixture_is_deterministic_and_contains_repeated_occurrences (test_fixtures_and_gates.SparseFixtureAndGateTest.test_event_fixture_is_deterministic_and_contains_repeated_occurrences) ... ok\ntest_parameter_layout_is_shared_and_scalar_ids_are_stable (test_fixtures_and_gates.SparseFixtureAndGateTest.test_parameter_layout_is_shared_and_scalar_ids_are_stable) ... ok\ntest_pruned_gate_has_hard_forward_and_explicit_ste_gradient (test_fixtures_and_gates.SparseFixtureAndGateTest.test_pruned_gate_has_hard_forward_and_explicit_ste_gradient) ... ok\ntest_ranked_fixture_keeps_identity_rank_and_mask_separate (test_fixtures_and_gates.SparseFixtureAndGateTest.test_ranked_fixture_keeps_identity_rank_and_mask_separate) ... ok\ntest_support_spec_preserves_sorted_identity_and_rejects_bad_inputs (test_fixtures_and_gates.SparseFixtureAndGateTest.test_support_spec_preserves_sorted_identity_and_rejects_bad_inputs) ... ok\ntest_cold_snapshot_restore_preserves_partition_tombstones_and_evidence (test_indexing_bindings.NativeIndexingBindingsTest.test_cold_snapshot_restore_preserves_partition_tombstones_and_evidence) ... ok\ntest_native_condition_worksets_and_bounded_proposals (test_indexing_bindings.NativeIndexingBindingsTest.test_native_condition_worksets_and_bounded_proposals) ... ok\ntest_native_rotating_derivative_sample_preserves_admitted (test_indexing_bindings.NativeIndexingBindingsTest.test_native_rotating_derivative_sample_preserves_admitted) ... ok\ntest_native_support_publication_and_reverse_index (test_indexing_bindings.NativeIndexingBindingsTest.test_native_support_publication_and_reverse_index) ... ok\ntest_native_temporal_window_keeps_occurrence_identity (test_indexing_bindings.NativeIndexingBindingsTest.test_native_temporal_window_keeps_occurrence_identity) ... ok\ntest_guarded_step_preserves_one_sparse_owner_leaf_and_publishes_once (test_native_owner_protocol.NativeOwnerProtocolTest.test_guarded_step_preserves_one_sparse_owner_leaf_and_publishes_once) ... ok\ntest_sparse_checkpoint_restores_owner_optimizer_and_window (test_native_owner_protocol.NativeOwnerProtocolTest.test_sparse_checkpoint_restores_owner_optimizer_and_window) ... ok\ntest_event_count_and_time_bounds_are_independent_and_prefix_clipped (test_synthetic_driver.SyntheticDriverTest.test_event_count_and_time_bounds_are_independent_and_prefix_clipped) ... ok\ntest_event_stream_chunk_retains_absolute_windows_for_checkpoint_restore (test_synthetic_driver.SyntheticDriverTest.test_event_stream_chunk_retains_absolute_windows_for_checkpoint_restore) ... ok\ntest_proposed_support_is_seeded_sparse_and_shuffled_control_changes_routes (test_synthetic_driver.SyntheticDriverTest.test_proposed_support_is_seeded_sparse_and_shuffled_control_changes_routes) ... ok\n----------------------------------------------------------------------\nRan 28 tests in 3.204s\nOK\n",
+      "substate": "exited",
+      "unit_name": "device-scheduler-attempt-a1cd337b62e77d83e92aeca94dd7a5aa.service"
+    },
+    "started_at": "2026-10-27T20:18:06.490346Z",
+    "state": "succeeded"
+  },
+  "attempt_count": 1,
+  "attempt_id": "8271545e-9db2-47ff-b3bc-b102dca63408",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-27T20:18:02.855774Z",
+  "decision_id": "ea676dea-bcf0-47eb-add6-b46b52526190",
+  "id": "34027c5b-2a17-4922-9eef-4bbc405340e7",
+  "job_id": "34027c5b-2a17-4922-9eef-4bbc405340e7",
+  "lease_binding": null,
+  "lease_fencing_token": 964,
+  "lease_id": "79099e97-0b21-4ada-a6ec-b17a344d66f3",
+  "lease_state": "released",
+  "owner": "operator",
+  "owner_id": "operator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "active",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-a1cd337b62e77d83e92aeca94dd7a5aa.service",
+      "invocation_id": "e8f4a8efa90d4245867e65190e362339",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt 8271545e-9db2-47ff-b3bc-b102dca63408"
+    },
+    "exit_code": 0,
+    "invocation_id": "e8f4a8efa90d4245867e65190e362339",
+    "logs": "test_checkpoint_continues_after_promotion_and_revocation (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_checkpoint_continues_after_promotion_and_revocation) ... ok\ntest_live_tape_freezes_structure_but_not_parameter_generation (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_live_tape_freezes_structure_but_not_parameter_generation) ... ok\ntest_parameter_update_published_on_one_stream_is_visible_on_another (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_parameter_update_published_on_one_stream_is_visible_on_another) ... ok\ntest_adaptive_publication_rebinds_support_without_replacing_owner_leaf (test_cuda_training.SparseSupportCudaTrainingTest.test_adaptive_publication_rebinds_support_without_replacing_owner_leaf) ... ok\ntest_checkpoint_continuation_restores_native_owner_and_adam_state (test_cuda_training.SparseSupportCudaTrainingTest.test_checkpoint_continuation_restores_native_owner_and_adam_state) ... ok\ntest_checkpoint_restores_promoted_then_revoked_identity_at_exact_epoch (test_cuda_training.SparseSupportCudaTrainingTest.test_checkpoint_restores_promoted_then_revoked_identity_at_exact_epoch) ... ok\ntest_dropped_training_graph_retires_parameter_reader (test_cuda_training.SparseSupportCudaTrainingTest.test_dropped_training_graph_retires_parameter_reader) ... ok\ntest_exception_in_pinned_forward_retires_parameter_reader (test_cuda_training.SparseSupportCudaTrainingTest.test_exception_in_pinned_forward_retires_parameter_reader) ... ok\ntest_gate_sampler_keeps_all_positive_and_masks_unsampled_closed_gradients (test_cuda_training.SparseSupportCudaTrainingTest.test_gate_sampler_keeps_all_positive_and_masks_unsampled_closed_gradients) ... ok\ntest_latent_transition_and_recurrent_vjp_match_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_latent_transition_and_recurrent_vjp_match_torch_reference) ... ok\ntest_no_grad_scoring_completes_parameter_reader_before_publication (test_cuda_training.SparseSupportCudaTrainingTest.test_no_grad_scoring_completes_parameter_reader_before_publication) ... ok\ntest_prepared_ce_geo_forward_and_simt_vjp_match_same_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_prepared_ce_geo_forward_and_simt_vjp_match_same_torch_reference) ... ok\ntest_relation_forward_and_ste_vjp_match_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_relation_forward_and_ste_vjp_match_torch_reference) ... ok\ntest_event_fixture_is_deterministic_and_contains_repeated_occurrences (test_fixtures_and_gates.SparseFixtureAndGateTest.test_event_fixture_is_deterministic_and_contains_repeated_occurrences) ... ok\ntest_parameter_layout_is_shared_and_scalar_ids_are_stable (test_fixtures_and_gates.SparseFixtureAndGateTest.test_parameter_layout_is_shared_and_scalar_ids_are_stable) ... ok\ntest_pruned_gate_has_hard_forward_and_explicit_ste_gradient (test_fixtures_and_gates.SparseFixtureAndGateTest.test_pruned_gate_has_hard_forward_and_explicit_ste_gradient) ... ok\ntest_ranked_fixture_keeps_identity_rank_and_mask_separate (test_fixtures_and_gates.SparseFixtureAndGateTest.test_ranked_fixture_keeps_identity_rank_and_mask_separate) ... ok\ntest_support_spec_preserves_sorted_identity_and_rejects_bad_inputs (test_fixtures_and_gates.SparseFixtureAndGateTest.test_support_spec_preserves_sorted_identity_and_rejects_bad_inputs) ... ok\ntest_cold_snapshot_restore_preserves_partition_tombstones_and_evidence (test_indexing_bindings.NativeIndexingBindingsTest.test_cold_snapshot_restore_preserves_partition_tombstones_and_evidence) ... ok\ntest_native_condition_worksets_and_bounded_proposals (test_indexing_bindings.NativeIndexingBindingsTest.test_native_condition_worksets_and_bounded_proposals) ... ok\ntest_native_rotating_derivative_sample_preserves_admitted (test_indexing_bindings.NativeIndexingBindingsTest.test_native_rotating_derivative_sample_preserves_admitted) ... ok\ntest_native_support_publication_and_reverse_index (test_indexing_bindings.NativeIndexingBindingsTest.test_native_support_publication_and_reverse_index) ... ok\ntest_native_temporal_window_keeps_occurrence_identity (test_indexing_bindings.NativeIndexingBindingsTest.test_native_temporal_window_keeps_occurrence_identity) ... ok\ntest_guarded_step_preserves_one_sparse_owner_leaf_and_publishes_once (test_native_owner_protocol.NativeOwnerProtocolTest.test_guarded_step_preserves_one_sparse_owner_leaf_and_publishes_once) ... ok\ntest_sparse_checkpoint_restores_owner_optimizer_and_window (test_native_owner_protocol.NativeOwnerProtocolTest.test_sparse_checkpoint_restores_owner_optimizer_and_window) ... ok\ntest_event_count_and_time_bounds_are_independent_and_prefix_clipped (test_synthetic_driver.SyntheticDriverTest.test_event_count_and_time_bounds_are_independent_and_prefix_clipped) ... ok\ntest_event_stream_chunk_retains_absolute_windows_for_checkpoint_restore (test_synthetic_driver.SyntheticDriverTest.test_event_stream_chunk_retains_absolute_windows_for_checkpoint_restore) ... ok\ntest_proposed_support_is_seeded_sparse_and_shuffled_control_changes_routes (test_synthetic_driver.SyntheticDriverTest.test_proposed_support_is_seeded_sparse_and_shuffled_control_changes_routes) ... ok\n----------------------------------------------------------------------\nRan 28 tests in 3.204s\nOK\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "success",
+    "state": "succeeded",
+    "stdout": "test_checkpoint_continues_after_promotion_and_revocation (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_checkpoint_continues_after_promotion_and_revocation) ... ok\ntest_live_tape_freezes_structure_but_not_parameter_generation (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_live_tape_freezes_structure_but_not_parameter_generation) ... ok\ntest_parameter_update_published_on_one_stream_is_visible_on_another (test_cuda_lifecycle_extra.SparseSupportCudaLifecycleExtraTest.test_parameter_update_published_on_one_stream_is_visible_on_another) ... ok\ntest_adaptive_publication_rebinds_support_without_replacing_owner_leaf (test_cuda_training.SparseSupportCudaTrainingTest.test_adaptive_publication_rebinds_support_without_replacing_owner_leaf) ... ok\ntest_checkpoint_continuation_restores_native_owner_and_adam_state (test_cuda_training.SparseSupportCudaTrainingTest.test_checkpoint_continuation_restores_native_owner_and_adam_state) ... ok\ntest_checkpoint_restores_promoted_then_revoked_identity_at_exact_epoch (test_cuda_training.SparseSupportCudaTrainingTest.test_checkpoint_restores_promoted_then_revoked_identity_at_exact_epoch) ... ok\ntest_dropped_training_graph_retires_parameter_reader (test_cuda_training.SparseSupportCudaTrainingTest.test_dropped_training_graph_retires_parameter_reader) ... ok\ntest_exception_in_pinned_forward_retires_parameter_reader (test_cuda_training.SparseSupportCudaTrainingTest.test_exception_in_pinned_forward_retires_parameter_reader) ... ok\ntest_gate_sampler_keeps_all_positive_and_masks_unsampled_closed_gradients (test_cuda_training.SparseSupportCudaTrainingTest.test_gate_sampler_keeps_all_positive_and_masks_unsampled_closed_gradients) ... ok\ntest_latent_transition_and_recurrent_vjp_match_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_latent_transition_and_recurrent_vjp_match_torch_reference) ... ok\ntest_no_grad_scoring_completes_parameter_reader_before_publication (test_cuda_training.SparseSupportCudaTrainingTest.test_no_grad_scoring_completes_parameter_reader_before_publication) ... ok\ntest_prepared_ce_geo_forward_and_simt_vjp_match_same_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_prepared_ce_geo_forward_and_simt_vjp_match_same_torch_reference) ... ok\ntest_relation_forward_and_ste_vjp_match_torch_reference (test_cuda_training.SparseSupportCudaTrainingTest.test_relation_forward_and_ste_vjp_match_torch_reference) ... ok\ntest_event_fixture_is_deterministic_and_contains_repeated_occurrences (test_fixtures_and_gates.SparseFixtureAndGateTest.test_event_fixture_is_deterministic_and_contains_repeated_occurrences) ... ok\ntest_parameter_layout_is_shared_and_scalar_ids_are_stable (test_fixtures_and_gates.SparseFixtureAndGateTest.test_parameter_layout_is_shared_and_scalar_ids_are_stable) ... ok\ntest_pruned_gate_has_hard_forward_and_explicit_ste_gradient (test_fixtures_and_gates.SparseFixtureAndGateTest.test_pruned_gate_has_hard_forward_and_explicit_ste_gradient) ... ok\ntest_ranked_fixture_keeps_identity_rank_and_mask_separate (test_fixtures_and_gates.SparseFixtureAndGateTest.test_ranked_fixture_keeps_identity_rank_and_mask_separate) ... ok\ntest_support_spec_preserves_sorted_identity_and_rejects_bad_inputs (test_fixtures_and_gates.SparseFixtureAndGateTest.test_support_spec_preserves_sorted_identity_and_rejects_bad_inputs) ... ok\ntest_cold_snapshot_restore_preserves_partition_tombstones_and_evidence (test_indexing_bindings.NativeIndexingBindingsTest.test_cold_snapshot_restore_preserves_partition_tombstones_and_evidence) ... ok\ntest_native_condition_worksets_and_bounded_proposals (test_indexing_bindings.NativeIndexingBindingsTest.test_native_condition_worksets_and_bounded_proposals) ... ok\ntest_native_rotating_derivative_sample_preserves_admitted (test_indexing_bindings.NativeIndexingBindingsTest.test_native_rotating_derivative_sample_preserves_admitted) ... ok\ntest_native_support_publication_and_reverse_index (test_indexing_bindings.NativeIndexingBindingsTest.test_native_support_publication_and_reverse_index) ... ok\ntest_native_temporal_window_keeps_occurrence_identity (test_indexing_bindings.NativeIndexingBindingsTest.test_native_temporal_window_keeps_occurrence_identity) ... ok\ntest_guarded_step_preserves_one_sparse_owner_leaf_and_publishes_once (test_native_owner_protocol.NativeOwnerProtocolTest.test_guarded_step_preserves_one_sparse_owner_leaf_and_publishes_once) ... ok\ntest_sparse_checkpoint_restores_owner_optimizer_and_window (test_native_owner_protocol.NativeOwnerProtocolTest.test_sparse_checkpoint_restores_owner_optimizer_and_window) ... ok\ntest_event_count_and_time_bounds_are_independent_and_prefix_clipped (test_synthetic_driver.SyntheticDriverTest.test_event_count_and_time_bounds_are_independent_and_prefix_clipped) ... ok\ntest_event_stream_chunk_retains_absolute_windows_for_checkpoint_restore (test_synthetic_driver.SyntheticDriverTest.test_event_stream_chunk_retains_absolute_windows_for_checkpoint_restore) ... ok\ntest_proposed_support_is_seeded_sparse_and_shuffled_control_changes_routes (test_synthetic_driver.SyntheticDriverTest.test_proposed_support_is_seeded_sparse_and_shuffled_control_changes_routes) ... ok\n----------------------------------------------------------------------\nRan 28 tests in 3.204s\nOK\n",
+    "substate": "exited",
+    "unit_name": "device-scheduler-attempt-a1cd337b62e77d83e92aeca94dd7a5aa.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "-u",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v11/tests",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CELLERATOR_RUN_CUDA_TESTS": "1",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v11/package:/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v11"
+    },
+    "event_trigger": null,
+    "idempotency_key": "cellerator-sparse-checkpoint-snapshot-v11-gpu1-20261027",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": true
+    },
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "operator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 6442450944.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "gpu.exclusive"
+    ],
+    "timeout_seconds": 3600.0,
+    "working_directory": "/home/tumlinson/device-scheduler"
+  },
+  "state": "succeeded",
+  "updated_at": "2026-10-27T20:18:14.130356Z"
+}

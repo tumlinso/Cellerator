@@ -1,0 +1,130 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "Cellerator",
+    "workspace": "cellerator",
+    "repository": "cellerator",
+    "objective": "Reusable sparse support, indexing, gating, learned latent state, and two trainable biological-tokenization slices with compiled execution and bounded adaptation.",
+    "program_document": "planning/sparse-support-foundation-v1/01_SCOPE.md"
+  },
+  "tasks": [
+    {
+      "id": "CE-SIG1-0000",
+      "kind": "epic",
+      "title": "Sparse support, indexing, and gating foundation v1",
+      "status": "planned",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "notes": "planning/sparse-support-foundation-v1/proposed-todos/ce-sig1-0000.md",
+      "completion_contract": {
+        "required": [
+          "All eight leaves complete with the acceptance contract in the epic task sheet and scope document."
+        ]
+      }
+    },
+    {
+      "id": "CE-SIG1-C01",
+      "parent_id": "CE-SIG1-0000",
+      "kind": "task",
+      "title": "Define native support and work-view contracts",
+      "status": "planned",
+      "priority": 95,
+      "scope": {"exclusive_paths": ["include/Cellerator/compute/indexing/", "include/Cellerator/compute/support/", "include/Cellerator/compute/gating/", "docs/sparse_support_foundation_v1/contracts.md"]},
+      "depends_on": [],
+      "notes": "planning/sparse-support-foundation-v1/proposed-todos/ce-sig1-c01.md",
+      "completion_contract": {"required": ["Torch-free contracts compile and define identity, epochs, capacities, overflow, preparation, and caller-stream hot-path behavior."]},
+      "parallel_policy": "serial"
+    },
+    {
+      "id": "CE-SIG1-I01",
+      "parent_id": "CE-SIG1-0000",
+      "kind": "task",
+      "title": "Implement exact support, index, and condition primitives",
+      "status": "planned",
+      "priority": 90,
+      "scope": {"exclusive_paths": ["src/compute/indexing/", "src/compute/support/", "src/compute/gating/", "tests/sparse_support_foundation_v1/indexing/"]},
+      "depends_on": [{"type": "task", "task_id": "CE-SIG1-C01"}],
+      "notes": "planning/sparse-support-foundation-v1/proposed-todos/ce-sig1-i01.md",
+      "completion_contract": {"required": ["Exact retrieval and condition work sets match independent CPU references and explicitly report capacity exhaustion."]},
+      "parallel_policy": "serial"
+    },
+    {
+      "id": "CE-SIG1-N01",
+      "parent_id": "CE-SIG1-0000",
+      "kind": "task",
+      "title": "Add native latent-state operations and uncompiled application slices",
+      "status": "planned",
+      "priority": 85,
+      "scope": {"exclusive_paths": ["include/Cellerator/compute/operation/latent_state.hh", "src/compute/operation/latent_state.cu", "python/cellerator/torch/", "bindings/torch/", "tests/sparse_support_foundation_v1/slices/"]},
+      "depends_on": [{"type": "task", "task_id": "CE-SIG1-I01"}],
+      "notes": "planning/sparse-support-foundation-v1/proposed-todos/ce-sig1-n01.md",
+      "completion_contract": {"required": ["Both event-stream and ranked-gene slices train uncompiled using overlapping latent mechanisms and shared parameter owners."]},
+      "parallel_policy": "serial"
+    },
+    {
+      "id": "CE-SIG1-P01",
+      "parent_id": "CE-SIG1-0000",
+      "kind": "task",
+      "title": "Integrate packed forward and backward execution",
+      "status": "planned",
+      "priority": 80,
+      "scope": {"exclusive_paths": ["include/CellPack/", "src/geometry/", "src/compute/operation/", "bindings/torch/", "tests/sparse_support_foundation_v1/packed/"]},
+      "depends_on": [{"type": "task", "task_id": "CE-SIG1-N01"}],
+      "notes": "planning/sparse-support-foundation-v1/proposed-todos/ce-sig1-p01.md",
+      "completion_contract": {"required": ["Packed forward and declared gradients match the equivalent Torch reference, with sparse SIMT fallback retained."]},
+      "parallel_policy": "serial"
+    },
+    {
+      "id": "CE-SIG1-L01",
+      "parent_id": "CE-SIG1-0000",
+      "kind": "task",
+      "title": "Implement learned gate and compile lifecycle",
+      "status": "planned",
+      "priority": 75,
+      "scope": {"exclusive_paths": ["src/compute/indexing/", "src/compute/gating/", "src/compute/support/", "tests/sparse_support_foundation_v1/discovery/"]},
+      "depends_on": [{"type": "task", "task_id": "CE-SIG1-P01"}],
+      "notes": "planning/sparse-support-foundation-v1/proposed-todos/ce-sig1-l01.md",
+      "completion_contract": {"required": ["Gate estimator metadata is explicit and bounded support discovery reports coverage and misses."]},
+      "parallel_policy": "serial"
+    },
+    {
+      "id": "CE-SIG1-A01",
+      "parent_id": "CE-SIG1-0000",
+      "kind": "task",
+      "title": "Add continual support adaptation and logical checkpointing",
+      "status": "planned",
+      "priority": 70,
+      "scope": {"exclusive_paths": ["include/Cellerator/compute/support/revision.hh", "src/compute/support/revision.cc", "src/geometry/persistence/", "python/cellerator/torch/", "tests/sparse_support_foundation_v1/adaptation/"]},
+      "depends_on": [{"type": "task", "task_id": "CE-SIG1-L01"}],
+      "notes": "planning/sparse-support-foundation-v1/proposed-todos/ce-sig1-a01.md",
+      "completion_contract": {"required": ["Base-plus-delta revisions, tape lifetimes, checkpoint continuation, and replacement projections preserve declared behavior."]},
+      "parallel_policy": "serial"
+    },
+    {
+      "id": "CE-SIG1-V01",
+      "parent_id": "CE-SIG1-0000",
+      "kind": "task",
+      "title": "Validate correctness, learning, and lifecycle",
+      "status": "planned",
+      "priority": 65,
+      "scope": {"exclusive_paths": ["tests/sparse_support_foundation_v1/", "docs/sparse_support_foundation_v1/validation/"]},
+      "depends_on": [{"type": "task", "task_id": "CE-SIG1-A01"}],
+      "notes": "planning/sparse-support-foundation-v1/proposed-todos/ce-sig1-v01.md",
+      "completion_contract": {"required": ["Independent references, gradients, sanitizer cases, held-out learning, and controls are evidenced with limits stated."]},
+      "parallel_policy": "serial"
+    },
+    {
+      "id": "CE-SIG1-B01",
+      "parent_id": "CE-SIG1-0000",
+      "kind": "task",
+      "title": "Measure and tune sparse execution regimes",
+      "status": "planned",
+      "priority": 60,
+      "scope": {"exclusive_paths": ["benchmarks/sparse_support_foundation_v1/", "docs/sparse_support_foundation_v1/performance/"]},
+      "depends_on": [{"type": "task", "task_id": "CE-SIG1-V01"}],
+      "notes": "planning/sparse-support-foundation-v1/proposed-todos/ce-sig1-b01.md",
+      "completion_contract": {"required": ["Finite scheduler-admitted V100 comparisons report complete costs, source/binary identity, fallbacks, and negative results."]},
+      "parallel_policy": "serial"
+    }
+  ]
+}

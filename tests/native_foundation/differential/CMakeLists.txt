@@ -9,7 +9,7 @@ if(TARGET Cellerator::local_differential)
   target_link_libraries(ce_nf1_d01 PRIVATE Cellerator::local_differential)
 else()
   target_sources(ce_nf1_d01 PRIVATE
-  "${CE_ROOT}/src/compute/operation/native_numeric/local_arithmetic.cc"
+  "${CE_ROOT}/src/ops/numeric/local_arithmetic.cc"
   "${CE_ROOT}/src/compute/operation/differential/local_arithmetic.cc"
   "${CE_ROOT}/src/compute/operation/operation_core_v2/schema.cc"
   "${CE_ROOT}/src/execution/program/program_v2.cc")

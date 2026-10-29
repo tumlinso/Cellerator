@@ -1,0 +1,63 @@
+{
+  "binary": "/tmp/cellerator_csr_union_bitmap_build/csr_union_bitmap_bench",
+  "binary_sha256": "581c7cbaaba4d137ca7cfa98da8a27bb2e4a7fe1d48a454df96dd18bf0938649",
+  "cancellation_reason": "reduce sample count to finish q1024/q2048 within finite timeout",
+  "cancelled_unix_ns": 1793134378323176239,
+  "command": [
+    "/tmp/cellerator_csr_union_bitmap_build/csr_union_bitmap_bench",
+    "--input-root",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/csr_union_bitmap/input/large-retrieval-a17c73f2",
+    "--warmups",
+    "1",
+    "--samples",
+    "9"
+  ],
+  "completed_cases": [
+    "q1_unique",
+    "q32_unique",
+    "q128_unique"
+  ],
+  "fixture_generator_sha256": "a17c73f2f1e9e8d10e9c73abf4599f6a0df21b86812d59d8665cb6ee13eeee89",
+  "fixture_manifest_sha256": "3e433776b818916bb8650b9ef71a09cef5c8dccb6e9b55e39ac9052d5c9a7091",
+  "input_root": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/csr_union_bitmap/input/large-retrieval-a17c73f2",
+  "query_cases": [
+    "q1024_duplicate4",
+    "q1024_unique",
+    "q128_duplicate4",
+    "q128_unique",
+    "q1_unique",
+    "q2048_duplicate4",
+    "q2048_unique",
+    "q32_duplicate4",
+    "q32_unique"
+  ],
+  "results": [
+    "q1_unique",
+    "q32_unique",
+    "q128_unique"
+  ],
+  "runner_state_at_stop": "running",
+  "scheduler_attempt_id": "853a5ebe-6ca7-4f5c-af4b-f2bd12d6e6ab",
+  "scheduler_cleanup_verified": true,
+  "scheduler_job_id": "3fdfc540-b69f-4eff-935b-44a4135815a6",
+  "scheduler_logs_receipt": "scheduler_logs.json",
+  "scheduler_terminal_receipt": "scheduler_terminal.json",
+  "schema": "cellerator.csr_union_bitmap_run.v1",
+  "source_sha256": {
+    "bench/sparse_support/experiments/csr_union_bitmap/CMakeLists.txt": "56e3b3c5ce4618d8ff3f766c8dc7aafbdf2c8bec58b74d74141b6d5f6df4d025",
+    "bench/sparse_support/experiments/csr_union_bitmap/csr_union_bitmap_bench.cu": "8ab79704bbfd6c717b0ca837c14abc56e768a2656ec47a0b6b07f08cce50cfe5",
+    "bench/sparse_support/experiments/csr_union_bitmap/gpu_job.json": "9565c37cd5833d161e7af9752bdae18f12f47fbf99691829a0a24764af13fe0a",
+    "bench/sparse_support/experiments/csr_union_bitmap/prepare_fixture.py": "d46e50838f10f31e841028773206d1b930910b5d7a9dc8114e37138f98cd19f8",
+    "bench/sparse_support/experiments/csr_union_bitmap/run_experiment.py": "3c0eff4570574624e8b110bfc374e81c1a84414812d987a150c1ce5b7adfe75b",
+    "bench/sparse_support/scaled_fixtures.py": "887437fc3418e06c25e515487891a3224f8dd56493b689bf41bc70e66ae5a76b",
+    "include/Cellerator/compute/indexing/cuda_postings.cuh": "f3c4015ff13b49b8e3e320f5dd59c9c6b4d556aab1560f422cc929cfa185f1b0",
+    "include/Cellerator/compute/indexing/reverse_postings.hh": "bbabcc387ca3f3428ddd3973b45616ce3a293e097111bd200993b7fcf836a414",
+    "include/Cellerator/compute/support/logical_support.hh": "9344fc65e6984b61651e42018e8cbd302b9182c473e5ea685e8b94bfa416b3e4",
+    "src/compute/indexing/cuda_postings.cu": "a3aecefb1ed359342bbc6ffb6843bda079f8a28082030f07510a0e78275e3853",
+    "src/compute/indexing/reverse_postings.cc": "aae47682995442ede9fd9d91754c5006f07c5983b27f1d761e17da55d4645830",
+    "src/compute/support/logical_support.cc": "926504f78f7d0e6064777250f7b9fbb926a5317a25a2fc6bae3b3aec3a40eced"
+  },
+  "started_unix_ns": 1793134201365520248,
+  "state": "cancelled_partial",
+  "topology_sha256": "5ec1f6bbc958ba62112fcd26a88d4912e5812806bfe0617a1e3df7abc7582bc3"
+}

@@ -14,14 +14,14 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[3]
 COMMON = [
     "src/compute/operation/relation_semantics.cc",
-    "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
-    "src/compiler/ir/semantic/implement_relation_ir_types.cc",
-    "src/compiler/ir/semantic/implement_state_and_value_plane_ir_types.cc",
-    "src/compiler/ir/semantic/implement_domain_and_axis_ir_types.cc",
+    "src/compiler/ir/semantic/relation_apply_and_transpose_operations.cc",
+    "src/compiler/ir/semantic/relation_ir_types.cc",
+    "src/compiler/ir/semantic/state_and_value_plane_ir_types.cc",
+    "src/compiler/ir/semantic/domain_and_axis_ir_types.cc",
 ]
 BRIDGE = [
     "src/compiler/sema/relation_spine_bridge.cc",
-    "src/compiler/sema/implement_numerical_tuple_semantics.cc",
+    "src/compiler/sema/numerical_tuple_semantics.cc",
     "src/compiler/frontend/parser/parse_compiler_semantic_declarations.cc",
     "src/compiler/frontend/parser/parse_biological_type_constructors_and_qualifiers.cc",
     "src/compiler/frontend/parser/parse_relation_application.cc",
@@ -34,7 +34,7 @@ TESTS = {
     "source_slice": ("tests/semantic_spine/compiler/source_slice_test.cc", COMMON + BRIDGE),
     "diagnostic": ("tests/semantic_spine/compiler/diagnostic_test.cc", COMMON + BRIDGE),
     "legacy_relation_ir": (
-        "tests/compiler/semantic_ir/implement_relation_apply_and_transpose_operations_test.cc", COMMON),
+        "tests/compiler/semantic_ir/relation_apply_and_transpose_operations_test.cc", COMMON),
 }
 SYMBOLS = [
     "Cellerator::compiler::frontend::parser::parse_semantic_declarations_v1",
@@ -93,7 +93,7 @@ def main():
         "parallel_jobs": jobs,
         "source_sha256": {source: hashlib.sha256((ROOT / source).read_bytes()).hexdigest()
                           for source in sources + [
-                              "include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh",
+                              "include/Cellerator/compiler/ir/semantic/relation_apply_and_transpose_operations_v1.hh",
                               "include/Cellerator/compute/operation/relation_semantics.hh",
                               "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
                           ]},

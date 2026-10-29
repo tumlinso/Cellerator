@@ -1,0 +1,52 @@
+{
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python3",
+    "/home/tumlinson/Cellerator/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/profiles/serial_postings_q24_ranked_v3_20261027/harness/run_profile.py"
+  ],
+  "environment": {
+    "CELLERATOR_SPARSE_SUPPORT_PROFILE_ADMITTED": "1",
+    "MKL_NUM_THREADS": "2",
+    "OMP_NUM_THREADS": "2",
+    "PATH": "/home/tumlinson/Software/miniconda3/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/usr/local/bin:/usr/bin:/bin",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "idempotency_key": "cellerator-sparse-serial-postings-ncu-ranked-q24-20261027",
+  "interruption": {
+    "cancellation_supported": true,
+    "restart_safe": false
+  },
+  "max_attempts": 1,
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "parameters": {
+        "consecutive_samples": 3,
+        "interval_seconds": 1,
+        "max_utilization_percent": 0,
+        "timeout_seconds": 60
+      },
+      "schema_version": 1
+    }
+  ],
+  "resources": [
+    {
+      "kind": "gpu",
+      "mode": "exclusive",
+      "quantities": {
+        "memory_bytes": 4294967296
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      }
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator.sparse_support.indexing",
+    "scaled.fixture.v3",
+    "ncu.full",
+    "frozen.serial_postings_baseline"
+  ],
+  "timeout_seconds": 3600,
+  "working_directory": "/home/tumlinson/Cellerator"
+}

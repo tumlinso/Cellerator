@@ -1,0 +1,1841 @@
+{
+  "decision": "supported",
+  "experiment": "E5",
+  "gpu_execution_performed": true,
+  "records_by_seed": [
+    {
+      "decision": "supported",
+      "experiment": "E5",
+      "gpu_execution_performed": true,
+      "native_extension_sha256": "51b0838ad3466f4c03f693d620aa6b800e8af9ed87a8a3fceb3bd432a05a4f24",
+      "package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+      "package_source_sha256": "0fbdcbdb9cea80d73cf628c90e9b45c747ff58fe9c8330aaf1baa46d90f80e85",
+      "parameter_blocks": {
+        "entity_embedding": {
+          "numel": 1536,
+          "offset": 0,
+          "shape": [
+            24,
+            64
+          ]
+        },
+        "rank_embedding": {
+          "numel": 512,
+          "offset": 1536,
+          "shape": [
+            8,
+            64
+          ]
+        },
+        "scorer": {
+          "numel": 64,
+          "offset": 2048,
+          "shape": [
+            64
+          ]
+        },
+        "transition_A": {
+          "numel": 16384,
+          "offset": 2112,
+          "shape": [
+            4,
+            64,
+            64
+          ]
+        },
+        "transition_B": {
+          "numel": 16384,
+          "offset": 18496,
+          "shape": [
+            4,
+            64,
+            64
+          ]
+        },
+        "transition_bias": {
+          "numel": 256,
+          "offset": 34880,
+          "shape": [
+            4,
+            64
+          ]
+        }
+      },
+      "raw_arrays_artifact": {
+        "array_keys": [
+          "block_entity_embedding_offset_shape",
+          "block_rank_embedding_offset_shape",
+          "block_scorer_offset_shape",
+          "block_transition_A_offset_shape",
+          "block_transition_B_offset_shape",
+          "block_transition_bias_offset_shape",
+          "count_windows",
+          "direct_current_event_all_final_output",
+          "direct_current_event_all_loss",
+          "direct_current_event_all_owner_after_step",
+          "direct_current_event_all_owner_gradient",
+          "direct_current_event_all_step0_edge_values",
+          "direct_current_event_all_step0_latent_affected_mechanisms",
+          "direct_current_event_all_step0_latent_affected_offsets",
+          "direct_current_event_all_step0_latent_event_input",
+          "direct_current_event_all_step0_latent_state_input",
+          "direct_current_event_all_step0_latent_state_output",
+          "direct_current_event_all_step0_provided_affected_mechanisms",
+          "direct_current_event_all_step0_provided_affected_offsets",
+          "direct_current_event_all_step0_provided_derivative_cell_offsets",
+          "direct_current_event_all_step0_provided_derivative_edge_ordinals",
+          "direct_current_event_all_step0_provided_derivative_gate_value_indices",
+          "direct_current_event_all_step0_provided_derivative_logical_edge_ids",
+          "direct_current_event_all_step0_provided_history_sources_json",
+          "direct_current_event_all_step0_provided_primal_cell_offsets",
+          "direct_current_event_all_step0_provided_primal_edge_ordinals",
+          "direct_current_event_all_step0_provided_primal_gate_value_indices",
+          "direct_current_event_all_step0_provided_primal_logical_edge_ids",
+          "direct_current_event_all_step0_relation_input",
+          "direct_current_event_all_step0_relation_output",
+          "direct_current_event_all_step0_score_admitted",
+          "direct_current_event_all_step0_score_candidate_cell_offsets",
+          "direct_current_event_all_step0_score_candidate_edge_ordinals",
+          "direct_current_event_all_step0_score_candidate_gate_value_indices",
+          "direct_current_event_all_step0_score_candidate_logical_edge_ids",
+          "direct_current_event_all_step0_score_context",
+          "direct_current_event_all_step0_score_edge_ordinals",
+          "direct_current_event_all_step0_score_logical_edge_ids",
+          "direct_current_event_all_step0_score_probabilities",
+          "direct_current_event_all_step0_score_train_values",
+          "direct_current_event_all_step0_selected_derivative_cell_offsets",
+          "direct_current_event_all_step0_selected_derivative_edge_ordinals",
+          "direct_current_event_all_step0_selected_derivative_gate_value_indices",
+          "direct_current_event_all_step0_selected_derivative_logical_edge_ids",
+          "direct_current_event_all_step0_selected_primal_cell_offsets",
+          "direct_current_event_all_step0_selected_primal_edge_ordinals",
+          "direct_current_event_all_step0_selected_primal_gate_value_indices",
+          "direct_current_event_all_step0_selected_primal_logical_edge_ids",
+          "direct_current_event_all_step1_edge_values",
+          "direct_current_event_all_step1_latent_affected_mechanisms",
+          "direct_current_event_all_step1_latent_affected_offsets",
+          "direct_current_event_all_step1_latent_event_input",
+          "direct_current_event_all_step1_latent_state_input",
+          "direct_current_event_all_step1_latent_state_output",
+          "direct_current_event_all_step1_provided_affected_mechanisms",
+          "direct_current_event_all_step1_provided_affected_offsets",
+          "direct_current_event_all_step1_provided_derivative_cell_offsets",
+          "direct_current_event_all_step1_provided_derivative_edge_ordinals",
+          "direct_current_event_all_step1_provided_derivative_gate_value_indices",
+          "direct_current_event_all_step1_provided_derivative_logical_edge_ids",
+          "direct_current_event_all_step1_provided_history_sources_json",
+          "direct_current_event_all_step1_provided_primal_cell_offsets",
+          "direct_current_event_all_step1_provided_primal_edge_ordinals",
+          "direct_current_event_all_step1_provided_primal_gate_value_indices",
+          "direct_current_event_all_step1_provided_primal_logical_edge_ids",
+          "direct_current_event_all_step1_relation_input",
+          "direct_current_event_all_step1_relation_output",
+          "direct_current_event_all_step1_score_admitted",
+          "direct_current_event_all_step1_score_candidate_cell_offsets",
+          "direct_current_event_all_step1_score_candidate_edge_ordinals",
+          "direct_current_event_all_step1_score_candidate_gate_value_indices",
+          "direct_current_event_all_step1_score_candidate_logical_edge_ids",
+          "direct_current_event_all_step1_score_context",
+          "direct_current_event_all_step1_score_edge_ordinals",
+          "direct_current_event_all_step1_score_logical_edge_ids",
+          "direct_current_event_all_step1_score_probabilities",
+          "direct_current_event_all_step1_score_train_values",
+          "direct_current_event_all_step1_selected_derivative_cell_offsets",
+          "direct_current_event_all_step1_selected_derivative_edge_ordinals",
+          "direct_current_event_all_step1_selected_derivative_gate_value_indices",
+          "direct_current_event_all_step1_selected_derivative_logical_edge_ids",
+          "direct_current_event_all_step1_selected_primal_cell_offsets",
+          "direct_current_event_all_step1_selected_primal_edge_ordinals",
+          "direct_current_event_all_step1_selected_primal_gate_value_indices",
+          "direct_current_event_all_step1_selected_primal_logical_edge_ids",
+          "direct_current_event_all_step2_edge_values",
+          "direct_current_event_all_step2_latent_affected_mechanisms",
+          "direct_current_event_all_step2_latent_affected_offsets",
+          "direct_current_event_all_step2_latent_event_input",
+          "direct_current_event_all_step2_latent_state_input",
+          "direct_current_event_all_step2_latent_state_output",
+          "direct_current_event_all_step2_provided_affected_mechanisms",
+          "direct_current_event_all_step2_provided_affected_offsets",
+          "direct_current_event_all_step2_provided_derivative_cell_offsets",
+          "direct_current_event_all_step2_provided_derivative_edge_ordinals",
+          "direct_current_event_all_step2_provided_derivative_gate_value_indices",
+          "direct_current_event_all_step2_provided_derivative_logical_edge_ids",
+          "direct_current_event_all_step2_provided_history_sources_json",
+          "direct_current_event_all_step2_provided_primal_cell_offsets",
+          "direct_current_event_all_step2_provided_primal_edge_ordinals",
+          "direct_current_event_all_step2_provided_primal_gate_value_indices",
+          "direct_current_event_all_step2_provided_primal_logical_edge_ids",
+          "direct_current_event_all_step2_relation_input",
+          "direct_current_event_all_step2_relation_output",
+          "direct_current_event_all_step2_score_admitted",
+          "direct_current_event_all_step2_score_candidate_cell_offsets",
+          "direct_current_event_all_step2_score_candidate_edge_ordinals",
+          "direct_current_event_all_step2_score_candidate_gate_value_indices",
+          "direct_current_event_all_step2_score_candidate_logical_edge_ids",
+          "direct_current_event_all_step2_score_context",
+          "direct_current_event_all_step2_score_edge_ordinals",
+          "direct_current_event_all_step2_score_logical_edge_ids",
+          "direct_current_event_all_step2_score_probabilities",
+          "direct_current_event_all_step2_score_train_values",
+          "direct_current_event_all_step2_selected_derivative_cell_offsets",
+          "direct_current_event_all_step2_selected_derivative_edge_ordinals",
+          "direct_current_event_all_step2_selected_derivative_gate_value_indices",
+          "direct_current_event_all_step2_selected_derivative_logical_edge_ids",
+          "direct_current_event_all_step2_selected_primal_cell_offsets",
+          "direct_current_event_all_step2_selected_primal_edge_ordinals",
+          "direct_current_event_all_step2_selected_primal_gate_value_indices",
+          "direct_current_event_all_step2_selected_primal_logical_edge_ids",
+          "direct_current_event_all_step3_edge_values",
+          "direct_current_event_all_step3_latent_affected_mechanisms",
+          "direct_current_event_all_step3_latent_affected_offsets",
+          "direct_current_event_all_step3_latent_event_input",
+          "direct_current_event_all_step3_latent_state_input",
+          "direct_current_event_all_step3_latent_state_output",
+          "direct_current_event_all_step3_provided_affected_mechanisms",
+          "direct_current_event_all_step3_provided_affected_offsets",
+          "direct_current_event_all_step3_provided_derivative_cell_offsets",
+          "direct_current_event_all_step3_provided_derivative_edge_ordinals",
+          "direct_current_event_all_step3_provided_derivative_gate_value_indices",
+          "direct_current_event_all_step3_provided_derivative_logical_edge_ids",
+          "direct_current_event_all_step3_provided_history_sources_json",
+          "direct_current_event_all_step3_provided_primal_cell_offsets",
+          "direct_current_event_all_step3_provided_primal_edge_ordinals",
+          "direct_current_event_all_step3_provided_primal_gate_value_indices",
+          "direct_current_event_all_step3_provided_primal_logical_edge_ids",
+          "direct_current_event_all_step3_relation_input",
+          "direct_current_event_all_step3_relation_output",
+          "direct_current_event_all_step3_score_admitted",
+          "direct_current_event_all_step3_score_candidate_cell_offsets",
+          "direct_current_event_all_step3_score_candidate_edge_ordinals",
+          "direct_current_event_all_step3_score_candidate_gate_value_indices",
+          "direct_current_event_all_step3_score_candidate_logical_edge_ids",
+          "direct_current_event_all_step3_score_context",
+          "direct_current_event_all_step3_score_edge_ordinals",
+          "direct_current_event_all_step3_score_logical_edge_ids",
+          "direct_current_event_all_step3_score_probabilities",
+          "direct_current_event_all_step3_score_train_values",
+          "direct_current_event_all_step3_selected_derivative_cell_offsets",
+          "direct_current_event_all_step3_selected_derivative_edge_ordinals",
+          "direct_current_event_all_step3_selected_derivative_gate_value_indices",
+          "direct_current_event_all_step3_selected_derivative_logical_edge_ids",
+          "direct_current_event_all_step3_selected_primal_cell_offsets",
+          "direct_current_event_all_step3_selected_primal_edge_ordinals",
+          "direct_current_event_all_step3_selected_primal_gate_value_indices",
+          "direct_current_event_all_step3_selected_primal_logical_edge_ids",
+          "direct_current_event_all_step4_edge_values",
+          "direct_current_event_all_step4_latent_affected_mechanisms",
+          "direct_current_event_all_step4_latent_affected_offsets",
+          "direct_current_event_all_step4_latent_event_input",
+          "direct_current_event_all_step4_latent_state_input",
+          "direct_current_event_all_step4_latent_state_output",
+          "direct_current_event_all_step4_provided_affected_mechanisms",
+          "direct_current_event_all_step4_provided_affected_offsets",
+          "direct_current_event_all_step4_provided_derivative_cell_offsets",
+          "direct_current_event_all_step4_provided_derivative_edge_ordinals",
+          "direct_current_event_all_step4_provided_derivative_gate_value_indices",
+          "direct_current_event_all_step4_provided_derivative_logical_edge_ids",
+          "direct_current_event_all_step4_provided_history_sources_json",
+          "direct_current_event_all_step4_provided_primal_cell_offsets",
+          "direct_current_event_all_step4_provided_primal_edge_ordinals",
+          "direct_current_event_all_step4_provided_primal_gate_value_indices",
+          "direct_current_event_all_step4_provided_primal_logical_edge_ids",
+          "direct_current_event_all_step4_relation_input",
+          "direct_current_event_all_step4_relation_output",
+          "direct_current_event_all_step4_score_admitted",
+          "direct_current_event_all_step4_score_candidate_cell_offsets",
+          "direct_current_event_all_step4_score_candidate_edge_ordinals",
+          "direct_current_event_all_step4_score_candidate_gate_value_indices",
+          "direct_current_event_all_step4_score_candidate_logical_edge_ids",
+          "direct_current_event_all_step4_score_context",
+          "direct_current_event_all_step4_score_edge_ordinals",
+          "direct_current_event_all_step4_score_logical_edge_ids",
+          "direct_current_event_all_step4_score_probabilities",
+          "direct_current_event_all_step4_score_train_values",
+          "direct_current_event_all_step4_selected_derivative_cell_offsets",
+          "direct_current_event_all_step4_selected_derivative_edge_ordinals",
+          "direct_current_event_all_step4_selected_derivative_gate_value_indices",
+          "direct_current_event_all_step4_selected_derivative_logical_edge_ids",
+          "direct_current_event_all_step4_selected_primal_cell_offsets",
+          "direct_current_event_all_step4_selected_primal_edge_ordinals",
+          "direct_current_event_all_step4_selected_primal_gate_value_indices",
+          "direct_current_event_all_step4_selected_primal_logical_edge_ids",
+          "direct_current_event_all_step5_edge_values",
+          "direct_current_event_all_step5_latent_affected_mechanisms",
+          "direct_current_event_all_step5_latent_affected_offsets",
+          "direct_current_event_all_step5_latent_event_input",
+          "direct_current_event_all_step5_latent_state_input",
+          "direct_current_event_all_step5_latent_state_output",
+          "direct_current_event_all_step5_provided_affected_mechanisms",
+          "direct_current_event_all_step5_provided_affected_offsets",
+          "direct_current_event_all_step5_provided_derivative_cell_offsets",
+          "direct_current_event_all_step5_provided_derivative_edge_ordinals",
+          "direct_current_event_all_step5_provided_derivative_gate_value_indices",
+          "direct_current_event_all_step5_provided_derivative_logical_edge_ids",
+          "direct_current_event_all_step5_provided_history_sources_json",
+          "direct_current_event_all_step5_provided_primal_cell_offsets",
+          "direct_current_event_all_step5_provided_primal_edge_ordinals",
+          "direct_current_event_all_step5_provided_primal_gate_value_indices",
+          "direct_current_event_all_step5_provided_primal_logical_edge_ids",
+          "direct_current_event_all_step5_relation_input",
+          "direct_current_event_all_step5_relation_output",
+          "direct_current_event_all_step5_score_admitted",
+          "direct_current_event_all_step5_score_candidate_cell_offsets",
+          "direct_current_event_all_step5_score_candidate_edge_ordinals",
+          "direct_current_event_all_step5_score_candidate_gate_value_indices",
+          "direct_current_event_all_step5_score_candidate_logical_edge_ids",
+          "direct_current_event_all_step5_score_context",
+          "direct_current_event_all_step5_score_edge_ordinals",
+          "direct_current_event_all_step5_score_logical_edge_ids",
+          "direct_current_event_all_step5_score_probabilities",
+          "direct_current_event_all_step5_score_train_values",
+          "direct_current_event_all_step5_selected_derivative_cell_offsets",
+          "direct_current_event_all_step5_selected_derivative_edge_ordinals",
+          "direct_current_event_all_step5_selected_derivative_gate_value_indices",
+          "direct_current_event_all_step5_selected_derivative_logical_edge_ids",
+          "direct_current_event_all_step5_selected_primal_cell_offsets",
+          "direct_current_event_all_step5_selected_primal_edge_ordinals",
+          "direct_current_event_all_step5_selected_primal_gate_value_indices",
+          "direct_current_event_all_step5_selected_primal_logical_edge_ids",
+          "event_ids",
+          "field_current_event_all_final_output",
+          "field_current_event_all_loss",
+          "field_current_event_all_owner_after_step",
+          "field_current_event_all_owner_gradient",
+          "field_current_event_all_step0_edge_values",
+          "field_current_event_all_step0_latent_affected_mechanisms",
+          "field_current_event_all_step0_latent_affected_offsets",
+          "field_current_event_all_step0_latent_event_input",
+          "field_current_event_all_step0_latent_state_input",
+          "field_current_event_all_step0_latent_state_output",
+          "field_current_event_all_step0_provided_affected_mechanisms",
+          "field_current_event_all_step0_provided_affected_offsets",
+          "field_current_event_all_step0_provided_derivative_cell_offsets",
+          "field_current_event_all_step0_provided_derivative_edge_ordinals",
+          "field_current_event_all_step0_provided_derivative_gate_value_indices",
+          "field_current_event_all_step0_provided_derivative_logical_edge_ids",
+          "field_current_event_all_step0_provided_history_sources_json",
+          "field_current_event_all_step0_provided_primal_cell_offsets",
+          "field_current_event_all_step0_provided_primal_edge_ordinals",
+          "field_current_event_all_step0_provided_primal_gate_value_indices",
+          "field_current_event_all_step0_provided_primal_logical_edge_ids",
+          "field_current_event_all_step0_relation_input",
+          "field_current_event_all_step0_relation_output",
+          "field_current_event_all_step0_score_admitted",
+          "field_current_event_all_step0_score_candidate_cell_offsets",
+          "field_current_event_all_step0_score_candidate_edge_ordinals",
+          "field_current_event_all_step0_score_candidate_gate_value_indices",
+          "field_current_event_all_step0_score_candidate_logical_edge_ids",
+          "field_current_event_all_step0_score_context",
+          "field_current_event_all_step0_score_edge_ordinals",
+          "field_current_event_all_step0_score_logical_edge_ids",
+          "field_current_event_all_step0_score_probabilities",
+          "field_current_event_all_step0_score_train_values",
+          "field_current_event_all_step0_selected_derivative_cell_offsets",
+          "field_current_event_all_step0_selected_derivative_edge_ordinals",
+          "field_current_event_all_step0_selected_derivative_gate_value_indices",
+          "field_current_event_all_step0_selected_derivative_logical_edge_ids",
+          "field_current_event_all_step0_selected_primal_cell_offsets",
+          "field_current_event_all_step0_selected_primal_edge_ordinals",
+          "field_current_event_all_step0_selected_primal_gate_value_indices",
+          "field_current_event_all_step0_selected_primal_logical_edge_ids",
+          "field_current_event_all_step1_edge_values",
+          "field_current_event_all_step1_latent_affected_mechanisms",
+          "field_current_event_all_step1_latent_affected_offsets",
+          "field_current_event_all_step1_latent_event_input",
+          "field_current_event_all_step1_latent_state_input",
+          "field_current_event_all_step1_latent_state_output",
+          "field_current_event_all_step1_provided_affected_mechanisms",
+          "field_current_event_all_step1_provided_affected_offsets",
+          "field_current_event_all_step1_provided_derivative_cell_offsets",
+          "field_current_event_all_step1_provided_derivative_edge_ordinals",
+          "field_current_event_all_step1_provided_derivative_gate_value_indices",
+          "field_current_event_all_step1_provided_derivative_logical_edge_ids",
+          "field_current_event_all_step1_provided_history_sources_json",
+          "field_current_event_all_step1_provided_primal_cell_offsets",
+          "field_current_event_all_step1_provided_primal_edge_ordinals",
+          "field_current_event_all_step1_provided_primal_gate_value_indices",
+          "field_current_event_all_step1_provided_primal_logical_edge_ids",
+          "field_current_event_all_step1_relation_input",
+          "field_current_event_all_step1_relation_output",
+          "field_current_event_all_step1_score_admitted",
+          "field_current_event_all_step1_score_candidate_cell_offsets",
+          "field_current_event_all_step1_score_candidate_edge_ordinals",
+          "field_current_event_all_step1_score_candidate_gate_value_indices",
+          "field_current_event_all_step1_score_candidate_logical_edge_ids",
+          "field_current_event_all_step1_score_context",
+          "field_current_event_all_step1_score_edge_ordinals",
+          "field_current_event_all_step1_score_logical_edge_ids",
+          "field_current_event_all_step1_score_probabilities",
+          "field_current_event_all_step1_score_train_values",
+          "field_current_event_all_step1_selected_derivative_cell_offsets",
+          "field_current_event_all_step1_selected_derivative_edge_ordinals",
+          "field_current_event_all_step1_selected_derivative_gate_value_indices",
+          "field_current_event_all_step1_selected_derivative_logical_edge_ids",
+          "field_current_event_all_step1_selected_primal_cell_offsets",
+          "field_current_event_all_step1_selected_primal_edge_ordinals",
+          "field_current_event_all_step1_selected_primal_gate_value_indices",
+          "field_current_event_all_step1_selected_primal_logical_edge_ids",
+          "field_current_event_all_step2_edge_values",
+          "field_current_event_all_step2_latent_affected_mechanisms",
+          "field_current_event_all_step2_latent_affected_offsets",
+          "field_current_event_all_step2_latent_event_input",
+          "field_current_event_all_step2_latent_state_input",
+          "field_current_event_all_step2_latent_state_output",
+          "field_current_event_all_step2_provided_affected_mechanisms",
+          "field_current_event_all_step2_provided_affected_offsets",
+          "field_current_event_all_step2_provided_derivative_cell_offsets",
+          "field_current_event_all_step2_provided_derivative_edge_ordinals",
+          "field_current_event_all_step2_provided_derivative_gate_value_indices",
+          "field_current_event_all_step2_provided_derivative_logical_edge_ids",
+          "field_current_event_all_step2_provided_history_sources_json",
+          "field_current_event_all_step2_provided_primal_cell_offsets",
+          "field_current_event_all_step2_provided_primal_edge_ordinals",
+          "field_current_event_all_step2_provided_primal_gate_value_indices",
+          "field_current_event_all_step2_provided_primal_logical_edge_ids",
+          "field_current_event_all_step2_relation_input",
+          "field_current_event_all_step2_relation_output",
+          "field_current_event_all_step2_score_admitted",
+          "field_current_event_all_step2_score_candidate_cell_offsets",
+          "field_current_event_all_step2_score_candidate_edge_ordinals",
+          "field_current_event_all_step2_score_candidate_gate_value_indices",
+          "field_current_event_all_step2_score_candidate_logical_edge_ids",
+          "field_current_event_all_step2_score_context",
+          "field_current_event_all_step2_score_edge_ordinals",
+          "field_current_event_all_step2_score_logical_edge_ids",
+          "field_current_event_all_step2_score_probabilities",
+          "field_current_event_all_step2_score_train_values",
+          "field_current_event_all_step2_selected_derivative_cell_offsets",
+          "field_current_event_all_step2_selected_derivative_edge_ordinals",
+          "field_current_event_all_step2_selected_derivative_gate_value_indices",
+          "field_current_event_all_step2_selected_derivative_logical_edge_ids",
+          "field_current_event_all_step2_selected_primal_cell_offsets",
+          "field_current_event_all_step2_selected_primal_edge_ordinals",
+          "field_current_event_all_step2_selected_primal_gate_value_indices",
+          "field_current_event_all_step2_selected_primal_logical_edge_ids",
+          "field_current_event_all_step3_edge_values",
+          "field_current_event_all_step3_latent_affected_mechanisms",
+          "field_current_event_all_step3_latent_affected_offsets",
+          "field_current_event_all_step3_latent_event_input",
+          "field_current_event_all_step3_latent_state_input",
+          "field_current_event_all_step3_latent_state_output",
+          "field_current_event_all_step3_provided_affected_mechanisms",
+          "field_current_event_all_step3_provided_affected_offsets",
+          "field_current_event_all_step3_provided_derivative_cell_offsets",
+          "field_current_event_all_step3_provided_derivative_edge_ordinals",
+          "field_current_event_all_step3_provided_derivative_gate_value_indices",
+          "field_current_event_all_step3_provided_derivative_logical_edge_ids",
+          "field_current_event_all_step3_provided_history_sources_json",
+          "field_current_event_all_step3_provided_primal_cell_offsets",
+          "field_current_event_all_step3_provided_primal_edge_ordinals",
+          "field_current_event_all_step3_provided_primal_gate_value_indices",
+          "field_current_event_all_step3_provided_primal_logical_edge_ids",
+          "field_current_event_all_step3_relation_input",
+          "field_current_event_all_step3_relation_output",
+          "field_current_event_all_step3_score_admitted",
+          "field_current_event_all_step3_score_candidate_cell_offsets",
+          "field_current_event_all_step3_score_candidate_edge_ordinals",
+          "field_current_event_all_step3_score_candidate_gate_value_indices",
+          "field_current_event_all_step3_score_candidate_logical_edge_ids",
+          "field_current_event_all_step3_score_context",
+          "field_current_event_all_step3_score_edge_ordinals",
+          "field_current_event_all_step3_score_logical_edge_ids",
+          "field_current_event_all_step3_score_probabilities",
+          "field_current_event_all_step3_score_train_values",
+          "field_current_event_all_step3_selected_derivative_cell_offsets",
+          "field_current_event_all_step3_selected_derivative_edge_ordinals",
+          "field_current_event_all_step3_selected_derivative_gate_value_indices",
+          "field_current_event_all_step3_selected_derivative_logical_edge_ids",
+          "field_current_event_all_step3_selected_primal_cell_offsets",
+          "field_current_event_all_step3_selected_primal_edge_ordinals",
+          "field_current_event_all_step3_selected_primal_gate_value_indices",
+          "field_current_event_all_step3_selected_primal_logical_edge_ids",
+          "field_current_event_all_step4_edge_values",
+          "field_current_event_all_step4_latent_affected_mechanisms",
+          "field_current_event_all_step4_latent_affected_offsets",
+          "field_current_event_all_step4_latent_event_input",
+          "field_current_event_all_step4_latent_state_input",
+          "field_current_event_all_step4_latent_state_output",
+          "field_current_event_all_step4_provided_affected_mechanisms",
+          "field_current_event_all_step4_provided_affected_offsets",
+          "field_current_event_all_step4_provided_derivative_cell_offsets",
+          "field_current_event_all_step4_provided_derivative_edge_ordinals",
+          "field_current_event_all_step4_provided_derivative_gate_value_indices",
+          "field_current_event_all_step4_provided_derivative_logical_edge_ids",
+          "field_current_event_all_step4_provided_history_sources_json",
+          "field_current_event_all_step4_provided_primal_cell_offsets",
+          "field_current_event_all_step4_provided_primal_edge_ordinals",
+          "field_current_event_all_step4_provided_primal_gate_value_indices",
+          "field_current_event_all_step4_provided_primal_logical_edge_ids",
+          "field_current_event_all_step4_relation_input",
+          "field_current_event_all_step4_relation_output",
+          "field_current_event_all_step4_score_admitted",
+          "field_current_event_all_step4_score_candidate_cell_offsets",
+          "field_current_event_all_step4_score_candidate_edge_ordinals",
+          "field_current_event_all_step4_score_candidate_gate_value_indices",
+          "field_current_event_all_step4_score_candidate_logical_edge_ids",
+          "field_current_event_all_step4_score_context",
+          "field_current_event_all_step4_score_edge_ordinals",
+          "field_current_event_all_step4_score_logical_edge_ids",
+          "field_current_event_all_step4_score_probabilities",
+          "field_current_event_all_step4_score_train_values",
+          "field_current_event_all_step4_selected_derivative_cell_offsets",
+          "field_current_event_all_step4_selected_derivative_edge_ordinals",
+          "field_current_event_all_step4_selected_derivative_gate_value_indices",
+          "field_current_event_all_step4_selected_derivative_logical_edge_ids",
+          "field_current_event_all_step4_selected_primal_cell_offsets",
+          "field_current_event_all_step4_selected_primal_edge_ordinals",
+          "field_current_event_all_step4_selected_primal_gate_value_indices",
+          "field_current_event_all_step4_selected_primal_logical_edge_ids",
+          "field_current_event_all_step5_edge_values",
+          "field_current_event_all_step5_latent_affected_mechanisms",
+          "field_current_event_all_step5_latent_affected_offsets",
+          "field_current_event_all_step5_latent_event_input",
+          "field_current_event_all_step5_latent_state_input",
+          "field_current_event_all_step5_latent_state_output",
+          "field_current_event_all_step5_provided_affected_mechanisms",
+          "field_current_event_all_step5_provided_affected_offsets",
+          "field_current_event_all_step5_provided_derivative_cell_offsets",
+          "field_current_event_all_step5_provided_derivative_edge_ordinals",
+          "field_current_event_all_step5_provided_derivative_gate_value_indices",
+          "field_current_event_all_step5_provided_derivative_logical_edge_ids",
+          "field_current_event_all_step5_provided_history_sources_json",
+          "field_current_event_all_step5_provided_primal_cell_offsets",
+          "field_current_event_all_step5_provided_primal_edge_ordinals",
+          "field_current_event_all_step5_provided_primal_gate_value_indices",
+          "field_current_event_all_step5_provided_primal_logical_edge_ids",
+          "field_current_event_all_step5_relation_input",
+          "field_current_event_all_step5_relation_output",
+          "field_current_event_all_step5_score_admitted",
+          "field_current_event_all_step5_score_candidate_cell_offsets",
+          "field_current_event_all_step5_score_candidate_edge_ordinals",
+          "field_current_event_all_step5_score_candidate_gate_value_indices",
+          "field_current_event_all_step5_score_candidate_logical_edge_ids",
+          "field_current_event_all_step5_score_context",
+          "field_current_event_all_step5_score_edge_ordinals",
+          "field_current_event_all_step5_score_logical_edge_ids",
+          "field_current_event_all_step5_score_probabilities",
+          "field_current_event_all_step5_score_train_values",
+          "field_current_event_all_step5_selected_derivative_cell_offsets",
+          "field_current_event_all_step5_selected_derivative_edge_ordinals",
+          "field_current_event_all_step5_selected_derivative_gate_value_indices",
+          "field_current_event_all_step5_selected_derivative_logical_edge_ids",
+          "field_current_event_all_step5_selected_primal_cell_offsets",
+          "field_current_event_all_step5_selected_primal_edge_ordinals",
+          "field_current_event_all_step5_selected_primal_gate_value_indices",
+          "field_current_event_all_step5_selected_primal_logical_edge_ids",
+          "initial_parameters_current_event_all",
+          "ranked_block_entity_embedding_offset_shape",
+          "ranked_block_rank_embedding_offset_shape",
+          "ranked_block_scorer_offset_shape",
+          "ranked_block_transition_A_offset_shape",
+          "ranked_block_transition_B_offset_shape",
+          "ranked_block_transition_bias_offset_shape",
+          "ranked_direct_20261027_all_final_output",
+          "ranked_direct_20261027_all_loss",
+          "ranked_direct_20261027_all_owner_after_step",
+          "ranked_direct_20261027_all_owner_gradient",
+          "ranked_direct_20261027_all_step0_edge_values",
+          "ranked_direct_20261027_all_step0_latent_affected_mechanisms",
+          "ranked_direct_20261027_all_step0_latent_affected_offsets",
+          "ranked_direct_20261027_all_step0_latent_event_input",
+          "ranked_direct_20261027_all_step0_latent_state_input",
+          "ranked_direct_20261027_all_step0_latent_state_output",
+          "ranked_direct_20261027_all_step0_relation_input",
+          "ranked_direct_20261027_all_step0_relation_output",
+          "ranked_direct_20261027_all_step0_score_admitted",
+          "ranked_direct_20261027_all_step0_score_candidate_cell_offsets",
+          "ranked_direct_20261027_all_step0_score_candidate_edge_ordinals",
+          "ranked_direct_20261027_all_step0_score_candidate_gate_value_indices",
+          "ranked_direct_20261027_all_step0_score_candidate_logical_edge_ids",
+          "ranked_direct_20261027_all_step0_score_context",
+          "ranked_direct_20261027_all_step0_score_edge_ordinals",
+          "ranked_direct_20261027_all_step0_score_logical_edge_ids",
+          "ranked_direct_20261027_all_step0_score_probabilities",
+          "ranked_direct_20261027_all_step0_score_train_values",
+          "ranked_direct_20261027_all_step0_selected_derivative_cell_offsets",
+          "ranked_direct_20261027_all_step0_selected_derivative_edge_ordinals",
+          "ranked_direct_20261027_all_step0_selected_derivative_gate_value_indices",
+          "ranked_direct_20261027_all_step0_selected_derivative_logical_edge_ids",
+          "ranked_direct_20261027_all_step0_selected_primal_cell_offsets",
+          "ranked_direct_20261027_all_step0_selected_primal_edge_ordinals",
+          "ranked_direct_20261027_all_step0_selected_primal_gate_value_indices",
+          "ranked_direct_20261027_all_step0_selected_primal_logical_edge_ids",
+          "ranked_field_20261027_all_final_output",
+          "ranked_field_20261027_all_loss",
+          "ranked_field_20261027_all_owner_after_step",
+          "ranked_field_20261027_all_owner_gradient",
+          "ranked_field_20261027_all_plan_trace_json",
+          "ranked_field_20261027_all_step0_edge_values",
+          "ranked_field_20261027_all_step0_latent_affected_mechanisms",
+          "ranked_field_20261027_all_step0_latent_affected_offsets",
+          "ranked_field_20261027_all_step0_latent_event_input",
+          "ranked_field_20261027_all_step0_latent_state_input",
+          "ranked_field_20261027_all_step0_latent_state_output",
+          "ranked_field_20261027_all_step0_relation_input",
+          "ranked_field_20261027_all_step0_relation_output",
+          "ranked_field_20261027_all_step0_score_admitted",
+          "ranked_field_20261027_all_step0_score_candidate_cell_offsets",
+          "ranked_field_20261027_all_step0_score_candidate_edge_ordinals",
+          "ranked_field_20261027_all_step0_score_candidate_gate_value_indices",
+          "ranked_field_20261027_all_step0_score_candidate_logical_edge_ids",
+          "ranked_field_20261027_all_step0_score_context",
+          "ranked_field_20261027_all_step0_score_edge_ordinals",
+          "ranked_field_20261027_all_step0_score_logical_edge_ids",
+          "ranked_field_20261027_all_step0_score_probabilities",
+          "ranked_field_20261027_all_step0_score_train_values",
+          "ranked_field_20261027_all_step0_selected_derivative_cell_offsets",
+          "ranked_field_20261027_all_step0_selected_derivative_edge_ordinals",
+          "ranked_field_20261027_all_step0_selected_derivative_gate_value_indices",
+          "ranked_field_20261027_all_step0_selected_derivative_logical_edge_ids",
+          "ranked_field_20261027_all_step0_selected_primal_cell_offsets",
+          "ranked_field_20261027_all_step0_selected_primal_edge_ordinals",
+          "ranked_field_20261027_all_step0_selected_primal_gate_value_indices",
+          "ranked_field_20261027_all_step0_selected_primal_logical_edge_ids",
+          "ranked_genes_20261027",
+          "ranked_initial_parameters_20261027_all",
+          "ranked_masked_positions_20261027",
+          "ranked_ranks_20261027",
+          "ranked_support_destinations_20261027",
+          "ranked_support_ids_20261027",
+          "ranked_support_sources_20261027",
+          "ranked_targets_20261027",
+          "ranked_workset0_derivative_cell_offsets",
+          "ranked_workset0_derivative_edge_ordinals",
+          "ranked_workset0_derivative_gate_value_indices",
+          "ranked_workset0_derivative_logical_edge_ids",
+          "ranked_workset0_primal_cell_offsets",
+          "ranked_workset0_primal_edge_ordinals",
+          "ranked_workset0_primal_gate_value_indices",
+          "ranked_workset0_primal_logical_edge_ids",
+          "ranked_workset1_derivative_cell_offsets",
+          "ranked_workset1_derivative_edge_ordinals",
+          "ranked_workset1_derivative_gate_value_indices",
+          "ranked_workset1_derivative_logical_edge_ids",
+          "ranked_workset1_primal_cell_offsets",
+          "ranked_workset1_primal_edge_ordinals",
+          "ranked_workset1_primal_gate_value_indices",
+          "ranked_workset1_primal_logical_edge_ids",
+          "support_destinations_current_event_all",
+          "support_edge_ids_current_event_all",
+          "support_sources_current_event_all",
+          "targets",
+          "time_windows",
+          "timestamps"
+        ],
+        "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/evidence/raw/e5_seed20261027_current_event_all.npz",
+        "sha256": "39d8b2702750862991efaf7f8aeb0a05af19289db2bbe6b6147f593a4b6752ce"
+      },
+      "records": [
+        {
+          "boundary": "experiment-local event loop uses existing native operations; no production field contract",
+          "field_stage_graph": [
+            {
+              "consumes": [
+                "provider",
+                "step",
+                "prefix",
+                "timestamps",
+                "windows"
+              ],
+              "effects": [
+                "reads:temporal-state",
+                "writes:workset-state"
+              ],
+              "name": "event_workset_provider",
+              "produces": [
+                "event_work"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "event_work",
+                "prefix",
+                "state"
+              ],
+              "effects": [
+                "reads:owner",
+                "writes:latent-state"
+              ],
+              "name": "native_latent_transition",
+              "produces": [
+                "event",
+                "event_input",
+                "next_state"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "event",
+                "event_input",
+                "event_work",
+                "next_state"
+              ],
+              "effects": [
+                "reads:owner",
+                "writes:intermediate"
+              ],
+              "name": "event_and_context",
+              "produces": [
+                "current_input",
+                "history_input",
+                "gate_context"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "gate_context",
+                "event_work",
+                "temperature",
+                "threshold",
+                "prune"
+              ],
+              "effects": [
+                "reads:owner",
+                "writes:gate-values"
+              ],
+              "name": "candidate_gate_scoring",
+              "produces": [
+                "gates"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "event_work",
+                "gates",
+                "seed"
+              ],
+              "effects": [
+                "reads:structure",
+                "writes:worksets"
+              ],
+              "name": "primal_derivative_selection",
+              "produces": [
+                "primal",
+                "derivative"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "primal",
+                "derivative",
+                "event",
+                "value_policy"
+              ],
+              "effects": [
+                "reads:owner",
+                "reads:worksets"
+              ],
+              "name": "shared_edge_values",
+              "produces": [
+                "edge_values"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "current_input",
+                "history_input",
+                "policy",
+                "edge_values",
+                "gates",
+                "primal",
+                "derivative"
+              ],
+              "effects": [
+                "reads:structure",
+                "reads:owner",
+                "writes:output"
+              ],
+              "name": "native_sparse_relation",
+              "produces": [
+                "relation_output"
+              ]
+            }
+          ],
+          "fixture": {
+            "cells": 4,
+            "entities": 24,
+            "seed": 20261027,
+            "steps": 6,
+            "width": 64
+          },
+          "gate_policy": {
+            "derivative_seed": 20261027,
+            "dormant_budget": 4,
+            "estimator": "straight_through",
+            "loss": "cross_entropy(next_event_logits, targets)",
+            "prune": true,
+            "temperature": 1.0,
+            "threshold": 0.5,
+            "value_policy": "all"
+          },
+          "lifecycle": [
+            {
+              "primal_derivative_trace_count": 1,
+              "state_generation": 6,
+              "structure_epoch": 1,
+              "support_ids_sha256": "95b053d2efc0320f0839b5dcc856e810b6bc0de72dd17cf0b9e9435fc2ee9d0c",
+              "value_generation": 0
+            },
+            {
+              "primal_derivative_trace_count": 6,
+              "state_generation": 6,
+              "structure_epoch": 1,
+              "support_ids_sha256": "95b053d2efc0320f0839b5dcc856e810b6bc0de72dd17cf0b9e9435fc2ee9d0c",
+              "value_generation": 0
+            }
+          ],
+          "loss": [
+            3.1780595779418945,
+            3.1780595779418945
+          ],
+          "optimizer": {
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "eps": 1e-08,
+            "foreach": null,
+            "fused": null,
+            "lr": 0.02,
+            "state_initially_empty": true,
+            "steps": 1,
+            "type": "torch.optim.Adam"
+          },
+          "output_sha256": [
+            "af3d96a37be439aeb4c033544fb51afc4be6f88b3b54c376af7678d5853fb8f8",
+            "af3d96a37be439aeb4c033544fb51afc4be6f88b3b54c376af7678d5853fb8f8"
+          ],
+          "owner_after_update_max_abs": 1.4156103134155273e-07,
+          "owner_gradient_max_abs": 7.275957614183426e-12,
+          "owner_gradient_sha256": [
+            "7bc00ffaeff2f083bc0a3bda9520510507b90ea49691b3e192cc5c12d8496c4a",
+            "51f96e5f1f58a584a0f7c0af1b136341a51ccca698a3294865a4102b49b276a7"
+          ],
+          "policy": "current_event",
+          "trace": [
+            [
+              {
+                "compiler_visible_internal_stages": false,
+                "native_callable": "KaryoplastEventSlice.forward"
+              }
+            ],
+            [
+              [
+                {
+                  "consumes": [
+                    "provider",
+                    "step",
+                    "prefix",
+                    "timestamps",
+                    "windows"
+                  ],
+                  "effects": [
+                    "reads:temporal-state",
+                    "writes:workset-state"
+                  ],
+                  "host_enqueue_ms": 1.1569909984245896,
+                  "operation": "event_workset_provider",
+                  "produces": [
+                    "event_work"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "prefix",
+                    "state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:latent-state"
+                  ],
+                  "host_enqueue_ms": 0.6420080026146024,
+                  "operation": "native_latent_transition",
+                  "produces": [
+                    "event",
+                    "event_input",
+                    "next_state"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event",
+                    "event_input",
+                    "event_work",
+                    "next_state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:intermediate"
+                  ],
+                  "host_enqueue_ms": 0.404029997298494,
+                  "operation": "event_and_context",
+                  "produces": [
+                    "current_input",
+                    "history_input",
+                    "gate_context"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "gate_context",
+                    "event_work",
+                    "temperature",
+                    "threshold",
+                    "prune"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:gate-values"
+                  ],
+                  "host_enqueue_ms": 0.7318979987758212,
+                  "operation": "candidate_gate_scoring",
+                  "produces": [
+                    "gates"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "gates",
+                    "seed"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "writes:worksets"
+                  ],
+                  "host_enqueue_ms": 0.4795040003955364,
+                  "operation": "primal_derivative_selection",
+                  "produces": [
+                    "primal",
+                    "derivative"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "primal",
+                    "derivative",
+                    "event",
+                    "value_policy"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "reads:worksets"
+                  ],
+                  "host_enqueue_ms": 0.2529940029489808,
+                  "operation": "shared_edge_values",
+                  "produces": [
+                    "edge_values"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "current_input",
+                    "history_input",
+                    "policy",
+                    "edge_values",
+                    "gates",
+                    "primal",
+                    "derivative"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "reads:owner",
+                    "writes:output"
+                  ],
+                  "host_enqueue_ms": 0.2907270027208142,
+                  "operation": "native_sparse_relation",
+                  "produces": [
+                    "relation_output"
+                  ]
+                }
+              ],
+              [
+                {
+                  "consumes": [
+                    "provider",
+                    "step",
+                    "prefix",
+                    "timestamps",
+                    "windows"
+                  ],
+                  "effects": [
+                    "reads:temporal-state",
+                    "writes:workset-state"
+                  ],
+                  "host_enqueue_ms": 1.3540959989768453,
+                  "operation": "event_workset_provider",
+                  "produces": [
+                    "event_work"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "prefix",
+                    "state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:latent-state"
+                  ],
+                  "host_enqueue_ms": 0.514521001605317,
+                  "operation": "native_latent_transition",
+                  "produces": [
+                    "event",
+                    "event_input",
+                    "next_state"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event",
+                    "event_input",
+                    "event_work",
+                    "next_state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:intermediate"
+                  ],
+                  "host_enqueue_ms": 0.7152910038712434,
+                  "operation": "event_and_context",
+                  "produces": [
+                    "current_input",
+                    "history_input",
+                    "gate_context"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "gate_context",
+                    "event_work",
+                    "temperature",
+                    "threshold",
+                    "prune"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:gate-values"
+                  ],
+                  "host_enqueue_ms": 1.172946002043318,
+                  "operation": "candidate_gate_scoring",
+                  "produces": [
+                    "gates"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "gates",
+                    "seed"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "writes:worksets"
+                  ],
+                  "host_enqueue_ms": 0.6303289992501959,
+                  "operation": "primal_derivative_selection",
+                  "produces": [
+                    "primal",
+                    "derivative"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "primal",
+                    "derivative",
+                    "event",
+                    "value_policy"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "reads:worksets"
+                  ],
+                  "host_enqueue_ms": 0.24246999964816496,
+                  "operation": "shared_edge_values",
+                  "produces": [
+                    "edge_values"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "current_input",
+                    "history_input",
+                    "policy",
+                    "edge_values",
+                    "gates",
+                    "primal",
+                    "derivative"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "reads:owner",
+                    "writes:output"
+                  ],
+                  "host_enqueue_ms": 0.31330699857790023,
+                  "operation": "native_sparse_relation",
+                  "produces": [
+                    "relation_output"
+                  ]
+                }
+              ],
+              [
+                {
+                  "consumes": [
+                    "provider",
+                    "step",
+                    "prefix",
+                    "timestamps",
+                    "windows"
+                  ],
+                  "effects": [
+                    "reads:temporal-state",
+                    "writes:workset-state"
+                  ],
+                  "host_enqueue_ms": 1.5456140026799403,
+                  "operation": "event_workset_provider",
+                  "produces": [
+                    "event_work"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "prefix",
+                    "state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:latent-state"
+                  ],
+                  "host_enqueue_ms": 0.44746799540007487,
+                  "operation": "native_latent_transition",
+                  "produces": [
+                    "event",
+                    "event_input",
+                    "next_state"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event",
+                    "event_input",
+                    "event_work",
+                    "next_state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:intermediate"
+                  ],
+                  "host_enqueue_ms": 0.616293000348378,
+                  "operation": "event_and_context",
+                  "produces": [
+                    "current_input",
+                    "history_input",
+                    "gate_context"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "gate_context",
+                    "event_work",
+                    "temperature",
+                    "threshold",
+                    "prune"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:gate-values"
+                  ],
+                  "host_enqueue_ms": 1.0005849981098436,
+                  "operation": "candidate_gate_scoring",
+                  "produces": [
+                    "gates"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "gates",
+                    "seed"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "writes:worksets"
+                  ],
+                  "host_enqueue_ms": 0.6994619980105199,
+                  "operation": "primal_derivative_selection",
+                  "produces": [
+                    "primal",
+                    "derivative"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "primal",
+                    "derivative",
+                    "event",
+                    "value_policy"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "reads:worksets"
+                  ],
+                  "host_enqueue_ms": 0.2527779943193309,
+                  "operation": "shared_edge_values",
+                  "produces": [
+                    "edge_values"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "current_input",
+                    "history_input",
+                    "policy",
+                    "edge_values",
+                    "gates",
+                    "primal",
+                    "derivative"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "reads:owner",
+                    "writes:output"
+                  ],
+                  "host_enqueue_ms": 0.317841004289221,
+                  "operation": "native_sparse_relation",
+                  "produces": [
+                    "relation_output"
+                  ]
+                }
+              ],
+              [
+                {
+                  "consumes": [
+                    "provider",
+                    "step",
+                    "prefix",
+                    "timestamps",
+                    "windows"
+                  ],
+                  "effects": [
+                    "reads:temporal-state",
+                    "writes:workset-state"
+                  ],
+                  "host_enqueue_ms": 1.357993001875002,
+                  "operation": "event_workset_provider",
+                  "produces": [
+                    "event_work"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "prefix",
+                    "state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:latent-state"
+                  ],
+                  "host_enqueue_ms": 0.441427000623662,
+                  "operation": "native_latent_transition",
+                  "produces": [
+                    "event",
+                    "event_input",
+                    "next_state"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event",
+                    "event_input",
+                    "event_work",
+                    "next_state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:intermediate"
+                  ],
+                  "host_enqueue_ms": 0.6143729988252744,
+                  "operation": "event_and_context",
+                  "produces": [
+                    "current_input",
+                    "history_input",
+                    "gate_context"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "gate_context",
+                    "event_work",
+                    "temperature",
+                    "threshold",
+                    "prune"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:gate-values"
+                  ],
+                  "host_enqueue_ms": 1.0003080024034716,
+                  "operation": "candidate_gate_scoring",
+                  "produces": [
+                    "gates"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "gates",
+                    "seed"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "writes:worksets"
+                  ],
+                  "host_enqueue_ms": 0.6835640015196986,
+                  "operation": "primal_derivative_selection",
+                  "produces": [
+                    "primal",
+                    "derivative"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "primal",
+                    "derivative",
+                    "event",
+                    "value_policy"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "reads:worksets"
+                  ],
+                  "host_enqueue_ms": 0.2433929985272698,
+                  "operation": "shared_edge_values",
+                  "produces": [
+                    "edge_values"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "current_input",
+                    "history_input",
+                    "policy",
+                    "edge_values",
+                    "gates",
+                    "primal",
+                    "derivative"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "reads:owner",
+                    "writes:output"
+                  ],
+                  "host_enqueue_ms": 0.2982970036100596,
+                  "operation": "native_sparse_relation",
+                  "produces": [
+                    "relation_output"
+                  ]
+                }
+              ],
+              [
+                {
+                  "consumes": [
+                    "provider",
+                    "step",
+                    "prefix",
+                    "timestamps",
+                    "windows"
+                  ],
+                  "effects": [
+                    "reads:temporal-state",
+                    "writes:workset-state"
+                  ],
+                  "host_enqueue_ms": 1.3544450048357248,
+                  "operation": "event_workset_provider",
+                  "produces": [
+                    "event_work"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "prefix",
+                    "state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:latent-state"
+                  ],
+                  "host_enqueue_ms": 0.43040500167990103,
+                  "operation": "native_latent_transition",
+                  "produces": [
+                    "event",
+                    "event_input",
+                    "next_state"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event",
+                    "event_input",
+                    "event_work",
+                    "next_state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:intermediate"
+                  ],
+                  "host_enqueue_ms": 0.6273449980653822,
+                  "operation": "event_and_context",
+                  "produces": [
+                    "current_input",
+                    "history_input",
+                    "gate_context"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "gate_context",
+                    "event_work",
+                    "temperature",
+                    "threshold",
+                    "prune"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:gate-values"
+                  ],
+                  "host_enqueue_ms": 1.0056649989564903,
+                  "operation": "candidate_gate_scoring",
+                  "produces": [
+                    "gates"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "gates",
+                    "seed"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "writes:worksets"
+                  ],
+                  "host_enqueue_ms": 0.7004939980106428,
+                  "operation": "primal_derivative_selection",
+                  "produces": [
+                    "primal",
+                    "derivative"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "primal",
+                    "derivative",
+                    "event",
+                    "value_policy"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "reads:worksets"
+                  ],
+                  "host_enqueue_ms": 0.24353199842153117,
+                  "operation": "shared_edge_values",
+                  "produces": [
+                    "edge_values"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "current_input",
+                    "history_input",
+                    "policy",
+                    "edge_values",
+                    "gates",
+                    "primal",
+                    "derivative"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "reads:owner",
+                    "writes:output"
+                  ],
+                  "host_enqueue_ms": 0.2867820003302768,
+                  "operation": "native_sparse_relation",
+                  "produces": [
+                    "relation_output"
+                  ]
+                }
+              ],
+              [
+                {
+                  "consumes": [
+                    "provider",
+                    "step",
+                    "prefix",
+                    "timestamps",
+                    "windows"
+                  ],
+                  "effects": [
+                    "reads:temporal-state",
+                    "writes:workset-state"
+                  ],
+                  "host_enqueue_ms": 1.41710299794795,
+                  "operation": "event_workset_provider",
+                  "produces": [
+                    "event_work"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "prefix",
+                    "state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:latent-state"
+                  ],
+                  "host_enqueue_ms": 0.42922000284306705,
+                  "operation": "native_latent_transition",
+                  "produces": [
+                    "event",
+                    "event_input",
+                    "next_state"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event",
+                    "event_input",
+                    "event_work",
+                    "next_state"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:intermediate"
+                  ],
+                  "host_enqueue_ms": 0.6240790025913157,
+                  "operation": "event_and_context",
+                  "produces": [
+                    "current_input",
+                    "history_input",
+                    "gate_context"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "gate_context",
+                    "event_work",
+                    "temperature",
+                    "threshold",
+                    "prune"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "writes:gate-values"
+                  ],
+                  "host_enqueue_ms": 1.0065599999506958,
+                  "operation": "candidate_gate_scoring",
+                  "produces": [
+                    "gates"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "event_work",
+                    "gates",
+                    "seed"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "writes:worksets"
+                  ],
+                  "host_enqueue_ms": 0.7238080070237629,
+                  "operation": "primal_derivative_selection",
+                  "produces": [
+                    "primal",
+                    "derivative"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "primal",
+                    "derivative",
+                    "event",
+                    "value_policy"
+                  ],
+                  "effects": [
+                    "reads:owner",
+                    "reads:worksets"
+                  ],
+                  "host_enqueue_ms": 0.2484580036252737,
+                  "operation": "shared_edge_values",
+                  "produces": [
+                    "edge_values"
+                  ]
+                },
+                {
+                  "consumes": [
+                    "module",
+                    "current_input",
+                    "history_input",
+                    "policy",
+                    "edge_values",
+                    "gates",
+                    "primal",
+                    "derivative"
+                  ],
+                  "effects": [
+                    "reads:structure",
+                    "reads:owner",
+                    "writes:output"
+                  ],
+                  "host_enqueue_ms": 0.2960079946205951,
+                  "operation": "native_sparse_relation",
+                  "produces": [
+                    "relation_output"
+                  ]
+                }
+              ]
+            ]
+          ]
+        },
+        {
+          "boundary": "ranked operation stages are experiment-local compositions of existing native calls",
+          "field_stage_graph": [
+            {
+              "consumes": [
+                "module",
+                "genes",
+                "ranks",
+                "workset"
+              ],
+              "effects": [
+                "reads:owner",
+                "reads:ranked-input"
+              ],
+              "name": "ranked_input_and_candidate_binding",
+              "produces": [
+                "initial_state",
+                "transition_input",
+                "affected_offsets",
+                "affected_mechanisms",
+                "source_input",
+                "candidate_derivative"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "initial_state",
+                "transition_input",
+                "affected_offsets",
+                "affected_mechanisms"
+              ],
+              "effects": [
+                "reads:owner",
+                "writes:latent-state"
+              ],
+              "name": "native_latent_transition",
+              "produces": [
+                "next_state"
+              ]
+            },
+            {
+              "consumes": [
+                "source_input",
+                "next_state"
+              ],
+              "effects": [
+                "w",
+                "r",
+                "i",
+                "t",
+                "e",
+                "s",
+                ":",
+                "i",
+                "n",
+                "t",
+                "e",
+                "r",
+                "m",
+                "e",
+                "d",
+                "i",
+                "a",
+                "t",
+                "e"
+              ],
+              "name": "ranked_context",
+              "produces": [
+                "current_input",
+                "history_input",
+                "gate_context"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "gate_context",
+                "candidate_derivative",
+                "temperature",
+                "threshold",
+                "prune"
+              ],
+              "effects": [
+                "reads:owner",
+                "writes:gate-values"
+              ],
+              "name": "candidate_gate_scoring",
+              "produces": [
+                "gates"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "candidate_derivative",
+                "gates",
+                "seed",
+                "window_counter"
+              ],
+              "effects": [
+                "reads:structure",
+                "writes:worksets"
+              ],
+              "name": "primal_derivative_selection",
+              "produces": [
+                "primal",
+                "derivative"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "primal",
+                "derivative",
+                "genes",
+                "value_policy"
+              ],
+              "effects": [
+                "reads:owner",
+                "reads:worksets"
+              ],
+              "name": "shared_edge_values",
+              "produces": [
+                "edge_values"
+              ]
+            },
+            {
+              "consumes": [
+                "module",
+                "current_input",
+                "history_input",
+                "policy",
+                "edge_values",
+                "gates",
+                "primal",
+                "derivative"
+              ],
+              "effects": [
+                "reads:structure",
+                "reads:owner",
+                "writes:output"
+              ],
+              "name": "native_sparse_relation",
+              "produces": [
+                "relation_output"
+              ]
+            }
+          ],
+          "fixture": {
+            "cells": 4,
+            "entities": 24,
+            "seed": 20261027,
+            "selected": 8,
+            "width": 64
+          },
+          "loss": [
+            3.178528308868408,
+            3.178528308868408
+          ],
+          "output_sha256": [
+            "5a28e5956b8a409faa1d360830f9b0d09d5e7de4993581582e07dcfa04333aa2",
+            "5a28e5956b8a409faa1d360830f9b0d09d5e7de4993581582e07dcfa04333aa2"
+          ],
+          "owner_after_update_max_abs": 3.427267074584961e-06,
+          "owner_gradient_max_abs": 5.820766091346741e-11,
+          "policy": "current_event",
+          "task": "ranked_masked_gene_one_transition",
+          "value_policy": "all"
+        }
+      ],
+      "scheduler": {
+        "attempt_id": null,
+        "job_id": null
+      },
+      "schema": "cellerator.adaptive_fields.e5_gpu.v1",
+      "uncovered": [
+        "full Torch recurrent oracle",
+        "support publication/checkpoint in field run",
+        "explicit repeated gate-index trace"
+      ]
+    }
+  ],
+  "relation_policies": [
+    "current_event"
+  ],
+  "schema": "cellerator.adaptive_fields.e5_gpu_campaign.v1",
+  "small_seed_values": [
+    20261027
+  ],
+  "value_policies": [
+    "all"
+  ]
+}

@@ -18,10 +18,10 @@ target_compile_features(cellerator_relation_gradient_cover PUBLIC cxx_std_17)
 
 if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
     add_library(cellerator_relation_update_compiler STATIC
-        src/compiler/ir/semantic/implement_gradient_and_publication_operations.cc
+        src/compiler/ir/semantic/gradient_and_publication_operations.cc
         src/compiler/sema/relation_update_spine_bridge.cc
         src/compiler/ir/realization/relation_update_spine.cc
-        src/compiler/frontend/source/build_a_lossless_raw_token_stream.cc
+        src/compiler/frontend/source/raw_token_stream.cc
         src/compiler/frontend/parser/parse_relation_application.cc)
     target_link_libraries(cellerator_relation_update_compiler PUBLIC Cellerator::relation_calculus)
     target_compile_features(cellerator_relation_update_compiler PUBLIC cxx_std_17)
@@ -70,12 +70,12 @@ if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
         CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 
     add_library(cellerator_spine_frontend STATIC
-        src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc
-        src/compiler/ir/semantic/implement_relation_ir_types.cc
-        src/compiler/ir/semantic/implement_state_and_value_plane_ir_types.cc
-        src/compiler/ir/semantic/implement_domain_and_axis_ir_types.cc
+        src/compiler/ir/semantic/relation_apply_and_transpose_operations.cc
+        src/compiler/ir/semantic/relation_ir_types.cc
+        src/compiler/ir/semantic/state_and_value_plane_ir_types.cc
+        src/compiler/ir/semantic/domain_and_axis_ir_types.cc
         src/compiler/sema/relation_spine_bridge.cc
-        src/compiler/sema/implement_numerical_tuple_semantics.cc
+        src/compiler/sema/numerical_tuple_semantics.cc
         src/compiler/frontend/parser/parse_compiler_semantic_declarations.cc
         src/compiler/frontend/parser/parse_biological_type_constructors_and_qualifiers.cc
         src/compiler/frontend/parser/parse_relation_application.cc

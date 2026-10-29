@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
+#include <vector>
 
 namespace cellerator::compute::projection {
 
@@ -188,5 +189,40 @@ static_assert(std::is_trivially_copyable<projection_schedule_entry_v1>::value,
     "projection schedules must remain pointer-free");
 static_assert(std::is_trivially_copyable<projection_value_map_v1>::value,
     "projection value maps must remain pointer-free");
+
+bool validate_physical_mma_hybrid_image_v1(const void* data,
+                                            std::size_t bytes) noexcept;
+
+enum class physical_image_build_status_v1 : std::uint8_t {
+    success = 0u,
+    invalid_argument,
+    arithmetic_overflow,
+    allocation_failure,
+};
+
+// Caller supplies the actual structure and typed axis identities. The first
+// general builder uses canonical consecutive groups of up to 16 members,
+// assigns unique endpoint pairs to N64 tiles, and stores duplicate pairs in
+// row-owned residual regions. The image's edge IDs are dense geometry ordinals;
+// a higher-level binding maps these ordinals to stable support identities.
+struct physical_mma_hybrid_build_request_v1 {
+    math::sparse_structure_identity structure_identity{};
+    math::feature_order_identity source_order{};
+    math::feature_order_identity destination_order{};
+    std::uint64_t provider_identity_low = 0u;
+    std::uint64_t provider_identity_high = 0u;
+    std::uint64_t capability_identity_low = 0u;
+    std::uint64_t capability_identity_high = 0u;
+    const std::uint32_t* source_indices = nullptr;
+    const std::uint32_t* destination_indices = nullptr;
+    std::uint64_t edge_count = 0u;
+    std::uint32_t source_count = 0u;
+    std::uint32_t destination_count = 0u;
+    std::uint32_t dense_width = 64u;
+};
+
+physical_image_build_status_v1 build_physical_mma_hybrid_image_v1(
+    const physical_mma_hybrid_build_request_v1& request,
+    std::vector<std::uint8_t>* image) noexcept;
 
 } // namespace cellerator::compute::projection

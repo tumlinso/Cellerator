@@ -1,0 +1,21 @@
+{
+  "attempt_id": "0d4b187b-c2eb-4721-af11-73cdd44bc518",
+  "cleanup_verified": true,
+  "job_id": "c2b8bb5c-514b-4c33-8f2f-f82d3ed7fecf",
+  "stderr": {
+    "omitted_lines": 0,
+    "original_bytes": 0,
+    "returned_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": "",
+    "truncated": false
+  },
+  "stdout": {
+    "omitted_lines": 0,
+    "original_bytes": 2417,
+    "returned_bytes": 2417,
+    "sha256": "9365d66fc7f5e2c326dd8a2e72d6cf1e0d8931903e00398620873d9c65e4622f",
+    "text": "========= COMPUTE-SANITIZER\n{\"schema\":\"cellerator.csr_union_bitmap_v1\",\"case_id\":\"q32_unique\",\"edges\":1000000,\"entities\":20000,\"cells\":32,\"q_per_cell\":32,\"query_terms_total\":1024,\"candidate_required_total\":57365,\"raw_posting_upper_bound\":57365,\"correctness\":\"cpu_oracle_exact\",\"device\":{\"name\":\"Tesla V100-SXM2-16GB\",\"uuid\":\"6c1cac7f-a360-0aef-ba98-2828bfd1db1a\",\"sm\":\"70\",\"runtime\":\"CUDA 12.9\"},\"overflow_check\":\"not_run\",\"postings_status\":\"measured_exact\",\"postings_operation_proxy_q_times_eligible\":1835680,\"postings_overflow_check\":\"not_run\",\"count_scan_concat_status\":\"measured_exact\",\"query_upload_ms\":0.02865,\"postings_p50_ms\":2200.0752,\"postings_p10_ms\":2199.80591,\"postings_p90_ms\":2200.0752,\"postings_samples_ms\":[2199.8059,2200.0752,2200.3579],\"fullscan_p50_ms\":99.098625,\"fullscan_p10_ms\":99.003395,\"fullscan_p90_ms\":99.098625,\"fullscan_samples_ms\":[99.003395,99.098625,99.225601],\"csr_bitmap_p50_ms\":4.8660479,\"csr_bitmap_p10_ms\":4.8363519,\"csr_bitmap_p90_ms\":4.8660479,\"csr_bitmap_samples_ms\":[4.8660479,4.8363519,5.2213759],\"count_scan_concat_p50_ms\":1.110016,\"count_scan_concat_samples_ms\":[1.4848,1.110016,1.1038719],\"count_scan_concat_stage_p50_us\":{\"term_count\":82.943998,\"scan_and_capacity\":428.03201,\"scatter\":594.944},\"csr_bitmap_stage_p50_us\":{\"zero\":14.336,\"posting_scatter\":202.75199,\"popcount\":902.14401,\"cub_scan\":2022.3999,\"capacity_finalize\":250.88,\"emit\":1494.0161},\"fullscan_stage_p50_us\":{\"zero\":14.336,\"query_membership\":98.304003,\"edge_count\":46372.864,\"tile_scan_finalize\":440.31999,\"emit\":52218.88},\"memory_bytes\":{\"baseline_index\":16480008,\"baseline_scratch_ex_output\":1048848,\"baseline_total_resident\":71177304,\"candidate_index\":16160008,\"candidate_scratch_ex_output\":20018703,\"candidate_total_resident\":89302871,\"count_scan_concat_index\":16160008,\"count_scan_concat_scratch_ex_output\":1050639,\"count_scan_concat_total_resident\":70334807,\"fullscan_index\":12000000,\"fullscan_scratch_ex_output\":2083471,\"fullscan_total_resident\":67207631,\"common_output\":52599344,\"common_offsets\":528,\"baseline_posting_query_bytes\":1048576,\"candidate_entity_query_bytes\":524288,\"candidate_scan_temp_bytes\":18687,\"concat_scan_temp_bytes\":2047,\"fullscan_scan_temp_bytes\":3071,\"output_offsets\":264}}\n{\"setup_ms\":{\"direct_csr_build\":8.764617,\"baseline_host_postings\":172.690034,\"baseline_cuda_projection\":19.052963,\"device_alloc_upload\":15.406949,\"total\":5647.44732}}\n========= ERROR SUMMARY: 0 errors\n",
+    "truncated": false
+  }
+}

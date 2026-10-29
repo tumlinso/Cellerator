@@ -1,5 +1,5 @@
 #include <Cellerator/compiler/ir/common/expose_the_public_ceir_c_api_v1.hh>
-#include <Cellerator/compiler/ir/common/implement_deterministic_canonical_printing_v1.hh>
+#include <Cellerator/compiler/ir/common/deterministic_canonical_printing_v1.hh>
 
 namespace cellerator::compiler::ceir {
 

@@ -1,0 +1,28 @@
+{
+  "passed": false,
+  "commands": [
+    {
+      "label": "reset_protocol",
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3.13",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py",
+        "--case",
+        "small",
+        "--output",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_final_qualification/normal/reset_protocol.json",
+        "--validate-reset-protocol",
+        "--candidate",
+        "scan_simt_full",
+        "--seed",
+        "20261027"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 1512, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 1492, in main\n    result = run(args)\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 963, in run\n    reset_protocol_validation, baseline_snapshot = validate_fixed_structure_reset(\n                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        torch, sparse_support, fixture,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<11 lines>...\n        primary_values=primary_values, threshold=threshold,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        seed=args.seed)\n        ^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py\", line 804, in validate_fixed_structure_reset\n    \"stale_structure_epoch_before\": stale_snapshot.structure_epoch,\n                                    ^^^^^^^^^^^^^^\nUnboundLocalError: cannot access local variable 'stale_snapshot' where it is not associated with a value\n",
+      "decision": null,
+      "performance_evidence": false
+    }
+  ],
+  "performance_evidence": false,
+  "run_key": "adaptive-fields-e7-final-qualification-5360243b-f5f3-440e-8ee7-148f80c47c11"
+}

@@ -1,0 +1,49 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "bench/sparse_support/experiments/bitmap_retrieval/run_memcheck.py",
+    "--binary",
+    "/tmp/cellerator_bitmap_retrieval_build_2/bitmap_retrieval_bench",
+    "--sanitizer",
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "--output",
+    "/home/tumlinson/Cellerator/bench/sparse_support/experiments/bitmap_retrieval/evidence/memcheck_v100_20261027.json"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "timeout_seconds": 600,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-bitmap-retrieval-memcheck-gpu3-20261027",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {"memory_bytes": 2147483648},
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      },
+      "mode": "exclusive"
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "sanitizer.memcheck",
+    "cellerator.sparse_support.bitmap_retrieval"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "2",
+    "PYTHONUNBUFFERED": "1",
+    "PATH": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer:/usr/local/bin:/usr/bin:/bin"
+  },
+  "interruption": {"restart_safe": true, "cancellation_supported": true},
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 3,
+        "max_utilization_percent": 0
+      }
+    }
+  ]
+}

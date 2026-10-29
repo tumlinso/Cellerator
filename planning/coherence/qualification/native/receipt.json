@@ -1,0 +1,459 @@
+{
+  "schema": "cellerator.compiler_native_validation.v1",
+  "workspace": "/tmp/cellerator-coherence",
+  "device_execution_performed": false,
+  "commands": [
+    {
+      "name": "cpu_configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/tmp/cellerator-coherence",
+        "-B",
+        "/tmp/cellerator-coherence-build",
+        "-DCELLERATOR_ENABLE_CUDA=OFF",
+        "-DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF",
+        "-DCELLERATOR_BUILD_TESTS=ON"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/cpu_configure.log",
+      "source_paths": [
+        "CMakeLists.txt",
+        "src/compiler/CMakeLists.txt",
+        "cmake/compiler/CelleratorCompilerTargets.cmake",
+        "cmake/compiler/CelleratorHostSdk.cmake"
+      ],
+      "log_sha256": "71c3eba64fb0491fe1a42e739234fc715b6b4fbfd8b14707e4df97791bd612fd"
+    },
+    {
+      "name": "host_sdk_build",
+      "command": [
+        "cmake",
+        "--build",
+        "/tmp/cellerator-coherence-build",
+        "--target",
+        "libCellerator",
+        "cellerator",
+        "celleratord",
+        "-j",
+        "4"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/host_sdk_build.log",
+      "source_paths": [
+        "src/compiler/driver/driver_passthrough_milestone.cc",
+        "src/compiler/tooling/celleratord_architecture.cc",
+        "tools/cellerator/driver_passthrough.cc",
+        "tools/celleratord/celleratord_architecture.cc"
+      ],
+      "log_sha256": "21b850010db3ab842a0d7faae8d0c7953865a1e97ff6ff30324fa8dcdc069d37"
+    },
+    {
+      "name": "native_cpu_build",
+      "command": [
+        "cmake",
+        "--build",
+        "/tmp/cellerator-coherence-build",
+        "--target",
+        "cellerator_ops_numeric",
+        "cellerator_op_matrix_patch",
+        "cellerator_op_process_ports",
+        "cellerator_identity_registry",
+        "cellerator_support",
+        "cellerator_indexing",
+        "cellerator_gating",
+        "cellerator_layout",
+        "cellerator_sparse_support_indexing_test",
+        "cellerator_sparse_support_image_builder",
+        "cellerator_sparse_support_derivative_sampling",
+        "-j",
+        "4"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/native_cpu_build.log",
+      "source_paths": [
+        "src/ops/numeric/local_arithmetic.cc",
+        "src/ops/matrix/patch.cc",
+        "src/ops/process/ports.cc",
+        "src/structure/identity_registry.cc",
+        "src/support",
+        "src/indexing",
+        "src/gating",
+        "src/layout"
+      ],
+      "log_sha256": "286408759141fa668d9ace51ec032febe61fa718c437d8b47e9eebf228cf549e"
+    },
+    {
+      "name": "native_cpu_ctest",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/tmp/cellerator-coherence-build",
+        "--output-on-failure",
+        "-R",
+        "cellerator_sparse_support_(indexing|image_builder|derivative_sampling)"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/native_cpu_ctest.log",
+      "source_paths": [
+        "tests/sparse_support"
+      ],
+      "log_sha256": "bf9f258a47a86cc1227a2e14b77db8d89d53d2ba410b500e9543a5bf3d1331df"
+    },
+    {
+      "name": "semantic_ir_build",
+      "command": [
+        "cmake",
+        "--build",
+        "/tmp/cellerator-coherence-semantic-ir-build",
+        "-j",
+        "4"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/semantic_ir_build.log",
+      "source_paths": [
+        "tests/compiler/semantic_ir/CMakeLists.txt",
+        "src/compute/operation/relation_semantics.cc",
+        "src/compiler/ir/semantic"
+      ],
+      "log_sha256": "9b04585b30b7e905782dd1173a77a767ace8f0c4d4d72a6ede3c48b7d9d193d8"
+    },
+    {
+      "name": "semantic_ir_ctest",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/tmp/cellerator-coherence-semantic-ir-build",
+        "--output-on-failure"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/semantic_ir_ctest.log",
+      "source_paths": [
+        "tests/compiler/semantic_ir"
+      ],
+      "log_sha256": "97408260e453e6dc867b6c17162c56848f697d48e368f7e230a998e42ed7fbda"
+    },
+    {
+      "name": "semantic_spine_host_runner",
+      "command": [
+        "python3",
+        "-B",
+        "tests/semantic_spine/compiler/run_tests.py",
+        "--build-dir",
+        "/tmp/cellerator-coherence-semantic-spine-compiler-build"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/semantic_spine_host_runner.log",
+      "source_paths": [
+        "tests/semantic_spine/compiler/run_tests.py",
+        "tests/semantic_spine/compiler/diagnostic_test.cc",
+        "src/compiler/frontend/source/raw_token_stream.cc"
+      ],
+      "log_sha256": "d30c82977267a175e4762c128729f521f37be290948ab229aaf2d2ebf764325d"
+    },
+    {
+      "name": "celleratord_configure",
+      "command": [
+        "cmake",
+        "-S",
+        "tests/celleratord/cellerator",
+        "-B",
+        "/tmp/cellerator-coherence-celleratord-build"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/celleratord_configure.log",
+      "source_paths": [
+        "tests/celleratord/cellerator/CMakeLists.txt",
+        "src/compiler/tooling/cellerator"
+      ],
+      "log_sha256": "77ae23c46574977ffadc961a68fb041ff707109e2c976cb37acc9d563637756c"
+    },
+    {
+      "name": "celleratord_build",
+      "command": [
+        "cmake",
+        "--build",
+        "/tmp/cellerator-coherence-celleratord-build",
+        "-j",
+        "4"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/celleratord_build.log",
+      "source_paths": [
+        "tests/celleratord/cellerator",
+        "src/compiler/tooling/cellerator"
+      ],
+      "log_sha256": "7990e6f0ee7f0ee815094a7b2d97b409e456bcc958dc701ad573a5507e5d8a6c"
+    },
+    {
+      "name": "celleratord_ctest",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/tmp/cellerator-coherence-celleratord-build",
+        "--output-on-failure"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/celleratord_ctest.log",
+      "source_paths": [
+        "tests/celleratord/cellerator"
+      ],
+      "log_sha256": "38f9f32e9752a101fe416a0ac3f287e289a30766fdd19a22b586d4deff58c020"
+    },
+    {
+      "name": "compiler_pass_configure",
+      "command": [
+        "cmake",
+        "-S",
+        "tests/compiler/pass",
+        "-B",
+        "/tmp/cellerator-coherence-compiler-pass-build"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/compiler_pass_configure.log",
+      "source_paths": [
+        "tests/compiler/pass/CMakeLists.txt",
+        "src/compiler/pass/built_in_stage_replacement.cc"
+      ],
+      "log_sha256": "e65bd568d6e768dcb192d4a81f05ab0ce044b18532721afc26bfe61fd48fce13"
+    },
+    {
+      "name": "compiler_pass_build",
+      "command": [
+        "cmake",
+        "--build",
+        "/tmp/cellerator-coherence-compiler-pass-build",
+        "--target",
+        "cellerator_built_in_stage_replacement_test",
+        "-j",
+        "4"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/compiler_pass_build.log",
+      "source_paths": [
+        "tests/compiler/pass/built_in_stage_replacement_test.cc",
+        "src/compiler/pass/built_in_stage_replacement.cc"
+      ],
+      "log_sha256": "240437ab7803e93cef01e1edb69d72643dabe024f501c1bd5a22583be917c87b"
+    },
+    {
+      "name": "compiler_pass_ctest",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/tmp/cellerator-coherence-compiler-pass-build",
+        "--output-on-failure",
+        "-R",
+        "ce_ccp1_g02_007"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/compiler_pass_ctest.log",
+      "source_paths": [
+        "tests/compiler/pass/built_in_stage_replacement_test.cc"
+      ],
+      "log_sha256": "dc71fb73d27013b865c0bbcfb42a7e2924c227415251298bce80855977b6f117"
+    },
+    {
+      "name": "raw_token_stream_build_run",
+      "command": [
+        "/bin/bash",
+        "-lc",
+        "/usr/bin/c++ -std=c++17 -Wall -Wextra -Werror -Iinclude src/compiler/frontend/source/raw_token_stream.cc tests/compiler/source/raw_token_stream_test.cc -o /tmp/cellerator-raw-token-stream-test && /tmp/cellerator-raw-token-stream-test"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/raw_token_stream_build_run.log",
+      "source_paths": [
+        "src/compiler/frontend/source/raw_token_stream.cc",
+        "include/Cellerator/compiler/frontend/source/raw_token_stream_v1.hh",
+        "tests/compiler/source/raw_token_stream_test.cc"
+      ],
+      "log_sha256": "6ecbf8ac46f39b520b2724982a89d76090fa9b9e0d2cc0de6f4395b81a352a7f"
+    },
+    {
+      "name": "activated_header_cache_build_run",
+      "command": [
+        "/bin/bash",
+        "-lc",
+        "/usr/bin/c++ -std=c++17 -Wall -Wextra -Werror -Iinclude src/compiler/frontend/source/activated_header_cache.cc tests/compiler/source/activated_header_cache_test.cc -o /tmp/cellerator-activated-header-cache-test && /tmp/cellerator-activated-header-cache-test"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/activated_header_cache_build_run.log",
+      "source_paths": [
+        "src/compiler/frontend/source/activated_header_cache.cc",
+        "include/Cellerator/compiler/frontend/source/activated_header_cache_v1.hh",
+        "tests/compiler/source/activated_header_cache_test.cc"
+      ],
+      "log_sha256": "eed0142278e79537fbd4769c5dee76430181d963b8e78f0e71028ff79482d62d"
+    },
+    {
+      "name": "parser_api_build_run",
+      "command": [
+        "/bin/bash",
+        "-lc",
+        "/usr/bin/c++ -std=c++17 -Wall -Wextra -Werror -Iinclude src/compiler/frontend/parser/parser_api.cc src/compiler/frontend/parser/parse_anonymous_execution_fields.cc src/compiler/frontend/parser/parse_inline_ceir_blocks.cc src/compiler/frontend/parser/named_field_parser.cc src/compiler/frontend/parser/parse_native_backend_fragments.cc src/compiler/frontend/parser/parse_non_relation_operation_families.cc src/compiler/frontend/parser/parse_planning_facts_preferences_and_hard_constraints.cc src/compiler/frontend/parser/parse_reflection_and_compiler_transform_constructs.cc src/compiler/frontend/parser/parse_relation_application.cc tests/compiler/parser/parser_api_test.cc -o /tmp/cellerator-parser-api-test && /tmp/cellerator-parser-api-test"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/parser_api_build_run.log",
+      "source_paths": [
+        "src/compiler/frontend/parser/parser_api.cc",
+        "include/Cellerator/compiler/frontend/parser/parser_api_v1.hh",
+        "src/compiler/frontend/parser/named_field_parser.cc",
+        "tests/compiler/parser/parser_api_test.cc"
+      ],
+      "log_sha256": "4430093297c3263caadeb64474f5f63fb73de41f0b4303f8ba4f2793bf67b659"
+    },
+    {
+      "name": "native_operators",
+      "command": [
+        "python3",
+        "-B",
+        "tests/substrate/operators/check.py",
+        "--build-dir",
+        "/tmp/cellerator-coherence-operators"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/native_operators.log",
+      "source_paths": [
+        "tests/substrate/operators",
+        "src/ops/matrix",
+        "src/ops/process"
+      ],
+      "log_sha256": "20f1f5937d7e31df1d525a887d7c4046096a96410ee4795e3952130eadee5e7a"
+    },
+    {
+      "name": "native_effects",
+      "command": [
+        "python3",
+        "-B",
+        "tests/substrate/effects/check.py",
+        "--build-dir",
+        "/tmp/cellerator-coherence-effects"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/native_effects.log",
+      "source_paths": [
+        "tests/substrate/effects",
+        "include/Cellerator/ops"
+      ],
+      "log_sha256": "a340492c776a980e2cc7555c234b73a67d81de0eb066a0b09e727d81caf433a4"
+    },
+    {
+      "name": "native_frontier",
+      "command": [
+        "python3",
+        "-B",
+        "tests/substrate/frontier/check.py",
+        "--build-dir",
+        "/tmp/cellerator-coherence-frontier",
+        "--sdk-prefix",
+        "/tmp/cellerator-coherence-sdk-prefix"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/native_frontier.log",
+      "source_paths": [
+        "tests/substrate/frontier",
+        "include/Cellerator/ops"
+      ],
+      "log_sha256": "c2fe89f5004c054a826482bd0c7e923c73dec1a7a54dfa9031e36376d8bb9c17"
+    },
+    {
+      "name": "installed_sdk",
+      "command": [
+        "python3",
+        "-B",
+        "tests/substrate/install/check.py",
+        "--build-dir",
+        "/tmp/cellerator-coherence-install",
+        "--prefix",
+        "/tmp/cellerator-coherence-installed",
+        "--require-integrated"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/installed_sdk.log",
+      "source_paths": [
+        "tests/substrate/install",
+        "src/ops/numeric/local_arithmetic.cc",
+        "include/Cellerator/ops/numeric/local_arithmetic.hh"
+      ],
+      "log_sha256": "c034bfcc8251cc518f7b5e04ba0265066b97118cba9e13e97c0010d7a4dde860"
+    },
+    {
+      "name": "cuda_static_build",
+      "command": [
+        "cmake",
+        "--build",
+        "/tmp/cellerator-coherence-cuda-build",
+        "--target",
+        "cellerator_ops_numeric",
+        "cellerator_native_numeric",
+        "cellerator_local_differential",
+        "cellerator_sparse_support_cuda",
+        "cellerator_identity_registry",
+        "cellerator_layout",
+        "cellerator_semantic_projection_layout",
+        "cellerator_feature_major_projection",
+        "cellerator_transpose_projection",
+        "-j",
+        "4"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/cuda_static_build.log",
+      "source_paths": [
+        "src/ops/numeric/local_arithmetic.cc",
+        "src/ops/sparse_support/training.cu",
+        "src/structure/identity_registry.cc",
+        "src/layout"
+      ],
+      "log_sha256": "79e3387a0ed819622d5f1e174fd097d323e8069ebd31f64f133063aff0d384ae"
+    },
+    {
+      "name": "semantic_spine_static_configure",
+      "command": [
+        "cmake",
+        "-S",
+        "/tmp/cellerator-coherence",
+        "-B",
+        "/tmp/cellerator-coherence-spine-static-build",
+        "-DCELLERATOR_ENABLE_CUDA=ON",
+        "-DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF",
+        "-DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF",
+        "-DCMAKE_CUDA_ARCHITECTURES=70",
+        "-DCELLERATOR_BUILD_TESTS=ON",
+        "-DCELLERATOR_ENABLE_TORCH=OFF",
+        "-DCELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1=ON",
+        "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/semantic_spine_static_configure.log",
+      "source_paths": [
+        "cmake/SemanticSpineV1.cmake",
+        "src/compiler/frontend/source/raw_token_stream.cc",
+        "src/compiler/sema/relation_update_spine_bridge.cc"
+      ],
+      "log_sha256": "2ae5adf5e8e372788b1e1233f8c977ae7caae44331d1dccfa99226a1050325fa"
+    },
+    {
+      "name": "semantic_spine_static_build",
+      "command": [
+        "cmake",
+        "--build",
+        "/tmp/cellerator-coherence-spine-static-build",
+        "--target",
+        "cellerator_relation_update_compiler",
+        "cellerator_spine_frontend",
+        "-j",
+        "4"
+      ],
+      "exit_code": 0,
+      "log": "planning/coherence/qualification/native/semantic_spine_static_build.log",
+      "source_paths": [
+        "src/compiler/frontend/source/raw_token_stream.cc",
+        "src/compiler/frontend/parser/parser_api.cc",
+        "src/compiler/sema/relation_update_spine_bridge.cc"
+      ],
+      "log_sha256": "79a893483ae8daa698f0761a8f024617b01688c53fd6134dc1a8047768b647b4"
+    }
+  ],
+  "source_checkpoint": "7663aa5e",
+  "coverage_note": "CPU/static checks of the integrated source worktree. device_execution_performed describes these commands only; admitted GPU checks have separate source/binary-bound records."
+}

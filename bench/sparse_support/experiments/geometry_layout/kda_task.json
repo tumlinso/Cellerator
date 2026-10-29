@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "task_id": "cellerator-cegeo-geometry-layout-probe-20261027",
+  "budgets": {"max_build_jobs": 1, "max_candidates": 5, "max_seconds": 3300},
+  "cases": [
+    {
+      "id": "small",
+      "weight": 1.0,
+      "input": {
+        "fixture": "small",
+        "fixture_root": "/tmp/cellerator_scaled_sparse_fixtures_887437fc",
+        "fixture_manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+        "seed": 20261027,
+        "entities": 64,
+        "support_edges": 96
+      },
+      "parameters": {"cells": 32, "width": 64, "oracle": "same Torch SIMT output, loss, parameter gradient"}
+    },
+    {
+      "id": "large_ranked",
+      "weight": 1.0,
+      "input": {
+        "fixture": "large-ranked",
+        "fixture_root": "/tmp/cellerator_scaled_sparse_fixtures_887437fc",
+        "fixture_manifest_sha256": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32",
+        "seed": 20261027,
+        "entities": 4096,
+        "support_edges": 262144,
+        "rank_count": 512,
+        "unique_directed_pairs": true,
+        "degree_cap": 512
+      },
+      "parameters": {"cells": 32, "width": 64, "cohort_shared_identity_fraction": 0.75}
+    },
+    {
+      "id": "event_local",
+      "weight": 1.0,
+      "input": {
+        "fixture": "deterministic_local_event_support",
+        "support_constructor": "packed_training_benchmark.make_support",
+        "seed": 20261027,
+        "entities": 32,
+        "support_edges": 64
+      },
+      "parameters": {"cells": 4, "steps": 6, "width": 64, "selected_occurrence": "last positive event"}
+    }
+  ],
+  "commands": {
+    "build": {
+      "argv": ["/home/tumlinson/Software/miniconda3/bin/python3", "geometry_kda_adapter.py", "build", "{request}", "{result}"],
+      "cpu_only": true,
+      "timeout_seconds": 120
+    },
+    "validate": {
+      "argv": ["/home/tumlinson/Software/miniconda3/bin/python3", "geometry_kda_adapter.py", "validate", "{request}", "{result}"],
+      "timeout_seconds": 2400
+    },
+    "benchmark": {
+      "argv": ["/home/tumlinson/Software/miniconda3/bin/python3", "geometry_kda_adapter.py", "benchmark", "{request}", "{result}"],
+      "timeout_seconds": 2400
+    }
+  },
+  "probe": {
+    "argv": ["/home/tumlinson/Software/miniconda3/bin/python3", "bench/sparse_support/experiments/geometry_layout/geometry_kda_adapter.py", "probe", "{request}", "{result}"],
+    "timeout_seconds": 120
+  },
+  "numerical_requirements": {
+    "output": {"reference": "same frozen Torch SIMT sparse relation", "atol": 0.005, "rtol": 0.005},
+    "parameter_gradient": {"reference": "same frozen Torch SIMT sparse relation and Adam leaves", "atol": 0.006, "rtol": 0.006},
+    "loss": {"atol": 0.0005, "rtol": 0.005},
+    "logical_ownership": "all support IDs are bound once through the image value-map; every mapped endpoint matches the original logical support",
+    "residual_and_delta": "packed relation output and full training gradient cover exact support; hybrid residual edges remain explicit"
+  },
+  "timing": {
+    "metric": "training_step_wall_ms",
+    "unit": "ms",
+    "direction": "minimize",
+    "scope": "zero_grad+gate_score_and_ste+all_edge_values+relation_forward+loss+backward_including_derivative_only_gate_gradient+guarded_adam; synchronized wall",
+    "warmup": 3,
+    "repetitions": 21,
+    "iterations": 2,
+    "setup_pairs": 5,
+    "rounds": 2,
+    "confirmation_rounds": 2,
+    "seed": 20261027
+  },
+  "promotion": {"min_improvement": 0.0, "max_regression": 0.9, "confidence": 0.95, "bootstrap_samples": 1000},
+  "target": {"kind": "cuda", "architecture": "sm_70", "compiler_target": "sm_70"},
+  "toolchain": {
+    "compiler_target_probe_argv": ["/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc", "--list-gpu-code"],
+    "runtime": "qualified immutable Cellerator Torch v12 validator extension; Torch CUDA runtime 12.6"
+  },
+  "execution": {"mode": "direct"},
+  "trusted_inputs": [
+    {"id": "geometry_adapter", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/geometry_kda_adapter.py", "role": "harness"},
+    {"id": "geometry_campaign_runner", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/run_geometry_campaign.py", "role": "harness"},
+    {"id": "geometry_kda_runner", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/run_geometry_kda.py", "role": "harness"},
+    {"id": "compute_sanitizer", "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer", "role": "toolchain"},
+    {"id": "geometry_torch_driver", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/geometry_training_benchmark.py", "role": "benchmark"},
+    {"id": "training_oracle_driver", "path": "/home/tumlinson/Cellerator/bench/sparse_support/packed_training_benchmark.py", "role": "validator"},
+    {"id": "image_manifest", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/prepared_images.json", "role": "reference"},
+    {"id": "canonical_small_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/small/canonical.cegeo", "role": "reference"},
+    {"id": "reordered_small_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/small/reordered.cegeo", "role": "reference"},
+    {"id": "hybrid8_small_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/small/hybrid8.cegeo", "role": "reference"},
+    {"id": "hybrid16_small_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/small/hybrid16.cegeo", "role": "reference"},
+    {"id": "canonical_ranked_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/large-ranked/canonical.cegeo", "role": "reference"},
+    {"id": "reordered_ranked_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/large-ranked/reordered.cegeo", "role": "reference"},
+    {"id": "hybrid8_ranked_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/large-ranked/hybrid8.cegeo", "role": "reference"},
+    {"id": "hybrid16_ranked_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/large-ranked/hybrid16.cegeo", "role": "reference"},
+    {"id": "canonical_event_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/event_local/canonical.cegeo", "role": "reference"},
+    {"id": "reordered_event_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/event_local/reordered.cegeo", "role": "reference"},
+    {"id": "hybrid8_event_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/event_local/hybrid8.cegeo", "role": "reference"},
+    {"id": "hybrid16_event_image", "path": "/home/tumlinson/Cellerator/bench/sparse_support/experiments/geometry_layout/evidence/prepared_images/event_local/hybrid16.cegeo", "role": "reference"},
+    {"id": "frozen_torch_identity", "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v12-validator/identity.json", "role": "toolchain"},
+    {"id": "frozen_torch_extension", "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v12-validator/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so", "role": "toolchain"},
+    {"id": "small_fixture_manifest", "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/small/manifest.json", "role": "reference"},
+    {"id": "ranked_fixture_manifest", "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-ranked/manifest.json", "role": "reference"},
+    {"id": "fixture_generator", "path": "/home/tumlinson/Cellerator/bench/sparse_support/scaled_fixtures.py", "role": "reference"}
+  ]
+}

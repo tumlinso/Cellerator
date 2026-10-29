@@ -11,6 +11,21 @@ add_library(cellerator_row_masked_n1_candidate STATIC
     src/compute/candidate/row_masked_n1_candidate.cu
 )
 
+# Provider-specific layout construction consumes semantic geometry and the
+# reusable physical projection owner without moving discovery into layout.
+add_library(cellerator_semantic_projection_layout STATIC
+    src/layout/mma_physical_work_layout.cc
+    src/layout/mma_residual_builder.cc)
+add_library(Cellerator::semantic_projection_layout ALIAS
+    cellerator_semantic_projection_layout)
+target_include_directories(cellerator_semantic_projection_layout PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+target_link_libraries(cellerator_semantic_projection_layout PUBLIC
+    Cellerator::layout Cellerator::semantic_geometry_v1
+    CellPack::execution_image_v2)
+target_compile_features(cellerator_semantic_projection_layout PUBLIC cxx_std_17)
+
 # CE-GEO source-linked provider and exact physical-projection inventory.
 # Semantic compilation remains in Cellerator::semantic_geometry_v1; this
 # target owns target refinement, physical realization, and provider discovery.
@@ -20,13 +35,14 @@ add_library(cellerator_architecture_provider STATIC
     src/compute/architecture/provider_registry.cc
     ${CELLERATOR_NVIDIA_COMMON_PROVIDER_SOURCES}
     ${CELLERATOR_NVIDIA_SM70_PROVIDER_SOURCES}
-    src/compute/projection/mma_physical_cover_validation.cc
-    src/compute/projection/mma_physical_work_layout.cc
-    src/compute/projection/mma_residual_builder.cc
-    src/compute/projection/physical_mma_hybrid.cc
 )
 add_library(Cellerator::architecture_provider ALIAS
     cellerator_architecture_provider)
+if(TARGET Cellerator::sparse_support)
+    # Cold image construction/validation is host-capable and shares one owner.
+    target_link_libraries(cellerator_architecture_provider PUBLIC Cellerator::sparse_support)
+else()
+endif()
 target_include_directories(cellerator_architecture_provider PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
@@ -39,6 +55,7 @@ target_link_libraries(cellerator_architecture_provider PUBLIC
     Cellerator::runtime
     Cellerator::semantic_geometry_v1
     CellPack::execution_image_v2
+    Cellerator::layout Cellerator::semantic_projection_layout
     CUDA::cudart
 )
 set_target_properties(cellerator_architecture_provider PROPERTIES
@@ -349,7 +366,7 @@ set_target_properties(cellerator_csr_fallback_candidate PROPERTIES
 # Construction and value packing are explicit host preparation; prepared
 # execution consumes the native feature-major payload directly for N=1..16.
 add_library(cellerator_feature_major_projection STATIC
-    src/compute/projection/physical_feature_major.cc
+    src/layout/physical_feature_major.cc
 )
 add_library(Cellerator::feature_major_projection ALIAS
     cellerator_feature_major_projection)
@@ -365,7 +382,7 @@ target_link_libraries(cellerator_feature_major_projection PUBLIC
 target_compile_features(cellerator_feature_major_projection PUBLIC cxx_std_17)
 
 add_library(cellerator_transpose_projection STATIC
-    src/compute/projection/physical_transpose.cc
+    src/layout/physical_transpose.cc
 )
 add_library(Cellerator::transpose_projection ALIAS
     cellerator_transpose_projection)

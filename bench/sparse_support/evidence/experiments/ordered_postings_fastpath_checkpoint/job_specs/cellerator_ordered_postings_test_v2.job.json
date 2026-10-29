@@ -1,0 +1,14 @@
+{
+  "argv": ["/tmp/cellerator_ordered_postings_build/tests/sparse_support/cellerator_sparse_support_cuda_worksets"],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "timeout_seconds": 180,
+  "max_attempts": 1,
+  "idempotency_key": "cellerator-ordered-disjoint-postings-worksets-v2-20261027",
+  "resources": [
+    {"kind":"gpu","quantities":{"memory_bytes":1073741824},"selectors":{"resource_id":"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"},"mode":"exclusive"}
+  ],
+  "tags": ["gpu.exclusive", "cellerator.sparse_support.cuda_test", "cellerator.sparse_support.indexing"],
+  "environment": {"OMP_NUM_THREADS":"2","PATH":"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin:/usr/local/bin:/usr/bin:/bin"},
+  "interruption": {"restart_safe":true,"cancellation_supported":true},
+  "preconditions": [{"name":"gpu.quiescence","schema_version":1,"parameters":{"timeout_seconds":60,"interval_seconds":1,"consecutive_samples":3,"max_utilization_percent":0}}]
+}

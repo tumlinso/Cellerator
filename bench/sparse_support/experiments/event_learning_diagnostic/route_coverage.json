@@ -1,0 +1,160 @@
+{
+  "cells": 64,
+  "class_destinations": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "current_input_route_support_top1_ceiling_count": 47,
+  "current_input_route_support_top1_ceiling_fraction": 0.734375,
+  "current_readout_entity_count": 24,
+  "diagnostic": "event_true_target_route_coverage_v1",
+  "heldout_seed": 241027,
+  "heldout_true_target_route_missing_from_all_window_sources": 0,
+  "heldout_true_target_route_missing_initial": 17,
+  "heldout_true_target_route_present_after_reported_promotion": 47,
+  "heldout_true_target_route_present_from_any_window_source": 64,
+  "heldout_true_target_route_present_from_any_window_source_after_promotion": 64,
+  "heldout_true_target_route_present_initial": 47,
+  "history_window_source_count_max": 5,
+  "history_window_source_count_mean": 5.0,
+  "history_window_source_count_min": 5,
+  "initial_support_edges": 96,
+  "last_event_source_domain": [
+    8,
+    15
+  ],
+  "per_source": [
+    {
+      "heldout_examples": 8,
+      "heldout_targets_supported": 7,
+      "heldout_targets_unsupported": 1,
+      "last_event_source": 8,
+      "supported_class_destination_count": 3,
+      "supported_class_destinations": [
+        16,
+        17,
+        18
+      ]
+    },
+    {
+      "heldout_examples": 8,
+      "heldout_targets_supported": 7,
+      "heldout_targets_unsupported": 1,
+      "last_event_source": 9,
+      "supported_class_destination_count": 3,
+      "supported_class_destinations": [
+        17,
+        18,
+        19
+      ]
+    },
+    {
+      "heldout_examples": 8,
+      "heldout_targets_supported": 7,
+      "heldout_targets_unsupported": 1,
+      "last_event_source": 10,
+      "supported_class_destination_count": 3,
+      "supported_class_destinations": [
+        16,
+        17,
+        19
+      ]
+    },
+    {
+      "heldout_examples": 8,
+      "heldout_targets_supported": 3,
+      "heldout_targets_unsupported": 5,
+      "last_event_source": 11,
+      "supported_class_destination_count": 3,
+      "supported_class_destinations": [
+        16,
+        17,
+        18
+      ]
+    },
+    {
+      "heldout_examples": 8,
+      "heldout_targets_supported": 8,
+      "heldout_targets_unsupported": 0,
+      "last_event_source": 12,
+      "supported_class_destination_count": 4,
+      "supported_class_destinations": [
+        16,
+        17,
+        18,
+        19
+      ]
+    },
+    {
+      "heldout_examples": 8,
+      "heldout_targets_supported": 8,
+      "heldout_targets_unsupported": 0,
+      "last_event_source": 13,
+      "supported_class_destination_count": 4,
+      "supported_class_destinations": [
+        16,
+        17,
+        18,
+        19
+      ]
+    },
+    {
+      "heldout_examples": 8,
+      "heldout_targets_supported": 4,
+      "heldout_targets_unsupported": 4,
+      "last_event_source": 14,
+      "supported_class_destination_count": 2,
+      "supported_class_destinations": [
+        17,
+        19
+      ]
+    },
+    {
+      "heldout_examples": 8,
+      "heldout_targets_supported": 3,
+      "heldout_targets_unsupported": 5,
+      "last_event_source": 15,
+      "supported_class_destination_count": 3,
+      "supported_class_destinations": [
+        16,
+        17,
+        19
+      ]
+    }
+  ],
+  "possible_routes_for_event_sources_to_class_destinations": 32,
+  "post_adaptation_support_edges": 97,
+  "post_promotion_coverage_changed": false,
+  "qualification_source": "torch-v9 corrected synthetic learning run",
+  "readout_invariant": "at each event step inputs contain only the current event entity; history/state affect gates, while sparse relation output for a destination is zero if the current event source has no support edge to it. The same permitted count/time-window history has multiple source entities and can supply a route when the current source cannot; unconnected outputs have zero logits because the readout has no bias",
+  "reported_promotion_zero_based": [
+    3,
+    23
+  ],
+  "steps": 12,
+  "support_route_count_for_event_sources_to_class_destinations": 25,
+  "train_seed": 41027,
+  "unconnected_output_ids_after_reported_promotion": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "valid_target_count": 4,
+  "validator_mechanism_read": false,
+  "validator_support_read": false
+}

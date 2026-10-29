@@ -1,0 +1,321 @@
+{
+  "format": "todo-orchestrator.plan",
+  "schema_version": 1,
+  "package_id": "cellerator-coherence-adoption-20261028-v1",
+  "project": {
+    "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "authority_id": "c4f019fe-f445-51c2-b444-a7cf24d6be34"
+  },
+  "provenance": {
+    "source": "planning/coherence/plan.json",
+    "producer": "Cellerator final adoption task derived from the approved coherence package"
+  },
+  "source_manifests": [
+    {
+      "id": "approved-coherence-plan",
+      "location": "planning/coherence/plan.json",
+      "sha256": "d88f971d734d27caceadb88c94de5aa72852aa22ad6e3253229328d78169d31e"
+    },
+    {
+      "id": "is1-reconciliation-json",
+      "location": "planning/coherence/is1-reconciliation.json",
+      "sha256": "934252d0ffc74147b66f3ce3e74df211cd96fa8ffa109ce29beceec18e492bcc"
+    },
+    {
+      "id": "is1-reconciliation-md",
+      "location": "planning/coherence/is1-reconciliation.md",
+      "sha256": "dac5b75354fe77562f01e16d91fbbc99072ba5ad9ae4d06c995c2043690aa01b"
+    }
+  ],
+  "work_items": [
+    {
+      "id": "CE-COHERE-10",
+      "title": "Review and adopt the integrated Cellerator coherence proposal",
+      "objective": "Review the preserved implementation and evidence against every approved coherence outcome, then make one bounded final adoption record.",
+      "outcome": "A source-bound final review covers the approved deliverables, records real evidence, and leaves unsupported capabilities and unknown legacy effects explicit.",
+      "scope": {
+        "paths": [
+          {
+            "path": ".gitignore",
+            "access": "write"
+          },
+          {
+            "path": "AGENTS.md",
+            "access": "write"
+          },
+          {
+            "path": "CMakeLists.txt",
+            "access": "write"
+          },
+          {
+            "path": "CONTRIBUTING.md",
+            "access": "write"
+          },
+          {
+            "path": "README.md",
+            "access": "write"
+          },
+          {
+            "path": "bench",
+            "access": "write"
+          },
+          {
+            "path": "bindings",
+            "access": "write"
+          },
+          {
+            "path": "cmake",
+            "access": "write"
+          },
+          {
+            "path": "compat/cp_math_v1/CMakeLists.txt",
+            "access": "write"
+          },
+          {
+            "path": "custom_torch_ops.md",
+            "access": "write"
+          },
+          {
+            "path": "docs",
+            "access": "write"
+          },
+          {
+            "path": "examples",
+            "access": "write"
+          },
+          {
+            "path": "experiments",
+            "access": "write"
+          },
+          {
+            "path": "include",
+            "access": "write"
+          },
+          {
+            "path": "planning",
+            "access": "write"
+          },
+          {
+            "path": "pyproject.toml",
+            "access": "write"
+          },
+          {
+            "path": "python",
+            "access": "write"
+          },
+          {
+            "path": "scope.md",
+            "access": "write"
+          },
+          {
+            "path": "scripts",
+            "access": "write"
+          },
+          {
+            "path": "src",
+            "access": "write"
+          },
+          {
+            "path": "tests",
+            "access": "write"
+          },
+          {
+            "path": "tools",
+            "access": "write"
+          }
+        ],
+        "concepts": [
+          "Cellerator package coherence",
+          "biological execution geometry",
+          "preservation-first consolidation",
+          "honest capability boundaries"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "[CE-COHERE-00 acceptance] Full private checkout/archive restoration verified",
+          "[CE-COHERE-00 acceptance] Approved plan preserved; authority backup limitation explicit",
+          "[CE-COHERE-01 acceptance] Live tips archived and content-equivalence recorded",
+          "[CE-COHERE-01 acceptance] Missing work integrated; protected managed state retained on unsupported cleanup",
+          "[CE-COHERE-02 acceptance] Exhaustive source disposition manifest and validator",
+          "[CE-COHERE-02 acceptance] Agent routing distinguishes source/evidence/experiments and visible gaps",
+          "[CE-COHERE-03 acceptance] Native numerical capabilities and consumers preserved",
+          "[CE-COHERE-03 acceptance] Build and affected checks pass after moves and purpose renames",
+          "[CE-COHERE-04 acceptance] Public ownership modules compose existing source with one parameter owner",
+          "[CE-COHERE-04 acceptance] Installed-package and optimizer/autograd checks pass",
+          "[CE-COHERE-05 acceptance] Shared and per-mechanism modes implement complete state and parameter gradients",
+          "[CE-COHERE-05 acceptance] Legacy checkpoint computation and optimizer-state values preserved",
+          "[CE-COHERE-06 acceptance] Dependency-specific reuse and bounded workset contracts validated",
+          "[CE-COHERE-06 acceptance] Native alternatives retain correctness fallbacks and bounded complete-cost evidence",
+          "[CE-COHERE-07 acceptance] Bounded non-JIT field witness reuses existing operations/contracts",
+          "[CE-COHERE-07 acceptance] Field maturity and lack of live-recompile guarantee explicit",
+          "[CE-COHERE-08 acceptance] Documentation accurately maps implementation, evidence and gaps",
+          "[CE-COHERE-08 acceptance] Affected docs render/links validate; GitHub description updated with gh",
+          "[CE-COHERE-09 acceptance] Extract linked code before recoverable archival",
+          "[CE-COHERE-09 acceptance] Independent numerical/build/package/docs/source-map qualification and publication complete; unsupported host lifecycle remains explicit",
+          "[CE-COHERE-10 gap record] Unsupported Torch operation/JVP/precision/device coverage, absence of an integrated-substrate provider receipt, and unknown legacy effects remain explicitly unresolved where the evidence does not close them."
+        ],
+        "required_evidence": [],
+        "allowed_dispositions": [
+          "completed",
+          "evaluated_not_promoted",
+          "accepted_negative"
+        ]
+      },
+      "references": [
+        {
+          "label": "Original approved plan and task assertions",
+          "uri": "planning/coherence/plan.json"
+        },
+        {
+          "label": "IS1 task reconciliation and limits",
+          "uri": "planning/coherence/is1-reconciliation.json"
+        },
+        {
+          "label": "IS1 task reconciliation narrative",
+          "uri": "planning/coherence/is1-reconciliation.md"
+        },
+        {
+          "label": "Cellerator source disposition map",
+          "uri": "docs/development/source_map/path_map.jsonl"
+        },
+        {
+          "label": "Current implementation boundary",
+          "uri": "docs/current_implementation.qmd"
+        },
+        {
+          "label": "Native source/build/installed-consumer qualification",
+          "uri": "planning/coherence/qualification/native/receipt.json"
+        },
+        {
+          "label": "Prepared routing correctness and scope",
+          "uri": "bench/sparse_support/experiments/prepared_routing/REPORT.md"
+        },
+        {
+          "label": "Prepared routing exact CUDA and sanitizer evidence",
+          "uri": "bench/sparse_support/experiments/prepared_routing/evidence/paired-route-paths.json"
+        },
+        {
+          "label": "Sparse support tests",
+          "uri": "tests/sparse_support"
+        },
+        {
+          "label": "Prepared routing tests",
+          "uri": "tests/prepared_routing"
+        },
+        {
+          "label": "Documentation validation record",
+          "uri": "planning/coherence/qualification/documentation/checks.json"
+        },
+        {
+          "label": "Preservation validation record",
+          "uri": "planning/coherence/preservation-validation.json"
+        },
+        {
+          "label": "Preserved branch dispositions",
+          "uri": "planning/coherence/branches.md"
+        },
+        {
+          "label": "Preservation archive disposition",
+          "uri": "planning/coherence/archive-disposition.md"
+        },
+        {
+          "label": "CUDA qualification index",
+          "uri": "planning/coherence/qualification/cuda/index.json"
+        }
+      ],
+      "supersedes": [
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-00",
+          "revision_id": "definition-581fdd5ad3953486b67a91058c2e8edcb4b3ac4c74616585c41030985cabf2d0"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-01",
+          "revision_id": "definition-c32e83f417f161ad78bb0cb49c291c2f736fc183cff83e2549f872e4f29cdf07"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-02",
+          "revision_id": "definition-7d494ab15ce97efdc6cddd6bfda8aeffac8b19d74e8eb08e858aca31e45df9fc"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-03",
+          "revision_id": "definition-4f2155fb05557ea90a81b70ee1eacf6deef03e9f0af3363986260ef2799c4a14"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-04",
+          "revision_id": "definition-014d5b24ba479b4dc381ec90fa3de3581389635f0061236624155c0bebc9daa2"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-05",
+          "revision_id": "definition-ca03dbd3584fe6d35650d2b6ec13b8cdd5d238b593f17ba395524569f783b59f"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-06",
+          "revision_id": "definition-41b17bfd213130d24346a375e465850c98ec28f17b41a295ef5d5db787a88dae"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-07",
+          "revision_id": "definition-9067a4abb74e58de2a5551b471468b9d5ca2b8c36bc8e683d71a9b0b6c2db2e7"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-08",
+          "revision_id": "definition-67925eae3cb806cb00981d54a935a34bb1ed97661aac878e4c9e350e55d859f5"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-09",
+          "revision_id": "definition-b9c75b1252f073cb1bf59bba3f8ec0659149bbf74fc0ec96e3a3407660fe84a4"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-IS1-TORCH",
+          "revision_id": "definition-5d56f9dcef75d72d0642177d5a74770d10533ce1604d88664f0e6ed2371c8d65"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-IS1-QUALIFY",
+          "revision_id": "definition-9ba0c0a399779602934c210cd4216ff4d261ec619859acaedeca3aa852678b30"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-IS1-DOCS",
+          "revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-IS1-INTEGRATE",
+          "revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8"
+        },
+        {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CE-IS1-CLOSE",
+          "revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5"
+        }
+      ]
+    }
+  ]
+}

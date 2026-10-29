@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compiler/ir/realization/freeze_realization_ir_module_and_target_scopes_v1.hh>
+#include <Cellerator/compiler/ir/realization/realization_ir_module_and_target_scopes_v1.hh>
 
 #include <cstdint>
 #include <string>

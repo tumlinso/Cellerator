@@ -1,0 +1,13 @@
+Ordered-postings aggregate cardinality overflow guard
+
+The latest SM70 incremental build of `cellerator_sparse_support_cuda_worksets`
+passed in `/tmp/cellerator_ordered_postings_resume_build`.
+`cellerator_sparse_support_cuda_worksets --bound-preflight-only` exited 0. This
+host-only path calls the query API with `cell_count=2` and
+`index.item_count=UINT64_MAX`, verifies `cudaErrorInvalidValue`, and returns
+before pointer checks, CUDA runtime calls, allocations, or kernel launches.
+`git diff --check` passed. Full GPU tests and sanitizers previously passed on
+the prior source identity; they were not rerun after this small prelaunch guard
+because GPU3 was handed to the indexed-values worker.
+
+Updated source and binary hashes are in `overflow_bound_source_identities.sha256`.

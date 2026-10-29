@@ -2,7 +2,7 @@
 #include <Cellerator/compiler/frontend/parser/parse_biological_type_constructors_and_qualifiers_v1.hh>
 #include <Cellerator/compiler/frontend/parser/parse_non_relation_operation_families_v1.hh>
 #include <Cellerator/compiler/frontend/parser/parse_relation_application_v1.hh>
-#include <Cellerator/compiler/sema/implement_numerical_tuple_semantics_v1.hh>
+#include <Cellerator/compiler/sema/numerical_tuple_semantics_v1.hh>
 #include <algorithm>
 #include <cctype>
 #include <map>

@@ -1,0 +1,168 @@
+{
+  "format": "cellerator-workflow-repair-validation-v1",
+  "repair": "Exact source-fenced late authoring handoff/report and equivalent bounded raw Git object batches",
+  "candidate": {
+    "todo_commit": "abc0d409e26e8dd579a9172373d4c9b4bd5aeb36",
+    "wheel": "/tmp/cellerator-workflow-repair/wheels-handoff/todo_orchestrator-0.2.1-py3-none-any.whl",
+    "wheel_sha256": "0557657e039925e6955776a6795cb05fce8e07a8d1e906de23e2c64d0b50e561",
+    "todo_package_fingerprint": "c9c639a33e9c574fcac5ef9ec0f0a648ab1caa9161eeee90f8a6f24ddc3b2638",
+    "project_control_wheel": "/tmp/cellerator-workflow-repair/wheels-pc-gitlink/project_control-0.5.2-py3-none-any.whl",
+    "project_control_wheel_sha256": "54b6dcb2ffe29e3f2bc619ce0924f46ff45b0441d3766ab06ce990e93028b163",
+    "project_control_package_fingerprint": "232f284bf12c3bc0abc5d8a1788d1851d27c0b0c8ad0b9a6c0872783837a265b",
+    "project_control_commit": "e2b3febbe88a352ed08126d04f2c8ca39af81f5d",
+    "candidate": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-todo-abc0d40-20261028T230541Z",
+    "old_release": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-todo-e3a7421-20261028T220736Z",
+    "release_manifest_sha256": "70ffdebcbfd4e461759a25f338d1da9189fba345173afb754bfc19218a5aa9e9",
+    "unchanged_packages": [
+      "device_scheduler_adapters",
+      "device_scheduler_core",
+      "device_scheduler_mcp",
+      "project_control",
+      "project_evidence",
+      "project_source"
+    ],
+    "third_party_versions_unchanged": true,
+    "authority_migration": false,
+    "activation_performed": false
+  },
+  "root_accepted_contract": "Expired current nonterminal unreconciled attempt may hand back exact committed source for review without renewing lease or authorizing computation; expired report additionally requires fresh matching source handoff and exact durable Todo command receipt.",
+  "diagnosis": {
+    "operation": "Same immutable finish action diagnosed after public recovery inspection",
+    "authority_revision": 18,
+    "attempt_state": "admitted",
+    "lease_expired": true,
+    "lease_expires_at": "2026-10-28T22:30:10.275068+00:00",
+    "original_finish_file_time_utc": "2026-10-28T22:31",
+    "failure_class": "AttemptLeaseMismatchError",
+    "failure_site": "todo_orchestrator/authority/attempts.py:1422 handback_authoring requires unexpired lease",
+    "source_state": "clean",
+    "source_digest": "595f4873084416820c253c6c4e7ecd7a6405f3a7061876b5f2e9c4c93db38147",
+    "process_observation": "unknown",
+    "children_observation": "none",
+    "authoring_handoff_present": false,
+    "advertised_recovery_intents": 0,
+    "candidate_count": 0,
+    "operation_count": 0,
+    "same_workflow_handle": true,
+    "finish_action_note_changed": false,
+    "new_claim_or_release_or_acceptance_or_integration_performed": false,
+    "diagnostic_method": "Python3.12 sys.monitoring EXCEPTION_HANDLED only; no per-call sys.settrace",
+    "trace": "finish-monitor-exception-class.txt",
+    "finding": "The two-minute native lease expired after the one-shot MCP process ended and before original finish request. No evidence of a resource-observer database failure. Current native and compact workflow contracts provide no truthful release/completion recovery without exact authoring handoff or actually terminal producer evidence.",
+    "phase": "historical observation before root-approved source repair; live authority remains untouched during candidate preparation"
+  },
+  "checks": [
+    {
+      "name": "combined Todo attempts acceptance and Git source suites",
+      "result": "pass",
+      "tests": 86,
+      "seconds": 32.145,
+      "log": "handoff-todo-source.log"
+    },
+    {
+      "name": "required Project Control core smoke",
+      "result": "pass",
+      "tests": 44,
+      "subtests": 6,
+      "seconds": 4.57,
+      "log": "handoff-pc-core.log"
+    },
+    {
+      "name": "PC host handoff runtime identity config CLI source selection",
+      "result": "pass",
+      "tests": 28,
+      "seconds": 3.17,
+      "log": "handoff-pc-focused.log"
+    },
+    {
+      "name": "installed candidate engine Git config CLI native providers",
+      "result": "pass",
+      "tests": 115,
+      "seconds": 35.954,
+      "package_origins_asserted": true,
+      "log": "handoff-installed-tests.log"
+    },
+    {
+      "name": "installed candidate native authoring handoff",
+      "result": "pass",
+      "tests": 5,
+      "seconds": 1.38,
+      "package_origins_asserted": true,
+      "log": "handoff-installed-host-tests.log"
+    },
+    {
+      "name": "sealed official launcher and pairing",
+      "result": "pass",
+      "log": "candidate-handoff-help.txt"
+    },
+    {
+      "name": "independent engine safety review",
+      "result": "accepted",
+      "tests_rerun": 45,
+      "seconds": 18.437,
+      "reviewer": "configured Luna workflow_transport",
+      "scope": "Engine late handoff/report; separate Git batching assessed through equivalence and focused safety tests."
+    }
+  ],
+  "coverage": [
+    "Late exact handoff/report succeeds with stored lease/state/expiry unchanged, including live producer liveness without a false process-exit assertion.",
+    "No handoff, wrong lease, stale host proof, changed pinned source, released and reconciled attempt reject.",
+    "Host pin without durably committed Todo handback receipt rejects in the report writer transaction.",
+    "Expired heartbeat/computation authority unchanged.",
+    "Raw Git binary/symlink/duplicate blobs, malformed/missing/non-blob/OID/size/content/truncation and timeout cases; no filter/fsmonitor execution."
+  ],
+  "actual_configured_resource_read": {
+    "status": "observed",
+    "adapter_class": "DeviceSchedulerHostResourceFacade",
+    "owner_count": 0,
+    "observed_at": "2026-10-28T22:55:48.043145+00:00",
+    "coverage": "Actual configured host ownership read only; no fabricated empty registry, no native lifecycle/evidence mutation; finish provider must still reobserve."
+  },
+  "actual_git_manifest_benchmark": {
+    "repository_head": "11245b73a09723403575eb438e189b992241033b",
+    "measured_commit": "11245b73a09723403575eb438e189b992241033b",
+    "workspace_head": "038d110f59517587d55c6310ff0ff66ccc6b43bd",
+    "workspace": "/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-b014a2b006f13d5c565629c02528fb9633909580731abc04bc324829b5390a7f",
+    "git_version": "git version 2.43.0",
+    "provider_source": "/tmp/cellerator-workflow-repair/todo/src/todo_orchestrator/providers/git/provider.py",
+    "read_only": true,
+    "commit_manifest": {
+      "entries": 10615,
+      "manifest_sha256": "96aef9a3dd13f256f049df40dd6ffb00ec89de6ba00cc579c1170a11739b5fc9",
+      "per_object_seconds": 23.981063772000198,
+      "batched_seconds": 2.762315313993895,
+      "speedup": 8.681508461583686,
+      "entry_equality": true
+    },
+    "index_manifest": {
+      "entries": 10623,
+      "manifest_sha256": "e8d30cb75f1057865a0c2cebb8b8b3017d419d82d930e791f2b7609a2218ce2b",
+      "per_object_seconds": 24.24197927500063,
+      "batched_seconds": 2.9703951370029245,
+      "speedup": 8.161196796012922,
+      "entry_equality": true
+    }
+  },
+  "benchmark_repeats": "git-object-batch-cellerator-repeat.json",
+  "benchmark_limit": "One per-object baseline followed by batched repeats may favor caches/order; equal manifests are decisive. Timing covers provider manifest reads only, not task lifecycle or biological/GPU operations.",
+  "invariants": [
+    "No authority migration, credential edits, fabricated process proof or hand-edited generated/authority state.",
+    "No lease revival, new command authority or shared persistent source cache.",
+    "Fresh source/safety/provenance/owner/child checks and30second freshness guards remain.",
+    "All non-Todo installed package fingerprints and exact third-party versions retained.",
+    "Cellerator live task handle, immutable finish note, workspace and receipts preserved."
+  ],
+  "limits": [
+    "No live workflow mutation after root authorized preparing this candidate. Root owns install and same-finish resume.",
+    "A public MCP journey against this new sealed pair has not been claimed.",
+    "Optional independent reviewer suggested a specific expired/revoked FINISH grant negative case; unchanged authorization checks remain present and broader authority suites passed."
+  ],
+  "artifact_sha256": {
+    "todo-handoff-fix.bundle": "927086efeb786a11c373682130c7e14321ac44d870e8b0a6dbba63e5b79f13bf",
+    "todo-handoff-fix.patch": "efd4c8540b354111eb04e988eb94cc7ee03f4060f786c7c9fdc866a7369b41d0",
+    "project-control-handoff-pairing.bundle": "7abaddd3378802daf0a05f866c6bb98254a44f22ae0ca3507daf2c77d7c12861",
+    "project-control-handoff-pairing.patch": "2296d96594cb385d1626bc7acca8bdd847a9a0a1f060e6855a45d91d892b3d98",
+    "ACTIVATION-handoff.md": "d4047efb372a8776dc4da9fcbcd4f3bf259c4f6e5f7b961f9eb4200831958193"
+  },
+  "activation_performed_by_this_agent": false
+}

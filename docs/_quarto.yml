@@ -1,42 +1,47 @@
 project:
   type: book
+  resources:
+    - development/source_map/**
 
 book:
   title: "Cellerator"
-  subtitle: "Architecture of a performance-first biological execution system"
-  downloads:
-    - pdf
+  subtitle: "A high-performance PyTorch extension for cellular model building"
   chapters:
     - index.qmd
+    - getting_started.qmd
     - architecture.qmd
+    - scope.qmd
+    - model_building.qmd
+    - operations.qmd
+    - layout_execution.qmd
     - current_implementation.qmd
-    - biological_execution_model.qmd
-    - cellpack_cp_bp.qmd
-    - core_execution_cp_math.qmd
-    - baseplane_integration.qmd
-    - storage_distribution_and_interop.qmd
-    - performance_validation.qmd
-    - migration_roadmap.qmd
     - developer_reference.qmd
+    - development/python-bindings.md
+    - development/experimental-fields.md
+    - development/routing.md
+    - part: "Subsystems, experiments, and history"
+      chapters:
+        - experiments_and_history.qmd
+        - sparse_support_foundation.qmd
+        - tokenization.qmd
+        - biological_execution_model.qmd
+        - cellpack_cp_bp.qmd
+        - core_execution_cp_math.qmd
+        - baseplane_integration.qmd
+        - storage_distribution_and_interop.qmd
+        - compute_and_models.qmd
+        - quantized_transfer_architecture.qmd
+        - cellshard_behavior.qmd
+        - ingest_and_runtime.qmd
+        - local_pipeline_ops.qmd
+        - performance_validation.qmd
+        - migration_roadmap.qmd
 
 format:
   html:
     toc: true
     code-copy: true
     theme: cosmo
-  pdf:
-    documentclass: scrreprt
-    classoption:
-      - 10pt
-    geometry:
-      - margin=1.8cm
-      - top=1.8cm
-      - bottom=1.8cm
-    include-in-header: preamble.tex
-    pdf-engine: xelatex
-    mainfont: "Liberation Sans"
-    sansfont: "Liberation Sans"
-    monofont: "Menlo"
 
 execute:
   enabled: false

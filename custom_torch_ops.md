@@ -1,5 +1,27 @@
 # Custom Torch Ops Registry
 
+## `tokenization_sequence_append`
+
+- Purpose: append caller-supplied token occurrences and aligned attributes to
+  explicit-capacity per-sequence ATen storage without copying previous history.
+- Owner: `src/compute/tokenization/`; public ATen contracts under
+  `include/Cellerator/compute/tokenization/`.
+- Boundary: integer token IDs, offsets, capacities, lengths and selected row IDs;
+  aligned contiguous attribute tensors retain their dtype and trailing shape.
+- Backend: CPU implementation and generic CUDA indexing/copy kernels on the
+  current ATen stream under the correct device guard. No Tensor Core operation.
+- Mutation: successful selected rows append new payload and advance length;
+  overflowing rows remain unchanged and return device-resident storage status.
+  Capacity growth is explicit. Prepared scratch avoids per-step host readback.
+- Backward: inference/storage only; gradient-tracked append payloads are rejected.
+  Pure encoding, normalization and attribute gathers retain ATen differentiation.
+- Semantics: no event detection, ordering inference, causal intervention,
+  biological lifecycle commands, model state or scheduling behavior.
+- Status: implemented; CPU C++ and V100 Python/CUDA tests pass, with zero
+  Compute Sanitizer memcheck errors. HPC CUDA 12.9 Nsight Systems and Compute
+  captures succeed. Source-bound qualification is under
+  `bench/tokenization/evidence/2026-10-26/`.
+
 ## `resident_cuda_torch_interop`
 
 - Purpose: provide an optional thin Torch view over Cellerator's resident CUDA
@@ -191,3 +213,15 @@
   sparse batches are implicit-zero expression matrices
   offset anchor in the sparse CUDA path treats the dense floor as zero
 - Status: implemented for sparse CUDA reconstruction/range training path
+
+## `sparse_support_training`
+
+- Purpose: native compiled gated sparse relation and indexed latent-state transition with explicit first-order VJPs, adapted to Torch autograd.
+- Ownership: Torch-free support/indexing/gating plus native sparse-support numerical operations; one canonical flat native parameter owner.
+- Boundary: contiguous same-device tensors, explicit stable support IDs/epochs, distinct primal and derivative candidate worksets, caller stream; tapes pin numerical and projection generations.
+- Arithmetic: FP16 storage/multiplication and FP32 accumulation/gradients/master parameters, with explicit FP32 reference.
+- Gates: sigmoid probability followed by threshold pruning; the straight-through derivative is an explicit biased estimator on a bounded derivative set.
+- Packing: existing CE-GEO physical cover/value maps form the first replaceable width-64 backend, with per-cell gates, residual/delta execution, and sparse SIMT backward.
+- Lifecycle: support publication and optimizer writes require retired tapes; checkpoint logical state/parameters before rebinding physical projection.
+- Status: native and Torch reference/VJP, cyclic-sampling, lifecycle and checkpoint tests pass on the qualified V100 snapshots. Held-out fixture evidence reports pruning quality separately; event results remain weak. See `docs/sparse_support_foundation.qmd` and `bench/sparse_support/evidence/qualification/`.
+- Transition compatibility: the existing `sparse_latent_transition` and native v1 symbols retain shared block-zero dynamics. The additive v2 route will expose explicit immutable `shared` and `per_mechanism` semantics over the same flat stacked owner; detached routing continues to read all legacy B blocks. V2 correctness and checkpoint qualification are pending this task; no performance claim is added.

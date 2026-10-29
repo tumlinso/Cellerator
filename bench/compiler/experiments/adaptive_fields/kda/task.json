@@ -1,0 +1,219 @@
+{
+  "budgets": {
+    "max_build_jobs": 1,
+    "max_candidates": 1,
+    "max_seconds": 3300
+  },
+  "cases": [
+    {
+      "id": "small",
+      "input": {
+        "fixture_manifest": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/small/manifest.json",
+        "fixture_manifest_sha256": "c33facc18f330739411c1f293609c237689685bd4003099ca79b331fded144be",
+        "seed": 20261027
+      },
+      "parameters": {
+        "collector_candidates": 6,
+        "width": 64
+      },
+      "weight": 1.0
+    },
+    {
+      "id": "large_events",
+      "input": {
+        "fixture_manifest": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-events/manifest.json",
+        "fixture_manifest_sha256": "910a4c742b795a2a827cb21e62c510a3bc5039e6878ae75d4826fc0d33234be8",
+        "seed": 20261027
+      },
+      "parameters": {
+        "collector_candidates": 6,
+        "width": 64
+      },
+      "weight": 1.0
+    },
+    {
+      "id": "large_ranked",
+      "input": {
+        "fixture_manifest": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-ranked/manifest.json",
+        "fixture_manifest_sha256": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32",
+        "seed": 20261027
+      },
+      "parameters": {
+        "collector_candidates": 6,
+        "width": 64
+      },
+      "weight": 1.0
+    }
+  ],
+  "commands": {
+    "benchmark": {
+      "argv": [
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/kda/adapter.py",
+        "benchmark",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 1800
+    },
+    "build": {
+      "argv": [
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/kda/adapter.py",
+        "build",
+        "{request}",
+        "{result}"
+      ],
+      "cpu_only": true,
+      "timeout_seconds": 1800
+    },
+    "probe": {
+      "argv": [
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/kda/adapter.py",
+        "probe",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 1800
+    },
+    "validate": {
+      "argv": [
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/kda/adapter.py",
+        "validate",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 1800
+    }
+  },
+  "execution": {
+    "mode": "direct"
+  },
+  "numerical_requirements": {
+    "arithmetic": "Preserve existing operation-specific tolerances in the trusted driver",
+    "exact": "Candidate IDs, ordinals, gate indices, worksets, epochs and owner identity",
+    "scope": "Relation-only workload, excludes the unresolved recurrent transition contract",
+    "validation": "All six real indexer/numerical paths must pass; no fixture shrinking or skipped cells"
+  },
+  "probe": {
+    "argv": [
+      "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+      "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/kda/adapter.py",
+      "probe",
+      "{request}",
+      "{result}"
+    ],
+    "timeout_seconds": 1800
+  },
+  "promotion": {
+    "bootstrap_samples": 1000,
+    "confidence": 0.95,
+    "max_regression": 0.0,
+    "min_improvement": 0.0
+  },
+  "schema_version": 1,
+  "target": {
+    "architecture": "sm_70",
+    "compiler_target": "sm_70",
+    "kind": "cuda"
+  },
+  "task_id": "adaptive-fields-bounded-portfolio-v1",
+  "timing": {
+    "confirmation_rounds": 2,
+    "direction": "minimize",
+    "iterations": 1,
+    "metric": "complete_training_step_wall_ms",
+    "repetitions": 21,
+    "rounds": 2,
+    "scope": "Native discovery + conversions + scoring/worksets + values + forward + backward + guarded Adam; synchronized wall",
+    "seed": 20261027,
+    "unit": "ms",
+    "warmup": 5
+  },
+  "toolchain": {
+    "compiler_target_probe_argv": [
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "--list-gpu-code"
+    ],
+    "runtime": "Frozen Cellerator v14 Python/v13 native extension; Torch 2.7 cu126"
+  },
+  "trusted_inputs": [
+    {
+      "id": "adapter",
+      "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/kda/adapter.py",
+      "role": "harness"
+    },
+    {
+      "id": "portfolio_driver",
+      "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py",
+      "role": "benchmark"
+    },
+    {
+      "id": "fixture_reader",
+      "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/e7_fixtures.py",
+      "role": "reference"
+    },
+    {
+      "id": "indexer_binding",
+      "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/ctypes_binding.py",
+      "role": "harness"
+    },
+    {
+      "id": "indexer_source",
+      "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/indexer_bridge.cu",
+      "role": "other"
+    },
+    {
+      "id": "indexer_header",
+      "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/indexer_bridge.h",
+      "role": "other"
+    },
+    {
+      "id": "indexer_library",
+      "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/libadaptive_fields_indexer.so",
+      "role": "toolchain"
+    },
+    {
+      "id": "indexer_manifest",
+      "path": "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/gpu/indexer/artifacts/build_manifest.json",
+      "role": "toolchain"
+    },
+    {
+      "id": "sparse_adapter",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package/cellerator/torch/sparse_support.py",
+      "role": "reference"
+    },
+    {
+      "id": "mechanism_adapter",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package/cellerator/torch/mechanism.py",
+      "role": "reference"
+    },
+    {
+      "id": "native_extension",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package/cellerator/torch/_torch.cpython-313-x86_64-linux-gnu.so",
+      "role": "toolchain"
+    },
+    {
+      "id": "package_identity",
+      "path": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/identity.json",
+      "role": "toolchain"
+    },
+    {
+      "id": "fixture_small",
+      "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/small/manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "fixture_large_events",
+      "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-events/manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "fixture_large_ranked",
+      "path": "/tmp/cellerator_scaled_sparse_fixtures_887437fc/large-ranked/manifest.json",
+      "role": "reference"
+    }
+  ]
+}

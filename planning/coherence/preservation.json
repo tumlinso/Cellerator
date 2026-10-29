@@ -1,0 +1,15 @@
+{
+  "format": "cellerator-preservation-v1",
+  "created_utc": "20261028T204231Z",
+  "source": "/home/tumlinson/Cellerator",
+  "head": "2f851ddb9719a85064f7140864c614245424f4cc",
+  "archive": "/mnt/block/cellerator/preservation/20261028T204231Z/workspace.tar.zst",
+  "archive_sha256": "c72232a16d2d4675403ea38cf82600d30262115073ad2a89d6d744ba79b7be91",
+  "archive_bytes": 3873743760,
+  "files_manifest_sha256": "da4d9747b371225217c8bf6e6e3bce3cb8e37a18ee56ecad162fa6635b1ba387",
+  "bundle_sha256": "2ee1a16a8f3b27161ede1220974a2251bb95cf1656e99c110c0cabff5f7cb64b",
+  "restored_regular_files_verified": 107449,
+  "git_connectivity_verified": true,
+  "authority_copy": "Physical database and WAL preserved; supported logical backup remains required before authority mutation.",
+  "restore": "Extract into a NEW empty directory with tar --zstd -xpf workspace.tar.zst -C DEST. Restore original paths only after review. Do not activate restored authority credentials; use supported authority restore for registered state. Git worktree absolute links need rebinding before use. No remote upload."
+}

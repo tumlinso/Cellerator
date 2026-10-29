@@ -8,10 +8,10 @@
 #include <Cellerator/compiler/planning/adapt_candidate_catalog_v3_providers_v1.hh>
 #include <Cellerator/compiler/planning/adapt_external_global_cost_exchange_v1.hh>
 #include <Cellerator/compiler/planning/expose_complete_planning_reports_v1.hh>
-#include <Cellerator/compiler/planning/implement_candidate_inclusion_exclusion_and_forcing_v1.hh>
-#include <Cellerator/compiler/planning/implement_custom_candidate_registration_v1.hh>
-#include <Cellerator/compiler/planning/implement_planner_portfolio_dispatch_v1.hh>
-#include <Cellerator/compiler/planning/implement_planning_cache_and_invalidation_v1.hh>
+#include <Cellerator/compiler/planning/candidate_inclusion_exclusion_and_forcing_v1.hh>
+#include <Cellerator/compiler/planning/custom_candidate_registration_v1.hh>
+#include <Cellerator/compiler/planning/planner_portfolio_dispatch_v1.hh>
+#include <Cellerator/compiler/planning/planning_cache_and_invalidation_v1.hh>
 #include <Cellerator/compiler/program/ruleset_v1.hh>
 
 #include <cstdint>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compiler/frontend/source/define_the_unified_source_location_model_v1.hh>
+#include <Cellerator/compiler/frontend/source/unified_source_location_model_v1.hh>
 
 #include <cstdint>
 #include <optional>

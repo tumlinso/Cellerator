@@ -1,5 +1,5 @@
 #include <Cellerator/compiler/backend/nvptx/compare_nvcc_clang_cuda_and_direct_ptx_routes_v1.hh>
-#include <Cellerator/compiler/backend/nvptx/deliver_a_direct_ptx_hot_path_demonstration_v1.hh>
+#include <Cellerator/compiler/backend/nvptx/direct_ptx_hot_path_demonstration_v1.hh>
 
 #include <bench/benchmark_mutex.hh>
 #include <cuda.h>

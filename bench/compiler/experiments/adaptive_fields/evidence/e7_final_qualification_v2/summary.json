@@ -1,0 +1,49 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "tool": "memcheck",
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3.13",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/e7_validate.py",
+        "--sanitizer",
+        "memcheck",
+        "--output-dir",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_final_qualification_v2/memcheck"
+      ],
+      "returncode": 0,
+      "stdout": "reset_protocol/memcheck: exit 0\nvalidation_seed20261027/memcheck: exit 0\nvalidation_seed20261028/memcheck: exit 0\nvalidation_seed20261029/memcheck: exit 0\nprotocol_smoke/memcheck: exit 0\n",
+      "stderr": ""
+    },
+    {
+      "tool": "racecheck",
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3.13",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/e7_validate.py",
+        "--sanitizer",
+        "racecheck",
+        "--output-dir",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_final_qualification_v2/racecheck"
+      ],
+      "returncode": 0,
+      "stdout": "reset_protocol/racecheck: exit 0\nvalidation_seed20261027/racecheck: exit 0\nvalidation_seed20261028/racecheck: exit 0\nvalidation_seed20261029/racecheck: exit 0\nprotocol_smoke/racecheck: exit 0\n",
+      "stderr": ""
+    },
+    {
+      "tool": "synccheck",
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python3.13",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/e7_validate.py",
+        "--sanitizer",
+        "synccheck",
+        "--output-dir",
+        "/home/tumlinson/Cellerator/bench/compiler/experiments/adaptive_fields/evidence/e7_final_qualification_v2/synccheck"
+      ],
+      "returncode": 0,
+      "stdout": "reset_protocol/synccheck: exit 0\nvalidation_seed20261027/synccheck: exit 0\nvalidation_seed20261028/synccheck: exit 0\nvalidation_seed20261029/synccheck: exit 0\nprotocol_smoke/synccheck: exit 0\n",
+      "stderr": ""
+    }
+  ],
+  "performance_evidence": false,
+  "run_key": "adaptive-fields-e7-final-qualification-v2-6168579f-a9ab-447d-a57a-db8bf1fd767a"
+}

@@ -46,7 +46,7 @@ The existing CPK1 N=1 header compiles unchanged; its CUDA execution is not
 claimed. That candidate retains its own prebound image, numeric, axis, output
 and lifetime contract. Host lowering explicitly declines the CPK1 family.
 
-Shared integration request: add `src/packing/core` once existing
+Shared integration request: add `src/layout/packing/core` once existing
 `Cellerator::native_numeric`, `Cellerator::indexed_mechanism` and `cellpack`
 targets are available; export the target through BUILD. The standalone fixture
 compiles actual host implementations for qualification and does not qualify

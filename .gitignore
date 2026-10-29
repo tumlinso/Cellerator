@@ -4,8 +4,21 @@ docs/*
 !docs/_quarto.yml
 !docs/*.qmd
 !docs/preamble.tex
+!docs/development/
+docs/development/*
+!docs/development/python-bindings.md
+!docs/development/experimental-fields.md
+!docs/development/fp64.md
+!docs/development/routing.md
+!docs/development/source_map/
+docs/development/source_map/*
+!docs/development/source_map/*.csv
+!docs/development/source_map/*.json
+!docs/development/source_map/*.jsonl
 !docs/semantic_spine_v1/
 !docs/semantic_spine_v1/**
+!docs/sparse_support_foundation/
+!docs/sparse_support_foundation/**
 !docs/pipeline/
 docs/pipeline/*
 !docs/pipeline/README.md
@@ -161,3 +174,46 @@ cuda_profile*.log
 
 /.quarto/
 **/*.quarto_ipynb
+**/.kda-experiments.lock
+
+# Source-bound sparse support qualification summaries; raw profiler reports and
+# build outputs remain ignored by their existing rules.
+!bench/sparse_support/evidence/*.json
+!bench/sparse_support/evidence/*.jsonl
+!bench/sparse_support/evidence/*.md
+!bench/sparse_support/evidence/*.txt
+
+# Reproducible large inputs and built experiment artifacts stay local; retain
+# their manifests, hashes, generators, and checkpoint notes in Git.
+/bench/sparse_support/**/*.bin
+/bench/sparse_support/**/*.cegeo
+/bench/sparse_support/**/prepared_images/prepared_images.json
+/bench/sparse_support/**/cellerator_sparse_support_cuda_indexing_bench
+/bench/sparse_support/**/geometry_image_probe
+/bench/sparse_support/**/validator_differential_probe
+/bench/sparse_support/**/validator_scaling_probe
+/bench/sparse_support/**/scaled_condition_probe
+/bench/sparse_support/**/trusted-inputs/frozen_torch_extension
+/bench/sparse_support/**/trusted-inputs/image_manifest
+/docs/sparse_support_foundation/evaluation.html
+/docs/sparse_support_foundation/evaluation_files/
+
+# Opaque KDA copies of generated binary inputs remain local with pinned hashes.
+/bench/sparse_support/**/trusted-inputs/canonical_event_image
+/bench/sparse_support/**/trusted-inputs/canonical_ranked_image
+/bench/sparse_support/**/trusted-inputs/canonical_small_image
+/bench/sparse_support/**/trusted-inputs/compute_sanitizer
+/bench/sparse_support/**/trusted-inputs/fastpath_binary
+/bench/sparse_support/**/trusted-inputs/frozen_v12_torch_extension
+/bench/sparse_support/**/trusted-inputs/frozen_v13_torch_extension
+/bench/sparse_support/**/trusted-inputs/hybrid16_event_image
+/bench/sparse_support/**/trusted-inputs/hybrid16_ranked_image
+/bench/sparse_support/**/trusted-inputs/hybrid16_small_image
+/bench/sparse_support/**/trusted-inputs/hybrid8_event_image
+/bench/sparse_support/**/trusted-inputs/hybrid8_ranked_image
+/bench/sparse_support/**/trusted-inputs/hybrid8_small_image
+/bench/sparse_support/**/trusted-inputs/reordered_event_image
+/bench/sparse_support/**/trusted-inputs/reordered_ranked_image
+/bench/sparse_support/**/trusted-inputs/reordered_small_image
+/bench/sparse_support/**/trusted-inputs/serial_baseline_binary
+/bench/sparse_support/**/trusted-inputs/v13_probe_extension

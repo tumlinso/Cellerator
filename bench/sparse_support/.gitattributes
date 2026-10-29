@@ -1,0 +1,10 @@
+# Preserve captured process output byte-for-byte, including terminal newlines.
+**/raw_stdout.txt -whitespace
+**/scheduler_stdout.txt -whitespace
+**/stdout.txt -whitespace
+# Engine snapshots and CSV/log outputs retain the engine's original bytes.
+evidence/**/kda_workspace/** -whitespace
+evidence/**/*.patch -whitespace
+**/kda_workspace*/** -whitespace
+**/benchmark.csv -whitespace
+**/trusted-inputs/** -whitespace

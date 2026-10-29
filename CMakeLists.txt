@@ -73,6 +73,8 @@ find_package(PkgConfig QUIET)
 # discover either dependency unless its corresponding option is enabled.
 option(CELLERATOR_ENABLE_PYTHON "Build the optional cellerator Python extension" OFF)
 option(CELLERATOR_ENABLE_TORCH "Build the optional Cellerator Torch adapters" OFF)
+option(CELLERATOR_ENABLE_TOKENIZATION
+    "Build the optional ATen-backed tokenization facility" OFF)
 option(CELLERATOR_BUILD_TORCH_EXAMPLES "Build optional CellShard-dependent Torch examples" OFF)
 option(CELLERATOR_ENABLE_CELLSHARD "Build the embedded CellShard component" OFF)
 option(CELLERATOR_BUILD_TESTS "Build Cellerator test executables" ON)
@@ -108,6 +110,15 @@ include(cmake/Product2.cmake)
 if(CELLERATOR_ENABLE_PYTHON)
     include(cmake/CelleratorPython.cmake)
 endif()
+# ATen numerical operations and tokenization have a separate optional
+# dependency boundary from the CUDA mechanism Torch adapters below.
+include(cmake/CelleratorTokenization.cmake)
+include(cmake/CelleratorSparseSupport.cmake)
+# Native arithmetic families are host-capable and independent of adapters.
+add_subdirectory(src/ops/numeric)
+add_subdirectory(src/ops/matrix)
+add_subdirectory(src/ops/process)
+add_subdirectory(src/structure)
 # Build the linked NF1 numerical foundation and its host reference consumer.
 # CUDA relation/value tests are enabled only with the semantic spine owner.
 option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 numerical foundation tests" OFF)
@@ -390,7 +401,7 @@ endif()
 message(STATUS "Cellerator CUDA mode: ${CELLERATOR_CUDA_MODE}")
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/support/cuda_mode.hh.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/cuda_mode.hh.in
     ${CMAKE_CURRENT_BINARY_DIR}/generated/cellerator_cuda_mode.hh
     @ONLY
 )
@@ -696,6 +707,13 @@ add_subdirectory(compat)
 include(compat/cp_math_v1/CMakeLists.txt)
 
 include(cmake/NativeFoundation.cmake)
+
+if(CELLERATOR_ENABLE_SPARSE_SUPPORT AND CELLERATOR_BUILD_TESTS)
+    add_subdirectory(tests/sparse_support)
+endif()
+if(CELLERATOR_ENABLE_SPARSE_SUPPORT AND EXISTS "${PROJECT_SOURCE_DIR}/bench/sparse_support/CMakeLists.txt")
+    add_subdirectory(bench/sparse_support)
+endif()
 
 if(CELLERATOR_BUILD_TESTS AND NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     add_executable(celleratorCudaStreamDeviceTest

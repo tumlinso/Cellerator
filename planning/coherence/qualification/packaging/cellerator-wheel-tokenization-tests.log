@@ -1,0 +1,33 @@
+test_buffer_append_subset_overflow_reserve_and_compact (test_tokenization.TokenizationCpuTests.test_buffer_append_subset_overflow_reserve_and_compact) ... ok
+test_buffer_rejects_gradient_tracked_payload (test_tokenization.TokenizationCpuTests.test_buffer_rejects_gradient_tracked_payload) ... ok
+test_caller_controlled_boundary_tokens_and_attributes (test_tokenization.TokenizationCpuTests.test_caller_controlled_boundary_tokens_and_attributes) ... ok
+test_csr_scores_must_share_the_value_topology (test_tokenization.TokenizationCpuTests.test_csr_scores_must_share_the_value_topology) ... /tmp/cellerator-coherence/tests/tokenization/test_tokenization.py:99: UserWarning: Sparse CSR tensor support is in beta state. If you miss a functionality in the sparse tensor support, please submit a feature request to https://github.com/pytorch/pytorch/issues. (Triggered internally at /pytorch/aten/src/ATen/SparseCsrTensorImpl.cpp:53.)
+  values = cpu_tensor([[2.0, 0.0, 1.0]]).to_sparse_csr()
+ok
+test_dense_rank_uses_feature_identity_for_ties_and_truncation (test_tokenization.TokenizationCpuTests.test_dense_rank_uses_feature_identity_for_ties_and_truncation) ... ok
+test_dense_sparse_agreement_and_original_nonzero_eligibility (test_tokenization.TokenizationCpuTests.test_dense_sparse_agreement_and_original_nonzero_eligibility) ... ok
+test_feature_axis_permutation_does_not_change_token_sequence (test_tokenization.TokenizationCpuTests.test_feature_axis_permutation_does_not_change_token_sequence) ... ok
+test_geneformer_ignores_unretained_reference_factors (test_tokenization.TokenizationCpuTests.test_geneformer_ignores_unretained_reference_factors) ... ok
+test_geneformer_style_formula_against_numpy (test_tokenization.TokenizationCpuTests.test_geneformer_style_formula_against_numpy) ... ok
+test_invalid_offsets_and_attribute_extent_rejected (test_tokenization.TokenizationCpuTests.test_invalid_offsets_and_attribute_extent_rejected) ... ok
+test_invalid_profile_reference_factors_fail (test_tokenization.TokenizationCpuTests.test_invalid_profile_reference_factors_fail) ... ok
+test_nonzero_feature_median_batches_even_and_empty_columns (test_tokenization.TokenizationCpuTests.test_nonzero_feature_median_batches_even_and_empty_columns) ... ok
+test_nonzero_feature_median_rejects_nonfinite_and_noncanonical_csr (test_tokenization.TokenizationCpuTests.test_nonzero_feature_median_rejects_nonfinite_and_noncanonical_csr) ... ok
+test_nonzero_feature_median_sparse_matches_dense (test_tokenization.TokenizationCpuTests.test_nonzero_feature_median_sparse_matches_dense) ... ok
+test_nonzero_feature_median_sparse_wide_blocked_shape (test_tokenization.TokenizationCpuTests.test_nonzero_feature_median_sparse_wide_blocked_shape) ... ok
+test_pack_pad_round_trip_preserves_attributes (test_tokenization.TokenizationCpuTests.test_pack_pad_round_trip_preserves_attributes) ... ok
+test_ranked_measurements_attributes_and_gradient (test_tokenization.TokenizationCpuTests.test_ranked_measurements_attributes_and_gradient) ... ok
+test_unknown_drop_does_not_consume_ranked_top_k (test_tokenization.TokenizationCpuTests.test_unknown_drop_does_not_consume_ranked_top_k) ... ok
+test_unknown_identity_error_drop_and_explicit_mapping (test_tokenization.TokenizationCpuTests.test_unknown_identity_error_drop_and_explicit_mapping) ... ok
+test_vocabulary_mapping_preserves_repeated_events_and_attributes (test_tokenization.TokenizationCpuTests.test_vocabulary_mapping_preserves_repeated_events_and_attributes) ... ok
+test_cuda_append_subset_overflow_reserve_and_attributes (test_tokenization.TokenizationCudaTests.test_cuda_append_subset_overflow_reserve_and_attributes) ... skipped 'CUDA tests require explicit Device Scheduler admission and opt-in'
+test_cuda_invalid_offsets_and_corrupt_length_do_not_write (test_tokenization.TokenizationCudaTests.test_cuda_invalid_offsets_and_corrupt_length_do_not_write) ... skipped 'CUDA tests require explicit Device Scheduler admission and opt-in'
+test_cuda_rank_profile_and_medians_match_cpu_references (test_tokenization.TokenizationCudaTests.test_cuda_rank_profile_and_medians_match_cpu_references) ... skipped 'CUDA tests require explicit Device Scheduler admission and opt-in'
+test_cuda_side_stream_wait_and_append_input_lifetime (test_tokenization.TokenizationCudaTests.test_cuda_side_stream_wait_and_append_input_lifetime) ... skipped 'CUDA tests require explicit Device Scheduler admission and opt-in'
+test_cuda_unspecified_device_uses_current_device (test_tokenization.TokenizationCudaTests.test_cuda_unspecified_device_uses_current_device) ... skipped 'CUDA tests require explicit Device Scheduler admission and opt-in'
+test_current_stream_rank_and_append_preserves_temporary_lifetimes (test_tokenization.TokenizationCudaTests.test_current_stream_rank_and_append_preserves_temporary_lifetimes) ... skipped 'CUDA tests require explicit Device Scheduler admission and opt-in'
+
+----------------------------------------------------------------------
+Ran 26 tests in 0.062s
+
+OK (skipped=6)

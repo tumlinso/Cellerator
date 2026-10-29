@@ -19,7 +19,7 @@ ALLOWED_PRODUCTION_ROOTS = (
     "include/Cellerator/compute/operation/",
     "include/Cellerator/geometry/",
     "src/compute/architecture/",
-    "src/compute/projection/",
+    "src/layout/",
     "src/geometry/compiler/",
     "src/geometry/persistence/",
 )

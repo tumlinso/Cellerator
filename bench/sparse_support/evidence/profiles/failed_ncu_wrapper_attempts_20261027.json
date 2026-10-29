@@ -1,0 +1,24 @@
+{
+  "schema": "cellerator.sparse_support.profile_failure_receipts.v1",
+  "cause": "The NVHPC compilers/bin/ncu wrapper selected unavailable Nsight Compute 13.1 before collecting a report.",
+  "supported_profiler": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+  "supported_profiler_version": "2025.2.1.0",
+  "attempts": [
+    {
+      "job_id": "b6d83228-2cc8-40d9-aae1-65be473ebd8b",
+      "attempt_id": "67a5b678-9f52-43cd-af83-25d9c3b772df",
+      "state": "failed",
+      "exit_code": 1,
+      "cleanup_verified": true,
+      "diagnostic": "ncu-Error-Version 13_1 /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/13.1/Nsight_Compute is not available in this installation"
+    },
+    {
+      "job_id": "c1372e3a-1471-4ae6-9b4a-4ecab5204a64",
+      "attempt_id": "afa40244-30bd-495b-a359-f3ca0dd3e7a1",
+      "state": "failed",
+      "exit_code": 1,
+      "cleanup_verified": true,
+      "diagnostic": "ncu-Error-Version 13_1 /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/13.1/Nsight_Compute is not available in this installation"
+    }
+  ]
+}

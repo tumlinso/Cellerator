@@ -1,0 +1,116 @@
+{
+  "schema": "cellerator.adaptive_fields.gpu_plan.v1",
+  "status": "preflight_only_waiting_for_parent_scheduler_window",
+  "repository": "/home/tumlinson/Cellerator",
+  "python": "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+  "frozen_package_root": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/package",
+  "frozen_identity": "/home/tumlinson/Cellerator/build-sparse-support/evidence/torch-v14-optional-policies/identity.json",
+  "fixture_root": "/tmp/cellerator_scaled_sparse_fixtures_887437fc",
+  "cuda_toolkit_root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+  "intended_device_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+  "resource_request": {
+    "gpu_mode": "exclusive",
+    "gpu_memory_bytes": 6442450944,
+    "job_timeout_seconds": 3300,
+    "max_attempts": 1,
+    "precondition": {
+      "name": "gpu.quiescence",
+      "timeout_seconds": 60,
+      "interval_seconds": 1,
+      "consecutive_samples": 3,
+      "max_utilization_percent": 0
+    },
+    "environment": {
+      "OMP_NUM_THREADS": "2",
+      "PYTHONUNBUFFERED": "1",
+      "CELLERATOR_SPARSE_SUPPORT_BENCH_ADMITTED": "1"
+    },
+    "authority_owner": "root task owner submits and records scheduler admission"
+  },
+  "gpu_work": [
+    {
+      "experiment": "E5",
+      "cases": ["small", "large_events", "large_ranked"],
+      "small_seeds": [20261027, 20261028, 20261029],
+      "large_fixture_manifest_sha256": {
+        "large_events": "910a4c742b795a2a827cb21e62c510a3bc5039e6878ae75d4826fc0d33234be8",
+        "large_ranked": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32"
+      },
+      "input_policies": ["current_event", "eligible_history"],
+      "requirements": [
+        "direct native path and experiment-local field stage path use the same canonical width-64 owner",
+        "exact primal/derivative workset identities, including derivative-only candidates",
+        "repeated gate indices and dormant sampling records",
+        "full-support and indexed-union edge-value policies",
+        "one gated-off interaction recovers; one support publication occurs between pinned training windows",
+        "compare forward, explicit surrogate probability VJP, recurrent VJP, parameter update, generations and checkpoint restore",
+        "no finite-difference validation of the hard-gate surrogate derivative"
+      ],
+      "decision": "supported | rejected | unresolved"
+    },
+    {
+      "experiment": "E7",
+      "fixtures": ["small", "large_events", "large_ranked"],
+      "indexers": ["scan", "ordered_postings_exact_fallback"],
+      "numerical_candidates": [
+        "SIMT_full_support",
+        "SIMT_indexed_union",
+        "CE_GEO_forward_indexed_union_SIMT_backward"
+      ],
+      "maximum_candidates_per_fixture": 6,
+      "timing": {
+        "warmups_per_candidate": 5,
+        "paired_samples_per_round": 21,
+        "exploration_rounds": 2,
+        "confirmation_rounds": 2,
+        "paired_samples_per_candidate_total": 84,
+        "reuse_horizons": [1, 16, 256],
+        "density_trace": ["low", "high", "low"],
+        "support_mutations_in_density_trace": 1,
+        "adaptive_policy_reassessment_steps": 16
+      },
+      "compiler_comparison": {
+        "same_generated_device_region": true,
+        "backends": ["NVCC", "NVRTC", "precompiled_baseline"],
+        "bindings_identical": true,
+        "new_kernel_algorithm": false,
+        "direct_ptx_campaign": false
+      },
+      "decision": "supported | rejected | unresolved"
+    },
+    {
+      "experiment": "E6_gpu",
+      "streams": 2,
+      "background_compilation_workers": 1,
+      "pending_replacements_max": 1,
+      "scenarios": [
+        "replace_while_old_work_in_flight",
+        "forward_tape_retains_executable_through_backward",
+        "compile_failure_or_cancellation",
+        "duplicate_requests",
+        "structural_change_stales_compilation",
+        "value_only_update_keeps_compilation_compatible"
+      ],
+      "required_checks": ["memcheck", "racecheck", "synccheck"],
+      "decision": "supported | rejected | unresolved"
+    }
+  ],
+  "source_inputs": [
+    "bench/compiler/experiments/adaptive_fields/gpu/e5_stage_adapter.py",
+    "bench/compiler/experiments/adaptive_fields/gpu/evidence/e5_contract_boundary.json",
+    "bench/compiler/experiments/adaptive_fields/gpu/e7_fixtures.py",
+    "bench/compiler/experiments/adaptive_fields/gpu/e7_relation_runner.py",
+    "bench/compiler/experiments/adaptive_fields/gpu/indexer/indexer_bridge.cu",
+    "bench/compiler/experiments/adaptive_fields/gpu/indexer/indexer_bridge.h",
+    "bench/compiler/experiments/adaptive_fields/gpu/indexer/ctypes_binding.py",
+    "bench/compiler/experiments/adaptive_fields/gpu/indexer/build_bridge.py",
+    "bench/compiler/experiments/adaptive_fields/gpu/preflight.py",
+    "bench/sparse_support/packed_training_benchmark.py",
+    "bench/sparse_support/experiments/indexed_values/probe.py",
+    "bench/sparse_support/experiments/event_learning_diagnostic/history_readout_trial.py",
+    "bench/sparse_support/scaled_fixtures.py",
+    "src/compute/indexing/cuda_postings.cu",
+    "include/Cellerator/compute/indexing/cuda_postings.cuh",
+    "bench/sparse_support/cuda_indexing_bench.cu"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "benchmark_driver_sha256": "14f5d763eb04f3a0095d623762e1beb383e2dec75fd2dca876459379ed4eb0de",
+  "cases": {
+    "large_events": {
+      "host_estimate": {
+        "candidate_feature_workspace_bytes": 169900032,
+        "candidate_workset_bytes": 2986776,
+        "dense_context_and_output_bytes": 245760000,
+        "estimated_numerical_workspace_bytes_before_ce_geo": 1401686808,
+        "estimated_packed_active_tile_workspace_bytes": 42475008,
+        "estimated_peak_bytes_before_admission": 1444161816,
+        "global_edge_value_refresh_bytes": 983040000
+      },
+      "inputs": {
+        "candidate_items": 82959,
+        "candidate_workset_bytes": 2986776,
+        "cells": 8,
+        "entities": 20000,
+        "fixture_manifest_sha256": "910a4c742b795a2a827cb21e62c510a3bc5039e6878ae75d4826fc0d33234be8",
+        "support_edges": 1280000,
+        "tile_count": 20000,
+        "width": 64
+      }
+    },
+    "large_ranked": {
+      "host_estimate": {
+        "candidate_feature_workspace_bytes": 2129813504,
+        "candidate_workset_bytes": 37439184,
+        "dense_context_and_output_bytes": 201326592,
+        "estimated_numerical_workspace_bytes_before_ce_geo": 2569905872,
+        "estimated_packed_active_tile_workspace_bytes": 532453376,
+        "estimated_peak_bytes_before_admission": 3102359248,
+        "global_edge_value_refresh_bytes": 201326592
+      },
+      "inputs": {
+        "candidate_items": 1039948,
+        "candidate_workset_bytes": 37439184,
+        "cells": 32,
+        "entities": 4096,
+        "fixture_manifest_sha256": "674d5d4660befcb6ddbcd618b16b136203d3478ddc577d09a037e116bffd6e32",
+        "support_edges": 262144,
+        "tile_count": 58688,
+        "width": 64
+      }
+    }
+  },
+  "host_regression_log_sha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
+  "schema": "cellerator.sparse_support.host_memory_preflight_estimates.v1",
+  "scope": "host-only recomputation after GPU run; not GPU-measured allocation"
+}

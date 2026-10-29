@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compiler/ast/freeze_ast_node_ownership_and_lifetime_v1.hh>
+#include <Cellerator/compiler/ast/ast_node_ownership_and_lifetime_v1.hh>
 
 #include <cstdint>
 #include <optional>

@@ -1,0 +1,225 @@
+{
+  "format": "cellerator-branch-reconciliation-v1",
+  "audit_date": "2026-10-28",
+  "baseline": {
+    "ref": "main",
+    "tip": "2f851ddb9719a85064f7140864c614245424f4cc",
+    "working_tree": "Source tree clean before these two planning records; planning/coherence was already untracked."
+  },
+  "live_ref_snapshot": {
+    "path": "/tmp/cellerator-live-branches.tsv",
+    "sha256": "3f41d22324ca1c0c0ef8564fe6db995d4cdb0889bf99a32975eb4500da1e23a8",
+    "comparison": "Snapshot tips match the current remote-tracking refs inspected in this checkout.",
+    "preserved_path": "planning/coherence/live-branches.tsv"
+  },
+  "method": [
+    "Compared exact tips and main-relative ancestry with git rev-list --left-right --count.",
+    "Used git cherry to identify patch-equivalent branch commits.",
+    "Compared branch-specific source path/blob identities in git trees against main; excluded stale generated Todo projections from source-merging decisions.",
+    "Verified local archive/worktree-cleanup-20261009 tags point exactly at the corresponding codex tips listed below."
+  ],
+  "conclusion": {
+    "production_source_missing_from_main_before_working_ref_closure": [],
+    "unique_source_disposition": "The non-ancestor CE-MOON tips have source trees represented in main, either byte-identically or in a later hardened/expanded form. Preserve each exact archive tag as historical source/evidence; do not merge historical Todo snapshots. No branch tip was mutated or closed in this audit.",
+    "ordinary_remote_working_refs_safe_to_close_after_authorized_workflow_resumes": [
+      "origin/codex/ce-mom-integrator",
+      "origin/codex/ce-mom-producer",
+      "origin/codex/ce-moon-l-diff",
+      "origin/codex/ce-moon-l-effects",
+      "origin/codex/ce-moon-l-integrate-v1",
+      "origin/codex/ce-moon-l-integration",
+      "origin/codex/ce-moon-l-learning",
+      "origin/codex/ce-moon-l-mechanisms",
+      "origin/codex/ce-moon-l-mma",
+      "origin/codex/ce-moon-l-rewrite",
+      "origin/codex/ce-moon-l-state",
+      "origin/codex/ce-moon-l-tensor",
+      "origin/codex/ce-moon-l-trajectory",
+      "origin/codex/resident-moments-20261007",
+      "origin/jbc/ce-crossop",
+      "origin/jbc/ce-decomposition",
+      "origin/jbc/ce-external-cost",
+      "origin/jbc/ce-fragment",
+      "origin/jbc/ce-integrate",
+      "origin/jbc/ce-interfaces",
+      "origin/jbc/ce-multiatom",
+      "origin/jbc/ce-planes",
+      "origin/jbc/ce-resumption"
+    ],
+    "protected_refs_and_workspaces": [
+      "origin/backup/todo-cutover-20261019T114102Z/cellerator--cellerator/wt-0",
+      "origin/backup/todo-cutover-20261019T114102Z/cellerator--cellerator/wt-1",
+      "all refs under refs/tags/archive/worktree-cleanup-20261009/",
+      "local codex/ce-is1-integrator-l at 41952561a1fa9b2aab7d6d563fae2e2006b0850e and its managed worktree; no unique commits, but supported cleanup is unavailable",
+      "todo-orchestrator/integration/9420c1503484acb26c34 at 645f73ea95373bc3b24b0e4aa3e0bfee3082052c",
+      "origin/main / main"
+    ],
+    "workflow_state": "Project Control plan apply was rejected by the host (native_operation_rejected); authority revision remained 10. Therefore no ref closure, task claim, source cleanup, or native edit was performed."
+  },
+  "remote_refs": [
+    {
+      "ref": "origin/backup/todo-cutover-20261019T114102Z/cellerator--cellerator/wt-0",
+      "tip": "5663a3a651bbb32cb8060fccd40c6100ade9a139",
+      "disposition": "protected_backup_unique_commit",
+      "detail": "One commit not in main; snapshot includes older architecture/docs and experiments/test-models/transcriptome_autoencoder.py. Preserve as backup."
+    },
+    {
+      "ref": "origin/backup/todo-cutover-20261019T114102Z/cellerator--cellerator/wt-1",
+      "tip": "41952561a1fa9b2aab7d6d563fae2e2006b0850e",
+      "disposition": "protected_backup_ancestor",
+      "detail": "Tip is an ancestor of main; retain as Todo-cutover backup."
+    },
+    {
+      "ref": "origin/codex/ce-mom-integrator",
+      "tip": "6b19c28a8230404405e476110401a90aaf07ad0e",
+      "disposition": "patch_equivalent_source_integrated",
+      "counterpart": "07765d87dcd10751dcfc9ba666c9f82697124286",
+      "detail": "Its sole branch commit is patch-equivalent to the main FP32/neighborhood commit. All 8 affected source paths exist in main; 7 blobs match and tests/native_numeric/build_probe.py has a later main version. Exact archive tag exists; working ref safe to close after workflow resumes."
+    },
+    {
+      "ref": "origin/codex/ce-mom-producer",
+      "tip": "07765d87dcd10751dcfc9ba666c9f82697124286",
+      "disposition": "ancestor_integrated",
+      "detail": "Tip is reachable from main; safe to close as ordinary working ref."
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-diff",
+      "tip": "27c0f9fc34c9b0c757e1c31f756a02c7dc56fbf1",
+      "disposition": "patch_equivalent_source_integrated",
+      "counterpart": "038645f51ab2ee6c4c165fc4a8beb0a500c9ff4d",
+      "detail": "Patch-equivalent to main; all 22 experiments/moonshot-parallel-v1/diff files are present with identical blobs. Exact archive tag exists."
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-effects",
+      "tip": "ac61496e651db109ac14f5889d2ae21c40df1b2c",
+      "disposition": "source_tree_integrated_exact",
+      "source_paths": "experiments/baseplane_moonshot/families/effects (6/6 blobs identical)",
+      "detail": "Two graph-unique commits add effects research and generated context. Source is present byte-identically in main; historical Todo projection changes remain only in the archived tip."
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-integrate-v1",
+      "tip": "22eaa1156adcc327b122b280c5434dc474b1ab95",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-integration",
+      "tip": "b2a65353d543a8d77d051be2d277d0c6ba4371dc",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-learning",
+      "tip": "760873bd852369a8aabad1d9a8e233a930097fa4",
+      "disposition": "source_tree_integrated_exact",
+      "source_paths": "experiments/baseplane_moonshot/families/learning (5/5 blobs identical)",
+      "detail": "Two graph-unique commits add bounded learning research and generated context. Source is present byte-identically in main; historical Todo projection changes remain only in the archived tip."
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-mechanisms",
+      "tip": "b1aeabd696060e1b445a6c44c59828be0fccbd4d",
+      "disposition": "source_tree_integrated_hardened",
+      "source_paths": "experiments/baseplane_moonshot/families/mechanisms (all 10 branch paths present; 8 blobs identical)",
+      "detail": "Main has later checked dimension/index bounds and finite-score guards in mechanisms.hpp/probe.cpp, plus integration-repair.json. No branch source path is absent; retain tip tag for exact earlier evidence."
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-mma",
+      "tip": "873ec5e70b26bc4bfd0b8e2821c505cd0e606711",
+      "disposition": "source_tree_integrated_expanded",
+      "source_paths": "experiments/moonshot-parallel-v1/mma (all 49 branch paths present; 33 blobs identical; 16 updated)",
+      "detail": "Main has 66 additional files, including refreshed/historical evidence and provenance tooling. No branch path is absent; preserve exact archive tag for the original tip."
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-rewrite",
+      "tip": "da95e55d8fe24f46b99bac12df03ab30e52a059f",
+      "disposition": "source_tree_integrated_updated_receipt",
+      "source_paths": "experiments/moonshot-parallel-v1/rewrite (all 9 branch paths present; 8 blobs identical)",
+      "detail": "Only capability-receipt.json differs in main; code and tests match."
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-state",
+      "tip": "8335b4b894ec6934e07036b3ea4a332ed4b77be0",
+      "disposition": "source_tree_integrated_exact",
+      "source_paths": "experiments/moonshot-parallel-v1/state (9/9 blobs identical)"
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-tensor",
+      "tip": "3f58a147e3d914052565522953b0e5e655133b23",
+      "disposition": "source_tree_integrated_hardened",
+      "source_paths": "experiments/baseplane_moonshot/families/tensor (all 7 branch paths present; 1 blob identical)",
+      "detail": "Main adds interpolation overflow/subnormal and nonfinite guards, comparator self-checks, and expanded source-bound evidence. No branch path is absent; preserve exact archive tip."
+    },
+    {
+      "ref": "origin/codex/ce-moon-l-trajectory",
+      "tip": "a30388d295e8d2e4d68e6d9f698cbff2ddeeca0a",
+      "disposition": "source_tree_integrated_exact",
+      "source_paths": "experiments/moonshot-parallel-v1/trajectory (11/11 blobs identical)"
+    },
+    {
+      "ref": "origin/codex/resident-moments-20261007",
+      "tip": "91cf8935917b17b80ed2ac1a8aceba2f58dc9728",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/jbc/ce-crossop",
+      "tip": "a8a6eeb3320bde7a8c0c6c135bcee1f9f0dd3822",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/jbc/ce-decomposition",
+      "tip": "4702972026f85bcf9ba47a252ac2fffca2a1a6bc",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/jbc/ce-external-cost",
+      "tip": "d4268d3f46d80e941fe4e5819fcc4cbd3803f219",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/jbc/ce-fragment",
+      "tip": "8a9376598f86e2df33008726f40b7fbe4dc0c2c4",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/jbc/ce-integrate",
+      "tip": "3e3c674780b39b00843c9cd1fafbcc44f79ad3c5",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/jbc/ce-interfaces",
+      "tip": "f4afd1da624f23a6a9428a2b48bbcfe5fe99f3ba",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/jbc/ce-multiatom",
+      "tip": "9dd38f34a25a37c5686bac095c783ed26bf7bb4e",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/jbc/ce-planes",
+      "tip": "774a41977eeea757816af019e4f4c772106481ef",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/jbc/ce-resumption",
+      "tip": "f7f2015be3ea8a44d12cd4a9d6db37199f4509a1",
+      "disposition": "ancestor_integrated"
+    },
+    {
+      "ref": "origin/main",
+      "tip": "2f851ddb9719a85064f7140864c614245424f4cc",
+      "disposition": "baseline_keep"
+    }
+  ],
+  "additional_managed_refs": [
+    {
+      "ref": "codex/ce-is1-integrator-l",
+      "tip": "41952561a1fa9b2aab7d6d563fae2e2006b0850e",
+      "worktree": ".git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-is1-integrator-l",
+      "disposition": "retain_managed_worktree_cleanup_unavailable"
+    },
+    {
+      "ref": "todo-orchestrator/integration/9420c1503484acb26c34",
+      "tip": "645f73ea95373bc3b24b0e4aa3e0bfee3082052c",
+      "disposition": "preserve_authority_integration_ref"
+    }
+  ]
+}
