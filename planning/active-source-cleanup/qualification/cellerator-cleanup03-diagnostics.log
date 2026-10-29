@@ -1,0 +1,122 @@
+
+=== configure: cmake -S tests/compiler/diagnostics -B /tmp/cellerator-cleanup03-diagnostics ===
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-cleanup03-diagnostics
+
+=== build: cmake --build /tmp/cellerator-cleanup03-diagnostics -j4 ===
+[  1%] Building CXX object CMakeFiles/cellerator_validation_mode_semantics_test.dir/validation_mode_semantics_test.cc.o
+[  3%] Building CXX object CMakeFiles/cellerator_structural_impossibility_checks_test.dir/structural_impossibility_checks_test.cc.o
+[  7%] Building CXX object CMakeFiles/cellerator_advisory_semantic_validators_test.dir/advisory_semantic_validators_test.cc.o
+[  7%] Building CXX object CMakeFiles/cellerator_exact_coverage_and_ownership_diagnostics_test.dir/exact_coverage_and_ownership_diagnostics_test.cc.o
+[  9%] Building CXX object CMakeFiles/cellerator_structural_impossibility_checks_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/structural_impossibility_checks.cc.o
+[ 13%] Building CXX object CMakeFiles/cellerator_validation_mode_semantics_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/validation_mode_semantics.cc.o
+[ 13%] Building CXX object CMakeFiles/cellerator_advisory_semantic_validators_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/advisory_semantic_validators.cc.o
+[ 15%] Building CXX object CMakeFiles/cellerator_exact_coverage_and_ownership_diagnostics_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/exact_coverage_and_ownership_diagnostics.cc.o
+[ 16%] Linking CXX executable cellerator_advisory_semantic_validators_test
+[ 18%] Linking CXX executable cellerator_validation_mode_semantics_test
+[ 20%] Linking CXX executable cellerator_structural_impossibility_checks_test
+[ 20%] Built target cellerator_advisory_semantic_validators_test
+[ 20%] Built target cellerator_validation_mode_semantics_test
+[ 22%] Building CXX object CMakeFiles/cellerator_target_native_diagnostics_test.dir/target_native_diagnostics_test.cc.o
+[ 24%] Building CXX object CMakeFiles/cellerator_build_the_provenance_graph_model_test.dir/build_the_provenance_graph_model_test.cc.o
+[ 24%] Built target cellerator_structural_impossibility_checks_test
+[ 26%] Building CXX object CMakeFiles/cellerator_build_the_provenance_graph_model_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/build_the_provenance_graph_model.cc.o
+[ 28%] Linking CXX executable cellerator_exact_coverage_and_ownership_diagnostics_test
+[ 30%] Building CXX object CMakeFiles/cellerator_target_native_diagnostics_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/target_native_diagnostics.cc.o
+[ 30%] Built target cellerator_exact_coverage_and_ownership_diagnostics_test
+[ 32%] Building CXX object CMakeFiles/cellerator_source_to_native_maps_and_removable_sections_test.dir/source_to_native_maps_and_removable_sections_test.cc.o
+[ 33%] Linking CXX executable cellerator_target_native_diagnostics_test
+[ 35%] Building CXX object CMakeFiles/cellerator_source_to_native_maps_and_removable_sections_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/source_to_native_maps_and_removable_sections.cc.o
+[ 35%] Built target cellerator_target_native_diagnostics_test
+[ 37%] Building CXX object CMakeFiles/cellerator_what_changed_and_staleness_explanations_test.dir/what_changed_and_staleness_explanations_test.cc.o
+[ 39%] Linking CXX executable cellerator_build_the_provenance_graph_model_test
+[ 41%] Building CXX object CMakeFiles/cellerator_what_changed_and_staleness_explanations_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/what_changed_and_staleness_explanations.cc.o
+[ 43%] Building CXX object CMakeFiles/cellerator_planning_barrier_explanations_test.dir/planning_barrier_explanations_test.cc.o
+[ 43%] Built target cellerator_build_the_provenance_graph_model_test
+[ 45%] Linking CXX executable cellerator_what_changed_and_staleness_explanations_test
+[ 47%] Building CXX object CMakeFiles/cellerator_candidate_decision_reports_test.dir/candidate_decision_reports_test.cc.o
+[ 49%] Linking CXX executable cellerator_source_to_native_maps_and_removable_sections_test
+[ 49%] Built target cellerator_what_changed_and_staleness_explanations_test
+[ 50%] Building CXX object CMakeFiles/cellerator_planning_barrier_explanations_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/planning_barrier_explanations.cc.o
+[ 52%] Building CXX object CMakeFiles/cellerator_optimization_opportunity_remarks_test.dir/optimization_opportunity_remarks_test.cc.o
+[ 52%] Built target cellerator_source_to_native_maps_and_removable_sections_test
+[ 54%] Building CXX object CMakeFiles/cellerator_optimization_opportunity_remarks_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/optimization_opportunity_remarks.cc.o
+[ 56%] Building CXX object CMakeFiles/cellerator_candidate_decision_reports_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/candidate_decision_reports.cc.o
+[ 58%] Linking CXX executable cellerator_planning_barrier_explanations_test
+[ 58%] Built target cellerator_planning_barrier_explanations_test
+[ 60%] Building CXX object CMakeFiles/cellerator_deterministic_reproducer_bundles_test.dir/deterministic_reproducer_bundles_test.cc.o
+[ 62%] Building CXX object CMakeFiles/cellerator_deterministic_reproducer_bundles_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/deterministic_reproducer_bundles.cc.o
+[ 64%] Linking CXX executable cellerator_candidate_decision_reports_test
+[ 66%] Linking CXX executable cellerator_optimization_opportunity_remarks_test
+[ 66%] Built target cellerator_candidate_decision_reports_test
+[ 67%] Building CXX object CMakeFiles/cellerator_crash_and_timeout_diagnostics_test.dir/crash_and_timeout_diagnostics_test.cc.o
+[ 67%] Built target cellerator_optimization_opportunity_remarks_test
+[ 69%] Building CXX object CMakeFiles/cellerator_crash_and_timeout_diagnostics_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/crash_and_timeout_diagnostics.cc.o
+[ 71%] Building CXX object CMakeFiles/cellerator_structured_diagnostic_queries_test.dir/structured_diagnostic_queries_test.cc.o
+[ 73%] Linking CXX executable cellerator_crash_and_timeout_diagnostics_test
+[ 73%] Built target cellerator_crash_and_timeout_diagnostics_test
+[ 75%] Building CXX object CMakeFiles/cellerator_structured_diagnostic_queries_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/structured_diagnostic_queries.cc.o
+[ 77%] Building CXX object CMakeFiles/cellerator_benchmark_diagnostics_and_provenance_overhead_test.dir/benchmark_diagnostics_and_provenance_overhead_test.cc.o
+[ 79%] Linking CXX executable cellerator_deterministic_reproducer_bundles_test
+[ 79%] Built target cellerator_deterministic_reproducer_bundles_test
+[ 81%] Building CXX object CMakeFiles/cellerator_explainability_and_unsafe_control_behavior_test.dir/explainability_and_unsafe_control_behavior_test.cc.o
+[ 83%] Building CXX object CMakeFiles/cellerator_benchmark_diagnostics_and_provenance_overhead_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/benchmark_diagnostics_and_provenance_overhead.cc.o
+[ 84%] Building CXX object CMakeFiles/cellerator_explainability_and_unsafe_control_behavior_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/explainability_and_unsafe_control_behavior.cc.o
+[ 86%] Linking CXX executable cellerator_structured_diagnostic_queries_test
+[ 88%] Linking CXX executable cellerator_benchmark_diagnostics_and_provenance_overhead_test
+[ 88%] Built target cellerator_structured_diagnostic_queries_test
+[ 90%] Building CXX object CMakeFiles/cellerator_explainability_and_unsafe_control_behavior_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/structural_impossibility_checks.cc.o
+[ 90%] Built target cellerator_benchmark_diagnostics_and_provenance_overhead_test
+[ 92%] Building CXX object CMakeFiles/cellerator_explainability_and_unsafe_control_behavior_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/advisory_semantic_validators.cc.o
+[ 94%] Building CXX object CMakeFiles/cellerator_explainability_and_unsafe_control_behavior_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/target_native_diagnostics.cc.o
+[ 96%] Building CXX object CMakeFiles/cellerator_explainability_and_unsafe_control_behavior_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/candidate_decision_reports.cc.o
+[ 98%] Building CXX object CMakeFiles/cellerator_explainability_and_unsafe_control_behavior_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/diagnostics/source_to_native_maps_and_removable_sections.cc.o
+[100%] Linking CXX executable cellerator_explainability_and_unsafe_control_behavior_test
+[100%] Built target cellerator_explainability_and_unsafe_control_behavior_test
+
+=== ctest: ctest --test-dir /tmp/cellerator-cleanup03-diagnostics --output-on-failure ===
+Internal ctest changing into directory: /tmp/cellerator-cleanup03-diagnostics
+Test project /tmp/cellerator-cleanup03-diagnostics
+      Start  1: cellerator_validation_mode_semantics_test
+ 1/16 Test  #1: cellerator_validation_mode_semantics_test .......................   Passed    0.00 sec
+      Start  2: cellerator_structural_impossibility_checks_test
+ 2/16 Test  #2: cellerator_structural_impossibility_checks_test .................   Passed    0.00 sec
+      Start  3: cellerator_advisory_semantic_validators_test
+ 3/16 Test  #3: cellerator_advisory_semantic_validators_test ....................   Passed    0.00 sec
+      Start  4: cellerator_exact_coverage_and_ownership_diagnostics_test
+ 4/16 Test  #4: cellerator_exact_coverage_and_ownership_diagnostics_test ........   Passed    0.00 sec
+      Start  5: cellerator_target_native_diagnostics_test
+ 5/16 Test  #5: cellerator_target_native_diagnostics_test .......................   Passed    0.00 sec
+      Start  6: cellerator_build_the_provenance_graph_model_test
+ 6/16 Test  #6: cellerator_build_the_provenance_graph_model_test ................   Passed    0.00 sec
+      Start  7: cellerator_source_to_native_maps_and_removable_sections_test
+ 7/16 Test  #7: cellerator_source_to_native_maps_and_removable_sections_test ....   Passed    0.00 sec
+      Start  8: cellerator_what_changed_and_staleness_explanations_test
+ 8/16 Test  #8: cellerator_what_changed_and_staleness_explanations_test .........   Passed    0.00 sec
+      Start  9: cellerator_planning_barrier_explanations_test
+ 9/16 Test  #9: cellerator_planning_barrier_explanations_test ...................   Passed    0.00 sec
+      Start 10: cellerator_candidate_decision_reports_test
+10/16 Test #10: cellerator_candidate_decision_reports_test ......................   Passed    0.00 sec
+      Start 11: cellerator_optimization_opportunity_remarks_test
+11/16 Test #11: cellerator_optimization_opportunity_remarks_test ................   Passed    0.00 sec
+      Start 12: cellerator_deterministic_reproducer_bundles_test
+12/16 Test #12: cellerator_deterministic_reproducer_bundles_test ................   Passed    0.00 sec
+      Start 13: cellerator_crash_and_timeout_diagnostics_test
+13/16 Test #13: cellerator_crash_and_timeout_diagnostics_test ...................   Passed    0.00 sec
+      Start 14: cellerator_structured_diagnostic_queries_test
+14/16 Test #14: cellerator_structured_diagnostic_queries_test ...................   Passed    0.00 sec
+      Start 15: cellerator_benchmark_diagnostics_and_provenance_overhead_test
+15/16 Test #15: cellerator_benchmark_diagnostics_and_provenance_overhead_test ...   Passed    0.00 sec
+      Start 16: cellerator_explainability_and_unsafe_control_behavior_test
+16/16 Test #16: cellerator_explainability_and_unsafe_control_behavior_test ......   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 16
+
+Total Test time (real) =   0.04 sec

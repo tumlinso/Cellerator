@@ -1,5 +1,5 @@
 #pragma once
-#include <Cellerator/compiler/diagnostics/expose_structured_diagnostic_and_query_apis_v1.hh>
+#include <Cellerator/compiler/diagnostics/structured_diagnostic_queries_v1.hh>
 #include <Cellerator/compiler/diagnostics/validation_mode_semantics_v1.hh>
 #include <Cellerator/compiler/diagnostics/advisory_semantic_validators_v1.hh>
 #include <Cellerator/compiler/diagnostics/candidate_decision_reports_v1.hh>

@@ -133,17 +133,17 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 add_test(NAME cellerator_scalable_certification_indexes_test COMMAND cellerator_scalable_certification_indexes_test)
 
-add_executable(cellerator_preserve_migration_provenance_in_source_and_artifacts_test
-    preserve_migration_provenance_in_source_and_artifacts_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/discovery/preserve_migration_provenance_in_source_and_artifacts.cc")
-target_include_directories(cellerator_preserve_migration_provenance_in_source_and_artifacts_test PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(cellerator_preserve_migration_provenance_in_source_and_artifacts_test PRIVATE cxx_std_17)
-target_compile_definitions(cellerator_preserve_migration_provenance_in_source_and_artifacts_test PRIVATE
+add_executable(cellerator_migration_provenance_manifest_test
+    migration_provenance_manifest_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/discovery/migration_provenance_manifest.cc")
+target_include_directories(cellerator_migration_provenance_manifest_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_migration_provenance_manifest_test PRIVATE cxx_std_17)
+target_compile_definitions(cellerator_migration_provenance_manifest_test PRIVATE
     CELLERATOR_SOURCE_ROOT="${CELLERATOR_ROOT}")
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(cellerator_preserve_migration_provenance_in_source_and_artifacts_test PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_migration_provenance_manifest_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME cellerator_preserve_migration_provenance_in_source_and_artifacts_test COMMAND cellerator_preserve_migration_provenance_in_source_and_artifacts_test)
+add_test(NAME cellerator_migration_provenance_manifest_test COMMAND cellerator_migration_provenance_manifest_test)
 
 add_executable(cellerator_temporary_cellshard_compiler_adapter_test
     temporary_cellshard_compiler_adapter_test.cc
@@ -188,7 +188,7 @@ add_executable(cellerator_migrated_discovery_and_atom_compiler_slice_test
     "${CELLERATOR_ROOT}/src/compiler/discovery/common_jbc_atom_identity_adapters.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/temporary_cellshard_compiler_adapter.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/port_discovery_tests_and_evidence_fixtures.cc"
-    "${CELLERATOR_ROOT}/src/compiler/discovery/preserve_migration_provenance_in_source_and_artifacts.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/migration_provenance_manifest.cc"
     "${CELLERATOR_ROOT}/src/compiler/discovery/validate_no_compiler_discovery_remains_authoritative_in.cc")
 target_include_directories(cellerator_migrated_discovery_and_atom_compiler_slice_test PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(cellerator_migrated_discovery_and_atom_compiler_slice_test PRIVATE cxx_std_17)

@@ -17,7 +17,7 @@ get_filename_component(_nf1_numeric_root "${CMAKE_CURRENT_LIST_DIR}/../../.." AB
 if(NOT TARGET cellerator_native_numeric)
   add_subdirectory("${_nf1_numeric_root}/src/compute/operation/native_numeric" "${CMAKE_CURRENT_BINARY_DIR}/native_numeric")
 endif()
-add_executable(ce_nf1_n01 n01.cc)
+add_executable(ce_nf1_n01 host_relation_numeric_contract_test.cc)
 target_link_libraries(ce_nf1_n01 PRIVATE Cellerator::native_numeric)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(ce_nf1_n01 PRIVATE -Wall -Wextra -Wpedantic -Werror -fno-fast-math -ffp-contract=off)

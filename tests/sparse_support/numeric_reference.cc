@@ -1,7 +1,7 @@
 #include <Cellerator/ops/sparse_support/training.hh>
 
 #define main ce_geo_mma_projection_roundtrip_regression
-#include "../ce_geo/projection/mma_projection_roundtrip_test.cc"
+#include "../geometry/projection/mma_projection_roundtrip_test.cc"
 #undef main
 
 #include <cassert>

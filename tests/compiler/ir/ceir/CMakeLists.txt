@@ -3,7 +3,7 @@ project(cellerator_compiler_d01_tests LANGUAGES CXX)
 
 enable_testing()
 
-get_filename_component(CELLERATOR_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+get_filename_component(CELLERATOR_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../.." ABSOLUTE)
 
 add_executable(cellerator_ceir_common_lexical_conventions_test
     ceir_common_lexical_conventions_test.cc
@@ -126,17 +126,17 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 add_test(NAME cellerator_validation_mode_plumbing_test COMMAND cellerator_validation_mode_plumbing_test)
 
-add_executable(cellerator_expose_the_public_ceir_c_api_test
-    expose_the_public_ceir_c_api_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/ir/common/expose_the_public_ceir_c_api.cc"
+add_executable(cellerator_ceir_builder_api_test
+    ceir_builder_api_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/common/ceir_builder_api.cc"
     "${CELLERATOR_ROOT}/src/compiler/ir/common/common_operation_and_extension_records.cc"
     "${CELLERATOR_ROOT}/src/compiler/ir/common/deterministic_canonical_printing.cc")
-target_include_directories(cellerator_expose_the_public_ceir_c_api_test PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(cellerator_expose_the_public_ceir_c_api_test PRIVATE cxx_std_17)
+target_include_directories(cellerator_ceir_builder_api_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_ceir_builder_api_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(cellerator_expose_the_public_ceir_c_api_test PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_ceir_builder_api_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME cellerator_expose_the_public_ceir_c_api_test COMMAND cellerator_expose_the_public_ceir_c_api_test)
+add_test(NAME cellerator_ceir_builder_api_test COMMAND cellerator_ceir_builder_api_test)
 
 add_executable(cellerator_ceir_common_round_trip_and_artifact_compatibility_test
     ceir_common_round_trip_and_artifact_compatibility_test.cc

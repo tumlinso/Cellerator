@@ -1,0 +1,740 @@
+{
+  "base_commit": "543039aa4f6b6222f4737befa9cb48cb2e54b574",
+  "prefix_scan_count": 90,
+  "row_count": 90,
+  "dispositions": {
+    "move": 85,
+    "archive": 3,
+    "keep": 2
+  },
+  "rows": [
+    {
+      "old_path": "bench/compiler/experiments/adaptive_fields/kda/create_task.py",
+      "new_path": "bench/compiler/experiments/adaptive_fields/kda/create_task.py",
+      "disposition": "keep",
+      "reason": "Keep: this script performs the KDA harness task-creation operation.",
+      "original_git_blob": "8aa257f8e1f4a903e158842b4bdd8a0bf55cc653",
+      "original_sha256": "6e9dd55c756f652b040cad9f2ccd5d114ba830b3fe1f46bbbc3058b6e9bb99e1"
+    },
+    {
+      "old_path": "bench/compiler/experiments/adaptive_fields/make_job.py",
+      "new_path": "bench/compiler/experiments/adaptive_fields/make_job.py",
+      "disposition": "keep",
+      "reason": "Keep: this script creates a KDA experiment job as an operational command.",
+      "original_git_blob": "3b72f52eb56ead450724d32b300f90d12211a79a",
+      "original_sha256": "20d462896726a897c561fae41381da3f3c34c129e03c050aa058e8b676c64efd"
+    },
+    {
+      "old_path": "bench/compiler/freeze_compiler_benchmark_methodology_benchmark.cc",
+      "new_path": "docs/history/compiler/benchmark_prototypes/freeze_compiler_benchmark_methodology_benchmark.cc",
+      "disposition": "archive",
+      "reason": "Unreferenced governance/benchmark scaffold; preserve original bytes and provenance in history.",
+      "original_git_blob": "7530a8a921dade1ec25b6e603345dbf01583ce4f",
+      "original_sha256": "94a40e404a0a118767b53f0baaf3af4866aad13cfa3c3399118e733af61515a7"
+    },
+    {
+      "old_path": "bench/compiler/freeze_the_part_one_performance_and_milestone_receipt_benchmark.cc",
+      "new_path": "docs/history/compiler/benchmark_prototypes/freeze_the_part_one_performance_and_milestone_receipt_benchmark.cc",
+      "disposition": "archive",
+      "reason": "Unreferenced governance/benchmark scaffold; preserve original bytes and provenance in history.",
+      "original_git_blob": "e465055289415fef0b79fc2a7e3fccb54c32783d",
+      "original_sha256": "2c58675fd610760b42fbb8acb3b0cd0348a2e52cecf2b27d610fcfa03e8d4ea4"
+    },
+    {
+      "old_path": "cmake/compiler/create_accelerator_enabled_compiler_smoke_targets.cmake",
+      "new_path": "cmake/compiler/accelerator_compiler_smoke_target.cmake",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "8c64dcd50d330679f8a0e1730111e9edefc9cdaa",
+      "original_sha256": "010b2bd4be2af63875f21a970cc74e2ad63d5de3e81c0853e8afc37302f7235d"
+    },
+    {
+      "old_path": "cmake/compiler/create_compiler_component_target_boundaries.cmake",
+      "new_path": "cmake/compiler/compiler_component_targets.cmake",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "c66895b6f8b659d430f6a7a1426c5dd6a045eded",
+      "original_sha256": "d710c299a019200c007ae4f52a68e320c780a0c24da41f4857cd66aa5495c5a5"
+    },
+    {
+      "old_path": "cmake/compiler/create_host_only_compiler_smoke_targets.cmake",
+      "new_path": "cmake/compiler/host_only_compiler_smoke_targets.cmake",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "56701d79e8e16bc3dcbb4e5f0842af88d85e7fbc",
+      "original_sha256": "91ae4ca69c65d6e8c1eea035e6854c802543c57760f0d871b8ff5fac7f576853"
+    },
+    {
+      "old_path": "cmake/compiler/define_backend_resource_discovery_manifests.cmake",
+      "new_path": "cmake/compiler/backend_resource_manifest.cmake",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "56e421c1959dcd5a97cd936cc0db7fac85bd55be",
+      "original_sha256": "1d01c182b8649e9c6e2e49065b547d8feacc8ecdb7afa3dcd0995872ecd53765"
+    },
+    {
+      "old_path": "cmake/compiler/define_build_presets_and_ci_matrix.cmake",
+      "new_path": "cmake/compiler/compiler_ci_presets.cmake",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "ef6f140481da200c6a189605f47cff7c7412c4d4",
+      "original_sha256": "03372480e99dbe83faed839bb67b185db41a664aefb023ed22c7122f596d86d1"
+    },
+    {
+      "old_path": "cmake/compiler/define_build_tree_generated_header_ownership.cmake",
+      "new_path": "cmake/compiler/generated_compiler_header.cmake",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "eceeeba105d3058f766848d12f08943edfddd982",
+      "original_sha256": "88d76f20cb089fbcaf7ef36fac8b5257d1f49cebbb5f914f1214bb776083847e"
+    },
+    {
+      "old_path": "cmake/compiler/define_optional_llvm_and_clang_library_discovery.cmake",
+      "new_path": "cmake/compiler/llvm_clang_discovery.cmake",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "58724c4b77c7173accf6aead1b61be682d5c7aa4",
+      "original_sha256": "843ad60525cfd62336f65d18524b0025994b7679501f45a765d1059b90eb9241"
+    },
+    {
+      "old_path": "cmake/compiler/define_tri_state_cuda_backend_configuration.cmake",
+      "new_path": "cmake/compiler/cuda_backend_configuration.cmake",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "b30a22443049c20f31773bd37138b2bdd5a1640c",
+      "original_sha256": "e3778608cb0961a6710df5f9c48e92b4aad017715cd7b11a07f247cb49c5721a"
+    },
+    {
+      "old_path": "cmake/compiler/isolate_legacy_cuda_target_requirements.cmake",
+      "new_path": "cmake/compiler/legacy_cuda_target_configuration.cmake",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "6495c77a55b24066f5fcb15c787390667444f0b4",
+      "original_sha256": "fd2936ef4d4eabbf6956bd228a23c5dbecd83b008b377e9d9d99c8c09c5c5e2e"
+    },
+    {
+      "old_path": "cmake/compiler/set_modern_compiler_tooling_language_standards.cmake",
+      "new_path": "cmake/compiler/compiler_language_standards.cmake",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "d9715a90e8fd03442c086a4d364f4bf281400526",
+      "original_sha256": "9cf4935306e7fa0150f198bb289d45520265990ba913dda0b779f7e1ffaf8bb3"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/api/expose_ceir_ownership_and_mutation_apis_v1.hh",
+      "new_path": "include/Cellerator/compiler/api/ceir_ownership_and_mutation_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "7e5683d345193f1ed1f46ce73e957ba054dd21f1",
+      "original_sha256": "1f713be9f3880f1ae754fffc9efa90c2e902d683d5202a2d0331f30ec511cd87"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/api/expose_parse_and_semantic_analysis_apis_v1.hh",
+      "new_path": "include/Cellerator/compiler/api/parsing_and_semantic_analysis_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "4172af1d4b3c2e77a49a372cca1fd6e2ddc27878",
+      "original_sha256": "19ad7ecda0b6f2233abd125c4158febb8910d42fa71be2a7ceaf00bf040d1875"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/api/expose_pass_reflection_and_extension_apis_v1.hh",
+      "new_path": "include/Cellerator/compiler/api/pass_reflection_and_extension_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "760fd64569adda83329953f8feab121f0cb2cc6e",
+      "original_sha256": "3055cb4faf484a3a4af3462401b5024d90956dd551133ff82f3b73e4f66b6eee"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/api/expose_planning_and_candidate_apis_v1.hh",
+      "new_path": "include/Cellerator/compiler/api/planning_and_candidate_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "78fd68bc3cff877ef78c665f3101ed1a6dc9a074",
+      "original_sha256": "7e47ac89a47de0d6f2f1e240ae3c02810a17ebd477c809d500352caad4f81487"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/api/expose_profile_build_load_query_apis_v1.hh",
+      "new_path": "include/Cellerator/compiler/api/profile_lifecycle_and_query_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "c470edf130ef89050233234294c221909b43f298",
+      "original_sha256": "069882fd349ec7704808913ffccd6ec5f82ef56367e0ee9dc05e4ed3f86c3e0b"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/api/expose_realization_and_backend_apis_v1.hh",
+      "new_path": "include/Cellerator/compiler/api/backend_realization_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "b58295bc52bc755f806e9f9e43ff77a7206c4035",
+      "original_sha256": "1dc93f5e20f064490d799a6c1b76565059f3e8f4642da1fb7c75a659c362964a"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/api/expose_structured_diagnostics_and_explainability_apis_v1.hh",
+      "new_path": "include/Cellerator/compiler/api/structured_diagnostics_and_explainability_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "82eb8c5fc2699990ed09d9e7c1bff1ec4bc8c1be",
+      "original_sha256": "2571af484e3574c3a97fea5bfe97d8eff90cb5dfcca0d38b1af1cbea676b989a"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/api/preserve_direct_runtime_execution_access_v1.hh",
+      "new_path": "include/Cellerator/compiler/api/direct_runtime_execution_access_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "054498063dd220435a08767cee3493927c6a224d",
+      "original_sha256": "01d88b048314f7e520f59df1afa9e25b68e76fe5aff9d8f0c97d86220280e729"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/ast/preserve_token_and_macro_provenance_v1.hh",
+      "new_path": "include/Cellerator/compiler/ast/token_and_macro_provenance_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "f0a8365388bc8d207d74ba9c6cab7f49da01050d",
+      "original_sha256": "fb74e5244604949603806ec34c015ada13f5039f6ed6154b0cc658ca354ea7b2"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/build/isolate_legacy_cuda_target_requirements_v1.hh",
+      "new_path": "include/Cellerator/compiler/build/legacy_cuda_target_isolation_policy_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "14701eda3b8f8019587a22ac1e608227a0248ca0",
+      "original_sha256": "05fb978123845635b7d5e7159d7384f045432a1b18e67f1c7df13ec1a4d6091a"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/build/set_modern_compiler_tooling_language_standards_v1.hh",
+      "new_path": "include/Cellerator/compiler/build/compiler_language_standard_policy_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "15ec23c1f52081bec251bdc4660cf589dcea7c4c",
+      "original_sha256": "ceab0f5167a2e0580f09fcf5e261bc7ce3b1188021c1a6a0054eddd3c5ece706"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/diagnostics/expose_structured_diagnostic_and_query_apis_v1.hh",
+      "new_path": "include/Cellerator/compiler/diagnostics/structured_diagnostic_queries_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "28aebd7d6d01d6cc1cfb162dbc779d9277fc1931",
+      "original_sha256": "f6bcf502844d47b88e387f560be8acc6b9b30ce3332703533cced53d00abdb02"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/discovery/preserve_migration_provenance_in_source_and_artifacts_v1.hh",
+      "new_path": "include/Cellerator/compiler/discovery/migration_provenance_manifest_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "d8cc4c79fad13ad2f66e6d78f20144f09454b35b",
+      "original_sha256": "18642576c475ca3bcb3cfc9e931a63d5617885c9b0fd8da6bb7f6d6dfadaa2af"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/frontend/cxx/expose_constexpr_and_constant_evaluation_results_v1.hh",
+      "new_path": "include/Cellerator/compiler/frontend/cxx/constexpr_imports_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "0494b909af43be912915e9313f11be32607e503e",
+      "original_sha256": "c9811c46d04a46ce90d358c9d70a83730ce8518bdbb89ec94c96d6e2257f4c1a"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/frontend/cxx/expose_reusable_frontend_sessions_v1.hh",
+      "new_path": "include/Cellerator/compiler/frontend/cxx/frontend_sessions_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "40ff1bc98d08c36041c1acb889dff062640bff24",
+      "original_sha256": "bb41b81e4607c175ca688579ba05a8c65203ca43f4112ee7538769d4ce915dc3"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/frontend/cxx/preserve_pure_c_fallthrough_exactly_v1.hh",
+      "new_path": "include/Cellerator/compiler/frontend/cxx/pure_c_fallthrough_policy_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "86614ca927aeb88bbd06efa29419f8cbbdede501",
+      "original_sha256": "dbf5ae910cd8f42d4829e60a4cd1852ff2015b45783ae380f5bee475befa8cd3"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/frontend/source/expose_source_pipeline_diagnostics_and_dumps_v1.hh",
+      "new_path": "include/Cellerator/compiler/frontend/source/source_pipeline_diagnostics_and_dumps_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "69c2307d01336c1366f095675b696cfa94be4a66",
+      "original_sha256": "5ef854c01d2cce7ee7d78cf692fc6ec8a3d4780d59c44c29196c926857cef11f"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/ir/common/expose_the_public_ceir_c_api_v1.hh",
+      "new_path": "include/Cellerator/compiler/ir/common/ceir_builder_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "d27cc644fcfbf4d8c3600b1591d1f6e7928b7693",
+      "original_sha256": "71548695bdbfe5e2ed0304c65941feea1e9bfa3e188b863a485fb200a0252fca"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/ir/text/expose_the_public_ceir_c_api_v1.hh",
+      "new_path": "include/Cellerator/compiler/ir/text/ceir_builder_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "8b626ce3b7e6959f788c5d8766b807134bd49647",
+      "original_sha256": "edcdccd3b254428b750ff1eb0471793e75933eabfb4276306c6ea0ef5f39f63a"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/planning/expose_complete_planning_reports_v1.hh",
+      "new_path": "include/Cellerator/compiler/planning/planning_reports_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "3d77d338715da4824763b9aa9a6672f98fce393e",
+      "original_sha256": "97206f8ac961f7e22852400858095969eb4d76d9a743c755367acb4dfd2e4fb0"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/profile/expose_profile_inspection_and_diff_tooling_v1.hh",
+      "new_path": "include/Cellerator/compiler/profile/profile_inspection_and_diff_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "4d7011d85d9c1ace1eed85f0a195e97119f265e4",
+      "original_sha256": "c6b6db41446277351a52310b7a75d67ea65be91fe3a34c19c486caca21eb611c"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/reflection/expose_reflection_and_inline_ir_diagnostics_v1.hh",
+      "new_path": "include/Cellerator/compiler/reflection/reflection_diagnostics_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "10f7f660bd603f23d692a489fb19948817c161e8",
+      "original_sha256": "40ee3a59e93f831e9453340d026290b88e316e8daa25f533b355a739eaa4cefe"
+    },
+    {
+      "old_path": "include/Cellerator/compiler/tooling/expose_reusable_tooling_snapshot_apis_v1.hh",
+      "new_path": "include/Cellerator/compiler/tooling/tooling_snapshots_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "2e9264a4ebf90cad259a9cd38a1d18b4d0eed155",
+      "original_sha256": "34fbcc20b4e35e9b3e11e301a42943270bdd77e0ca2f3da3423f6c32a63700d9"
+    },
+    {
+      "old_path": "include/Cellerator/sdk/expose_ceir_ownership_and_mutation_apis_v1.hh",
+      "new_path": "include/Cellerator/sdk/ceir_ownership_and_mutation_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "42801abc88f13d9fbc7cf35af625cad4ec205712",
+      "original_sha256": "450486478639bc6b130f40354d7a476807086425ecbc5e29cd6de46a27dc76b3"
+    },
+    {
+      "old_path": "include/Cellerator/sdk/expose_parse_and_semantic_analysis_apis_v1.hh",
+      "new_path": "include/Cellerator/sdk/parsing_and_semantic_analysis_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "05c3db7903a75d2f7e9db7456a8cd17c9bebbc50",
+      "original_sha256": "9d7eaf15429fb33ec8e7d2b608f0f9abaad2a5c2ee30ad9cb64fad4025000cd7"
+    },
+    {
+      "old_path": "include/Cellerator/sdk/expose_pass_reflection_and_extension_apis_v1.hh",
+      "new_path": "include/Cellerator/sdk/pass_reflection_and_extension_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "fb77ce824ec438e8f1250459568e14861722a451",
+      "original_sha256": "1dafd5e1cf2083565f2533d88cc4a65e9ed3ccedcf54aaa9baf2fc9b3a50bbfb"
+    },
+    {
+      "old_path": "include/Cellerator/sdk/expose_planning_and_candidate_apis_v1.hh",
+      "new_path": "include/Cellerator/sdk/planning_and_candidate_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "9869d3e3e517db3db484731cbf929859f43ba429",
+      "original_sha256": "26bbce463b262924324e5f1a310293eecbc3b564b245c9616d3986a6cd756046"
+    },
+    {
+      "old_path": "include/Cellerator/sdk/expose_profile_build_load_query_apis_v1.hh",
+      "new_path": "include/Cellerator/sdk/profile_lifecycle_and_query_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "65495d721ae4157fcf00200261520041647d03ba",
+      "original_sha256": "f91bcc417208cc2dd086c22cf2b3789bb3442a4e5cdd358f781fcac05b7110a5"
+    },
+    {
+      "old_path": "include/Cellerator/sdk/expose_realization_and_backend_apis_v1.hh",
+      "new_path": "include/Cellerator/sdk/backend_realization_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "b2a954ff3cadbd3bd52700a2cbbbd3a177059d6c",
+      "original_sha256": "c71cde4487daf859630fb1b2793588679c3167cf91c27fee693577c64e3c4c37"
+    },
+    {
+      "old_path": "include/Cellerator/sdk/expose_structured_diagnostics_and_explainability_apis_v1.hh",
+      "new_path": "include/Cellerator/sdk/structured_diagnostics_and_explainability_api_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "0adbd13c1347e6067da84c97f84c762acd2bf418",
+      "original_sha256": "1bd528779fb35ffa05957ffbfebe1fc6d2817cf0f6b780c43d4a0f1928ad173a"
+    },
+    {
+      "old_path": "include/Cellerator/sdk/preserve_direct_runtime_execution_access_v1.hh",
+      "new_path": "include/Cellerator/sdk/direct_runtime_execution_access_v1.hh",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "7ceb24ffe11b70ef7fe535d6b5fe8d2d334e877b",
+      "original_sha256": "718c8d0f40eb41f35ccbb5f7dec56ae76c5e1a7d356e06e15c8c9e56a5a2c1ef"
+    },
+    {
+      "old_path": "src/compiler/api/expose_ceir_ownership_and_mutation_apis.cc",
+      "new_path": "src/compiler/api/ceir_ownership_and_mutation_api.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "16dce39702197ac3ae92a95e5c02af19c9785c0a",
+      "original_sha256": "c9248ee8134a4c9743262bf4fa8dc459dd64084dce91864636deff297941b80d"
+    },
+    {
+      "old_path": "src/compiler/api/expose_parse_and_semantic_analysis_apis.cc",
+      "new_path": "src/compiler/api/parsing_and_semantic_analysis_api.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "88a4a493968d2fbfa68235a8c9d7c1d8ceb4f628",
+      "original_sha256": "dd28997a0501e033a8f380103d990d7aea71d1ab274eef0b79157ca33ed46be3"
+    },
+    {
+      "old_path": "src/compiler/api/expose_pass_reflection_and_extension_apis.cc",
+      "new_path": "src/compiler/api/pass_reflection_and_extension_api.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "36665181d29b6892133bc89965566583f908663d",
+      "original_sha256": "fc0851e5dca9017b9b75269c466c35d803b065a3966beb5982b16c8090b2cb8e"
+    },
+    {
+      "old_path": "src/compiler/api/expose_planning_and_candidate_apis.cc",
+      "new_path": "src/compiler/api/planning_and_candidate_api.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "2ab96c23ea377d9ed983857ac69b054af5dbd043",
+      "original_sha256": "8deda6d1e80ba087056fd84dd9d6d80b620dd029bd026dc594265a1518009804"
+    },
+    {
+      "old_path": "src/compiler/api/expose_profile_build_load_query_apis.cc",
+      "new_path": "src/compiler/api/profile_lifecycle_and_query_api.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "3ddf907483a5a14a027a26ee7758c5b97a260a7c",
+      "original_sha256": "df65aa10a12603de8b94bd4cc7f15d722b0f56d3ba27c08a9a37c53a507c6596"
+    },
+    {
+      "old_path": "src/compiler/api/expose_realization_and_backend_apis.cc",
+      "new_path": "src/compiler/api/backend_realization_api.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "5aeca4910c0bacdc8a641f4209781841013d1395",
+      "original_sha256": "c610d952dc552a33c5a1324d2c538fe43f88ab9437bb99c8dddf5058abcb8cda"
+    },
+    {
+      "old_path": "src/compiler/api/expose_structured_diagnostics_and_explainability_apis.cc",
+      "new_path": "src/compiler/api/structured_diagnostics_and_explainability_api.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "5d492285cb47c1ec4793feca9799d4de681cf3ae",
+      "original_sha256": "f908d52470ab4ec2a06fb90514ed3ee3f217af4252e89ce6ed6df44a2fbd201b"
+    },
+    {
+      "old_path": "src/compiler/api/preserve_direct_runtime_execution_access.cc",
+      "new_path": "src/compiler/api/direct_runtime_execution_access.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "4ab0eb0b973d02679f394def7d930932d5405abb",
+      "original_sha256": "9b772dbe57065aeba9c5ab9bc65205ae443a43e045579f22e4938cba0666ec15"
+    },
+    {
+      "old_path": "src/compiler/ast/preserve_token_and_macro_provenance.cc",
+      "new_path": "src/compiler/ast/token_and_macro_provenance.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "7f6130686d61b5902d717c1c750b14f92f017aeb",
+      "original_sha256": "76ef25a630c5afe37d5678085a4967f04c5cac4c02eab3670aa59984f17efafe"
+    },
+    {
+      "old_path": "src/compiler/diagnostics/expose_structured_diagnostic_and_query_apis.cc",
+      "new_path": "src/compiler/diagnostics/structured_diagnostic_queries.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "e251d431e43f4fefa4bfef77bfbe2af09357493d",
+      "original_sha256": "beb51fc640daf3493639792ddc4a644d84dd02aad0160cbdc58f3557b2692484"
+    },
+    {
+      "old_path": "src/compiler/discovery/preserve_migration_provenance_in_source_and_artifacts.cc",
+      "new_path": "src/compiler/discovery/migration_provenance_manifest.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "642b09548f041eb6f6d091135f37a3f3f741fb51",
+      "original_sha256": "7e9f8024ac888c14669d926a03d5104a15e560bb6feb6dee53530f37f6a98ed2"
+    },
+    {
+      "old_path": "src/compiler/frontend/cxx/expose_constexpr_and_constant_evaluation_results.cc",
+      "new_path": "src/compiler/frontend/cxx/constexpr_imports.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "67d3f7e0f831b8770c4eee1e489e9fe3b74016b7",
+      "original_sha256": "7b81f546a57f5eefd905fa51b738ebe3c511dd6e190512c92c591855ad33ca2c"
+    },
+    {
+      "old_path": "src/compiler/frontend/cxx/expose_reusable_frontend_sessions.cc",
+      "new_path": "src/compiler/frontend/cxx/frontend_sessions.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "10b0c61aae7800026e4184adc2a9f5cb26536c41",
+      "original_sha256": "d1dc32f0b6fe8159cd501b6cb4298be88f84ef3ecac6ea4b1fd1802ef2a79d02"
+    },
+    {
+      "old_path": "src/compiler/frontend/cxx/preserve_pure_c_fallthrough_exactly.cc",
+      "new_path": "src/compiler/frontend/cxx/pure_c_fallthrough_policy.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "c0f4fa7bec918f4cf8d83197180a27e8c644ce51",
+      "original_sha256": "7e3ee46b154b10283d79f349436d0c305784afb46da57055bf15fb34caa01f4a"
+    },
+    {
+      "old_path": "src/compiler/frontend/source/expose_source_pipeline_diagnostics_and_dumps.cc",
+      "new_path": "src/compiler/frontend/source/source_pipeline_diagnostics_and_dumps.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "8274dcc87c14e450e2995e0d1f758af458c4ecff",
+      "original_sha256": "a0864cea938f63fcc5ef0e5be8f0ecf3eeb96e1bdbf9e406a109af46e557b9e1"
+    },
+    {
+      "old_path": "src/compiler/ir/common/expose_the_public_ceir_c_api.cc",
+      "new_path": "src/compiler/ir/common/ceir_builder_api.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "97f1f0fbb940d0ac935691595dd05b286bf54ca9",
+      "original_sha256": "a5ca5b69fc79bf881be487f1059fe987a0acff18641106dbbc563c941f780196"
+    },
+    {
+      "old_path": "src/compiler/planning/expose_complete_planning_reports.cc",
+      "new_path": "src/compiler/planning/planning_reports.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "80549ab5955c323eac16b466ddd31b0e5b96bc66",
+      "original_sha256": "ec9448c41015282d92614fb4a9c87d67c80277f55a0bc18cedc6ebe9a19fb268"
+    },
+    {
+      "old_path": "src/compiler/profile/expose_profile_inspection_and_diff_tooling.cc",
+      "new_path": "src/compiler/profile/profile_inspection_and_diff.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "c614768011f1151bccd16406c663f0499b8dd0a4",
+      "original_sha256": "565667f099ebd776bc0498030913909bdcefc233352dc2f3f5c6400217817ce2"
+    },
+    {
+      "old_path": "src/compiler/reflection/expose_reflection_and_inline_ir_diagnostics.cc",
+      "new_path": "src/compiler/reflection/reflection_diagnostics.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "bab8563f86ee14c42188ef68838212f40cbcb49b",
+      "original_sha256": "5c40d60c3a34838a6ab00d380bd0c56d127418e11ae3bd591423300eae5fc589"
+    },
+    {
+      "old_path": "src/compiler/tooling/expose_reusable_tooling_snapshot_apis.cc",
+      "new_path": "src/compiler/tooling/tooling_snapshots.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "a3472b1bd671e4c250a4d87b67a009ba6fa773f3",
+      "original_sha256": "cc19d381e68986a22ecd0b416a58119b285aa76dafd20b2159a64ef62a885f2b"
+    },
+    {
+      "old_path": "tests/compiler/ast/preserve_token_and_macro_provenance_test.cc",
+      "new_path": "tests/compiler/ast/token_and_macro_provenance_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "daddc380c838d633dd7e56ae503396ea24eb48b5",
+      "original_sha256": "557b1b0d71c7950279ff77fa017a85374e8553eee6aae8bdbdd12122ad15e1d3"
+    },
+    {
+      "old_path": "tests/compiler/build/isolate_legacy_cuda_target_requirements_test.cc",
+      "new_path": "tests/compiler/build/legacy_cuda_target_isolation_policy_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "84667cee815ed7800be952b543c6310cdc45850b",
+      "original_sha256": "3e0a1fa785dfc8f835936332a794a85367e3ade4d7761b93b1f6d9e28fe7e9ee"
+    },
+    {
+      "old_path": "tests/compiler/build/set_modern_compiler_tooling_language_standards_test.cc",
+      "new_path": "tests/compiler/build/compiler_language_standard_policy_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "8ae2ab34233d659fb599461e6abf9e467e840dd3",
+      "original_sha256": "3a2833012246ce8c99ce17ab7f67ea670e6a16f07d62e43df5a6bc80fc44302a"
+    },
+    {
+      "old_path": "tests/compiler/cxx_bridge/expose_constexpr_and_constant_evaluation_results_test.cc",
+      "new_path": "tests/compiler/cxx_bridge/constexpr_imports_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "c93d1a5f862a883f06dc857421aa985d85205617",
+      "original_sha256": "4ec04d34574f57396a3bf1a0adb872f131961f150ed17ea226536adce41c2e18"
+    },
+    {
+      "old_path": "tests/compiler/cxx_bridge/expose_reusable_frontend_sessions_test.cc",
+      "new_path": "tests/compiler/cxx_bridge/frontend_sessions_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "364a34d211ae5465fc62fdbdeec1aee1892658ff",
+      "original_sha256": "ea0d59c9c1db750fded0a5570af06cad5ada42b5d9098f48e4f1e7cfa1c61973"
+    },
+    {
+      "old_path": "tests/compiler/cxx_bridge/preserve_pure_c_fallthrough_exactly_test.cc",
+      "new_path": "tests/compiler/cxx_bridge/pure_c_fallthrough_policy_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "2a609f5420630c4fbb8242f82dc75cc17b3bf50f",
+      "original_sha256": "cb8009e14393d2f799f39d6f6ec08dd104917fa76c40d0245a5533ed61ba5b6d"
+    },
+    {
+      "old_path": "tests/compiler/diagnostics/expose_structured_diagnostic_and_query_apis_test.cc",
+      "new_path": "tests/compiler/diagnostics/structured_diagnostic_queries_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "7f2184d9e4dfb0d1acd815db752ddd5f72020279",
+      "original_sha256": "228eba6ff9c2a78149939d4be3c9a3d6b2efe59ad243a0a65ec06b58b8592ffd"
+    },
+    {
+      "old_path": "tests/compiler/discovery/preserve_migration_provenance_in_source_and_artifacts_test.cc",
+      "new_path": "tests/compiler/discovery/migration_provenance_manifest_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "b162e98bb285a54c5fd714eeeafbb3e1bbf0addf",
+      "original_sha256": "8939e2a486f33a22ff55c3e2799c69b20614f26e1e181c58d63112a83a60e799"
+    },
+    {
+      "old_path": "tests/compiler/ir/ceir/expose_the_public_ceir_c_api_test.cc",
+      "new_path": "tests/compiler/ir/ceir/ceir_builder_api_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "11fb3d6b805d96d8b09f2b7a8b715d6a83f701eb",
+      "original_sha256": "af99ec76ca6d930334b366f16d01ce6467203aa9eacf6631a4f66e053957fb72"
+    },
+    {
+      "old_path": "tests/compiler/migration/project_authority/publish_the_part_one_compiler_charter_test.cc",
+      "new_path": "docs/history/compiler/governance_test_prototypes/publish_the_part_one_compiler_charter_test.cc",
+      "disposition": "archive",
+      "reason": "Unreferenced governance/benchmark scaffold; preserve original bytes and provenance in history.",
+      "original_git_blob": "b3b660a996a57513eb81639045fa47be190c8453",
+      "original_sha256": "48d0c7d090c63de7a1748319e5db9c6f4fb1a9c82c6388382164e8b765ebfd08"
+    },
+    {
+      "old_path": "tests/compiler/planning/expose_complete_planning_reports_test.cc",
+      "new_path": "tests/compiler/planning/planning_reports_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "4314cfdf990111971f676700a2d9998331d1ba78",
+      "original_sha256": "a37ef8c417482af1af9bcb33ca321480654de8bb77b6db76592385418be86815"
+    },
+    {
+      "old_path": "tests/compiler/profile/expose_profile_inspection_and_diff_tooling_test.cc",
+      "new_path": "tests/compiler/profile/profile_inspection_and_diff_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "d410eb9fc277b5719c4b5ee03ca0bc829d6d2a7b",
+      "original_sha256": "961b6c79a0ab13a85c6ad45329b0b9e89677ebaeadd90608582de41689dcbe10"
+    },
+    {
+      "old_path": "tests/compiler/reflection/expose_reflection_and_inline_ir_diagnostics_test.cc",
+      "new_path": "tests/compiler/reflection/reflection_diagnostics_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "165eede8101e595be5ca67cd279f53c82b9f622f",
+      "original_sha256": "0f39547979977c4ee91c93c0ce0a1ff2c30b56975554f32aa9132dca48608ea6"
+    },
+    {
+      "old_path": "tests/compiler/release/publish_architecture_and_migration_completion_records_test.cc",
+      "new_path": "tests/compiler/release/architecture_and_migration_records_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "0e287fee24bbffd3011eaecce69bbea036a8880c",
+      "original_sha256": "6588c1098ac38c650da4b841ab9f65bcc62bda6db7a944e9069ab2a4f9fcab0c"
+    },
+    {
+      "old_path": "tests/compiler/sdk/expose_ceir_ownership_and_mutation_apis_test.cc",
+      "new_path": "tests/compiler/sdk/ceir_ownership_and_mutation_api_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "b15d9be66ee01e1f6b14378f11cd35b8e2fd4cea",
+      "original_sha256": "7fd4b0980a308f8529242ff54be0e8fd24b5eb5c0852e7ec3ef91659e76d2b84"
+    },
+    {
+      "old_path": "tests/compiler/sdk/expose_parse_and_semantic_analysis_apis_test.cc",
+      "new_path": "tests/compiler/sdk/parsing_and_semantic_analysis_api_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "a1324442912e30227feee34625d4ae37cc76bb81",
+      "original_sha256": "24045cc3ab8c6575dedd07da206651bf2ac7709f43718a8c933b69bbfd22d9c1"
+    },
+    {
+      "old_path": "tests/compiler/sdk/expose_pass_reflection_and_extension_apis_test.cc",
+      "new_path": "tests/compiler/sdk/pass_reflection_and_extension_api_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "63b31a52d19e330e718f75a7970b681e7b2d18cd",
+      "original_sha256": "9d42dbd75cdcacda9ba6cc221d7fa622ea95948b81506f3159fe8e5a64185acd"
+    },
+    {
+      "old_path": "tests/compiler/sdk/expose_planning_and_candidate_apis_test.cc",
+      "new_path": "tests/compiler/sdk/planning_and_candidate_api_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "7c43228fa3525dccc22875a5e3e44fc2791bc8b5",
+      "original_sha256": "226a853c3455ebd7db5f5e9db37eba3160dd162724cb26903acf7007ac806f57"
+    },
+    {
+      "old_path": "tests/compiler/sdk/expose_profile_build_load_query_apis_test.cc",
+      "new_path": "tests/compiler/sdk/profile_lifecycle_and_query_api_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "20499563def61e9a18e85b1868b9e095a97a6647",
+      "original_sha256": "f53fe80534766e93f624d7683078bd684cc6aa66541fe8d1a60d7407c97aac67"
+    },
+    {
+      "old_path": "tests/compiler/sdk/expose_realization_and_backend_apis_test.cc",
+      "new_path": "tests/compiler/sdk/backend_realization_api_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "a9f4634f2704fc415bfd71cd1252e940cdffec6a",
+      "original_sha256": "8a8b9f7c16e9e6f294153a338b7b308974553f6ae6a1814d0f2729164d61ba88"
+    },
+    {
+      "old_path": "tests/compiler/sdk/expose_structured_diagnostics_and_explainability_apis_test.cc",
+      "new_path": "tests/compiler/sdk/structured_diagnostics_and_explainability_api_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "2662ed69b1580e26bb53047e5fc70c902c7de71e",
+      "original_sha256": "6b1f1ee6ee5d61cda8c5fdcb6ce396d421b7171513a140f2940a448e850e2e74"
+    },
+    {
+      "old_path": "tests/compiler/sdk/preserve_direct_runtime_execution_access_test.cc",
+      "new_path": "tests/compiler/sdk/direct_runtime_execution_access_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "a982e29220ee156327f865c8707b62a9cea104e2",
+      "original_sha256": "6f6cff2d1000deffdec446144e66dbf8df09de72edc195b4a0ee79245489b828"
+    },
+    {
+      "old_path": "tests/compiler/source/expose_source_pipeline_diagnostics_and_dumps_test.cc",
+      "new_path": "tests/compiler/source/source_pipeline_diagnostics_and_dumps_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "6f9c9b923c62ba53a2772cd0ca7e5668de8bf1ab",
+      "original_sha256": "e8ddb54d25f7f0cd6b8bc6dc08344cfda03485ad61ff45117106e884bd7ada06"
+    },
+    {
+      "old_path": "tests/compiler/tooling/expose_reusable_tooling_snapshot_apis_test.cc",
+      "new_path": "tests/compiler/tooling/tooling_snapshots_test.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "7ea875812661a7440aa0ab2d155d81bb8c840e88",
+      "original_sha256": "3f1faf0a6a40b3ce0271e41c4accee92c0ba01779cd4ede8faa039eac7d5eff3"
+    },
+    {
+      "old_path": "tools/celleratord/expose_reusable_tooling_snapshot_apis.cc",
+      "new_path": "tools/celleratord/tooling_snapshots.cc",
+      "disposition": "move",
+      "reason": "Replace the TODO action prefix with the asserted API or contract purpose; retain implementation and semantics.",
+      "original_git_blob": "46f006233831b1132b3c463534b163e3c0ee9c15",
+      "original_sha256": "07995a8a6f2761f3967e422d5a5c31ef535f49b75b7ab426414b7b90dffa52dd"
+    }
+  ],
+  "archive_indexes": [
+    "docs/history/compiler/benchmark_prototypes/README.md",
+    "docs/history/compiler/benchmark_prototypes/provenance.json",
+    "docs/history/compiler/governance_test_prototypes/README.md",
+    "docs/history/compiler/governance_test_prototypes/provenance.json"
+  ],
+  "collision_check": "passed: unique destination paths; no destination conflicts with a tracked path outside the source key set",
+  "qualification_scope": "preserve C++ symbols, numerical semantics, CMake helper functions and source behavior; update real path callers, SDK facades, CMake source references and derived release test target names only"
+}

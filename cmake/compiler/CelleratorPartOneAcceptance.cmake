@@ -23,7 +23,7 @@ cellerator_add_release_acceptance(
 cellerator_add_release_acceptance(
     tests/compiler/release/reconcile_programming_guides_and_examples_test.cc)
 cellerator_add_release_acceptance(
-    tests/compiler/release/publish_architecture_and_migration_completion_records_test.cc)
+    tests/compiler/release/architecture_and_migration_records_test.cc)
 cellerator_add_release_acceptance(
     tests/compiler/release/run_clean_host_only_sdk_acceptance_test.cc)
 cellerator_add_release_acceptance(

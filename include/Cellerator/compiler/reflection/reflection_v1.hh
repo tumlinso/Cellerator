@@ -1,7 +1,7 @@
 #pragma once
 #include <Cellerator/compiler/reflection/identity_and_generation_behavior_under_inline_ir_v1.hh>
 #include <Cellerator/compiler/reflection/source_defined_inline_rewrite_v1.hh>
-#include <Cellerator/compiler/reflection/expose_reflection_and_inline_ir_diagnostics_v1.hh>
+#include <Cellerator/compiler/reflection/reflection_diagnostics_v1.hh>
 #include <Cellerator/compiler/reflection/compile_time_ir_handle_model_v1.hh>
 #include <Cellerator/compiler/reflection/compile_time_ceir_builders_v1.hh>
 #include <Cellerator/compiler/reflection/inline_planning_ir_blocks_v1.hh>

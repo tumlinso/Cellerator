@@ -50,12 +50,12 @@ target_include_directories(cellerator_assign_deterministic_source_identities_tes
 target_compile_features(cellerator_assign_deterministic_source_identities_test PRIVATE cxx_std_17)
 add_test(NAME cellerator_assign_deterministic_source_identities_test COMMAND cellerator_assign_deterministic_source_identities_test)
 
-add_executable(cellerator_preserve_token_and_macro_provenance_test
-    preserve_token_and_macro_provenance_test.cc
-    ../../../src/compiler/ast/preserve_token_and_macro_provenance.cc)
-target_include_directories(cellerator_preserve_token_and_macro_provenance_test PRIVATE ../../../include)
-target_compile_features(cellerator_preserve_token_and_macro_provenance_test PRIVATE cxx_std_17)
-add_test(NAME cellerator_preserve_token_and_macro_provenance_test COMMAND cellerator_preserve_token_and_macro_provenance_test)
+add_executable(cellerator_token_and_macro_provenance_test
+    token_and_macro_provenance_test.cc
+    ../../../src/compiler/ast/token_and_macro_provenance.cc)
+target_include_directories(cellerator_token_and_macro_provenance_test PRIVATE ../../../include)
+target_compile_features(cellerator_token_and_macro_provenance_test PRIVATE cxx_std_17)
+add_test(NAME cellerator_token_and_macro_provenance_test COMMAND cellerator_token_and_macro_provenance_test)
 
 add_executable(cellerator_ast_visitors_matchers_and_queries_test
     ast_visitors_matchers_and_queries_test.cc
@@ -105,7 +105,7 @@ add_executable(cellerator_ast_and_source_diagnostics_interface_test
     ../../../src/compiler/ast/source_level_ast_node_families.cc
     ../../../src/compiler/ast/bind_c_ast_references_safely.cc
     ../../../src/compiler/ast/ast_visitors_matchers_and_queries.cc
-    ../../../src/compiler/ast/preserve_token_and_macro_provenance.cc
+    ../../../src/compiler/ast/token_and_macro_provenance.cc
     ../../../src/compiler/ast/structured_frontend_diagnostic_records.cc)
 target_include_directories(cellerator_ast_and_source_diagnostics_interface_test PRIVATE "${C02_012_INSTALLED_INCLUDE}")
 target_compile_features(cellerator_ast_and_source_diagnostics_interface_test PRIVATE cxx_std_17)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compiler/frontend/cxx/bind_source_captures_to_c_declarations_and_expressions_v1.hh>
-#include <Cellerator/compiler/frontend/cxx/expose_constexpr_and_constant_evaluation_results_v1.hh>
+#include <Cellerator/compiler/frontend/cxx/constexpr_imports_v1.hh>
 #include <Cellerator/compiler/frontend/cxx/extract_canonical_and_spelled_c_types_v1.hh>
 #include <Cellerator/compiler/frontend/cxx/integrate_template_instantiation_with_typed_biological_o_v1.hh>
 

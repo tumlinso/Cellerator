@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compiler/tooling/benchmark_baseline_editor_latency_v1.hh>
-#include <Cellerator/compiler/tooling/expose_reusable_tooling_snapshot_apis_v1.hh>
+#include <Cellerator/compiler/tooling/tooling_snapshots_v1.hh>
 #include <Cellerator/compiler/tooling/forward_completion_hover_navigation_and_rename_v1.hh>
 #include <Cellerator/compiler/tooling/celleratord_architecture_v1.hh>
 #include <Cellerator/compiler/tooling/clangd_worker_lifecycle_v1.hh>

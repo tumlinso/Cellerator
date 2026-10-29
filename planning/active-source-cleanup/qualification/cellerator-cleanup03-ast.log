@@ -1,0 +1,100 @@
+
+=== configure: cmake -S tests/compiler/ast -B /tmp/cellerator-cleanup03-ast ===
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-cleanup03-ast
+
+=== build: cmake --build /tmp/cellerator-cleanup03-ast -j4 ===
+[  2%] Building CXX object CMakeFiles/cellerator_source_level_ast_node_families_test.dir/source_level_ast_node_families_test.cc.o
+[  4%] Building CXX object CMakeFiles/cellerator_ast_node_ownership_and_lifetime_test.dir/ast_node_ownership_and_lifetime_test.cc.o
+[  6%] Building CXX object CMakeFiles/cellerator_bind_c_ast_references_safely_test.dir/bind_c_ast_references_safely_test.cc.o
+[  9%] Building CXX object CMakeFiles/cellerator_cellerator_symbol_tables_and_scopes_test.dir/cellerator_symbol_tables_and_scopes_test.cc.o
+[ 11%] Building CXX object CMakeFiles/cellerator_bind_c_ast_references_safely_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/bind_c_ast_references_safely.cc.o
+[ 13%] Building CXX object CMakeFiles/cellerator_cellerator_symbol_tables_and_scopes_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/cellerator_symbol_tables_and_scopes.cc.o
+[ 16%] Building CXX object CMakeFiles/cellerator_source_level_ast_node_families_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/source_level_ast_node_families.cc.o
+[ 18%] Building CXX object CMakeFiles/cellerator_ast_node_ownership_and_lifetime_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/ast_node_ownership_and_lifetime.cc.o
+[ 20%] Linking CXX executable cellerator_bind_c_ast_references_safely_test
+[ 23%] Building CXX object CMakeFiles/cellerator_source_level_ast_node_families_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/ast_node_ownership_and_lifetime.cc.o
+[ 23%] Built target cellerator_bind_c_ast_references_safely_test
+[ 25%] Linking CXX executable cellerator_ast_node_ownership_and_lifetime_test
+[ 27%] Building CXX object CMakeFiles/cellerator_assign_deterministic_source_identities_test.dir/assign_deterministic_source_identities_test.cc.o
+[ 27%] Built target cellerator_ast_node_ownership_and_lifetime_test
+[ 30%] Building CXX object CMakeFiles/cellerator_token_and_macro_provenance_test.dir/token_and_macro_provenance_test.cc.o
+[ 32%] Linking CXX executable cellerator_cellerator_symbol_tables_and_scopes_test
+[ 32%] Built target cellerator_cellerator_symbol_tables_and_scopes_test
+[ 34%] Building CXX object CMakeFiles/cellerator_ast_visitors_matchers_and_queries_test.dir/ast_visitors_matchers_and_queries_test.cc.o
+[ 37%] Linking CXX executable cellerator_source_level_ast_node_families_test
+[ 39%] Building CXX object CMakeFiles/cellerator_assign_deterministic_source_identities_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/assign_deterministic_source_identities.cc.o
+[ 39%] Built target cellerator_source_level_ast_node_families_test
+[ 41%] Building CXX object CMakeFiles/cellerator_structured_frontend_diagnostic_records_test.dir/structured_frontend_diagnostic_records_test.cc.o
+[ 44%] Building CXX object CMakeFiles/cellerator_token_and_macro_provenance_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/token_and_macro_provenance.cc.o
+[ 46%] Building CXX object CMakeFiles/cellerator_ast_visitors_matchers_and_queries_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/ast_visitors_matchers_and_queries.cc.o
+[ 48%] Linking CXX executable cellerator_assign_deterministic_source_identities_test
+[ 51%] Linking CXX executable cellerator_token_and_macro_provenance_test
+[ 51%] Built target cellerator_assign_deterministic_source_identities_test
+[ 55%] Building CXX object CMakeFiles/cellerator_structured_frontend_diagnostic_records_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/structured_frontend_diagnostic_records.cc.o
+[ 55%] Building CXX object CMakeFiles/cellerator_source_aware_fix_its_test.dir/source_aware_fix_its_test.cc.o
+[ 55%] Built target cellerator_token_and_macro_provenance_test
+[ 58%] Building CXX object CMakeFiles/cellerator_deterministic_ast_dump_and_snapshot_formats_test.dir/deterministic_ast_dump_and_snapshot_formats_test.cc.o
+[ 60%] Linking CXX executable cellerator_ast_visitors_matchers_and_queries_test
+[ 60%] Built target cellerator_ast_visitors_matchers_and_queries_test
+[ 62%] Building CXX object CMakeFiles/cellerator_support_incremental_ast_identity_reuse_test.dir/support_incremental_ast_identity_reuse_test.cc.o
+[ 65%] Building CXX object CMakeFiles/cellerator_source_aware_fix_its_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/source_aware_fix_its.cc.o
+[ 67%] Building CXX object CMakeFiles/cellerator_deterministic_ast_dump_and_snapshot_formats_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/deterministic_ast_dump_and_snapshot_formats.cc.o
+[ 69%] Linking CXX executable cellerator_structured_frontend_diagnostic_records_test
+[ 69%] Built target cellerator_structured_frontend_diagnostic_records_test
+[ 72%] Building CXX object CMakeFiles/cellerator_ast_and_source_diagnostics_interface_test.dir/ast_and_source_diagnostics_interface_test.cc.o
+[ 74%] Building CXX object CMakeFiles/cellerator_support_incremental_ast_identity_reuse_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/support_incremental_ast_identity_reuse.cc.o
+[ 76%] Linking CXX executable cellerator_source_aware_fix_its_test
+[ 76%] Built target cellerator_source_aware_fix_its_test
+[ 79%] Building CXX object CMakeFiles/cellerator_ast_and_source_diagnostics_interface_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/ast_and_source_diagnostics_interface.cc.o
+[ 81%] Linking CXX executable cellerator_deterministic_ast_dump_and_snapshot_formats_test
+[ 83%] Linking CXX executable cellerator_support_incremental_ast_identity_reuse_test
+[ 83%] Built target cellerator_deterministic_ast_dump_and_snapshot_formats_test
+[ 86%] Building CXX object CMakeFiles/cellerator_ast_and_source_diagnostics_interface_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/ast_node_ownership_and_lifetime.cc.o
+[ 86%] Built target cellerator_support_incremental_ast_identity_reuse_test
+[ 88%] Building CXX object CMakeFiles/cellerator_ast_and_source_diagnostics_interface_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/source_level_ast_node_families.cc.o
+[ 90%] Building CXX object CMakeFiles/cellerator_ast_and_source_diagnostics_interface_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/bind_c_ast_references_safely.cc.o
+[ 93%] Building CXX object CMakeFiles/cellerator_ast_and_source_diagnostics_interface_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/ast_visitors_matchers_and_queries.cc.o
+[ 95%] Building CXX object CMakeFiles/cellerator_ast_and_source_diagnostics_interface_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/token_and_macro_provenance.cc.o
+[ 97%] Building CXX object CMakeFiles/cellerator_ast_and_source_diagnostics_interface_test.dir/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4/src/compiler/ast/structured_frontend_diagnostic_records.cc.o
+[100%] Linking CXX executable cellerator_ast_and_source_diagnostics_interface_test
+[100%] Built target cellerator_ast_and_source_diagnostics_interface_test
+
+=== ctest: ctest --test-dir /tmp/cellerator-cleanup03-ast --output-on-failure ===
+Internal ctest changing into directory: /tmp/cellerator-cleanup03-ast
+Test project /tmp/cellerator-cleanup03-ast
+      Start  1: cellerator_ast_node_ownership_and_lifetime_test
+ 1/12 Test  #1: cellerator_ast_node_ownership_and_lifetime_test ...............   Passed    0.09 sec
+      Start  2: cellerator_source_level_ast_node_families_test
+ 2/12 Test  #2: cellerator_source_level_ast_node_families_test ................   Passed    0.00 sec
+      Start  3: cellerator_bind_c_ast_references_safely_test
+ 3/12 Test  #3: cellerator_bind_c_ast_references_safely_test ..................   Passed    0.00 sec
+      Start  4: cellerator_cellerator_symbol_tables_and_scopes_test
+ 4/12 Test  #4: cellerator_cellerator_symbol_tables_and_scopes_test ...........   Passed    0.00 sec
+      Start  5: cellerator_assign_deterministic_source_identities_test
+ 5/12 Test  #5: cellerator_assign_deterministic_source_identities_test ........   Passed    0.00 sec
+      Start  6: cellerator_token_and_macro_provenance_test
+ 6/12 Test  #6: cellerator_token_and_macro_provenance_test ....................   Passed    0.00 sec
+      Start  7: cellerator_ast_visitors_matchers_and_queries_test
+ 7/12 Test  #7: cellerator_ast_visitors_matchers_and_queries_test .............   Passed    1.56 sec
+      Start  8: cellerator_structured_frontend_diagnostic_records_test
+ 8/12 Test  #8: cellerator_structured_frontend_diagnostic_records_test ........   Passed    0.00 sec
+      Start  9: cellerator_source_aware_fix_its_test
+ 9/12 Test  #9: cellerator_source_aware_fix_its_test ..........................   Passed    0.00 sec
+      Start 10: cellerator_deterministic_ast_dump_and_snapshot_formats_test
+10/12 Test #10: cellerator_deterministic_ast_dump_and_snapshot_formats_test ...   Passed    0.00 sec
+      Start 11: cellerator_support_incremental_ast_identity_reuse_test
+11/12 Test #11: cellerator_support_incremental_ast_identity_reuse_test ........   Passed    0.02 sec
+      Start 12: cellerator_ast_and_source_diagnostics_interface_test
+12/12 Test #12: cellerator_ast_and_source_diagnostics_interface_test ..........   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 12
+
+Total Test time (real) =   1.70 sec

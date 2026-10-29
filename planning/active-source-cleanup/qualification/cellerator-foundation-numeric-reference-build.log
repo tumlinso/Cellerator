@@ -1,0 +1,58 @@
+[  4%] Built target cellpack
+[  9%] Built target cellerator_runtime
+[  9%] Built target cellerator_compute_sampling
+[  9%] Built target cellpack_semantic_geometry
+[  9%] Built target cellerator_support
+[ 28%] Built target cellerator_semantic_geometry_v1
+[ 28%] Built target cellpack_statistical_validation
+[ 28%] Built target cellpack_local_cell_ordering
+[ 33%] Built target cellpack_apply_plan
+[ 33%] Built target cellerator_operation_core
+[ 33%] Built target cellerator_layout
+[ 33%] Built target cellerator_indexing
+[ 42%] Built target cellerator_relation_algebra
+[ 42%] Built target cellerator_cusparse_csr_candidate
+[ 47%] Built target cellpack_record_statistical_validation
+[ 47%] Built target cellpack_warp_tiles
+[ 47%] Built target cellerator_gating
+[ 52%] Built target cellerator_fusion_training
+[ 52%] Built target cellpack_alternating_refinement
+[ 52%] Building CUDA object CMakeFiles/cellerator_sparse_support_cuda.dir/src/gating/cuda_worksets.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 52%] Built target cellpack_feature_weighted_row_reduction
+[ 57%] Built target cellerator_planner
+[ 57%] Building CUDA object CMakeFiles/cellerator_sparse_support_cuda.dir/src/indexing/cuda_postings.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 57%] Built target cellpack_feature_weighted_row_reduction_cuda
+[ 57%] Built target cellpack_persistent_packing_payload
+[ 61%] Built target cellerator_row_masked_n1_candidate
+[ 61%] Built target cellpack_execution_image_v2
+[ 61%] Built target cellerator_csr_fallback_candidate
+[ 66%] Built target cellerator_feature_major_projection
+[ 66%] Built target cellerator_semantic_projection_layout
+[ 71%] Built target cellerator_provider_common
+[ 71%] Built target cellerator_provider_sm70
+[ 71%] Built target cellerator_transpose_projection
+[ 71%] Built target cellerator_feature_major_small_n_candidate
+[ 76%] Built target cellerator_transpose_backward_candidate
+[ 80%] Built target cellerator_projection_activation
+[ 85%] Built target cellerator_builtin_candidate_catalog
+[ 95%] Built target cellerator_architecture_provider
+[ 95%] Built target cellerator_preparation_factory
+[100%] Built target cellerator_compute_candidate_inventory
+[100%] Built target cellerator_relation_catalog
+[100%] Built target cellerator_executable_program
+[100%] Built target cellerator_indexed_mechanism
+[100%] Linking CXX static library libcellerator_sparse_support_cuda.a
+[100%] Built target cellerator_sparse_support_cuda
+[100%] Building CUDA object src/ops/sparse_support/CMakeFiles/cellerator_ops_sparse_support.dir/training.cu.o
+[100%] Building CXX object src/ops/sparse_support/CMakeFiles/cellerator_ops_sparse_support.dir/training.cc.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[100%] Building CXX object src/ops/sparse_support/CMakeFiles/cellerator_ops_sparse_support.dir/prepared_routing.cc.o
+[100%] Building CUDA object src/ops/sparse_support/CMakeFiles/cellerator_ops_sparse_support.dir/prepared_routing.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[100%] Linking CXX static library libcellerator_ops_sparse_support.a
+[100%] Built target cellerator_ops_sparse_support
+[100%] Building CXX object tests/sparse_support/CMakeFiles/cellerator_sparse_support_numeric_reference.dir/numeric_reference.cc.o
+[100%] Linking CXX executable cellerator_sparse_support_numeric_reference
+[100%] Built target cellerator_sparse_support_numeric_reference

@@ -1,7 +1,7 @@
 #include <Cellerator/compiler/discovery/migrated_discovery_and_atom_compiler_slice_v1.hh>
 
 #include <Cellerator/compiler/discovery/port_discovery_tests_and_evidence_fixtures_v1.hh>
-#include <Cellerator/compiler/discovery/preserve_migration_provenance_in_source_and_artifacts_v1.hh>
+#include <Cellerator/compiler/discovery/migration_provenance_manifest_v1.hh>
 #include <Cellerator/compiler/discovery/validate_no_compiler_discovery_remains_authoritative_in_v1.hh>
 
 #include <utility>

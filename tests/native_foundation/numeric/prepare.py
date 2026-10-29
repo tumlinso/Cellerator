@@ -45,7 +45,7 @@ def prepare():
     compilation = json.loads((build / "compile_commands.json").read_text())
     expected = {source / "src/compute/operation/relation_semantics.cc",
                 source / "src/compute/operation/native_numeric/host_relation.cc",
-                source / "tests/native_foundation/numeric/n01.cc"}
+                source / "tests/native_foundation/numeric/host_relation_numeric_contract_test.cc"}
     compiled = {Path(item["file"]).resolve() for item in compilation}
     if not expected <= compiled or any(not path.is_relative_to(source) for path in compiled):
         raise ValueError("qualification must compile the actual worktree owners")

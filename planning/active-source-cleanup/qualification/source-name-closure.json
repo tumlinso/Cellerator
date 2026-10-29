@@ -1,0 +1,91 @@
+{
+  "source_base": "0cc3c2204953bc9f9c727eebb303b657d44f29bf",
+  "followup_moves": 102,
+  "compiler": {
+    "moves": 85,
+    "archives": 3,
+    "operation_keepers": 2
+  },
+  "foundation": {
+    "moves": 14,
+    "byte_identity_preserved": true,
+    "host_regressions": 5,
+    "cuda_compile_link_targets": 9
+  },
+  "repairs": [
+    {
+      "path": "tests/sparse_support/numeric_reference.cc",
+      "change": "Use current geometry projection fixture include",
+      "validation": "g++12 C++20 syntax plus existing host numeric-reference build/CTest passed"
+    },
+    {
+      "path": "tests/compiler/ir/ceir/CMakeLists.txt",
+      "change": "Resolve repository root using four parent components rather than three",
+      "validation": "Affected CEIR suite14/14 passed"
+    },
+    {
+      "path": "tools/maintenance/source_map/generate.py",
+      "change": "Describe SDK facade ownership and narrow installed versus experimental qualification explicitly",
+      "validation": "Map and lifecycle validation are separate checks"
+    }
+  ],
+  "logs": [
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-cleanup03-ir-ceir.log",
+      "sha256": "1493d267e44b0638ceef3d15800b5973f8ae9e6f8f634926c713b83aceb70ed0"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-cleanup03-diagnostics.log",
+      "sha256": "2f9ef4551b5b7947a53bd1ce82d78a4f3d00fa99aa65d5820894afe165cabe68"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-cleanup03-ast.log",
+      "sha256": "40307ee2cb4b50a28553d3aea31002aa00982228fb83d924ad6d4f29a0d39832"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-cleanup03-discovery.log",
+      "sha256": "107e2002ca02e6ac051e5e91eb75f267544900c8d9a3b21e20a3c3c302153ff6"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-cleanup03-planning.log",
+      "sha256": "e92913584422025c66226294a2c24a3aef61c11d10408870d5608eebdfa9d2e6"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-cleanup03-profile.log",
+      "sha256": "a61a9f3767d5d4115b5a4764daf5e080fdc33e75f064e71c6dfe5a1a5271e7cc"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-cleanup03-install.log",
+      "sha256": "7f7c21d266312c73dabaefc618c3830458b8d4ce56f112cc11d99d068550f139"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-foundation-root-cmake.log",
+      "sha256": "7eae2ebf1d40f174fe543d2da14379666494d48960bf3dd21abc2b38d54f1afc"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-foundation-target-build.log",
+      "sha256": "fab896893c35c2fd13f26b779a65c4e7d9f40555a5099c533182458a2e62773b"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-foundation-host-ctest.log",
+      "sha256": "0b25a26aadd60d0cccdb732420b59618c26f7c92cc0bde1ceea615d1a9c17f67"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-foundation-numeric-reference-build.log",
+      "sha256": "65c2f338a874460202611cea5e9da1dde491a3a23acd684ad13f15ed2dd87e0b"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-foundation-numeric-reference-ctest.log",
+      "sha256": "898abc5939ee46b07b4cb4d56d503319efc2c2a7a6c78ab54f10eaa87700fe30"
+    },
+    {
+      "path": "planning/active-source-cleanup/qualification/cellerator-final-numeric-reference-syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "coverage_limits": [
+    "No GPU runtime workload or performance benchmark ran in this cleanup.",
+    "CUDA semantic indexing remains limited by available Clang driver configurations.",
+    "Final canonical compdb/index/export and installed package/docs/observer qualification follow this source checkpoint."
+  ]
+}

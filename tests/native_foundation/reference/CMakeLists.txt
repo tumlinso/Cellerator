@@ -1,4 +1,4 @@
-add_executable(ce_nf1_t01 t01.cc)
+add_executable(ce_nf1_t01 independent_relation_derivative_reference_test.cc)
 target_compile_features(ce_nf1_t01 PRIVATE cxx_std_20)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(ce_nf1_t01 PRIVATE -Wall -Wextra -Wpedantic -Werror -fno-fast-math)

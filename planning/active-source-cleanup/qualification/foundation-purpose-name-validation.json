@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "source_workspace": "/home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4",
+  "workspace_base_commit": "0cc3c2204953bc9f9c727eebb303b657d44f29bf",
+  "approved_map_sha256": "edc7fc2b23c10e3019d2feb9ffdfc7b76b7873e8ed4edf81237b990a721a2a08",
+  "moved_files": 14,
+  "all_file_content_and_git_blob_ids_preserved": true,
+  "destinations_unique": true,
+  "all_old_paths_absent": true,
+  "active_caller_paths": [
+    "cmake/NativeFoundation.cmake",
+    "tests/native_foundation/differential/CMakeLists.txt",
+    "tests/native_foundation/nary/CMakeLists.txt",
+    "tests/native_foundation/numeric/CMakeLists.txt",
+    "tests/native_foundation/numeric/prepare.py",
+    "tests/native_foundation/reference/CMakeLists.txt",
+    "tests/native_foundation/values/CMakeLists.txt",
+    "tests/native_foundation/values/prepare.py",
+    "tests/native_foundation/values/run_leased_test.py",
+    "tests/native_foundation/values/test_gpu_gate_adapter.py"
+  ],
+  "frozen_gate_and_ctest_ids_preserved": true,
+  "host_tests": {
+    "command": "ctest --test-dir /tmp/cellerator-foundation-root-build --output-on-failure -R ^ce_nf1_(d01|h01|h02|n01|t01)$",
+    "passed": 5,
+    "failed": 0,
+    "log": "/tmp/cellerator-foundation-host-ctest.log"
+  },
+  "cuda_compile_link_only": {
+    "targets": [
+      "ce_nf1_d02",
+      "ce_nf1_h03",
+      "ce_nf1_v01",
+      "ce_nf1_v02",
+      "ce_nf1_v03",
+      "ce_nf1_v04",
+      "ce_nf1_v05",
+      "ce_nf1_v06",
+      "ce_nf1_v07"
+    ],
+    "passed": 9,
+    "failed": 0,
+    "architecture": "sm_70",
+    "cuda": "12.9.86",
+    "hardware_probe": "off",
+    "runtime_tests_executed": false,
+    "log": "/tmp/cellerator-foundation-target-build.log"
+  },
+  "additional_host_test": {
+    "target": "cellerator_sparse_support_numeric_reference",
+    "passed": true,
+    "log": "/tmp/cellerator-foundation-numeric-reference-ctest.log"
+  },
+  "cmake_configuration": {
+    "command": "cmake -S <registered workspace> -B /tmp/cellerator-foundation-root-build -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 -DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-12 -DCMAKE_CUDA_ARCHITECTURES=70 -DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane -DBASEPLANE_ENABLE_CUDA=ON -DCELLERATOR_ENABLE_CUDA=ON -DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF -DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF -DCELLERATOR_ENABLE_TORCH=OFF -DCELLERATOR_BUILD_TESTS=ON -DCELLERATOR_BUILD_SEMANTIC_SPINE_V1=ON -DCELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS=ON -DCMAKE_BUILD_TYPE=Release",
+    "passed": true,
+    "log": "/tmp/cellerator-foundation-root-cmake.log"
+  },
+  "validation_limits": [
+    "No GPU runtime tests were run.",
+    "Some earlier isolated CMake attempts failed before full root configuration because Cellerator runtime/indexed mechanism targets were absent; the supported root CMake build was configured and all target checks passed."
+  ],
+  "entries": [
+    {
+      "old_path": "tests/native_foundation/differential/d01.cc",
+      "new_path": "tests/native_foundation/differential/local_differential_composition_test.cc",
+      "original_git_blob": "dba018e6087f2f5802cf82401232979bb7211d54",
+      "original_full_sha256": "653e510f09668bf18e962760029f693bec779a13c56d08c481b91544c879feff",
+      "current_active_caller_paths": [
+        "tests/native_foundation/differential/CMakeLists.txt",
+        "cmake/NativeFoundation.cmake"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "653e510f09668bf18e962760029f693bec779a13c56d08c481b91544c879feff",
+      "result_git_blob": "dba018e6087f2f5802cf82401232979bb7211d54",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/differential/d02.cu",
+      "new_path": "tests/native_foundation/differential/local_device_differential_response_test.cu",
+      "original_git_blob": "fc5e1c06879b0971694eb55cd6fb0ffe129b0e96",
+      "original_full_sha256": "202893c9696d2eac5d6418212399580bb58b70294c3d228cf8a5a9a69de70aa2",
+      "current_active_caller_paths": [
+        "tests/native_foundation/differential/CMakeLists.txt",
+        "cmake/NativeFoundation.cmake"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "202893c9696d2eac5d6418212399580bb58b70294c3d228cf8a5a9a69de70aa2",
+      "result_git_blob": "fc5e1c06879b0971694eb55cd6fb0ffe129b0e96",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/nary/h01.cc",
+      "new_path": "tests/native_foundation/nary/ordered_incidence_gather_test.cc",
+      "original_git_blob": "e08c7614b86358aab805751c034b0163f790e4d6",
+      "original_full_sha256": "d00cf82c10b3558a46c7820b97433fe888fa2aaed29442bca3688625e8d6ce6f",
+      "current_active_caller_paths": [
+        "tests/native_foundation/nary/CMakeLists.txt",
+        "cmake/NativeFoundation.cmake"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "d00cf82c10b3558a46c7820b97433fe888fa2aaed29442bca3688625e8d6ce6f",
+      "result_git_blob": "e08c7614b86358aab805751c034b0163f790e4d6",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/nary/h02.cc",
+      "new_path": "tests/native_foundation/nary/host_indexed_mechanism_composition_test.cc",
+      "original_git_blob": "2b70244d992400bc489fb34ba31ffd918a510d19",
+      "original_full_sha256": "8d72ba1b981c8cef70b5957b01c38451f6afc741d4ad23a9f21ccb162f6875bc",
+      "current_active_caller_paths": [
+        "tests/native_foundation/nary/CMakeLists.txt",
+        "cmake/NativeFoundation.cmake"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "8d72ba1b981c8cef70b5957b01c38451f6afc741d4ad23a9f21ccb162f6875bc",
+      "result_git_blob": "2b70244d992400bc489fb34ba31ffd918a510d19",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/nary/h03.cu",
+      "new_path": "tests/native_foundation/nary/cuda_indexed_mechanism_evaluator_test.cu",
+      "original_git_blob": "c7eebd4999aaed8ce45d2443d1c0a4b621ee00bc",
+      "original_full_sha256": "07dc0f7f2d9a05630aaa61c6cc23690436003849c0840b111d9df038dca3c16c",
+      "current_active_caller_paths": [
+        "tests/native_foundation/nary/CMakeLists.txt",
+        "cmake/NativeFoundation.cmake"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "07dc0f7f2d9a05630aaa61c6cc23690436003849c0840b111d9df038dca3c16c",
+      "result_git_blob": "c7eebd4999aaed8ce45d2443d1c0a4b621ee00bc",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/numeric/n01.cc",
+      "new_path": "tests/native_foundation/numeric/host_relation_numeric_contract_test.cc",
+      "original_git_blob": "02b168678f560bffac55d93cd603336e972c89f9",
+      "original_full_sha256": "b5799304c0c9bfc36c8106538f14daa8c0fffb9241c94e78b8a1b08d703e456e",
+      "current_active_caller_paths": [
+        "tests/native_foundation/numeric/CMakeLists.txt",
+        "tests/native_foundation/numeric/prepare.py",
+        "cmake/NativeFoundation.cmake"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "b5799304c0c9bfc36c8106538f14daa8c0fffb9241c94e78b8a1b08d703e456e",
+      "result_git_blob": "02b168678f560bffac55d93cd603336e972c89f9",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/reference/t01.cc",
+      "new_path": "tests/native_foundation/reference/independent_relation_derivative_reference_test.cc",
+      "original_git_blob": "64b88613f66f20d37d627ff629cc174313620da6",
+      "original_full_sha256": "daf696b17c497030c2a37889d39e9d8f816d0d79245d1a85ca411b4d2683379d",
+      "current_active_caller_paths": [
+        "tests/native_foundation/reference/CMakeLists.txt",
+        "cmake/NativeFoundation.cmake"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "daf696b17c497030c2a37889d39e9d8f816d0d79245d1a85ca411b4d2683379d",
+      "result_git_blob": "64b88613f66f20d37d627ff629cc174313620da6",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/values/v01.cu",
+      "new_path": "tests/native_foundation/values/prepared_relation_instance_values_test.cu",
+      "original_git_blob": "ac8416f5041190877e1e35ea921386d87755cfed",
+      "original_full_sha256": "43d4ad40ed6e1442d7ebc41beb44805a4f70f7716fa07d07ac360c9ec4bb5519",
+      "current_active_caller_paths": [
+        "tests/native_foundation/values/CMakeLists.txt",
+        "tests/native_foundation/values/prepare.py",
+        "tests/native_foundation/values/test_gpu_gate_adapter.py",
+        "tests/native_foundation/values/run_leased_test.py"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "43d4ad40ed6e1442d7ebc41beb44805a4f70f7716fa07d07ac360c9ec4bb5519",
+      "result_git_blob": "ac8416f5041190877e1e35ea921386d87755cfed",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/values/v02.cu",
+      "new_path": "tests/native_foundation/values/relation_atom_value_binding_test.cu",
+      "original_git_blob": "d0db5061048721752ad1d85155c92f7bf3d5d3fd",
+      "original_full_sha256": "5be9b5270ae23912b1c4bb78063d3054a92e35b01a0bf024969b30e77f135bcc",
+      "current_active_caller_paths": [
+        "tests/native_foundation/values/CMakeLists.txt",
+        "tests/native_foundation/values/prepare.py",
+        "tests/native_foundation/values/test_gpu_gate_adapter.py",
+        "tests/native_foundation/values/run_leased_test.py"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "5be9b5270ae23912b1c4bb78063d3054a92e35b01a0bf024969b30e77f135bcc",
+      "result_git_blob": "d0db5061048721752ad1d85155c92f7bf3d5d3fd",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/values/v03.cu",
+      "new_path": "tests/native_foundation/values/relation_async_read_lease_test.cu",
+      "original_git_blob": "d25a492d4491b380ac7b85da0252242b3328be23",
+      "original_full_sha256": "6923c2d1fb3662205903cc71b67ae79e8207ce94a956d7db12f2a3129aa2e4c2",
+      "current_active_caller_paths": [
+        "tests/native_foundation/values/CMakeLists.txt",
+        "tests/native_foundation/values/prepare.py",
+        "tests/native_foundation/values/test_gpu_gate_adapter.py",
+        "tests/native_foundation/values/run_leased_test.py"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "6923c2d1fb3662205903cc71b67ae79e8207ce94a956d7db12f2a3129aa2e4c2",
+      "result_git_blob": "d25a492d4491b380ac7b85da0252242b3328be23",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/values/v04.cu",
+      "new_path": "tests/native_foundation/values/relation_value_precision_test.cu",
+      "original_git_blob": "04edc8ea6756d2d339b6cc3fdfdc34135a530ce5",
+      "original_full_sha256": "e214431f14581a1178224b78d214d1cec39d9c1d14ea5802f7b0adcfe9a9226b",
+      "current_active_caller_paths": [
+        "tests/native_foundation/values/CMakeLists.txt",
+        "tests/native_foundation/values/prepare.py",
+        "tests/native_foundation/values/test_gpu_gate_adapter.py",
+        "tests/native_foundation/values/run_leased_test.py"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "e214431f14581a1178224b78d214d1cec39d9c1d14ea5802f7b0adcfe9a9226b",
+      "result_git_blob": "04edc8ea6756d2d339b6cc3fdfdc34135a530ce5",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/values/v05.cu",
+      "new_path": "tests/native_foundation/values/relation_epoch_replacement_test.cu",
+      "original_git_blob": "b34edb383d02e55f7bbe179bee7e2685bacd35e2",
+      "original_full_sha256": "e933c7e4c8cfc029c41716fc648620640d30ebc7fc496b87f32723a6b7e03c6b",
+      "current_active_caller_paths": [
+        "tests/native_foundation/values/CMakeLists.txt",
+        "tests/native_foundation/values/prepare.py",
+        "tests/native_foundation/values/test_gpu_gate_adapter.py",
+        "tests/native_foundation/values/run_leased_test.py"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "e933c7e4c8cfc029c41716fc648620640d30ebc7fc496b87f32723a6b7e03c6b",
+      "result_git_blob": "b34edb383d02e55f7bbe179bee7e2685bacd35e2",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/values/v06.cu",
+      "new_path": "tests/native_foundation/values/relation_value_update_test.cu",
+      "original_git_blob": "b3d986df07495fdd3da8a1a8eef05102d8ca5f25",
+      "original_full_sha256": "66a95c6a10a83df08fe2f3a08c762d14c1d4709b13e3fcca0171443df735a243",
+      "current_active_caller_paths": [
+        "tests/native_foundation/values/CMakeLists.txt",
+        "tests/native_foundation/values/prepare.py",
+        "tests/native_foundation/values/test_gpu_gate_adapter.py",
+        "tests/native_foundation/values/run_leased_test.py"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "66a95c6a10a83df08fe2f3a08c762d14c1d4709b13e3fcca0171443df735a243",
+      "result_git_blob": "b3d986df07495fdd3da8a1a8eef05102d8ca5f25",
+      "byte_identity": "preserved"
+    },
+    {
+      "old_path": "tests/native_foundation/values/v07.cu",
+      "new_path": "tests/native_foundation/values/relation_execution_preflight_test.cu",
+      "original_git_blob": "c6d2b144b8f523acb399ac8923d41348568c3306",
+      "original_full_sha256": "03a9190b4aed21105b324e9e63e8497a7d61728b7c4aaab04b32a46ba514f7f3",
+      "current_active_caller_paths": [
+        "tests/native_foundation/values/CMakeLists.txt",
+        "tests/native_foundation/values/prepare.py",
+        "tests/native_foundation/values/test_gpu_gate_adapter.py",
+        "tests/native_foundation/values/run_leased_test.py"
+      ],
+      "retained_workflow_identity": {
+        "policy": "Preserve established CE-NF1 task/evidence IDs, CMake executable/CTest IDs, and values GPU gate groups; these are dispatch/evidence interfaces distinct from source filenames. Update only direct source path references."
+      },
+      "result_full_sha256": "03a9190b4aed21105b324e9e63e8497a7d61728b7c4aaab04b32a46ba514f7f3",
+      "result_git_blob": "c6d2b144b8f523acb399ac8923d41348568c3306",
+      "byte_identity": "preserved"
+    }
+  ]
+}

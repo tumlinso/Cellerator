@@ -149,15 +149,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 add_test(NAME cellerator_planning_cache_and_invalidation_test COMMAND cellerator_planning_cache_and_invalidation_test)
 
-add_executable(cellerator_expose_complete_planning_reports_test
-    expose_complete_planning_reports_test.cc
-    "${CELLERATOR_ROOT}/src/compiler/planning/expose_complete_planning_reports.cc")
-target_include_directories(cellerator_expose_complete_planning_reports_test PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(cellerator_expose_complete_planning_reports_test PRIVATE cxx_std_17)
+add_executable(cellerator_planning_reports_test
+    planning_reports_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/planning_reports.cc")
+target_include_directories(cellerator_planning_reports_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_planning_reports_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(cellerator_expose_complete_planning_reports_test PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_planning_reports_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME cellerator_expose_complete_planning_reports_test COMMAND cellerator_expose_complete_planning_reports_test)
+add_test(NAME cellerator_planning_reports_test COMMAND cellerator_planning_reports_test)
 
 add_executable(cellerator_benchmark_planning_scalability_and_boundedness_test
     benchmark_planning_scalability_and_boundedness_test.cc
