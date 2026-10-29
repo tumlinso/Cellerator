@@ -1,0 +1,47 @@
+WARNING: The directory '/home/tumlinson/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /home/tumlinson/.local/state/project-control/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workspaces/w-620e7a4314f82e71b440b77e77460247fc1b49ac07bbceda619d0752c9cfb6e4
+  Preparing metadata (pyproject.toml): started
+  Running command Preparing metadata (pyproject.toml)
+  *** scikit-build-core 1.1.1 using CMake 3.28.3 (metadata_wheel)
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: cellerator
+  Building wheel for cellerator (pyproject.toml): started
+  Running command Building wheel for cellerator (pyproject.toml)
+  *** scikit-build-core 1.1.1 using CMake 3.28.3 (wheel)
+  *** Configuring CMake...
+  loading initial cache file /tmp/cellerator-final-host-build-487a/CMakeInit.txt
+  -- Defaulting CUDA compiler to the local HPC SDK nvcc
+  -- Defaulting CUDA host compiler to /usr/bin/g++-12 for nvcc compatibility
+  -- The CXX compiler identification is GNU 13.3.0
+  -- Detecting CXX compiler ABI info
+  -- Detecting CXX compiler ABI info - done
+  -- Check for working CXX compiler: /usr/bin/g++ - skipped
+  -- Detecting CXX compile features
+  -- Detecting CXX compile features - done
+  -- Found Python: /home/tumlinson/Software/miniconda3/bin/python (found version "3.13.11") found components: Interpreter Development.Module
+  -- Performing Test HAS_FLTO_AUTO
+  -- Performing Test HAS_FLTO_AUTO - Success
+  -- Found pybind11: /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/pybind11/include (found version "3.0.3")
+  -- Configuring done (0.9s)
+  -- Generating done (0.0s)
+  -- Build files have been written to: /tmp/cellerator-final-host-build-487a
+  *** Building project with Unix Makefiles...
+  [ 20%] Building CXX object CMakeFiles/cellerator_product2.dir/src/compute/operation/product2/product2.cc.o
+  [ 40%] Building CXX object CMakeFiles/cellerator_product2.dir/src/execution/program/program_v2.cc.o
+  [ 60%] Linking CXX shared library libcellerator_product2.so
+  [ 60%] Built target cellerator_product2
+  [ 80%] Building CXX object CMakeFiles/cellerator_python_native.dir/bindings/python/module.cc.o
+  [100%] Linking CXX shared module _native.cpython-313-x86_64-linux-gnu.so
+  [100%] Built target cellerator_python_native
+  [100%] Built target cellerator_python_extensions
+  *** Installing project into wheel...
+  -- Install configuration: "Release"
+  -- Installing: /tmp/tmp5jpbri0d/wheel/platlib/cellerator/.libs/libcellerator_product2.so
+  -- Installing: /tmp/tmp5jpbri0d/wheel/platlib/cellerator/_native.cpython-313-x86_64-linux-gnu.so
+  -- Set non-toolchain portion of runtime path of "/tmp/tmp5jpbri0d/wheel/platlib/cellerator/_native.cpython-313-x86_64-linux-gnu.so" to "$ORIGIN/.libs"
+  *** Making wheel...
+  *** Created cellerator-0.1.0-cp313-cp313-linux_x86_64.whl
+  Building wheel for cellerator (pyproject.toml): finished with status 'done'
+  Created wheel for cellerator: filename=cellerator-0.1.0-cp313-cp313-linux_x86_64.whl size=178428 sha256=6c040eceb9be6cc55ab365f60c9841b249a6f5564dbac6776fbae54d606a6de7
+  Stored in directory: /tmp/pip-ephem-wheel-cache-3ynx1_ud/wheels/1a/71/7d/17bdc7d70d5ce0349533b018f4d28fbd010d3b117ac90b25f3
+Successfully built cellerator

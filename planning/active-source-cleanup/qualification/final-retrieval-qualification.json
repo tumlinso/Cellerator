@@ -1,0 +1,330 @@
+{
+  "compilation_database": {
+    "commands": 647,
+    "configuration": {
+      "cuda": "CUDA 12.9",
+      "cxx": "/usr/bin/g++-12",
+      "hardware_probe": false,
+      "product2": true,
+      "python": false,
+      "sm": "70",
+      "sparse_support": true,
+      "tests": true,
+      "torch": false
+    },
+    "path": "build-ctxpp/compile_commands.json",
+    "sha256": "c92093456e4a0f7d991f78ece3bd083ac724406716ba638159c5b688dbd4b04f",
+    "unique_translation_units": 634,
+    "validation": {
+      "external_baseplane_translation_units": 11,
+      "missing_command_paths": 0,
+      "required_sparse_product2_sdk_paths_present": true
+    }
+  },
+  "cpp_context_compiler_fixes": {
+    "commits": [
+      "b49421b308dcc267636f3a83b59c80ccd3f5d0de",
+      "ce00a9ce21779d62b867c50ad7feb96f8494c6f4",
+      "4691951"
+    ],
+    "latest_change": "Correct absolute locator for external private state and diagnostics; 74 skill tests passed in 150.548 seconds.",
+    "latest_commit_pushed": true
+  },
+  "created_utc": "2026-10-29T11:30:00Z",
+  "format": "cellerator-cpp-retrieval-qualification/2",
+  "generation": {
+    "backend": "libclang-runtime",
+    "cached_tu_jobs": 471,
+    "coverage": {
+      "claim": "Useful semantic retrieval is available with explicitly incomplete translation-unit coverage; this is not full-source semantic coverage.",
+      "diagnostic_groups": 1,
+      "groups": [
+        {
+          "affected_files": 159,
+          "class": "Clang driver unavailable",
+          "failed_configurations": 165,
+          "scope": "CUDA configurations for which the configured Clang driver was unavailable"
+        }
+      ],
+      "parse_status_ok": 958,
+      "unobserved": 2124
+    },
+    "fresh_merge": true,
+    "index": {
+      "bytes": 1011468531,
+      "edges": 1641692,
+      "incomplete": true,
+      "path": ".ctxpp/index.jsonl",
+      "semantic": true,
+      "sha256": "3486eca44737a8f7d1c54a88135f215d06526d8ec2c1eeae28196706b5e530da",
+      "symbols": 45517
+    },
+    "manifest": {
+      "all_canonical_paths_exist": true,
+      "files": 3082,
+      "sha256": "32207b8b9de5e271e7c0b645a7c86795ff66710c27f8658dda9d1f19a732cae6"
+    },
+    "observer_export": {
+      "bytes": 1012488057,
+      "format": "CTXPP-EXPORT/1",
+      "integrity_valid": true,
+      "path": ".ctxpp/observer-export.json",
+      "sha256": "2e78a3136edae9083d8774bcb2e5349b448b6c6a40f109983d925ec8e6de271d"
+    },
+    "previous_index_used_for_merge": false,
+    "prior_valid_tu_cache_used": true,
+    "private_candidate_retained": "build-ctxpp/ctxpp-clean-final-7055",
+    "state_path": ".ctxpp"
+  },
+  "known_limits": [
+    "159 active files across 165 configurations remain unparsed because the configured Clang driver is unavailable for those CUDA configurations.",
+    "cellerator::compiler::api::v1::compiler_session_v1 is not indexed by the selected compile database; Torch/SDK parsing configuration was not expanded solely to force it.",
+    "No GPU workload was run as part of index or observer qualification.",
+    "Fresh stdio context is usable at a 1,000-byte content budget and returns one source excerpt plus four guidance declarations, but the excerpt is truncated and guidance document contents are omitted by budget. Earlier 8 KB requests exceeded the profile response cap and are retained as superseded attempts."
+  ],
+  "observer_proofs": {
+    "fresh_stdio": {
+      "context": {
+        "coverage_complete": true,
+        "guidance_contents_included": 0,
+        "guidance_declarations": [
+          "AGENTS.md",
+          "docs/architecture.qmd",
+          "docs/developer_reference.qmd",
+          "docs/development/routing.md"
+        ],
+        "guidance_note": "The fresh stdio packet returned the implementation excerpt plus all four declarations, but the 1,000-byte context budget left their document contents unavailable. HTTP context separately returned the same four declarations; only AGENTS.md content fit the prior bounded HTTP packet.",
+        "implementation_content_truncated": true,
+        "implementation_items": 1,
+        "observed_at": "2026-10-29T11:30:39Z",
+        "omissions": [
+          "content truncated at 1000 bytes",
+          "C++ relationships: budget exhausted",
+          "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1: structural provider reports partial coverage; related results may be missing",
+          {
+            "detail": "context_budget",
+            "reason": "declared_guidance_unavailable",
+            "target": "cellerator:AGENTS.md"
+          },
+          {
+            "detail": "context_budget",
+            "reason": "declared_guidance_unavailable",
+            "target": "cellerator:docs/architecture.qmd"
+          },
+          {
+            "detail": "context_budget",
+            "reason": "declared_guidance_unavailable",
+            "target": "cellerator:docs/developer_reference.qmd"
+          },
+          {
+            "detail": "context_budget",
+            "reason": "declared_guidance_unavailable",
+            "target": "cellerator:docs/development/routing.md"
+          }
+        ],
+        "provider_status": "partial",
+        "requested_content_budget_bytes": 1000,
+        "source_refs": [
+          {
+            "line_end": 156,
+            "line_start": 41,
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8"
+          }
+        ],
+        "status": "usable_bounded_context_with_partial_content",
+        "used_content_bytes": 1000
+      },
+      "current_source_hashes_verified": true,
+      "observed_at": "2026-10-29T11:25Z-11:28Z",
+      "prior_context_attempts": [
+        {
+          "budget_bytes": 8192,
+          "request": "implementation plus guidance",
+          "required_response_bytes": 10755,
+          "status": "superseded_size_limit"
+        },
+        {
+          "budget_bytes": 8192,
+          "request": "guidance only",
+          "required_response_bytes": 9198,
+          "status": "superseded_size_limit"
+        }
+      ],
+      "searches": {
+        "2": {
+          "complete": true,
+          "matches": [
+            {
+              "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+              "kind": "definition",
+              "line_end": 156,
+              "line_start": 41,
+              "path": "src/ops/sparse_support/prepared_routing.cc",
+              "provider": "cpp-context-compiler",
+              "qualified_name": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1"
+            }
+          ],
+          "resolution": "resolved",
+          "status": "ok"
+        },
+        "3": {
+          "complete": true,
+          "matches": [
+            {
+              "content_sha256": "dd5ac2ea23543adf7b35ee9a2c0107eae1530658a6283463f471e516ee82ca7f",
+              "kind": "definition",
+              "line_end": 230,
+              "line_start": 148,
+              "path": "src/geometry/semantic_geometry.cc",
+              "provider": "cpp-context-compiler",
+              "qualified_name": "cellpack::build_cp_bp_v1_compatibility_adapter_host"
+            }
+          ],
+          "resolution": "resolved",
+          "status": "ok"
+        },
+        "4": {
+          "complete": true,
+          "matches": [
+            {
+              "content_sha256": "921d7428493587b924e8ffcf03198b5f828360f14d43526f9b7c61e9cebfd469",
+              "kind": "definition",
+              "line_end": 7,
+              "line_start": 7,
+              "path": "src/compiler/driver/downstream_compiler_invocation.cc",
+              "provider": "cpp-context-compiler",
+              "qualified_name": "cellerator::compiler::driver::run_downstream_compiler_v1"
+            }
+          ],
+          "resolution": "resolved",
+          "status": "ok"
+        },
+        "5": {
+          "complete": true,
+          "matches": [
+            {
+              "content_sha256": "a63462b664ad15ac60b245daa963e83cc363ec98bd6c8d28921f7435e877f87a",
+              "kind": "definition",
+              "line_end": 96,
+              "line_start": 96,
+              "path": "src/compute/operation/product2/product2.cc",
+              "provider": "cpp-context-compiler",
+              "qualified_name": "ce_product2_forward"
+            }
+          ],
+          "resolution": "resolved",
+          "status": "ok"
+        }
+      },
+      "status": "pass_with_partial_context_content",
+      "trace": {
+        "coverage_complete": true,
+        "edge_count": 8,
+        "predicates": [
+          "call",
+          "test_relationship"
+        ],
+        "status": "partial",
+        "test_path": "tests/ops/product2/native_product2_test.cc",
+        "test_sha256": "2ca1d38834a83b5192f930024b28a1d772595cc27597dad44117f6f33ace20db"
+      }
+    },
+    "http": {
+      "current_source_hashes_verified": true,
+      "guidance_declarations": [
+        "AGENTS.md",
+        "docs/architecture.qmd",
+        "docs/developer_reference.qmd",
+        "docs/development/routing.md"
+      ],
+      "guidance_note": "Four declarations returned; the bounded packet fit AGENTS.md content but did not include full contents of the other three references.",
+      "product2_test_edges": {
+        "observed": true,
+        "predicates": [
+          "call",
+          "test_relationship"
+        ],
+        "test_path": "tests/ops/product2/native_product2_test.cc",
+        "test_sha256": "2ca1d38834a83b5192f930024b28a1d772595cc27597dad44117f6f33ace20db"
+      },
+      "representative_symbols": [
+        {
+          "lines": [
+            41,
+            156
+          ],
+          "name": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1",
+          "path": "src/ops/sparse_support/prepared_routing.cc",
+          "sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8"
+        },
+        {
+          "lines": [
+            148,
+            230
+          ],
+          "name": "cellpack::build_cp_bp_v1_compatibility_adapter_host",
+          "path": "src/geometry/semantic_geometry.cc",
+          "sha256": "dd5ac2ea23543adf7b35ee9a2c0107eae1530658a6283463f471e516ee82ca7f"
+        },
+        {
+          "lines": [
+            7,
+            7
+          ],
+          "name": "cellerator::compiler::driver::run_downstream_compiler_v1",
+          "path": "src/compiler/driver/downstream_compiler_invocation.cc",
+          "sha256": "921d7428493587b924e8ffcf03198b5f828360f14d43526f9b7c61e9cebfd469"
+        },
+        {
+          "line": 96,
+          "name": "ce_product2_forward",
+          "path": "src/compute/operation/product2/product2.cc",
+          "sha256": "a63462b664ad15ac60b245daa963e83cc363ec98bd6c8d28921f7435e877f87a"
+        }
+      ],
+      "status": "pass"
+    },
+    "source_revision_note": "Source retrieval returned semantic_revision/context_revision null. These optional Todo revisions are not required for source-only C++ retrieval and null does not indicate a stale C++ index."
+  },
+  "observer_runtime": {
+    "cpp_export_environment_verified": true,
+    "health_readiness_version_http_status": 200,
+    "manifest_sha256": "865c5108c7f85218055432bded73829d6f013fd65b62cdaccaf8d41172860839",
+    "prior_consolidated_candidate_receipt": {
+      "mcp_calls": 25,
+      "path": "/tmp/cellerator-observer-scaling-qualification.json",
+      "sha256": "169f62f6621530177044374af13d50729017770ee41efe70f7dcecc67415b377"
+    },
+    "project_control_commit": "9fc74b4f1f1613b9fc7faa3e716a7441fb949989",
+    "project_source_commit": "5fb7fa341acee56fef44d6294ca83b5233947d49",
+    "restart_count": 0,
+    "service_pid": 2007784,
+    "state": "active",
+    "stdio_wrapper_exports_environment": true
+  },
+  "preservation": {
+    "final_private_candidate_retained": "build-ctxpp/ctxpp-clean-final-7055",
+    "pre_cutover_state_retained": "build-ctxpp/ctxpp-default-before-final-refresh-20261029",
+    "prior_state_archive": "/mnt/block/cellerator/preservation/cleanup-checkpoint-20261029T061426Z/ctxpp-qualified-state-543039aa-before-7055e52-refresh.tar.zst",
+    "prior_state_archive_sha256": "0d2243e1d40e980529298cbcffa11284df5a40ff0e139c4ec7f8787b9018c389"
+  },
+  "qualification_result": "PASS_WITH_EXPLICIT_PARTIAL_COVERAGE_AND_CONTEXT_BUDGET",
+  "renamed_path_audit": {
+    "current_active_numeric_reference_diagnostic": "cleared after the Task 03 include correction; no longer present in final generation.",
+    "incremental_retention_finding": "A prior incremental merge retained 303 records referring to an obsolete renamed test path. The final generation used the validated current TU cache/state but no prior semantic index, eliminating the ghosts without hand-editing index data.",
+    "mapping_paths_checked": 102,
+    "nonexistent_canonical_cpp_file_references": 0,
+    "old_path_references_in_published_index": 0,
+    "published_manifest_paths_missing": 0
+  },
+  "scope": "Final Task 03 semantic C++ index, observer export, and configured Project Control retrieval qualification. Index/export only; no Cellerator source modifications by this workstream.",
+  "source": {
+    "commit": "7055e52e91231ef8534b2feee13cb48f9dbfd4a3",
+    "ctxpp_config_sha256": "3d476bf2c9d503eb1461634f4b6333af6cfa5b1a093f204a49bfa9587abd4a41",
+    "ctxpp_configuration_hash": "09c2f4a580d42e1fefbceb9dddd8cd8599374a508aa2787f7470c64e499cf101",
+    "input_identity_note": "Final generation was built against the frozen canonical source at 7055e52e91231ef8534b2feee13cb48f9dbfd4a3. Later Task 03 metadata-only commit 487a82d0 did not change C++/Python/README inputs; generation remains source-current.",
+    "repository": "/home/tumlinson/Cellerator",
+    "source_clean_at_refresh": true
+  }
+}
