@@ -1,0 +1,25 @@
+$ cmake -S /tmp/cellerator-header-source-closure-installed-consumer -B /tmp/cellerator-header-source-closure-installed-consumer/build -DCMAKE_PREFIX_PATH=/tmp/cellerator-header-source-closure-fresh-sdk
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-header-source-closure-installed-consumer/build
+
+$ cmake --build /tmp/cellerator-header-source-closure-installed-consumer/build -j 2
+[ 50%] Building CXX object CMakeFiles/installed_consumer.dir/main.cc.o
+[100%] Linking CXX executable installed_consumer
+[100%] Built target installed_consumer
+
+$ ctest --test-dir /tmp/cellerator-header-source-closure-installed-consumer/build --output-on-failure
+Internal ctest changing into directory: /tmp/cellerator-header-source-closure-installed-consumer/build
+Test project /tmp/cellerator-header-source-closure-installed-consumer/build
+    Start 1: installed_consumer
+1/1 Test #1: installed_consumer ...............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec

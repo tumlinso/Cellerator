@@ -23,7 +23,7 @@ def main()->None:
         out="docs/development/source_map"
         (repo/"src"/"compute").mkdir(parents=True)
         tools.mkdir(parents=True)
-        (repo/".gitignore").write_text("__pycache__/\n*.pyc\n")
+        (repo/".gitignore").write_text("__pycache__/\n*.pyc\nbuild/\n")
         (repo/"README.md").write_text("# fixture\n")
         (repo/"src"/"compute"/"model.py").write_text("value = 1\n")
         for name in ("generate.py","validate.py","common.py","lifecycle_test.py"):
@@ -33,9 +33,12 @@ def main()->None:
         run(["git","config","user.name","Source Map Fixture"],repo)
         run(["git","add","."],repo); run(["git","commit","-qm","baseline"],repo)
         def generate():
-            return run(["python",str(tools/"generate.py"),"--repo",str(repo),"--output",out],repo)
+            return run(["python","-B",str(tools/"generate.py"),"--repo",str(repo),"--output",out],repo)
         def validate(ok:bool=True):
-            return run(["python",str(tools/"validate.py"),"--repo",str(repo),"--output",out],repo,ok)
+            return run(["python","-B",str(tools/"validate.py"),"--repo",str(repo),"--output",out],repo,ok)
+        def audit_migrations(ok:bool=True):
+            return run(["python","-B",str(tools/"validate.py"),"--repo",str(repo),"--output",out,
+                        "--migration-manifest","planning/coherence/source-migrations.json"],repo,ok)
         generate(); run(["git","add","."],repo); run(["git","commit","-qm","generated source map"],repo); validate()
 
         # Advancing HEAD by committing generated outputs must not invalidate itself.
@@ -67,15 +70,55 @@ def main()->None:
         rules=repo/out/"routing_rules.json"
         rules.write_text(rules.read_text()+"\n")
         validate(ok=False); generate(); validate()
+
+        # Generic source-map validation needs no migration manifest; explicit audit catches ignored intended sources.
+        (repo/"include"/"Cellerator"/"compiler"/"build").mkdir(parents=True)
+        destination=repo/"include"/"Cellerator"/"compiler"/"build"/"intended.hh"
+        destination.write_text("// ignored source\n")
+        pathspec_decoy=repo/"include"/"Cellerator"/"compiler"/"build"/"literalb.hh"
+        pathspec_decoy.write_text("// pathspec decoy\n")
+        (repo/"planning"/"coherence").mkdir(parents=True)
+        migration_manifest=repo/"planning"/"coherence"/"source-migrations.json"
+        migration_manifest.write_text(json.dumps({
+            "path_migrations":[
+                {"new_path":"include/Cellerator/compiler/build/intended.hh","target_path_exists":True},
+                {"new_path":"include/Cellerator/compiler/build/literal[bracket].hh","target_path_exists":True},
+            ],
+            "source_extractions":[],"compatibility_facades":[],
+        })+"\n")
+        run(["git","add","planning/coherence/source-migrations.json"],repo)
+        run(["git","add","-f","include/Cellerator/compiler/build/literalb.hh"],repo)
+        run(["git","commit","-qm","record migration destination"],repo)
+        validate(ok=False); generate(); validate()
+        missing_destination=audit_migrations(ok=False)
+        if "intended migration destination is not tracked: include/Cellerator/compiler/build/intended.hh" not in missing_destination:
+            raise RuntimeError("migration audit did not identify the ignored intended destination")
+        literal_missing="intended migration destination is not tracked: include/Cellerator/compiler/build/literal[bracket].hh"
+        if literal_missing not in missing_destination:
+            raise RuntimeError("migration audit treated a pathspec match as an exact tracked filename")
+        run(["git","add","-f","include/Cellerator/compiler/build/intended.hh"],repo)
+        run(["git","commit","-qm","track intended migration destination"],repo)
+        validate(ok=False); generate(); validate()
+        still_missing=audit_migrations(ok=False)
+        if literal_missing not in still_missing:
+            raise RuntimeError("pathspec decoy incorrectly satisfied an absent literal destination")
+        literal_destination=repo/"include"/"Cellerator"/"compiler"/"build"/"literal[bracket].hh"
+        literal_destination.write_text("// exact literal source\n")
+        run(["git","add","-f","--",":(literal)include/Cellerator/compiler/build/literal[bracket].hh"],repo)
+        run(["git","commit","-qm","track literal bracket destination"],repo)
+        validate(ok=False); generate(); validate(); audit_migrations()
         print(json.dumps({
             "ok":True,"lifecycle":"generate -> stage/commit -> validate",
             "cases":[
                 "committed generated map does not self-invalidate and HEAD is provenance only",
+                "explicit migration audit catches ignored intended destinations while ordinary validation remains manifest-agnostic",
                 "source edit invalidates the map until regeneration",
                 "new unknown route fails both before and after regeneration",
                 "adding an explicit route changes the bound rules and regenerating restores validation",
                 "source move invalidates path coverage until regeneration",
                 "generated-output corruption is detected and regenerated",
+                "generic source-map validation works without a migration manifest; explicit audit catches ignored intended destinations and passes once tracked",
+                "migration auditing compares literal tracked filenames; bracket pathspec metacharacters do not accept a decoy",
             ],
             "final_head":run(["git","rev-parse","HEAD"],repo).strip(),
         },indent=2))

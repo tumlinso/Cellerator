@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "lifecycle": "generate -> stage/commit -> validate",
+  "cases": [
+    "committed generated map does not self-invalidate and HEAD is provenance only",
+    "explicit migration audit catches ignored intended destinations while ordinary validation remains manifest-agnostic",
+    "source edit invalidates the map until regeneration",
+    "new unknown route fails both before and after regeneration",
+    "adding an explicit route changes the bound rules and regenerating restores validation",
+    "source move invalidates path coverage until regeneration",
+    "generated-output corruption is detected and regenerated",
+    "generic source-map validation works without a migration manifest; explicit audit catches ignored intended destinations and passes once tracked",
+    "migration auditing compares literal tracked filenames; bracket pathspec metacharacters do not accept a decoy"
+  ],
+  "final_head": "577820d0d0a0c81123a59cd4da7bd09fa9650f14"
+}
