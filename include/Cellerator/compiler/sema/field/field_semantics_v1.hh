@@ -4,7 +4,7 @@
 // headers remain available for narrow consumers; this facade is the frozen
 // interface consumed by downstream compiler stages.
 #include <Cellerator/compiler/sema/field/execution_field_semantic_ownership_v1.hh>
-#include <Cellerator/compiler/sema/field/first_profile_required_semantic_field_slice_v1.hh>
+#include <Cellerator/compiler/sema/field/profile_required_semantic_field_slice_v1.hh>
 #include <Cellerator/compiler/sema/field/automatic_lifetime_and_generation_transfer_v1.hh>
 #include <Cellerator/compiler/sema/field/conditional_profile_alternatives_and_joins_v1.hh>
 #include <Cellerator/compiler/sema/field/forced_realization_controls_v1.hh>

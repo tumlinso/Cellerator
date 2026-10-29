@@ -8,7 +8,7 @@ trap 'find "${build_dir}" -type f -delete; rmdir "${build_dir}"' EXIT
 cuda_root=${CUDA_ROOT:-/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9}
 nvcc="${cuda_root}/bin/nvcc"
 cuobjdump="${cuda_root}/bin/cuobjdump"
-source_file="${repo_root}/tests/profiling/ce_exop/profiler_compile_smoke.cu"
+source_file="${repo_root}/tests/profiling/operations/profiler_compile_smoke.cu"
 
 "${nvcc}" -std=c++17 -arch=sm_70 -lineinfo -dc "${source_file}" \
     -o "${build_dir}/markers_off.o"

@@ -54,9 +54,9 @@ def main() -> int:
     host_commands = [
         [str(build / "cellPackExecutionImageV2Test")],
         [str(build / "celleratorBuiltinCatalogTest")],
-        [str(build / "celleratorLivePlannerFeaturesTest")],
+        [str(build / "celleratorPlannerInputFixtureTest")],
         [str(build / "celleratorExecutableCoreIntegrationTest")],
-        [sys.executable, "tests/ce_geo/baseline/test_dense_fragment_negative_control.py"],
+        [sys.executable, "tests/geometry/baseline/test_dense_fragment_negative_control.py"],
     ]
     results = []
     for command in host_commands:
@@ -81,7 +81,7 @@ def main() -> int:
         "tests/math_core/transpose_backward_candidate_test.cu",
         "tests/tensor_core/v100_dense_fragment_candidate_test.cu",
         "tests/tensor_core/test_v100_dense_fragment_decision.py",
-        "tests/ce_geo/baseline/test_dense_fragment_negative_control.py",
+        "tests/geometry/baseline/test_dense_fragment_negative_control.py",
         "bench/ce_live/tensor_core/campaign/run_v100_decision.py",
         "bench/architecture_evidence/real_traces/pbmc3k-support-512.json",
         "data/manifests/ce_live/pbmc3k_quantitative_v1.json",

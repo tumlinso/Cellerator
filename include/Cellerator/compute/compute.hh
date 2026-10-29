@@ -25,7 +25,7 @@
 
 namespace cellerator::compute {
 
-struct ce_exop_operation_portfolio_v1 {
+struct compute_candidate_inventory_v1 {
     std::uint64_t relation_apply_candidates = 0u;
     std::uint64_t residual_candidates = 0u;
     std::uint64_t contraction_candidates = 0u;
@@ -39,6 +39,6 @@ struct ce_exop_operation_portfolio_v1 {
     bool all_experimental_candidates_require_measurement = false;
 };
 
-ce_exop_operation_portfolio_v1 query_ce_exop_operation_portfolio_v1() noexcept;
+compute_candidate_inventory_v1 query_compute_candidate_inventory_v1() noexcept;
 
 } // namespace cellerator::compute

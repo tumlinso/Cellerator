@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compiler/ir/planning/first_inspectable_candidate_search_space_v1.hh>
+#include <Cellerator/compiler/ir/planning/candidate_search_space_inspection_v1.hh>
 #include <Cellerator/compiler/ir/planning/planning_ir_module_and_decision_state_model_v1.hh>
 #include <Cellerator/compiler/ir/planning/analytical_measured_and_external_evidence_v1.hh>
 #include <Cellerator/compiler/ir/planning/atom_requirement_and_affordance_nodes_v1.hh>

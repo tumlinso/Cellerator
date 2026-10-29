@@ -2,7 +2,7 @@
 
 ## Authority and purpose
 
-CE-GEO is the execution program for the Cellerator geometry and Volta campaign. It is subordinate to [AGENTS.md](../AGENTS.md), [scope.md](../scope.md), [Architecture](architecture.qmd), [Current Implementation](current_implementation.qmd), and [Migration Roadmap](migration_roadmap.qmd). Those documents define repository architecture and ownership; this document defines the settled campaign decomposition, interfaces, gates, empirical questions, and completion semantics. It does not reopen CE-ARCH, CE-LIVE, CP-BP, CPK1, CPE2, or planner-v2 decisions.
+CE-GEO is the execution program for the Cellerator geometry and Volta campaign. It is subordinate to [AGENTS.md](../../../AGENTS.md), [scope.md](../../../scope.md), [Architecture](../../architecture.qmd), [Current Implementation](../../current_implementation.qmd), and [Migration Roadmap](../../migration_roadmap.qmd). Those documents define repository architecture and ownership; this document defines the settled campaign decomposition, interfaces, gates, empirical questions, and completion semantics. It does not reopen CE-ARCH, CE-LIVE, CP-BP, CPK1, CPE2, or planner-v2 decisions.
 
 The campaign is Volta-first and additive. Ordinary implementation begins only through the configured Project Control front door. First-class agents own serial run lanes. Local workers may return bounded candidate findings to one claimed parent but never own CE-GEO tasks, lanes, interfaces, decisions, rendezvous, or completion.
 

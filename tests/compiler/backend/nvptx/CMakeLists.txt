@@ -12,8 +12,7 @@ target_compile_features(cellerator_clang_cuda_and_nvptx_backend_contracts_test P
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_clang_cuda_and_nvptx_backend_contracts_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_f04_001 ALIAS cellerator_clang_cuda_and_nvptx_backend_contracts_test)
-add_test(NAME ce_ccp1_f04_001 COMMAND cellerator_clang_cuda_and_nvptx_backend_contracts_test)
+add_test(NAME cellerator_clang_cuda_and_nvptx_backend_contracts_test COMMAND cellerator_clang_cuda_and_nvptx_backend_contracts_test)
 
 add_executable(cellerator_clang_cuda_action_mapping_test
     clang_cuda_action_mapping_test.cc
@@ -23,8 +22,7 @@ target_compile_features(cellerator_clang_cuda_action_mapping_test PRIVATE cxx_st
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_clang_cuda_action_mapping_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_f04_002 ALIAS cellerator_clang_cuda_action_mapping_test)
-add_test(NAME ce_ccp1_f04_002 COMMAND cellerator_clang_cuda_action_mapping_test)
+add_test(NAME cellerator_clang_cuda_action_mapping_test COMMAND cellerator_clang_cuda_action_mapping_test)
 
 add_executable(cellerator_llvm_nvptx_module_boundary_test
     llvm_nvptx_module_boundary_test.cc
@@ -34,8 +32,7 @@ target_compile_features(cellerator_llvm_nvptx_module_boundary_test PRIVATE cxx_s
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_llvm_nvptx_module_boundary_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_f04_003 ALIAS cellerator_llvm_nvptx_module_boundary_test)
-add_test(NAME ce_ccp1_f04_003 COMMAND cellerator_llvm_nvptx_module_boundary_test)
+add_test(NAME cellerator_llvm_nvptx_module_boundary_test COMMAND cellerator_llvm_nvptx_module_boundary_test)
 
 add_executable(cellerator_direct_ptx_typed_operation_model_test
     direct_ptx_typed_operation_model_test.cc
@@ -45,8 +42,7 @@ target_compile_features(cellerator_direct_ptx_typed_operation_model_test PRIVATE
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_direct_ptx_typed_operation_model_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_f04_004 ALIAS cellerator_direct_ptx_typed_operation_model_test)
-add_test(NAME ce_ccp1_f04_004 COMMAND cellerator_direct_ptx_typed_operation_model_test)
+add_test(NAME cellerator_direct_ptx_typed_operation_model_test COMMAND cellerator_direct_ptx_typed_operation_model_test)
 
 add_executable(cellerator_inline_ptx_native_block_binding_test
     inline_ptx_native_block_binding_test.cc
@@ -57,8 +53,7 @@ target_compile_features(cellerator_inline_ptx_native_block_binding_test PRIVATE 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_inline_ptx_native_block_binding_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_f04_005 ALIAS cellerator_inline_ptx_native_block_binding_test)
-add_test(NAME ce_ccp1_f04_005 COMMAND cellerator_inline_ptx_native_block_binding_test)
+add_test(NAME cellerator_inline_ptx_native_block_binding_test COMMAND cellerator_inline_ptx_native_block_binding_test)
 
 find_program(PTXAS_EXECUTABLE ptxas REQUIRED)
 add_executable(cellerator_ptx_emission_and_ptxas_assembly_test
@@ -100,18 +95,17 @@ target_link_libraries(cellerator_fatbinary_object_embedding_for_direct_ptx_test 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_fatbinary_object_embedding_for_direct_ptx_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_f04_007 ALIAS cellerator_fatbinary_object_embedding_for_direct_ptx_test)
-add_test(NAME ce_ccp1_f04_007 COMMAND cellerator_fatbinary_object_embedding_for_direct_ptx_test)
+add_test(NAME cellerator_fatbinary_object_embedding_for_direct_ptx_test COMMAND cellerator_fatbinary_object_embedding_for_direct_ptx_test)
 
-add_executable(ce_ccp1_f04_008
+add_executable(cellerator_map_target_capabilities_and_instruction_families_test
     map_target_capabilities_and_instruction_families_test.cc
     "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/map_target_capabilities_and_instruction_families.cc")
-target_include_directories(ce_ccp1_f04_008 PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(ce_ccp1_f04_008 PRIVATE cxx_std_17)
+target_include_directories(cellerator_map_target_capabilities_and_instruction_families_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_map_target_capabilities_and_instruction_families_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_f04_008 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_map_target_capabilities_and_instruction_families_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_f04_008 COMMAND ce_ccp1_f04_008)
+add_test(NAME cellerator_map_target_capabilities_and_instruction_families_test COMMAND cellerator_map_target_capabilities_and_instruction_families_test)
 
 add_executable(cellerator_source_to_ptx_provenance_test
     source_to_ptx_provenance_test.cc
@@ -123,8 +117,7 @@ target_compile_features(cellerator_source_to_ptx_provenance_test PRIVATE cxx_std
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_source_to_ptx_provenance_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_f04_009 ALIAS cellerator_source_to_ptx_provenance_test)
-add_test(NAME ce_ccp1_f04_009 COMMAND cellerator_source_to_ptx_provenance_test)
+add_test(NAME cellerator_source_to_ptx_provenance_test COMMAND cellerator_source_to_ptx_provenance_test)
 
 find_library(CUDA_DRIVER_LIBRARY cuda REQUIRED)
 add_executable(cellerator_direct_ptx_hot_path_demonstration_test
@@ -146,30 +139,30 @@ find_program(CLANG_CUDA_EXECUTABLE clang++-18 REQUIRED)
 find_program(PTXAS_MODERN_EXECUTABLE ptxas
     PATHS "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin"
     NO_DEFAULT_PATH REQUIRED)
-add_executable(ce_ccp1_f04_011
+add_executable(cellerator_compare_nvcc_clang_cuda_and_direct_ptx_routes_test
     compare_nvcc_clang_cuda_and_direct_ptx_routes_test.cc
     "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/compare_nvcc_clang_cuda_and_direct_ptx_routes.cc"
     "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/direct_ptx_hot_path_demonstration.cc")
-target_include_directories(ce_ccp1_f04_011 PRIVATE "${CELLERATOR_ROOT}/include" "${CELLERATOR_ROOT}")
-target_compile_features(ce_ccp1_f04_011 PRIVATE cxx_std_17)
-target_link_libraries(ce_ccp1_f04_011 PRIVATE "${CUDA_DRIVER_LIBRARY}")
+target_include_directories(cellerator_compare_nvcc_clang_cuda_and_direct_ptx_routes_test PRIVATE "${CELLERATOR_ROOT}/include" "${CELLERATOR_ROOT}")
+target_compile_features(cellerator_compare_nvcc_clang_cuda_and_direct_ptx_routes_test PRIVATE cxx_std_17)
+target_link_libraries(cellerator_compare_nvcc_clang_cuda_and_direct_ptx_routes_test PRIVATE "${CUDA_DRIVER_LIBRARY}")
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_f04_011 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_compare_nvcc_clang_cuda_and_direct_ptx_routes_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_f04_011 COMMAND ce_ccp1_f04_011
+add_test(NAME cellerator_compare_nvcc_clang_cuda_and_direct_ptx_routes_test COMMAND cellerator_compare_nvcc_clang_cuda_and_direct_ptx_routes_test
     "${NVCC_EXECUTABLE}" "${CLANG_CUDA_EXECUTABLE}" "${PTXAS_MODERN_EXECUTABLE}"
     "${CELLERATOR_ROOT}/bench/compiler/backend/nvptx/matched_unit_degree_relation.cu"
     "${CMAKE_CURRENT_BINARY_DIR}/f04_011" "/usr/lib/gcc/x86_64-linux-gnu/12")
 
-add_executable(ce_ccp1_f04_012
+add_executable(cellerator_validate_backend_fallback_and_mixed_routes_test
     validate_backend_fallback_and_mixed_routes_test.cc
     "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/validate_backend_fallback_and_mixed_routes.cc")
-target_include_directories(ce_ccp1_f04_012 PRIVATE "${CELLERATOR_ROOT}/include")
-target_compile_features(ce_ccp1_f04_012 PRIVATE cxx_std_17)
+target_include_directories(cellerator_validate_backend_fallback_and_mixed_routes_test PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(cellerator_validate_backend_fallback_and_mixed_routes_test PRIVATE cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(ce_ccp1_f04_012 PRIVATE -Wall -Wextra -Werror)
+    target_compile_options(cellerator_validate_backend_fallback_and_mixed_routes_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_test(NAME ce_ccp1_f04_012 COMMAND ce_ccp1_f04_012)
+add_test(NAME cellerator_validate_backend_fallback_and_mixed_routes_test COMMAND cellerator_validate_backend_fallback_and_mixed_routes_test)
 
 add_executable(cellerator_optional_nvidia_backend_routes_test
     optional_nvidia_backend_routes_test.cc
@@ -180,5 +173,4 @@ target_compile_features(cellerator_optional_nvidia_backend_routes_test PRIVATE c
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_optional_nvidia_backend_routes_test PRIVATE -Wall -Wextra -Werror)
 endif()
-add_executable(ce_ccp1_f04_013 ALIAS cellerator_optional_nvidia_backend_routes_test)
-add_test(NAME ce_ccp1_f04_013 COMMAND cellerator_optional_nvidia_backend_routes_test)
+add_test(NAME cellerator_optional_nvidia_backend_routes_test COMMAND cellerator_optional_nvidia_backend_routes_test)

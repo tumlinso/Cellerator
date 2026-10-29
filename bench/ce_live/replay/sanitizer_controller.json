@@ -4,16 +4,16 @@
   "campaign_id": "ce-live-34-cpe2-replay-sanitizer",
   "recipe": "compute-sanitizer",
   "paths": [
-    "tests/persistence/ce_live_program_replay_test.cu",
+    "tests/persistence/executable_program_replay_test.cu",
     "include/Cellerator/execution/opaque_artifact.hh",
     "include/Cellerator/execution/program.hh"
   ],
   "correctness_argv": [
-    "bash", "bench/ce_live/replay/run_ce_live_program_replay_test.sh",
+    "bash", "bench/ce_live/replay/run_executable_program_replay_test.sh",
     "--build-only"
   ],
   "argv": [
-    "/tmp/cellerator-ce-live-34/ce_live_program_replay_test"
+    "/tmp/cellerator-ce-live-34/executable_program_replay_test"
   ],
   "correctness_timeout": 180,
   "timeout": 300,

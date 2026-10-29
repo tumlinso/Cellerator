@@ -9,7 +9,7 @@ sm_70 compile checks. It does not provide a deep profile, a biological-data
 result, a candidate winner, or a preprint claim.
 
 The authoritative evidence record is
-[`bench/ce_exop/evidence/286/documentation_spine_v1.json`](../bench/ce_exop/evidence/286/documentation_spine_v1.json),
+[`bench/ce_exop/evidence/286/documentation_spine_v1.json`](../../../bench/ce_exop/evidence/286/documentation_spine_v1.json),
 SHA-256
 `dceef389e921cad8f9bef1521eee1b83a5f1b04b810bda69bb0eed1c921fd3f3`.
 It was published on main `72b7ae68` and pins the accepted implementation commit

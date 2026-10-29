@@ -6,7 +6,7 @@
   "paths": [
     "include/Cellerator/execution/training_program.hh",
     "src/execution/training_program.cu",
-    "tests/execution/ce_live_concurrency_test.cu"
+    "tests/execution/training_program_concurrency_test.cu"
   ],
   "correctness_argv": [
     "bash",
@@ -14,7 +14,7 @@
     "--build-only"
   ],
   "argv": [
-    "/tmp/cellerator-ce-live-35/ce_live_concurrency_test"
+    "/tmp/cellerator-ce-live-35/training_program_concurrency_test"
   ],
   "correctness_timeout": 180,
   "timeout": 300,

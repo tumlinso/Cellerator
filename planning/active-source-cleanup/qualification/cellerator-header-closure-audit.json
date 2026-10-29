@@ -1,0 +1,75 @@
+{
+  "unresolved_current": {
+    "Cellerator/bindings/torch/autograd_ops.hh": [
+      "bindings/torch/src/autograd_ops.cu",
+      "tests/bindings/torch/autograd_ops_test.cc"
+    ],
+    "Cellerator/bindings/torch/mechanism.hh": [
+      "bindings/torch/src/mechanism.cc",
+      "bindings/torch/src/python_module.cc"
+    ],
+    "Cellerator/bindings/torch/model_ops.hh": [
+      "bindings/torch/src/model_ops.cu",
+      "examples/torch/include/Cellerator/examples/dense_reduce/dR_model.hh",
+      "tests/bindings/model_ops/model_custom_ops_test.cc"
+    ],
+    "Cellerator/bindings/torch/native_views.hh": [
+      "bindings/torch/src/native_views.cc",
+      "tests/bindings/torch/native_views_test.cc"
+    ],
+    "Cellerator/bindings/torch/program_ops.hh": [
+      "bindings/torch/src/program_ops.cu",
+      "tests/bindings/torch/program_ops_test.cc",
+      "tests/bindings/torch/quantitative_smoke_test.cc"
+    ],
+    "Cellerator/preprocess/preprocess.cuh": [
+      "compat/legacy_sparse/bench/preprocess_format_compare_bench.cu"
+    ],
+    "Cellerator/native_foundation.hh": [
+      "examples/glasshelix_execution_foundation_v1/combinatorial_consumer.cc"
+    ],
+    "Cellerator/examples/cellshard_tensor_views.hh": [
+      "examples/torch/include/Cellerator/examples/dense_reduce/dR_infer.hh",
+      "tests/examples/torch/bindings_compile_test.cc"
+    ],
+    "Cellerator/examples/quantize.hh": [
+      "examples/torch/src/quantize/quantize_cuda.cu",
+      "tests/bindings/torch/quantize_primitive_test.cc"
+    ],
+    "Cellerator/config.cuh": [
+      "include/Cellerator/types.cuh"
+    ],
+    "Cellerator/examples/dense_reduce.hh": [
+      "tests/bindings/torch/dense_reduce_compile_test.cc"
+    ]
+  },
+  "baseline_unresolved": [
+    "Cellerator/bindings/torch/autograd_ops.hh",
+    "Cellerator/bindings/torch/mechanism.hh",
+    "Cellerator/bindings/torch/model_ops.hh",
+    "Cellerator/bindings/torch/native_views.hh",
+    "Cellerator/bindings/torch/program_ops.hh",
+    "Cellerator/compiler/api/create_installed_sdk_examples_v1.hh",
+    "Cellerator/compiler/api/create_narrow_public_runtime_facades_v1.hh",
+    "Cellerator/compiler/api/define_abi_version_and_feature_queries_v1.hh",
+    "Cellerator/compiler/api/define_c_compiler_session_api_v1.hh",
+    "Cellerator/compiler/api/define_cpp_compiler_session_api_v1.hh",
+    "Cellerator/compiler/api/define_thread_safety_and_context_isolation_v1.hh",
+    "Cellerator/compiler/api/freeze_libcellerator_component_architecture_v1.hh",
+    "Cellerator/compiler/api/freeze_libcellerator_sdk_acceptance_v1.hh",
+    "Cellerator/config.cuh",
+    "Cellerator/examples/cellshard_tensor_views.hh",
+    "Cellerator/examples/dense_reduce.hh",
+    "Cellerator/examples/quantize.hh",
+    "Cellerator/native_foundation.hh",
+    "Cellerator/preprocess/preprocess.cuh",
+    "Cellerator/sdk/abi_version_and_feature_queries_v1.hh",
+    "Cellerator/sdk/cpp_compiler_session_api_v1.hh",
+    "Cellerator/sdk/installed_sdk_examples_v1.hh",
+    "Cellerator/sdk/libcellerator_component_architecture_v1.hh",
+    "Cellerator/sdk/libcellerator_sdk_acceptance_v1.hh",
+    "Cellerator/sdk/narrow_public_runtime_facades_v1.hh",
+    "Cellerator/sdk/thread_safety_and_context_isolation_v1.hh"
+  ],
+  "new_unresolved": {}
+}

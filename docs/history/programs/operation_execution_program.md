@@ -2,7 +2,7 @@
 
 ## Authority and execution boundary
 
-CE-EXOP is the execution program for the next Volta-first Cellerator campaign. It is subordinate to [AGENTS.md](../AGENTS.md), [scope.md](../scope.md), [Architecture](architecture.qmd), [Current Implementation](current_implementation.qmd), [Migration Roadmap](migration_roadmap.qmd), and the completed [CE-GEO program](CE_GEO_PROGRAM.md). Those documents remain the architecture spine. This document supplies the campaign charter, work decomposition, integration rules, validation contract, and completion meaning needed by a fresh first-class Codex lane agent.
+CE-EXOP is the execution program for the next Volta-first Cellerator campaign. It is subordinate to [AGENTS.md](../../../AGENTS.md), [scope.md](../../../scope.md), [Architecture](../../architecture.qmd), [Current Implementation](../../current_implementation.qmd), [Migration Roadmap](../../migration_roadmap.qmd), and the completed [CE-GEO program](biological_geometry_program.md). Those documents remain the architecture spine. This document supplies the campaign charter, work decomposition, integration rules, validation contract, and completion meaning needed by a fresh first-class Codex lane agent.
 
 Implementation begins only through the configured Project Control front door after CE-EXOP-01 is claimed. First-class agents own serial lanes and managed isolated-merge workspaces. Local coding workers, if later delegated by a claimed parent, are subordinate candidate producers only: they do not claim CE-EXOP tasks, own lanes, publish interfaces, communicate cross-lane authority, join rendezvous, or complete the parent. Integration lanes alone accept cross-lane merges. This bootstrap creates no implementation worktree and claims no task.
 
@@ -252,7 +252,7 @@ Profiler fixtures use synthetic controlled widths, degrees, occupancy, residual 
 - preprint figures, evidence, and claims;
 - CE-AMP.
 
-CE-EXOP-287 publishes `docs/CE_EXOP_PROFILING_HANDOFF.md` with the actual remaining questions and exact profiler-ready identities.
+CE-EXOP-287 publishes `docs/history/programs/deferred_operation_profiling_handoff.md` with the actual remaining questions and exact profiler-ready identities.
 
 ## Completion semantics
 

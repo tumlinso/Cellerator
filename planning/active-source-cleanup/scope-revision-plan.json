@@ -1,0 +1,468 @@
+{
+  "format": "todo-orchestrator.plan",
+  "schema_version": 1,
+  "project": {
+    "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "authority_id": "c4f019fe-f445-51c2-b444-a7cf24d6be34"
+  },
+  "package_id": "cellerator-cleanup-scope-closure-20261029-v1",
+  "provenance": {
+    "source": "User-approved cleanup implementation; exact consumer and retrieval-path closure",
+    "producer": "Root: preserve assertions and prior definitions; include original benchmark/experiment fixture paths and observer guidance explicitly"
+  },
+  "work_items": [
+    {
+      "id": "CE-CLEAN-01",
+      "title": "Clean active source ownership, names, builds and documentation",
+      "objective": "Resolve active implementation destinations and purpose names, disentangle fixtures, consolidate docs and retire preserved obsolete payloads with behavior unchanged.",
+      "outcome": "Resolve active implementation destinations and purpose names, disentangle fixtures, consolidate docs and retire preserved obsolete payloads with behavior unchanged.",
+      "scope": {
+        "paths": [
+          {
+            "path": "src",
+            "access": "write"
+          },
+          {
+            "path": "include",
+            "access": "write"
+          },
+          {
+            "path": "cmake",
+            "access": "write"
+          },
+          {
+            "path": "bindings",
+            "access": "write"
+          },
+          {
+            "path": "python",
+            "access": "write"
+          },
+          {
+            "path": "tests",
+            "access": "write"
+          },
+          {
+            "path": "tools",
+            "access": "write"
+          },
+          {
+            "path": "examples",
+            "access": "write"
+          },
+          {
+            "path": "stdlib",
+            "access": "write"
+          },
+          {
+            "path": "library",
+            "access": "write"
+          },
+          {
+            "path": "modules",
+            "access": "write"
+          },
+          {
+            "path": "profiles",
+            "access": "write"
+          },
+          {
+            "path": "compat",
+            "access": "write"
+          },
+          {
+            "path": "scripts",
+            "access": "write"
+          },
+          {
+            "path": "docs",
+            "access": "write"
+          },
+          {
+            "path": "CelleraTorch",
+            "access": "write"
+          },
+          {
+            "path": "debug_out",
+            "access": "write"
+          },
+          {
+            "path": ".gitignore",
+            "access": "write"
+          },
+          {
+            "path": ".ctxpp.toml",
+            "access": "write"
+          },
+          {
+            "path": "AGENTS.md",
+            "access": "write"
+          },
+          {
+            "path": "CMakeLists.txt",
+            "access": "write"
+          },
+          {
+            "path": "CONTRIBUTING.md",
+            "access": "write"
+          },
+          {
+            "path": "README.md",
+            "access": "write"
+          },
+          {
+            "path": "scope.md",
+            "access": "write"
+          },
+          {
+            "path": "pyproject.toml",
+            "access": "write"
+          },
+          {
+            "path": "planning/active-source-cleanup",
+            "access": "write"
+          },
+          {
+            "path": "bench",
+            "access": "write"
+          },
+          {
+            "path": "experiments",
+            "access": "write"
+          },
+          {
+            "path": "custom_torch_ops.md",
+            "access": "write"
+          },
+          {
+            "path": "style_hint.md",
+            "access": "write"
+          },
+          {
+            "path": "ENVIRONMENT_NOTES.md",
+            "access": "write"
+          }
+        ],
+        "concepts": [
+          "purpose-based source ownership",
+          "preservation-first cleanup",
+          "current documentation",
+          "observer retrieval"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Active native families and test/build units have concrete owners and purpose-based names; meaningful mathematical/hardware/version terms retained.",
+          "Known consumers and installed header/target/import paths are updated with deliberate compatibility exceptions; no numerical or checkpoint semantic changes.",
+          "Normal Product2 tests and common fixtures no longer depend on their originating experiment/benchmark location.",
+          "Current documentation is concise and coherent; dated history/evidence remains accessible and intact; paused CelleraTorch root and obsolete diagnostics/bytecode are archived or removed recoverably.",
+          "Ignored local documentation is reconciled and generated-only ignore policy prevents hidden source; routing names exact owners and destinations."
+        ],
+        "required_evidence": [],
+        "allowed_dispositions": [
+          "completed"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved cleanup follow-up and immutable baseline",
+          "uri": "git:9a0353c342ec319284497a245cdb8a22ed0ce144"
+        },
+        {
+          "label": "Verified pre-cleanup recovery checkpoint",
+          "uri": "/mnt/block/cellerator/preservation/cleanup-checkpoint-20261029T061426Z/manifest.json"
+        }
+      ]
+    },
+    {
+      "id": "CE-CLEAN-02",
+      "title": "Rebuild current C++ and Project Control retrieval",
+      "objective": "Generate current compilation databases, source index/export and configured observer retrieval with truthful semantic coverage.",
+      "outcome": "Generate current compilation databases, source index/export and configured observer retrieval with truthful semantic coverage.",
+      "scope": {
+        "paths": [
+          {
+            "path": ".ctxpp.toml",
+            "access": "write"
+          },
+          {
+            "path": "docs/development",
+            "access": "write"
+          },
+          {
+            "path": "tools/maintenance",
+            "access": "write"
+          },
+          {
+            "path": "planning/active-source-cleanup",
+            "access": "write"
+          },
+          {
+            "path": ".project-context.json",
+            "access": "write"
+          },
+          {
+            "path": "ENVIRONMENT_NOTES.md",
+            "access": "write"
+          }
+        ],
+        "concepts": [
+          "purpose-based source ownership",
+          "preservation-first cleanup",
+          "current documentation",
+          "observer retrieval"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Fresh compilation databases and current-source C++ index/export contain no unexplained vanished active source paths.",
+          "Configured Project Control observers can read/search current source and resolve representative supported symbols, relations, tests and guidance.",
+          "Semantic versus lexical-only coverage and unsupported configurations are explicit; no Todo authority or credentials are migrated."
+        ],
+        "required_evidence": [],
+        "allowed_dispositions": [
+          "completed"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved cleanup follow-up and immutable baseline",
+          "uri": "git:9a0353c342ec319284497a245cdb8a22ed0ce144"
+        },
+        {
+          "label": "Verified pre-cleanup recovery checkpoint",
+          "uri": "/mnt/block/cellerator/preservation/cleanup-checkpoint-20261029T061426Z/manifest.json"
+        }
+      ]
+    },
+    {
+      "id": "CE-CLEAN-03",
+      "title": "Qualify and publish the cleaned library",
+      "objective": "Run affected builds, installed consumers, package imports, docs/routing and observer checks; publish validated commits and final recovery/evidence.",
+      "outcome": "Run affected builds, installed consumers, package imports, docs/routing and observer checks; publish validated commits and final recovery/evidence.",
+      "scope": {
+        "paths": [
+          {
+            "path": "planning/active-source-cleanup",
+            "access": "write"
+          },
+          {
+            "path": "docs/development/source_map",
+            "access": "write"
+          },
+          {
+            "path": "docs/development/routing.md",
+            "access": "write"
+          },
+          {
+            "path": "bench",
+            "access": "write"
+          },
+          {
+            "path": "experiments",
+            "access": "write"
+          },
+          {
+            "path": "custom_torch_ops.md",
+            "access": "write"
+          },
+          {
+            "path": "style_hint.md",
+            "access": "write"
+          },
+          {
+            "path": "ENVIRONMENT_NOTES.md",
+            "access": "write"
+          },
+          {
+            "path": "src",
+            "access": "write"
+          },
+          {
+            "path": "include",
+            "access": "write"
+          },
+          {
+            "path": "cmake",
+            "access": "write"
+          },
+          {
+            "path": "bindings",
+            "access": "write"
+          },
+          {
+            "path": "python",
+            "access": "write"
+          },
+          {
+            "path": "tests",
+            "access": "write"
+          },
+          {
+            "path": "tools",
+            "access": "write"
+          },
+          {
+            "path": "examples",
+            "access": "write"
+          },
+          {
+            "path": "stdlib",
+            "access": "write"
+          },
+          {
+            "path": "library",
+            "access": "write"
+          },
+          {
+            "path": "modules",
+            "access": "write"
+          },
+          {
+            "path": "profiles",
+            "access": "write"
+          },
+          {
+            "path": "compat",
+            "access": "write"
+          },
+          {
+            "path": "scripts",
+            "access": "write"
+          },
+          {
+            "path": "docs",
+            "access": "write"
+          },
+          {
+            "path": "CelleraTorch",
+            "access": "write"
+          },
+          {
+            "path": "debug_out",
+            "access": "write"
+          },
+          {
+            "path": ".gitignore",
+            "access": "write"
+          },
+          {
+            "path": ".ctxpp.toml",
+            "access": "write"
+          },
+          {
+            "path": "AGENTS.md",
+            "access": "write"
+          },
+          {
+            "path": "CMakeLists.txt",
+            "access": "write"
+          },
+          {
+            "path": "CONTRIBUTING.md",
+            "access": "write"
+          },
+          {
+            "path": "README.md",
+            "access": "write"
+          },
+          {
+            "path": "scope.md",
+            "access": "write"
+          },
+          {
+            "path": "pyproject.toml",
+            "access": "write"
+          },
+          {
+            "path": ".project-context.json",
+            "access": "write"
+          }
+        ],
+        "concepts": [
+          "purpose-based source ownership",
+          "preservation-first cleanup",
+          "current documentation",
+          "observer retrieval"
+        ]
+      },
+      "acceptance": {
+        "assertions": [
+          "Affected native builds/regressions and installed SDK/Python/Torch consumers pass within stated tested configurations.",
+          "Rendered current docs links and source-map checks pass; final observer retrieval receipts reflect published source identity.",
+          "Validated batches are committed/pushed; each removed artifact is recoverable, no required planning/workflow history is deleted, remaining product gaps are stated separately."
+        ],
+        "required_evidence": [],
+        "allowed_dispositions": [
+          "completed"
+        ]
+      },
+      "references": [
+        {
+          "label": "Approved cleanup follow-up and immutable baseline",
+          "uri": "git:9a0353c342ec319284497a245cdb8a22ed0ce144"
+        },
+        {
+          "label": "Verified pre-cleanup recovery checkpoint",
+          "uri": "/mnt/block/cellerator/preservation/cleanup-checkpoint-20261029T061426Z/manifest.json"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-CLEAN-01"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-CLEAN-00"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-CLEAN-02"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-CLEAN-01"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "kind": "work_item",
+        "entity_id": "CE-CLEAN-03"
+      },
+      "mode": "all",
+      "members": [
+        {
+          "relation": "completion",
+          "target": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "kind": "work_item",
+            "entity_id": "CE-CLEAN-02"
+          }
+        }
+      ]
+    }
+  ]
+}

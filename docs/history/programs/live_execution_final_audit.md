@@ -26,12 +26,12 @@ has migrated or every biological workload is supported.
 ## Evidence index
 
 - Wave C aggregate evidence: `bench/ce_live/evidence/ce_live_evidence_v1.json`
-  and `docs/CE_LIVE_EVIDENCE.md`.
+  and `docs/history/programs/end_to_end_evidence.md`.
 - Quantitative forward records:
   `bench/ce_live/forward/pbmc3k_forward_v1.jsonl`.
 - Native training evidence:
   `bench/ce_live/training/native_training_v1_evidence.json`.
-- Replay evidence: `docs/CE_LIVE_REPLAY.md`.
+- Replay evidence: `docs/history/programs/image_replay_validation.md`.
 - Concurrency evidence:
   `bench/ce_live/concurrency/acceptance_evidence.json`.
 - Tensor Core decision:

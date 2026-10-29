@@ -324,7 +324,7 @@ terminal, and authority/build guidance may assume the readiness contract only
 after CE-LIVE-14 is terminal.
 
 CE-LIVE-10 remains unassigned floating validation work. Neither fork owns
-CE-LIVE-19, `docs/CE_LIVE_PROGRAM.md`, root integration CMake seams, or shared
+CE-LIVE-19, `docs/history/programs/live_execution_program.md`, root integration CMake seams, or shared
 live integration tests. CE-LIVE-19 is integration-exclusive and receives one
 explicit owner only after all seven Wave A tasks are terminal.
 
@@ -575,7 +575,7 @@ The native activation audit accepts the following bounded surface for
 
 The reproducible Wave C evidence is
 `bench/ce_live/evidence/ce_live_evidence_v1.json`; its interpretation and exact
-foreground controller command are recorded in `docs/CE_LIVE_EVIDENCE.md`.
+foreground controller command are recorded in `docs/history/programs/end_to_end_evidence.md`.
 The fixture supports computational validation only and makes no biological or
 scientific claim.
 
@@ -676,4 +676,4 @@ one legal FMP1 schedule per tested SpMM request, the native training program is
 N=16 only, the experimental Tensor Core candidate is not registered, CPEXEC02
 remains CellShard work, broader Baseplane execution remains in its repository,
 and distributed/general-DAG execution is later work. Exact evidence and
-limitations are consolidated in `docs/CE_LIVE_FINAL_AUDIT.md`.
+limitations are consolidated in `docs/history/programs/live_execution_final_audit.md`.

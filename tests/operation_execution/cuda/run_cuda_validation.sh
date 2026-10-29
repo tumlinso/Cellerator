@@ -7,33 +7,33 @@ mode="${3:---build-only}"
 suite="${4:-candidate-matrix}"
 
 candidate_matrix_tests=(
-    "ceGeoSm70WidthsTest|tests/tensor_core/sm70/relation_apply_widths_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_widths.cu"
-    "ceGeoSm70N64Test|tests/tensor_core/sm70/relation_apply_n64_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu"
-    "ceGeoSm70ValuePackTest|tests/tensor_core/sm70/value_pack_test.cu|src/compute/architecture/providers/nvidia/sm70/value_pack.cu"
-    "ceGeoSm70HybridTest|tests/tensor_core/sm70/relation_apply_hybrid_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cu src/compute/architecture/providers/nvidia/sm70/value_pack.cu src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu src/compute/architecture/providers/nvidia/sm70/residual.cu"
+    "geometry_sm70_widths_test|tests/tensor_core/sm70/relation_apply_widths_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_widths.cu"
+    "geometry_sm70_n64_test|tests/tensor_core/sm70/relation_apply_n64_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu"
+    "geometry_sm70_value_pack_test|tests/tensor_core/sm70/value_pack_test.cu|src/compute/architecture/providers/nvidia/sm70/value_pack.cu"
+    "geometry_sm70_hybrid_test|tests/tensor_core/sm70/relation_apply_hybrid_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cu src/compute/architecture/providers/nvidia/sm70/value_pack.cu src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu src/compute/architecture/providers/nvidia/sm70/residual.cu"
 )
 
 dynamic_value_tests=(
-    "ceGeoEdgeMapOrGateTest|tests/relation_algebra/edge_map_or_gate_test.cu|src/compute/candidate/edge_map_or_gate.cu"
-    "ceGeoSm70ValuePackTest|tests/tensor_core/sm70/value_pack_test.cu|src/compute/architecture/providers/nvidia/sm70/value_pack.cu"
+    "edge_map_or_gate_test|tests/relation_algebra/edge_map_or_gate_test.cu|src/compute/candidate/edge_map_or_gate.cu"
+    "geometry_sm70_value_pack_test|tests/tensor_core/sm70/value_pack_test.cu|src/compute/architecture/providers/nvidia/sm70/value_pack.cu"
 )
 
 transpose_gradient_tests=(
-    "ceGeoSm70TransposeApplyTest|tests/tensor_core/sm70/transpose_relation_apply_test.cu|"
-    "ceGeoSm70ContractOnSupportTest|tests/tensor_core/sm70/contract_on_support_test.cu|"
-    "ceGeoSm70EdgeValueGradientTest|tests/tensor_core/sm70/edge_value_gradient_test.cu|"
+    "geometry_sm70_transpose_apply_test|tests/tensor_core/sm70/transpose_relation_apply_test.cu|"
+    "geometry_sm70_contract_on_support_test|tests/tensor_core/sm70/contract_on_support_test.cu|"
+    "geometry_sm70_edge_value_gradient_test|tests/tensor_core/sm70/edge_value_gradient_test.cu|"
 )
 
 composition_tests=(
-    "ceGeoSegmentNormalizeTest|tests/relation_algebra/segment_normalize_test.cu|src/compute/candidate/segment/normalize.cu"
-    "ceGeoSegmentReduceTest|tests/relation_algebra/segment_reduce_test.cu|src/compute/candidate/segment/reduce.cu"
-    "ceGeoRelationBundleTest|tests/relation_algebra/relation_bundle_test.cu|src/compute/candidate/relation_bundle.cc"
-    "ceGeoSm70AdvancedOpsTest|tests/tensor_core/sm70/advanced_operations_test.cu|"
+    "segment_normalize_test|tests/relation_algebra/segment_normalize_test.cu|src/compute/candidate/segment/normalize.cu"
+    "segment_reduce_test|tests/relation_algebra/segment_reduce_test.cu|src/compute/candidate/segment/reduce.cu"
+    "relation_bundle_test|tests/relation_algebra/relation_bundle_test.cu|src/compute/candidate/relation_bundle.cc"
+    "geometry_sm70_advanced_ops_test|tests/tensor_core/sm70/advanced_operations_test.cu|"
 )
 
 runtime_safety_tests=(
-    "ceGeoSm70PreparedReuseGraphTest|tests/tensor_core/sm70/prepared_reuse_graph_test.cu|src/compute/architecture/providers/nvidia/sm70/value_pack.cu"
-    "ceGeoSm70WidthsTest|tests/tensor_core/sm70/relation_apply_widths_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_widths.cu"
+    "geometry_sm70_prepared_reuse_graph_test|tests/tensor_core/sm70/prepared_reuse_graph_test.cu|src/compute/architecture/providers/nvidia/sm70/value_pack.cu"
+    "geometry_sm70_widths_test|tests/tensor_core/sm70/relation_apply_widths_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_widths.cu"
 )
 
 compile_tests() {
@@ -124,7 +124,7 @@ case "${mode}" in
         if [[ "${suite}" == runtime-safety ]]; then
             sanitize_targets "${targets[@]}"
         elif [[ "${suite}" == all ]]; then
-            sanitize_targets ceGeoSm70PreparedReuseGraphTest ceGeoSm70WidthsTest
+            sanitize_targets geometry_sm70_prepared_reuse_graph_test geometry_sm70_widths_test
         fi
         ;;
     *)

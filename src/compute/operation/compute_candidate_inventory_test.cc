@@ -5,8 +5,8 @@
 #include <cstdint>
 
 int main() {
-    const cellerator::compute::ce_exop_operation_portfolio_v1 portfolio =
-        cellerator::compute::query_ce_exop_operation_portfolio_v1();
+    const cellerator::compute::compute_candidate_inventory_v1 portfolio =
+        cellerator::compute::query_compute_candidate_inventory_v1();
     assert(portfolio.relation_apply_candidates >= 15u);
     assert(portfolio.residual_candidates >= 6u);
     assert(portfolio.contraction_candidates >= 4u);

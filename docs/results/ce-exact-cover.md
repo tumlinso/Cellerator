@@ -50,4 +50,4 @@ Observed source-file identity: `e09e263a3b82bcbd06f9008a618a5184dd141928af54d1fe
 
 Portable evidence: [ce-exact-cover-gate-evidence.jsonl](../../docs/results/data/ce-exact-cover-gate-evidence.jsonl), [ce-exact-cover-evidence-manifest.json](../../docs/results/data/ce-exact-cover-evidence-manifest.json).
 
-[Chart/table input](data/ce-exact-cover.json) · [All selected results](index.md)
+[Chart/table input](data/ce-exact-cover.json) · [Performance validation](../performance_validation.qmd)

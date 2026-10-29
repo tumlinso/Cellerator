@@ -1,4 +1,4 @@
-#include <bench/ce_live/runtime_fixture/quantitative_fixture.hh>
+#include <tests/fixtures/model_execution/quantitative_relation_fixture.hh>
 
 #include <Cellerator/compute/operation/builtin_catalog.hh>
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 
-namespace ce_live = cellerator::ce_live;
+namespace quantitative_fixture = cellerator::fixtures::quantitative_relation;
 namespace cm = cellerator::compute::math;
 namespace core = cellerator::compute::math::core;
 namespace execution = cellerator::execution;
@@ -226,7 +226,7 @@ std::vector<__half> pack_values(const std::vector<float> &source,
 void fill_dense(std::vector<float> *dense,
     std::uint32_t features, std::uint32_t width) {
     dense->resize(static_cast<std::size_t>(features) * width);
-    ce_live::fill_deterministic_dense_operand(
+    quantitative_fixture::fill_deterministic_dense_operand(
         dense->data(), features, width);
 }
 
@@ -269,17 +269,17 @@ int main(int argc, char **argv) {
     const fixture_data fixture = load_fixture(argv[1]);
 
     execution::identity_registry registry{};
-    ce_live::native_quantitative_relation relation{};
+    quantitative_fixture::native_quantitative_relation relation{};
     std::vector<float> generation_1 = fixture.generation_1;
     std::vector<float> generation_2 = fixture.generation_2;
-    const ce_live::quantitative_fixture_arrays arrays{
+    const quantitative_fixture::quantitative_fixture_arrays arrays{
         {fixture.offsets.data(), fixture.indices.data(), fixture.rows,
             fixture.features, fixture.nnz},
         generation_1.data(), generation_2.data()};
-    const auto identities = ce_live::pbmc3k_quantitative_v1_identities();
-    require(ce_live::bind_quantitative_fixture(arrays, identities,
+    const auto identities = quantitative_fixture::pbmc3k_quantitative_v1_identities();
+    require(quantitative_fixture::bind_quantitative_fixture(arrays, identities,
             &registry, {1u, 1u}, &relation)
-            == ce_live::quantitative_fixture_status::ok,
+            == quantitative_fixture::quantitative_fixture_status::ok,
         "PBMC3K quantitative relation binding failed");
     require(execution::validate_relation_structure(relation.structure)
             == execution::lifetime_validation_code::ok,

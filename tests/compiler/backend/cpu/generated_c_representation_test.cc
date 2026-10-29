@@ -18,7 +18,7 @@ int main() {
     assert(source.find("alignas(16)") != std::string::npos);
 
     const auto temporary = std::filesystem::temp_directory_path() /
-        "ce_ccp1_f02_004_generated.cc";
+        "cellerator_generated_c_representation.cc";
     const auto gcc_object = temporary.string() + ".gcc.o";
     const auto clang_object = temporary.string() + ".clang.o";
     { std::ofstream file(temporary); file << source; }

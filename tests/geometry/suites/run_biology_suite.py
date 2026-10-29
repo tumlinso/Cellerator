@@ -9,20 +9,20 @@ from pathlib import Path
 
 
 BIOLOGY_BINARIES = (
-    "ceGeoRelationCatalogIntegrationTest",
-    "ceGeoRelationContractTest",
-    "ceGeoEdgeMapOrGateTest",
-    "ceGeoRelationInterfaceTest",
-    "ceGeoRelationCompatibilityTest",
-    "ceGeoRelationBundleTest",
-    "ceGeoSegmentNormalizeTest",
-    "ceGeoSegmentReduceTest",
-    "ceGeoSm70AdvancedOpsTest",
-    "ceGeoSm70EdgeValueGradientTest",
-    "ceGeoSm70SegmentBackwardTest",
-    "ceGeoSm70CoverNormalizeTest",
-    "ceGeoSm70TransposeApplyTest",
-    "ceGeoBiologicalRelationsExample",
+    "relation_catalog_integration_test",
+    "relation_contract_test",
+    "edge_map_or_gate_test",
+    "relation_interface_test",
+    "relation_compatibility_test",
+    "relation_bundle_test",
+    "segment_normalize_test",
+    "segment_reduce_test",
+    "geometry_sm70_advanced_ops_test",
+    "geometry_sm70_edge_value_gradient_test",
+    "geometry_sm70_segment_backward_test",
+    "geometry_sm70_cover_normalize_test",
+    "geometry_sm70_transpose_apply_test",
+    "biological_relations_example",
 )
 
 

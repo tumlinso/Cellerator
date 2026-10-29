@@ -52,16 +52,16 @@ boundary_sources=(
 
 for mode in strict sanitized; do
     build_and_run "${mode}" legacy-baseline \
-        tests/ce_exop/host/legacy_baseline_regression_test.cc \
+        tests/operation_execution/host/legacy_baseline_regression_test.cc \
         "${operation_sources[@]}"
     build_and_run "${mode}" scalable-index \
-        tests/geometry/ce_exop/scalable_index_validation_test.cc \
+        tests/geometry/partitioning/scalable_index_validation_test.cc \
         src/geometry/validation/scalable_validation_v2.cc
     build_and_run "${mode}" optimizer-oracle \
-        tests/geometry/ce_exop/optimizer_oracle_quality_test.cc \
+        tests/geometry/partitioning/optimizer_oracle_quality_test.cc \
         src/geometry/optimizer/oracle/exact_oracle.cc
     build_and_run "${mode}" boundary-negative \
-        tests/ce_exop/host/boundary_negative_test.cc \
+        tests/operation_execution/host/boundary_negative_test.cc \
         "${boundary_sources[@]}"
     build_and_run "${mode}" operation-core-v2-integrated \
         src/compute/operation/operation_core_v2/operation_core_v2_test.cc \
@@ -74,8 +74,8 @@ for mode in strict sanitized; do
         tests/relation_algebra/contract_test.cc
 done
 
-tests/ce_exop/host/static_architecture_audit.sh .
-git diff --check -- tests/ce_exop/host tests/geometry/ce_exop tests/relation_algebra/v2
+tests/operation_execution/host/static_architecture_audit.sh .
+git diff --check -- tests/operation_execution/host tests/geometry/partitioning tests/relation_algebra/v2
 
 echo "CE-EXOP integrated host acceptance: PASS"
 echo "compiler=$(${cxx} --version | head -n 1)"

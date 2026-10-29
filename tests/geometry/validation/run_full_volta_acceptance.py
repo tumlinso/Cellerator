@@ -129,31 +129,31 @@ def direct_validation_commands(build: pathlib.Path) -> list[list[str]]:
                    "-Wno-deprecated-gpu-targets",
                    "-Xcompiler=-Wall,-Wextra,-Werror", "-ccbin", cxx,
                    "-Iinclude", "-Ibuild/generated"]
-    semantic = build / "ceGeoSemanticPropertyTest"
-    physical = build / "ceGeoPhysicalCoverPropertyTest"
-    numerical = build / "ceGeoNumericalRefereeTest"
-    negative = build / "ceGeoFoundationNegativeTest"
-    gradient = build / "ceGeoGradientValidationTest"
-    hot_path = build / "ceGeoHotPathTest"
+    semantic = build / "geometry_semantic_property_test"
+    physical = build / "geometry_physical_cover_property_test"
+    numerical = build / "geometry_numerical_referee_test"
+    negative = build / "geometry_foundation_negative_test"
+    gradient = build / "geometry_gradient_validation_test"
+    hot_path = build / "geometry_hot_path_test"
     return [
-        [*common_host, "tests/ce_geo/validation/semantic_property_test.cc",
+        [*common_host, "tests/geometry/validation/semantic_property_test.cc",
          "-o", str(semantic),
          "build/src/geometry/libcellerator_semantic_geometry_v1.a"],
         [str(semantic)],
-        [*common_host, "tests/ce_geo/validation/physical_cover_property_test.cc",
+        [*common_host, "tests/geometry/validation/physical_cover_property_test.cc",
          "-o", str(physical), "build/libcellerator_architecture_provider.a"],
         [str(physical)],
-        [*common_host, "tests/ce_geo/validation/numerical_referee_test.cc",
+        [*common_host, "tests/geometry/validation/numerical_referee_test.cc",
          "-o", str(numerical)],
         [str(numerical)],
-        [*common_cuda, "tests/ce_geo/validation/foundation_negative_test.cu",
+        [*common_cuda, "tests/geometry/validation/foundation_negative_test.cu",
          "-o", str(negative), "build/libcellerator_architecture_provider.a",
          "build/libcellerator_operation_core.a", "build/libcellerator_runtime.a"],
         [str(negative)],
-        [*common_cuda, "tests/ce_geo/validation/gradient_validation_test.cu",
+        [*common_cuda, "tests/geometry/validation/gradient_validation_test.cu",
          "src/compute/candidate/segment/normalize.cu", "-o", str(gradient)],
         [str(gradient)],
-        [*common_cuda, "tests/ce_geo/validation/hot_path_test.cu",
+        [*common_cuda, "tests/geometry/validation/hot_path_test.cu",
          "-o", str(hot_path),
          "build/libcellerator_executable_program.a",
          "build/libcellerator_projection_activation.a",
@@ -221,22 +221,22 @@ def main() -> int:
              "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_CUDA_ARCHITECTURES=70",
              "-DCELLERATOR_ENABLE_TORCH=OFF"],
             [sys.executable,
-             "tests/ce_geo/validation/baseline_golden_regression.py",
+             "tests/geometry/validation/baseline_golden_regression.py",
              "--build", "build"],
             ["cmake", "--build", "build", "-j", str(args.jobs)],
-            [sys.executable, "tests/ce_geo/run_build_matrix.py",
+            [sys.executable, "tests/geometry/suites/run_build_matrix.py",
              "--jobs", str(args.jobs)],
-            [sys.executable, "tests/ce_geo/run_foundation_suite.py",
+            [sys.executable, "tests/geometry/suites/run_foundation_suite.py",
              "--build", "build"],
-            [sys.executable, "tests/ce_geo/run_sm70_vertical_suite.py",
+            [sys.executable, "tests/geometry/suites/run_sm70_vertical_suite.py",
              "--build", "build"],
-            [sys.executable, "tests/ce_geo/run_biology_suite.py",
+            [sys.executable, "tests/geometry/suites/run_biology_suite.py",
              "--build", "build"],
             *direct_validation_commands(build),
-            [sys.executable, "tests/ce_geo/validation/test_static_contracts.py"],
-            [sys.executable, "scripts/ce_geo/check_static_contracts.py",
-             "--manifest", "tests/ce_geo/validation/owned_production_paths.json"],
-            [sys.executable, "tests/ce_geo/validation/run_compute_sanitizer.py",
+            [sys.executable, "tests/geometry/validation/test_static_contracts.py"],
+            [sys.executable, "scripts/geometry/check_geometry_contracts.py",
+             "--manifest", "tests/geometry/validation/owned_production_paths.json"],
+            [sys.executable, "tests/geometry/validation/run_compute_sanitizer.py",
              "--build", "build", "--output", str(SANITIZER_OUTPUT)],
         ]
         records = []
@@ -262,7 +262,7 @@ def main() -> int:
                 "commit": source_commit,
                 "tree": source_tree,
                 "owned_manifest_sha256": sha256_file(
-                    ROOT / "tests/ce_geo/validation/owned_production_paths.json"
+                    ROOT / "tests/geometry/validation/owned_production_paths.json"
                 ),
                 "sanitizer_evidence_sha256": sha256_file(
                     ROOT / "bench/ce_geo/evidence/sanitizer/campaign.json"

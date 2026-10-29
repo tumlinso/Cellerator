@@ -33,7 +33,7 @@ def main() -> int:
             ], source)
             run([
                 "cmake", "--build", str(build),
-                "--target", "ceGeoSm70VerticalTests", "ceGeoBiologyTests",
+                "--target", "geometry_sm70_vertical_tests", "biological_relation_tests",
                 "-j", str(arguments.jobs),
             ], source)
     print("CE-GEO native/compatibility build matrix passed")

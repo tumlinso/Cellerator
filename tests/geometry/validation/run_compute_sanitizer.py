@@ -32,20 +32,20 @@ class Target:
 TARGETS = (
     Target("projectionEnumerationTest",
            ("device_views", "cpe2_rebind"), ("memcheck", "initcheck")),
-    Target("ceGeoSm70ValuePackTest",
+    Target("geometry_sm70_value_pack_test",
            ("value_pack", "generation_reuse"),
            ("memcheck", "racecheck", "initcheck", "synccheck")),
-    Target("ceGeoSm70N64HybridTest",
+    Target("geometry_sm70_n64_hybrid_test",
            ("mma", "residual", "epilogue"),
            ("memcheck", "racecheck", "initcheck", "synccheck")),
-    Target("ceGeoSegmentNormalizeTest",
+    Target("segment_normalize_test",
            ("segments",),
            ("memcheck", "racecheck", "initcheck", "synccheck")),
-    Target("ceGeoSm70TransposeRelationApplyTest",
+    Target("geometry_sm70_transpose_relation_apply_test",
            ("transpose",), ("memcheck", "initcheck")),
-    Target("ceGeoSm70ContractOnSupportTest",
+    Target("geometry_sm70_contract_on_support_test",
            ("contraction",), ("memcheck", "initcheck")),
-    Target("ceGeoGradientValidationTest",
+    Target("geometry_gradient_validation_test",
            ("gradients", "transpose", "contraction", "segments"),
            ("memcheck", "racecheck", "initcheck", "synccheck")),
 )
@@ -134,16 +134,16 @@ def build_command(target: Target, repo_root: pathlib.Path,
     direct_libraries: tuple[str, ...] = ()
     if target.name == "projectionEnumerationTest":
         direct_source = (
-            repo_root / "tests/ce_geo/persistence/projection_enumeration_test.cu"
+            repo_root / "tests/geometry/acquisition/projection_enumeration_test.cu"
         )
         direct_libraries = (
             "libcellerator_opaque_execution_artifact.a",
             "libcellpack_execution_image_v2.a",
             "libcellpack_persistent_packing_payload.a",
         )
-    elif target.name == "ceGeoGradientValidationTest":
+    elif target.name == "geometry_gradient_validation_test":
         direct_source = (
-            repo_root / "tests/ce_geo/validation/gradient_validation_test.cu"
+            repo_root / "tests/geometry/validation/gradient_validation_test.cu"
         )
         direct_libraries = (
             "libcellerator_relation_algebra.a",

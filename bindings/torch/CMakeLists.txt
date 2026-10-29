@@ -243,7 +243,7 @@ if(CELLERATOR_BUILD_TESTS)
         ${PROJECT_SOURCE_DIR}/tests/bindings/torch/autograd_ops_test.cc)
     add_executable(celleratorTorchQuantitativeSmokeTest
         ${PROJECT_SOURCE_DIR}/tests/bindings/torch/quantitative_smoke_test.cc
-        ${PROJECT_SOURCE_DIR}/bench/ce_live/runtime_fixture/quantitative_fixture.cc)
+        ${PROJECT_SOURCE_DIR}/tests/fixtures/model_execution/quantitative_relation_fixture.cc)
     target_include_directories(celleratorTorchQuantitativeSmokeTest PRIVATE
         ${PROJECT_SOURCE_DIR})
     target_link_libraries(celleratorTorchQuantitativeSmokeTest PRIVATE

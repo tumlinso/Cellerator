@@ -13,8 +13,8 @@ import unittest
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[3]
-SCRIPT = REPO_ROOT / "scripts/ce_geo/check_static_contracts.py"
-SPEC = importlib.util.spec_from_file_location("check_static_contracts", SCRIPT)
+SCRIPT = REPO_ROOT / "scripts/geometry/check_geometry_contracts.py"
+SPEC = importlib.util.spec_from_file_location("check_geometry_contracts", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 AUDITOR = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = AUDITOR

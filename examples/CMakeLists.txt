@@ -1,4 +1,4 @@
-include(examples/ce_geo/CMakeLists.txt)
+include(examples/biology/CMakeLists.txt)
 
 if(TARGET CellShard::runtime)
 add_library(cellerator_state_reduce_cuda STATIC

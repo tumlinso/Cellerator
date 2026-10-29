@@ -20,7 +20,7 @@ GOLDEN = ROOT / "bench/ce_geo/evidence/baseline/baseline.json"
 HOST_TARGETS = (
     "cellPackExecutionImageV2Test",
     "celleratorBuiltinCatalogTest",
-    "celleratorLivePlannerFeaturesTest",
+    "celleratorPlannerInputFixtureTest",
     "celleratorExecutableCoreIntegrationTest",
 )
 
@@ -245,7 +245,7 @@ def run_regressions(build: pathlib.Path, golden: dict[str, Any]) -> None:
 
     # This live decision test is separate from the four binary host baselines.
     run([sys.executable,
-         "tests/ce_geo/baseline/test_dense_fragment_negative_control.py"])
+         "tests/geometry/baseline/test_dense_fragment_negative_control.py"])
 
     for target in CUDA_TARGETS:
         run([str(build / target)])

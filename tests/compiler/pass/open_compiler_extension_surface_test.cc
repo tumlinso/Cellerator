@@ -13,7 +13,7 @@ int main() {
     assert(descriptor.pipeline_phase_count == 12 && descriptor.pipeline_stage_count == 24);
     assert((descriptor.capabilities & cp::cold_provenance_v1) != 0);
 
-    const auto directory = std::filesystem::temp_directory_path() / "ce_ccp1_g02_018";
+    const auto directory = std::filesystem::temp_directory_path() / "cellerator_open_compiler_extension_surface";
     std::filesystem::remove_all(directory);
     const auto install = directory / "install" / "include";
     std::filesystem::create_directories(install);

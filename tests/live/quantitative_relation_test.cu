@@ -1,4 +1,4 @@
-#include <bench/ce_live/runtime_fixture/quantitative_fixture.hh>
+#include <tests/fixtures/model_execution/quantitative_relation_fixture.hh>
 
 #include <cuda_runtime.h>
 
@@ -9,7 +9,7 @@
 #include <iostream>
 #include <vector>
 
-namespace fixture = cellerator::ce_live;
+namespace fixture = cellerator::fixtures::quantitative_relation;
 namespace execution = cellerator::execution;
 
 namespace {

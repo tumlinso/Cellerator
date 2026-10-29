@@ -9,20 +9,20 @@ from pathlib import Path
 
 
 FOUNDATION_BINARIES = (
-    "ceGeoCapabilityTest",
-    "ceGeoProviderRegistryTest",
-    "ceGeoProviderContractTest",
-    "ceGeoCatalogContractTest",
-    "ceGeoProjectionReferenceV2Test",
-    "ceGeoBuiltinFragmentTest",
-    "ceGeoRelationCatalogTest",
-    "ceGeoSemanticCompilerTest",
-    "ceGeoCsg1Test",
-    "ceGeoCsg1SupportSectionsTest",
-    "ceGeoCpe2CapabilityManifestTest",
-    "ceGeoPreboundProjectionV2Test",
-    "ceGeoGeometryAcquisitionContractTest",
-    "ceGeoAcquisitionCostMappingTest",
+    "geometry_capability_test",
+    "geometry_provider_registry_test",
+    "geometry_provider_contract_test",
+    "geometry_catalog_contract_test",
+    "geometry_projection_reference_v2_test",
+    "geometry_builtin_fragment_test",
+    "relation_catalog_test",
+    "geometry_semantic_compiler_test",
+    "geometry_csg1_test",
+    "geometry_csg1_support_sections_test",
+    "geometry_cpe2_capability_manifest_test",
+    "geometry_prebound_projection_v2_test",
+    "geometry_acquisition_contract_test",
+    "geometry_acquisition_cost_mapping_test",
 )
 
 

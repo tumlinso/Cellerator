@@ -16,18 +16,18 @@ function(cellerator_add_sm70_vertical_test target source)
     )
 endfunction()
 
-cellerator_add_sm70_vertical_test(ceGeoSm70ProviderTest
+cellerator_add_sm70_vertical_test(geometry_sm70_provider_test
     tests/tensor_core/sm70/provider_test.cu)
-cellerator_add_sm70_vertical_test(ceGeoSm70ValuePackTest
+cellerator_add_sm70_vertical_test(geometry_sm70_value_pack_test
     tests/tensor_core/sm70/value_pack_test.cu)
-cellerator_add_sm70_vertical_test(ceGeoSm70N64Test
+cellerator_add_sm70_vertical_test(geometry_sm70_n64_test
     tests/tensor_core/sm70/relation_apply_n64_test.cu)
-cellerator_add_sm70_vertical_test(ceGeoSm70HybridTest
+cellerator_add_sm70_vertical_test(geometry_sm70_hybrid_test
     tests/tensor_core/sm70/relation_apply_hybrid_test.cu)
 
-add_custom_target(ceGeoSm70VerticalTests DEPENDS
-    ceGeoSm70ProviderTest
-    ceGeoSm70ValuePackTest
-    ceGeoSm70N64Test
-    ceGeoSm70HybridTest
+add_custom_target(geometry_sm70_vertical_tests DEPENDS
+    geometry_sm70_provider_test
+    geometry_sm70_value_pack_test
+    geometry_sm70_n64_test
+    geometry_sm70_hybrid_test
 )

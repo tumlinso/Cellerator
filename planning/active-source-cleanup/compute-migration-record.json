@@ -1,0 +1,1346 @@
+{
+  "schema": "cellerator-source-cleanup-migrations/v1",
+  "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+  "worktree_head": "2c2c222f36c3aa1f7f8bb22d97031002c6420978",
+  "purpose": "Native compute/build/test and biological example ownership cleanup; behavior preserving.",
+  "path_migrations": [
+    {
+      "old_path": "examples/ce_geo/CMakeLists.txt",
+      "new_path": "examples/biology/CMakeLists.txt",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "536ef0ccd6c7c213e88c75a80b55f8f746c935da",
+      "new_worktree_sha256": "1106db8ed2515d60c59501d2d90e4e837f2e519b53e383dcd1aa6a11b9727983",
+      "new_blob_oid": "68ab5bc7b4ad75653b0a1004426a3117a895f7d3"
+    },
+    {
+      "old_path": "examples/ce_geo/README.md",
+      "new_path": "examples/biology/README.md",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "7497d73a42d720a2022730bdb8ee16dbd59b7f17",
+      "new_worktree_sha256": "5f04f9893f2564af2db31c44a86370c92bf055b9128218b840bcddb7f9cf68e5",
+      "new_blob_oid": "117f2d31da3d577e01d744f3f8080203f78fac79"
+    },
+    {
+      "old_path": "examples/ce_geo/biological_relations.cc",
+      "new_path": "examples/biology/biological_relations.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "f2975a10821f586630aabb4d47be39cd7b7d6429",
+      "new_worktree_sha256": "da8b66d55345e722bba4b5db05b1a8d347b8c1c444f6b35aefc73d37b459f1fc",
+      "new_blob_oid": "f2975a10821f586630aabb4d47be39cd7b7d6429"
+    },
+    {
+      "old_path": "src/compute/operation/ce_exop_operation_portfolio.cc",
+      "new_path": "src/compute/operation/compute_candidate_inventory.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "d3e7f0e800b74b6db3aa7260e18ca16ec7123ebd",
+      "new_worktree_sha256": "f4db08f58edba306fa57e997873c76fb430a2ce13fe769ab0dc423e2daa20e06",
+      "new_blob_oid": "dace3669dcdb6c4e41229e7090a2f280d71fdce7"
+    },
+    {
+      "old_path": "src/compute/operation/ce_exop_operation_portfolio_test.cc",
+      "new_path": "src/compute/operation/compute_candidate_inventory_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "2f78f17e3a0814c201abbca5c059af04d1c44126",
+      "new_worktree_sha256": "fc55e4e29e5c90b6fe1dad7f915f7b649299c4bae96db250f28ea7cce249d6a5",
+      "new_blob_oid": "ee2deafb16967cef42cf89fe015d180c22090d86"
+    },
+    {
+      "old_path": "src/compute/operation/ce_geo_catalog_assembly.cc",
+      "new_path": "src/compute/operation/relation_catalog_readiness.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "eee57d6e3a5e52b36c3eff36bd14f1b7472d416d",
+      "new_worktree_sha256": "5bfaae9bf15a15678920b83bd80a4155c1eda6ecf8a528c1c21d99662eec1300",
+      "new_blob_oid": "0876d8e70e93be92a9cd4c7ae164f236bad9b41b"
+    },
+    {
+      "old_path": "bench/ce_live/runtime_fixture/quantitative_fixture.cc",
+      "new_path": "tests/fixtures/model_execution/quantitative_relation_fixture.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "277d532a7c95cc7f7900e75890ac6cd6433004ae",
+      "new_worktree_sha256": "eece4a0c22d6d3eedf1cdbd39026de25f15ad598646b41d03623620d21ec848c",
+      "new_blob_oid": "a35e878755c28fb465435e311943fc77991b2437"
+    },
+    {
+      "old_path": "bench/ce_live/runtime_fixture/quantitative_fixture.hh",
+      "new_path": "tests/fixtures/model_execution/quantitative_relation_fixture.hh",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "a2fff335346367d56179fc590ca92d95fe7ebf41",
+      "new_worktree_sha256": "037c527225c0f45a61a1aec8f3cc044418ea04eb6eea199bc23c6d768b15339a",
+      "new_blob_oid": "791b8e96783f3319eb9621dc8f0379cba502e1ed"
+    },
+    {
+      "old_path": "bench/ce_live/planner/live_planner_inputs.cc",
+      "new_path": "tests/fixtures/planner/live_planner_inputs.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "a1d723e6c5ae07d7f4db92f69b20505103e0cff7",
+      "new_worktree_sha256": "096663a3f03ca01fcb232bac71fd89e2a47d54c17664cd3556eb5db34045a44d",
+      "new_blob_oid": "ea22060a9d654192003dba783494c777dab07712"
+    },
+    {
+      "old_path": "bench/ce_live/planner/live_planner_inputs.hh",
+      "new_path": "tests/fixtures/planner/live_planner_inputs.hh",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "1963962320c0120ef8e615773ee6a3f18c84b5c2",
+      "new_worktree_sha256": "f4c56cd1cb72865e0d8b56b77ac833d39c3f9521a73f30f5ef322faf5983c121",
+      "new_blob_oid": "166879a96acfd1380359c872431ca73508853168"
+    },
+    {
+      "old_path": "tests/ce_geo/persistence/acquisition_cost_mapping_test.cc",
+      "new_path": "tests/geometry/acquisition/acquisition_cost_mapping_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "21fea2039327cc43a15bf974f2a4012f3705f686",
+      "new_worktree_sha256": "fea136d8ceba5f842a9ed148383ca5f9f9da0dc584cdf84e1697157756014f0d",
+      "new_blob_oid": "21fea2039327cc43a15bf974f2a4012f3705f686"
+    },
+    {
+      "old_path": "tests/ce_geo/persistence/geometry_acquisition_contract_test.cc",
+      "new_path": "tests/geometry/acquisition/geometry_acquisition_contract_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "32fea0a44bea3a8b98b0401869e8bcb068cac46a",
+      "new_worktree_sha256": "85c2860b23415291b184bd2d903df1c31a7b6aa9d4a422228cf7c84151ad9be4",
+      "new_blob_oid": "32fea0a44bea3a8b98b0401869e8bcb068cac46a"
+    },
+    {
+      "old_path": "tests/ce_geo/persistence/geometry_acquisition_routes_test.cu",
+      "new_path": "tests/geometry/acquisition/geometry_acquisition_routes_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "a09599b32468fba6f6bdefef7121ba9e4d1379f2",
+      "new_worktree_sha256": "01cf01f777b5091fcf9ed18e35a5f7731203741c2288152cd42092600bf46f23",
+      "new_blob_oid": "a09599b32468fba6f6bdefef7121ba9e4d1379f2"
+    },
+    {
+      "old_path": "tests/ce_geo/persistence/persistence_acquisition_regression_test.cu",
+      "new_path": "tests/geometry/acquisition/persistence_acquisition_regression_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "26c93cb2c79dc6b6b7a599782c6e5bec269de064",
+      "new_worktree_sha256": "722d6b1f720d39673c7caee5b7870067d5a01cbebeb98339c12a731df890575a",
+      "new_blob_oid": "26c93cb2c79dc6b6b7a599782c6e5bec269de064"
+    },
+    {
+      "old_path": "tests/ce_geo/persistence/projection_enumeration_test.cu",
+      "new_path": "tests/geometry/acquisition/projection_enumeration_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "b8c63db2fd0de4dc5c64660c163b69bb1b23b90c",
+      "new_worktree_sha256": "680b5844343f1dda166a4479947d0a98c5cf4a6cd112819a6e442f6254e4101a",
+      "new_blob_oid": "b8c63db2fd0de4dc5c64660c163b69bb1b23b90c"
+    },
+    {
+      "old_path": "tests/ce_geo/persistence/provider_activation_test.cu",
+      "new_path": "tests/geometry/acquisition/provider_activation_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "0aa146b1b535d1489abff8c76cc169c1e12c2522",
+      "new_worktree_sha256": "0758dccbb380dc25a152aaab3e75d52c9de5a0eb67facf640f6bd9c349547d43",
+      "new_blob_oid": "0aa146b1b535d1489abff8c76cc169c1e12c2522"
+    },
+    {
+      "old_path": "tests/ce_geo/baseline/check_cpe2_sizes.py",
+      "new_path": "tests/geometry/baseline/check_cpe2_sizes.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "b361e137745e320b8aed723f9a2071d1ae05cb5e",
+      "new_worktree_sha256": "6b10895e1593b890e045a734947926955f2fdd202c5300f6d5a47a8821a23c51",
+      "new_blob_oid": "b361e137745e320b8aed723f9a2071d1ae05cb5e"
+    },
+    {
+      "old_path": "tests/ce_geo/baseline/run_baseline.py",
+      "new_path": "tests/geometry/baseline/run_baseline.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "5988d9d0d52e70bc4229a2a66cddf5e845259851",
+      "new_worktree_sha256": "0e90ece7b87f2952080f72915d9fb391efbfb7386d973e9a7eb927fecf252759",
+      "new_blob_oid": "68d3725d7134fa6fdb00c11a06b72c6b504246c1"
+    },
+    {
+      "old_path": "tests/ce_geo/baseline/test_dense_fragment_negative_control.py",
+      "new_path": "tests/geometry/baseline/test_dense_fragment_negative_control.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "c93eb2292b26a8917d0d93e19f3b5d35503abc31",
+      "new_worktree_sha256": "f0c36ecbd7dd240151b5de81a97942ffbbdac320e9cdb3096d0a8889b5697c41",
+      "new_blob_oid": "c93eb2292b26a8917d0d93e19f3b5d35503abc31"
+    },
+    {
+      "old_path": "tests/ce_geo/catalog/builtin_fragment_test.cu",
+      "new_path": "tests/geometry/catalog/builtin_fragment_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "421600e02f231d7757318e6feff1539d5d959f11",
+      "new_worktree_sha256": "ee6bd92bc2e2a1aa40184695c4ded6742b1146cd63340786597ec82be6ca5e18",
+      "new_blob_oid": "421600e02f231d7757318e6feff1539d5d959f11"
+    },
+    {
+      "old_path": "tests/ce_geo/catalog/catalog_contract_test.cc",
+      "new_path": "tests/geometry/catalog/catalog_contract_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "118e75471475ae7a6712a0839c883089647427f8",
+      "new_worktree_sha256": "2d65232b148931c208134cdaea030e1e091b9d432239cb6fcff7f5908fcadbc4",
+      "new_blob_oid": "118e75471475ae7a6712a0839c883089647427f8"
+    },
+    {
+      "old_path": "tests/ce_geo/catalog/catalog_program_regression_test.cu",
+      "new_path": "tests/geometry/catalog/catalog_program_regression_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "96230e0c735031a02edd78e9603c00fe4ed1168c",
+      "new_worktree_sha256": "72a7d284fa9332340ae0a5aebdd375222fb4209114e1c3d057df0d70778fc603",
+      "new_blob_oid": "96230e0c735031a02edd78e9603c00fe4ed1168c"
+    },
+    {
+      "old_path": "tests/ce_geo/catalog/erased_prepare_test.cu",
+      "new_path": "tests/geometry/catalog/erased_prepare_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "4c311f7d1ab6cc20b4af9e280a04ab88f323f441",
+      "new_worktree_sha256": "e768f8996a109f04d979de9890128083ace8fac783d088ed7991b4b970991ab7",
+      "new_blob_oid": "4c311f7d1ab6cc20b4af9e280a04ab88f323f441"
+    },
+    {
+      "old_path": "tests/ce_geo/catalog/program_v2_test.cu",
+      "new_path": "tests/geometry/catalog/program_v2_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "a6a85d66db2b5991357eb051d41e42ad39f49965",
+      "new_worktree_sha256": "39f3f81e747f96c68f7356ab711454a6f9913462580c77aa15efeeb6864e8806",
+      "new_blob_oid": "a6a85d66db2b5991357eb051d41e42ad39f49965"
+    },
+    {
+      "old_path": "tests/ce_geo/catalog/projection_reference_v2_test.cc",
+      "new_path": "tests/geometry/catalog/projection_reference_v2_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "1be82b08a47b396fab446a54e250d81f8f675151",
+      "new_worktree_sha256": "a1ae910db4a35a5fc8905258297fee85e1cb2fcb580bbfd81ffcf7ba3b35959a",
+      "new_blob_oid": "1be82b08a47b396fab446a54e250d81f8f675151"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/admissibility_test.cc",
+      "new_path": "tests/geometry/contracts/admissibility_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "5aec1b727f1e65430125dea6783ac3b36f872120",
+      "new_worktree_sha256": "260db8c98b7870ea3ba7488b856d79d9690fc5d65ae19aa00d041cfadfa0db33",
+      "new_blob_oid": "5aec1b727f1e65430125dea6783ac3b36f872120"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/cpbp_cpk1_adapter_test.cc",
+      "new_path": "tests/geometry/contracts/cpbp_cpk1_adapter_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "4ade11ba28a4b809c6a375cb882a6b0bf7041601",
+      "new_worktree_sha256": "b16141c1eedd161ab22d08919ae996cb6b540288c8ff7efd9937461688a784a6",
+      "new_blob_oid": "4ade11ba28a4b809c6a375cb882a6b0bf7041601"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/cpe2_capability_manifest_test.cc",
+      "new_path": "tests/geometry/contracts/cpe2_capability_manifest_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "66dbe10875661417580fdfd7a747329d13d0eecb",
+      "new_worktree_sha256": "8004aa7175a85af6f4a43c82224d9db2998d757a032fa15a5ab7f8309e2ec91e",
+      "new_blob_oid": "66dbe10875661417580fdfd7a747329d13d0eecb"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/csg1_support_sections_test.cc",
+      "new_path": "tests/geometry/contracts/csg1_support_sections_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "c5e3095791c0f720e4ce605733319ebf7d6632e7",
+      "new_worktree_sha256": "5b6db367ddae53821b103696b605aea1136bae945c7f8c136e89fb3b5266f8f2",
+      "new_blob_oid": "c5e3095791c0f720e4ce605733319ebf7d6632e7"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/csg1_test.cc",
+      "new_path": "tests/geometry/contracts/csg1_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "0cc999157a18359e6beeb269a42311ba4164c0bb",
+      "new_worktree_sha256": "02a3451d2c2fedeeef5e48c2e503d7e5dc86d7878bcfdcc037bc5f92c6738c07",
+      "new_blob_oid": "0cc999157a18359e6beeb269a42311ba4164c0bb"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/exact_relation_rescan_test.cc",
+      "new_path": "tests/geometry/contracts/exact_relation_rescan_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "633c276269724a7340218ff2ce33708c23a9b27f",
+      "new_worktree_sha256": "fcdcfd76bf54e86cab3b925dac8463c0cf904c8d228398575459a53a8f4cfdf3",
+      "new_blob_oid": "633c276269724a7340218ff2ce33708c23a9b27f"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/identity_strategy_test.cc",
+      "new_path": "tests/geometry/contracts/identity_strategy_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "9c49af2c61f7bd852ebf187662434865ac134974",
+      "new_worktree_sha256": "db97f047054840ad5f79cb80d6b98b7531eddc90aa8ad107cd73cac4c246e510",
+      "new_blob_oid": "9c49af2c61f7bd852ebf187662434865ac134974"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/portable_support_property_test.cc",
+      "new_path": "tests/geometry/contracts/portable_support_property_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "0b36e40c017675bfbe82e767bdfbfaf9bac6faf5",
+      "new_worktree_sha256": "e396d643e03177339fad3c96280a4e33ec34f3bc2fc4173def28bcf35b93b11b",
+      "new_blob_oid": "0b36e40c017675bfbe82e767bdfbfaf9bac6faf5"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/prebound_projection_v2_test.cc",
+      "new_path": "tests/geometry/contracts/prebound_projection_v2_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "74779a7a70c4b454fb782beb6ef8c823c19b68db",
+      "new_worktree_sha256": "4006c2fb233b2dbf4b674f79c4e15101df8339eb93ef80e3d3571cc8edfc2206",
+      "new_blob_oid": "74779a7a70c4b454fb782beb6ef8c823c19b68db"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/rectangular_affinity_test.cc",
+      "new_path": "tests/geometry/contracts/rectangular_affinity_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "2dd18e3be028f42c8333a9a07cdfe28513211572",
+      "new_worktree_sha256": "b0c34f4a590c01bc723b241a502d8ebf03bd0beea0886fdd0ad2163bb9706c42",
+      "new_blob_oid": "2dd18e3be028f42c8333a9a07cdfe28513211572"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/rectangular_support_contract_test.cc",
+      "new_path": "tests/geometry/contracts/rectangular_support_contract_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "8998fd58dbb18dc0d1e7b5d6078947661e6650f9",
+      "new_worktree_sha256": "c31429036b1b5483034037d42e43d7a19aff4b35dece982e996ecbbbd9ce9b0b",
+      "new_blob_oid": "8998fd58dbb18dc0d1e7b5d6078947661e6650f9"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/rectangular_support_interface_test.cc",
+      "new_path": "tests/geometry/contracts/rectangular_support_interface_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "ab039ef0166b28fd1d4a5d40f5e1860bdc05ce1e",
+      "new_worktree_sha256": "a800cb150f9beca142e58e74351a8c8efac18a45fad7b31784da80c2847b008a",
+      "new_blob_oid": "ab039ef0166b28fd1d4a5d40f5e1860bdc05ce1e"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/relation_cover_test.cc",
+      "new_path": "tests/geometry/contracts/relation_cover_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "e0a22d571de814f2a0362cd488247a67dd8562a0",
+      "new_worktree_sha256": "82601b314e8003de0c0f53a16c12f7fd7ab71ef9f9f577caf7759379cf518e33",
+      "new_blob_oid": "e0a22d571de814f2a0362cd488247a67dd8562a0"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/sampled_support_test.cc",
+      "new_path": "tests/geometry/contracts/sampled_support_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "65d647e6e8e1514f38f6b7e0e0ce1f9150cf4624",
+      "new_worktree_sha256": "450e9dd1c0816df003cf0f5b275b790a2c706829aa14e2c80c1006912fc7cf6e",
+      "new_blob_oid": "65d647e6e8e1514f38f6b7e0e0ce1f9150cf4624"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/semantic_compiler_property_test.cc",
+      "new_path": "tests/geometry/contracts/semantic_compiler_property_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "a209d2d8d7e5c2ccb687815666f94437f0979557",
+      "new_worktree_sha256": "dda459b3949d1c6c5d364c9d29a84106b04e99d0223da5478292971a3e5bee40",
+      "new_blob_oid": "a209d2d8d7e5c2ccb687815666f94437f0979557"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/strategy_registry_test.cc",
+      "new_path": "tests/geometry/contracts/strategy_registry_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "be678ec839b6237db097fd4ac19b5418dedbe420",
+      "new_worktree_sha256": "eb34b78f73b11e12132e37c0d58777ba17c43ae418cba32f210f601f4668eaa8",
+      "new_blob_oid": "be678ec839b6237db097fd4ac19b5418dedbe420"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/support_affinity_test.cc",
+      "new_path": "tests/geometry/contracts/support_affinity_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "be510337ae6113241ad873138066e5d293b43669",
+      "new_worktree_sha256": "3ee0f153f552744d820df5b9f2f5f8ee4ca1dc43f385b9830256342b1199d126",
+      "new_blob_oid": "be510337ae6113241ad873138066e5d293b43669"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/support_atlas_contract_test.cc",
+      "new_path": "tests/geometry/contracts/support_atlas_contract_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "d54ef4c1dae0e9b9ceff8f16ff74d2f4feea618d",
+      "new_worktree_sha256": "c3b70a78e2b655eb99754c7025cc887a7671a3c8f960e8a14fd56b5d3e64e1ba",
+      "new_blob_oid": "d54ef4c1dae0e9b9ceff8f16ff74d2f4feea618d"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/support_stability_test.cc",
+      "new_path": "tests/geometry/contracts/support_stability_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "f7d3763dfc195bcf6e326cad87e8e6ba00e4a8b7",
+      "new_worktree_sha256": "919dce473a7bb6c95ab884acf8f62256594c1c1153da1f32e5c43ffe44647ed8",
+      "new_blob_oid": "f7d3763dfc195bcf6e326cad87e8e6ba00e4a8b7"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/work_layout_test.cc",
+      "new_path": "tests/geometry/contracts/work_layout_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "87216ba55571de8dcef8787b8850f6584a41ebce",
+      "new_worktree_sha256": "5de523e685ec3ebde1872fd09abfdd912a7c5cebc04f4a61b1b57fbdd89c0196",
+      "new_blob_oid": "87216ba55571de8dcef8787b8850f6584a41ebce"
+    },
+    {
+      "old_path": "tests/geometry/ce_geo/work_window_test.cc",
+      "new_path": "tests/geometry/contracts/work_window_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "a95d0b2959a8240c980f830db84068c3b02cec9b",
+      "new_worktree_sha256": "707cb1c366222b31a942689d53b14a71276d5b22d0f4821593952535a5261efe",
+      "new_blob_oid": "a95d0b2959a8240c980f830db84068c3b02cec9b"
+    },
+    {
+      "old_path": "tests/geometry/ce_exop/optimizer_oracle_quality_test.cc",
+      "new_path": "tests/geometry/partitioning/optimizer_oracle_quality_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "4169c9d531c6eef362611f3d8e1d7a58f4658e7b",
+      "new_worktree_sha256": "4a69b7cc938e7a808d6ae4cb0f31d3b59863485a7855a9af0ba332824202ace6",
+      "new_blob_oid": "4169c9d531c6eef362611f3d8e1d7a58f4658e7b"
+    },
+    {
+      "old_path": "tests/geometry/ce_exop/scalable_index_validation_test.cc",
+      "new_path": "tests/geometry/partitioning/scalable_index_validation_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "b9057ec4832ebe91ba0ed04bf92c950486d53ffd",
+      "new_worktree_sha256": "761a48d9c1155c6ea5300677a0c15e4911f6853bf2722c2e0f789b2ca4666707",
+      "new_blob_oid": "b9057ec4832ebe91ba0ed04bf92c950486d53ffd"
+    },
+    {
+      "old_path": "tests/ce_geo/projection/exact_physical_cover_test.cc",
+      "new_path": "tests/geometry/projection/exact_physical_cover_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "a25a117bbbda1884314e4414c31bc8c3ef860322",
+      "new_worktree_sha256": "b0b21451accd5019d44df72b3d61bdfa5782c77972e21da6599d3dee885aeac8",
+      "new_blob_oid": "a25a117bbbda1884314e4414c31bc8c3ef860322"
+    },
+    {
+      "old_path": "tests/ce_geo/projection/mma_hybrid_contract_test.cc",
+      "new_path": "tests/geometry/projection/mma_hybrid_contract_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "54299c27547aded6948892352477ff1bca9dd23d",
+      "new_worktree_sha256": "77980a94d27aacecb0874accc0616a2e8598710a34829998845f368cd5e691a7",
+      "new_blob_oid": "54299c27547aded6948892352477ff1bca9dd23d"
+    },
+    {
+      "old_path": "tests/ce_geo/projection/mma_projection_property_test.cc",
+      "new_path": "tests/geometry/projection/mma_projection_property_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "4f230b12d5e907b1a431994db800f4e199dd8981",
+      "new_worktree_sha256": "4bd010565259f48749057c56c3bc1b4540ce768cc9f1e423a76f566648799a6a",
+      "new_blob_oid": "4f230b12d5e907b1a431994db800f4e199dd8981"
+    },
+    {
+      "old_path": "tests/ce_geo/projection/mma_projection_roundtrip_test.cc",
+      "new_path": "tests/geometry/projection/mma_projection_roundtrip_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "b0756e0e804dc76355be70b0672a54bdd4b9de98",
+      "new_worktree_sha256": "03f438a9c29a846dac6630072a5b1eeb2ee96d30fb1c742021d8652135f75900",
+      "new_blob_oid": "b0756e0e804dc76355be70b0672a54bdd4b9de98"
+    },
+    {
+      "old_path": "tests/ce_geo/projection/mma_provider_realization_test.cu",
+      "new_path": "tests/geometry/projection/mma_provider_realization_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "40f0c56c22ba2d93f110d751b0a0b56ffdefb3fc",
+      "new_worktree_sha256": "894fc84341c5c1bc6d0f189f34fa6e1a5cfbc67648fd1cbeded3ce6fa731cde0",
+      "new_blob_oid": "40f0c56c22ba2d93f110d751b0a0b56ffdefb3fc"
+    },
+    {
+      "old_path": "tests/ce_geo/projection/mma_residual_builder_test.cc",
+      "new_path": "tests/geometry/projection/mma_residual_builder_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "e3b44cc0e0c4e1108fdc12aa9c51131a17837c3a",
+      "new_worktree_sha256": "e6c4a4bb1595d9fdda66ffcd513aab7c4e694c5ccb5a2a6d460b4b656b1ab91e",
+      "new_blob_oid": "e3b44cc0e0c4e1108fdc12aa9c51131a17837c3a"
+    },
+    {
+      "old_path": "tests/ce_geo/projection/mma_target_refinement_test.cc",
+      "new_path": "tests/geometry/projection/mma_target_refinement_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "1a23ab821b0571811fb210eef5971b9e8ba67d5f",
+      "new_worktree_sha256": "24fca48e59103f90e822298ff0b3356aeca5d7c5016647ed5c8b37efecc27ec0",
+      "new_blob_oid": "1a23ab821b0571811fb210eef5971b9e8ba67d5f"
+    },
+    {
+      "old_path": "tests/ce_geo/projection/physical_padding_test.cc",
+      "new_path": "tests/geometry/projection/physical_padding_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "47550cdd280f8a2a597120fc3f8f1f5236773247",
+      "new_worktree_sha256": "05cdf6a9f036e6dd6163180a5c84f23cb9a027109c361d3152be291e1c59307e",
+      "new_blob_oid": "47550cdd280f8a2a597120fc3f8f1f5236773247"
+    },
+    {
+      "old_path": "tests/ce_geo/projection/sm70_grouping_test.cc",
+      "new_path": "tests/geometry/projection/sm70_grouping_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "e7b2ad56938414e346f30b0310109a8cd8ae29b0",
+      "new_worktree_sha256": "90bd7445ff263ec1118b0db5ae51c4f97de61cb986105177a923dced6426a3ce",
+      "new_blob_oid": "e7b2ad56938414e346f30b0310109a8cd8ae29b0"
+    },
+    {
+      "old_path": "tests/ce_geo/projection/target_refinement_contract_test.cc",
+      "new_path": "tests/geometry/projection/target_refinement_contract_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "c12730cb41a61e55b3f99b53c568901c17b9a8cb",
+      "new_worktree_sha256": "ce22bddb7749c17cee68ec9bade872d3f5ab0b31e5b19ab9375b67c646ff3507",
+      "new_blob_oid": "c12730cb41a61e55b3f99b53c568901c17b9a8cb"
+    },
+    {
+      "old_path": "tests/ce_geo/hardware/capability_test.cc",
+      "new_path": "tests/geometry/providers/capability_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "f29a18c7c1dc08d0975cd866e0a15ab169d96e13",
+      "new_worktree_sha256": "68374af3430065776ddec5775029b75fd8225a91226ec072dd0453218686f5d1",
+      "new_blob_oid": "f29a18c7c1dc08d0975cd866e0a15ab169d96e13"
+    },
+    {
+      "old_path": "tests/ce_geo/hardware/device_descriptor_test.cu",
+      "new_path": "tests/geometry/providers/device_descriptor_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "091d4fc686e76ef7ebc5f4245b078e671b4b26a1",
+      "new_worktree_sha256": "c518ff389accd58926ed745838dd7b002ea4510208050ba54fd7019af26768b2",
+      "new_blob_oid": "091d4fc686e76ef7ebc5f4245b078e671b4b26a1"
+    },
+    {
+      "old_path": "tests/ce_geo/hardware/fake_provider.cc",
+      "new_path": "tests/geometry/providers/fake_provider.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "981a96b5b511aa7d591ffa218e0ab83b23d1048e",
+      "new_worktree_sha256": "d1c84a191d218aee296966ff73fec428c5fa6598c0a92555c1da771f074e7b1f",
+      "new_blob_oid": "981a96b5b511aa7d591ffa218e0ab83b23d1048e"
+    },
+    {
+      "old_path": "tests/ce_geo/hardware/provider_contract_test.cu",
+      "new_path": "tests/geometry/providers/provider_contract_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "f5ba5f5cfeaef75f33121007597d0d873802ce54",
+      "new_worktree_sha256": "4c33a471b27ed88d21b28f55053edabdcc245b5455ce166f1cd98b914e82be0b",
+      "new_blob_oid": "f5ba5f5cfeaef75f33121007597d0d873802ce54"
+    },
+    {
+      "old_path": "tests/ce_geo/hardware/provider_registry_test.cc",
+      "new_path": "tests/geometry/providers/provider_registry_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "6917880035cbdea815a88552572257e276b00651",
+      "new_worktree_sha256": "594f3a94eb478cfb249fb4261cda3de12687047009f16ed5f9dcc598cdc00f56",
+      "new_blob_oid": "6917880035cbdea815a88552572257e276b00651"
+    },
+    {
+      "old_path": "tests/ce_geo/run_biology_suite.py",
+      "new_path": "tests/geometry/suites/run_biology_suite.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "b39674faf779b93f744ac4f36b325f6850ed6dba",
+      "new_worktree_sha256": "6906e13300452681f3cbd25c60402f59c714644c1a776d94cf84c5d54102ac91",
+      "new_blob_oid": "d3810e2a549cba4a368bb424fdf4125f8f665bdc"
+    },
+    {
+      "old_path": "tests/ce_geo/run_build_matrix.py",
+      "new_path": "tests/geometry/suites/run_build_matrix.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "2a303b459cecc7330ac58d57c4a8228fe6335b70",
+      "new_worktree_sha256": "9a21345f927e9ca1d28431dd916a98e01ea446d9e24e618242b3349fd6ced15d",
+      "new_blob_oid": "18b4585879f2f18212dd810125965c309a5c1f15"
+    },
+    {
+      "old_path": "tests/ce_geo/run_foundation_suite.py",
+      "new_path": "tests/geometry/suites/run_foundation_suite.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "ce35b9cc3e3d612fae2b27e3bd6cb4c333bcd5a5",
+      "new_worktree_sha256": "ad83bb33949c9da8c1b232b6a5ec25bcdaebe269da1022a5c6d2ae908cf69531",
+      "new_blob_oid": "35b10ce326869490ed04cebbba7e8017ad46f335"
+    },
+    {
+      "old_path": "tests/ce_geo/run_sm70_vertical_suite.py",
+      "new_path": "tests/geometry/suites/run_sm70_vertical_suite.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "af675c05e12a93633147434fe83da591e69fced3",
+      "new_worktree_sha256": "1bf2431c2a41ab6ecdee1b536d92585f86da160618fe7e2307bf642f5dea1392",
+      "new_blob_oid": "d8a35d7d240b0306ead4ab49556ae4f28bb7322a"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/baseline_golden_regression.py",
+      "new_path": "tests/geometry/validation/baseline_golden_regression.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "6258e4c0ffa54a256b97416d486f46bb88b4a326",
+      "new_worktree_sha256": "8a262b0542df66805615dbacf84cd6bc4831d30de484436073ba4ec7dc90b7dc",
+      "new_blob_oid": "6995df174a3ef2c7b3d8bd834561f92cc20bbc62"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/foundation_negative_test.cu",
+      "new_path": "tests/geometry/validation/foundation_negative_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "b567e95ca617acf9c40200be62521f8cae88cca9",
+      "new_worktree_sha256": "f0f237127f09d2ea56674b4c3d50948d48711df50a168c0d62bcb327b600eeb0",
+      "new_blob_oid": "b567e95ca617acf9c40200be62521f8cae88cca9"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/gradient_validation_test.cu",
+      "new_path": "tests/geometry/validation/gradient_validation_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "88245b58453d93399a258b07f944d4370967d8c6",
+      "new_worktree_sha256": "fd4de33f6080c7b693e4c4e1fc2312d86c9fbee282a327594daaabf5db3da3bc",
+      "new_blob_oid": "88245b58453d93399a258b07f944d4370967d8c6"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/hot_path_test.cu",
+      "new_path": "tests/geometry/validation/hot_path_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "7a31e5f7e120bbd8794d2e5029898c8c81e7a23b",
+      "new_worktree_sha256": "ab4d3949cb69042e4bd7f2263d7c841ff0e7f33afcdc22bcb15965a342ee151e",
+      "new_blob_oid": "7a31e5f7e120bbd8794d2e5029898c8c81e7a23b"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/numerical_referee.hh",
+      "new_path": "tests/geometry/validation/numerical_referee.hh",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "3aeff7d0e6f3416bc17473029dcdad59bff91fac",
+      "new_worktree_sha256": "42f9b3172f3911cadc4fc621533220c60c1702141cb061f1df4b98af417a98bc",
+      "new_blob_oid": "3aeff7d0e6f3416bc17473029dcdad59bff91fac"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/numerical_referee_test.cc",
+      "new_path": "tests/geometry/validation/numerical_referee_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "2ae085290dee8a85d847681f4f766afb1aec10ba",
+      "new_worktree_sha256": "4d4d6e9948b3663fe18700ed4dfc4501a608597fea0967288245d4a89ac2a0f0",
+      "new_blob_oid": "2ae085290dee8a85d847681f4f766afb1aec10ba"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/owned_production_paths.json",
+      "new_path": "tests/geometry/validation/owned_production_paths.json",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "98d001862ee9ac58c68a06932dcee30bd3ed78c9",
+      "new_worktree_sha256": "a74215d15d862e15710bbe646a36415a06824a0e1f4004d9ec87a9ccf61baed6",
+      "new_blob_oid": "98d001862ee9ac58c68a06932dcee30bd3ed78c9"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/physical_cover_property_test.cc",
+      "new_path": "tests/geometry/validation/physical_cover_property_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "0188f0c1a05785a9fbd1cbf233f25f6a211dc761",
+      "new_worktree_sha256": "91882aedba5017b44ae7d3cc4c46ed6ded4887d6ac6ccac5b7a28a8d9bc9258e",
+      "new_blob_oid": "0188f0c1a05785a9fbd1cbf233f25f6a211dc761"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/run_compute_sanitizer.py",
+      "new_path": "tests/geometry/validation/run_compute_sanitizer.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "f4bb91411fe69efea4a3b51b289a23b79100962d",
+      "new_worktree_sha256": "09c9f11abdd585d3430745bed9e973beda215c133ecee9c2ab9a592e994cbd9e",
+      "new_blob_oid": "473ae471725581ff01aa953b2b3d657dc99edc2c"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/run_full_volta_acceptance.py",
+      "new_path": "tests/geometry/validation/run_full_volta_acceptance.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "743a66d36b9e14e1c07b4bf3984a715e169493ae",
+      "new_worktree_sha256": "2badbd58d5c38972db2e03d2577b61d4e8f72014c4b76e50c63069d35114b720",
+      "new_blob_oid": "4cb86110c1880958cdf1a7517bc6c3be651e73bb"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/semantic_property_test.cc",
+      "new_path": "tests/geometry/validation/semantic_property_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "0934ddcf7cef55e946c8570597f6bf93cb6b9a79",
+      "new_worktree_sha256": "e9ffe63134c986725eea43afb6552277f5e79bf289a9d1038a3bb613d7efb6b1",
+      "new_blob_oid": "0934ddcf7cef55e946c8570597f6bf93cb6b9a79"
+    },
+    {
+      "old_path": "tests/ce_geo/validation/test_static_contracts.py",
+      "new_path": "tests/geometry/validation/test_static_contracts.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "b407009bd90fedccd1aecc14f716b7aa3d68699e",
+      "new_worktree_sha256": "9774eda635625b4d1a1086d049bc40d6b53794d40352769e042e06e8e4b8dd86",
+      "new_blob_oid": "b2f0f204fd793c453edf837487a2560177c375f0"
+    },
+    {
+      "old_path": "tests/ce_exop/cuda/run_cuda_validation.sh",
+      "new_path": "tests/operation_execution/cuda/run_cuda_validation.sh",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "c563baf0d6b67b5857f7f4ba3b1522aba3a4a538",
+      "new_worktree_sha256": "1512ee1b78df9a06ea510267f006a4b82971539a88edfdc47dcc918f2215af36",
+      "new_blob_oid": "a445db8173166fc058e7b716af1d639d01ca3e24"
+    },
+    {
+      "old_path": "tests/ce_exop/host/boundary_negative_test.cc",
+      "new_path": "tests/operation_execution/host/boundary_negative_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "fa48b9a3f88fe8cd3de9a3f5bf603582344baae2",
+      "new_worktree_sha256": "6cf38f01461750c87d7182d34c86499aac01df2a0207bba9da3b2d14ff12ddf2",
+      "new_blob_oid": "fa48b9a3f88fe8cd3de9a3f5bf603582344baae2"
+    },
+    {
+      "old_path": "tests/ce_exop/host/legacy_baseline_regression_test.cc",
+      "new_path": "tests/operation_execution/host/legacy_baseline_regression_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "92182c1e0e67baf2c92ee83b2c15ec3ade446a30",
+      "new_worktree_sha256": "5990829365c0ef538b6ebb47e4b52c6801ed882dc9dd7fa5bc230fd14ea30493",
+      "new_blob_oid": "92182c1e0e67baf2c92ee83b2c15ec3ade446a30"
+    },
+    {
+      "old_path": "tests/ce_exop/host/run_host_acceptance.sh",
+      "new_path": "tests/operation_execution/host/run_host_acceptance.sh",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "6d7ddd9d4a6df560ca04854458e072b69860e860",
+      "new_worktree_sha256": "038a146d42157750b596ac4d322486fad7203ec799e46f34b162554568e820db",
+      "new_blob_oid": "0b52c4a64b11b0dc9afc4b4da374ba32b6613686"
+    },
+    {
+      "old_path": "tests/ce_exop/host/static_architecture_audit.sh",
+      "new_path": "tests/operation_execution/host/static_architecture_audit.sh",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "f784d7eb73e6e21e62d777cfa6197054880ed305",
+      "new_worktree_sha256": "58208e86e7471d150a3a26e65af3adb83fac9f2a0f216808fb45a7dcb135b9e1",
+      "new_blob_oid": "f784d7eb73e6e21e62d777cfa6197054880ed305"
+    },
+    {
+      "old_path": "experiments/moonshot-parallel-v1/integration/product2_cuda_smoke.cu",
+      "new_path": "tests/ops/product2/cuda_product2_smoke.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "9005b98b4eb8195a32537e206923eab52d255feb",
+      "new_worktree_sha256": "c2967bd3793678f3d81870b3386a6c1eb1f50fa00d8af26693dca8d83b42b2ae",
+      "new_blob_oid": "9005b98b4eb8195a32537e206923eab52d255feb"
+    },
+    {
+      "old_path": "experiments/moonshot-parallel-v1/integration/native_product2_test.cc",
+      "new_path": "tests/ops/product2/native_product2_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "8d0d253ac89968fa53ff46a2a4dd3a8cbe427685",
+      "new_worktree_sha256": "2ca1d38834a83b5192f930024b28a1d772595cc27597dad44117f6f33ace20db",
+      "new_blob_oid": "8d0d253ac89968fa53ff46a2a4dd3a8cbe427685"
+    },
+    {
+      "old_path": "tests/profiling/ce_exop/profiler_compile_smoke.cu",
+      "new_path": "tests/profiling/operations/profiler_compile_smoke.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "fbfffdb7ab65386261b13905b5a3b19c6e68bf4e",
+      "new_worktree_sha256": "8563679e84640bfd01f41cf0d7498a94c9ebbc849e79d4e6d0491f5bb78b8ebb",
+      "new_blob_oid": "fbfffdb7ab65386261b13905b5a3b19c6e68bf4e"
+    },
+    {
+      "old_path": "tests/profiling/ce_exop/profiler_fixture_validation.cc",
+      "new_path": "tests/profiling/operations/profiler_fixture_validation.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "826e1db4bd69ac491c37019b87ffa5c6531727a9",
+      "new_worktree_sha256": "75ae02eb33057ad2f310fbf492d92f12e681f31feafac5244510f249079fb34a",
+      "new_blob_oid": "826e1db4bd69ac491c37019b87ffa5c6531727a9"
+    },
+    {
+      "old_path": "tests/profiling/ce_exop/run_compile_smoke.sh",
+      "new_path": "tests/profiling/operations/run_compile_smoke.sh",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "8c3b85de7565cf602852dc03010e91f1b91bd5a0",
+      "new_worktree_sha256": "5e62933cde13757a1a56139c5fe5090f9da725dce5634c48567abb3194132516",
+      "new_blob_oid": "a47301e01cbe73d0e72804976d2b47ff52769d4f"
+    },
+    {
+      "old_path": "tests/profiling/ce_exop/run_fixture_validation.sh",
+      "new_path": "tests/profiling/operations/run_fixture_validation.sh",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "89517c1c271e7c5a6dcaa9dec314e8a9e4293ab9",
+      "new_worktree_sha256": "dc17b74f32c4690eb8c5b010ef01342794108dc091876ba99bb2ff72f0e4b802",
+      "new_blob_oid": "35f3a16fad9b4f0390d8f7282e519863e1e461ec"
+    },
+    {
+      "old_path": "tests/profiling/ce_exop/validate_acceptance.py",
+      "new_path": "tests/profiling/operations/validate_acceptance.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "9f91de5b4078e287dc6526ac5f9b10fe0c2b80f0",
+      "new_worktree_sha256": "a8bd9925fbd475bfc43aebf83207b92b54c610cb9a6220d2789dd26cccc45ab9",
+      "new_blob_oid": "9f91de5b4078e287dc6526ac5f9b10fe0c2b80f0"
+    },
+    {
+      "old_path": "tests/profiling/ce_exop/validate_deferred_requirements.py",
+      "new_path": "tests/profiling/operations/validate_deferred_requirements.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "0ced0cec7687a436fc584a61907924a932e3240b",
+      "new_worktree_sha256": "59f702955cd4efe8ed7efad264ba16727df24a43a8355e2657a9e67b2db96852",
+      "new_blob_oid": "0ced0cec7687a436fc584a61907924a932e3240b"
+    },
+    {
+      "old_path": "tests/profiling/ce_exop/validate_generic_export.py",
+      "new_path": "tests/profiling/operations/validate_generic_export.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "c2b2f13eae011a785f93d61064a1e9a6feccf999",
+      "new_worktree_sha256": "cc0220cfa2ac14dc51be09622d8f98cee34534f5d1812999a0a5d6945ef5d640",
+      "new_blob_oid": "c2b2f13eae011a785f93d61064a1e9a6feccf999"
+    },
+    {
+      "old_path": "tests/profiling/ce_exop/validate_manifests.py",
+      "new_path": "tests/profiling/operations/validate_manifests.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "51706f22c93d9e9832c7e64d814548e3cc7972ef",
+      "new_worktree_sha256": "240cbd697e5eb3fe92a86f6acc70962828a4a710d4326952533e558679a25de7",
+      "new_blob_oid": "51706f22c93d9e9832c7e64d814548e3cc7972ef"
+    },
+    {
+      "old_path": "scripts/ce_live_fixture.py",
+      "new_path": "scripts/fixtures/quantitative_relation_fixture.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "204088af6525719638c17b27f56714d4a6b3a980",
+      "new_worktree_sha256": "972565dc366b2bd1d23a0c9878bcdababd2dd19198ac74050a9be2dccc05e9af",
+      "new_blob_oid": "4d4f03effb9e13ea5347463dc3cf6e033b234ffb"
+    },
+    {
+      "old_path": "scripts/ce_geo/check_static_contracts.py",
+      "new_path": "scripts/geometry/check_geometry_contracts.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "03c4fec5cfb8ce273649c645e32eec37d36e35e6",
+      "new_worktree_sha256": "b2005c4e84ba19da515cf342f6215ba56b2ebd0b3650e6a4350f6a07f0ed091c",
+      "new_blob_oid": "03c4fec5cfb8ce273649c645e32eec37d36e35e6"
+    },
+    {
+      "old_path": "scripts/ce_geo/final_acceptance.py",
+      "new_path": "scripts/history/geometry_campaign/final_acceptance.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "6393980f8652e2db7ad78b1500aa59524b9c8a3a",
+      "new_worktree_sha256": "2116cd80a00047cbf2eb21e0cc9e0f2b95477074a32a7f05f3c89567e24392b4",
+      "new_blob_oid": "6393980f8652e2db7ad78b1500aa59524b9c8a3a"
+    },
+    {
+      "old_path": "scripts/ce_geo/publish_completion.py",
+      "new_path": "scripts/history/geometry_campaign/publish_completion.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "58709b3c13d4bbb92bb919d0394fc7aba2cf25a6",
+      "new_worktree_sha256": "6946455b869671ecf1ff8e7e95c4b965578fb840b81dac2dd76d45f0e05eed7b",
+      "new_blob_oid": "58709b3c13d4bbb92bb919d0394fc7aba2cf25a6"
+    },
+    {
+      "old_path": "scripts/ce_geo/validate_documentation.py",
+      "new_path": "scripts/history/geometry_campaign/validate_documentation.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "3ecfdb90cbf68df130149eac899c612eeb92db5e",
+      "new_worktree_sha256": "65e619dbd9c264aa55ce4ea9cb7edc0a9460cb27e78545326c53d7016138dc31",
+      "new_blob_oid": "3ecfdb90cbf68df130149eac899c612eeb92db5e"
+    },
+    {
+      "old_path": "scripts/ce_geo/validate_preflight.py",
+      "new_path": "scripts/history/geometry_campaign/validate_preflight.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "cc3fd1c058ec221a83089c8dfeeee2d801f79edc",
+      "new_worktree_sha256": "b0d42e1c9a7836dff7ddf5b95e79ec2cec6f6bba65456de6822e54079d953010",
+      "new_blob_oid": "cc3fd1c058ec221a83089c8dfeeee2d801f79edc"
+    },
+    {
+      "old_path": "scripts/ce_geo/validate_program.py",
+      "new_path": "scripts/history/geometry_campaign/validate_program.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "0dea9c50438755cc2244f3f163b1857667e3f539",
+      "new_worktree_sha256": "7de9a54ce02ef28b7e7e5220a38ccef23e035f956a373f1771eacac60ce71e35",
+      "new_blob_oid": "0dea9c50438755cc2244f3f163b1857667e3f539"
+    },
+    {
+      "old_path": "scripts/ce_geo/verify_amp_interlock.py",
+      "new_path": "scripts/history/geometry_campaign/verify_amp_interlock.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "47ad78666471c36603cab9362e058a5295c253b4",
+      "new_worktree_sha256": "1a9abe0ce66dad574235d6886b78b5632d4f1abd8fd9402a0c04579ed42c68f1",
+      "new_blob_oid": "47ad78666471c36603cab9362e058a5295c253b4"
+    },
+    {
+      "old_path": "tests/execution/ce_live_concurrency_test.cu",
+      "new_path": "tests/execution/training_program_concurrency_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "4ac61061baadabf10c7148e88dc6c80ea133a7eb",
+      "new_worktree_sha256": "b624fc19072c78e419a768d8d9c1228295bb9c9e33590e4e179c9f914356f38a",
+      "new_blob_oid": "ec678d81c0ea738886a31829fc8365b311a4c4e6"
+    },
+    {
+      "old_path": "tests/live/fixture/test_ce_live_fixture.py",
+      "new_path": "tests/live/fixture/test_quantitative_fixture.py",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "837d72933f63e6de1ae0fb131b2dc6e3218f1a58",
+      "new_worktree_sha256": "b1331a667c7a8537bb0d4360253656f6f9fe1df516e38560476793240a5adc24",
+      "new_blob_oid": "4c47429ac99c823b91f3dafbc5dfcbf3629c4391"
+    },
+    {
+      "old_path": "tests/persistence/ce_live_program_replay_test.cu",
+      "new_path": "tests/persistence/executable_program_replay_test.cu",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "43f509b5e0a044b9ba55e56cb42a0afb1dd65669",
+      "new_worktree_sha256": "8ef5da57d14b2d69982df0fb86ae5fd6d59f8aa67c1f5c52451e48002fed5525",
+      "new_blob_oid": "0f3ce231b6de2a4b0fabac1cc1163fe667935bf5"
+    },
+    {
+      "old_path": "tests/planner/ce_live_planner_features_test.cc",
+      "new_path": "tests/planner/planner_input_fixture_test.cc",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "ddc441bda3bc5bf10573b789ca174550df86f40c",
+      "new_worktree_sha256": "92aff4f808ebae31a646bafcf9ac322e64c378d44f486a260f71421722e51f5e",
+      "new_blob_oid": "887e60cb5c62acc03f7e11f09491b1309565228f"
+    },
+    {
+      "old_path": "bench/ce_live/replay/run_ce_live_program_replay_test.sh",
+      "new_path": "bench/ce_live/replay/run_executable_program_replay_test.sh",
+      "baseline_commit": "c65df803445f5041e7153cf6f0ea2728fb4f01e8",
+      "baseline_blob_oid": "1cde5d2481ade4ee606d679566d793e54413b199",
+      "new_worktree_sha256": "f626ee27314be8b5b6316d88359f9de9933199411f781de69e219ec26cb5400f",
+      "new_blob_oid": "dedb92a553d5684e2ad405650098393aa2044f88"
+    }
+  ],
+  "symbol_renames": [
+    {
+      "old": "ce_exop_operation_portfolio_v1 / query_ce_exop_operation_portfolio_v1",
+      "new": "compute_candidate_inventory_v1 / query_compute_candidate_inventory_v1",
+      "owner": "include/Cellerator/compute/compute.hh and src/compute/operation/compute_candidate_inventory.cc",
+      "consumers": [
+        "src/compute/operation/compute_candidate_inventory_test.cc",
+        "src/compute/CMakeLists.txt"
+      ],
+      "verification": "exact reference inventory and successful build/test"
+    },
+    {
+      "old": "ce_geo_catalog_assembly / validate_ce_geo_catalog_assembly_v1 / Cellerator::ce_geo_catalog",
+      "new": "relation_catalog_readiness / validate_relation_catalog_readiness_v1 / Cellerator::relation_catalog",
+      "owner": "src/compute/operation/relation_catalog_readiness.cc and src/compute/CMakeLists.txt",
+      "consumers": [
+        "src/ops/sparse_support/CMakeLists.txt"
+      ],
+      "verification": "catalog + sparse-support builds"
+    },
+    {
+      "old": "cellerator::ce_live::planner_inputs",
+      "new": "cellerator::fixtures::planner_inputs",
+      "owner": "tests/fixtures/planner/live_planner_inputs.hh/.cc",
+      "consumers": [
+        "tests/planner/planner_input_fixture_test.cc",
+        "tests/live/integration/executable_core_integration_test.cc"
+      ],
+      "verification": "CMake fixture library and planner test compile/run"
+    },
+    {
+      "old": "cellerator::ce_live",
+      "new": "cellerator::fixtures::quantitative_relation",
+      "owner": "tests/fixtures/model_execution/quantitative_relation_fixture.hh/.cc",
+      "consumers": [
+        "tests/live/quantitative_relation_test.cu",
+        "tests/live/quantitative_forward_fixture.cuh",
+        "tests/live/integration/executable_core_integration_test.cc"
+      ],
+      "verification": "fixture library, quantitative CUDA test, and executable core integration compile/run"
+    }
+  ],
+  "build_target_renames": {
+    "ceGeo_targets": {
+      "ceGeoAcquisitionCostMappingTest": "geometry_acquisition_cost_mapping_test",
+      "ceGeoBiologicalRelations": "biological_relations",
+      "ceGeoBiologicalRelationsExample": "biological_relations_example",
+      "ceGeoBiologyTests": "biological_relation_tests",
+      "ceGeoBuiltinFragmentTest": "geometry_builtin_fragment_test",
+      "ceGeoCapabilityTest": "geometry_capability_test",
+      "ceGeoCatalogContractTest": "geometry_catalog_contract_test",
+      "ceGeoCpe2CapabilityManifestTest": "geometry_cpe2_capability_manifest_test",
+      "ceGeoCsg1SupportSectionsTest": "geometry_csg1_support_sections_test",
+      "ceGeoCsg1Test": "geometry_csg1_test",
+      "ceGeoEdgeMapOrGateTest": "edge_map_or_gate_test",
+      "ceGeoFoundationNegativeTest": "geometry_foundation_negative_test",
+      "ceGeoGeometryAcquisitionContractTest": "geometry_acquisition_contract_test",
+      "ceGeoGradientValidationTest": "geometry_gradient_validation_test",
+      "ceGeoHotPathTest": "geometry_hot_path_test",
+      "ceGeoNumericalRefereeTest": "geometry_numerical_referee_test",
+      "ceGeoPhysicalCoverPropertyTest": "geometry_physical_cover_property_test",
+      "ceGeoPreboundProjectionV2Test": "geometry_prebound_projection_v2_test",
+      "ceGeoProjectionReferenceV2Test": "geometry_projection_reference_v2_test",
+      "ceGeoProviderContractTest": "geometry_provider_contract_test",
+      "ceGeoProviderRegistryTest": "geometry_provider_registry_test",
+      "ceGeoRelationBundleTest": "relation_bundle_test",
+      "ceGeoRelationCatalogIntegrationTest": "relation_catalog_integration_test",
+      "ceGeoRelationCatalogTest": "relation_catalog_test",
+      "ceGeoRelationCompatibilityTest": "relation_compatibility_test",
+      "ceGeoRelationContractTest": "relation_contract_test",
+      "ceGeoRelationInterfaceTest": "relation_interface_test",
+      "ceGeoSegmentNormalizeTest": "segment_normalize_test",
+      "ceGeoSegmentReduceTest": "segment_reduce_test",
+      "ceGeoSemanticCompilerTest": "geometry_semantic_compiler_test",
+      "ceGeoSemanticPropertyTest": "geometry_semantic_property_test",
+      "ceGeoSm70AdvancedOpsTest": "geometry_sm70_advanced_ops_test",
+      "ceGeoSm70ContractOnSupportTest": "geometry_sm70_contract_on_support_test",
+      "ceGeoSm70CoverNormalizeTest": "geometry_sm70_cover_normalize_test",
+      "ceGeoSm70EdgeValueGradientTest": "geometry_sm70_edge_value_gradient_test",
+      "ceGeoSm70HybridTest": "geometry_sm70_hybrid_test",
+      "ceGeoSm70N64HybridTest": "geometry_sm70_n64_hybrid_test",
+      "ceGeoSm70N64Test": "geometry_sm70_n64_test",
+      "ceGeoSm70PreparedReuseGraphTest": "geometry_sm70_prepared_reuse_graph_test",
+      "ceGeoSm70ProviderTest": "geometry_sm70_provider_test",
+      "ceGeoSm70SegmentBackwardTest": "geometry_sm70_segment_backward_test",
+      "ceGeoSm70TransposeApplyTest": "geometry_sm70_transpose_apply_test",
+      "ceGeoSm70TransposeRelationApplyTest": "geometry_sm70_transpose_relation_apply_test",
+      "ceGeoSm70ValuePackTest": "geometry_sm70_value_pack_test",
+      "ceGeoSm70VerticalTests": "geometry_sm70_vertical_tests",
+      "ceGeoSm70WidthsTest": "geometry_sm70_widths_test"
+    },
+    "cellerator_ce_exop_targets": {
+      "cellerator_ce_exop_cuda_compile_acceptance": "cellerator_operation_cuda_compile_acceptance",
+      "cellerator_ce_exop_fusion_sm70_compile": "cellerator_operation_fusion_sm70_compile",
+      "cellerator_ce_exop_fusion_training_integration_test": "cellerator_operation_fusion_training_integration_test",
+      "cellerator_ce_exop_host_acceptance": "cellerator_operation_host_acceptance",
+      "cellerator_ce_exop_operation_portfolio": "cellerator_operation_operation_portfolio",
+      "cellerator_ce_exop_operation_portfolio_test": "cellerator_operation_operation_portfolio_test",
+      "cellerator_ce_exop_profiler_acceptance": "cellerator_operation_profiler_acceptance",
+      "cellerator_ce_exop_relation_": "cellerator_operation_relation_",
+      "cellerator_ce_exop_relation_apply_v1_test": "cellerator_operation_relation_apply_v1_test",
+      "cellerator_ce_exop_relation_sm70_compile": "cellerator_operation_relation_sm70_compile",
+      "cellerator_ce_exop_training_": "cellerator_operation_training_"
+    },
+    "dynamic_target_prefixes": [
+      {
+        "old": "cellerator_ce_exop_${test_name}",
+        "new": "cellerator_operation_${test_name}"
+      }
+    ],
+    "helper_functions": [
+      {
+        "old": "cellerator_add_ce_geo_foundation_test",
+        "new": "cellerator_add_geometry_foundation_test"
+      }
+    ],
+    "cmake_variables": [
+      {
+        "old_prefix": "CELLERATOR_CE_EXOP_",
+        "new_prefix": "CELLERATOR_OPERATION_"
+      }
+    ],
+    "ceLive_targets": {
+      "celleratorCeLiveConcurrencyTest": "celleratorTrainingProgramConcurrencyTest",
+      "celleratorCeLiveProgramReplayTest": "celleratorExecutableProgramReplayTest",
+      "celleratorLivePlannerFeaturesTest": "celleratorPlannerInputFixtureTest"
+    },
+    "active_test_labels": {
+      "ce_live_planner_features_test": "planner_input_fixture_test",
+      "ce_live_program_replay_test": "executable_program_replay_test",
+      "ce_live_concurrency_test": "training_program_concurrency_test",
+      "test_ce_live_fixture": "test_quantitative_fixture"
+    }
+  },
+  "consumer_closure": [
+    {
+      "component": "Product2",
+      "build": [
+        "cellerator_product2_test",
+        "cellerator_product2_cuda_smoke"
+      ],
+      "callers": [
+        "cmake/Product2.cmake",
+        "bindings/torch/CMakeLists.txt",
+        "tests/ops/product2"
+      ]
+    },
+    {
+      "component": "planner input fixture",
+      "build": [
+        "cellerator_planner_input_fixtures"
+      ],
+      "callers": [
+        "tests/planner_targets.cmake",
+        "tests/planner/planner_input_fixture_test.cc",
+        "tests/live/integration/executable_core_integration_test.cc"
+      ]
+    },
+    {
+      "component": "quantitative relation fixture",
+      "build": [
+        "cellerator_quantitative_relation_fixtures"
+      ],
+      "callers": [
+        "tests/planner_targets.cmake",
+        "tests/live/quantitative_relation_test.cu",
+        "tests/live/quantitative_forward_fixture.cuh",
+        "bench/ce_live/runtime_fixture/run_quantitative_relation_test.sh",
+        "bench/ce_live/forward/run_quantitative_forward_test.sh",
+        "bench/ce_live/runtime_fixture/cuda_controller.json"
+      ]
+    },
+    {
+      "component": "candidate inventory and relation catalog",
+      "build": [
+        "cellerator_compute_candidate_inventory_test",
+        "cellerator_relation_catalog",
+        "cellerator_ops_sparse_support"
+      ],
+      "callers": [
+        "src/compute/CMakeLists.txt",
+        "src/ops/sparse_support/CMakeLists.txt"
+      ]
+    },
+    {
+      "component": "geometry and operation test suites",
+      "build": "purpose-based target map above",
+      "callers": [
+        "tests/CMakeLists.txt",
+        "tests/relation_algebra/CMakeLists.txt",
+        "tests/tensor_core/sm70/CMakeLists.txt",
+        "cmake/NativeFoundation.cmake",
+        "tests/geometry/suites/*",
+        "tests/geometry/validation/*",
+        "tests/operation_execution/*"
+      ]
+    },
+    {
+      "component": "biological relation example",
+      "build": [
+        "biological_relations_example"
+      ],
+      "callers": [
+        "examples/CMakeLists.txt",
+        "examples/biology/CMakeLists.txt"
+      ]
+    },
+    {
+      "component": "live fixture tests",
+      "build": [
+        "celleratorTrainingProgramConcurrencyTest",
+        "celleratorPlannerInputFixtureTest",
+        "celleratorQuantitativeRelationTest",
+        "celleratorExecutableCoreIntegrationTest"
+      ],
+      "callers": [
+        "tests/CMakeLists.txt",
+        "tests/planner_targets.cmake",
+        "tests/live/integration/run_wave_b_suite.sh",
+        "tests/geometry/baseline/run_baseline.py",
+        "tests/geometry/validation/baseline_golden_regression.py"
+      ]
+    },
+    {
+      "component": "program replay check",
+      "build": [
+        "manual nvcc compile-only because CellShard::inspect was not configured"
+      ],
+      "callers": [
+        "bench/ce_live/replay/run_executable_program_replay_test.sh",
+        "bench/ce_live/replay/cuda_controller.json",
+        "bench/ce_live/replay/sanitizer_controller.json"
+      ]
+    },
+    {
+      "component": "quantitative fixture extraction",
+      "build": [
+        "Python fixture tests (2 passed, 1 skipped without local PBMC3K data)"
+      ],
+      "callers": [
+        "tests/live/fixture/test_quantitative_fixture.py",
+        "bench/ce_live/fixture/README.md",
+        "bench/ce_live/runtime_fixture/run_quantitative_relation_test.sh",
+        "bench/ce_live/forward/run_quantitative_forward_test.sh"
+      ]
+    },
+    {
+      "component": "geometry campaign tooling",
+      "build": [
+        "current auditor imported by static test suite"
+      ],
+      "callers": [
+        "tests/geometry/validation/test_static_contracts.py",
+        "tests/geometry/validation/run_full_volta_acceptance.py"
+      ],
+      "history": "six campaign-specific validators/publishers now live in scripts/history/geometry_campaign; their registered historical paths and IDs remain frozen."
+    }
+  ],
+  "historical_evidence": "Frozen Todo plans, snapshots, and source-bound benchmark evidence keep original IDs and paths; active build/test/controller references point to purpose-named paths.",
+  "validation": {
+    "host_configure": "PASS: Product2-only host configuration in /tmp/cellerator-compute-cleanup-build",
+    "cuda_configure": "PASS: full configure /tmp/cellerator-compute-cleanup-cuda-build with CUDA 12.9, sm_70, Baseplane CUDA disabled",
+    "host_builds": "PASS: Product2, candidate inventory, relation catalog, fixture libraries, renamed geometry/provider/acquisition tests and biological example",
+    "cuda_compile_only": "PASS: Product2 CUDA smoke; catalog/operation relation/fusion compile targets; biological relation CUDA suite target; no GPU workload run",
+    "host_runtime_tests": "PASS: Product2; candidate inventory; geometry capability/provider/catalog/acquisition/semantic/CSG/projection; biological example; static contracts (9 tests)",
+    "runner_syntax": "PASS: 7 active Python runners compile in memory",
+    "sanitizer_host_acceptance": "PASS: strict baseline and host ASan/UBSan acceptance passed using a temporary runner with ASAN detect_leaks=0 to accommodate ptrace. LeakSanitizer was disabled; no LSan pass claimed.",
+    "gpu_runtime": "NOT RUN: no device visible and root coordination required",
+    "identity_rename_method": "clang-rename absent; exact references enumerated with rg and each changed C++ TU/target was compile-proven.",
+    "live_fixture_compile": "PASS: training concurrency, planner fixture, quantitative relation CUDA, and executable core integration targets compile under CUDA 12.9/sm_70; no GPU execution",
+    "live_fixture_host": "PASS: planner fixture and executable core integration binaries; Python fixture suite 2 passed, 1 skipped (local PBMC3K input absent)",
+    "geometry_auditor": "PASS: 9 static-contract tests after auditor relocation",
+    "program_replay": "PASS: nvcc compile-only with CellShard CUDA ABI macros and headers; CMake replay target absent because optional CellShard::inspect was not configured",
+    "campaign_scripts": "Six hard-coded publishers/validators preserved under scripts/history/geometry_campaign; reusable auditor resides at scripts/geometry/check_geometry_contracts.py",
+    "source_reference_audit": "PASS: current build/source/test references contain none of the moved epic-prefixed test paths or targets; serialized fixture schema and manifest paths retained."
+  },
+  "source_proof": [
+    {
+      "path": "CMakeLists.txt",
+      "baseline_blob_oid": "85b409786b647819636c641a30a700f761566c85",
+      "new_worktree_sha256": "c68a247c63e9bd14335b2300a4bfde79f18ec9d3578ad4c39bf25c6b7a1fe8f9",
+      "new_blob_oid": "c6bf54232d3daf0ab31c916e91204160ad9fb89a"
+    },
+    {
+      "path": "cmake/NativeFoundation.cmake",
+      "baseline_blob_oid": "d6712ae3cfbea16769f0c11899b4023becbebb7e",
+      "new_worktree_sha256": "09fa6e56855c143b257bf6e677a2c6af28cd137485768ad9630fd27cf8382c33",
+      "new_blob_oid": "361bc0c43731ca9257ec2b3cc53c833ba2ab6748"
+    },
+    {
+      "path": "cmake/Product2.cmake",
+      "baseline_blob_oid": "efb0f7d820c7d31b1e7ed2f066352c8577b202de",
+      "new_worktree_sha256": "80f64cf4d6c812c4b5fb0b00a3ba67f41569b6a49ceb3895a263347f408ec2b5",
+      "new_blob_oid": "fbbb783c44487ee820135f51433d2be1ab0c7810"
+    },
+    {
+      "path": "bindings/torch/CMakeLists.txt",
+      "baseline_blob_oid": "5d93591534674c654cc1f2c21f779a973877f4ed",
+      "new_worktree_sha256": "b2569cdfb3d55d50b5bbebc17e7423ff019e4b357f9e0af02954524e728c4d0e",
+      "new_blob_oid": "7e603f1e7bfb2d13024b7f8419ee2439b154fb4d"
+    },
+    {
+      "path": "include/Cellerator/compute/compute.hh",
+      "baseline_blob_oid": "74fc15f6edc6daa0a04a8ee186784c1b155b6ae6",
+      "new_worktree_sha256": "b9cd3c0f1f3b2d56b77d8d8157f003e06568c46bcf8c4cf736be10b6f71f8392",
+      "new_blob_oid": "69b2f22a10c8c02e3f6c9821448a4bf9fef3aea3"
+    },
+    {
+      "path": "src/compute/CMakeLists.txt",
+      "baseline_blob_oid": "c93aea5e93bdc6f8e48859c7b29c99b0756f3d00",
+      "new_worktree_sha256": "e2a8e9ae5c4757905aa4b3ef1869df67656d3d432105b800daf4a1e880eb73bb",
+      "new_blob_oid": "39d29be7198275b1802dbe0f6c0409112819d72c"
+    },
+    {
+      "path": "src/ops/sparse_support/CMakeLists.txt",
+      "baseline_blob_oid": "7934a7a3cb61326c9a29c19104d829f9e3477983",
+      "new_worktree_sha256": "d12ea893f8c01f2f35a28be1fe3a38224a2c800deb7513a188f57a872deb46f3",
+      "new_blob_oid": "e40538104ead7467428e09488e18272640c084cb"
+    },
+    {
+      "path": "src/planner/CMakeLists.txt",
+      "baseline_blob_oid": "9b9b5018736e90368fd2a9a642dd97e6d0b35e0e",
+      "new_worktree_sha256": "8be1c9ab56fa7fd76a4e75eaa98e4ffb4ccdbd1b761b02aa6a5bc8e56715d3a3",
+      "new_blob_oid": "12a36365eb4f1ba31d136fd7c224ea30105f2ff9"
+    },
+    {
+      "path": "tests/CMakeLists.txt",
+      "baseline_blob_oid": "6b268652e0b9d5b37e1425efa5dbe7643abccf9f",
+      "new_worktree_sha256": "059e4827aacb4495d7dd444c6740b71d8a2aab557d145923478c9be2ba70de29",
+      "new_blob_oid": "b212386d04f8cfe4f80506688630c2b6971eb8ca"
+    },
+    {
+      "path": "tests/planner_targets.cmake",
+      "baseline_blob_oid": "4c5dde85f4e62bb575f5dcefac178ac231143868",
+      "new_worktree_sha256": "1bb0c6c649be2e0c5e31d24258422d26b45cfebf16f43c56dfdb71450e91f9af",
+      "new_blob_oid": "a91c61760cfbf5815f841cc1c287d5e2b8edf65f"
+    },
+    {
+      "path": "tests/geometry/baseline/run_baseline.py",
+      "baseline_blob_oid": null,
+      "new_worktree_sha256": "0e90ece7b87f2952080f72915d9fb391efbfb7386d973e9a7eb927fecf252759",
+      "new_blob_oid": "68d3725d7134fa6fdb00c11a06b72c6b504246c1"
+    },
+    {
+      "path": "tests/geometry/validation/baseline_golden_regression.py",
+      "baseline_blob_oid": null,
+      "new_worktree_sha256": "8a262b0542df66805615dbacf84cd6bc4831d30de484436073ba4ec7dc90b7dc",
+      "new_blob_oid": "6995df174a3ef2c7b3d8bd834561f92cc20bbc62"
+    },
+    {
+      "path": "tests/geometry/validation/run_compute_sanitizer.py",
+      "baseline_blob_oid": null,
+      "new_worktree_sha256": "09c9f11abdd585d3430745bed9e973beda215c133ecee9c2ab9a592e994cbd9e",
+      "new_blob_oid": "473ae471725581ff01aa953b2b3d657dc99edc2c"
+    },
+    {
+      "path": "tests/geometry/validation/run_full_volta_acceptance.py",
+      "baseline_blob_oid": null,
+      "new_worktree_sha256": "2badbd58d5c38972db2e03d2577b61d4e8f72014c4b76e50c63069d35114b720",
+      "new_blob_oid": "4cb86110c1880958cdf1a7517bc6c3be651e73bb"
+    },
+    {
+      "path": "tests/geometry/validation/test_static_contracts.py",
+      "baseline_blob_oid": null,
+      "new_worktree_sha256": "9774eda635625b4d1a1086d049bc40d6b53794d40352769e042e06e8e4b8dd86",
+      "new_blob_oid": "b2f0f204fd793c453edf837487a2560177c375f0"
+    },
+    {
+      "path": "tests/geometry/suites/run_biology_suite.py",
+      "baseline_blob_oid": null,
+      "new_worktree_sha256": "6906e13300452681f3cbd25c60402f59c714644c1a776d94cf84c5d54102ac91",
+      "new_blob_oid": "d3810e2a549cba4a368bb424fdf4125f8f665bdc"
+    },
+    {
+      "path": "tests/geometry/suites/run_build_matrix.py",
+      "baseline_blob_oid": null,
+      "new_worktree_sha256": "9a21345f927e9ca1d28431dd916a98e01ea446d9e24e618242b3349fd6ced15d",
+      "new_blob_oid": "18b4585879f2f18212dd810125965c309a5c1f15"
+    },
+    {
+      "path": "tests/geometry/suites/run_foundation_suite.py",
+      "baseline_blob_oid": null,
+      "new_worktree_sha256": "ad83bb33949c9da8c1b232b6a5ec25bcdaebe269da1022a5c6d2ae908cf69531",
+      "new_blob_oid": "35b10ce326869490ed04cebbba7e8017ad46f335"
+    },
+    {
+      "path": "tests/geometry/suites/run_sm70_vertical_suite.py",
+      "baseline_blob_oid": null,
+      "new_worktree_sha256": "1bf2431c2a41ab6ecdee1b536d92585f86da160618fe7e2307bf642f5dea1392",
+      "new_blob_oid": "d8a35d7d240b0306ead4ab49556ae4f28bb7322a"
+    },
+    {
+      "path": "tests/live/quantitative_relation_test.cu",
+      "baseline_blob_oid": "ba0ed8455e72bb10c71fc786d8bdc1cbd725e17b",
+      "new_worktree_sha256": "fd836d1c5056f8a397f3ca066b5a854698a852105d89952c4f9fed9cc50f5271",
+      "new_blob_oid": "d238c50f5f8b157e54a7214987c26889793e32e4"
+    },
+    {
+      "path": "tests/live/quantitative_forward_fixture.cuh",
+      "baseline_blob_oid": "d17965e171b04b3135a24ba6d122de7c67667dbd",
+      "new_worktree_sha256": "70522e5b6e97ade05acd3e22d6bf24e72633e96fdd6cf108b708c2b1830b2efa",
+      "new_blob_oid": "6673f7923090f75c97af72d19ba8c890992bb2e6"
+    },
+    {
+      "path": "tests/live/integration/executable_core_integration_test.cc",
+      "baseline_blob_oid": "b2a8a06e8a057d4bbd8c22f392da197301fbcd9a",
+      "new_worktree_sha256": "cca863d0c6c3618e54f4ef0fa6a3511bc59936f0ca650c8d29c9186ab9b210a5",
+      "new_blob_oid": "376cfe1f095e9ab03d9524a3c18d159fb061e47a"
+    },
+    {
+      "path": "tests/live/integration/run_wave_b_suite.sh",
+      "baseline_blob_oid": "7adc7e327bc4118e22a65de373824378fc6f0cb6",
+      "new_worktree_sha256": "292ff5c64baca7149552ae2732613423797700408e1ffb6e681fbbd124cb7049",
+      "new_blob_oid": "4628241efe7892e611904513dd88f5c761b399d6"
+    },
+    {
+      "path": "bench/ce_live/concurrency/run_concurrency_test.sh",
+      "baseline_blob_oid": "0d9df03d8852dce22773eb8ddd1c7f0d3286499c",
+      "new_worktree_sha256": "4a7ac45b4ca99f141502e1fbb407b5971d3ad766e1579eb76054af045bc6d2f5",
+      "new_blob_oid": "d27a72169a9a8f84e5b482ca36c5727b0450f465"
+    },
+    {
+      "path": "bench/ce_live/concurrency/cuda_controller.json",
+      "baseline_blob_oid": "c24c84e19312e004e7e3f3a1607ce49f2f7f3a2a",
+      "new_worktree_sha256": "7c337b999c7b8eae08deceb807af302095b73e78c413fee372df7343bf57ce1c",
+      "new_blob_oid": "d0750dfd7cdd652707a60b072d0cc6e0577f6891"
+    },
+    {
+      "path": "bench/ce_live/concurrency/sanitizer_controller.json",
+      "baseline_blob_oid": "a8e620b0ae8a9865e3ae1d43fcf366e76eab2978",
+      "new_worktree_sha256": "adcde516187d97765680d549c5467a557f30e078ff271d90fa574c52ce168a0a",
+      "new_blob_oid": "668df70e14ceaf906846648cb28806177199a8ed"
+    },
+    {
+      "path": "bench/ce_live/replay/cuda_controller.json",
+      "baseline_blob_oid": "0d699b1287ad06819586ab2e85170d22be59957e",
+      "new_worktree_sha256": "b6d19a4cb0fb36c8b377d421fad1652f9de50f35836dbc9f92896da60e619722",
+      "new_blob_oid": "0ca7ec7c7ec690bddd3c36aeb4b9192f506a29c6"
+    },
+    {
+      "path": "bench/ce_live/replay/sanitizer_controller.json",
+      "baseline_blob_oid": "6098933740b9d9c62447f1491a026775db77ae86",
+      "new_worktree_sha256": "ec023debf6a05220b7bc91ad02a5cdbd6d7a71055966aae31d47bcc33b5f0074",
+      "new_blob_oid": "551c64362110a5ea8c296b0f780ad80fa18508dd"
+    },
+    {
+      "path": "bench/ce_live/evidence/run_evidence_campaign.sh",
+      "baseline_blob_oid": "5b2bf224537db816c92b73eba75e638c49718707",
+      "new_worktree_sha256": "b2730c173ef74c73097c8e1f7ea7fd0d5d69b90790c1e5b0bce82e6e01a12089",
+      "new_blob_oid": "3eabcd4d20e9dc1eab4d78da675aca22a527f699"
+    },
+    {
+      "path": "bench/ce_live/runtime_fixture/run_quantitative_relation_test.sh",
+      "baseline_blob_oid": "03df203d16bd6d85637dd6f009be8b962fdf6230",
+      "new_worktree_sha256": "aef4b7ea401a84b53363cf68aa895bfc128aee844755e27f30a778421fed432f",
+      "new_blob_oid": "5d67fd8562968c79e4906943ed10d71b3889accf"
+    },
+    {
+      "path": "bench/ce_live/runtime_fixture/cuda_controller.json",
+      "baseline_blob_oid": "65b25462a4bcea53707b462c2fd13d6e0cf48b11",
+      "new_worktree_sha256": "cbe18f9ccefe89166799778395be0ec19158afb4bf49e7dadfc2275489dfc1dc",
+      "new_blob_oid": "7f7eecc8f5b6d25e65d3df40b3ae0fdeeacdffda"
+    },
+    {
+      "path": "bench/ce_live/forward/run_quantitative_forward_test.sh",
+      "baseline_blob_oid": "36d0a7985910fbc92d69d4dede3576461b694427",
+      "new_worktree_sha256": "9f22a5e04c1392bb89d5bee087ce4f8069e3359d28c0e2dcd659dd471dda0eb1",
+      "new_blob_oid": "7f2962a1c555cf553655439bf20104afb42b3d6d"
+    },
+    {
+      "path": "bench/ce_live/fixture/README.md",
+      "baseline_blob_oid": "37e959efbe0c804eedb723f38f8bf3c273ec9d91",
+      "new_worktree_sha256": "367b1083de519f21628ed21bf440c99ac1a95c9503e584ccd55d769683fb6274",
+      "new_blob_oid": "28910d739de7670c03cd2ba22dcb3a56f063f9c5"
+    },
+    {
+      "path": "examples/CMakeLists.txt",
+      "baseline_blob_oid": "c1d02c720bdb91fb7cfa9fa3f5f77de883ad78f9",
+      "new_worktree_sha256": "97c62cd101f285ac7750a925bf922d95b0bbe0b5ce9beb58008ad17b7ff38e67",
+      "new_blob_oid": "66adaefa0d455ea2463bc23362ba6d67ac13b3a1"
+    }
+  ]
+}

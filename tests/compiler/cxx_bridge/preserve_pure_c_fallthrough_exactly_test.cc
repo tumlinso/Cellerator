@@ -24,7 +24,7 @@ int run(const std::vector<std::string>& arguments) {
 
 int main() {
     const auto root = std::filesystem::path("/tmp") /
-        ("ce_ccp1_b04_012_" + std::to_string(static_cast<long long>(getpid())));
+        ("cellerator_preserve_pure_c_fallthrough_exactly" + std::to_string(static_cast<long long>(getpid())));
     std::filesystem::create_directories(root);
     const auto source_path = root / "pure.cc";
     std::ofstream(source_path) << "#include <vector>\nint main(){std::vector<int> v{42};return v[0]!=42;}\n";

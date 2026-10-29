@@ -16,7 +16,7 @@ bool build(const std::string& path, void* data) noexcept {
 }
 
 int main() {
-    const auto directory = std::filesystem::temp_directory_path() / "ce_ccp1_g02_014";
+    const auto directory = std::filesystem::temp_directory_path() / "cellerator_cache_compiled_transforms_safely";
     std::filesystem::remove_all(directory);
     int builds = 0;
     cp::transform_cache_request_v1 request{{"source-v1", "api-v1", "abi-v1",

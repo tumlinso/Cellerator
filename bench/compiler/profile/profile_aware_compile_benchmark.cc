@@ -1,4 +1,4 @@
-#include <Cellerator/compiler/profile/first_profile_aware_compile_benchmark_v1.hh>
+#include <Cellerator/compiler/profile/profile_aware_compile_benchmark_v1.hh>
 
 #include <chrono>
 #include <cstdint>

@@ -1,8 +1,8 @@
-#include <bench/ce_live/runtime_fixture/quantitative_fixture.hh>
+#include <tests/fixtures/model_execution/quantitative_relation_fixture.hh>
 
 #include <cstring>
 
-namespace cellerator::ce_live {
+namespace cellerator::fixtures::quantitative_relation {
 namespace {
 
 int hex_digit(char value) noexcept {
@@ -186,4 +186,4 @@ void fill_deterministic_dense_operand(float *values,
                 = deterministic_dense_operand(source, lane);
 }
 
-} // namespace cellerator::ce_live
+} // namespace cellerator::fixtures::quantitative_relation

@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace cellerator::ce_live {
+namespace cellerator::fixtures::quantitative_relation {
 
 enum class quantitative_fixture_status : std::uint8_t {
     ok = 0u,
@@ -74,4 +74,4 @@ float deterministic_dense_operand(
 void fill_deterministic_dense_operand(float *values,
     std::uint32_t source_count, std::uint32_t dense_width) noexcept;
 
-} // namespace cellerator::ce_live
+} // namespace cellerator::fixtures::quantitative_relation

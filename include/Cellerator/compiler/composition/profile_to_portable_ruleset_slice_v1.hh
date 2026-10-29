@@ -1,6 +1,6 @@
 #pragma once
-#include <Cellerator/compiler/composition/import_portable_schedule_ruleset_representation_v1.hh>
-#include <Cellerator/compiler/composition/import_workload_family_representation_v1.hh>
+#include <Cellerator/compiler/composition/portable_schedule_ruleset_representation_v1.hh>
+#include <Cellerator/compiler/composition/workload_family_representation_v1.hh>
 #include <cstddef>
 #include <string>
 #include <vector>

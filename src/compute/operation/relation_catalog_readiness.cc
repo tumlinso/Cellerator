@@ -9,7 +9,7 @@ namespace cellerator::compute::operation {
 relation_algebra_catalog_view_v1 assembled_relation_algebra_catalog_v1()
     noexcept;
 
-bool validate_ce_geo_catalog_assembly_v1() noexcept {
+bool validate_relation_catalog_readiness_v1() noexcept {
     const architecture::compiled_provider_manifest_v1 providers =
         architecture::providers::nvidia::sm70_compiled_provider_manifest_v1();
     const relation_algebra_catalog_view_v1 relations =

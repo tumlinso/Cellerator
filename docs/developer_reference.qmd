@@ -9,7 +9,9 @@ the relevant operation or subsystem record. Use the active Project Control
 task for live status and ownership. Closed Todo files and historical compiler
 plans record earlier intent; they do not define current package capability.
 
-The [source routing guide](development/routing.md) and its generated map are
+The [implementation style guide](development/implementation_style.md) describes maintained contributor conventions. The [operation registry](development/operation_registry.md) is a historical inventory; confirm any entry against current source and the routing map.
+
+The [Celleratord query-contract index](https://github.com/tumlinso/Cellerator/blob/main/docs/celleratord/README.md) describes query semantics and separates them from current implementation evidence. The [source routing guide](development/routing.md) and its generated map are
 the path-level inventory: they list current role, owner, target, disposition,
 maturity, consumers, and evidence. This page summarizes build routes and
 points to that map; it is not a duplicate source catalog.
@@ -23,9 +25,12 @@ bindings/python/      optional pybind Python extension
 bindings/torch/       optional compiled Torch adapters
 python/cellerator/    installed Python package and Torch modules
 tests/                native, Python, and subsystem checks
+examples/biology/      host-only typed biological relation examples
 bench/, experiments/  measured candidates and source-bound experiments
 docs/                 architecture, capability boundaries, and evidence links
 ```
+
+The [biological relation example](https://github.com/tumlinso/Cellerator/blob/main/examples/biology/README.md) exercises public typed-relation and execution-lifetime contracts on the host; it does not execute a numerical kernel or load a dataset.
 
 Newer native organization includes `src/common`, `src/structure`, `src/support`,
 `src/indexing`, `src/gating`, `src/layout`, and `src/ops`. The public header

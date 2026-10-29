@@ -16,7 +16,7 @@ The intended division of work is:
 
 The aim is to reuse PyTorch and Cellerator infrastructure wherever it already
 fits, and to simplify around demonstrated needs rather than recreate framework
-services. See [the design note](docs/design.md) for boundaries and evidence
+services. See [the preserved design note](paused_runtime_design.md) for boundaries and evidence
 guidance.
 
 This workspace is distinct from the existing optional `python/cellerator/torch`

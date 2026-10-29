@@ -9,7 +9,7 @@
 namespace cp = cellerator::compiler::pass::v1;
 
 int main() {
-    const auto directory = std::filesystem::temp_directory_path() / "ce_ccp1_g02_006";
+    const auto directory = std::filesystem::temp_directory_path() / "cellerator_custom_realization_pass_api";
     std::filesystem::create_directories(directory);
     const auto source = directory / "realization_pass.cc";
     const auto library = directory / "realization_pass.so";

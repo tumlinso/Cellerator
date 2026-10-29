@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Cellerator/compiler/discovery/import_co_support_and_overlap_discovery_v1.hh>
-#include <Cellerator/compiler/discovery/import_exact_rescan_and_proposal_certification_v1.hh>
-#include <Cellerator/compiler/discovery/import_factor_bicluster_and_signature_proposal_strategie_v1.hh>
-#include <Cellerator/compiler/discovery/import_multimodal_and_identity_spine_discovery_v1.hh>
-#include <Cellerator/compiler/discovery/import_relation_motif_and_operation_trace_discovery_v1.hh>
-#include <Cellerator/compiler/discovery/import_support_signature_discovery_v1.hh>
-#include <Cellerator/compiler/discovery/import_trajectory_and_lineage_pattern_discovery_v1.hh>
+#include <Cellerator/compiler/discovery/co_support_and_overlap_discovery_v1.hh>
+#include <Cellerator/compiler/discovery/exact_rescan_and_proposal_certification_v1.hh>
+#include <Cellerator/compiler/discovery/factor_bicluster_and_signature_proposal_strategy_v1.hh>
+#include <Cellerator/compiler/discovery/multimodal_and_identity_spine_discovery_v1.hh>
+#include <Cellerator/compiler/discovery/relation_motif_and_operation_trace_discovery_v1.hh>
+#include <Cellerator/compiler/discovery/support_signature_discovery_v1.hh>
+#include <Cellerator/compiler/discovery/trajectory_and_lineage_pattern_discovery_v1.hh>
 #include <Cellerator/compiler/profile/profile_environment_v1.hh>
 
 #include <cstdint>

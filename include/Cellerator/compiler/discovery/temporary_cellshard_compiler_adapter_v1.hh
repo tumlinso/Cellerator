@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compiler/discovery/import_atom_envelope_and_typed_ports_v1.hh>
+#include <Cellerator/compiler/discovery/atom_envelope_and_typed_ports_v1.hh>
 
 #include <cstdint>
 #include <string_view>

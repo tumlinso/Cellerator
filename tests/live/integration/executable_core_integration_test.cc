@@ -5,8 +5,8 @@
 #include <Cellerator/parameters.hh>
 #include <Cellerator/runtime/value_readiness.cuh>
 
-#include <bench/ce_live/planner/live_planner_inputs.hh>
-#include <bench/ce_live/runtime_fixture/quantitative_fixture.hh>
+#include <tests/fixtures/planner/live_planner_inputs.hh>
+#include <tests/fixtures/model_execution/quantitative_relation_fixture.hh>
 
 #include <cmath>
 #include <cstdint>
@@ -15,7 +15,7 @@
 
 namespace core = cellerator::compute::math::core;
 namespace execution = cellerator::execution;
-namespace inputs = cellerator::ce_live::planner_inputs;
+namespace inputs = cellerator::fixtures::planner_inputs;
 
 namespace {
 
@@ -49,7 +49,7 @@ void test_candidate_surface() {
 
 void test_quantitative_planner_bridge() {
     const auto fixture_ids =
-        cellerator::ce_live::pbmc3k_quantitative_v1_identities();
+        cellerator::fixtures::quantitative_relation::pbmc3k_quantitative_v1_identities();
     require(execution::valid_identity(fixture_ids.feature_domain)
             && execution::valid_identity(fixture_ids.observation_domain)
             && execution::valid_identity(fixture_ids.structure),

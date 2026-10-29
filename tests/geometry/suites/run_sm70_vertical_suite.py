@@ -9,10 +9,10 @@ from pathlib import Path
 
 
 VERTICAL_BINARIES = (
-    "ceGeoSm70ProviderTest",
-    "ceGeoSm70ValuePackTest",
-    "ceGeoSm70N64Test",
-    "ceGeoSm70HybridTest",
+    "geometry_sm70_provider_test",
+    "geometry_sm70_value_pack_test",
+    "geometry_sm70_n64_test",
+    "geometry_sm70_hybrid_test",
 )
 
 

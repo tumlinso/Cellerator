@@ -1,10 +1,10 @@
-#include <bench/ce_live/planner/live_planner_inputs.hh>
+#include <tests/fixtures/planner/live_planner_inputs.hh>
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
 
-namespace cellerator::ce_live::planner_inputs {
+namespace cellerator::fixtures::planner_inputs {
 namespace {
 
 bool valid_identities(const relation_identity_input &identities) noexcept {
@@ -130,4 +130,4 @@ live_input_status account_candidate_phases(
         : live_input_status::invalid_reuse;
 }
 
-} // namespace cellerator::ce_live::planner_inputs
+} // namespace cellerator::fixtures::planner_inputs

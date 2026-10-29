@@ -8,9 +8,9 @@ target_include_directories(cellerator_ops_sparse_support PUBLIC
 target_link_libraries(cellerator_ops_sparse_support PUBLIC
     Cellerator::indexed_mechanism Cellerator::architecture_provider
     Cellerator::sparse_support_cuda CUDA::cudart)
-if(TARGET Cellerator::ce_geo_catalog)
+if(TARGET Cellerator::relation_catalog)
     target_link_libraries(cellerator_ops_sparse_support PUBLIC
-        Cellerator::ce_geo_catalog)
+        Cellerator::relation_catalog)
 endif()
 target_compile_features(cellerator_ops_sparse_support PUBLIC cxx_std_20)
 set_target_properties(cellerator_ops_sparse_support PROPERTIES

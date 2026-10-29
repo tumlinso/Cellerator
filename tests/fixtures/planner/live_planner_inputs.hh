@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-namespace cellerator::ce_live::planner_inputs {
+namespace cellerator::fixtures::planner_inputs {
 
 enum class live_input_status : std::uint8_t {
     ok = 0u,
@@ -97,4 +97,4 @@ constexpr bool authoritative_for_promotion(
     return input.measured;
 }
 
-} // namespace cellerator::ce_live::planner_inputs
+} // namespace cellerator::fixtures::planner_inputs

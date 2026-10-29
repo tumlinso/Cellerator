@@ -19,11 +19,11 @@ int main() {
         }
         const auto again = construct_shadow_cxx_v1(5, source, {{{5, begin}, {5, begin + 10}}});
         if (again.placeholders[0].stable_id != shadow.placeholders[0].stable_id) throw std::runtime_error("placeholder ID unstable");
-        const char* path = "/tmp/ce_ccp1_b03_010_shadow.cc";
+        const char* path = "/tmp/cellerator_construct_shadow_c_placeholders.cc";
         std::ofstream output(path);
         output << "template<unsigned long long> int cellerator_shadow_field(){return 2;}\n" << shadow.bytes;
         output.close();
-        if (std::system("clang++-18 -std=c++17 -fsyntax-only /tmp/ce_ccp1_b03_010_shadow.cc") != 0)
+        if (std::system("clang++-18 -std=c++17 -fsyntax-only /tmp/cellerator_construct_shadow_c_placeholders.cc") != 0)
             throw std::runtime_error("upstream Clang rejected shadow C++");
         std::cout << "validated stable typed shadow-C++ placeholders with Clang\n";
         return 0;

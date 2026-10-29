@@ -4,7 +4,7 @@
 
 namespace cellerator::compute {
 
-ce_exop_operation_portfolio_v1 query_ce_exop_operation_portfolio_v1() noexcept {
+compute_candidate_inventory_v1 query_compute_candidate_inventory_v1() noexcept {
     namespace apply = architecture::nvidia::sm70::relation_apply;
     namespace residual = architecture::providers::nvidia::sm70::residual;
     namespace contract = architecture::providers::nvidia::sm70::contract;

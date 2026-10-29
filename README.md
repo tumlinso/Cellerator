@@ -43,6 +43,8 @@ boundaries and evidence.
   optional native build requirements.
 - [Developer reference](docs/developer_reference.qmd): source/build entry
   points and validation commands.
+- [Implementation style](docs/development/implementation_style.md): maintained
+  contributor conventions.
 
 Projects such as Karyoplast, Cytoplast, and Blastback own their models and
 scientific interpretation. AnnData remains a required Python dependency and a
