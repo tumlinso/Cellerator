@@ -1,0 +1,97 @@
+---
+title: "Layout and execution"
+---
+
+## One modeled system, several distinct lifetimes
+
+Biology can constrain computation because repeated model evaluations often
+share entities, relations, and structural organization. A coherent runtime
+must preserve those identities while deciding which work is active and how
+to represent it on hardware. Keep these responsibilities explicit:
+
+```text
+identity and structure
+        ↓
+activity and eligible work
+        ↓
+physical layout and index maps
+        ↓
+prepared operation and reusable resources
+        ↓
+runtime bindings and execution
+```
+
+The diagram describes distinct concepts, not a claim that every current
+operation passes through one universal pipeline. Each facility defines its
+own implemented boundary and maturity.
+
+## Identity, support, routing, gating
+
+Identity records which modeled entities and relation occurrences are meant.
+Support describes which parts are eligible for an operation or evaluation.
+Indexing gives efficient lookup; routing maps eligible work to an operation
+or mechanism; gating controls conditional work. These concepts can cooperate
+without collapsing into a single sparse matrix or dispatcher. Structure epochs
+and value generations must remain distinct when their invalidation behavior
+differs.
+
+Cellerator has early implementations in sparse support, ordered indexing,
+routing, and gating. Their measurements and tests cover particular contracts
+and workloads. A selected sparse path must preserve identity and define
+overflow, capacity, stale-structure, update, and derivative behavior. It is
+not automatically better than dense execution, and measured indexing gains do
+not imply an end-to-end model speedup.
+
+The opt-in prepared entity-to-mechanism route query uses caller-supplied
+identity and generation values to decide whether its reverse-posting index can
+be reused. It emits a query result for the existing discrete route policy; it
+does not learn or reinterpret routes. The frozen binary passed exact CUDA
+correctness and memcheck, racecheck, and synccheck. A bounded V100 lifecycle
+measurement showed a long-reuse win for one synthetic ranked input shape, an
+inconclusive event result, and losses to dense Torch on larger stress shapes.
+The prepared strategy remains opt-in. See the
+[source-bound report](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/bench/sparse_support/experiments/prepared_routing/REPORT.md)
+for the cold-cost, workload, and comparison limits. This is an operation-
+specific example of explicit preparation identity, not a package-wide adaptive
+dispatcher.
+
+## Layout and execution
+
+Layout is the physical mapping of logical values and derivatives. Execution
+defines preparation, reuse, allocation, stream and device bindings, and the
+actual lifetime of executable work. A structure discovery result is not a
+physical layout; a layout candidate is not a runtime resource; and neither is
+evidence of adaptation by itself.
+
+The architecture preserves several runtime requirements: biological domain
+and order identity are stable; structure epochs are separate from mutable
+value generations; runtime gates should be established before execution when
+possible; complete setup, conversion, allocation, synchronization, and
+execution costs matter; and candidate selection is measured rather than
+mandated by one sparse format or accelerator route. These are design
+contracts, not evidence that all operations implement adaptive execution.
+
+## Fields and compilation
+
+Execution fields and compiler/IR work are experimental. The current
+`ExecutionField` composes a prepared native Product2 Torch module, uses CPU
+FP32 rank-one inputs, and exposes explicit immutable stage structure, structure
+epoch, value/binding generation, and `rebind_structure`. It has five installed
+CPU tests reported passing. It does not provide JIT compilation, GPU dispatch,
+or live recompilation. See [experimental fields](development/experimental-fields.md)
+for its narrow contract and limitations.
+
+Compilation may eventually help generate and validate execution plans, much
+as TorchScript historically relates to Torch modules, but ordinary Cellerator
+operations must not depend on a compiler runtime. Live recompilation is not a
+stable package promise. See [experiments and history](experiments_and_history.qmd)
+for legacy compiler docs and preserved evidence.
+
+## Evidence boundary
+
+Do not infer a performance claim from source presence, an execution graph, a
+sparse representation, or a microbenchmark. Report the workload, hardware,
+setup and conversion costs, numerical checks, repeated-use assumptions, and
+excluded regions. The [performance and validation guide](performance_validation.qmd)
+defines this evidence boundary; the dated [implementation record](current_implementation.qmd)
+links current results.

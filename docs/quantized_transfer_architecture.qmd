@@ -2,6 +2,13 @@
 title: "Quantized Transfer Architecture"
 ---
 
+::: {.callout-warning}
+This is a dated hardware/candidate design record. Its selected route and
+workload do not imply a current default or a general speedup; consult the
+[implementation record](current_implementation.qmd) and source-bound evidence
+before reusing its conclusions.
+:::
+
 ## Purpose
 
 This note records the current architectural posture for quantized sparse execution on the native 4x V100 host. The quantized path only justifies its complexity if it wins **end to end** after payload reduction, device staging, and execution. Smaller packs alone are not enough.

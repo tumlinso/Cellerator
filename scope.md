@@ -1,162 +1,97 @@
-# Cellerator Scope
+# Cellerator scope
 
 ## Purpose
 
-Cellerator exists to make biological computation faster by compiling biological organization into accelerator organization.
+Cellerator is a high-performance PyTorch extension for building cellular
+dynamical models. It adds reusable model operations and execution semantics
+that account for biological structure: identities, relationships, repeated
+organization, conditional activity, and reusable work. That structure can
+improve interpretability and reveal computation that need not be repeated.
+Whether a particular representation or implementation is faster remains an
+operation- and workload-specific question.
 
-Its primary concern is not a file format, a model family, a sparse-matrix API, or a high-level workflow. Its concern is the complete path from biological structure to efficient execution:
+Cellerator enables scientific work. It does not decide what a cell means, which
+relationships are biologically valid, or which model a consumer should adopt.
 
-```text
-biological domains and relations
-    → semantic execution geometry
-    → physical projections
-    → planned native or vendor kernels
-    → persistent execution order
-    → quantitative biological state
-```
+## The boundary with PyTorch
 
-Performance is the governing criterion. Biological semantics belong in the core when they expose exploitable regularity, enable correct identity and ordering, or permit cheaper execution.
+PyTorch remains the general numerical and learning framework. Use Torch for
+ordinary tensor arithmetic, conventional neural layers, autograd, optimizers,
+and model composition when those express the computation well. Cellerator owns
+specialized operations when cellular structure changes the mathematical
+contract, useful execution geometry, data organization, or complete cost.
 
-## In Scope
+The `nn` namespace should grow from implemented, useful `torch.nn.Module`
+compositions over Cellerator operations and ordinary Torch components. It is
+not a promised catalogue of biological layers. Native C++ entry points also
+remain first-class; Python integration should not replace unique native
+contracts.
 
-Cellerator owns:
+## What belongs here
 
-- biological domain, axis, order, geometry, partition, structure, and value-generation identity;
-- typed relations between biological domains;
-- immutable sparse and hierarchical structure;
-- mutable numerical value planes;
-- CellPack and CP-BP biological geometry compilation;
-- row, feature, module, and nested partition optimization;
-- physical projection construction and caching;
-- native sparse, masked, block-sparse, dense-fragment, reduction, graph, and sequence-conditioned kernels;
-- CP-Math planning, autotuning, prepared execution, epilogues, and backend selection;
-- graph-wide order and conversion optimization;
-- sparse-to-dense learned transitions that consume native biological structures directly;
-- training-oriented forward, transpose, backward, and optimizer primitives;
-- precision and quantization policy tied to biological modules or execution blocks;
-- single-GPU and multi-GPU execution planning;
-- layout-aware sparse transforms, reductions, and biological operators reused by higher layers;
-- independent correctness referees, structural validation, and performance instrumentation;
-- narrow shared ABI contracts used by Baseplane, CellShard, optional Cellerator Torch bindings, and other adapters.
+Cellerator owns reusable, model-neutral machinery for:
 
-## Subordinate and Adjacent Repositories
+- cellular entity, axis, order, relation, and structure identity;
+- numerical operations and derivatives specialized by the structure of a
+  modeled system;
+- logical support, indexing, routing, and conditional work, with explicit
+  capacity, overflow, and invalidation behavior where applicable;
+- physical layouts and value/gradient mappings that preserve logical identity;
+- preparation, reuse, and execution semantics with explicit lifetime and cost
+  boundaries;
+- native CPU/GPU implementations and thin PyTorch integration for those
+  operations;
+- experimental execution fields and compiler research, separated from the
+  stable package surface while contracts are being established.
 
-### Baseplane
+This is an open set of operation families. New operations should fit the same
+ownership pattern rather than require a new top-level framework. Not every
+operation needs sparsity, a custom kernel, or compilation.
 
-Baseplane is a subordinate library within the Cellerator conceptual and computational umbrella.
+## What remains elsewhere
 
-It owns sequence-specialized engineering:
+- **PyTorch:** general tensor operations, standard neural layers, autograd,
+  optimizers, and general model-training facilities.
+- **Scientific consumers:** biological hypotheses, domain-specific model
+  assumptions, their validation, and complete applications such as Karyoplast,
+  Cytoplast, or Blastback.
+- **AnnData and upstream single-cell libraries:** established data models and
+  classical preprocessing, QC, normalization, and analysis workflows. AnnData
+  is a required Python dependency today, but a direct Cellerator AnnData
+  preparation adapter is not implemented. Scanpy and RAPIDS-singlecell remain
+  upstream; this repository's classical routines have been testbeds.
+- **Storage and delivery systems:** durable datasets, sharding, transport, and
+  publication remain with their owning projects, such as CellShard.
+- **Sequence-specialized representation:** intrinsically sequence-grounded
+  functionality remains with Baseplane; Cellerator owns general numerical
+  execution around reusable inputs.
 
-- compact nucleotide representations;
-- validity-aware sequence views;
-- bit-plane transforms;
-- exact and bounded sequence predicates;
-- motif and grammar programs;
-- masks, events, segments, and sequence-local reductions;
-- CPU, SIMD, and CUDA implementations of those primitives.
+## Maturity
 
-Cellerator owns their integration with regulatory structure, quantitative state, planning, and downstream execution.
+Cellerator is early and not near complete. Native operations, sparse support,
+indexing, routing, gating, Python/Torch adapters, tokenization, layout work,
+and execution experiments exist at different levels of integration. Sparse
+indexing, routing, and gating are promising early capabilities; they do not
+establish a complete adaptive model runtime or a universal speedup.
 
-### CellShard
+Execution fields and compiler/IR work are experimental. The current execution
+field composes a narrow prepared operation and does not provide JIT or live
+recompilation. The implemented `nn` module set is small. Future operations
+belong in reusable operation families first and in `nn` when parameter
+ownership, composition, or a stable model-level interface warrants it.
 
-CellShard owns storage and distribution:
+Keep software correctness, scientific validity, package usability, and
+measured performance as distinct claims. Each capability claim should identify
+its implementation, public entry point, contract, relevant tests, and bounded
+evidence. Where source paths or consumer ownership are not reconciled, document
+the current route and mark the target as proposed.
 
-- canonical and sharded persistence;
-- source ingest and durable publication;
-- execution-envelope storage;
-- generation and compatibility validation;
-- fetch, cache, transport, upload, and delivery to workers;
-- storage-oriented partition metadata.
+## Scope test for new work
 
-CellShard does not own Cellerator's biological geometry, physical projection semantics, planner, or kernels.
-
-### Optional Torch bindings
-
-The optional `cellerator.torch` package and C++ bindings under
-`bindings/torch/` adapt Torch and libtorch to Cellerator-owned contracts:
-
-- tensor views;
-- custom-op registration;
-- framework module wrappers;
-- explicit conversion at framework boundaries.
-
-They do not create a separate runtime or own native structures, parameters,
-planning, or reusable math. CMake consumers opt in with
-`CELLERATOR_ENABLE_TORCH`; ordinary native consumers do not discover or link
-Torch.
-
-## Higher Layers
-
-Model, trajectory, and workflow code may remain in Cellerator when they:
-
-- exercise Cellerator-native biological operations;
-- provide reusable numerical policy;
-- expose performance-relevant execution structure;
-- validate the core on realistic workloads.
-
-They must not duplicate core math, runtime ownership, structure semantics, or planning.
-
-Conventional preprocessing semantics, QC policy, normalization conventions,
-workflow ordering, and dataset orchestration belong in downstream BioPrep.
-Cellerator supplies only the reusable low-level operations that such a package
-composes.
-
-## Out of Scope
-
-Cellerator does not own:
-
-- canonical biological dataset storage;
-- generic object-store, HDF5, network, RDMA, or file-service infrastructure;
-- a replacement for CUDA, cuBLAS, cuSPARSE, CUB, NCCL, MPI, or UCX;
-- a general-purpose tensor framework;
-- a Scanpy, AnnData, or notebook-workflow replacement;
-- a universal sparse matrix library unrelated to biological structure;
-- automatic preservation of every historical API;
-- a requirement that one format win for every workload;
-- biological ontology for its own sake;
-- runtime reconstruction of modules that could have been compiled;
-- hidden conversion at framework or storage boundaries.
-
-## Scope Tests
-
-A proposed core feature belongs in Cellerator when most of the following are true:
-
-- it operates on biological domains or relations;
-- biological structure changes the efficient implementation;
-- it affects order, projection, scheduling, fusion, precision, or communication;
-- it can be reused across models or workflows;
-- a generic framework would obscure or mishandle the relevant cost;
-- its correctness requires biological identity beyond array shape;
-- it can reduce bytes, launches, synchronization, or communication.
-
-A proposed feature probably belongs elsewhere when it is primarily:
-
-- canonical storage or transport;
-- source parsing;
-- framework registration;
-- user-interface workflow;
-- generic numerical functionality with no biological execution advantage.
-
-## Transitional Exceptions
-
-The current repository contains older layout, preprocessing, model, and runtime surfaces that predate this scope. They may remain while they provide:
-
-- working fallbacks;
-- reference implementations;
-- tests;
-- migration adapters;
-- realistic workloads;
-- benchmark baselines.
-
-Do not interpret their continued presence as permanent ownership or as evidence for the future core ABI.
-
-## CE-GEO boundary after Volta integration
-
-CE-GEO does not widen Cellerator into storage, workflow, model, or framework
-ownership. Cellerator owns portable biological geometry semantics, physical
-projection meaning, planner-visible complete cost, and native numerical
-execution. CellShard still owns persistence and transport, BioPrep owns
-biological preprocessing policy, Baseplane owns sequence-specialized
-primitives, and optional Torch bindings remain adapters. The measured `sm_70` N=64
-hybrid promotion is regime-specific and does not make MMA or one sparse layout
-the repository default.
+A proposed operation belongs in Cellerator when biological identity or shared
+structure changes its useful mathematical operation or execution, and the
+contract can be reused across models. Prefer ordinary Torch operations when
+structure does not change the contract or execution opportunity. Keep model
+assumptions in the scientific consumer, state distinct from parameters and
+structure, and avoid creating another biology ontology, dataset workflow,
+tensor system, or optimizer framework to house one operation.

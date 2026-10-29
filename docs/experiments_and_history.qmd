@@ -1,0 +1,75 @@
+---
+title: "Experiments and history"
+---
+
+## Experimental work is routed, not silently promoted
+
+Compiler, IR, execution-field, live gating, tokenization, adaptive indexing,
+and physical layout experiments have produced useful mechanisms and
+evidence. Their existence does not make each interface a supported general
+API. The maturity and limits of each component belong beside its evidence;
+the dated [implementation record](current_implementation.qmd) links the
+current records.
+
+The [experimental fields note](development/experimental-fields.md) describes
+the current narrow `ExecutionField` module. The older compiler- and runtime-
+oriented documentation remains accessible below for source/history context;
+the current product description and stable package route are in
+[architecture](architecture.qmd) and [developer reference](developer_reference.qmd).
+
+## Preserved subsystem and evidence pages
+
+- [Biological execution model](biological_execution_model.qmd)
+- [CellPack and CP-BP](cellpack_cp_bp.qmd)
+- [Core execution and CP-Math](core_execution_cp_math.qmd)
+- [Baseplane integration](baseplane_integration.qmd)
+- [Storage, distribution, and interoperability](storage_distribution_and_interop.qmd)
+- [Cellerator and compute/model source routing note](compute_and_models.qmd)
+- [Quantized transfer design](quantized_transfer_architecture.qmd)
+- [CellShard behavior](cellshard_behavior.qmd)
+- [CellShard ingest and runtime](ingest_and_runtime.qmd)
+- [Local pipeline operations](local_pipeline_ops.qmd)
+- [ATen tokenization qualification record](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/docs/tokenization_qualification.qmd)
+- [Sparse support foundation](sparse_support_foundation.qmd)
+- [Tokenization](tokenization.qmd)
+- [Performance and validation](performance_validation.qmd)
+- [Migration roadmap](migration_roadmap.qmd)
+
+These pages contain subsystem-specific contracts, plans, and historical
+design. Read them with the source date and maturity boundary in mind. Original
+source snapshots, qualification reports, and archived planning records remain
+the evidence authority; a prose summary does not replace or edit those bytes.
+The exhaustive disposition map is in [development routing](development/routing.md).
+
+The [IS1 reconciliation proposal](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/planning/coherence/is1-reconciliation.md)
+maps historical blocked obligations to the newer coherence plan and records
+the remaining package, qualification, and workflow gaps. It is a proposal, not
+native task completion or current status authority.
+
+## Branch closure and preservation records
+
+The 2026-10-28 branch audit, verified branch closure, and remaining archival
+holds are documented in the repository's
+[archive disposition](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/planning/coherence/archive-disposition.md),
+[branch-closure receipt](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/planning/coherence/branch-closure.json),
+and [branch comparison](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/planning/coherence/branches.md).
+The disposition record links the preserved bundle and checksum, retained refs,
+historical plan-path holds, payload holds, and supported-workflow hold. These
+records explain branch preservation and archival boundaries; the source map
+still assigns each repository path its own disposition.
+
+## Root research snapshots
+
+The root also retains dated design and operational material. These links pin
+the original files to the audited `main` snapshot and preserve their context:
+[architecture follow-ups](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/ARCHITECTURE_FOLLOWUPS.md),
+[execution-field investigation](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/ARCHITECTURE_INVESTIGATION.md),
+[optimization evidence](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/optimization.md),
+[planning strategy](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/planning_strategy.md),
+the [out-of-scope migration inventory](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/out_of_scope_inventory.md),
+and [local environment notes](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/ENVIRONMENT_NOTES.md).
+The [custom Torch operation registry](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/custom_torch_ops.md)
+is an operation-by-operation source reference; confirm every entry against
+its current owner, build target, and consumers. The current
+[scope](scope.qmd) and [architecture](architecture.qmd) govern present product
+direction.

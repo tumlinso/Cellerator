@@ -118,7 +118,7 @@ Its raw-bundle compatibility is a preparation boundary; an admitted GPU adapter
 still binds relation identity, epochs, roles, and timestamp units. Synthetic
 timings do not automatically remove a mechanism or fix a runtime policy.
 
-See the [benchmark protocol](../bench/sparse_support/README.md) and
+See the [benchmark protocol](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/README.md) and
 [implementation contract](sparse_support_foundation/draft.md). Retained
 qualification distinguishes host tests, admitted GPU correctness, numerical
 and surrogate-gradient comparisons, learning behavior, sanitizers, profiling,
@@ -126,44 +126,44 @@ and unprofiled timings. Preparation, discovery, gating, packing, backward,
 publication, and memory remain visible in complete-cost comparisons. No single
 layout or algorithm is the default winner for every workload.
 
-The source-bound [native qualification](../bench/sparse_support/evidence/qualification/native/README.md),
-[corrected gradient/lifecycle run](../bench/sparse_support/evidence/qualification/lifecycle/v9-gradient-scatter/REPORT.md),
-and [learning fixture report](../bench/sparse_support/evidence/qualification/learning/v9_corrected/REPORT.md)
+The source-bound [native qualification](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/native/README.md),
+[corrected gradient/lifecycle run](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/lifecycle/v9-gradient-scatter/REPORT.md),
+and [learning fixture report](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/learning/v9_corrected/REPORT.md)
 retain the exact tested snapshots. The corrected 50-epoch fixture reached
 56.25% ranked-gene accuracy with pruned execution versus 34.38% for shuffled
 support. Event accuracy was 28.12% on 64 held-out cells, close to the four-class
 chance rate of 25%; this is a weak result and does not establish recovery of the
 hidden mechanisms. The earlier run with incorrectly scattered sampled gate
 gradients remains diagnostic evidence and is excluded from those results.
-The [final snapshot-restoration suite](../bench/sparse_support/evidence/qualification/lifecycle/v11-snapshot-restore/REPORT.md)
+The [final snapshot-restoration suite](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/lifecycle/v11-snapshot-restore/REPORT.md)
 passes 28 tests, including loading into a fresh model after a novel edge was
 promoted and later revoked. Saved base/delta ownership, epochs, tombstones, and
 promotion evidence are restored directly while retaining the parameter leaf.
-The [v14 integration](../bench/sparse_support/evidence/qualification/v14-optional-policies/REPORT.md)
+The [v14 integration](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/qualification/v14-optional-policies/REPORT.md)
 passes 83 tests and two subtests across the optional policies, intake, and
 existing Torch bindings, plus the native CUDA workset test.
 
-The [controlled event readout experiment](../bench/sparse_support/experiments/event_learning_diagnostic/README.md)
+The [controlled event readout experiment](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/experiments/event_learning_diagnostic/README.md)
 retains both input choices. On one fixed synthetic task, history input reached
 509/512 pruned held-out predictions versus 122/512 for current-event input,
 with matched support, initialization, and training. The task depends directly
 on recent participant sets; it does not establish behavior on order-sensitive
-or biological tasks. The [indexed-value experiment](../bench/sparse_support/experiments/indexed_values/evidence/qualification/v13/REPORT.md)
+or biological tasks. The [indexed-value experiment](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/experiments/indexed_values/evidence/qualification/v13/REPORT.md)
 measured a 2.935× complete-step gain for its sparse event workload, with a small
 regression and a nearly neutral ranked case. Both value paths remain available.
 
-The [balanced V100 comparison](../bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/run_001/REPORT.md)
+The [balanced V100 comparison](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/run_001/REPORT.md)
 found no reliable complete-cost advantage for packed execution on its two
 small relation fixtures. Same-process paired training favored SIMT by about
 2.5%; the separate-request KDA comparison disagreed and its aggregate interval
 crossed parity. SIMT remains the measured fallback. Packed execution is a
 qualified trainable capability, without a promoted performance regime here.
 
-The [large native comparison](../bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/REPORT.md)
+The [large native comparison](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/REPORT.md)
 measures ordered discovery plus conditional worksets against serial merge and
 full rescan, including preparation and reuse costs. The
-[large packed/SIMT comparison](../bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/torch_v13_complete_cost_20261028/REPORT.md)
-and [physical layout comparison](../bench/sparse_support/experiments/geometry_layout/V13_RESULTS.md)
+[large packed/SIMT comparison](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/torch_v13_complete_cost_20261028/REPORT.md)
+and [physical layout comparison](https://github.com/tumlinso/Cellerator/blob/2f851ddb9719a85064f7140864c614245424f4cc/bench/sparse_support/experiments/geometry_layout/V13_RESULTS.md)
 retain canonical, reordered, and hybrid candidates with exact gradient checks.
 Those synthetic steps generally favored SIMT; they neither remove packed
 mechanisms nor predict the result on biological data. All candidate families

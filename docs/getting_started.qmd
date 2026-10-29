@@ -1,0 +1,67 @@
+---
+title: "Getting started"
+---
+
+## Current supported route
+
+The host Python package includes a native Product2 operation and a small Torch
+adapter. The operation accepts CPU FP32 vectors and int64 packet indices. Its
+module owns trainable coefficients through ordinary `torch.nn.Parameter` and
+uses first-order Torch autograd for input and coefficient gradients. This is a
+bounded example, not a claim that all operations work on CPU or that the
+package already provides a full model-building API.
+
+Install the host package from the repository root:
+
+```sh
+python -m pip install .
+```
+
+The default Python build enables Python and Product2 while disabling CUDA and
+the optional compiled Torch adapters. `Product2Module` is a Python Torch
+module backed by the native CPU operation; installing it does not require the
+optional CUDA indexed-mechanism adapter.
+
+```python
+import torch
+from cellerator.nn import Product2Module
+
+coefficients = torch.tensor([0.5, 1.25], dtype=torch.float32)
+a = torch.tensor([0, 1], dtype=torch.int64)
+b = torch.tensor([1, 2], dtype=torch.int64)
+operation = Product2Module(coefficients, a, b)
+
+x = torch.tensor([2.0, 3.0, 4.0], dtype=torch.float32)
+prediction = operation(x)
+loss = prediction.square().mean()
+loss.backward()
+
+optimizer = torch.optim.SGD(operation.parameters(), lr=1e-3)
+optimizer.step()
+```
+
+The example demonstrates normal Torch parameter and optimizer ownership around
+one specialized operation. Inputs and outputs are CPU FP32 vectors. The module
+does not imply a general biological layer catalogue, GPU execution, higher
+order derivatives, or a model-level scientific interpretation.
+
+## Build the host native extension directly
+
+```sh
+cmake -S . -B build-cpu \
+  -DCELLERATOR_ENABLE_CUDA=OFF \
+  -DCELLERATOR_ENABLE_PYTHON=ON \
+  -DCELLERATOR_ENABLE_TORCH=OFF
+cmake --build build-cpu --target cellerator_python_extensions
+```
+
+The complete build and optional backend boundaries are in the
+[developer reference](developer_reference.qmd) and
+[Python binding guide](development/python-bindings.md). CUDA and compiled Torch
+adapters require a compatible CUDA/Torch toolchain and explicit configuration.
+
+## What to read next
+
+See [model building](model_building.qmd) for composition guidance,
+[operations](operations.qmd) for actual interfaces, and
+[current implementation](current_implementation.qmd) for evidence and gaps.

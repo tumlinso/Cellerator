@@ -2,33 +2,34 @@
 title: "Cellerator"
 ---
 
-Cellerator is a compiler and execution substrate for biologically structured computation. It explores how recurring relations, support patterns, and useful order can become reusable geometry and executable work while quantitative values change.
+Cellerator is an early high-performance PyTorch extension for building
+cellular dynamical models. Biology can guide both the operations a model uses
+and the way those operations are organized for hardware. PyTorch remains the
+foundation for ordinary tensors, standard neural layers, autograd, optimizers,
+and composition.
 
-The implementation combines a host-first compiler/SDK route with a separately configured CUDA numerical runtime. It includes prepared operations and multiple physical candidates, while the wider language, general training, and adaptive execution goals remain incomplete. The dated [current implementation record](current_implementation.qmd) separates implementation evidence from future capabilities.
+Cellerator is designed to extend Torch where modeled structure changes the
+mathematical or execution contract. It enables scientific work without
+choosing the consumer's scientific assumptions. It is not a replacement for
+PyTorch, Scanpy, or RAPIDS-singlecell. AnnData is required by the Python
+package, but a direct AnnData preparation adapter is not yet implemented.
 
-Biological semantics guide which structure may be reusable; measurements decide whether a physical realization is useful. No one sparse format or device path is the universal center. See the [architecture](architecture.qmd), then the detailed subsystem chapters below.
+The library is early and not near complete. The dated
+[implementation record](current_implementation.qmd) explains current
+capabilities and evidence; the [architecture](architecture.qmd) describes
+ownership boundaries and target organization.
 
-## Documentation map
+## Begin here
 
-- [Architecture](architecture.qmd) summarizes the intended model and project boundaries.
-- [Current implementation](current_implementation.qmd) gives the dated implementation boundary.
-- [Python bindings](development/python-bindings.md) documents the core package and optional Torch adapter.
+1. [Getting started](getting_started.qmd) installs and exercises the current
+   host Product2 path.
+2. [Model building](model_building.qmd) describes Torch composition and
+   scientific ownership.
+3. [Operations](operations.qmd) describes current operation families.
+4. [Layout and execution](layout_execution.qmd) explains identity, support,
+   routing, gates, preparation, and runtime boundaries.
+5. [Developer reference](developer_reference.qmd) and [source routing](development/routing.md)
+   direct contributors to current source owners.
 
-## Documentation map
-
-- [Architecture](architecture.qmd) defines the target system.
-- [Current implementation](current_implementation.qmd) records what is implemented and transitional.
-- [Biological execution model](biological_execution_model.qmd) defines domains, relations, identities, hierarchy, and sequence-plus-state semantics.
-- [CellPack and CP-BP](cellpack_cp_bp.qmd) defines biological geometry compilation.
-- [Core execution and CP-Math](core_execution_cp_math.qmd) defines planning, runtime ownership, projections, and kernels.
-- [Baseplane integration](baseplane_integration.qmd) defines the sequence-to-state mechanism.
-- [Storage, distribution, and interop](storage_distribution_and_interop.qmd) defines CellShard and framework boundaries.
-- [Performance and validation](performance_validation.qmd) defines evidence requirements.
-- [Migration roadmap](migration_roadmap.qmd) defines the transition from the present repository.
-- [Developer reference](developer_reference.qmd) records build, test, source, and documentation entry points.
-
-## Governing rule
-
-Cellerator should preserve biological meaning when that meaning helps execution, but performance decides the representation.
-
-Every additional layer must reduce time, traffic, synchronization, communication, or downstream cost. Otherwise it is decorative weight.
+Subsystem contracts, experimental research, and historical source-bound
+records remain available in [experiments and history](experiments_and_history.qmd).

@@ -2,6 +2,13 @@
 title: "CellShard Behavior"
 ---
 
+::: {.callout-warning}
+This page preserves a prior integration/behavior description for CellShard and
+the Cellerator pipeline. CellShard owns persistence and delivery; current
+Cellerator package scope and interfaces are in [scope](scope.qmd) and the
+[source-routing map](development/routing.md).
+:::
+
 CellShard presently functions as the storage, optional ingest, and execution-staging substrate rather than as a general analytical environment. Downstream BioPrep owns conventional preprocessing: it compiles biological QC rules, adapts CellShard-delivered layouts to Cellerator's generic sparse operations, and owns normalization conventions, keep-mask policy, and raw-count validation. CellShard remains responsible for durable dataset representation, execution-facing layout derivation, and controlled publication.
 
 The central distinction in its behavior is the separation between canonical persistence and hot execution. The `.csh5` container is the durable source of truth. It holds the authoritative dataset header, partition and shard boundaries, payload arrays, and the runtime-service metadata needed to identify generations and ownership. The `.cspack` artifacts derived from that container are not archival objects; they are execution artifacts. CellShard materializes versioned CSPACK generations from `.csh5`, serves those generations for repeated multithreaded access, and treats them as the fast path for host fetch, delivery, and downstream staging. In practical terms, `.csh5` remains the stable canonical body of the dataset, whereas `.cspack` carries the transient but operationally decisive form in which that dataset is read at runtime.

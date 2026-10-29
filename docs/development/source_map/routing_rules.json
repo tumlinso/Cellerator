@@ -1,0 +1,902 @@
+{
+  "06bdd9b1e8fc": {
+    "archive_reference": "do not edit generated manifests by hand; preserve original archive and restore instructions",
+    "consumers": "archive disposition and separate private recovery manifest",
+    "current_owner": "planning/coherence preservation evidence",
+    "disposition": "preserve_payload_recovery_evidence",
+    "intended_destination": "retain manifest and original paths; ignored payload contents remain governed by private recovery archive",
+    "maturity": "snapshot/validation receipt; not a relocation record",
+    "role": "payload-preservation manifest or validation receipt",
+    "tests_or_evidence": "recorded paths, hashes and verification scope; external targets not read or moved by source-map tooling"
+  },
+  "08d0f156bf6a": {
+    "archive_reference": "preserve source bytes until target/callsite disposition is confirmed",
+    "consumers": "exact per-file target and caller not found in declared CMake; source header/tests may still have independent uses",
+    "current_owner": "src/layout; only the three named MMA cover TUs belong to current Cellerator::layout, with packing TUs routed separately",
+    "disposition": "hold_layout_source_for_build_and_consumer_mapping",
+    "intended_destination": "map each remaining TU to an active build target and caller before promoting or relocating; physical realization remains separate from geometry and runtime state",
+    "maturity": "source_present_not_in_declared_layout_or_packing_target",
+    "role": "physical-layout source present outside current declared target source lists",
+    "tests_or_evidence": "tests/ce_geo/projection, tests/geometry and source compilation checks are family candidates, not per-file proof"
+  },
+  "09782b2e5ac1": {
+    "archive_reference": "preserve input identity/order mapping",
+    "consumers": "Cellerator::packing_strategy and tests/substrate/strategies consumer",
+    "current_owner": "src/layout/packing/strategies/CMakeLists.txt; selectable Substrate component packing_strategies",
+    "disposition": "retain_selectable_placement_strategy",
+    "intended_destination": "retain as a distinct placement operation over the existing packing strategy",
+    "maturity": "host component evidence; do not infer GPU execution",
+    "role": "order-preserving layout placement strategy",
+    "tests_or_evidence": "tests/substrate/strategies/native_consumer.cc and check.py; selected SDK scope only"
+  },
+  "108d77cb0ffa": {
+    "archive_reference": "retain original tracked bytes and provenance; no speculative deletion",
+    "consumers": "historical readers and specific research owners",
+    "current_owner": "optimization.md",
+    "disposition": "preserve_historical_root_research",
+    "intended_destination": "preserve as dated research/history and point readers to current scope/architecture; do not update its conclusions as if it were current authority",
+    "maturity": "dated or superseded; linked evidence remains source-bound",
+    "role": "historical architecture, research, performance, or scope note",
+    "tests_or_evidence": "page-specific tests/evidence must be read at their recorded source identity"
+  },
+  "10be1015b542": {
+    "archive_reference": "retain exact source and manifest",
+    "consumers": "unknown; compiler tests/build targets need scan",
+    "current_owner": "compiler research / language artifacts",
+    "disposition": "retain_experimental_language_surface",
+    "intended_destination": "preserve as experimental compiler material; do not imply current installed Python API",
+    "maturity": "experimental_language_material",
+    "role": "compiler language standard library or source artifact",
+    "tests_or_evidence": "tests/compiler and source records; implementation coverage unresolved"
+  },
+  "140c6a51dcf5": {
+    "archive_reference": "preserve selector inputs and owner closure",
+    "consumers": "Cellerator::packing_strategy, native_numeric, indexed incidence and CellPack",
+    "current_owner": "tests/substrate/packing and src/layout/packing/core",
+    "disposition": "retain_selectable_packing_strategy_checks",
+    "intended_destination": "retain with packing_strategy component",
+    "maturity": "host SDK component only",
+    "role": "selectable Substrate packing-strategy checks",
+    "tests_or_evidence": "strategy_test.cc and check.py; selected SDK scope only"
+  },
+  "14774c5bed7b": {
+    "archive_reference": "a GPU-gated/skip status is not GPU qualification",
+    "consumers": "Python Torch sparse execution mode and native transition owner",
+    "current_owner": "tests/sparse_support/test_transition_modes.py",
+    "disposition": "retain_mode_v2_checks",
+    "intended_destination": "retain beside sparse-support transition implementation",
+    "maturity": "five CPU checks pass; fourteen GPU checks await root qualification",
+    "role": "transition mode v2 CPU contract and GPU-gated integration checks",
+    "tests_or_evidence": "exact test file; GPU forward/VJP/checkpoint and sanitizer evidence pending"
+  },
+  "19c08a843352": {
+    "archive_reference": "preserve operation fixtures and first-order autograd contract",
+    "consumers": "cellerator.ops and Product2Module",
+    "current_owner": "tests/bindings/python over native Product2 and Product2Module",
+    "disposition": "retain_product2_python_tests",
+    "intended_destination": "retain with the standalone Product2 operation",
+    "maturity": "CPU FP32 installed/package behavior only; not a GPU test",
+    "role": "Product2 Python/package contract checks",
+    "tests_or_evidence": "exact Python test files; native and GPU coverage are separate"
+  },
+  "1a81d7a99047": {
+    "archive_reference": "preserve managed AGENTS workflow block and all accepted project instructions",
+    "consumers": "all repository readers and contributors",
+    "current_owner": "README.md",
+    "disposition": "retain_current_root_guidance",
+    "intended_destination": "retain as current entry guidance; keep product boundary aligned with docs/architecture and current source contracts",
+    "maturity": "current direction; implementation evidence remains dated elsewhere",
+    "role": "current root product or contributor contract",
+    "tests_or_evidence": "docs render/link checks; source implementation claims are linked to owners"
+  },
+  "1b83ad72dca3": {
+    "archive_reference": "preserve selector identity and component dependency closure",
+    "consumers": "cmake/substrate/Substrate.cmake; tests/substrate/packing",
+    "current_owner": "src/layout/packing/core/CMakeLists.txt; selectable Substrate component packing_strategy",
+    "disposition": "retain_selectable_packing_strategy",
+    "intended_destination": "retain existing native host packing strategy and its CellPack prerequisite",
+    "maturity": "host component/test evidence is bounded to selected SDK route",
+    "role": "identity-supplied packing strategy owner",
+    "tests_or_evidence": "tests/substrate/packing/strategy_test.cc and check.py; not default root package API"
+  },
+  "1d1fc5f51d35": {
+    "archive_reference": "do not promote to the default route dispatcher without qualified complete-query evidence",
+    "consumers": "bindings/sparse_support/prepared_routing.cc and tests/prepared_routing/test_prepared_routing.py",
+    "current_owner": "python/cellerator/torch/prepared_routing.py over the registered sparse-support Torch binding",
+    "disposition": "retain_opt_in_prepared_routing_adapter",
+    "intended_destination": "retain opt-in adapter; caller supplies and rechecks structure/route/binding identity generations; retain incumbent fallback",
+    "maturity": "CPU wrapper contract passes; CUDA runtime qualification pending",
+    "role": "Python adapter for prepared entity-to-mechanism routing",
+    "tests_or_evidence": "three CPU adapter checks; no GPU proof from wrapper tests"
+  },
+  "1e7afb0c812a": {
+    "archive_reference": "never duplicate mutable task state",
+    "consumers": "planning context only",
+    "current_owner": "planning/coherence",
+    "disposition": "preserve_active_plan",
+    "intended_destination": "preserve approved plan; live status remains Todo authority",
+    "maturity": "approved_intent_not_implementation",
+    "role": "approved consolidation plan and deliverables",
+    "tests_or_evidence": "plan acceptance and registered workflow are separate"
+  },
+  "1f6a8f727ab0": {
+    "archive_reference": "preserve managed AGENTS workflow block and all accepted project instructions",
+    "consumers": "all repository readers and contributors",
+    "current_owner": "scope.md",
+    "disposition": "retain_current_root_guidance",
+    "intended_destination": "retain as current entry guidance; keep product boundary aligned with docs/architecture and current source contracts",
+    "maturity": "current direction; implementation evidence remains dated elsewhere",
+    "role": "current root product or contributor contract",
+    "tests_or_evidence": "docs render/link checks; source implementation claims are linked to owners"
+  },
+  "20d116f1630f": {
+    "archive_reference": "retain original tracked bytes and provenance; no speculative deletion",
+    "consumers": "historical readers and specific research owners",
+    "current_owner": "planning_strategy.md",
+    "disposition": "preserve_historical_root_research",
+    "intended_destination": "preserve as dated research/history and point readers to current scope/architecture; do not update its conclusions as if it were current authority",
+    "maturity": "dated or superseded; linked evidence remains source-bound",
+    "role": "historical architecture, research, performance, or scope note",
+    "tests_or_evidence": "page-specific tests/evidence must be read at their recorded source identity"
+  },
+  "20fb8f3f4908": {
+    "archive_reference": "preserve eligibility and derivative semantics; do not infer complete adaptive execution",
+    "consumers": "Cellerator::sparse_support combines support/indexing/gating/layout; sparse-support Torch consumers and mode operations call selected paths",
+    "current_owner": "src/gating target Cellerator::gating; CUDA worksets are separately built as Cellerator::sparse_support_cuda",
+    "disposition": "retain_native_gating_owner",
+    "intended_destination": "conditional work eligibility, distinct from support/index construction and physical realization",
+    "maturity": "host_contracts_present; cuda_worksets_have_separate_device_checks",
+    "role": "condition programs, derivative sampling, and conditional worksets",
+    "tests_or_evidence": "tests/sparse_support/indexing_support_gating_test.cc, derivative_sampling_test.cc, cuda_worksets_test.cu, and tests/sparse_support/test_transition_modes.py; each covers a bounded contract"
+  },
+  "22177e28453c": {
+    "archive_reference": "preserve bytes, manifests, source identities and restore path",
+    "consumers": "unknown; identify source snapshots and consumers",
+    "current_owner": "experiments/<initiative>",
+    "disposition": "preserve_experiment_pending_reconciliation",
+    "intended_destination": "preserve and route to owning mechanism or archive; extract reusable source only after consumer audit",
+    "maturity": "experimental_or_historical_per_initiative",
+    "role": "standalone experiment source, fixture, or receipt",
+    "tests_or_evidence": "initiative receipts/tests; claims bounded to each record"
+  },
+  "226cd3d4109e": {
+    "archive_reference": "preserve prepared topology, first-order gradient, and precision contracts",
+    "consumers": "cellerator_python_extensions depends on product2; consumers are cellerator.ops, Product2Module, and direct native package callers",
+    "current_owner": "cmake/Product2.cmake builds Cellerator::product2 from src/compute/operation/product2; Python package uses bindings/python and python/cellerator/torch/product2.py",
+    "disposition": "retain_product2_native_and_torch_operation",
+    "intended_destination": "retain as a standalone model-neutral product operation; explicit native and Torch composition, not generic indexed mechanism ABI",
+    "maturity": "CPU FP32 host operation implemented; CUDA source is optional and has separate runtime qualification",
+    "role": "prepared Product2 native operation",
+    "tests_or_evidence": "experiments/moonshot-parallel-v1/integration/native_product2_test.cc, tests/bindings/python/test_product2.py, test_product2_torch.py; GPU smoke is not evidence of a general GPU performance regime"
+  },
+  "23ddc24756f6": {
+    "archive_reference": "preserve no-fast-math/contract flags and operation-specific precision semantics",
+    "consumers": "src/compute/operation/native_numeric, cmake/substrate/Substrate.cmake, tests/substrate/operators, tests/substrate/effects and native SDK consumer checks",
+    "current_owner": "src/ops/numeric target Cellerator::ops_numeric; native_numeric and Substrate SDK components consume it",
+    "disposition": "retain_native_numeric_family",
+    "intended_destination": "model-neutral operation family; retain native API and explicit arithmetic contracts",
+    "maturity": "host implementation and consumers verified; individual precision/domain contracts remain operation-specific",
+    "role": "reusable numeric primitives and precision contracts",
+    "tests_or_evidence": "tests/math_core and substrate SDK/operator/effects/frontier consumer checks; see preserved source-bound math extraction report"
+  },
+  "272f6c33b196": {
+    "archive_reference": "preserve bytes, source refs, receipts, machine state",
+    "consumers": "unknown; identify initiative owner and active task",
+    "current_owner": "planning/<initiative>",
+    "disposition": "preserve_plan_or_archive_after_reconciliation",
+    "intended_destination": "preserve until active obligation, unique capability, and provenance are reconciled",
+    "maturity": "plan_or_historical_evidence",
+    "role": "historical, active, or proposed research/planning artifact",
+    "tests_or_evidence": "linked evidence/tests per initiative; not a product capability assertion"
+  },
+  "29ed64a76a22": {
+    "archive_reference": "not archive until code/consumers are reconciled",
+    "consumers": "unknown; reverse-reference scan required",
+    "current_owner": "native compiler subtree; exact subsystem owner unresolved",
+    "disposition": "retain_with_status_review",
+    "intended_destination": "optional compiler and field research behind bounded interfaces",
+    "maturity": "implementation_present_unqualified",
+    "role": "compiler / IR / frontend implementation",
+    "tests_or_evidence": "tests/compiler and source-bound compiler experiments; per-file relation unresolved"
+  },
+  "2c84d43fbc98": {
+    "archive_reference": "do not hand edit generated authority; retain submodule declarations",
+    "consumers": "not applicable or supported workflow",
+    "current_owner": "repository/Project Control owners",
+    "disposition": "managed_or_repository_metadata",
+    "intended_destination": "preserve metadata; mutate only via supported workflow/approved project action",
+    "maturity": "metadata_not_product_capability",
+    "role": "repository workflow, tooling, or dependency metadata",
+    "tests_or_evidence": "tooling-specific checks"
+  },
+  "2d4f4cd85a62": {
+    "archive_reference": "record source commit and blob id",
+    "consumers": "historical readers only; scan links",
+    "current_owner": "docs/history or docs/archive",
+    "disposition": "preserve_archive",
+    "intended_destination": "archive with banner and provenance; exclude from current book unless index/reference",
+    "maturity": "historical",
+    "role": "historical or archived documentation",
+    "tests_or_evidence": "source-bound historical records; do not rewrite bytes"
+  },
+  "32c61d59e165": {
+    "archive_reference": "preserve owner lifecycle and checkpoint expectations",
+    "consumers": "Cellerator::indexed_mechanism, bindings/python and bindings/torch",
+    "current_owner": "native/Python mechanism adapter checks",
+    "disposition": "retain_mechanism_binding_checks",
+    "intended_destination": "retain with CUDA indexed-mechanism owner and optional framework adapters",
+    "maturity": "contract coverage present; GPU runtime qualification remains separate",
+    "role": "optional indexed-mechanism binding lifecycle checks",
+    "tests_or_evidence": "exact native and Python test files; do not infer all CUDA mechanism paths are covered"
+  },
+  "3500a5f26eb4": {
+    "archive_reference": "preserve order/identity fixtures",
+    "consumers": "Cellerator::packing_strategies and Cellerator::packing_strategy",
+    "current_owner": "tests/substrate/strategies and src/layout/packing/strategies",
+    "disposition": "retain_selectable_placement_strategy_checks",
+    "intended_destination": "retain with packing_strategies component",
+    "maturity": "host SDK component only",
+    "role": "order-preserving placement strategy consumer checks",
+    "tests_or_evidence": "native_consumer.cc, check.py and dependency hash; no GPU claim"
+  },
+  "367886648a8b": {
+    "archive_reference": "preserve unique native capability",
+    "consumers": "unknown; reverse-reference scan required",
+    "current_owner": "native compute subtree; exact operation family by path",
+    "disposition": "retain_and_route_by_family",
+    "intended_destination": "ops/<family>, structure, indexing, gating, routing or layout by mechanism",
+    "maturity": "mixed; per-path qualification required",
+    "role": "native computational operations and data mechanisms",
+    "tests_or_evidence": "tests/<family>, bench/<family>; mapping pending"
+  },
+  "36d484bf66e4": {
+    "archive_reference": "preserve reproducible experiment configs",
+    "consumers": "build target/import references required",
+    "current_owner": "repository build/tooling owner",
+    "disposition": "retain_and_reconcile_with_source_moves",
+    "intended_destination": "maintain coherent native and installed Torch package routes",
+    "maturity": "infrastructure_presence",
+    "role": "build, packaging, automation, or configuration",
+    "tests_or_evidence": "build/test entrypoints and docs must be updated with moves"
+  },
+  "36ef36fc81d3": {
+    "archive_reference": "preserve exact bytes and source provenance",
+    "consumers": "unknown; report links may identify consumers",
+    "current_owner": "docs source-bound record family",
+    "disposition": "preserve_evidence_and_index",
+    "intended_destination": "retain as evidence; add navigation wrapper rather than rewriting frozen results",
+    "maturity": "evidence_scoped_per_record",
+    "role": "experiment report or capability evidence",
+    "tests_or_evidence": "record-defined validation only; do not broaden claim"
+  },
+  "39c40ef3b1c5": {
+    "archive_reference": "retain original tracked bytes and provenance; no speculative deletion",
+    "consumers": "historical readers and specific research owners",
+    "current_owner": "ARCHITECTURE_FOLLOWUPS.md",
+    "disposition": "preserve_historical_root_research",
+    "intended_destination": "preserve as dated research/history and point readers to current scope/architecture; do not update its conclusions as if it were current authority",
+    "maturity": "dated or superseded; linked evidence remains source-bound",
+    "role": "historical architecture, research, performance, or scope note",
+    "tests_or_evidence": "page-specific tests/evidence must be read at their recorded source identity"
+  },
+  "3b43d13298db": {
+    "archive_reference": "hash/manifest before relocation or archive",
+    "consumers": "unknown; consumer scan required",
+    "current_owner": "data/fixtures or debug artifact owner unresolved",
+    "disposition": "hold_for_payload_review",
+    "intended_destination": "keep only if referenced; classify as protected payload before any cleanup",
+    "maturity": "unclassified_payload",
+    "role": "data, fixture, or diagnostic artifact",
+    "tests_or_evidence": "unknown; fixture or diagnostic provenance required"
+  },
+  "3b5bd2bc7d5a": {
+    "archive_reference": "preserve original path and blob identity until references move",
+    "consumers": "unknown; caller/build scan required",
+    "current_owner": "native ops family by path",
+    "disposition": "retain_native_operation_family",
+    "intended_destination": "ops/<family>; native operations remain available without Torch",
+    "maturity": "implementation_present_unqualified",
+    "role": "native operation family contract or implementation",
+    "tests_or_evidence": "family tests and native consumers; exact relation unresolved"
+  },
+  "3b958dd132eb": {
+    "archive_reference": "private preserved bundle path and SHA-256 are in archive disposition; keep tracked evidence bytes unchanged",
+    "consumers": "planning/coherence/archive-disposition.md and branch reconciliation readers",
+    "current_owner": "planning/coherence branch reconciliation evidence",
+    "disposition": "preserve_branch_closure_evidence",
+    "intended_destination": "retain exact receipts and referenced local archive/bundle; not current branch state",
+    "maturity": "snapshot or completed closure receipt; date and tip bound",
+    "role": "branch audit, source comparison, or verified closure receipt",
+    "tests_or_evidence": "JSON/TSV records carry exact ref/tip and closure fields; validate with the receipt, do not rerun ref mutations"
+  },
+  "3eb799e9fc44": {
+    "archive_reference": "recovery manifest and per-path archive reference; do not treat map as archive",
+    "consumers": "engineers and agents changing source, docs, or artifacts",
+    "current_owner": "documentation/maintenance owner with source owners",
+    "disposition": "retain_agent_routing_contract",
+    "intended_destination": "retain as contributor routing guide and regenerate adjacent normalized source map after source moves",
+    "maturity": "current routing rules; generated map snapshot may lag until refresh",
+    "role": "agent-facing source ownership and cleanup routing contract",
+    "tests_or_evidence": "generator/validator lifecycle check plus source map freshness check"
+  },
+  "3f038af005a1": {
+    "archive_reference": "not archive",
+    "consumers": "unknown; scan imports and sibling consumers",
+    "current_owner": "python/cellerator",
+    "disposition": "retain_and_grow_from_existing_surface",
+    "intended_destination": "installed Torch extension package: ops, nn, structure, layout, execution, interop",
+    "maturity": "early_package_surface",
+    "role": "Python package / Torch surface",
+    "tests_or_evidence": "tests/package, tests/bindings/python, examples/torch"
+  },
+  "40e968372c33": {
+    "archive_reference": "immutable bytes; attach source commit/hash when indexed",
+    "consumers": "unknown; check source snapshots and linked implementation",
+    "current_owner": "bench/<family>",
+    "disposition": "preserve_as_evidence_or_reusable_source_after_audit",
+    "intended_destination": "source-bound experimental evidence by operation/field family",
+    "maturity": "experimental_or_unqualified",
+    "role": "benchmark, experiment, source snapshot, or evidence record",
+    "tests_or_evidence": "co-located bench/evidence; qualification must be checked per record"
+  },
+  "42598bea021e": {
+    "archive_reference": "preserve frozen evidence bytes; keep source paths and target paths distinct",
+    "consumers": "readers, native/Python contributors, and model builders; exact callsites belong in source map",
+    "current_owner": "Cellerator documentation spine",
+    "disposition": "retain_current_spine",
+    "intended_destination": "retain as current Torch-extension docs; update alongside implemented contracts and measured evidence",
+    "maturity": "early_product_with_per_operation_maturity",
+    "role": "current product, developer, operation, or capability-boundary docs",
+    "tests_or_evidence": "Quarto HTML render, local link scan, and claims linked to implementation/tests/evidence"
+  },
+  "45e42b0937f9": {
+    "archive_reference": "preserve source-bound field contract and test identities",
+    "consumers": "ExecutionField users and contributors",
+    "current_owner": "Python experimental field owner",
+    "disposition": "retain_experimental_capability_doc",
+    "intended_destination": "retain beside implementation; revise only with field contract and test changes",
+    "maturity": "experimental; CPU Product2 composition only",
+    "role": "experimental execution-field capability note",
+    "tests_or_evidence": "tests/experimental/test_fields.py; no JIT or GPU claim"
+  },
+  "483ca8071822": {
+    "archive_reference": "preserve dependency identity/generation arguments and per-stream workspace ownership",
+    "consumers": "python/cellerator/torch/prepared_routing.py and tests/prepared_routing/test_prepared_routing.py",
+    "current_owner": "bindings/sparse_support/prepared_routing.cc registered by bindings/sparse_support/module.cc and bindings/torch/CMakeLists.txt",
+    "disposition": "retain_opt_in_prepared_routing_adapter",
+    "intended_destination": "retain internal binding; preserve opt-in API and Python fallback",
+    "maturity": "binding integration present; CUDA runtime qualification pending",
+    "role": "Torch binding for opt-in prepared entity-to-mechanism routing",
+    "tests_or_evidence": "Torch binding translation unit compiled; CUDA correctness, sanitizers and complete-query timing pending"
+  },
+  "4d8029d81f9e": {
+    "archive_reference": "preserve sole parameter owner, guarded optimizer/checkpoint lifecycle and existing ABI",
+    "consumers": "bindings/python mechanism handle, bindings/torch mechanism adapter, sparse-support operations and Cellerator::native_foundation",
+    "current_owner": "src/compute/operation/indexed_mechanism target Cellerator::indexed_mechanism",
+    "disposition": "retain_cuda_indexed_mechanism_owner",
+    "intended_destination": "retain as the CUDA mechanism owner; expose only through explicit optional adapters",
+    "maturity": "CUDA implementation present; runtime qualification is by operation and device",
+    "role": "indexed mechanism, evaluators and native parameter owner",
+    "tests_or_evidence": "tests/bindings/native/mechanism_handle_test.cc and tests/bindings/python/test_native_mechanism.py/test_mechanism.py; CUDA operations require admitted runtime qualification"
+  },
+  "4fe3f030d5ef": {
+    "archive_reference": "preserve unique API and ABI until consumer migration is proven",
+    "consumers": "unknown; CellPack and sibling consumer scan required",
+    "current_owner": "CellPack compatibility/subsystem owner unresolved",
+    "disposition": "retain_distinct_subsystem_pending_consumer_audit",
+    "intended_destination": "preserve as a distinct native capability; survey consumers before mapping into geometry/layout/execution",
+    "maturity": "implementation_presence_unqualified",
+    "role": "CellPack native headers and model/execution structures",
+    "tests_or_evidence": "tests/ce_geo, tests/geometry, tests/native_foundation are candidates, not complete proof"
+  },
+  "5324e6962481": {
+    "archive_reference": "preserve test fixtures and references",
+    "consumers": "test subject inferred from path only; verify build registration",
+    "current_owner": "tests/<path family>",
+    "disposition": "retain_and_rehome_with_source",
+    "intended_destination": "test co-located with owning subsystem or package layer",
+    "maturity": "test_presence_not_capability_proof",
+    "role": "automated test or fixture",
+    "tests_or_evidence": "this path is evidence candidate; assertion scope requires review"
+  },
+  "538b0532be37": {
+    "archive_reference": "preserve upstream/submodule identity",
+    "consumers": "must inventory sibling/external consumers",
+    "current_owner": "path-owned integration surface",
+    "disposition": "retain_and_map_consumers",
+    "intended_destination": "retain compatibility/consumer boundary; consolidate only with all callers/build targets",
+    "maturity": "implementation_or_vendor_presence_unqualified",
+    "role": "compatibility, component, external dependency or module integration",
+    "tests_or_evidence": "compile/link integration tests required per target"
+  },
+  "582249514bbe": {
+    "archive_reference": "retain exact bytes and source snapshot",
+    "consumers": "unknown; compare against active authority",
+    "current_owner": "planning artifact owner unresolved",
+    "disposition": "hold_plan_reconciliation",
+    "intended_destination": "preserve until supported authority reconciliation; not live status",
+    "maturity": "plan_not_implementation",
+    "role": "legacy or machine-readable plan snapshot",
+    "tests_or_evidence": "none unless plan references source evidence"
+  },
+  "5bdb06741192": {
+    "archive_reference": "preserve native direct consumers",
+    "consumers": "unknown; inspect extension link targets and Python imports",
+    "current_owner": "bindings/torch",
+    "disposition": "retain_and_consolidate_with_python_surface",
+    "intended_destination": "private Torch binding/operator adapter; model-facing API should compose torch.nn.Module",
+    "maturity": "implementation_present_unqualified",
+    "role": "Torch C++ adapter / registered operators",
+    "tests_or_evidence": "tests/bindings/torch, tests/package; exact per-file relation pending"
+  },
+  "5e7e3163284d": {
+    "archive_reference": "preserve source/input identities, negative results and qualification receipts",
+    "consumers": "prepared routing native operation, Torch binding; Python fallback and dense route baseline",
+    "current_owner": "bench/sparse_support/experiments/prepared_routing",
+    "disposition": "retain_prepared_routing_evidence_pending_gpu",
+    "intended_destination": "retain opt-in correctness and performance candidate with implementation; run only through admitted KDA workflow",
+    "maturity": "source/build/host evidence only; no GPU result",
+    "role": "prepared-routing CUDA qualification and complete-query benchmark candidate",
+    "tests_or_evidence": "KDA draft, run_cuda_correctness.py and source hash records; all device checks/timing pending"
+  },
+  "611571a6d092": {
+    "archive_reference": "preserve opt-in default and identity dependencies; no GPU performance claim until admitted qualification",
+    "consumers": "bindings/torch/CMakeLists.txt registers the Torch binding; python/cellerator/torch/__init__.py routes imports; tests/prepared_routing C++/Python files and bench/sparse_support/experiments/prepared_routing are direct consumers/evidence candidates",
+    "current_owner": "src/ops/sparse_support/prepared_routing.cc/.cu; public contract include/Cellerator/ops/sparse_support/prepared_routing.hh; binding and Python adapter in bindings/sparse_support and python/cellerator/torch",
+    "disposition": "retain_opt_in_prepared_routing",
+    "intended_destination": "opt-in exact route-union query using prepared reverse postings; keep route identity/generation checks and existing route policy; retain Python fallback",
+    "maturity": "CPU contract and adapter tests pass; CUDA correctness, sanitizer, and performance qualification pending",
+    "role": "prepared entity-to-mechanism routing operation",
+    "tests_or_evidence": "tests/prepared_routing/prepared_routing_test.cc and test_prepared_routing.py; bench KDA draft records GPU qualification path, which remains pending"
+  },
+  "61941484651e": {
+    "archive_reference": "provider source moved to src/ops/matrix; preserve precision/derivative contracts and source-path proof",
+    "consumers": "Substrate operators consumer and selectable installed component; retained Python proof experiments/moonshot-parallel-v1/diff/patch/ops.py compiles current provider by path",
+    "current_owner": "src/ops/matrix CMake target Cellerator::op_matrix_patch; selectable Substrate component matrix_patch",
+    "disposition": "retain_native_matrix_patch_family",
+    "intended_destination": "reusable native patch operation with forward/JVP/VJP contract; keep scientific interpretation with consumer",
+    "maturity": "host FP32 implementation; explicit stored-half STE is a separate surrogate contract",
+    "role": "matrix patch operation family",
+    "tests_or_evidence": "tests/substrate/operators/native_consumer.cc and check.py plus source-bound math extraction report; no broad biological validation"
+  },
+  "623c2348951b": {
+    "archive_reference": "provider source moved to src/ops/process; preserve ragged extents, derivative contract and source-path proof",
+    "consumers": "Substrate operators consumer and retained Python proof experiments/moonshot-parallel-v1/diff/ports/ops.py compiling current provider by path",
+    "current_owner": "src/ops/process CMake target Cellerator::op_process_ports; selectable Substrate component private_ports",
+    "disposition": "retain_native_process_ports_family",
+    "intended_destination": "reusable transport primitive; local nonlinear law, edge interpretation and scientific meaning remain caller-owned",
+    "maturity": "host FP32 implementation and explicit forward/JVP/VJP contracts",
+    "role": "private port transport operation family",
+    "tests_or_evidence": "tests/substrate/operators/native_consumer.cc and check.py plus source-bound math extraction report; not a biological port model"
+  },
+  "6519b99f1744": {
+    "archive_reference": "preserve feature gates",
+    "consumers": "all native targets and consumers",
+    "current_owner": "native build system",
+    "disposition": "retain_build_boundary",
+    "intended_destination": "retain and update atomically with source ownership moves",
+    "maturity": "build_infrastructure",
+    "role": "native source build/configuration",
+    "tests_or_evidence": "native builds/test registration"
+  },
+  "6523a8962f94": {
+    "archive_reference": "preserve local configs, scripts and dataset links pending owner review",
+    "consumers": "local pipeline operators, not general model builders",
+    "current_owner": "docs/pipeline and docs/local_pipeline_ops.qmd; outside installed numerical package",
+    "disposition": "retain_local_operational_material",
+    "intended_destination": "retain as local operator/testbed guidance; classical data acquisition and preprocessing remain upstream",
+    "maturity": "operational_not_package_api",
+    "role": "local pipeline operations and scripts",
+    "tests_or_evidence": "documented local scripts/manifests; no Cellerator numerical capability claim"
+  },
+  "6554a4347d18": {
+    "archive_reference": "preserve fixtures and comparison inputs; no GPU result implied",
+    "consumers": "public prepared-routing contract, Python adapter and CUDA Torch binding",
+    "current_owner": "tests/prepared_routing",
+    "disposition": "retain_prepared_routing_checks_pending_gpu",
+    "intended_destination": "retain with the opt-in prepared-routing operation",
+    "maturity": "host checks pass; device runner awaits qualification",
+    "role": "prepared-routing host/adapter checks and GPU runner",
+    "tests_or_evidence": "prepared_routing_test.cc and test_prepared_routing.py pass; run_cuda_correctness.py remains pending admission; C++ check is not currently registered in a tests/prepared_routing CMakeLists"
+  },
+  "6a68f552e3a7": {
+    "archive_reference": "remove no unique requirement without checking current contributor contract",
+    "consumers": "contributors",
+    "current_owner": "style_hint.md",
+    "disposition": "retain_style_guidance_pending_reconcile",
+    "intended_destination": "retain only conventions consistent with AGENTS.md and actual source tooling",
+    "maturity": "developer guidance, not capability evidence",
+    "role": "developer style guidance",
+    "tests_or_evidence": "format/build conventions validated by repository config"
+  },
+  "7270b6a5f22d": {
+    "archive_reference": "preserve incident/source details; do not turn historical notes into package requirements",
+    "consumers": "local contributors and operators",
+    "current_owner": "ENVIRONMENT_NOTES.md",
+    "disposition": "retain_local_environment_snapshot",
+    "intended_destination": "retain as local setup/history; verify machine and host details before reusing",
+    "maturity": "date-bound operational guidance",
+    "role": "dated local environment and operational notes",
+    "tests_or_evidence": "verify against current toolchain/host state before execution"
+  },
+  "75c5e6a61463": {
+    "archive_reference": "preserve independent test inputs and reported source identity",
+    "consumers": "Cellerator::tokenization and optional Python binding",
+    "current_owner": "tests/tokenization and cmake/CelleratorTokenization.cmake",
+    "disposition": "retain_tokenization_operation_tests",
+    "intended_destination": "retain with optional tokenization facility",
+    "maturity": "per-operation CPU/CUDA checks; scientific interpretation remains downstream",
+    "role": "ATen tokenization CPU/CUDA operation tests",
+    "tests_or_evidence": "core_test.cc, numerics_test.cc, append_test.cc; use the dated tokenization qualification for aggregate installed evidence"
+  },
+  "768dfb7769fb": {
+    "archive_reference": "preserve parameter ownership, first-order derivatives and feature gates; do not generalize synthetic model slices",
+    "consumers": "bindings/sparse_support, python/cellerator/torch sparse-support modules, and examples/torch; CMake NativeFoundation owns current native link closure",
+    "current_owner": "src/ops/sparse_support target Cellerator::sparse_support_numeric; CMake gated by CUDA and sparse-support feature",
+    "disposition": "retain_native_sparse_support_operations",
+    "intended_destination": "reusable operation family under sparse support with Torch adapter as optional consumer",
+    "maturity": "native CPU/CUDA implementations present; numerical and integrated tests are bounded by qualification records",
+    "role": "sparse-support training operation and native numerical worksets",
+    "tests_or_evidence": "tests/sparse_support/numeric_reference.cc, numeric_cuda_test.cu, CUDA training/mode tests and source-bound qualification records; CPU/GPU evidence remains operation-specific"
+  },
+  "77047bfecee3": {
+    "archive_reference": "retain biological assumptions with consumer",
+    "consumers": "unknown; inspect downstream includes",
+    "current_owner": "Cellerator examples/model fixtures",
+    "disposition": "retain_example_until_consumer_audit",
+    "intended_destination": "move to examples/model families or consumer-owned projects after include/build references are mapped",
+    "maturity": "example_or_model_support_unqualified",
+    "role": "native model and trajectory examples",
+    "tests_or_evidence": "related tests/examples and model tests; exact mapping pending"
+  },
+  "77afc3c38696": {
+    "archive_reference": "preserve original path and provenance; archive only after indexed preservation",
+    "consumers": "historical readers and subsystem contributors",
+    "current_owner": "docs subsystem matching path",
+    "disposition": "retain_as_historical_subsystem_doc",
+    "intended_destination": "retain accessible under experiments/history with currentness banner; do not use as present package/API claims",
+    "maturity": "historical design or mixed implementation",
+    "role": "historical or subsystem design documentation",
+    "tests_or_evidence": "verify links and preserve source-specific evidence"
+  },
+  "77df3de1f6bb": {
+    "archive_reference": "preserve Torch oracle, optimizer, and rebind coverage",
+    "consumers": "python/cellerator/experimental/fields.py and native Product2 Torch module",
+    "current_owner": "tests/experimental/test_fields.py",
+    "disposition": "retain_experimental_field_checks",
+    "intended_destination": "retain beside Python experimental field interface",
+    "maturity": "five installed CPU tests pass",
+    "role": "experimental ExecutionField installed CPU tests",
+    "tests_or_evidence": "exact test file and installed-package run; current field is CPU Product2 composition only"
+  },
+  "7d5906def3b7": {
+    "archive_reference": "preserve formulas, parameters and checkpoint semantics",
+    "consumers": "unknown; reverse-reference scan required",
+    "current_owner": "native operation family or model support by path",
+    "disposition": "retain_and_route_by_semantics",
+    "intended_destination": "ops/<family> or model examples/consumer layer after API review",
+    "maturity": "mixed; per-path qualification required",
+    "role": "native math, packing, quantization or model support",
+    "tests_or_evidence": "tests/math_core, tests/native_numeric, tests/learning_consumer, examples; mapping pending"
+  },
+  "83c4d02e1b48": {
+    "archive_reference": "preserve unique capability and historical receipts",
+    "consumers": "unknown; reverse-reference scan required",
+    "current_owner": "native geometry subtree",
+    "disposition": "retain_and_reconcile_semantics",
+    "intended_destination": "structure/geometry discovery separated from layout realization and runtime state",
+    "maturity": "implementation_present_unqualified",
+    "role": "geometry discovery / organization",
+    "tests_or_evidence": "tests/geometry, tests/ce_geo, bench/geometry; mapping pending"
+  },
+  "85bc4cb5ae02": {
+    "archive_reference": "preserve schema/ABI until explicit migration",
+    "consumers": "include consumers and ABI probes required",
+    "current_owner": "native public API boundary",
+    "disposition": "retain_public_native_boundary",
+    "intended_destination": "retain direct native API while package-facing route is clarified",
+    "maturity": "public_contract_review_required",
+    "role": "native public umbrella, ABI or binding handle",
+    "tests_or_evidence": "tests/biological_abi, tests/bindings candidate"
+  },
+  "86f42e37cf12": {
+    "archive_reference": "preserve receipts, logs, hashes, environment references, and provenance",
+    "consumers": "workflow repair owner, archive disposition, and supported Project Control workflow",
+    "current_owner": "planning/coherence/workflow-repairs; records name specific Todo/Project Control source revisions, candidate environments, wheel hashes, and repair attempts where applicable",
+    "disposition": "preserve_workflow_repair_evidence",
+    "intended_destination": "retain exact repair receipts as historical evidence; do not treat them as proof of current runtime/authority state or an instruction to replay a repair",
+    "maturity": "repair and package qualification is revision-bound; operation-specific limits are recorded in each JSON receipt",
+    "role": "source/runtime repair evidence and qualification limits",
+    "tests_or_evidence": "per-record source/wheel/manifest identities and recovery checks; no generic claim that the active runtime or authority has changed"
+  },
+  "89e38d0ebbd7": {
+    "archive_reference": "preserve relation semantics and shared numeric dependency; do not duplicate local arithmetic",
+    "consumers": "Cellerator::native_foundation, Cellerator::local_differential and selectable Substrate native_numeric component",
+    "current_owner": "src/compute/operation/native_numeric/CMakeLists.txt target Cellerator::native_numeric, linked to Cellerator::ops_numeric",
+    "disposition": "retain_native_numeric_operation_owner",
+    "intended_destination": "retain native relation arithmetic and share the reusable local arithmetic owner with SDK consumers",
+    "maturity": "host and optional device source present; type/operation claims remain contract-specific",
+    "role": "native relation arithmetic owner",
+    "tests_or_evidence": "tests/native_numeric/device_arithmetic.cc when CUDA/testing is enabled; installed Substrate SDK/operator/effects/frontier checks recorded in source-bound math extraction report"
+  },
+  "9129bbc9e156": {
+    "archive_reference": "not applicable",
+    "consumers": "unknown; query supported workflow",
+    "current_owner": "Project Control / Todo authority",
+    "disposition": "managed_protected",
+    "intended_destination": "Keep under supported workflow; never hand-edit projections",
+    "maturity": "managed_state",
+    "role": "managed workflow state/export",
+    "tests_or_evidence": "authority/evidence via supported workflow"
+  },
+  "9798603476fc": {
+    "archive_reference": "archive superseded records with source identity",
+    "consumers": "unknown; link scan required",
+    "current_owner": "docs subsystem matching path",
+    "disposition": "retain_and_reconcile_or_archive",
+    "intended_destination": "route to architecture, operation guide, development guide, or testbed docs",
+    "maturity": "mixed; inspect currentness",
+    "role": "technical, operational or subsystem documentation",
+    "tests_or_evidence": "claims and links require per-doc validation"
+  },
+  "9cb412e3be12": {
+    "archive_reference": "preserve until separate disposition approved",
+    "consumers": "unknown; separate package/build references",
+    "current_owner": "CelleraTorch experiment",
+    "disposition": "retain_experimental",
+    "intended_destination": "keep explicitly experimental and distinct from python/cellerator/torch",
+    "maturity": "experimental",
+    "role": "separate CelleraTorch documentation experiment",
+    "tests_or_evidence": "its own docs/tests only; not current API proof"
+  },
+  "9f0f415ac890": {
+    "archive_reference": "preserve logical/physical maps, padding and value/gradient identity; keep unlisted source disposition explicit",
+    "consumers": "Cellerator::compute and sparse-support umbrella consume selected layout APIs; identify concrete projection caller per path",
+    "current_owner": "src/layout target Cellerator::layout when CELLERATOR_ENABLE_SPARSE_SUPPORT is ON; public declarations currently under include/Cellerator/compute/projection",
+    "disposition": "retain_native_layout_owner_with_exact_target_boundary",
+    "intended_destination": "physical mapping separated from semantic geometry, identity, and runtime allocation",
+    "maturity": "three MMA TUs are in target; family qualification remains operation-specific",
+    "role": "physical projection/layout contracts and selected MMA realization",
+    "tests_or_evidence": "tests/ce_geo/projection/mma_residual_builder_test.cc, exact_physical_cover_test.cc, mma_projection_roundtrip_test.cc and tests/geometry layout tests; not proof for every header/source"
+  },
+  "a10e64cfa256": {
+    "archive_reference": "preserve managed AGENTS workflow block and all accepted project instructions",
+    "consumers": "all repository readers and contributors",
+    "current_owner": "CONTRIBUTING.md",
+    "disposition": "retain_current_root_guidance",
+    "intended_destination": "retain as current entry guidance; keep product boundary aligned with docs/architecture and current source contracts",
+    "maturity": "current direction; implementation evidence remains dated elsewhere",
+    "role": "current root product or contributor contract",
+    "tests_or_evidence": "docs render/link checks; source implementation claims are linked to owners"
+  },
+  "a2c9fbd6a2e8": {
+    "archive_reference": "preserve biological assumptions as consumer-owned",
+    "consumers": "unknown; executable/build registration scan pending",
+    "current_owner": "examples/<family>",
+    "disposition": "retain_and_route_by_api",
+    "intended_destination": "model builder / consumer example; classical workflows labeled as testbeds",
+    "maturity": "example_not_product_capability",
+    "role": "example, fixture, or consumer demonstration",
+    "tests_or_evidence": "examples target and related tests; exact relation unresolved"
+  },
+  "aaea7564c72d": {
+    "archive_reference": "preserve report bytes and bundle/hash references; source map provides per-path disposition",
+    "consumers": "planning/coherence/README.md, docs/experiments_and_history.qmd, and source-map archive references",
+    "current_owner": "planning/coherence/archive-disposition.md; authored with archive worker",
+    "disposition": "preserve_archive_disposition_record",
+    "intended_destination": "retain as preservation evidence/navigation; do not treat as live task status or permission to move held artifacts",
+    "maturity": "completed closure plus explicit unresolved holds",
+    "role": "human-readable archival disposition and remaining holds",
+    "tests_or_evidence": "links to branch closure, audited refs, preservation manifest and workflow repair evidence"
+  },
+  "ab364ba4d939": {
+    "archive_reference": "preserve original logs and JSON bytes; later runs belong in a new dated receipt",
+    "consumers": "archive disposition, source routing map, and maintainers of the specific subsystem; not live task status",
+    "current_owner": "planning/coherence/qualification; exact command and scope are recorded by per-campaign receipts",
+    "disposition": "preserve_source_qualification_evidence",
+    "intended_destination": "retain as immutable qualification evidence with its source checkpoint, command, exit status, log hash, toolchain, and scope; do not present logs as current source status",
+    "maturity": "historical, checkpoint-bound evidence; each receipt states whether device execution occurred",
+    "role": "source-bound command/build/test qualification receipts and logs",
+    "tests_or_evidence": "receipt.json binds command arguments/source paths/exit codes/log hashes; only the listed operation and source checkpoint are evidenced"
+  },
+  "af623b637c99": {
+    "archive_reference": "preserve ABI and integration dependencies",
+    "consumers": "unknown; consumers and build feature gates required",
+    "current_owner": "native distributed subsystem",
+    "disposition": "retain_scope_review_required",
+    "intended_destination": "hold behind user-approved scope; preserve any current consumers and mark optional",
+    "maturity": "implementation_presence_unqualified",
+    "role": "distributed execution API or architecture",
+    "tests_or_evidence": "tests/distributed candidate; qualification unresolved"
+  },
+  "af96ce1f304a": {
+    "archive_reference": "retain original tracked bytes and provenance; no speculative deletion",
+    "consumers": "historical readers and specific research owners",
+    "current_owner": "out_of_scope_inventory.md",
+    "disposition": "preserve_historical_root_research",
+    "intended_destination": "preserve as dated research/history and point readers to current scope/architecture; do not update its conclusions as if it were current authority",
+    "maturity": "dated or superseded; linked evidence remains source-bound",
+    "role": "historical architecture, research, performance, or scope note",
+    "tests_or_evidence": "page-specific tests/evidence must be read at their recorded source identity"
+  },
+  "b16f866f40fa": {
+    "archive_reference": "preserve naming and interfaces pending compatibility audit",
+    "consumers": "unknown; public include consumers required",
+    "current_owner": "compiler SDK research",
+    "disposition": "retain_experimental_sdk_material",
+    "intended_destination": "keep experimental until installed SDK/use is demonstrated; do not imply Python package API",
+    "maturity": "proposed_or_unverified",
+    "role": "compiler SDK API proposal or task-named header",
+    "tests_or_evidence": "compiler and package tests candidate only"
+  },
+  "b94312bfa8a9": {
+    "archive_reference": "preserve managed AGENTS workflow block and all accepted project instructions",
+    "consumers": "all repository readers and contributors",
+    "current_owner": "AGENTS.md",
+    "disposition": "retain_current_root_guidance",
+    "intended_destination": "retain as current entry guidance; keep product boundary aligned with docs/architecture and current source contracts",
+    "maturity": "current direction; implementation evidence remains dated elsewhere",
+    "role": "current root product or contributor contract",
+    "tests_or_evidence": "docs render/link checks; source implementation claims are linked to owners"
+  },
+  "bec6de2624c2": {
+    "archive_reference": "preserve independent SDK build/install evidence",
+    "consumers": "Cellerator::ops_numeric, ::matrix_patch, ::private_ports plus sibling effects/frontier consumers",
+    "current_owner": "tests/substrate/operators and cmake/substrate/Substrate.cmake",
+    "disposition": "retain_substrate_native_operator_checks",
+    "intended_destination": "retain as consumer evidence for explicitly selected host operation components",
+    "maturity": "host SDK checks qualify selected components only",
+    "role": "selectable Substrate native operator consumer checks",
+    "tests_or_evidence": "native_consumer.cc, check.py and README.md with source-specific math extraction report; not a complete biological application test"
+  },
+  "c087134ff351": {
+    "archive_reference": "preserve ABI/schema and actual sibling consumers",
+    "consumers": "unknown; reverse-reference scan required",
+    "current_owner": "native shared subsystem; inspect API/callers before move",
+    "disposition": "retain_and_reconcile_owner",
+    "intended_destination": "common, structure, execution, runtime, or interop according to behavior",
+    "maturity": "implementation_present_unqualified",
+    "role": "native shared infrastructure or adapter",
+    "tests_or_evidence": "tests matching subsystem and external consumers; exact relation unresolved"
+  },
+  "ce4922d05274": {
+    "archive_reference": "preserve support identity/generation behavior and installed compatibility header paths",
+    "consumers": "Cellerator::indexing and Cellerator::gating consume support contracts; ops/sparse_support prepared routing builds logical edges/participants",
+    "current_owner": "src/support CMake target Cellerator::support; public headers remain include/Cellerator/compute/support",
+    "disposition": "retain_native_support_owner",
+    "intended_destination": "support and eligibility, separate from indexing, gates, mechanism routing, and physical layout",
+    "maturity": "host_facility_implemented_with_operation_specific_evidence",
+    "role": "logical support, support proposals, and eligibility state",
+    "tests_or_evidence": "tests/sparse_support/indexing_support_gating_test.cc and physical_image_builder_test.cc; Python fixtures and gates cover adapters, not all native paths"
+  },
+  "cfbac9c511f4": {
+    "archive_reference": "preserve ABI and identity encoding; preserve direct native includes",
+    "consumers": "tests/biological_abi_host_test.cc and tests/execution_identity/identity_registry_test.cc; current CMake/build registrations determine enabled coverage",
+    "current_owner": "src/structure/CMakeLists.txt plus include/Cellerator/structure; root CMake builds Cellerator::biological_abi and Cellerator::identity_registry",
+    "disposition": "retain_native_structure_owner",
+    "intended_destination": "stable identity and preparation-time registry; keep domain/order identity separate from support, layout, and runtime bindings",
+    "maturity": "host_contract_and_registry_implemented; not a biological model layer",
+    "role": "biological identity ABI and identity registry",
+    "tests_or_evidence": "identity registry source/header and ABI host test; no GPU or scientific-validity claim"
+  },
+  "d03578ed5c89": {
+    "archive_reference": "preserve derivative/primal separation and no-fast-math contract",
+    "consumers": "Cellerator::native_numeric and executable program consumers; selectable Substrate native_numeric SDK dependency",
+    "current_owner": "src/compute/operation/differential target Cellerator::local_differential",
+    "disposition": "retain_shared_local_differential_owner",
+    "intended_destination": "retain derivative actions as a distinct owner consuming the shared native numeric primal",
+    "maturity": "host/device sources present; derivative claims are operation-specific",
+    "role": "local operation derivative owner",
+    "tests_or_evidence": "tests/native_foundation/differential and tests/relation_update_spine_v1; CUDA run evidence remains separately bounded"
+  },
+  "d2d31fb4da1e": {
+    "archive_reference": "preserve caller-defined vocabularies, event interpretation boundary and capacity/overflow contracts",
+    "consumers": "cellerator.tokenization, ATen operation modules, and sequence-buffer callers",
+    "current_owner": "cmake/CelleratorTokenization.cmake target Cellerator::tokenization with optional Python _tokenization binding",
+    "disposition": "retain_optional_tokenization_facility",
+    "intended_destination": "retain as optional tensor/tokenization operations; biological event and history meaning stay with consumers",
+    "maturity": "CPU and optional CUDA implementations; installed suite evidence remains tied to its record",
+    "role": "optional ATen tokenization and sequence-buffer operations",
+    "tests_or_evidence": "tests/tokenization/core_test.cc, numerics_test.cc, append_test.cc and source-bound 2026-10-26 qualification; do not generalize to biological model validity"
+  },
+  "d500d1d2318a": {
+    "archive_reference": "preserve public/native consumer compatibility",
+    "consumers": "unknown; import/link references pending",
+    "current_owner": "binding subtree named by path",
+    "disposition": "retain_and_route_by_api",
+    "intended_destination": "internal binding; expose through coherent Cellerator Torch ops where supported",
+    "maturity": "implementation_present_unqualified",
+    "role": "language or operation binding adapter",
+    "tests_or_evidence": "tests/bindings and family tests; exact relation unresolved"
+  },
+  "da90744bf87a": {
+    "archive_reference": "recreatable from current tracked/worktree inputs; no source payload moved",
+    "consumers": "developer routing and validation",
+    "current_owner": "source-map generator",
+    "disposition": "generated_metadata",
+    "intended_destination": "docs/development/source_map",
+    "maturity": "metadata_not_product_capability",
+    "role": "generated route-map artifact",
+    "tests_or_evidence": "tools/maintenance/source_map/lifecycle_test.py"
+  },
+  "dc2cf8c53172": {
+    "archive_reference": "preserve unique operation rationale and original evidence links",
+    "consumers": "native/Python consumers named per operation; do not infer API from heading",
+    "current_owner": "custom_torch_ops.md plus actual owners under include/Cellerator and src",
+    "disposition": "reconcile_operation_registry_with_source_map",
+    "intended_destination": "retain as a routed operation registry only where entries map to current owner/contracts; superseded entries stay historical",
+    "maturity": "mixed by operation; verify each entry against current target and consumer",
+    "role": "operation registry and native/Torch capability inventory",
+    "tests_or_evidence": "cross-check build targets, imports, and family tests before changing any entry"
+  },
+  "debef2537520": {
+    "archive_reference": "preserve updated-block fixture and device gate",
+    "consumers": "transition routing API in Python Torch sparse execution",
+    "current_owner": "tests/sparse_support/test_transition_routing_tail.py",
+    "disposition": "retain_tail_routing_check_pending_gpu",
+    "intended_destination": "retain beside transition-routing operation",
+    "maturity": "CPU fixture assertion passes; runtime behavior remains GPU-gated",
+    "role": "transition routing-tail regression check",
+    "tests_or_evidence": "test source only for runtime route tail; not a GPU result"
+  },
+  "e6fc5162a146": {
+    "archive_reference": "preserve ordering, logical IDs, and compatibility headers; no universal index dispatcher",
+    "consumers": "Cellerator::gating uses index contracts; ops/sparse_support/prepared_routing uses reverse postings; sparse-support Torch bindings expose selected adapters",
+    "current_owner": "src/indexing target Cellerator::indexing; CUDA postings are compiled into Cellerator::sparse_support_cuda when enabled",
+    "disposition": "retain_native_indexing_owner",
+    "intended_destination": "index construction/lookup remains distinct from structure identity, support meaning, route interpretation, and gates",
+    "maturity": "host_and_cuda_sources_present; GPU qualification is operation-specific",
+    "role": "reverse-posting index, temporal occurrences, and CUDA posting lookup",
+    "tests_or_evidence": "tests/sparse_support/indexing_support_gating_test.cc, tests/sparse_support/test_indexing_bindings.py, tests/sparse_support/cuda_worksets_test.cu; CUDA execution requires admitted device qualification"
+  },
+  "ed9761cadf2b": {
+    "archive_reference": "retain original tracked bytes and provenance; no speculative deletion",
+    "consumers": "historical readers and specific research owners",
+    "current_owner": "ARCHITECTURE_INVESTIGATION.md",
+    "disposition": "preserve_historical_root_research",
+    "intended_destination": "preserve as dated research/history and point readers to current scope/architecture; do not update its conclusions as if it were current authority",
+    "maturity": "dated or superseded; linked evidence remains source-bound",
+    "role": "historical architecture, research, performance, or scope note",
+    "tests_or_evidence": "page-specific tests/evidence must be read at their recorded source identity"
+  },
+  "f134770f7950": {
+    "archive_reference": "preserve exact source bytes until test relocation is reviewed",
+    "consumers": "Cellerator::product2 and Python Product2 adapter",
+    "current_owner": "cmake/Product2.cmake consumes these files for native and optional CUDA smoke targets",
+    "disposition": "retain_product2_test_source_at_current_path",
+    "intended_destination": "keep with Product2 until a complete test relocation updates CMake and preserves source identity",
+    "maturity": "native test is build-registered; CUDA smoke still needs admitted-device execution evidence",
+    "role": "native Product2 test source retained in historical experiment path",
+    "tests_or_evidence": "Product2 CMake target plus Python/native tests; source path is intentionally still owned by current CMake"
+  },
+  "f44479e2450f": {
+    "archive_reference": "preserve runtime/ABI behavior",
+    "consumers": "unknown; reverse-reference scan required",
+    "current_owner": "native execution or runtime subtree",
+    "disposition": "retain_with_contract_review",
+    "intended_destination": "execution, prepared bindings and runtime ownership; field usage experimental",
+    "maturity": "implementation_present_unqualified",
+    "role": "execution / runtime implementation",
+    "tests_or_evidence": "tests/execution, tests/runtime, bench evidence; per-file relation unresolved"
+  },
+  "f5292917c55d": {
+    "archive_reference": "preserve layout and value/gradient semantics",
+    "consumers": "unknown; include/reference scan required",
+    "current_owner": "native numerical/runtime primitives",
+    "disposition": "retain_and_map_native_api",
+    "intended_destination": "ops, layout, structure or runtime according to behavior; preserve direct native use",
+    "maturity": "implementation_presence_unqualified",
+    "role": "native matrix, memory or parameter primitives",
+    "tests_or_evidence": "tests/math_core, native_numeric, memory, layout candidates"
+  },
+  "ffa81c2cb2a5": {
+    "archive_reference": "preserve original path and blob identity until all includes/build references move",
+    "consumers": "src/compute, src/layout, src/indexing, and CUDA targets include shared headers; enumerate exact includes for moves",
+    "current_owner": "src/common and include/Cellerator/common are the current helper owner",
+    "disposition": "retain_shared_build_helpers",
+    "intended_destination": "keep shared checks/types in common only while concrete source targets include or link them; CUDA-specific helpers stay internal",
+    "maturity": "build_support_not_model_api",
+    "role": "shared native helpers",
+    "tests_or_evidence": "native CMake targets; component checks in tests/math_core, tests/sparse_support, and CUDA-specific consumers where applicable"
+  }
+}

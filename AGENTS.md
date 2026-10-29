@@ -24,6 +24,8 @@ automatically. Existing non-Todo tools remain available for their own purposes.
 
 Read the [architecture](docs/architecture.qmd) for intent, [current implementation record](docs/current_implementation.qmd) for its dated boundary, and [developer reference](docs/developer_reference.qmd) for entry points. The [Python binding guide](docs/development/python-bindings.md) covers the current package surface. For an edit, the current scoped task and inspected source—not a historical plan or README completion sentence—determine what exists and what is authorized.
 
+For source ownership, evidence boundaries, and path routing, see the [contributor routing guide](docs/development/routing.md). The source map linked there is not live task status or capability proof.
+
 ## Operate within the current authority
 
 Use the installed Project Control/Codex front door and this repository's Todo authority. Take one bounded outcome, inspect only what it needs, preserve other claims/dirty work, and finish with actual evidence. Use configured subagents only for useful bounded work; the owner retains acceptance. Never edit SQLite, generated Todo views, recovery snapshots or generated context indexes by hand. Keep managed workflow blocks intact.

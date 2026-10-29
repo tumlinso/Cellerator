@@ -2,6 +2,12 @@
 title: "Ingest And Runtime"
 ---
 
+::: {.callout-warning}
+This is a neighboring CellShard ingest/runtime integration note, not a
+Cellerator package API. Check the current CellShard owner and build before
+using its commands or status as current.
+:::
+
 ## Bounded-Memory Ingest
 
 CellShard's optional ingest path is designed around bounded-memory conversion rather than whole-dataset materialization in RAM. It is built only when `CELLSHARD_BUILD_INGEST=ON`.
