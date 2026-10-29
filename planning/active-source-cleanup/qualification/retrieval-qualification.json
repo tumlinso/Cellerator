@@ -1,0 +1,251 @@
+{
+  "format": "cellerator-cpp-retrieval-qualification/1",
+  "source": {
+    "repository": "/home/tumlinson/Cellerator",
+    "commit": "543039aa4f6b6222f4737befa9cb48cb2e54b574",
+    "source_frozen_at_scan": true,
+    "ctxpp_config_sha256": "3d476bf2c9d503eb1461634f4b6333af6cfa5b1a093f204a49bfa9587abd4a41",
+    "ctxpp_configuration_hash": "09c2f4a580d42e1fefbceb9dddd8cd8599374a508aa2787f7470c64e499cf101",
+    "compile_commands": {
+      "path": "build-ctxpp/compile_commands.json",
+      "sha256": "9d61e7ee978ad6d6d1038e870ab3e9af33cb397302ffa1ca15eac000a949d341",
+      "entries": 647,
+      "unique_translation_units": 634,
+      "configuration": "GCC 12, CUDA 12.9, SM70, sparse support enabled, Product2 enabled"
+    },
+    "scan": {
+      "state_dir": ".ctxpp",
+      "backend": "libclang-runtime",
+      "complete": false,
+      "semantic_index_available": true,
+      "configured_file_records": 3085,
+      "symbol_records": 45477,
+      "edge_records": 1636471,
+      "diagnostic_groups": 3,
+      "failures": [
+        {
+          "class": "Clang driver unavailable",
+          "affected_files": 159,
+          "failed_configurations": 165,
+          "scope": "CUDA translation units that the configured Clang driver could not parse"
+        },
+        {
+          "class": "stale source include path (known cleanup caller regression)",
+          "file": "tests/sparse_support/numeric_reference.cc",
+          "dependency": "../ce_geo/projection/mma_projection_roundtrip_test.cc (stale path; real file moved under ../geometry/projection/)",
+          "detail": "tests/sparse_support/numeric_reference.cc still references the moved ce_geo projection test; root plans the one-line include correction in Task 03."
+        },
+        {
+          "class": "dependent parse error",
+          "file": "tests/sparse_support/numeric_reference.cc",
+          "detail": "physical_image is undeclared after the stale include fails; this dependent parse error should clear with the Task 03 include fix."
+        }
+      ],
+      "source_coverage_note": "All 3085 configured paths have index file records; this does not mean every record is semantic. Overall index metadata marks coverage incomplete."
+    },
+    "index": {
+      "path": ".ctxpp/index.jsonl",
+      "bytes": 1008716612,
+      "sha256": "d9e32599c392a5c9e43a9b49e3ccdc76b3f0cf592080d1d916063b1521d29913"
+    },
+    "observer_export": {
+      "path": ".ctxpp/observer-export.json",
+      "format": "CTXPP-EXPORT/1",
+      "integrity": true,
+      "bytes": 1009739001,
+      "sha256": "fa1690551c0924f1242df2b15f841a264798ed88c9e224b1151ea99b07fd8ddb"
+    },
+    "source_identity_note": "The C++ translation units and headers were unchanged from clean baseline commit 543039aa4f6b6222f4737befa9cb48cb2e54b574. The approved .ctxpp.toml snapshot (SHA256 3d476bf2c9d503eb1461634f4b6333af6cfa5b1a093f204a49bfa9587abd4a41) was a tracked working-tree change at scan time, later checkpointed with routing guidance in native02 commit 4390bcd2e215d68409bc3dc61b5625774d9a22f8. The routing guide was excluded from C++ scan inputs."
+  },
+  "tool_fixes": {
+    "repository": "cpp-context-compiler in the installed skills repository",
+    "commits": [
+      "b49421b308dcc267636f3a83b59c80ccd3f5d0de",
+      "ce00a9ce21779d62b867c50ad7feb96f8494c6f4",
+      "4691951"
+    ],
+    "latest_commit_pushed": true,
+    "latest_change": "External state directory diagnostic logs now use an absolute locator; full test suite passed 74 tests in 150.548 seconds."
+  },
+  "preservation": {
+    "checkpoint": "/mnt/block/cellerator/preservation/cleanup-checkpoint-20261029T061426Z",
+    "default_ctxpp_archive": {
+      "file": "ctxpp-default-state-before-rebuild-20261029T081418Z.tar.zst",
+      "sha256": "310a453838a709d2ce73a6af6910ff8b9ee631c52b91f870a8a35119be9ad655"
+    },
+    "pre_cutover_default_retained_at": "build-ctxpp/ctxpp-default-before-cutover-20261029",
+    "candidate_retained_at": "build-ctxpp/ctxpp-candidate"
+  },
+  "observer_cutover": {
+    "shared_environment_file": ".config/project-control/cellerator-cpp-context.env",
+    "systemd_dropin": ".config/systemd/user/project-control.service.d/95-cellerator-cpp-context.conf",
+    "stdio_wrapper": ".local/bin/project-control",
+    "wrapper_exports_cpp_exports": true,
+    "existing_systemd_dropins_preserved": true,
+    "service_activation": "Root activated final manifest 865c5108...; PID 2007784 active, zero restarts, healthz/readyz/version HTTP 200; shared CPP export environment verified."
+  },
+  "retrieval_probes": {
+    "ctxpp_cli": {
+      "status": "pass",
+      "query": "prepare_entity_mechanism_index_v1",
+      "result": "Exact non-degraded FunctionDecl at src/ops/sparse_support/prepared_routing.cc:41; public declaration at include/Cellerator/ops/sparse_support/prepared_routing.hh:66."
+    },
+    "ctxpp_cli_routes": {
+      "status": "pass",
+      "result": "Read-only geometry/layout and compiler/SDK routes returned semantic indexed records."
+    },
+    "http_observer_context": {
+      "status": "pass",
+      "result": "Post-activation HTTP source search and context requests resolved exact Cellerator definitions. Product2 call and test_relationship edges were observed from the native host test."
+    },
+    "fresh_stdio_context": {
+      "status": "pass",
+      "result": "Post-activation fresh stdio source searches/context resolved exact definitions and four declared guides. Product2 call and test_relationship edges were observed from the native host test."
+    },
+    "existing_stdio_context": {
+      "status": "superseded",
+      "result": "An older pre-cutover stdio instance lacked the export environment. It is superseded by fresh post-activation stdio proofs and is not a current source index status."
+    },
+    "coverage_claim": "Semantic retrieval is active and useful, with explicit partial source coverage. Do not claim full source/translation-unit coverage.",
+    "indexed_host_test_call_edge": {
+      "status": "pass",
+      "target": {
+        "name": "ce_product2_forward",
+        "symbol_id": "c:@F@ce_product2_forward",
+        "path": "src/compute/operation/product2/product2.cc",
+        "definition_line": 96,
+        "degraded": null
+      },
+      "test_path": "tests/ops/product2/native_product2_test.cc",
+      "edge_type": "call",
+      "edge_count_to_target": 24,
+      "evidence": "Read-only inspection of the current indexed test-TU payload found 24 CallExpr edges from the compiled native Product2 host test to this exact symbol. This is C++ index evidence; the sealed Project Control candidate still must prove its typed test_relationship association."
+    },
+    "initial_cutover_attempts": {
+      "status": "superseded_by_final_candidate",
+      "stdio": "A pre-activation fresh stdio query timed out after 180 seconds while loading the unoptimized export.",
+      "http": "An initial pre-activation MCP tunnel request timed out at about 20 seconds.",
+      "note": "Both were before the Project Control scaling candidate; final post-activation cold/warm and context probes succeeded.",
+      "observed_utc_date": "2026-10-29",
+      "sequence": "Before the successful 2026-10-29 10:43Z final-candidate activation."
+    },
+    "prepared_context_and_guidance": {
+      "status": "pass_with_partial_coverage",
+      "stdio_context_sections": {
+        "implementation": 1,
+        "guidance": 4
+      },
+      "http_context_sections": {
+        "implementation": 1,
+        "guidance": 4
+      },
+      "http_extended_sections": {
+        "implementation": 1,
+        "callers": 0,
+        "references": 1,
+        "tests": 0,
+        "guidance": 4
+      },
+      "note": "Prepared routing definition/reference resolved; incoming prepared test/caller edges are not present in this compilation configuration. Product2 supplies a separately verified host test relationship."
+    },
+    "representative_semantic_symbols": {
+      "prepared_execution": {
+        "name": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1",
+        "path": "src/ops/sparse_support/prepared_routing.cc",
+        "lines": [
+          41,
+          156
+        ],
+        "sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+        "stdio": "resolved",
+        "http": "resolved"
+      },
+      "geometry_layout": {
+        "name": "cellpack::build_cp_bp_v1_compatibility_adapter_host",
+        "path": "src/geometry/semantic_geometry.cc",
+        "lines": [
+          148,
+          230
+        ],
+        "sha256": "dd5ac2ea23543adf7b35ee9a2c0107eae1530658a6283463f471e516ee82ca7f",
+        "stdio": "resolved",
+        "http": "resolved"
+      },
+      "installed_host_sdk": {
+        "name": "cellerator::compiler::driver::run_downstream_compiler_v1",
+        "path": "src/compiler/driver/downstream_compiler_invocation.cc",
+        "lines": [
+          7,
+          7
+        ],
+        "sha256": "921d7428493587b924e8ffcf03198b5f828360f14d43526f9b7c61e9cebfd469",
+        "stdio": "resolved",
+        "http": "resolved"
+      },
+      "unqualified_prototype": {
+        "name": "cellerator::compiler::api::v1::compiler_session_v1",
+        "path": "include/Cellerator/compiler/api/cpp_compiler_session_api_v1.hh",
+        "status": "not indexed in this compilation configuration"
+      }
+    },
+    "product2_observed_relationships": {
+      "target": {
+        "name": "ce_product2_forward",
+        "symbol_id": "c:@F@ce_product2_forward",
+        "path": "src/compute/operation/product2/product2.cc",
+        "line": 96
+      },
+      "test_path": "tests/ops/product2/native_product2_test.cc",
+      "test_sha256": "2ca1d38834a83b5192f930024b28a1d772595cc27597dad44117f6f33ace20db",
+      "observed_predicates": [
+        "call",
+        "test_relationship"
+      ],
+      "transports": [
+        "stdio",
+        "http"
+      ],
+      "source_symbol": "c:native_product2_test.cc@1482@F@main#@mis",
+      "source_line": 20,
+      "coverage": "Observed, source-hash verified in both transports. The underlying CTXPP translation unit also contains 24 CallExpr edges to the target."
+    },
+    "source_freshness_interpretation": "Positive Project Control results were matched to current path and content hashes. Source-only semantic_revision/context_revision are null because Todo semantic state is not required for source retrieval; null is not a C++ freshness failure.",
+    "freshness_source_hashes_current": true
+  },
+  "project_control_source_scaling": {
+    "qualification_receipt": {
+      "path": "/tmp/cellerator-observer-scaling-qualification.json",
+      "sha256": "169f62f6621530177044374af13d50729017770ee41efe70f7dcecc67415b377",
+      "mcp_calls_summarized": 25,
+      "source_commits": {
+        "project_control": "9fc74b4f1f1613b9fc7faa3e716a7441fb949989",
+        "project_source": "5fb7fa341acee56fef44d6294ca83b5233947d49"
+      }
+    },
+    "active_runtime": {
+      "manifest_sha256": "865c5108c7f85218055432bded73829d6f013fd65b62cdaccaf8d41172860839",
+      "service_pid": 2007784,
+      "state": "active",
+      "restarts": 0,
+      "health_readiness_version_http_status": 200,
+      "activation_receipt": "/home/tumlinson/.local/state/project-control/cutovers/observer-cpp-scaling-20261029T094117Z/activation-result-20261029T104309Z.json",
+      "existing_service_dropins_preserved": true,
+      "candidate_status_before_activation": "Consolidated principal receipt recorded a sealed inactive candidate; root activated that candidate after qualification."
+    },
+    "confirmed_changes": [
+      "Generation-keyed export cache with per-file records; source hashes and policy checks remain active.",
+      "Candidate-path routing avoids constructing unrelated edge units while preserving multiplicity, ambiguity and ordering.",
+      "Exact symbol lookup covers all repository paths instead of the first 2000.",
+      "Revision views reuse immutable export data while validating each source independently.",
+      "One-pass file inventory and bounded path-policy cache preserve current policy inputs."
+    ],
+    "candidate_validation": {
+      "project_source_tests": "38 passed",
+      "project_control_tests": "46 passed plus 6 subtests",
+      "installed_distributions": "46; all match baseline",
+      "unaffected_fingerprints": "5; all match baseline",
+      "todo_fingerprint_unchanged": true,
+      "read_only_candidate": true
+    }
+  }
+}

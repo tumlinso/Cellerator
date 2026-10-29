@@ -1,0 +1,910 @@
+{
+  "schema": "cellerator.observer-cpp-scaling-qualification/v1",
+  "qualified_utc": "2026-10-29T10:44:57.399140+00:00",
+  "source_commits": {
+    "project_foundations": "5fb7fa341acee56fef44d6294ca83b5233947d49",
+    "project_control": "9fc74b4f1f1613b9fc7faa3e716a7441fb949989"
+  },
+  "preservation_checkpoint": "/mnt/block/cellerator/preservation/cleanup-checkpoint-20261029T061426Z/observer-source-scaling-20261029T092258Z",
+  "runtime_candidate": {
+    "activation": "not performed; root retains activation authority",
+    "all_versions_match_baseline": true,
+    "baseline_checkpoint_sha256": "16487382510e8b11654faad2fd8a8c6c6cdb7a67289efd784cbe5855faf1ec0d",
+    "candidate": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-observer-scaling-final-20261029T1034Z",
+    "current_target": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-lifecycle-dispositions-20261029T080026Z",
+    "entrypoints": {
+      "inference": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-observer-scaling-final-20261029T1034Z/bin/project-control-inference",
+      "release": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-observer-scaling-final-20261029T1034Z/bin/project-control-release",
+      "server": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-observer-scaling-final-20261029T1034Z/bin/project-control"
+    },
+    "installed_distributions": 46,
+    "pcu_candidate_sha256": "3de27cd54e0885278c6c1c8beae4b9c689764472c1d18b41172cde245a0a6c35",
+    "previous_target": "/home/tumlinson/.local/state/project-control/venvs/pc-0.5.2-review-queue-20261029T031509Z",
+    "project_control_commit": "9fc74b4f1f1613b9fc7faa3e716a7441fb949989",
+    "project_control_fingerprint": "180a39b407d88f776d1afbe23ba356dba5ac4f2552aa4b79a154e396f6149e13",
+    "project_control_wheel_sha256": "240475c2480075e5931e44467636e14fd103c56f3799df077b86623668c60494",
+    "project_source_commit": "5fb7fa341acee56fef44d6294ca83b5233947d49",
+    "project_source_fingerprint": "f8c0ba9f1a837172c94d04724e5eee6327878155f5ae96f225f00291ece8650b",
+    "project_source_wheel_sha256": "e3a50d01801c8c142b2e32ccdb8410775c5dcc72ca40cc29b2aa2e7fb88a6f50",
+    "read_only_seal": "recursive a-w; candidate root mode 0500; no writable files observed",
+    "release_manifest_sha256": "865c5108c7f85218055432bded73829d6f013fd65b62cdaccaf8d41172860839",
+    "status": "sealed_inactive_candidate_ready_for_private_runtime_probe_and_root_review",
+    "todo_fingerprint": "d6ee2fb4036c33b542ee75d3a806182f2883b0bb8adbfef07bc4503ec565b6ae",
+    "unchanged_fingerprint_count": 5,
+    "unchanged_fingerprints_match_baseline": true,
+    "validation": {
+      "foundation_unittest": "38 passed",
+      "installed_imports": "candidate site-packages verified",
+      "project_control_pytest": "46 passed, 6 subtests passed",
+      "release_launcher": "--help passed",
+      "runtime_binding": "release digest and Todo identity verified"
+    }
+  },
+  "source_tests": {
+    "foundation": "38 passed",
+    "project_control": "46 passed, 6 subtests passed",
+    "graph_equivalence": "720 trace variants plus context budgets, source/hash/policy, ambiguity, replacement and paging tests",
+    "development_limit": "pc-dev checkout .venv lacked foundation dependencies; exact core selection passed with qualified explicit source dependencies and then installed candidate imports"
+  },
+  "confirmed_fixes": [
+    "One generation-keyed C++ export cache with per-file record indexes; current source hashes/policies and semantic guards stay active.",
+    "Candidate-path routing avoids constructing unrelated edge units, preserving edge/configuration multiplicity, ambiguity, ordering and global partial coverage.",
+    "Exact symbol lookup considers all source paths rather than the first 2000 tree entries.",
+    "Revision views reuse immutable export data while validating each view source independently.",
+    "Internal all-tree enumeration collects once; bounded 16384-entry pure path-policy cache uses current path/exclude/deny inputs, never filesystem/content/ACL/actor state."
+  ],
+  "input": {
+    "export_sha256": "fa1690551c0924f1242df2b15f841a264798ed88c9e224b1151ea99b07fd8ddb",
+    "files": 3085,
+    "symbols": 45477,
+    "edges": 1636471,
+    "semantic": true,
+    "incomplete": true,
+    "cellerator_head": "543039aa4f6b6222f4737befa9cb48cb2e54b574"
+  },
+  "private_mcp_calls": [
+    {
+      "transport": "stdio",
+      "label": "prepared-cold",
+      "tool": "search",
+      "seconds": 11.621940391996759,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "resolved",
+        "complete": true,
+        "matches": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "name": "prepare_entity_mechanism_index_v1",
+            "qualified_name": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1",
+            "kind": "definition",
+            "line_start": 41,
+            "line_end": 156,
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "provider": "cpp-context-compiler",
+            "resolution": "resolved"
+          }
+        ],
+        "kind": "symbol",
+        "target": "prepare_entity_mechanism_index_v1",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 156
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/stdio-prepared-cold.json",
+      "sha256": "5cb33ff135fbb3d97450f4beaaf794e54d0a82e3f2a055db390a58c44a5f04bf"
+    },
+    {
+      "transport": "stdio",
+      "label": "prepared-warm",
+      "tool": "search",
+      "seconds": 2.9274867919884855,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "resolved",
+        "complete": true,
+        "matches": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "name": "prepare_entity_mechanism_index_v1",
+            "qualified_name": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1",
+            "kind": "definition",
+            "line_start": 41,
+            "line_end": 156,
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "provider": "cpp-context-compiler",
+            "resolution": "resolved"
+          }
+        ],
+        "kind": "symbol",
+        "target": "prepare_entity_mechanism_index_v1",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 156
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/stdio-prepared-warm.json",
+      "sha256": "b1abd927c136f8f9fed0975f80480fb24fa5478336dd102fc5b030a183c29fac"
+    },
+    {
+      "transport": "stdio",
+      "label": "prepared-context",
+      "tool": "context",
+      "seconds": 3.8329470949975075,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "sections": {
+          "implementation": 1,
+          "guidance": 4
+        },
+        "repositories": [
+          "cellerator"
+        ],
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 156
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/stdio-prepared-context.json",
+      "sha256": "821f0badb0eef55791e3d697c9630bf21afe406effa702366b86ac71ad6912ff"
+    },
+    {
+      "transport": "stdio",
+      "label": "prepared-trace",
+      "tool": "trace",
+      "seconds": 3.5168609370011836,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "repositories": {
+          "cellerator": {
+            "edge_count": 0,
+            "coverage": "partial",
+            "complete": false,
+            "predicates": []
+          }
+        },
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/stdio-prepared-trace.json",
+      "sha256": "1944b0bcc00efcbd4bf356fb7c987d177b91f4f317a967dbc7b772e1f4736c2d"
+    },
+    {
+      "transport": "stdio",
+      "label": "guidance",
+      "tool": "context",
+      "seconds": 0.03189594300056342,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "sections": {
+          "guidance": 4
+        },
+        "repositories": [
+          "cellerator"
+        ],
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/stdio-guidance.json",
+      "sha256": "635c5440cc83248b4b0bf166e8b562c8140f34e197c4701f73252e348d41878f"
+    },
+    {
+      "transport": "stdio",
+      "label": "representative-0",
+      "tool": "search",
+      "seconds": 2.8496077349991538,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "not_found",
+        "complete": true,
+        "matches": [],
+        "kind": "symbol",
+        "target": "cellerator::compiler::api::v1::compiler_session_v1",
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/stdio-representative-0.json",
+      "sha256": "81cd205130d75046a03719365cc00c4329e0a9ec5fec677681fb7f8e4c4f1382"
+    },
+    {
+      "transport": "stdio",
+      "label": "representative-1",
+      "tool": "search",
+      "seconds": 2.892550069009303,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "resolved",
+        "complete": true,
+        "matches": [
+          {
+            "repository": "cellerator",
+            "path": "src/geometry/semantic_geometry.cc",
+            "name": "build_cp_bp_v1_compatibility_adapter_host",
+            "qualified_name": "cellpack::build_cp_bp_v1_compatibility_adapter_host",
+            "kind": "definition",
+            "line_start": 148,
+            "line_end": 230,
+            "content_sha256": "dd5ac2ea23543adf7b35ee9a2c0107eae1530658a6283463f471e516ee82ca7f",
+            "provider": "cpp-context-compiler",
+            "resolution": "resolved"
+          }
+        ],
+        "kind": "symbol",
+        "target": "cellpack::build_cp_bp_v1_compatibility_adapter_host",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/geometry/semantic_geometry.cc",
+            "content_sha256": "dd5ac2ea23543adf7b35ee9a2c0107eae1530658a6283463f471e516ee82ca7f",
+            "line_start": 148,
+            "line_end": 230
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/stdio-representative-1.json",
+      "sha256": "e82d604c3c2f6693610ad848be22e0ab067873bcf5b8068b710f8ea572bff4b1"
+    },
+    {
+      "transport": "stdio",
+      "label": "representative-2",
+      "tool": "search",
+      "seconds": 2.8747699049999937,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "resolved",
+        "complete": true,
+        "matches": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "name": "prepare_entity_mechanism_index_v1",
+            "qualified_name": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1",
+            "kind": "definition",
+            "line_start": 41,
+            "line_end": 156,
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "provider": "cpp-context-compiler",
+            "resolution": "resolved"
+          }
+        ],
+        "kind": "symbol",
+        "target": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 156
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/stdio-representative-2.json",
+      "sha256": "689ca6f6ce1c2c70502305e68ed67b72bd133981b7d9ed3df34f65c118459bae"
+    },
+    {
+      "transport": "http",
+      "label": "prepared-cold",
+      "tool": "search",
+      "seconds": 11.397096430999227,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "resolved",
+        "complete": true,
+        "matches": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "name": "prepare_entity_mechanism_index_v1",
+            "qualified_name": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1",
+            "kind": "definition",
+            "line_start": 41,
+            "line_end": 156,
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "provider": "cpp-context-compiler",
+            "resolution": "resolved"
+          }
+        ],
+        "kind": "symbol",
+        "target": "prepare_entity_mechanism_index_v1",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 156
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-prepared-cold.json",
+      "sha256": "0ec5e4b66554b873f367663e4b91450bc366c83197ae87b080c05dfe11b4b464"
+    },
+    {
+      "transport": "http",
+      "label": "prepared-warm",
+      "tool": "search",
+      "seconds": 2.897887824001373,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "resolved",
+        "complete": true,
+        "matches": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "name": "prepare_entity_mechanism_index_v1",
+            "qualified_name": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1",
+            "kind": "definition",
+            "line_start": 41,
+            "line_end": 156,
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "provider": "cpp-context-compiler",
+            "resolution": "resolved"
+          }
+        ],
+        "kind": "symbol",
+        "target": "prepare_entity_mechanism_index_v1",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 156
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-prepared-warm.json",
+      "sha256": "94ea8f6a10c4fdea7cb84583e3f81c1306265eb9ff7e8801f4975c58171bda93"
+    },
+    {
+      "transport": "http",
+      "label": "prepared-context",
+      "tool": "context",
+      "seconds": 4.181946764001623,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "sections": {
+          "implementation": 1,
+          "guidance": 4
+        },
+        "repositories": [
+          "cellerator"
+        ],
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 156
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-prepared-context.json",
+      "sha256": "fb308f81b820dec33899762a1a3f83740045ffe69fc0b8b7f41aca698338485e"
+    },
+    {
+      "transport": "http",
+      "label": "prepared-trace",
+      "tool": "trace",
+      "seconds": 3.230007336998824,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "repositories": {
+          "cellerator": {
+            "edge_count": 0,
+            "coverage": "partial",
+            "complete": false,
+            "predicates": []
+          }
+        },
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-prepared-trace.json",
+      "sha256": "9b397a522bad70e560d9444cabd7b82de9e933bafff1215aa5d124b54160b1a8"
+    },
+    {
+      "transport": "http",
+      "label": "guidance",
+      "tool": "context",
+      "seconds": 0.028566654000314884,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "sections": {
+          "guidance": 4
+        },
+        "repositories": [
+          "cellerator"
+        ],
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-guidance.json",
+      "sha256": "7a3b6513e8acbedb68d23f34ea9dd93d96b821b96e7524e4d5e101610ff4bc4a"
+    },
+    {
+      "transport": "http",
+      "label": "representative-0",
+      "tool": "search",
+      "seconds": 2.9434023610083386,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "not_found",
+        "complete": true,
+        "matches": [],
+        "kind": "symbol",
+        "target": "cellerator::compiler::api::v1::compiler_session_v1",
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-representative-0.json",
+      "sha256": "decf9442005512fe7f116b3a33ee8c37782caa00d822b872af2bd0fb459467fb"
+    },
+    {
+      "transport": "http",
+      "label": "representative-1",
+      "tool": "search",
+      "seconds": 3.0241600329900393,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "resolved",
+        "complete": true,
+        "matches": [
+          {
+            "repository": "cellerator",
+            "path": "src/geometry/semantic_geometry.cc",
+            "name": "build_cp_bp_v1_compatibility_adapter_host",
+            "qualified_name": "cellpack::build_cp_bp_v1_compatibility_adapter_host",
+            "kind": "definition",
+            "line_start": 148,
+            "line_end": 230,
+            "content_sha256": "dd5ac2ea23543adf7b35ee9a2c0107eae1530658a6283463f471e516ee82ca7f",
+            "provider": "cpp-context-compiler",
+            "resolution": "resolved"
+          }
+        ],
+        "kind": "symbol",
+        "target": "cellpack::build_cp_bp_v1_compatibility_adapter_host",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/geometry/semantic_geometry.cc",
+            "content_sha256": "dd5ac2ea23543adf7b35ee9a2c0107eae1530658a6283463f471e516ee82ca7f",
+            "line_start": 148,
+            "line_end": 230
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-representative-1.json",
+      "sha256": "1a4132108ad49a840b0213b6b15ebe0daab9ef4e8c249d8e4dc655a4b09bb7ca"
+    },
+    {
+      "transport": "http",
+      "label": "representative-2",
+      "tool": "search",
+      "seconds": 2.9177022149960976,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "resolved",
+        "complete": true,
+        "matches": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "name": "prepare_entity_mechanism_index_v1",
+            "qualified_name": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1",
+            "kind": "definition",
+            "line_start": 41,
+            "line_end": 156,
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "provider": "cpp-context-compiler",
+            "resolution": "resolved"
+          }
+        ],
+        "kind": "symbol",
+        "target": "cellerator::ops::sparse_support::prepare_entity_mechanism_index_v1",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 156
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-representative-2.json",
+      "sha256": "98cc94ed131c92e31dab32cd39937191848557e551d059e377bf241a597c8fc0"
+    },
+    {
+      "transport": "http",
+      "label": "test-relationship",
+      "tool": "trace",
+      "seconds": 3.437619378004456,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "repositories": {
+          "cellerator": {
+            "edge_count": 1,
+            "coverage": "partial",
+            "complete": false,
+            "predicates": [
+              "test_relationship"
+            ]
+          }
+        },
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-test-relationship.json",
+      "sha256": "96ae69042b3d72631f6d9e6d4231ed3e51ffc2e48833fb23cead02a9e115c56b"
+    },
+    {
+      "transport": "http",
+      "label": "prepared-context-extended",
+      "tool": "context",
+      "seconds": 4.546279247995699,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "sections": {
+          "implementation": 1,
+          "callers": 0,
+          "references": 1,
+          "tests": 0,
+          "guidance": 4
+        },
+        "repositories": [
+          "cellerator"
+        ],
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 156
+          },
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 41
+          },
+          {
+            "repository": "cellerator",
+            "path": ".project-context.json",
+            "content_sha256": "2047807a591f5f91844c2e7f4626ec06944259ff4130119a1c9322357ecc68ef"
+          },
+          {
+            "repository": "cellerator",
+            "path": "AGENTS.md",
+            "content_sha256": "0f211ea864376a8563cd33971d27f880ecbfd1fdf83b7e95cfedac0c3bef78ce"
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-prepared-context-extended.json",
+      "sha256": "ef7d06c287a73a3d1d0c6fd7d58456d237a123bd85b5211a0438183c539a64a2"
+    },
+    {
+      "transport": "http",
+      "label": "source-read",
+      "tool": "read",
+      "seconds": 0.03297514699806925,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/ops/sparse_support/prepared_routing.cc",
+            "content_sha256": "dcc5c96cb6135c92bc5b86bd4ab8bb62af8fbe284dbb99491d143d43dd3ee7d8",
+            "line_start": 41,
+            "line_end": 48
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-final/http-source-read.json",
+      "sha256": "a498beeaa4c02aad372fe9dcdb033dc865ff944454ec2570792eaeac88beb8fc"
+    },
+    {
+      "transport": "stdio",
+      "label": "installed-host-sdk",
+      "seconds": 10.966788110003108,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "resolved",
+        "complete": true,
+        "matches": [
+          {
+            "repository": "cellerator",
+            "path": "src/compiler/driver/downstream_compiler_invocation.cc",
+            "name": "run_downstream_compiler_v1",
+            "qualified_name": "cellerator::compiler::driver::run_downstream_compiler_v1",
+            "kind": "definition",
+            "line_start": 7,
+            "line_end": 7,
+            "content_sha256": "921d7428493587b924e8ffcf03198b5f828360f14d43526f9b7c61e9cebfd469",
+            "provider": "cpp-context-compiler",
+            "resolution": "resolved"
+          }
+        ],
+        "kind": "symbol",
+        "target": "cellerator::compiler::driver::run_downstream_compiler_v1",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/compiler/driver/downstream_compiler_invocation.cc",
+            "content_sha256": "921d7428493587b924e8ffcf03198b5f828360f14d43526f9b7c61e9cebfd469",
+            "line_start": 7,
+            "line_end": 7
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-followup/stdio-installed-host-sdk.json",
+      "sha256": "e7f1a861bba28cb6964daacefbac2db053526963743188a4522218a91a76a339"
+    },
+    {
+      "transport": "stdio",
+      "label": "product2-call",
+      "seconds": 3.5964922230050433,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "repositories": {
+          "cellerator": {
+            "edge_count": 1,
+            "coverage": "partial",
+            "complete": false,
+            "predicates": [
+              "call"
+            ]
+          }
+        },
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-followup/stdio-product2-call.json",
+      "sha256": "2ded53d705cfd27717612bedd788f6ef1876b19a6c4710507ea824d5755a9e18"
+    },
+    {
+      "transport": "stdio",
+      "label": "product2-test_relationship",
+      "seconds": 3.1725833530072123,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "repositories": {
+          "cellerator": {
+            "edge_count": 1,
+            "coverage": "partial",
+            "complete": false,
+            "predicates": [
+              "test_relationship"
+            ]
+          }
+        },
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-followup/stdio-product2-test_relationship.json",
+      "sha256": "674117ede2d2ddb899cdf879d45cb69f2ad7dcb2229f2960fbc837ec9b5396b3"
+    },
+    {
+      "transport": "http",
+      "label": "installed-host-sdk",
+      "seconds": 10.999902702998952,
+      "is_error": false,
+      "summary": {
+        "status": "ok",
+        "resolution": "resolved",
+        "complete": true,
+        "matches": [
+          {
+            "repository": "cellerator",
+            "path": "src/compiler/driver/downstream_compiler_invocation.cc",
+            "name": "run_downstream_compiler_v1",
+            "qualified_name": "cellerator::compiler::driver::run_downstream_compiler_v1",
+            "kind": "definition",
+            "line_start": 7,
+            "line_end": 7,
+            "content_sha256": "921d7428493587b924e8ffcf03198b5f828360f14d43526f9b7c61e9cebfd469",
+            "provider": "cpp-context-compiler",
+            "resolution": "resolved"
+          }
+        ],
+        "kind": "symbol",
+        "target": "cellerator::compiler::driver::run_downstream_compiler_v1",
+        "source_refs": [
+          {
+            "repository": "cellerator",
+            "path": "src/compiler/driver/downstream_compiler_invocation.cc",
+            "content_sha256": "921d7428493587b924e8ffcf03198b5f828360f14d43526f9b7c61e9cebfd469",
+            "line_start": 7,
+            "line_end": 7
+          }
+        ]
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-followup/http-installed-host-sdk.json",
+      "sha256": "cd44ac211301f6a664f3e5564985728da13134b1537b5cffd2c2b895dc0991de"
+    },
+    {
+      "transport": "http",
+      "label": "product2-call",
+      "seconds": 3.5927375789906364,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "repositories": {
+          "cellerator": {
+            "edge_count": 1,
+            "coverage": "partial",
+            "complete": false,
+            "predicates": [
+              "call"
+            ]
+          }
+        },
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-followup/http-product2-call.json",
+      "sha256": "c2acd8b76b9101fac356b73e8a93b43e6f28ebf12bf70ad24e4b125673823fee"
+    },
+    {
+      "transport": "http",
+      "label": "product2-test_relationship",
+      "seconds": 3.176817685001879,
+      "is_error": false,
+      "summary": {
+        "status": "partial",
+        "complete": false,
+        "repositories": {
+          "cellerator": {
+            "edge_count": 1,
+            "coverage": "partial",
+            "complete": false,
+            "predicates": [
+              "test_relationship"
+            ]
+          }
+        },
+        "source_refs": []
+      },
+      "receipt": "/tmp/cellerator-observer-sealed-probe-followup/http-product2-test_relationship.json",
+      "sha256": "281ee0764b6dad905f1e9c50bfd312cb8e5ac8881908980959c00d494dd19a2e"
+    }
+  ],
+  "verified_product2_relationships": [
+    {
+      "transport": "stdio",
+      "predicate": "call",
+      "source_path": "tests/ops/product2/native_product2_test.cc",
+      "sha256": "2ca1d38834a83b5192f930024b28a1d772595cc27597dad44117f6f33ace20db",
+      "source": "c:native_product2_test.cc@1482@F@main#@mis",
+      "target": "c:@F@ce_product2_forward",
+      "line": 20,
+      "basis": "observed",
+      "receipt": "/tmp/cellerator-observer-sealed-probe-followup/stdio-product2-call.json",
+      "receipt_sha256": "2ded53d705cfd27717612bedd788f6ef1876b19a6c4710507ea824d5755a9e18"
+    },
+    {
+      "transport": "stdio",
+      "predicate": "test_relationship",
+      "source_path": "tests/ops/product2/native_product2_test.cc",
+      "sha256": "2ca1d38834a83b5192f930024b28a1d772595cc27597dad44117f6f33ace20db",
+      "source": "c:native_product2_test.cc@1482@F@main#@mis",
+      "target": "c:@F@ce_product2_forward",
+      "line": 20,
+      "basis": "observed",
+      "receipt": "/tmp/cellerator-observer-sealed-probe-followup/stdio-product2-test_relationship.json",
+      "receipt_sha256": "674117ede2d2ddb899cdf879d45cb69f2ad7dcb2229f2960fbc837ec9b5396b3"
+    },
+    {
+      "transport": "http",
+      "predicate": "call",
+      "source_path": "tests/ops/product2/native_product2_test.cc",
+      "sha256": "2ca1d38834a83b5192f930024b28a1d772595cc27597dad44117f6f33ace20db",
+      "source": "c:native_product2_test.cc@1482@F@main#@mis",
+      "target": "c:@F@ce_product2_forward",
+      "line": 20,
+      "basis": "observed",
+      "receipt": "/tmp/cellerator-observer-sealed-probe-followup/http-product2-call.json",
+      "receipt_sha256": "c2acd8b76b9101fac356b73e8a93b43e6f28ebf12bf70ad24e4b125673823fee"
+    },
+    {
+      "transport": "http",
+      "predicate": "test_relationship",
+      "source_path": "tests/ops/product2/native_product2_test.cc",
+      "sha256": "2ca1d38834a83b5192f930024b28a1d772595cc27597dad44117f6f33ace20db",
+      "source": "c:native_product2_test.cc@1482@F@main#@mis",
+      "target": "c:@F@ce_product2_forward",
+      "line": 20,
+      "basis": "observed",
+      "receipt": "/tmp/cellerator-observer-sealed-probe-followup/http-product2-test_relationship.json",
+      "receipt_sha256": "281ee0764b6dad905f1e9c50bfd312cb8e5ac8881908980959c00d494dd19a2e"
+    }
+  ],
+  "private_http_cleanup": [
+    {
+      "pid": 2005674,
+      "exit_code": -15,
+      "port": 8852
+    },
+    {
+      "pid": 2007247,
+      "exit_code": -15,
+      "port": 8852
+    }
+  ],
+  "private_port_8852_closed": true,
+  "performance_scope": {
+    "same_stdio_search_arguments": {
+      "project": "cellerator",
+      "repository": "cellerator",
+      "query": {
+        "kind": "symbol",
+        "target": "prepare_entity_mechanism_index_v1"
+      },
+      "limit": 10
+    },
+    "before_inventory_fix_seconds": {
+      "cold": 48.981380024008104,
+      "warm": 42.51922870700946
+    },
+    "final_stdio_seconds": {
+      "cold": 11.621940391996759,
+      "warm": 2.9274867919884855
+    },
+    "definition": "Per-tool MCP latency, handshake excluded; cold means fresh server/export cache. Source SQLite state was preseeded from a consistent private copy; filesystem cache not flushed. Context/trace request sizes changed, so their final absolute timings are not compared with earlier oversized exploratory requests. No numerical/GPU/biological performance claim."
+  },
+  "coverage_limits": [
+    "Index is explicitly incomplete: 159 files/165 configurations lack required Clang driver.",
+    "numeric_reference.cc stale cleanup-era include and dependent parse error are owned by root for source qualification.",
+    "Broad compiler_session_v1 prototype is unconfigured here; actual installed host SDK run_downstream_compiler_v1 is verified.",
+    "Prepared routing definition/reference is verified, but incoming prepared test/caller edges are not established in this configuration. Compiled Product2 call/test_relationship edges are positively verified.",
+    "Source-only semantic_revision=null is not a C++ freshness failure. All positive records were checked against actual current source hashes.",
+    "No live service activation, Todo authority/credential mutation or GPU workload by this workstream; root owns activation."
+  ]
+}
