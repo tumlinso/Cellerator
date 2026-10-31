@@ -22,20 +22,20 @@ Check:
 1. `FeatureBinding` maps named identities to declared model indices, while selected readout outputs preserve requested identity ordering. Repeated occurrences remain separate positions.
 2. `PreparedRelation` on CUDA matches raw CSR and dense equivalent support in output, input VJP, and parameter VJP. Exercise FP32 and FP16 if those operations accept both. Record input/weight/output storage types and any accumulation type explicitly; attention may use the module's ordinary Torch precision behavior.
 3. Value-only changes reuse one prepared relation and yield results based on updated values. An altered occurrence order or structural generation fails before any silent remapping. Include empty neighborhoods and duplicate/overlap support.
-4. A biological query selecting a feature subset matches selection from the full declared readout, and gradients reach selected inputs/head parameters. Explicit conditioning changes result and has a gradient path; frozen-base and joint modes update only the intended parameters.
+4. Named feature encoding preserves repeated occurrences and noncontiguous model coordinates. A biological query selecting a feature subset matches selection from the full declared readout and preserves requested identity order; gradients reach selected inputs/head parameters. Shared conditioning groups one base invocation by object identity, changes results through the registered conditioner, and has a gradient path. Frozen-base and joint modes update only the intended parameters.
 5. `InteractionPrograms` handles overlapping memberships and context-conditioned program queries on GPU. Gradients from features and multiple members reach shared program parameters; empty support remains zero where specified.
-6. When practical, run one ordinary differentiable surrounding-layer composition with the already-built native grouped-linear extension. This is ancillary and uses the existing kernel unchanged.
+6. Compose bound `FeatureEncoder` output with the already-built native grouped-linear extension, comparing outputs and VJPs with its Torch reference. This is ancillary and uses the existing kernel unchanged; the test skips only if the optional isolated extension is unavailable.
 7. On the prepared path, no repeated structural `.item()` validation or implicit structural device-to-host transfer occurs per forward; verify by source and/or a targeted instrumentation counter where practical. No profiler is used.
 
 ## Numerical acceptance
 
-For FP32, compare CUDA output and VJPs with CPU/reference at `rtol=3e-4, atol=3e-5` or tighter where stable. For FP16, use represented FP16 values as reference inputs and compare outputs/VJPs with `rtol=8e-3, atol=6e-3`, with documented reason if an operation needs a wider bound. Do not silently widen thresholds to pass. The primary criterion is matching the specified semantics; randomized dropout is disabled.
+For FP32, compare CUDA output and VJPs with CPU/reference at `rtol=3e-4, atol=3e-5` or tighter where stable. For FP16, use represented FP16 values as reference inputs and compare outputs/VJPs with `rtol=8e-3, atol=6e-3`, with documented reason if an operation needs a wider bound. Do not silently widen thresholds to pass. The primary criterion is matching the specified semantics; randomized dropout is disabled. RelationAttention, feature binding/encoding, readout, and programs use FP32 by default; the prepared/raw relation differential also probes FP16 with the module's ordinary Torch arithmetic (no custom accumulator type is promised). The reused grouped-linear operation receives FP32 Torch-owned weights/inputs, returns FP32, and its pre-existing native contract accumulates in FP32.
 
 ## Execution and exact validation
 
 1. Author this draft before qualification implementation.
 2. Add an opt-in `unittest` test file and isolated admitted-job runner. CPU references and syntax can be checked without CUDA allocation.
-3. Fix test/source artifact identity and record SHA-256 hashes before submission.
+3. Fix test/source artifact identity in `evidence/artifact_manifest.json` and record SHA-256 hashes before submission. The runner checks those identities before and after execution and rejects source drift.
 4. Submit one finite, exclusive UUID-selected V100 job via Device Scheduler using the existing Cellerator client route; no direct/unmanaged CUDA fallback. GPU memory is an admission estimate. Correctness does not need a quiescence precondition.
 5. Run the isolated GPU test pattern in that job; wait, collect logs/evidence, verify cleanup, and do not assume resource release until cleanup is confirmed.
 6. Record scheduler job/attempt/GPU UUID, runtime/toolchain, source and native extension hashes, test totals, precision, and cleanup state in `REPORT.md` and structured evidence. No timing or biological-validity claim is made.

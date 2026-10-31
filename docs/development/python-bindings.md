@@ -23,8 +23,14 @@ an arbitrary object or an external state reference; observations and update
 rules are supplied separately for dynamical models. Generic `Cell` handles bind
 arbitrary information to shared callable programs without a clock or mandatory
 state vector. The legacy `Model` name aliases `DynamicalModel`.
+`FeatureBinding`, `PreparedAlignment`, `IdentityCodec`, `PredictionQuery`, and
+`Prediction` are also available from the root without importing Torch. They
+declare model-local biological coordinates and borrowed values; they do not
+replace typed native axes, relations, or parameter owners. `Cell.query(...)`
+delegates to a supporting shared program without imposing a latent state.
 See the [neural foundation](../nn_foundation.qmd) for composable learned
-features, relations, readouts, and ordinary parameter-owned custom operations,
+features, prepared relations, queries, supervision, manifests, readouts, and
+ordinary parameter-owned custom operations,
 and the [framework guide](../biological_framework.qmd)
 for examples and the boundary between these mechanisms and native execution.
 

@@ -230,9 +230,27 @@ class PreparedRelation:
         self._frozen = True
 
     @classmethod
-    def from_csr(cls, row_ptr: Tensor | Sequence[int], col_indices: Tensor | Sequence[int], **kwargs: Any) -> "PreparedRelation":
+    def from_csr(
+        cls,
+        row_ptr: Tensor | Sequence[int],
+        col_indices: Tensor | Sequence[int],
+        *,
+        source_order: Sequence[Hashable],
+        target_order: Sequence[Hashable],
+        source_offsets: Sequence[int] | None = None,
+        target_offsets: Sequence[int] | None = None,
+        source_axis: Axis | None = None,
+        target_axis: Axis | None = None,
+        structural_generation: int = 0,
+        device: torch.device | str = "cpu",
+    ) -> "PreparedRelation":
         """Create an immutable relation from host CSR structure."""
-        return cls(row_ptr, col_indices, **kwargs)
+        return cls(
+            row_ptr, col_indices, source_order=source_order, target_order=target_order,
+            source_offsets=source_offsets, target_offsets=target_offsets,
+            source_axis=source_axis, target_axis=target_axis,
+            structural_generation=structural_generation, device=device,
+        )
 
     @classmethod
     def from_dense(
@@ -327,9 +345,17 @@ class PreparedRelation:
             raise ValueError("prepared relation extents do not match source/target tensors")
         if source_order is None or target_order is None:
             raise ValueError("prepared relations require source_order and target_order at execution")
-        if _order(source_order, "source_order") != self.source_order:
+        checked_source_order = (
+            source_order if source_order is self.source_order
+            else _order(source_order, "source_order")
+        )
+        checked_target_order = (
+            target_order if target_order is self.target_order
+            else _order(target_order, "target_order")
+        )
+        if checked_source_order != self.source_order:
             raise ValueError("source occurrence order differs from prepared relation")
-        if _order(target_order, "target_order") != self.target_order:
+        if checked_target_order != self.target_order:
             raise ValueError("target occurrence order differs from prepared relation")
         if _offsets(source_offsets, n_sources, "source_offsets") != self.source_offsets:
             raise ValueError("source group offsets differ from prepared relation")

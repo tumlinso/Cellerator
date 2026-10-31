@@ -8,6 +8,14 @@ from __future__ import annotations
 import copy
 
 import torch
+import torch.nn.functional as F
+
+from cellerator.biology import FeatureBinding, PredictionQuery
+from cellerator.torch.supervision import (
+    align_prediction_targets,
+    categorical_target_columns,
+    reduce_prediction_loss,
+)
 
 if __package__:
     from .reference_models import (
@@ -15,7 +23,9 @@ if __package__:
         ExpressionReferenceModel,
         atac_binary_loss,
         attach_atac_view,
+        attach_expression_view,
         attach_history_view,
+        attach_event_view,
         event_next_token_loss,
         masked_expression_mse,
     )
@@ -25,7 +35,9 @@ else:
         ExpressionReferenceModel,
         atac_binary_loss,
         attach_atac_view,
+        attach_expression_view,
         attach_history_view,
+        attach_event_view,
         event_next_token_loss,
         masked_expression_mse,
     )
@@ -66,6 +78,7 @@ def _event_batch() -> dict[str, object]:
     return {
         "event_ids": torch.tensor(flat, dtype=torch.long),
         "event_offsets": offsets,
+        "sample_ids": tuple(f"event-cell-{index}" for index in range(len(rows))),
     }
 
 
@@ -158,6 +171,7 @@ def _train_history_atac(
     *,
     train_base: bool,
     seed: int,
+    output_binding: FeatureBinding | None = None,
     steps: int = 80,
 ) -> tuple[float, float]:
     """Train a paired ATAC observation head on an explicit history readout.
@@ -168,7 +182,10 @@ def _train_history_atac(
     """
     model_base = copy.deepcopy(base).cpu()
     torch.manual_seed(seed)
-    model = attach_history_view(model_base, "atac", output_size=targets.shape[-1]).cpu()
+    model = attach_history_view(
+        model_base, "atac", output_size=targets.shape[-1],
+        output_binding=output_binding,
+    ).cpu()
     model.train()
     if not train_base:
         model.base.requires_grad_(False)
@@ -177,8 +194,19 @@ def _train_history_atac(
         lr=0.02,
     )
 
+    query = (
+        None if output_binding is None else PredictionQuery(
+            "atac", feature_ids=output_binding.identities,
+            sample_ids=batch["sample_ids"],
+        )
+    )
+
     def loss_value() -> torch.Tensor:
-        return atac_binary_loss(model.predict(batch, "atac"), targets)
+        prediction = (
+            model.predict(batch, "atac") if query is None
+            else model.query(batch, query).values
+        )
+        return atac_binary_loss(prediction, targets)
 
     initial = float(loss_value().detach())
     for _ in range(steps):
@@ -188,6 +216,117 @@ def _train_history_atac(
         optimizer.step()
     final = float(loss_value().detach())
     return initial, final
+
+
+def _train_bound_expression(steps: int = 60) -> tuple[float, float]:
+    """Train an expression model through biological IDs and a selected query."""
+    binding = FeatureBinding.from_ids(
+        ("gene-A", "gene-B", "gene-C", "gene-D", "gene-E"),
+        (2, 7, 11, 15, 19), domain="gene", model_capacity=21,
+    )
+    model = attach_expression_view(
+        ExpressionReferenceModel(21, 12, heads=3, binding=binding)
+    ).cpu()
+    source_ids = ("gene-C", "gene-A", "gene-E", "gene-B", "gene-D")
+    source_columns = torch.tensor([2, 0, 4, 1, 3])
+    patterns, target_mask = _expression_batch()[1:]
+    # Target/input arrays deliberately use the same permuted named axis.
+    target_values = patterns.index_select(1, source_columns)
+    withheld = torch.zeros_like(target_mask)
+    withheld[:, (0, 3)] = True
+    input_mask = ~withheld.index_select(1, source_columns)
+    sample_ids = tuple(f"bound-cell-{index}" for index in range(patterns.shape[0]))
+    batch = {
+        "feature_identities": source_ids,
+        "values": target_values,
+        "observed": input_mask,
+        "sample_ids": sample_ids,
+    }
+    query = PredictionQuery(
+        "expression", feature_ids=binding.identities, sample_ids=sample_ids
+    )
+    alignment = binding.prepare(source_ids, query.feature_ids)
+    aligned_mask = alignment.gather(withheld.index_select(1, source_columns), axis=1)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.02)
+
+    def loss_value() -> tuple[torch.Tensor, torch.Tensor]:
+        prediction = model.query(batch, query)
+        pred_values, aligned_targets = align_prediction_targets(
+            prediction, target_values, alignment, target_sample_ids=sample_ids,
+        )
+        aligned_targets_mask = aligned_mask
+        losses = F.mse_loss(pred_values, aligned_targets, reduction="none")
+        return reduce_prediction_loss(
+            losses, unit="cell", valid_mask=aligned_targets_mask,
+            sample_ids=sample_ids, cell_ids=sample_ids,
+        )
+
+    initial_loss, initial_count = loss_value()
+    if not int(initial_count):
+        raise RuntimeError("bound expression example unexpectedly has no targets")
+    initial = float(initial_loss.detach())
+    for _ in range(steps):
+        optimizer.zero_grad(set_to_none=True)
+        loss, count = loss_value()
+        if int(count):
+            loss.backward()
+            optimizer.step()
+    final_loss, final_count = loss_value()
+    if not int(final_count):
+        raise RuntimeError("bound expression supervision disappeared during training")
+    return initial, float(final_loss.detach())
+
+
+def _train_bound_events(steps: int = 80) -> tuple[float, float]:
+    """Train event logits after mapping biological labels to output columns."""
+    binding = FeatureBinding.from_ids(
+        ("gene-B", "gene-A"), (5, 12), domain="gene", model_capacity=14,
+    )
+    base = EventHistoryReferenceModel(
+        2, 12, heads=3, max_history=16, binding=binding,
+    )
+    model = attach_event_view(base)
+    rows = [
+        ("gene-A", "gene-B", "gene-A", "gene-B"),
+        (),
+        ("gene-B", "gene-A", "gene-B", "gene-A"),
+        ("gene-A", "gene-B", "gene-A", "gene-B"),
+    ]
+    labels = tuple(identity for row in rows for identity in row)
+    offsets = [0]
+    for row in rows:
+        offsets.append(offsets[-1] + len(row))
+    sample_ids = tuple(f"bound-history-{index}" for index in range(len(rows)))
+    batch = {"event_ids": labels, "event_offsets": tuple(offsets), "sample_ids": sample_ids}
+    query = PredictionQuery(
+        "events", feature_ids=binding.identities, sample_ids=sample_ids,
+        row_offsets=offsets,
+    )
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.02)
+
+    def loss_value() -> tuple[torch.Tensor, torch.Tensor]:
+        prediction = model.query(batch, query)
+        columns = categorical_target_columns(prediction, labels)
+        unreduced = F.cross_entropy(prediction.values, columns, reduction="none")
+        return reduce_prediction_loss(
+            unreduced, unit="observation", sample_ids=prediction.sample_ids,
+            row_offsets=prediction.row_offsets,
+        )
+
+    initial_loss, initial_count = loss_value()
+    if not int(initial_count):
+        raise RuntimeError("bound event example unexpectedly has no targets")
+    initial = float(initial_loss.detach())
+    for _ in range(steps):
+        optimizer.zero_grad(set_to_none=True)
+        loss, count = loss_value()
+        if int(count):
+            loss.backward()
+            optimizer.step()
+    final_loss, final_count = loss_value()
+    if not int(final_count):
+        raise RuntimeError("bound event supervision disappeared during training")
+    return initial, float(final_loss.detach())
 
 
 def main() -> None:
@@ -213,10 +352,10 @@ def main() -> None:
     )
     history_atac_targets = torch.tensor([
         [1.0, 0.0, 1.0],
+        [0.0, 0.0, 0.0],
         [0.0, 1.0, 0.0],
-        [1.0, 1.0, 0.0],
-        [0.0, 0.0, 1.0],
-        [1.0, 0.0, 0.0],
+        [1.0, 0.0, 1.0],
+        [0.0, 1.0, 0.0],
     ], dtype=torch.float32)
     history_atac_frozen_initial, history_atac_frozen_final = _train_history_atac(
         event_model, event_batch_data, history_atac_targets,
@@ -226,6 +365,20 @@ def main() -> None:
         event_model, event_batch_data, history_atac_targets,
         train_base=True, seed=2028
     )
+    peak_binding = FeatureBinding.from_ids(
+        ("peak-A", "peak-B", "peak-C"), (1, 4, 9),
+        domain="peak", model_capacity=11,
+    )
+    history_atac_bound_frozen_initial, history_atac_bound_frozen_final = _train_history_atac(
+        event_model, event_batch_data, history_atac_targets,
+        train_base=False, seed=2029, output_binding=peak_binding,
+    )
+    history_atac_bound_joint_initial, history_atac_bound_joint_final = _train_history_atac(
+        event_model, event_batch_data, history_atac_targets,
+        train_base=True, seed=2029, output_binding=peak_binding,
+    )
+    bound_expression_initial, bound_expression_final = _train_bound_expression()
+    bound_event_initial, bound_event_final = _train_bound_events()
     results = {
         "expression_masked_mse": (expression_initial, expression_final),
         "event_next_event_ce": (event_initial, event_final),
@@ -237,6 +390,14 @@ def main() -> None:
         "history_atac_joint_base_bce": (
             history_atac_joint_initial, history_atac_joint_final
         ),
+        "history_atac_bound_frozen_base_bce": (
+            history_atac_bound_frozen_initial, history_atac_bound_frozen_final
+        ),
+        "history_atac_bound_joint_base_bce": (
+            history_atac_bound_joint_initial, history_atac_bound_joint_final
+        ),
+        "bound_expression_cell_mse": (bound_expression_initial, bound_expression_final),
+        "bound_event_observation_ce": (bound_event_initial, bound_event_final),
     }
     for name, (initial, final) in results.items():
         if not (torch.isfinite(torch.tensor(initial)) and torch.isfinite(torch.tensor(final))):

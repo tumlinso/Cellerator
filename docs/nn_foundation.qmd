@@ -47,8 +47,9 @@ construction routes to a real `DynamicalCell`.
 ## Biological features and interactions
 
 The lazy `cellerator.nn` interface exposes `FeatureEncoder`, `RelationAttention`,
-`ModelWithViews`, `grouped_linear`, and `GroupedLinear`, alongside existing
-neural adapters. `cellerator.torch.nn` retains the same relevant exports.
+`PreparedRelation`, `InteractionPrograms`, `FeatureReadout`, `ModelWithViews`,
+and grouped-linear composition, alongside existing neural adapters.
+`cellerator.torch.nn` retains the same relevant exports.
 Conventional Torch modules compose directly with these components.
 
 `FeatureEncoder(vocabulary_size, width, value_size=1, attribute_size=None)`
@@ -63,6 +64,40 @@ Callers choose vocabulary mappings and align feature IDs, measurements, masks,
 and attributes explicitly. Feature identity, vocabulary index, event occurrence,
 and physical position are distinct. No new global registry or mandatory
 biological tensor container is introduced.
+
+### Bind identities at the data boundary
+
+`FeatureBinding` is an immutable, model-local declaration. Construct it from an
+existing `GeneVocabulary` with `FeatureBinding.from_gene_vocabulary(vocabulary)`
+or supply ordered identities and actual model indices for genes, peaks, or other
+participants. A vocabulary's canonical gene index, token/embedding ID, unique
+feature position, and event occurrence position remain distinct.
+
+```python
+from cellerator import FeatureBinding
+
+genes = FeatureBinding.from_ids(
+    ("gene-A", "gene-B"), (2, 7), domain="gene", model_capacity=8,
+    metadata={"reference": "caller-declared-reference"},
+)
+alignment = genes.prepare(("gene-B", "gene-A"), genes.identities)
+# Select columns without changing the storage family; SciPy inputs stay sparse.
+aligned_values = alignment.gather(source_values, axis=-1)
+```
+
+Gene bindings reuse the native vocabulary's canonical IDs, aliases, token IDs,
+unknown policy, and reference metadata. No global registry is added. An optional
+existing `Axis` records domain/order identity and must have the declared extent.
+Unknown or ambiguous identities fail according to the declared policy;
+same-shaped incompatible declarations are not interchangeable.
+
+`binding.prepare(...)` prepares a unique feature-axis alignment.
+`binding.map_occurrences(...)` separately maps ordered histories and preserves
+repeated genes. `FeatureEncoder(..., binding=genes).encode_bound(...)` accepts
+named occurrences or a reusable `PreparedAlignment`; raw integer `forward`
+calls keep their earlier behavior. `AnnDataView.align_features(...)` and
+`from_adata_bound(...)` perform explicit sparse-preserving boundary adaptation.
+Metadata does not automatically follow arbitrary neural transformations.
 
 `RelationAttention(width, heads=1, dropout=0.0)` supplies a concrete attention
 family. It supports ordinary dense source/target tensors and packed occurrences
@@ -83,6 +118,21 @@ hard regulatory memberships or establish causal interactions.
 Context can condition features through ordinary learned modules before
 interaction. Aggregation defines output participants explicitly; arbitrary
 neural transformations are not assumed to preserve biological metadata.
+
+### Prepare relational structure once
+
+`PreparedRelation.from_csr(...)` binds support to declared source and target
+occurrence orders, extents, optional axes, group offsets, structural generation,
+and device. It owns the prepared structural buffers and retains duplicate edges
+and empty neighborhoods. Use `attention(source, target, relation=prepared, ...)`
+with matching endpoint declarations. The prepared route reuses device indices
+without revalidating their contents through per-forward GPU scalar reads.
+
+Changing topology, order, grouping, generation, or device requires an explicitly
+prepared compatible structure; `.to(device)` prepares the device counterpart.
+Changing feature values, activity, or parameters does not rebuild it. Raw CSR
+attention and typed native relation APIs remain available. Preparation and
+device placement are visible costs; no speedup is implied by this interface.
 
 ## Auxiliary views
 
@@ -114,6 +164,102 @@ safe without introducing cross-call revision or graph-lifetime assumptions.
 Predicted ATAC and measured ATAC remain different information. Appropriate
 paired supervision and the selected representation's information content are
 scientific requirements of the particular readout experiment.
+
+### Labelled queries and actual conditioning
+
+`PredictionQuery` and `Prediction` are optional Torch-free boundary records.
+Queries declare a view, requested feature IDs, sample/window IDs, optional packed
+row offsets, numerical conditioning, and separate descriptive context metadata.
+Predictions borrow differentiable values and label their feature and sample
+coordinates without copying, moving, or detaching them.
+
+```python
+from cellerator import Cell, FeatureBinding, PredictionQuery
+from cellerator.nn import FeatureReadout, ModelWithViews
+
+peaks = FeatureBinding.from_ids(("peak-A", "peak-B"), domain="peak")
+model = ModelWithViews(base)
+model.add_view(
+    "atac", FeatureReadout(peaks, width), source="regulatory",
+    output_binding=peaks, queryable=True,
+)
+request = PredictionQuery("atac", feature_ids=("peak-B",))
+prediction = Cell(history, id="cell-1").bind(model).query(request)
+```
+
+`FeatureReadout` composes target embeddings, existing attention, and a projection.
+Query-capable heads receive prepared host model indices and compute requested
+outputs. Ordinary heads can instead declare an output binding, compute the full
+output, and gather its final feature axis afterward; that full computation still
+costs work. Operations that change participants must declare their output binding.
+
+`model.query(batch, (query_a, query_b))` shares one batched base evaluation for
+queries using the same conditioning object, including `None`. Distinct
+conditioning objects require separate evaluations. A registered
+`conditioner(batch, conditioning)` must produce the actual base input whenever
+conditioning is non-`None`; unsupported conditioning raises before execution.
+Trainable conditioners should be ordinary registered modules. Context metadata
+only labels results and never substitutes for numerical conditioning.
+
+Sample IDs label the caller-selected input/output order. Queries do not select
+or reorder input samples implicitly. Packed offsets map occurrence rows to
+sample/window identifiers. Different windows belonging to one physical cell
+need distinct observation keys or an explicit supervision row map.
+
+### Supervision and saved biological meaning
+
+Use `align_prediction_targets(...)` with a prepared feature mapping and explicit
+sample/window coordinates before ordinary unreduced Torch losses.
+`categorical_target_columns(prediction, event_labels)` maps biological or token
+labels to columns of `Prediction.feature_ids`; noncontiguous token IDs are not
+class-column offsets.
+
+`reduce_prediction_loss(losses, unit=...)` requires an explicit reduction unit.
+`"observation"` weights valid scalar loss terms equally. `"cell"` pools valid
+terms across all windows belonging to each declared physical cell, then weights
+cells equally; supply separate observation/window `sample_ids` and physical
+`cell_ids`. Missing measurements use an explicit validity mask. Empty supervision
+returns a differentiable zero and zero valid count; examples skip the optimizer
+when all objectives are empty. The helpers add no trainer or automatic objective.
+
+`biological_manifest(...)`, `save_biological_manifest(...)`,
+`load_biological_manifest(...)`, and `validate_biological_manifest(...)` record and
+check explicit versioned JSON declarations beside ordinary weights. They include
+feature/token mappings, reference metadata, declared relation endpoints and
+grouping, output bindings, view names, and supplied selector identifiers.
+External prepared relations are passed explicitly with `relations={...}`.
+Validate compatibility **before** calling the existing weight loader. Optional
+weight-file pairing records its filename and SHA-256; the manifest does not load
+weights, instantiate a model, or execute selectors. A selector identifier records
+a declaration, not proof that reconstructed code is equivalent.
+
+No dictionary-valued `get_extra_state()` entries are added. Ordinary Torch
+state dictionaries and specialized native-owner checkpoint functions retain their
+contracts. Histories, conditioning values, and latent activations are not saved
+by default. Custom identities require an explicit `IdentityCodec` for JSON.
+
+## Contextual interaction programs
+
+`InteractionPrograms(width, num_programs, ...)` supplies an optional composition
+of feature-to-program attention and program-to-feature attention. Its learned
+query bank is shared; features may participate in several programs through dense
+or explicitly prepared overlapping support. It returns `program_features` and
+`feature_updates` as deliberately exposed readout sources; residual addition is
+the caller's choice.
+
+Program identities are model-local learned components, without prescribed cell
+types or pathways. Packed `program_order` can repeat bank identities in separate
+groups while sharing parameters and accumulating their gradients. Registered
+context projections change computation explicitly. Empty support contributes
+zero interaction. These operations learn weights and contextual features over
+presented support, not automatically discovered hard topology or molecular
+mechanisms.
+
+`GatedInteractor` also accepts an explicitly registered conditioner supplying a
+broadcastable gate contribution. `context=None` preserves its previous numerical
+behavior. Supplying context without support now raises rather than silently
+discarding it; callers that previously passed unused context must remove it or
+register an actual conditioning adapter.
 
 ## Reference learning compositions
 

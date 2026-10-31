@@ -168,6 +168,24 @@ class PreparedRelationTests(unittest.TestCase):
                    source_order=("a", "b"), target_order=("x", "y"),
                    source_offsets=(0, 1, 3), target_offsets=(0, 1, 2))
 
+    def test_device_preparation_is_explicit_and_values_can_change_without_rebinding(self):
+        relation = PreparedRelation.from_csr(
+            [0, 2], [0, 1], source_order=("a", "b"), target_order=("x",)
+        )
+        meta_relation = relation.to("meta")
+        self.assertEqual(meta_relation.device, torch.device("meta"))
+        module = RelationAttention(2).cpu().eval()
+        source = torch.tensor([[1.0, 0.0], [0.0, 1.0]])
+        target = torch.tensor([[0.5, -0.5]])
+        kwargs = dict(relation=relation, source_order=("a", "b"), target_order=("x",))
+        first = module(source, target, **kwargs)
+        second = module(source * 2.0, target, **kwargs)
+        self.assertFalse(torch.allclose(first, second))
+        with self.assertRaisesRegex(ValueError, "relation is on meta"):
+            module(source, target, **{
+                **kwargs, "relation": meta_relation,
+            })
+
     def test_manifest_requires_codec_for_custom_ids_and_preserves_occurrences(self):
         identity = Identity(11, 12)
         relation = PreparedRelation.from_csr(

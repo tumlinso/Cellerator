@@ -6,9 +6,8 @@ import unittest
 from pathlib import Path
 
 import torch
-from torch import nn
 
-from cellerator.biology import FeatureBinding, PredictionQuery
+from cellerator.biology import FeatureBinding, Prediction, PredictionQuery
 from cellerator.modeling import Cell
 from cellerator.torch.manifest import (
     load_biological_manifest,
@@ -16,11 +15,11 @@ from cellerator.torch.manifest import (
     validate_biological_manifest,
 )
 from cellerator.torch.supervision import categorical_target_columns
+from cellerator.torch.supervision import align_prediction_targets, reduce_prediction_loss
 from examples.nn_foundation.reference_models import (
     EventHistoryReferenceModel,
     ExpressionReferenceModel,
     atac_binary_loss,
-    attach_atac_view,
     attach_event_view,
     attach_expression_view,
     attach_history_view,
@@ -48,9 +47,6 @@ class BoundReferenceModelTests(unittest.TestCase):
             ordered_values = values.index_select(1, torch.tensor(order))
             ordered_observed = observed.index_select(1, torch.tensor(order))
             return model({
-                # The legacy integer field remains accepted; named identities
-                # are the explicit biological coordinate for this route.
-                "feature_ids": torch.zeros_like(ordered_values, dtype=torch.long),
                 "feature_identities": ids,
                 "values": ordered_values,
                 "observed": ordered_observed,
@@ -69,7 +65,6 @@ class BoundReferenceModelTests(unittest.TestCase):
             13, 8, heads=2, binding=binding, num_programs=2
         )
         batch = {
-            "feature_ids": torch.zeros((2, 3), dtype=torch.long),
             "feature_identities": ("gC", "gA", "gB"),
             "values": torch.rand(2, 3),
             "observed": torch.ones((2, 3), dtype=torch.bool),
@@ -93,6 +88,18 @@ class BoundReferenceModelTests(unittest.TestCase):
             "event_offsets": (0, 3),
             "sample_ids": ("cell-1",),
         }
+        raw_result = base(batch)
+        self.assertEqual(raw_result["context_ids"].tolist(), [14, 9, 4])
+        # Class positions follow ('gene-B', 'gene-A', 'gene-C'), independently
+        # of the noncontiguous model token IDs (4, 9, 13).
+        self.assertEqual(raw_result["targets"].tolist(), [1, 0, 1])
+        token_result = base({
+            "event_ids": torch.tensor([9, 4, 9]),
+            "event_offsets": (0, 3),
+            "event_id_space": "model",
+        })
+        self.assertEqual(token_result["target_ids"], ("gene-A", "gene-B", "gene-A"))
+        torch.testing.assert_close(token_result["logits"], raw_result["logits"])
         query = PredictionQuery(
             "events", feature_ids=("gene-A", "gene-C", "gene-B"),
             sample_ids=("cell-1",), row_offsets=(0, 3),
@@ -115,14 +122,95 @@ class BoundReferenceModelTests(unittest.TestCase):
         other = _binding(("gene-X", "gene-Y"), (2, 7), capacity=9)
         model = attach_expression_view(ExpressionReferenceModel(9, 8, binding=binding))
         batch = {
-            "feature_ids": torch.zeros((1, 2), dtype=torch.long),
             "feature_identities": binding.identities,
             "values": torch.tensor([[0.25, 0.75]]),
             "observed": torch.ones((1, 2), dtype=torch.bool),
             "sample_ids": ("cell-a",),
         }
-        with self.assertRaisesRegex(ValueError, "binding|identit|feature"):
+        with self.assertRaisesRegex((ValueError, KeyError), "binding|identit|feature"):
             model.query(batch, PredictionQuery("expression", other.identities))
+        raw_batch = {
+            "feature_ids": torch.tensor([[7, 2]]),
+            "values": batch["values"],
+            "observed": batch["observed"],
+        }
+        with self.assertRaisesRegex(ValueError, "feature_identities"):
+            model.query(raw_batch, PredictionQuery("expression"))
+
+    def test_identity_target_alignment_and_explicit_cell_reduction(self):
+        torch.manual_seed(305)
+        binding = _binding(("gA", "gB", "gC"), (2, 7, 11), capacity=13)
+        base = ExpressionReferenceModel(13, 8, binding=binding).eval()
+        model = attach_expression_view(base)
+        batch = {
+            "feature_identities": binding.identities,
+            "values": torch.tensor([[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]),
+            "observed": torch.ones((2, 3), dtype=torch.bool),
+            "sample_ids": ("cell-1", "cell-2"),
+        }
+        query = PredictionQuery(
+            "expression", feature_ids=("gC", "gA"),
+            sample_ids=batch["sample_ids"],
+        )
+        prediction = model.query(batch, query)
+        target_ids = ("gA", "gB", "gC")
+        target_values = torch.tensor([[10.0, 20.0, 30.0], [40.0, 50.0, 60.0]])
+        alignment = binding.prepare(target_ids, prediction.feature_ids)
+        pred_values, aligned = align_prediction_targets(
+            prediction, target_values, alignment,
+            target_sample_ids=batch["sample_ids"],
+        )
+        self.assertEqual(aligned.tolist(), [[30.0, 10.0], [60.0, 40.0]])
+        losses = torch.nn.functional.mse_loss(pred_values, aligned, reduction="none")
+        observation_loss, observation_count = reduce_prediction_loss(
+            losses, unit="observation", sample_ids=batch["sample_ids"],
+        )
+        self.assertEqual(int(observation_count), losses.numel())
+        cell_loss, cell_count = reduce_prediction_loss(
+            losses, unit="cell", sample_ids=batch["sample_ids"],
+            cell_ids=("physical-1", "physical-2"),
+        )
+        self.assertEqual(int(cell_count), 2)
+        torch.testing.assert_close(observation_loss, cell_loss)
+
+        empty, count = reduce_prediction_loss(
+            losses, unit="cell", valid_mask=torch.zeros_like(losses, dtype=torch.bool),
+            sample_ids=batch["sample_ids"], cell_ids=("physical-1", "physical-2"),
+        )
+        self.assertEqual(int(count), 0)
+        self.assertEqual(float(empty), 0.0)
+        self.assertIsNotNone(empty.grad_fn)
+
+    def test_target_alignment_handles_unequal_history_lengths_and_window_order(self):
+        binding = _binding(("gA", "gB", "gC"), (2, 7, 11), capacity=13)
+        values = torch.tensor([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]])
+        prediction = Prediction(
+            values, feature_ids=("gA", "gB"),
+            sample_ids=("cell-1", "cell-2"), row_offsets=(0, 2, 3),
+        )
+        target_source_ids = ("gB", "gA", "gC")
+        targets = torch.tensor([
+            [20.0, 10.0, 30.0], [40.0, 30.0, 50.0], [60.0, 50.0, 70.0],
+        ])
+        alignment = binding.prepare(target_source_ids, prediction.feature_ids)
+
+        pred_values, aligned = align_prediction_targets(
+            prediction, targets, alignment,
+            target_sample_ids=("cell-2", "cell-1"),
+            target_row_offsets=(0, 1, 3),
+        )
+
+        torch.testing.assert_close(pred_values, values)
+        self.assertEqual(aligned.tolist(), [[30.0, 40.0], [50.0, 60.0], [10.0, 20.0]])
+
+    def test_cell_reduction_weights_each_physical_cell_equally_across_windows(self):
+        losses = torch.tensor([1.0, 3.0, 10.0], requires_grad=True)
+        cell_loss, cell_count = reduce_prediction_loss(
+            losses, unit="cell", sample_ids=("window-a", "window-b", "window-c"),
+            row_offsets=(0, 1, 2, 3), cell_ids=("cell-a", "cell-a", "cell-b"),
+        )
+        self.assertEqual(int(cell_count), 2)
+        self.assertEqual(float(cell_loss), 6.0)
 
     def test_bounded_sparse_minibatch_aligns_columns_without_densifying_full_data(self):
         try:
@@ -164,35 +252,97 @@ class BoundReferenceModelTests(unittest.TestCase):
             "atac", feature_ids=("peak-3", "peak-1"),
             sample_ids=batch["sample_ids"],
         )
+        event_query = PredictionQuery(
+            "events", feature_ids=("gene-C", "gene-A"),
+            sample_ids=batch["sample_ids"], row_offsets=batch["event_offsets"],
+        )
         targets = torch.tensor([[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]])
         calls = []
         hook = base.register_forward_hook(lambda *_: calls.append(1))
 
         base.requires_grad_(False)
-        frozen = model.query(batch, query)
+        event_prediction, frozen = model.query(batch, (event_query, query))
+        self.assertEqual(event_prediction.feature_ids, event_query.feature_ids)
+        self.assertEqual(event_prediction.row_offsets, batch["event_offsets"])
+        self.assertEqual(tuple(event_prediction.values.shape), (4, 2))
         self.assertEqual(tuple(frozen.values.shape), (3, 2))
         self.assertEqual(frozen.feature_ids, query.feature_ids)
         self.assertEqual(len(calls), 1)
         frozen_loss = atac_binary_loss(frozen.values, targets)
+        frozen_base_before = [parameter.detach().clone() for parameter in base.parameters()]
+        frozen_head_before = [parameter.detach().clone()
+                              for parameter in model._views[model._view_indices["atac"]].module.parameters()]
+        frozen_optimizer = torch.optim.SGD(
+            (parameter for parameter in model.parameters() if parameter.requires_grad),
+            lr=0.05,
+        )
         model.zero_grad(set_to_none=True)
         frozen_loss.backward()
         readout = model._views[model._view_indices["atac"]].module
         self.assertTrue(any(parameter.grad is not None for parameter in readout.parameters()))
         self.assertTrue(all(parameter.grad is None for parameter in base.parameters()))
+        frozen_optimizer.step()
+        self.assertTrue(all(torch.equal(old, new.detach())
+                            for old, new in zip(frozen_base_before, base.parameters())))
+        self.assertTrue(any(not torch.equal(old, new.detach())
+                            for old, new in zip(frozen_head_before, readout.parameters())))
 
         model.zero_grad(set_to_none=True)
         base.requires_grad_(True)
+        joint_base_before = [parameter.detach().clone() for parameter in base.parameters()]
+        joint_head_before = [parameter.detach().clone() for parameter in readout.parameters()]
         joint = model.query(batch, query)
+        joint_optimizer = torch.optim.SGD(model.parameters(), lr=0.05)
         atac_binary_loss(joint.values, targets).backward()
         self.assertEqual(len(calls), 2)
         self.assertTrue(any(parameter.grad is not None for parameter in readout.parameters()))
         self.assertTrue(any(parameter.grad is not None for parameter in base.parameters()))
+        joint_optimizer.step()
+        self.assertTrue(any(not torch.equal(old, new.detach())
+                            for old, new in zip(joint_head_before, readout.parameters())))
+        self.assertTrue(any(not torch.equal(old, new.detach())
+                            for old, new in zip(joint_base_before, base.parameters())))
         hook.remove()
 
-    def test_semantic_manifest_round_trips_with_reconstructed_model_and_state_dict(self):
-        binding = _binding(("gA", "gB"), (3, 8), capacity=10)
+    def test_empty_bound_event_query_skips_update_with_differentiable_zero(self):
+        event_binding = _binding(("gene-A", "gene-B"), (4, 9), capacity=11)
+        model = attach_event_view(EventHistoryReferenceModel(
+            2, 8, heads=2, binding=event_binding,
+        ))
+        sample_ids = ("empty-1", "empty-2")
+        batch = {
+            "event_ids": (), "event_offsets": (0, 0, 0), "sample_ids": sample_ids,
+        }
+        query = PredictionQuery(
+            "events", feature_ids=event_binding.identities,
+            sample_ids=sample_ids, row_offsets=batch["event_offsets"],
+        )
+        prediction = model.query(batch, query)
+        columns = categorical_target_columns(prediction, ())
+        terms = torch.nn.functional.cross_entropy(
+            prediction.values, columns, reduction="none"
+        )
+        loss, count = reduce_prediction_loss(
+            terms, unit="observation", sample_ids=sample_ids,
+            row_offsets=prediction.row_offsets,
+        )
+        self.assertEqual(tuple(prediction.values.shape), (0, 2))
+        self.assertEqual(int(count), 0)
+        self.assertEqual(float(loss), 0.0)
+        self.assertIsNotNone(loss.grad_fn)
 
+        optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+        before = [parameter.detach().clone() for parameter in model.parameters()]
+        if int(count):
+            optimizer.zero_grad(set_to_none=True)
+            loss.backward()
+            optimizer.step()
+        self.assertTrue(all(torch.equal(old, new.detach())
+                            for old, new in zip(before, model.parameters())))
+
+    def test_semantic_manifest_round_trips_with_reconstructed_model_and_state_dict(self):
         def build():
+            binding = _binding(("gA", "gB"), (3, 8), capacity=10)
             return attach_expression_view(ExpressionReferenceModel(10, 8, binding=binding))
 
         original = build()
@@ -212,6 +362,15 @@ class BoundReferenceModelTests(unittest.TestCase):
             )
             state = torch.load(weights, map_location="cpu", weights_only=True)
             reconstructed.load_state_dict(state)
+
+            incompatible_binding = _binding(("gB", "gA"), (8, 3), capacity=10)
+            incompatible = attach_expression_view(ExpressionReferenceModel(
+                10, 8, binding=incompatible_binding,
+            ))
+            with self.assertRaisesRegex(ValueError, "do not match"):
+                validate_biological_manifest(
+                    incompatible, loaded, weights_path=weights,
+                )
 
 
 if __name__ == "__main__":

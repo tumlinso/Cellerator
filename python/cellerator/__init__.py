@@ -16,6 +16,9 @@ from .modeling import (
     Cell, DynamicalCell, DynamicalModel, Experiment, ExperimentResult, Model,
     StepContext, StepResult, simulate,
 )
+from .biology import (
+    FeatureBinding, IdentityCodec, PreparedAlignment, Prediction, PredictionQuery,
+)
 
 _FRAMEWORK_PACKAGES = frozenset({
     "modeling", "state", "events", "interactions", "dynamics", "execution",
@@ -146,6 +149,7 @@ def _known_mechanism_handles():
 __all__ = [
     "Cell", "DynamicalCell", "DynamicalModel", "Experiment", "ExperimentResult",
     "Model", "StepContext", "StepResult", "simulate",
+    "FeatureBinding", "IdentityCodec", "PreparedAlignment", "Prediction", "PredictionQuery",
     "Axis", "Identity", "Incidence", "Mechanism", "MechanismSpec",
     "OutputContribution", "SharedSupportSpec", "prepare_mechanism",
     "prepare_product2", "product2_forward", "product2_vjp", "product2_jvp",

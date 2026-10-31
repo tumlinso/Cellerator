@@ -11,6 +11,8 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 import math
+import operator
+import threading
 from types import MappingProxyType
 from typing import Any, Callable, Literal
 
@@ -31,8 +33,8 @@ def _nonnegative_index(value: Any, name: str) -> int:
     if isinstance(value, bool):
         raise TypeError(f"{name} must be a nonnegative integer")
     try:
-        result = int(value.__index__())
-    except (AttributeError, TypeError, ValueError) as exc:
+        result = operator.index(value)
+    except TypeError as exc:
         raise TypeError(f"{name} must be a nonnegative integer") from exc
     if result < 0:
         raise ValueError(f"{name} must be nonnegative")
@@ -194,6 +196,12 @@ class PreparedAlignment:
     canonical_indices: tuple[int | None, ...] = ()
     dropped_ids: tuple[Any, ...] = ()
     binding_signature: tuple[Any, ...] = ()
+    _device_index_cache: dict[tuple[Any, ...], Any] = field(
+        default_factory=dict, init=False, repr=False, compare=False
+    )
+    _device_index_lock: Any = field(
+        default_factory=threading.Lock, init=False, repr=False, compare=False
+    )
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "source_order", tuple(self.source_order))
@@ -211,9 +219,6 @@ class PreparedAlignment:
             raise ValueError("canonical_indices must align with model_indices")
         if len(self.requested_ids) != len(self.model_indices) or len(self.source_positions) != len(self.model_indices):
             raise ValueError("requested IDs, source positions, and model indices must align")
-        if any(value is not None and _nonnegative_index(value, "canonical index") < 0
-               for value in canonical):
-            raise ValueError("canonical indices must be nonnegative or None")
         object.__setattr__(self, "canonical_indices", tuple(
             None if value is None else _nonnegative_index(value, "canonical index")
             for value in canonical
@@ -232,10 +237,11 @@ class PreparedAlignment:
         kind: Literal["source", "model"] = "source",
         device: Any = None,
     ) -> Any:
-        """Explicitly materialize indices as a Torch tensor on ``device``.
+        """Explicitly materialize and cache indices as a Torch tensor.
 
         Torch is imported only by this method.  No input tensor is inspected,
         copied back to the host, or moved between devices implicitly.
+        Returned cached tensors are shared; treat them as immutable indices.
         """
         import torch
 
@@ -245,7 +251,20 @@ class PreparedAlignment:
             values = self.model_indices
         else:
             raise ValueError("kind must be 'source' or 'model'")
-        return torch.tensor(values, dtype=torch.long, device=device)
+        target = torch.device("cpu") if device is None else torch.device(device)
+        if target.type == "cuda" and target.index is None:
+            target = torch.device("cuda", torch.cuda.current_device())
+        key = (kind, target.type, target.index)
+        with self._device_index_lock:
+            cached = self._device_index_cache.get(key)
+            if cached is None:
+                cached = torch.tensor(values, dtype=torch.long, device=target)
+                self._device_index_cache[key] = cached
+            return cached
+
+    def to_indices(self, device: Any = None) -> Any:
+        """Return cached model/embedding indices on an explicitly chosen device."""
+        return self.index_tensor(kind="model", device=device)
 
     def gather(self, values: Any, *, axis: int = -1) -> Any:
         """Select aligned entries while preserving the source storage family."""
@@ -440,7 +459,9 @@ class FeatureBinding:
                               for record in records)
         canonical_indices = tuple(range(len(records)))
         aliases = {
-            record.gene_id: tuple(record.aliases) + ((record.symbol,) if record.symbol else ())
+            record.gene_id: tuple(dict.fromkeys(
+                tuple(record.aliases) + ((record.symbol,) if record.symbol else ())
+            ))
             for record in records
         }
         metadata_record = vocabulary.metadata
@@ -517,7 +538,7 @@ class FeatureBinding:
         if id_space == "model":
             try:
                 model_id = _nonnegative_index(identity, "model identity")
-            except (TypeError, ValueError) as exc:
+            except TypeError as exc:
                 raise TypeError("model-space identities must be nonnegative integer IDs") from exc
             positions = self._model_targets.get(model_id, ())
             if len(positions) > 1:
@@ -574,7 +595,6 @@ class FeatureBinding:
         for position, identity in enumerate(raw_source):
             canonical, _canonical_index, _model_index = self._resolve(identity)
             if self.unknown_policy == "drop" and _model_index < 0:
-                dropped.append(identity)
                 canonical_source.append(identity)
                 continue
             if canonical in source_positions:
@@ -688,7 +708,11 @@ class FeatureBinding:
             for item in manifest.get("aliases", ())
         }
         codec = None
-        for encoded in manifest["identities"]:
+        encoded_entries = list(manifest["identities"])
+        for alias_entry in manifest.get("aliases", ()):
+            encoded_entries.append(alias_entry["identity"])
+            encoded_entries.extend(alias_entry["aliases"])
+        for encoded in encoded_entries:
             if encoded.get("type") == "custom":
                 codec_name = encoded["codec"]
                 codec = None if codecs is None else codecs.get(codec_name)

@@ -65,6 +65,8 @@ class FeatureBindingTests(unittest.TestCase):
         tokens = binding.map_occurrences((13, 4, 13), id_space="model")
         self.assertEqual(tokens.requested_ids, ("gene-b", "gene-a", "gene-b"))
         self.assertEqual(tokens.model_indices, (13, 4, 13))
+        cached = tokens.to_indices(device="cpu")
+        self.assertIs(tokens.to_indices(device=torch.device("cpu")), cached)
 
     def test_unknown_policies_are_explicit_and_drop_keeps_input_extent(self):
         binding = FeatureBinding.from_ids(
@@ -76,7 +78,7 @@ class FeatureBindingTests(unittest.TestCase):
         self.assertEqual(prepared.source_order, ("a", "unknown", "b"))
         self.assertEqual(prepared.requested_ids, ("b", "a"))
         self.assertEqual(prepared.source_positions, (2, 0))
-        self.assertEqual(prepared.dropped_ids, ("unknown", "unknown"))
+        self.assertEqual(prepared.dropped_ids, ("unknown",))
         values = torch.tensor([[2.0, 99.0, 4.0]])
         torch.testing.assert_close(prepared.gather(values, axis=1), torch.tensor([[4.0, 2.0]]))
 
@@ -163,6 +165,14 @@ class GeneVocabularyBindingTests(unittest.TestCase):
         self.assertEqual(alignment.model_indices, (4, 17))
 
         encoder = FeatureEncoder(18, 6, value_size=None, binding=binding).cpu()
+        cached = alignment.to_indices(device="cpu")
+        observed_indices = []
+        hook = encoder.feature_embedding.register_forward_pre_hook(
+            lambda _module, args: observed_indices.append(args[0])
+        )
+        encoder.encode_bound(alignment)
+        hook.remove()
+        self.assertIs(observed_indices[-1], cached)
         names = ("gene-z", "gene-a", "gene-z")
         encoded_bound = encoder.encode_bound(names)
         model_rows = torch.tensor([17, 4, 17], dtype=torch.long)

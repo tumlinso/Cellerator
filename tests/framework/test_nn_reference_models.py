@@ -189,15 +189,17 @@ class ReferenceModelTests(unittest.TestCase):
         base.requires_grad_(False)
         frozen_loss = atac_binary_loss(wrapped.predict(batch, "atac"), atac_targets)
         frozen_loss.backward()
-        head = wrapped._views[wrapped._view_indices["atac"]].module
-        self.assertIsNotNone(head.weight.grad)
+        trainable_after_freeze = [parameter for parameter in wrapped.parameters()
+                                  if parameter.requires_grad]
+        self.assertTrue(trainable_after_freeze)
+        self.assertTrue(all(parameter.grad is not None for parameter in trainable_after_freeze))
         self.assertTrue(all(parameter.grad is None for parameter in base.parameters()))
 
         wrapped.zero_grad(set_to_none=True)
         base.requires_grad_(True)
         joint_loss = atac_binary_loss(wrapped.predict(batch, "atac"), atac_targets)
         joint_loss.backward()
-        self.assertIsNotNone(head.weight.grad)
+        self.assertTrue(any(parameter.grad is not None for parameter in trainable_after_freeze))
         self.assertTrue(any(parameter.grad is not None for parameter in base.parameters()))
 
     def test_standard_optimizer_updates_expression_and_event_models_and_skips_empty_targets(self):

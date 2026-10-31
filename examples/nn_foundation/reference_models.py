@@ -57,10 +57,12 @@ class ExpressionReferenceModel(nn.Module):
         self.expression_readout = nn.Linear(width, 1)
 
     def forward(self, batch: dict[str, Tensor]) -> dict[str, Tensor]:
-        feature_ids = batch["feature_ids"]
         values = batch["values"]
         observed = batch["observed"]
         if self.binding is not None and "feature_identities" in batch:
+            raw_identities = batch["feature_identities"]
+            if isinstance(raw_identities, Tensor) or isinstance(raw_identities, (str, bytes)):
+                raise TypeError("feature_identities must be a host sequence of feature identities")
             source_ids = tuple(batch["feature_identities"])
             alignment = self.binding.prepare(source_ids, self.binding.identities)
             positions = alignment.index_tensor(device=values.device)
@@ -72,8 +74,16 @@ class ExpressionReferenceModel(nn.Module):
             )
             output_feature_ids = self.binding.identities
         else:
+            try:
+                feature_ids = batch["feature_ids"]
+            except KeyError as exc:
+                if self.binding is not None:
+                    raise ValueError(
+                        "bound expression batches require feature_identities; raw batches require feature_ids"
+                    ) from exc
+                raise
             encoded = self.encoder(feature_ids, values, observed=observed)
-            output_feature_ids = None
+            output_feature_ids = feature_ids
         features = self.interactions(encoded)
         program_features = None
         if self.interaction_programs is not None:
@@ -92,8 +102,7 @@ class ExpressionReferenceModel(nn.Module):
             "features": features,
             "cell_features": cell_features,
         }
-        if output_feature_ids is not None:
-            result["feature_ids"] = output_feature_ids
+        result["feature_ids"] = output_feature_ids
         if program_features is not None:
             result["program_features"] = program_features
         return result
@@ -132,8 +141,19 @@ def attach_expression_view(
     """Expose expression outputs as an identity-aware, queryable model view."""
     binding = output_binding if output_binding is not None else base.binding
     model = ModelWithViews(base)
+    if binding is None:
+        source: Any = "expression"
+    else:
+        def source(result, _inputs):
+            declared = result.get("feature_ids") if isinstance(result, Mapping) else None
+            if not isinstance(declared, tuple) or declared != binding.identities:
+                raise ValueError(
+                    "identity-aware expression queries require the bound feature_identities input"
+                )
+            return result["expression"]
+
     model.add_view(
-        "expression", nn.Identity(), source="expression", output_binding=binding,
+        "expression", nn.Identity(), source=source, output_binding=binding,
         queryable=False, source_id="reference_models.expression",
     )
     return model
@@ -373,6 +393,10 @@ class EventHistoryReferenceModel(nn.Module):
         else:
             if id_space not in {"identity", "model"}:
                 raise ValueError("event_id_space must be 'identity' or 'model'")
+            if isinstance(event_ids, Tensor) and event_ids.device.type != "cpu":
+                raise ValueError(
+                    "prepare bound event occurrences from host identities before device transfer"
+                )
             raw_ids = tuple(event_ids.tolist()) if isinstance(event_ids, Tensor) else tuple(event_ids)
             offsets = _validated_offsets(event_offsets, len(raw_ids))
             alignment = self.binding.map_occurrences(raw_ids, id_space=id_space)

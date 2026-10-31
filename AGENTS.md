@@ -48,7 +48,14 @@ it as a cellular simulator with neural learning added through adapters.
   this architectural record as permission to develop it.
 - Use the [NN foundation guide](docs/nn_foundation.qmd) for the implemented
   generic `Cell`, explicit `Dynamical*` migration, composable neural components,
-  auxiliary views, and custom-operation contracts. Current qualification is
+  biological bindings, prepared relations, labelled queries, explicit supervision,
+  auxiliary views, and custom-operation contracts. Keep canonical biological IDs,
+  token/model indices, and occurrence/physical positions distinct. Prepare stable
+  identity and relation structure at boundaries; value changes do not redefine
+  topology. Context metadata is descriptive: supplied numerical conditioning must
+  actually enter a registered computation or fail clearly. Preserve biological
+  meaning in explicit manifests beside weights, without changing native-owner
+  checkpoint contracts or adding executable reconstruction. Current qualification is
   bounded by the implementation record; the first milestone is not the full
   biological modeling ambition or permission for unrelated development.
 - Preserve [first-class C++ and Python modeling](docs/architecture.qmd#cpp-and-python-modeling).

@@ -24,6 +24,11 @@ class InteractionPrograms(nn.Module):
 
     A learned program query first aggregates its supplied feature members.
     A second relation-attention call returns program-derived feature updates.
+    The constructor's unique ``program_ids`` describe a shared learned query
+    bank. ``program_order`` describes occurrences for this invocation and may
+    repeat a bank ID; repeated occurrences reuse the same query and accumulate
+    gradients to it. Packed groups can therefore each use the same shared
+    program set without duplicating parameters.
     When ``relation`` is omitted, attention is dense within supplied groups.
     When present, it is a :class:`PreparedRelation` from feature occurrences to
     program identities; its transposed support sends updates back. Both
@@ -32,9 +37,10 @@ class InteractionPrograms(nn.Module):
 
     Context is optional and becomes an actual additive condition on learned
     queries through a registered projection. For packed inputs it may be
-    ``[context_size]`` (shared) or ``[num_programs, context_size]`` (per
-    program). For dense inputs it may be ``[context_size]``, ``[batch,
-    context_size]``, or ``[batch, num_programs, context_size]``.
+    ``[context_size]`` (shared) or ``[num_program_occurrences, context_size]``
+    (per program occurrence). For dense inputs it may be ``[context_size]``,
+    ``[batch, context_size]``, or ``[batch, num_program_occurrences,
+    context_size]``.
 
     The returned ``feature_updates`` are interaction contributions; residual
     composition with the input features is left to the caller.
@@ -74,6 +80,7 @@ class InteractionPrograms(nn.Module):
         self.program_ids = ids
         self.program_axis = program_axis
         self.context_size = context_size
+        self._program_indices = {identity: index for index, identity in enumerate(ids)}
         self.program_queries = nn.Parameter(torch.empty(num_programs, width))
         nn.init.normal_(self.program_queries, mean=0.0, std=width ** -0.5)
         self.context_projection = (
@@ -82,11 +89,20 @@ class InteractionPrograms(nn.Module):
         self.feature_to_program = RelationAttention(width, heads=heads, dropout=dropout)
         self.program_to_feature = RelationAttention(width, heads=heads, dropout=dropout)
 
-    def _condition_queries(self, features: Tensor, context: Tensor | None) -> Tensor:
-        if features.ndim == 2:
-            queries = self.program_queries
+    def _condition_queries(
+        self, features: Tensor, context: Tensor | None,
+        program_order: tuple[Hashable, ...],
+    ) -> Tensor:
+        if program_order:
+            indices = torch.tensor(
+                [self._program_indices[identity] for identity in program_order],
+                dtype=torch.long, device=features.device,
+            )
+            queries = self.program_queries.index_select(0, indices)
         else:
-            queries = self.program_queries.unsqueeze(0).expand(features.shape[0], -1, -1)
+            queries = self.program_queries.new_empty((0, self.width))
+        if features.ndim == 3:
+            queries = queries.unsqueeze(0).expand(features.shape[0], -1, -1)
         if context is None:
             return queries
         if self.context_projection is None:
@@ -104,9 +120,10 @@ class InteractionPrograms(nn.Module):
         if features.ndim == 2:
             if context.ndim == 1:
                 projected = projected.unsqueeze(0)
-            elif context.ndim != 2 or context.shape[0] not in (1, self.num_programs):
+            elif context.ndim != 2 or context.shape[0] not in (1, len(program_order)):
                 raise ValueError(
-                    "packed context must be [context_size] or [num_programs, context_size]"
+                    "packed context must be [context_size] or "
+                    "[num_program_occurrences, context_size]"
                 )
         else:
             batch = features.shape[0]
@@ -117,9 +134,10 @@ class InteractionPrograms(nn.Module):
                     raise ValueError("dense group context must have one row per batch group")
                 projected = projected.unsqueeze(1)
             elif context.ndim == 3:
-                if context.shape[:2] != (batch, self.num_programs):
+                if context.shape[:2] != (batch, len(program_order)):
                     raise ValueError(
-                        "dense per-program context must be [batch, num_programs, context_size]"
+                        "dense per-program context must be "
+                        "[batch, num_program_occurrences, context_size]"
                     )
             else:
                 raise ValueError("context rank must be one, two, or three")
@@ -134,9 +152,11 @@ class InteractionPrograms(nn.Module):
         *,
         relation: PreparedRelation | None = None,
         feature_order: Sequence[Hashable] | None = None,
+        program_order: Sequence[Hashable] | None = None,
         feature_offsets: Sequence[int] | None = None,
         program_offsets: Sequence[int] | None = None,
         feature_axis: Axis | None = None,
+        program_occurrence_axis: Axis | None = None,
         structural_generation: int = 0,
         context: Tensor | None = None,
     ) -> dict[str, Tensor]:
@@ -155,7 +175,26 @@ class InteractionPrograms(nn.Module):
         if relation is not None and not isinstance(relation, PreparedRelation):
             raise TypeError("relation must be a PreparedRelation or None")
 
-        queries = self._condition_queries(features, context)
+        if program_order is None:
+            program_occurrences = self.program_ids
+        else:
+            if isinstance(program_order, (str, bytes)) or not isinstance(program_order, Sequence):
+                raise TypeError("program_order must be a host sequence of program identities")
+            program_occurrences = tuple(program_order)
+            for identity in program_occurrences:
+                try:
+                    hash(identity)
+                except TypeError as exc:
+                    raise TypeError("program_order identities must be hashable") from exc
+                if identity not in self._program_indices:
+                    raise KeyError("program_order contains an identity outside the learned program bank")
+        if program_occurrence_axis is not None and not isinstance(program_occurrence_axis, Axis):
+            raise TypeError("program_occurrence_axis must be a Cellerator Axis or None")
+        if (program_occurrence_axis is not None
+                and program_occurrence_axis.extent != len(program_occurrences)):
+            raise ValueError("program_occurrence_axis extent must equal program occurrence count")
+
+        queries = self._condition_queries(features, context, program_occurrences)
         if relation is None:
             program_features = self.feature_to_program(
                 features, queries,
@@ -173,9 +212,13 @@ class InteractionPrograms(nn.Module):
                 source_offsets=feature_offsets, target_offsets=program_offsets,
                 relation=relation,
                 source_order=feature_order,
-                target_order=self.program_ids,
+                target_order=program_occurrences,
                 source_axis=feature_axis,
-                target_axis=self.program_axis,
+                target_axis=(
+                    program_occurrence_axis
+                    if program_occurrence_axis is not None
+                    else self.program_axis if program_occurrences == self.program_ids else None
+                ),
                 structural_generation=structural_generation,
             )
             reverse = relation.transpose()
@@ -183,9 +226,13 @@ class InteractionPrograms(nn.Module):
                 program_features, features,
                 source_offsets=program_offsets, target_offsets=feature_offsets,
                 relation=reverse,
-                source_order=self.program_ids,
+                source_order=program_occurrences,
                 target_order=feature_order,
-                source_axis=self.program_axis,
+                source_axis=(
+                    program_occurrence_axis
+                    if program_occurrence_axis is not None
+                    else self.program_axis if program_occurrences == self.program_ids else None
+                ),
                 target_axis=feature_axis,
                 structural_generation=structural_generation,
             )

@@ -255,6 +255,23 @@ class Cell:
             raise TypeError("the bound program does not support named prediction views")
         return predict(self.data, view=view)
 
+    def query(self, query: Any) -> Any:
+        """Delegate an identity-labelled request to the shared bound program.
+
+        A standard ``PredictionQuery`` without sample identifiers receives this
+        cell's identity. The program remains responsible for interpreting its
+        data and for any batched computation; no representation is cached here.
+        """
+        if self._program is None:
+            raise RuntimeError("no program is bound; call cell.bind(program) first")
+        evaluate = getattr(self._program, "query", None)
+        if not callable(evaluate):
+            raise TypeError("the bound program does not support biological queries")
+        from ..biology import PredictionQuery
+        if isinstance(query, PredictionQuery) and query.sample_ids is None:
+            query = replace(query, sample_ids=(self.id,))
+        return evaluate(self.data, query)
+
     @classmethod
     def from_reference(cls, model: "DynamicalModel", state_reference: Any, *,
                        id: Any = None, time: float = 0.0) -> "DynamicalCell":

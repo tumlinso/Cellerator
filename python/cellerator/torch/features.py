@@ -187,7 +187,6 @@ class FeatureEncoder(nn.Module):
             alignment = feature_ids
             self.binding.validate_alignment(alignment)
             shape = (len(alignment.model_indices),)
-            indices = alignment.model_indices
         else:
             if isinstance(feature_ids, Tensor):
                 raise TypeError(
@@ -201,12 +200,15 @@ class FeatureEncoder(nn.Module):
                 raise ValueError(
                     "unknown features were dropped; gather aligned values explicitly before encoding"
                 )
-            indices = alignment.model_indices
-        if len(indices) != _product(shape):
+        if len(alignment.model_indices) != _product(shape):
             raise ValueError("prepared model indices do not match the named feature shape")
-        feature_tensor = torch.tensor(
-            indices, dtype=torch.long, device=self.feature_embedding.weight.device
-        ).reshape(shape)
+        cached_indices = alignment.to_indices(
+            device=self.feature_embedding.weight.device
+        )
+        feature_tensor = (
+            cached_indices if tuple(cached_indices.shape) == shape
+            else cached_indices.reshape(shape)
+        )
         return self.forward(feature_tensor, values, observed=observed, attributes=attributes)
 
     def cellerator_biological_descriptors(self, *, identity_codec=None):

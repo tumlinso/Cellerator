@@ -54,6 +54,49 @@ class InteractionProgramsTests(unittest.TestCase):
         self.assertIsNotNone(features.grad)
         self.assertIsNotNone(model.program_queries.grad)
 
+    def test_packed_groups_reuse_the_same_program_parameters_per_group(self):
+        torch.manual_seed(1021)
+        program_ids = ("shared-a", "shared-b")
+        program_order = ("shared-a", "shared-b", "shared-a", "shared-b")
+        feature_order = ("cell-a/g0", "cell-a/g1", "cell-b/g0", "cell-b/g1")
+        relation = PreparedRelation.from_dense(
+            [
+                [True, True, False, False],
+                [True, True, False, False],
+                [False, False, True, True],
+                [False, False, True, True],
+            ],
+            source_order=feature_order,
+            target_order=program_order,
+            source_offsets=(0, 2, 4),
+            target_offsets=(0, 2, 4),
+        )
+        model = InteractionPrograms(4, 2, heads=2, program_ids=program_ids).cpu().eval()
+        features = torch.randn(4, 4, requires_grad=True)
+
+        packed = model(
+            features, relation=relation, feature_order=feature_order,
+            program_order=program_order, feature_offsets=(0, 2, 4),
+            program_offsets=(0, 2, 4),
+        )
+        local_relation = PreparedRelation.from_dense(
+            [[True, True], [True, True]],
+            source_order=("local/g0", "local/g1"), target_order=program_ids,
+        )
+        for group in range(2):
+            left, right = group * 2, (group + 1) * 2
+            local = model(
+                features[left:right], relation=local_relation,
+                feature_order=("local/g0", "local/g1"),
+            )
+            torch.testing.assert_close(packed["program_features"][left:right], local["program_features"])
+            torch.testing.assert_close(packed["feature_updates"][left:right], local["feature_updates"])
+
+        (packed["program_features"].square().sum()
+         + packed["feature_updates"].square().sum()).backward()
+        self.assertIsNotNone(model.program_queries.grad)
+        self.assertTrue(torch.isfinite(model.program_queries.grad).all())
+
     def test_duplicate_membership_is_preserved_through_prepared_composition(self):
         relation = PreparedRelation.from_csr(
             [0, 3], [0, 0, 1], source_order=("g0", "g1"), target_order=("p",)
