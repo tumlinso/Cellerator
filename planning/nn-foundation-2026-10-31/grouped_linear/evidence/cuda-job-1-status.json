@@ -1,0 +1,94 @@
+{
+  "job": {
+    "attempt_id": null,
+    "blocked_reason": "resource_request_not_currently_feasible",
+    "cleanup_verified": false,
+    "created_at": "2026-10-31T14:02:54.118389Z",
+    "id": "67d5df76-8e01-482f-be25-791d0aab1187",
+    "job_id": "67d5df76-8e01-482f-be25-791d0aab1187",
+    "lease_binding": null,
+    "lease_fencing_token": null,
+    "lease_id": null,
+    "owner": "cellerator",
+    "owner_id": "cellerator",
+    "reservation_id": null,
+    "result": null,
+    "spec": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "/home/tumlinson/Cellerator/planning/nn-foundation-2026-10-31/grouped_linear/scripts/qualify.py",
+        "--extension-dir",
+        "/tmp/cellerator-nn-grouped-linear-sm70",
+        "--output",
+        "/home/tumlinson/Cellerator/planning/nn-foundation-2026-10-31/grouped_linear/evidence/cuda-run-1.json"
+      ],
+      "deadline": null,
+      "dependencies": [],
+      "environment": {
+        "CUDA_VISIBLE_DEVICES": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "event_trigger": null,
+      "expected_duration_seconds": 45.0,
+      "flexible": false,
+      "idempotency_key": "cellerator-nn-grouped-linear-autograd-20261031-r1",
+      "interruption": {
+        "cancellation_supported": true,
+        "checkpoint_supported": false,
+        "cooperative_yield": false,
+        "restart_safe": false
+      },
+      "kill_timeout_seconds": 270.0,
+      "max_attempts": 1,
+      "not_before": null,
+      "owner_id": "cellerator",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "parameters": {
+            "consecutive_samples": 2,
+            "interval_seconds": 1,
+            "max_utilization_percent": 0,
+            "timeout_seconds": 45
+          },
+          "schema_version": 1
+        }
+      ],
+      "preemption_action": "abandon",
+      "priority": 50,
+      "priority_class": "normal",
+      "profile_id": null,
+      "resources": [
+        {
+          "kind": "gpu",
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "same_host": true,
+          "schema_version": 1,
+          "selectors": {
+            "resource_id": "gpu:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          },
+          "topology_constraints": {}
+        }
+      ],
+      "retention_policy": null,
+      "schema_version": 1,
+      "secret_refs": [],
+      "tags": [
+        "gpu.exclusive",
+        "cellerator-nn-foundation-correctness"
+      ],
+      "termination_grace_seconds": 10.0,
+      "timeout_seconds": 300.0,
+      "working_directory": "/home/tumlinson/Cellerator"
+    },
+    "state": "blocked",
+    "updated_at": "2026-10-31T14:03:30.159329Z"
+  },
+  "timed_out": true
+}

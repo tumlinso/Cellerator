@@ -1,0 +1,30 @@
+{
+  "architecture": "sm_70",
+  "binary_sha256": "c659416abb4d4b2ef323cab89b46ac42571446cf6bd62ad08e4e82014fd0ce42",
+  "build_argv": [
+    "cmake",
+    "-S",
+    "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding",
+    "-B",
+    "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace/runs/kda-experiments/builds/baseline/0aab41c8b5d7f7b422047b2ed7c2b1c86a54942d17536b7a5139dbbe54381991/ee88546b42254d3682ecdfeca2c5213d/cmake",
+    "-DCELLERATOR_SOURCE_DIR=/home/tumlinson/Cellerator",
+    "-DKDA_CANDIDATE_SOURCE_DIR=/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace/runs/kda-experiments/candidates/baseline/a73f168f7664d3a5b78bc27c83f5f6e7cb566ed9a4118fac03255731dc1f5435",
+    "-DKDA_WARP_BACKWARD=OFF",
+    "-DCMAKE_CXX_COMPILER=/usr/bin/g++-12",
+    "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-12",
+    "-DCMAKE_CUDA_ARCHITECTURES=70",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_CUDA_FLAGS=-lineinfo"
+  ],
+  "candidate_id": "baseline",
+  "common_source_root": "/home/tumlinson/Cellerator",
+  "source_files": {
+    "include/Cellerator/modeling/cuda/packed_embedding.hh": "9e2b8906f68f61efc0c56b60f565c60473d915d9b4b3d452fa96a40f25139a7d",
+    "src/modeling/cuda/packed_embedding.cu": "e050b7c0af2d4280a3b3ef3023e6e8f808413338a3787586f6a222e0985082c7",
+    "tests/framework/cuda/packed_embedding_smoke.cu": "385c851b991cc92f4a6a78aa23dba2cd0fcb97803ceadca22bca17e17aff01ff"
+  },
+  "source_snapshot_sha256": "a73f168f7664d3a5b78bc27c83f5f6e7cb566ed9a4118fac03255731dc1f5435",
+  "trusted_smoke_sha256": "385c851b991cc92f4a6a78aa23dba2cd0fcb97803ceadca22bca17e17aff01ff",
+  "warp_backward": false
+}

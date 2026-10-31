@@ -4,13 +4,13 @@ The state, observation and score are invented examples. Returned weights are
 compatibility weights under this score, not biological evidence.
 """
 from cellerator.inference import Observation, Particle, particle_filter
-from cellerator.modeling import Model
+from cellerator.modeling import DynamicalModel
 
 
 def main() -> None:
     # Rate is an unknown candidate parameter encoded in the supplied state.
     # The same update law propagates all candidate realizations.
-    model = Model(
+    model = DynamicalModel(
         dynamics=lambda state, context: {
             "measurement": state["measurement"] + state["rate"] * context.dt,
             "rate": state["rate"],

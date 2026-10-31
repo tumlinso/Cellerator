@@ -1,0 +1,39 @@
+-- The CXX compiler identification is GNU 12.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/x86_64-linux-gnu-g++-12 - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- The CUDA compiler identification is NVIDIA 12.9.86
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - done
+-- Check for working CUDA compiler: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc - skipped
+-- Detecting CUDA compile features
+-- Detecting CUDA compile features - done
+-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version "12.9.86") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Configuring done (6.8s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/workspace/runs/kda-experiments/builds/baseline/16caa1f45fd0168ad51f93298c80d2eeaf377d44d3e3fc9c0ee94b783fc7318f/177225cbbbff41679fd532fe1131a2f6/cmake
+[  7%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/src/modeling/cuda/runtime.cu.o
+[ 14%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/src/modeling/cuda/plans.cu.o
+[ 21%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/src/modeling/cuda/dispatch.cu.o
+[ 28%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/src/modeling/cuda/quantization.cu.o
+[ 35%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/src/modeling/cuda/memory.cu.o
+[ 42%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/src/modeling/cuda/frontier.cu.o
+[ 50%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/src/modeling/cuda/grouped_linear.cu.o
+[ 57%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/src/modeling/cuda/packed_embedding.cu.o
+[ 64%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/src/modeling/cuda/reactions.cu.o
+[ 71%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/src/modeling/cuda/regulatory_gates.cu.o
+[ 78%] Building CUDA object CMakeFiles/cellerator_kda_attention.dir/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/workspace/runs/kda-experiments/candidates/baseline/ce3465393f8363cd8a52f6c9aefbab704f4627a8103077473d4660380052cc44/src/modeling/cuda/attention.cu.o
+[ 85%] Linking CUDA static library libcellerator_kda_attention.a
+[ 85%] Built target cellerator_kda_attention
+[ 92%] Building CUDA object CMakeFiles/cellerator_kda_attention_smoke.dir/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/tests/framework/cuda/attention_smoke.cu.o
+[100%] Linking CUDA executable cellerator_kda_attention_smoke
+[100%] Built target cellerator_kda_attention_smoke
+[ 85%] Built target cellerator_kda_attention
+[ 92%] Building CUDA object CMakeFiles/cellerator_kda_attention_geometry_driver.dir/attention_geometry_driver.cu.o
+[100%] Linking CUDA executable cellerator_kda_attention_geometry_driver
+[100%] Built target cellerator_kda_attention_geometry_driver

@@ -46,6 +46,23 @@ it as a cellular simulator with neural learning added through adapters.
   neither a kernel nor a namespace establishes the full capability. Await the
   user's operationalization or implementation instructions rather than treating
   this architectural record as permission to develop it.
+- Use the [NN foundation guide](docs/nn_foundation.qmd) for the implemented
+  generic `Cell`, explicit `Dynamical*` migration, composable neural components,
+  auxiliary views, and custom-operation contracts. Current qualification is
+  bounded by the implementation record; the first milestone is not the full
+  biological modeling ambition or permission for unrelated development.
+- Preserve [first-class C++ and Python modeling](docs/architecture.qmd#cpp-and-python-modeling).
+  C++ should be at least as expressive for Cellerator's biological and neural
+  abstractions, with intuitive model authoring, training, composition, and
+  extension. Native kernels beneath a Python-only modeling layer are insufficient.
+  Design the public C++ API as an idiomatic native library, not translated Python
+  bindings or a cosmetic LibTorch wrapper; Python adapters must not determine
+  native types, composition, ownership, or extension conventions.
+  Foreground C++ typing, ownership, specialization, and HPC integration, and
+  Python experimentation and ecosystem integration. Reuse established backends
+  without making LibTorch ergonomics the public modeling API. Distinguish this
+  target from current Python-facing NN capabilities; documentation is not
+  permission to implement a new backend or duplicate conventional ML machinery.
 - Treat `Cell`, explicit state transitions, histories, and population execution
   as optional capabilities. Static representation learning, dense attention,
   transformers, recurrent networks, conditional models, and hybrids are equally

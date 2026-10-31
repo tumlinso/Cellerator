@@ -1,0 +1,30 @@
+{
+  "architecture": "sm_70",
+  "attention_source_sha256": "75868b95070b4cb0ebb5424bb707eb68544bf023b1df34d623eeb78f242b23b3",
+  "baseline_source_manifest_sha256": "5ae24fc2f24b0103685161d86fe75b51f67beeafe10d1b795cfb0b1b50108902",
+  "binary_sha256": {
+    "cmake/cellerator_kda_attention_geometry_driver": "75e950d319d10794aca13258c8b1f44d70d7604a9681a0ae9321d335947fd08b",
+    "cmake/cellerator_kda_attention_smoke": "7f178a4dd5ef6ea7fed4daa5d125ce7c49c2cba6451fa0c4bf269035ee0b2830"
+  },
+  "build_argv": [
+    "cmake",
+    "-S",
+    "/tmp/cellerator-kda-final-snapshots/attention/snapshots/a017b4cfd5403488ad18ae7f9cc34bff2364fe1156f28e6cd3dbeb8e94946215/planning/v100-framework-2026-10-29/attention/launch_geometry",
+    "-B",
+    "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/workspace/runs/kda-experiments/builds/baseline/4846c59b8c7b55f89f30122df42b72174c7ce364131b85f60681df81f22d15b5/7b9598df120d4af4931171decaa449d1/cmake",
+    "-DCELLERATOR_SOURCE_DIR=/tmp/cellerator-kda-final-snapshots/attention/snapshots/a017b4cfd5403488ad18ae7f9cc34bff2364fe1156f28e6cd3dbeb8e94946215",
+    "-DKDA_CANDIDATE_SOURCE_DIR=/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/workspace/runs/kda-experiments/candidates/baseline/ce3465393f8363cd8a52f6c9aefbab704f4627a8103077473d4660380052cc44",
+    "-DCMAKE_CXX_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12",
+    "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12",
+    "-DCMAKE_CUDA_ARCHITECTURES=70",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_CUDA_FLAGS=-lineinfo"
+  ],
+  "candidate_id": "baseline",
+  "candidate_snapshot_sha256": "ce3465393f8363cd8a52f6c9aefbab704f4627a8103077473d4660380052cc44",
+  "common_source_root": "/tmp/cellerator-kda-final-snapshots/attention/snapshots/a017b4cfd5403488ad18ae7f9cc34bff2364fe1156f28e6cd3dbeb8e94946215",
+  "task_source_manifest_sha256": "f62440801db2b5978a0b8d79a3ba4b922a252e4141280660108a3e1075f52833",
+  "trusted_driver_sha256": "27882b9738af444ee6f145145ba46d877d4a7cef9916ca2facced1bc3e1ed81d",
+  "trusted_smoke_sha256": "f85dbbbf4e67c754e42630e017905e9f364bcac3fd7aa21fd3ccc0abc593a6eb"
+}

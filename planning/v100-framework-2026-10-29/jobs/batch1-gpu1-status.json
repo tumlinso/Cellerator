@@ -1,0 +1,608 @@
+{
+  "attempt": {
+    "attempt_id": "6fa160e1-520b-4214-a143-f5bde156a70e",
+    "cleanup_verified": true,
+    "created_at": "2026-10-29T19:14:26.272086Z",
+    "error": {},
+    "evidence": [
+      {
+        "adapter_errors": [],
+        "kind": "execution_preconditions",
+        "operation_id": "preconditions:6fa160e1-520b-4214-a143-f5bde156a70e",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 3,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-29T19:14:28.766159+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:14:31.148305+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 3
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:14:28.766159+00:00",
+                        "process_observed_at": "2026-10-29T19:14:31.148305+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                        "state": "busy"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-29T19:14:34.603994+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:14:37.021449+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:14:34.603994+00:00",
+                        "process_observed_at": "2026-10-29T19:14:37.021449+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-29T19:14:40.501099+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:14:42.912453+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 3
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:14:40.501099+00:00",
+                        "process_observed_at": "2026-10-29T19:14:42.912453+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                        "state": "busy"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-29T19:14:46.373047+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:14:48.780615+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 3
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:14:46.373047+00:00",
+                        "process_observed_at": "2026-10-29T19:14:48.780615+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                        "state": "busy"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-29T19:14:52.258000+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:14:54.662273+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:14:52.258000+00:00",
+                        "process_observed_at": "2026-10-29T19:14:54.662273+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-29T19:14:58.125318+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:15:00.499050+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:14:58.125318+00:00",
+                        "process_observed_at": "2026-10-29T19:15:00.499050+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-29T19:15:03.956367+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:15:06.347840+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:15:03.956367+00:00",
+                        "process_observed_at": "2026-10-29T19:15:06.347840+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 3,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      2684354560
+                    ],
+                    "timeout_seconds": 60.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      }
+    ],
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "claim_id": "c4d65273-cbbd-4237-9709-b39c738ab342",
+      "fencing_token": 1172,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 1,
+            "inventory_observed_at": "2026-10-29T19:14:14.258071+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:03:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-29T19:14:14.258071+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          "capabilities": [
+            "memory-accounting-only",
+            "whole-device-exclusive-admission",
+            "shared-admission",
+            "nvidia-smi-compute-process-telemetry"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "schema_version": 1,
+          "topology": {
+            "links": [
+              {
+                "relation": "PHB",
+                "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+                "target_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                "type": "pcie"
+              },
+              {
+                "relation": "SYS",
+                "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                "type": "sys"
+              },
+              {
+                "relation": "NV6",
+                "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                "type": "nvlink"
+              }
+            ],
+            "pci_bus_id": "00000000:03:00.0",
+            "topology_state": "observed"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-9cf695841289a9a7e7e0a18c48313d1d.service",
+      "identity": "6fa160e1-520b-4214-a143-f5bde156a70e",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-9cf695841289a9a7e7e0a18c48313d1d.service",
+        "description": "Device Scheduler attempt 6fa160e1-520b-4214-a143-f5bde156a70e",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "e676dcfda030405a939e7ba32dea3ea7",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-10-29T19:15:06.430606Z"
+    },
+    "finished_at": "2026-10-29T19:16:49.989645Z",
+    "id": "6fa160e1-520b-4214-a143-f5bde156a70e",
+    "job_id": "fc7d81c1-b3ee-4f4d-a990-fd731a81d3e5",
+    "operation_id": "start:6fa160e1-520b-4214-a143-f5bde156a70e",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:6fa160e1-520b-4214-a143-f5bde156a70e",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "observation": {
+                  "consecutive_samples": 3,
+                  "samples": [
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-29T19:14:28.766159+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:14:31.148305+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 3
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:14:28.766159+00:00",
+                      "process_observed_at": "2026-10-29T19:14:31.148305+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                      "state": "busy"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-29T19:14:34.603994+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:14:37.021449+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:14:34.603994+00:00",
+                      "process_observed_at": "2026-10-29T19:14:37.021449+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-29T19:14:40.501099+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:14:42.912453+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 3
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:14:40.501099+00:00",
+                      "process_observed_at": "2026-10-29T19:14:42.912453+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                      "state": "busy"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-29T19:14:46.373047+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:14:48.780615+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 3
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:14:46.373047+00:00",
+                      "process_observed_at": "2026-10-29T19:14:48.780615+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                      "state": "busy"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-29T19:14:52.258000+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:14:54.662273+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:14:52.258000+00:00",
+                      "process_observed_at": "2026-10-29T19:14:54.662273+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-29T19:14:58.125318+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:15:00.499050+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:14:58.125318+00:00",
+                      "process_observed_at": "2026-10-29T19:15:00.499050+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-29T19:15:03.956367+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:15:06.347840+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:15:03.956367+00:00",
+                      "process_observed_at": "2026-10-29T19:15:06.347840+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    }
+                  ],
+                  "state": "observed"
+                },
+                "parameters": {
+                  "consecutive_samples": 3,
+                  "interval_seconds": 1.0,
+                  "max_utilization_percent": 0,
+                  "minimum_free_bytes": [
+                    2684354560
+                  ],
+                  "timeout_seconds": 60.0
+                },
+                "precondition_index": 0
+              },
+              "name": "gpu.quiescence",
+              "resource_ids": [
+                "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+              ],
+              "schema_version": 1,
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "state": "verified"
+    },
+    "result": {
+      "active_state": "failed",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-9cf695841289a9a7e7e0a18c48313d1d.service",
+        "invocation_id": "e676dcfda030405a939e7ba32dea3ea7",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt 6fa160e1-520b-4214-a143-f5bde156a70e"
+      },
+      "exit_code": 1,
+      "invocation_id": "e676dcfda030405a939e7ba32dea3ea7",
+      "logs": "{\"case\": \"memory\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_memory_smoke\"], \"returncode\": -6, \"seconds\": 3.5572822093963623, \"binary_sha256\": \"2bee7b682d74b7915f7ca464283ae85e297bde97285e0a5a900f1d1caa39fb4c\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/memory-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\ncellerator_framework_cuda_memory_smoke: /home/tumlinson/Cellerator/tests/framework/cuda/memory_smoke.cu:63: void check_case(int64_t) [with S = float; int64_t = long int]: Assertion `std::abs(value-expected)<=tol*std::max(1.f,std::abs(expected))' failed.\n{\"case\": \"frontier\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_frontier_smoke\"], \"returncode\": 0, \"seconds\": 2.793203830718994, \"binary_sha256\": \"29f0b4a07ac9c8336d11b6b3788bb66a023d0a477e480d198718a8d53f00c8bf\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/frontier-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nCUDA changed-source frontier oracle matrix passed\n{\"case\": \"attention\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_attention_smoke\", \"--device\"], \"returncode\": 2, \"seconds\": 3.9587466716766357, \"binary_sha256\": \"4208d78b4eb6e28d224e38c667bbfec42327c81cabdecaf11b07ce440205a46d\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/attention-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nfused output[15]: actual -0.0297650509, expected -0.0816384167, abs error 0.0519\nattention device run on Tesla V100-SXM2-16GB, compute capability 7.0\nFP32 staged forward and VJP passed (164 edges; degrees 0/1/2/31/32/33/65)\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "exit-code",
+      "state": "failed",
+      "stdout": "{\"case\": \"memory\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_memory_smoke\"], \"returncode\": -6, \"seconds\": 3.5572822093963623, \"binary_sha256\": \"2bee7b682d74b7915f7ca464283ae85e297bde97285e0a5a900f1d1caa39fb4c\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/memory-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\ncellerator_framework_cuda_memory_smoke: /home/tumlinson/Cellerator/tests/framework/cuda/memory_smoke.cu:63: void check_case(int64_t) [with S = float; int64_t = long int]: Assertion `std::abs(value-expected)<=tol*std::max(1.f,std::abs(expected))' failed.\n{\"case\": \"frontier\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_frontier_smoke\"], \"returncode\": 0, \"seconds\": 2.793203830718994, \"binary_sha256\": \"29f0b4a07ac9c8336d11b6b3788bb66a023d0a477e480d198718a8d53f00c8bf\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/frontier-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nCUDA changed-source frontier oracle matrix passed\n{\"case\": \"attention\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_attention_smoke\", \"--device\"], \"returncode\": 2, \"seconds\": 3.9587466716766357, \"binary_sha256\": \"4208d78b4eb6e28d224e38c667bbfec42327c81cabdecaf11b07ce440205a46d\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/attention-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nfused output[15]: actual -0.0297650509, expected -0.0816384167, abs error 0.0519\nattention device run on Tesla V100-SXM2-16GB, compute capability 7.0\nFP32 staged forward and VJP passed (164 edges; degrees 0/1/2/31/32/33/65)\n",
+      "substate": "failed",
+      "unit_name": "device-scheduler-attempt-9cf695841289a9a7e7e0a18c48313d1d.service"
+    },
+    "started_at": "2026-10-29T19:15:06.430707Z",
+    "state": "failed"
+  },
+  "attempt_count": 1,
+  "attempt_id": "6fa160e1-520b-4214-a143-f5bde156a70e",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-29T19:14:23.919478Z",
+  "decision_id": "e45d4fab-42b6-4624-b601-e0b2e6d085f5",
+  "id": "fc7d81c1-b3ee-4f4d-a990-fd731a81d3e5",
+  "job_id": "fc7d81c1-b3ee-4f4d-a990-fd731a81d3e5",
+  "lease_binding": null,
+  "lease_fencing_token": 1172,
+  "lease_id": "c4d65273-cbbd-4237-9709-b39c738ab342",
+  "lease_state": "released",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "failed",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-9cf695841289a9a7e7e0a18c48313d1d.service",
+      "invocation_id": "e676dcfda030405a939e7ba32dea3ea7",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt 6fa160e1-520b-4214-a143-f5bde156a70e"
+    },
+    "exit_code": 1,
+    "invocation_id": "e676dcfda030405a939e7ba32dea3ea7",
+    "logs": "{\"case\": \"memory\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_memory_smoke\"], \"returncode\": -6, \"seconds\": 3.5572822093963623, \"binary_sha256\": \"2bee7b682d74b7915f7ca464283ae85e297bde97285e0a5a900f1d1caa39fb4c\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/memory-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\ncellerator_framework_cuda_memory_smoke: /home/tumlinson/Cellerator/tests/framework/cuda/memory_smoke.cu:63: void check_case(int64_t) [with S = float; int64_t = long int]: Assertion `std::abs(value-expected)<=tol*std::max(1.f,std::abs(expected))' failed.\n{\"case\": \"frontier\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_frontier_smoke\"], \"returncode\": 0, \"seconds\": 2.793203830718994, \"binary_sha256\": \"29f0b4a07ac9c8336d11b6b3788bb66a023d0a477e480d198718a8d53f00c8bf\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/frontier-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nCUDA changed-source frontier oracle matrix passed\n{\"case\": \"attention\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_attention_smoke\", \"--device\"], \"returncode\": 2, \"seconds\": 3.9587466716766357, \"binary_sha256\": \"4208d78b4eb6e28d224e38c667bbfec42327c81cabdecaf11b07ce440205a46d\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/attention-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nfused output[15]: actual -0.0297650509, expected -0.0816384167, abs error 0.0519\nattention device run on Tesla V100-SXM2-16GB, compute capability 7.0\nFP32 staged forward and VJP passed (164 edges; degrees 0/1/2/31/32/33/65)\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "exit-code",
+    "state": "failed",
+    "stdout": "{\"case\": \"memory\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_memory_smoke\"], \"returncode\": -6, \"seconds\": 3.5572822093963623, \"binary_sha256\": \"2bee7b682d74b7915f7ca464283ae85e297bde97285e0a5a900f1d1caa39fb4c\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/memory-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\ncellerator_framework_cuda_memory_smoke: /home/tumlinson/Cellerator/tests/framework/cuda/memory_smoke.cu:63: void check_case(int64_t) [with S = float; int64_t = long int]: Assertion `std::abs(value-expected)<=tol*std::max(1.f,std::abs(expected))' failed.\n{\"case\": \"frontier\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_frontier_smoke\"], \"returncode\": 0, \"seconds\": 2.793203830718994, \"binary_sha256\": \"29f0b4a07ac9c8336d11b6b3788bb66a023d0a477e480d198718a8d53f00c8bf\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/frontier-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nCUDA changed-source frontier oracle matrix passed\n{\"case\": \"attention\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_attention_smoke\", \"--device\"], \"returncode\": 2, \"seconds\": 3.9587466716766357, \"binary_sha256\": \"4208d78b4eb6e28d224e38c667bbfec42327c81cabdecaf11b07ce440205a46d\", \"log\": \"/tmp/cellerator-v100-results/batch1-gpu1/attention-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nfused output[15]: actual -0.0297650509, expected -0.0816384167, abs error 0.0519\nattention device run on Tesla V100-SXM2-16GB, compute capability 7.0\nFP32 staged forward and VJP passed (164 edges; degrees 0/1/2/31/32/33/65)\n",
+    "substate": "failed",
+    "unit_name": "device-scheduler-attempt-9cf695841289a9a7e7e0a18c48313d1d.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python",
+      "/home/tumlinson/Cellerator/scripts/validation/framework_cuda_suite.py",
+      "--build",
+      "/tmp/cellerator-v100-framework-build",
+      "--cases",
+      "memory",
+      "frontier",
+      "attention",
+      "--output",
+      "/tmp/cellerator-v100-results/batch1-gpu1"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "event_trigger": null,
+    "expected_duration_seconds": 30.0,
+    "flexible": false,
+    "idempotency_key": "cellerator-framework-v100-first-device-20261029-scoped-gpu1",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "kill_timeout_seconds": 330.0,
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 3,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "preemption_action": "abandon",
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 2147483648.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "retention_policy": null,
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "cellerator-v100-correctness",
+      "gpu.exclusive"
+    ],
+    "termination_grace_seconds": 10.0,
+    "timeout_seconds": 360.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "failed",
+  "updated_at": "2026-10-29T19:16:49.989645Z"
+}

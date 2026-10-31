@@ -8,11 +8,11 @@ claims or validation.
 from cellerator.events import Event
 from cellerator.execution import Population, Send
 from cellerator.interactions import Interaction, InteractionGraph
-from cellerator.modeling import Cell, Model, StepContext, StepResult
+from cellerator.modeling import DynamicalCell, DynamicalModel, StepContext, StepResult
 from cellerator.state import SparseState
 
 
-def build_model() -> Model:
+def build_model() -> DynamicalModel:
     relations = InteractionGraph(
         (
             Interaction.hyperedge(
@@ -82,18 +82,18 @@ def build_model() -> Model:
         """Return selected readouts, separately from the modeled state."""
         return {name: float(state[name]) for name in ("IFIT1", "IL1B")}
 
-    return Model(advance, observation=observe, parameters=parameters)
+    return DynamicalModel(advance, observation=observe, parameters=parameters)
 
 
 def main() -> None:
     model = build_model()  # Shared rule and parameters; cells own distinct state.
-    first = Cell(
+    first = DynamicalCell(
         model,
         SparseState({"STAT1": 1.2, "IFNAR": 1.0, "IFIT1": 0.0,
                      "NFKB": 0.0, "TNFR": 1.0, "IL1B": 0.0}),
         id="interferon-cell",
     )
-    neighbor = Cell(
+    neighbor = DynamicalCell(
         model,
         SparseState({"STAT1": 0.0, "IFNAR": 0.0, "IFIT1": 0.0,
                      "NFKB": 0.0, "TNFR": 1.0, "IL1B": 0.0}),

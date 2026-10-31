@@ -3,7 +3,7 @@
 Run: PYTHONPATH=python python examples/framework/scheduled_experts.py
 The resource labels describe CPU callbacks, not physical GPU measurements.
 """
-from cellerator import Cell, Model
+from cellerator import DynamicalCell, DynamicalModel
 from cellerator.execution import (
     BoundExecution, DeviceSpec, ExecutionEngine, ExpertPlacement, ExpertSpec,
     ExpertWorklist, HardwareTopology, LinkSpec, ParameterKey, ParameterRevision,
@@ -13,8 +13,8 @@ from cellerator.execution import (
 
 
 def main():
-    receiving_model = Model(lambda state, context: context.inputs)
-    cells = {name: Cell(receiving_model, value, id=name)
+    receiving_model = DynamicalModel(lambda state, context: context.inputs)
+    cells = {name: DynamicalCell(receiving_model, value, id=name)
              for name, value in (("cell-a", 2.0), ("cell-b", 5.0))}
     slow, fast = ParameterKey("slow", 0), ParameterKey("fast", 0)
     residency = ResidencyManager({"cpu-worker": 1024}, lambda payload, *_: payload)

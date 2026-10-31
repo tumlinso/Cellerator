@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from cellerator.modeling import Model, StepContext, StepResult
+from cellerator.modeling import DynamicalModel, StepContext, StepResult
 from cellerator.spatial.coupling import ExchangeLink, ExchangePlan, ExchangeState, concentrations
 
 
@@ -34,7 +34,7 @@ def run(steps: int = 100, dt: float = 0.1):
                           metadata={"limited": result.limited,
                                     "transfers": result.transfers})
 
-    model = Model(coupled_step)
+    model = DynamicalModel(coupled_step)
     state = initial
     for step in range(steps):
         state = model.step(state, StepContext(time=step * dt, dt=dt)).state

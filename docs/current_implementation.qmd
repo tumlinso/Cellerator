@@ -4,13 +4,21 @@ title: "Current implementation"
 
 ## Package boundary
 
-Cellerator is an early, general biological modeling and machine-learning framework. Models can use opaque state, identity-addressed sparse fields, molecular events, regulatory relations, latent arrays, spatial environments, or combinations of these. A `Cell` connects persistent identity and state to shared model dynamics; the state may also live in an external store. The update rule and observation model are separate. PyTorch is an optional integration for learned modules and autograd, rather than the definition of a model or its storage.
+Cellerator is an early biological machine-learning framework. Models can use
+measurements, identity-addressed sparse fields, molecular events, regulatory
+relations, latent representations, spatial environments, or combinations of
+these. A general `Cell` binds cellular identity and caller-owned information
+to an optional shared learned program. Explicit state transitions use
+`DynamicalCell` and `DynamicalModel`; the legacy `Model` name aliases the latter.
+PyTorch supplies the current ordinary training integration while native
+operations and arbitrary representations remain first-class.
 
 Implemented facilities have different backend and maturity boundaries. The 2026-10-29 framework expansion adds executable CPU reference mechanisms, C++ classes, optional bindings, and CUDA sources. A source file or namespace does not by itself establish numerical qualification, biological validity, or a performance advantage. In particular, topology planning and callback-based execution do not establish an autonomous distributed GPU service.
 
 ## Available package surfaces
 
-- `modeling` provides `Model`, `Cell`, explicit step contexts/results, observations, and experiments at requested observation times. It supports arbitrary caller-owned state representations and shared parameters without importing Torch or a native extension.
+- `modeling` provides a general `Cell` information/program handle and explicit `DynamicalCell`/`DynamicalModel` transitions, step contexts/results, observations, and experiments. Legacy dynamic construction remains deprecated compatibility behavior. The package imports without Torch or a native extension.
+- `nn` and `torch.nn` expose `FeatureEncoder`, dense/packed/CSR `RelationAttention`, `ModelWithViews`, and functional/module grouped linear composition. Ordinary Torch parameters and optimizers remain ordinary; existing canonical native owners retain their guarded update contracts. The source examples cover masked expression, causal event history, and paired auxiliary readouts.
 - `state`, `events`, and `dynamics` provide sparse/ragged/layout-aware state, generation-safe store references, event histories and trajectories, lineage, discrete/continuous/stochastic reference dynamics, and explicit composition. Quantization profiles can be shared across cells and feature orderings; exact-value overrides remain per-payload and caller-controlled.
 - `interactions` provides directed, bipartite, and joint hyperedge computations with explicit activity gates, aggregation, and native sparse worklist adapters. Native model, relation, layout, and field classes preserve semantic identities independently of storage slots. Incremental native execution invalidates declared dependencies and caches unaffected results.
 - `execution` provides populations, routed context, suspension/resumption, lifecycle effects, expert-major worklists, topology cost estimates, revisioned parameter residency, and asynchronous callback execution. Native conditional dispatch preserves exact expert revisions and origin identities. Logical routing, biological accessibility, and physical placement remain separate.
@@ -26,7 +34,25 @@ Implemented facilities have different backend and maturity boundaries. The 2026-
 - `ExecutionField` is an experimental CPU composition of prepared Product2 operations. It has explicit structure rebinding, but no JIT, live recompilation, or general compiler contract.
 - AnnData is a required Python dependency. Its new adapter maps explicit `X`, layer, or raw inputs to identity-aligned state and writes aligned observations while preserving sparse inputs. Classical single-cell analysis remains upstream in Scanpy and RAPIDS-singlecell.
 
-Start with the [biological framework guide](biological_framework.qmd), [distributed execution contract](distributed_execution.qmd), and [native CUDA guide](framework_cuda.qmd). The [Python binding guide](development/python-bindings.md), [sparse-support reference](sparse_support_foundation.qmd), [tokenization reference](tokenization.qmd), and [experimental fields note](development/experimental-fields.md) retain their narrower contracts. The [source routing guide](development/routing.md) identifies owners; the [developer reference](developer_reference.qmd) describes established build and validation routes.
+Start with the [NN foundation guide](nn_foundation.qmd), [biological framework guide](biological_framework.qmd), [distributed execution contract](distributed_execution.qmd), and [native CUDA guide](framework_cuda.qmd). The [Python binding guide](development/python-bindings.md), [sparse-support reference](sparse_support_foundation.qmd), [tokenization reference](tokenization.qmd), and [experimental fields note](development/experimental-fields.md) retain their narrower contracts. The [source routing guide](development/routing.md) identifies owners; the [developer reference](developer_reference.qmd) describes established build and validation routes.
+
+## NN foundation evidence, 2026-10-31
+
+The first NN milestone supplies composable biological feature/interaction
+modules, shared trainable readouts, generic cell binding, a compatibility
+migration for explicit dynamics, and a native grouped-linear autograd adapter.
+The [qualification record](../planning/nn-foundation-2026-10-31/VALIDATION.md)
+records the combined CPU suite, native CPU composition, package validation,
+and their limits.
+
+The [CUDA adapter qualification](../planning/nn-foundation-2026-10-31/grouped_linear/REPORT.md)
+passed all 13 tests on admitted V100/SM70 hardware with zero skips. A separate
+admitted memcheck run passed the same 13 tests with zero reported errors;
+both jobs verified resource cleanup. Checks cover input and weight VJPs,
+FP16/FP32 operands, FP32 master weights, empty/ragged segments, streams,
+mutation rejection, and composed ordinary-layer training. These are bounded
+correctness and memory-access checks, not a speedup or biological claim.
+The native numerical kernels and bindings were reused unchanged.
 
 ## Framework expansion evidence, 2026-10-29
 

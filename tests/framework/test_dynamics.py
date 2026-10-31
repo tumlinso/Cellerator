@@ -3,7 +3,7 @@ import unittest
 from cellerator.dynamics import (
     JumpChannel, MappingAlgebra, additive, apply_events, euler, gillespie, rk4, sequence,
 )
-from cellerator.modeling import Cell, Model, StepContext, StepResult
+from cellerator.modeling import DynamicalCell, DynamicalModel, StepContext, StepResult
 
 
 class DeterministicRandom:
@@ -31,7 +31,7 @@ class DynamicsTests(unittest.TestCase):
         self.assertEqual(seen, [(2, "cue"), (3.0, "cue"), (3.0, "cue"), (4, "cue")])
 
     def test_cell_uses_continuous_dynamics(self):
-        cell = Cell(Model(euler(lambda x, c: 2.0)), 3.0)
+        cell = DynamicalCell(DynamicalModel(euler(lambda x, c: 2.0)), 3.0)
         out = cell.advance(0.5)
         self.assertEqual((cell.state, cell.time, out.time), (4.0, 0.5, 0.5))
 

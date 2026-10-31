@@ -1,0 +1,188 @@
+---
+title: "Biological neural-network foundation"
+---
+
+Cellerator's neural components connect biological information, learned
+relationships, histories, and requested observations to ordinary trainable
+compositions. They implement part of the
+[modeling backbone](architecture.qmd#modeling-and-neural-network-backbone);
+they do not require one cellular representation or an explicit transition rule.
+PyTorch supplies conventional layers, autograd, losses, and optimizers. Native
+operations remain independent numerical components with focused adapters.
+
+This guide describes the current Python-facing NN foundation. It does not
+establish an equivalent C++ modeling surface. The architectural target is
+[first-class model authoring and training in C++ and Python](architecture.qmd#cpp-and-python-modeling),
+with an idiomatic C++ library API designed directly for native model authoring,
+rather than translated Python bindings or a LibTorch frontend wrapper. Existing
+C++ operations and classes are foundations for that target, not proof of parity.
+
+## Cells and shared learned programs
+
+`Cell(data=None, *, id=None)` is a lightweight identity and information handle.
+Its data may be measurements, a history, a structured representation, or an
+external reference. A generic cell requires no clock, mutable state vector, or
+neural model superclass. Importing it does not import Torch.
+
+```python
+from cellerator import Cell
+
+cell = Cell({"rna": [1.0, 2.0]}, id="cell-1")
+bound = cell.bind(lambda information: sum(information["rna"]))
+assert bound.predict() == 3.0
+```
+
+Binding retains the shared program and information source rather than copying
+parameters. Models can also consume batches directly. Batch execution does not
+require creating and iterating over a Python cell for every row.
+
+Explicit transitions use `DynamicalCell` and `DynamicalModel`. Their state,
+time, observations, and advancement retain the earlier dynamics contracts.
+`DynamicalCell` is a specialized `Cell`, and its generic data access follows
+current state, including external state references. The legacy `Model` name
+aliases `DynamicalModel`; it is not a universal learned-model base class.
+Legacy `Cell(model, state, ...)` and `Cell.from_reference(...)` remain deprecated
+construction routes to a real `DynamicalCell`.
+
+## Biological features and interactions
+
+The lazy `cellerator.nn` interface exposes `FeatureEncoder`, `RelationAttention`,
+`ModelWithViews`, `grouped_linear`, and `GroupedLinear`, alongside existing
+neural adapters. `cellerator.torch.nn` retains the same relevant exports.
+Conventional Torch modules compose directly with these components.
+
+`FeatureEncoder(vocabulary_size, width, value_size=1, attribute_size=None)`
+combines registered integer feature IDs with optional values, observation
+status, and aligned attributes. Pass `value_size=None` for identity/attribute
+inputs without measurements. Hidden values are removed before projection;
+measured zero remains distinct from unobserved information. The encoder does
+not normalize measurements, rank genes, infer aliases, or declare their
+biological meaning.
+
+Callers choose vocabulary mappings and align feature IDs, measurements, masks,
+and attributes explicitly. Feature identity, vocabulary index, event occurrence,
+and physical position are distinct. No new global registry or mandatory
+biological tensor container is introduced.
+
+`RelationAttention(width, heads=1, dropout=0.0)` supplies a concrete attention
+family. It supports ordinary dense source/target tensors and packed occurrences
+with optional group offsets and CSR support. Supplied relations select eligible
+source occurrences; attention learns weights among them. This does not infer
+hard regulatory memberships or establish causal interactions.
+
+- Dense attention stays within each batch group.
+- Packed groups can represent cells, windows, or other computational contexts.
+  Declared group boundaries are validated; distinct windows of one cell may
+  still be different groups.
+- Explicit population coupling can use a caller-defined larger group and CSR
+  relations. Computational grouping is not a biological independence claim.
+- Repeated occurrences and duplicate relation entries retain multiplicity.
+- Causal self-attention uses occurrence order, not an inferred biological clock.
+- Empty neighborhoods contribute zero; residual updates are separate modules.
+
+Context can condition features through ordinary learned modules before
+interaction. Aggregation defines output participants explicitly; arbitrary
+neural transformations are not assumed to preserve biological metadata.
+
+## Auxiliary views
+
+`ModelWithViews(base)` registers shared readouts without changing the base
+model's `forward` behavior:
+
+```python
+from torch import nn
+from cellerator.nn import ModelWithViews
+
+# The base explicitly returns {"regulatory": ...}; it may use any architecture.
+model = ModelWithViews(base)
+model.add_view("atac", nn.Linear(width, peak_count), source="regulatory")
+atac = model.predict(batch, view="atac")
+```
+
+A source can be the entire base result, an explicitly returned mapping key,
+or a callable `source(result, input)`. A trainable source transform should be
+an `nn.Module` so its parameters are registered. A readout may itself be a
+substantial learned module; no single canonical latent vector is required.
+
+Multiple requested views share one batched base invocation. Only requested
+heads run, and ordinary gradients remain connected. A cell bound to this model
+can request `cell.predict("atac")`. A frozen base and joint training are explicit
+parameter-training choices; freezing parameters does not imply detaching inputs.
+There is no hidden persistent representation cache. Reuse within a call is
+safe without introducing cross-call revision or graph-lifetime assumptions.
+
+Predicted ATAC and measured ATAC remain different information. Appropriate
+paired supervision and the selected representation's information content are
+scientific requirements of the particular readout experiment.
+
+## Reference learning compositions
+
+The [NN examples](../examples/nn_foundation/README.md) demonstrate two small
+compositions using shared building blocks:
+
+- Expression features and explicit masks feed contextual interactions and
+  requested reconstruction outputs. Masked MSE exercises the modeling and
+  gradient path; it is not evidence of learned cellular mechanisms.
+- Ordered event histories use repeated integer occurrences, group offsets,
+  a computational start representation, explicit order encoding, causal
+  attention, and shifted next-event cross-entropy. Empty histories have a
+  start context and no supervised event loss without targets. No gradient
+  through sampled discrete events is invented.
+
+Auxiliary binary ATAC readouts use synthetic paired targets to exercise frozen
+and joint training. The examples use ordinary optimizers, not a new trainer
+system. Sparse AnnData inputs stay sparse during selection; conversion of an
+explicitly bounded minibatch is a caller-visible operation. Whole-dataset
+densification and implicit preprocessing are not required.
+
+The existing trajectory-window trainer remains useful for explicit dynamical
+models and truncation. It does not define static or autoregressive training.
+Canonical native parameter owners still require their guarded update APIs;
+ordinary Torch-owned parameters use ordinary optimizers.
+
+Run the synthetic CPU training example from a source checkout:
+
+```sh
+PYTHONPATH=python:. python examples/nn_foundation/train.py
+```
+
+The [qualification record](../planning/nn-foundation-2026-10-31/VALIDATION.md)
+separates framework tests, native CPU composition, admitted CUDA autograd and
+memcheck, and isolated wheel validation.
+
+## Custom operations
+
+Start with an ordinary differentiable composition when it expresses the desired
+computation. Use custom native execution when structure or numerical work
+justifies it. An extension specifies:
+
+1. Its mathematical inputs/outputs, biological identity effects, and layouts.
+2. Parameter, structure, memory, mutation, and stream ownership.
+3. Supported precision and devices, including accumulation/output types.
+4. A differentiable reference or VJP for each differentiable argument, with
+   explicit limitations for integer structure and higher-order derivatives.
+
+The native CPU Product2 adapter provides an existing FP32 vector and first-order
+composition example. The new grouped-linear adapter uses ordinary Torch-owned
+weights and the existing cuBLAS-backed numerical operation:
+
+```python
+from cellerator.nn import grouped_linear
+
+# Expert-major rows; host offsets partition rows among weight[E, O, I].
+output = grouped_linear(inputs, weight, row_offsets, implementation="auto")
+```
+
+`auto` selects the reference on CPU and native execution on CUDA. Missing native
+CUDA support is an explicit error; `implementation="reference"` selects the
+Torch composition deliberately. The native path accepts matching FP16 or FP32
+operands, uses FP32 accumulation, retains Torch allocation/parameter ownership,
+and supplies first-order input and weight gradients. It performs no implicit
+precision conversion. Differentiable casts can connect FP32 master weights to
+FP16 computation. Each forward graph retains its own executor and borrowed
+views through backward on the current stream. These ownership and preparation
+costs do not establish a performance advantage.
+
+See the [extension contract record](../custom_torch_ops.md) and
+[qualification report](../planning/nn-foundation-2026-10-31/grouped_linear/REPORT.md).
+No additional runtime operator registry or autograd engine is required.

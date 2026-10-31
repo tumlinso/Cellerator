@@ -1,0 +1,1519 @@
+{
+  "schema": "cellerator.v100.framework.validation.v1",
+  "base_commit": "a5190c168b25e2764ccc4e09e406472ab845cae6",
+  "accepted_checks": [
+    {
+      "case": "runtime",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_runtime_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.24977779388427734,
+      "binary_sha256": "e35046b68282bf32a3b71b54b461e49d0c73beeacf7ec17664da052bba1218b3",
+      "log": "/tmp/cellerator-v100-results/batch1-core-a-reroute/runtime-none.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/runtime-none.log",
+      "log_sha256": "ed767aeb3fa2c6c96b07488b0b1d3613a44bf8bf33439415d6b5f25ce0fb98c4",
+      "scheduler_job_id": "5f4fcaeb-fe97-48ae-b54d-990693c5d2ba"
+    },
+    {
+      "case": "runtime",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_runtime_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 4.5723912715911865,
+      "binary_sha256": "e35046b68282bf32a3b71b54b461e49d0c73beeacf7ec17664da052bba1218b3",
+      "log": "/tmp/cellerator-v100-results/memcheck-r4-gpu1/runtime-memcheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/runtime-memcheck.log",
+      "log_sha256": "f328a1df381f6c06047f7928c84aa1c5f55c86725c50504eedfd22193bb71423",
+      "scheduler_job_id": "6c0ea0b7-21d9-4d09-8c32-a8e2715da843"
+    },
+    {
+      "case": "runtime",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_runtime_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 4.947939872741699,
+      "binary_sha256": "e35046b68282bf32a3b71b54b461e49d0c73beeacf7ec17664da052bba1218b3",
+      "log": "/tmp/cellerator-v100-results/racecheck-r4-gpu1/runtime-racecheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/runtime-racecheck.log",
+      "log_sha256": "9b92c2d532ad2e1ea96aa0a6768a9784e8a9352905fe42dda6c49ab5b1bfa963",
+      "scheduler_job_id": "f574a36a-f49a-4457-948a-21b7a6d78fe0"
+    },
+    {
+      "case": "runtime",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_runtime_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 6.78865122795105,
+      "binary_sha256": "e35046b68282bf32a3b71b54b461e49d0c73beeacf7ec17664da052bba1218b3",
+      "log": "/tmp/cellerator-v100-results/initcheck-r4-gpu1/runtime-initcheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/runtime-initcheck.log",
+      "log_sha256": "f328a1df381f6c06047f7928c84aa1c5f55c86725c50504eedfd22193bb71423",
+      "scheduler_job_id": "1f694f4f-2ed1-4e0a-97ae-f17398b75cc8"
+    },
+    {
+      "case": "runtime",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_runtime_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 4.529943943023682,
+      "binary_sha256": "e35046b68282bf32a3b71b54b461e49d0c73beeacf7ec17664da052bba1218b3",
+      "log": "/tmp/cellerator-v100-results/synccheck-r4-gpu1/runtime-synccheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/runtime-synccheck.log",
+      "log_sha256": "f328a1df381f6c06047f7928c84aa1c5f55c86725c50504eedfd22193bb71423",
+      "scheduler_job_id": "2ba216d7-47ad-43a3-8da9-0713209a7736"
+    },
+    {
+      "case": "dispatch",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_dispatch_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 1.630204200744629,
+      "binary_sha256": "2b2c91bbca3a526955095abfb148dbbbacae334ce532f9846ea406b41a1352b9",
+      "log": "/tmp/cellerator-v100-results/r4-gpu1/dispatch-none.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/dispatch-none.log",
+      "log_sha256": "e93173055d432412b2ae6abf1c16b8e2a1d2c0adef6b3ffeb6ff1f6e778187b0",
+      "scheduler_job_id": "7ef16ade-9ea9-46ec-a8fe-d691d1016413"
+    },
+    {
+      "case": "dispatch",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_dispatch_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 4.5602943897247314,
+      "binary_sha256": "2b2c91bbca3a526955095abfb148dbbbacae334ce532f9846ea406b41a1352b9",
+      "log": "/tmp/cellerator-v100-results/memcheck-r4-gpu1/dispatch-memcheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/dispatch-memcheck.log",
+      "log_sha256": "b96ecf0713cab8fe5a9795ff9e515b2283b49b5f76b9839975fc2c257116cf2c",
+      "scheduler_job_id": "6c0ea0b7-21d9-4d09-8c32-a8e2715da843"
+    },
+    {
+      "case": "dispatch",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_dispatch_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 6.765415906906128,
+      "binary_sha256": "2b2c91bbca3a526955095abfb148dbbbacae334ce532f9846ea406b41a1352b9",
+      "log": "/tmp/cellerator-v100-results/racecheck-r4-gpu1/dispatch-racecheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/dispatch-racecheck.log",
+      "log_sha256": "05e706967a484a19493dd348c64b26b257de4d22d8a1eff4dd64cb673774cf27",
+      "scheduler_job_id": "f574a36a-f49a-4457-948a-21b7a6d78fe0"
+    },
+    {
+      "case": "dispatch",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_dispatch_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 1.8676891326904297,
+      "binary_sha256": "2b2c91bbca3a526955095abfb148dbbbacae334ce532f9846ea406b41a1352b9",
+      "log": "/tmp/cellerator-v100-results/initcheck-r4-gpu1/dispatch-initcheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/dispatch-initcheck.log",
+      "log_sha256": "b96ecf0713cab8fe5a9795ff9e515b2283b49b5f76b9839975fc2c257116cf2c",
+      "scheduler_job_id": "1f694f4f-2ed1-4e0a-97ae-f17398b75cc8"
+    },
+    {
+      "case": "dispatch",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_dispatch_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 4.542893886566162,
+      "binary_sha256": "2b2c91bbca3a526955095abfb148dbbbacae334ce532f9846ea406b41a1352b9",
+      "log": "/tmp/cellerator-v100-results/synccheck-r4-gpu1/dispatch-synccheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/dispatch-synccheck.log",
+      "log_sha256": "b96ecf0713cab8fe5a9795ff9e515b2283b49b5f76b9839975fc2c257116cf2c",
+      "scheduler_job_id": "2ba216d7-47ad-43a3-8da9-0713209a7736"
+    },
+    {
+      "case": "quantization",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.21567249298095703,
+      "binary_sha256": "b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1",
+      "log": "/tmp/cellerator-v100-results/final-quantization/none/quantization-none.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/quantization-none.log",
+      "log_sha256": "b0aa177b19b6611a43ef175269b1eae8267d30537651140f04c8749ac973d825",
+      "scheduler_job_id": "c9ec0b2c-e5e7-4317-8ae2-90c6ab369bcf"
+    },
+    {
+      "case": "quantization",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.42102885246276855,
+      "binary_sha256": "b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1",
+      "log": "/tmp/cellerator-v100-results/final-quantization/memcheck/quantization-memcheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/quantization-memcheck.log",
+      "log_sha256": "e2ad51e129065ec443bc893c610a853b60ace49476f44a695360fb3bc34df352",
+      "scheduler_job_id": "c9ec0b2c-e5e7-4317-8ae2-90c6ab369bcf"
+    },
+    {
+      "case": "quantization",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.8230621814727783,
+      "binary_sha256": "b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1",
+      "log": "/tmp/cellerator-v100-results/final-quantization/racecheck/quantization-racecheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/quantization-racecheck.log",
+      "log_sha256": "8c22d5c1ac6ea71e4c4367b5bcf640895ae3838a893b692f08728458351dcbfe",
+      "scheduler_job_id": "c9ec0b2c-e5e7-4317-8ae2-90c6ab369bcf"
+    },
+    {
+      "case": "quantization",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.572131872177124,
+      "binary_sha256": "b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1",
+      "log": "/tmp/cellerator-v100-results/final-quantization/initcheck/quantization-initcheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/quantization-initcheck.log",
+      "log_sha256": "e2ad51e129065ec443bc893c610a853b60ace49476f44a695360fb3bc34df352",
+      "scheduler_job_id": "c9ec0b2c-e5e7-4317-8ae2-90c6ab369bcf"
+    },
+    {
+      "case": "quantization",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.39038515090942383,
+      "binary_sha256": "b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1",
+      "log": "/tmp/cellerator-v100-results/final-quantization/synccheck/quantization-synccheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/quantization-synccheck.log",
+      "log_sha256": "e2ad51e129065ec443bc893c610a853b60ace49476f44a695360fb3bc34df352",
+      "scheduler_job_id": "c9ec0b2c-e5e7-4317-8ae2-90c6ab369bcf"
+    },
+    {
+      "case": "memory",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-framework-r2/cellerator_framework_cuda_memory_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.808105707168579,
+      "binary_sha256": "2eb63ea0257ab718bac5c48b3e1802692f7f9e5b5c1de05f046f2cef05da739b",
+      "log": "/tmp/cellerator-v100-results/r2-gpu1/memory-none.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/memory-none.log",
+      "log_sha256": "47ff24f40bff7a4b555d251abd2eab8a1b53e689d161d62d416833b516962606",
+      "scheduler_job_id": "20926b4d-55b2-427a-9304-5dfb853088c5"
+    },
+    {
+      "case": "memory",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_memory_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 3.629953384399414,
+      "binary_sha256": "2eb63ea0257ab718bac5c48b3e1802692f7f9e5b5c1de05f046f2cef05da739b",
+      "log": "/tmp/cellerator-v100-results/memcheck-r4-gpu1/memory-memcheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/memory-memcheck.log",
+      "log_sha256": "633f5599771fd6106763c068f889248f457830b3564563b358b5cbb1c1e4e463",
+      "scheduler_job_id": "6c0ea0b7-21d9-4d09-8c32-a8e2715da843"
+    },
+    {
+      "case": "memory",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_memory_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.8758537769317627,
+      "binary_sha256": "2eb63ea0257ab718bac5c48b3e1802692f7f9e5b5c1de05f046f2cef05da739b",
+      "log": "/tmp/cellerator-v100-results/racecheck-r4-gpu1/memory-racecheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/memory-racecheck.log",
+      "log_sha256": "5feeade04e72cac0753aab1fe7f075bdabf84cc8ff494ac2219406a6ae9101fd",
+      "scheduler_job_id": "f574a36a-f49a-4457-948a-21b7a6d78fe0"
+    },
+    {
+      "case": "memory",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_memory_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.7159605026245117,
+      "binary_sha256": "2eb63ea0257ab718bac5c48b3e1802692f7f9e5b5c1de05f046f2cef05da739b",
+      "log": "/tmp/cellerator-v100-results/initcheck-r4-gpu1/memory-initcheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/memory-initcheck.log",
+      "log_sha256": "633f5599771fd6106763c068f889248f457830b3564563b358b5cbb1c1e4e463",
+      "scheduler_job_id": "1f694f4f-2ed1-4e0a-97ae-f17398b75cc8"
+    },
+    {
+      "case": "memory",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_memory_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 3.046394109725952,
+      "binary_sha256": "2eb63ea0257ab718bac5c48b3e1802692f7f9e5b5c1de05f046f2cef05da739b",
+      "log": "/tmp/cellerator-v100-results/synccheck-r4-gpu1/memory-synccheck.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/memory-synccheck.log",
+      "log_sha256": "633f5599771fd6106763c068f889248f457830b3564563b358b5cbb1c1e4e463",
+      "scheduler_job_id": "2ba216d7-47ad-43a3-8da9-0713209a7736"
+    },
+    {
+      "case": "frontier",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_frontier_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.793203830718994,
+      "binary_sha256": "29f0b4a07ac9c8336d11b6b3788bb66a023d0a477e480d198718a8d53f00c8bf",
+      "log": "/tmp/cellerator-v100-results/batch1-gpu1/frontier-none.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/frontier-none.log",
+      "log_sha256": "e47a850a14e5fa4ec5322e19fedc88c2fba1c4a1b594bcfc6a16dcc1291ccce4",
+      "scheduler_job_id": "fc7d81c1-b3ee-4f4d-a990-fd731a81d3e5"
+    },
+    {
+      "case": "frontier",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_frontier_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 4.7987775802612305,
+      "binary_sha256": "29f0b4a07ac9c8336d11b6b3788bb66a023d0a477e480d198718a8d53f00c8bf",
+      "log": "/tmp/cellerator-v100-results/memcheck-r4-gpu2/frontier-memcheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/frontier-memcheck.log",
+      "log_sha256": "c51d3be4e296d192ede2fa3606b018d79506cf23c0978f7604a55727b91708e2",
+      "scheduler_job_id": "06035a34-e2c8-4059-9517-74362e76f691"
+    },
+    {
+      "case": "frontier",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_frontier_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 7.0192859172821045,
+      "binary_sha256": "29f0b4a07ac9c8336d11b6b3788bb66a023d0a477e480d198718a8d53f00c8bf",
+      "log": "/tmp/cellerator-v100-results/racecheck-r4-gpu2/frontier-racecheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/frontier-racecheck.log",
+      "log_sha256": "bf5220c8c53b9c3b25185e4536eea6fdd34d738a8fb238a9c69281e54b6bc2c8",
+      "scheduler_job_id": "e793bf12-b626-44a1-a7e0-86fe8961bcb8"
+    },
+    {
+      "case": "frontier",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_frontier_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 4.56792426109314,
+      "binary_sha256": "29f0b4a07ac9c8336d11b6b3788bb66a023d0a477e480d198718a8d53f00c8bf",
+      "log": "/tmp/cellerator-v100-results/initcheck-r4-gpu2/frontier-initcheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/frontier-initcheck.log",
+      "log_sha256": "c51d3be4e296d192ede2fa3606b018d79506cf23c0978f7604a55727b91708e2",
+      "scheduler_job_id": "f400dc0d-ba39-4183-bb63-cc6d50ff9929"
+    },
+    {
+      "case": "frontier",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_frontier_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 6.130017995834351,
+      "binary_sha256": "29f0b4a07ac9c8336d11b6b3788bb66a023d0a477e480d198718a8d53f00c8bf",
+      "log": "/tmp/cellerator-v100-results/synccheck-r4-gpu2/frontier-synccheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/frontier-synccheck.log",
+      "log_sha256": "c51d3be4e296d192ede2fa3606b018d79506cf23c0978f7604a55727b91708e2",
+      "scheduler_job_id": "246d4676-1707-4630-b9f4-cfcbaf125f37"
+    },
+    {
+      "case": "attention",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-framework-r2/cellerator_framework_cuda_attention_smoke",
+        "--device"
+      ],
+      "returncode": 0,
+      "seconds": 3.7318944931030273,
+      "binary_sha256": "2057ef6ca5d4d3412e252ad0b1f08fd09fbc342b88441d54b0a475079d485f55",
+      "log": "/tmp/cellerator-v100-results/r2-gpu1/attention-none.log",
+      "visible_devices": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "retained_log": "evidence/logs/attention-none.log",
+      "log_sha256": "024a6ec2b9d3faf95bba8dc5b1ec61f586b145e631af3c02112faa6075a6be82",
+      "scheduler_job_id": "20926b4d-55b2-427a-9304-5dfb853088c5"
+    },
+    {
+      "case": "attention",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_attention_smoke",
+        "--device"
+      ],
+      "returncode": 0,
+      "seconds": 4.841312646865845,
+      "binary_sha256": "2057ef6ca5d4d3412e252ad0b1f08fd09fbc342b88441d54b0a475079d485f55",
+      "log": "/tmp/cellerator-v100-results/memcheck-r4-gpu2/attention-memcheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/attention-memcheck.log",
+      "log_sha256": "04aeff6a207cdc16860d456e3c822b3c4b22f339005d2e523b8dc3860b421158",
+      "scheduler_job_id": "06035a34-e2c8-4059-9517-74362e76f691"
+    },
+    {
+      "case": "attention",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_attention_smoke",
+        "--device"
+      ],
+      "returncode": 0,
+      "seconds": 6.6284096240997314,
+      "binary_sha256": "2057ef6ca5d4d3412e252ad0b1f08fd09fbc342b88441d54b0a475079d485f55",
+      "log": "/tmp/cellerator-v100-results/racecheck-r4-gpu2/attention-racecheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/attention-racecheck.log",
+      "log_sha256": "aa5e7964f0e58563daf1f67c1921fc9581bbd27f097dfb3ed12cde774ba4240e",
+      "scheduler_job_id": "e793bf12-b626-44a1-a7e0-86fe8961bcb8"
+    },
+    {
+      "case": "attention",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_attention_smoke",
+        "--device"
+      ],
+      "returncode": 0,
+      "seconds": 3.9930062294006348,
+      "binary_sha256": "2057ef6ca5d4d3412e252ad0b1f08fd09fbc342b88441d54b0a475079d485f55",
+      "log": "/tmp/cellerator-v100-results/initcheck-r4-gpu2/attention-initcheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/attention-initcheck.log",
+      "log_sha256": "04aeff6a207cdc16860d456e3c822b3c4b22f339005d2e523b8dc3860b421158",
+      "scheduler_job_id": "f400dc0d-ba39-4183-bb63-cc6d50ff9929"
+    },
+    {
+      "case": "attention",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_attention_smoke",
+        "--device"
+      ],
+      "returncode": 0,
+      "seconds": 3.3813631534576416,
+      "binary_sha256": "2057ef6ca5d4d3412e252ad0b1f08fd09fbc342b88441d54b0a475079d485f55",
+      "log": "/tmp/cellerator-v100-results/synccheck-r4-gpu2/attention-synccheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/attention-synccheck.log",
+      "log_sha256": "04aeff6a207cdc16860d456e3c822b3c4b22f339005d2e523b8dc3860b421158",
+      "scheduler_job_id": "246d4676-1707-4630-b9f4-cfcbaf125f37"
+    },
+    {
+      "case": "grouped_linear",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_grouped_linear_smoke",
+        "--gpu"
+      ],
+      "returncode": 0,
+      "seconds": 0.5115759372711182,
+      "binary_sha256": "b66a6213bb93e144a96375c2cd9b5d60378de86ead494d89fbccbe4ad1e3ceda",
+      "log": "/tmp/cellerator-v100-results/final-grouped_linear/none/grouped_linear-none.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/grouped_linear-none.log",
+      "log_sha256": "7dee06b8d72c83c59e9ce1c4994fd17c40c24998449b5e2255e23bc951908914",
+      "scheduler_job_id": "65eaaf44-1f5f-4af4-b651-56611763cc48"
+    },
+    {
+      "case": "grouped_linear",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_grouped_linear_smoke",
+        "--gpu"
+      ],
+      "returncode": 0,
+      "seconds": 0.871185302734375,
+      "binary_sha256": "b66a6213bb93e144a96375c2cd9b5d60378de86ead494d89fbccbe4ad1e3ceda",
+      "log": "/tmp/cellerator-v100-results/final-grouped_linear/memcheck/grouped_linear-memcheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/grouped_linear-memcheck.log",
+      "log_sha256": "b91bb4b50b46869848cd1123c9da858f6499c32a790ef66360523026a23a37cc",
+      "scheduler_job_id": "65eaaf44-1f5f-4af4-b651-56611763cc48"
+    },
+    {
+      "case": "grouped_linear",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_grouped_linear_smoke",
+        "--gpu"
+      ],
+      "returncode": 0,
+      "seconds": 2.753828525543213,
+      "binary_sha256": "b66a6213bb93e144a96375c2cd9b5d60378de86ead494d89fbccbe4ad1e3ceda",
+      "log": "/tmp/cellerator-v100-results/final-grouped_linear/racecheck/grouped_linear-racecheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/grouped_linear-racecheck.log",
+      "log_sha256": "30cba7fbeca74b39d4ec8bfd7e5ba3b5bc2995ec49ea75c3793cb8007701e4cb",
+      "scheduler_job_id": "65eaaf44-1f5f-4af4-b651-56611763cc48"
+    },
+    {
+      "case": "grouped_linear",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_grouped_linear_smoke",
+        "--gpu"
+      ],
+      "returncode": 0,
+      "seconds": 0.9542028903961182,
+      "binary_sha256": "b66a6213bb93e144a96375c2cd9b5d60378de86ead494d89fbccbe4ad1e3ceda",
+      "log": "/tmp/cellerator-v100-results/final-grouped_linear/initcheck/grouped_linear-initcheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/grouped_linear-initcheck.log",
+      "log_sha256": "b91bb4b50b46869848cd1123c9da858f6499c32a790ef66360523026a23a37cc",
+      "scheduler_job_id": "65eaaf44-1f5f-4af4-b651-56611763cc48"
+    },
+    {
+      "case": "grouped_linear",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_grouped_linear_smoke",
+        "--gpu"
+      ],
+      "returncode": 0,
+      "seconds": 0.8027279376983643,
+      "binary_sha256": "b66a6213bb93e144a96375c2cd9b5d60378de86ead494d89fbccbe4ad1e3ceda",
+      "log": "/tmp/cellerator-v100-results/final-grouped_linear/synccheck/grouped_linear-synccheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/grouped_linear-synccheck.log",
+      "log_sha256": "b91bb4b50b46869848cd1123c9da858f6499c32a790ef66360523026a23a37cc",
+      "scheduler_job_id": "65eaaf44-1f5f-4af4-b651-56611763cc48"
+    },
+    {
+      "case": "packed_embedding",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-framework-r3/cellerator_framework_cuda_packed_embedding_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 1.2060692310333252,
+      "binary_sha256": "d8d89ee30815f7caecf3f2f6d9ab4daf399ca661c1f1f9b13e6cbbdf6a9ded07",
+      "log": "/tmp/cellerator-v100-results/r3-gpu2/packed_embedding-none.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/packed_embedding-none.log",
+      "log_sha256": "74198c06dc902d844c03458a8c0ac8d11ae5ab348f26482b41ba3c478063a2c1",
+      "scheduler_job_id": "f125b603-cc0b-4442-a3dd-3c5489f512b2"
+    },
+    {
+      "case": "packed_embedding",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_packed_embedding_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.7654261589050293,
+      "binary_sha256": "d8d89ee30815f7caecf3f2f6d9ab4daf399ca661c1f1f9b13e6cbbdf6a9ded07",
+      "log": "/tmp/cellerator-v100-results/memcheck-r4-gpu2/packed_embedding-memcheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/packed_embedding-memcheck.log",
+      "log_sha256": "75fada8a1020b614329694b9bc84385a7dc30a3d6a316fcf7b690925de0c3800",
+      "scheduler_job_id": "06035a34-e2c8-4059-9517-74362e76f691"
+    },
+    {
+      "case": "packed_embedding",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_packed_embedding_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 3.1865007877349854,
+      "binary_sha256": "d8d89ee30815f7caecf3f2f6d9ab4daf399ca661c1f1f9b13e6cbbdf6a9ded07",
+      "log": "/tmp/cellerator-v100-results/racecheck-r4-gpu2/packed_embedding-racecheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/packed_embedding-racecheck.log",
+      "log_sha256": "d3bced7099329ff58ca010959217b0bb93aca28e6c854b7432be5a0f2524408b",
+      "scheduler_job_id": "e793bf12-b626-44a1-a7e0-86fe8961bcb8"
+    },
+    {
+      "case": "packed_embedding",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_packed_embedding_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.654921054840088,
+      "binary_sha256": "d8d89ee30815f7caecf3f2f6d9ab4daf399ca661c1f1f9b13e6cbbdf6a9ded07",
+      "log": "/tmp/cellerator-v100-results/initcheck-r4-gpu2/packed_embedding-initcheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/packed_embedding-initcheck.log",
+      "log_sha256": "75fada8a1020b614329694b9bc84385a7dc30a3d6a316fcf7b690925de0c3800",
+      "scheduler_job_id": "f400dc0d-ba39-4183-bb63-cc6d50ff9929"
+    },
+    {
+      "case": "packed_embedding",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_packed_embedding_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.7337288856506348,
+      "binary_sha256": "d8d89ee30815f7caecf3f2f6d9ab4daf399ca661c1f1f9b13e6cbbdf6a9ded07",
+      "log": "/tmp/cellerator-v100-results/synccheck-r4-gpu2/packed_embedding-synccheck.log",
+      "visible_devices": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "retained_log": "evidence/logs/packed_embedding-synccheck.log",
+      "log_sha256": "75fada8a1020b614329694b9bc84385a7dc30a3d6a316fcf7b690925de0c3800",
+      "scheduler_job_id": "246d4676-1707-4630-b9f4-cfcbaf125f37"
+    },
+    {
+      "case": "reactions",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-reactions-final2/cellerator_framework_cuda_reactions_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.2516918182373047,
+      "binary_sha256": "16036878e9b2579eb8f7432f76c0fadeadcc5a6fab2cb819aba9275b643a4244",
+      "log": "/tmp/cellerator-v100-results/final-reactions-r2/none/reactions-none.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/reactions-none.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scheduler_job_id": "99cdcefc-2987-4a80-9235-e13e68740828"
+    },
+    {
+      "case": "reactions",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-reactions-final2/cellerator_framework_cuda_reactions_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.416262149810791,
+      "binary_sha256": "16036878e9b2579eb8f7432f76c0fadeadcc5a6fab2cb819aba9275b643a4244",
+      "log": "/tmp/cellerator-v100-results/final-reactions-r2/memcheck/reactions-memcheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/reactions-memcheck.log",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "scheduler_job_id": "99cdcefc-2987-4a80-9235-e13e68740828"
+    },
+    {
+      "case": "reactions",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-reactions-final2/cellerator_framework_cuda_reactions_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.8515782356262207,
+      "binary_sha256": "16036878e9b2579eb8f7432f76c0fadeadcc5a6fab2cb819aba9275b643a4244",
+      "log": "/tmp/cellerator-v100-results/final-reactions-r2/racecheck/reactions-racecheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/reactions-racecheck.log",
+      "log_sha256": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4",
+      "scheduler_job_id": "99cdcefc-2987-4a80-9235-e13e68740828"
+    },
+    {
+      "case": "reactions",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-reactions-final2/cellerator_framework_cuda_reactions_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.39668965339660645,
+      "binary_sha256": "16036878e9b2579eb8f7432f76c0fadeadcc5a6fab2cb819aba9275b643a4244",
+      "log": "/tmp/cellerator-v100-results/final-reactions-r2/initcheck/reactions-initcheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/reactions-initcheck.log",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "scheduler_job_id": "99cdcefc-2987-4a80-9235-e13e68740828"
+    },
+    {
+      "case": "reactions",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-reactions-final2/cellerator_framework_cuda_reactions_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 0.38288331031799316,
+      "binary_sha256": "16036878e9b2579eb8f7432f76c0fadeadcc5a6fab2cb819aba9275b643a4244",
+      "log": "/tmp/cellerator-v100-results/final-reactions-r2/synccheck/reactions-synccheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/reactions-synccheck.log",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "scheduler_job_id": "99cdcefc-2987-4a80-9235-e13e68740828"
+    },
+    {
+      "case": "regulatory_gates",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_regulatory_gates_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 1.6115953922271729,
+      "binary_sha256": "56cfe78d7a94eaf5d10706b83b655e79e42744a9f7ab85e948c034999dca7fef",
+      "log": "/tmp/cellerator-v100-results/r4-gpu3/regulatory_gates-none.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/regulatory_gates-none.log",
+      "log_sha256": "f4f9a891bdbdbac4ad0c098ce68f2c8bfcc29e824611fb13209abb232dd58421",
+      "scheduler_job_id": "01d4e813-4d03-4059-8600-27957ab5d724"
+    },
+    {
+      "case": "regulatory_gates",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_regulatory_gates_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.724944591522217,
+      "binary_sha256": "56cfe78d7a94eaf5d10706b83b655e79e42744a9f7ab85e948c034999dca7fef",
+      "log": "/tmp/cellerator-v100-results/memcheck-r4-gpu3/regulatory_gates-memcheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/regulatory_gates-memcheck.log",
+      "log_sha256": "c4fa5235c4ec42fa5b72d1fc696c52904ec96314c031d9e66a1314992fe69ec9",
+      "scheduler_job_id": "8ca35dec-2670-4f75-acfd-4ae1d2f4683e"
+    },
+    {
+      "case": "regulatory_gates",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_regulatory_gates_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 1.672098159790039,
+      "binary_sha256": "56cfe78d7a94eaf5d10706b83b655e79e42744a9f7ab85e948c034999dca7fef",
+      "log": "/tmp/cellerator-v100-results/racecheck-r4-gpu3/regulatory_gates-racecheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/regulatory_gates-racecheck.log",
+      "log_sha256": "f4355ba44c6642081c237939c6f27349cfb65b8ec902e4fa6d1fcc42e8bec532",
+      "scheduler_job_id": "b85280ff-72da-4318-b57b-ea7396e1849a"
+    },
+    {
+      "case": "regulatory_gates",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_regulatory_gates_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.6099600791931152,
+      "binary_sha256": "56cfe78d7a94eaf5d10706b83b655e79e42744a9f7ab85e948c034999dca7fef",
+      "log": "/tmp/cellerator-v100-results/initcheck-r4-gpu3/regulatory_gates-initcheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/regulatory_gates-initcheck.log",
+      "log_sha256": "c4fa5235c4ec42fa5b72d1fc696c52904ec96314c031d9e66a1314992fe69ec9",
+      "scheduler_job_id": "91b0b071-1e34-4fe3-b390-abf92bb558a2"
+    },
+    {
+      "case": "regulatory_gates",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_regulatory_gates_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 3.9055111408233643,
+      "binary_sha256": "56cfe78d7a94eaf5d10706b83b655e79e42744a9f7ab85e948c034999dca7fef",
+      "log": "/tmp/cellerator-v100-results/synccheck-r4-gpu3/regulatory_gates-synccheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/regulatory_gates-synccheck.log",
+      "log_sha256": "c4fa5235c4ec42fa5b72d1fc696c52904ec96314c031d9e66a1314992fe69ec9",
+      "scheduler_job_id": "883b223c-7771-46d9-8808-d00aa71bbc42"
+    },
+    {
+      "case": "parameter_transfer",
+      "tool": "none",
+      "argv": [
+        "/tmp/cellerator-v100-framework-build/cellerator_framework_cuda_parameter_transfer_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 3.080911874771118,
+      "binary_sha256": "b71776156eefdc77198230927575ea36826a77e521d6b3728149f0d51390929e",
+      "log": "/tmp/cellerator-v100-results/batch1-gpu3/parameter_transfer-none.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/parameter_transfer-none.log",
+      "log_sha256": "b11dfe9cf3fcbe385881d4bb9e2594c77c3992d54fd0e01df69ecc707691b084",
+      "scheduler_job_id": "81878ce8-4663-49fa-a613-4c8ac09e7219"
+    },
+    {
+      "case": "parameter_transfer",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_parameter_transfer_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.6958422660827637,
+      "binary_sha256": "b71776156eefdc77198230927575ea36826a77e521d6b3728149f0d51390929e",
+      "log": "/tmp/cellerator-v100-results/memcheck-r4-gpu3/parameter_transfer-memcheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/parameter_transfer-memcheck.log",
+      "log_sha256": "9b97946d17f3edac68249401291ee1666ebfb3b18f8eeb56db8051d3a4ac2a6a",
+      "scheduler_job_id": "8ca35dec-2670-4f75-acfd-4ae1d2f4683e"
+    },
+    {
+      "case": "parameter_transfer",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_parameter_transfer_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 3.192343235015869,
+      "binary_sha256": "b71776156eefdc77198230927575ea36826a77e521d6b3728149f0d51390929e",
+      "log": "/tmp/cellerator-v100-results/racecheck-r4-gpu3/parameter_transfer-racecheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/parameter_transfer-racecheck.log",
+      "log_sha256": "2898b4614ac86011fa9a177d7b22b885f152a936ffe637bdc44282bdf5d347f2",
+      "scheduler_job_id": "b85280ff-72da-4318-b57b-ea7396e1849a"
+    },
+    {
+      "case": "parameter_transfer",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_parameter_transfer_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.7034528255462646,
+      "binary_sha256": "b71776156eefdc77198230927575ea36826a77e521d6b3728149f0d51390929e",
+      "log": "/tmp/cellerator-v100-results/initcheck-r4-gpu3/parameter_transfer-initcheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/parameter_transfer-initcheck.log",
+      "log_sha256": "9b97946d17f3edac68249401291ee1666ebfb3b18f8eeb56db8051d3a4ac2a6a",
+      "scheduler_job_id": "91b0b071-1e34-4fe3-b390-abf92bb558a2"
+    },
+    {
+      "case": "parameter_transfer",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_parameter_transfer_smoke"
+      ],
+      "returncode": 0,
+      "seconds": 2.727966070175171,
+      "binary_sha256": "b71776156eefdc77198230927575ea36826a77e521d6b3728149f0d51390929e",
+      "log": "/tmp/cellerator-v100-results/synccheck-r4-gpu3/parameter_transfer-synccheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/parameter_transfer-synccheck.log",
+      "log_sha256": "9b97946d17f3edac68249401291ee1666ebfb3b18f8eeb56db8051d3a4ac2a6a",
+      "scheduler_job_id": "883b223c-7771-46d9-8808-d00aa71bbc42"
+    },
+    {
+      "case": "bindings",
+      "tool": "none",
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-c",
+        "import cellerator, unittest, sys; cellerator.__path__.append('/tmp/cellerator-v100-framework-build'); suite=unittest.defaultTestLoader.discover(\"tests/framework/cuda\", pattern=\"test_runtime_binding.py\"); r=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(not r.wasSuccessful())"
+      ],
+      "returncode": 0,
+      "seconds": 3.4960083961486816,
+      "binary_sha256": "fcb3145cc509bf06bd4b00ca913d316e2db7b67dff016f354d931f5533e4d18a",
+      "log": "/tmp/cellerator-v100-results/batch1-gpu3/bindings-none.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/bindings-none.log",
+      "log_sha256": "88b7c1bbba0558e58c66139c75476960f6aecb5d0f1d065346829b8c71216b97",
+      "scheduler_job_id": "81878ce8-4663-49fa-a613-4c8ac09e7219"
+    },
+    {
+      "case": "bindings",
+      "tool": "memcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-c",
+        "import cellerator, unittest, sys; cellerator.__path__.append('/tmp/cellerator-v100-framework-r4'); suite=unittest.defaultTestLoader.discover(\"tests/framework/cuda\", pattern=\"test_runtime_binding.py\"); r=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(not r.wasSuccessful())"
+      ],
+      "returncode": 0,
+      "seconds": 3.268137216567993,
+      "binary_sha256": "fcb3145cc509bf06bd4b00ca913d316e2db7b67dff016f354d931f5533e4d18a",
+      "log": "/tmp/cellerator-v100-results/memcheck-r4-gpu3/bindings-memcheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/bindings-memcheck.log",
+      "log_sha256": "cf99cfeb0d5e90d2d9e0c27f6b3c87a02c9b90c129e4285369eb7d4d460d8d49",
+      "scheduler_job_id": "8ca35dec-2670-4f75-acfd-4ae1d2f4683e"
+    },
+    {
+      "case": "bindings",
+      "tool": "racecheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-c",
+        "import cellerator, unittest, sys; cellerator.__path__.append('/tmp/cellerator-v100-framework-r4'); suite=unittest.defaultTestLoader.discover(\"tests/framework/cuda\", pattern=\"test_runtime_binding.py\"); r=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(not r.wasSuccessful())"
+      ],
+      "returncode": 0,
+      "seconds": 3.8106770515441895,
+      "binary_sha256": "fcb3145cc509bf06bd4b00ca913d316e2db7b67dff016f354d931f5533e4d18a",
+      "log": "/tmp/cellerator-v100-results/racecheck-r4-gpu3/bindings-racecheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/bindings-racecheck.log",
+      "log_sha256": "541ab7202b501592f4028e44514140d4fdc4908f994932869a1ba097c71d7fd7",
+      "scheduler_job_id": "b85280ff-72da-4318-b57b-ea7396e1849a"
+    },
+    {
+      "case": "bindings",
+      "tool": "initcheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-c",
+        "import cellerator, unittest, sys; cellerator.__path__.append('/tmp/cellerator-v100-framework-r4'); suite=unittest.defaultTestLoader.discover(\"tests/framework/cuda\", pattern=\"test_runtime_binding.py\"); r=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(not r.wasSuccessful())"
+      ],
+      "returncode": 0,
+      "seconds": 3.103020191192627,
+      "binary_sha256": "fcb3145cc509bf06bd4b00ca913d316e2db7b67dff016f354d931f5533e4d18a",
+      "log": "/tmp/cellerator-v100-results/initcheck-r4-gpu3/bindings-initcheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/bindings-initcheck.log",
+      "log_sha256": "9705af61074dd7861e93354ba6a394f9b033ed6e5b4d31736a77a4c55a178d6e",
+      "scheduler_job_id": "91b0b071-1e34-4fe3-b390-abf92bb558a2"
+    },
+    {
+      "case": "bindings",
+      "tool": "synccheck",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-c",
+        "import cellerator, unittest, sys; cellerator.__path__.append('/tmp/cellerator-v100-framework-r4'); suite=unittest.defaultTestLoader.discover(\"tests/framework/cuda\", pattern=\"test_runtime_binding.py\"); r=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(not r.wasSuccessful())"
+      ],
+      "returncode": 0,
+      "seconds": 3.184568405151367,
+      "binary_sha256": "fcb3145cc509bf06bd4b00ca913d316e2db7b67dff016f354d931f5533e4d18a",
+      "log": "/tmp/cellerator-v100-results/synccheck-r4-gpu3/bindings-synccheck.log",
+      "visible_devices": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "retained_log": "evidence/logs/bindings-synccheck.log",
+      "log_sha256": "d0bb9c281c38ce21af3d8d9c11b9261ec42eac3002fe3d74154702ef4f4f5365",
+      "scheduler_job_id": "883b223c-7771-46d9-8808-d00aa71bbc42"
+    }
+  ],
+  "source_sha256": {
+    "src/modeling/cuda/reactions.cu": "d5906f424dd0079a0fc83572944799a0d0132a465baef4e16ff10857811d2120",
+    "src/modeling/cuda/runtime.cu": "8dec5ff0a107758bac58f0a586fa60920f70b5105e9c548a0af03eab9273065b",
+    "src/modeling/cuda/regulatory_gates.cu": "a9bb2054723ca048d01bd65ff97de58c1f4d111feab6ae9ea9835ec3f055d808",
+    "src/modeling/cuda/grouped_linear.cu": "3725f4e212531442b13df900f351b5592258acacc4b42241a722212c41505469",
+    "src/modeling/cuda/packed_embedding.cu": "e050b7c0af2d4280a3b3ef3023e6e8f808413338a3787586f6a222e0985082c7",
+    "src/modeling/cuda/quantization.cu": "d8aedbe838d89192220ac1e229001dd242a165a06bf87309512696264fcc7e1b",
+    "src/modeling/cuda/attention.cu": "75868b95070b4cb0ebb5424bb707eb68544bf023b1df34d623eeb78f242b23b3",
+    "src/modeling/cuda/parameter_transfer.cu": "98bcdfcda290bb1599c85019243ae0038401cbadfcb2b5cc32fffd6eb1f883e1",
+    "src/modeling/cuda/plans.cu": "2ba6afce4437f349b7920e1030df588deb2ae7d4a165f9a2096098faaaa71a89",
+    "src/modeling/cuda/memory.cu": "1759526002f05ab63c8b5037a3ceda3fbb81e9e0d85c0a2ddaf346843cc0d0a9",
+    "src/modeling/cuda/dispatch.cu": "2731762db81f63959585ab975a367b387c7502f2690ba651159d9cfb26bc96b4",
+    "src/modeling/cuda/frontier.cu": "3dbd8f04fc03dee34cf4ce6adae3345aa487ad6e16c6bff65e516cc9d8e5dede",
+    "include/Cellerator/modeling/cuda/dispatch.hh": "7edefe924d4b577955a6a105813c79846257b598b346f9531500552b132f24e2",
+    "include/Cellerator/modeling/cuda/memory.hh": "51ed6a64fee6caa504308e17a724971a4188ffada40eeef36a478501d2ecd8a8",
+    "include/Cellerator/modeling/cuda/packed_embedding.hh": "9e2b8906f68f61efc0c56b60f565c60473d915d9b4b3d452fa96a40f25139a7d",
+    "include/Cellerator/modeling/cuda/attention.hh": "0c2d07fb3e8608b698d5a511ca92a36f24f1ed7ce75aa3e9d2ddb3a67c0dd283",
+    "include/Cellerator/modeling/cuda/quantization.hh": "341be48630dd51552bd0bbae39d3db8f8f0e5bc375f9fec93a320e42285f9667",
+    "include/Cellerator/modeling/cuda/grouped_linear.hh": "0c24d60f57fb745701a0ff925bf0b4815445ca0b72c0d32b0995e96249a8bc09",
+    "include/Cellerator/modeling/cuda/parameter_transfer.hh": "0aea2d86a178b17a1845a68386b69f2f5436a8c8d0a56d7700b90280528c2d4e",
+    "include/Cellerator/modeling/cuda/frontier.hh": "a38341b7ad7909bd7493f4048a3b30a2a867cc2e54a622b1ee6e688fd1363531",
+    "include/Cellerator/modeling/cuda/reactions.hh": "6a47130432bd7a6522e1c6e19d216fe170d626929fb8840f2d526a45d839721e",
+    "include/Cellerator/modeling/cuda/regulatory_gates.hh": "1455e471d5e04f7204735177d00dc3f1c8d6d1d9be71515b0f847e20098fabce",
+    "include/Cellerator/modeling/cuda/plans.hh": "0e7a852d126cf2818fb5f29009e2824e206d63a0cfd24671413bf8f4478f7d31",
+    "include/Cellerator/modeling/cuda/runtime.hh": "e89d9bb08367a47ffdfcf99e1659f98f0246d1912905bd0b5b5d9ae08eaa374a",
+    "tests/framework/cuda/dispatch_smoke.cu": "c1aeccde01d9738e9598248e5638edb82b0914b3430f38b4bcb0a4796a9c6f3e",
+    "tests/framework/cuda/quantization_smoke.cu": "303c00d7cd3f5533ef9b382bb331e2df244a7f325573fa2187e945d2f1d3ae03",
+    "tests/framework/cuda/packed_embedding_smoke.cu": "385c851b991cc92f4a6a78aa23dba2cd0fcb97803ceadca22bca17e17aff01ff",
+    "tests/framework/cuda/runtime_smoke.cu": "fcaedfe1bce71b9d114a10e37d8b6d0c1b6056963eb122b7ba42458848edd50f",
+    "tests/framework/cuda/regulatory_gates_smoke.cu": "2c1582fe5d28bea9ee44e502748e37e83c8af7ddbdca24409f177b0c2957a711",
+    "tests/framework/cuda/attention_smoke.cu": "f85dbbbf4e67c754e42630e017905e9f364bcac3fd7aa21fd3ccc0abc593a6eb",
+    "tests/framework/cuda/frontier_smoke.cu": "7c036e3723cc629efb598bbd8425c62af4ab093e46444fa946c05a76ae18e01f",
+    "tests/framework/cuda/memory_smoke.cu": "e463aa18ef4cbd4067802dc21e99d53c0926ea4f03b39b358d393d533b269a50",
+    "tests/framework/cuda/grouped_linear_smoke.cu": "53a6f0e2cfffeae54f3e79d76ca8eec3ea230e7bc94a9bf096275cb8dcff0886",
+    "tests/framework/cuda/parameter_transfer_smoke.cu": "5f051638772f9364f6e6dbf97e7554ece265c8de8dfdeb0727596b28a08648a2",
+    "tests/framework/cuda/reactions_smoke.cu": "cf74e7dac0802d9a648d11384e2285d8e75cc601c6d53d3dbf56996850ebb31c",
+    "tests/framework/cuda/test_runtime_binding.py": "3cf6d5a54c5e62829ea5c3f22eb3a9edddb1339923d254adf5b66c24e043bc25"
+  },
+  "tools": {
+    "nvcc": "12.9.86",
+    "compute_sanitizer": "2025.2.1.0",
+    "architecture": "sm_70"
+  },
+  "scheduler_receipts": {
+    "5f4fcaeb-fe97-48ae-b54d-990693c5d2ba": {
+      "state": "failed",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/5f4fcaeb-fe97-48ae-b54d-990693c5d2ba.json"
+    },
+    "6c0ea0b7-21d9-4d09-8c32-a8e2715da843": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/6c0ea0b7-21d9-4d09-8c32-a8e2715da843.json"
+    },
+    "f574a36a-f49a-4457-948a-21b7a6d78fe0": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/f574a36a-f49a-4457-948a-21b7a6d78fe0.json"
+    },
+    "1f694f4f-2ed1-4e0a-97ae-f17398b75cc8": {
+      "state": "failed",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/1f694f4f-2ed1-4e0a-97ae-f17398b75cc8.json"
+    },
+    "2ba216d7-47ad-43a3-8da9-0713209a7736": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/2ba216d7-47ad-43a3-8da9-0713209a7736.json"
+    },
+    "7ef16ade-9ea9-46ec-a8fe-d691d1016413": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/7ef16ade-9ea9-46ec-a8fe-d691d1016413.json"
+    },
+    "c9ec0b2c-e5e7-4317-8ae2-90c6ab369bcf": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/c9ec0b2c-e5e7-4317-8ae2-90c6ab369bcf.json"
+    },
+    "20926b4d-55b2-427a-9304-5dfb853088c5": {
+      "state": "failed",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/20926b4d-55b2-427a-9304-5dfb853088c5.json"
+    },
+    "fc7d81c1-b3ee-4f4d-a990-fd731a81d3e5": {
+      "state": "failed",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/fc7d81c1-b3ee-4f4d-a990-fd731a81d3e5.json"
+    },
+    "06035a34-e2c8-4059-9517-74362e76f691": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/06035a34-e2c8-4059-9517-74362e76f691.json"
+    },
+    "e793bf12-b626-44a1-a7e0-86fe8961bcb8": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/e793bf12-b626-44a1-a7e0-86fe8961bcb8.json"
+    },
+    "f400dc0d-ba39-4183-bb63-cc6d50ff9929": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/f400dc0d-ba39-4183-bb63-cc6d50ff9929.json"
+    },
+    "246d4676-1707-4630-b9f4-cfcbaf125f37": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/246d4676-1707-4630-b9f4-cfcbaf125f37.json"
+    },
+    "65eaaf44-1f5f-4af4-b651-56611763cc48": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/65eaaf44-1f5f-4af4-b651-56611763cc48.json"
+    },
+    "f125b603-cc0b-4442-a3dd-3c5489f512b2": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/f125b603-cc0b-4442-a3dd-3c5489f512b2.json"
+    },
+    "99cdcefc-2987-4a80-9235-e13e68740828": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/99cdcefc-2987-4a80-9235-e13e68740828.json"
+    },
+    "01d4e813-4d03-4059-8600-27957ab5d724": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/01d4e813-4d03-4059-8600-27957ab5d724.json"
+    },
+    "8ca35dec-2670-4f75-acfd-4ae1d2f4683e": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/8ca35dec-2670-4f75-acfd-4ae1d2f4683e.json"
+    },
+    "b85280ff-72da-4318-b57b-ea7396e1849a": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/b85280ff-72da-4318-b57b-ea7396e1849a.json"
+    },
+    "91b0b071-1e34-4fe3-b390-abf92bb558a2": {
+      "state": "failed",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/91b0b071-1e34-4fe3-b390-abf92bb558a2.json"
+    },
+    "883b223c-7771-46d9-8808-d00aa71bbc42": {
+      "state": "succeeded",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/883b223c-7771-46d9-8808-d00aa71bbc42.json"
+    },
+    "81878ce8-4663-49fa-a613-4c8ac09e7219": {
+      "state": "failed",
+      "cleanup_verified": true,
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "receipt": "evidence/scheduler-receipts/81878ce8-4663-49fa-a613-4c8ac09e7219.json"
+    }
+  }
+}

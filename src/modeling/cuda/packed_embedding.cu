@@ -255,6 +255,87 @@ __global__ void backward_kernel(ConstPackedStateView packed,
         gradients.occurrence_weights[o] = weight_gradient;
 }
 
+// Experimental alternative used to compare occurrence-major strided work with
+// one warp owning each sparse occurrence. The optional compile definition keeps
+// the public API and caller contract identical for matched experiments.
+#if defined(CELLERATOR_PACKED_EMBEDDING_WARP_BACKWARD)
+__global__ void backward_warp_kernel(ConstPackedStateView packed,
+                                     std::uint32_t rows,
+                                     QuantizationProfileView profile,
+                                     ConstOverrideView overrides,
+                                     PackedOccurrenceView occurrences,
+                                     PackedEmbeddingTableView table,
+                                     ConstDeviceView output_gradient,
+                                     PackedEmbeddingGradientView gradients,
+                                     DeviceStatus status) {
+    const std::uint32_t occurrence = blockIdx.x * 4U + threadIdx.y;
+    if (occurrence >= occurrences.occurrence_count) return;
+    if ((*status.bits & kBadInput) != 0U) return;
+
+    constexpr unsigned kWarpMask = 0xffffffffU;
+    const unsigned lane = threadIdx.x;
+    std::uint32_t segment = 0U, feature = 0U, lo = 0U, hi = 0U;
+    float mix = 0.0f, occurrence_weight = 1.0f;
+    unsigned long long base = 0U;
+    int valid = 1;
+    if (lane == 0U) {
+        std::uint64_t table_base = 0U;
+        valid = locate_segment(occurrences, occurrence, &segment, status);
+        if (valid) {
+            valid = resolve(occurrences.logical_indices[occurrence], rows, profile,
+                            packed, overrides, table.feature_offsets,
+                            table.value_capacity, table.embedding_dim, status,
+                            &feature, &lo, &hi, &mix, &table_base);
+            base = static_cast<unsigned long long>(table_base);
+        }
+        if (valid && occurrences.weights != nullptr) {
+            occurrence_weight = occurrences.weights[occurrence];
+            if (!isfinite(occurrence_weight)) {
+                atomicOr(status.bits, kNonFinite);
+                valid = 0;
+            }
+        }
+    }
+    valid = __shfl_sync(kWarpMask, valid, 0);
+    if (!valid) return;
+    segment = __shfl_sync(kWarpMask, segment, 0);
+    feature = __shfl_sync(kWarpMask, feature, 0);
+    lo = __shfl_sync(kWarpMask, lo, 0);
+    hi = __shfl_sync(kWarpMask, hi, 0);
+    mix = __shfl_sync(kWarpMask, mix, 0);
+    occurrence_weight = __shfl_sync(kWarpMask, occurrence_weight, 0);
+    base = __shfl_sync(kWarpMask, base, 0);
+    (void)feature;
+
+    float weight_gradient = 0.0f;
+    for (std::uint32_t d = lane; d < table.embedding_dim; d += 32U) {
+        const auto y_index = static_cast<std::uint64_t>(segment) *
+                             table.embedding_dim + d;
+        const float dy = read_value(output_gradient.data, table.dtype, y_index);
+        const auto lo_index = base + static_cast<unsigned long long>(lo) *
+                                      table.embedding_dim + d;
+        const auto hi_index = base + static_cast<unsigned long long>(hi) *
+                                      table.embedding_dim + d;
+        const float emb_lo = read_value(table.values, table.dtype, lo_index);
+        const float emb_hi = read_value(table.values, table.dtype, hi_index);
+        const float embedding = emb_lo * (1.0f - mix) + emb_hi * mix;
+        weight_gradient += dy * embedding;
+        if (lo == hi) {
+            atomicAdd(&gradients.table[lo_index], dy * occurrence_weight);
+        } else {
+            atomicAdd(&gradients.table[lo_index],
+                      dy * occurrence_weight * (1.0f - mix));
+            atomicAdd(&gradients.table[hi_index],
+                      dy * occurrence_weight * mix);
+        }
+    }
+    for (unsigned delta = 16U; delta != 0U; delta >>= 1U)
+        weight_gradient += __shfl_down_sync(kWarpMask, weight_gradient, delta);
+    if (lane == 0U && gradients.occurrence_weights != nullptr)
+        gradients.occurrence_weights[occurrence] = weight_gradient;
+}
+#endif
+
 std::uint64_t elements(std::uint64_t a, std::uint64_t b) {
     if (b != 0U && a > std::numeric_limits<std::uint64_t>::max() / b)
         throw std::invalid_argument("packed embedding shape overflow");
@@ -362,9 +443,17 @@ cudaError_t packed_embedding_bag_backward(
                         kThreads, 0, stream>>>(occurrences, status);
     error = cudaGetLastError();
     if (error != cudaSuccess || occurrences.occurrence_count == 0U) return error;
+#if defined(CELLERATOR_PACKED_EMBEDDING_WARP_BACKWARD)
+    const auto warp_blocks = (static_cast<std::uint64_t>(occurrences.occurrence_count) + 3U) / 4U;
+    backward_warp_kernel<<<static_cast<std::uint32_t>(warp_blocks),
+                           dim3(32U, 4U), 0, stream>>>(
+        packed, rows, profile, overrides, occurrences, table, output_gradient,
+        gradients, status);
+#else
     backward_kernel<<<blocks(occurrences.occurrence_count), kThreads, 0, stream>>>(
         packed, rows, profile, overrides, occurrences, table, output_gradient,
         gradients, status);
+#endif
     return cudaGetLastError();
 }
 

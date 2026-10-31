@@ -1,0 +1,21 @@
+event-memory fp16/fp32 device oracle passed
+{"argv": ["/home/tumlinson/Cellerator/.autobench/builds/a97ba079679285c2231f5df53bfe67f461c2b259b821a9abe22d61775ec48e4c/cmake/cellerator_framework_cuda_memory_smoke"], "binary_sha256": "44a54286795d3539a8f03be2fb5ab75a1434f4f5bc72c79452d441846c40529d", "case": "memory", "log": "memory-correctness-none.log", "mode": "correctness", "returncode": 0, "tool": "none", "wall_seconds": 0.2141069789940957}
+CUDA changed-source frontier oracle matrix passed
+{"argv": ["/home/tumlinson/Cellerator/.autobench/builds/a97ba079679285c2231f5df53bfe67f461c2b259b821a9abe22d61775ec48e4c/cmake/cellerator_framework_cuda_frontier_smoke"], "binary_sha256": "1e15e4a86652a2598cb09d2dc2b8bae8afb700fd4deb3397095c4c93be58a2f9", "case": "frontier", "log": "frontier-correctness-none.log", "mode": "correctness", "returncode": 0, "tool": "none", "wall_seconds": 0.24404182101716287}
+attention device run on Tesla V100-SXM2-16GB, compute capability 7.0
+FP32 staged forward and VJP passed (V=5; 164 edges; degrees 0/1/2/31/32/33/65)
+FP32 fused forward and VJP passed (V=5; 164 edges; degrees 0/1/2/31/32/33/65)
+FP32 fused forward and VJP passed (V=1; 164 edges; degrees 0/1/2/31/32/33/65)
+FP32 fused forward and VJP passed (V=31; 164 edges; degrees 0/1/2/31/32/33/65)
+FP32 fused forward and VJP passed (V=32; 164 edges; degrees 0/1/2/31/32/33/65)
+FP32 fused forward and VJP passed (V=33; 164 edges; degrees 0/1/2/31/32/33/65)
+FP32 fused forward and VJP passed (V=65; 164 edges; degrees 0/1/2/31/32/33/65)
+FP16 staged forward and VJP passed (V=5; 164 edges; degrees 0/1/2/31/32/33/65)
+FP16 fused forward and VJP passed (V=5; 164 edges; degrees 0/1/2/31/32/33/65)
+FP16 fused forward and VJP passed (V=1; 164 edges; degrees 0/1/2/31/32/33/65)
+FP16 fused forward and VJP passed (V=31; 164 edges; degrees 0/1/2/31/32/33/65)
+FP16 fused forward and VJP passed (V=32; 164 edges; degrees 0/1/2/31/32/33/65)
+FP16 fused forward and VJP passed (V=33; 164 edges; degrees 0/1/2/31/32/33/65)
+FP16 fused forward and VJP passed (V=65; 164 edges; degrees 0/1/2/31/32/33/65)
+fused block-stride case passed (Q=65536; degree=1; V=1)
+{"argv": ["/home/tumlinson/Cellerator/.autobench/builds/a97ba079679285c2231f5df53bfe67f461c2b259b821a9abe22d61775ec48e4c/cmake/cellerator_framework_cuda_attention_smoke", "--device"], "binary_sha256": "0b3763353217742717ba3ae3b83889cedcdde2d788f34c0668e7d8aea0993396", "case": "attention", "log": "attention-correctness-none.log", "mode": "correctness", "returncode": 0, "tool": "none", "wall_seconds": 0.23887108400231227}

@@ -9,7 +9,7 @@ from cellerator.adapters.torch import TorchModel
 from cellerator.adapters.training import (
     TrainingStep, TrainingTrajectory, TrajectoryWindowRunner, detach_state,
 )
-from cellerator.modeling import Cell, StepResult
+from cellerator.modeling import DynamicalCell, StepResult
 
 
 class Growth(nn.Module):
@@ -196,7 +196,7 @@ class TrajectoryTrainingTests(unittest.TestCase):
 
     def test_cell_capture_preserves_identity_and_leaves_cell_unchanged(self):
         model = TorchModel(Growth())
-        cell = Cell(model.as_model(), trajectory("a", 3.).state, id="cell", time=4.)
+        cell = DynamicalCell(model.as_model(), trajectory("a", 3.).state, id="cell", time=4.)
         item = TrainingTrajectory.from_cell(cell)
         runner = TrajectoryWindowRunner(model, max_steps=1)
         out = runner.run_window([item], {"cell": [TrainingStep(target=0.)]}, squared,

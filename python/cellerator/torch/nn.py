@@ -1,23 +1,25 @@
 """Cellerator model modules built on Torch's Module and optimizer contracts."""
-from .product2 import Product2Module
-from . import mechanism as _mechanism
-from . import routing as _routing
-from . import biology as _biology
+from importlib import import_module
 
-_NAMES = (
-    "BiologicalTensor", "MechanismModule", "SharedSupportRelation",
-    "RankedGeneSlice", "KaryoplastEventSlice",
-)
+_EXPORTS = {
+    "Product2Module": ".product2",
+    "BiologicalTensor": ".mechanism",
+    "MechanismModule": ".mechanism",
+    "SharedSupportRelation": ".biology",
+    "RankedGeneSlice": ".routing",
+    "KaryoplastEventSlice": ".routing",
+    "FeatureEncoder": ".features",
+    "RelationAttention": ".relation_attention",
+    "ModelWithViews": ".views",
+    "grouped_linear": ".grouped_linear",
+    "GroupedLinear": ".grouped_linear",
+}
 
 
 def __getattr__(name: str):
-    if name in ("RankedGeneSlice", "KaryoplastEventSlice"):
-        return getattr(_routing, name)
-    if name == "SharedSupportRelation":
-        return getattr(_biology, name)
-    if name in ("BiologicalTensor", "MechanismModule"):
-        return getattr(_mechanism, name)
+    if name in _EXPORTS:
+        return getattr(import_module(_EXPORTS[name], __package__), name)
     raise AttributeError(name)
 
 
-__all__ = ["Product2Module", *_NAMES]
+__all__ = list(_EXPORTS)

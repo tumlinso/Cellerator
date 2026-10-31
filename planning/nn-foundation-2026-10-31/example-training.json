@@ -1,0 +1,32 @@
+{
+  "command": "CUDA_VISIBLE_DEVICES= PYTHONPATH=python:. OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python examples/nn_foundation/train.py",
+  "limitations": "Synthetic CPU engineering examples; no biological validation or performance claim.",
+  "metrics": [
+    {
+      "final": 0.00066,
+      "initial": 0.048773,
+      "name": "expression_masked_mse"
+    },
+    {
+      "final": 0.115528,
+      "initial": 0.819076,
+      "name": "event_next_event_ce"
+    },
+    {
+      "final": 0.295442,
+      "initial": 0.660246,
+      "name": "atac_frozen_base_bce"
+    },
+    {
+      "final": 7e-06,
+      "initial": 0.660246,
+      "name": "atac_joint_base_bce"
+    }
+  ],
+  "schema": "cellerator.nn-foundation.example-training.v1",
+  "source_sha256": {
+    "examples/nn_foundation/__init__.py": "fe7e67720d6988193073a1a81f3e6c06e0ef2f87a36f6636b196707f9607035f",
+    "examples/nn_foundation/reference_models.py": "eedbe6b2650efc771328f6257f7be2cee19cfbf48e112f837f99a9f6cb0f2858",
+    "examples/nn_foundation/train.py": "1e29a8dbd1d266d346bdbd97d54019e00e0b96487566ca1c5c3dca55f050781e"
+  }
+}

@@ -14,7 +14,7 @@ from cellerator.experimental.inheritance import (
     paired_fork_callbacks,
 )
 from cellerator.execution import Population
-from cellerator.modeling import Cell, Model
+from cellerator.modeling import DynamicalCell, DynamicalModel
 
 
 class FixedRng:
@@ -59,7 +59,7 @@ class InheritanceTests(unittest.TestCase):
         self.assertIsNot(left["memory"], right["memory"])
 
     def test_mutable_state_is_not_aliased_between_daughters(self):
-        parent = Cell(Model(lambda state, context: state), {"history": [1], "memory": {"x": 2}}, id="p")
+        parent = DynamicalCell(DynamicalModel(lambda state, context: state), {"history": [1], "memory": {"x": 2}}, id="p")
         left, right = divide_cell(parent, CopyInheritance(), daughter_ids=("l", "r"))
         left.state["history"].append(2)
         left.state["memory"]["x"] = 7
@@ -68,8 +68,8 @@ class InheritanceTests(unittest.TestCase):
         self.assertIs(left.model, right.model)
 
     def test_population_division_performs_one_conserving_draw(self):
-        model = Model(lambda state, context: state, parameters=object())
-        population = Population([Cell(model, {"count": 10, "x": [1]}, id="p")])
+        model = DynamicalModel(lambda state, context: state, parameters=object())
+        population = Population([DynamicalCell(model, {"count": 10, "x": [1]}, id="p")])
         rng = FixedRng(4)
         rule = FieldwiseInheritance({"count": BinomialPartition()})
         first, second = divide_population(
@@ -81,8 +81,8 @@ class InheritanceTests(unittest.TestCase):
         self.assertEqual(rng.calls, [(10, 0.5)])
 
     def test_fork_callbacks_share_one_paired_random_draw(self):
-        model = Model(lambda state, context: state)
-        parent = Cell(model, {"count": 10}, id="p")
+        model = DynamicalModel(lambda state, context: state)
+        parent = DynamicalCell(model, {"count": 10}, id="p")
         population = Population([parent])
         rng = FixedRng(2)
         first, second = paired_fork_callbacks(

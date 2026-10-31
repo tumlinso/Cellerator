@@ -15,7 +15,7 @@ import random
 from types import MappingProxyType
 from typing import Any
 
-from cellerator.modeling import Model, StepContext
+from cellerator.modeling import DynamicalModel, StepContext
 
 StateCopy = Callable[[Any], Any]
 LogLikelihood = Callable[[Any, Any], float]
@@ -129,7 +129,7 @@ def systematic_resample(weights: Sequence[float], *, rng: Any = None) -> tuple[i
 
 
 def particle_filter(
-    model: Model,
+    model: DynamicalModel,
     initial: Iterable[Particle | Any],
     observations: Iterable[Observation],
     log_likelihood: LogLikelihood,
@@ -153,8 +153,8 @@ def particle_filter(
     retain weighted particles without resampling. Log evidence accumulates the
     incremental normalizers before each resampling step.
     """
-    if not isinstance(model, Model):
-        raise TypeError("model must be a cellerator.modeling.Model")
+    if not isinstance(model, DynamicalModel):
+        raise TypeError("model must be a cellerator.modeling.DynamicalModel")
     if not callable(log_likelihood):
         raise TypeError("log_likelihood must be callable")
     if not callable(copy_state):

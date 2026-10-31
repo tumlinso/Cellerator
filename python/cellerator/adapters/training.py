@@ -17,7 +17,7 @@ from typing import Any
 import torch
 from torch import Tensor, nn
 
-from cellerator.modeling import Cell, Model, StepContext, StepResult
+from cellerator.modeling import DynamicalCell, DynamicalModel, StepContext, StepResult
 
 
 class _NoTarget:
@@ -133,14 +133,14 @@ class TrainingTrajectory:
         object.__setattr__(self, "history", tuple(self.history))
 
     @classmethod
-    def from_cell(cls, cell: Cell) -> "TrainingTrajectory":
-        """Capture identity/state/time without copying; does not mutate the Cell.
+    def from_cell(cls, cell: DynamicalCell) -> "TrainingTrajectory":
+        """Capture identity/state/time without copying; does not mutate the DynamicalCell.
 
         The caller must use this trajectory as the state owner while training,
         and must not concurrently advance or mutate the source cell.
         """
-        if not isinstance(cell, Cell):
-            raise TypeError("cell must be a Cell")
+        if not isinstance(cell, DynamicalCell):
+            raise TypeError("cell must be a DynamicalCell")
         return cls(cell.id, cell.state, cell.time)
 
 
@@ -164,8 +164,8 @@ class TrainingWindowResult:
 class TrajectoryWindowRunner:
     """Run one bounded graph window across independently timed trajectories.
 
-    ``model`` is a Model or a module exposing ``as_model()`` (TorchModel or
-    TorchDynamics). For parameter-mutation detection a Model must expose its
+    ``model`` is a DynamicalModel or a module exposing ``as_model()`` (TorchModel or
+    TorchDynamics). For parameter-mutation detection a DynamicalModel must expose its
     owning nn.Module as ``parameters``. ``max_steps`` bounds each cell's schedule,
     including observation-only steps. Reduction is ``sum``, weighted ``mean``,
     or ``mean_trajectories`` (mean of each observed cell's weighted mean).
@@ -194,15 +194,15 @@ class TrajectoryWindowRunner:
             raise ValueError("unknown loss reduction")
         if not callable(detach):
             raise TypeError("detach must be callable")
-        if isinstance(model, Model):
+        if isinstance(model, DynamicalModel):
             bound = model
         else:
             as_model = getattr(model, "as_model", None)
             if not callable(as_model):
-                raise TypeError("model must be Model or provide as_model()")
+                raise TypeError("model must be DynamicalModel or provide as_model()")
             bound = as_model()
-        if not isinstance(bound, Model) or not isinstance(bound.parameters, nn.Module):
-            raise TypeError("training Model.parameters must be its owning torch.nn.Module")
+        if not isinstance(bound, DynamicalModel) or not isinstance(bound.parameters, nn.Module):
+            raise TypeError("training DynamicalModel.parameters must be its owning torch.nn.Module")
         self.model, self.module = bound, bound.parameters
         self.max_steps, self.reduction, self.detach = max_steps, reduction, detach
         self._running = False

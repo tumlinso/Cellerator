@@ -4,7 +4,7 @@ Requires the optional built cellerator._conditional_native extension.
 Run: PYTHONPATH=python python examples/framework/scheduled_native_experts.py
 """
 import numpy as np
-from cellerator import Cell, Model
+from cellerator import DynamicalCell, DynamicalModel
 from cellerator.adapters.conditional import NativeConditionalBackend, NativeIdentityMap
 from cellerator.execution import (
     BoundExecution, DeviceSpec, ExecutionEngine, ExpertPlacement, ExpertSpec,
@@ -14,8 +14,8 @@ from cellerator.execution import (
 
 
 def run(native_module=None):
-    model = Model(lambda state, context: context.inputs)
-    cells = {name: Cell(model, np.array([value], dtype=np.float16), id=name)
+    model = DynamicalModel(lambda state, context: context.inputs)
+    cells = {name: DynamicalCell(model, np.array([value], dtype=np.float16), id=name)
              for name, value in (("cell-a", 2), ("cell-b", 5))}
     old, other = ParameterKey("gain", "revision-a"), ParameterKey("other", "revision-a")
     identities = NativeIdentityMap(

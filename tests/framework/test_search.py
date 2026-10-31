@@ -7,12 +7,12 @@ from cellerator.inference import (
     TimedEvent,
     search_event_histories,
 )
-from cellerator.modeling import Model
+from cellerator.modeling import DynamicalModel
 
 
 class EventSearchTests(unittest.TestCase):
     def test_observation_preserves_ambiguous_event_histories(self):
-        model = Model(lambda state, _: state, observation=lambda state, _: state)
+        model = DynamicalModel(lambda state, _: state, observation=lambda state, _: state)
 
         def proposals(state, context, observation):
             return (
@@ -45,7 +45,7 @@ class EventSearchTests(unittest.TestCase):
 
     def test_beam_pruning_is_stable_and_declared(self):
         result = search_event_histories(
-            Model(lambda state, _: state), [0], [Observation(1.0, None)],
+            DynamicalModel(lambda state, _: state), [0], [Observation(1.0, None)],
             lambda *_: (EventPath((), provenance="first"), EventPath((), provenance="second")),
             lambda state, event, _: state,
             lambda *_: 0.0,
@@ -59,7 +59,7 @@ class EventSearchTests(unittest.TestCase):
     def test_model_cannot_end_before_event_time(self):
         from cellerator.modeling import StepResult
 
-        model = Model(
+        model = DynamicalModel(
             lambda state, ctx: StepResult(state, time=ctx.time + ctx.dt / 2),
             observation=lambda state, _: state,
         )
@@ -73,7 +73,7 @@ class EventSearchTests(unittest.TestCase):
 
     def test_expansion_limit_is_reported(self):
         result = search_event_histories(
-            Model(lambda state, _: state), [0], [Observation(1.0, None)],
+            DynamicalModel(lambda state, _: state), [0], [Observation(1.0, None)],
             lambda *_: tuple(EventPath((), provenance=f"path-{i}") for i in range(3)),
             lambda state, event, _: state,
             lambda *_: 0.0,

@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "task_id": "cellerator-attention-v100-row-cta-launch-geometry-v1",
+  "cases": [
+    {
+      "id": "all8-staged",
+      "weight": 1.0,
+      "input": {
+        "fixture": "SparseAttention(Q=512,N=96,D=32,V=32,degree=8,dtype=fp32,route=staged)",
+        "generator": "deterministic patterned host FP32 fixture in attention_geometry_driver.cu"
+      },
+      "parameters": {
+        "fixture": "all8",
+        "route": "staged",
+        "dtype": "fp32",
+        "queries": 512,
+        "keys": 96,
+        "dim": 32,
+        "value_dim": 32,
+        "degree": 8
+      }
+    },
+    {
+      "id": "all8-fused",
+      "weight": 1.0,
+      "input": {
+        "fixture": "SparseAttention(Q=512,N=96,D=32,V=32,degree=8,dtype=fp32,route=mixed-fused)",
+        "generator": "deterministic patterned host FP32 fixture in attention_geometry_driver.cu"
+      },
+      "parameters": {
+        "fixture": "all8",
+        "route": "mixed-fused",
+        "dtype": "fp32",
+        "queries": 512,
+        "keys": 96,
+        "dim": 32,
+        "value_dim": 32,
+        "degree": 8
+      }
+    },
+    {
+      "id": "mixed8-65-staged",
+      "weight": 1.0,
+      "input": {
+        "fixture": "SparseAttention(Q=512,N=96,D=32,V=32,degree=8+65,dtype=fp32,route=staged)",
+        "generator": "deterministic patterned host FP32 fixture in attention_geometry_driver.cu"
+      },
+      "parameters": {
+        "fixture": "mixed8-65",
+        "route": "staged",
+        "dtype": "fp32",
+        "queries": 512,
+        "keys": 96,
+        "dim": 32,
+        "value_dim": 32,
+        "small_degree": 8,
+        "large_degree": 65,
+        "large_row_stride": 16
+      }
+    },
+    {
+      "id": "mixed8-65-fused",
+      "weight": 1.0,
+      "input": {
+        "fixture": "SparseAttention(Q=512,N=96,D=32,V=32,degree=8+65,dtype=fp32,route=mixed-fused)",
+        "generator": "deterministic patterned host FP32 fixture in attention_geometry_driver.cu"
+      },
+      "parameters": {
+        "fixture": "mixed8-65",
+        "route": "mixed-fused",
+        "dtype": "fp32",
+        "queries": 512,
+        "keys": 96,
+        "dim": 32,
+        "value_dim": 32,
+        "small_degree": 8,
+        "large_degree": 65,
+        "large_row_stride": 16
+      }
+    }
+  ],
+  "commands": {
+    "build": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "kda_attention_geometry.py",
+        "build",
+        "{request}",
+        "{result}"
+      ],
+      "cpu_only": true,
+      "timeout_seconds": 540
+    },
+    "validate": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "kda_attention_geometry.py",
+        "validate",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 600
+    },
+    "benchmark": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "kda_attention_geometry.py",
+        "benchmark",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 600
+    }
+  },
+  "trusted_inputs": [
+    {
+      "id": "attention_geometry_adapter",
+      "path": "kda_attention_geometry.py",
+      "role": "harness"
+    },
+    {
+      "id": "attention_geometry_autobench_wrapper",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/kda_attention_geometry_autobench.py",
+      "role": "harness"
+    },
+    {
+      "id": "attention_geometry_driver",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/attention_geometry_driver.cu",
+      "role": "validator"
+    },
+    {
+      "id": "attention_geometry_cmake",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/CMakeLists.txt",
+      "role": "harness"
+    },
+    {
+      "id": "attention_independent_smoke",
+      "path": "/home/tumlinson/Cellerator/tests/framework/cuda/attention_smoke.cu",
+      "role": "validator"
+    },
+    {
+      "id": "attention_shared_source_manifest",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/base-source-manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "attention_task_source_manifest",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/task-source-manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "attention_baseline_source",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/candidate-sources/baseline/src/modeling/cuda/attention.cu",
+      "role": "reference"
+    },
+    {
+      "id": "attention_candidate_source",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/candidate-sources/one_cta_per_row/src/modeling/cuda/attention.cu",
+      "role": "other"
+    },
+    {
+      "id": "attention_autobench_definition",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/autobench-definition.toml",
+      "role": "harness"
+    },
+    {
+      "id": "cmake_executable",
+      "path": "/usr/bin/cmake",
+      "role": "toolchain"
+    },
+    {
+      "id": "gcc12_executable",
+      "path": "/usr/bin/x86_64-linux-gnu-g++-12",
+      "role": "toolchain"
+    },
+    {
+      "id": "nvcc_sm70_executable",
+      "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "role": "toolchain"
+    },
+    {
+      "id": "attention_autobench_artifact_binder",
+      "path": "/home/tumlinson/Cellerator/scripts/validation/kda_autobench_artifacts.py",
+      "role": "harness"
+    }
+  ],
+  "numerical_requirements": {
+    "independent_oracle": "Trusted host FP64 scaled dot-product attention computes every query output from the exact FP32 input values used by the device. Candidate staged and mixed-fused outputs are each compared with the oracle, and the existing attention smoke independently checks FP16/FP32 staged/fused forward and VJP behavior.",
+    "storage_types": [
+      "fp16",
+      "fp32"
+    ],
+    "arithmetic": "The timed geometry fixtures use FP32 storage and FP32 device arithmetic; the separate trusted smoke matrix validates FP16 and FP32 input/output storage with FP32 intermediates and gradients.",
+    "acceptance": "All FP16 and FP32 trusted smoke cases pass without tolerance changes, including CSR degrees 0/1/2/31/32/33/65, value dimensions 1/5/31/32/33/65, zero-mode and accumulation-mode backward, and Q=65536 block-stride coverage. Each timed FP32 candidate output passes the host FP64 oracle with atol=3e-5 and rtol=3e-5 before timing and after repeated execution.",
+    "fixture_semantics": "Q=512, N=96, D=32, V=32, scale=0.1767766953f. All-degree-8 has 4096 edges. Mixed degree uses 65 edges for each row divisible by 16 and 8 edges for other rows, totaling 5920 edges. CSR keys and nonzero patterned FP32 payloads match the existing attention V100 timing fixture. Inputs and plans remain resident through timed calls."
+  },
+  "probe": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python",
+      "kda_attention_geometry.py",
+      "probe",
+      "{request}",
+      "{result}"
+    ],
+    "timeout_seconds": 45
+  },
+  "timing": {
+    "metric": "resident_forward_latency_ms",
+    "unit": "ms",
+    "direction": "minimize",
+    "warmup": 4,
+    "repetitions": 7,
+    "rounds": 5,
+    "confirmation_rounds": 4,
+    "seed": 91573,
+    "scope": "Each raw sample is a CUDA-event average of 25 resident API calls after four warmups for the requested route and fixture. Each API call launches the route's full kernel sequence. Inputs, plan arrays, workspace allocations, and output allocations are created before timing; outputs are checked against the independent host FP64 oracle before samples and once after the final timed sample. No H2D/D2H, allocation, or plan setup time is measured.",
+    "case_order": "all8-staged, all8-fused, mixed8-65-staged, mixed8-65-fused; KDA shuffles candidate order and pairs baseline/challenger within rounds"
+  },
+  "promotion": {
+    "min_improvement": 0.05,
+    "max_regression": 0.05,
+    "confidence": 0.95,
+    "bootstrap_samples": 2000
+  },
+  "target": {
+    "kind": "cuda",
+    "architecture": "sm_70",
+    "compiler_target": "sm_70"
+  },
+  "toolchain": {
+    "compiler_target_probe_argv": [
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "--list-gpu-code"
+    ]
+  },
+  "execution": {
+    "mode": "direct"
+  },
+  "budgets": {
+    "max_candidates": 2,
+    "max_build_jobs": 1,
+    "max_seconds": 3600
+  }
+}

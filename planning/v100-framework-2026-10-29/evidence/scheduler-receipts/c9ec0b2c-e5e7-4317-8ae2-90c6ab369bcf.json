@@ -1,0 +1,408 @@
+{
+  "attempt": {
+    "attempt_id": "566e25e3-3c76-4e86-878d-16d4b9dc3b93",
+    "cleanup_verified": true,
+    "created_at": "2026-10-29T19:43:41.053322Z",
+    "error": {},
+    "evidence": [
+      {
+        "adapter_errors": [],
+        "kind": "execution_preconditions",
+        "operation_id": "preconditions:566e25e3-3c76-4e86-878d-16d4b9dc3b93",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 2,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-29T19:43:41.155759+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:43:41.193803+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:43:41.155759+00:00",
+                        "process_observed_at": "2026-10-29T19:43:41.193803+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "inventory_observed_at": "2026-10-29T19:43:42.267110+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:43:42.305050+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:43:42.267110+00:00",
+                        "process_observed_at": "2026-10-29T19:43:42.305050+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 2,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      2684354560
+                    ],
+                    "timeout_seconds": 60.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      }
+    ],
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        }
+      ],
+      "claim_id": "a2fd6c14-c866-4bee-b501-593fff1c1f84",
+      "fencing_token": 1244,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 1,
+            "inventory_observed_at": "2026-10-29T19:43:28.079418+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:03:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-29T19:43:28.079418+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 3,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          "capabilities": [
+            "memory-accounting-only",
+            "whole-device-exclusive-admission",
+            "shared-admission",
+            "nvidia-smi-compute-process-telemetry"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "schema_version": 1,
+          "topology": {
+            "links": [
+              {
+                "relation": "PHB",
+                "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+                "target_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                "type": "pcie"
+              },
+              {
+                "relation": "SYS",
+                "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                "type": "sys"
+              },
+              {
+                "relation": "NV6",
+                "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                "type": "nvlink"
+              }
+            ],
+            "pci_bus_id": "00000000:03:00.0",
+            "topology_state": "observed"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-f3574b18105b8d74a36c91af5021df2c.service",
+      "identity": "566e25e3-3c76-4e86-878d-16d4b9dc3b93",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-f3574b18105b8d74a36c91af5021df2c.service",
+        "description": "Device Scheduler attempt 566e25e3-3c76-4e86-878d-16d4b9dc3b93",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "848bc450a1e54207b15c28140557f92d",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-10-29T19:43:42.385564Z"
+    },
+    "finished_at": "2026-10-29T19:43:47.635745Z",
+    "id": "566e25e3-3c76-4e86-878d-16d4b9dc3b93",
+    "job_id": "c9ec0b2c-e5e7-4317-8ae2-90c6ab369bcf",
+    "operation_id": "start:566e25e3-3c76-4e86-878d-16d4b9dc3b93",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:566e25e3-3c76-4e86-878d-16d4b9dc3b93",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "observation": {
+                  "consecutive_samples": 2,
+                  "samples": [
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-29T19:43:41.155759+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:43:41.193803+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:43:41.155759+00:00",
+                      "process_observed_at": "2026-10-29T19:43:41.193803+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "inventory_observed_at": "2026-10-29T19:43:42.267110+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:43:42.305050+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:43:42.267110+00:00",
+                      "process_observed_at": "2026-10-29T19:43:42.305050+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    }
+                  ],
+                  "state": "observed"
+                },
+                "parameters": {
+                  "consecutive_samples": 2,
+                  "interval_seconds": 1.0,
+                  "max_utilization_percent": 0,
+                  "minimum_free_bytes": [
+                    2684354560
+                  ],
+                  "timeout_seconds": 60.0
+                },
+                "precondition_index": 0
+              },
+              "name": "gpu.quiescence",
+              "resource_ids": [
+                "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+              ],
+              "schema_version": 1,
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "state": "verified"
+    },
+    "result": {
+      "active_state": "active",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-f3574b18105b8d74a36c91af5021df2c.service",
+        "invocation_id": "848bc450a1e54207b15c28140557f92d",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt 566e25e3-3c76-4e86-878d-16d4b9dc3b93"
+      },
+      "exit_code": 0,
+      "invocation_id": "848bc450a1e54207b15c28140557f92d",
+      "logs": "{\"case\": \"quantization\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.21567249298095703, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/none/quantization-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n{\"case\": \"quantization\", \"tool\": \"memcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"memcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.42102885246276855, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/memcheck/quantization-memcheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"quantization\", \"tool\": \"racecheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"racecheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.8230621814727783, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/racecheck/quantization-racecheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n{\"case\": \"quantization\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.572131872177124, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/initcheck/quantization-initcheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"quantization\", \"tool\": \"synccheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"synccheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.39038515090942383, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/synccheck/quantization-synccheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "success",
+      "state": "succeeded",
+      "stdout": "{\"case\": \"quantization\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.21567249298095703, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/none/quantization-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n{\"case\": \"quantization\", \"tool\": \"memcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"memcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.42102885246276855, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/memcheck/quantization-memcheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"quantization\", \"tool\": \"racecheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"racecheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.8230621814727783, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/racecheck/quantization-racecheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n{\"case\": \"quantization\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.572131872177124, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/initcheck/quantization-initcheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"quantization\", \"tool\": \"synccheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"synccheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.39038515090942383, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/synccheck/quantization-synccheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n",
+      "substate": "exited",
+      "unit_name": "device-scheduler-attempt-f3574b18105b8d74a36c91af5021df2c.service"
+    },
+    "started_at": "2026-10-29T19:43:42.385654Z",
+    "state": "succeeded"
+  },
+  "attempt_count": 1,
+  "attempt_id": "566e25e3-3c76-4e86-878d-16d4b9dc3b93",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-29T19:43:21.664697Z",
+  "decision_id": "62badc8c-31af-47f2-ad9c-9c914dc01cc3",
+  "id": "c9ec0b2c-e5e7-4317-8ae2-90c6ab369bcf",
+  "job_id": "c9ec0b2c-e5e7-4317-8ae2-90c6ab369bcf",
+  "lease_binding": null,
+  "lease_fencing_token": 1244,
+  "lease_id": "a2fd6c14-c866-4bee-b501-593fff1c1f84",
+  "lease_state": "released",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "active",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-f3574b18105b8d74a36c91af5021df2c.service",
+      "invocation_id": "848bc450a1e54207b15c28140557f92d",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt 566e25e3-3c76-4e86-878d-16d4b9dc3b93"
+    },
+    "exit_code": 0,
+    "invocation_id": "848bc450a1e54207b15c28140557f92d",
+    "logs": "{\"case\": \"quantization\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.21567249298095703, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/none/quantization-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n{\"case\": \"quantization\", \"tool\": \"memcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"memcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.42102885246276855, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/memcheck/quantization-memcheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"quantization\", \"tool\": \"racecheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"racecheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.8230621814727783, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/racecheck/quantization-racecheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n{\"case\": \"quantization\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.572131872177124, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/initcheck/quantization-initcheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"quantization\", \"tool\": \"synccheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"synccheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.39038515090942383, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/synccheck/quantization-synccheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "success",
+    "state": "succeeded",
+    "stdout": "{\"case\": \"quantization\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.21567249298095703, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/none/quantization-none.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n{\"case\": \"quantization\", \"tool\": \"memcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"memcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.42102885246276855, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/memcheck/quantization-memcheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"quantization\", \"tool\": \"racecheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"racecheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.8230621814727783, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/racecheck/quantization-racecheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n{\"case\": \"quantization\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.572131872177124, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/initcheck/quantization-initcheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"quantization\", \"tool\": \"synccheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"synccheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-final-fixtures/cellerator_framework_cuda_quantization_smoke\"], \"returncode\": 0, \"seconds\": 0.39038515090942383, \"binary_sha256\": \"b903895ff2ef4f52e6348e8fa16f9a983a1e10a9af03e23ae7079ee3fdaee3c1\", \"log\": \"/tmp/cellerator-v100-results/final-quantization/synccheck/quantization-synccheck.log\", \"visible_devices\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\"}\n========= COMPUTE-SANITIZER\nquantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed\nquantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed\nV100 quantization correctness passed\n========= ERROR SUMMARY: 0 errors\n",
+    "substate": "exited",
+    "unit_name": "device-scheduler-attempt-f3574b18105b8d74a36c91af5021df2c.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python",
+      "/home/tumlinson/Cellerator/scripts/validation/framework_cuda_suite.py",
+      "--build",
+      "/tmp/cellerator-v100-final-fixtures",
+      "--cases",
+      "quantization",
+      "--tool",
+      "all",
+      "--output",
+      "/tmp/cellerator-v100-results/final-quantization"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "event_trigger": null,
+    "expected_duration_seconds": 90.0,
+    "flexible": false,
+    "idempotency_key": "cellerator-v100-final-fixture-alltools-quantization-20261029",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "kill_timeout_seconds": 870.0,
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 2,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "preemption_action": "abandon",
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 2147483648.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "retention_policy": null,
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "cellerator-v100-correctness",
+      "gpu.exclusive"
+    ],
+    "termination_grace_seconds": 10.0,
+    "timeout_seconds": 900.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "succeeded",
+  "updated_at": "2026-10-29T19:43:47.635745Z"
+}

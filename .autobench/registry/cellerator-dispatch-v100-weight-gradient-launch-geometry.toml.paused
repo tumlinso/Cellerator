@@ -1,0 +1,52 @@
+[benchmark]
+enabled = false
+name = "cellerator-dispatch-v100-weight-gradient-launch-geometry"
+revision = 2
+
+[source]
+include = [
+  "cmake/CelleratorConditional.cmake",
+  "cmake/CelleratorFrameworkCUDA.cmake",
+  "include/Cellerator/**",
+  "src/modeling/cuda/*.cu",
+  "src/execution/conditional/*.cc",
+  "tests/framework/cuda/dispatch_smoke.cu",
+  "planning/v100-framework-2026-10-29/dispatch/launch_geometry/CMakeLists.txt",
+  "planning/v100-framework-2026-10-29/dispatch/launch_geometry/README.md",
+  "planning/v100-framework-2026-10-29/dispatch/launch_geometry/autobench-definition.toml",
+  "planning/v100-framework-2026-10-29/dispatch/launch_geometry/base-source-manifest.json",
+  "planning/v100-framework-2026-10-29/dispatch/launch_geometry/candidate-sources/**",
+  "planning/v100-framework-2026-10-29/dispatch/launch_geometry/dispatch_geometry_driver.cu",
+  "planning/v100-framework-2026-10-29/dispatch/launch_geometry/task.json",
+  "scripts/validation/kda_dispatch_geometry.py",
+  "scripts/validation/kda_dispatch_geometry_autobench.py",
+]
+
+[protocol]
+id = "cellerator-dispatch-v100-sm70-weight-gradient-grid-v1"
+
+[build]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/kda_dispatch_geometry_autobench.py",
+  "--source", "{snapshot}",
+  "--workspace", "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/dispatch/launch_geometry/workspace",
+  "--mode", "prepare",
+]
+expected_seconds = 300
+kill_seconds = 600
+resources = { cpu_cores = 1, host_memory_bytes = 8589934592 }
+
+[[packet]]
+name = "dispatch-weight-gradient-geometry-evaluate"
+kind = "timing"
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/kda_dispatch_geometry_autobench.py",
+  "--source", "{snapshot}",
+  "--workspace", "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/dispatch/launch_geometry/workspace",
+  "--mode", "evaluate",
+]
+expected_seconds = 180
+kill_seconds = 600
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }

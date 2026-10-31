@@ -12,6 +12,7 @@ import math
 import threading
 from types import MappingProxyType
 from typing import Any, Protocol, runtime_checkable
+import warnings
 from uuid import uuid4
 
 
@@ -88,7 +89,7 @@ class StepResult:
 
 @runtime_checkable
 class Dynamics(Protocol):
-    """Callable state update accepted by :class:`Model`."""
+    """Callable state update accepted by :class:`DynamicalModel`."""
 
     def __call__(self, state: Any, context: StepContext) -> StepResult | Any: ...
 
@@ -100,11 +101,12 @@ class Observation(Protocol):
     def __call__(self, state: Any, context: StepContext) -> Any: ...
 
 
-class Model:
-    """Reusable dynamics and observation rules with shared model parameters.
+class DynamicalModel:
+    """Reusable transition and observation rules with shared parameters.
 
-    A model defines behavior; :class:`Cell` instances supply independent state.
-    No tensor framework or biological ontology is required.
+    This is an optional dynamics abstraction. General learned programs can be
+    ordinary callables or modules and do not need to subclass a Cellerator base.
+    ``Model`` remains a legacy alias for this class.
     """
 
     __slots__ = ("dynamics", "observation", "parameters")
@@ -171,32 +173,138 @@ class Model:
 
 
 class Cell:
-    """An identified, persistent model instance with its own evolving state.
+    """A lightweight identity and reference to information about one cell.
 
-    State is held by reference. Construct separate state values (or handles)
-    for independent cells. This avoids assuming state is copyable or dense.
-    A cell lock serializes advances of this identity, but does not make arbitrary
-    caller-owned mutable state thread safe.
+    ``data`` is caller-owned and may be a measurement, history, structured
+    object, latent handle, or another model-specific representation. A cell
+    carries no required clock, transition rule, or materialized state vector.
+    Bind an ordinary callable or module with :meth:`bind` when a per-cell
+    prediction handle is useful; batched calls to the program remain valid.
+
+    The former transition-shaped ``Cell(model, state, ...)`` constructor is
+    retained temporarily as a deprecated compatibility route to
+    :class:`DynamicalCell`.
     """
 
-    __slots__ = ("model", "_state", "_state_ref", "id", "_time", "_lock")
+    __slots__ = ("_data", "_source", "_program", "id")
 
-    def __init__(
-        self,
-        model: Model,
-        state: Any,
-        *,
-        id: Any = None,
-        time: float = 0.0,
-    ) -> None:
-        if not isinstance(model, Model):
-            raise TypeError("model must be a Model")
+    def __new__(cls, *args: Any, **kwargs: Any):
+        # Preserve the old constructor only when both pieces of its signature
+        # are explicit. A DynamicalModel alone is still valid caller-owned data.
+        if cls is Cell:
+            positional_model = bool(args) and isinstance(args[0], DynamicalModel)
+            keyword_model = isinstance(kwargs.get("model"), DynamicalModel)
+            has_state = (len(args) >= 2 or "state" in kwargs)
+            if has_state and (positional_model or keyword_model):
+                warnings.warn(
+                    "Cell(model, state, ...) is deprecated; use "
+                    "DynamicalCell(model, state, ...) instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+                return object.__new__(DynamicalCell)
+        return object.__new__(cls)
+
+    def __init__(self, data: Any = None, *, id: Any = None) -> None:
+        self._data = data
+        self._source: Cell | None = None
+        self._program: Any = None
+        self.id = uuid4().hex if id is None else id
+
+    @property
+    def data(self) -> Any:
+        """Caller-owned information, read live through a bound source handle."""
+        return self._source.data if self._source is not None else self._data
+
+    @data.setter
+    def data(self, value: Any) -> None:
+        if self._source is not None:
+            self._source.data = value
+        else:
+            self._data = value
+
+    @property
+    def program(self) -> Any:
+        """The shared callable bound to this handle, if any."""
+        return self._program
+
+    def bind(self, program: Any) -> "Cell":
+        """Return a handle sharing this identity and live data source.
+
+        ``program`` is stored by reference, so modules and their parameters are
+        shared rather than copied. The returned object is a generic ``Cell``
+        handle even when the source is a :class:`DynamicalCell`.
+        """
+        if not callable(program):
+            raise TypeError("program must be callable")
+        bound = Cell(self.data, id=self.id)
+        bound._source = self._source if self._source is not None else self
+        bound._program = program
+        return bound
+
+    def predict(self, view: str | None = None) -> Any:
+        """Evaluate the bound program on current data, optionally requesting a view."""
+        if self._program is None:
+            raise RuntimeError("no program is bound; call cell.bind(program) first")
+        if view is None:
+            return self._program(self.data)
+        if not isinstance(view, str) or not view:
+            raise ValueError("view must be a non-empty string")
+        predict = getattr(self._program, "predict", None)
+        if not callable(predict):
+            raise TypeError("the bound program does not support named prediction views")
+        return predict(self.data, view=view)
+
+    @classmethod
+    def from_reference(cls, model: "DynamicalModel", state_reference: Any, *,
+                       id: Any = None, time: float = 0.0) -> "DynamicalCell":
+        """Deprecated compatibility factory for externally owned dynamic state."""
+        if cls is not Cell:
+            raise TypeError("Cell.from_reference is a legacy dynamics factory")
+        warnings.warn(
+            "Cell.from_reference is deprecated; use "
+            "DynamicalCell.from_reference instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return DynamicalCell.from_reference(
+            model, state_reference, id=id, time=time
+        )
+
+
+class DynamicalCell(Cell):
+    """An identified, persistent instance of a :class:`DynamicalModel`.
+
+    This optional specialization owns a clock and transition behavior. State is
+    held by reference; the generic :attr:`Cell.data` view always follows its
+    current state, including when the state is externally managed.
+    """
+
+    __slots__ = ("model", "_state", "_state_ref", "_time", "_lock")
+
+    def __init__(self, model: DynamicalModel, state: Any, *, id: Any = None,
+                 time: float = 0.0) -> None:
+        if not isinstance(model, DynamicalModel):
+            raise TypeError("model must be a DynamicalModel")
+        super().__init__(state, id=id)
         self.model = model
         self._state = state
         self._state_ref = None
-        self.id = uuid4().hex if id is None else id
         self._time = _finite_real(time, "time")
         self._lock = threading.RLock()
+
+    @property
+    def data(self) -> Any:
+        """Current modeled information, following the live state reference."""
+        return self.state
+
+    @data.setter
+    def data(self, value: Any) -> None:
+        with self._lock:
+            if self._state_ref is not None:
+                self._state_ref.set(value)
+            else:
+                self._state = value
 
     @property
     def state(self) -> Any:
@@ -280,12 +388,12 @@ class Cell:
     @classmethod
     def from_reference(
         cls,
-        model: Model,
+        model: DynamicalModel,
         state_reference: Any,
         *,
         id: Any = None,
         time: float = 0.0,
-    ) -> "Cell":
+    ) -> "DynamicalCell":
         """Bind to an external state owner implementing ``get`` and ``set``.
 
         The reference remains the authoritative state store. This is useful for
@@ -307,14 +415,19 @@ class Cell:
         return cell
 
 
+# Retain the original name for transition-model users while making its scope
+# explicit in new APIs. Ordinary learned programs need no Cellerator base class.
+Model = DynamicalModel
+
+
 def functional_model(
     dynamics: Callable[[Any, StepContext], StepResult | Any],
     *,
     observation: Callable[[Any, StepContext], Any] | None = None,
     parameters: Any = None,
-) -> Model:
+) -> DynamicalModel:
     """Create a model from ordinary functions without subclassing."""
-    return Model(dynamics, observation, parameters)
+    return DynamicalModel(dynamics, observation, parameters)
 
 
 class FunctionalDynamics:

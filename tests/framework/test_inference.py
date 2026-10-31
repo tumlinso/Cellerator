@@ -10,12 +10,12 @@ from cellerator.inference import (
     rank_event_hypotheses,
     systematic_resample,
 )
-from cellerator.modeling import Model, StepResult
+from cellerator.modeling import DynamicalModel, StepResult
 
 
 class InferenceTests(unittest.TestCase):
     def test_particle_filter_updates_state_and_weights(self):
-        model = Model(
+        model = DynamicalModel(
             lambda state, ctx: StepResult(state + ctx.dt),
             observation=lambda state, _: state,
         )
@@ -37,7 +37,7 @@ class InferenceTests(unittest.TestCase):
 
     def test_arbitrary_state_uses_explicit_copy_policy(self):
         source = {"gene-a": 2}
-        model = Model(lambda state, _: {"gene-a": state["gene-a"] + 1})
+        model = DynamicalModel(lambda state, _: {"gene-a": state["gene-a"] + 1})
         posterior = particle_filter(
             model,
             [Particle(source), Particle(source)],
@@ -52,7 +52,7 @@ class InferenceTests(unittest.TestCase):
         self.assertIsNot(posterior.particles[0].state, posterior.particles[1].state)
 
     def test_resampling_tracks_ancestry(self):
-        model = Model(lambda state, _: state, observation=lambda state, _: state)
+        model = DynamicalModel(lambda state, _: state, observation=lambda state, _: state)
         posterior = particle_filter(
             model,
             [Particle("supported"), Particle("excluded")],
@@ -69,7 +69,7 @@ class InferenceTests(unittest.TestCase):
         self.assertTrue(all(p.lineage for p in posterior.particles))
 
     def test_early_model_step_is_not_mislabeled_with_observation_time(self):
-        model = Model(lambda state, ctx: StepResult(state + 1, time=ctx.time + ctx.dt / 2))
+        model = DynamicalModel(lambda state, ctx: StepResult(state + 1, time=ctx.time + ctx.dt / 2))
         with self.assertRaisesRegex(ValueError, "advance explicitly"):
             particle_filter(
                 model, [Particle(0)], [Observation(2.0, None)], lambda _, __: 0.0
@@ -90,7 +90,7 @@ class InferenceTests(unittest.TestCase):
     def test_all_impossible_candidates_are_reported(self):
         with self.assertRaisesRegex(ValueError, "zero observation likelihood"):
             particle_filter(
-                Model(lambda state, _: state), [0, 1],
+                DynamicalModel(lambda state, _: state), [0, 1],
                 [Observation(1.0, None)], lambda _, __: -math.inf,
             )
 

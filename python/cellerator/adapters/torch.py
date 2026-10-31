@@ -12,29 +12,29 @@ from typing import Any
 import torch
 from torch import Tensor, nn
 
-from cellerator.modeling import Model, StepContext, StepResult
+from cellerator.modeling import DynamicalModel, StepContext, StepResult
 
 
 class TorchDynamics(nn.Module):
     """A trainable state transition whose parameters are shared by cells.
 
     Subclasses implement ``forward(state, context)`` and may return any state
-    object or a :class:`StepResult`. Cell state never lives in this module.
+    object or a :class:`StepResult`. DynamicalCell state never lives in this module.
     """
 
     def step(self, state: Any, context: StepContext) -> StepResult:
         value = self(state, context)
         return value if isinstance(value, StepResult) else StepResult(value)
 
-    def as_model(self, observation: Callable[[Any, StepContext], Any] | nn.Module | None = None) -> Model:
+    def as_model(self, observation: Callable[[Any, StepContext], Any] | nn.Module | None = None) -> DynamicalModel:
         """Bind this parameter-sharing rule to the generic model interface."""
-        return Model(self.step, observation, parameters=self)
+        return DynamicalModel(self.step, observation, parameters=self)
 
 
 class TorchModel(nn.Module):
     """Torch-owned shared dynamics and observation modules.
 
-    Use ``step``/``observe`` with ``Cell`` or call ``forward`` directly.
+    Use ``step``/``observe`` with ``DynamicalCell`` or call ``forward`` directly.
     Optimizers see shared parameters once, regardless of cell count.
     """
 
@@ -68,9 +68,9 @@ class TorchModel(nn.Module):
             return self._observation_fn(state, context)
         return state
 
-    def as_model(self) -> Model:
+    def as_model(self) -> DynamicalModel:
         """Expose registered Torch parameters through the generic model API."""
-        return Model(self.step, self.observe, parameters=self)
+        return DynamicalModel(self.step, self.observe, parameters=self)
 
 
 class ResidualStateUpdate(TorchDynamics):
@@ -117,21 +117,27 @@ class GatedInteractor(nn.Module):
     """
 
     def __init__(self, input_size: int, hidden_size: int, output_size: int,
-                 *, normalize: bool = False):
+                 *, normalize: bool = False, context_size: int | None = None):
         super().__init__()
         if min(input_size, hidden_size, output_size) <= 0:
             raise ValueError("feature sizes must be positive")
+        if context_size is not None and context_size <= 0:
+            raise ValueError("context_size must be positive or None")
         self.input_size = int(input_size)
         self.output_size = int(output_size)
         self.normalize = bool(normalize)
+        self.context_size = context_size
         self.encode = nn.Linear(self.input_size, hidden_size)
         self.gate = nn.Linear(self.input_size, 1)
+        self.context_projection = (
+            nn.Linear(context_size, self.input_size, bias=False)
+            if context_size is not None else None
+        )
         self.joint = nn.Sequential(nn.SiLU(), nn.Linear(hidden_size, hidden_size),
                                    nn.SiLU(), nn.Linear(hidden_size, output_size))
 
     def forward(self, participants: Sequence[Tensor] | Tensor,
                 context: Any = None) -> Tensor:
-        del context  # relation-specific context may be captured by a caller wrapper
         if isinstance(participants, Tensor):
             if participants.ndim < 2:
                 raise ValueError("participant tensor needs [..., participants, features]")
@@ -148,8 +154,27 @@ class GatedInteractor(nn.Module):
                     raise ValueError("participants must have matching shapes and devices") from exc
         if values.shape[-1] != self.input_size:
             raise ValueError("participant feature size does not match input_size")
-        hidden = torch.tanh(self.encode(values))
-        weights = torch.sigmoid(self.gate(values))
+        if context is None:
+            conditioned_values = values
+        else:
+            if self.context_projection is None:
+                raise ValueError(
+                    "context was supplied but GatedInteractor has no context_size"
+                )
+            if not isinstance(context, Tensor) or not context.is_floating_point():
+                raise TypeError("context must be a floating-point Torch Tensor")
+            expected = tuple(values.shape[:-2]) + (self.context_size,)
+            if tuple(context.shape) != expected:
+                raise ValueError(
+                    "context must align with participant groups and end in context_size"
+                )
+            if context.device != values.device:
+                raise ValueError("context and participants must share a device")
+            if context.dtype != values.dtype:
+                raise TypeError("context and participants must share a dtype")
+            conditioned_values = values + self.context_projection(context).unsqueeze(-2)
+        hidden = torch.tanh(self.encode(conditioned_values))
+        weights = torch.sigmoid(self.gate(conditioned_values))
         pooled = (weights * hidden).sum(dim=-2)
         if self.normalize:
             pooled = pooled / weights.sum(dim=-2).clamp_min(1.0)

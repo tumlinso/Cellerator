@@ -1,0 +1,40 @@
+[
+  {
+    "argv": [
+      "/home/tumlinson/Cellerator/.autobench/builds/b62d2c0d7a1739c059f0c10f5bb529ecee64c7d1e070a2fb9632d6be79fb58a2/cmake/cellerator_framework_cuda_regulatory_gates_smoke"
+    ],
+    "binary_sha256": "f7a8be0bc6cdfca051135924792accacab4ca6576c37e91a2cd1252616a5151d",
+    "case": "regulatory_gates",
+    "log": "regulatory_gates-correctness-none.log",
+    "mode": "correctness",
+    "returncode": 0,
+    "tool": "none",
+    "wall_seconds": 0.26146941000479273
+  },
+  {
+    "argv": [
+      "/home/tumlinson/Cellerator/.autobench/builds/b62d2c0d7a1739c059f0c10f5bb529ecee64c7d1e070a2fb9632d6be79fb58a2/cmake/cellerator_framework_cuda_parameter_transfer_smoke"
+    ],
+    "binary_sha256": "23faba9c4c5b2ad1a7f9a2dd071821d7d8a0f1cf8165d6e55c5177334c792eb5",
+    "case": "parameter_transfer",
+    "log": "parameter_transfer-correctness-none.log",
+    "mode": "correctness",
+    "returncode": 0,
+    "tool": "none",
+    "wall_seconds": 0.23107901299954392
+  },
+  {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python",
+      "-c",
+      "import importlib.util,sys,unittest; sys.path.insert(0,'/home/tumlinson/Cellerator/.autobench/state/snapshots/2a1dd68a98f9ed0389240a88adaf499fb7f5cc627fa70d28e82a531877b765de/python'); import cellerator; cellerator.__path__.append('/home/tumlinson/Cellerator/.autobench/builds/b62d2c0d7a1739c059f0c10f5bb529ecee64c7d1e070a2fb9632d6be79fb58a2/cmake'); spec=importlib.util.spec_from_file_location('test_runtime_binding','/home/tumlinson/Cellerator/.autobench/state/snapshots/2a1dd68a98f9ed0389240a88adaf499fb7f5cc627fa70d28e82a531877b765de/tests/framework/cuda/test_runtime_binding.py'); module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module); suite=unittest.defaultTestLoader.loadTestsFromModule(module); result=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(not result.wasSuccessful())"
+    ],
+    "binary_sha256": "0270e29ecc693c0bc16290b53b1628dd6188a1e8fc6de76575c0d5fced61b053",
+    "case": "bindings",
+    "log": "bindings-correctness-none.log",
+    "mode": "correctness",
+    "returncode": 0,
+    "tool": "none",
+    "wall_seconds": 0.5919231850130018
+  }
+]

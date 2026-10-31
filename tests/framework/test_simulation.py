@@ -3,10 +3,14 @@ import random
 import unittest
 
 from cellerator.events import Event
-from cellerator.modeling import Cell, Experiment, Model, StepResult, simulate
+from cellerator.modeling import Cell, DynamicalCell, Experiment, DynamicalModel, StepResult, simulate
 
 
 class SimulationTests(unittest.TestCase):
+    def test_experiment_rejects_a_generic_cell(self):
+        with self.assertRaisesRegex(TypeError, "DynamicalCell"):
+            Experiment(Cell({"rna": [1, 2]}), (0.0,))
+
     def test_schedule_boundaries_observations_and_state_snapshots(self):
         def dynamics(state, context):
             rate = context.inputs["rate"]
@@ -14,12 +18,12 @@ class SimulationTests(unittest.TestCase):
             event = Event("advance", time=context.time + context.dt, payload=value)
             return StepResult({"value": value}, events=(event,))
 
-        model = Model(
+        model = DynamicalModel(
             dynamics,
             observation=lambda state, context: (state["value"], context.inputs["rate"]),
             parameters={"shared": True},
         )
-        cell = Cell(model, {"value": 0.0}, id="c1")
+        cell = DynamicalCell(model, {"value": 0.0}, id="c1")
         result = Experiment(
             cell,
             (0.5, 1.5),
@@ -42,7 +46,7 @@ class SimulationTests(unittest.TestCase):
 
         def run(seed):
             return simulate(
-                Cell(Model(dynamics), 0.0),
+                DynamicalCell(DynamicalModel(dynamics), 0.0),
                 (1.0, 2.0),
                 input_schedule=lambda time, state: 1.0 + state * 0,
                 rng=random.Random(seed),
@@ -55,7 +59,7 @@ class SimulationTests(unittest.TestCase):
         self.assertEqual(first.times, second.times)
 
     def test_overshooting_dynamics_does_not_get_labeled_as_requested_time(self):
-        cell = Cell(Model(lambda state, context: StepResult(
+        cell = DynamicalCell(DynamicalModel(lambda state, context: StepResult(
             state + 1, time=context.time + context.dt + 0.1
         )), 0)
         with self.assertRaisesRegex(ValueError, "past the requested time bound"):
@@ -71,8 +75,8 @@ class SimulationTests(unittest.TestCase):
             def __deepcopy__(self, _memo):
                 raise TypeError("state has no generic clone operation")
 
-        cell = Cell(
-            Model(lambda state, context: OpaqueState(state.value + context.dt)),
+        cell = DynamicalCell(
+            DynamicalModel(lambda state, context: OpaqueState(state.value + context.dt)),
             OpaqueState(0.0),
         )
         result = simulate(

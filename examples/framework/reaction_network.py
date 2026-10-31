@@ -6,7 +6,7 @@ Time is in caller-chosen units; molecule counts are discrete and conserved.
 import random
 
 from cellerator.dynamics.reactions import Reaction, ReactionNetwork
-from cellerator.modeling import Cell, Model
+from cellerator.modeling import DynamicalCell, DynamicalModel
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
         # A deliberately supplied measurement assumption, not an inferred model.
         return {"fluorescence": state["active"] + observation_rng.gauss(0, 0.5)}
 
-    cell = Cell(Model(network, observation), network.state({"inactive": 20}), id="cell-1")
+    cell = DynamicalCell(DynamicalModel(network, observation), network.state({"inactive": 20}), id="cell-1")
     print("Conservation:", network.conservation_residuals({"inactive": 1, "active": 1}))
     for _ in range(5):
         step = cell.advance(0.5, rng=dynamics_rng)

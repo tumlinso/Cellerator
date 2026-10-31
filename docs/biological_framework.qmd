@@ -2,8 +2,8 @@
 title: "Biological modeling framework"
 ---
 
-Cellerator is a general machine-learning and computational framework for
-biological modeling, with particular emphasis on cellular dynamics. It provides
+Cellerator is a general machine-learning and computational framework organized
+around the computational structure of biological systems. It provides
 native numerical machinery, specialized operations, and model interfaces that
 can express biological structure directly. Its work includes sparse relations,
 state-dependent interactions, event-driven updates, and layouts organized for
@@ -18,9 +18,12 @@ not define the scope of Cellerator.
 
 ## A modeling vocabulary
 
-A model relates persistent state to the changes that can act on it, the context
-that influences those changes, and the observations a model can produce. These
-are useful common questions rather than a universal biological schema:
+Biological models learn representations, relationships, and behavior through
+different computational formulations. The [neural foundation](nn_foundation.qmd)
+composes feature identities, contextual interactions, histories, and auxiliary
+readouts with ordinary trainable modules. Persistent state and explicit
+transitions are useful capabilities for models that need them. The following
+questions describe that dynamical vocabulary, rather than a universal schema:
 
 | Concept | Modeling question |
 |---|---|
@@ -31,11 +34,13 @@ are useful common questions rather than a universal biological schema:
 | Interaction | Which entities may jointly affect another state, and when is that relation active? |
 | Trajectory | What sequence of states, events, and branches follows, or remains possible? |
 
-The Python `cellerator.modeling` entry point provides `Model`, `Cell`,
-`StepContext`, `StepResult`, `Experiment`, and `simulate`. A `Cell` is an
-identified persistent model instance with model-native state. Models carry
-reusable behavior and shared parameters; cell instances carry separate state
-and time. `Experiment` advances a cell in place through requested observation
+The Python `cellerator.modeling` entry point provides a general `Cell` information
+handle, with optional program binding and prediction, and explicit
+`DynamicalModel`, `DynamicalCell`, `StepContext`, `StepResult`, `Experiment`, and
+`simulate` capabilities. Dynamical models carry reusable behavior and shared
+parameters; dynamical cell instances carry separate state and time. `Model`
+remains a legacy alias of `DynamicalModel`. `Experiment` advances a dynamical
+cell in place through requested observation
 times, samples model observations, and records state snapshots and emitted
 events. Its input schedule can change at absolute times or be computed from
 time and state. Snapshot copying is an explicit policy for nonstandard state
@@ -43,7 +48,7 @@ types.
 
 ```python
 from cellerator.events import Event
-from cellerator.modeling import Cell, Model, StepResult, simulate
+from cellerator.modeling import DynamicalCell, DynamicalModel, StepResult, simulate
 
 def update(state, context):
     expression = state["expression"] + context.dt * context.inputs["production"]
@@ -51,8 +56,8 @@ def update(state, context):
                   target="gene-a", payload=expression)
     return StepResult({"expression": expression}, events=(event,))
 
-model = Model(update, observation=lambda state, context: state["expression"])
-cell = Cell(model, {"expression": 0.0}, id="cell-17")
+model = DynamicalModel(update, observation=lambda state, context: state["expression"])
+cell = DynamicalCell(model, {"expression": 0.0}, id="cell-17")
 result = simulate(cell, times=(1.0, 2.0),
                   input_schedule={0.0: {"production": 1.0},
                                   1.0: {"production": 0.25}})

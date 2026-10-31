@@ -8,7 +8,7 @@ from typing import Any
 
 from cellerator.events import Trajectory
 
-from .core import Cell, StepResult, USE_MODEL_PARAMETERS, _finite_real
+from .core import DynamicalCell, StepResult, USE_MODEL_PARAMETERS, _finite_real
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,7 +21,7 @@ class ExperimentResult:
     events: tuple[Any, ...]
     final_state: Any
     final_time: float
-    cell: Cell
+    cell: DynamicalCell
 
 
 class Experiment:
@@ -40,7 +40,7 @@ class Experiment:
 
     def __init__(
         self,
-        cell: Cell,
+        cell: DynamicalCell,
         times: Iterable[float],
         *,
         input_schedule: Mapping[float, Any] | Callable[[float, Any], Any] | None = None,
@@ -50,8 +50,8 @@ class Experiment:
         parameters: Any = USE_MODEL_PARAMETERS,
         metadata: Mapping[str, Any] | None = None,
     ) -> None:
-        if not isinstance(cell, Cell):
-            raise TypeError("cell must be a Cell")
+        if not isinstance(cell, DynamicalCell):
+            raise TypeError("cell must be a DynamicalCell")
         requested = tuple(_finite_real(value, "observation time") for value in times)
         if not requested:
             raise ValueError("at least one observation time is required")
@@ -154,11 +154,11 @@ class Experiment:
 
 
 def simulate(
-    cell: Cell,
+    cell: DynamicalCell,
     times: Iterable[float],
     **kwargs: Any,
 ) -> ExperimentResult:
-    """Run one :class:`Cell` through requested observation times."""
+    """Run one :class:`DynamicalCell` through requested observation times."""
     return Experiment(cell, times, **kwargs).run()
 
 

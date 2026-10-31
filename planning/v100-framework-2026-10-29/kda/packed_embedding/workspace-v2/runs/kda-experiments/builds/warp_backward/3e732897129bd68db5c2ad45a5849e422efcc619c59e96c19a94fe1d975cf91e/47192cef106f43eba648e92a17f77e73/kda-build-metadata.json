@@ -1,0 +1,29 @@
+{
+  "architecture": "sm_70",
+  "binary_sha256": "b2f45d91ea6e4a7d2cd0cb9d817f995c59f9b0ced2e54361d24d5f6e429004dc",
+  "build_argv": [
+    "cmake",
+    "-S",
+    "/tmp/cellerator-kda-final-snapshots/packed/snapshots/9e712c42c9bca7318bc670c281fb1f82757b9893024f89f2a71c3a4c95d3c1e9/planning/v100-framework-2026-10-29/kda/packed_embedding",
+    "-B",
+    "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2/runs/kda-experiments/builds/warp_backward/3e732897129bd68db5c2ad45a5849e422efcc619c59e96c19a94fe1d975cf91e/47192cef106f43eba648e92a17f77e73/cmake",
+    "-DCELLERATOR_SOURCE_DIR=/tmp/cellerator-kda-final-snapshots/packed/snapshots/9e712c42c9bca7318bc670c281fb1f82757b9893024f89f2a71c3a4c95d3c1e9",
+    "-DKDA_CANDIDATE_SOURCE_DIR=/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2/runs/kda-experiments/candidates/warp_backward/de496ae3db1641db56d26a66fccef4017bd17a1109b3942e1058540c3d84d983",
+    "-DKDA_WARP_BACKWARD=ON",
+    "-DCMAKE_CXX_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12",
+    "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12",
+    "-DCMAKE_CUDA_ARCHITECTURES=70",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_CUDA_FLAGS=-lineinfo"
+  ],
+  "candidate_id": "warp_backward",
+  "common_source_root": "/tmp/cellerator-kda-final-snapshots/packed/snapshots/9e712c42c9bca7318bc670c281fb1f82757b9893024f89f2a71c3a4c95d3c1e9",
+  "source_files": {
+    "include/Cellerator/modeling/cuda/packed_embedding.hh": "9e2b8906f68f61efc0c56b60f565c60473d915d9b4b3d452fa96a40f25139a7d",
+    "src/modeling/cuda/packed_embedding.cu": "e050b7c0af2d4280a3b3ef3023e6e8f808413338a3787586f6a222e0985082c7"
+  },
+  "source_snapshot_sha256": "de496ae3db1641db56d26a66fccef4017bd17a1109b3942e1058540c3d84d983",
+  "trusted_smoke_sha256": "385c851b991cc92f4a6a78aa23dba2cd0fcb97803ceadca22bca17e17aff01ff",
+  "warp_backward": true
+}

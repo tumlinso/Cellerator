@@ -7,7 +7,7 @@ from random import Random
 
 from cellerator.dynamics import JumpChannel, gillespie
 from cellerator.events import Event, EventHistory, Trajectory
-from cellerator.modeling import Cell, Model
+from cellerator.modeling import DynamicalCell, DynamicalModel
 
 
 def main() -> None:
@@ -30,8 +30,8 @@ def main() -> None:
             },
         ),
     )
-    cell = Cell(
-        Model(gillespie(channels)),
+    cell = DynamicalCell(
+        DynamicalModel(gillespie(channels)),
         {"substrate": 10, "transcripts": 0},
         id="toy-cell",
     )

@@ -1,0 +1,65 @@
+{
+  "owner_id": "cellerator",
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python",
+    "/home/tumlinson/Cellerator/scripts/validation/framework_cuda_suite.py",
+    "--build",
+    "/tmp/cellerator-v100-framework-r4",
+    "--cases",
+    "runtime",
+    "dispatch",
+    "quantization",
+    "memory",
+    "--tool",
+    "synccheck",
+    "--sanitizer",
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "--output",
+    "/tmp/cellerator-v100-results/synccheck-r4-gpu1"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 2147483648
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+      },
+      "mode": "exclusive",
+      "same_host": true
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator-v100-correctness"
+  ],
+  "priority_class": "interactive",
+  "priority": 50,
+  "flexible": false,
+  "timeout_seconds": 900,
+  "expected_duration_seconds": 90,
+  "kill_timeout_seconds": 870,
+  "termination_grace_seconds": 10,
+  "preemption_action": "abandon",
+  "max_attempts": 1,
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 60,
+        "interval_seconds": 1,
+        "consecutive_samples": 2,
+        "max_utilization_percent": 0
+      }
+    }
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "idempotency_key": "cellerator-v100-synccheck-r4-gpu1-20261029"
+}

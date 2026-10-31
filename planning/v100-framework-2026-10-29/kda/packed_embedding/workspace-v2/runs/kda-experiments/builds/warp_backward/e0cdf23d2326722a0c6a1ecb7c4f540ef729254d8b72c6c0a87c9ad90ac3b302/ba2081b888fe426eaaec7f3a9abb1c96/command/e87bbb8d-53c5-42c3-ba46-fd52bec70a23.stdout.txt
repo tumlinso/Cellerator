@@ -1,0 +1,35 @@
+-- The CXX compiler identification is GNU 12.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/x86_64-linux-gnu-g++-12 - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- The CUDA compiler identification is NVIDIA 12.9.86
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - done
+-- Check for working CUDA compiler: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc - skipped
+-- Detecting CUDA compile features
+-- Detecting CUDA compile features - done
+-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version "12.9.86") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Configuring done (3.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2/runs/kda-experiments/builds/warp_backward/e0cdf23d2326722a0c6a1ecb7c4f540ef729254d8b72c6c0a87c9ad90ac3b302/ba2081b888fe426eaaec7f3a9abb1c96/cmake
+[  7%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/src/modeling/cuda/runtime.cu.o
+[ 21%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/src/modeling/cuda/plans.cu.o
+[ 21%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/src/modeling/cuda/dispatch.cu.o
+[ 28%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/src/modeling/cuda/quantization.cu.o
+[ 35%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/src/modeling/cuda/memory.cu.o
+[ 42%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/src/modeling/cuda/frontier.cu.o
+[ 50%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/src/modeling/cuda/attention.cu.o
+[ 57%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/src/modeling/cuda/grouped_linear.cu.o
+[ 64%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/src/modeling/cuda/reactions.cu.o
+[ 71%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/src/modeling/cuda/regulatory_gates.cu.o
+[ 78%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding.dir/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2/runs/kda-experiments/candidates/warp_backward/de496ae3db1641db56d26a66fccef4017bd17a1109b3942e1058540c3d84d983/src/modeling/cuda/packed_embedding.cu.o
+[ 85%] Linking CUDA static library libcellerator_kda_packed_embedding.a
+[ 85%] Built target cellerator_kda_packed_embedding
+[ 92%] Building CUDA object CMakeFiles/cellerator_kda_packed_embedding_smoke.dir/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/tests/framework/cuda/packed_embedding_smoke.cu.o
+[100%] Linking CUDA executable cellerator_kda_packed_embedding_smoke
+[100%] Built target cellerator_kda_packed_embedding_smoke

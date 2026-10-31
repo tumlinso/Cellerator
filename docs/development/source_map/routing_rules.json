@@ -249,6 +249,16 @@
     "role": "subsystem-local engineering or test documentation",
     "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
   },
+  "03d631310b55": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_quantization_profiles.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_quantization_profiles.py; registration and run evidence are operation- and environment-specific"
+  },
   "03f058cfcb38": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
     "consumers": "include/Cellerator/runtime contributors and maintainers of linked implementations",
@@ -699,6 +709,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/release/integrate_jbc_migration_and_cellshard_compatibility_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "09f6d276df5f": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_state.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_state.py; registration and run evidence are operation- and environment-specific"
+  },
   "0a7d2c2234fb": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -768,6 +788,16 @@
     "maturity": "geometry implementation present; target and qualification vary by family; physical realization belongs to layout/provider families",
     "role": "semantic geometry optimizer_state.hh",
     "tests_or_evidence": "tests/geometry contracts, acquisition, projection, providers, catalog, and validation suites by subject; no blanket pass claim"
+  },
+  "0be3136d1c64": {
+    "archive_reference": "preserve ABI/schema and real sibling consumers; move related implementation, headers, registrations, and callers together",
+    "consumers": "current headers and includes rooted at include/Cellerator/interop/ggml; inspect source targets and downstream callers before changing ABI or ownership",
+    "current_owner": "include/Cellerator/interop/ggml",
+    "disposition": "retain_named_native_shared_subsystem",
+    "intended_destination": "retain under include/Cellerator/interop/ggml; adapt native contracts to external consumers",
+    "maturity": "source and interface present; target and consumer qualification remain specific",
+    "role": "native interop subsystem",
+    "tests_or_evidence": "tests in the matching subsystem and actual native consumer checks; do not infer execution from source presence"
   },
   "0c1f1135fbf9": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -939,6 +969,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/backend/cpu/backend_provider_abi_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "0ea7ce0ec146": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_distributed_dispatch.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_distributed_dispatch.py; registration and run evidence are operation- and environment-specific"
+  },
   "0ecdc152f3b5": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -1058,6 +1098,16 @@
     "maturity": "experimental_language_material",
     "role": "compiler language standard library or source artifact",
     "tests_or_evidence": "tests/compiler and source records; implementation coverage unresolved"
+  },
+  "10c7885c37b3": {
+    "archive_reference": "preserve the native conditional ABI and keep its generic scheduling role distinct from model routing policy",
+    "consumers": "Cellerator::conditional and Python callers of the native conditional module",
+    "current_owner": "cmake/CelleratorConditional.cmake; optional _conditional_native module linked to Cellerator::conditional",
+    "disposition": "retain_conditional_python_binding",
+    "intended_destination": "retain as the Python bridge for the generic host conditional-execution library",
+    "maturity": "binding target is registered when Python support is enabled; source presence does not establish package runtime qualification",
+    "role": "Python binding for host conditional dispatch and parameter storage",
+    "tests_or_evidence": "conditional binding/engine bridge checks are registered under CELLERATOR_BUILD_TESTS; run and package evidence remain separate"
   },
   "10e19db9bc42": {
     "archive_reference": "preserve structure/order identity and keep semantic discovery separate from physical layout and execution",
@@ -1439,6 +1489,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/relation_update_spine_v1/source_bridge_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "16b5061c5926": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_quantization.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_quantization.py; registration and run evidence are operation- and environment-specific"
+  },
   "16c47addbfec": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -1648,6 +1708,16 @@
     "maturity": "CPU FP32 installed/package behavior only; not a GPU test",
     "role": "Product2 Python/package contract checks",
     "tests_or_evidence": "exact Python test files; native and GPU coverage are separate"
+  },
+  "1a17543a521f": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_simulation.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_simulation.py; registration and run evidence are operation- and environment-specific"
   },
   "1a192ed6006b": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -1949,6 +2019,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/resilience/run_sanitizers_and_resource_bound_tests_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "1d87efbf910f": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/regulatory_gates_smoke.cu; registration and run evidence are operation- and environment-specific"
+  },
   "1d9f912fc597": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -2128,6 +2208,16 @@
     "maturity": "host_contracts_present; cuda_worksets_have_separate_device_checks",
     "role": "condition programs, derivative sampling, and conditional worksets",
     "tests_or_evidence": "tests/sparse_support/indexing_support_gating_test.cc, derivative_sampling_test.cc, cuda_worksets_test.cu, and tests/sparse_support/test_transition_modes.py; each covers a bounded contract"
+  },
+  "214e05c2b8c6": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_execution.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_execution.py; registration and run evidence are operation- and environment-specific"
   },
   "215278bf2537": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -2409,6 +2499,16 @@
     "role": "subsystem-local engineering or test documentation",
     "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
   },
+  "24e35525312c": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_topology_planning.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_topology_planning.py; registration and run evidence are operation- and environment-specific"
+  },
   "24f633ab83a1": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -2498,6 +2598,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/jbc/decomposition/test_sparse_update_conflict_v1.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "267e9771c1a1": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/test_native_binding.py; registration and run evidence are operation- and environment-specific"
   },
   "268cde90b336": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -2848,6 +2958,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/ast/support_incremental_ast_identity_reuse_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "2a11369d4986": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/conditional_dispatch_example.cc; registration and run evidence are operation- and environment-specific"
   },
   "2a303162a628": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -3259,6 +3379,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/backend/nvptx/direct_ptx_hot_path_demonstration_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "30c4c4b355be": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/test_runtime_binding.py; registration and run evidence are operation- and environment-specific"
+  },
   "30d147cf5692": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -3288,6 +3418,16 @@
     "maturity": "source and interface present; target and consumer qualification remain specific",
     "role": "native profiling subsystem",
     "tests_or_evidence": "tests in the matching subsystem and actual native consumer checks; do not infer execution from source presence"
+  },
+  "311dd730a76b": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_nn_native_composition.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_nn_native_composition.py; registration and run evidence are operation- and environment-specific"
   },
   "312e575a5be9": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
@@ -3969,6 +4109,16 @@
     "role": "optional host compiler SDK build and executable surface",
     "tests_or_evidence": "cmake/compiler/CelleratorPartOneAcceptance.cmake and registered compiler driver/tooling tests where enabled"
   },
+  "3be5c0fd4415": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/parameter_transfer_smoke.cu; registration and run evidence are operation- and environment-specific"
+  },
   "3c3ba8c69385": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -4138,6 +4288,16 @@
     "maturity": "early_package_surface",
     "role": "Python package / Torch surface",
     "tests_or_evidence": "tests/package, tests/bindings/python, examples/torch"
+  },
+  "3f37303b6234": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_interactions.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_interactions.py; registration and run evidence are operation- and environment-specific"
   },
   "3f845039897d": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -4368,6 +4528,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/math_bell_lowering_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "42a003d310c0": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/incremental_test.cc; registration and run evidence are operation- and environment-specific"
   },
   "42c177e0b6f6": {
     "archive_reference": "preserve prepared object identity, runtime lifetime, and ABI; do not merge semantic geometry, physical layout, and runtime state",
@@ -4649,6 +4819,16 @@
     "role": "prepared execution training_program_v2 contract",
     "tests_or_evidence": "tests/execution or tests/runtime family checks when registered; source presence does not establish runtime qualification"
   },
+  "46078b37171b": {
+    "archive_reference": "preserve ABI/schema and real sibling consumers; move related implementation, headers, registrations, and callers together",
+    "consumers": "current headers and includes rooted at src/interop/ggml; inspect source targets and downstream callers before changing ABI or ownership",
+    "current_owner": "src/interop/ggml",
+    "disposition": "retain_named_native_shared_subsystem",
+    "intended_destination": "retain under src/interop/ggml; adapt native contracts to external consumers",
+    "maturity": "source and interface present; target and consumer qualification remain specific",
+    "role": "native interop subsystem",
+    "tests_or_evidence": "tests in the matching subsystem and actual native consumer checks; do not infer execution from source presence"
+  },
   "4612a427f7cd": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -4769,6 +4949,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/discovery/factor_bicluster_and_signature_proposal_strategy_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "478ca1606685": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_nn_views.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_nn_views.py; registration and run evidence are operation- and environment-specific"
+  },
   "479cbec30cc8": {
     "archive_reference": "preserve formulas, parameters, derivative behavior, and checkpoint/schema semantics",
     "consumers": "inspect the family CMake and direct native includes before claiming target or package exposure",
@@ -4788,6 +4978,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/source/recognize_cellerator_execution_field_token_islands_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "47a566ae756b": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/quantization_smoke.cu; registration and run evidence are operation- and environment-specific"
   },
   "47d229eff39e": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
@@ -4989,6 +5189,16 @@
     "role": "preserved historical CelleraTorch Python source snapshot",
     "tests_or_evidence": "byte hashes and Python AST parsing establish preservation only; archived test snapshots are not collected by pytest"
   },
+  "4bc30e29d2fa": {
+    "archive_reference": "preserve stream/device contracts and keep optional CUDA dependencies lazy",
+    "consumers": "Cellerator::framework_cuda and Python adapter consumers",
+    "current_owner": "cmake/CelleratorFrameworkCUDA.cmake; optional _modeling_cuda module linked to Cellerator::framework_cuda",
+    "disposition": "retain_framework_cuda_python_binding",
+    "intended_destination": "retain as an optional bridge to selected native CUDA operations",
+    "maturity": "built only when framework CUDA and its Python binding option are enabled; binding source does not establish device qualification",
+    "role": "optional Python binding for framework CUDA operations",
+    "tests_or_evidence": "tests/framework/cuda/test_runtime_binding.py and operation-specific smoke sources are separate checks; CMake deliberately does not auto-run GPU smoke jobs"
+  },
   "4bd0948aff6d": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -5068,6 +5278,16 @@
     "maturity": "source/header present; build, runtime, and numerical qualification are operation-specific",
     "role": "compute fusion_training_integration_test.cc subsystem",
     "tests_or_evidence": "tests under the corresponding tests family and native build registration; map does not imply each check ran"
+  },
+  "4d41562479b6": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_anndata_adapter.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_anndata_adapter.py; registration and run evidence are operation- and environment-specific"
   },
   "4d639fc15d05": {
     "archive_reference": "preserve task IDs only in planning/history; route code by subsystem purpose and preserve native interfaces",
@@ -5459,6 +5679,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/planning/public_planning_compiler_interface_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "5382c10306fd": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/runtime_smoke.cu; registration and run evidence are operation- and environment-specific"
+  },
   "538840d9ed5e": {
     "archive_reference": "preserve prepared topology, first-order gradient, and operation fixture identities",
     "consumers": "Cellerator::product2, Python Product2 adapter, and Product2Module",
@@ -5529,6 +5759,16 @@
     "role": "compute gene_candidate_discovery.hh subsystem",
     "tests_or_evidence": "tests under the corresponding tests family and native build registration; map does not imply each check ran"
   },
+  "547dc1e67969": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/model_contract_test.cc; registration and run evidence are operation- and environment-specific"
+  },
   "54e86efb05c4": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -5538,6 +5778,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/geometry/planner_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "54f9839c41b8": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/reactions_smoke.cu; registration and run evidence are operation- and environment-specific"
   },
   "5506b841e354": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -5679,6 +5929,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/driver/fingerprint_toolchains_for_artifacts_and_resumption_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "56a80fe766e7": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_dynamics.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_dynamics.py; registration and run evidence are operation- and environment-specific"
+  },
   "56aa1d089774": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
     "consumers": "bench/sparse_support/evidence/experiments/packed_training_v2/r4 contributors and maintainers of linked implementations",
@@ -5739,6 +5999,16 @@
     "role": "architecture providers and target refinement",
     "tests_or_evidence": "tests under the corresponding tests family and native build registration; map does not imply each check ran"
   },
+  "574c65395d84": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/packed_embedding_smoke.cu; registration and run evidence are operation- and environment-specific"
+  },
   "5768b9463bb9": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -5748,6 +6018,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/native_numeric/device_arithmetic.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "57784666d21f": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_inheritance.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_inheritance.py; registration and run evidence are operation- and environment-specific"
   },
   "577bc3a196df": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -5848,6 +6128,16 @@
     "maturity": "implementation present; prepared execution and runtime qualification are operation-specific; ExecutionField live recompilation remains experimental",
     "role": "runtime resources and device coordination",
     "tests_or_evidence": "tests/execution or tests/runtime family checks when registered; source presence does not establish runtime qualification"
+  },
+  "594d6d4313e6": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_coupling.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_coupling.py; registration and run evidence are operation- and environment-specific"
   },
   "59583732d8e9": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -5958,6 +6248,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/backend/nvcc/host_device_split_compilation_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "5a5ca87ab8ad": {
+    "archive_reference": "preserve revision validation, ordering, and stream/lifetime contracts; do not imply a distributed runtime",
+    "consumers": "Cellerator::conditional, Cellerator::framework_cuda, and explicit transfer callers",
+    "current_owner": "cmake/CelleratorFrameworkCUDA.cmake; optional Cellerator::framework_parameter_transfer target",
+    "disposition": "retain_framework_parameter_transfer_implementation",
+    "intended_destination": "retain the bridge separately from framework CUDA numerical operators and require its conditional-owner dependency",
+    "maturity": "source is registered in an opt-in CUDA target; no runtime qualification is inferred",
+    "role": "revision-aware CUDA parameter-transfer implementation",
+    "tests_or_evidence": "tests/framework/cuda/parameter_transfer_smoke.cu is buildable only when requested and is not automatically executed"
   },
   "5ad03771b20b": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -6419,6 +6719,16 @@
     "role": "prepared execution lifetimes.hh contract",
     "tests_or_evidence": "tests/execution or tests/runtime family checks when registered; source presence does not establish runtime qualification"
   },
+  "619244401f0a": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/dispatch_smoke.cu; registration and run evidence are operation- and environment-specific"
+  },
   "61941484651e": {
     "archive_reference": "provider source moved to src/ops/matrix; preserve precision/derivative contracts and source-path proof",
     "consumers": "Substrate operators consumer and selectable installed component; retained Python proof experiments/moonshot-parallel-v1/diff/patch/ops.py compiles current provider by path",
@@ -6819,6 +7129,16 @@
     "role": "subsystem-local engineering or test documentation",
     "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
   },
+  "66d6fccd2ebc": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_nn_relation_attention.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_nn_relation_attention.py; registration and run evidence are operation- and environment-specific"
+  },
   "66eaf489cb81": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -6918,6 +7238,16 @@
     "maturity": "implementation present; prepared execution and runtime qualification are operation-specific; ExecutionField live recompilation remains experimental",
     "role": "prepared execution projection_activation.cc contract",
     "tests_or_evidence": "tests/execution or tests/runtime family checks when registered; source presence does not establish runtime qualification"
+  },
+  "68aff0f61268": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/inheritance_test.cc; registration and run evidence are operation- and environment-specific"
   },
   "68b1bb52d945": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -7099,6 +7429,16 @@
     "role": "native profiling subsystem",
     "tests_or_evidence": "tests in the matching subsystem and actual native consumer checks; do not infer execution from source presence"
   },
+  "6aaf40472cf4": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/coupling_test.cc; registration and run evidence are operation- and environment-specific"
+  },
   "6ab448fe848c": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -7138,6 +7478,16 @@
     "maturity": "implementation present; target, consumer, and numerical maturity are operation-specific",
     "role": "native extreme_dequantize_kernel.cuh subsystem",
     "tests_or_evidence": "tests/math_core, tests/native_numeric, model tests, or examples only where they exercise this exact contract"
+  },
+  "6b2ba25e0e46": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/attention_smoke.cu; registration and run evidence are operation- and environment-specific"
   },
   "6b637680d3b9": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -7348,6 +7698,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/relation_update_spine_v1/evidence_contract_test.py; registration and run evidence are operation- and environment-specific"
+  },
+  "6dca3076d64a": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_storage.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_storage.py; registration and run evidence are operation- and environment-specific"
   },
   "6dd245c0b437": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -7719,6 +8079,16 @@
     "role": "semantic geometry rectangular_support.hh",
     "tests_or_evidence": "tests/geometry contracts, acquisition, projection, providers, catalog, and validation suites by subject; no blanket pass claim"
   },
+  "7368738557e3": {
+    "archive_reference": "preserve revision, stream, and transfer semantics; do not imply residency scheduling",
+    "consumers": "Cellerator::conditional and Cellerator::framework_cuda; binding and transfer callers remain optional",
+    "current_owner": "cmake/CelleratorFrameworkCUDA.cmake; optional Cellerator::framework_parameter_transfer target",
+    "disposition": "retain_framework_parameter_transfer_contract",
+    "intended_destination": "retain the revision-aware transfer bridge as a separate optional target from the CUDA numerical library",
+    "maturity": "public header is installed only with the optional transfer target; runtime qualification is operation-specific",
+    "role": "optional CUDA parameter-transfer contract",
+    "tests_or_evidence": "tests/framework/cuda/parameter_transfer_smoke.cu is a buildable smoke source, not an automatically run CTest or runtime qualification"
+  },
   "7368a8abd70d": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
     "consumers": "examples/relation_update_spine_v1 contributors and maintainers of linked implementations",
@@ -7899,6 +8269,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/semantic_spine/algebra/support_product_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "7583b0dfffc1": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_reactions.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_reactions.py; registration and run evidence are operation- and environment-specific"
+  },
   "758ee3528315": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -8038,6 +8418,16 @@
     "maturity": "five installed CPU tests pass",
     "role": "experimental ExecutionField installed CPU tests",
     "tests_or_evidence": "exact test file and installed-package run; current field is CPU Product2 composition only"
+  },
+  "77ea91dad25f": {
+    "archive_reference": "preserve its context when source is moved and update links with the owning code",
+    "consumers": "examples/nn_foundation contributors and maintainers of linked implementations",
+    "current_owner": "examples/nn_foundation",
+    "disposition": "retain_local_subsystem_documentation",
+    "intended_destination": "retain beside examples/nn_foundation as subsystem guidance; do not treat prose as an API or capability implementation",
+    "maturity": "documentation presence; capability status comes from cited source and evidence",
+    "role": "subsystem-local engineering or test documentation",
+    "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
   },
   "77fae96c857d": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -8209,6 +8599,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/jbc/decomposition/test_provider_registry_v1.cc; registration and run evidence are operation- and environment-specific"
   },
+  "79f2a4687435": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_nn_features.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_nn_features.py; registration and run evidence are operation- and environment-specific"
+  },
   "7a031f21b68f": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
     "consumers": "bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/kda_workspace/runs/kda-experiments/attempts/fd675334-5946-48c4-bde9-88dd3f5b5d75/stages/packed/validation/requests/92317cf7-1187-4a6d-b123-a05fa39fdf05-ranked_batch-driver contributors and maintainers of linked implementations",
@@ -8228,6 +8628,16 @@
     "maturity": "documentation presence; capability status comes from cited source and evidence",
     "role": "subsystem-local engineering or test documentation",
     "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
+  },
+  "7a41df850916": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_nn_reference_models.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_nn_reference_models.py; registration and run evidence are operation- and environment-specific"
   },
   "7a502a292df7": {
     "archive_reference": "preserve ABI/schema and real sibling consumers; move related implementation, headers, registrations, and callers together",
@@ -8268,6 +8678,16 @@
     "maturity": "documentation presence; capability status comes from cited source and evidence",
     "role": "subsystem-local engineering or test documentation",
     "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
+  },
+  "7b11aa7c5d9d": {
+    "archive_reference": "preserve prepared object identity, runtime lifetime, and ABI; do not merge semantic geometry, physical layout, and runtime state",
+    "consumers": "src/execution/CMakeLists.txt and its linked CellPack::execution_image_v2 dependency; map preparation and runtime separately",
+    "current_owner": "src/execution/conditional",
+    "disposition": "retain_in_named_execution_or_runtime_family",
+    "intended_destination": "retain at src/execution/conditional; retain this execution subsystem contract",
+    "maturity": "implementation present; prepared execution and runtime qualification are operation-specific; ExecutionField live recompilation remains experimental",
+    "role": "prepared execution conditional contract",
+    "tests_or_evidence": "tests/execution or tests/runtime family checks when registered; source presence does not establish runtime qualification"
   },
   "7b47392c16bc": {
     "archive_reference": "preserve structure/order identity and keep semantic discovery separate from physical layout and execution",
@@ -8458,6 +8878,16 @@
     "maturity": "documentation presence; capability status comes from cited source and evidence",
     "role": "subsystem-local engineering or test documentation",
     "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
+  },
+  "7e1c960a4508": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_learning_adapters.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_learning_adapters.py; registration and run evidence are operation- and environment-specific"
   },
   "7e6ce9d98b88": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -8829,6 +9259,26 @@
     "role": "compute current_targets.cmake subsystem",
     "tests_or_evidence": "tests under the corresponding tests family and native build registration; map does not imply each check ran"
   },
+  "82e381f15c5a": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/reactions_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "8318da4b518b": {
+    "archive_reference": "preserve stream, precision, buffer ownership, and backward contracts; make no blanket performance claim",
+    "consumers": "public contracts under include/Cellerator/modeling/cuda; optional bindings/modeling_cuda and native consumers",
+    "current_owner": "cmake/CelleratorFrameworkCUDA.cmake; Cellerator::framework_cuda",
+    "disposition": "retain_framework_cuda_implementations",
+    "intended_destination": "retain registered CUDA operations as an optional native family with per-operation contracts",
+    "maturity": "sources are registered when CELLERATOR_ENABLE_FRAMEWORK_CUDA is enabled; smoke executables are opt-in and not CTest jobs",
+    "role": "optional framework CUDA numerical implementation",
+    "tests_or_evidence": "tests/framework/cuda/*_smoke.cu are buildable smoke sources only; device execution and qualification are separate"
+  },
   "832ff9e03118": {
     "archive_reference": "preserve structure/order identity and keep semantic discovery separate from physical layout and execution",
     "consumers": "src/geometry/CMakeLists.txt and src/geometry/owned_targets.cmake define concrete CellPack and semantic-geometry target families",
@@ -8969,6 +9419,26 @@
     "role": "native extreme_ptx_primitives.cuh subsystem",
     "tests_or_evidence": "tests/math_core, tests/native_numeric, model tests, or examples only where they exercise this exact contract"
   },
+  "859e8c2a0f17": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/entity_layout_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "85a051d04eb1": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/memory_smoke.cu; registration and run evidence are operation- and environment-specific"
+  },
   "85bc4cb5ae02": {
     "archive_reference": "preserve schema/ABI until explicit migration",
     "consumers": "include consumers and ABI probes required",
@@ -9059,6 +9529,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/diagnostics/deterministic_reproducer_bundles_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "86de8a505c94": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/scheduler_test.cc; registration and run evidence are operation- and environment-specific"
+  },
   "86f42e37cf12": {
     "archive_reference": "preserve receipts, logs, hashes, environment references, and provenance",
     "consumers": "workflow repair owner, archive disposition, and supported Project Control workflow",
@@ -9128,6 +9608,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/realization_ir/order_transforms_and_persistent_physical_order_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "88066d209eba": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_spatial.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_spatial.py; registration and run evidence are operation- and environment-specific"
   },
   "8809259dc837": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -9999,6 +10489,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/geometry/suites/run_foundation_suite.py; registration and run evidence are operation- and environment-specific"
   },
+  "94b965790cbf": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/grouped_linear_smoke.cu; registration and run evidence are operation- and environment-specific"
+  },
   "94bea29fe946": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
     "consumers": "bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/kda_workspace/runs/kda-experiments/attempts/fd675334-5946-48c4-bde9-88dd3f5b5d75/stages/packed/exploration/round-000/2594df24b29a8936700a/requests/2c20cdb2-46f0-4098-82bd-58cc8cfa19a1-event_local-driver contributors and maintainers of linked implementations",
@@ -10078,6 +10578,16 @@
     "maturity": "geometry implementation present; target and qualification vary by family; physical realization belongs to layout/provider families",
     "role": "semantic geometry warp_tiles_cuda.cu",
     "tests_or_evidence": "tests/geometry contracts, acquisition, projection, providers, catalog, and validation suites by subject; no blanket pass claim"
+  },
+  "965670671c0b": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/conditional_parameter_execution_test.cc; registration and run evidence are operation- and environment-specific"
   },
   "96816349fa8e": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
@@ -10208,6 +10718,16 @@
     "maturity": "source/header present; build, runtime, and numerical qualification are operation-specific",
     "role": "compute relation_calculus.hh subsystem",
     "tests_or_evidence": "tests under the corresponding tests family and native build registration; map does not imply each check ran"
+  },
+  "97af38ac06de": {
+    "archive_reference": "preserve optional dependency boundary and caller-visible storage/quantization contracts",
+    "consumers": "src/interop/ggml/quantization.cc and pinned upstream ggml-base dependency",
+    "current_owner": "cmake/CelleratorGGML.cmake; optional _ggml_native module and Cellerator::ggml_quantization",
+    "disposition": "retain_optional_ggml_binding",
+    "intended_destination": "retain as a separately gated adapter; do not add a package-wide ggml dependency",
+    "maturity": "built only when CELLERATOR_ENABLE_GGML and Python support are enabled; no runtime qualification implied",
+    "role": "optional Python binding for ggml quantization interoperability",
+    "tests_or_evidence": "ggml binding and quantization checks where configured; source/build registration is not numerical validation"
   },
   "98268b6da3b2": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -10399,6 +10919,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/build/tri_state_cuda_backend_configuration_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "9b8d87d3fe58": {
+    "archive_reference": "preserve prepared object identity, runtime lifetime, and ABI; do not merge semantic geometry, physical layout, and runtime state",
+    "consumers": "src/execution/CMakeLists.txt and its linked CellPack::execution_image_v2 dependency; map preparation and runtime separately",
+    "current_owner": "include/Cellerator/execution/conditional",
+    "disposition": "retain_in_named_execution_or_runtime_family",
+    "intended_destination": "retain at include/Cellerator/execution/conditional; retain this execution subsystem contract",
+    "maturity": "implementation present; prepared execution and runtime qualification are operation-specific; ExecutionField live recompilation remains experimental",
+    "role": "prepared execution conditional contract",
+    "tests_or_evidence": "tests/execution or tests/runtime family checks when registered; source presence does not establish runtime qualification"
+  },
   "9bb0395d3b4f": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -10529,6 +11059,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/backend/nvptx/map_target_capabilities_and_instruction_families_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "9d02a46654fa": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/ggml",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/ggml/test_quantization.py; registration and run evidence are operation- and environment-specific"
+  },
   "9d21e274482d": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -10609,6 +11149,26 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/tensor_core/sm70/relation_apply_n32_test.cu; registration and run evidence are operation- and environment-specific"
   },
+  "9e7599cc9afd": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/sparse_modeling_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "9e8002979198": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/parameter_store_test.cc; registration and run evidence are operation- and environment-specific"
+  },
   "9eb090555aac": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
     "consumers": "bench/sparse_support/evidence/experiments/packed_training_v2/r4/kda_workspace/runs/kda-experiments/attempts/bce397ac-4745-4ec2-97e6-899d86e0ec14/stages/simt/confirmation/round-000/e633da07953d6cd3baf4/requests/9728500b-e405-4b4a-80f0-77b7379c99e6-ranked_batch-driver contributors and maintainers of linked implementations",
@@ -10648,6 +11208,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/native_foundation/values/relation_atom_value_binding_test.cu; registration and run evidence are operation- and environment-specific"
+  },
+  "9f84dc1bd752": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_residency.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_residency.py; registration and run evidence are operation- and environment-specific"
   },
   "9f9f7dbf433c": {
     "archive_reference": "preserve identity, precision, layout, and derivative contracts; move only with its real callers and build entries",
@@ -10958,6 +11528,26 @@
     "maturity": "source/header present; build, runtime, and numerical qualification are operation-specific",
     "role": "compute operation_core_v2 subsystem",
     "tests_or_evidence": "tests under the corresponding tests family and native build registration; map does not imply each check ran"
+  },
+  "a389c6a0fb09": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/accessibility_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "a39249a6eb53": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_response_precision.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_response_precision.py; registration and run evidence are operation- and environment-specific"
   },
   "a3926d4afefd": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -11519,6 +12109,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/substrate/execution/host.cc; registration and run evidence are operation- and environment-specific"
   },
+  "ac09e43e5f94": {
+    "archive_reference": "preserve stream, ownership, precision, and workspace contracts; keep runtime evidence operation-specific",
+    "consumers": "src/modeling/cuda family implementations and optional framework CUDA consumers",
+    "current_owner": "cmake/CelleratorFrameworkCUDA.cmake; public declarations under include/Cellerator/modeling/cuda",
+    "disposition": "retain_framework_cuda_operation_contracts",
+    "intended_destination": "retain as CUDA-facing contracts for the optional Cellerator::framework_cuda numerical library",
+    "maturity": "installed with the opt-in CUDA target; source and target registration do not establish device qualification",
+    "role": "optional framework CUDA operation contracts",
+    "tests_or_evidence": "tests/framework/cuda/*_smoke.cu sources are optional build targets and are deliberately not automatically run"
+  },
   "ac0a0e442412": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -11588,6 +12188,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/lto/mixed_backend_re_emission_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "acd088ae4e77": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_modeling.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_modeling.py; registration and run evidence are operation- and environment-specific"
   },
   "ad3193b8db8b": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -11949,6 +12559,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/release/validate_all_final_part_one_capabilities_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "b29143fb5df9": {
+    "archive_reference": "preserve its context when source is moved and update links with the owning code",
+    "consumers": "src/execution/conditional contributors and maintainers of linked implementations",
+    "current_owner": "src/execution/conditional",
+    "disposition": "retain_local_subsystem_documentation",
+    "intended_destination": "retain beside src/execution/conditional as subsystem guidance; do not treat prose as an API or capability implementation",
+    "maturity": "documentation presence; capability status comes from cited source and evidence",
+    "role": "subsystem-local engineering or test documentation",
+    "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
+  },
   "b2952d4a6c3a": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -12079,6 +12699,16 @@
     "role": "semantic geometry local_cell_ordering.hh",
     "tests_or_evidence": "tests/geometry contracts, acquisition, projection, providers, catalog, and validation suites by subject; no blanket pass claim"
   },
+  "b3c8ccd6d524": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/cell_relation_example.cc; registration and run evidence are operation- and environment-specific"
+  },
   "b443974b03ba": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -12148,6 +12778,16 @@
     "maturity": "geometry implementation present; target and qualification vary by family; physical realization belongs to layout/provider families",
     "role": "semantic geometry statistical_validation.hh",
     "tests_or_evidence": "tests/geometry contracts, acquisition, projection, providers, catalog, and validation suites by subject; no blanket pass claim"
+  },
+  "b5419bc89b64": {
+    "archive_reference": "preserve each definition and status marker; do not infer that a paused or registered benchmark ran",
+    "consumers": "Autobench registry readers and maintainers of the named benchmark definitions",
+    "current_owner": ".autobench registry and its supported Autobench tooling",
+    "disposition": "retain_autobench_registry_metadata",
+    "intended_destination": "retain benchmark definitions and pause metadata at their source paths; use Autobench for registration and execution",
+    "maturity": "configuration metadata only; active or paused definitions are not measurement or qualification evidence",
+    "role": "Autobench registry input or ignore metadata",
+    "tests_or_evidence": "validate through Autobench; only source-bound execution receipts establish the result of a run"
   },
   "b573bafc6df5": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
@@ -13059,6 +13699,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/reflection/source_defined_inline_rewrite_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "c4869dfe7024": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/cuda",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/cuda/frontier_smoke.cu; registration and run evidence are operation- and environment-specific"
+  },
   "c487b6f20ce9": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -13899,6 +14549,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/discovery/relation_motif_and_operation_trace_discovery_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "d10f4388d66a": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_nn_grouped_linear.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_nn_grouped_linear.py; registration and run evidence are operation- and environment-specific"
+  },
   "d1424850f2bb": {
     "archive_reference": "preserve formulas, parameters, derivative behavior, and checkpoint/schema semantics",
     "consumers": "inspect the family CMake and direct native includes before claiming target or package exposure",
@@ -14079,6 +14739,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/sema/relation_endpoint_semantics_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "d37918c1041e": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_execution_engine.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_execution_engine.py; registration and run evidence are operation- and environment-specific"
+  },
   "d394e6110a14": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -14098,6 +14768,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/backend/nvcc/integrate_cuda_runtime_and_library_linkage_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "d3c4ab04833f": {
+    "archive_reference": "preserve its context when source is moved and update links with the owning code",
+    "consumers": "src/modeling contributors and maintainers of linked implementations",
+    "current_owner": "src/modeling",
+    "disposition": "retain_local_subsystem_documentation",
+    "intended_destination": "retain beside src/modeling as subsystem guidance; do not treat prose as an API or capability implementation",
+    "maturity": "documentation presence; capability status comes from cited source and evidence",
+    "role": "subsystem-local engineering or test documentation",
+    "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
   },
   "d3c5a7b0f88f": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -14199,6 +14879,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/composition/workload_family_representation_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "d5eebe691f49": {
+    "archive_reference": "preserve caller-defined representations and distinguish optional dynamics/relations from a mandatory cell lifecycle",
+    "consumers": "src/modeling/sparse_relation.cc plus existing support/indexing owners; optional Python binding is separate",
+    "current_owner": "cmake/CelleratorModeling.cmake; installed include/Cellerator/modeling headers and Cellerator::modeling",
+    "disposition": "retain_host_modeling_contracts",
+    "intended_destination": "retain the reusable host modeling interfaces as optional capabilities within the broader biological ML framework",
+    "maturity": "public header and host target/test registration are present; this surface is not the complete neural-network framework",
+    "role": "public host biological-modeling contracts",
+    "tests_or_evidence": "tests/framework/native modeling, relation, reaction, and contract targets registered by CelleratorModeling.cmake; test execution is separately evidenced"
+  },
   "d6047463924d": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -14288,6 +14978,16 @@
     "maturity": "documentation presence; capability status comes from cited source and evidence",
     "role": "subsystem-local engineering or test documentation",
     "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
+  },
+  "d7aad380bfa9": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_trajectory_training.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_trajectory_training.py; registration and run evidence are operation- and environment-specific"
   },
   "d7d2f491c87e": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -14559,6 +15259,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/backend/nvptx/fatbinary_object_embedding_for_direct_ptx_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "dbd0e808eb99": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/conditional_dispatch_test.cc; registration and run evidence are operation- and environment-specific"
+  },
   "dbf0b02d1fac": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -14568,6 +15278,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/geometry/format_test.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "dbfb4db933e3": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_search.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_search.py; registration and run evidence are operation- and environment-specific"
   },
   "dc2ef3e06158": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -14838,6 +15558,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/biological_abi/baseplane_cpu_consumer/CMakeLists.txt; registration and run evidence are operation- and environment-specific"
+  },
+  "e084576c9075": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_inference.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_inference.py; registration and run evidence are operation- and environment-specific"
   },
   "e0c44cbdb692": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -15569,6 +16299,16 @@
     "role": "subsystem-local engineering or test documentation",
     "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
   },
+  "e9fad84e1db8": {
+    "archive_reference": "preserve its context when source is moved and update links with the owning code",
+    "consumers": "examples/framework contributors and maintainers of linked implementations",
+    "current_owner": "examples/framework",
+    "disposition": "retain_local_subsystem_documentation",
+    "intended_destination": "retain beside examples/framework as subsystem guidance; do not treat prose as an API or capability implementation",
+    "maturity": "documentation presence; capability status comes from cited source and evidence",
+    "role": "subsystem-local engineering or test documentation",
+    "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
+  },
   "ea10cac5a657": {
     "archive_reference": "preserve task IDs only in planning/history; route code by subsystem purpose and preserve native interfaces",
     "consumers": "include consumers and compiler target include interfaces; verify each header against build/install rules",
@@ -16289,6 +17029,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/build/host_only_root_project_contract_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "f47a4cc52d44": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/conditional_engine_bridge_test.py; registration and run evidence are operation- and environment-specific"
+  },
   "f5093e90a2f3": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -16328,6 +17078,16 @@
     "maturity": "implementation_presence_unqualified",
     "role": "native matrix, memory or parameter primitives",
     "tests_or_evidence": "tests/math_core, native_numeric, memory, layout candidates"
+  },
+  "f5540d67f60c": {
+    "archive_reference": "preserve Torch ownership, numerical/lifetime contracts, and the distinction between operation-specific evidence and framework-wide capability",
+    "consumers": "contributors implementing custom Torch operations and users composing the optional Torch integration",
+    "current_owner": "Cellerator biological-ML and Torch operation documentation",
+    "disposition": "retain_custom_torch_operation_guide",
+    "intended_destination": "retain as an operation-specific extension recipe subordinate to the general biological modeling and neural-network architecture",
+    "maturity": "developer guidance; operation maturity and qualification remain tied to each linked source and report",
+    "role": "custom Torch operation authoring guide",
+    "tests_or_evidence": "the grouped_linear section links its concrete adapter, native operation, tests, and source-bound qualification; no universal operator registry is implied"
   },
   "f559e1bd37be": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -16489,6 +17249,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/planning_ir/partial_result_algebra_nodes_test.cc; registration and run evidence are operation- and environment-specific"
   },
+  "f7ce8a0654ca": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_accessibility.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_accessibility.py; registration and run evidence are operation- and environment-specific"
+  },
   "f8032a92946e": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
     "consumers": "bench/sparse_support/experiments/shared_conditions/scaled/evidence/runs/gpu1_20261027_02 contributors and maintainers of linked implementations",
@@ -16578,6 +17348,16 @@
     "maturity": "documentation presence; capability status comes from cited source and evidence",
     "role": "subsystem-local engineering or test documentation",
     "tests_or_evidence": "review links and cited source paths; a README is not build or runtime evidence"
+  },
+  "f931d030e16b": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/native",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/native/conditional_binding_test.py; registration and run evidence are operation- and environment-specific"
   },
   "f9704d676196": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
@@ -16779,6 +17559,16 @@
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/jbc/decomposition/test_split_segment_reduce_v1.cc; registration and run evidence are operation- and environment-specific"
   },
+  "fcee47a2660b": {
+    "archive_reference": "preserve relation identity, occurrence multiplicity, snapshot, and publication contracts",
+    "consumers": "public headers under include/Cellerator/modeling and existing Cellerator::support/Cellerator::indexing dependencies",
+    "current_owner": "cmake/CelleratorModeling.cmake; Cellerator::modeling",
+    "disposition": "retain_host_sparse_relation_owner",
+    "intended_destination": "retain as the implementation of the public host SparseRelation and DynamicRelation contracts",
+    "maturity": "source and host target are registered behind CELLERATOR_ENABLE_MODELING; no complete neural-model or scientific claim implied",
+    "role": "host sparse biological-relation implementation",
+    "tests_or_evidence": "tests/framework/native sparse-modeling and cell-relation targets are registered by CelleratorModeling.cmake; execution evidence remains separate"
+  },
   "fd01671942b3": {
     "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
     "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
@@ -16878,6 +17668,16 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/compiler/discovery/temporary_cellshard_compiler_adapter_new_consumer.cc; registration and run evidence are operation- and environment-specific"
+  },
+  "fe440a6ed4a9": {
+    "archive_reference": "preserve native type/ownership behavior; do not make this binding the universal cell-model API",
+    "consumers": "Cellerator::modeling and Python host modeling adapters",
+    "current_owner": "cmake/CelleratorModeling.cmake; optional _modeling_native module linked to Cellerator::modeling",
+    "disposition": "retain_host_modeling_python_binding",
+    "intended_destination": "retain as a narrow bridge to host modeling types; keep ordinary neural composition in the Python/Torch modeling surface",
+    "maturity": "target is registered under Python/modeling build flags; binding behavior is checked only by its scoped tests",
+    "role": "Python binding for host biological-modeling primitives",
+    "tests_or_evidence": "tests/framework/native/test_native_binding.py is registered when the module and tests are enabled"
   },
   "fe4ea2515b2d": {
     "archive_reference": "preserve its context when source is moved and update links with the owning code",
@@ -17028,5 +17828,15 @@
     "maturity": "test source present; execution status and assertion coverage are not established by this map",
     "role": "test, fixture, or validation tool",
     "tests_or_evidence": "tests/execution/training_program_concurrency_test.cu; registration and run evidence are operation- and environment-specific"
+  },
+  "ffff2dfac917": {
+    "archive_reference": "preserve independent fixtures, source identity, and historical receipts",
+    "consumers": "subject is identified by exact suite path; build/CTest/Python registration and assertion scope must be checked separately",
+    "current_owner": "tests/framework/test_events.py",
+    "disposition": "retain_in_named_test_suite",
+    "intended_destination": "retain under tests/framework beside its subject; move only with implementation and registration",
+    "maturity": "test source present; execution status and assertion coverage are not established by this map",
+    "role": "test, fixture, or validation tool",
+    "tests_or_evidence": "tests/framework/test_events.py; registration and run evidence are operation- and environment-specific"
   }
 }

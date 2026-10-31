@@ -1,0 +1,533 @@
+{
+  "attempt": {
+    "attempt_id": "a4c31543-896c-4736-8357-ff0584cfc0b4",
+    "cleanup_verified": true,
+    "created_at": "2026-10-29T19:39:42.670567Z",
+    "error": {},
+    "evidence": [
+      {
+        "adapter_errors": [],
+        "kind": "execution_preconditions",
+        "operation_id": "preconditions:a4c31543-896c-4736-8357-ff0584cfc0b4",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 2,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-29T19:39:45.167520+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:39:47.558118+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:39:45.167520+00:00",
+                        "process_observed_at": "2026-10-29T19:39:47.558118+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-29T19:39:51.007254+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:39:53.401987+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 3
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:39:51.007254+00:00",
+                        "process_observed_at": "2026-10-29T19:39:53.401987+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                        "state": "busy"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-29T19:39:56.861037+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:39:59.241501+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 3
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:39:56.861037+00:00",
+                        "process_observed_at": "2026-10-29T19:39:59.241501+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                        "state": "busy"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-29T19:40:02.691888+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:40:05.049798+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:40:02.691888+00:00",
+                        "process_observed_at": "2026-10-29T19:40:05.049798+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "inventory_observed_at": "2026-10-29T19:40:08.523695+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:40:10.896579+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:40:08.523695+00:00",
+                        "process_observed_at": "2026-10-29T19:40:10.896579+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 2,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      2684354560
+                    ],
+                    "timeout_seconds": 60.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      }
+    ],
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "claim_id": "4d5fd297-be27-4db1-8725-e3386b056f07",
+      "fencing_token": 1231,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 3,
+            "inventory_observed_at": "2026-10-29T19:39:29.499908+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:84:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-29T19:39:29.499908+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          },
+          "capabilities": [
+            "memory-accounting-only",
+            "whole-device-exclusive-admission",
+            "shared-admission",
+            "nvidia-smi-compute-process-telemetry"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+          "schema_version": 1,
+          "topology": {
+            "links": [
+              {
+                "relation": "SYS",
+                "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+                "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                "type": "sys"
+              },
+              {
+                "relation": "NV6",
+                "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                "type": "nvlink"
+              },
+              {
+                "relation": "PHB",
+                "source_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                "type": "pcie"
+              }
+            ],
+            "pci_bus_id": "00000000:84:00.0",
+            "topology_state": "observed"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-ef4dd25ea751f50134c534798d50a122.service",
+      "identity": "a4c31543-896c-4736-8357-ff0584cfc0b4",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-ef4dd25ea751f50134c534798d50a122.service",
+        "description": "Device Scheduler attempt a4c31543-896c-4736-8357-ff0584cfc0b4",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "d76503e9207747cb814cf9fa4eba2897",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-10-29T19:40:10.977989Z"
+    },
+    "finished_at": "2026-10-29T19:40:58.001739Z",
+    "id": "a4c31543-896c-4736-8357-ff0584cfc0b4",
+    "job_id": "91b0b071-1e34-4fe3-b390-abf92bb558a2",
+    "operation_id": "start:a4c31543-896c-4736-8357-ff0584cfc0b4",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:a4c31543-896c-4736-8357-ff0584cfc0b4",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "observation": {
+                  "consecutive_samples": 2,
+                  "samples": [
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-29T19:39:45.167520+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:39:47.558118+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:39:45.167520+00:00",
+                      "process_observed_at": "2026-10-29T19:39:47.558118+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-29T19:39:51.007254+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:39:53.401987+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 3
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:39:51.007254+00:00",
+                      "process_observed_at": "2026-10-29T19:39:53.401987+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                      "state": "busy"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-29T19:39:56.861037+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:39:59.241501+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 3
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:39:56.861037+00:00",
+                      "process_observed_at": "2026-10-29T19:39:59.241501+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                      "state": "busy"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-29T19:40:02.691888+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:40:05.049798+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:40:02.691888+00:00",
+                      "process_observed_at": "2026-10-29T19:40:05.049798+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "inventory_observed_at": "2026-10-29T19:40:08.523695+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:40:10.896579+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:40:08.523695+00:00",
+                      "process_observed_at": "2026-10-29T19:40:10.896579+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    }
+                  ],
+                  "state": "observed"
+                },
+                "parameters": {
+                  "consecutive_samples": 2,
+                  "interval_seconds": 1.0,
+                  "max_utilization_percent": 0,
+                  "minimum_free_bytes": [
+                    2684354560
+                  ],
+                  "timeout_seconds": 60.0
+                },
+                "precondition_index": 0
+              },
+              "name": "gpu.quiescence",
+              "resource_ids": [
+                "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+              ],
+              "schema_version": 1,
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "state": "verified"
+    },
+    "result": {
+      "active_state": "failed",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-ef4dd25ea751f50134c534798d50a122.service",
+        "invocation_id": "d76503e9207747cb814cf9fa4eba2897",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt a4c31543-896c-4736-8357-ff0584cfc0b4"
+      },
+      "exit_code": 1,
+      "invocation_id": "d76503e9207747cb814cf9fa4eba2897",
+      "logs": "{\"case\": \"reactions\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_reactions_smoke\"], \"returncode\": 99, \"seconds\": 6.493170261383057, \"binary_sha256\": \"06c6d60334998fa30eba8a6b7e7a0ec4e94a86be5a8e0a8b13c18e7427f6e8e4\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/reactions-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\nuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa025c0 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa025e0 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa02660 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa02680 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= ERROR SUMMARY: 184 errors\n========= ERROR SUMMARY: 84 errors were not printed. Use --print-limit option to adjust the number of printed errors\n{\"case\": \"regulatory_gates\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_regulatory_gates_smoke\"], \"returncode\": 0, \"seconds\": 2.6099600791931152, \"binary_sha256\": \"56cfe78d7a94eaf5d10706b83b655e79e42744a9f7ab85e948c034999dca7fef\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/regulatory_gates-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\nregulatory CUDA worklist and bitplane gates match independent scalar oracle; bounds, tails and duplicate work passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"parameter_transfer\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_parameter_transfer_smoke\"], \"returncode\": 0, \"seconds\": 2.7034528255462646, \"binary_sha256\": \"b71776156eefdc77198230927575ea36826a77e521d6b3728149f0d51390929e\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/parameter_transfer-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\nparameter transfer host contracts passed (no CUDA calls)\nparameter transfer GPU byte identity, revision pins and downstream lifetime passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"bindings\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/home/tumlinson/Software/miniconda3/bin/python\", \"-c\", \"import cellerator, unittest, sys; cellerator.__path__.append('/tmp/cellerator-v100-framework-r4'); suite=unittest.defaultTestLoader.discover(\\\"tests/framework/cuda\\\", pattern=\\\"test_runtime_binding.py\\\"); r=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(not r.wasSuccessful())\"], \"returncode\": 0, \"seconds\": 3.103020191192627, \"binary_sha256\": \"fcb3145cc509bf06bd4b00ca913d316e2db7b67dff016f354d931f5533e4d18a\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/bindings-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\ntest_dispatch_cross_stream_gather_combine_and_backward (test_runtime_binding.DeviceIntegrationTests.test_dispatch_cross_stream_gather_combine_and_backward) ... ok\ntest_grouped_linear_forward_backward_with_empty_expert (test_runtime_binding.DeviceIntegrationTests.test_grouped_linear_forward_backward_with_empty_expert) ... ok\ntest_pinned_transfer_ticket_roundtrip (test_runtime_binding.DeviceIntegrationTests.test_pinned_transfer_ticket_roundtrip) ... ok\ntest_grouped_linear_rejects_invalid_metadata_before_cuda (test_runtime_binding.HostContractTests.test_grouped_linear_rejects_invalid_metadata_before_cuda) ... ok\ntest_plan_rejects_inconsistent_reverse_map (test_runtime_binding.HostContractTests.test_plan_rejects_inconsistent_reverse_map) ... ok\ntest_profile_rejects_invalid_host_metadata (test_runtime_binding.HostContractTests.test_profile_rejects_invalid_host_metadata) ... ok\ntest_python_borrowed_shape_and_alignment (test_runtime_binding.HostContractTests.test_python_borrowed_shape_and_alignment) ... ok\ntest_view_bounds (test_runtime_binding.HostContractTests.test_view_bounds) ... ok\ntest_zero_allocation_and_borrowed_stream (test_runtime_binding.HostContractTests.test_zero_allocation_and_borrowed_stream) ... ok\n----------------------------------------------------------------------\nRan 9 tests in 2.517s\nOK\n========= ERROR SUMMARY: 0 errors\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "exit-code",
+      "state": "failed",
+      "stdout": "{\"case\": \"reactions\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_reactions_smoke\"], \"returncode\": 99, \"seconds\": 6.493170261383057, \"binary_sha256\": \"06c6d60334998fa30eba8a6b7e7a0ec4e94a86be5a8e0a8b13c18e7427f6e8e4\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/reactions-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\nuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa025c0 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa025e0 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa02660 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa02680 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= ERROR SUMMARY: 184 errors\n========= ERROR SUMMARY: 84 errors were not printed. Use --print-limit option to adjust the number of printed errors\n{\"case\": \"regulatory_gates\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_regulatory_gates_smoke\"], \"returncode\": 0, \"seconds\": 2.6099600791931152, \"binary_sha256\": \"56cfe78d7a94eaf5d10706b83b655e79e42744a9f7ab85e948c034999dca7fef\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/regulatory_gates-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\nregulatory CUDA worklist and bitplane gates match independent scalar oracle; bounds, tails and duplicate work passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"parameter_transfer\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_parameter_transfer_smoke\"], \"returncode\": 0, \"seconds\": 2.7034528255462646, \"binary_sha256\": \"b71776156eefdc77198230927575ea36826a77e521d6b3728149f0d51390929e\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/parameter_transfer-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\nparameter transfer host contracts passed (no CUDA calls)\nparameter transfer GPU byte identity, revision pins and downstream lifetime passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"bindings\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/home/tumlinson/Software/miniconda3/bin/python\", \"-c\", \"import cellerator, unittest, sys; cellerator.__path__.append('/tmp/cellerator-v100-framework-r4'); suite=unittest.defaultTestLoader.discover(\\\"tests/framework/cuda\\\", pattern=\\\"test_runtime_binding.py\\\"); r=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(not r.wasSuccessful())\"], \"returncode\": 0, \"seconds\": 3.103020191192627, \"binary_sha256\": \"fcb3145cc509bf06bd4b00ca913d316e2db7b67dff016f354d931f5533e4d18a\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/bindings-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\ntest_dispatch_cross_stream_gather_combine_and_backward (test_runtime_binding.DeviceIntegrationTests.test_dispatch_cross_stream_gather_combine_and_backward) ... ok\ntest_grouped_linear_forward_backward_with_empty_expert (test_runtime_binding.DeviceIntegrationTests.test_grouped_linear_forward_backward_with_empty_expert) ... ok\ntest_pinned_transfer_ticket_roundtrip (test_runtime_binding.DeviceIntegrationTests.test_pinned_transfer_ticket_roundtrip) ... ok\ntest_grouped_linear_rejects_invalid_metadata_before_cuda (test_runtime_binding.HostContractTests.test_grouped_linear_rejects_invalid_metadata_before_cuda) ... ok\ntest_plan_rejects_inconsistent_reverse_map (test_runtime_binding.HostContractTests.test_plan_rejects_inconsistent_reverse_map) ... ok\ntest_profile_rejects_invalid_host_metadata (test_runtime_binding.HostContractTests.test_profile_rejects_invalid_host_metadata) ... ok\ntest_python_borrowed_shape_and_alignment (test_runtime_binding.HostContractTests.test_python_borrowed_shape_and_alignment) ... ok\ntest_view_bounds (test_runtime_binding.HostContractTests.test_view_bounds) ... ok\ntest_zero_allocation_and_borrowed_stream (test_runtime_binding.HostContractTests.test_zero_allocation_and_borrowed_stream) ... ok\n----------------------------------------------------------------------\nRan 9 tests in 2.517s\nOK\n========= ERROR SUMMARY: 0 errors\n",
+      "substate": "failed",
+      "unit_name": "device-scheduler-attempt-ef4dd25ea751f50134c534798d50a122.service"
+    },
+    "started_at": "2026-10-29T19:40:10.978083Z",
+    "state": "failed"
+  },
+  "attempt_count": 1,
+  "attempt_id": "a4c31543-896c-4736-8357-ff0584cfc0b4",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-29T19:36:13.490378Z",
+  "decision_id": "8c1761b5-b00a-4841-96ac-cfb4347f890c",
+  "id": "91b0b071-1e34-4fe3-b390-abf92bb558a2",
+  "job_id": "91b0b071-1e34-4fe3-b390-abf92bb558a2",
+  "lease_binding": null,
+  "lease_fencing_token": 1231,
+  "lease_id": "4d5fd297-be27-4db1-8725-e3386b056f07",
+  "lease_state": "released",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "failed",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-ef4dd25ea751f50134c534798d50a122.service",
+      "invocation_id": "d76503e9207747cb814cf9fa4eba2897",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt a4c31543-896c-4736-8357-ff0584cfc0b4"
+    },
+    "exit_code": 1,
+    "invocation_id": "d76503e9207747cb814cf9fa4eba2897",
+    "logs": "{\"case\": \"reactions\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_reactions_smoke\"], \"returncode\": 99, \"seconds\": 6.493170261383057, \"binary_sha256\": \"06c6d60334998fa30eba8a6b7e7a0ec4e94a86be5a8e0a8b13c18e7427f6e8e4\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/reactions-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\nuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa025c0 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa025e0 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa02660 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa02680 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= ERROR SUMMARY: 184 errors\n========= ERROR SUMMARY: 84 errors were not printed. Use --print-limit option to adjust the number of printed errors\n{\"case\": \"regulatory_gates\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_regulatory_gates_smoke\"], \"returncode\": 0, \"seconds\": 2.6099600791931152, \"binary_sha256\": \"56cfe78d7a94eaf5d10706b83b655e79e42744a9f7ab85e948c034999dca7fef\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/regulatory_gates-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\nregulatory CUDA worklist and bitplane gates match independent scalar oracle; bounds, tails and duplicate work passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"parameter_transfer\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_parameter_transfer_smoke\"], \"returncode\": 0, \"seconds\": 2.7034528255462646, \"binary_sha256\": \"b71776156eefdc77198230927575ea36826a77e521d6b3728149f0d51390929e\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/parameter_transfer-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\nparameter transfer host contracts passed (no CUDA calls)\nparameter transfer GPU byte identity, revision pins and downstream lifetime passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"bindings\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/home/tumlinson/Software/miniconda3/bin/python\", \"-c\", \"import cellerator, unittest, sys; cellerator.__path__.append('/tmp/cellerator-v100-framework-r4'); suite=unittest.defaultTestLoader.discover(\\\"tests/framework/cuda\\\", pattern=\\\"test_runtime_binding.py\\\"); r=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(not r.wasSuccessful())\"], \"returncode\": 0, \"seconds\": 3.103020191192627, \"binary_sha256\": \"fcb3145cc509bf06bd4b00ca913d316e2db7b67dff016f354d931f5533e4d18a\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/bindings-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\ntest_dispatch_cross_stream_gather_combine_and_backward (test_runtime_binding.DeviceIntegrationTests.test_dispatch_cross_stream_gather_combine_and_backward) ... ok\ntest_grouped_linear_forward_backward_with_empty_expert (test_runtime_binding.DeviceIntegrationTests.test_grouped_linear_forward_backward_with_empty_expert) ... ok\ntest_pinned_transfer_ticket_roundtrip (test_runtime_binding.DeviceIntegrationTests.test_pinned_transfer_ticket_roundtrip) ... ok\ntest_grouped_linear_rejects_invalid_metadata_before_cuda (test_runtime_binding.HostContractTests.test_grouped_linear_rejects_invalid_metadata_before_cuda) ... ok\ntest_plan_rejects_inconsistent_reverse_map (test_runtime_binding.HostContractTests.test_plan_rejects_inconsistent_reverse_map) ... ok\ntest_profile_rejects_invalid_host_metadata (test_runtime_binding.HostContractTests.test_profile_rejects_invalid_host_metadata) ... ok\ntest_python_borrowed_shape_and_alignment (test_runtime_binding.HostContractTests.test_python_borrowed_shape_and_alignment) ... ok\ntest_view_bounds (test_runtime_binding.HostContractTests.test_view_bounds) ... ok\ntest_zero_allocation_and_borrowed_stream (test_runtime_binding.HostContractTests.test_zero_allocation_and_borrowed_stream) ... ok\n----------------------------------------------------------------------\nRan 9 tests in 2.517s\nOK\n========= ERROR SUMMARY: 0 errors\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "exit-code",
+    "state": "failed",
+    "stdout": "{\"case\": \"reactions\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_reactions_smoke\"], \"returncode\": 99, \"seconds\": 6.493170261383057, \"binary_sha256\": \"06c6d60334998fa30eba8a6b7e7a0ec4e94a86be5a8e0a8b13c18e7427f6e8e4\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/reactions-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\nuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa025c0 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa025e0 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa02660 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= Host API memory access error at host access to 0x7744daa01800 of size 6,656 bytes\n=========     Uninitialized access at 0x7744daa02680 on access by cudaMemcpy source\n=========     Saved host backtrace up to driver entry point at error\n=========         Host Frame: cuMemcpyDtoHAsync_v2 [0x37b5cf] in libcuda.so.1\n=========         Host Frame:  [0x4a0b0] in libcudart.so.12\n=========         Host Frame:  [0x17687] in libcudart.so.12\n=========         Host Frame: cudaMemcpyAsync [0x799fc] in libcudart.so.12\n=========         Host Frame: cellerator::modeling::cuda::DeviceBuffer::download_async(void*, unsigned long, cellerator::modeling::cuda::Stream const&, unsigned long) const in runtime.cu:131 [0x7adc] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: std::vector<unsigned long, std::allocator<unsigned long> > download<unsigned long>(cellerator::modeling::cuda::DeviceBuffer const&, unsigned long, cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:110 [0x61e1] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: check_device_fixture(cellerator::modeling::cuda::Stream const&) in reactions_smoke.cu:85 [0x593d] in cellerator_framework_cuda_reactions_smoke\n=========         Host Frame: main in reactions_smoke.cu:126 [0x34c2] in cellerator_framework_cuda_reactions_smoke\n=========\n========= ERROR SUMMARY: 184 errors\n========= ERROR SUMMARY: 84 errors were not printed. Use --print-limit option to adjust the number of printed errors\n{\"case\": \"regulatory_gates\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_regulatory_gates_smoke\"], \"returncode\": 0, \"seconds\": 2.6099600791931152, \"binary_sha256\": \"56cfe78d7a94eaf5d10706b83b655e79e42744a9f7ab85e948c034999dca7fef\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/regulatory_gates-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\nregulatory CUDA worklist and bitplane gates match independent scalar oracle; bounds, tails and duplicate work passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"parameter_transfer\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/tmp/cellerator-v100-framework-r4/cellerator_framework_cuda_parameter_transfer_smoke\"], \"returncode\": 0, \"seconds\": 2.7034528255462646, \"binary_sha256\": \"b71776156eefdc77198230927575ea36826a77e521d6b3728149f0d51390929e\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/parameter_transfer-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\nparameter transfer host contracts passed (no CUDA calls)\nparameter transfer GPU byte identity, revision pins and downstream lifetime passed\n========= ERROR SUMMARY: 0 errors\n{\"case\": \"bindings\", \"tool\": \"initcheck\", \"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer\", \"--tool\", \"initcheck\", \"--error-exitcode\", \"99\", \"/home/tumlinson/Software/miniconda3/bin/python\", \"-c\", \"import cellerator, unittest, sys; cellerator.__path__.append('/tmp/cellerator-v100-framework-r4'); suite=unittest.defaultTestLoader.discover(\\\"tests/framework/cuda\\\", pattern=\\\"test_runtime_binding.py\\\"); r=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(not r.wasSuccessful())\"], \"returncode\": 0, \"seconds\": 3.103020191192627, \"binary_sha256\": \"fcb3145cc509bf06bd4b00ca913d316e2db7b67dff016f354d931f5533e4d18a\", \"log\": \"/tmp/cellerator-v100-results/initcheck-r4-gpu3/bindings-initcheck.log\", \"visible_devices\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}\n========= COMPUTE-SANITIZER\ntest_dispatch_cross_stream_gather_combine_and_backward (test_runtime_binding.DeviceIntegrationTests.test_dispatch_cross_stream_gather_combine_and_backward) ... ok\ntest_grouped_linear_forward_backward_with_empty_expert (test_runtime_binding.DeviceIntegrationTests.test_grouped_linear_forward_backward_with_empty_expert) ... ok\ntest_pinned_transfer_ticket_roundtrip (test_runtime_binding.DeviceIntegrationTests.test_pinned_transfer_ticket_roundtrip) ... ok\ntest_grouped_linear_rejects_invalid_metadata_before_cuda (test_runtime_binding.HostContractTests.test_grouped_linear_rejects_invalid_metadata_before_cuda) ... ok\ntest_plan_rejects_inconsistent_reverse_map (test_runtime_binding.HostContractTests.test_plan_rejects_inconsistent_reverse_map) ... ok\ntest_profile_rejects_invalid_host_metadata (test_runtime_binding.HostContractTests.test_profile_rejects_invalid_host_metadata) ... ok\ntest_python_borrowed_shape_and_alignment (test_runtime_binding.HostContractTests.test_python_borrowed_shape_and_alignment) ... ok\ntest_view_bounds (test_runtime_binding.HostContractTests.test_view_bounds) ... ok\ntest_zero_allocation_and_borrowed_stream (test_runtime_binding.HostContractTests.test_zero_allocation_and_borrowed_stream) ... ok\n----------------------------------------------------------------------\nRan 9 tests in 2.517s\nOK\n========= ERROR SUMMARY: 0 errors\n",
+    "substate": "failed",
+    "unit_name": "device-scheduler-attempt-ef4dd25ea751f50134c534798d50a122.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python",
+      "/home/tumlinson/Cellerator/scripts/validation/framework_cuda_suite.py",
+      "--build",
+      "/tmp/cellerator-v100-framework-r4",
+      "--cases",
+      "reactions",
+      "regulatory_gates",
+      "parameter_transfer",
+      "bindings",
+      "--tool",
+      "initcheck",
+      "--sanitizer",
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+      "--output",
+      "/tmp/cellerator-v100-results/initcheck-r4-gpu3"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "event_trigger": null,
+    "expected_duration_seconds": 90.0,
+    "flexible": false,
+    "idempotency_key": "cellerator-v100-initcheck-r4-gpu3-20261029",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "kill_timeout_seconds": 870.0,
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 2,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "preemption_action": "abandon",
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 2147483648.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "retention_policy": null,
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "cellerator-v100-correctness",
+      "gpu.exclusive"
+    ],
+    "termination_grace_seconds": 10.0,
+    "timeout_seconds": 900.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "failed",
+  "updated_at": "2026-10-29T19:40:58.001739Z"
+}

@@ -8,15 +8,15 @@ except ImportError as exc:  # pragma: no cover - depends on optional Torch
     raise SystemExit("Install the optional Torch integration to run this example.") from exc
 
 from cellerator.adapters.torch import ResidualStateUpdate, TorchModel
-from cellerator.modeling import Cell
+from cellerator.modeling import DynamicalCell
 
 
 def main() -> None:
     torch.manual_seed(13)
     learned_rule = TorchModel(ResidualStateUpdate(state_size=3, hidden_size=5))
     shared_model = learned_rule.as_model()
-    first = Cell(shared_model, torch.tensor([1.0, 0.0, 0.0]))
-    second = Cell(shared_model, torch.tensor([0.0, 1.0, 0.0]))
+    first = DynamicalCell(shared_model, torch.tensor([1.0, 0.0, 0.0]))
+    second = DynamicalCell(shared_model, torch.tensor([0.0, 1.0, 0.0]))
 
     first_loss = first.advance(dt=0.2).state.square().sum()
     second_loss = second.advance(dt=0.2).state.square().sum()

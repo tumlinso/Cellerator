@@ -1,0 +1,64 @@
+{
+  "owner_id": "cellerator",
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python",
+    "/home/tumlinson/Cellerator/planning/nn-foundation-2026-10-31/grouped_linear/scripts/qualify.py",
+    "--extension-dir",
+    "/tmp/cellerator-nn-grouped-linear-sm70",
+    "--output",
+    "/home/tumlinson/Cellerator/planning/nn-foundation-2026-10-31/grouped_linear/evidence/cuda-run-1.json"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 2147483648
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+      },
+      "mode": "exclusive",
+      "same_host": true
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator-nn-foundation-correctness"
+  ],
+  "priority_class": "interactive",
+  "priority": 50,
+  "flexible": false,
+  "timeout_seconds": 300,
+  "expected_duration_seconds": 45,
+  "kill_timeout_seconds": 270,
+  "termination_grace_seconds": 10,
+  "preemption_action": "abandon",
+  "max_attempts": 1,
+  "interruption": {
+    "cancellation_supported": true,
+    "checkpoint_supported": false,
+    "cooperative_yield": false,
+    "restart_safe": false
+  },
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 45,
+        "interval_seconds": 1,
+        "consecutive_samples": 2,
+        "max_utilization_percent": 0
+      }
+    }
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "idempotency_key": "cellerator-nn-grouped-linear-autograd-20261031-r1"
+}

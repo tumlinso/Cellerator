@@ -15,7 +15,7 @@ from typing import Any, Protocol
 
 import numpy as np
 
-from ..modeling import Cell
+from ..modeling import DynamicalCell
 
 _UNSET = object()
 
@@ -286,16 +286,16 @@ def paired_fork_callbacks(
 
 
 def divide_cell(
-    parent: Cell,
+    parent: DynamicalCell,
     inheritance: InheritanceRule,
     *,
     daughter_ids: tuple[Any, Any] = (None, None),
     rng: Any = None,
     metadata: Mapping[str, Any] | None = None,
-) -> tuple[Cell, Cell]:
+) -> tuple[DynamicalCell, DynamicalCell]:
     """Create two daughter Cells sharing model parameters and owning new states."""
-    if not isinstance(parent, Cell):
-        raise TypeError("parent must be a Model Cell")
+    if not isinstance(parent, DynamicalCell):
+        raise TypeError("parent must be a DynamicalCell")
     context = DivisionContext(
         parent_id=parent.id, daughter_ids=daughter_ids, time=parent.time, rng=rng,
         metadata={} if metadata is None else metadata,
@@ -305,8 +305,8 @@ def divide_cell(
         raise ValueError("inheritance must return two daughter states")
     left, right = (_clone(pair[0]), _clone(pair[1]))
     return (
-        Cell(parent.model, left, id=context.daughter_ids[0], time=parent.time),
-        Cell(parent.model, right, id=context.daughter_ids[1], time=parent.time),
+        DynamicalCell(parent.model, left, id=context.daughter_ids[0], time=parent.time),
+        DynamicalCell(parent.model, right, id=context.daughter_ids[1], time=parent.time),
     )
 
 
@@ -318,7 +318,7 @@ def divide_population(
     daughter_ids: tuple[Any, Any],
     rng: Any = None,
     metadata: Mapping[str, Any] | None = None,
-) -> tuple[Cell, Cell]:
+) -> tuple[DynamicalCell, DynamicalCell]:
     """Evaluate one paired inheritance draw, then add both daughters.
 
     Computing the pair once preserves joint conservation for stochastic

@@ -4,7 +4,7 @@ Signal delivery here illustrates a computational contract, not a model of a
 particular ligand, receptor, or biological timescale.
 """
 from cellerator.execution import Population, Send
-from cellerator.modeling import Cell, Model, StepResult
+from cellerator.modeling import DynamicalCell, DynamicalModel, StepResult
 
 
 def main() -> None:
@@ -21,8 +21,8 @@ def main() -> None:
         signals = tuple(record.value for record in incoming)
         return {**state, "received": state["received"] + signals}
 
-    sender = Cell(Model(signal_rule), {"emitted": False}, id="sender")
-    receiver = Cell(Model(receive_rule), {"received": ()}, id="receiver")
+    sender = DynamicalCell(DynamicalModel(signal_rule), {"emitted": False}, id="sender")
+    receiver = DynamicalCell(DynamicalModel(receive_rule), {"received": ()}, id="receiver")
     population = Population((sender, receiver), context_capacity=4)
 
     first = population.advance(dt=1.0)

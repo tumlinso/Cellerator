@@ -9,7 +9,7 @@ from cellerator.experimental.inheritance import (
     ResetField,
     divide_cell,
 )
-from cellerator.modeling import Cell, Model
+from cellerator.modeling import DynamicalCell, DynamicalModel
 
 
 def identity(state, context):
@@ -17,8 +17,8 @@ def identity(state, context):
 
 
 # These names and rules are a model's choices; Cellerator treats them as keys.
-parent = Cell(
-    Model(identity, parameters={"shared": "model-owned"}),
+parent = DynamicalCell(
+    DynamicalModel(identity, parameters={"shared": "model-owned"}),
     {
         "particle_count": 19,
         "continuous_pool": 8.0,

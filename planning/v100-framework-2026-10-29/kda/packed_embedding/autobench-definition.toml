@@ -1,0 +1,52 @@
+[benchmark]
+name = "cellerator-packed-embedding-v100-kda"
+revision = 3
+
+[source]
+include = [
+  "cmake/CelleratorConditional.cmake",
+  "cmake/CelleratorFrameworkCUDA.cmake",
+  "include/Cellerator/modeling/cuda/**",
+  "include/Cellerator/execution/conditional/**",
+  "src/modeling/cuda/*.cu",
+  "src/execution/conditional/*.cc",
+  "tests/framework/cuda/packed_embedding_smoke.cu",
+  "planning/v100-framework-2026-10-29/kda/packed_embedding/CMakeLists.txt",
+  "planning/v100-framework-2026-10-29/kda/packed_embedding/base-source-manifest.json",
+  "planning/v100-framework-2026-10-29/kda/packed_embedding/task.json",
+  "planning/v100-framework-2026-10-29/kda/packed_embedding/autobench-definition.toml",
+  "scripts/validation/kda_packed_embedding.py",
+  "scripts/validation/kda_packed_autobench.py",
+  "scripts/validation/kda_autobench_artifacts.py",
+]
+
+[protocol]
+id = "cellerator-packed-embedding-kda-sm70-resident-backward-v2"
+
+[build]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/kda_packed_autobench.py",
+  "--source", "{snapshot}",
+  "--workspace", "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2",
+  "--autobench-build", "{build}",
+  "--mode", "prepare",
+]
+expected_seconds = 150
+kill_seconds = 600
+resources = { cpu_cores = 1, host_memory_bytes = 8589934592 }
+
+[[packet]]
+name = "packed-embedding-kda-evaluate"
+kind = "timing"
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/kda_packed_autobench.py",
+  "--source", "{snapshot}",
+  "--workspace", "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2",
+  "--autobench-build", "{build}",
+  "--mode", "evaluate",
+]
+expected_seconds = 240
+kill_seconds = 600
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }

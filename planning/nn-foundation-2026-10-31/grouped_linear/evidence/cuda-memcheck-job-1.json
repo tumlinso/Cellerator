@@ -1,0 +1,69 @@
+{
+  "owner_id": "cellerator",
+  "argv": [
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "--tool",
+    "memcheck",
+    "--error-exitcode",
+    "99",
+    "/home/tumlinson/Software/miniconda3/bin/python",
+    "/home/tumlinson/Cellerator/planning/nn-foundation-2026-10-31/grouped_linear/scripts/qualify.py",
+    "--extension-dir",
+    "/tmp/cellerator-nn-grouped-linear-sm70",
+    "--output",
+    "/home/tumlinson/Cellerator/planning/nn-foundation-2026-10-31/grouped_linear/evidence/cuda-memcheck-run-1.json"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "resources": [
+    {
+      "kind": "gpu",
+      "quantities": {
+        "memory_bytes": 2147483648
+      },
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      },
+      "mode": "exclusive",
+      "same_host": true
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator-nn-foundation-correctness"
+  ],
+  "priority_class": "interactive",
+  "priority": 50,
+  "flexible": false,
+  "timeout_seconds": 420,
+  "expected_duration_seconds": 90,
+  "kill_timeout_seconds": 390,
+  "termination_grace_seconds": 10,
+  "preemption_action": "abandon",
+  "max_attempts": 1,
+  "interruption": {
+    "cancellation_supported": true,
+    "checkpoint_supported": false,
+    "cooperative_yield": false,
+    "restart_safe": false
+  },
+  "preconditions": [
+    {
+      "name": "gpu.quiescence",
+      "schema_version": 1,
+      "parameters": {
+        "timeout_seconds": 45,
+        "interval_seconds": 1,
+        "consecutive_samples": 2,
+        "max_utilization_percent": 0
+      }
+    }
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "idempotency_key": "cellerator-nn-grouped-linear-autograd-memcheck-20261031-r1"
+}

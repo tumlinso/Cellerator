@@ -1,6 +1,8 @@
 """Foundational interfaces for backend-neutral biological dynamical models."""
 from .core import (
     Cell,
+    DynamicalCell,
+    DynamicalModel,
     Dynamics,
     FunctionalDynamics,
     FunctionalObservation,
@@ -16,6 +18,8 @@ from .simulation import Experiment, ExperimentResult, simulate
 
 __all__ = [
     "Cell",
+    "DynamicalCell",
+    "DynamicalModel",
     "Dynamics",
     "Experiment",
     "ExperimentResult",

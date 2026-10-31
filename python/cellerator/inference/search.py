@@ -15,7 +15,7 @@ import math
 from types import MappingProxyType
 from typing import Any
 
-from cellerator.modeling import Model, StepContext, StepResult
+from cellerator.modeling import DynamicalModel, StepContext, StepResult
 
 from .core import Observation, Particle, _normalize_log_weights
 
@@ -126,7 +126,7 @@ def _checked_score(value: Any, name: str) -> float:
     return score
 
 
-def _advance(model: Model, state: Any, start: float, end: float,
+def _advance(model: DynamicalModel, state: Any, start: float, end: float,
              observation: Observation, observation_index: int) -> Any:
     """Advance exactly to ``end`` or reject an explicitly early/late step."""
     dt = end - start
@@ -151,7 +151,7 @@ def _advance(model: Model, state: Any, start: float, end: float,
 
 def _apply_event(apply_event: EventApply, state: Any, timed: TimedEvent,
                  *, start: float, observation: Observation,
-                 observation_index: int, event_index: int, model: Model) -> Any:
+                 observation_index: int, event_index: int, model: DynamicalModel) -> Any:
     context = StepContext(
         time=timed.time, dt=timed.time - start, inputs=observation.inputs,
         parameters=model.parameters,
@@ -171,7 +171,7 @@ def _apply_event(apply_event: EventApply, state: Any, timed: TimedEvent,
 
 
 def search_event_histories(
-    model: Model,
+    model: DynamicalModel,
     initial: Iterable[Particle | Any],
     observations: Iterable[Observation],
     propose: Proposal,
@@ -199,8 +199,8 @@ def search_event_histories(
     the reason; this makes returned weights visibly conditional on the retained
     beam. Invalid proposals or model-time mismatches raise ``ValueError``.
     """
-    if not isinstance(model, Model):
-        raise TypeError("model must be a cellerator.modeling.Model")
+    if not isinstance(model, DynamicalModel):
+        raise TypeError("model must be a cellerator.modeling.DynamicalModel")
     if not callable(propose) or not callable(apply_event) or not callable(log_likelihood):
         raise TypeError("propose, apply_event and log_likelihood must be callable")
     for name, value in (("beam_width", beam_width), ("max_expansions", max_expansions),

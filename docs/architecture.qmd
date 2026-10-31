@@ -179,12 +179,20 @@ across efficient execution and reuse.
 
 ### Existing foundations and remaining capability gaps
 
-This is a source-oriented architectural assessment as of 2026-10-31, not a
+This is the source-oriented architectural assessment recorded before the
+2026-10-31 NN foundation implementation, not a
 completion checklist or a replacement for the dated
 [implementation record](current_implementation.qmd). The existing mechanisms
 have different backend and validation boundaries. The remaining work includes
 coherence and generalization of interfaces, not just adding more kernels or
 renaming existing classes.
+
+The first implementation now provides a general `Cell`, explicit dynamical
+wrappers, feature encoding, relation attention, shared readouts, and a trainable
+grouped-linear adapter. Read the [NN foundation guide](nn_foundation.qmd) and
+[dated implementation record](current_implementation.qmd) for current contracts
+and qualification. The table below preserves the motivation for that work;
+the broader modeling capabilities remain open-ended.
 
 | Concern | Existing machinery to build on | Remaining conceptual capability |
 |---|---|---|
@@ -222,6 +230,103 @@ not select APIs, prescribe an implementation sequence, or authorize development.
 The architectural test is whether a researcher can express a biological learning
 question more directly and turn it into a trainable, efficient model because
 Cellerator supplies the appropriate computational vocabulary.
+
+## First-class C++ and Python modeling {#cpp-and-python-modeling}
+
+**Design direction recorded 2026-10-31.** Cellerator should be an intuitive
+biological ML modeling framework in C++ as well as Python. Its C++ interface
+should be at least as expressive for the framework's biological and neural
+abstractions, with room for native extensions beyond the Python bindings.
+Authoring, composing, training, and extending a model belong in both languages.
+A collection of native kernels beneath a Python-only modeling layer would not
+fulfil this requirement.
+
+The C++ API should originate as an idiomatic C++ library in which models are
+authored directly. Its types and composition should follow C++ needs rather
+than mirror a Python class hierarchy, constructor vocabulary, or registration
+pattern. Backend reuse must not turn the public API into a cosmetic wrapper
+around LibTorch's frontend. Native biological components should be usable and
+extensible as ordinary C++ library facilities, with Python bindings and adapters
+exposing shared mechanisms rather than determining their native design.
+Python-specific model composition and extensions remain legitimate.
+
+The shared foundation is the biological meaning of the computation: feature
+identities and occurrences, eligible interactions, conditioning and history,
+learned representations, readouts, supervision, and parameter sharing. Neither
+language should impose an explicit cell lifecycle or a universal tensor layout.
+Equivalent model definitions should preserve those meanings across interfaces,
+even when their syntax and extension mechanisms differ.
+
+### Strengths to foreground
+
+| C++ | Python |
+|---|---|
+| Typed model composition, generic algorithms, and compile-time specialization where they improve usability or execution. | Interactive model exploration, runtime composition, and rapid experiments with representations and objectives. |
+| Direct inheritance, callables, and templates for extending biological modules and operators without a Python dependency. | Ordinary Python and `torch.nn.Module` composition, callable readouts, and custom-operation prototyping. |
+| Predictable ownership and lifetimes, reusable workspaces, borrowed storage, and specialized dynamic layouts. | Convenient integration with AnnData, scientific data tools, training utilities, notebooks, and analysis workflows. |
+| Native HPC embedding, CPU parallelism, CUDA integration, and control over batching, memory, and communication when needed. | Orchestration of the same native work through coarse batched calls, with access to advanced execution controls when needed. |
+
+These are complementary strengths, not exclusive roles. C++ should support
+exploratory model construction and ordinary training; Python should support
+large-scale execution and novel native extensions. Python orchestration can
+invoke the same native computation, so language choice alone establishes no
+performance advantage.
+
+### Intuitive authoring with an explicit advanced path
+
+A C++ model author should be able to compose a feature encoder, a contextual
+interaction, ordinary neural layers, and selected readouts around a biological
+objective without writing binding code or manually wiring every allocator,
+stream, and backend registration. Safe ownership defaults and ordinary C++
+composition should make the common case concise. Explicit views, preparation,
+storage, and stream controls should remain available when the model needs them.
+Value and reference semantics, constructors, containers, and generic interfaces
+should fit ordinary C++ practice. Extension should not require imitating a
+Python object's attribute machinery or registration conventions.
+RAII ownership must account for asynchronous work retaining borrowed resources;
+returning from a host call does not necessarily end their use.
+
+Inheritance is useful for runtime substitution and heterogeneous collections;
+templates and callables are useful for typed specialization and local
+composition. Use each where it helps, rather than forcing every model through
+one base class or duplicating Python's object conventions. Batch execution
+should not require per-cell cross-language callbacks. Native-only consumers
+should be able to build and link the selected facilities without an interpreter.
+
+Reuse existing tensor libraries, differentiation, conventional layers,
+optimizers, and communication facilities. LibTorch can supply useful machinery;
+its module registration and C++ ergonomics need not define Cellerator's public
+modeling experience. A more convenient Cellerator interface should preserve
+backend interoperability and parameter ownership rather than hide a second
+parameter copy. This direction does not require a new universal autograd engine,
+operator registry, or reimplementation of standard neural layers.
+
+### Shared contracts and the current gap
+
+Native mathematical operations should have explicit contracts independent of a
+particular binding. C++ and Python composition should agree on identity/layout
+effects, precision, mutation, derivatives, ownership, and lifetime. Preserve one
+logical owner for shared parameters across readouts and adapters. Keep
+language-specific extension points open: not every C++ template or Python
+callable needs a counterpart in the other language. Supported cross-language
+model exchange must declare its limits rather than promise serialization of
+arbitrary user code.
+
+For example, a gene-aware expression encoder should be natural to define and
+train in C++; a Karyoplast-style history model should permit custom native
+interactions and shared auxiliary readouts; a Cytoplast-style population should
+embed shared learned computation in a native HPC application. Python should
+offer the corresponding biological concepts alongside its data and training
+ecosystem. These remain motivating model families, not architectures imposed
+by the framework.
+
+The current NN foundation's generic cell binding, feature encoding, relation
+attention, and readout composer are Python-facing. Existing C++ modeling,
+tokenization, numerical, and CUDA APIs provide foundations, but do not establish
+equivalent complete native model authoring and training. Closing that gap is
+architectural work still to design and qualify. The first milestone's ordinary
+PyTorch training route remains valid; this clarification neither relabels it as
+C++ parity nor authorizes a new implementation push.
 
 ## Cells, representations, and auxiliary views
 
@@ -304,10 +409,12 @@ recurrent systems, and explicit dynamical models alike.
   model's declared information dependencies.
 
 These are design constraints and performance goals, not measured speedup
-claims. The current state/clock/`advance()` cell wrapper may support a custom
-observation callback, but that is not yet the minimal shared-readout interface
-described here. Reconsider its role during an explicitly authorized redesign;
-do not treat this note as approval to change it now.
+claims. The 2026-10-31 implementation separates the old state/clock/`advance()`
+wrapper into `DynamicalCell`, supplies a general information-bound `Cell`, and
+adds `ModelWithViews` for explicitly selected shared readouts. See the
+[NN foundation guide](nn_foundation.qmd). It reuses one forward result within a
+call and introduces no persistent cache. Further representation, execution,
+and modeling capabilities still require their own scoped development.
 
 ## Scientific questions and identifiability
 

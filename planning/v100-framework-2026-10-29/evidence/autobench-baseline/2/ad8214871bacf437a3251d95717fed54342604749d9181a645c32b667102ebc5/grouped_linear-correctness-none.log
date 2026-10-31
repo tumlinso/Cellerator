@@ -1,0 +1,71 @@
+DEVICE name=Tesla V100-SXM2-16GB cc=7.0 visible_index=0
+ragged_0.forward max_abs_error=0
+ragged_0.grouped_cublas_forward max_abs_error=1.19209e-07
+ragged_0.dx_overwrite max_abs_error=1.19209e-07
+ragged_0.dw_overwrite_0 max_abs_error=2.98023e-08
+ragged_0.dw_overwrite_1 max_abs_error=0
+ragged_0.dw_overwrite_2 max_abs_error=2.98023e-08
+ragged_0.dw_overwrite_3 max_abs_error=5.96046e-08
+ragged_0.dx_accumulate max_abs_error=1.19209e-07
+ragged_0.dw_accumulate_0 max_abs_error=5.96046e-08
+ragged_0.dw_accumulate_1 max_abs_error=0
+ragged_0.dw_accumulate_2 max_abs_error=5.96046e-08
+ragged_0.dw_accumulate_3 max_abs_error=5.96046e-08
+PASS ragged_0 dtype=fp32 experts=4 rows=9 in=7 out=5
+ragged_0.forward max_abs_error=0
+ragged_0.grouped_cublas_forward max_abs_error=0
+ragged_0.dx_overwrite max_abs_error=0
+ragged_0.dw_overwrite_0 max_abs_error=0
+ragged_0.dw_overwrite_1 max_abs_error=0
+ragged_0.dw_overwrite_2 max_abs_error=0
+ragged_0.dw_overwrite_3 max_abs_error=0
+ragged_0.dx_accumulate max_abs_error=0
+ragged_0.dw_accumulate_0 max_abs_error=0
+ragged_0.dw_accumulate_1 max_abs_error=0
+ragged_0.dw_accumulate_2 max_abs_error=0
+ragged_0.dw_accumulate_3 max_abs_error=0
+PASS ragged_0 dtype=fp16 experts=4 rows=9 in=7 out=5
+ragged_1.forward max_abs_error=1.19209e-07
+ragged_1.grouped_cublas_forward max_abs_error=1.78814e-07
+ragged_1.dx_overwrite max_abs_error=2.38419e-07
+ragged_1.dw_overwrite_0 max_abs_error=0
+ragged_1.dw_overwrite_1 max_abs_error=1.19209e-07
+ragged_1.dw_overwrite_2 max_abs_error=2.38419e-07
+ragged_1.dx_accumulate max_abs_error=2.38419e-07
+ragged_1.dw_accumulate_0 max_abs_error=1.19209e-07
+ragged_1.dw_accumulate_1 max_abs_error=1.19209e-07
+ragged_1.dw_accumulate_2 max_abs_error=2.38419e-07
+PASS ragged_1 dtype=fp32 experts=3 rows=17 in=8 out=16
+ragged_1.forward max_abs_error=0
+ragged_1.grouped_cublas_forward max_abs_error=0
+ragged_1.dx_overwrite max_abs_error=0
+ragged_1.dw_overwrite_0 max_abs_error=0
+ragged_1.dw_overwrite_1 max_abs_error=0
+ragged_1.dw_overwrite_2 max_abs_error=0
+ragged_1.dx_accumulate max_abs_error=0
+ragged_1.dw_accumulate_0 max_abs_error=0
+ragged_1.dw_accumulate_1 max_abs_error=0
+ragged_1.dw_accumulate_2 max_abs_error=0
+PASS ragged_1 dtype=fp16 experts=3 rows=17 in=8 out=16
+ragged_2.forward max_abs_error=0
+ragged_2.grouped_cublas_forward max_abs_error=5.96046e-08
+ragged_2.dx_overwrite max_abs_error=1.19209e-07
+ragged_2.dw_overwrite_0 max_abs_error=5.96046e-08
+ragged_2.dw_overwrite_1 max_abs_error=2.98023e-08
+ragged_2.dw_overwrite_2 max_abs_error=0
+ragged_2.dx_accumulate max_abs_error=1.19209e-07
+ragged_2.dw_accumulate_0 max_abs_error=5.96046e-08
+ragged_2.dw_accumulate_1 max_abs_error=5.96046e-08
+ragged_2.dw_accumulate_2 max_abs_error=2.98023e-08
+PASS ragged_2 dtype=fp32 experts=3 rows=8 in=3 out=9
+ragged_2.forward max_abs_error=0
+ragged_2.grouped_cublas_forward max_abs_error=0
+ragged_2.dx_overwrite max_abs_error=0
+ragged_2.dw_overwrite_0 max_abs_error=0
+ragged_2.dw_overwrite_1 max_abs_error=0
+ragged_2.dw_overwrite_2 max_abs_error=0
+ragged_2.dx_accumulate max_abs_error=0
+ragged_2.dw_accumulate_0 max_abs_error=0
+ragged_2.dw_accumulate_1 max_abs_error=0
+ragged_2.dw_accumulate_2 max_abs_error=0
+PASS ragged_2 dtype=fp16 experts=3 rows=8 in=3 out=9

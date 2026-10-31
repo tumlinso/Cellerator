@@ -1,0 +1,14 @@
+runtime CUDA smoke passed
+{"argv": ["/home/tumlinson/Cellerator/.autobench/builds/a97ba079679285c2231f5df53bfe67f461c2b259b821a9abe22d61775ec48e4c/cmake/cellerator_framework_cuda_runtime_smoke"], "binary_sha256": "4c68b636f186f4a12feeddb1a0d3bed13e1dd3cf13ac2517e819e002acbaeb36", "case": "runtime", "log": "runtime-correctness-none.log", "mode": "correctness", "returncode": 0, "tool": "none", "wall_seconds": 0.21589442700496875}
+dispatch device oracle passed on device 0
+{"argv": ["/home/tumlinson/Cellerator/.autobench/builds/a97ba079679285c2231f5df53bfe67f461c2b259b821a9abe22d61775ec48e4c/cmake/cellerator_framework_cuda_dispatch_smoke"], "binary_sha256": "7ac98df1e9b518f30a891daa3bf63b6007f03f8a2fa032cf2ba9917de8683ac0", "case": "dispatch", "log": "dispatch-correctness-none.log", "mode": "correctness", "returncode": 0, "tool": "none", "wall_seconds": 0.23546218301635236}
+quantization bit width 1 dtype fp32 short-profile: encode/decode/overrides/shared-word updates passed
+quantization bit width 1 dtype fp16 short-profile: encode/decode/overrides/shared-word updates passed
+quantization bit width 2 dtype fp32 profile: encode/decode/overrides/shared-word updates passed
+quantization bit width 2 dtype fp16 profile: encode/decode/overrides/shared-word updates passed
+quantization bit width 4 dtype fp32 profile: encode/decode/overrides/shared-word updates passed
+quantization bit width 4 dtype fp16 profile: encode/decode/overrides/shared-word updates passed
+quantization bit width 8 dtype fp32 profile: encode/decode/overrides/shared-word updates passed
+quantization bit width 8 dtype fp16 profile: encode/decode/overrides/shared-word updates passed
+V100 quantization correctness passed
+{"argv": ["/home/tumlinson/Cellerator/.autobench/builds/a97ba079679285c2231f5df53bfe67f461c2b259b821a9abe22d61775ec48e4c/cmake/cellerator_framework_cuda_quantization_smoke"], "binary_sha256": "951f146dad9bca26af71375912a504378629b39b5f57809a3bfb3a43cf1713cc", "case": "quantization", "log": "quantization-correctness-none.log", "mode": "correctness", "returncode": 0, "tool": "none", "wall_seconds": 0.22897739100153558}

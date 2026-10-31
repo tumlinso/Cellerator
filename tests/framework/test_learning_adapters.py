@@ -5,7 +5,7 @@ import torch
 from torch import nn
 
 from cellerator.interactions import Interaction, InteractionGraph
-from cellerator.modeling import Cell, StepContext
+from cellerator.modeling import DynamicalCell, StepContext
 from cellerator.adapters.torch import (
     EventPredictionHead,
     GatedInteractor,
@@ -22,8 +22,8 @@ class TorchAdapterTests(unittest.TestCase):
         model = TorchModel(module).as_model()
         x1 = torch.tensor([0.2, 0.5, 0.7], requires_grad=True)
         x2 = torch.tensor([0.9, 0.1, 0.3], requires_grad=True)
-        first = Cell(model, x1, id="a")
-        second = Cell(model, x2, id="b")
+        first = DynamicalCell(model, x1, id="a")
+        second = DynamicalCell(model, x2, id="b")
 
         result = first.advance(0.25, inputs=torch.tensor([0.1, 0.8]))
         self.assertEqual(first.state.shape, x1.shape)

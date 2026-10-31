@@ -15,12 +15,17 @@ RAPIDS-singlecell remain upstream for classical analysis and preprocessing.
 
 ## Modeling without a native extension
 
-`Cell`, `Model`, `StepContext`, `StepResult`, and `simulate` are available from
+`Cell`, `DynamicalCell`, `DynamicalModel`, `StepContext`, `StepResult`, and `simulate` are available from
 `cellerator` without loading the compiled numerical extension or Torch. The
 `state`, `events`, `interactions`, `dynamics`, `execution`, `inference`, and
 `spatial` packages provide model-independent reference mechanisms. State can be
 an arbitrary object or an external state reference; observations and update
-rules are supplied separately. See the [framework guide](../biological_framework.qmd)
+rules are supplied separately for dynamical models. Generic `Cell` handles bind
+arbitrary information to shared callable programs without a clock or mandatory
+state vector. The legacy `Model` name aliases `DynamicalModel`.
+See the [neural foundation](../nn_foundation.qmd) for composable learned
+features, relations, readouts, and ordinary parameter-owned custom operations,
+and the [framework guide](../biological_framework.qmd)
 for examples and the boundary between these mechanisms and native execution.
 
 Optional adapters are explicit imports: `cellerator.adapters.torch`,

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "files": [
+    "src/modeling/cuda/packed_embedding.cu",
+    "include/Cellerator/modeling/cuda/packed_embedding.hh",
+    "tests/framework/cuda/packed_embedding_smoke.cu"
+  ],
+  "dependencies": [
+    {
+      "name": "Cellerator shared CUDA source closure",
+      "revision": "sha256:533b5ee7ac57ee0062e4f70c315ec4273e53870f431d33f24e5945c708ae089d"
+    }
+  ]
+}

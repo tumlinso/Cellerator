@@ -12,7 +12,10 @@ from ._declarations import (
     Axis, Identity, Incidence, Mechanism, MechanismSpec, OutputContribution,
     SharedSupportSpec, constructor_data,
 )
-from .modeling import Cell, Experiment, ExperimentResult, Model, StepContext, StepResult, simulate
+from .modeling import (
+    Cell, DynamicalCell, DynamicalModel, Experiment, ExperimentResult, Model,
+    StepContext, StepResult, simulate,
+)
 
 _FRAMEWORK_PACKAGES = frozenset({
     "modeling", "state", "events", "interactions", "dynamics", "execution",
@@ -141,7 +144,8 @@ def _known_mechanism_handles():
 
 
 __all__ = [
-    "Cell", "Experiment", "ExperimentResult", "Model", "StepContext", "StepResult", "simulate",
+    "Cell", "DynamicalCell", "DynamicalModel", "Experiment", "ExperimentResult",
+    "Model", "StepContext", "StepResult", "simulate",
     "Axis", "Identity", "Incidence", "Mechanism", "MechanismSpec",
     "OutputContribution", "SharedSupportSpec", "prepare_mechanism",
     "prepare_product2", "product2_forward", "product2_vjp", "product2_jvp",

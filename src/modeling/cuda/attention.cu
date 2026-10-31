@@ -122,6 +122,8 @@ __global__ void fused_small_kernel(const T* q, const T* k, const T* v, T* output
                                    std::int64_t queries, std::int64_t dim,
                                    std::int64_t value_dim, float scale, float* probabilities) {
     constexpr unsigned mask = 0xffffffffu;
+    __shared__ float aggregation_probabilities[32];
+    __shared__ std::int64_t aggregation_keys[32];
     for (std::int64_t row = blockIdx.x; row < queries; row += gridDim.x) {
         const auto begin = offsets[row], end = offsets[row + 1];
         const auto degree = end - begin;
@@ -145,16 +147,22 @@ __global__ void fused_small_kernel(const T* q, const T* k, const T* v, T* output
                 denominator += __shfl_down_sync(mask, denominator, delta);
             denominator = __shfl_sync(mask, denominator, 0);
             const float probability = degree > 0 ? weight / denominator : 0.0f;
-            if (threadIdx.x < degree) probabilities[begin + threadIdx.x] = probability;
+            if (threadIdx.x < degree) {
+                probabilities[begin + threadIdx.x] = probability;
+                aggregation_probabilities[threadIdx.x] = probability;
+                aggregation_keys[threadIdx.x] = keys[begin + threadIdx.x];
+            }
+            __syncthreads();
             for (std::int64_t d = threadIdx.x; d < value_dim; d += 32) {
                 float sum = 0.0f;
                 for (std::int64_t edge = 0; edge < degree; ++edge) {
-                    const float p = __shfl_sync(mask, probability, static_cast<int>(edge));
-                    const auto key = keys[begin + edge];
+                    const float p = aggregation_probabilities[edge];
+                    const auto key = aggregation_keys[edge];
                     sum += p * as_float(v[key * value_dim + d]);
                 }
                 output[row * value_dim + d] = from_float<T>(sum);
             }
+            __syncthreads();
         }
     }
 }

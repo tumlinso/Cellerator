@@ -4,7 +4,7 @@ import unittest
 
 from cellerator.dynamics import JumpOccurrence, gillespie
 from cellerator.dynamics.reactions import Reaction, ReactionNetwork
-from cellerator.modeling import Cell, Model, StepContext
+from cellerator.modeling import DynamicalCell, DynamicalModel, StepContext
 
 
 class Draws:
@@ -117,7 +117,7 @@ class ReactionTests(unittest.TestCase):
 
     def test_model_observation_and_empty_network(self):
         network = ReactionNetwork(["A"], [])
-        cell = Cell(Model(network, lambda state, ctx: state["A"] * 2), network.state({"A": 7}))
+        cell = DynamicalCell(DynamicalModel(network, lambda state, ctx: state["A"] * 2), network.state({"A": 7}))
         cell.advance(0.5)
         self.assertEqual(cell.time, 0.5)
         self.assertEqual(cell.observe(), 14)

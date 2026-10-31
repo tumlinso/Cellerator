@@ -3,7 +3,7 @@ from copy import deepcopy
 import unittest
 
 from cellerator.events import Event, EventHistory
-from cellerator.modeling import Cell, Model, StepResult
+from cellerator.modeling import Cell, DynamicalCell, DynamicalModel, StepResult
 from cellerator.execution import (
     Broadcast, CausalityError, ContextCapacityError, Create, Eject,
     ExecutionFailure, Fork, LocalExecutor, Population, Remove, Resume, Send,
@@ -12,13 +12,17 @@ from cellerator.execution import (
 
 
 class ExecutionTests(unittest.TestCase):
+    def test_population_rejects_a_generic_cell(self):
+        with self.assertRaisesRegex(TypeError, "DynamicalCell"):
+            Population([Cell({"events": []})])
+
     def test_shared_models_keep_arbitrary_state_and_external_inputs_separate(self):
-        model = Model(lambda state, context: {
+        model = DynamicalModel(lambda state, context: {
             **state, "value": state["value"] + context.parameters["rate"],
             "external": context.inputs.external,
         }, parameters={"rate": 2})
-        population = Population([Cell(model, {"value": 1}, id="a"),
-                                 Cell(model, {"value": 10}, id="b")])
+        population = Population([DynamicalCell(model, {"value": 1}, id="a"),
+                                 DynamicalCell(model, {"value": 10}, id="b")])
         result = population.advance(inputs={"a": {"opaque": "input"}})
         self.assertEqual(result.order, ("a", "b"))
         self.assertEqual(population["a"].state["value"], 3)
@@ -36,8 +40,8 @@ class ExecutionTests(unittest.TestCase):
             admitted.extend(record.value for record in context.inputs.incoming)
             return StepResult(tuple(context.inputs), events=(Event("observed"),))
 
-        model = Model(update)
-        population = Population([Cell(model, (), id="a")], context_capacity=2, history=history)
+        model = DynamicalModel(update)
+        population = Population([DynamicalCell(model, (), id="a")], context_capacity=2, history=history)
         for value in ("first", "second", "third"):
             population.send("a", value)
         report = population.advance()
@@ -50,7 +54,7 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(len(history), 1)
 
     def test_reject_overflow_keeps_pending_until_explicit_ejection(self):
-        population = Population([Cell(Model(lambda state, _: state), 0, id="a")],
+        population = Population([DynamicalCell(DynamicalModel(lambda state, _: state), 0, id="a")],
                                 context_capacity=1, overflow="reject")
         population.send("a", "first")
         population.advance()
@@ -66,7 +70,7 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(tuple(population.context("a")), ("second",))
 
     def test_oversized_rejecting_inbox_recovers_by_explicit_pending_discard(self):
-        population = Population([Cell(Model(lambda state, _: state), 0, id="a")],
+        population = Population([DynamicalCell(DynamicalModel(lambda state, _: state), 0, id="a")],
                                 context_capacity=1, overflow="reject")
         population.send("a", "keep")
         population.send("a", "discard")
@@ -78,8 +82,8 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(tuple(population.context("a")), ("keep",))
 
     def test_suspension_keeps_state_time_and_pending_inputs(self):
-        model = Model(lambda state, context: state + len(context.inputs.incoming))
-        population = Population([Cell(model, 0, id="a")])
+        model = DynamicalModel(lambda state, context: state + len(context.inputs.incoming))
+        population = Population([DynamicalCell(model, 0, id="a")])
         population.suspend("a", reason="caller policy")
         population.send("a", "pulse", time=0.5)
         self.assertEqual(population.advance().order, ())
@@ -95,11 +99,11 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(population["a"].state, 1)  # retained context is not a new occurrence
 
     def test_deferred_event_and_effect_routing_has_stable_tie_order(self):
-        sender = Model(lambda state, context: StepResult(state,
+        sender = DynamicalModel(lambda state, context: StepResult(state,
             events=(Event("event", target="receiver"),),
             effects=(Send("receiver", "effect"),)))
-        receiver = Model(lambda state, context: state + tuple(record.value for record in context.inputs.incoming))
-        population = Population([Cell(sender, 0, id="sender"), Cell(receiver, (), id="receiver")])
+        receiver = DynamicalModel(lambda state, context: state + tuple(record.value for record in context.inputs.incoming))
+        population = Population([DynamicalCell(sender, 0, id="sender"), DynamicalCell(receiver, (), id="receiver")])
         population.advance()
         self.assertEqual(population["receiver"].state, ())
         self.assertEqual(len(population.pending("receiver")), 2)
@@ -111,13 +115,13 @@ class ExecutionTests(unittest.TestCase):
 
     def test_lifecycle_effects_apply_after_selection_and_fork_is_caller_owned(self):
         state = {"memory": ["parent"]}
-        child_model = Model(lambda current, _: current)
-        parent_model = Model(lambda current, _: StepResult(current, effects=(
+        child_model = DynamicalModel(lambda current, _: current)
+        parent_model = DynamicalModel(lambda current, _: StepResult(current, effects=(
             Fork(deepcopy, id="child", inherit_context=True),
             Create(child_model, {"other": 1}, id="created"),
             Suspend(reason="quiescent"),
         )))
-        population = Population([Cell(parent_model, state, id="parent")])
+        population = Population([DynamicalCell(parent_model, state, id="parent")])
         population.send("parent", "retained")
         report = population.advance()
         self.assertEqual(report.order, ("parent",))
@@ -131,9 +135,9 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(population.pending("child"), ())
 
     def test_synchronized_peers_stop_at_shared_pending_message_boundary(self):
-        sender = Model(lambda state, context: StepResult(state, effects=(Send("target", "pulse"),)))
-        target = Model(lambda state, context: state + len(context.inputs.incoming))
-        population = Population([Cell(sender, 0, id="sender"), Cell(target, 0, id="target")])
+        sender = DynamicalModel(lambda state, context: StepResult(state, effects=(Send("target", "pulse"),)))
+        target = DynamicalModel(lambda state, context: state + len(context.inputs.incoming))
+        population = Population([DynamicalCell(sender, 0, id="sender"), DynamicalCell(target, 0, id="target")])
         population.send("sender", "boundary", time=0.5)
         population.advance(dt=1)
         self.assertEqual(population["sender"].time, 0.5)
@@ -143,8 +147,8 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(population["target"].state, 1)
 
     def test_effect_fork_rejects_unsynchronized_parent(self):
-        parent = Cell(Model(lambda state, _: state), {}, id="parent")
-        emitter = Cell(Model(lambda state, _: StepResult(state, effects=(
+        parent = DynamicalCell(DynamicalModel(lambda state, _: state), {}, id="parent")
+        emitter = DynamicalCell(DynamicalModel(lambda state, _: StepResult(state, effects=(
             Fork(deepcopy, parent="parent", id="child"),))), {}, id="emitter")
         population = Population([parent, emitter])
         with self.assertRaises(ExecutionFailure) as caught:
@@ -154,8 +158,8 @@ class ExecutionTests(unittest.TestCase):
 
     def test_removed_identity_is_never_reused_and_discarded_pending_is_reported(self):
         records = []
-        model = Model(lambda state, _: state)
-        population = Population([Cell(model, object(), id="a")], recorder=records.append)
+        model = DynamicalModel(lambda state, _: state)
+        population = Population([DynamicalCell(model, object(), id="a")], recorder=records.append)
         population.send("a", "future", time=5)
         removed = population.remove("a")
         self.assertEqual(len(records[-1].value["pending"]), 1)
@@ -166,10 +170,10 @@ class ExecutionTests(unittest.TestCase):
             population.send("a", "late")
 
     def test_resource_grouping_uses_model_identity_and_explicit_work_keys(self):
-        model = Model(lambda state, _: state)
-        other = Model(lambda state, _: state)
-        population = Population([Cell(model, 1, id="a"), Cell(other, 2, id="b"),
-                                 Cell(model, 3, id="c")])
+        model = DynamicalModel(lambda state, _: state)
+        other = DynamicalModel(lambda state, _: state)
+        population = Population([DynamicalCell(model, 1, id="a"), DynamicalCell(other, 2, id="b"),
+                                 DynamicalCell(model, 3, id="c")])
         self.assertEqual([batch.ids for batch in population.plan()], [("a", "c"), ("b",)])
         self.assertEqual([batch.ids for batch in population.plan(group_by=lambda cell: cell.state % 2)],
                          [("a", "c"), ("b",)])
@@ -178,10 +182,10 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(set(report.results), {"a", "b", "c"})
 
     def test_causal_violations_reject_before_transition_commit(self):
-        population = Population([Cell(Model(lambda state, _: state + 1), 0, id="a", time=2)])
+        population = Population([DynamicalCell(DynamicalModel(lambda state, _: state + 1), 0, id="a", time=2)])
         with self.assertRaises(CausalityError):
             population.send("a", "past", time=1)
-        invalid = Cell(Model(lambda state, _: StepResult(state + 1, time=4)), 0, id="b")
+        invalid = DynamicalCell(DynamicalModel(lambda state, _: StepResult(state + 1, time=4)), 0, id="b")
         population.add(invalid)
         population.send("b", "boundary", time=0.5)
         with self.assertRaises(ExecutionFailure) as caught:
@@ -194,8 +198,8 @@ class ExecutionTests(unittest.TestCase):
         def fail(state, context):
             raise RuntimeError("caller model failed")
 
-        population = Population([Cell(Model(lambda state, _: StepResult(state + 1, effects=("domain",))), 0, id="a"),
-                                 Cell(Model(fail), 0, id="b")])
+        population = Population([DynamicalCell(DynamicalModel(lambda state, _: StepResult(state + 1, effects=("domain",))), 0, id="a"),
+                                 DynamicalCell(DynamicalModel(fail), 0, id="b")])
         with self.assertRaises(ExecutionFailure) as caught:
             population.advance()
         self.assertEqual(population["a"].state, 1)
@@ -205,12 +209,12 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(report.unhandled_effects[0].value, "domain")
 
     def test_broadcast_resume_ejection_and_removal_are_explicit_effects(self):
-        target_model = Model(lambda state, _: state)
-        sender_model = Model(lambda state, _: StepResult(state, effects=(
+        target_model = DynamicalModel(lambda state, _: state)
+        sender_model = DynamicalModel(lambda state, _: StepResult(state, effects=(
             Broadcast("pulse", targets=("target",)), Resume("target"),
             Eject(count=1), Remove(),
         )))
-        population = Population([Cell(sender_model, 0, id="sender"), Cell(target_model, 0, id="target")])
+        population = Population([DynamicalCell(sender_model, 0, id="sender"), DynamicalCell(target_model, 0, id="target")])
         population.send("sender", "old")
         population.suspend("target")
         report = population.advance()

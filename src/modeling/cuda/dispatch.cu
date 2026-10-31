@@ -222,8 +222,19 @@ cudaError_t combine_backward(const T* grad_origin, std::size_t grad_origin_capac
          !valid_capacity(expert_output, expert_capacity, expert_required)) ||
         (grad_weight != nullptr && grad_weight_capacity < static_cast<std::size_t>(plan.selection_count)))
         return cudaErrorInvalidValue;
-    if (expert_required == 0) return cudaSuccess;
-    if (features == 0) return cudaSuccess;
+    if (expert_required == 0) {
+        // A zero feature extent still has one weight gradient per selection.
+        // Its reduction is the empty sum, so initialize every requested
+        // derivative instead of returning with caller storage untouched.
+        if (grad_weight != nullptr && plan.selection_count > 0) {
+            grad_weight_kernel<<<blocks_for(static_cast<std::size_t>(plan.selection_count)),
+                                 kReductionThreads, 0, stream>>>(
+                grad_origin, expert_output, grad_weight, plan.selection_origin,
+                plan.selection_count, features);
+            return cudaGetLastError();
+        }
+        return cudaSuccess;
+    }
     grad_expert_kernel<<<blocks_for(expert_required), kThreads, 0, stream>>>(
         grad_origin, grad_expert, plan.selection_origin, plan.dispatch_weight,
         plan.selection_count, features, expert_required);

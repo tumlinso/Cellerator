@@ -11,7 +11,7 @@ except ImportError:
     scipy_sparse = None
 
 from cellerator.adapters.anndata import AnnDataView, write_observation
-from cellerator.modeling import Model
+from cellerator.modeling import DynamicalModel
 
 
 @unittest.skipUnless(anndata is not None and scipy_sparse is not None,
@@ -45,7 +45,7 @@ class AnnDataAdapterTests(unittest.TestCase):
 
     def test_selected_rows_bind_to_model_cells_with_stable_ids(self):
         view = AnnDataView.from_adata(self.example(), cell_ids=["c-b", "c-a"])
-        cells = view.to_cells(Model(lambda state, _: state))
+        cells = view.to_cells(DynamicalModel(lambda state, _: state))
         self.assertEqual(tuple(cell.id for cell in cells), ("c-b", "c-a"))
         self.assertTrue(scipy_sparse.issparse(cells[0].state["measurement"]))
 

@@ -1,6 +1,6 @@
 """Deterministic, in-process reference execution for heterogeneous populations.
 
-State stays with each Cell; Model objects/parameters may be shared. There is no
+State stays with each DynamicalCell; DynamicalModel objects/parameters may be shared. There is no
 distributed runtime, implicit biological policy, vectorization or device work.
 """
 from __future__ import annotations
@@ -14,7 +14,7 @@ from types import MappingProxyType
 from typing import Any
 
 from ..events import Event
-from ..modeling import Cell, Model, StepResult
+from ..modeling import DynamicalCell, DynamicalModel, StepResult
 from .context import ActiveContext, ContextInputs, Ejection, RoutedInput
 from .effects import Broadcast, Create, Eject, Fork, Remove, Resume, Send, Suspend
 
@@ -106,7 +106,7 @@ class Population:
     unsupported.
     """
 
-    def __init__(self, cells: Iterable[Cell] = (), *, context_capacity: int = 128,
+    def __init__(self, cells: Iterable[DynamicalCell] = (), *, context_capacity: int = 128,
                  overflow: str = "oldest", history: Any = None,
                  recorder: Callable[[ExecutionRecord], None] | None = None):
         prototype = ActiveContext(context_capacity, overflow=overflow)
@@ -118,7 +118,7 @@ class Population:
             raise TypeError("history must provide append(event)")
         self.history = history
         self.recorder = recorder
-        self._cells: dict[Any, Cell] = {}
+        self._cells: dict[Any, DynamicalCell] = {}
         self._seen: set[Any] = set()
         self._contexts: dict[Any, ActiveContext] = {}
         self._pending: dict[Any, list[tuple[float, int, RoutedInput]]] = {}
@@ -133,10 +133,10 @@ class Population:
     def __len__(self) -> int:
         return len(self._cells)
 
-    def __iter__(self) -> Iterator[Cell]:
+    def __iter__(self) -> Iterator[DynamicalCell]:
         return iter(tuple(self._cells.values()))
 
-    def __getitem__(self, cell_id: Any) -> Cell:
+    def __getitem__(self, cell_id: Any) -> DynamicalCell:
         return self._cells[cell_id]
 
     @property
@@ -158,10 +158,10 @@ class Population:
         if self.recorder is not None:
             self.recorder(record)
 
-    def add(self, cell: Cell) -> Cell:
+    def add(self, cell: DynamicalCell) -> DynamicalCell:
         self._mutable()
-        if not isinstance(cell, Cell):
-            raise TypeError("population members must be Cells")
+        if not isinstance(cell, DynamicalCell):
+            raise TypeError("population members must be DynamicalCells")
         hash(cell.id)
         if cell.id is None:
             raise ValueError("population cell identity cannot be None")
@@ -175,12 +175,12 @@ class Population:
         self._record("create", cell.id, cell.time, cell)
         return cell
 
-    def create(self, model: Model, state: Any, *, id: Any = None, time: float = 0.0) -> Cell:
+    def create(self, model: DynamicalModel, state: Any, *, id: Any = None, time: float = 0.0) -> DynamicalCell:
         self._mutable()
-        return self.add(Cell(model, state, id=id, time=time))
+        return self.add(DynamicalCell(model, state, id=id, time=time))
 
-    def remove(self, cell_id: Any) -> Cell:
-        """Remove membership; return the still-valid Cell and report discarded inputs."""
+    def remove(self, cell_id: Any) -> DynamicalCell:
+        """Remove membership; return the still-valid DynamicalCell and report discarded inputs."""
         self._mutable()
         cell = self._cells[cell_id]
         context = self._contexts[cell_id].eject()
@@ -191,7 +191,7 @@ class Population:
         return cell
 
     def fork(self, parent: Any, *, inherit: Callable[[Any], Any], id: Any = None,
-             model: Model | None = None, inherit_context: bool = False) -> Cell:
+             model: DynamicalModel | None = None, inherit_context: bool = False) -> DynamicalCell:
         """Create a child using the caller's explicit state inheritance function.
 
         The model is shared unless overridden. Context membership may be copied
@@ -307,9 +307,9 @@ class Population:
         return selected
 
     def plan(self, ids: Iterable[Any] | None = None, *,
-             group_by: str | Callable[[Cell], Any] = "model",
+             group_by: str | Callable[[DynamicalCell], Any] = "model",
              batch_size: int | None = None) -> tuple[WorkBatch, ...]:
-        """Group selected work by shared Model identity or a caller's work key.
+        """Group selected work by shared DynamicalModel identity or a caller's work key.
 
         This is a resource plan only. It never changes membership, suspension or
         model rules. Group and within-group order follow first occurrence. The

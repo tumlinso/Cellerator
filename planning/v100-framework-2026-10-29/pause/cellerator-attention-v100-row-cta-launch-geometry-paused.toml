@@ -1,0 +1,55 @@
+[benchmark]
+enabled = false
+name = "cellerator-attention-v100-row-cta-launch-geometry"
+revision = 2
+
+[source]
+include = [
+  "cmake/CelleratorConditional.cmake",
+  "cmake/CelleratorFrameworkCUDA.cmake",
+  "include/Cellerator/modeling/cuda/**",
+  "include/Cellerator/execution/conditional/**",
+  "src/modeling/cuda/*.cu",
+  "src/execution/conditional/*.cc",
+  "tests/framework/cuda/attention_smoke.cu",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/docs/draft.md",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/README.md",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/CMakeLists.txt",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/attention_geometry_driver.cu",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/kda_attention_geometry.py",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/kda_attention_geometry_autobench.py",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/task.json",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/task-source-manifest.json",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/base-source-manifest.json",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/candidate-sources/**",
+  "planning/v100-framework-2026-10-29/attention/launch_geometry/autobench-definition.toml",
+]
+
+[protocol]
+id = "cellerator-attention-v100-sm70-row-cta-forward-v1"
+
+[build]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/planning/v100-framework-2026-10-29/attention/launch_geometry/kda_attention_geometry_autobench.py",
+  "--source", "{snapshot}",
+  "--workspace", "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/workspace",
+  "--mode", "prepare",
+]
+expected_seconds = 150
+kill_seconds = 600
+resources = { cpu_cores = 1, host_memory_bytes = 8589934592 }
+
+[[packet]]
+name = "attention-row-cta-geometry-evaluate"
+kind = "timing"
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/planning/v100-framework-2026-10-29/attention/launch_geometry/kda_attention_geometry_autobench.py",
+  "--source", "{snapshot}",
+  "--workspace", "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/workspace",
+  "--mode", "evaluate",
+]
+expected_seconds = 240
+kill_seconds = 600
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }

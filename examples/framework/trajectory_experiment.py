@@ -1,6 +1,6 @@
 """Run one cellular model through input changes and observe its trajectory."""
 from cellerator.events import Event
-from cellerator.modeling import Cell, Experiment, Model, StepResult
+from cellerator.modeling import DynamicalCell, Experiment, DynamicalModel, StepResult
 
 
 def update(state, context):
@@ -13,12 +13,12 @@ def update(state, context):
     return StepResult({"expression": expression}, events=(event,))
 
 
-model = Model(
+model = DynamicalModel(
     update,
     observation=lambda state, context: {"RNA": state["expression"]},
     parameters={"degradation": 0.02},
 )
-cell = Cell(model, {"expression": 0.0}, id="founder")
+cell = DynamicalCell(model, {"expression": 0.0}, id="founder")
 result = Experiment(
     cell,
     times=(0.5, 1.0, 2.0),

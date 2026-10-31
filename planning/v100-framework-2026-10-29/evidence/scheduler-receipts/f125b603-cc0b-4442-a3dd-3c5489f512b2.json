@@ -1,0 +1,567 @@
+{
+  "attempt": {
+    "attempt_id": "9e162bab-4229-4bc8-a69d-3080138750f0",
+    "cleanup_verified": true,
+    "created_at": "2026-10-29T19:28:05.836503Z",
+    "error": {},
+    "evidence": [
+      {
+        "adapter_errors": [],
+        "kind": "execution_preconditions",
+        "operation_id": "preconditions:9e162bab-4229-4bc8-a69d-3080138750f0",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 2,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "inventory_observed_at": "2026-10-29T19:28:07.620067+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:28:09.804529+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:28:07.620067+00:00",
+                        "process_observed_at": "2026-10-29T19:28:09.804529+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "inventory_observed_at": "2026-10-29T19:28:13.317130+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:28:15.759032+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "utilization_percent": 3
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:28:13.317130+00:00",
+                        "process_observed_at": "2026-10-29T19:28:15.759032+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                        "state": "busy"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "inventory_observed_at": "2026-10-29T19:28:19.286754+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:28:21.709063+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "utilization_percent": 3
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:28:19.286754+00:00",
+                        "process_observed_at": "2026-10-29T19:28:21.709063+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                        "state": "busy"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "inventory_observed_at": "2026-10-29T19:28:25.202688+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:28:27.641208+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "utilization_percent": 3
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:28:25.202688+00:00",
+                        "process_observed_at": "2026-10-29T19:28:27.641208+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                        "state": "busy"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "inventory_observed_at": "2026-10-29T19:28:31.144927+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:28:33.598013+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:28:31.144927+00:00",
+                        "process_observed_at": "2026-10-29T19:28:33.598013+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "inventory_observed_at": "2026-10-29T19:28:37.179459+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-29T19:28:39.660183+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-29T19:28:37.179459+00:00",
+                        "process_observed_at": "2026-10-29T19:28:39.660183+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 2,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      2684354560
+                    ],
+                    "timeout_seconds": 60.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      }
+    ],
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        }
+      ],
+      "claim_id": "4081ff37-9756-4c3f-ab2a-75a0b26671ad",
+      "fencing_token": 1200,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 2,
+            "inventory_observed_at": "2026-10-29T19:27:42.347752+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:83:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-29T19:27:42.347752+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 3,
+            "uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          },
+          "capabilities": [
+            "memory-accounting-only",
+            "whole-device-exclusive-admission",
+            "shared-admission",
+            "nvidia-smi-compute-process-telemetry"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+          "schema_version": 1,
+          "topology": {
+            "links": [
+              {
+                "relation": "NV6",
+                "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+                "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                "type": "nvlink"
+              },
+              {
+                "relation": "SYS",
+                "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                "type": "sys"
+              },
+              {
+                "relation": "PHB",
+                "source_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                "type": "pcie"
+              }
+            ],
+            "pci_bus_id": "00000000:83:00.0",
+            "topology_state": "observed"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-433507958f06b20da9648dd091feb835.service",
+      "identity": "9e162bab-4229-4bc8-a69d-3080138750f0",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-433507958f06b20da9648dd091feb835.service",
+        "description": "Device Scheduler attempt 9e162bab-4229-4bc8-a69d-3080138750f0",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "a59e9fa9023347dbab3154e189df707d",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-10-29T19:28:39.748399Z"
+    },
+    "finished_at": "2026-10-29T19:28:46.995588Z",
+    "id": "9e162bab-4229-4bc8-a69d-3080138750f0",
+    "job_id": "f125b603-cc0b-4442-a3dd-3c5489f512b2",
+    "operation_id": "start:9e162bab-4229-4bc8-a69d-3080138750f0",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:9e162bab-4229-4bc8-a69d-3080138750f0",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "observation": {
+                  "consecutive_samples": 2,
+                  "samples": [
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "inventory_observed_at": "2026-10-29T19:28:07.620067+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:28:09.804529+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:28:07.620067+00:00",
+                      "process_observed_at": "2026-10-29T19:28:09.804529+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "inventory_observed_at": "2026-10-29T19:28:13.317130+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:28:15.759032+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "utilization_percent": 3
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:28:13.317130+00:00",
+                      "process_observed_at": "2026-10-29T19:28:15.759032+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                      "state": "busy"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "inventory_observed_at": "2026-10-29T19:28:19.286754+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:28:21.709063+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "utilization_percent": 3
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:28:19.286754+00:00",
+                      "process_observed_at": "2026-10-29T19:28:21.709063+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                      "state": "busy"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "inventory_observed_at": "2026-10-29T19:28:25.202688+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:28:27.641208+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "utilization_percent": 3
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:28:25.202688+00:00",
+                      "process_observed_at": "2026-10-29T19:28:27.641208+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": "GPU process, utilization, or free-memory requirement is not satisfied",
+                      "state": "busy"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "inventory_observed_at": "2026-10-29T19:28:31.144927+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:28:33.598013+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:28:31.144927+00:00",
+                      "process_observed_at": "2026-10-29T19:28:33.598013+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "inventory_observed_at": "2026-10-29T19:28:37.179459+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-29T19:28:39.660183+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-29T19:28:37.179459+00:00",
+                      "process_observed_at": "2026-10-29T19:28:39.660183+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    }
+                  ],
+                  "state": "observed"
+                },
+                "parameters": {
+                  "consecutive_samples": 2,
+                  "interval_seconds": 1.0,
+                  "max_utilization_percent": 0,
+                  "minimum_free_bytes": [
+                    2684354560
+                  ],
+                  "timeout_seconds": 60.0
+                },
+                "precondition_index": 0
+              },
+              "name": "gpu.quiescence",
+              "resource_ids": [
+                "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+              ],
+              "schema_version": 1,
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "state": "verified"
+    },
+    "result": {
+      "active_state": "active",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-433507958f06b20da9648dd091feb835.service",
+        "invocation_id": "a59e9fa9023347dbab3154e189df707d",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt 9e162bab-4229-4bc8-a69d-3080138750f0"
+      },
+      "exit_code": 0,
+      "invocation_id": "a59e9fa9023347dbab3154e189df707d",
+      "logs": "{\"case\": \"grouped_linear\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-r3/cellerator_framework_cuda_grouped_linear_smoke\", \"--gpu\"], \"returncode\": 0, \"seconds\": 5.86881947517395, \"binary_sha256\": \"0676997185dda31b35fb76400bffa29ea94aaf4d336cbae70504ca64ac116aff\", \"log\": \"/tmp/cellerator-v100-results/r3-gpu2/grouped_linear-none.log\", \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\"}\nDEVICE name=Tesla V100-SXM2-16GB cc=7.0 visible_index=0\nragged_0.forward max_abs_error=0\nragged_0.grouped_cublas_forward max_abs_error=1.19209e-07\nragged_0.dx_overwrite max_abs_error=1.19209e-07\nragged_0.dw_overwrite_0 max_abs_error=2.98023e-08\nragged_0.dw_overwrite_1 max_abs_error=0\nragged_0.dw_overwrite_2 max_abs_error=2.98023e-08\nragged_0.dw_overwrite_3 max_abs_error=5.96046e-08\nragged_0.dx_accumulate max_abs_error=1.19209e-07\nragged_0.dw_accumulate_0 max_abs_error=5.96046e-08\nragged_0.dw_accumulate_1 max_abs_error=0\nragged_0.dw_accumulate_2 max_abs_error=5.96046e-08\nragged_0.dw_accumulate_3 max_abs_error=5.96046e-08\nPASS ragged_0 dtype=fp32 experts=4 rows=9 in=7 out=5\nragged_0.forward max_abs_error=0.00062117\nragged_0.grouped_cublas_forward max_abs_error=0.00062117\nragged_0.dx_overwrite max_abs_error=0.000473022\nragged_0.dw_overwrite_0 max_abs_error=0.000215232\nragged_0.dw_overwrite_1 max_abs_error=0\nragged_0.dw_overwrite_2 max_abs_error=0.000218123\nragged_0.dw_overwrite_3 max_abs_error=0.000460863\nragged_0.dx_accumulate max_abs_error=0.000531197\nragged_0.dw_accumulate_0 max_abs_error=0.000258505\nragged_0.dw_accumulate_1 max_abs_error=0\nragged_0.dw_accumulate_2 max_abs_error=0.000316024\nragged_0.dw_accumulate_3 max_abs_error=0.000620961\nPASS ragged_0 dtype=fp16 experts=4 rows=9 in=7 out=5\nragged_1.forward max_abs_error=1.19209e-07\nragged_1.grouped_cublas_forward max_abs_error=1.78814e-07\nragged_1.dx_overwrite max_abs_error=2.38419e-07\nragged_1.dw_overwrite_0 max_abs_error=0\nragged_1.dw_overwrite_1 max_abs_error=1.19209e-07\nragged_1.dw_overwrite_2 max_abs_error=2.38419e-07\nragged_1.dx_accumulate max_abs_error=2.38419e-07\nragged_1.dw_accumulate_0 max_abs_error=1.19209e-07\nragged_1.dw_accumulate_1 max_abs_error=1.19209e-07\nragged_1.dw_accumulate_2 max_abs_error=2.38419e-07\nPASS ragged_1 dtype=fp32 experts=3 rows=17 in=8 out=16\nragged_1.forward max_abs_error=0.000664949\nragged_1.grouped_cublas_forward max_abs_error=0.000664949\nragged_1.dx_overwrite max_abs_error=0.00088346\nragged_1.dw_overwrite_0 max_abs_error=0.000333577\nragged_1.dw_overwrite_1 max_abs_error=0.000635624\nragged_1.dw_overwrite_2 max_abs_error=0.000752091\nragged_1.dx_accumulate max_abs_error=0.00141668\nragged_1.dw_accumulate_0 max_abs_error=0.000344515\nragged_1.dw_accumulate_1 max_abs_error=0.000622153\nragged_1.dw_accumulate_2 max_abs_error=0.000967026\nPASS ragged_1 dtype=fp16 experts=3 rows=17 in=8 out=16\nragged_2.forward max_abs_error=0\nragged_2.grouped_cublas_forward max_abs_error=5.96046e-08\nragged_2.dx_overwrite max_abs_error=1.19209e-07\nragged_2.dw_overwrite_0 max_abs_error=5.96046e-08\nragged_2.dw_overwrite_1 max_abs_error=2.98023e-08\nragged_2.dw_overwrite_2 max_abs_error=0\nragged_2.dx_accumulate max_abs_error=1.19209e-07\nragged_2.dw_accumulate_0 max_abs_error=5.96046e-08\nragged_2.dw_accumulate_1 max_abs_error=5.96046e-08\nragged_2.dw_accumulate_2 max_abs_error=2.98023e-08\nPASS ragged_2 dtype=fp32 experts=3 rows=8 in=3 out=9\nragged_2.forward max_abs_error=0.000273287\nragged_2.grouped_cublas_forward max_abs_error=0.000273287\nragged_2.dx_overwrite max_abs_error=0.000596344\nragged_2.dw_overwrite_0 max_abs_error=0.000399649\nragged_2.dw_overwrite_1 max_abs_error=0.000350416\nragged_2.dw_overwrite_2 max_abs_error=0.000153854\nragged_2.dx_accumulate max_abs_error=0.000596344\nragged_2.dw_accumulate_0 max_abs_error=0.000394583\nragged_2.dw_accumulate_1 max_abs_error=0.000521302\nragged_2.dw_accumulate_2 max_abs_error=0.000240684\nPASS ragged_2 dtype=fp16 experts=3 rows=8 in=3 out=9\n{\"case\": \"packed_embedding\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-r3/cellerator_framework_cuda_packed_embedding_smoke\"], \"returncode\": 0, \"seconds\": 1.2060692310333252, \"binary_sha256\": \"d8d89ee30815f7caecf3f2f6d9ab4daf399ca661c1f1f9b13e6cbbdf6a9ded07\", \"log\": \"/tmp/cellerator-v100-results/r3-gpu2/packed_embedding-none.log\", \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\"}\npacked embedding oracle smoke passed\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "success",
+      "state": "succeeded",
+      "stdout": "{\"case\": \"grouped_linear\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-r3/cellerator_framework_cuda_grouped_linear_smoke\", \"--gpu\"], \"returncode\": 0, \"seconds\": 5.86881947517395, \"binary_sha256\": \"0676997185dda31b35fb76400bffa29ea94aaf4d336cbae70504ca64ac116aff\", \"log\": \"/tmp/cellerator-v100-results/r3-gpu2/grouped_linear-none.log\", \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\"}\nDEVICE name=Tesla V100-SXM2-16GB cc=7.0 visible_index=0\nragged_0.forward max_abs_error=0\nragged_0.grouped_cublas_forward max_abs_error=1.19209e-07\nragged_0.dx_overwrite max_abs_error=1.19209e-07\nragged_0.dw_overwrite_0 max_abs_error=2.98023e-08\nragged_0.dw_overwrite_1 max_abs_error=0\nragged_0.dw_overwrite_2 max_abs_error=2.98023e-08\nragged_0.dw_overwrite_3 max_abs_error=5.96046e-08\nragged_0.dx_accumulate max_abs_error=1.19209e-07\nragged_0.dw_accumulate_0 max_abs_error=5.96046e-08\nragged_0.dw_accumulate_1 max_abs_error=0\nragged_0.dw_accumulate_2 max_abs_error=5.96046e-08\nragged_0.dw_accumulate_3 max_abs_error=5.96046e-08\nPASS ragged_0 dtype=fp32 experts=4 rows=9 in=7 out=5\nragged_0.forward max_abs_error=0.00062117\nragged_0.grouped_cublas_forward max_abs_error=0.00062117\nragged_0.dx_overwrite max_abs_error=0.000473022\nragged_0.dw_overwrite_0 max_abs_error=0.000215232\nragged_0.dw_overwrite_1 max_abs_error=0\nragged_0.dw_overwrite_2 max_abs_error=0.000218123\nragged_0.dw_overwrite_3 max_abs_error=0.000460863\nragged_0.dx_accumulate max_abs_error=0.000531197\nragged_0.dw_accumulate_0 max_abs_error=0.000258505\nragged_0.dw_accumulate_1 max_abs_error=0\nragged_0.dw_accumulate_2 max_abs_error=0.000316024\nragged_0.dw_accumulate_3 max_abs_error=0.000620961\nPASS ragged_0 dtype=fp16 experts=4 rows=9 in=7 out=5\nragged_1.forward max_abs_error=1.19209e-07\nragged_1.grouped_cublas_forward max_abs_error=1.78814e-07\nragged_1.dx_overwrite max_abs_error=2.38419e-07\nragged_1.dw_overwrite_0 max_abs_error=0\nragged_1.dw_overwrite_1 max_abs_error=1.19209e-07\nragged_1.dw_overwrite_2 max_abs_error=2.38419e-07\nragged_1.dx_accumulate max_abs_error=2.38419e-07\nragged_1.dw_accumulate_0 max_abs_error=1.19209e-07\nragged_1.dw_accumulate_1 max_abs_error=1.19209e-07\nragged_1.dw_accumulate_2 max_abs_error=2.38419e-07\nPASS ragged_1 dtype=fp32 experts=3 rows=17 in=8 out=16\nragged_1.forward max_abs_error=0.000664949\nragged_1.grouped_cublas_forward max_abs_error=0.000664949\nragged_1.dx_overwrite max_abs_error=0.00088346\nragged_1.dw_overwrite_0 max_abs_error=0.000333577\nragged_1.dw_overwrite_1 max_abs_error=0.000635624\nragged_1.dw_overwrite_2 max_abs_error=0.000752091\nragged_1.dx_accumulate max_abs_error=0.00141668\nragged_1.dw_accumulate_0 max_abs_error=0.000344515\nragged_1.dw_accumulate_1 max_abs_error=0.000622153\nragged_1.dw_accumulate_2 max_abs_error=0.000967026\nPASS ragged_1 dtype=fp16 experts=3 rows=17 in=8 out=16\nragged_2.forward max_abs_error=0\nragged_2.grouped_cublas_forward max_abs_error=5.96046e-08\nragged_2.dx_overwrite max_abs_error=1.19209e-07\nragged_2.dw_overwrite_0 max_abs_error=5.96046e-08\nragged_2.dw_overwrite_1 max_abs_error=2.98023e-08\nragged_2.dw_overwrite_2 max_abs_error=0\nragged_2.dx_accumulate max_abs_error=1.19209e-07\nragged_2.dw_accumulate_0 max_abs_error=5.96046e-08\nragged_2.dw_accumulate_1 max_abs_error=5.96046e-08\nragged_2.dw_accumulate_2 max_abs_error=2.98023e-08\nPASS ragged_2 dtype=fp32 experts=3 rows=8 in=3 out=9\nragged_2.forward max_abs_error=0.000273287\nragged_2.grouped_cublas_forward max_abs_error=0.000273287\nragged_2.dx_overwrite max_abs_error=0.000596344\nragged_2.dw_overwrite_0 max_abs_error=0.000399649\nragged_2.dw_overwrite_1 max_abs_error=0.000350416\nragged_2.dw_overwrite_2 max_abs_error=0.000153854\nragged_2.dx_accumulate max_abs_error=0.000596344\nragged_2.dw_accumulate_0 max_abs_error=0.000394583\nragged_2.dw_accumulate_1 max_abs_error=0.000521302\nragged_2.dw_accumulate_2 max_abs_error=0.000240684\nPASS ragged_2 dtype=fp16 experts=3 rows=8 in=3 out=9\n{\"case\": \"packed_embedding\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-r3/cellerator_framework_cuda_packed_embedding_smoke\"], \"returncode\": 0, \"seconds\": 1.2060692310333252, \"binary_sha256\": \"d8d89ee30815f7caecf3f2f6d9ab4daf399ca661c1f1f9b13e6cbbdf6a9ded07\", \"log\": \"/tmp/cellerator-v100-results/r3-gpu2/packed_embedding-none.log\", \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\"}\npacked embedding oracle smoke passed\n",
+      "substate": "exited",
+      "unit_name": "device-scheduler-attempt-433507958f06b20da9648dd091feb835.service"
+    },
+    "started_at": "2026-10-29T19:28:39.748493Z",
+    "state": "succeeded"
+  },
+  "attempt_count": 1,
+  "attempt_id": "9e162bab-4229-4bc8-a69d-3080138750f0",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-29T19:27:38.980538Z",
+  "decision_id": "b5527d22-7700-4f31-81be-3b053cf02126",
+  "id": "f125b603-cc0b-4442-a3dd-3c5489f512b2",
+  "job_id": "f125b603-cc0b-4442-a3dd-3c5489f512b2",
+  "lease_binding": null,
+  "lease_fencing_token": 1200,
+  "lease_id": "4081ff37-9756-4c3f-ab2a-75a0b26671ad",
+  "lease_state": "released",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "active",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-433507958f06b20da9648dd091feb835.service",
+      "invocation_id": "a59e9fa9023347dbab3154e189df707d",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt 9e162bab-4229-4bc8-a69d-3080138750f0"
+    },
+    "exit_code": 0,
+    "invocation_id": "a59e9fa9023347dbab3154e189df707d",
+    "logs": "{\"case\": \"grouped_linear\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-r3/cellerator_framework_cuda_grouped_linear_smoke\", \"--gpu\"], \"returncode\": 0, \"seconds\": 5.86881947517395, \"binary_sha256\": \"0676997185dda31b35fb76400bffa29ea94aaf4d336cbae70504ca64ac116aff\", \"log\": \"/tmp/cellerator-v100-results/r3-gpu2/grouped_linear-none.log\", \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\"}\nDEVICE name=Tesla V100-SXM2-16GB cc=7.0 visible_index=0\nragged_0.forward max_abs_error=0\nragged_0.grouped_cublas_forward max_abs_error=1.19209e-07\nragged_0.dx_overwrite max_abs_error=1.19209e-07\nragged_0.dw_overwrite_0 max_abs_error=2.98023e-08\nragged_0.dw_overwrite_1 max_abs_error=0\nragged_0.dw_overwrite_2 max_abs_error=2.98023e-08\nragged_0.dw_overwrite_3 max_abs_error=5.96046e-08\nragged_0.dx_accumulate max_abs_error=1.19209e-07\nragged_0.dw_accumulate_0 max_abs_error=5.96046e-08\nragged_0.dw_accumulate_1 max_abs_error=0\nragged_0.dw_accumulate_2 max_abs_error=5.96046e-08\nragged_0.dw_accumulate_3 max_abs_error=5.96046e-08\nPASS ragged_0 dtype=fp32 experts=4 rows=9 in=7 out=5\nragged_0.forward max_abs_error=0.00062117\nragged_0.grouped_cublas_forward max_abs_error=0.00062117\nragged_0.dx_overwrite max_abs_error=0.000473022\nragged_0.dw_overwrite_0 max_abs_error=0.000215232\nragged_0.dw_overwrite_1 max_abs_error=0\nragged_0.dw_overwrite_2 max_abs_error=0.000218123\nragged_0.dw_overwrite_3 max_abs_error=0.000460863\nragged_0.dx_accumulate max_abs_error=0.000531197\nragged_0.dw_accumulate_0 max_abs_error=0.000258505\nragged_0.dw_accumulate_1 max_abs_error=0\nragged_0.dw_accumulate_2 max_abs_error=0.000316024\nragged_0.dw_accumulate_3 max_abs_error=0.000620961\nPASS ragged_0 dtype=fp16 experts=4 rows=9 in=7 out=5\nragged_1.forward max_abs_error=1.19209e-07\nragged_1.grouped_cublas_forward max_abs_error=1.78814e-07\nragged_1.dx_overwrite max_abs_error=2.38419e-07\nragged_1.dw_overwrite_0 max_abs_error=0\nragged_1.dw_overwrite_1 max_abs_error=1.19209e-07\nragged_1.dw_overwrite_2 max_abs_error=2.38419e-07\nragged_1.dx_accumulate max_abs_error=2.38419e-07\nragged_1.dw_accumulate_0 max_abs_error=1.19209e-07\nragged_1.dw_accumulate_1 max_abs_error=1.19209e-07\nragged_1.dw_accumulate_2 max_abs_error=2.38419e-07\nPASS ragged_1 dtype=fp32 experts=3 rows=17 in=8 out=16\nragged_1.forward max_abs_error=0.000664949\nragged_1.grouped_cublas_forward max_abs_error=0.000664949\nragged_1.dx_overwrite max_abs_error=0.00088346\nragged_1.dw_overwrite_0 max_abs_error=0.000333577\nragged_1.dw_overwrite_1 max_abs_error=0.000635624\nragged_1.dw_overwrite_2 max_abs_error=0.000752091\nragged_1.dx_accumulate max_abs_error=0.00141668\nragged_1.dw_accumulate_0 max_abs_error=0.000344515\nragged_1.dw_accumulate_1 max_abs_error=0.000622153\nragged_1.dw_accumulate_2 max_abs_error=0.000967026\nPASS ragged_1 dtype=fp16 experts=3 rows=17 in=8 out=16\nragged_2.forward max_abs_error=0\nragged_2.grouped_cublas_forward max_abs_error=5.96046e-08\nragged_2.dx_overwrite max_abs_error=1.19209e-07\nragged_2.dw_overwrite_0 max_abs_error=5.96046e-08\nragged_2.dw_overwrite_1 max_abs_error=2.98023e-08\nragged_2.dw_overwrite_2 max_abs_error=0\nragged_2.dx_accumulate max_abs_error=1.19209e-07\nragged_2.dw_accumulate_0 max_abs_error=5.96046e-08\nragged_2.dw_accumulate_1 max_abs_error=5.96046e-08\nragged_2.dw_accumulate_2 max_abs_error=2.98023e-08\nPASS ragged_2 dtype=fp32 experts=3 rows=8 in=3 out=9\nragged_2.forward max_abs_error=0.000273287\nragged_2.grouped_cublas_forward max_abs_error=0.000273287\nragged_2.dx_overwrite max_abs_error=0.000596344\nragged_2.dw_overwrite_0 max_abs_error=0.000399649\nragged_2.dw_overwrite_1 max_abs_error=0.000350416\nragged_2.dw_overwrite_2 max_abs_error=0.000153854\nragged_2.dx_accumulate max_abs_error=0.000596344\nragged_2.dw_accumulate_0 max_abs_error=0.000394583\nragged_2.dw_accumulate_1 max_abs_error=0.000521302\nragged_2.dw_accumulate_2 max_abs_error=0.000240684\nPASS ragged_2 dtype=fp16 experts=3 rows=8 in=3 out=9\n{\"case\": \"packed_embedding\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-r3/cellerator_framework_cuda_packed_embedding_smoke\"], \"returncode\": 0, \"seconds\": 1.2060692310333252, \"binary_sha256\": \"d8d89ee30815f7caecf3f2f6d9ab4daf399ca661c1f1f9b13e6cbbdf6a9ded07\", \"log\": \"/tmp/cellerator-v100-results/r3-gpu2/packed_embedding-none.log\", \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\"}\npacked embedding oracle smoke passed\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "success",
+    "state": "succeeded",
+    "stdout": "{\"case\": \"grouped_linear\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-r3/cellerator_framework_cuda_grouped_linear_smoke\", \"--gpu\"], \"returncode\": 0, \"seconds\": 5.86881947517395, \"binary_sha256\": \"0676997185dda31b35fb76400bffa29ea94aaf4d336cbae70504ca64ac116aff\", \"log\": \"/tmp/cellerator-v100-results/r3-gpu2/grouped_linear-none.log\", \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\"}\nDEVICE name=Tesla V100-SXM2-16GB cc=7.0 visible_index=0\nragged_0.forward max_abs_error=0\nragged_0.grouped_cublas_forward max_abs_error=1.19209e-07\nragged_0.dx_overwrite max_abs_error=1.19209e-07\nragged_0.dw_overwrite_0 max_abs_error=2.98023e-08\nragged_0.dw_overwrite_1 max_abs_error=0\nragged_0.dw_overwrite_2 max_abs_error=2.98023e-08\nragged_0.dw_overwrite_3 max_abs_error=5.96046e-08\nragged_0.dx_accumulate max_abs_error=1.19209e-07\nragged_0.dw_accumulate_0 max_abs_error=5.96046e-08\nragged_0.dw_accumulate_1 max_abs_error=0\nragged_0.dw_accumulate_2 max_abs_error=5.96046e-08\nragged_0.dw_accumulate_3 max_abs_error=5.96046e-08\nPASS ragged_0 dtype=fp32 experts=4 rows=9 in=7 out=5\nragged_0.forward max_abs_error=0.00062117\nragged_0.grouped_cublas_forward max_abs_error=0.00062117\nragged_0.dx_overwrite max_abs_error=0.000473022\nragged_0.dw_overwrite_0 max_abs_error=0.000215232\nragged_0.dw_overwrite_1 max_abs_error=0\nragged_0.dw_overwrite_2 max_abs_error=0.000218123\nragged_0.dw_overwrite_3 max_abs_error=0.000460863\nragged_0.dx_accumulate max_abs_error=0.000531197\nragged_0.dw_accumulate_0 max_abs_error=0.000258505\nragged_0.dw_accumulate_1 max_abs_error=0\nragged_0.dw_accumulate_2 max_abs_error=0.000316024\nragged_0.dw_accumulate_3 max_abs_error=0.000620961\nPASS ragged_0 dtype=fp16 experts=4 rows=9 in=7 out=5\nragged_1.forward max_abs_error=1.19209e-07\nragged_1.grouped_cublas_forward max_abs_error=1.78814e-07\nragged_1.dx_overwrite max_abs_error=2.38419e-07\nragged_1.dw_overwrite_0 max_abs_error=0\nragged_1.dw_overwrite_1 max_abs_error=1.19209e-07\nragged_1.dw_overwrite_2 max_abs_error=2.38419e-07\nragged_1.dx_accumulate max_abs_error=2.38419e-07\nragged_1.dw_accumulate_0 max_abs_error=1.19209e-07\nragged_1.dw_accumulate_1 max_abs_error=1.19209e-07\nragged_1.dw_accumulate_2 max_abs_error=2.38419e-07\nPASS ragged_1 dtype=fp32 experts=3 rows=17 in=8 out=16\nragged_1.forward max_abs_error=0.000664949\nragged_1.grouped_cublas_forward max_abs_error=0.000664949\nragged_1.dx_overwrite max_abs_error=0.00088346\nragged_1.dw_overwrite_0 max_abs_error=0.000333577\nragged_1.dw_overwrite_1 max_abs_error=0.000635624\nragged_1.dw_overwrite_2 max_abs_error=0.000752091\nragged_1.dx_accumulate max_abs_error=0.00141668\nragged_1.dw_accumulate_0 max_abs_error=0.000344515\nragged_1.dw_accumulate_1 max_abs_error=0.000622153\nragged_1.dw_accumulate_2 max_abs_error=0.000967026\nPASS ragged_1 dtype=fp16 experts=3 rows=17 in=8 out=16\nragged_2.forward max_abs_error=0\nragged_2.grouped_cublas_forward max_abs_error=5.96046e-08\nragged_2.dx_overwrite max_abs_error=1.19209e-07\nragged_2.dw_overwrite_0 max_abs_error=5.96046e-08\nragged_2.dw_overwrite_1 max_abs_error=2.98023e-08\nragged_2.dw_overwrite_2 max_abs_error=0\nragged_2.dx_accumulate max_abs_error=1.19209e-07\nragged_2.dw_accumulate_0 max_abs_error=5.96046e-08\nragged_2.dw_accumulate_1 max_abs_error=5.96046e-08\nragged_2.dw_accumulate_2 max_abs_error=2.98023e-08\nPASS ragged_2 dtype=fp32 experts=3 rows=8 in=3 out=9\nragged_2.forward max_abs_error=0.000273287\nragged_2.grouped_cublas_forward max_abs_error=0.000273287\nragged_2.dx_overwrite max_abs_error=0.000596344\nragged_2.dw_overwrite_0 max_abs_error=0.000399649\nragged_2.dw_overwrite_1 max_abs_error=0.000350416\nragged_2.dw_overwrite_2 max_abs_error=0.000153854\nragged_2.dx_accumulate max_abs_error=0.000596344\nragged_2.dw_accumulate_0 max_abs_error=0.000394583\nragged_2.dw_accumulate_1 max_abs_error=0.000521302\nragged_2.dw_accumulate_2 max_abs_error=0.000240684\nPASS ragged_2 dtype=fp16 experts=3 rows=8 in=3 out=9\n{\"case\": \"packed_embedding\", \"tool\": \"none\", \"argv\": [\"/tmp/cellerator-v100-framework-r3/cellerator_framework_cuda_packed_embedding_smoke\"], \"returncode\": 0, \"seconds\": 1.2060692310333252, \"binary_sha256\": \"d8d89ee30815f7caecf3f2f6d9ab4daf399ca661c1f1f9b13e6cbbdf6a9ded07\", \"log\": \"/tmp/cellerator-v100-results/r3-gpu2/packed_embedding-none.log\", \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\"}\npacked embedding oracle smoke passed\n",
+    "substate": "exited",
+    "unit_name": "device-scheduler-attempt-433507958f06b20da9648dd091feb835.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python",
+      "/home/tumlinson/Cellerator/scripts/validation/framework_cuda_suite.py",
+      "--build",
+      "/tmp/cellerator-v100-framework-r3",
+      "--cases",
+      "grouped_linear",
+      "packed_embedding",
+      "--output",
+      "/tmp/cellerator-v100-results/r3-gpu2"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "event_trigger": null,
+    "expected_duration_seconds": 30.0,
+    "flexible": false,
+    "idempotency_key": "cellerator-v100-corrected-r3-gpu2-20261029",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "kill_timeout_seconds": 330.0,
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 2,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 60
+        },
+        "schema_version": 1
+      }
+    ],
+    "preemption_action": "abandon",
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 2147483648.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "retention_policy": null,
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "cellerator-v100-correctness",
+      "gpu.exclusive"
+    ],
+    "termination_grace_seconds": 10.0,
+    "timeout_seconds": 360.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "succeeded",
+  "updated_at": "2026-10-29T19:28:46.995588Z"
+}

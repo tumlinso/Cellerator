@@ -113,6 +113,26 @@ class AnnDataView:
         value = self.values[i:i + 1, :]
         return value.copy() if copy else value
 
+    def align_features(
+        self,
+        binding: Any,
+        requested_ids: Sequence[Hashable] | None = None,
+    ) -> tuple["AnnDataView", Any]:
+        """Align this sparse-preserving view to a model-local feature binding.
+
+        Returns the aligned view and its reusable ``PreparedAlignment``. Alias
+        resolution and biological compatibility are owned by the binding;
+        this adapter only gathers the selected matrix columns and carries the
+        resulting canonical output order.
+        """
+        from cellerator.biology import FeatureBinding
+
+        if not isinstance(binding, FeatureBinding):
+            raise TypeError("binding must be a FeatureBinding")
+        alignment = binding.prepare(self.feature_ids, requested_ids)
+        values = alignment.gather(self.values, axis=1)
+        return AnnDataView(values, self.cell_ids, alignment.requested_ids, self.source), alignment
+
     def to_cell_states(self, *, field: str = "measurement", copy: bool = False) -> dict[Hashable, dict[str, Any]]:
         """Create model-neutral state records while retaining the feature axis."""
         return {
@@ -126,12 +146,12 @@ class AnnDataView:
 
     def to_cells(self, model: Any, *, state_factory: Any = None, copy: bool = False,
                  start_time: float = 0.0) -> tuple[Any, ...]:
-        """Bind selected measurement states to `cellerator.modeling.Cell` objects.
+        """Bind selected measurement states to `cellerator.modeling.DynamicalCell` objects.
 
         A caller may supply ``state_factory(cell_id, row, feature_ids, source)``
         to construct domain-specific, latent, or externally owned state.
         """
-        from cellerator.modeling import Cell
+        from cellerator.modeling import DynamicalCell
 
         if state_factory is None:
             states = self.to_cell_states(copy=copy)
@@ -139,13 +159,33 @@ class AnnDataView:
             states = {identity: state_factory(identity, self.row(identity, copy=copy),
                                                self.feature_ids, self.source)
                       for identity in self.cell_ids}
-        return tuple(Cell(model, states[identity], id=identity, time=start_time)
+        return tuple(DynamicalCell(model, states[identity], id=identity, time=start_time)
                      for identity in self.cell_ids)
 
 
 def from_adata(adata: Any, **kwargs: Any) -> AnnDataView:
     """Convenience spelling for :meth:`AnnDataView.from_adata`."""
     return AnnDataView.from_adata(adata, **kwargs)
+
+
+def from_adata_bound(
+    adata: Any,
+    binding: Any,
+    *,
+    requested_ids: Sequence[Hashable] | None = None,
+    **kwargs: Any,
+) -> tuple[AnnDataView, Any]:
+    """Read an AnnData matrix and align its named features to a binding.
+
+    Source feature names are read once and may resolve through binding aliases.
+    ``requested_ids`` declares the output order; matrix sparsity and cell row
+    order are preserved. Pass ordinary ``from_adata`` selection options such
+    as ``layer``, ``use_raw``, ``cell_ids``, and ``copy`` through ``kwargs``.
+    """
+    if "feature_ids" in kwargs:
+        raise ValueError("use requested_ids to select the binding-aligned feature order")
+    view = AnnDataView.from_adata(adata, **kwargs)
+    return view.align_features(binding, requested_ids)
 
 
 def write_observation(
@@ -253,4 +293,4 @@ def write_observation(
     return out
 
 
-__all__ = ["AnnDataView", "from_adata", "write_observation"]
+__all__ = ["AnnDataView", "from_adata", "from_adata_bound", "write_observation"]

@@ -1,0 +1,21 @@
+{
+  "attempt_id": "a49f689c-8359-41a8-bd1d-02293c6f4570",
+  "cleanup_verified": true,
+  "job_id": "8442581b-0a52-4373-b812-61d8e79c225f",
+  "stderr": {
+    "omitted_lines": 0,
+    "original_bytes": 0,
+    "returned_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": "",
+    "truncated": false
+  },
+  "stdout": {
+    "omitted_lines": 0,
+    "original_bytes": 3470,
+    "returned_bytes": 3470,
+    "sha256": "b5f81ef59cb92fd01c9231cd4985c685196ad2796f27a2d96ec1fe3ef77bb9c2",
+    "text": "========= COMPUTE-SANITIZER\ntest_composed_training_shared_parameters_and_standard_optimizer (test_nn_grouped_linear.GroupedLinearNativeTests.test_composed_training_shared_parameters_and_standard_optimizer) ... ok\ntest_fp16_fp32_ragged_forward_and_both_vjps (test_nn_grouped_linear.GroupedLinearNativeTests.test_fp16_fp32_ragged_forward_and_both_vjps) ... ok\ntest_fp32_master_to_half_compute_gradients_reach_original_leaf (test_nn_grouped_linear.GroupedLinearNativeTests.test_fp32_master_to_half_compute_gradients_reach_original_leaf) ... ok\ntest_noncontiguous_operands_and_nondefault_stream (test_nn_grouped_linear.GroupedLinearNativeTests.test_noncontiguous_operands_and_nondefault_stream) ... ok\ntest_saved_parameter_mutation_and_higher_order_are_rejected (test_nn_grouped_linear.GroupedLinearNativeTests.test_saved_parameter_mutation_and_higher_order_are_rejected) ... ok\ntest_zero_rows_and_all_empty_experts (test_nn_grouped_linear.GroupedLinearNativeTests.test_zero_rows_and_all_empty_experts) ... ok\ntest_malformed_offsets_and_mismatched_operands_fail (test_nn_grouped_linear.GroupedLinearReferenceTests.test_malformed_offsets_and_mismatched_operands_fail) ... ok\ntest_noncontiguous_inputs_and_weights_preserve_gradients (test_nn_grouped_linear.GroupedLinearReferenceTests.test_noncontiguous_inputs_and_weights_preserve_gradients) ... ok\ntest_ragged_rows_and_both_gradients_match_row_oracle (test_nn_grouped_linear.GroupedLinearReferenceTests.test_ragged_rows_and_both_gradients_match_row_oracle) ... ok\ntest_reference_gradcheck_and_higher_order (test_nn_grouped_linear.GroupedLinearReferenceTests.test_reference_gradcheck_and_higher_order) ... ok\ntest_shared_module_accumulates_gradients_once_and_uses_standard_optimizer (test_nn_grouped_linear.GroupedLinearReferenceTests.test_shared_module_accumulates_gradients_once_and_uses_standard_optimizer) ... ok\ntest_standard_state_dict_and_to (test_nn_grouped_linear.GroupedLinearReferenceTests.test_standard_state_dict_and_to) ... ok\ntest_zero_rows_keep_zero_input_and_parameter_gradients (test_nn_grouped_linear.GroupedLinearReferenceTests.test_zero_rows_keep_zero_input_and_parameter_gradients) ... ok\n----------------------------------------------------------------------\nRan 13 tests in 5.088s\nOK\n{\n  \"tests_run\": 13,\n  \"failures\": 0,\n  \"errors\": 0,\n  \"skipped\": 0,\n  \"success\": true,\n  \"python\": \"3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]\",\n  \"torch\": \"2.7.0+cu126\",\n  \"torch_cuda\": \"12.6\",\n  \"device_name\": \"Tesla V100-SXM2-16GB\",\n  \"device_capability\": [\n    7,\n    0\n  ],\n  \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\",\n  \"extension\": \"/tmp/cellerator-nn-grouped-linear-sm70/_modeling_cuda.cpython-313-x86_64-linux-gnu.so\",\n  \"extension_sha256\": \"d5ffa9284ae5a7dd96ce1e6f8adcbd347b86b58064d0a00496d04f1a8b6ec537\",\n  \"source_sha256\": {\n    \"python/cellerator/torch/grouped_linear.py\": \"918ec4a98d2420917b21b9d5f16fed646bbdc997c7d83206bedc4c3762c38cc5\",\n    \"tests/framework/test_nn_grouped_linear.py\": \"ad0c138e036854cb84e647951569c7a5edafb06fabc18d5da6e4cd6ad8694ca2\",\n    \"include/Cellerator/modeling/cuda/grouped_linear.hh\": \"0c24d60f57fb745701a0ff925bf0b4815445ca0b72c0d32b0995e96249a8bc09\",\n    \"src/modeling/cuda/grouped_linear.cu\": \"3725f4e212531442b13df900f351b5592258acacc4b42241a722212c41505469\",\n    \"bindings/modeling_cuda/module.cc\": \"7d66395d138a0e274b31237121b934ebd749bce4268b83e51addf95edd4a633b\"\n  }\n}\n========= ERROR SUMMARY: 0 errors\n",
+    "truncated": false
+  }
+}

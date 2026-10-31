@@ -1,0 +1,29 @@
+{
+  "architecture": "sm_70",
+  "binary_sha256": "f12ac3d6d615cd914d9fb420a0f6f9d343d5d38afdcf14fd15e98ca3ae8a21a0",
+  "build_argv": [
+    "cmake",
+    "-S",
+    "/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e/planning/v100-framework-2026-10-29/kda/packed_embedding",
+    "-B",
+    "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2/runs/kda-experiments/builds/baseline/bd0ec83520c17651c69ba377b617c2eba9801badff238ca73e48cce7ddcbe6c9/d64e6c8c29a34f369c64419e46d3bb84/cmake",
+    "-DCELLERATOR_SOURCE_DIR=/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e",
+    "-DKDA_CANDIDATE_SOURCE_DIR=/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2/runs/kda-experiments/candidates/baseline/de496ae3db1641db56d26a66fccef4017bd17a1109b3942e1058540c3d84d983",
+    "-DKDA_WARP_BACKWARD=OFF",
+    "-DCMAKE_CXX_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12",
+    "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12",
+    "-DCMAKE_CUDA_ARCHITECTURES=70",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_CUDA_FLAGS=-lineinfo"
+  ],
+  "candidate_id": "baseline",
+  "common_source_root": "/tmp/cellerator-kda-final-snapshots/packed/snapshots/5f806ea66d48df232b9d2019aa7e464dd871b3c66dae5507ee491e761cfa8d0e",
+  "source_files": {
+    "include/Cellerator/modeling/cuda/packed_embedding.hh": "9e2b8906f68f61efc0c56b60f565c60473d915d9b4b3d452fa96a40f25139a7d",
+    "src/modeling/cuda/packed_embedding.cu": "e050b7c0af2d4280a3b3ef3023e6e8f808413338a3787586f6a222e0985082c7"
+  },
+  "source_snapshot_sha256": "de496ae3db1641db56d26a66fccef4017bd17a1109b3942e1058540c3d84d983",
+  "trusted_smoke_sha256": "385c851b991cc92f4a6a78aa23dba2cd0fcb97803ceadca22bca17e17aff01ff",
+  "warp_backward": false
+}

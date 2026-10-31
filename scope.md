@@ -107,6 +107,40 @@ Other representation and computation backends can participate through explicit
 operation and model interfaces without being coerced through dense Torch
 tensors or a universal state-transition interface.
 
+## C++ and Python as modeling languages
+
+C++ and Python are first-class languages for building, training, extending, and
+executing biological models. The intended C++ modeling interface should be at
+least as expressive as the Python interface for Cellerator's biological and
+neural abstractions. It should make a complete model natural to author in C++,
+including custom learned components, relationships, objectives, and readouts.
+Native entry points for kernels alone do not meet this ambition.
+
+The C++ experience should feel native to C++: its modeling API is designed
+directly around idiomatic C++ types, composition, ownership, and extension.
+It is not a translation of the Python API or a binding-shaped frontend.
+Reusing LibTorch machinery does not mean adopting its frontend or reproducing
+Python module conventions in C++. Shared native mechanisms are C++ library
+facilities in their own right; Python can adapt them while retaining its own
+useful modeling and extension capabilities.
+
+C++ should foreground typed composition, inheritance where useful, generic
+programming, explicit ownership, specialized representations, and integration
+with HPC applications. Python should foreground interactive exploration,
+dynamic composition, data workflows, and reuse of its scientific and ML
+ecosystem. Both should support serious modeling and training. Comparable
+expressiveness does not require identical syntax or duplicating every
+language-specific ecosystem feature.
+
+Reuse established numerical and differentiation infrastructure, including
+LibTorch where appropriate, while designing an intuitive Cellerator modeling
+experience. Users should not need to understand backend registration and
+resource plumbing to express a biological model. Native use should not require
+a Python interpreter; Python models should retain direct access to ordinary
+Python modules and custom operations. These are architectural requirements,
+not a claim that the current interfaces have reached parity. See the
+[language design direction](docs/architecture.qmd#cpp-and-python-modeling).
+
 ## What belongs here
 
 Cellerator owns reusable, model-neutral machinery for:

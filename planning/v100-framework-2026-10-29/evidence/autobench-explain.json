@@ -1,0 +1,219 @@
+{
+  "benchmark": "cellerator-framework-v100",
+  "source_fingerprint": "2fbcb78151924f5dfffb64ba0adee236c4ff0e3dd820feb55dc2a40720c9a07b",
+  "protocol": {
+    "id": "cellerator-framework-v100-oracle-and-resident-timing-v2"
+  },
+  "build_fingerprint": "a97ba079679285c2231f5df53bfe67f461c2b259b821a9abe22d61775ec48e4c",
+  "build_output_identity": "cf8c6704898f8917ec23f14851df1b6d10f8bf72af733df261f9e41b3e3e4873",
+  "packets": [
+    {
+      "name": "correctness-core-a",
+      "kind": "correctness",
+      "state": "current",
+      "current_fingerprint": "bc382ffcb2b50e5fb2b4a81fa43c3753fa915980779cf04ac0bb4015972a52c5",
+      "expected_fingerprint": "bc382ffcb2b50e5fb2b4a81fa43c3753fa915980779cf04ac0bb4015972a52c5",
+      "expected_seconds": 60,
+      "kill_seconds": 360,
+      "depends_on": [],
+      "reasons": [],
+      "protocol_fingerprint": "820c3aca7324108fce139115a8fdc9c6b35c2db727a50ac45833acd4cf613380",
+      "retry_cooldown": null
+    },
+    {
+      "name": "correctness-core-b",
+      "kind": "correctness",
+      "state": "current",
+      "current_fingerprint": "38276b87113de9e9954d9e9e49bb45ac34c3ce4cb1d5816ca027801ca635d5eb",
+      "expected_fingerprint": "38276b87113de9e9954d9e9e49bb45ac34c3ce4cb1d5816ca027801ca635d5eb",
+      "expected_seconds": 60,
+      "kill_seconds": 360,
+      "depends_on": [],
+      "reasons": [],
+      "protocol_fingerprint": "79009a2259e2bd05df40b3b731925aa1776ad0bdde8376445d84f69fbb3de2f1",
+      "retry_cooldown": null
+    },
+    {
+      "name": "correctness-core-c",
+      "kind": "correctness",
+      "state": "stale_or_missing",
+      "current_fingerprint": "ad8214871bacf437a3251d95717fed54342604749d9181a645c32b667102ebc5",
+      "expected_fingerprint": "6cd58ddab11cd8a2b451bb2ff460d4f90c19b566b18bb67ba806e81478c27826",
+      "expected_seconds": 60,
+      "kill_seconds": 360,
+      "depends_on": [],
+      "reasons": [
+        "source, build, protocol, data, or packet registration changed"
+      ],
+      "protocol_fingerprint": "b45ee58d6d74c112c7c4c1d8b402b53233c5c32233b0723f322f89a0466d009c",
+      "retry_cooldown": null
+    },
+    {
+      "name": "correctness-core-d",
+      "kind": "correctness",
+      "state": "stale_or_missing",
+      "current_fingerprint": "89e3726ec2c3837811f8fb23bed8ae97e2bba5b3adb8b1575672c4a2f66c77a9",
+      "expected_fingerprint": "570878b29bad1dd4b8b6c1f7f924bb48e0d0864e5c762ef5ce6e5a78c26c1d50",
+      "expected_seconds": 60,
+      "kill_seconds": 360,
+      "depends_on": [],
+      "reasons": [
+        "source, build, protocol, data, or packet registration changed"
+      ],
+      "protocol_fingerprint": "0251f8af17debd49fb9a04cf11d2536fc6b297a2fd0168b9d4121d57aaa4284d",
+      "retry_cooldown": null
+    },
+    {
+      "name": "attention-timing",
+      "kind": "timing",
+      "state": "stale_or_missing",
+      "current_fingerprint": "f193783e70ece3159f85938570e8d81526ff26cd73268576f90effa6047d3c73",
+      "expected_fingerprint": "cec153e01b1bca807470cd39d1dc5e44cd16c68b6bf4e2bad6d0bd39685a4ff1",
+      "expected_seconds": 45,
+      "kill_seconds": 240,
+      "depends_on": [
+        "correctness-core-b"
+      ],
+      "reasons": [
+        "source, build, protocol, data, or packet registration changed"
+      ],
+      "protocol_fingerprint": "fa636ef8fbf0f2d59bb244695b53a96806acc35cb10551be718d21390487f425",
+      "retry_cooldown": null
+    },
+    {
+      "name": "grouped-linear-timing",
+      "kind": "timing",
+      "state": "stale_or_missing",
+      "current_fingerprint": "8f35bcabb180b2c3d393d49ae7c763c5fa9eb4a56bd65a8d45b043662496b45a",
+      "expected_fingerprint": "70d29d80ecc0f0c94efa9a9db3171c09e45def2ac5c5add5ff6523f879361cb4",
+      "expected_seconds": 90,
+      "kill_seconds": 360,
+      "depends_on": [
+        "correctness-core-c"
+      ],
+      "reasons": [
+        "source, build, protocol, data, or packet registration changed"
+      ],
+      "protocol_fingerprint": "e8b31bac8ecf5eb4c4101fc56b8823bf15c1fd1b64be3c05dbdc87714a581e1d",
+      "retry_cooldown": null
+    },
+    {
+      "name": "packed-embedding-comparison-timing",
+      "kind": "timing",
+      "state": "stale_or_missing",
+      "current_fingerprint": "4c92cca544a9f19453653b3c8fc2da04c76d63edd4989f127754b6129da11493",
+      "expected_fingerprint": "1cd981ead708cdd6c494026ae6ffe2e52547c313e3960159c0b8498311c889ef",
+      "expected_seconds": 90,
+      "kill_seconds": 360,
+      "depends_on": [
+        "correctness-core-c"
+      ],
+      "reasons": [
+        "source, build, protocol, data, or packet registration changed"
+      ],
+      "protocol_fingerprint": "93835e2d71b47f05cc6ae1ed677059b0c6b6196b5ecd392774ed7772fd06ded1",
+      "retry_cooldown": null
+    },
+    {
+      "name": "dispatch-timing",
+      "kind": "timing",
+      "state": "stale_or_missing",
+      "current_fingerprint": "8d25d41f1a35cc876ffcc3efd529e631f705c9afd65eee1846814115741745ac",
+      "expected_fingerprint": "2a251777a4e9f4c0b60453a850efd2596b6cdd2ea34744a793356a8d1a59ded0",
+      "expected_seconds": 90,
+      "kill_seconds": 360,
+      "depends_on": [
+        "correctness-core-a"
+      ],
+      "reasons": [
+        "source, build, protocol, data, or packet registration changed"
+      ],
+      "protocol_fingerprint": "26e677019f3dd44847d1704c107085308e69e92c0ea7cadeee4c269bdd7f0248",
+      "retry_cooldown": null
+    },
+    {
+      "name": "frontier-timing",
+      "kind": "timing",
+      "state": "stale_or_missing",
+      "current_fingerprint": null,
+      "expected_fingerprint": "41fe0b6dba74fee87c723a9a900855450861aed45541bacdfa20eba336c1316b",
+      "expected_seconds": 90,
+      "kill_seconds": 360,
+      "depends_on": [
+        "correctness-core-b"
+      ],
+      "reasons": [
+        "no successful result has been recorded"
+      ],
+      "protocol_fingerprint": "19cdefa579946add9e520f6e996a837d5461c24eb72f853976c42af57708fed3",
+      "retry_cooldown": null
+    },
+    {
+      "name": "event-memory-timing",
+      "kind": "timing",
+      "state": "stale_or_missing",
+      "current_fingerprint": "a0e140d45605044442073310b9e81a75b21459cadcd5bec357d7bf8bed8e52b3",
+      "expected_fingerprint": "07cb1c44361f42f34a6d7e90c3a8dcdd87164cdd4b13fc00d1e7430feeda6446",
+      "expected_seconds": 90,
+      "kill_seconds": 360,
+      "depends_on": [
+        "correctness-core-b"
+      ],
+      "reasons": [
+        "source, build, protocol, data, or packet registration changed"
+      ],
+      "protocol_fingerprint": "579c25b581249ef303d2901ee0e81e3eaca7f5b8a69d3e1b08fe4c15b0e1711a",
+      "retry_cooldown": null
+    },
+    {
+      "name": "state-decode-timing",
+      "kind": "timing",
+      "state": "stale_or_missing",
+      "current_fingerprint": "74ffec22e9e3818aa97cb382c800d53c43ddef1d4979ec6ed71b1f5ff3ddc65c",
+      "expected_fingerprint": "30dccb760f72696f8abaee92309167348b050d2e9d2e5d0f76810941bdac78fb",
+      "expected_seconds": 90,
+      "kill_seconds": 360,
+      "depends_on": [
+        "correctness-core-a"
+      ],
+      "reasons": [
+        "source, build, protocol, data, or packet registration changed"
+      ],
+      "protocol_fingerprint": "a6c83a18f6eacfdde47cc60c2a69a80a8b8cd671bee55fb08d445ba0f73b3129",
+      "retry_cooldown": null
+    },
+    {
+      "name": "regulatory-timing",
+      "kind": "timing",
+      "state": "stale_or_missing",
+      "current_fingerprint": "2bdc9d03be6b88c26c3b33c44bc40a8a717e52974ab389f7008043f37d99dd1f",
+      "expected_fingerprint": "ac2e9075627ba348a6558708afa5786f68c753debfa3be45ac8131dfb3fc34cd",
+      "expected_seconds": 90,
+      "kill_seconds": 360,
+      "depends_on": [
+        "correctness-core-d"
+      ],
+      "reasons": [
+        "source, build, protocol, data, or packet registration changed"
+      ],
+      "protocol_fingerprint": "7e469fc72b64f46232444c5da03b5b649048cd4b68386909432269bfd21c0b3a",
+      "retry_cooldown": null
+    }
+  ],
+  "build_retry_cooldown": null,
+  "active_or_unresolved_attempts": [
+    {
+      "id": "e1388a27-876f-4eb3-b07d-20da4cb5039f",
+      "packet_index": 4,
+      "job_id": "448ad66d-a073-440b-b2ec-feb10f3c5ec5",
+      "state": "submitted",
+      "error": null
+    }
+  ],
+  "source_trace": {
+    "edge_count": 0,
+    "complete": true,
+    "coverage": "declared input scope",
+    "omissions": []
+  }
+}

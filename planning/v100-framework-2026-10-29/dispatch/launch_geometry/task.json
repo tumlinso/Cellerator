@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "task_id": "cellerator-dispatch-v100-weight-gradient-launch-geometry-v1",
+  "cases": [
+    {
+      "id": "fp32-f1-64x256",
+      "weight": 1.0,
+      "input": {
+        "fixture": "DispatchBackward(origins=64, selections=256, features=1, dtype=fp32)",
+        "generator": "trusted nonzero host fixture in dispatch_geometry_driver.cu",
+        "seed": 73119
+      },
+      "parameters": {
+        "origins": 64,
+        "selections": 256,
+        "features": 1,
+        "dtype": "fp32",
+        "seed": 73119,
+        "measured_operation": "DispatchPlan::combine_backward",
+        "routing_weights": "signed, two repeated weight values per origin"
+      }
+    },
+    {
+      "id": "fp32-f32-64x256",
+      "weight": 1.0,
+      "input": {
+        "fixture": "DispatchBackward(origins=64, selections=256, features=32, dtype=fp32)",
+        "generator": "trusted nonzero host fixture in dispatch_geometry_driver.cu",
+        "seed": 73119
+      },
+      "parameters": {
+        "origins": 64,
+        "selections": 256,
+        "features": 32,
+        "dtype": "fp32",
+        "seed": 73119,
+        "measured_operation": "DispatchPlan::combine_backward",
+        "routing_weights": "signed, two repeated weight values per origin"
+      }
+    },
+    {
+      "id": "fp32-f256-64x256",
+      "weight": 1.0,
+      "input": {
+        "fixture": "DispatchBackward(origins=64, selections=256, features=256, dtype=fp32)",
+        "generator": "trusted nonzero host fixture in dispatch_geometry_driver.cu",
+        "seed": 73119
+      },
+      "parameters": {
+        "origins": 64,
+        "selections": 256,
+        "features": 256,
+        "dtype": "fp32",
+        "seed": 73119,
+        "measured_operation": "DispatchPlan::combine_backward",
+        "routing_weights": "signed, two repeated weight values per origin"
+      }
+    },
+    {
+      "id": "fp32-f2048-64x256",
+      "weight": 1.0,
+      "input": {
+        "fixture": "DispatchBackward(origins=64, selections=256, features=2048, dtype=fp32)",
+        "generator": "trusted nonzero host fixture in dispatch_geometry_driver.cu",
+        "seed": 73119
+      },
+      "parameters": {
+        "origins": 64,
+        "selections": 256,
+        "features": 2048,
+        "dtype": "fp32",
+        "seed": 73119,
+        "measured_operation": "DispatchPlan::combine_backward",
+        "routing_weights": "signed, two repeated weight values per origin"
+      }
+    }
+  ],
+  "commands": {
+    "build": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "/home/tumlinson/Cellerator/scripts/validation/kda_dispatch_geometry.py",
+        "build",
+        "{request}",
+        "{result}"
+      ],
+      "cpu_only": true,
+      "timeout_seconds": 1800
+    },
+    "validate": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "/home/tumlinson/Cellerator/scripts/validation/kda_dispatch_geometry.py",
+        "validate",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 300
+    },
+    "benchmark": {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "/home/tumlinson/Cellerator/scripts/validation/kda_dispatch_geometry.py",
+        "benchmark",
+        "{request}",
+        "{result}"
+      ],
+      "timeout_seconds": 180
+    }
+  },
+  "trusted_inputs": [
+    {
+      "id": "dispatch_geometry_adapter",
+      "path": "/home/tumlinson/Cellerator/scripts/validation/kda_dispatch_geometry.py",
+      "role": "harness"
+    },
+    {
+      "id": "dispatch_geometry_driver",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/dispatch/launch_geometry/dispatch_geometry_driver.cu",
+      "role": "validator"
+    },
+    {
+      "id": "dispatch_independent_smoke",
+      "path": "/home/tumlinson/Cellerator/tests/framework/cuda/dispatch_smoke.cu",
+      "role": "validator"
+    },
+    {
+      "id": "dispatch_geometry_cmake",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/dispatch/launch_geometry/CMakeLists.txt",
+      "role": "harness"
+    },
+    {
+      "id": "dispatch_shared_source_manifest",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/dispatch/launch_geometry/base-source-manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "dispatch_autobench_wrapper",
+      "path": "/home/tumlinson/Cellerator/scripts/validation/kda_dispatch_geometry_autobench.py",
+      "role": "harness"
+    },
+    {
+      "id": "dispatch_autobench_definition",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/dispatch/launch_geometry/autobench-definition.toml",
+      "role": "harness"
+    },
+    {
+      "id": "dispatch_baseline_manifest",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/dispatch/launch_geometry/candidate-sources/baseline/baseline.manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "dispatch_candidate_manifest",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/dispatch/launch_geometry/candidate-sources/one_cta_per_selection/one_cta_per_selection.manifest.json",
+      "role": "reference"
+    },
+    {
+      "id": "cmake_executable",
+      "path": "/usr/bin/cmake",
+      "role": "toolchain"
+    },
+    {
+      "id": "gcc12_executable",
+      "path": "/usr/bin/x86_64-linux-gnu-g++-12",
+      "role": "toolchain"
+    },
+    {
+      "id": "nvcc_sm70_executable",
+      "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "role": "toolchain"
+    },
+    {
+      "id": "dispatch_autobench_artifact_binder",
+      "path": "/home/tumlinson/Cellerator/scripts/validation/kda_autobench_artifacts.py",
+      "role": "harness"
+    }
+  ],
+  "numerical_requirements": {
+    "independent_oracle": "trusted driver generates nonzero FP32 inputs from seed 73119 and checks every expert gradient against weight[d]*grad_origin[origin(d),feature] and every routing-weight gradient against a host FP64 sum of grad_origin[origin(d),feature]*expert_output[d,feature]; exact timed feature sizes are validated before samples are collected",
+    "storage_types": [
+      "fp32"
+    ],
+    "arithmetic": "FP32 expert output, gradient input, expert gradient, and accumulated weight gradient; host weight-gradient oracle sums exact FP32 input values in FP64 then compares the FP32 device result",
+    "acceptance": "all existing dispatch smoke matrix cases (FP16/FP32 and feature tails 1,3,31,32,33,129, including empty routes and zero features) plus nonzero timed FP32 cases at F=1,32,256,2048 pass; expert-gradient tolerance is 2e-6*(1+abs(reference)); weight-gradient tolerance is 2e-4*(1+abs(reference)); all checks run separately for each candidate",
+    "fixture_semantics": "64 origins, 256 selections, four selections per origin in stable origin-major reverse order, signed weights 0.25/-0.125, nonzero deterministic FP32 feature values, resident immutable plan and caller-owned output buffers"
+  },
+  "probe": {
+    "argv": [
+      "/home/tumlinson/Software/miniconda3/bin/python",
+      "/home/tumlinson/Cellerator/scripts/validation/kda_dispatch_geometry.py",
+      "probe",
+      "{request}",
+      "{result}"
+    ],
+    "timeout_seconds": 45
+  },
+  "timing": {
+    "metric": "resident_combine_backward_ms",
+    "unit": "ms",
+    "direction": "minimize",
+    "warmup": 100,
+    "repetitions": 7,
+    "rounds": 5,
+    "confirmation_rounds": 4,
+    "seed": 73119,
+    "scope": "each raw sample is one CUDA-event measurement of 300 resident DispatchPlan::combine_backward calls averaged per call; 100 warmups precede seven independent event samples; immutable plan, nonzero FP32 input buffers, and output allocations are prepared before timing; each call launches expert-gradient and routing-weight-gradient kernels; no transfer or plan setup is timed"
+  },
+  "promotion": {
+    "min_improvement": 0.05,
+    "max_regression": 0.05,
+    "confidence": 0.95,
+    "bootstrap_samples": 2000
+  },
+  "target": {
+    "kind": "cuda",
+    "architecture": "sm_70",
+    "compiler_target": "sm_70"
+  },
+  "toolchain": {
+    "compiler_target_probe_argv": [
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "--list-gpu-code"
+    ]
+  },
+  "execution": {
+    "mode": "direct"
+  },
+  "budgets": {
+    "max_candidates": 2,
+    "max_build_jobs": 1,
+    "max_seconds": 1800
+  }
+}

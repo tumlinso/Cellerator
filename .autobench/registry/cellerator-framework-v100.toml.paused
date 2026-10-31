@@ -1,0 +1,204 @@
+[benchmark]
+name = "cellerator-framework-v100"
+revision = 3
+enabled = false
+
+[source]
+include = [
+  "cmake/CelleratorConditional.cmake",
+  "cmake/CelleratorFrameworkCUDA.cmake",
+  "include/Cellerator/modeling/cuda/**",
+  "include/Cellerator/execution/conditional/**",
+  "src/modeling/cuda/*.cu",
+  "src/execution/conditional/*.cc",
+  "bindings/modeling_cuda/module.cc",
+  "tests/framework/cuda/**",
+  "python/cellerator/**",
+  "planning/v100-framework-2026-10-29/autobench/CMakeLists.txt",
+  "planning/v100-framework-2026-10-29/dispatch/dispatch_benchmark.cu",
+  "planning/v100-framework-2026-10-29/frontier/candidate/CMakeLists.txt",
+  "planning/v100-framework-2026-10-29/frontier/candidate/*.cu",
+  "planning/v100-framework-2026-10-29/memory/benchmark.cu",
+  "planning/v100-framework-2026-10-29/quantization/decode_bench.cu",
+  "planning/v100-framework-2026-10-29/regulatory/regulatory_gate_comparison.cu",
+  "planning/v100-framework-2026-10-29/grouped_linear/benchmark/benchmark.cu",
+  "scripts/validation/autobench_build_framework_v100.py",
+  "scripts/validation/autobench_run_framework_v100.py",
+]
+
+[protocol]
+id = "cellerator-framework-v100-oracle-and-resident-timing-v2"
+
+[build]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_build_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}", "--jobs", "4",
+]
+expected_seconds = 300
+kill_seconds = 600
+resources = { cpu_cores = 4, host_memory_bytes = 8589934592 }
+
+[[packet]]
+name = "correctness-core-a"
+kind = "correctness"
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "correctness", "--cases", "runtime", "dispatch", "quantization",
+]
+expected_seconds = 60
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "correctness-core-b"
+kind = "correctness"
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "correctness", "--cases", "memory", "frontier", "attention",
+]
+expected_seconds = 60
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "correctness-core-c"
+kind = "correctness"
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "correctness", "--cases", "grouped_linear", "packed_embedding", "reactions",
+]
+expected_seconds = 60
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "correctness-core-d"
+kind = "correctness"
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "correctness", "--cases", "regulatory_gates", "parameter_transfer", "bindings",
+]
+expected_seconds = 60
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "attention-timing"
+kind = "timing"
+depends_on = ["correctness-core-b"]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "benchmark", "--cases", "attention",
+]
+expected_seconds = 45
+kill_seconds = 240
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "grouped-linear-timing"
+kind = "timing"
+depends_on = ["correctness-core-c"]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "benchmark", "--cases", "grouped_linear",
+]
+expected_seconds = 90
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "packed-embedding-comparison-timing"
+kind = "timing"
+depends_on = ["correctness-core-c"]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "benchmark", "--cases", "packed_embedding", "packed_embedding_candidate",
+]
+expected_seconds = 90
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "dispatch-timing"
+kind = "timing"
+depends_on = ["correctness-core-a"]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "benchmark", "--cases", "dispatch",
+]
+expected_seconds = 90
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "frontier-timing"
+kind = "timing"
+depends_on = ["correctness-core-b"]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "benchmark", "--cases", "frontier",
+]
+expected_seconds = 90
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "event-memory-timing"
+kind = "timing"
+depends_on = ["correctness-core-b"]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "benchmark", "--cases", "memory",
+]
+expected_seconds = 90
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "state-decode-timing"
+kind = "timing"
+depends_on = ["correctness-core-a"]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "benchmark", "--cases", "quantization",
+]
+expected_seconds = 90
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }
+
+[[packet]]
+name = "regulatory-timing"
+kind = "timing"
+depends_on = ["correctness-core-d"]
+argv = [
+  "/home/tumlinson/Software/miniconda3/bin/python",
+  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
+  "--mode", "benchmark", "--cases", "regulatory",
+]
+expected_seconds = 90
+kill_seconds = 360
+resources = { gpu_memory_bytes = 2147483648, mode = "exclusive" }

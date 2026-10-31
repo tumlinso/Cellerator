@@ -1,0 +1,414 @@
+{
+  "job": {
+    "attempt": {
+      "attempt_id": "a49f689c-8359-41a8-bd1d-02293c6f4570",
+      "cleanup_verified": true,
+      "created_at": "2026-10-31T14:06:05.377801Z",
+      "error": {},
+      "evidence": [
+        {
+          "adapter_errors": [],
+          "kind": "execution_preconditions",
+          "operation_id": "preconditions:a49f689c-8359-41a8-bd1d-02293c6f4570",
+          "preconditions": [
+            {
+              "name": "gpu.quiescence",
+              "reports": [
+                {
+                  "adapter_id": "nvidia-smi",
+                  "evidence": {
+                    "observation": {
+                      "consecutive_samples": 2,
+                      "samples": [
+                        {
+                          "gpus": [
+                            {
+                              "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                              "inventory_observed_at": "2026-10-31T14:06:07.850152+00:00",
+                              "memory_free_bytes": 16929259520,
+                              "memory_total_bytes": 17179869184,
+                              "process_ids": [],
+                              "process_observed_at": "2026-10-31T14:06:10.233793+00:00",
+                              "required_free_bytes": 2684354560,
+                              "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                              "utilization_percent": 0
+                            }
+                          ],
+                          "inventory_observed_at": "2026-10-31T14:06:07.850152+00:00",
+                          "process_observed_at": "2026-10-31T14:06:10.233793+00:00",
+                          "process_scope": "nvidia-smi-visible-compute-applications",
+                          "reason": null,
+                          "state": "idle"
+                        },
+                        {
+                          "gpus": [
+                            {
+                              "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                              "inventory_observed_at": "2026-10-31T14:06:13.691529+00:00",
+                              "memory_free_bytes": 16929259520,
+                              "memory_total_bytes": 17179869184,
+                              "process_ids": [],
+                              "process_observed_at": "2026-10-31T14:06:16.067416+00:00",
+                              "required_free_bytes": 2684354560,
+                              "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                              "utilization_percent": 0
+                            }
+                          ],
+                          "inventory_observed_at": "2026-10-31T14:06:13.691529+00:00",
+                          "process_observed_at": "2026-10-31T14:06:16.067416+00:00",
+                          "process_scope": "nvidia-smi-visible-compute-applications",
+                          "reason": null,
+                          "state": "idle"
+                        }
+                      ],
+                      "state": "observed"
+                    },
+                    "parameters": {
+                      "consecutive_samples": 2,
+                      "interval_seconds": 1.0,
+                      "max_utilization_percent": 0,
+                      "minimum_free_bytes": [
+                        2684354560
+                      ],
+                      "timeout_seconds": 45.0
+                    },
+                    "precondition_index": 0
+                  },
+                  "name": "gpu.quiescence",
+                  "resource_ids": [
+                    "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+                  ],
+                  "schema_version": 1,
+                  "state": "verified"
+                }
+              ],
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "execution_context": {
+        "allocations": [
+          {
+            "mode": "exclusive",
+            "quantities": {
+              "memory_bytes": 2147483648.0
+            },
+            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          }
+        ],
+        "claim_id": "94b6d114-f448-46fb-bb03-4f0476238dc1",
+        "fencing_token": 1338,
+        "purpose": "job",
+        "resources": [
+          {
+            "attributes": {
+              "index_observation": 2,
+              "inventory_observed_at": "2026-10-31T14:05:51.176389+00:00",
+              "managed_process_ids": [],
+              "memory_enforcement": "accounting_only",
+              "memory_free_bytes_observation": 16929259520,
+              "name": "Tesla V100-SXM2-16GB",
+              "pci_bus_id": "00000000:83:00.0",
+              "process_count_observation": 0,
+              "process_identity_unknown_count": 0,
+              "process_mapping_state": "unknown",
+              "process_observed_at": "2026-10-31T14:05:51.176389+00:00",
+              "process_telemetry": "compute-apps-visible",
+              "process_telemetry_state": "observed",
+              "processes_observation": [],
+              "unmanaged_process_count": 0,
+              "utilization_percent_observation": 0,
+              "uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+            },
+            "capabilities": [
+              "memory-accounting-only",
+              "shared-admission",
+              "nvidia-smi-compute-process-telemetry",
+              "whole-device-exclusive-admission"
+            ],
+            "capacities": {
+              "memory_bytes": 17179869184.0
+            },
+            "conflict_domains": [
+              "gpu-exclusive:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+            ],
+            "host_id": "testlsserver",
+            "kind": "gpu",
+            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+            "schema_version": 1,
+            "topology": {
+              "links": [
+                {
+                  "relation": "NV6",
+                  "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+                  "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                  "type": "nvlink"
+                },
+                {
+                  "relation": "SYS",
+                  "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                  "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                  "type": "sys"
+                },
+                {
+                  "relation": "PHB",
+                  "source_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                  "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                  "type": "pcie"
+                }
+              ],
+              "pci_bus_id": "00000000:83:00.0",
+              "topology_state": "observed"
+            }
+          }
+        ],
+        "schema_version": 1
+      },
+      "execution_handle": {
+        "adapter_id": "systemd-user-unit",
+        "external_id": "device-scheduler-attempt-327441a049344aaa211a2251ac8a2f09.service",
+        "identity": "a49f689c-8359-41a8-bd1d-02293c6f4570",
+        "metadata": {
+          "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-327441a049344aaa211a2251ac8a2f09.service",
+          "description": "Device Scheduler attempt a49f689c-8359-41a8-bd1d-02293c6f4570",
+          "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+          "handle_version": 1,
+          "invocation_id": "e1cf28d421054f8ebab4af45daa52f87",
+          "profile_id": null,
+          "profile_version": null
+        },
+        "started_at": "2026-10-31T14:06:16.147051Z"
+      },
+      "finished_at": "2026-10-31T14:06:41.619727Z",
+      "id": "a49f689c-8359-41a8-bd1d-02293c6f4570",
+      "job_id": "8442581b-0a52-4373-b812-61d8e79c225f",
+      "operation_id": "start:a49f689c-8359-41a8-bd1d-02293c6f4570",
+      "precondition_receipt": {
+        "adapter_errors": [],
+        "operation_id": "preconditions:a49f689c-8359-41a8-bd1d-02293c6f4570",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 2,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "inventory_observed_at": "2026-10-31T14:06:07.850152+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-31T14:06:10.233793+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-31T14:06:07.850152+00:00",
+                        "process_observed_at": "2026-10-31T14:06:10.233793+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "inventory_observed_at": "2026-10-31T14:06:13.691529+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-31T14:06:16.067416+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-31T14:06:13.691529+00:00",
+                        "process_observed_at": "2026-10-31T14:06:16.067416+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 2,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      2684354560
+                    ],
+                    "timeout_seconds": 45.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      },
+      "result": {
+        "active_state": "active",
+        "adapter": "systemd-user-unit/v1",
+        "cleanup_verified": true,
+        "evidence": {
+          "adapter": "systemd-user-unit/v1",
+          "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-327441a049344aaa211a2251ac8a2f09.service",
+          "invocation_id": "e1cf28d421054f8ebab4af45daa52f87",
+          "main_code": "1",
+          "unit_description": "Device Scheduler attempt a49f689c-8359-41a8-bd1d-02293c6f4570"
+        },
+        "exit_code": 0,
+        "invocation_id": "e1cf28d421054f8ebab4af45daa52f87",
+        "logs": "========= COMPUTE-SANITIZER\ntest_composed_training_shared_parameters_and_standard_optimizer (test_nn_grouped_linear.GroupedLinearNativeTests.test_composed_training_shared_parameters_and_standard_optimizer) ... ok\ntest_fp16_fp32_ragged_forward_and_both_vjps (test_nn_grouped_linear.GroupedLinearNativeTests.test_fp16_fp32_ragged_forward_and_both_vjps) ... ok\ntest_fp32_master_to_half_compute_gradients_reach_original_leaf (test_nn_grouped_linear.GroupedLinearNativeTests.test_fp32_master_to_half_compute_gradients_reach_original_leaf) ... ok\ntest_noncontiguous_operands_and_nondefault_stream (test_nn_grouped_linear.GroupedLinearNativeTests.test_noncontiguous_operands_and_nondefault_stream) ... ok\ntest_saved_parameter_mutation_and_higher_order_are_rejected (test_nn_grouped_linear.GroupedLinearNativeTests.test_saved_parameter_mutation_and_higher_order_are_rejected) ... ok\ntest_zero_rows_and_all_empty_experts (test_nn_grouped_linear.GroupedLinearNativeTests.test_zero_rows_and_all_empty_experts) ... ok\ntest_malformed_offsets_and_mismatched_operands_fail (test_nn_grouped_linear.GroupedLinearReferenceTests.test_malformed_offsets_and_mismatched_operands_fail) ... ok\ntest_noncontiguous_inputs_and_weights_preserve_gradients (test_nn_grouped_linear.GroupedLinearReferenceTests.test_noncontiguous_inputs_and_weights_preserve_gradients) ... ok\ntest_ragged_rows_and_both_gradients_match_row_oracle (test_nn_grouped_linear.GroupedLinearReferenceTests.test_ragged_rows_and_both_gradients_match_row_oracle) ... ok\ntest_reference_gradcheck_and_higher_order (test_nn_grouped_linear.GroupedLinearReferenceTests.test_reference_gradcheck_and_higher_order) ... ok\ntest_shared_module_accumulates_gradients_once_and_uses_standard_optimizer (test_nn_grouped_linear.GroupedLinearReferenceTests.test_shared_module_accumulates_gradients_once_and_uses_standard_optimizer) ... ok\ntest_standard_state_dict_and_to (test_nn_grouped_linear.GroupedLinearReferenceTests.test_standard_state_dict_and_to) ... ok\ntest_zero_rows_keep_zero_input_and_parameter_gradients (test_nn_grouped_linear.GroupedLinearReferenceTests.test_zero_rows_keep_zero_input_and_parameter_gradients) ... ok\n----------------------------------------------------------------------\nRan 13 tests in 5.088s\nOK\n{\n  \"tests_run\": 13,\n  \"failures\": 0,\n  \"errors\": 0,\n  \"skipped\": 0,\n  \"success\": true,\n  \"python\": \"3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]\",\n  \"torch\": \"2.7.0+cu126\",\n  \"torch_cuda\": \"12.6\",\n  \"device_name\": \"Tesla V100-SXM2-16GB\",\n  \"device_capability\": [\n    7,\n    0\n  ],\n  \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\",\n  \"extension\": \"/tmp/cellerator-nn-grouped-linear-sm70/_modeling_cuda.cpython-313-x86_64-linux-gnu.so\",\n  \"extension_sha256\": \"d5ffa9284ae5a7dd96ce1e6f8adcbd347b86b58064d0a00496d04f1a8b6ec537\",\n  \"source_sha256\": {\n    \"python/cellerator/torch/grouped_linear.py\": \"918ec4a98d2420917b21b9d5f16fed646bbdc997c7d83206bedc4c3762c38cc5\",\n    \"tests/framework/test_nn_grouped_linear.py\": \"ad0c138e036854cb84e647951569c7a5edafb06fabc18d5da6e4cd6ad8694ca2\",\n    \"include/Cellerator/modeling/cuda/grouped_linear.hh\": \"0c24d60f57fb745701a0ff925bf0b4815445ca0b72c0d32b0995e96249a8bc09\",\n    \"src/modeling/cuda/grouped_linear.cu\": \"3725f4e212531442b13df900f351b5592258acacc4b42241a722212c41505469\",\n    \"bindings/modeling_cuda/module.cc\": \"7d66395d138a0e274b31237121b934ebd749bce4268b83e51addf95edd4a633b\"\n  }\n}\n========= ERROR SUMMARY: 0 errors\n",
+        "logs_error": null,
+        "logs_truncated": false,
+        "result": "success",
+        "state": "succeeded",
+        "stdout": "========= COMPUTE-SANITIZER\ntest_composed_training_shared_parameters_and_standard_optimizer (test_nn_grouped_linear.GroupedLinearNativeTests.test_composed_training_shared_parameters_and_standard_optimizer) ... ok\ntest_fp16_fp32_ragged_forward_and_both_vjps (test_nn_grouped_linear.GroupedLinearNativeTests.test_fp16_fp32_ragged_forward_and_both_vjps) ... ok\ntest_fp32_master_to_half_compute_gradients_reach_original_leaf (test_nn_grouped_linear.GroupedLinearNativeTests.test_fp32_master_to_half_compute_gradients_reach_original_leaf) ... ok\ntest_noncontiguous_operands_and_nondefault_stream (test_nn_grouped_linear.GroupedLinearNativeTests.test_noncontiguous_operands_and_nondefault_stream) ... ok\ntest_saved_parameter_mutation_and_higher_order_are_rejected (test_nn_grouped_linear.GroupedLinearNativeTests.test_saved_parameter_mutation_and_higher_order_are_rejected) ... ok\ntest_zero_rows_and_all_empty_experts (test_nn_grouped_linear.GroupedLinearNativeTests.test_zero_rows_and_all_empty_experts) ... ok\ntest_malformed_offsets_and_mismatched_operands_fail (test_nn_grouped_linear.GroupedLinearReferenceTests.test_malformed_offsets_and_mismatched_operands_fail) ... ok\ntest_noncontiguous_inputs_and_weights_preserve_gradients (test_nn_grouped_linear.GroupedLinearReferenceTests.test_noncontiguous_inputs_and_weights_preserve_gradients) ... ok\ntest_ragged_rows_and_both_gradients_match_row_oracle (test_nn_grouped_linear.GroupedLinearReferenceTests.test_ragged_rows_and_both_gradients_match_row_oracle) ... ok\ntest_reference_gradcheck_and_higher_order (test_nn_grouped_linear.GroupedLinearReferenceTests.test_reference_gradcheck_and_higher_order) ... ok\ntest_shared_module_accumulates_gradients_once_and_uses_standard_optimizer (test_nn_grouped_linear.GroupedLinearReferenceTests.test_shared_module_accumulates_gradients_once_and_uses_standard_optimizer) ... ok\ntest_standard_state_dict_and_to (test_nn_grouped_linear.GroupedLinearReferenceTests.test_standard_state_dict_and_to) ... ok\ntest_zero_rows_keep_zero_input_and_parameter_gradients (test_nn_grouped_linear.GroupedLinearReferenceTests.test_zero_rows_keep_zero_input_and_parameter_gradients) ... ok\n----------------------------------------------------------------------\nRan 13 tests in 5.088s\nOK\n{\n  \"tests_run\": 13,\n  \"failures\": 0,\n  \"errors\": 0,\n  \"skipped\": 0,\n  \"success\": true,\n  \"python\": \"3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]\",\n  \"torch\": \"2.7.0+cu126\",\n  \"torch_cuda\": \"12.6\",\n  \"device_name\": \"Tesla V100-SXM2-16GB\",\n  \"device_capability\": [\n    7,\n    0\n  ],\n  \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\",\n  \"extension\": \"/tmp/cellerator-nn-grouped-linear-sm70/_modeling_cuda.cpython-313-x86_64-linux-gnu.so\",\n  \"extension_sha256\": \"d5ffa9284ae5a7dd96ce1e6f8adcbd347b86b58064d0a00496d04f1a8b6ec537\",\n  \"source_sha256\": {\n    \"python/cellerator/torch/grouped_linear.py\": \"918ec4a98d2420917b21b9d5f16fed646bbdc997c7d83206bedc4c3762c38cc5\",\n    \"tests/framework/test_nn_grouped_linear.py\": \"ad0c138e036854cb84e647951569c7a5edafb06fabc18d5da6e4cd6ad8694ca2\",\n    \"include/Cellerator/modeling/cuda/grouped_linear.hh\": \"0c24d60f57fb745701a0ff925bf0b4815445ca0b72c0d32b0995e96249a8bc09\",\n    \"src/modeling/cuda/grouped_linear.cu\": \"3725f4e212531442b13df900f351b5592258acacc4b42241a722212c41505469\",\n    \"bindings/modeling_cuda/module.cc\": \"7d66395d138a0e274b31237121b934ebd749bce4268b83e51addf95edd4a633b\"\n  }\n}\n========= ERROR SUMMARY: 0 errors\n",
+        "substate": "exited",
+        "unit_name": "device-scheduler-attempt-327441a049344aaa211a2251ac8a2f09.service"
+      },
+      "started_at": "2026-10-31T14:06:16.147152Z",
+      "state": "succeeded"
+    },
+    "attempt_count": 1,
+    "attempt_id": "a49f689c-8359-41a8-bd1d-02293c6f4570",
+    "blocked_reason": null,
+    "cleanup_verified": true,
+    "created_at": "2026-10-31T14:06:02.931859Z",
+    "decision_id": "469ed722-5f23-4d0c-858d-d7dd0c69b576",
+    "id": "8442581b-0a52-4373-b812-61d8e79c225f",
+    "job_id": "8442581b-0a52-4373-b812-61d8e79c225f",
+    "lease_binding": null,
+    "lease_fencing_token": 1338,
+    "lease_id": "94b6d114-f448-46fb-bb03-4f0476238dc1",
+    "lease_state": "active",
+    "owner": "cellerator",
+    "owner_id": "cellerator",
+    "reservation_id": null,
+    "reservation_phase_id": null,
+    "result": {
+      "active_state": "active",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-327441a049344aaa211a2251ac8a2f09.service",
+        "invocation_id": "e1cf28d421054f8ebab4af45daa52f87",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt a49f689c-8359-41a8-bd1d-02293c6f4570"
+      },
+      "exit_code": 0,
+      "invocation_id": "e1cf28d421054f8ebab4af45daa52f87",
+      "logs": "========= COMPUTE-SANITIZER\ntest_composed_training_shared_parameters_and_standard_optimizer (test_nn_grouped_linear.GroupedLinearNativeTests.test_composed_training_shared_parameters_and_standard_optimizer) ... ok\ntest_fp16_fp32_ragged_forward_and_both_vjps (test_nn_grouped_linear.GroupedLinearNativeTests.test_fp16_fp32_ragged_forward_and_both_vjps) ... ok\ntest_fp32_master_to_half_compute_gradients_reach_original_leaf (test_nn_grouped_linear.GroupedLinearNativeTests.test_fp32_master_to_half_compute_gradients_reach_original_leaf) ... ok\ntest_noncontiguous_operands_and_nondefault_stream (test_nn_grouped_linear.GroupedLinearNativeTests.test_noncontiguous_operands_and_nondefault_stream) ... ok\ntest_saved_parameter_mutation_and_higher_order_are_rejected (test_nn_grouped_linear.GroupedLinearNativeTests.test_saved_parameter_mutation_and_higher_order_are_rejected) ... ok\ntest_zero_rows_and_all_empty_experts (test_nn_grouped_linear.GroupedLinearNativeTests.test_zero_rows_and_all_empty_experts) ... ok\ntest_malformed_offsets_and_mismatched_operands_fail (test_nn_grouped_linear.GroupedLinearReferenceTests.test_malformed_offsets_and_mismatched_operands_fail) ... ok\ntest_noncontiguous_inputs_and_weights_preserve_gradients (test_nn_grouped_linear.GroupedLinearReferenceTests.test_noncontiguous_inputs_and_weights_preserve_gradients) ... ok\ntest_ragged_rows_and_both_gradients_match_row_oracle (test_nn_grouped_linear.GroupedLinearReferenceTests.test_ragged_rows_and_both_gradients_match_row_oracle) ... ok\ntest_reference_gradcheck_and_higher_order (test_nn_grouped_linear.GroupedLinearReferenceTests.test_reference_gradcheck_and_higher_order) ... ok\ntest_shared_module_accumulates_gradients_once_and_uses_standard_optimizer (test_nn_grouped_linear.GroupedLinearReferenceTests.test_shared_module_accumulates_gradients_once_and_uses_standard_optimizer) ... ok\ntest_standard_state_dict_and_to (test_nn_grouped_linear.GroupedLinearReferenceTests.test_standard_state_dict_and_to) ... ok\ntest_zero_rows_keep_zero_input_and_parameter_gradients (test_nn_grouped_linear.GroupedLinearReferenceTests.test_zero_rows_keep_zero_input_and_parameter_gradients) ... ok\n----------------------------------------------------------------------\nRan 13 tests in 5.088s\nOK\n{\n  \"tests_run\": 13,\n  \"failures\": 0,\n  \"errors\": 0,\n  \"skipped\": 0,\n  \"success\": true,\n  \"python\": \"3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]\",\n  \"torch\": \"2.7.0+cu126\",\n  \"torch_cuda\": \"12.6\",\n  \"device_name\": \"Tesla V100-SXM2-16GB\",\n  \"device_capability\": [\n    7,\n    0\n  ],\n  \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\",\n  \"extension\": \"/tmp/cellerator-nn-grouped-linear-sm70/_modeling_cuda.cpython-313-x86_64-linux-gnu.so\",\n  \"extension_sha256\": \"d5ffa9284ae5a7dd96ce1e6f8adcbd347b86b58064d0a00496d04f1a8b6ec537\",\n  \"source_sha256\": {\n    \"python/cellerator/torch/grouped_linear.py\": \"918ec4a98d2420917b21b9d5f16fed646bbdc997c7d83206bedc4c3762c38cc5\",\n    \"tests/framework/test_nn_grouped_linear.py\": \"ad0c138e036854cb84e647951569c7a5edafb06fabc18d5da6e4cd6ad8694ca2\",\n    \"include/Cellerator/modeling/cuda/grouped_linear.hh\": \"0c24d60f57fb745701a0ff925bf0b4815445ca0b72c0d32b0995e96249a8bc09\",\n    \"src/modeling/cuda/grouped_linear.cu\": \"3725f4e212531442b13df900f351b5592258acacc4b42241a722212c41505469\",\n    \"bindings/modeling_cuda/module.cc\": \"7d66395d138a0e274b31237121b934ebd749bce4268b83e51addf95edd4a633b\"\n  }\n}\n========= ERROR SUMMARY: 0 errors\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "success",
+      "state": "succeeded",
+      "stdout": "========= COMPUTE-SANITIZER\ntest_composed_training_shared_parameters_and_standard_optimizer (test_nn_grouped_linear.GroupedLinearNativeTests.test_composed_training_shared_parameters_and_standard_optimizer) ... ok\ntest_fp16_fp32_ragged_forward_and_both_vjps (test_nn_grouped_linear.GroupedLinearNativeTests.test_fp16_fp32_ragged_forward_and_both_vjps) ... ok\ntest_fp32_master_to_half_compute_gradients_reach_original_leaf (test_nn_grouped_linear.GroupedLinearNativeTests.test_fp32_master_to_half_compute_gradients_reach_original_leaf) ... ok\ntest_noncontiguous_operands_and_nondefault_stream (test_nn_grouped_linear.GroupedLinearNativeTests.test_noncontiguous_operands_and_nondefault_stream) ... ok\ntest_saved_parameter_mutation_and_higher_order_are_rejected (test_nn_grouped_linear.GroupedLinearNativeTests.test_saved_parameter_mutation_and_higher_order_are_rejected) ... ok\ntest_zero_rows_and_all_empty_experts (test_nn_grouped_linear.GroupedLinearNativeTests.test_zero_rows_and_all_empty_experts) ... ok\ntest_malformed_offsets_and_mismatched_operands_fail (test_nn_grouped_linear.GroupedLinearReferenceTests.test_malformed_offsets_and_mismatched_operands_fail) ... ok\ntest_noncontiguous_inputs_and_weights_preserve_gradients (test_nn_grouped_linear.GroupedLinearReferenceTests.test_noncontiguous_inputs_and_weights_preserve_gradients) ... ok\ntest_ragged_rows_and_both_gradients_match_row_oracle (test_nn_grouped_linear.GroupedLinearReferenceTests.test_ragged_rows_and_both_gradients_match_row_oracle) ... ok\ntest_reference_gradcheck_and_higher_order (test_nn_grouped_linear.GroupedLinearReferenceTests.test_reference_gradcheck_and_higher_order) ... ok\ntest_shared_module_accumulates_gradients_once_and_uses_standard_optimizer (test_nn_grouped_linear.GroupedLinearReferenceTests.test_shared_module_accumulates_gradients_once_and_uses_standard_optimizer) ... ok\ntest_standard_state_dict_and_to (test_nn_grouped_linear.GroupedLinearReferenceTests.test_standard_state_dict_and_to) ... ok\ntest_zero_rows_keep_zero_input_and_parameter_gradients (test_nn_grouped_linear.GroupedLinearReferenceTests.test_zero_rows_keep_zero_input_and_parameter_gradients) ... ok\n----------------------------------------------------------------------\nRan 13 tests in 5.088s\nOK\n{\n  \"tests_run\": 13,\n  \"failures\": 0,\n  \"errors\": 0,\n  \"skipped\": 0,\n  \"success\": true,\n  \"python\": \"3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:28:48) [GCC 14.3.0]\",\n  \"torch\": \"2.7.0+cu126\",\n  \"torch_cuda\": \"12.6\",\n  \"device_name\": \"Tesla V100-SXM2-16GB\",\n  \"device_capability\": [\n    7,\n    0\n  ],\n  \"visible_devices\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\",\n  \"extension\": \"/tmp/cellerator-nn-grouped-linear-sm70/_modeling_cuda.cpython-313-x86_64-linux-gnu.so\",\n  \"extension_sha256\": \"d5ffa9284ae5a7dd96ce1e6f8adcbd347b86b58064d0a00496d04f1a8b6ec537\",\n  \"source_sha256\": {\n    \"python/cellerator/torch/grouped_linear.py\": \"918ec4a98d2420917b21b9d5f16fed646bbdc997c7d83206bedc4c3762c38cc5\",\n    \"tests/framework/test_nn_grouped_linear.py\": \"ad0c138e036854cb84e647951569c7a5edafb06fabc18d5da6e4cd6ad8694ca2\",\n    \"include/Cellerator/modeling/cuda/grouped_linear.hh\": \"0c24d60f57fb745701a0ff925bf0b4815445ca0b72c0d32b0995e96249a8bc09\",\n    \"src/modeling/cuda/grouped_linear.cu\": \"3725f4e212531442b13df900f351b5592258acacc4b42241a722212c41505469\",\n    \"bindings/modeling_cuda/module.cc\": \"7d66395d138a0e274b31237121b934ebd749bce4268b83e51addf95edd4a633b\"\n  }\n}\n========= ERROR SUMMARY: 0 errors\n",
+      "substate": "exited",
+      "unit_name": "device-scheduler-attempt-327441a049344aaa211a2251ac8a2f09.service"
+    },
+    "spec": {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "/home/tumlinson/Cellerator/planning/nn-foundation-2026-10-31/grouped_linear/scripts/qualify.py",
+        "--extension-dir",
+        "/tmp/cellerator-nn-grouped-linear-sm70",
+        "--output",
+        "/home/tumlinson/Cellerator/planning/nn-foundation-2026-10-31/grouped_linear/evidence/cuda-memcheck-run-1.json"
+      ],
+      "deadline": null,
+      "dependencies": [],
+      "environment": {
+        "CUDA_VISIBLE_DEVICES": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "event_trigger": null,
+      "expected_duration_seconds": 90.0,
+      "flexible": false,
+      "idempotency_key": "cellerator-nn-grouped-linear-autograd-memcheck-20261031-r1",
+      "interruption": {
+        "cancellation_supported": true,
+        "checkpoint_supported": false,
+        "cooperative_yield": false,
+        "restart_safe": false
+      },
+      "kill_timeout_seconds": 390.0,
+      "max_attempts": 1,
+      "not_before": null,
+      "owner_id": "cellerator",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "parameters": {
+            "consecutive_samples": 2,
+            "interval_seconds": 1,
+            "max_utilization_percent": 0,
+            "timeout_seconds": 45
+          },
+          "schema_version": 1
+        }
+      ],
+      "preemption_action": "abandon",
+      "priority": 50,
+      "priority_class": "normal",
+      "profile_id": null,
+      "resources": [
+        {
+          "kind": "gpu",
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "same_host": true,
+          "schema_version": 1,
+          "selectors": {
+            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          },
+          "topology_constraints": {}
+        }
+      ],
+      "retention_policy": null,
+      "schema_version": 1,
+      "secret_refs": [],
+      "tags": [
+        "gpu.exclusive",
+        "cellerator-nn-foundation-correctness"
+      ],
+      "termination_grace_seconds": 10.0,
+      "timeout_seconds": 420.0,
+      "working_directory": "/home/tumlinson/Cellerator"
+    },
+    "state": "succeeded",
+    "updated_at": "2026-10-31T14:06:41.619727Z"
+  },
+  "timed_out": false
+}

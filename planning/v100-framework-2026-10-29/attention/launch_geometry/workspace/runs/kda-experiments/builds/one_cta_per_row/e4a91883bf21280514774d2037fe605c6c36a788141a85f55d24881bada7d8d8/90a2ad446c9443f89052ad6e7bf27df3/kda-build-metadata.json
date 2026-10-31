@@ -1,0 +1,30 @@
+{
+  "architecture": "sm_70",
+  "attention_source_sha256": "4d102280a82e214aaca42617a2e83ecc52b542dc4061808ddb5140f8b6027bb5",
+  "baseline_source_manifest_sha256": "5ae24fc2f24b0103685161d86fe75b51f67beeafe10d1b795cfb0b1b50108902",
+  "binary_sha256": {
+    "cmake/cellerator_kda_attention_geometry_driver": "64b29f2ddd513da4a8fb552cc00092ac146c6d4263455531a78e8b3bec25ea03",
+    "cmake/cellerator_kda_attention_smoke": "0005fbf15d6d1fb979529968e6e4bb26d83ed90de157f5fca21c802434a3f173"
+  },
+  "build_argv": [
+    "cmake",
+    "-S",
+    "/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b/planning/v100-framework-2026-10-29/attention/launch_geometry",
+    "-B",
+    "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/workspace/runs/kda-experiments/builds/one_cta_per_row/e4a91883bf21280514774d2037fe605c6c36a788141a85f55d24881bada7d8d8/90a2ad446c9443f89052ad6e7bf27df3/cmake",
+    "-DCELLERATOR_SOURCE_DIR=/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b",
+    "-DKDA_CANDIDATE_SOURCE_DIR=/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/attention/launch_geometry/workspace/runs/kda-experiments/candidates/one_cta_per_row/d0c741207db9ac769c4b6a7268ba2e77145c20044571950458283c510cbde197",
+    "-DCMAKE_CXX_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12",
+    "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12",
+    "-DCMAKE_CUDA_ARCHITECTURES=70",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_CUDA_FLAGS=-lineinfo"
+  ],
+  "candidate_id": "one_cta_per_row",
+  "candidate_snapshot_sha256": "d0c741207db9ac769c4b6a7268ba2e77145c20044571950458283c510cbde197",
+  "common_source_root": "/home/tumlinson/Cellerator/.autobench/state/snapshots/19c74e6f028c37c12c372e5a6515bb54411abe2c1f418d5299f5499cdd0e7b8b",
+  "task_source_manifest_sha256": "d3aba657fd9590a0e971696626ae3337801d7043ef555a48842e54131e9cb5ad",
+  "trusted_driver_sha256": "27882b9738af444ee6f145145ba46d877d4a7cef9916ca2facced1bc3e1ed81d",
+  "trusted_smoke_sha256": "f85dbbbf4e67c754e42630e017905e9f364bcac3fd7aa21fd3ccc0abc593a6eb"
+}

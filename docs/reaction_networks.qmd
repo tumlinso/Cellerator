@@ -15,14 +15,14 @@ Torch or converting a cell into a dense feature tensor.
 ```python
 import random
 from cellerator.dynamics.reactions import Reaction, ReactionNetwork
-from cellerator.modeling import Cell, Model
+from cellerator.modeling import DynamicalCell, DynamicalModel
 
 network = ReactionNetwork(["inactive", "active"], [
     Reaction.mass_action("activate", {"inactive": 1}, {"active": 1}, 0.6),
     Reaction.mass_action("deactivate", {"active": 1}, {"inactive": 1}, 0.3),
 ])
-model = Model(network, observation=lambda counts, ctx: counts["active"])
-cell = Cell(model, network.state({"inactive": 20}))
+model = DynamicalModel(network, observation=lambda counts, ctx: counts["active"])
+cell = DynamicalCell(model, network.state({"inactive": 20}))
 result = cell.advance(0.5, rng=random.Random(13))
 assert sum(cell.state.values()) == 20
 print(cell.observe(), result.events)

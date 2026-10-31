@@ -86,5 +86,23 @@ int main(int argc, char** argv) {
                                   consumer_stream.get()), "consumer parameter download");
     }
     assert(std::memcmp(output.data(), "\x09\x09\x09", 3) == 0);
+
+    // Empty payloads still carry an exact logical revision but need no host
+    // staging or device allocation. The recorded marker must make the ticket
+    // ready without dereferencing a null payload.
+    cc::ParameterStore empty_store;
+    const cc::ExpertKey empty_key{21, 1};
+    empty_store.register_initial(empty_key, buffers({}));
+    const auto empty_memory = cu::ParameterTransfer::required_memory(
+        empty_store.acquire(empty_key));
+    assert(empty_memory.retained_source_bytes == 0);
+    assert(empty_memory.pinned_staging_bytes == 0);
+    assert(empty_memory.device_bytes == 0);
+    auto empty_ticket = cu::ParameterTransfer::upload(
+        empty_store, empty_key, transfer_stream);
+    empty_ticket.wait();
+    const auto empty_view = empty_ticket.view();
+    assert(empty_ticket.key() == empty_key);
+    assert(empty_view.data == nullptr && empty_view.bytes == 0);
     std::cout << "parameter transfer GPU byte identity, revision pins and downstream lifetime passed\n";
 }
