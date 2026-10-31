@@ -7,13 +7,28 @@ and completion evidence.
 
 ## Product boundary
 
-Cellerator is a general computational and machine-learning framework for
-biological modeling, especially cellular dynamics. Its native numerical
-machinery, modeling interfaces, structured layouts, and specialized kernels
-can express and exploit biological identities, relations, state changes, and
-interaction geometry. PyTorch is useful optional integration for learned
-modules, autograd, and tensor operations; it does not define the framework's
-scope. Consumers retain their scientific assumptions and validation.
+Cellerator is an extensible machine-learning framework organized around learning
+biological representations, relationships, and behavior. Route work by the
+representation, architecture, objective, and execution needs of the learning
+problem. Cellular dynamics, persistent state, and population execution are
+capabilities within this purpose; they are not a mandatory foundation for every
+network. Static representation learners, dense attention, transformers,
+recurrent models, conditional computation, and hybrids all belong in scope.
+
+Native numerical machinery, structured layouts, and specialized kernels can
+exploit structure a model contains or discovers. Sparsity and explicit
+biological annotations are optional. PyTorch is useful infrastructure for
+learned modules, autograd, and tensors; neither a Torch-only interface nor a
+universal cell-transition interface defines the framework. See the
+[scope](../scope.qmd) and [learning-problem architecture](../architecture.qmd#organizing-the-learning-problem)
+for the governing intent.
+
+Consumers retain scientific assumptions and validation. Explicit relationships
+can make a question clearer without guaranteeing causal or molecular
+identification. Identifiability is relative to the question, model family,
+assumptions, and experiment; latent ambiguity is not a universal prohibition.
+GlassHelix investigates formal inferability, while Cellerator supplies reusable
+learning mechanisms that can reflect the question and its available constraints.
 
 Keep entity and relation identity, structural order, activity/eligibility,
 values and parameters, logical/physical layout, and runtime bindings distinct.
@@ -22,9 +37,11 @@ complete adaptive runtime from a narrower gate, a sparse representation, a test,
 or the existence of compiler code.
 
 Cellerator is early. Sparse support, indexing, routing and gating are promising
-facilities with operation-specific maturity. The `nn` surface should grow as
-real `torch.nn.Module` compositions are implemented; this guide does not imply a
-standard biological layer catalogue. Execution fields, compiler/IR integration,
+facilities with operation-specific maturity. The small implemented `nn` surface
+does not limit the intended range of learned architectures or objectives;
+its growth should follow reusable modeling needs and actual implementations.
+This guide does not imply a standard biological layer catalogue. Execution
+fields, compiler/IR integration,
 JIT and live recompilation remain experimental and are not prerequisites for
 ordinary model use. New backend-neutral modeling interfaces, state/event
 representations, interaction mechanisms, dynamics, and adapters have been
@@ -47,7 +64,8 @@ validity, or task completion.
 
 | Change | Current source route | Intended owner | Routing notes |
 |---|---|---|---|
-| Backend-neutral model instances and dynamics | `python/cellerator/modeling`, `state`, `events`, `dynamics`, `interactions`, `execution`, and `inference` | Distinct open Python package boundaries for model rules, opaque state, event histories, numerical updates, sparse relations, population execution, and inference | These are model-facing interfaces and reference mechanisms under rapid development. Preserve arbitrary state representations. Do not place consumer biological semantics in general packages or assume package presence qualifies a native/GPU backend. See the [biological framework](../biological_framework.qmd). |
+| Learned representations, neural composition, objectives, and training | `python/cellerator/nn.py`, `ops.py`, `torch`, `adapters`, with relevant interaction/inference and native operation owners | Reusable biological learning capabilities, using existing numerical and ML infrastructure where appropriate | Begin with the representation and learning question. Current namespace placement is not a hierarchy of importance. Do not force a learned component into `Cell` or a state-transition wrapper; do not imply that every intended architecture or objective exists. |
+| Optional model instances, dynamics, and population mechanics | `python/cellerator/modeling`, `state`, `events`, `dynamics`, `interactions`, `execution`, and `inference` | Composable mechanisms for model rules, opaque state, event histories, numerical updates, relations, population execution, and inference | Use relevant contracts without requiring every model to adopt dynamics or a lifecycle. Preserve arbitrary representations and general neural composition. Do not place consumer hypotheses in general packages or assume package presence qualifies a native/GPU backend. See the [biological framework](../biological_framework.qmd) for current APIs and [architecture](../architecture.qmd) for their intended role. |
 | Learned/data adapters | `python/cellerator/adapters` | Optional bridges to general learning libraries and explicit AnnData boundaries | Keep optional dependencies lazy. AnnData identity/layer selection is caller supplied; preserve sparse inputs and exact row/column identities. Do not make Torch the core state contract. |
 | Native mathematical or model operation | `src/ops/{numeric,matrix,process,sparse_support}` and the still-active `src/compute/<family>` operations, with matching public headers | Keep ownership with the concrete operation family (`Cellerator::ops_numeric`, `Cellerator::op_matrix_patch`, `Cellerator::op_process_ports`, or the named `src/compute/operation/<family>` target) | `src/ops/numeric`, `matrix`, `process` have explicit CMake owners and Substrate SDK consumers. `src/compute` still owns Product2, native numeric and differential operations, indexed mechanisms, model ops, candidate portfolios, operators, tokenization and training families. The source map records the actual family and evidence boundary; it does not imply each file is built or qualified. Keep derivatives, precision, build registration, and callers together. |
 | Identity, support, indexing, and gating | `src/structure`, `src/support`, `src/indexing`, `src/gating`; public identity headers under `include/Cellerator/structure` and support/indexing/gating under `include/Cellerator/compute` | Distinct structure identity, logical eligibility, lookup, and conditional-work owners | CMake currently defines `Cellerator::identity_registry`, `::support`, `::indexing`, and `::gating`, with a compatibility `::sparse_support` umbrella. Host checks include `tests/biological_abi/biological_abi_host_test.cc`, `tests/execution_identity/identity_registry_test.cc`, and focused `tests/sparse_support/*`; CUDA workset checks are separately gated. |

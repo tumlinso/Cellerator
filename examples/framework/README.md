@@ -71,8 +71,8 @@ Additional subsystem references:
 - [Native conditional planning and scheduling](../../docs/native_scheduling.qmd)
 - [Revision-pinned CUDA parameter transfer](../../docs/framework_parameter_transfer.qmd)
 - [Worklist regulatory gates](../../docs/framework_regulatory_gates.qmd)
-- [Native CUDA runtime](../../docs/framework_cuda.qmd), compiled for SM70 but
-  not yet executed on a GPU
+- [Native CUDA runtime](../../docs/framework_cuda.qmd), with focused V100
+  numerical checks; see the linked validation report for scope and limits
 - [Incremental sparse invalidation](../../docs/incremental_cellular.qmd)
 - [Cell and environment coupling](../../docs/cellular_coupling.qmd)
 - [Sparse stochastic reaction networks](../../docs/reaction_networks.qmd)

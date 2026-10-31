@@ -9,6 +9,37 @@ the relevant operation or subsystem record. Use the active Project Control
 task for live status and ownership. Closed Todo files and historical compiler
 plans record earlier intent; they do not define current package capability.
 
+## Architectural orientation for contributors
+
+Biological machine learning is the organizing principle: make representations,
+relationships, architectures, and objectives for cellular systems natural to
+construct, train, and execute. Read the [learning-problem architecture](architecture.qmd#organizing-the-learning-problem)
+before extending model-facing APIs. Evaluate the representation and objective
+alongside numerical execution, rather than treating learning as an adapter to
+a universal cell-transition runtime.
+
+`Cell`, persistent state, trajectories, and population mechanics are optional
+capabilities. Dense attention, static representation learners, transformers,
+recurrent models, conditional computation, and hybrids remain equally valid.
+An operation can exploit biological structure without requiring every model to
+use it. Keep the framework's general neural-network expressiveness intact.
+
+For interpretation claims, use the [question-relative identifiability boundary](architecture.qmd#scientific-questions-and-identifiability).
+Explicit structure can clarify a learning problem; inference depends on its
+model family, assumptions, and observations or interventions. Neither biological
+naming nor latent-state ambiguity settles identifiability on its own. GlassHelix
+investigates the formal inferability question; Cellerator supplies reusable
+architectures and learning mechanisms.
+
+This is architectural guidance, not a request to rewrite current APIs or proof
+that every intended capability is implemented. The
+[modeling and neural-network backbone](architecture.qmd#modeling-and-neural-network-backbone)
+records the six conceptual concerns and distinguishes existing foundations from
+remaining capabilities. Use the source routing and implementation evidence
+below for the bounded change actually authorized.
+
+## Implementation references
+
 The [implementation style guide](development/implementation_style.md) describes maintained contributor conventions. The [operation registry](development/operation_registry.md) is a historical inventory; confirm any entry against current source and the routing map.
 
 The [Celleratord query-contract index](https://github.com/tumlinso/Cellerator/blob/main/docs/celleratord/README.md) describes query semantics and separates them from current implementation evidence. The [source routing guide](development/routing.md) and its generated map are

@@ -65,5 +65,8 @@ The [smoke source](../tests/framework/cuda/parameter_transfer_smoke.cu) has a
 and non-host rejection without CUDA calls. Its GPU path independently compares
 downloaded bytes, destroys an upload ticket before consumer completion, publishes
 and retires a revision while executing, and checks the fallback destruction
-drain. This change was compiled for SM70 and host contracts were run; the GPU path
-was not executed and performance is unmeasured.
+drain. Focused V100 checks verified the device byte comparisons and lease
+lifetime cases; see the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md). Transfer
+performance and multi-GPU movement remain unmeasured and are outside this
+bridge's contract.

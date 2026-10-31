@@ -34,9 +34,12 @@ by copying device metadata back to the host. The current implementation is a
 correctness-oriented baseline; compilation alone provides no performance or
 runtime-correctness qualification.
 
-`tests/framework/cuda/attention_smoke.cu` contains an independent host
-reference and an API compile/link fixture. Device tests require a separately
-admitted CUDA run.
+`tests/framework/cuda/attention_smoke.cu` compares device results with an
+independent reference. The V100 matrix checks staged and fused row lengths
+across warp boundaries, backward behavior, and a large reduction case. The
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md) records
+tested shapes, tolerances and sanitizer results. These correctness checks do
+not measure a workload-level speedup.
 
 ## Optional fused small-row path
 
@@ -48,8 +51,9 @@ write edge probabilities for the existing backward API. Larger rows use the
 staged path; the original forward entrypoints retain their existing behavior.
 
 The design draws on KernelBender's producer/consumer ownership guidance in
-`references/compositions/ownership-fragments.md`. It is an alternative to
-measure, not an automatically selected optimization. SM70 compilation and the
-host reference fixture pass; neither device correctness nor a speedup has been
-established. Compare the complete forward/backward path, including workspace
-and preparation costs, before choosing it for a workload.
+`references/compositions/ownership-fragments.md`. Its focused V100 correctness
+cases are recorded in the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md). It remains
+an alternative without a measured speedup or automatic selection.
+Compare the complete forward/backward path, including workspace and preparation
+costs, before choosing it for a workload.

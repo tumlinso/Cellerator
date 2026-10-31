@@ -141,10 +141,12 @@ nvcc -std=c++17 -arch=sm_70 -Iinclude \
 
 The fixture's device path additionally checks packed output against that
 oracle, compaction, capacity overflow, guard words, invalid occurrences and
-malformed sparse masks. **The device path has not been executed.** GPU
-correctness, sanitizer qualification, performance and biological validity are
-unestablished. GPU execution continues to require the repository's admitted
-execution route. The optional CMake smoke target is build-only and is not
+malformed sparse masks. These occurrence-based device cases passed on V100;
+the suite-wide sanitizer outcomes and test limits are in the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md). Performance
+and biological validity remain unestablished. GPU execution continues to
+require the repository's admitted execution route. The optional CMake smoke
+target is build-only and is not
 registered as an automatically executed CTest.
 
 ## Experimental independent-cell bitplanes
@@ -180,8 +182,10 @@ cross-word neighboring-cell transitions.
 
 The CPU fixture exhausts three-feature truth assignments distributed over
 32 cells, checks a second word with nine valid tail cells against scalar gates,
-and consumes the resulting plane in a second Boolean transition. CUDA source
-is compiled for `sm_70`; the bitplane kernel has not been run. No performance
-advantage or automatic dispatch preference is established. A future decision
-requires comparing both representations over identical work, including cold
-conversion, state updates, repeated transitions, extraction and compaction.
+and consumes the resulting plane in a second Boolean transition. Focused V100
+device checks for the bitplane kernel are summarized in the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md). No
+performance advantage or automatic dispatch preference is established. A
+future decision requires comparing both representations over identical work,
+including cold conversion, state updates, repeated transitions, extraction and
+compaction.

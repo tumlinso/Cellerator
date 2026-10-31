@@ -4,17 +4,53 @@ title: "Architecture"
 
 ## Product direction
 
-Cellerator is a general computational and machine-learning framework for
-biological modeling, especially cellular dynamics. It makes state, dynamical
-updates, observations, events, and structured interactions expressible and
-provides its own native numerical operations, data layouts, and specialized
-CPU/GPU computation. The biological structure of a model can shape its
-mathematical contract and its execution geometry.
+Cellerator is an extensible machine-learning framework whose computational
+abstractions are developed around the structure of the cell and the systems it
+comprises. Its governing architectural question is:
+
+> What would machine learning look like if its computational abstractions were
+> developed around the structure of the cell and the systems it comprises,
+> rather than cellular systems being translated into abstractions originally
+> developed for language?
+
+The aim is to make learning cellular representations, relationships, and
+dynamics as natural as learning sequences is in language-model frameworks,
+without compromising general neural-network expressiveness and while exploiting
+biological structure for computational efficiency. PyTorch provides tensors and
+differentiable operations; sequence-model libraries provide convenient sequence
+architectures. Cellerator should make cellular systems equally natural
+computational subjects through a richer vocabulary for constructing models of
+cells and their behavior, without imposing a particular mathematical cell object.
+
+This original biological ML ambition governs subsequent design choices and
+ecosystem analogies. Representation, architecture, learning objectives, and
+execution should develop together. Stable molecular identities, conditional
+interactions, overlapping regulatory modules, history, and shared learned rules
+can motivate both neural abstractions and specialized layouts or kernels.
+Compiler, scheduler, and distribution machinery serve those models; they do not
+replace the biological modeling purpose. Building, training, and sharing cell
+models describes the experience this architecture should make possible.
+
+Biological structure adds a vocabulary and computational opportunities without
+restricting general neural-network expressiveness. Dense networks, ordinary
+attention, transformers, recurrent models, mixtures of experts, sparse
+conditional models, dynamical systems, and arbitrary combinations remain valid.
+This is an ambition for practical modeling expressiveness, not a claim of a
+larger universal-approximation class. A model should gain useful choices from
+biological structure rather than be required to follow a biological metaphor.
+
+Dynamics remains a central motivation alongside learning representations and
+relationships. Optional state-transition APIs preserve freedom to learn behavior
+through event histories, recurrent memory, latent dynamics, and other forms;
+they do not demote dynamics or privilege static encoders. No single formulation
+defines every permissible biological learning problem.
 
 PyTorch is an optional and useful integration route for learned modules,
-autograd, and ordinary tensor computation. It is not Cellerator's definition
-or limit: state may be sparse, ragged, event based, relational, externally
-owned, custom, or hybrid. Cellerator provides reusable computational machinery;
+autograd, and ordinary tensor computation. Cellerator also owns native numerical
+operations, specialized CPU/GPU execution, and representations that may be dense,
+sparse, ragged, event based, relational, externally owned, custom, or hybrid.
+An optional framework adapter is an implementation boundary; it does not make
+learning secondary to a simulation runtime. Cellerator provides reusable machinery;
 Karyoplast, Cytoplast, Blastback, and future consumers own application-specific
 biological assumptions and scientific validation.
 
@@ -27,19 +63,292 @@ For the user facing modeling vocabulary and the new Python packages, see the
 rapid development; package presence does not imply scientific validation or
 accelerated backend support.
 
+## Organizing the learning problem
+
+The architecture serves three connected ambitions: **expressiveness** in
+describing models, **learning** suited to biological questions, and **efficiency**
+from structure a model contains or discovers. Design a capability across these
+concerns rather than beginning with a required cell lifecycle or sparse format.
+
+| Concern | Architectural responsibility |
+|---|---|
+| Representations and observations | Express what is measured, what the model represents, and how they relate, without treating a transcriptional profile, embedding, or latent state as a complete cell by definition. |
+| Neural composition and relationships | Compose ordinary neural operators with learned or supplied biological relationships, contextual interactions, overlapping modules, and optional memory. Allow relationships beyond those already known. |
+| Objectives and training | Express the biological question through conditioning, supervision, observation models, losses, and training procedures. Distinguish what the objective constrains from what a representation is hoped to contain. |
+| Optional dynamics and coupling | Provide state transitions, continuous evolution, stochastic events, histories, and interacting populations when a model needs them. These are composable capabilities rather than a mandatory model form. |
+| Numerical and physical execution | Implement the chosen mathematical computation with appropriate derivatives, layouts, precision, reuse, scheduling, and resource ownership. Exploit structure without silently changing model semantics. |
+
+These are responsibilities, not a required sequence of runtime stages or a new
+mandatory object hierarchy. A static representation learner can use biological
+attention without a transition rule; a perturbation model can predict responses
+without simulating every intermediate state; a recurrent model can maintain
+persistent cellular state. Each is a first-class use case.
+
+Attention already expresses learned, context-dependent interactions. The
+architectural question is which participants, representations, conditioning,
+and objectives best express the biological problem. A sequence encoding or
+masked reconstruction objective is one choice, not the default definition of
+cellular learning. Reconstruction of observations alone does not establish that
+the responsible dynamics or intervention responses have been learned.
+
+`Cell`, `Model`, step contexts, events, and trajectory APIs support the models
+for which their contracts are useful. They do not define every permissible
+network or require every learning problem to be expressed as explicit cellular
+state transitions. Conventional neural modules and alternative representations
+must remain composable without adopting those APIs.
+
+## Modeling and neural-network backbone
+
+**Conceptual direction recorded 2026-10-31.** The missing backbone is the coherent
+modeling experience that connects biological information, learned computation,
+and the questions a model is trained to answer. Existing numerical, interaction,
+state, and execution mechanisms are foundations for it. Their presence does not
+by itself provide a complete biological neural-network framework.
+
+The following six concerns are complementary responsibilities, not a mandatory
+pipeline, package layout, class hierarchy, or implementation plan. They preserve
+the biological ML ambition above while keeping the public experience minimal.
+
+### Biological information and learned representations
+
+Distinguish molecular identity, measured values, experimental context, history,
+and inferred information. Feature identity should survive storage reordering;
+repeated events involving one gene remain distinct occurrences. Models may use
+expression features, event histories, molecular graphs, latent arrays, regulatory
+memory, or hybrids. A cell makes the cellular subject and relevant information
+addressable without asserting a complete or uniquely defined biological state.
+Compatibility between representations depends on their meaning and available
+information, not merely matching dimensions.
+
+### General trainable composition
+
+Provide coherent composition of learned modules, shared parameters, gradients,
+and ordinary neural operations with structured biological computations. Dense
+transformations, normalization, residual connections, attention, recurrence,
+and conditional modules should remain natural choices. Reuse established neural
+infrastructure where it serves these needs; the ambition does not require
+reimplementing every conventional layer or optimizer. Cellerator's contribution
+is preserving useful biological identities and relationships through composition
+without repeatedly reconstructing them in application-specific glue. Native
+execution and alternative backends remain possible.
+
+### Learned interactions
+
+Make it natural to express which participants interact, under what context,
+through what learned computation, and how their contributions combine.
+Participants may be genes, peaks, proteins, latent features, overlapping modules,
+or cells. Relationships may be supplied, discovered, dense, sparse, or conditional;
+attention belongs naturally in this family. Models should be able to learn
+participation as well as interaction strengths without assigning every module a
+predetermined biological role. Known regulatory structure may inform a model
+without delimiting the relationships it can discover.
+
+### History, memory, and conditional behavior
+
+Histories, interventions, environmental conditioning, recurrent memory, and
+temporal prediction should be natural architectural ingredients. Autoregressive
+event models, recurrent networks, and explicit dynamical systems express
+different forms of this capability. Shared parameters, cell-specific computational
+context, and biological observations remain distinct. A model may learn behavior
+through distributed history-dependent computation without declaring one explicit
+biological state vector. Static models need neither a clock nor a transition rule.
+
+### Readouts and learning questions
+
+Connect representations to conditioning information, requested predictions,
+available observations, targets, and objectives. Masked reconstruction, event
+prediction, perturbation response, trajectory learning, and multimodal prediction
+provide different constraints; preserve those differences instead of imposing a
+universal loss or observation model. A shared auxiliary model can derive ATAC
+predictions from suitable Karyoplast representations or context and be trained
+separately or jointly, as the experiment requires. Preserve the distinction
+between a measured view and a predicted one. Neither representation structure
+nor an objective's name establishes the resulting scientific claim.
+
+### Reusable model construction and training
+
+Make these components fit together into complete trainable models, including
+selected trainable or frozen components, combined objectives, heterogeneous
+batches, and reusable pretrained components. Cellular encoders, conditional
+predictors, event models, recurrent models, and interacting-population models
+are useful conceptual families and compositions, not a fixed model catalog.
+The framework should support individual and collective learning questions;
+cell-level addressability does not require statistical independence or a
+separate loss for every cell. Model definitions should retain their meaning
+across efficient execution and reuse.
+
+### Existing foundations and remaining capability gaps
+
+This is a source-oriented architectural assessment as of 2026-10-31, not a
+completion checklist or a replacement for the dated
+[implementation record](current_implementation.qmd). The existing mechanisms
+have different backend and validation boundaries. The remaining work includes
+coherence and generalization of interfaces, not just adding more kernels or
+renaming existing classes.
+
+| Concern | Existing machinery to build on | Remaining conceptual capability |
+|---|---|---|
+| Information and representations | Feature identities, ranked/event vocabularies, sparse and ragged state, event histories, and explicit AnnData exchange. | A coherent model-facing vocabulary spanning measured, historical, and learned information without requiring one persistent state representation. |
+| Trainable composition | A small `nn` surface for Product2, mechanisms, and shared-support relations; optional Torch learned dynamics, gated interactors, event heads, and expert banks. | Natural general neural composition across structured biological representations and ordinary modules, with clear parameter and gradient ownership. |
+| Interactions | Directed, bipartite, and hyperedge computations, activity gates, sparse support, worklists, and numerical attention/dispatch operations. | A unified modeling experience for learned participation, contextual computation, and aggregation across dense, sparse, and overlapping relationships. |
+| History and behavior | Explicit model/cell transition APIs, external state references, trajectories, events, and population context/lifecycle mechanisms. | General history-conditioned and recurrent modeling that composes with static encoders and does not make `advance()` the universal model operation. |
+| Readouts and questions | Observation callbacks, an event prediction head, observation-conditioned inference, and trajectory loss contexts. | Shared trainable auxiliary views and composable biological objectives with explicit conditioning, target, and representation dependencies. |
+| Model construction and training | A trajectory-window training adapter, shared-parameter expert execution, and focused differentiable dispatch paths. | A coherent construction and training experience across static, generative, recurrent, multimodal, and population models; complete-model validation remains separate. |
+
+Useful source entry points are the [neural interface](../python/cellerator/nn.py),
+[learned adapters](../python/cellerator/adapters/torch.py),
+[trajectory training adapter](../python/cellerator/adapters/training.py),
+[interaction mechanisms](../python/cellerator/interactions/core.py), and
+[current model/cell contracts](../python/cellerator/modeling/core.py). Read their
+actual contracts before operationalizing this direction; a named module or
+working primitive does not establish the broader capability in the final column.
+
+### How the concerns combine
+
+| Modeling case | Combination of concerns |
+|---|---|
+| Geneformer-like encoder | Biological feature representations, contextual interactions, aggregation, and reconstruction or representation objectives. |
+| Karyoplast | Event representations, history-dependent computation, shared conditional modules, generative objectives, and auxiliary readouts. |
+| Cytoplast | Many private cellular contexts using shared learned computation, with coupling, environmental inputs, and individual or collective objectives. |
+
+These are motivating design cases, not instructions to implement those projects
+inside Cellerator. Execution should exploit identities, conditional participation,
+reuse, and interaction locality through suitable layouts, kernels, batching, and
+placement while preserving mathematical meaning. Model sharing preserves that
+meaning for reuse. Both serve the modeling and learning backbone.
+
+Operationalization remains a separate user-directed step. This section does
+not select APIs, prescribe an implementation sequence, or authorize development.
+The architectural test is whether a researcher can express a biological learning
+question more directly and turn it into a trainable, efficient model because
+Cellerator supplies the appropriate computational vocabulary.
+
+## Cells, representations, and auxiliary views
+
+**Design request recorded 2026-10-31.** Preserve this requirement when refining
+the elementary classes. It is design intent, not an implemented API contract or
+authorization to resume development. Exact class boundaries and method names
+remain open. The public API should be intuitive and minimal, and its eventual
+implementation should support efficient native and batched execution.
+
+A `Cell` should make a cellular subject and its associated information
+addressable in a learning problem. When bound to a learned model, it can be a
+lightweight handle to that model's representation or computational context for
+the cell. A "pointer to a latent" is a useful intuition, but must not become a
+requirement for one explicit, persistently materialized latent vector. Relevant
+information may be distributed across structured features, event history,
+attention context, recurrent memory, or several learned representations.
+History and behavior under specified conditions remain native modeling concepts;
+an instantaneous view is only one possible selection of cellular information.
+
+### Motivating request: an auxiliary ATAC model for Karyoplast
+
+Given suitable supporting data, a user should be able to train a separate
+auxiliary model that derives another view of a Karyoplast cell, such as its
+ATAC peaks. Attach the readout to the shared learned program so many cells can
+use the same auxiliary parameters. A cell's individual history or context
+determines its prediction without requiring its own copy of either model.
+The auxiliary readout may itself be a substantial learned model; it is not
+restricted to a linear head.
+
+The readout's source must be selectable: a named representation, intermediate
+features, history-dependent context, or a composition of available features.
+Do not require all readouts to consume a single canonical cell embedding. A
+convenient final embedding may discard information useful to an auxiliary
+task. The availability of training data does not by itself establish that a
+particular representation retains the information needed for the new readout.
+
+Training only the auxiliary model with a frozen base and jointly training the
+base and auxiliary model are distinct, explicit choices. Preserve the
+appropriate gradient paths. Measured ATAC data and model-predicted ATAC views
+must remain distinguishable; auxiliary predictions are not new measurements.
+The same mechanism should accommodate other readouts and model families.
+
+Illustrative syntax only; these methods are not established public APIs:
+
+```python
+karyoplast.add_view("atac", atac_decoder, source="regulatory_features")
+
+cell = karyoplast.bind(history=events)
+peaks = cell.predict("atac")
+
+# The same request over a batch of cell handles.
+peaks = karyoplast.predict(cells, view="atac")
+```
+
+The durable requirement is this small modeling experience, not these exact
+spellings. Users should not have to construct separate task, view, and session
+objects for every prediction. Those concepts may support the implementation
+and advanced composition without imposing a mandatory public object hierarchy.
+Auxiliary views should be usable with static encoders, autoregressive models,
+recurrent systems, and explicit dynamical models alike.
+
+### Performance and ownership requirements
+
+- Keep shared base and auxiliary parameters separate from lightweight cell
+  handles and cell-specific context. Avoid parameter duplication per cell.
+- Compute requested views lazily and reuse valid intermediate representations.
+  Do not require dense state decoding, permanent materialization of every
+  possible view, or unnecessary host/device copies.
+- Make batches a native execution path rather than a Python loop over cell
+  objects. Preserve sparse, ragged, structured, and device-resident data where
+  their operation contracts permit it.
+- Retain gradients when training requires them; a view must not silently detach
+  a representation or force a conversion through a non-differentiable format.
+- Cache reuse must account for the source history/context, selected
+  representation and conditioning, and base/readout parameter revisions.
+  Updating a model or changing the cell's available information must not return
+  a stale prediction as current.
+- Distinguish semantically necessary recurrent memory from reconstructible
+  caches and temporary activations. Physical eviction must preserve the
+  model's declared information dependencies.
+
+These are design constraints and performance goals, not measured speedup
+claims. The current state/clock/`advance()` cell wrapper may support a custom
+observation callback, but that is not yet the minimal shared-readout interface
+described here. Reconsider its role during an explicitly authorized redesign;
+do not treat this note as approval to change it now.
+
+## Scientific questions and identifiability
+
+Preserving identities and making context-dependent interactions explicit may
+make a question clearer in the architecture and its learning objective. This
+can make relevant components easier to investigate. Biological naming or
+structure alone does not establish causality, molecular interpretation, or
+identifiability, and known regulatory relationships need not be hardcoded.
+
+Identifiability is relative to a question, an admissible model family,
+assumptions, and the observation experiment. Appropriately sampled dynamics,
+natural excitation, lineage, interventions, or other forcing can constrain a
+feature within a defensible model class. Identifying a dynamical feature does
+not require identifying every latent coordinate or biochemical realization.
+Latent-state ambiguity therefore cannot justify a universal impossibility claim.
+
+Cellerator should make the intended question and available constraints natural
+to express in models and training. GlassHelix investigates which inferential
+conclusions are formally justified under those conditions. Keep the model's
+representational choices, the constraints supplied by observations and losses,
+and the resulting scientific claims distinct.
+
 ## Core concepts and ownership
 
 Keep these concepts related but distinct:
 
-1. **Identity and structure:** which modeled entities and relations exist, with
+1. **Learning question and objective:** what is to be learned, what observations
+   and conditioning are available, and which claims the loss and experiment
+   can constrain.
+2. **Representations and composition:** how observations, learned features,
+   optional persistent state, and neural components fit together.
+3. **Identity and structure:** which modeled entities and relations exist, with
    stable domain and order identity.
-2. **Activity and eligibility:** which entities or relations participate in a
-   particular evaluation.
-3. **Values and parameters:** state, learned values, and their generations.
-4. **Logical and physical layout:** how logical identities map to storage and
+4. **Activity and eligibility:** which entities or relations participate in a
+   particular evaluation; dense participation remains a valid choice.
+5. **Values and parameters:** learned parameters, activations, optional persistent
+   state, and their distinct ownership and generations.
+6. **Logical and physical layout:** how logical identities map to storage and
    execution representations, including the inverse mapping needed for values
    and gradients.
-5. **Prepared execution and runtime state:** reusable operation preparation,
+7. **Prepared execution and runtime state:** reusable operation preparation,
    allocations, streams, device bindings, and actual execution lifetime.
 
 A value update should not imply a structure rebuild unless the operation
@@ -51,12 +360,65 @@ boundaries per operation.
 
 | Concern | Owner | Cellerator boundary |
 |---|---|---|
-| Tensors, standard layers, autograd, optimizers | PyTorch | Compose Torch directly; add adapters only for specialized operations. |
-| Reusable cellular relations, support, and operations | Cellerator | Define model-neutral contracts and native entry points. |
+| Tensors, standard layers, autograd, optimizers | PyTorch and other numerical/ML backends | Reuse established infrastructure where useful; keep Cellerator's native operations and backend choices first-class. |
+| Biological representations, neural compositions, reusable objectives and training mechanisms | Cellerator | Make biological learning natural without requiring cell instances, transition rules, or a particular network family. |
+| Model configuration, serialization, pretrained loading, and sharing interfaces | Cellerator | Preserve the model's biological input/output meaning and dependencies; integrate with existing artifact services. |
+| Reusable cellular relations, support, dynamics, and operations | Cellerator | Define composable contracts and native entry points, with dynamics as one capability. |
 | Scientific interpretation and model assumptions | Karyoplast, Cytoplast, Blastback, other consumers | Consumers choose biological meaning and validate their models. |
+| Formal inferability of mechanisms or features | GlassHelix | Investigate question-specific identifiability and assumptions; Cellerator supplies reusable modeling and learning machinery. |
 | Sequence-grounded representations | Baseplane | Cellerator consumes sequence-specific results without taking ownership of sequence semantics. |
 | Persistence, sharding, transport, delivery | CellShard and owning systems | Integrate across explicit data boundaries. |
 | Classical single-cell analysis | AnnData ecosystem, Scanpy, RAPIDS-singlecell | Remains upstream; `cellerator.adapters.anndata` offers explicit identity-aligned exchange without preprocessing or layer guessing. |
+
+## Model reuse and sharing support {#building-training-and-sharing-cell-models}
+
+**Supporting product framing recorded 2026-10-31.** A coherent model library and
+ecosystem should make the biological ML abstractions above usable and reusable.
+The Transformers analogy concerns this experience; it is subordinate to the
+governing biological ML ambition. Researchers should be able to construct and
+train cell models, load and adapt pretrained models, attach additional learned readouts, and share usable
+model packages. This is an architectural direction; it does not assert that
+these interfaces are already implemented or settle their method names.
+
+Keep this experience minimal across different model families. A Geneformer-like
+encoder can operate on expression observations, Karyoplast can condition on a
+cell's event history, and Cytoplast can coordinate many private contexts using
+shared learned modules. Common construction, training, and sharing conventions
+should preserve those differences. They must not require tokenization, a
+transformer, a clock, a state-transition rule, or one canonical latent vector.
+
+A reusable model package should preserve enough information to instantiate and
+interpret the model, with explicit references to any external dependencies:
+
+| Concern | Information to preserve where applicable |
+|---|---|
+| Learned computation | Architecture configuration, shared parameters, and required component implementations. |
+| Biological inputs | Feature identities, ordering, species or reference vocabulary, modality and representation conventions, and required preprocessing or conditioning. |
+| Available outputs | Supported predictions and views, attached readout parameters, and the source representations and base-model revisions those readouts depend on. |
+| Learning meaning | Documented objectives, supervision and conditioning, intended questions, assumptions, and bounded evaluation evidence. |
+| Reuse and compatibility | Versioned loading contracts, component dependencies, and execution requirements needed to reproduce the declared computation. |
+
+These are information responsibilities, not a fixed file format, mandatory
+class hierarchy, or promise that every model answers every biological question.
+For example, sharing an auxiliary ATAC readout should preserve its relationship
+to the base model and source representation; loading it does not turn a
+prediction into a measured ATAC profile.
+
+Keep shared model artifacts distinct from individual cellular histories,
+private recurrent memory, and training or population checkpoints. Those may
+have their own save/resume contracts without becoming prerequisites for loading
+every model. Device placement, expert residency, batching, and specialized
+layouts remain execution concerns. Portable model meaning must not depend on
+one transient placement, and portability must not force dense materialization
+or replace native C++/CUDA execution with a mandatory Torch implementation.
+
+Cellerator should own the model serialization, loading, and sharing interfaces
+while reusing established artifact hosting and delivery. A possible
+[Hugging Face Hub integration](https://huggingface.co/docs/hub/models-adding-libraries)
+would be one supporting interoperability route, and library registration could
+be a later milestone. Neither defines Cellerator's distinctive purpose or
+implies scientific endorsement, package maturity, or measured speedup. This framing authorizes no integration, registration, publication, or
+code change by itself.
 
 ## Proposed package shape
 
@@ -65,6 +427,11 @@ is maintained separately in [developer routing](development/routing.md); it
 records current paths, owner, consumers, evidence, disposition, and maturity.
 Until a unit has moved with its build targets, consumers, tests, and evidence,
 its current path remains authoritative.
+
+Package placement does not define a mandatory modeling pipeline. In particular,
+existing state-transition packages and the current small `nn` surface do not
+make dynamics the framework core or impose a ceiling on learned architectures.
+This clarification changes architectural intent, not implementation paths.
 
 ```text
 include/Cellerator/                 # public native contracts
@@ -76,10 +443,10 @@ src/                                 # native implementations, grouped by owner
   ops/<family>/                     # numeric, matrix, process, sparse, etc.
 bindings/                            # thin Python and optional Torch adapters
 python/cellerator/                   # installed Python package
-  modeling/ state/ events/            # model instances, state and trajectories
-  interactions/ dynamics/ execution/  # relations, updates, population mechanics
-  inference/ adapters/ ops/            # inference, data/framework adapters, ops
-  nn/ torch/ experimental/             # Torch and research integrations
+  nn/ ops/ adapters/ torch/           # neural compositions, operations, integrations
+  interactions/ inference/            # relationships and inference mechanisms
+  modeling/ state/ events/ dynamics/  # optional model state, histories and evolution
+  execution/ experimental/            # execution services and research candidates
 bench/ experiments/                  # candidates and bounded evidence
 ```
 
@@ -103,17 +470,23 @@ derivatives, precision, preparation/reuse behavior, supported backend, and
 required identity/layout mappings. Keep the family space open. Do not add
 placeholder modules for imagined future operations.
 
-The `nn` namespace stays small and concrete: compositions that benefit from
-Torch parameter ownership, model composition, or a stable module interface.
-Use normal Torch layers wherever they already express the operation. Do not
-build a second general layer catalog, tensor runtime, or optimizer framework.
+The `nn` namespace and other model-facing APIs should grow from reusable
+representation, architecture, and learning needs. Their current small size is
+an implementation fact. Reuse normal layers, autograd, and optimizers where
+they already serve the computation; add biological compositions, objectives,
+or native implementations where they improve modeling or execution. Avoid
+duplicating established infrastructure without a concrete purpose. A useful
+learned component need not be a new kernel or a state-transition wrapper.
 
 ### Sparse indexing, routing, and gating
 
-Sparse indexing, support, routing, and gating are promising early capabilities.
-They help identify and execute only eligible work when the model's structure
-justifies it. These are separate concerns: identity-preserving structure,
-support selection, mapping work to mechanisms, and conditional execution each
+Sparse indexing, support, routing, and gating are optional computational
+opportunities. They help identify and execute eligible work when the model's
+structure justifies it; they must not constrain which relationships a model may
+learn or require a dense architecture to adopt sparse machinery. Dense attention
+and dense learned transformations remain first-class. Keep general paths usable
+without unnecessary routing or conversion overhead. Identity-preserving
+structure, support selection, mapping work to mechanisms, and conditional execution each
 need explicit contracts and invalidation rules. The existence of one fast
 candidate does not establish a universal dispatcher or prove complete-model
 speedup. Preserve dense, sparse, and alternate candidates when evidence does

@@ -50,7 +50,8 @@ policy, placement, or parameter ownership is prescribed here.
 
 ## Validation boundary
 
-The compile/link smoke fixture includes a small host reference for a ragged
-three-expert layout (including an empty expert), forward products, and gradient
-products. It does not launch a GPU kernel. Runtime GPU validation and numerical
-comparison against cuBLAS execution require the repository's device scheduler.
+The device smoke fixture checks a ragged three-expert layout (including an
+empty expert), forward products, and gradient products. Focused V100 numerical
+results for FP16 storage with FP32 accumulation and FP32 execution are in the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md). These
+cases are correctness evidence, not a performance comparison against cuBLAS.

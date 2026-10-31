@@ -208,6 +208,8 @@ be shared across independent calls.
 `tests/framework/cuda/reactions_smoke.cu` contains runtime assertions for ordered
 updates, event-major index indirection, failure rollback, int64 overflow,
 frontier-capacity rejection, duplicate stoichiometry, and invalid host shapes.
-The implementation and fixture were compiled and linked for SM70. **They have
-not been executed on a GPU or checked by Compute Sanitizer in this delivery.**
-Compile/link evidence does not establish device correctness or performance.
+The implementation and fixture were compiled and linked for SM70. The device
+fixture passed focused V100 numerical checks; the sanitizer record and the
+tested event, overflow, and rollback cases are in the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md). These
+checks do not establish performance or biological validity.

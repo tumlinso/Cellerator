@@ -26,6 +26,61 @@ Read the [architecture](docs/architecture.qmd) for intent, [current implementati
 
 For source ownership, evidence boundaries, and path routing, see the [contributor routing guide](docs/development/routing.md). The source map linked there is not live task status or capability proof.
 
+## Biological machine learning is the organizing principle
+
+Read [scope](scope.md) and [architecture](docs/architecture.qmd) before proposing
+model-facing abstractions. The original biological ML ambition is the governing
+design authority: develop computational abstractions around the structure of
+the cell and the systems it comprises, making cellular representations,
+relationships, and dynamics natural to learn while preserving general
+neural-network expressiveness and exploiting biological structure for efficiency.
+Evaluate representation, architecture, learning objective, and execution together.
+Compiler, scheduler, distribution, and model-sharing machinery serve this
+ambition; they do not define the framework's distinctive purpose. Do not organize
+it as a cellular simulator with neural learning added through adapters.
+
+- Read the [modeling and neural-network backbone](docs/architecture.qmd#modeling-and-neural-network-backbone)
+  before operationalizing model-facing work. Its six concerns are conceptual
+  responsibilities, not fixed classes or a required pipeline. Distinguish the
+  existing foundations from the remaining modeling and training capabilities;
+  neither a kernel nor a namespace establishes the full capability. Await the
+  user's operationalization or implementation instructions rather than treating
+  this architectural record as permission to develop it.
+- Treat `Cell`, explicit state transitions, histories, and population execution
+  as optional capabilities. Static representation learning, dense attention,
+  transformers, recurrent networks, conditional models, and hybrids are equally
+  valid; no model must adopt a cell lifecycle or biological ontology to participate.
+  Dynamics remains a central motivation: optional transition APIs do not demote
+  it or privilege static encoders over history-dependent representations.
+- Biological structure should add practical expressiveness and computational
+  opportunities. Keep supplied and learned relationships possible, preserve
+  general neural composition, and treat sparsity as an opportunity rather than
+  an architectural requirement. PyTorch is optional infrastructure, not the
+  definition or limit of the framework.
+- State what a learning objective and observation experiment actually constrain.
+  Explicit biological structure does not guarantee causality or identifiability;
+  latent-state ambiguity does not imply universal non-identifiability either.
+  Frame identifiability relative to the question, admissible model family,
+  assumptions, and experiment. GlassHelix owns formal inferability investigation;
+  Cellerator owns reusable modeling and learning machinery.
+- Distinguish architectural intent from current package maturity. Existing
+  state-transition APIs and a small `nn` surface do not define the future scope.
+  Do not infer permission for implementation changes from a documentation update.
+- Preserve the [cell representation and auxiliary-view design request](docs/architecture.qmd#cells-representations-and-auxiliary-views)
+  when revisiting elementary classes. Keep the API minimal: a cell may reference
+  model-specific latent features or distributed history/context, and shared
+  trainable auxiliary models should derive views such as ATAC without per-cell
+  parameter copies or a mandatory state vector. Plan for lazy, batched execution
+  and valid representation reuse. The documented syntax is illustrative, not a
+  settled API or permission to implement it.
+- Keep [model reuse and sharing](docs/architecture.qmd#building-training-and-sharing-cell-models)
+  subordinate to the biological ML ambition. Building, training, and sharing
+  cell models describes the user experience; the Transformers analogy concerns
+  coherence and usability, not a required architecture or backend. Hub integration
+  and registration are prospective supporting milestones, not the framework's
+  defining objective, existing capabilities, or authorization to implement,
+  publish, or register anything.
+
 ## Operate within the current authority
 
 Use the installed Project Control/Codex front door and this repository's Todo authority. Take one bounded outcome, inspect only what it needs, preserve other claims/dirty work, and finish with actual evidence. Use configured subagents only for useful bounded work; the owner retains acceptance. Never edit SQLite, generated Todo views, recovery snapshots or generated context indexes by hand. Keep managed workflow blocks intact.

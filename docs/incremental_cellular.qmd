@@ -162,11 +162,12 @@ g++ -std=c++17 -Wall -Wextra -Werror -Iinclude \
 ```
 
 The CUDA frontier and its [smoke test](../tests/framework/cuda/frontier_smoke.cu)
-compiled and linked with CUDA 12.9 for `sm_70`. The smoke test contains a host
-set-union oracle, duplicate/empty rows, output capacity boundaries and malformed
-source/posting cases. **It has not been executed on a GPU**, and device
-correctness, Compute Sanitizer checks and performance remain unqualified.
-GPU execution must use the repository's existing admitted execution route.
+compiled and linked with CUDA 12.9 for `sm_70`. The device test compares with a
+set-union oracle across duplicate and empty rows, output-capacity boundaries,
+and malformed source/posting cases. Focused V100 results and sanitizer outcomes
+are in the [validation report](../planning/v100-framework-2026-10-29/REPORT.md).
+Performance remains unmeasured. GPU execution must use the repository's
+existing admitted execution route.
 
 ```sh
 nvcc -std=c++17 -arch=sm_70 -Iinclude \

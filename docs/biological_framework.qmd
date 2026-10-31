@@ -168,9 +168,10 @@ snapshot, and requires an explicit output reduction policy.
 For cached pure callbacks, the native
 [incremental interaction engine](incremental_cellular.qmd) separately tracks
 declared source dependencies and marks affected relations dirty after source
-updates. Its CUDA changed-source frontier compiles for SM70 but has not been
-executed on a GPU. Invalidation and eligibility are distinct: a dirty relation
-excluded from the current eligibility worklist remains dirty until selected.
+updates. Its CUDA changed-source frontier passed focused V100 numerical checks;
+see the [validation report](../planning/v100-framework-2026-10-29/REPORT.md).
+Invalidation and eligibility are distinct: a dirty relation excluded from the
+current eligibility worklist remains dirty until selected.
 
 `cellerator.spatial.SpatialIndex` is an incremental uniform-grid neighbor
 index for arbitrary stable identities in one to three Euclidean dimensions.
@@ -200,10 +201,12 @@ Rates, units, and measurement assumptions remain the model author's choices.
 The native CUDA extension applies supplied sparse events to many private count
 states sharing one reaction bank and can emit changed-source records for a
 separate incremental frontier. It does not evaluate propensities, sample
-events, or run GPU SSA, and its smoke fixture has not been executed on a GPU.
-Thus discrete reaction state can compose with learned or spatial components
-through explicit observations and events without requiring them to share a
-numeric state representation.
+events, or run GPU SSA. Its supplied-event application kernel passed focused
+V100 numerical checks, with scope and tested cases in the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md). Thus
+discrete reaction state can compose with learned or spatial components through
+explicit observations and events without requiring them to share a numeric
+state representation.
 
 The experimental `cellerator.experimental.accessibility` package adds compact
 caller-defined open/closed rules with required or forbidden inputs. An
@@ -216,8 +219,9 @@ The native [worklist regulatory gate](framework_regulatory_gates.qmd) evaluates
 caller-authored required/forbidden-input and accessibility programs for sparse
 `(instance, rule)` occurrences. It can consume ordinals from an explicit
 frontier-to-rule mapping but does not infer biological bits, update model
-state, or synchronize its device projection. Its SM70 smoke was compiled and
-host-oracle path checked; the CUDA device path has not been executed.
+state, or synchronize its device projection. Its occurrence and bitplane CUDA
+paths passed focused V100 checks; see the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md).
 
 `cellerator.inference` offers reusable observation and trajectory operations
 for explicit candidate models and supplied event hypotheses. These tools
@@ -270,8 +274,10 @@ The native [revision-pinned CUDA parameter transfer](framework_parameter_transfe
 adds an explicit asynchronous H2D copy for a selected immutable parameter
 revision, with staging, readiness, and consumer-lifetime leases. It is a
 device-transfer primitive; it does not reserve planner budgets, discover
-devices, evict residency, or provide network movement. Its GPU smoke path was
-not executed, so runtime correctness and performance remain unqualified.
+devices, evict residency, or provide network movement. Its focused V100 device
+checks are recorded in the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md); transfer
+performance and wider runtime integration remain unqualified.
 
 The optional Torch distributed adapter
 [`DistributedSparseExpertBank`](distributed_dispatch.qmd) transports selected
@@ -287,17 +293,18 @@ lists the current `Population`, topology, residency, and worklist interfaces.
 
 The optional native [`Cellerator::framework_cuda` runtime](framework_cuda.qmd)
 provides resource ownership, immutable sparse dispatch plans, and packed state
-operations independent of Torch. Its C++ library, Python extension, and smoke
-executables compiled for SM70; the GPU smoke programs were not executed, so
-CUDA correctness and performance are not yet demonstrated.
+operations independent of Torch. Focused numerical checks now cover its V100
+smoke programs and Python bindings; this does not qualify performance or the
+full modeling workload. See the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md).
 
 The native [sparse relation attention](framework_sparse_attention.qmd) and
 [grouped linear](framework_grouped_linear.qmd) operators are specialized
 building blocks for explicit CSR neighborhoods and expert-major ragged work.
 They provide FP16 and FP32 storage paths with their declared accumulation and
-gradient contracts, but GPU numerical behavior has not been validated. They do
-not decide what a relation or expert means, how work is selected, or where
-parameters are placed. The native [packed-state embedding bag](framework_packed_embedding.qmd)
+gradient contracts, and have focused V100 numerical checks. They do not decide
+what a relation or expert means, how work is selected, or where parameters are
+placed. The native [packed-state embedding bag](framework_packed_embedding.qmd)
 gathers embeddings for explicit active `(cell, feature)` occurrences directly
 from packed state codes and supports interpolated lookup for exact overrides;
 callers own the occurrences and state-to-feature mapping.
@@ -327,8 +334,8 @@ differentiable through this runner; sampling estimators and scientific
 interpretation remain model-specific.
 
 The new package surfaces are in rapid development. Their presence does not
-establish optimized performance, GPU execution, biological validation, or a
-stable compatibility contract. See the dated
+establish optimized performance, general GPU execution, biological validation,
+or a stable compatibility contract. See the dated
 [implementation record](current_implementation.qmd) for the current delivery
 and evidence boundary.
 

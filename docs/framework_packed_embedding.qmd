@@ -42,7 +42,8 @@ gradients are assigned per occurrence. Packed codes, occurrence selection,
 feature mappings, and exact values are conditioning inputs and receive no
 gradients.
 
-The compile/link smoke fixture checks a host oracle for ragged weighted bags,
-an exact-value interpolation, and first-order gradients. It does not launch the
-GPU implementation; numerical GPU validation remains pending scheduler
-admission.
+The device smoke fixture compares ragged weighted bags, exact-value
+interpolation, and first-order gradients with a host oracle. Focused V100
+numerical cases across 1-, 2-, 4-, and 8-bit codes are recorded in the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md). This does
+not establish performance or general quantization fidelity.

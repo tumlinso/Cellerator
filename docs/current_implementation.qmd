@@ -17,7 +17,7 @@ Implemented facilities have different backend and maturity boundaries. The 2026-
 - Optional Torch adapters provide learned dynamics, overlapping interactor modules, sparse expert execution, and differentiable distributed dispatch. CPU Gloo execution has focused two-process evidence; GPU/NCCL and multi-host execution remain unqualified. The collective adapter requires coordinated rank participation and is distinct from independently scheduled expert callbacks.
 - `spatial` provides an incremental neighborhood index and conservative pairwise scalar diffusion. `inference` provides observation-conditioned particles and bounded event-history search with explicit uncertainty and search limits.
 - Experimental accessibility, inheritance, and response-sensitive precision policies compose with these mechanisms. They encode caller-supplied assumptions; no universal gene ON/OFF biology or inherited regulatory program is imposed.
-- Optional native CUDA resources and numerical operations use explicit streams, device views, compact worklists, FP16/FP32 contracts, and caller-visible storage. Sparse attention and segmented expert linear execution expose backward operations; packed embeddings consume selected state codes without dense decoding; supplied molecular events update sparse stoichiometry; word-mask and experimental bitplane gates evaluate explicit regulatory rules. An exact-revision host-to-device transfer bridge retains parameter leases. SM70 compilation is exercised separately from GPU execution. The optional ggml bridge supplies numeric block quantization independently of biological quantization profiles.
+- Optional native CUDA resources and numerical operations use explicit streams, device views, compact worklists, FP16/FP32 contracts, and caller-visible storage. Sparse attention and segmented expert linear execution expose backward operations; packed embeddings consume selected state codes without dense decoding; supplied molecular events update sparse stoichiometry; word-mask and experimental bitplane gates evaluate explicit regulatory rules. An exact-revision host-to-device transfer bridge retains parameter leases. These new SM70 paths now have bounded V100 numerical evidence; see the validation record below. The optional ggml bridge supplies numeric block quantization independently of biological quantization profiles.
 - The optional trajectory training adapter shares one trainable model across independently timed ragged states, with explicit truncation, loss reduction, gradient accumulation, and optimizer boundaries. It does not invent gradients through discrete molecular events.
 - The host Python package provides native CPU Product2 and a `torch.nn.Module` adapter for CPU FP32 vectors with first-order input and coefficient gradients.
 - Optional CUDA indexed-mechanism and sparse-support components have their own builds, contracts, and evidence.
@@ -30,7 +30,18 @@ Start with the [biological framework guide](biological_framework.qmd), [distribu
 
 ## Framework expansion evidence, 2026-10-29
 
-Focused source-package tests, native C++ tests, optional binding checks, and runnable examples accompany the additions. The combined host build includes modeling, conditional dispatch, and the optional pinned ggml bridge. CUDA libraries, bindings, and smoke executables have been compiled and linked for SM70; **the new CUDA numerical kernels have not been run on a GPU**. No new speedup or full training-system claim follows from these checks. Detailed delivery commands and unresolved boundaries are recorded with the [implementation push](../planning/framework-push-2026-10-29/DELIVERY.md).
+Focused source-package tests, native C++ tests, optional binding checks, runnable
+examples, and a CPU wheel build accompany the additions. The combined host
+build includes modeling, conditional dispatch, and the optional pinned ggml
+bridge. The new CUDA implementation has admitted V100 numerical runs for all
+eleven smoke programs and nine Python binding checks. Memcheck, racecheck,
+initcheck, and synccheck each report zero errors. The
+[V100 framework validation report](../planning/v100-framework-2026-10-29/REPORT.md)
+records exact cases and receipts. These are focused kernel and binding checks,
+not full-workload performance evidence. No speedup, production readiness,
+biological validity, GPU distributed service, or complete training-system claim
+follows. The earlier compile-only integration record remains in the
+[implementation push](../planning/framework-push-2026-10-29/DELIVERY.md).
 
 ## Prepared routing evidence boundary
 
@@ -40,4 +51,4 @@ Other source-bound sparse, tokenization, layout, and performance records retain 
 
 ## Gaps
 
-Cellerator is not near complete. Distributed GPU transport integration, numerical and performance qualification of new kernels, broad end-to-end training, richer dynamical solvers, and biological validation remain open. Residency movement and physical execution still need concrete runtime callbacks; planner costs are supplied estimates. Compiler/IR integration is not expanded by this implementation push. Keep correctness, scientific validity, usability, and performance claims separate and bounded by their evidence.
+Cellerator is not near complete. Distributed GPU transport integration, performance qualification of the new kernels, broad end-to-end training, richer dynamical solvers, and biological validation remain open. Residency movement and physical execution still need concrete runtime callbacks; planner costs are supplied estimates. Compiler/IR integration is not expanded by this implementation push. Keep correctness, scientific validity, usability, and performance claims separate and bounded by their evidence.

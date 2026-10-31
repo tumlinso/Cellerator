@@ -16,13 +16,16 @@ Enable `CELLERATOR_ENABLE_FRAMEWORK_CUDA=ON`. Add
 The native target links CUDA Runtime and cuBLAS. The Python option requires
 Python development headers and pybind11.
 
-The 2026-10-29 implementation was compiled with CUDA 12.9, GCC 12 and SM70 in
-a focused CMake harness, including the C++ library, Python module and CUDA smoke
-executables. Host-only resource-contract and binding checks ran, along with
-attention and grouped-linear host references. **No device test body was
-executed.** Numerical CUDA correctness, sanitizers and
-performance remain unqualified. No tests are automatically registered that
-would launch GPU work; execution requires the host scheduler's admission.
+The implementation was compiled with CUDA 12.9, GCC 12 and SM70 in a focused
+CMake harness, including the C++ library, Python module and CUDA smoke
+executables. Subsequent admitted V100 checks executed all eleven CUDA smoke
+programs and nine Python binding tests against numerical references. Memcheck,
+racecheck, initcheck and synccheck each reported zero errors; exact cases and
+receipts are recorded in the
+[V100 framework validation report](../planning/v100-framework-2026-10-29/REPORT.md).
+These checks cover listed kernel cases, not complete workloads or performance.
+No tests are automatically registered that would launch GPU work; execution
+requires the host scheduler's admission.
 
 ```sh
 cmake -S /tmp/cellerator-framework-cuda-harness \
@@ -247,8 +250,10 @@ is unspecified. A status flag invalidates both outputs, including partially
 written storage. Rule identities and structure epochs stay with the immutable
 host bank rather than being inferred from physical bit positions.
 
-These operations expose native borrowed-buffer APIs. No Python wrappers or
-GPU correctness/performance qualification are added for them in this pass.
+These operations expose native borrowed-buffer APIs. Focused V100 numerical
+and sanitizer evidence is summarized in the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md). No Python
+wrappers or performance qualification are implied.
 
 ## Revision-pinned parameter transfers
 
@@ -280,6 +285,7 @@ available for backward. The original staged entrypoints remain the default.
 requires explicit preparation; it does not automatically replace or convert
 the occurrence-based rule evaluation API.
 
-Both alternatives have compile and host-oracle evidence only. No GPU numerical
-validation, speedup, conversion-cost advantage or automatic selection policy
-has been established for either candidate.
+Both alternatives have focused V100 correctness checks documented in the
+[validation report](../planning/v100-framework-2026-10-29/REPORT.md). No
+speedup, conversion-cost advantage or automatic selection policy has been
+established for either candidate.
