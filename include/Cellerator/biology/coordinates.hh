@@ -6,6 +6,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <span>
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -131,6 +132,20 @@ private:
 template<class Identity>
 class OccurrenceCoordinates {
 public:
+    static OccurrenceCoordinates from_ids(
+        std::span<const Identity> identities,
+        std::span<const std::int64_t> group_offsets = {},
+        std::optional<AxisDescriptor> axis = {},
+        std::uint64_t structure_generation = 0,
+        std::span<const std::int64_t> physical_positions = {}) {
+        return from_ids(
+            std::vector<Identity>(identities.begin(), identities.end()),
+            std::vector<std::int64_t>(group_offsets.begin(), group_offsets.end()),
+            std::move(axis), structure_generation,
+            std::vector<std::int64_t>(physical_positions.begin(),
+                                      physical_positions.end()));
+    }
+
     static OccurrenceCoordinates from_ids(
         std::vector<Identity> identities,
         std::vector<std::int64_t> group_offsets = {},

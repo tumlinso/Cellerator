@@ -4,6 +4,7 @@
 #include <ATen/core/grad_mode.h>
 #include <c10/core/TensorImpl.h>
 
+#include <cmath>
 #include <stdexcept>
 #include <string>
 #include <unordered_set>
@@ -57,7 +58,6 @@ ParameterId append_slot(
     if (owner->slots.size() >= static_cast<std::size_t>(invalid_parameter_id.value))
         throw std::overflow_error("Parameters exhausted its numeric slot space");
     const ParameterId id{static_cast<std::uint64_t>(owner->slots.size())};
-    tensor.requires_grad_(group->trainable);
     owner->slots.push_back({std::move(tensor), group->id, tied_to});
     group->slots.push_back(id);
     return id;
@@ -102,29 +102,49 @@ ParameterId ParameterGroup::add(const at::Tensor& tensor) {
         throw std::invalid_argument("cannot add an undefined tensor as a parameter");
     if (!tensor.is_floating_point())
         throw std::invalid_argument("trainable parameters require a floating-point tensor");
+    if (!tensor.is_leaf())
+        throw std::invalid_argument(
+            "parameter tensor must be a leaf; explicitly detach or allocate it before add");
+    if (tensor.device() != *group_->options.device_opt())
+        throw std::invalid_argument(
+            "parameter tensor device does not match group placement; explicitly move or allocate it before add");
+    if (tensor.scalar_type() != group_->options.dtype().toScalarType())
+        throw std::invalid_argument(
+            "parameter tensor dtype does not match group dtype; explicitly cast or allocate it before add");
 
-    // Detach makes the owned value a leaf while preserving the requested
-    // storage placement and dtype. Component handles resolve this same leaf.
-    auto leaf = tensor.detach().to(group_->options).detach();
-    return append_slot(owner_, group_, std::move(leaf));
+    for (std::size_t i = 0; i < owner_->slots.size(); ++i) {
+        const auto& existing = owner_->slots[i];
+        if (existing.tensor.unsafeGetTensorImpl() == tensor.unsafeGetTensorImpl()) {
+            const auto canonical = existing.tied_to.value_or(
+                ParameterId{static_cast<std::uint64_t>(i)});
+            return append_slot(owner_, group_, tensor, canonical);
+        }
+    }
+    // Adopt the exact Tensor handle. The caller's requires_grad state remains
+    // authoritative until an explicit set_trainable() call.
+    return append_slot(owner_, group_, tensor);
 }
 
 ParameterId ParameterGroup::empty(at::IntArrayRef shape) {
     if (!owner_ || !group_)
         throw std::logic_error("ParameterGroup is not bound to a Parameters owner");
-    return add(at::empty(shape, group_->options));
+    auto value = at::empty(shape, group_->options);
+    value.requires_grad_(group_->trainable);
+    return add(value);
 }
 
 ParameterId ParameterGroup::zeros(at::IntArrayRef shape) {
     if (!owner_ || !group_)
         throw std::logic_error("ParameterGroup is not bound to a Parameters owner");
-    return add(at::zeros(shape, group_->options));
+    auto value = at::zeros(shape, group_->options);
+    value.requires_grad_(group_->trainable);
+    return add(value);
 }
 
 ParameterId ParameterGroup::normal(at::IntArrayRef shape, double stddev) {
     if (!owner_ || !group_)
         throw std::logic_error("ParameterGroup is not bound to a Parameters owner");
-    if (!(stddev >= 0.0))
+    if (!(stddev >= 0.0) || !std::isfinite(stddev))
         throw std::invalid_argument("normal parameter standard deviation must be nonnegative");
     auto id = empty(shape);
     auto value = get(id);
@@ -141,6 +161,9 @@ ParameterId ParameterGroup::tie(ParameterId existing) {
     validate_id(*owner_, existing);
     const auto& source = owner_->slots[static_cast<std::size_t>(existing.value)];
     const auto canonical = source.tied_to.value_or(existing);
+    // An alias records another slot for an existing leaf; it does not silently
+    // change that leaf's trainability. set_trainable remains the explicit
+    // operation for toggling a tied parameter through any member group.
     return append_slot(owner_, group_, source.tensor, canonical);
 }
 
@@ -149,6 +172,27 @@ at::Tensor ParameterGroup::get(ParameterId id) const {
         throw std::logic_error("ParameterGroup is not bound to a Parameters owner");
     validate_id(*owner_, id);
     return owner_->slots[static_cast<std::size_t>(id.value)].tensor;
+}
+
+std::span<const ParameterId> ParameterGroup::parameter_ids() const {
+    if (!owner_ || !group_)
+        throw std::logic_error("ParameterGroup is not bound to a Parameters owner");
+    return std::span<const ParameterId>(group_->slots.data(), group_->slots.size());
+}
+
+std::vector<at::Tensor> ParameterGroup::torch_parameters() const {
+    if (!owner_ || !group_)
+        throw std::logic_error("ParameterGroup is not bound to a Parameters owner");
+    std::vector<at::Tensor> result;
+    result.reserve(group_->slots.size());
+    std::unordered_set<const c10::TensorImpl*> visited;
+    for (const auto id : group_->slots) {
+        validate_id(*owner_, id);
+        const auto& tensor = owner_->slots[static_cast<std::size_t>(id.value)].tensor;
+        if (visited.insert(tensor.unsafeGetTensorImpl()).second)
+            result.push_back(tensor);
+    }
+    return result;
 }
 
 void ParameterGroup::set_trainable(bool trainable) {

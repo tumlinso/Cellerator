@@ -15,6 +15,7 @@ from torch import Tensor, nn
 from torch.nn import functional as F
 
 from .relations import PreparedRelation
+from ._native_nn import native_nn, validate_implementation, functional_children_supported
 
 
 def _host_offsets(
@@ -111,7 +112,8 @@ class RelationAttention(nn.Module):
     features before passing them here.
     """
 
-    def __init__(self, width: int, heads: int = 1, dropout: float = 0.0) -> None:
+    def __init__(self, width: int, heads: int = 1, dropout: float = 0.0, *,
+                 implementation: str = "auto", kernel: str = "aten") -> None:
         super().__init__()
         if width <= 0:
             raise ValueError("width must be positive")
@@ -123,6 +125,10 @@ class RelationAttention(nn.Module):
         self.heads = heads
         self.head_width = width // heads
         self.dropout = float(dropout)
+        self.implementation = validate_implementation(implementation)
+        if kernel not in {"aten", "cellerator_csr"}:
+            raise ValueError("kernel must be 'aten' or 'cellerator_csr'")
+        self.kernel = kernel
         self.query = nn.Linear(width, width)
         self.key = nn.Linear(width, width)
         self.value = nn.Linear(width, width)
@@ -143,6 +149,12 @@ class RelationAttention(nn.Module):
         columns: Tensor,
         n_targets: int,
     ) -> Tensor:
+        native = native_nn(self.implementation)
+        if native is not None:
+            return native.sparse_attention(
+                query, key, value, rows, columns, self.head_width ** -0.5,
+                self.dropout, self.training,
+            )
         if columns.numel() == 0:
             # Keep a zero-gradient path to source and target projections. This
             # makes empty support an ordinary differentiable case. Sanitizing
@@ -254,6 +266,35 @@ class RelationAttention(nn.Module):
         if causal and target is not source:
             raise ValueError("causal attention is only supported when target is source")
 
+        native = native_nn(self.implementation)
+        if self.kernel == "cellerator_csr":
+            if native is None or not hasattr(native, "csr_scaled_dot_product_attention_cuda_prepared"):
+                raise RuntimeError("Cellerator CSR attention requires the optional native NN CUDA component")
+            if relation is None:
+                raise ValueError("Cellerator CSR attention requires a PreparedRelation")
+            if self._dropout_probability():
+                raise ValueError("Cellerator CSR attention does not support active dropout")
+        elif (native is not None and relation is None and row_ptr is None
+              and functional_children_supported(self.query, self.key, self.value, self.output)):
+            src_offsets, dst_offsets = (), ()
+            if source.ndim == 2:
+                src_offsets = _host_offsets(source_offsets, source.shape[0], "source_offsets")
+                dst_offsets = _host_offsets(target_offsets, target.shape[0], "target_offsets")
+                if target is source:
+                    src_offsets = src_offsets if src_offsets is not None else dst_offsets
+                    dst_offsets = dst_offsets if dst_offsets is not None else src_offsets
+                elif (src_offsets is None) != (dst_offsets is None):
+                    raise ValueError("packed source and target offsets must be supplied together")
+            elif source_offsets is not None or target_offsets is not None:
+                raise ValueError("offsets are only used with packed 2D inputs")
+            return native.relation_attention(
+                source, target,
+                [self.query.weight, self.query.bias, self.key.weight, self.key.bias,
+                 self.value.weight, self.value.bias, self.output.weight],
+                self.width, self.heads, self.dropout,
+                src_offsets or (), dst_offsets or (), causal, self.training,
+            )
+
         dense = source.ndim == 3
         if dense:
             if source_offsets is not None or target_offsets is not None:
@@ -315,6 +356,16 @@ class RelationAttention(nn.Module):
                 n_targets=n_targets,
                 device=source.device,
             )
+            if self.kernel == "cellerator_csr":
+                if causal and relation.has_future_edges:
+                    raise ValueError("prepare relation.causal() before selecting native causal CSR attention")
+                combined_heads = native.csr_scaled_dot_product_attention_cuda_prepared(
+                    q, k, v, relation._row_ptr, relation._col_indices,
+                    self.head_width ** -0.5, 0.0,
+                )
+                combined = combined_heads.reshape(n_targets, self.width)
+                output = self.output(combined)
+                return output.reshape(*target.shape[:-1], self.width) if dense else output
             if causal:
                 if source_offsets_tuple != target_offsets_tuple:
                     raise ValueError("causal self-attention requires identical group offsets")

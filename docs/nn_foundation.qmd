@@ -10,12 +10,14 @@ they do not require one cellular representation or an explicit transition rule.
 PyTorch supplies conventional layers, autograd, losses, and optimizers. Native
 operations remain independent numerical components with focused adapters.
 
-This guide describes the current Python-facing NN foundation. It does not
-establish an equivalent C++ modeling surface. The architectural target is
+This guide describes the Python-facing NN foundation. The complementary
+[native C++ guide](native_nn.qmd) documents ordinary typed model/result classes,
+explicit parameter ownership, prepared queries and native training. Both serve
 [first-class model authoring and training in C++ and Python](architecture.qmd#cpp-and-python-modeling),
 with an idiomatic C++ library API designed directly for native model authoring,
 rather than translated Python bindings or a LibTorch frontend wrapper. Existing
-C++ operations and classes are foundations for that target, not proof of parity.
+C++ operations and classes have their own qualification boundaries, not a
+blanket claim of parity across every model family or backend.
 
 ## Cells and shared learned programs
 
@@ -51,6 +53,21 @@ The lazy `cellerator.nn` interface exposes `FeatureEncoder`, `RelationAttention`
 and grouped-linear composition, alongside existing neural adapters.
 `cellerator.torch.nn` retains the same relevant exports.
 Conventional Torch modules compose directly with these components.
+
+`FeatureEncoder` and `RelationAttention` accept `implementation="auto"`,
+`"reference"`, or `"native"`. The optional `_nn_native` extension borrows the
+existing registered tensors and runs shared C++ computations without another
+parameter owner. The reference route remains available. Automatic selection
+preserves customized child modules and their hooks rather than bypassing their
+computation; explicit native feature encoding requires standard unhooked
+children. Tensor gradients and hooks use ordinary autograd.
+
+Attention's separate `kernel="cellerator_csr"` selects the optional staged
+CUDA kernel for a `PreparedRelation`, with no active dropout and first-order
+derivatives only. `relation.causal()` explicitly prepares causal support before
+selecting that kernel. The default `kernel="aten"` retains the ordinary
+differentiable route. Prepared buffers have host version guards, including when
+constructed under inference mode; changes require preparation of a new relation.
 
 `FeatureEncoder(vocabulary_size, width, value_size=1, attribute_size=None)`
 combines registered integer feature IDs with optional values, observation

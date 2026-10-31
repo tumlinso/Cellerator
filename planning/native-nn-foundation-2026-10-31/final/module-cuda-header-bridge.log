@@ -1,0 +1,146 @@
+-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include (found version "12.9.86") 
+-- PyTorch: CUDA detected: 12.9
+-- PyTorch: CUDA nvcc is: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc
+-- PyTorch: CUDA toolkit directory: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
+-- PyTorch: Header version is: 12.9
+CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:140 (message):
+  Failed to compute shorthash for libnvrtc.so
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/cellerator-native-nn-cuda-current-install/lib/cmake/Cellerator/CelleratorConfig.cmake:28 (find_dependency)
+  CMakeLists.txt:8 (find_package)
+
+
+CMake Warning (dev) at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:438 (message):
+  The package name passed to `find_package_handle_standard_args` (nvtx3) does
+  not match the name of the calling package (Caffe2).  This can lead to
+  problems in calling code that expects `find_package` result variables
+  (e.g., `_FOUND`) to follow a certain pattern.
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:178 (find_package_handle_standard_args)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/cellerator-native-nn-cuda-current-install/lib/cmake/Cellerator/CelleratorConfig.cmake:28 (find_dependency)
+  CMakeLists.txt:8 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Could NOT find nvtx3 (missing: nvtx3_dir) 
+CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:184 (message):
+  Cannot find NVTX3, find old NVTX instead
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/cellerator-native-nn-cuda-current-install/lib/cmake/Cellerator/CelleratorConfig.cmake:28 (find_dependency)
+  CMakeLists.txt:8 (find_package)
+
+
+-- USE_CUDNN is set to 0. Compiling without cuDNN support
+-- USE_CUSPARSELT is set to 0. Compiling without cuSPARSELt support
+-- USE_CUDSS is set to 0. Compiling without cuDSS support
+-- USE_CUFILE is set to 0. Compiling without cuFile support
+-- Automatic GPU detection failed. Building for common architectures.
+-- Autodetected CUDA architecture(s): 5.0;8.0;8.6;8.9;9.0;9.0a;10.0;10.0a;10.1a;12.0;12.0a
+-- Added CUDA NVCC flags for: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_89,code=sm_89;-gencode;arch=compute_90,code=sm_90;-gencode;arch=compute_90a,code=sm_90a;-gencode;arch=compute_100,code=sm_100;-gencode;arch=compute_100a,code=sm_100a;-gencode;arch=compute_101a,code=sm_101a;-gencode;arch=compute_120,code=sm_120;-gencode;arch=compute_120a,code=sm_120a
+-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version "12.9.86") 
+-- Configuring done (2.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-nn-module-cuda-current-prefix/module-package
+Change Dir: '/tmp/cellerator-nn-module-cuda-current-prefix/module-package'
+
+Run Build Command(s): /tmp/cellerator-module-tools/ninja/usr/bin/ninja -v
+[1/4] "/tmp/cellerator-module-tools/clang/usr/lib/llvm-18/bin/clang-scan-deps" -format=p1689 -- /usr/bin/clang++-18 -DCELLERATOR_NN_HAS_CUDA=1 -DUSE_C10D_GLOO -DUSE_C10D_NCCL -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE -isystem /tmp/cellerator-native-nn-cuda-current-install/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -isystem /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -std=gnu++20 -D_GLIBCXX_USE_CXX11_ABI=1 -x c++ /home/tumlinson/Cellerator/modules/native/cellerator.nn.ccm -c -o CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o -MT CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o.ddi -MD -MF CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o.ddi.d > CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o.ddi.tmp && mv CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o.ddi.tmp CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o.ddi
+[2/4] /usr/bin/cmake -E cmake_ninja_dyndep --tdi=CMakeFiles/cellerator_nn_modules.dir/CXXDependInfo.json --lang=CXX --modmapfmt=clang --dd=CMakeFiles/cellerator_nn_modules.dir/CXX.dd @CMakeFiles/cellerator_nn_modules.dir/CXX.dd.rsp
+[3/4] /usr/bin/clang++-18 -DCELLERATOR_NN_HAS_CUDA=1 -DUSE_C10D_GLOO -DUSE_C10D_NCCL -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE -isystem /tmp/cellerator-native-nn-cuda-current-install/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -isystem /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -std=gnu++20 -D_GLIBCXX_USE_CXX11_ABI=1 -MD -MT CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o -MF CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o.d @CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o.modmap -o CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o -c /home/tumlinson/Cellerator/modules/native/cellerator.nn.ccm
+[4/4] : && /usr/bin/cmake -E rm -f libcellerator_nn_modules.a && /usr/bin/llvm-ar-18 qc libcellerator_nn_modules.a  CMakeFiles/cellerator_nn_modules.dir/cellerator.nn.ccm.o && /usr/bin/llvm-ranlib-18 libcellerator_nn_modules.a && :
+
+-- Install configuration: ""
+-- Installing: /tmp/cellerator-nn-module-cuda-current-prefix/install/lib/libcellerator_nn_modules.a
+-- Up-to-date: /tmp/cellerator-nn-module-cuda-current-prefix/install/share/CelleratorNNModules/modules/cellerator.nn.ccm
+-- Installing: /tmp/cellerator-nn-module-cuda-current-prefix/install/lib/cellerator/nn/modules/cellerator.nn.pcm
+-- Up-to-date: /tmp/cellerator-nn-module-cuda-current-prefix/install/lib/cmake/CelleratorNNModules/CelleratorNNModulesTargets.cmake
+-- Up-to-date: /tmp/cellerator-nn-module-cuda-current-prefix/install/lib/cmake/CelleratorNNModules/CelleratorNNModulesTargets-noconfig.cmake
+-- Up-to-date: /tmp/cellerator-nn-module-cuda-current-prefix/install/lib/cmake/CelleratorNNModules/modules/cxx-modules-CelleratorNNModulesTargets.cmake
+-- Up-to-date: /tmp/cellerator-nn-module-cuda-current-prefix/install/lib/cmake/CelleratorNNModules/modules/cxx-modules-CelleratorNNModulesTargets-noconfig.cmake
+-- Installing: /tmp/cellerator-nn-module-cuda-current-prefix/install/lib/cmake/CelleratorNNModules/modules/target-nn-noconfig.cmake
+-- Up-to-date: /tmp/cellerator-nn-module-cuda-current-prefix/install/lib/cmake/CelleratorNNModules/CelleratorNNModulesConfig.cmake
+-- Up-to-date: /tmp/cellerator-nn-module-cuda-current-prefix/install/lib/cmake/CelleratorNNModules/CelleratorNNModulesConfigVersion.cmake
+-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include (found version "12.9.86") 
+-- PyTorch: CUDA detected: 12.9
+-- PyTorch: CUDA nvcc is: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc
+-- PyTorch: CUDA toolkit directory: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
+-- PyTorch: Header version is: 12.9
+CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:140 (message):
+  Failed to compute shorthash for libnvrtc.so
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/cellerator-native-nn-cuda-current-install/lib/cmake/Cellerator/CelleratorConfig.cmake:28 (find_dependency)
+  CMakeLists.txt:13 (find_package)
+
+
+CMake Warning (dev) at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:438 (message):
+  The package name passed to `find_package_handle_standard_args` (nvtx3) does
+  not match the name of the calling package (Caffe2).  This can lead to
+  problems in calling code that expects `find_package` result variables
+  (e.g., `_FOUND`) to follow a certain pattern.
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:178 (find_package_handle_standard_args)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/cellerator-native-nn-cuda-current-install/lib/cmake/Cellerator/CelleratorConfig.cmake:28 (find_dependency)
+  CMakeLists.txt:13 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Could NOT find nvtx3 (missing: nvtx3_dir) 
+CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:184 (message):
+  Cannot find NVTX3, find old NVTX instead
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/cellerator-native-nn-cuda-current-install/lib/cmake/Cellerator/CelleratorConfig.cmake:28 (find_dependency)
+  CMakeLists.txt:13 (find_package)
+
+
+-- USE_CUDNN is set to 0. Compiling without cuDNN support
+-- USE_CUSPARSELT is set to 0. Compiling without cuSPARSELt support
+-- USE_CUDSS is set to 0. Compiling without cuDSS support
+-- USE_CUFILE is set to 0. Compiling without cuFile support
+-- Automatic GPU detection failed. Building for common architectures.
+-- Autodetected CUDA architecture(s): 5.0;8.0;8.6;8.9;9.0;9.0a;10.0;10.0a;10.1a;12.0;12.0a
+-- Added CUDA NVCC flags for: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_89,code=sm_89;-gencode;arch=compute_90,code=sm_90;-gencode;arch=compute_90a,code=sm_90a;-gencode;arch=compute_100,code=sm_100;-gencode;arch=compute_100a,code=sm_100a;-gencode;arch=compute_101a,code=sm_101a;-gencode;arch=compute_120,code=sm_120;-gencode;arch=compute_120a,code=sm_120a
+-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version "12.9.86") 
+-- Configuring done (2.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-nn-module-cuda-current-prefix/consumer
+Change Dir: '/tmp/cellerator-nn-module-cuda-current-prefix/consumer'
+
+Run Build Command(s): /tmp/cellerator-module-tools/ninja/usr/bin/ninja -v
+[1/11] "/tmp/cellerator-module-tools/clang/usr/lib/llvm-18/bin/clang-scan-deps" -format=p1689 -- /usr/bin/clang++-18  -I/tmp/cellerator-native-nn-cuda-current-install/include -I/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -I/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -std=gnu++20 --precompile -x c++ /tmp/cellerator-nn-module-cuda-current-prefix/install/share/CelleratorNNModules/modules/cellerator.nn.ccm -c -o CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/8cddf2699d3a.bmi -MT CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/8cddf2699d3a.bmi.ddi -MD -MF CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/8cddf2699d3a.bmi.ddi.d > CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/8cddf2699d3a.bmi.ddi.tmp && mv CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/8cddf2699d3a.bmi.ddi.tmp CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/8cddf2699d3a.bmi.ddi
+[2/11] /usr/bin/cmake -E cmake_ninja_dyndep --tdi=CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/CXXDependInfo.json --lang=CXX --modmapfmt=clang --dd='CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/CXX.dd' @'CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/CXX.dd'.rsp
+[3/11] "/tmp/cellerator-module-tools/clang/usr/lib/llvm-18/bin/clang-scan-deps" -format=p1689 -- /usr/bin/clang++-18 -DCELLERATOR_NN_HAS_CUDA=1 -DCELLERATOR_NN_MODULES_TEST_CUDA=1 -DUSE_C10D_GLOO -DUSE_C10D_NCCL -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE -isystem /tmp/cellerator-native-nn-cuda-current-install/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -isystem /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -std=gnu++20 -D_GLIBCXX_USE_CXX11_ABI=1 -x c++ /home/tumlinson/Cellerator/tests/nn/modules/module_only.cc -c -o CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o -MT CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o.ddi -MD -MF CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o.ddi.d > CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o.ddi.tmp && mv CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o.ddi.tmp CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o.ddi
+[4/11] "/tmp/cellerator-module-tools/clang/usr/lib/llvm-18/bin/clang-scan-deps" -format=p1689 -- /usr/bin/clang++-18 -DCELLERATOR_NN_HAS_CUDA=1 -DCELLERATOR_NN_MODULES_TEST_CUDA=1 -DUSE_C10D_GLOO -DUSE_C10D_NCCL -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE -isystem /tmp/cellerator-native-nn-cuda-current-install/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -isystem /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -std=gnu++20 -D_GLIBCXX_USE_CXX11_ABI=1 -x c++ /home/tumlinson/Cellerator/tests/nn/modules/include_bridge.cc -c -o CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o -MT CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o.ddi -MD -MF CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o.ddi.d > CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o.ddi.tmp && mv CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o.ddi.tmp CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o.ddi
+[5/11] "/tmp/cellerator-module-tools/clang/usr/lib/llvm-18/bin/clang-scan-deps" -format=p1689 -- /usr/bin/clang++-18 -DCELLERATOR_NN_HAS_CUDA=1 -DCELLERATOR_NN_MODULES_TEST_CUDA=1 -DUSE_C10D_GLOO -DUSE_C10D_NCCL -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE -isystem /tmp/cellerator-native-nn-cuda-current-install/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -isystem /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -std=gnu++20 -D_GLIBCXX_USE_CXX11_ABI=1 -x c++ /home/tumlinson/Cellerator/tests/nn/modules/import_consumer.cc -c -o CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o -MT CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o.ddi -MD -MF CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o.ddi.d > CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o.ddi.tmp && mv CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o.ddi.tmp CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o.ddi
+[6/11] /usr/bin/cmake -E cmake_ninja_dyndep --tdi=CMakeFiles/cellerator_nn_module_consumer.dir/CXXDependInfo.json --lang=CXX --modmapfmt=clang --dd=CMakeFiles/cellerator_nn_module_consumer.dir/CXX.dd @CMakeFiles/cellerator_nn_module_consumer.dir/CXX.dd.rsp
+[7/12] /usr/bin/clang++-18 -DCELLERATOR_NN_HAS_CUDA=1 -DCELLERATOR_NN_MODULES_TEST_CUDA=1 -DUSE_C10D_GLOO -DUSE_C10D_NCCL -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE -isystem /tmp/cellerator-native-nn-cuda-current-install/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -isystem /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -std=gnu++20 -D_GLIBCXX_USE_CXX11_ABI=1 -MD -MT CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o -MF CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o.d @CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o.modmap -o CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o -c /home/tumlinson/Cellerator/tests/nn/modules/include_bridge.cc
+[8/12] /usr/bin/clang++-18  -I/tmp/cellerator-native-nn-cuda-current-install/include -I/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -I/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -std=gnu++20 --precompile -MD -MT 'CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/8cddf2699d3a.bmi' -MF CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/8cddf2699d3a.bmi.d @CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/8cddf2699d3a.bmi.modmap -o 'CMakeFiles/CelleratorNNModules__nn@synth_e49340dbd7d9.dir/8cddf2699d3a.bmi' -c /tmp/cellerator-nn-module-cuda-current-prefix/install/share/CelleratorNNModules/modules/cellerator.nn.ccm
+[9/12] /usr/bin/clang++-18 -DCELLERATOR_NN_HAS_CUDA=1 -DCELLERATOR_NN_MODULES_TEST_CUDA=1 -DUSE_C10D_GLOO -DUSE_C10D_NCCL -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE -isystem /tmp/cellerator-native-nn-cuda-current-install/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -isystem /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -std=gnu++20 -D_GLIBCXX_USE_CXX11_ABI=1 -MD -MT CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o -MF CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o.d @CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o.modmap -o CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o -c /home/tumlinson/Cellerator/tests/nn/modules/module_only.cc
+[10/12] /usr/bin/clang++-18 -DCELLERATOR_NN_HAS_CUDA=1 -DCELLERATOR_NN_MODULES_TEST_CUDA=1 -DUSE_C10D_GLOO -DUSE_C10D_NCCL -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE -isystem /tmp/cellerator-native-nn-cuda-current-install/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -isystem /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -std=gnu++20 -D_GLIBCXX_USE_CXX11_ABI=1 -MD -MT CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o -MF CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o.d @CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o.modmap -o CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o -c /home/tumlinson/Cellerator/tests/nn/modules/import_consumer.cc
+[11/12] /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc -forward-unknown-to-host-compiler -ccbin=/usr/bin/g++-12 -DCELLERATOR_NN_HAS_CUDA=1 -DCELLERATOR_NN_MODULES_TEST_CUDA=1 -DUSE_C10D_GLOO -DUSE_C10D_NCCL -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE -isystem /tmp/cellerator-native-nn-cuda-current-install/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include -isystem /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/torch/csrc/api/include -isystem /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include -DONNX_NAMESPACE=onnx_c2 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_86,code=sm_86 -gencode arch=compute_89,code=sm_89 -gencode arch=compute_90,code=sm_90 -gencode arch=compute_90a,code=sm_90a -gencode arch=compute_100,code=sm_100 -gencode arch=compute_100a,code=sm_100a -gencode arch=compute_101a,code=sm_101a -gencode arch=compute_120,code=sm_120 -gencode arch=compute_120a,code=sm_120a -Xcudafe --diag_suppress=cc_clobber_ignored,--diag_suppress=field_without_dll_interface,--diag_suppress=base_class_has_different_dll_interface,--diag_suppress=dll_interface_conflict_none_assumed,--diag_suppress=dll_interface_conflict_dllexport_assumed,--diag_suppress=bad_friend_decl --expt-relaxed-constexpr --expt-extended-lambda -std=c++20 -D_GLIBCXX_USE_CXX11_ABI=1 -MD -MT CMakeFiles/cellerator_nn_module_consumer.dir/cuda_bridge.cu.o -MF CMakeFiles/cellerator_nn_module_consumer.dir/cuda_bridge.cu.o.d -x cu -c /home/tumlinson/Cellerator/tests/nn/modules/cuda_bridge.cu -o CMakeFiles/cellerator_nn_module_consumer.dir/cuda_bridge.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[12/12] : && /usr/bin/clang++-18   CMakeFiles/cellerator_nn_module_consumer.dir/import_consumer.cc.o CMakeFiles/cellerator_nn_module_consumer.dir/module_only.cc.o CMakeFiles/cellerator_nn_module_consumer.dir/include_bridge.cc.o CMakeFiles/cellerator_nn_module_consumer.dir/cuda_bridge.cu.o -o cellerator_nn_module_consumer -L/lib/intel64   -L/lib/intel64_win   -L/lib/win-x64   -L/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/lib/stubs   -L/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/lib -Wl,-rpath,/lib/intel64:/lib/intel64_win:/lib/win-x64:/tmp/cellerator-native-nn-cuda-current-install/lib:/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib:/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64  /tmp/cellerator-nn-module-cuda-current-prefix/install/lib/libcellerator_nn_modules.a  /tmp/cellerator-native-nn-cuda-current-install/lib/libcellerator_nn.a  /tmp/cellerator-native-nn-cuda-current-install/lib/libcellerator_product2.so  /usr/lib/x86_64-linux-gnu/libcrypto.so  /tmp/cellerator-native-nn-cuda-current-install/lib/libcellerator_nn_cuda.a  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libtorch.so  -Wl,--no-as-needed,"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libtorch_cuda.so" -Wl,--as-needed  -Wl,--no-as-needed,"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libtorch.so" -Wl,--as-needed  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libtorch_cuda.so  -Wl,--no-as-needed,"/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so" -Wl,--as-needed  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10_cuda.so  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so  /tmp/cellerator-native-nn-cuda-current-install/lib/libcellerator_framework_cuda.a  /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64/libcudart.so  /usr/lib/x86_64-linux-gnu/libcublas.so  /usr/lib/x86_64-linux-gnu/libcublasLt.so  /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64/libculibos.a  -lcudadevrt  -lcudart_static  -lrt  -lpthread  -ldl && :
+
+Internal ctest changing into directory: /tmp/cellerator-nn-module-cuda-current-prefix/consumer
+Test project /tmp/cellerator-nn-module-cuda-current-prefix/consumer
+    Start 1: cellerator_nn_module_consumer
+1/1 Test #1: cellerator_nn_module_consumer ....   Passed    0.56 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.56 sec

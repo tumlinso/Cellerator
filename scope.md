@@ -132,6 +132,14 @@ ecosystem. Both should support serious modeling and training. Comparable
 expressiveness does not require identical syntax or duplicating every
 language-specific ecosystem feature.
 
+The C++ interface targets C++ model developers and HPC applications. Its native
+style includes ordinary result structs, templates, primitive borrowed views,
+explicit extents and lifetimes, and separate owners for parameters and buffers.
+Named module registration, member enumeration, and a universal learned-model
+base are not required. Names still carry biological meaning at data and saved
+declaration boundaries. Optional host C++20 modules organize imports while CUDA
+and conventional header builds remain independent.
+
 Reuse established numerical and differentiation infrastructure, including
 LibTorch where appropriate, while designing an intuitive Cellerator modeling
 experience. Users should not need to understand backend registration and

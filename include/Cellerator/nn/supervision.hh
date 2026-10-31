@@ -127,7 +127,7 @@ std::pair<at::Tensor, at::Tensor> reduce_prediction_loss_impl(
 // columns remain separate coordinates throughout this operation.
 template<class FeatureId, class ObservationId, class Alignment>
 std::pair<at::Tensor, at::Tensor> align_prediction_targets(
-    const Prediction<at::Tensor, QueryPayload<std::vector<FeatureId>,
+    const Prediction<at::Tensor, QueryPayload<FeatureId,
                                                 ObservationCoordinates<ObservationId>>>& prediction,
     const at::Tensor& target_values,
     const Alignment& prepared_alignment,
@@ -141,7 +141,9 @@ std::pair<at::Tensor, at::Tensor> align_prediction_targets(
         throw std::invalid_argument("prediction values must be a defined floating-point tensor");
     }
     const auto& predicted_ids = prediction.payload.feature_ids;
-    if (predicted_ids != prepared_alignment.canonical_ids()) {
+    if (predicted_ids.size() != prepared_alignment.canonical_ids().size() ||
+        !std::equal(predicted_ids.begin(), predicted_ids.end(),
+                    prepared_alignment.canonical_ids().begin())) {
         throw std::invalid_argument(
             "prepared feature destination order must match Prediction feature IDs");
     }
@@ -165,20 +167,32 @@ std::pair<at::Tensor, at::Tensor> align_prediction_targets(
             "prediction feature axis does not match Prediction feature IDs");
     }
 
-    auto target_columns = at::tensor(prepared_alignment.output_columns(),
-        at::TensorOptions().dtype(at::kLong).device(target_values.device()));
+    at::Tensor target_columns;
+    if constexpr (requires {
+        prepared_alignment.output_column_tensor();
+        prepared_alignment.device();
+    }) {
+        if (prepared_alignment.device() != target_values.device()) {
+            throw std::invalid_argument(
+                "prepared target columns and target values must share a device");
+        }
+        target_columns = prepared_alignment.output_column_tensor();
+    } else {
+        target_columns = at::tensor(prepared_alignment.output_columns(),
+            at::TensorOptions().dtype(at::kLong).device(target_values.device()));
+    }
     auto aligned_targets = target_values.index_select(axis, target_columns);
     const auto prediction_rows = prediction.values.size(0);
     const auto target_rows = aligned_targets.size(0);
     const auto prediction_offsets = detail::validate_group_offsets(
-        prediction.payload.coordinates.row_offsets, prediction_rows,
+        prediction.payload.coordinates.get().row_offsets, prediction_rows,
         "prediction row_offsets");
     const auto target_offsets = detail::validate_group_offsets(
         target_coordinates.row_offsets, target_rows, "target row_offsets");
     const auto prediction_groups = static_cast<std::int64_t>(prediction_offsets.size() - 1);
     const auto target_groups = static_cast<std::int64_t>(target_offsets.size() - 1);
     const auto group_mapping = detail::map_groups(
-        prediction.payload.coordinates.sample_ids, target_coordinates.sample_ids,
+        prediction.payload.coordinates.get().sample_ids, target_coordinates.sample_ids,
         prediction_groups, target_groups, row_map);
 
     std::vector<std::int64_t> row_positions;
@@ -204,17 +218,30 @@ std::pair<at::Tensor, at::Tensor> align_prediction_targets(
         throw std::invalid_argument(
             "aligned prediction and target tensor shapes must match exactly");
     }
+    if (prediction.values.device() != aligned_targets.device()) {
+        throw std::invalid_argument(
+            "aligned prediction and target tensors must share a device");
+    }
     return {prediction.values, std::move(aligned_targets)};
 }
 
 template<class FeatureId, class ObservationId, class Label>
 at::Tensor categorical_target_columns(
-    const Prediction<at::Tensor, QueryPayload<std::vector<FeatureId>,
+    const Prediction<at::Tensor, QueryPayload<FeatureId,
                                                 ObservationCoordinates<ObservationId>>>& prediction,
     const std::vector<Label>& event_labels) {
     std::vector<std::int64_t> columns;
+    if (!prediction.values.defined() || !prediction.values.is_floating_point()) {
+        throw std::invalid_argument(
+            "categorical prediction values must be a defined floating-point tensor");
+    }
     columns.reserve(event_labels.size());
     const auto& feature_ids = prediction.payload.feature_ids;
+    if (prediction.values.dim() == 0 ||
+        prediction.values.size(-1) != static_cast<std::int64_t>(feature_ids.size())) {
+        throw std::invalid_argument(
+            "categorical prediction class axis does not match Prediction feature IDs");
+    }
     for (std::size_t i = 0; i < feature_ids.size(); ++i) {
         for (std::size_t j = 0; j < i; ++j) {
             if (feature_ids[i] == feature_ids[j]) {
@@ -242,6 +269,12 @@ std::pair<at::Tensor, at::Tensor> reduce_prediction_loss(
     const ObservationCoordinates<ObservationId>& coordinates,
     const std::vector<CellId>& cell_ids,
     std::optional<at::Tensor> valid_mask = std::nullopt) {
+    if (!losses.defined() || !losses.is_floating_point()) {
+        throw std::invalid_argument("losses must be a defined floating-point tensor");
+    }
+    if (unit != SupervisionUnit::observation && unit != SupervisionUnit::cell) {
+        throw std::invalid_argument("unit must be SupervisionUnit::observation or cell");
+    }
     const auto rows = losses.dim() == 0 ? std::int64_t{1} : losses.size(0);
     const auto offsets = detail::validate_group_offsets(coordinates.row_offsets,
                                                          rows, "row_offsets");
@@ -298,9 +331,15 @@ std::pair<at::Tensor, at::Tensor> reduce_prediction_loss(
     SupervisionUnit unit,
     const ObservationCoordinates<ObservationId>& coordinates,
     std::optional<at::Tensor> valid_mask = std::nullopt) {
+    if (!losses.defined() || !losses.is_floating_point()) {
+        throw std::invalid_argument("losses must be a defined floating-point tensor");
+    }
     if (unit == SupervisionUnit::cell) {
         throw std::invalid_argument(
             "cell reduction requires separate sample/window IDs and physical cell_ids");
+    }
+    if (unit != SupervisionUnit::observation) {
+        throw std::invalid_argument("unit must be SupervisionUnit::observation or cell");
     }
     const auto rows = losses.dim() == 0 ? std::int64_t{1} : losses.size(0);
     const auto offsets = detail::validate_group_offsets(coordinates.row_offsets,

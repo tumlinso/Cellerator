@@ -1,0 +1,403 @@
+{
+  "attempt": {
+    "attempt_id": "a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0",
+    "cleanup_verified": true,
+    "created_at": "2026-10-31T15:41:02.414868Z",
+    "error": {},
+    "evidence": [
+      {
+        "adapter_errors": [],
+        "kind": "execution_preconditions",
+        "operation_id": "preconditions:a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0",
+        "preconditions": [
+          {
+            "name": "gpu.quiescence",
+            "reports": [
+              {
+                "adapter_id": "nvidia-smi",
+                "evidence": {
+                  "observation": {
+                    "consecutive_samples": 2,
+                    "samples": [
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "inventory_observed_at": "2026-10-31T15:41:02.514961+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-31T15:41:02.556419+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-31T15:41:02.514961+00:00",
+                        "process_observed_at": "2026-10-31T15:41:02.556419+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      },
+                      {
+                        "gpus": [
+                          {
+                            "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "inventory_observed_at": "2026-10-31T15:41:03.640292+00:00",
+                            "memory_free_bytes": 16929259520,
+                            "memory_total_bytes": 17179869184,
+                            "process_ids": [],
+                            "process_observed_at": "2026-10-31T15:41:03.681781+00:00",
+                            "required_free_bytes": 2684354560,
+                            "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                            "utilization_percent": 0
+                          }
+                        ],
+                        "inventory_observed_at": "2026-10-31T15:41:03.640292+00:00",
+                        "process_observed_at": "2026-10-31T15:41:03.681781+00:00",
+                        "process_scope": "nvidia-smi-visible-compute-applications",
+                        "reason": null,
+                        "state": "idle"
+                      }
+                    ],
+                    "state": "observed"
+                  },
+                  "parameters": {
+                    "consecutive_samples": 2,
+                    "interval_seconds": 1.0,
+                    "max_utilization_percent": 0,
+                    "minimum_free_bytes": [
+                      2684354560
+                    ],
+                    "timeout_seconds": 45.0
+                  },
+                  "precondition_index": 0
+                },
+                "name": "gpu.quiescence",
+                "resource_ids": [
+                  "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+                ],
+                "schema_version": 1,
+                "state": "verified"
+              }
+            ],
+            "state": "verified"
+          }
+        ],
+        "state": "verified"
+      }
+    ],
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "exclusive",
+          "quantities": {
+            "memory_bytes": 2147483648.0
+          },
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        }
+      ],
+      "claim_id": "6a056368-1a28-4c08-a32e-8a6590efcce6",
+      "fencing_token": 1344,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "index_observation": 2,
+            "inventory_observed_at": "2026-10-31T15:40:47.287016+00:00",
+            "managed_process_ids": [],
+            "memory_enforcement": "accounting_only",
+            "memory_free_bytes_observation": 16929259520,
+            "name": "Tesla V100-SXM2-16GB",
+            "pci_bus_id": "00000000:83:00.0",
+            "process_count_observation": 0,
+            "process_identity_unknown_count": 0,
+            "process_mapping_state": "unknown",
+            "process_observed_at": "2026-10-31T15:40:47.287016+00:00",
+            "process_telemetry": "compute-apps-visible",
+            "process_telemetry_state": "observed",
+            "processes_observation": [],
+            "unmanaged_process_count": 0,
+            "utilization_percent_observation": 0,
+            "uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          },
+          "capabilities": [
+            "memory-accounting-only",
+            "shared-admission",
+            "nvidia-smi-compute-process-telemetry",
+            "whole-device-exclusive-admission"
+          ],
+          "capacities": {
+            "memory_bytes": 17179869184.0
+          },
+          "conflict_domains": [
+            "gpu-exclusive:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          ],
+          "host_id": "testlsserver",
+          "kind": "gpu",
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+          "schema_version": 1,
+          "topology": {
+            "links": [
+              {
+                "relation": "NV6",
+                "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+                "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                "type": "nvlink"
+              },
+              {
+                "relation": "SYS",
+                "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+                "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                "type": "sys"
+              },
+              {
+                "relation": "PHB",
+                "source_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+                "type": "pcie"
+              }
+            ],
+            "pci_bus_id": "00000000:83:00.0",
+            "topology_state": "observed"
+          }
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-fcc659b4bb22283b44524300afbf70dc.service",
+      "identity": "a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-fcc659b4bb22283b44524300afbf70dc.service",
+        "description": "Device Scheduler attempt a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "3c0b791a6b0e4eee97cc0b11b60fbf68",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-10-31T15:41:03.761978Z"
+    },
+    "finished_at": "2026-10-31T15:41:19.733298Z",
+    "id": "a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0",
+    "job_id": "3d308d91-1dd8-4a95-8be5-89b5aeeebd6a",
+    "operation_id": "start:a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0",
+    "precondition_receipt": {
+      "adapter_errors": [],
+      "operation_id": "preconditions:a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0",
+      "preconditions": [
+        {
+          "name": "gpu.quiescence",
+          "reports": [
+            {
+              "adapter_id": "nvidia-smi",
+              "evidence": {
+                "observation": {
+                  "consecutive_samples": 2,
+                  "samples": [
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "inventory_observed_at": "2026-10-31T15:41:02.514961+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-31T15:41:02.556419+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-31T15:41:02.514961+00:00",
+                      "process_observed_at": "2026-10-31T15:41:02.556419+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    },
+                    {
+                      "gpus": [
+                        {
+                          "gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "inventory_observed_at": "2026-10-31T15:41:03.640292+00:00",
+                          "memory_free_bytes": 16929259520,
+                          "memory_total_bytes": 17179869184,
+                          "process_ids": [],
+                          "process_observed_at": "2026-10-31T15:41:03.681781+00:00",
+                          "required_free_bytes": 2684354560,
+                          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+                          "utilization_percent": 0
+                        }
+                      ],
+                      "inventory_observed_at": "2026-10-31T15:41:03.640292+00:00",
+                      "process_observed_at": "2026-10-31T15:41:03.681781+00:00",
+                      "process_scope": "nvidia-smi-visible-compute-applications",
+                      "reason": null,
+                      "state": "idle"
+                    }
+                  ],
+                  "state": "observed"
+                },
+                "parameters": {
+                  "consecutive_samples": 2,
+                  "interval_seconds": 1.0,
+                  "max_utilization_percent": 0,
+                  "minimum_free_bytes": [
+                    2684354560
+                  ],
+                  "timeout_seconds": 45.0
+                },
+                "precondition_index": 0
+              },
+              "name": "gpu.quiescence",
+              "resource_ids": [
+                "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+              ],
+              "schema_version": 1,
+              "state": "verified"
+            }
+          ],
+          "state": "verified"
+        }
+      ],
+      "state": "verified"
+    },
+    "result": {
+      "active_state": "failed",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-fcc659b4bb22283b44524300afbf70dc.service",
+        "invocation_id": "3c0b791a6b0e4eee97cc0b11b60fbf68",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0"
+      },
+      "exit_code": 1,
+      "invocation_id": "3c0b791a6b0e4eee97cc0b11b60fbf68",
+      "logs": "Device: Tesla V100-SXM2-16GB UUID GPU-d745da9c-7649-8334-41f1-483afa6f3206 compute 7.0\nFAIL grouped FP16/FP32 forward, VJP, empty expert, SGD: Operators taking TensorOptions cannot take a TensorOptions with options.requires_grad set as true. This isn't implemented yet.\nException raised from check_tensor_options_and_extract_memory_format at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/ATen/core/CheckMemoryFormat.h:9 (most recent call first):\nframe #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7fcd23d785e8 in /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so)\nframe #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, char const*) + 0x6a (0x7fcd23d0d5b6 in /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so)\nframe #2: <unknown function> + 0x2594f (0x5bf8bf13e94f in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #3: <unknown function> + 0x1d4da (0x5bf8bf1364da in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #4: <unknown function> + 0x1df2d (0x5bf8bf136f2d in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #5: <unknown function> + 0x12789 (0x5bf8bf12b789 in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #6: <unknown function> + 0x2a1ca (0x7fccde42a1ca in /lib/x86_64-linux-gnu/libc.so.6)\nframe #7: __libc_start_main + 0x8b (0x7fccde42a28b in /lib/x86_64-linux-gnu/libc.so.6)\nframe #8: <unknown function> + 0x12aa5 (0x5bf8bf12baa5 in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nFAIL staged CSR attention FP16/FP32 forward and q/k/v VJP at V=1,2,33: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL empty CSR neighborhoods and zero-query tensors: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL attention outstanding/repeated graphs and first-order boundary: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL attention original tensor and CSR version checks: native staged CSR attention forward: no kernel image is available for execution on the device\nPASS two outstanding grouped graphs and retained repeated backward\nPASS explicit first-order boundary\nPASS original noncontiguous tensor version check\nFAIL non-default stream, dropped handles and allocator churn: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL cross-stream attention allocator ownership and VJP: native staged CSR attention forward: no kernel image is available for execution on the device\nPASS external from_blob inference and disposed-graph event retention\nCUDA adapter qualification: 4 passed, 7 failed\nCUDA adapter qualification failed: one or more CUDA qualification cases failed\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "exit-code",
+      "state": "failed",
+      "stdout": "Device: Tesla V100-SXM2-16GB UUID GPU-d745da9c-7649-8334-41f1-483afa6f3206 compute 7.0\nFAIL grouped FP16/FP32 forward, VJP, empty expert, SGD: Operators taking TensorOptions cannot take a TensorOptions with options.requires_grad set as true. This isn't implemented yet.\nException raised from check_tensor_options_and_extract_memory_format at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/ATen/core/CheckMemoryFormat.h:9 (most recent call first):\nframe #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7fcd23d785e8 in /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so)\nframe #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, char const*) + 0x6a (0x7fcd23d0d5b6 in /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so)\nframe #2: <unknown function> + 0x2594f (0x5bf8bf13e94f in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #3: <unknown function> + 0x1d4da (0x5bf8bf1364da in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #4: <unknown function> + 0x1df2d (0x5bf8bf136f2d in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #5: <unknown function> + 0x12789 (0x5bf8bf12b789 in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #6: <unknown function> + 0x2a1ca (0x7fccde42a1ca in /lib/x86_64-linux-gnu/libc.so.6)\nframe #7: __libc_start_main + 0x8b (0x7fccde42a28b in /lib/x86_64-linux-gnu/libc.so.6)\nframe #8: <unknown function> + 0x12aa5 (0x5bf8bf12baa5 in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nFAIL staged CSR attention FP16/FP32 forward and q/k/v VJP at V=1,2,33: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL empty CSR neighborhoods and zero-query tensors: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL attention outstanding/repeated graphs and first-order boundary: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL attention original tensor and CSR version checks: native staged CSR attention forward: no kernel image is available for execution on the device\nPASS two outstanding grouped graphs and retained repeated backward\nPASS explicit first-order boundary\nPASS original noncontiguous tensor version check\nFAIL non-default stream, dropped handles and allocator churn: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL cross-stream attention allocator ownership and VJP: native staged CSR attention forward: no kernel image is available for execution on the device\nPASS external from_blob inference and disposed-graph event retention\nCUDA adapter qualification: 4 passed, 7 failed\nCUDA adapter qualification failed: one or more CUDA qualification cases failed\n",
+      "substate": "failed",
+      "unit_name": "device-scheduler-attempt-fcc659b4bb22283b44524300afbf70dc.service"
+    },
+    "started_at": "2026-10-31T15:41:03.762091Z",
+    "state": "failed"
+  },
+  "attempt_count": 1,
+  "attempt_id": "a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-10-31T15:41:00.315499Z",
+  "decision_id": "06433c80-46ba-4f0a-ae51-dd4208b6dd33",
+  "id": "3d308d91-1dd8-4a95-8be5-89b5aeeebd6a",
+  "job_id": "3d308d91-1dd8-4a95-8be5-89b5aeeebd6a",
+  "lease_binding": null,
+  "lease_fencing_token": 1344,
+  "lease_id": "6a056368-1a28-4c08-a32e-8a6590efcce6",
+  "lease_state": "released",
+  "owner": "cellerator",
+  "owner_id": "cellerator",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "failed",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-fcc659b4bb22283b44524300afbf70dc.service",
+      "invocation_id": "3c0b791a6b0e4eee97cc0b11b60fbf68",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0"
+    },
+    "exit_code": 1,
+    "invocation_id": "3c0b791a6b0e4eee97cc0b11b60fbf68",
+    "logs": "Device: Tesla V100-SXM2-16GB UUID GPU-d745da9c-7649-8334-41f1-483afa6f3206 compute 7.0\nFAIL grouped FP16/FP32 forward, VJP, empty expert, SGD: Operators taking TensorOptions cannot take a TensorOptions with options.requires_grad set as true. This isn't implemented yet.\nException raised from check_tensor_options_and_extract_memory_format at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/ATen/core/CheckMemoryFormat.h:9 (most recent call first):\nframe #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7fcd23d785e8 in /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so)\nframe #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, char const*) + 0x6a (0x7fcd23d0d5b6 in /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so)\nframe #2: <unknown function> + 0x2594f (0x5bf8bf13e94f in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #3: <unknown function> + 0x1d4da (0x5bf8bf1364da in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #4: <unknown function> + 0x1df2d (0x5bf8bf136f2d in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #5: <unknown function> + 0x12789 (0x5bf8bf12b789 in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #6: <unknown function> + 0x2a1ca (0x7fccde42a1ca in /lib/x86_64-linux-gnu/libc.so.6)\nframe #7: __libc_start_main + 0x8b (0x7fccde42a28b in /lib/x86_64-linux-gnu/libc.so.6)\nframe #8: <unknown function> + 0x12aa5 (0x5bf8bf12baa5 in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nFAIL staged CSR attention FP16/FP32 forward and q/k/v VJP at V=1,2,33: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL empty CSR neighborhoods and zero-query tensors: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL attention outstanding/repeated graphs and first-order boundary: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL attention original tensor and CSR version checks: native staged CSR attention forward: no kernel image is available for execution on the device\nPASS two outstanding grouped graphs and retained repeated backward\nPASS explicit first-order boundary\nPASS original noncontiguous tensor version check\nFAIL non-default stream, dropped handles and allocator churn: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL cross-stream attention allocator ownership and VJP: native staged CSR attention forward: no kernel image is available for execution on the device\nPASS external from_blob inference and disposed-graph event retention\nCUDA adapter qualification: 4 passed, 7 failed\nCUDA adapter qualification failed: one or more CUDA qualification cases failed\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "exit-code",
+    "state": "failed",
+    "stdout": "Device: Tesla V100-SXM2-16GB UUID GPU-d745da9c-7649-8334-41f1-483afa6f3206 compute 7.0\nFAIL grouped FP16/FP32 forward, VJP, empty expert, SGD: Operators taking TensorOptions cannot take a TensorOptions with options.requires_grad set as true. This isn't implemented yet.\nException raised from check_tensor_options_and_extract_memory_format at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/ATen/core/CheckMemoryFormat.h:9 (most recent call first):\nframe #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7fcd23d785e8 in /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so)\nframe #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, char const*) + 0x6a (0x7fcd23d0d5b6 in /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so)\nframe #2: <unknown function> + 0x2594f (0x5bf8bf13e94f in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #3: <unknown function> + 0x1d4da (0x5bf8bf1364da in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #4: <unknown function> + 0x1df2d (0x5bf8bf136f2d in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #5: <unknown function> + 0x12789 (0x5bf8bf12b789 in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #6: <unknown function> + 0x2a1ca (0x7fccde42a1ca in /lib/x86_64-linux-gnu/libc.so.6)\nframe #7: __libc_start_main + 0x8b (0x7fccde42a28b in /lib/x86_64-linux-gnu/libc.so.6)\nframe #8: <unknown function> + 0x12aa5 (0x5bf8bf12baa5 in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nFAIL staged CSR attention FP16/FP32 forward and q/k/v VJP at V=1,2,33: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL empty CSR neighborhoods and zero-query tensors: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL attention outstanding/repeated graphs and first-order boundary: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL attention original tensor and CSR version checks: native staged CSR attention forward: no kernel image is available for execution on the device\nPASS two outstanding grouped graphs and retained repeated backward\nPASS explicit first-order boundary\nPASS original noncontiguous tensor version check\nFAIL non-default stream, dropped handles and allocator churn: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL cross-stream attention allocator ownership and VJP: native staged CSR attention forward: no kernel image is available for execution on the device\nPASS external from_blob inference and disposed-graph event retention\nCUDA adapter qualification: 4 passed, 7 failed\nCUDA adapter qualification failed: one or more CUDA qualification cases failed\n",
+    "substate": "failed",
+    "unit_name": "device-scheduler-attempt-fcc659b4bb22283b44524300afbf70dc.service"
+  },
+  "spec": {
+    "argv": [
+      "/tmp/cellerator-native-derivatives/native_nn_ops_cuda_test",
+      "--device"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "LD_LIBRARY_PATH": "/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib:/usr/local/cuda/lib64",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "event_trigger": null,
+    "expected_duration_seconds": 45.0,
+    "flexible": false,
+    "idempotency_key": "cellerator-native-nn-derivatives-correctness-20261031-r2",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "kill_timeout_seconds": 270.0,
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "cellerator",
+    "preconditions": [
+      {
+        "name": "gpu.quiescence",
+        "parameters": {
+          "consecutive_samples": 2,
+          "interval_seconds": 1,
+          "max_utilization_percent": 0,
+          "timeout_seconds": 45
+        },
+        "schema_version": 1
+      }
+    ],
+    "preemption_action": "abandon",
+    "priority": 50,
+    "priority_class": "normal",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "gpu",
+        "mode": "exclusive",
+        "quantities": {
+          "memory_bytes": 2147483648.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {
+          "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        },
+        "topology_constraints": {}
+      }
+    ],
+    "retention_policy": null,
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "gpu.exclusive",
+      "cellerator-native-nn-derivatives-correctness"
+    ],
+    "termination_grace_seconds": 10.0,
+    "timeout_seconds": 300.0,
+    "working_directory": "/home/tumlinson/Cellerator"
+  },
+  "state": "failed",
+  "updated_at": "2026-10-31T15:41:19.733298Z"
+}

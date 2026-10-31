@@ -133,7 +133,7 @@ class PreparedRelation:
         "source_order", "target_order", "source_offsets", "target_offsets",
         "source_axis", "target_axis", "structural_generation", "n_sources",
         "n_targets", "_device", "_row_ptr", "_col_indices", "_rows",
-        "_causal_mask", "_transpose_cache", "_frozen",
+        "_causal_mask", "_transpose_cache", "_structure_versions", "_has_future_edges", "_frozen",
     )
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -222,10 +222,17 @@ class PreparedRelation:
         self.n_sources = n_sources
         self.n_targets = n_targets
         self._device = target_device
-        self._row_ptr = torch.tensor(ptr, dtype=torch.long, device=target_device)
-        self._col_indices = torch.tensor(columns, dtype=torch.long, device=target_device)
-        self._rows = torch.tensor(rows, dtype=torch.long, device=target_device)
-        self._causal_mask = torch.tensor(causal, dtype=torch.bool, device=target_device)
+        # Index tensors need version counters even when preparation is called
+        # inside inference_mode. Checking counters never reads device contents.
+        with torch.inference_mode(False):
+            self._row_ptr = torch.tensor(ptr, dtype=torch.long, device=target_device)
+            self._col_indices = torch.tensor(columns, dtype=torch.long, device=target_device)
+            self._rows = torch.tensor(rows, dtype=torch.long, device=target_device)
+            self._causal_mask = torch.tensor(causal, dtype=torch.bool, device=target_device)
+        self._structure_versions = tuple(tensor._version for tensor in (
+            self._row_ptr, self._col_indices, self._rows, self._causal_mask
+        ))
+        self._has_future_edges = not all(causal)
         self._transpose_cache = None
         self._frozen = True
 
@@ -317,6 +324,7 @@ class PreparedRelation:
         return self._rows, self._col_indices
 
     def _device_causal_mask(self, device: torch.device) -> Tensor:
+        self._validate_storage()
         if torch.device(device) != self._device:
             raise ValueError(
                 f"prepared relation is on {self._device}; call relation.to({device!s}) explicitly"
@@ -337,6 +345,7 @@ class PreparedRelation:
         n_targets: int,
         device: torch.device,
     ) -> tuple[Tensor, Tensor]:
+        self._validate_storage()
         if isinstance(structural_generation, bool) or not isinstance(structural_generation, int):
             raise TypeError("structural_generation must be a nonnegative integer")
         if structural_generation < 0:
@@ -369,8 +378,37 @@ class PreparedRelation:
             raise ValueError("target Axis differs from prepared relation")
         return self._device_edges(device)
 
+    def _validate_storage(self) -> None:
+        versions = tuple(tensor._version for tensor in (
+            self._row_ptr, self._col_indices, self._rows, self._causal_mask
+        ))
+        if versions != self._structure_versions:
+            raise ValueError("prepared relation buffers were mutated; prepare a new relation")
+
+    @property
+    def has_future_edges(self) -> bool:
+        self._validate_storage()
+        return self._has_future_edges
+
+    def causal(self) -> "PreparedRelation":
+        """Explicitly prepare support containing only group-local causal edges."""
+        self._validate_storage()
+        columns = []
+        offsets = [0]
+        for left, right in zip(self._row_ptr_host, self._row_ptr_host[1:]):
+            columns.extend(self._col_indices_host[index]
+                           for index in range(left, right) if self._causal_host[index])
+            offsets.append(len(columns))
+        return PreparedRelation(
+            offsets, columns, source_order=self.source_order, target_order=self.target_order,
+            source_offsets=self.source_offsets, target_offsets=self.target_offsets,
+            source_axis=self.source_axis, target_axis=self.target_axis,
+            structural_generation=self.structural_generation, device=self._device,
+        )
+
     def to(self, device: torch.device | str) -> "PreparedRelation":
         """Return this relation prepared on ``device`` (without implicit copies)."""
+        self._validate_storage()
         target_device = torch.device(device)
         if target_device == self._device:
             return self

@@ -81,6 +81,36 @@ AttentionParameters::AttentionParameters(ParameterGroup group, std::int64_t widt
     : query(group, width, width), key(group, width, width),
       value(group, width, width), output(group, width, width, false) {}
 
+at::Tensor sparse_attention(const at::Tensor& q, const at::Tensor& k,
+    const at::Tensor& v, const at::Tensor& rows, const at::Tensor& columns,
+    double scale, double dropout, Run run) {
+    if (q.dim()!=3 || k.dim()!=3 || v.dim()!=3 || q.size(1)!=k.size(1)
+        || q.size(1)!=v.size(1) || q.size(2)!=k.size(2) || k.size(0)!=v.size(0))
+        throw std::invalid_argument("projected attention expects q[Q,H,D], k[N,H,D], v[N,H,V]");
+    if (q.device()!=k.device() || q.device()!=v.device() || q.scalar_type()!=k.scalar_type()
+        || q.scalar_type()!=v.scalar_type() || rows.device()!=q.device() || columns.device()!=q.device()
+        || rows.scalar_type()!=at::kLong || columns.scalar_type()!=at::kLong
+        || rows.dim()!=1 || columns.dim()!=1 || rows.numel()!=columns.numel())
+        throw std::invalid_argument("projected attention dtype/device/index shape mismatch");
+    if (!std::isfinite(scale) || !(dropout>=0.0 && dropout<1.0))
+        throw std::invalid_argument("attention scale/dropout is invalid");
+    if (columns.numel()==0) {
+        return at::zeros({q.size(0),q.size(1),v.size(2)},v.options())
+            +(at::nan_to_num(q)*0.0).sum()+(at::nan_to_num(k)*0.0).sum()
+            +(at::nan_to_num(v)*0.0).sum();
+    }
+    auto scores=(q.index_select(0,rows)*k.index_select(0,columns)).sum(-1)*scale;
+    auto row_heads=rows.unsqueeze(-1).expand({rows.numel(),q.size(1)});
+    auto maxima=at::full({q.size(0),q.size(1)},-std::numeric_limits<double>::infinity(),scores.options());
+    maxima=at::scatter_reduce(maxima,0,row_heads,scores,"amax",true);
+    auto numerators=(scores-maxima.index_select(0,rows)).exp();
+    auto denominator=at::zeros({q.size(0),q.size(1)},scores.options()).index_add(0,rows,numerators);
+    auto weights=numerators/denominator.index_select(0,rows);
+    if (run.training && dropout>0.0) weights=at::dropout(weights,dropout,true);
+    auto messages=v.index_select(0,columns)*weights.unsqueeze(-1);
+    return at::zeros({q.size(0),q.size(1),v.size(2)},v.options()).index_add(0,rows,messages);
+}
+
 at::Tensor relation_attention(const at::Tensor& source, const at::Tensor& target,
     const AttentionParameters& p, const AttentionOptions& o,
     AttentionLayout layout, Run run) {
@@ -168,21 +198,8 @@ at::Tensor relation_attention(const at::Tensor& source, const at::Tensor& target
             rows = rows.index({relation.causal_mask()});
             columns = columns.index({relation.causal_mask()});
         }
-        if (columns.numel() == 0) {
-            combined = zero_interaction(q, k, v);
-        } else {
-            const auto scale = 1.0 / std::sqrt(static_cast<double>(o.width / o.heads));
-            auto scores = (q.index_select(0, rows) * k.index_select(0, columns)).sum(-1) * scale;
-            auto row_heads = rows.unsqueeze(-1).expand({rows.numel(), o.heads});
-            auto maxima = at::full({target_count, o.heads}, -std::numeric_limits<double>::infinity(), scores.options());
-            maxima = at::scatter_reduce(maxima, 0, row_heads, scores, "amax", true);
-            auto numerators = (scores - maxima.index_select(0, rows)).exp();
-            auto denominator = at::zeros({target_count, o.heads}, scores.options()).index_add(0, rows, numerators);
-            auto weights = numerators / denominator.index_select(0, rows);
-            if (dropout > 0) weights = at::dropout(weights, dropout, true);
-            auto messages = v.index_select(0, columns) * weights.unsqueeze(-1);
-            combined = at::zeros({target_count, o.heads, o.width / o.heads}, v.options()).index_add(0, rows, messages);
-        }
+        combined = sparse_attention(q,k,v,rows,columns,
+            1.0/std::sqrt(static_cast<double>(o.width/o.heads)),dropout,run);
     }
     auto shape = target.sizes().vec();
     return linear(combined.reshape({target_count, o.width}), p.output).reshape(shape);

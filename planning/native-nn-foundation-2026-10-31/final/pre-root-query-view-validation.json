@@ -1,0 +1,71 @@
+{
+  "record_scope": "Final bounded validation before root's later custom full-head borrowed-view fix.",
+  "validated_query_header_sha256": "ed0ec8a10cd24c75a78742d15ff49848c476d7bbafa5f3258c19b10c967d093d",
+  "cpu_build": {
+    "command": "cmake --build /tmp/cellerator-native-nn-cmake -j2",
+    "exit_code": 0,
+    "built_targets": ["cellerator_nn", "15 CPU NN test executables", "native_nn_train"]
+  },
+  "cpu_ctest": {
+    "command": "LD_LIBRARY_PATH=<Torch lib> ctest --test-dir /tmp/cellerator-native-nn-cmake --output-on-failure",
+    "passed": 15,
+    "failed": 0,
+    "cuda_tests_run": false,
+    "log": "cpu-ctest.log"
+  },
+  "training_demo": {
+    "exit_code": 0,
+    "log": "native-nn-train.log",
+    "observed": {
+      "expression_masked_mse": [1.20768, 0.0164046],
+      "expression_atac_frozen_base_bce": [0.69094, 0.518424],
+      "expression_atac_joint_base_bce": [0.518424, 0.488026],
+      "event_next_event_ce": [0.620356, 0.175237],
+      "history_atac_frozen_base_bce": [0.846502, 0.212311],
+      "history_atac_joint_base_bce": [0.212311, 0.212401],
+      "masked_targets": 8,
+      "event_occurrences": 8,
+      "event_empty_histories": 4,
+      "all_empty_loss": "none"
+    }
+  },
+  "cpu_install_and_consumer": {
+    "install_component": "NN",
+    "prefix": "/tmp/cellerator-native-nn-consumer.mQYDYs/install",
+    "query_header_sha256": "ed0ec8a10cd24c75a78742d15ff49848c476d7bbafa5f3258c19b10c967d093d",
+    "configure_build_run": "passed",
+    "logs": [
+      "cpu-install.log",
+      "installed-consumer-configure.log",
+      "installed-consumer-build.log",
+      "installed-consumer-run.log"
+    ]
+  },
+  "module_cpu_consumer": {
+    "compiler": "Clang 18",
+    "generator": "Ninja",
+    "installed_header_query_sha256": "ed0ec8a10cd24c75a78742d15ff49848c476d7bbafa5f3258c19b10c967d093d",
+    "producer_rebuilt": true,
+    "plain_header_mixed_translation_unit_and_import_only_translation_unit": "compiled and linked",
+    "ctest_passed": 1,
+    "ctest_failed": 0,
+    "log": "module-cpu.log"
+  },
+  "module_cuda_header_bridge": {
+    "existing_cuda_prefix": "/tmp/cellerator-native-nn-cuda-current-install",
+    "refreshed_only_header": "include/Cellerator/nn/query.hh",
+    "refreshed_header_sha256": "ed0ec8a10cd24c75a78742d15ff49848c476d7bbafa5f3258c19b10c967d093d",
+    "compiler": "Clang 18 plus NVCC 12.9.86 with /usr/bin/g++-12 host compiler",
+    "module_producer_rebuilt": true,
+    "cuda_bridge_compiled_and_linked": true,
+    "ctest_passed": 1,
+    "ctest_failed": 0,
+    "gpu_kernel_launched": false,
+    "log": "module-cuda-header-bridge.log"
+  },
+  "supersession_note": "After these runs, root confirmed another borrowed-view lifetime case in a custom full-head gathered span, changed query.hh and added a regression. These results are pre-follow-up evidence; root owns the final source/header/module refresh and any affected reruns. This record does not claim qualification of that later source state.",
+  "nonfatal_environment_warnings": [
+    "Torch/Caffe2 could not compute the NVRTC library shorthash and did not find NVTX3.",
+    "NVCC warned that offline compilation for pre-sm_75 architectures will be removed in a future release."
+  ]
+}

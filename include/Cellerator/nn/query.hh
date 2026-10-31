@@ -1,10 +1,14 @@
 #pragma once
 
 #include <ATen/ATen.h>
+#include <Cellerator/biology/feature_binding.hh>
 #include <Cellerator/nn/types.hh>
 
 #include <cstdint>
 #include <functional>
+#include <memory>
+#include <optional>
+#include <span>
 #include <stdexcept>
 #include <tuple>
 #include <type_traits>
@@ -31,11 +35,78 @@ struct Prediction {
     Payload payload;
 };
 
-template<class FeatureIds, class Coordinates>
+template<class FeatureId, class Coordinates>
 struct QueryPayload {
-    FeatureIds feature_ids;
-    Coordinates coordinates;
+    // These views borrow the prepared target and coordinate declarations.
+    // For the batched `predict` path, lifetime_owner retains one typed frame
+    // containing the base result and any owned model/input/request/selected
+    // source values. Lvalue dependencies remain caller-owned; temporary query
+    // requests are held by the frame. The direct Readout path has no owner.
+    std::span<const FeatureId> feature_ids;
+    std::reference_wrapper<const Coordinates> coordinates;
+    std::shared_ptr<const void> lifetime_owner;
 };
+
+// A host-prepared target alignment plus immutable device indices. Building a
+// PreparedTargets is an explicit boundary operation; repeated readout calls
+// reuse its index buffers instead of rebuilding them from host IDs.
+template<class FeatureId>
+class PreparedTargets {
+public:
+    using identity_type = FeatureId;
+
+    const biology::PreparedAlignment<FeatureId>& alignment() const noexcept {
+        return alignment_;
+    }
+    const std::vector<FeatureId>& canonical_ids() const noexcept {
+        return alignment_.canonical_ids();
+    }
+    const std::vector<FeatureId>& source_ids() const noexcept {
+        return alignment_.source_ids();
+    }
+    const std::vector<std::int64_t>& model_indices() const noexcept {
+        return alignment_.model_indices();
+    }
+    const std::vector<std::int64_t>& output_columns() const noexcept {
+        return alignment_.output_columns();
+    }
+    const at::Tensor& model_index_tensor() const noexcept { return model_indices_; }
+    const at::Tensor& output_column_tensor() const noexcept { return output_columns_; }
+    at::Device device() const noexcept { return device_; }
+
+private:
+    PreparedTargets(biology::PreparedAlignment<FeatureId> alignment,
+                    at::Tensor model_indices, at::Tensor output_columns,
+                    at::Device device)
+        : alignment_(std::move(alignment)), model_indices_(std::move(model_indices)),
+          output_columns_(std::move(output_columns)), device_(device) {}
+
+    biology::PreparedAlignment<FeatureId> alignment_;
+    at::Tensor model_indices_;
+    at::Tensor output_columns_;
+    at::Device device_ = at::Device(at::kCPU);
+
+    template<class Id>
+    friend PreparedTargets<Id> prepare_targets(
+        const biology::FeatureBinding<Id>&, const std::vector<Id>&, at::Device);
+};
+
+template<class FeatureId>
+PreparedTargets<FeatureId> prepare_targets(
+    const biology::FeatureBinding<FeatureId>& binding,
+    const std::vector<FeatureId>& requested_ids,
+    at::Device device) {
+    auto alignment = binding.prepare(binding.canonical_ids(), requested_ids);
+    const auto options = at::TensorOptions().dtype(at::kLong).device(device);
+    auto model_indices = at::tensor(alignment.model_indices(), options);
+    auto output_columns = at::tensor(alignment.output_columns(), options);
+    const auto realized_device = model_indices.device();
+    if (output_columns.device() != realized_device) {
+        throw std::logic_error("prepared target index tensors landed on different devices");
+    }
+    return PreparedTargets<FeatureId>(std::move(alignment),
+        std::move(model_indices), std::move(output_columns), realized_device);
+}
 
 namespace detail {
 
@@ -66,6 +137,18 @@ decltype(auto) unhold(T&& value) {
     }
 }
 
+// Forward owned components as rvalues while borrowed lvalues remain lvalues.
+// PredictionFrame uses this for its model, preserving callable overload
+// selection while keeping owned model storage at a stable address.
+template<class T>
+decltype(auto) forward_held(T& value) {
+    if constexpr (is_reference_wrapper<std::remove_cvref_t<T>>::value) {
+        return value.get();
+    } else {
+        return std::move(value);
+    }
+}
+
 template<class Callable, class... Args>
 decltype(auto) invoke_with_run(Callable&& callable, Run run, Args&&... args) {
     if constexpr (std::is_invocable_v<Callable, Args..., Run>) {
@@ -86,6 +169,20 @@ decltype(auto) invoke_model(Model&& model, Input&& input, Run run) {
     }
 }
 
+template<class Conditioner, class Input, class Condition>
+decltype(auto) invoke_conditioner(Conditioner&& conditioner, Input&& input,
+                                  Condition&& condition, Run run) {
+    if constexpr (std::is_invocable_v<Conditioner, Input, Condition, Run>) {
+        return std::invoke(std::forward<Conditioner>(conditioner),
+                           std::forward<Input>(input),
+                           std::forward<Condition>(condition), run);
+    } else {
+        return std::invoke(std::forward<Conditioner>(conditioner),
+                           std::forward<Input>(input),
+                           std::forward<Condition>(condition));
+    }
+}
+
 template<class Selector, class Result, class Input>
 decltype(auto) select_source(Selector&& selector, Result&& result, Input&& input) {
     if constexpr (std::is_invocable_v<Selector, Result, Input>) {
@@ -98,7 +195,11 @@ decltype(auto) select_source(Selector&& selector, Result&& result, Input&& input
 
 template<class Binding, class Targets>
 void validate_readout_targets(const Binding& binding, const Targets& targets) {
-    if constexpr (requires { binding.canonical_ids(); targets.source_ids(); }) {
+    if constexpr (requires { binding.validate_alignment(targets.alignment()); }) {
+        binding.validate_alignment(targets.alignment());
+    } else if constexpr (requires { binding.validate_alignment(targets); }) {
+        binding.validate_alignment(targets);
+    } else if constexpr (requires { binding.canonical_ids(); targets.source_ids(); }) {
         if (binding.canonical_ids() != targets.source_ids()) {
             throw std::invalid_argument(
                 "prepared target source order does not match the readout binding");
@@ -116,12 +217,21 @@ template<class Values, class Targets>
 decltype(auto) gather_full_output(Values&& values, const Targets& targets) {
     if constexpr (std::is_same_v<std::remove_cvref_t<Values>, at::Tensor>) {
         const auto& source_ids = targets.source_ids();
-        const auto& columns = targets.output_columns();
         if (values.dim() == 0 || values.size(-1) != static_cast<std::int64_t>(source_ids.size())) {
             throw std::invalid_argument(
                 "full readout output axis does not match the prepared source order");
         }
-        return values.index_select(-1, index_tensor(columns, values));
+        if constexpr (requires { targets.output_column_tensor(); targets.device(); }) {
+            if (targets.device() != values.device()) {
+                throw std::invalid_argument(
+                    "prepared target output columns are on a different device than readout values");
+            }
+            return values.index_select(-1, targets.output_column_tensor());
+        } else {
+            // Host-only alignments stay available; repeated queries should
+            // prepare device indices once with prepare_targets().
+            return values.index_select(-1, index_tensor(targets.output_columns(), values));
+        }
     } else if constexpr (requires { targets.gather(std::forward<Values>(values), -1); }) {
         return targets.gather(std::forward<Values>(values), -1);
     } else if constexpr (requires {
@@ -134,10 +244,28 @@ decltype(auto) gather_full_output(Values&& values, const Targets& targets) {
     }
 }
 
-template<class Decoder, class Source, class Targets, class Coordinates>
+struct NoFullOutput {};
+
+template<class Decoder, class Source>
+auto full_output_storage() {
+    if constexpr (std::is_invocable_v<Decoder, Source, Run> ||
+                  std::is_invocable_v<Decoder, Source>) {
+        using full_type = decltype(invoke_with_run(
+            std::declval<Decoder>(), Run{}, std::declval<Source>()));
+        if constexpr (!std::is_same_v<std::remove_cvref_t<full_type>, at::Tensor>) {
+            return std::optional<held_t<full_type>>{};
+        } else {
+            return NoFullOutput{};
+        }
+    } else {
+        return NoFullOutput{};
+    }
+}
+
+template<class Decoder, class Source, class Targets, class Coordinates, class RetainFull>
 decltype(auto) invoke_head(Decoder&& decoder, Source&& source,
                            const Targets& targets, const Coordinates& coordinates,
-                           Run run) {
+                           Run run, RetainFull&& retain_full) {
     if constexpr (requires {
         decoder.query(source, targets, coordinates, run);
     }) {
@@ -163,40 +291,40 @@ decltype(auto) invoke_head(Decoder&& decoder, Source&& source,
     }) {
         return decoder.query(std::forward<Source>(source), targets.model_indices());
     } else {
-        auto full = invoke_with_run(std::forward<Decoder>(decoder), run,
-                                    std::forward<Source>(source));
-        return gather_full_output(std::move(full), targets);
+        decltype(auto) full = invoke_with_run(std::forward<Decoder>(decoder), run,
+                                              std::forward<Source>(source));
+        if constexpr (std::is_same_v<std::remove_cvref_t<decltype(full)>, at::Tensor>) {
+            return gather_full_output(std::forward<decltype(full)>(full), targets);
+        } else {
+            // A user-defined gather can return a view into the full result.
+            // Keep that result at a stable address in the same batch frame.
+            return gather_full_output(
+                retain_full(std::forward<decltype(full)>(full)), targets);
+        }
     }
 }
 
-template<class View, class BaseResult, class Input, class Targets, class Coordinates>
-auto evaluate_request(View& view, BaseResult&& base_result, Input&& input,
-                      const Targets& targets, const Coordinates& coordinates, Run run) {
+template<class View, class Source, class Targets, class Coordinates, class RetainFull>
+auto evaluate_selected_request(View& view, Source&& source,
+                               const Targets& targets, const Coordinates& coordinates,
+                               Run run, std::shared_ptr<const void> owner,
+                               RetainFull&& retain_full) {
     const auto& binding = unhold(view.binding_holder());
     validate_readout_targets(binding, targets);
-    auto&& selector = unhold(view.selector_holder());
     auto&& decoder = unhold(view.decoder_holder());
-    decltype(auto) source = select_source(selector,
-        std::forward<BaseResult>(base_result), std::forward<Input>(input));
     decltype(auto) raw = invoke_head(decoder, std::forward<decltype(source)>(source),
-                                     targets, coordinates, run);
+                                     targets, coordinates, run,
+                                     std::forward<RetainFull>(retain_full));
     using values_type = std::remove_cvref_t<decltype(raw)>;
-    using ids_type = std::remove_cvref_t<decltype(targets.canonical_ids())>;
+    using ids_type = typename std::remove_cvref_t<
+        decltype(targets.canonical_ids())>::value_type;
     using coordinates_type = std::remove_cvref_t<Coordinates>;
     using payload_type = QueryPayload<ids_type, coordinates_type>;
     return Prediction<values_type, payload_type>{
         std::forward<decltype(raw)>(raw),
-        payload_type{targets.canonical_ids(), coordinates}
+        payload_type{std::span<const ids_type>(targets.canonical_ids()),
+                     std::cref(coordinates), std::move(owner)}
     };
-}
-
-template<class Request, class BaseResult, class Input>
-auto evaluate_request(Request& request, BaseResult&& base_result, Input&& input, Run run) {
-    auto&& view = unhold(request.view_holder());
-    auto&& targets = unhold(request.targets_holder());
-    auto&& coordinates = unhold(request.coordinates_holder());
-    return evaluate_request(view, std::forward<BaseResult>(base_result),
-                            std::forward<Input>(input), targets, coordinates, run);
 }
 
 template<class Request>
@@ -225,6 +353,8 @@ public:
     BindingHolder& binding_holder() noexcept { return binding_; }
     const BindingHolder& binding_holder() const noexcept { return binding_; }
 
+    // This direct decoder call does not allocate a prediction owner. Any view
+    // returned by the decoder must obey the caller's source/dependency lifetime.
     template<class Result, class Input>
     decltype(auto) operator()(Result&& result, Input&& input, Run run = {}) const {
         auto&& selected = detail::select_source(
@@ -275,7 +405,11 @@ private:
     CoordinatesHolder coordinates_;
 };
 
-// Construct a typed request. This call performs no model or head work.
+// Construct a typed request. This call performs no model or head work. Each
+// lvalue argument is borrowed and each rvalue is owned by the request. A
+// prediction made from a temporary request retains that request, so its owned
+// targets and coordinates stay alive; any borrowed lvalue dependencies remain
+// the caller's responsibility.
 template<class View, class Targets, class Coordinates>
 auto query(View&& view, Targets&& targets, Coordinates&& coordinates) {
     return QueryRequest<detail::held_t<View&&>, detail::held_t<Targets&&>,
@@ -285,26 +419,177 @@ auto query(View&& view, Targets&& targets, Coordinates&& coordinates) {
         detail::hold(std::forward<Coordinates>(coordinates)));
 }
 
-// Invoke the base exactly once, then run each concrete query request against
-// that shared result. One request returns its Prediction directly; multiple
-// requests return a fixed tuple in request order. No dynamic registry is used.
+namespace detail {
+
+template<class RequestHolder>
+using request_ref_t = decltype(unhold(std::declval<RequestHolder&>()));
+
+template<class RequestHolder>
+using request_view_ref_t = decltype(unhold(
+    std::declval<request_ref_t<RequestHolder>>().view_holder()));
+
+template<class RequestHolder>
+using request_selector_ref_t = decltype(unhold(
+    std::declval<request_view_ref_t<RequestHolder>>().selector_holder()));
+
+template<class RequestHolder>
+using request_decoder_ref_t = decltype(unhold(
+    std::declval<request_view_ref_t<RequestHolder>>().decoder_holder()));
+
+template<class Holder>
+using unheld_ref_t = decltype(unhold(std::declval<Holder&>()));
+
+template<class RequestHolder, class ResultHolder, class InputHolder>
+using selected_source_t = decltype(select_source(
+    std::declval<request_selector_ref_t<RequestHolder>>(),
+    std::declval<unheld_ref_t<ResultHolder>>(),
+    std::declval<unheld_ref_t<InputHolder>>()));
+
+template<class ModelHolder, class InputHolder>
+using model_result_t = decltype(invoke_model(
+    forward_held(std::declval<ModelHolder&>()),
+    unhold(std::declval<InputHolder&>()), Run{}));
+
+template<class RequestHolder, class ResultHolder, class InputHolder>
+using selected_source_holder_t = held_t<selected_source_t<
+    RequestHolder, ResultHolder, InputHolder>>;
+
+template<class Holder>
+decltype(auto) forward_source_holder(Holder& holder) {
+    return forward_held(holder);
+}
+
+// One typed owner stores every lifetime participating in a batched query:
+// owned model/input, the single base result, request values, and selector
+// values. Every returned prediction shares the same lifetime token.
+template<class ModelHolder, class InputHolder, class... RequestHolders>
+class PredictionFrame {
+    using raw_result_type = model_result_t<ModelHolder, InputHolder>;
+    using result_holder_type = held_t<raw_result_type>;
+    using source_holders_type = std::tuple<std::optional<selected_source_holder_t<
+        RequestHolders, result_holder_type, InputHolder>>...>;
+    using full_output_holders_type = std::tuple<decltype(full_output_storage<
+        request_decoder_ref_t<RequestHolders>,
+        decltype(forward_held(std::declval<selected_source_holder_t<
+            RequestHolders, result_holder_type, InputHolder>&>()))>())...>;
+
+public:
+    PredictionFrame(ModelHolder model, InputHolder input,
+                    std::tuple<RequestHolders...> requests,
+                    std::shared_ptr<const void> lifetime_anchor = {})
+        : lifetime_anchor_(std::move(lifetime_anchor)), model_(std::move(model)),
+          input_(std::move(input)), requests_(std::move(requests)) {}
+
+    void evaluate_base(Run run) {
+        decltype(auto) raw_result = invoke_model(
+            forward_held(model_), unhold(input_), run);
+        result_.emplace(hold(std::forward<decltype(raw_result)>(raw_result)));
+    }
+
+    template<std::size_t I>
+    auto evaluate_one(Run run, std::shared_ptr<const void> lifetime_owner) {
+        capture_source<I>();
+        auto&& request = unhold(std::get<I>(requests_));
+        auto&& view = unhold(request.view_holder());
+        auto&& targets = unhold(request.targets_holder());
+        auto&& coordinates = unhold(request.coordinates_holder());
+        auto&& source = forward_source_holder(*std::get<I>(sources_));
+        auto retain_full = [this](auto&& full) -> decltype(auto) {
+            auto& storage = std::get<I>(full_outputs_);
+            if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(storage)>,
+                                          NoFullOutput>) {
+                storage.emplace(hold(std::forward<decltype(full)>(full)));
+                return forward_held(*storage);
+            } else {
+                static_assert(std::is_same_v<decltype(full), void>,
+                    "only non-Tensor full-head results require retained storage");
+            }
+        };
+        return evaluate_selected_request(view, std::forward<decltype(source)>(source),
+            targets, coordinates, run, std::move(lifetime_owner), retain_full);
+    }
+
+    template<std::size_t I = 0>
+    auto evaluate_in_order(Run run,
+                           const std::shared_ptr<const void>& lifetime_owner) {
+        auto current = evaluate_one<I>(run, lifetime_owner);
+        if constexpr (I + 1 == sizeof...(RequestHolders)) {
+            return std::tuple{std::move(current)};
+        } else {
+            return std::tuple_cat(std::tuple{std::move(current)},
+                                  evaluate_in_order<I + 1>(run, lifetime_owner));
+        }
+    }
+
+private:
+    template<std::size_t I>
+    void capture_source() {
+        auto&& request = unhold(std::get<I>(requests_));
+        auto&& view = unhold(request.view_holder());
+        auto&& selector = unhold(view.selector_holder());
+        decltype(auto) selected = select_source(selector, unhold(*result_),
+                                               unhold(input_));
+        std::get<I>(sources_).emplace(
+            hold(std::forward<decltype(selected)>(selected)));
+    }
+
+    // Declared first so any borrowed frame members are destroyed before the
+    // upstream conditioned invocation that may back them.
+    std::shared_ptr<const void> lifetime_anchor_;
+    ModelHolder model_;
+    InputHolder input_;
+    std::optional<result_holder_type> result_;
+    std::tuple<RequestHolders...> requests_;
+    source_holders_type sources_;
+    full_output_holders_type full_outputs_;
+};
+
+template<class ModelHolder, class InputHolder, class... RequestHolders>
+auto make_prediction_frame(ModelHolder model, InputHolder input,
+                           std::tuple<RequestHolders...> requests,
+                           std::shared_ptr<const void> lifetime_anchor = {}) {
+    using frame_type = PredictionFrame<ModelHolder, InputHolder, RequestHolders...>;
+    return std::make_shared<frame_type>(std::move(model), std::move(input),
+                                        std::move(requests),
+                                        std::move(lifetime_anchor));
+}
+
 template<class Model, class Input, class... Requests>
-auto predict(Model&& model, Input&& input, Run run, Requests&&... requests) {
-    auto request_tuple = std::forward_as_tuple(std::forward<Requests>(requests)...);
-    decltype(auto) base_result = detail::invoke_model(std::forward<Model>(model), input, run);
+auto predict_with_lifetime_anchor(std::shared_ptr<const void> lifetime_anchor,
+                                 Model&& model, Input&& input, Run run,
+                                 Requests&&... requests) {
     if constexpr (sizeof...(Requests) == 0) {
-        return base_result;
+        return invoke_model(std::forward<Model>(model), input, run);
     } else {
-        auto outputs = std::apply([&](auto&... request) {
-            return std::tuple{detail::evaluate_request(
-                request, base_result, input, run)...};
-        }, request_tuple);
+        auto frame = make_prediction_frame(
+            hold(std::forward<Model>(model)), hold(std::forward<Input>(input)),
+            std::tuple<held_t<Requests&&>...>{
+                hold(std::forward<Requests>(requests))...},
+            std::move(lifetime_anchor));
+        frame->evaluate_base(run);
+        std::shared_ptr<const void> owner = frame;
+        auto outputs = frame->template evaluate_in_order<0>(run, owner);
         if constexpr (sizeof...(Requests) == 1) {
             return std::get<0>(std::move(outputs));
         } else {
             return outputs;
         }
     }
+}
+
+} // namespace detail
+
+// Invoke the base exactly once, then run each concrete query request against
+// that shared result. The safe query path uses one shared typed lifetime frame
+// per batched invocation, so predictions may return borrowed views into the
+// model, input, base result, requests, or selector-produced sources. Lvalue
+// dependencies remain borrowed and must outlive the predictions. One request
+// returns its Prediction directly; multiple requests return a fixed tuple.
+// This costs one shared frame allocation per batch, not one owner per result.
+template<class Model, class Input, class... Requests>
+auto predict(Model&& model, Input&& input, Run run, Requests&&... requests) {
+    return detail::predict_with_lifetime_anchor({}, std::forward<Model>(model),
+        std::forward<Input>(input), run, std::forward<Requests>(requests)...);
 }
 
 template<class Model, class Input, class... Requests>
@@ -357,15 +642,27 @@ auto predict_conditioned(ConditionedInvocation<Model, Input, Conditioner, Condit
     auto&& input = unhold(invocation.input());
     auto&& conditioner = unhold(invocation.conditioner());
     auto&& condition = unhold(invocation.condition());
-    decltype(auto) actual_input = [&]() -> decltype(auto) {
-        if constexpr (std::is_invocable_v<decltype(conditioner), decltype(input),
-                                          decltype(condition), Run>) {
-            return std::invoke(conditioner, input, condition, run);
-        } else {
-            return std::invoke(conditioner, input, condition);
-        }
-    }();
-    return predict(model, actual_input, run, std::forward<Requests>(requests)...);
+    decltype(auto) actual_input = invoke_conditioner(conditioner, input, condition, run);
+    // If conditioning creates a value, forward it into predict so the batched
+    // prediction frame owns it. A returned reference remains an explicit
+    // borrow of the conditioner/input's lifetime.
+    return predict(model, std::forward<decltype(actual_input)>(actual_input), run,
+                   std::forward<Requests>(requests)...);
+}
+
+template<class Invocation, class... Requests>
+auto predict_conditioned_owned(std::shared_ptr<Invocation> lifetime_anchor,
+                               Run run, Requests&&... requests) {
+    auto& invocation = *lifetime_anchor;
+    auto&& model_holder = invocation.model();
+    auto&& input = unhold(invocation.input());
+    auto&& conditioner = unhold(invocation.conditioner());
+    auto&& condition = unhold(invocation.condition());
+    decltype(auto) actual_input = invoke_conditioner(conditioner, input, condition, run);
+    return predict_with_lifetime_anchor(std::move(lifetime_anchor),
+        forward_held(model_holder),
+        std::forward<decltype(actual_input)>(actual_input), run,
+        std::forward<Requests>(requests)...);
 }
 } // namespace detail
 
@@ -374,6 +671,15 @@ auto predict(ConditionedInvocation<Model, Input, Conditioner, Condition>& invoca
              Run run, Requests&&... requests) {
     return detail::predict_conditioned(invocation, run,
                                        std::forward<Requests>(requests)...);
+}
+
+template<class Model, class Input, class Conditioner, class Condition, class... Requests>
+auto predict(ConditionedInvocation<Model, Input, Conditioner, Condition>&& invocation,
+             Run run, Requests&&... requests) {
+    using invocation_type = ConditionedInvocation<Model, Input, Conditioner, Condition>;
+    auto owner = std::make_shared<invocation_type>(std::move(invocation));
+    return detail::predict_conditioned_owned(std::move(owner), run,
+        std::forward<Requests>(requests)...);
 }
 
 } // namespace cellerator::nn

@@ -1,0 +1,21 @@
+{
+  "attempt_id": "a9298d6e-c1b7-4ce3-a762-a9bbffa55cc0",
+  "cleanup_verified": true,
+  "job_id": "3d308d91-1dd8-4a95-8be5-89b5aeeebd6a",
+  "stderr": {
+    "omitted_lines": 0,
+    "original_bytes": 0,
+    "returned_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": "",
+    "truncated": false
+  },
+  "stdout": {
+    "omitted_lines": 0,
+    "original_bytes": 2969,
+    "returned_bytes": 2969,
+    "sha256": "fab00632e105efb009c589c61bea2f437e690b58a39ddfe8316821084cc03d1c",
+    "text": "Device: Tesla V100-SXM2-16GB UUID GPU-d745da9c-7649-8334-41f1-483afa6f3206 compute 7.0\nFAIL grouped FP16/FP32 forward, VJP, empty expert, SGD: Operators taking TensorOptions cannot take a TensorOptions with options.requires_grad set as true. This isn't implemented yet.\nException raised from check_tensor_options_and_extract_memory_format at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/include/ATen/core/CheckMemoryFormat.h:9 (most recent call first):\nframe #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7fcd23d785e8 in /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so)\nframe #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, char const*) + 0x6a (0x7fcd23d0d5b6 in /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib/libc10.so)\nframe #2: <unknown function> + 0x2594f (0x5bf8bf13e94f in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #3: <unknown function> + 0x1d4da (0x5bf8bf1364da in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #4: <unknown function> + 0x1df2d (0x5bf8bf136f2d in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #5: <unknown function> + 0x12789 (0x5bf8bf12b789 in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nframe #6: <unknown function> + 0x2a1ca (0x7fccde42a1ca in /lib/x86_64-linux-gnu/libc.so.6)\nframe #7: __libc_start_main + 0x8b (0x7fccde42a28b in /lib/x86_64-linux-gnu/libc.so.6)\nframe #8: <unknown function> + 0x12aa5 (0x5bf8bf12baa5 in /tmp/cellerator-native-derivatives/native_nn_ops_cuda_test)\nFAIL staged CSR attention FP16/FP32 forward and q/k/v VJP at V=1,2,33: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL empty CSR neighborhoods and zero-query tensors: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL attention outstanding/repeated graphs and first-order boundary: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL attention original tensor and CSR version checks: native staged CSR attention forward: no kernel image is available for execution on the device\nPASS two outstanding grouped graphs and retained repeated backward\nPASS explicit first-order boundary\nPASS original noncontiguous tensor version check\nFAIL non-default stream, dropped handles and allocator churn: native staged CSR attention forward: no kernel image is available for execution on the device\nFAIL cross-stream attention allocator ownership and VJP: native staged CSR attention forward: no kernel image is available for execution on the device\nPASS external from_blob inference and disposed-graph event retention\nCUDA adapter qualification: 4 passed, 7 failed\nCUDA adapter qualification failed: one or more CUDA qualification cases failed\n",
+    "truncated": false
+  }
+}

@@ -4,6 +4,7 @@
 #include <Cellerator/nn/layers.hh>
 
 #include <ATen/ATen.h>
+#include <torch/optim.h>
 
 #include <cassert>
 #include <stdexcept>
@@ -28,6 +29,14 @@ int main() {
     assert(owner.get(projection.parameters().weight_id).unsafeGetTensorImpl()
            == projection.weight().unsafeGetTensorImpl());
     assert(owner.torch_parameters().size() == 2);
+
+    torch::optim::SGD optimizer(owner.torch_parameters(),
+                                torch::optim::SGDOptions(0.05));
+    const auto weight_before_step = projection.weight().clone();
+    optimizer.zero_grad();
+    projection(input).sum().backward();
+    optimizer.step();
+    assert(!at::equal(weight_before_step, projection.weight()));
 
     Linear no_bias(group, 3, 4, false);
     assert(!no_bias.bias().defined());

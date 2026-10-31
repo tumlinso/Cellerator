@@ -61,6 +61,14 @@ inline void validate_step_clock(double time, double dt) {
 inline void validate_result_clock(const std::optional<double>& time) {
     if (time && !std::isfinite(*time)) throw std::invalid_argument("result time must be finite");
 }
+
+// Generic Cell resolves this live provider on each access, so the inherited
+// information/data view always follows the state adopted by a transition.
+template<class State>
+struct CurrentStateView {
+    std::shared_ptr<const State> current;
+    const State& operator()() const noexcept { return *current; }
+};
 } // namespace detail
 
 // Explicit state-transition behavior and parameter ownership. Generic learned
@@ -122,26 +130,18 @@ auto make_dynamical_model(Dynamics dynamics,
     return std::make_shared<model_type>(std::move(dynamics), std::move(parameters), std::move(observation));
 }
 
-// Source held by a DynamicalCell. Generic Cell resolves it on each access, so
-// an inherited information/data view always follows the adopted state.
-template<class State>
-struct CurrentStateView {
-    std::shared_ptr<const State> current;
-    const State& operator()() const noexcept { return *current; }
-};
-
 // State, clock, observation, and transition behavior are opt-in through this
 // specialized Cell. Results remain immutable snapshots and may hold move-only
 // state without copying it.
 template<class ModelType, class Identity = std::uint64_t>
 class DynamicalCell final
-    : public Cell<std::shared_ptr<CurrentStateView<typename ModelType::state_type>>, Identity> {
+    : public Cell<std::shared_ptr<detail::CurrentStateView<typename ModelType::state_type>>, Identity> {
 public:
     using state_type = typename ModelType::state_type;
     using context_type = typename ModelType::context_type;
     using result_type = typename ModelType::result_type;
     using identity_type = Identity;
-    using state_view_type = CurrentStateView<state_type>;
+    using state_view_type = detail::CurrentStateView<state_type>;
     using base_type = Cell<std::shared_ptr<state_view_type>, Identity>;
 
     DynamicalCell(std::shared_ptr<const ModelType> model, state_type state,

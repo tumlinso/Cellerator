@@ -39,6 +39,14 @@ struct AttentionParameters {
     AttentionParameters(ParameterGroup group, std::int64_t width);
 };
 
+// Projected relation-restricted attention, used by both language frontends.
+// q[Q,H,D], k[N,H,D], v[N,H,V]; rows/columns are validated device occurrence
+// indices from prepared support or an explicitly validated raw CSR path.
+at::Tensor sparse_attention(
+    const at::Tensor& q, const at::Tensor& k, const at::Tensor& v,
+    const at::Tensor& rows, const at::Tensor& columns,
+    double scale, double dropout = 0.0, Run run = {});
+
 at::Tensor relation_attention(
     const at::Tensor& source, const at::Tensor& target,
     const AttentionParameters& parameters, const AttentionOptions& options,

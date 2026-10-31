@@ -1,0 +1,21 @@
+{
+  "attempt_id": "7d1055e4-c264-42d1-b223-bf92fc23bd83",
+  "cleanup_verified": true,
+  "job_id": "bfbe6b36-52b7-4fba-b0db-961b9dbbc8eb",
+  "stderr": {
+    "omitted_lines": 0,
+    "original_bytes": 0,
+    "returned_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": "",
+    "truncated": false
+  },
+  "stdout": {
+    "omitted_lines": 0,
+    "original_bytes": 837,
+    "returned_bytes": 837,
+    "sha256": "6138c0fb257eb5c51c8aabac38422e1ba8577f2ec8afc86ed4701efd40d0cdf9",
+    "text": "========= COMPUTE-SANITIZER\nDevice: Tesla V100-SXM2-16GB UUID GPU-d745da9c-7649-8334-41f1-483afa6f3206 compute 7.0\nPASS grouped FP16/FP32 forward, VJP, empty expert, SGD\nPASS staged CSR attention FP16/FP32 forward and q/k/v VJP at V=1,2,33\nPASS empty CSR neighborhoods and zero-query tensors\nPASS attention outstanding/repeated graphs and first-order boundary\nPASS attention original tensor and CSR version checks\nPASS two outstanding grouped graphs and retained repeated backward\nPASS explicit first-order boundary\nPASS original noncontiguous tensor version check\nPASS non-default stream, dropped handles and allocator churn\nSKIP two host-gated async-submission fixtures under sanitizer launch instrumentation; required in normal qualification\nCUDA adapter qualification: 9 passed, 0 failed, 2 skipped\n========= ERROR SUMMARY: 0 errors\n",
+    "truncated": false
+  }
+}

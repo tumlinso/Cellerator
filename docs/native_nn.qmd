@@ -1,0 +1,285 @@
+---
+title: "Native C++ biological neural-network foundation"
+---
+
+This page documents the current native C++ modeling surface in the optional
+`Cellerator::nn` component. It complements the
+[Python-facing NN foundation guide](nn_foundation.qmd); the C++ API is designed
+for native model authoring rather than generated from Python classes. Both sit
+within Cellerator's [biological machine-learning scope](scope.qmd) and
+[modeling architecture](architecture.qmd#cpp-and-python-modeling).
+
+The native component uses C++20 and ATen/LibTorch tensors. Python is optional,
+but this is not a no-Torch library: LibTorch supplies tensor operations and can
+provide ordinary optimizers and autograd. Native models compose ordinary C++
+types and can return any result type their callers need.
+
+## Author a model as an ordinary C++ type
+
+A model can be a struct with an `operator()` and concrete components. There is
+no required model superclass, `torch::nn::Module`, member walk, parameter
+registration, or universal tensor-valued forward result. The reference
+[`ExpressionReferenceModel`](../examples/native_nn/reference_models.hh)
+contains explicit `Parameters`, groups, a feature encoder, attention, a linear
+projection, and a target-bound readout. Its base call keeps the composition
+visible:
+
+```cpp
+auto encoded = encoder(
+    nn::FeatureInput{ids, values, observed, std::nullopt}, run);
+auto features = encoded + interactions(encoded, nn::AttentionLayout{}, run);
+auto expression = expression_projection(features, run).squeeze(-1);
+auto pooled = nn::mean_by_group(
+    features.reshape({features.size(0) * features.size(1), width}),
+    repeated_group_offsets(features.size(0), features.size(1)));
+return ExpressionResult{
+    std::move(expression), std::move(features), std::move(pooled),
+    feature_binding.canonical_ids(), batch.sample_ids};
+```
+
+Here `ExpressionResult` is a model-specific C++ record with expression values
+`[samples, features]`, per-feature representations `[samples, features, width]`,
+a caller-selected pooled view `[samples, width]`, and feature/sample identities.
+Returning it does not require wrapping it in
+`nn::Prediction`. That wrapper is available when a boundary needs typed query
+labels. The complete expression and event-history compositions are in the
+[reference models](../examples/native_nn/reference_models.hh), with their
+small CPU training loops in [`train.cc`](../examples/native_nn/train.cc). The
+event-history model builds packed `[START, e0, ..., e(n-2)]` inputs, keeps
+repeated event occurrences distinct, applies a prepared causal relation, and
+returns packed logits plus per-history features. Empty histories retain a START
+representation but have no next-event target.
+
+## Make parameter ownership explicit
+
+[`parameters.hh`](../include/Cellerator/nn/parameters.hh) defines `nn::Parameters`
+as the owner of parameter slots. Components allocate through cheap, copyable
+`nn::ParameterGroup` handles; groups can be kept separate, frozen, or made
+trainable explicitly. Slot IDs and structural layout are available for
+inspection, and tied slots resolve to the same leaf tensor. Nothing discovers
+parameters by walking arbitrary model fields.
+
+The reference training code passes the owner's unique leaf tensors to an
+ordinary Torch optimizer:
+
+```cpp
+torch::optim::Adam optimizer(
+    model.parameters.torch_parameters(), torch::optim::AdamOptions(0.025));
+for (std::int64_t step = 0; step < steps; ++step) {
+    optimizer.zero_grad();
+    const auto loss = expression_loss(model, batch, true);
+    if (!loss) throw std::runtime_error("expression supervision disappeared");
+    loss->backward();
+    optimizer.step();
+}
+```
+
+`nn::Run{true}` selects training behavior such as dropout. It does not enable
+or disable autograd; gradient recording and optimizer steps remain controlled
+by the normal Torch mechanisms. `ParameterGroup::set_trainable(false)` freezes
+that group's leaves while leaving gradients through the computation to inputs
+connected. `torch_parameters()` returns each distinct owner leaf once, in slot
+order, including frozen leaves.
+
+`ParameterGroup::parameter_ids()` exposes a borrowed span of that group's owner
+slots; `group.torch_parameters()` selects its unique leaves for an optimizer.
+Group checkpoint overloads save and restore just those leaves using local slot
+IDs. Intentionally tied leaves remain shared with any other groups. Adding an
+existing parameter adopts the same leaf handle and rejects implicit device or
+dtype conversions; detach, cast, and placement choices are explicit.
+
+Several functional forms accept borrowed tensors instead of allocating slots:
+[`layers.hh`](../include/Cellerator/nn/layers.hh) exposes
+`nn::LinearParameters`, which can refer to caller-owned weight and bias tensors;
+[`features.hh`](../include/Cellerator/nn/features.hh) and
+[`attention.hh`](../include/Cellerator/nn/attention.hh) provide corresponding
+functional parameter records. These calls do not move, clone, or register the
+borrowed tensors. The caller keeps their ownership and lifetime.
+By contrast, `Parameters` owns its slots, `PreparedRelation` copies its host CSR
+structure and owns its realized device buffers, and `PreparedTargets` owns its
+prepared index tensors. Query payload feature IDs and observation coordinates
+are borrowed views; keep their declarations alive while using a result built
+from an lvalue request. An rvalue request is retained by the returned payload,
+though any lvalue objects referenced by that request must still outlive it.
+
+The queried `predict` path retains one typed lifetime frame per batched call.
+It holds the base result, rvalue model/input/request values, selector-produced
+values, and user-defined full-head results whose gathers may return borrowed
+views. Multiple predictions share that frame; there is no per-prediction owner
+allocation. An rvalue conditioned invocation needs one additional retained
+owner because a conditioner can return a view into its input even by value.
+Lvalue dependencies remain caller-owned. Direct model and decoder composition
+avoids these retention allocations and leaves result lifetimes explicit; normal
+numerical operations still have their ordinary allocation costs.
+
+## Bind biological identities at the boundary
+
+[`FeatureBinding`](../include/Cellerator/biology/feature_binding.hh) maps
+canonical feature identities to model rows. A prepared alignment separately
+records source-column positions, model indices, canonical indices when
+supplied, and optional physical positions.
+`FeatureInput::ids` are numerical model rows; they are not canonical IDs. The
+caller prepares the binding and aligns measurements before passing tensors to
+the encoder. This keeps source order, canonical biological identity, model
+index, repeated occurrence, and physical position distinct.
+
+`nn::FeatureEncoder` combines model-row embeddings with optional values,
+observation status, and aligned attributes. Its `FeatureInput` explicitly
+contains `ids`, optional `values`, optional Boolean `observed`, and optional
+`attributes`. It does not infer aliases, normalize measurements, rank features,
+or assign biological meaning to integer rows.
+
+For ordered or repeated participants, use
+[`OccurrenceCoordinates`](../include/Cellerator/biology/coordinates.hh).
+Repeated labels may denote distinct
+occurrences; group offsets, an optional declared axis, structural generation,
+and physical positions are separate coordinates. Its order token identifies
+that exact declaration, so equal tensor extents do not imply compatible
+biological order.
+
+[`PreparedRelation`](../include/Cellerator/nn/relations.hh) binds CSR support
+to source and target occurrence-order tokens, group declarations, structural
+generation, and an explicit device.
+CSR rows address target occurrences and columns address source occurrences.
+Preparation owns copies of host structure and can explicitly realize it on a
+device with `.to(device)`; duplicate edges and empty neighborhoods are
+retained. `.causal()` constructs a prefix-only relation while preserving its
+declared endpoints. A change to endpoint order, topology, grouping, generation,
+or device requires a compatible prepared relation; changes to feature values
+alone do not redefine that structure.
+
+## Compose interactions, readouts, and learning questions
+
+[`attention.hh`](../include/Cellerator/nn/attention.hh) defines
+`nn::RelationAttention`, which supports dense grouped layouts and prepared
+relations. The default `AttentionKernel::aten` implementation is differentiable
+ATen; `AttentionKernel::cellerator_csr` opts into the staged CSR CUDA kernel
+described under [backend limits](#native-operations-and-limits).
+`nn::InteractionPrograms` adds learned queries over features and can use a
+caller-prepared overlapping relation.
+[`programs.hh`](../include/Cellerator/nn/programs.hh) defines this composition
+and `nn::GatedInteractor`, which supplies a separate composition for
+independently gated participant occurrences. These components compute the
+relationships the caller declares; they do not infer a hard regulatory
+topology or establish causal interpretation.
+
+Readouts are also concrete values. `nn::readout(decoder, selector, binding)`
+combines a decoder with a selector for the model result and a target binding.
+The selector can be a member pointer, as in the example below.
+[`query.hh`](../include/Cellerator/nn/query.hh) provides the typed request
+composer. A `query` request supplies prepared target identities and
+`nn::ObservationCoordinates`; `nn::predict` invokes the base model once and
+evaluates the requested readouts against that same result:
+
+```cpp
+auto view = nn::readout(model.atac_readout,
+                        &ex::ExpressionResult::pooled,
+                        model.atac_binding);
+auto targets = model.atac_binding.prepare(
+    model.atac_binding.canonical_ids());
+auto request = nn::query(view, targets, coordinates);
+auto prediction = nn::predict(model, batch, nn::Run{training}, request);
+```
+
+For repeated queries on a device, `nn::prepare_targets(binding, requested_ids,
+device)` creates `PreparedTargets` with reusable model-index and output-column
+tensors. A plain `binding.prepare(...)` is a host alignment; the direct
+`FeatureReadout` overload materializes its index tensor during each call.
+Calling a `Readout` directly returns the decoder's value type. The optional
+`Prediction` wrapper is added at the query boundary by `nn::predict`.
+
+[`readouts.hh`](../include/Cellerator/nn/readouts.hh) implements
+`FeatureReadout`, a query-capable head that selects the requested target
+embedding rows and computes those outputs. A conventional full-output head can
+instead compute all outputs and gather requested columns afterward. The
+returned `Prediction<Values, Payload>` keeps the head's value type and adds
+optional feature and observation coordinates; ordinary model calls remain free
+to return custom types.
+
+`nn::conditioned(model, input, conditioner, condition)` makes numerical
+conditioning an explicit call: the conditioner receives the input and
+condition and produces the actual input passed to the model. Descriptive
+observation coordinates only label predictions; they are not silently used as
+conditioning. For tensor-valued predictions,
+`align_prediction_targets` aligns target feature IDs and sample/window groups,
+and `categorical_target_columns` maps event labels to prediction class columns.
+[`supervision.hh`](../include/Cellerator/nn/supervision.hh) provides these
+alignment helpers. `reduce_prediction_loss` requires a declared
+`SupervisionUnit::observation` or `SupervisionUnit::cell`. Observation
+reduction weights valid scalar loss terms equally; cell reduction pools valid
+terms within each physical cell and then weights valid cells equally, requiring
+physical cell IDs separately from sample/window IDs. These helpers align or
+reduce a caller-defined objective rather than choosing one for every model.
+
+The [training example](../examples/native_nn/train.cc) shows ordinary optimizer
+loops for masked expression prediction, next-event prediction, and auxiliary
+ATAC readouts with either a frozen or jointly trained base. Its fixtures are
+synthetic examples of API composition, not biological validation or a
+prescribed model architecture.
+
+## Native operations and limits
+
+The focused numerical adapters declared in
+[`ops.hh`](../include/Cellerator/nn/ops.hh) retain narrow contracts:
+
+- `product2_cpu` is CPU FP32 over a one-dimensional input, coefficients, and
+  int64 index arrays; it supplies first-order gradients only.
+- `grouped_linear_cuda` takes CUDA FP16 or FP32 input and expert weights plus
+  host row offsets; empty expert segments are supported and autograd is
+  first-order only.
+- Staged CSR scaled-dot-product attention is an explicit CUDA path with matching
+  FP16/FP32 payloads, FP32 accumulation, and first-order gradients. It currently
+  requires zero dropout. The default attention kernel remains ATen.
+
+These adapter contracts do not limit ordinary ATen compositions to the same
+shapes or derivative behavior. Source availability and a successful host build
+do not establish GPU qualification, performance improvement, or biological
+validity. The [adapter record](../planning/native-nn-foundation-2026-10-31/derivatives/REPORT.md)
+and [composition record](../planning/native-nn-foundation-2026-10-31/derivatives/COMPOSITION_REPORT.md)
+contain bounded V100 correctness/memcheck results for captured executables.
+Later host-only changes are recorded separately; this page makes no performance
+or biological claim.
+
+## Headers, CMake, and optional host modules
+
+The canonical header entry point is
+[`<Cellerator/nn.hh>`](../include/Cellerator/nn.hh), with focused declarations
+under [`include/Cellerator/nn`](../include/Cellerator/nn/) and biological
+identity types under
+[`include/Cellerator/biology`](../include/Cellerator/biology/). The optional
+C++20 `Cellerator::nn` target is independent of Python bindings but depends on
+LibTorch and the native Product2 target. A standalone CPU configure can enable
+the component and reference executable:
+
+```sh
+cmake -S . -B /tmp/cellerator-native-nn \
+  -DCELLERATOR_ENABLE_CUDA=OFF \
+  -DCELLERATOR_ENABLE_NN=ON \
+  -DCELLERATOR_ENABLE_NN_CUDA=OFF \
+  -DCELLERATOR_ENABLE_PYTHON=OFF \
+  -DCELLERATOR_ENABLE_TORCH=OFF \
+  -DCELLERATOR_BUILD_PRODUCT2=ON \
+  -DCELLERATOR_BUILD_NN_TRAIN=ON
+cmake --build /tmp/cellerator-native-nn --target cellerator_nn native_nn_train
+/tmp/cellerator-native-nn/native_nn_train
+```
+
+Configure with `Torch_DIR` or `CMAKE_PREFIX_PATH` for the local LibTorch
+installation as needed. The
+[standalone build and installed-consumer route](../planning/native-nn-foundation-2026-10-31/build/README.md)
+records the environment-specific CMake invocation. Enabling the CUDA adapters
+is separate and also requires Cellerator framework CUDA, a loaded CUDA
+toolchain, and CUDA-enabled Torch.
+
+An optional `CelleratorNNModules` package re-exports selected public declarations
+through the C++20 module [`cellerator.nn`](../modules/native/cellerator.nn.ccm);
+its separate [CMake project](../modules/native/CMakeLists.txt) is CXX-only.
+The module is a host C++ import surface, not an NVCC module entry point. Use
+the ordinary public headers in CUDA translation units. The optional module
+packaging does not change the underlying C++ types or ABI.
+
+For Python-facing behavior and its distinct implementation boundary, see the
+[Python NN foundation guide](nn_foundation.qmd). The shared goals and remaining
+modeling questions are recorded in the
+[architecture](architecture.qmd#modeling-and-neural-network-backbone); the
+code links above define the native interfaces described on this page.

@@ -1,0 +1,21 @@
+{
+  "attempt_id": "b4e92eab-0121-4ca5-a8bd-d66ad2b3fe99",
+  "cleanup_verified": true,
+  "job_id": "20018fca-9d18-4db6-aeef-9ae5f11bdb9b",
+  "stderr": {
+    "omitted_lines": 0,
+    "original_bytes": 0,
+    "returned_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": "",
+    "truncated": false
+  },
+  "stdout": {
+    "omitted_lines": 0,
+    "original_bytes": 771,
+    "returned_bytes": 771,
+    "sha256": "ba9e6cc68b0860cbc4d85c4a435e991bd74c6a9578789902394bb6236eca40b5",
+    "text": "Device: Tesla V100-SXM2-16GB UUID GPU-d745da9c-7649-8334-41f1-483afa6f3206 compute 7.0\nPASS grouped FP16/FP32 forward, VJP, empty expert, SGD\nPASS staged CSR attention FP16/FP32 forward and q/k/v VJP at V=1,2,33\nPASS empty CSR neighborhoods and zero-query tensors\nPASS attention outstanding/repeated graphs and first-order boundary\nPASS attention original tensor and CSR version checks\nPASS two outstanding grouped graphs and retained repeated backward\nPASS explicit first-order boundary\nPASS original noncontiguous tensor version check\nPASS non-default stream, dropped handles and allocator churn\nPASS cross-stream attention allocator ownership and VJP\nPASS external from_blob inference and disposed-graph event retention\nCUDA adapter qualification: 11 passed, 0 failed\n",
+    "truncated": false
+  }
+}

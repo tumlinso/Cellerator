@@ -55,6 +55,7 @@ Neither future module exports:
 - Baseplane sequence-engine implementation;
 - speculative GlassHelix scientific concepts.
 
-Until the native scan proof passes, `.hh`, `.cc`, `.cu`, and `.cuh` remain the
-only active implementation and interoperability contracts. CUDA targets do not
-import modules.
+The broader module boundaries above remain deferred. The separately qualified
+optional [`cellerator.nn`](native/README.md) host interface does not supersede
+them. `.hh`, `.cc`, `.cu`, and `.cuh` remain independent implementation and
+interoperability contracts. CUDA targets do not import named modules.

@@ -70,6 +70,15 @@ it as a cellular simulator with neural learning added through adapters.
   without making LibTorch ergonomics the public modeling API. Distinguish this
   target from current Python-facing NN capabilities; documentation is not
   permission to implement a new backend or duplicate conventional ML machinery.
+- Read the [native NN guide](docs/native_nn.qmd) for native model authoring.
+  Models and results are ordinary typed structs/callables. Parameters have an
+  explicit owner and numeric groups: do not introduce named module registration,
+  a member visitor protocol, a mandatory model superclass, or a universal tensor
+  facade. Prefer templates, primitive views, explicit extents and lifetimes, and
+  separate allocation owners. Use the optional host C++20 module interface
+  without making NVCC parse modules or forcing module tooling on header users.
+  This C++ interface targets C++ model developers/HPC users; Python supplies its
+  own approachable data and experimentation route. Bindings adapt the native API.
 - Treat `Cell`, explicit state transitions, histories, and population execution
   as optional capabilities. Static representation learning, dense attention,
   transformers, recurrent networks, conditional models, and hybrids are equally

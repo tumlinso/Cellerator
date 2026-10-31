@@ -1,0 +1,23 @@
+{
+  "git_head": "1fc450bb3d7aa0aad779bc332f9737fbcc3e85d1",
+  "files": {
+    "include/Cellerator/nn/ops.hh": "27b1a3bab72379e7d531f95ba0f7703b6eab623235e6e43ce40e30089b04d7d4",
+    "src/nn/ops_cpu.cc": "b6dfed60d8c23083cb62eeea2dfba52c9375decef674d27c3eab46f786ba4119",
+    "src/nn/ops_cuda.cc": "9296c77eb8eeb311ecb18289c5ec5ba84fbd8c6d0c81b80445d267da8bb913cc",
+    "tests/nn/native/ops_cpu.cc": "673ba1a7ab332ac9b87ce3825a7b0e8f9a175b95105fe3013798098c77b6688c",
+    "tests/nn/native/ops_cuda.cc": "678348568341f4391ca5be05d32f71dd802db8a415057027816ece9441aa5349",
+    "include/Cellerator/modeling/cuda/attention.hh": "0c2d07fb3e8608b698d5a511ca92a36f24f1ed7ce75aa3e9d2ddb3a67c0dd283",
+    "include/Cellerator/modeling/cuda/grouped_linear.hh": "0c24d60f57fb745701a0ff925bf0b4815445ca0b72c0d32b0995e96249a8bc09",
+    "include/Cellerator/modeling/cuda/runtime.hh": "e89d9bb08367a47ffdfcf99e1659f98f0246d1912905bd0b5b5d9ae08eaa374a",
+    "src/modeling/cuda/attention.cu": "75868b95070b4cb0ebb5424bb707eb68544bf023b1df34d623eeb78f242b23b3",
+    "src/modeling/cuda/grouped_linear.cu": "3725f4e212531442b13df900f351b5592258acacc4b42241a722212c41505469",
+    "src/modeling/cuda/runtime.cu": "8dec5ff0a107758bac58f0a586fa60920f70b5105e9c548a0af03eab9273065b",
+    "src/compute/operation/product2/product2.cc": "a63462b664ad15ac60b245daa963e83cc363ec98bd6c8d28921f7435e877f87a",
+    "planning/native-nn-foundation-2026-10-31/derivatives/scripts/CMakeLists.txt": "c225da9c997be73c9909fbfbebfd668766b416daeaf8f4719ca368d5ecb1db1a"
+  },
+  "binaries": {
+    "/tmp/cellerator-native-derivatives/native_nn_ops_cpu_test": "1be74657e90f85e325877e6379747e7296606b9e843dc077c31118559839d71a",
+    "/tmp/cellerator-native-derivatives/native_nn_ops_cuda_test": "7faaf644d2b5e2ce3e71ca460d964dd8d895a4dbc2778d1705cf6e56bb3b1c3e"
+  },
+  "qualification": "correctness and lifetime only; no timings"
+}

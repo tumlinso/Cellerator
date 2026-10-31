@@ -1,0 +1,39 @@
+{
+  "claim": "bounded first-order numerical/autograd/lifetime qualification only; no performance or biological validity claim",
+  "cpu": {
+    "status": "passed",
+    "log": "cpu-qualified-final.log"
+  },
+  "cuda_correctness": {
+    "job_id": "2ddb686b-d493-4bb5-bcb8-9fe7504e17eb",
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "cleanup_verified": true,
+    "receipt": "cuda-status-r5.json"
+  },
+  "cuda_memcheck": {
+    "job_id": "bfbe6b36-52b7-4fba-b0db-961b9dbbc8eb",
+    "passed": 9,
+    "failed": 0,
+    "skipped": 2,
+    "memory_errors": 0,
+    "cleanup_verified": true,
+    "receipt": "memcheck-status-r4.json",
+    "skip_reason": "host-gated asynchronous submission fixtures are incompatible with sanitizer launch instrumentation; passed in required normal mode"
+  },
+  "device_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+  "device": "Tesla V100-SXM2-16GB",
+  "architecture": "sm_70",
+  "identity": "identity-qualified-final.json",
+  "limits": [
+    "first-order native only",
+    "FP32 CPU Product2",
+    "matching FP16/FP32 CUDA storage; FP32 native accumulation",
+    "attention dropout unsupported",
+    "native allocator qualified; cudaMallocAsync not separately exercised",
+    "foreign custom deleter qualification used from_blob; no separate DLPack roundtrip",
+    "arbitrary globally installed pluggable allocators rejected",
+    "no CUDA graph capture/compiler qualification"
+  ]
+}

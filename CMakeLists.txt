@@ -123,6 +123,19 @@ include(cmake/CelleratorConditional.cmake)
 include(cmake/CelleratorGGML.cmake)
 include(cmake/CelleratorFrameworkCUDA.cmake)
 include(cmake/CelleratorNN.cmake)
+
+macro(cellerator_append_component_validation)
+    if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
+        file(APPEND "${CELLERATOR_HOST_CONFIG}"
+            "foreach(_cellerator_component IN LISTS Cellerator_FIND_COMPONENTS)\n"
+            "  if(Cellerator_FIND_REQUIRED_\${_cellerator_component} AND NOT Cellerator_\${_cellerator_component}_FOUND)\n"
+            "    set(Cellerator_FOUND FALSE)\n"
+            "    set(Cellerator_NOT_FOUND_MESSAGE \"Required Cellerator component '\${_cellerator_component}' is unavailable\")\n"
+            "  endif()\n"
+            "endforeach()\n")
+    endif()
+endmacro()
+
 # Native arithmetic families are host-capable and independent of adapters.
 add_subdirectory(src/ops/numeric)
 add_subdirectory(src/ops/matrix)
@@ -137,6 +150,7 @@ if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
             "CELLERATOR_ENABLE_TORCH requires the CUDA indexed-mechanism owner; "
             "configure with CELLERATOR_ENABLE_CUDA=AUTO or ON.")
     endif()
+    cellerator_append_component_validation()
     return()
 endif()
 set(CELLERATOR_CUDA_MODE "generic" CACHE STRING
@@ -745,14 +759,4 @@ if(CELLERATOR_ENABLE_TORCH)
     add_subdirectory(bindings/torch)
 endif()
 
-# Validate requested optional package components only after every optional
-# component has had a chance to extend CelleratorConfig.cmake.
-if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
-    file(APPEND "${CELLERATOR_HOST_CONFIG}"
-        "foreach(_cellerator_component IN LISTS Cellerator_FIND_COMPONENTS)\n"
-        "  if(Cellerator_FIND_REQUIRED_\${_cellerator_component} AND NOT Cellerator_\${_cellerator_component}_FOUND)\n"
-        "    set(Cellerator_FOUND FALSE)\n"
-        "    set(Cellerator_NOT_FOUND_MESSAGE \"Required Cellerator component '\${_cellerator_component}' is unavailable\")\n"
-        "  endif()\n"
-        "endforeach()\n")
-endif()
+cellerator_append_component_validation()

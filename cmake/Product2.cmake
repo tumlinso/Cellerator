@@ -1,5 +1,9 @@
 # Independent product2 operation: existing indexed mechanism ABI is unchanged.
-option(CELLERATOR_BUILD_PRODUCT2 "Build standalone prepared product2 operation" ${CELLERATOR_ENABLE_PYTHON})
+set(_cellerator_build_product2_default OFF)
+if(CELLERATOR_ENABLE_PYTHON OR CELLERATOR_ENABLE_NN)
+  set(_cellerator_build_product2_default ON)
+endif()
+option(CELLERATOR_BUILD_PRODUCT2 "Build standalone prepared product2 operation" ${_cellerator_build_product2_default})
 if(CELLERATOR_BUILD_PRODUCT2)
   add_library(cellerator_product2 SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/product2/product2.cc

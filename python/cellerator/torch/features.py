@@ -11,6 +11,7 @@ import torch
 from torch import Tensor, nn
 
 from cellerator.biology import FeatureBinding, PreparedAlignment
+from ._native_nn import native_nn, validate_implementation, functional_children_supported
 
 
 def _flatten_feature_ids(values):
@@ -53,6 +54,7 @@ class FeatureEncoder(nn.Module):
         value_size: int | None = 1,
         attribute_size: int | None = None,
         binding: FeatureBinding | None = None,
+        implementation: str = "auto",
     ) -> None:
         super().__init__()
         if vocabulary_size <= 0:
@@ -72,6 +74,7 @@ class FeatureEncoder(nn.Module):
         self.value_size = value_size
         self.attribute_size = attribute_size
         self.binding = binding
+        self.implementation = validate_implementation(implementation)
         self.feature_embedding = nn.Embedding(vocabulary_size, width)
         self.status_embedding = nn.Embedding(2, width)
         self.value_projection = (
@@ -103,6 +106,28 @@ class FeatureEncoder(nn.Module):
     ) -> Tensor:
         """Return an ordinary Torch tensor with shape ``[*feature_axes, width]``."""
         self._features(feature_ids)
+        native = native_nn(self.implementation)
+        if native is not None and not functional_children_supported(
+            self.feature_embedding, self.status_embedding,
+            self.value_projection, self.attribute_projection,
+        ):
+            if self.implementation == "native":
+                raise ValueError("functional native encoding requires standard unhooked children; select reference for custom modules or hooks")
+            native = None
+        if native is not None:
+            self._validate_native_input(feature_ids, values, observed, attributes)
+            return native.encode_features(
+                feature_ids,
+                values=values,
+                observed=observed,
+                attributes=attributes,
+                feature_embedding=self.feature_embedding.weight,
+                status_embedding=self.status_embedding.weight,
+                value_projection=None if self.value_projection is None else self.value_projection.weight,
+                attribute_projection=None if self.attribute_projection is None else self.attribute_projection.weight,
+                value_size=self.value_size,
+                attribute_size=self.attribute_size,
+            )
         encoded = self.feature_embedding(feature_ids.to(dtype=torch.long))
 
         if observed is None:
@@ -162,6 +187,28 @@ class FeatureEncoder(nn.Module):
                 raise TypeError("attributes and module parameters must share a dtype")
             encoded = encoded + self.attribute_projection(attributes)
         return encoded
+
+    def _validate_native_input(self, ids, values, observed, attributes):
+        """Keep Python argument errors while shared native code owns the math."""
+        if observed is not None:
+            if not isinstance(observed, Tensor) or observed.dtype != torch.bool:
+                raise TypeError("observed must be a Boolean Torch Tensor")
+            if observed.shape != ids.shape or observed.device != ids.device:
+                raise ValueError("observed must match feature ID shape and device")
+        for value, size, label in (
+            (values, self.value_size, "values"),
+            (attributes, self.attribute_size, "attributes"),
+        ):
+            if value is None:
+                continue
+            if size is None:
+                raise ValueError(f"{label} supplied without configured projection")
+            if not isinstance(value, Tensor) or not value.is_floating_point():
+                raise TypeError(f"{label} must be a floating-point Torch Tensor")
+            if value.device != ids.device:
+                raise ValueError(f"{label} must share feature ID device")
+            if value.dtype != self.feature_embedding.weight.dtype:
+                raise TypeError(f"{label} and module parameters must share a dtype")
 
     def encode_bound(
         self,

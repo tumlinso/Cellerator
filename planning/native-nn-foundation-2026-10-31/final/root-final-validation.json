@@ -1,0 +1,44 @@
+{
+  "query_header_sha256": "5a2925211bf6fb65930ce7ccd7831d79989c2da7639c973b2866a87947b289a3",
+  "installed_header_sha256": {
+    "/tmp/cellerator-native-nn-consumer.mQYDYs/install": "5a2925211bf6fb65930ce7ccd7831d79989c2da7639c973b2866a87947b289a3",
+    "/tmp/cellerator-native-nn-cuda-current-install": "5a2925211bf6fb65930ce7ccd7831d79989c2da7639c973b2866a87947b289a3"
+  },
+  "cpu_ctest": {
+    "passed": 15,
+    "failed": 0,
+    "log": "cpu-ctest-root-final.log"
+  },
+  "training_demo": {
+    "exit_code": 0,
+    "log": "native-nn-train-root-final.log"
+  },
+  "address_sanitizer": {
+    "exit_code": 0,
+    "standalone_reproducers": 3,
+    "expanded_query_test": true,
+    "log": "../lifetime/asan-final.log"
+  },
+  "installed_cpp_consumer": {
+    "passed": true,
+    "log": "installed-consumer-run-root-final.log"
+  },
+  "host_module_cpu": {
+    "passed": 1,
+    "failed": 0,
+    "log": "module-cpu-root-final.log"
+  },
+  "host_module_cuda_header_bridge": {
+    "passed": 1,
+    "failed": 0,
+    "log": "module-cuda-header-root-final.log",
+    "gpu_kernels_launched": false
+  },
+  "source_identity_record": "source-identities.json",
+  "cuda_evidence": "../derivatives/REPORT.md and COMPOSITION_REPORT.md pin separately captured executables; latest host header changes were not GPU-executed",
+  "notes": [
+    "No further source changes after final query header capture.",
+    "No commit or push by root or its subagents.",
+    "Some earlier source was committed by an external participant in the shared workspace."
+  ]
+}

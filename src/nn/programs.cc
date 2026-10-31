@@ -140,8 +140,10 @@ std::vector<std::int64_t> selected_bank_indices(
 
 at::Tensor index_tensor(const std::vector<std::int64_t>& indices,
                         const at::Tensor& reference) {
-    auto options = at::TensorOptions().dtype(at::kLong).device(reference.device());
-    return at::tensor(indices, options);
+    auto result = at::tensor(
+        indices, at::TensorOptions().dtype(at::kLong).device(at::kCPU));
+    return reference.device() == at::Device(at::kCPU)
+        ? result : result.to(reference.device());
 }
 
 void validate_context_width_and_placement(const at::Tensor& context,
@@ -266,12 +268,9 @@ void validate_gate_broadcast(const at::Tensor& contribution,
 
     const auto contribution_rank = contribution.dim();
     const auto logits_rank = gate_logits.dim();
-    const auto extra_leading = std::max<std::int64_t>(0, contribution_rank - logits_rank);
-    for (std::int64_t axis = 0; axis < extra_leading; ++axis) {
-        if (contribution.size(axis) != 1) {
-            throw std::invalid_argument(
-                "conditioner output must broadcast to gate-logit shape");
-        }
+    if (contribution_rank > logits_rank) {
+        throw std::invalid_argument(
+            "conditioner output must broadcast to gate-logit shape");
     }
     const auto shared_rank = std::min(contribution_rank, logits_rank);
     for (std::int64_t trailing = 0; trailing < shared_rank; ++trailing) {

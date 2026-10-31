@@ -14,7 +14,16 @@ The optional `celleratorModuleCompilerProbe` target preserves the successful
 direct compiler proof without placing any CUDA target on a BMI dependency
 graph. It is not represented as a successful native CMake scan.
 
-No architectural module surface is enabled until a native CMake scan and host
-consumer pass with installed repository tooling. Physical consolidation
-continues through conventional `.hh`, `.cc`, and `.cu` contracts as required by
-the remap program.
+## Native NN module, 2026-10-31
+
+The original constant-export probe remains a historical infrastructure check.
+The optional host [native NN module](native/README.md) adds a separate real
+modeling surface. Its qualification uses Clang 18, CMake 3.28, and local Ninja
+and clang-scan-deps tools, native dependency scanning, installed consumers,
+ATen/autograd, and a typed model. See the source-bound
+[module record](../planning/native-nn-foundation-2026-10-31/modules/qualification.md)
+for the actual supported configurations and toolchain limits.
+
+This does not qualify the broader deferred state/execution/interop modules.
+Conventional `.hh`, `.cc`, and `.cu` contracts remain independently usable;
+CUDA translation units do not import named modules.

@@ -5,7 +5,7 @@ project(CelleratorNNModules VERSION 0.1.0 LANGUAGES CXX)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-find_package(Cellerator CONFIG REQUIRED)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS nn)
 if(NOT TARGET Cellerator::nn)
     message(FATAL_ERROR
         "The installed Cellerator package does not export Cellerator::nn")

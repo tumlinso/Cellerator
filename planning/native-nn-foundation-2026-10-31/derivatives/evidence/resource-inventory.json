@@ -1,0 +1,438 @@
+{
+  "inventory_warnings": [],
+  "resources": [
+    {
+      "availability_reason": null,
+      "available": true,
+      "external_lease": {
+        "adapter_id": "nvidia-smi",
+        "admission_memory_bytes": 15236333568,
+        "mode": "exclusive_gpu_quiescence",
+        "release_method": "repeatable_read_only_observation",
+        "required_allocation_mode": "exclusive",
+        "supported": true
+      },
+      "last_seen_at": "2026-10-31T15:39:27.097594+00:00",
+      "resource": {
+        "attributes": {
+          "index_observation": 0,
+          "inventory_observed_at": "2026-10-31T15:39:26.996939+00:00",
+          "managed_process_ids": [],
+          "memory_enforcement": "accounting_only",
+          "memory_free_bytes_observation": 16929259520,
+          "name": "Tesla V100-SXM2-16GB",
+          "pci_bus_id": "00000000:02:00.0",
+          "process_count_observation": 0,
+          "process_identity_unknown_count": 0,
+          "process_mapping_state": "unknown",
+          "process_observed_at": "2026-10-31T15:39:26.996939+00:00",
+          "process_telemetry": "compute-apps-visible",
+          "process_telemetry_state": "observed",
+          "processes_observation": [],
+          "unmanaged_process_count": 0,
+          "utilization_percent_observation": 0,
+          "uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+        },
+        "capabilities": [
+          "memory-accounting-only",
+          "shared-admission",
+          "nvidia-smi-compute-process-telemetry",
+          "whole-device-exclusive-admission"
+        ],
+        "capacities": {
+          "memory_bytes": 17179869184.0
+        },
+        "conflict_domains": [
+          "gpu-exclusive:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+        ],
+        "host_id": "testlsserver",
+        "kind": "gpu",
+        "resource_id": "gpu:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        "schema_version": 1,
+        "topology": {
+          "links": [
+            {
+              "relation": "PHB",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "type": "pcie"
+            },
+            {
+              "relation": "NV6",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "type": "nvlink"
+            },
+            {
+              "relation": "SYS",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "sys"
+            }
+          ],
+          "pci_bus_id": "00000000:02:00.0",
+          "topology_state": "observed"
+        }
+      },
+      "source_adapter_id": "nvidia-smi"
+    },
+    {
+      "availability_reason": null,
+      "available": true,
+      "external_lease": {
+        "adapter_id": "nvidia-smi",
+        "admission_memory_bytes": 15236333568,
+        "mode": "exclusive_gpu_quiescence",
+        "release_method": "repeatable_read_only_observation",
+        "required_allocation_mode": "exclusive",
+        "supported": true
+      },
+      "last_seen_at": "2026-10-31T15:39:27.097594+00:00",
+      "resource": {
+        "attributes": {
+          "index_observation": 3,
+          "inventory_observed_at": "2026-10-31T15:39:26.996939+00:00",
+          "managed_process_ids": [],
+          "memory_enforcement": "accounting_only",
+          "memory_free_bytes_observation": 16929259520,
+          "name": "Tesla V100-SXM2-16GB",
+          "pci_bus_id": "00000000:84:00.0",
+          "process_count_observation": 0,
+          "process_identity_unknown_count": 0,
+          "process_mapping_state": "unknown",
+          "process_observed_at": "2026-10-31T15:39:26.996939+00:00",
+          "process_telemetry": "compute-apps-visible",
+          "process_telemetry_state": "observed",
+          "processes_observation": [],
+          "unmanaged_process_count": 0,
+          "utilization_percent_observation": 0,
+          "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        },
+        "capabilities": [
+          "memory-accounting-only",
+          "shared-admission",
+          "nvidia-smi-compute-process-telemetry",
+          "whole-device-exclusive-admission"
+        ],
+        "capacities": {
+          "memory_bytes": 17179869184.0
+        },
+        "conflict_domains": [
+          "gpu-exclusive:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "host_id": "testlsserver",
+        "kind": "gpu",
+        "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+        "schema_version": 1,
+        "topology": {
+          "links": [
+            {
+              "relation": "SYS",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "sys"
+            },
+            {
+              "relation": "NV6",
+              "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "nvlink"
+            },
+            {
+              "relation": "PHB",
+              "source_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "pcie"
+            }
+          ],
+          "pci_bus_id": "00000000:84:00.0",
+          "topology_state": "observed"
+        }
+      },
+      "source_adapter_id": "nvidia-smi"
+    },
+    {
+      "availability_reason": null,
+      "available": true,
+      "external_lease": {
+        "adapter_id": "nvidia-smi",
+        "admission_memory_bytes": 15236333568,
+        "mode": "exclusive_gpu_quiescence",
+        "release_method": "repeatable_read_only_observation",
+        "required_allocation_mode": "exclusive",
+        "supported": true
+      },
+      "last_seen_at": "2026-10-31T15:39:27.097594+00:00",
+      "resource": {
+        "attributes": {
+          "index_observation": 1,
+          "inventory_observed_at": "2026-10-31T15:39:26.996939+00:00",
+          "managed_process_ids": [],
+          "memory_enforcement": "accounting_only",
+          "memory_free_bytes_observation": 16929259520,
+          "name": "Tesla V100-SXM2-16GB",
+          "pci_bus_id": "00000000:03:00.0",
+          "process_count_observation": 0,
+          "process_identity_unknown_count": 0,
+          "process_mapping_state": "unknown",
+          "process_observed_at": "2026-10-31T15:39:26.996939+00:00",
+          "process_telemetry": "compute-apps-visible",
+          "process_telemetry_state": "observed",
+          "processes_observation": [],
+          "unmanaged_process_count": 0,
+          "utilization_percent_observation": 0,
+          "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        "capabilities": [
+          "memory-accounting-only",
+          "shared-admission",
+          "nvidia-smi-compute-process-telemetry",
+          "whole-device-exclusive-admission"
+        ],
+        "capacities": {
+          "memory_bytes": 17179869184.0
+        },
+        "conflict_domains": [
+          "gpu-exclusive:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        ],
+        "host_id": "testlsserver",
+        "kind": "gpu",
+        "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+        "schema_version": 1,
+        "topology": {
+          "links": [
+            {
+              "relation": "PHB",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "type": "pcie"
+            },
+            {
+              "relation": "SYS",
+              "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "type": "sys"
+            },
+            {
+              "relation": "NV6",
+              "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "nvlink"
+            }
+          ],
+          "pci_bus_id": "00000000:03:00.0",
+          "topology_state": "observed"
+        }
+      },
+      "source_adapter_id": "nvidia-smi"
+    },
+    {
+      "availability_reason": null,
+      "available": true,
+      "external_lease": {
+        "adapter_id": "nvidia-smi",
+        "admission_memory_bytes": 15236333568,
+        "mode": "exclusive_gpu_quiescence",
+        "release_method": "repeatable_read_only_observation",
+        "required_allocation_mode": "exclusive",
+        "supported": true
+      },
+      "last_seen_at": "2026-10-31T15:39:27.097594+00:00",
+      "resource": {
+        "attributes": {
+          "index_observation": 2,
+          "inventory_observed_at": "2026-10-31T15:39:26.996939+00:00",
+          "managed_process_ids": [],
+          "memory_enforcement": "accounting_only",
+          "memory_free_bytes_observation": 16929259520,
+          "name": "Tesla V100-SXM2-16GB",
+          "pci_bus_id": "00000000:83:00.0",
+          "process_count_observation": 0,
+          "process_identity_unknown_count": 0,
+          "process_mapping_state": "unknown",
+          "process_observed_at": "2026-10-31T15:39:26.996939+00:00",
+          "process_telemetry": "compute-apps-visible",
+          "process_telemetry_state": "observed",
+          "processes_observation": [],
+          "unmanaged_process_count": 0,
+          "utilization_percent_observation": 0,
+          "uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        },
+        "capabilities": [
+          "memory-accounting-only",
+          "shared-admission",
+          "nvidia-smi-compute-process-telemetry",
+          "whole-device-exclusive-admission"
+        ],
+        "capacities": {
+          "memory_bytes": 17179869184.0
+        },
+        "conflict_domains": [
+          "gpu-exclusive:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+        ],
+        "host_id": "testlsserver",
+        "kind": "gpu",
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        "schema_version": 1,
+        "topology": {
+          "links": [
+            {
+              "relation": "NV6",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "type": "nvlink"
+            },
+            {
+              "relation": "SYS",
+              "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "type": "sys"
+            },
+            {
+              "relation": "PHB",
+              "source_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "pcie"
+            }
+          ],
+          "pci_bus_id": "00000000:83:00.0",
+          "topology_state": "observed"
+        }
+      },
+      "source_adapter_id": "nvidia-smi"
+    },
+    {
+      "availability_reason": null,
+      "available": true,
+      "external_lease": {
+        "adapter_id": "linux-host",
+        "enforcement": "per-job systemd cgroup ceilings; host admission is ledger accounting",
+        "mode": "scheduler_supervised_jobs_only",
+        "supported": true,
+        "unmanaged_consumers": "unsupported",
+        "usage": "supervised"
+      },
+      "last_seen_at": "2026-10-31T15:39:26.753758+00:00",
+      "resource": {
+        "attributes": {
+          "observed_logical_cpus": 80,
+          "scope": "whole host"
+        },
+        "capabilities": [
+          "systemd-cgroup-request-dependent",
+          "supervised-lease-job-only"
+        ],
+        "capacities": {
+          "cores": 80.0
+        },
+        "conflict_domains": [],
+        "host_id": "testlsserver",
+        "kind": "cpu",
+        "resource_id": "host:testlsserver:cpu",
+        "schema_version": 1,
+        "topology": {}
+      },
+      "source_adapter_id": "linux-host"
+    },
+    {
+      "availability_reason": null,
+      "available": true,
+      "external_lease": {
+        "reason": "trusted_reclamation_adapter_unavailable",
+        "supported": false
+      },
+      "last_seen_at": "2026-10-31T15:39:27.097594+00:00",
+      "resource": {
+        "attributes": {
+          "closure": "complete-observed-gpu-inventory",
+          "contention_established": false,
+          "domain_id": "host:testlsserver:domain:gpu-topology:9be0ea407f2b0f0f",
+          "enforcement": "scheduler-admission-only",
+          "evidence": "nvidia-smi-topo-m",
+          "member_resource_ids": [
+            "gpu:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+            "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+            "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+            "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          ],
+          "relations": [
+            {
+              "relation": "PHB",
+              "source": "GPU0",
+              "target": "GPU1"
+            },
+            {
+              "relation": "NV6",
+              "source": "GPU0",
+              "target": "GPU2"
+            },
+            {
+              "relation": "NV6",
+              "source": "GPU1",
+              "target": "GPU3"
+            },
+            {
+              "relation": "PHB",
+              "source": "GPU2",
+              "target": "GPU3"
+            }
+          ]
+        },
+        "capabilities": [
+          "exclusive-scheduler-admission",
+          "topology-derived",
+          "not-hardware-enforced"
+        ],
+        "capacities": {
+          "slots": 1.0
+        },
+        "conflict_domains": [],
+        "host_id": "testlsserver",
+        "kind": "isolation",
+        "resource_id": "host:testlsserver:domain:gpu-topology:9be0ea407f2b0f0f",
+        "schema_version": 1,
+        "topology": {
+          "member_resource_ids": [
+            "gpu:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+            "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+            "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+            "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          ]
+        }
+      },
+      "source_adapter_id": "nvidia-smi"
+    },
+    {
+      "availability_reason": null,
+      "available": true,
+      "external_lease": {
+        "adapter_id": "linux-host",
+        "enforcement": "per-job systemd cgroup ceilings; host admission is ledger accounting",
+        "mode": "scheduler_supervised_jobs_only",
+        "supported": true,
+        "unmanaged_consumers": "unsupported",
+        "usage": "supervised"
+      },
+      "last_seen_at": "2026-10-31T15:39:26.753758+00:00",
+      "resource": {
+        "attributes": {
+          "available_bytes": 53096173568
+        },
+        "capabilities": [
+          "systemd-cgroup-request-dependent",
+          "supervised-lease-job-only"
+        ],
+        "capacities": {
+          "bytes": 67362435072.0
+        },
+        "conflict_domains": [],
+        "host_id": "testlsserver",
+        "kind": "memory",
+        "resource_id": "host:testlsserver:memory",
+        "schema_version": 1,
+        "topology": {}
+      },
+      "source_adapter_id": "linux-host"
+    }
+  ]
+}

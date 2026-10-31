@@ -7,6 +7,9 @@
 #include <torch/csrc/autograd/custom_function.h>
 #include <algorithm>
 #include <cmath>
+#include <condition_variable>
+#include <deque>
+#include <thread>
 #include <memory>
 #include <mutex>
 
@@ -17,6 +20,9 @@ using torch::autograd::AutogradContext;
 using torch::autograd::variable_list;
 
 void payload(const at::Tensor& t, const char* name) {
+    const auto backend = c10::cuda::CUDACachingAllocator::name();
+    TORCH_CHECK(backend == "native" || backend == "cudaMallocAsync",
+                "native NN adapters require the Torch native or cudaMallocAsync allocator backend");
     TORCH_CHECK(t.is_cuda() && t.layout() == at::kStrided &&
                 (t.scalar_type() == at::kHalf || t.scalar_type() == at::kFloat),
                 name, " must be a strided CUDA FP16 or FP32 tensor");
@@ -25,13 +31,89 @@ void matching(const at::Tensor& a, const at::Tensor& b) {
     TORCH_CHECK(a.device() == b.device() && a.scalar_type() == b.scalar_type(),
                 "native operands must have matching device and dtype");
 }
+bool stream_managed(const at::Tensor& t) {
+    const auto allocator = c10::cuda::CUDACachingAllocator::get();
+    const auto storage = t.storage();
+    const auto deleter = allocator->raw_deleter();
+    return storage.allocator() == allocator &&
+           (!deleter || storage.data_ptr().get_deleter() == deleter);
+}
 void record(const at::Tensor& t, c10::cuda::CUDAStream stream) {
-    if (t.defined() && t.is_cuda() && t.numel())
+    if (t.defined() && t.is_cuda() && t.numel() && stream_managed(t))
         c10::cuda::CUDACachingAllocator::recordStream(t.storage().data_ptr(), stream);
 }
 void record(const variable_list& tensors, c10::cuda::CUDAStream stream) {
     for (const auto& t : tensors) record(t, stream);
 }
+// recordStream only manages allocations belonging to the active Torch
+// allocator. Foreign from_blob/DLPack storage needs its actual Tensor owner
+// retained through a completion event, including no-grad and discarded graphs.
+// This private queue releases owners on a host worker, never a CUDA callback.
+class ExternalCompletions {
+    struct Pending {
+        cudaEvent_t event; int device; variable_list owners;
+        c10::intrusive_ptr<torch::CustomClassHolder> resource;
+    };
+    std::mutex mutex_;
+    std::condition_variable condition_;
+    std::deque<Pending> pending_;
+    bool stopping_ = false;
+    std::thread worker_;
+    void run() noexcept {
+        for (;;) {
+            Pending next;
+            {
+                std::unique_lock<std::mutex> lock(mutex_);
+                condition_.wait(lock,[&]{ return stopping_ || !pending_.empty(); });
+                if (pending_.empty()) return;
+                next = std::move(pending_.front()); pending_.pop_front();
+            }
+            // CUDA failures are reported by the submitting operation/stream.
+            // Even a failed completion wait must not throw on this cleanup path.
+            (void)cudaSetDevice(next.device);
+            (void)cudaEventSynchronize(next.event);
+            (void)cudaEventDestroy(next.event);
+            next.owners.clear();
+            next.resource.reset();
+        }
+    }
+public:
+    ExternalCompletions() : worker_([this]{ run(); }) {}
+    ~ExternalCompletions() {
+        { std::lock_guard<std::mutex> lock(mutex_); stopping_ = true; }
+        condition_.notify_one();
+        worker_.join(); // Drain recorded work before process/library teardown.
+    }
+    void add(cudaEvent_t event,int device,const variable_list& owners,
+             const c10::intrusive_ptr<torch::CustomClassHolder>& resource) {
+        { std::lock_guard<std::mutex> lock(mutex_); pending_.push_back({event,device,owners,resource}); }
+        condition_.notify_one();
+    }
+    static ExternalCompletions& instance() { static ExternalCompletions value; return value; }
+};
+class ExternalBorrowHold {
+    variable_list owners_;
+    c10::intrusive_ptr<torch::CustomClassHolder> resource_;
+    c10::cuda::CUDAStream stream_;
+public:
+    ExternalBorrowHold(const variable_list& tensors,c10::cuda::CUDAStream stream) : stream_(stream) {
+        for (const auto& t : tensors) {
+            if (t.defined() && t.is_cuda() && t.numel() && !stream_managed(t)) owners_.push_back(t);
+        }
+    }
+    void resource(c10::intrusive_ptr<torch::CustomClassHolder> value) { resource_ = std::move(value); }
+    ~ExternalBorrowHold() noexcept {
+        if (owners_.empty() && !resource_) return;
+        cudaEvent_t event = nullptr;
+        if (cudaEventCreateWithFlags(&event,cudaEventDisableTiming) == cudaSuccess &&
+            cudaEventRecord(event,stream_.stream()) == cudaSuccess) {
+            try { ExternalCompletions::instance().add(event,stream_.device_index(),owners_,resource_); return; }
+            catch (...) { /* Low-memory/thread failure: synchronous safe fallback. */ }
+        }
+        (void)cudaStreamSynchronize(stream_.stream());
+        if (event) (void)cudaEventDestroy(event);
+    }
+};
 native::ConstDeviceView view(const at::Tensor& t) {
     return {t.const_data_ptr(), static_cast<std::size_t>(t.nbytes()), t.get_device()};
 }
@@ -48,9 +130,14 @@ public:
                               at::Tensor weights, std::vector<std::int64_t> offsets) {
         c10::cuda::CUDAGuard guard(input.device());
         const auto stream = c10::cuda::getCurrentCUDAStream(input.get_device());
+        ExternalBorrowHold hold({input,weights},stream);
+        record({input,weights},stream); // Protect copies even if later preparation throws.
         auto x = input.contiguous(), w = weights.contiguous();
         auto y = at::empty({x.size(0), w.size(1)}, x.options());
         auto state = c10::make_intrusive<GroupState>();
+        // Handle destruction can synchronize; defer it past queued use even
+        // when no-grad discards the Function context immediately.
+        hold.resource(state);
         std::vector<native::ConstDeviceView> views;
         for (std::int64_t e = 0; e < w.size(0); ++e) views.push_back(view(w[e]));
         state->executor = std::make_unique<native::GroupedLinear>(
@@ -69,9 +156,13 @@ public:
         const auto& x = saved[2]; const auto& w = saved[3];
         c10::cuda::CUDAGuard guard(x.device());
         const auto stream = c10::cuda::getCurrentCUDAStream(x.get_device());
+        auto owners = saved; owners.push_back(gradients[0]);
+        ExternalBorrowHold hold(owners,stream);
+        record(owners,stream);
         auto dy = gradients[0].contiguous();
         auto dx = at::empty_like(x), dw = at::zeros_like(w);
         auto state = c10::static_intrusive_pointer_cast<GroupState>(ctx->saved_data["state"].toCapsule());
+        hold.resource(state);
         std::lock_guard<std::mutex> lock(state->mutex);
         std::vector<native::DeviceView> views;
         for (std::int64_t e = 0; e < w.size(0); ++e) views.push_back(writable(dw[e]));
@@ -120,6 +211,8 @@ public:
                               at::Tensor v, at::Tensor offsets, at::Tensor keys, double scale, bool prepared) {
         c10::cuda::CUDAGuard guard(q.device());
         const auto stream = c10::cuda::getCurrentCUDAStream(q.get_device());
+        ExternalBorrowHold hold({q,k,v,offsets,keys},stream);
+        record({q,k,v,offsets,keys},stream);
         auto os = prepared ? offsets : offsets.contiguous().clone();
         auto ks = prepared ? keys : keys.contiguous().clone();
         if (!prepared) {
@@ -152,6 +245,9 @@ public:
         auto s = ctx->get_saved_variables();
         c10::cuda::CUDAGuard guard(s[0].device());
         const auto stream = c10::cuda::getCurrentCUDAStream(s[0].get_device());
+        auto owners = s; owners.push_back(gradients[0]);
+        ExternalBorrowHold hold(owners,stream);
+        record(owners,stream);
         auto dy = gradients[0].permute({1,0,2}).contiguous();
         auto dq = at::empty_like(s[5],s[5].options().dtype(at::kFloat));
         auto dk = at::empty_like(s[6],s[6].options().dtype(at::kFloat));

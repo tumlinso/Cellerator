@@ -51,6 +51,10 @@ void validate_csr_shape(const CsrSupport& support,
     if (support.row_ptr.size() != static_cast<std::size_t>(target_count + 1)) {
         throw std::invalid_argument("CSR row_ptr needs one entry per target plus terminal offset");
     }
+    if (support.col_indices.size() > static_cast<std::size_t>(
+            std::numeric_limits<std::int64_t>::max())) {
+        throw std::overflow_error("CSR edge count exceeds int64 range");
+    }
     if (support.row_ptr.empty() || support.row_ptr.front() != 0) {
         throw std::invalid_argument("CSR row_ptr must start at zero");
     }

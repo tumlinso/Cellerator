@@ -96,6 +96,17 @@ endif()
 install(DIRECTORY include/Cellerator/compute/tokenization
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/compute
     COMPONENT Tokenization)
+install(FILES include/Cellerator/biology/gene_feature_binding.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/biology
+    COMPONENT Tokenization)
+install(FILES
+    include/Cellerator/biology/coordinates.hh
+    include/Cellerator/biology/feature_binding.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/biology
+    COMPONENT Tokenization)
+install(FILES include/Cellerator/execution/identity.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution
+    COMPONENT Tokenization)
 
 # Extend the package config produced by the host SDK so downstream C++ users
 # can request either the numerical operations or the full tokenizer facility.

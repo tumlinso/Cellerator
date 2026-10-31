@@ -332,13 +332,22 @@ offer the corresponding biological concepts alongside its data and training
 ecosystem. These remain motivating model families, not architectures imposed
 by the framework.
 
-The current NN foundation's generic cell binding, feature encoding, relation
-attention, and readout composer are Python-facing. Existing C++ modeling,
-tokenization, numerical, and CUDA APIs provide foundations, but do not establish
-equivalent complete native model authoring and training. Closing that gap is
-architectural work still to design and qualify. The first milestone's ordinary
-PyTorch training route remains valid; this clarification neither relabels it as
-C++ parity nor authorizes a new implementation push.
+The [native NN foundation](native_nn.qmd) now provides a C++ authoring route
+alongside the Python-facing foundation. Its parameter owner is explicit and
+separate from composition: ordinary model structs allocate through numeric
+groups, invoke concrete callable components, and return their own result types.
+It has no named module registration or member visitor protocol. Typed readout
+objects and prepared queries preserve biological meaning without requiring a
+runtime view registry or duplicated string labels in computation.
+
+Primitive borrowed views, explicit allocation owners, typed identities, and
+compile-time composition are part of the native experience. The first training
+backend uses ATen tensors honestly; Cellerator-specific data representations
+remain separate. Host C++20 modules are optional; header and CUDA translation
+units share canonical declarations and keep their established build route.
+The [dated implementation record](current_implementation.qmd) and qualification
+artifacts bound these capabilities. They do not establish complete parity for
+every backend or the framework's full biological ML ambition.
 
 ## Cells, representations, and auxiliary views
 

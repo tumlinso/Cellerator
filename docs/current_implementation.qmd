@@ -36,6 +36,32 @@ Implemented facilities have different backend and maturity boundaries. The 2026-
 
 Start with the [NN foundation guide](nn_foundation.qmd), [biological framework guide](biological_framework.qmd), [distributed execution contract](distributed_execution.qmd), and [native CUDA guide](framework_cuda.qmd). The [Python binding guide](development/python-bindings.md), [sparse-support reference](sparse_support_foundation.qmd), [tokenization reference](tokenization.qmd), and [experimental fields note](development/experimental-fields.md) retain their narrower contracts. The [source routing guide](development/routing.md) identifies owners; the [developer reference](developer_reference.qmd) describes established build and validation routes.
 
+## Native C++ NN foundation, 2026-10-31
+
+The optional `Cellerator::nn` component provides native model authoring with
+ordinary typed structs, explicit parameter ownership/numeric groups, concrete
+feature encoding and attention, typed readout/query composition, biological
+bindings, prepared relations/targets, explicit conditioning, supervision,
+overlapping programs, and manifest/checkpoint IO. Generic native cells are
+separate from the renamed `DynamicalModel`/`DynamicalCell` transition classes.
+There is no required module registry, member visitor, model superclass, or
+universal tensor wrapper. ATen/autograd and ordinary optimizers supply the
+first trainable backend; generic biological bindings and cell handles have
+Torch-free header routes.
+
+The shared optional `_nn_native` functions borrow existing Python parameters.
+Reference implementations remain available. Default native selection preserves
+customized child-module behavior and hooks through compatible frontend paths.
+Native CPU Product2, CUDA grouped linear, and explicit staged CSR attention have
+focused first-order adapters; their kernels remain unchanged.
+
+Read the [native guide](native_nn.qmd) and
+[qualification record](../planning/native-nn-foundation-2026-10-31/VALIDATION.md)
+for actual CPU, installed consumer, module, and V100 checks and their limits.
+The GPU records pin captured executables and source identities; later host-only
+group-checkpoint, query lifetime, and install/config changes do not become GPU-qualified merely
+by appearing in the same checkout. No speedup or biological validity follows.
+
 ## NN foundation evidence, 2026-10-31
 
 The biological-meaning pass connects canonical biological identities, actual

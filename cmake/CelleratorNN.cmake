@@ -12,6 +12,11 @@ endif()
 
 include("${PROJECT_SOURCE_DIR}/cmake/CelleratorTorchDependency.cmake")
 
+if(NOT TARGET Cellerator::product2)
+    message(FATAL_ERROR
+        "CELLERATOR_ENABLE_NN requires CELLERATOR_BUILD_PRODUCT2=ON for CPU derivative operations")
+endif()
+
 # JSON is used only by the native manifest/checkpoint implementation. Copy its
 # include path privately instead of exporting a header-only package target to
 # downstream NN users.
@@ -92,7 +97,9 @@ target_include_directories(cellerator_nn PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     PRIVATE ${cellerator_nn_json_includes})
 target_compile_features(cellerator_nn PUBLIC cxx_std_20)
-target_link_libraries(cellerator_nn PUBLIC ${CELLERATOR_TORCH_LINK_TARGETS})
+target_link_libraries(cellerator_nn PUBLIC
+    ${CELLERATOR_TORCH_LINK_TARGETS}
+    Cellerator::product2)
 target_link_libraries(cellerator_nn PRIVATE OpenSSL::Crypto)
 if(CELLERATOR_TORCH_CXX_OPTIONS)
     target_compile_options(cellerator_nn PUBLIC ${CELLERATOR_TORCH_CXX_OPTIONS})
@@ -101,6 +108,7 @@ if(CELLERATOR_ENABLE_NN_CUDA)
     target_link_libraries(cellerator_nn PUBLIC Cellerator::nn_cuda)
 endif()
 list(APPEND cellerator_nn_export_targets cellerator_nn)
+list(APPEND cellerator_nn_export_targets cellerator_product2)
 
 if(CELLERATOR_ENABLE_PYTHON)
     if(NOT TARGET cellerator_python_extensions)
@@ -109,6 +117,15 @@ if(CELLERATOR_ENABLE_PYTHON)
     endif()
     if(NOT EXISTS "${PROJECT_SOURCE_DIR}/bindings/nn/module.cc")
         message(FATAL_ERROR "bindings/nn/module.cc is required for the NN Python binding")
+    endif()
+    unset(CELLERATOR_NN_TORCH_PYTHON_LIBRARY CACHE)
+    find_library(CELLERATOR_NN_TORCH_PYTHON_LIBRARY
+        NAMES torch_python
+        HINTS "${CELLERATOR_TORCH_LIB_DIR}"
+        NO_DEFAULT_PATH)
+    if(NOT CELLERATOR_NN_TORCH_PYTHON_LIBRARY)
+        message(FATAL_ERROR
+            "The NN Python binding requires torch_python from the Torch installation selected by Python")
     endif()
     pybind11_add_module(cellerator_nn_python MODULE
         "${PROJECT_SOURCE_DIR}/bindings/nn/module.cc")
@@ -120,7 +137,8 @@ if(CELLERATOR_ENABLE_PYTHON)
         INSTALL_RPATH "$ORIGIN/.libs;$ORIGIN/../torch/lib")
     target_link_libraries(cellerator_nn_python PRIVATE
         Cellerator::nn
-        Python::Module)
+        Python::Module
+        ${CELLERATOR_NN_TORCH_PYTHON_LIBRARY})
     install(TARGETS cellerator_nn_python
         LIBRARY DESTINATION cellerator COMPONENT Python
         RUNTIME DESTINATION cellerator COMPONENT Python)
@@ -130,16 +148,20 @@ endif()
 option(CELLERATOR_BUILD_NN_TESTS
     "Build standalone native NN CPU tests (CUDA tests compile only when NN CUDA is enabled)"
     ${CELLERATOR_BUILD_TESTS})
-if(CELLERATOR_BUILD_TESTS AND CELLERATOR_BUILD_NN_TESTS)
+if(CELLERATOR_BUILD_NN_TESTS)
     enable_testing()
+    add_custom_target(cellerator_nn_tests)
     file(GLOB cellerator_nn_test_sources CONFIGURE_DEPENDS
         "${PROJECT_SOURCE_DIR}/tests/nn/native/*.cc")
     foreach(cellerator_nn_test_source IN LISTS cellerator_nn_test_sources)
         get_filename_component(cellerator_nn_test_name "${cellerator_nn_test_source}" NAME_WE)
-        if(cellerator_nn_test_name STREQUAL "ops_cuda" AND NOT CELLERATOR_ENABLE_NN_CUDA)
+        string(REGEX REPLACE "_test$" "" cellerator_nn_test_name
+            "${cellerator_nn_test_name}")
+        if(cellerator_nn_test_name MATCHES "^cuda_|_cuda$"
+           AND NOT CELLERATOR_ENABLE_NN_CUDA)
             continue()
         endif()
-        if(cellerator_nn_test_name STREQUAL "biology_gene_vocabulary_adapter"
+        if(cellerator_nn_test_name MATCHES "^biology_gene_vocabulary_adapter"
            AND NOT TARGET Cellerator::tokenization)
             message(STATUS
                 "Skipping NN/tokenization adapter test: enable CELLERATOR_ENABLE_TOKENIZATION")
@@ -149,16 +171,29 @@ if(CELLERATOR_BUILD_TESTS AND CELLERATOR_BUILD_NN_TESTS)
         add_executable(${cellerator_nn_test_target} "${cellerator_nn_test_source}")
         target_link_libraries(${cellerator_nn_test_target} PRIVATE Cellerator::nn)
         target_compile_features(${cellerator_nn_test_target} PRIVATE cxx_std_20)
-        if(cellerator_nn_test_name STREQUAL "biology_gene_vocabulary_adapter")
+        add_dependencies(cellerator_nn_tests ${cellerator_nn_test_target})
+        if(cellerator_nn_test_name MATCHES "^biology_gene_vocabulary_adapter")
             target_link_libraries(${cellerator_nn_test_target} PRIVATE Cellerator::tokenization)
         endif()
         add_test(NAME ${cellerator_nn_test_target} COMMAND ${cellerator_nn_test_target})
-        if(cellerator_nn_test_name STREQUAL "ops_cuda")
+        if(cellerator_nn_test_name MATCHES "^cuda_|_cuda$")
             # Compile/link coverage is available here. Running CUDA tests is
             # still an explicit scheduler-admitted operation.
             set_tests_properties(${cellerator_nn_test_target} PROPERTIES DISABLED TRUE LABELS cuda)
         endif()
     endforeach()
+endif()
+
+option(CELLERATOR_BUILD_NN_TRAIN
+    "Build the native NN CPU training example" OFF)
+if(CELLERATOR_BUILD_NN_TRAIN)
+    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/examples/native_nn/train.cc")
+        message(FATAL_ERROR
+            "CELLERATOR_BUILD_NN_TRAIN requires examples/native_nn/train.cc")
+    endif()
+    add_executable(native_nn_train "${PROJECT_SOURCE_DIR}/examples/native_nn/train.cc")
+    target_link_libraries(native_nn_train PRIVATE Cellerator::nn)
+    target_compile_features(native_nn_train PRIVATE cxx_std_20)
 endif()
 
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/nn"
@@ -169,8 +204,17 @@ install(FILES
     "${PROJECT_SOURCE_DIR}/include/Cellerator/biology/feature_binding.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/biology"
     COMPONENT NN)
+install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/execution/identity.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution"
+    COMPONENT NN)
 install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/nn.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
+    COMPONENT NN)
+install(FILES
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/cell.hh"
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/dynamical.hh"
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/model.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/modeling"
     COMPONENT NN)
 install(TARGETS ${cellerator_nn_export_targets}
     EXPORT CelleratorNNTargets
@@ -183,7 +227,7 @@ install(EXPORT CelleratorNNTargets NAMESPACE Cellerator::
 if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
     set(cellerator_nn_cuda_config "")
     if(CELLERATOR_ENABLE_NN_CUDA)
-        set(cellerator_nn_cuda_config
+        string(CONCAT cellerator_nn_cuda_config
             "  find_dependency(CUDAToolkit REQUIRED)\n"
             "  if(NOT TARGET Cellerator::framework_cuda)\n"
             "    include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFrameworkCUDATargets.cmake\")\n"
@@ -192,6 +236,12 @@ if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
     file(APPEND "${CELLERATOR_HOST_CONFIG}"
         "if(\"nn\" IN_LIST Cellerator_FIND_COMPONENTS OR \"nn_cuda\" IN_LIST Cellerator_FIND_COMPONENTS)\n"
         "  include(CMakeFindDependencyMacro)\n"
+        "  if(Torch_DIR)\n"
+        "    get_filename_component(_cellerator_torch_caffe2_dir \"\${Torch_DIR}/../Caffe2\" REALPATH)\n"
+        "    if(EXISTS \"\${_cellerator_torch_caffe2_dir}/Caffe2Config.cmake\")\n"
+        "      set(Caffe2_DIR \"\${_cellerator_torch_caffe2_dir}\" CACHE PATH \"Caffe2 package belonging to the selected Torch installation\" FORCE)\n"
+        "    endif()\n"
+        "  endif()\n"
         "  find_dependency(Torch REQUIRED)\n"
         "  find_dependency(OpenSSL REQUIRED COMPONENTS Crypto)\n"
         "${cellerator_nn_cuda_config}"

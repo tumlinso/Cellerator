@@ -16,3 +16,10 @@ The package installs the module source and CMake file-set metadata. CMake
 re-scans the installed interface source while building an importing consumer,
 so it generates the BMI with that consumer's compiler instead of requiring a
 compiler-version-specific BMI from the package.
+
+The bounded external qualification uses CMake 3.28, Clang 18, Ninja, and
+`clang-scan-deps` 18. Its NVCC bridge used NVCC 12.9 with GNU 12 as the host
+compiler. On CMake 3.28/Ninja, separate executable targets importing the same
+installed module target generated a duplicate Ninja rule; place importing
+translation units in one target or verify this behavior with another CMake
+version. The tested package does not launch CUDA code.

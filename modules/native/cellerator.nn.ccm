@@ -13,6 +13,7 @@ using ::at::Tensor;
 using ::at::Device;
 using ::at::DeviceType;
 using ::at::ScalarType;
+using ::at::TensorOptions;
 }
 
 // The module surface re-exports the canonical header declarations. Importers
@@ -56,7 +57,6 @@ using ::cellerator::nn::predict;
 using ::cellerator::nn::predict_query;
 using ::cellerator::nn::ConditionedInvocation;
 using ::cellerator::nn::conditioned;
-using ::cellerator::nn::predict_conditioned;
 using ::cellerator::nn::align_prediction_targets;
 using ::cellerator::nn::categorical_target_columns;
 using ::cellerator::nn::reduce_prediction_loss;
@@ -69,9 +69,6 @@ using ::cellerator::nn::ProgramResult;
 using ::cellerator::nn::GatedInteractor;
 
 using ::cellerator::nn::SupervisionUnit;
-using ::cellerator::nn::align_prediction_targets;
-using ::cellerator::nn::categorical_target_columns;
-using ::cellerator::nn::reduce_prediction_loss;
 
 using ::cellerator::nn::BiologicalDeclaration;
 using ::cellerator::nn::BiologicalRelationDeclaration;
@@ -83,6 +80,17 @@ using ::cellerator::nn::biological_manifest_format;
 using ::cellerator::nn::biological_manifest_version;
 using ::cellerator::nn::parse_biological_manifest;
 using ::cellerator::nn::serialize_biological_manifest;
+using ::cellerator::nn::serialize_feature_binding_descriptor;
+using ::cellerator::nn::feature_identity_json;
+using ::cellerator::nn::feature_identity_none_json;
+using ::cellerator::nn::feature_identity128_json;
+using ::cellerator::nn::feature_custom_identity_json;
+using ::cellerator::nn::feature_tuple_identity_json;
+using ::cellerator::nn::serialize_relation_descriptor;
+using ::cellerator::nn::relation_identity_json;
+using ::cellerator::nn::relation_identity_none_json;
+using ::cellerator::nn::relation_identity128_json;
+using ::cellerator::nn::relation_tuple_identity_json;
 using ::cellerator::nn::validate_biological_manifest;
 using ::cellerator::nn::save_biological_manifest;
 using ::cellerator::nn::load_biological_manifest;

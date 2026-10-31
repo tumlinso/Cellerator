@@ -1,0 +1,89 @@
+=================================================================
+==9==ERROR: AddressSanitizer: heap-use-after-free on address 0x50200054f290 at pc 0x64aef5e31c05 bp 0x7fff8c9f4440 sp 0x7fff8c9f4430
+READ of size 4 at 0x50200054f290 thread T0
+    #0 0x64aef5e31c04 in main /tmp/native_full_gather_repro.cc:12
+    #1 0x7d110ec2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #2 0x7d110ec2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #3 0x64aef5e314e4 in _start (/tmp/native-full-gather-repro+0x24e4) (BuildId: 8b82b89b94dd4964b85b41ee8a72782875bb3eff)
+
+0x50200054f290 is located 0 bytes inside of 4-byte region [0x50200054f290,0x50200054f294)
+freed by thread T0 here:
+    #0 0x7d1161cff5e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
+    #1 0x64aef5e34af1 in std::__new_allocator<int>::deallocate(int*, unsigned long) /usr/include/c++/12/bits/new_allocator.h:169
+    #2 0x64aef5e34af1 in std::allocator<int>::deallocate(int*, unsigned long) /usr/include/c++/12/bits/allocator.h:205
+    #3 0x64aef5e34af1 in std::allocator_traits<std::allocator<int> >::deallocate(std::allocator<int>&, int*, unsigned long) /usr/include/c++/12/bits/alloc_traits.h:496
+    #4 0x64aef5e34af1 in std::_Vector_base<int, std::allocator<int> >::_M_deallocate(int*, unsigned long) /usr/include/c++/12/bits/stl_vector.h:387
+    #5 0x64aef5e34af1 in std::_Vector_base<int, std::allocator<int> >::~_Vector_base() /usr/include/c++/12/bits/stl_vector.h:366
+    #6 0x64aef5e34af1 in std::vector<int, std::allocator<int> >::~vector() /usr/include/c++/12/bits/stl_vector.h:735
+    #7 0x64aef5e34af1 in Full::~Full() /tmp/native_full_gather_repro.cc:10
+    #8 0x64aef5e34af1 in decltype(auto) cellerator::nn::detail::invoke_head<Head&, std::vector<int, std::allocator<int> >&, Targets, int>(Head&, std::vector<int, std::allocator<int> >&, Targets const&, int const&, cellerator::nn::Run) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:279
+    #9 0x64aef5e34af1 in auto cellerator::nn::detail::evaluate_selected_request<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> >, std::vector<int, std::allocator<int> >&, Targets, int>(cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> >&, std::vector<int, std::allocator<int> >&, Targets const&, int const&, cellerator::nn::Run, std::shared_ptr<void const>) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:289
+    #10 0x64aef5e34af1 in auto cellerator::nn::detail::PredictionFrame<std::reference_wrapper<Model>, int, std::reference_wrapper<cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> > > >::evaluate_one<0ul>(cellerator::nn::Run, std::shared_ptr<void const>) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:463
+    #11 0x64aef5e34af1 in auto cellerator::nn::detail::PredictionFrame<std::reference_wrapper<Model>, int, std::reference_wrapper<cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> > > >::evaluate_in_order<0ul>(cellerator::nn::Run, std::shared_ptr<void const> const&) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:469
+    #12 0x64aef5e34af1 in auto cellerator::nn::detail::predict_with_lifetime_anchor<Model&, int, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&>(std::shared_ptr<void const>, Model&, int&&, cellerator::nn::Run, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:524
+    #13 0x64aef5e35b66 in auto cellerator::nn::predict<Model&, int, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&>(Model&, int&&, cellerator::nn::Run, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:545
+    #14 0x64aef5e35b66 in auto cellerator::nn::predict<Model&, int, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&>(Model&, int&&, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:552
+    #15 0x64aef5e31b6d in main /tmp/native_full_gather_repro.cc:12
+    #16 0x7d110ec2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #17 0x7d110ec2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #18 0x64aef5e314e4 in _start (/tmp/native-full-gather-repro+0x24e4) (BuildId: 8b82b89b94dd4964b85b41ee8a72782875bb3eff)
+
+previously allocated by thread T0 here:
+    #0 0x7d1161cfe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
+    #1 0x64aef5e3479d in std::__new_allocator<int>::allocate(unsigned long, void const*) /usr/include/c++/12/bits/new_allocator.h:148
+    #2 0x64aef5e3479d in std::allocator<int>::allocate(unsigned long) /usr/include/c++/12/bits/allocator.h:193
+    #3 0x64aef5e3479d in std::allocator_traits<std::allocator<int> >::allocate(std::allocator<int>&, unsigned long) /usr/include/c++/12/bits/alloc_traits.h:464
+    #4 0x64aef5e3479d in std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long) /usr/include/c++/12/bits/stl_vector.h:378
+    #5 0x64aef5e3479d in std::_Vector_base<int, std::allocator<int> >::_M_create_storage(unsigned long) /usr/include/c++/12/bits/stl_vector.h:395
+    #6 0x64aef5e3479d in std::_Vector_base<int, std::allocator<int> >::_Vector_base(unsigned long, std::allocator<int> const&) /usr/include/c++/12/bits/stl_vector.h:332
+    #7 0x64aef5e3479d in std::vector<int, std::allocator<int> >::vector(std::vector<int, std::allocator<int> > const&) /usr/include/c++/12/bits/stl_vector.h:600
+    #8 0x64aef5e3479d in Head::operator()(std::vector<int, std::allocator<int> > const&) /tmp/native_full_gather_repro.cc:11
+    #9 0x64aef5e3479d in Full std::__invoke_impl<Full, Head&, std::vector<int, std::allocator<int> >&>(std::__invoke_other, Head&, std::vector<int, std::allocator<int> >&) /usr/include/c++/12/bits/invoke.h:61
+    #10 0x64aef5e3479d in std::__invoke_result<Head&, std::vector<int, std::allocator<int> >&>::type std::__invoke<Head&, std::vector<int, std::allocator<int> >&>(Head&, std::vector<int, std::allocator<int> >&) /usr/include/c++/12/bits/invoke.h:97
+    #11 0x64aef5e3479d in std::invoke_result<Head&, std::vector<int, std::allocator<int> >&>::type std::invoke<Head&, std::vector<int, std::allocator<int> >&>(Head&, std::vector<int, std::allocator<int> >&) /usr/include/c++/12/functional:111
+    #12 0x64aef5e3479d in decltype(auto) cellerator::nn::detail::invoke_with_run<Head&, std::vector<int, std::allocator<int> >&>(Head&, cellerator::nn::Run, std::vector<int, std::allocator<int> >&) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:159
+    #13 0x64aef5e3479d in decltype(auto) cellerator::nn::detail::invoke_head<Head&, std::vector<int, std::allocator<int> >&, Targets, int>(Head&, std::vector<int, std::allocator<int> >&, Targets const&, int const&, cellerator::nn::Run) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:276
+    #14 0x64aef5e3479d in auto cellerator::nn::detail::evaluate_selected_request<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> >, std::vector<int, std::allocator<int> >&, Targets, int>(cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> >&, std::vector<int, std::allocator<int> >&, Targets const&, int const&, cellerator::nn::Run, std::shared_ptr<void const>) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:289
+    #15 0x64aef5e3479d in auto cellerator::nn::detail::PredictionFrame<std::reference_wrapper<Model>, int, std::reference_wrapper<cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> > > >::evaluate_one<0ul>(cellerator::nn::Run, std::shared_ptr<void const>) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:463
+    #16 0x64aef5e3479d in auto cellerator::nn::detail::PredictionFrame<std::reference_wrapper<Model>, int, std::reference_wrapper<cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> > > >::evaluate_in_order<0ul>(cellerator::nn::Run, std::shared_ptr<void const> const&) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:469
+    #17 0x64aef5e3479d in auto cellerator::nn::detail::predict_with_lifetime_anchor<Model&, int, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&>(std::shared_ptr<void const>, Model&, int&&, cellerator::nn::Run, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:524
+    #18 0x64aef5e35b66 in auto cellerator::nn::predict<Model&, int, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&>(Model&, int&&, cellerator::nn::Run, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:545
+    #19 0x64aef5e35b66 in auto cellerator::nn::predict<Model&, int, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&>(Model&, int&&, cellerator::nn::QueryRequest<std::reference_wrapper<cellerator::nn::Readout<std::reference_wrapper<Head>, std::vector<int, std::allocator<int> > Result::*, std::reference_wrapper<Binding> > >, std::reference_wrapper<Targets>, std::reference_wrapper<int> >&) /home/tumlinson/Cellerator/include/Cellerator/nn/query.hh:552
+    #20 0x64aef5e31b6d in main /tmp/native_full_gather_repro.cc:12
+    #21 0x7d110ec2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #22 0x7d110ec2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #23 0x64aef5e314e4 in _start (/tmp/native-full-gather-repro+0x24e4) (BuildId: 8b82b89b94dd4964b85b41ee8a72782875bb3eff)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /tmp/native_full_gather_repro.cc:12 in main
+Shadow bytes around the buggy address:
+  0x50200054f000: fa fa fd fa fa fa fd fd fa fa fd fa fa fa fd fa
+  0x50200054f080: fa fa fd fa fa fa fd fd fa fa fd fa fa fa fd fd
+  0x50200054f100: fa fa fd fa fa fa fd fa fa fa fd fa fa fa fd fd
+  0x50200054f180: fa fa fd fa fa fa fd fd fa fa fd fa fa fa fd fa
+  0x50200054f200: fa fa 04 fa fa fa 04 fa fa fa 00 fa fa fa 04 fa
+=>0x50200054f280: fa fa[fd]fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x50200054f300: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x50200054f380: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x50200054f400: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x50200054f480: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x50200054f500: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==9==ABORTING

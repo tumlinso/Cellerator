@@ -27,7 +27,10 @@ struct ProgramResult {
 // Per-call program selection and optional structural/context inputs. The
 // program_bank_indices entries map target occurrences to rows in the learned
 // query bank. An absent view selects each bank row once per declared group;
-// an explicitly empty view represents no program occurrences.
+// an explicitly empty view represents no program occurrences. The supplied
+// program order token describes those same occurrences; the mapping from token
+// identities to bank rows remains caller-owned. structural_generation, when
+// supplied, is checked against the prepared relation's declaration.
 // Offsets and views are borrowed for the duration of operator().
 struct ProgramCall {
     const PreparedRelation* relation = nullptr;

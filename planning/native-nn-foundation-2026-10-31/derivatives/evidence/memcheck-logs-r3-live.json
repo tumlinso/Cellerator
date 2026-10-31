@@ -1,0 +1,21 @@
+{
+  "attempt_id": "b752dfa2-6790-4875-b78b-77e860599ca1",
+  "cleanup_verified": true,
+  "job_id": "d66e8d69-a02c-412f-b771-40c2d4090ab7",
+  "stderr": {
+    "omitted_lines": 0,
+    "original_bytes": 0,
+    "returned_bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": "",
+    "truncated": false
+  },
+  "stdout": {
+    "omitted_lines": 0,
+    "original_bytes": 1060,
+    "returned_bytes": 1060,
+    "sha256": "dd873f289059b8666fd16e95b3bdd5ec7099e6f7c9d346db666351946f835d39",
+    "text": "========= COMPUTE-SANITIZER\nDevice: Tesla V100-SXM2-16GB UUID GPU-d745da9c-7649-8334-41f1-483afa6f3206 compute 7.0\nPASS grouped FP16/FP32 forward, VJP, empty expert, SGD\nPASS staged CSR attention FP16/FP32 forward and q/k/v VJP at V=1,2,33\nPASS empty CSR neighborhoods and zero-query tensors\nPASS attention outstanding/repeated graphs and first-order boundary\nPASS attention original tensor and CSR version checks\nPASS two outstanding grouped graphs and retained repeated backward\nPASS explicit first-order boundary\nPASS original noncontiguous tensor version check\nPASS non-default stream, dropped handles and allocator churn\nFAIL cross-stream attention allocator ownership and VJP: CUDA stream gate auto-released before owner check\nFAIL external from_blob inference and disposed-graph event retention: CUDA stream gate auto-released before owner check\nCUDA adapter qualification: 9 passed, 2 failed\nCUDA adapter qualification failed: one or more CUDA qualification cases failed\n========= Target application returned an error\n========= ERROR SUMMARY: 0 errors\n",
+    "truncated": false
+  }
+}

@@ -7,25 +7,6 @@
 
 namespace cellerator::nn::detail {
 
-namespace {
-std::vector<std::int64_t> validate_offsets(
-    const std::vector<std::int64_t>& offsets,
-    std::int64_t rows,
-    const char* name) {
-    if (offsets.empty()) {
-        throw std::invalid_argument(std::string(name) + " must contain at least the zero boundary");
-    }
-    if (offsets.front() != 0 || offsets.back() != rows) {
-        throw std::invalid_argument(std::string(name) +
-            " must start at zero and end at the row count");
-    }
-    if (!std::is_sorted(offsets.begin(), offsets.end())) {
-        throw std::invalid_argument(std::string(name) + " must be nondecreasing");
-    }
-    return offsets;
-}
-} // namespace
-
 std::pair<at::Tensor, at::Tensor> reduce_prediction_loss_impl(
     const at::Tensor& losses,
     SupervisionUnit unit,
@@ -57,7 +38,7 @@ std::pair<at::Tensor, at::Tensor> reduce_prediction_loss_impl(
         const auto count = mask.sum(at::kLong);
         const auto denominator = count.clamp_min(1).to(losses.scalar_type());
         auto mean = safe.sum() / denominator;
-        return {mean + losses.sum() * 0.0, count};
+        return {mean + safe.sum() * 0.0, count};
     }
 
     const std::int64_t rows = losses.dim() == 0 ? 1 : losses.size(0);
@@ -99,7 +80,7 @@ std::pair<at::Tensor, at::Tensor> reduce_prediction_loss_impl(
     const auto mean = at::where(valid_owners, cell_means, at::zeros_like(cell_means)).sum() /
         valid_count.clamp_min(1).to(losses.scalar_type());
     // Preserve the graph even for a tensor with zero rows or only empty windows.
-    return {mean + losses.sum() * 0.0, valid_count};
+    return {mean + safe.sum() * 0.0, valid_count};
 }
 
 } // namespace cellerator::nn::detail
@@ -137,11 +118,20 @@ at::Tensor grouped_rows(const at::Tensor& rows,
                         const std::vector<std::int64_t>& row_offsets,
                         bool take_last) {
     const auto offsets = validate_group_offsets(rows, row_offsets);
+    if (!take_last && !rows.is_floating_point()) {
+        throw std::invalid_argument("mean_by_group requires floating-point rows");
+    }
     const auto groups = static_cast<std::int64_t>(offsets.size() - 1);
     std::vector<std::int64_t> output_shape = rows.sizes().vec();
     output_shape[0] = groups;
+    const auto graph_zero = [&] {
+        if (rows.requires_grad() && (rows.is_floating_point() || rows.is_complex())) {
+            return at::nan_to_num(rows).sum() * 0.0;
+        }
+        return at::zeros({}, rows.options());
+    };
     if (groups == 0) {
-        return at::empty(output_shape, rows.options()) + rows.sum() * 0.0;
+        return at::empty(output_shape, rows.options()) + graph_zero();
     }
     std::vector<at::Tensor> outputs;
     outputs.reserve(static_cast<std::size_t>(groups));
@@ -157,7 +147,8 @@ at::Tensor grouped_rows(const at::Tensor& rows,
             outputs.push_back(rows.narrow(0, begin, end - begin).mean(0));
         }
     }
-    return at::stack(outputs, 0) + rows.sum() * 0.0;
+    const bool no_rows = rows.size(0) == 0;
+    return at::stack(outputs, 0) + (no_rows ? graph_zero() : at::zeros({}, rows.options()));
 }
 } // namespace
 

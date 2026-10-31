@@ -32,29 +32,44 @@ public:
                    std::int64_t heads = 1,
                    double dropout = 0.0)
         : group_(std::move(group)), binding_(std::move(binding)),
-          width_(width), output_size_(output_size),
+          width_(checked_width(width, output_size, heads, dropout)), output_size_(output_size),
           target_embedding_(group_, target_capacity(binding_), width_),
+          all_targets_(prepare_targets(binding_, binding_.canonical_ids(),
+                                       target_embedding_.weight().device())),
           interactions_(group_, attention_options(width_, heads, dropout)),
           projection_(group_, width_, output_size_) {
-        if (width_ <= 0 || output_size_ <= 0 || heads <= 0) {
-            throw std::invalid_argument("FeatureReadout dimensions must be positive");
-        }
         binding_.validate_model_capacity(target_embedding_.weight().size(0));
     }
 
     at::Tensor operator()(const at::Tensor& context, Run run = {}) const {
-        return project(context, binding_.model_indices(), run);
+        return project(context, all_targets_.model_index_tensor(), all_targets_.device(), run);
     }
 
+    template<class ObservationId>
+    at::Tensor query(
+        const at::Tensor& context,
+        const PreparedTargets<FeatureId>& targets,
+        const ObservationCoordinates<ObservationId>& coordinates,
+        Run run = {}) const {
+        (void)coordinates; // observation labels are descriptive, not numerical input
+        binding_.validate_alignment(targets.alignment());
+        return project(context, targets.model_index_tensor(), targets.device(), run);
+    }
+
+    // The Torch-free alignment overload is kept for boundary and CPU callers.
+    // It materializes a temporary device index tensor for each call; repeated
+    // queries should use prepare_targets(binding, ids, device) instead.
     template<class ObservationId>
     at::Tensor query(
         const at::Tensor& context,
         const biology::PreparedAlignment<FeatureId>& targets,
         const ObservationCoordinates<ObservationId>& coordinates,
         Run run = {}) const {
-        (void)coordinates; // observation labels are descriptive, not numerical input
+        (void)coordinates;
         binding_.validate_alignment(targets);
-        return project(context, targets.model_indices(), run);
+        auto indices = at::tensor(targets.model_indices(),
+            at::TensorOptions().dtype(at::kLong).device(context.device()));
+        return project(context, indices, context.device(), run);
     }
 
     const biology::FeatureBinding<FeatureId>& binding() const noexcept {
@@ -70,6 +85,23 @@ public:
     std::int64_t output_size() const noexcept { return output_size_; }
 
 private:
+    static std::int64_t checked_width(std::int64_t width,
+                                     std::int64_t output_size,
+                                     std::int64_t heads,
+                                     double dropout) {
+        if (width <= 0 || output_size <= 0 || heads <= 0) {
+            throw std::invalid_argument("FeatureReadout dimensions must be positive");
+        }
+        if (width % heads != 0) {
+            throw std::invalid_argument(
+                "FeatureReadout width must be divisible by attention heads");
+        }
+        if (!(dropout >= 0.0 && dropout < 1.0)) {
+            throw std::invalid_argument("FeatureReadout dropout must be in [0,1)");
+        }
+        return width;
+    }
+
     static std::int64_t target_capacity(
         const biology::FeatureBinding<FeatureId>& binding) {
         if (binding.model_capacity()) return *binding.model_capacity();
@@ -89,6 +121,9 @@ private:
     static AttentionOptions attention_options(std::int64_t width,
                                               std::int64_t heads,
                                               double dropout) {
+        if (!(dropout >= 0.0 && dropout < 1.0)) {
+            throw std::invalid_argument("FeatureReadout dropout must be in [0,1)");
+        }
         AttentionOptions options;
         options.width = width;
         options.heads = heads;
@@ -96,16 +131,17 @@ private:
         return options;
     }
 
-    at::Tensor project(const at::Tensor& context,
-                       const std::vector<std::int64_t>& target_indices,
-                       Run run) const {
+    at::Tensor project(const at::Tensor& context, const at::Tensor& target_indices,
+                       at::Device target_device, Run run) const {
         validate_feature_readout_context(context, target_embedding_.weight(), width_);
+        if (target_device != context.device() || target_indices.device() != context.device()) {
+            throw std::invalid_argument(
+                "prepared target indices and FeatureReadout context must share a device");
+        }
         auto source = context.dim() == 2 ? context.unsqueeze(1) : context;
-        auto indices = at::tensor(target_indices,
-            at::TensorOptions().dtype(at::kLong).device(context.device()));
-        auto targets = target_embedding_(indices, run);
+        auto targets = target_embedding_(target_indices, run);
         targets = targets.unsqueeze(0).expand(
-            {source.size(0), static_cast<std::int64_t>(target_indices.size()), width_});
+            {source.size(0), target_indices.numel(), width_});
         auto attended = interactions_.cross(source, targets, AttentionLayout{}, run);
         auto output = projection_(attended, run);
         return output_size_ == 1 ? output.squeeze(-1) : output;
@@ -116,6 +152,7 @@ private:
     std::int64_t width_;
     std::int64_t output_size_;
     Embedding target_embedding_;
+    PreparedTargets<FeatureId> all_targets_;
     RelationAttention interactions_;
     Linear projection_;
 };

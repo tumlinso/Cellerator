@@ -4,10 +4,25 @@
 
 #include <ATen/ATen.h>
 
+#include <cstddef>
 #include <cstdint>
+#include <limits>
+#include <stdexcept>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace cellerator::nn {
+
+// Borrowed primitive CSR view. Preparation copies both arrays before
+// returning, so callers retain their own allocation and lifetime policy.
+template<class Index = std::int64_t>
+struct CsrView {
+    const Index* row_ptr = nullptr;
+    std::size_t row_ptr_count = 0;
+    const Index* col_indices = nullptr;
+    std::size_t edge_count = 0;
+};
 
 struct CsrSupport {
     // Rows are targets; columns are source occurrence positions.
@@ -27,6 +42,46 @@ public:
         const biology::OccurrenceOrderToken& target_order,
         std::uint64_t structural_generation = 0,
         at::Device device = at::Device(at::kCPU));
+
+    template<class Index,
+             std::enable_if_t<std::is_integral<Index>::value
+                                  && !std::is_same<Index, bool>::value,
+                              int> = 0>
+    static PreparedRelation from_csr(
+        CsrView<Index> support,
+        const biology::OccurrenceOrderToken& source_order,
+        const biology::OccurrenceOrderToken& target_order,
+        std::uint64_t structural_generation = 0,
+        at::Device device = at::Device(at::kCPU)) {
+        static_assert(sizeof(Index) <= sizeof(std::int64_t),
+                      "CSR view indices must not exceed int64 width");
+        if (support.row_ptr_count != 0 && support.row_ptr == nullptr) {
+            throw std::invalid_argument("CSR row_ptr view has a null data pointer");
+        }
+        if (support.edge_count != 0 && support.col_indices == nullptr) {
+            throw std::invalid_argument("CSR col_indices view has a null data pointer");
+        }
+        CsrSupport owned;
+        owned.row_ptr.reserve(support.row_ptr_count);
+        owned.col_indices.reserve(support.edge_count);
+        const auto checked_index = [](Index value) {
+            if constexpr (std::is_unsigned<Index>::value) {
+                if (value > static_cast<std::make_unsigned_t<std::int64_t>>(
+                                std::numeric_limits<std::int64_t>::max())) {
+                    throw std::overflow_error("CSR index exceeds int64 range");
+                }
+            }
+            return static_cast<std::int64_t>(value);
+        };
+        for (std::size_t i = 0; i < support.row_ptr_count; ++i) {
+            owned.row_ptr.push_back(checked_index(support.row_ptr[i]));
+        }
+        for (std::size_t i = 0; i < support.edge_count; ++i) {
+            owned.col_indices.push_back(checked_index(support.col_indices[i]));
+        }
+        return from_csr(std::move(owned), source_order, target_order,
+                        structural_generation, device);
+    }
 
     std::int64_t source_count() const noexcept { return n_sources_; }
     std::int64_t target_count() const noexcept { return n_targets_; }

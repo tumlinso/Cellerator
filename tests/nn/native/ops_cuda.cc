@@ -7,13 +7,18 @@
 #include <torch/optim/sgd.h>
 #include <torch/torch.h>
 
+#include <atomic>
+#include <chrono>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <cstdint>
 #include <exception>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -146,7 +151,7 @@ void check_attention_case(at::ScalarType dtype, const at::Device& device,
 }
 void test_grouped_forward_vjp_and_sgd(const at::Device& device) {
     for (auto dtype : {at::kFloat,at::kHalf}) check_grouped_case(dtype,device);
-    auto xempty=at::empty({0,5},at::TensorOptions().dtype(at::kFloat).device(device).requires_grad(true));
+    auto xempty=at::empty({0,5},at::TensorOptions().dtype(at::kFloat).device(device)).requires_grad_(true);
     auto wempty=cuda_rand({3,2,5},at::kFloat,device,true);
     auto yempty=grouped_linear_cuda(xempty,wempty,{0,0,0,0});
     check(yempty.sizes()==at::IntArrayRef({0,2}),"zero-row grouped output shape mismatch");
@@ -302,6 +307,219 @@ void test_original_noncontiguous_version_check(const at::Device& device) {
     catch (const c10::Error&) { weight_rejected=true; }
     check(weight_rejected,"mutation of original noncontiguous parameter must fail saved-tensor version check");
 }
+struct CallbackGate {
+    std::atomic<bool> started{false};
+    std::atomic<bool> open{false};
+    std::atomic<bool> timed_out{false};
+    int timeout_seconds=[] {
+        const auto value=std::getenv("CELLERATOR_NN_TEST_GATE_TIMEOUT_SECONDS");
+        return value ? std::max(3,std::min(30,std::atoi(value))) : 3;
+    }();
+    static void CUDART_CB wait(void* opaque) {
+        auto* self=static_cast<CallbackGate*>(opaque);
+        self->started.store(true,std::memory_order_release);
+        const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(self->timeout_seconds);
+        while(!self->open.load(std::memory_order_acquire) && std::chrono::steady_clock::now()<deadline)
+            std::this_thread::yield();
+        if(!self->open.load(std::memory_order_acquire)) {
+            self->timed_out.store(true,std::memory_order_release);
+            self->open.store(true,std::memory_order_release);
+        }
+    }
+};
+struct OrderedStreams {
+    at::cuda::CUDAStream producer;
+    at::cuda::CUDAStream consumer;
+    cudaEvent_t ready=nullptr;
+    CallbackGate gate;
+    bool armed=false;
+    explicit OrderedStreams(int device)
+        : producer(at::cuda::getStreamFromPool(false,device)),
+          consumer(at::cuda::getStreamFromPool(false,device)) {
+        auto status=cudaEventCreateWithFlags(&ready,cudaEventDisableTiming);
+        if(status!=cudaSuccess) throw std::runtime_error(cudaGetErrorString(status));
+    }
+    void arm() {
+        auto status=cudaEventRecord(ready,producer.stream());
+        if(status==cudaSuccess) status=cudaStreamWaitEvent(consumer.stream(),ready,0);
+        if(status==cudaSuccess) status=cudaLaunchHostFunc(consumer.stream(),CallbackGate::wait,&gate);
+        if(status!=cudaSuccess) throw std::runtime_error(cudaGetErrorString(status));
+        armed=true;
+    }
+    void wait_until_queued() {
+        if(!armed) throw std::runtime_error("stream gate was not armed");
+        const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(5);
+        while(!gate.started.load(std::memory_order_acquire) && std::chrono::steady_clock::now()<deadline)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if(!gate.started.load(std::memory_order_acquire))
+            throw std::runtime_error("CUDA host gate did not start within five seconds");
+        if(gate.timed_out.load(std::memory_order_acquire))
+            throw std::runtime_error("CUDA stream gate auto-released before owner check");
+    }
+    void finish() noexcept {
+        gate.open.store(true,std::memory_order_release);
+        (void)consumer.synchronize();
+        (void)producer.synchronize();
+    }
+    ~OrderedStreams() {
+        finish();
+        if(ready) (void)cudaEventDestroy(ready);
+    }
+};
+struct FinishBeforeOwnerDestruction {
+    OrderedStreams* streams;
+    ~FinishBeforeOwnerDestruction() { streams->finish(); }
+};
+struct ExternalOwner {
+    void* allocation=nullptr;
+    Tensor tensor;
+    std::shared_ptr<std::atomic<bool>> deleter_called=std::make_shared<std::atomic<bool>>(false);
+    ExternalOwner(const std::vector<std::int64_t>& shape,const std::vector<float>& host,
+                  const at::Device& device,const at::cuda::CUDAStream& upload_stream,
+                  bool requires_grad) {
+        const auto bytes=host.size()*sizeof(float);
+        auto status=cudaMalloc(&allocation,bytes);
+        if(status!=cudaSuccess) throw std::runtime_error(cudaGetErrorString(status));
+        auto state=deleter_called;
+        tensor=at::from_blob(allocation,shape,[state](void*) {
+            state->store(true,std::memory_order_release);
+        },at::TensorOptions().dtype(at::kFloat).device(device));
+        if(requires_grad) tensor.requires_grad_(true);
+        status=cudaMemcpyAsync(allocation,host.data(),bytes,cudaMemcpyHostToDevice,upload_stream.stream());
+        if(status!=cudaSuccess) throw std::runtime_error(cudaGetErrorString(status));
+    }
+    void drop_tensor() { tensor=Tensor(); }
+    bool released() const { return deleter_called->load(std::memory_order_acquire); }
+    ~ExternalOwner() {
+        drop_tensor();
+        if(allocation) (void)cudaFree(allocation);
+    }
+};
+void test_cross_stream_attention_allocator_lifetime(const at::Device& device) {
+    constexpr double scale=0.7071067811865476;
+    const std::vector<std::int64_t> row_offsets{0,2,2,3};
+    const std::vector<std::int64_t> key_ids{0,1,2};
+    auto q_cpu=at::tensor(std::vector<float>{0.2f,-0.1f,0.7f,0.3f,-0.5f,0.4f,
+                                              0.6f,-0.2f,0.1f,0.8f,0.9f,-0.3f}).view({3,2,2});
+    auto k_cpu=at::tensor(std::vector<float>{0.3f,0.5f,-0.4f,0.2f,0.7f,-0.6f,
+                                              0.8f,0.1f,-0.2f,0.9f,0.4f,-0.5f}).view({3,2,2});
+    auto v_cpu=at::tensor(std::vector<float>{0.4f,-0.3f,0.1f,0.6f,0.8f,-0.2f,
+                                              -0.7f,0.5f,0.2f,0.9f,0.3f,-0.4f}).view({3,2,2});
+    auto upstream_cpu=at::tensor(std::vector<float>{0.5f,-0.1f,0.2f,0.7f,-0.3f,0.4f,
+                                                     0.8f,0.2f,-0.6f,0.3f,0.1f,-0.5f}).view({3,2,2});
+    auto qr=q_cpu.clone().requires_grad_(true), kr=k_cpu.clone().requires_grad_(true),
+         vr=v_cpu.clone().requires_grad_(true);
+    auto expected=attention_reference(qr,kr,vr,row_offsets,key_ids,scale);
+    auto expected_grads=torch::autograd::grad({expected},{qr,kr,vr},{upstream_cpu});
+
+    OrderedStreams streams(device.index());
+    FinishBeforeOwnerDestruction finish{&streams};
+    Tensor q,k,v,offsets,keys,upstream;
+    {
+        c10::cuda::CUDAStreamGuard producer_guard(streams.producer);
+        auto options=at::TensorOptions().dtype(at::kFloat).device(device);
+        q=at::empty({3,2,2},options); q.copy_(q_cpu); q.requires_grad_(true);
+        k=at::empty({3,2,2},options); k.copy_(k_cpu); k.requires_grad_(true);
+        v=at::empty({3,2,2},options); v.copy_(v_cpu); v.requires_grad_(true);
+        upstream=at::empty({3,2,2},options); upstream.copy_(upstream_cpu);
+        offsets=at::empty({4},options.dtype(at::kLong));
+        offsets.copy_(at::tensor(row_offsets,at::TensorOptions().dtype(at::kLong)));
+        keys=at::empty({3},options.dtype(at::kLong));
+        keys.copy_(at::tensor(key_ids,at::TensorOptions().dtype(at::kLong)));
+    }
+    streams.arm();
+    Tensor output_for_check;
+    std::vector<Tensor> actual_grads;
+    {
+        c10::cuda::CUDAStreamGuard consumer_guard(streams.consumer);
+        auto output=csr_scaled_dot_product_attention_cuda_prepared(q,k,v,offsets,keys,scale);
+        actual_grads=torch::autograd::grad({output},{q,k,v},{upstream});
+        output_for_check=output.detach();
+    }
+    // Backward has returned while its CUDA work remains behind the host gate.
+    // Drop the output graph and inputs so their blocks can be recycled on the
+    // creation stream if recordStream ownership is missing.
+    q=Tensor(); k=Tensor(); v=Tensor(); offsets=Tensor(); keys=Tensor(); upstream=Tensor();
+    streams.wait_until_queued();
+    std::vector<Tensor> churn;
+    {
+        c10::cuda::CUDAStreamGuard producer_guard(streams.producer);
+        auto options=at::TensorOptions().dtype(at::kFloat).device(device);
+        for(int i=0;i<24;++i) {
+            churn.push_back(at::empty({3,2,2},options).zero_());
+            churn.push_back(at::empty({4},options.dtype(at::kLong)).zero_());
+            churn.push_back(at::empty({3},options.dtype(at::kLong)).zero_());
+        }
+    }
+    streams.producer.synchronize();
+    {
+        c10::cuda::CUDAStreamGuard producer_guard(streams.producer);
+        churn.clear();
+    }
+    streams.finish();
+    close(output_for_check.to(at::kCPU),expected,2e-4,2e-4,"cross-stream prepared attention output");
+    for(std::size_t i=0;i<actual_grads.size();++i)
+        close(actual_grads[i].to(at::kCPU),expected_grads[i],2e-4,2e-4,
+              "cross-stream attention gradient "+std::to_string(i));
+}
+
+void expect_release_after_stream(const std::shared_ptr<std::atomic<bool>>& called,
+                                 const char* description) {
+    const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(5);
+    while(!called->load(std::memory_order_acquire) && std::chrono::steady_clock::now()<deadline)
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    check(called->load(std::memory_order_acquire),std::string(description)+
+          " deleter did not run within five seconds of stream completion");
+}
+void test_external_storage_completion_retention(const at::Device& device) {
+    const std::vector<float> host_x{1.0f,2.0f,3.0f,4.0f,5.0f,6.0f};
+    const std::vector<float> host_w{1.0f,0.5f,-1.0f,2.0f,0.25f,-0.5f,1.5f,1.0f};
+    auto expected=grouped_reference(at::tensor(host_x).view({3,2}),
+                                    at::tensor(host_w).view({2,2,2}),{0,1,3});
+    {
+        OrderedStreams streams(device.index());
+        ExternalOwner x({3,2},host_x,device,streams.producer,false);
+        ExternalOwner w({2,2,2},host_w,device,streams.producer,false);
+        FinishBeforeOwnerDestruction finish{&streams};
+        streams.arm();
+        Tensor output;
+        {
+            c10::cuda::CUDAStreamGuard stream_guard(streams.consumer);
+            at::InferenceMode inference;
+            output=grouped_linear_cuda(x.tensor,w.tensor,{0,1,3});
+            check(!output.requires_grad(),"inference output unexpectedly tracks autograd");
+            x.drop_tensor(); w.drop_tensor();
+        }
+        streams.wait_until_queued();
+        check(!x.released() && !w.released(),
+              "inference from_blob owners must remain live while consumer stream is gated");
+        streams.finish();
+        expect_release_after_stream(x.deleter_called,"inference input");
+        expect_release_after_stream(w.deleter_called,"inference weight");
+        close(output.to(at::kCPU),expected,2e-4,2e-4,"external inference output");
+    }
+    {
+        OrderedStreams streams(device.index());
+        ExternalOwner x({3,2},host_x,device,streams.producer,true);
+        ExternalOwner w({2,2,2},host_w,device,streams.producer,true);
+        FinishBeforeOwnerDestruction finish{&streams};
+        streams.arm();
+        {
+            c10::cuda::CUDAStreamGuard stream_guard(streams.consumer);
+            auto output=grouped_linear_cuda(x.tensor,w.tensor,{0,1,3});
+            check(output.requires_grad(),"training output must retain its graph");
+            output=Tensor(); // Destroy the graph while its forward remains behind the gate.
+            x.drop_tensor(); w.drop_tensor();
+        }
+        streams.wait_until_queued();
+        check(!x.released() && !w.released(),
+              "early-disposed graph owners must remain live while consumer stream is gated");
+        streams.finish();
+        expect_release_after_stream(x.deleter_called,"early-disposed input");
+        expect_release_after_stream(w.deleter_called,"early-disposed weight");
+    }
+}
+
 void test_nondefault_stream_and_dropped_handles(const at::Device& device) {
     auto stream=at::cuda::getStreamFromPool(false,device.index());
     {
@@ -348,7 +566,7 @@ template<class F> void run_case(const char* name,F&& fn,int& passed,int& failed)
     try { fn(); ++passed; std::cout<<"PASS "<<name<<"\n"; }
     catch (const std::exception& e) { ++failed; std::cerr<<"FAIL "<<name<<": "<<e.what()<<"\n"; }
 }
-void run_device_case() {
+void run_device_case(bool sanitizer_mode) {
     torch::manual_seed(0xCE11);
     const auto device=at::Device(at::kCUDA,c10::cuda::current_device());
     cudaDeviceProp properties{};
@@ -372,18 +590,24 @@ void run_device_case() {
     run_case("explicit first-order boundary",[&]{test_first_order_boundary(device);},passed,failed);
     run_case("original noncontiguous tensor version check",[&]{test_original_noncontiguous_version_check(device);},passed,failed);
     run_case("non-default stream, dropped handles and allocator churn",[&]{test_nondefault_stream_and_dropped_handles(device);},passed,failed);
+    if (!sanitizer_mode) {
+        run_case("cross-stream attention allocator ownership and VJP",[&]{test_cross_stream_attention_allocator_lifetime(device);},passed,failed);
+        run_case("external from_blob inference and disposed-graph event retention",[&]{test_external_storage_completion_retention(device);},passed,failed);
+    } else {
+        std::cout << "SKIP two host-gated async-submission fixtures under sanitizer launch instrumentation; required in normal qualification\n";
+    }
     auto sync=cudaDeviceSynchronize();
     if(sync!=cudaSuccess) { ++failed; std::cerr<<"FAIL final device synchronization: "<<cudaGetErrorString(sync)<<"\n"; }
-    std::cout<<"CUDA adapter qualification: "<<passed<<" passed, "<<failed<<" failed\n";
+    std::cout<<"CUDA adapter qualification: "<<passed<<" passed, "<<failed<<" failed, "<<(sanitizer_mode ? 2 : 0)<<" skipped\n";
     if(failed) throw std::runtime_error("one or more CUDA qualification cases failed");
 }
 } // namespace
 
 int main(int argc,char** argv) {
-    if(argc!=2 || std::string(argv[1])!="--device") {
+    if(argc!=2 || (std::string(argv[1])!="--device" && std::string(argv[1])!="--memcheck")) {
         std::cout<<"CUDA NN adapter qualification is opt-in. Run with --device inside an admitted Device Scheduler job.\n";
         return 0;
     }
-    try { run_device_case(); return 0; }
+    try { run_device_case(std::string(argv[1])=="--memcheck"); return 0; }
     catch(const std::exception& e) { std::cerr<<"CUDA adapter qualification failed: "<<e.what()<<"\n"; return 1; }
 }

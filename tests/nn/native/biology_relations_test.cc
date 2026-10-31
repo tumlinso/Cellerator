@@ -93,6 +93,17 @@ int main() {
     assert(cpu_copy.host_row_ptr() == relation.host_row_ptr());
     assert(cpu_copy.source_order_token().same_order(source.order_token()));
 
+    std::int64_t row_ptr_view[]{0, 2, 4, 6, 6};
+    std::int64_t col_indices_view[]{0, 0, 1, 2, 3, 4};
+    auto copied_view = PreparedRelation::from_csr(
+        cellerator::nn::CsrView<std::int64_t>{row_ptr_view, 5, col_indices_view, 6},
+        source.order_token(), target.order_token(), 7);
+    row_ptr_view[1] = 0;
+    col_indices_view[0] = 4;
+    assert((copied_view.host_row_ptr() == std::vector<std::int64_t>{0, 2, 4, 6, 6}));
+    assert((copied_view.host_col_indices()
+        == std::vector<std::int64_t>{0, 0, 1, 2, 3, 4}));
+
     // A rebuilt declaration with identical IDs and extents is still stale:
     // the order token is structural identity, not a shape check.
     auto rebuilt_source = OccurrenceCoordinates<std::string>::from_ids(

@@ -5,6 +5,7 @@
 #include <Cellerator/biology/feature_binding.hh>
 
 #include <cassert>
+#include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -13,6 +14,22 @@ struct FeatureKey {
     int value;
     friend bool operator==(FeatureKey lhs, FeatureKey rhs) noexcept {
         return lhs.value == rhs.value;
+    }
+};
+
+struct SparseValues {
+    std::vector<int> selected_values;
+    std::string storage_family = "csr";
+
+    SparseValues gather_feature_columns(
+        const std::vector<std::int64_t>& columns) const {
+        SparseValues result;
+        result.storage_family = storage_family;
+        for (const auto column : columns) {
+            result.selected_values.push_back(
+                selected_values.at(static_cast<std::size_t>(column)));
+        }
+        return result;
     }
 };
 
@@ -61,6 +78,10 @@ int main() {
         gathered.push_back(source_values.at(static_cast<std::size_t>(position)));
     }
     assert((gathered == std::vector<int>{7, 5}));
+    const SparseValues sparse{{5, 7}, "csr"};
+    const auto sparse_gather = target.gather(sparse, -1);
+    assert(sparse_gather.storage_family == "csr");
+    assert((sparse_gather.selected_values == std::vector<int>{7, 5}));
 
     auto drop_options = FeatureBindingOptions{};
     drop_options.unknown_policy = cellerator::biology::UnknownIdentityPolicy::drop;
@@ -81,6 +102,27 @@ int main() {
     assert(mapped_unknown.canonical_indices().front() == std::nullopt);
     assert(mapped_unknown.model_indices().front() == 1);
 
+    const std::array<FeatureKey, 2> id_view{{{5}, {8}}};
+    const std::array<std::int64_t, 2> model_view{{12, 14}};
+    const std::array<std::int64_t, 2> group_view{{0, 2}};
+    const std::array<std::int64_t, 2> physical_view{{21, 34}};
+    auto span_binding = FeatureBinding<FeatureKey>::from_ids(
+        std::span<const FeatureKey>(id_view),
+        std::span<const std::int64_t>(model_view));
+    auto span_coordinates = OccurrenceCoordinates<FeatureKey>::from_ids(
+        std::span<const FeatureKey>(id_view),
+        std::span<const std::int64_t>(group_view), {}, 6,
+        std::span<const std::int64_t>(physical_view));
+    const auto span_occurrences = span_binding.map_occurrences(span_coordinates);
+    assert((span_occurrences.model_indices() == std::vector<std::int64_t>{12, 14}));
+    assert((span_occurrences.physical_positions() == std::vector<std::int64_t>{21, 34}));
+    const std::array<FeatureKey, 1> requested_view{{{8}}};
+    const auto span_alignment = span_binding.prepare(
+        std::span<const FeatureKey>(id_view),
+        std::span<const FeatureKey>(requested_view));
+    assert((span_alignment.source_positions() == std::vector<std::int64_t>{1}));
+    assert((span_alignment.model_indices() == std::vector<std::int64_t>{14}));
+
     auto incompatible = FeatureBinding<std::string>::from_ids(
         {"gene-A", "gene-B"}, {9, 3}, options);
     bool rejected = false;
@@ -95,6 +137,6 @@ int main() {
         "identity-test", 1, [](const std::string& id) { return id; });
     assert(descriptor.domain == "gene");
     assert((descriptor.model_indices == std::vector<std::int64_t>{9, 3}));
-    assert((descriptor.canonical_indices
-        == std::vector<std::optional<std::int64_t>>{2, 8}));
+    assert(descriptor.canonical_indices.has_value());
+    assert((*descriptor.canonical_indices == std::vector<std::int64_t>{2, 8}));
 }

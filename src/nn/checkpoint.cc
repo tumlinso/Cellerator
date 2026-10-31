@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <cstdint>
 #include <map>
 #include <set>
 #include <sstream>
@@ -29,7 +30,6 @@ struct ParameterSnapshot {
     std::vector<ParameterSlot> slots;
     std::vector<ParameterGroupLayout> groups;
     std::map<std::uint64_t, ParameterSlot> slots_by_id;
-    std::map<std::uint64_t, std::uint64_t> canonical_by_id;
     std::vector<ParameterId> roots;
     std::unordered_map<const TensorImpl*, ParameterId> root_by_tensor;
 };
@@ -88,7 +88,7 @@ ParameterSnapshot snapshot_parameters(const Parameters& parameters) {
             snapshot.roots.push_back(slot.id);
             snapshot.root_by_tensor.emplace(impl, slot.id);
         }
-        snapshot.canonical_by_id.emplace(slot.id.value, canonical_id);
+        (void)canonical_id;
     }
 
     std::map<std::uint64_t, std::size_t> membership_count;
@@ -211,6 +211,32 @@ void copy_values(const std::vector<std::pair<at::Tensor, at::Tensor>>& values) {
     for (const auto& entry : values) entry.first.copy_(entry.second);
 }
 
+Parameters selected_group_parameters(const ParameterGroup& selected) {
+    const auto ids = selected.parameter_ids();
+    at::Device base_device(at::kCPU);
+    at::ScalarType base_dtype = at::kFloat;
+    if (!ids.empty()) {
+        const auto first = selected.get(ids.front());
+        base_device = first.device();
+        base_dtype = first.scalar_type();
+    } else {
+        const auto options = selected.options();
+        if (options.device_opt()) base_device = *options.device_opt();
+        if (options.dtype_opt()) base_dtype = options.dtype_opt()->toScalarType();
+    }
+
+    Parameters owner(base_device, base_dtype);
+    for (const auto id : ids) {
+        const auto tensor = selected.get(id);
+        auto slot_group = owner.group(tensor.options());
+        // ParameterGroup::add adopts this exact leaf. A repeated TensorImpl
+        // becomes a local alias slot, while a leaf outside the selected group
+        // remains a root in this local checkpoint view.
+        (void)slot_group.add(tensor);
+    }
+    return owner;
+}
+
 } // namespace
 
 void save_checkpoint(
@@ -261,6 +287,15 @@ void save_checkpoint(
     }
 }
 
+void save_checkpoint(
+    const std::filesystem::path& path,
+    const ParameterGroup& group,
+    const BiologicalManifest& manifest,
+    torch::optim::Optimizer* optimizer) {
+    auto owner = selected_group_parameters(group);
+    save_checkpoint(path, owner, manifest, optimizer);
+}
+
 void load_checkpoint(
     const std::filesystem::path& path,
     Parameters& parameters,
@@ -283,6 +318,18 @@ void load_checkpoint(
         !optimizer_metadata.at("groups").is_array())
         throw std::invalid_argument("checkpoint optimizer layout is malformed");
     const bool saved_optimizer = optimizer_metadata.at("present").get<bool>();
+    for (const auto& group : optimizer_metadata.at("groups")) {
+        if (!group.is_array())
+            throw std::invalid_argument("checkpoint optimizer groups must be arrays of numeric slots");
+        for (const auto& id : group) {
+            if (!id.is_number_unsigned() && !id.is_number_integer())
+                throw std::invalid_argument("checkpoint optimizer slot IDs must be integers");
+            if (!id.is_number_unsigned() && id.get<std::int64_t>() < 0)
+                throw std::invalid_argument("checkpoint optimizer slot IDs must be nonnegative");
+        }
+    }
+    if (!saved_optimizer && !optimizer_metadata.at("groups").empty())
+        throw std::invalid_argument("checkpoint without an optimizer must have empty optimizer groups");
 
     std::set<std::string> archive_keys{
         "format", "version", "biological_manifest", "parameter_layout",
@@ -293,7 +340,8 @@ void load_checkpoint(
 
     c10::IValue format;
     archive.read("format", format);
-    if (!format.isString() || format.toStringRef() != native_checkpoint_format)
+    if (!format.isString() ||
+        std::string(format.toStringRef()) != std::string(native_checkpoint_format))
         throw std::invalid_argument("unsupported Cellerator native NN checkpoint format");
     c10::IValue version;
     archive.read("version", version);
@@ -347,7 +395,7 @@ void load_checkpoint(
     if (optimizer) {
         torch::serialize::OutputArchive backup_archive;
         optimizer->save(backup_archive);
-        std::ostringstream backup_stream(std::ios::binary);
+        std::ostringstream backup_stream(std::ios::out | std::ios::binary);
         backup_archive.save_to(backup_stream);
         optimizer_backup_bytes = backup_stream.str();
     }
@@ -365,7 +413,8 @@ void load_checkpoint(
         }
         if (optimizer && !optimizer_backup_bytes.empty()) {
             try {
-                std::istringstream backup_stream(optimizer_backup_bytes, std::ios::binary);
+                std::istringstream backup_stream(optimizer_backup_bytes,
+                                                 std::ios::in | std::ios::binary);
                 torch::serialize::InputArchive backup_archive;
                 backup_archive.load_from(backup_stream);
                 optimizer->load(backup_archive);
@@ -376,6 +425,15 @@ void load_checkpoint(
         }
         throw;
     }
+}
+
+void load_checkpoint(
+    const std::filesystem::path& path,
+    const ParameterGroup& group,
+    const BiologicalManifest& expected_manifest,
+    torch::optim::Optimizer* optimizer) {
+    auto owner = selected_group_parameters(group);
+    load_checkpoint(path, owner, expected_manifest, optimizer);
 }
 
 } // namespace cellerator::nn

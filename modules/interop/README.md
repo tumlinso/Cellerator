@@ -4,7 +4,8 @@ The future host-only module interfaces are `cellerator.baseplane` and
 `cellerator.cellshard`. Their underlying conventional contracts now have
 canonical homes under `include/Cellerator/interop`.
 
-Native CMake module scanning remains deferred because this host has CMake 3.28
-with Unix Makefiles and no `clang-scan-deps` or Ninja. No unbuilt `.ccm` facade
-is introduced, and CUDA stays outside the module graph. `cellerator.glasshelix`
-is additionally deferred because no frozen scientific contract exists.
+These interop modules remain deferred. The separate optional
+[`cellerator.nn`](../native/README.md) host surface has a local Clang/Ninja
+dependency-scanning route; that does not qualify the interop boundaries above.
+CUDA stays outside the named-module graph. `cellerator.glasshelix` is additionally
+deferred because no frozen scientific contract exists.

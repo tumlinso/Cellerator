@@ -1,0 +1,49 @@
+-- PyTorch: CUDA detected: 12.9
+-- PyTorch: CUDA nvcc is: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc
+-- PyTorch: CUDA toolkit directory: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
+-- PyTorch: Header version is: 12.9
+CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:140 (message):
+  Failed to compute shorthash for libnvrtc.so
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/cellerator-native-nn-consumer.mQYDYs/install/lib/cmake/Cellerator/CelleratorConfig.cmake:19 (find_dependency)
+  CMakeLists.txt:4 (find_package)
+
+
+CMake Warning (dev) at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:438 (message):
+  The package name passed to `find_package_handle_standard_args` (nvtx3) does
+  not match the name of the calling package (Caffe2).  This can lead to
+  problems in calling code that expects `find_package` result variables
+  (e.g., `_FOUND`) to follow a certain pattern.
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:178 (find_package_handle_standard_args)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/cellerator-native-nn-consumer.mQYDYs/install/lib/cmake/Cellerator/CelleratorConfig.cmake:19 (find_dependency)
+  CMakeLists.txt:4 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Could NOT find nvtx3 (missing: nvtx3_dir) 
+CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:184 (message):
+  Cannot find NVTX3, find old NVTX instead
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/cellerator-native-nn-consumer.mQYDYs/install/lib/cmake/Cellerator/CelleratorConfig.cmake:19 (find_dependency)
+  CMakeLists.txt:4 (find_package)
+
+
+-- USE_CUDNN is set to 0. Compiling without cuDNN support
+-- USE_CUSPARSELT is set to 0. Compiling without cuSPARSELt support
+-- USE_CUDSS is set to 0. Compiling without cuDSS support
+-- USE_CUFILE is set to 0. Compiling without cuFile support
+-- Automatic GPU detection failed. Building for common architectures.
+-- Autodetected CUDA architecture(s): 5.0;8.0;8.6;8.9;9.0;9.0a;10.0;10.0a;10.1a;12.0;12.0a
+-- Added CUDA NVCC flags for: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_89,code=sm_89;-gencode;arch=compute_90,code=sm_90;-gencode;arch=compute_90a,code=sm_90a;-gencode;arch=compute_100,code=sm_100;-gencode;arch=compute_100a,code=sm_100a;-gencode;arch=compute_101a,code=sm_101a;-gencode;arch=compute_120,code=sm_120;-gencode;arch=compute_120a,code=sm_120a
+-- Configuring done (1.8s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-native-nn-consumer.mQYDYs/consumer

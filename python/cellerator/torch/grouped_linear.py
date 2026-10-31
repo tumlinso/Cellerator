@@ -15,6 +15,7 @@ import operator
 import torch
 from torch import Tensor, nn
 from torch.nn import functional as F
+from ._native_nn import native_nn
 
 __all__ = ["grouped_linear", "GroupedLinear"]
 
@@ -171,6 +172,11 @@ def grouped_linear(
         raise ValueError("native grouped_linear requires CUDA tensors")
     if inputs.dtype not in (torch.float16, torch.float32):
         raise TypeError("native grouped_linear supports CUDA float16 and float32 only")
+    shared_native = native_nn("auto")
+    if shared_native is not None and hasattr(shared_native, "grouped_linear_cuda"):
+        # The C++ adapter saves original operands before making working copies,
+        # so noncontiguous parameter mutation is checked through normal versions.
+        return shared_native.grouped_linear_cuda(inputs, weight, offsets)
     return _NativeGroupedLinear.apply(inputs.contiguous(), weight.contiguous(), offsets)
 
 

@@ -42,14 +42,15 @@ authoritative.
   Native higher-order differentiation, automatic mixed-precision registration,
   compiler integration, and performance remain outside this qualification.
 
-## Native C++ NN first-order adapters (planned)
+## Native C++ NN first-order adapters
 
 - Purpose/owner: optional native NN operation adapters for ordinary Torch training; Cellerator NN owns adapters and existing numerical owners retain kernels.
-- Status: implementation in progress; qualification pending in `planning/native-nn-foundation-2026-10-31/derivatives/`.
+- Status: CPU and admitted V100 correctness validated (11 CUDA groups); separate memory qualification retained in `planning/native-nn-foundation-2026-10-31/derivatives/REPORT.md`.
 - C++ boundary: `Cellerator/nn/ops.hh` namespace `cellerator::nn::ops`: CPU `product2_cpu`, CUDA `grouped_linear_cuda` and `csr_scaled_dot_product_attention_cuda`. No new Python binding required.
 - Backend: existing native Product2 CPU, cuBLAS grouped linear, staged CUDA CSR attention. No new Tensor Core kernel or fused-small attention route.
 - Inputs/outputs: Product2 1D FP32 x/coefficient with int64 gathered indices; grouped linear [R,I]/[E,O,I] -> [R,O] with host row offsets; attention [Q,H,D]/[N,H,D]/[N,H,V] -> [Q,H,V] with explicit CUDA CSR, scale and zero-only dropout.
 - Precision/layout: matching CUDA FP16/FP32, FP32 internal accumulation; adapter prepares contiguous storage and preserves original saved tensors. Empty support is zero, duplicate CSR edges remain distinct.
 - Autograd/lifetime: first-order VJP only, original version checks, per-invocation native executor/workspace, current guarded stream and allocator stream records. Ordinary Torch parameter ownership and optimizer updates.
+- Allocator boundary: Torch `native`/`cudaMallocAsync` backends; foreign from_blob/DLPack owners and native executor handles retained through completion events, outside CUDA callbacks. Arbitrary globally installed pluggable allocators fail clearly. Trusted prepared CSR route reuses validated immutable structure without content reads or snapshots.
 - Distributed implications: local operations only, no communication or model ownership policy.
 - Code: `src/nn/ops_cpu.cc`, `src/nn/ops_cuda.cc`; tests in `tests/nn/native/ops*.cc`.

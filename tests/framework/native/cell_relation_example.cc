@@ -3,7 +3,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/model.hh>
+#include <Cellerator/modeling/dynamical.hh>
 #include <Cellerator/modeling/value_field.hh>
 
 #include <cassert>

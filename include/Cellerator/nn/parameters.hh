@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <span>
 #include <vector>
 
 namespace cellerator::nn {
@@ -67,6 +68,10 @@ public:
     // original storage placement.
     void set_options(at::TensorOptions options);
 
+    // Adopts an already-allocated floating leaf without moving, casting,
+    // cloning, or changing its requires_grad state. A tensor already present
+    // in this owner receives a new tied alias slot. Explicitly cast/move or
+    // detach tensors before adding them to a differently configured group.
     ParameterId add(const at::Tensor& tensor);
     ParameterId empty(at::IntArrayRef shape);
     ParameterId zeros(at::IntArrayRef shape);
@@ -75,6 +80,14 @@ public:
     // Add a new numeric alias slot which resolves to the same leaf tensor.
     ParameterId tie(ParameterId existing);
     at::Tensor get(ParameterId id) const;
+
+    // Borrowed view of this group's owner-slot IDs. The view remains valid
+    // until the next parameter allocation or alias added through this group.
+    std::span<const ParameterId> parameter_ids() const;
+
+    // Unique leaves in this group, in first-slot order. Frozen leaves remain
+    // present so optimizer input stays stable as trainability changes.
+    std::vector<at::Tensor> torch_parameters() const;
 
     // Toggles requires_grad on every distinct leaf currently in this group;
     // future allocations inherit the same setting.
