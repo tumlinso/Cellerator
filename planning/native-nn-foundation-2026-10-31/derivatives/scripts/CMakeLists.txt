@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.24)
+project(CelleratorNativeDerivativeQualification LANGUAGES CXX CUDA)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CUDA_ARCHITECTURES 70)
+find_package(Torch REQUIRED)
+get_filename_component(CELLERATOR_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../.." ABSOLUTE)
+set(CELLERATOR_ENABLE_FRAMEWORK_CUDA ON CACHE BOOL "" FORCE)
+include("${CELLERATOR_ROOT}/cmake/CelleratorFrameworkCUDA.cmake")
+add_library(native_derivative_cpu STATIC
+    "${CELLERATOR_ROOT}/src/nn/ops_cpu.cc"
+    "${CELLERATOR_ROOT}/src/compute/operation/product2/product2.cc"
+    "${CELLERATOR_ROOT}/src/execution/program/program_v2.cc")
+target_include_directories(native_derivative_cpu PUBLIC "${CELLERATOR_ROOT}/include")
+target_link_libraries(native_derivative_cpu PUBLIC ${TORCH_LIBRARIES})
+add_library(native_derivative_cuda STATIC "${CELLERATOR_ROOT}/src/nn/ops_cuda.cc")
+target_include_directories(native_derivative_cuda PUBLIC "${CELLERATOR_ROOT}/include")
+target_link_libraries(native_derivative_cuda PUBLIC ${TORCH_LIBRARIES} Cellerator::framework_cuda)
+add_executable(native_nn_ops_cpu_test "${CELLERATOR_ROOT}/tests/nn/native/ops_cpu.cc")
+target_link_libraries(native_nn_ops_cpu_test PRIVATE native_derivative_cpu)
+add_executable(native_nn_ops_cuda_test "${CELLERATOR_ROOT}/tests/nn/native/ops_cuda.cc")
+target_link_libraries(native_nn_ops_cuda_test PRIVATE native_derivative_cuda)

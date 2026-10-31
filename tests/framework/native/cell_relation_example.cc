@@ -62,10 +62,10 @@ int main() {
         for (auto value : state.field.values()) total += value;
         return total;
     };
-    auto model = m::make_model<State, Context>(transition, parameters, observation);
-    auto first = m::make_cell(model, State{m::ValueField<float>(layout, 1, {3,1,2}), "initial"},
+    auto model = m::make_dynamical_model<State, Context>(transition, parameters, observation);
+    auto first = m::make_dynamical_cell(model, State{m::ValueField<float>(layout, 1, {3,1,2}), "initial"},
                               std::string("cell-a"));
-    auto second = m::make_cell(model, State{m::ValueField<float>(layout, 1, {0,0,1}), "initial"},
+    auto second = m::make_dynamical_cell(model, State{m::ValueField<float>(layout, 1, {0,0,1}), "initial"},
                                std::string("cell-b"));
     assert(first.model() == second.model()); // Behavior/parameters are shared.
 

@@ -75,6 +75,10 @@ option(CELLERATOR_ENABLE_PYTHON "Build the optional cellerator Python extension"
 option(CELLERATOR_ENABLE_TORCH "Build the optional Cellerator Torch adapters" OFF)
 option(CELLERATOR_ENABLE_TOKENIZATION
     "Build the optional ATen-backed tokenization facility" OFF)
+option(CELLERATOR_ENABLE_NN
+    "Build the optional native C++ neural-network foundation" OFF)
+option(CELLERATOR_ENABLE_NN_CUDA
+    "Build optional CUDA neural-network derivative adapters" OFF)
 option(CELLERATOR_BUILD_TORCH_EXAMPLES "Build optional CellShard-dependent Torch examples" OFF)
 option(CELLERATOR_ENABLE_CELLSHARD "Build the embedded CellShard component" OFF)
 option(CELLERATOR_BUILD_TESTS "Build Cellerator test executables" ON)
@@ -118,6 +122,7 @@ include(cmake/CelleratorModeling.cmake)
 include(cmake/CelleratorConditional.cmake)
 include(cmake/CelleratorGGML.cmake)
 include(cmake/CelleratorFrameworkCUDA.cmake)
+include(cmake/CelleratorNN.cmake)
 # Native arithmetic families are host-capable and independent of adapters.
 add_subdirectory(src/ops/numeric)
 add_subdirectory(src/ops/matrix)
@@ -738,4 +743,16 @@ endif()
 
 if(CELLERATOR_ENABLE_TORCH)
     add_subdirectory(bindings/torch)
+endif()
+
+# Validate requested optional package components only after every optional
+# component has had a chance to extend CelleratorConfig.cmake.
+if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
+    file(APPEND "${CELLERATOR_HOST_CONFIG}"
+        "foreach(_cellerator_component IN LISTS Cellerator_FIND_COMPONENTS)\n"
+        "  if(Cellerator_FIND_REQUIRED_\${_cellerator_component} AND NOT Cellerator_\${_cellerator_component}_FOUND)\n"
+        "    set(Cellerator_FOUND FALSE)\n"
+        "    set(Cellerator_NOT_FOUND_MESSAGE \"Required Cellerator component '\${_cellerator_component}' is unavailable\")\n"
+        "  endif()\n"
+        "endforeach()\n")
 endif()

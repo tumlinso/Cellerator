@@ -82,15 +82,36 @@ python planning/nn-biological-meaning-2026-10-31/validate_wheel.py \
   --output /tmp/biological-wheel-validation.json
 ```
 
-Documentation rendering and final source-map validation are recorded separately
-in this directory after the final prose and generated inventory are checked.
+All **37 documentation pages** rendered successfully in a temporary staged
+book. One included scope link was repaired and its page rerendered without
+warnings. [`docs-validation.json`](docs-validation.json) records source hashes,
+commands' successful results, and the warning/resolution. Rendering executes no
+example or GPU code and publishes no site.
+
+The source-map generator's temporary-repository lifecycle checks passed;
+[`source-map-lifecycle.json`](source-map-lifecycle.json) records their results.
+Final generated routing evidence remains in the canonical
+[`validation.json`](../../docs/development/source_map/validation.json), with its
+normal source/index/worktree staleness checks; it is not numerical acceptance.
+The final live-tree validator could not hold a stable snapshot while concurrent
+native NN sources and build logs changed and new files arrived. Its actual
+nonpassing result is preserved in
+[`source-map-checkpoint.json`](source-map-checkpoint.json); a source-map refresh
+after that separate workstream becomes quiescent remains necessary. No staleness
+check was weakened. The qualified Python/GPU source hashes still matched at the
+final check recorded in
+[`qualification-source-check.json`](qualification-source-check.json).
 
 ## Preservation and limits
 
 [`preservation.json`](preservation.json) records byte comparison of all **2,042**
-preexisting files under `src`, `include`, `bindings`, `state`, and `events`; none
-changed during this pass. Preexisting unrelated CUDA work and submodule removals
-were preserved and included in the user-requested repository checkpoints.
+preexisting files under `src`, `include`, `bindings`, `state`, and `events` at
+the qualification checkpoint; all matched. This pass changed none of those
+files. Concurrent native NN development subsequently added and changed native
+files while documentation and inventory checks finished. Those edits are
+preserved and included in the user-requested checkpoints, but are not qualified
+by this pass's Python-facing test results. Preexisting unrelated CUDA work and
+submodule removals were also preserved.
 
 Manifests record declarations beside ordinary weights, not executable model
 reconstruction or guarantees of selector equivalence. No histories, latent

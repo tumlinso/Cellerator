@@ -1,0 +1,96 @@
+-- The CXX compiler identification is GNU 13.3.0
+-- The CUDA compiler identification is NVIDIA 12.9.86
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - done
+-- Check for working CUDA compiler: /usr/local/cuda/bin/nvcc - skipped
+-- Detecting CUDA compile features
+-- Detecting CUDA compile features - done
+-- Found CUDA: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9 (found version "12.9") 
+-- Unable to find cublas_v2.h in either "/usr/local/cuda/include" or "/usr/math_libs/include"
+-- Found CUDAToolkit: /usr/local/cuda/include (found version "12.9.86") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- PyTorch: CUDA detected: 12.9
+-- PyTorch: CUDA nvcc is: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc
+-- PyTorch: CUDA toolkit directory: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
+-- PyTorch: Header version is: 12.9
+-- Found Python: /home/tumlinson/Software/miniconda3/bin/python3 (found version "3.13.11") found components: Interpreter 
+CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:140 (message):
+  Failed to compute shorthash for libnvrtc.so
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  CMakeLists.txt:6 (find_package)
+
+
+CMake Warning (dev) at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:438 (message):
+  The package name passed to `find_package_handle_standard_args` (nvtx3) does
+  not match the name of the calling package (Caffe2).  This can lead to
+  problems in calling code that expects `find_package` result variables
+  (e.g., `_FOUND`) to follow a certain pattern.
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:178 (find_package_handle_standard_args)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  CMakeLists.txt:6 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Could NOT find nvtx3 (missing: nvtx3_dir) 
+CMake Warning at /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/public/cuda.cmake:184 (message):
+  Cannot find NVTX3, find old NVTX instead
+Call Stack (most recent call first):
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)
+  /home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/share/cmake/Torch/TorchConfig.cmake:68 (find_package)
+  CMakeLists.txt:6 (find_package)
+
+
+-- USE_CUDNN is set to 0. Compiling without cuDNN support
+-- USE_CUSPARSELT is set to 0. Compiling without cuSPARSELt support
+-- USE_CUDSS is set to 0. Compiling without cuDSS support
+-- USE_CUFILE is set to 0. Compiling without cuFile support
+-- Automatic GPU detection failed. Building for common architectures.
+-- Autodetected CUDA architecture(s): 5.0;8.0;8.6;8.9;9.0;9.0a;10.0;10.0a;10.1a;12.0;12.0a
+-- Added CUDA NVCC flags for: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_89,code=sm_89;-gencode;arch=compute_90,code=sm_90;-gencode;arch=compute_90a,code=sm_90a;-gencode;arch=compute_100,code=sm_100;-gencode;arch=compute_100a,code=sm_100a;-gencode;arch=compute_101a,code=sm_101a;-gencode;arch=compute_120,code=sm_120;-gencode;arch=compute_120a,code=sm_120a
+-- Found Torch: /usr/local/lib/libtorch.so  
+-- Found CUDAToolkit: /usr/local/cuda/targets/x86_64-linux/include;/usr/include (found version "12.9.86") 
+-- Configuring done (4.9s)
+CMake Warning at CMakeLists.txt:19 (add_executable):
+  Cannot generate a safe runtime search path for target
+  native_nn_ops_cpu_test because there is a cycle in the constraint graph:
+
+    dir 0 is [/lib/intel64]
+    dir 1 is [/lib/intel64_win]
+    dir 2 is [/lib/win-x64]
+    dir 3 is [/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib]
+      dir 5 must precede it due to runtime library [libc10.so]
+    dir 4 is [/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64]
+    dir 5 is [/usr/local/lib]
+      dir 3 must precede it due to runtime library [libtorch.so]
+
+  Some of these libraries may not be found correctly.
+
+
+CMake Warning at CMakeLists.txt:21 (add_executable):
+  Cannot generate a safe runtime search path for target
+  native_nn_ops_cuda_test because there is a cycle in the constraint graph:
+
+    dir 0 is [/lib/intel64]
+    dir 1 is [/lib/intel64_win]
+    dir 2 is [/lib/win-x64]
+    dir 3 is [/home/tumlinson/Software/miniconda3/lib/python3.13/site-packages/torch/lib]
+      dir 4 must precede it due to runtime library [libc10.so]
+    dir 4 is [/usr/local/lib]
+      dir 3 must precede it due to runtime library [libtorch.so]
+    dir 5 is [/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/lib64]
+
+  Some of these libraries may not be found correctly.
+
+
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-native-derivatives

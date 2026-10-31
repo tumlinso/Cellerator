@@ -1,0 +1,117 @@
+module;
+
+#include <Cellerator/nn.hh>
+#include <Cellerator/biology/feature_binding.hh>
+#include <Cellerator/biology/coordinates.hh>
+
+export module cellerator.nn;
+
+// ATen stays a normal header dependency. These declarations make the types
+// appearing in Cellerator's public signatures nameable to module importers.
+export namespace at {
+using ::at::Tensor;
+using ::at::Device;
+using ::at::DeviceType;
+using ::at::ScalarType;
+}
+
+// The module surface re-exports the canonical header declarations. Importers
+// and conventional-header users therefore use the same C++ types and ABI.
+export namespace cellerator::nn {
+using ::cellerator::nn::Run;
+using ::cellerator::nn::Identity;
+using ::cellerator::nn::ParameterId;
+using ::cellerator::nn::ParameterSlot;
+using ::cellerator::nn::ParameterGroupLayout;
+using ::cellerator::nn::invalid_parameter_id;
+using ::cellerator::nn::Parameters;
+using ::cellerator::nn::ParameterGroup;
+using ::cellerator::nn::LinearParameters;
+using ::cellerator::nn::linear;
+using ::cellerator::nn::Linear;
+using ::cellerator::nn::Embedding;
+
+using ::cellerator::nn::FeatureInput;
+using ::cellerator::nn::FeatureEncoderOptions;
+using ::cellerator::nn::FeatureEncoderParameters;
+using ::cellerator::nn::encode_features;
+using ::cellerator::nn::FeatureEncoder;
+
+using ::cellerator::nn::AttentionKernel;
+using ::cellerator::nn::AttentionOptions;
+using ::cellerator::nn::AttentionLayout;
+using ::cellerator::nn::AttentionParameters;
+using ::cellerator::nn::relation_attention;
+using ::cellerator::nn::RelationAttention;
+
+using ::cellerator::nn::FeatureReadout;
+using ::cellerator::nn::readout;
+using ::cellerator::nn::Readout;
+using ::cellerator::nn::ObservationCoordinates;
+using ::cellerator::nn::Prediction;
+using ::cellerator::nn::QueryPayload;
+using ::cellerator::nn::QueryRequest;
+using ::cellerator::nn::query;
+using ::cellerator::nn::predict;
+using ::cellerator::nn::predict_query;
+using ::cellerator::nn::ConditionedInvocation;
+using ::cellerator::nn::conditioned;
+using ::cellerator::nn::predict_conditioned;
+using ::cellerator::nn::align_prediction_targets;
+using ::cellerator::nn::categorical_target_columns;
+using ::cellerator::nn::reduce_prediction_loss;
+
+using ::cellerator::nn::CsrSupport;
+using ::cellerator::nn::PreparedRelation;
+using ::cellerator::nn::InteractionPrograms;
+using ::cellerator::nn::ProgramCall;
+using ::cellerator::nn::ProgramResult;
+using ::cellerator::nn::GatedInteractor;
+
+using ::cellerator::nn::SupervisionUnit;
+using ::cellerator::nn::align_prediction_targets;
+using ::cellerator::nn::categorical_target_columns;
+using ::cellerator::nn::reduce_prediction_loss;
+
+using ::cellerator::nn::BiologicalDeclaration;
+using ::cellerator::nn::BiologicalRelationDeclaration;
+using ::cellerator::nn::BiologicalViewSourceKind;
+using ::cellerator::nn::BiologicalViewDeclaration;
+using ::cellerator::nn::BiologicalManifestWeights;
+using ::cellerator::nn::BiologicalManifest;
+using ::cellerator::nn::biological_manifest_format;
+using ::cellerator::nn::biological_manifest_version;
+using ::cellerator::nn::parse_biological_manifest;
+using ::cellerator::nn::serialize_biological_manifest;
+using ::cellerator::nn::validate_biological_manifest;
+using ::cellerator::nn::save_biological_manifest;
+using ::cellerator::nn::load_biological_manifest;
+
+using ::cellerator::nn::native_checkpoint_format;
+using ::cellerator::nn::native_checkpoint_version;
+using ::cellerator::nn::save_checkpoint;
+using ::cellerator::nn::load_checkpoint;
+}
+
+export namespace cellerator::nn::ops {
+using ::cellerator::nn::ops::product2_cpu;
+using ::cellerator::nn::ops::grouped_linear_cuda;
+using ::cellerator::nn::ops::csr_scaled_dot_product_attention_cuda;
+}
+
+export namespace cellerator::biology {
+using ::cellerator::biology::AxisDescriptor;
+using ::cellerator::biology::OccurrenceCoordinates;
+using ::cellerator::biology::OccurrenceOrderToken;
+using ::cellerator::biology::UnknownIdentityPolicy;
+using ::cellerator::biology::FeatureBindingOptions;
+using ::cellerator::biology::FeatureBinding;
+using ::cellerator::biology::PreparedAlignment;
+using ::cellerator::biology::FeatureAlias;
+using ::cellerator::biology::EncodedFeatureAlias;
+using ::cellerator::biology::FeatureBindingDescriptor;
+}
+
+export namespace torch::optim {
+using ::torch::optim::Optimizer;
+}

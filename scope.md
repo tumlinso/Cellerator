@@ -139,7 +139,7 @@ resource plumbing to express a biological model. Native use should not require
 a Python interpreter; Python models should retain direct access to ordinary
 Python modules and custom operations. These are architectural requirements,
 not a claim that the current interfaces have reached parity. See the
-[language design direction](docs/architecture.qmd#cpp-and-python-modeling).
+[language design direction](https://github.com/tumlinso/Cellerator/blob/main/docs/architecture.qmd#cpp-and-python-modeling).
 
 ## What belongs here
 
