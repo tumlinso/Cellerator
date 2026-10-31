@@ -91,6 +91,16 @@ class PredictionSupervisionTests(unittest.TestCase):
         with self.assertRaisesRegex(KeyError, "no Prediction class column"):
             categorical_target_columns(prediction, (99,))
 
+    def test_alignment_rejects_broadcast_compatible_but_unequal_shapes(self):
+        binding = FeatureBinding.from_ids(("gene-a",), (4,), model_capacity=5)
+        alignment = binding.prepare(("gene-a",))
+        prediction = Prediction(
+            torch.zeros((2, 3, 1)), feature_ids=("gene-a",)
+        )
+        targets = torch.zeros((2, 1, 1))
+        with self.assertRaisesRegex(ValueError, "shapes must match exactly"):
+            align_prediction_targets(prediction, targets, alignment)
+
     def test_observation_reduction_uses_valid_mask_and_empty_mask_returns_grad_zero(self):
         losses = torch.tensor([[1.0, 3.0], [5.0, float("nan")]], requires_grad=True)
         mask = torch.tensor([[True, False], [True, False]])

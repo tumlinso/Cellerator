@@ -18,7 +18,7 @@ Implemented facilities have different backend and maturity boundaries. The 2026-
 ## Available package surfaces
 
 - `modeling` provides a general `Cell` information/program handle and explicit `DynamicalCell`/`DynamicalModel` transitions, step contexts/results, observations, and experiments. Legacy dynamic construction remains deprecated compatibility behavior. The package imports without Torch or a native extension.
-- `nn` and `torch.nn` expose `FeatureEncoder`, dense/packed/CSR `RelationAttention`, `ModelWithViews`, and functional/module grouped linear composition. Ordinary Torch parameters and optimizers remain ordinary; existing canonical native owners retain their guarded update contracts. The source examples cover masked expression, causal event history, and paired auxiliary readouts.
+- `nn` and `torch.nn` expose bound `FeatureEncoder`, dense/packed/CSR `RelationAttention`, reusable `PreparedRelation`, shared `InteractionPrograms`, `FeatureReadout`, labelled `ModelWithViews` queries, supervision helpers, biological manifests, and functional/module grouped linear composition. The Torch-free root provides model-local `FeatureBinding` and borrowed-value prediction/query records. Ordinary Torch parameters and optimizers remain ordinary; existing canonical native owners retain their guarded update contracts. The source examples cover masked expression, causal event history, and paired auxiliary readouts.
 - `state`, `events`, and `dynamics` provide sparse/ragged/layout-aware state, generation-safe store references, event histories and trajectories, lineage, discrete/continuous/stochastic reference dynamics, and explicit composition. Quantization profiles can be shared across cells and feature orderings; exact-value overrides remain per-payload and caller-controlled.
 - `interactions` provides directed, bipartite, and joint hyperedge computations with explicit activity gates, aggregation, and native sparse worklist adapters. Native model, relation, layout, and field classes preserve semantic identities independently of storage slots. Incremental native execution invalidates declared dependencies and caches unaffected results.
 - `execution` provides populations, routed context, suspension/resumption, lifecycle effects, expert-major worklists, topology cost estimates, revisioned parameter residency, and asynchronous callback execution. Native conditional dispatch preserves exact expert revisions and origin identities. Logical routing, biological accessibility, and physical placement remain separate.
@@ -37,6 +37,31 @@ Implemented facilities have different backend and maturity boundaries. The 2026-
 Start with the [NN foundation guide](nn_foundation.qmd), [biological framework guide](biological_framework.qmd), [distributed execution contract](distributed_execution.qmd), and [native CUDA guide](framework_cuda.qmd). The [Python binding guide](development/python-bindings.md), [sparse-support reference](sparse_support_foundation.qmd), [tokenization reference](tokenization.qmd), and [experimental fields note](development/experimental-fields.md) retain their narrower contracts. The [source routing guide](development/routing.md) identifies owners; the [developer reference](developer_reference.qmd) describes established build and validation routes.
 
 ## NN foundation evidence, 2026-10-31
+
+The biological-meaning pass connects canonical biological identities, actual
+model indices, and repeated occurrences to neural construction and supervision.
+Prepared relations bind endpoint order, grouping, optional existing axes,
+structural generation, and device independently of mutable features. Queryable
+readouts preserve output identities and require actual registered numerical
+conditioning; descriptive context does not count as conditioning. Explicit JSON
+manifests preserve declarations beside weights without changing native-owner
+checkpoints or reconstructing executable code.
+
+The [integration qualification](../planning/nn-biological-meaning-2026-10-31/VALIDATION.md)
+records CPU integration, synthetic expression/history and auxiliary training,
+isolated wheel/import checks, and documentation rendering. Its
+[bounded V100 run](../planning/nn-biological-meaning-2026-10-31/gpu/REPORT.md)
+passed all six tests with zero skips and verified scheduler cleanup. This checks
+new compositions and prepared device structures, including FP16/FP32 attention
+VJPs and native grouped-linear interoperability. It does not qualify performance,
+scientific biological validity, distributed service, or C++ modeling parity.
+Numerical kernels and native bindings were preserved by this pass.
+
+`GatedInteractor` now rejects supplied context unless a declared conditioning
+path consumes it. Its `context=None` computation is preserved. This is an
+intentional compatibility repair for callers that previously supplied ignored
+context. Raw neural and CSR APIs, generic cells, explicit dynamics, and native
+parameter-owner/checkpoint contracts remain available.
 
 The first NN milestone supplies composable biological feature/interaction
 modules, shared trainable readouts, generic cell binding, a compatibility

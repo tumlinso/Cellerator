@@ -5,6 +5,8 @@ import torch
 from torch import nn
 
 from cellerator.biology import FeatureBinding, PredictionQuery
+from cellerator.torch.manifest import biological_manifest, validate_biological_manifest
+from cellerator.torch.manifest import biological_manifest, validate_biological_manifest
 from cellerator.torch.readouts import FeatureReadout
 from cellerator.torch.views import ModelWithViews
 
@@ -103,6 +105,24 @@ class BiologicalQueryTests(unittest.TestCase):
         self.assertEqual(base.calls, 1)
         hook.remove()
 
+    def test_feature_readout_manifest_preserves_axis_order_and_output_binding_must_match(self):
+        original = FeatureReadout(self.binding, width=4)
+        manifest = biological_manifest(original)
+        reversed_binding = FeatureBinding.from_ids(
+            ("gene-c", "gene-b", "gene-a"),
+            model_indices=(4, 2, 5),
+            model_capacity=7,
+            domain="gene",
+        )
+        reversed_readout = FeatureReadout(reversed_binding, width=4)
+        with self.assertRaisesRegex(ValueError, "declarations"):
+            validate_biological_manifest(reversed_readout, manifest)
+
+        with self.assertRaisesRegex(ValueError, "match the readout module"):
+            ModelWithViews(BaseModel()).add_view(
+                "rna", original, source="features", output_binding=reversed_binding
+            )
+
     def test_frozen_base_keeps_input_gradient_through_feature_readout(self):
         torch.manual_seed(202)
         base = BaseModel()
@@ -141,6 +161,20 @@ class BiologicalQueryTests(unittest.TestCase):
         self.assertEqual(prediction.sample_ids, ("window-1", "window-2"))
         self.assertEqual(prediction.row_offsets, (0, 1, 3))
         self.assertEqual(base.calls, 1)
+
+    def test_query_offsets_must_match_declared_base_window_grouping(self):
+        base = PackedBaseModel()
+        model = ModelWithViews(base)
+        model.add_view(
+            "expression", FixedFeatureHead((1.0, 2.0, 3.0)),
+            source="features", output_binding=self.binding,
+        )
+
+        with self.assertRaisesRegex(ValueError, "row_offsets must agree"):
+            model.query(object(), PredictionQuery(
+                "expression", sample_ids=("window-1", "window-2"),
+                row_offsets=(0, 2, 3),
+            ))
 
     def test_multiple_compatible_queries_share_one_base_call_and_preserve_order(self):
         base = BaseModel()

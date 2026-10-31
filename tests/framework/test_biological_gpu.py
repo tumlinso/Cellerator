@@ -81,7 +81,7 @@ class BiologicalCUDAIntegrationTests(unittest.TestCase):
             target_order=target_order,
         )
         prepared = host_prepared.to(self.device)
-        self.assertIs(host_prepared.to(self.device), prepared)
+        self.assertIs(prepared.to(self.device), prepared)
         self.assertEqual(prepared.device, self.device)
         self.assertEqual(prepared.row_ptr, row_ptr)
         self.assertEqual(prepared.col_indices, col_indices)
@@ -265,9 +265,10 @@ class BiologicalCUDAIntegrationTests(unittest.TestCase):
         base, conditioner = Base(), Conditioner()
         rna = FeatureReadout(binding, 4, output_size=2, heads=2)
         atac = FeatureReadout(binding, 4, output_size=2, heads=2)
-        model = ModelWithViews(base, conditioner=conditioner).to(self.device)
+        model = ModelWithViews(base, conditioner=conditioner)
         model.add_view("rna", rna, source="latent", output_binding=binding, queryable=True)
         model.add_view("atac", atac, source="latent", output_binding=binding, queryable=True)
+        model.to(self.device)
         sample_ids = ("cell-a", "cell-b")
         features = torch.randn(2, 3, 4, device=self.device, requires_grad=True)
         batch = {"features": features, "sample_ids": sample_ids}
@@ -323,11 +324,12 @@ class BiologicalCUDAIntegrationTests(unittest.TestCase):
                 row_offsets=(0, 2, 3),
             ))
 
-        unsupported = ModelWithViews(Base()).to(self.device)
+        unsupported = ModelWithViews(Base())
         unsupported.add_view(
             "rna", FeatureReadout(binding, 4, output_size=2, heads=2),
             source="latent", output_binding=binding, queryable=True,
         )
+        unsupported.to(self.device)
         with self.assertRaisesRegex(ValueError, "registered conditioner"):
             unsupported.query({"features": features, "sample_ids": sample_ids}, first_query)
 

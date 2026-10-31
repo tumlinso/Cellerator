@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "owner_id": "cellerator",
+  "idempotency_key": "cellerator-bio-meaning-v100-smoke-20261031-1ee613d001aa",
+  "argv": [
+    "/home/tumlinson/Software/miniconda3/bin/python",
+    "/home/tumlinson/Cellerator/planning/nn-biological-meaning-2026-10-31/gpu/scripts/qualify.py",
+    "--output",
+    "planning/nn-biological-meaning-2026-10-31/gpu/evidence/cuda-run.json",
+    "--artifact-manifest",
+    "/home/tumlinson/Cellerator/planning/nn-biological-meaning-2026-10-31/gpu/evidence/artifact_manifest.json",
+    "--extension-dir",
+    "/tmp/cellerator-nn-grouped-linear-sm70"
+  ],
+  "working_directory": "/home/tumlinson/Cellerator",
+  "environment": {
+    "CELLERATOR_TEST_CUDA": "1",
+    "CUDA_VISIBLE_DEVICES": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "resources": [
+    {
+      "kind": "gpu",
+      "mode": "exclusive",
+      "quantities": {
+        "memory_bytes": 2147483648.0
+      },
+      "same_host": true,
+      "schema_version": 1,
+      "selectors": {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+      },
+      "topology_constraints": {}
+    }
+  ],
+  "tags": [
+    "gpu.exclusive",
+    "cellerator-biological-meaning-correctness"
+  ],
+  "timeout_seconds": 360.0,
+  "expected_duration_seconds": 120.0,
+  "kill_timeout_seconds": 270.0,
+  "termination_grace_seconds": 10.0,
+  "max_attempts": 1,
+  "priority": 50,
+  "priority_class": "normal",
+  "preemption_action": "abandon",
+  "interruption": {
+    "cancellation_supported": true,
+    "checkpoint_supported": false,
+    "cooperative_yield": false,
+    "restart_safe": false
+  },
+  "dependencies": [],
+  "preconditions": [],
+  "secret_refs": [],
+  "profile_id": null,
+  "retention_policy": null,
+  "event_trigger": null,
+  "not_before": null,
+  "deadline": null,
+  "flexible": false
+}

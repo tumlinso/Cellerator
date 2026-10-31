@@ -117,16 +117,22 @@ class GatedInteractor(nn.Module):
     """
 
     def __init__(self, input_size: int, hidden_size: int, output_size: int,
-                 *, normalize: bool = False, context_size: int | None = None):
+                 *, normalize: bool = False, context_size: int | None = None,
+                 conditioner: nn.Module | None = None):
         super().__init__()
         if min(input_size, hidden_size, output_size) <= 0:
             raise ValueError("feature sizes must be positive")
         if context_size is not None and context_size <= 0:
             raise ValueError("context_size must be positive or None")
+        if conditioner is not None and not isinstance(conditioner, nn.Module):
+            raise TypeError("conditioner must be a torch.nn.Module or None")
+        if conditioner is not None and context_size is not None:
+            raise ValueError("context_size and conditioner are mutually exclusive")
         self.input_size = int(input_size)
         self.output_size = int(output_size)
         self.normalize = bool(normalize)
         self.context_size = context_size
+        self.context_conditioner = conditioner
         self.encode = nn.Linear(self.input_size, hidden_size)
         self.gate = nn.Linear(self.input_size, 1)
         self.context_projection = (
@@ -154,8 +160,14 @@ class GatedInteractor(nn.Module):
                     raise ValueError("participants must have matching shapes and devices") from exc
         if values.shape[-1] != self.input_size:
             raise ValueError("participant feature size does not match input_size")
+        gate_contribution = None
         if context is None:
             conditioned_values = values
+        elif self.context_conditioner is not None:
+            conditioned_values = values
+            gate_contribution = self.context_conditioner(context)
+            if not isinstance(gate_contribution, Tensor) or not gate_contribution.is_floating_point():
+                raise TypeError("conditioner must return a floating-point Torch Tensor")
         else:
             if self.context_projection is None:
                 raise ValueError(
@@ -174,7 +186,22 @@ class GatedInteractor(nn.Module):
                 raise TypeError("context and participants must share a dtype")
             conditioned_values = values + self.context_projection(context).unsqueeze(-2)
         hidden = torch.tanh(self.encode(conditioned_values))
-        weights = torch.sigmoid(self.gate(conditioned_values))
+        gate_logits = self.gate(conditioned_values)
+        if gate_contribution is not None:
+            if gate_contribution.device != gate_logits.device:
+                raise ValueError("conditioner output and gate logits must share a device")
+            if gate_contribution.dtype != gate_logits.dtype:
+                raise TypeError("conditioner output and gate logits must share a dtype")
+            try:
+                broadcast_shape = torch.broadcast_shapes(
+                    gate_logits.shape, gate_contribution.shape
+                )
+            except RuntimeError as exc:
+                raise ValueError("conditioner output must broadcast to gate logits") from exc
+            if tuple(broadcast_shape) != tuple(gate_logits.shape):
+                raise ValueError("conditioner output broadcast must match gate-logit shape")
+            gate_logits = gate_logits + gate_contribution
+        weights = torch.sigmoid(gate_logits)
         pooled = (weights * hidden).sum(dim=-2)
         if self.normalize:
             pooled = pooled / weights.sum(dim=-2).clamp_min(1.0)

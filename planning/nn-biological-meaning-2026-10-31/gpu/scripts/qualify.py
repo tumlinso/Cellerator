@@ -79,7 +79,33 @@ def main() -> int:
     artifact_manifest = json.loads(artifact_manifest_path.read_text())
     expected_hashes = artifact_manifest["source_sha256"]
     source_identity_matches = initial_hashes == expected_hashes
+    expected_native_hash = artifact_manifest.get("native_extension_sha256")
+    native_candidates = tuple(extension_dir.glob("_modeling_cuda*.so"))
+    native_preflight_hash = (
+        digest(native_candidates[0]) if len(native_candidates) == 1 else None
+    )
+    native_preflight_matches = (
+        expected_native_hash is None or native_preflight_hash == expected_native_hash
+    )
     guidance_hashes = {str(path): digest(path) for path in GUIDANCE_SOURCES}
+    if not source_identity_matches or not native_preflight_matches:
+        output = args.output if args.output.is_absolute() else ROOT / args.output
+        output.parent.mkdir(parents=True, exist_ok=True)
+        refusal = {
+            "purpose": "correctness smoke only; no test or CUDA allocation attempted",
+            "success": False,
+            "tests_run": 0,
+            "source_identity_matches_manifest": source_identity_matches,
+            "native_extension_identity_matches_manifest": native_preflight_matches,
+            "source_sha256_before": initial_hashes,
+            "expected_source_sha256": expected_hashes,
+            "native_extension_sha256_before": native_preflight_hash,
+            "expected_native_extension_sha256": expected_native_hash,
+            "guidance_sha256": guidance_hashes,
+        }
+        output.write_text(json.dumps(refusal, indent=2) + "\n")
+        print(json.dumps(refusal, indent=2))
+        return 2
     result = unittest.TextTestRunner(verbosity=2).run(
         unittest.defaultTestLoader.discover(
             str(ROOT / "tests/framework"), pattern="test_biological_gpu.py"
@@ -98,7 +124,6 @@ def main() -> int:
     expected_v100 = capability == (7, 0) and "V100" in torch.cuda.get_device_name(device)
     native_path = None if extension_module is None else Path(extension_module.__file__)
     native_hash = None if native_path is None else digest(native_path)
-    expected_native_hash = artifact_manifest.get("native_extension_sha256")
     native_identity_matches = (
         expected_native_hash is None or native_hash == expected_native_hash
     )

@@ -201,20 +201,29 @@ def _train_history_atac(
         )
     )
 
-    def loss_value() -> torch.Tensor:
-        prediction = (
-            model.predict(batch, "atac") if query is None
-            else model.query(batch, query).values
+    def loss_value() -> tuple[torch.Tensor, torch.Tensor]:
+        if query is None:
+            loss = atac_binary_loss(model.predict(batch, "atac"), targets)
+            return loss, torch.tensor(targets.numel(), dtype=torch.long)
+        prediction = model.query(batch, query)
+        unreduced = F.binary_cross_entropy_with_logits(
+            prediction.values, targets, reduction="none"
         )
-        return atac_binary_loss(prediction, targets)
+        return reduce_prediction_loss(
+            unreduced, unit="cell", sample_ids=prediction.sample_ids,
+            cell_ids=prediction.sample_ids,
+        )
 
-    initial = float(loss_value().detach())
+    initial_loss, initial_count = loss_value()
+    initial = float(initial_loss.detach())
     for _ in range(steps):
         optimizer.zero_grad(set_to_none=True)
-        loss = loss_value()
-        loss.backward()
-        optimizer.step()
-    final = float(loss_value().detach())
+        loss, count = loss_value()
+        if int(count):
+            loss.backward()
+            optimizer.step()
+    final_loss, _ = loss_value()
+    final = float(final_loss.detach())
     return initial, final
 
 

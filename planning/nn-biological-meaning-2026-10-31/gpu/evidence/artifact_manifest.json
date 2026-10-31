@@ -1,0 +1,38 @@
+{
+  "purpose": "admitted V100 correctness smoke; no performance or biological validity claim",
+  "source_sha256": {
+    "python/cellerator/__init__.py": "2ec7adac18b44974d28fd3428eaa7489775a6a119120be6defbdbdff600d9d13",
+    "python/cellerator/_declarations.py": "605b0cb70415454224303d43b3ff52e2580bbc1813eff8079161f6031d253d93",
+    "python/cellerator/torch/__init__.py": "b02c263c0f0fada0a7a5ecfe8a9905a6b300296ed5269260153c413114ed053c",
+    "python/cellerator/biology.py": "d4ad3524bddaf69f9b4717e061eb93b497154bd35798c1f2429f4eed8deeb6e4",
+    "python/cellerator/torch/features.py": "e3db8901b97797a63bd0694329c08e280e78ed78df89002c5b70e03bbacc853a",
+    "python/cellerator/torch/readouts.py": "f7de75d261e8df0d4feb36eb8bc01f280e7a470fb59fa633dd707e5fa81fa73e",
+    "python/cellerator/torch/views.py": "4097bcdbc1ee6c4d23c2302870d81d7134d7c99d0c18d8d9cc92435c48db088f",
+    "python/cellerator/torch/relation_attention.py": "19d5f6361347012ab563727ff32cdde40c7e0cc77fc84589d54e6377a4638f98",
+    "python/cellerator/torch/relations.py": "e87cc66891a87919a73911cffce7cfa340407147ab6024019f0d8b8f58c8f19f",
+    "python/cellerator/torch/programs.py": "4fd4fa6a07602e4ef26692f62d297a5d00aef65cce4b3b861bb2ea6f774babdf",
+    "python/cellerator/torch/grouped_linear.py": "918ec4a98d2420917b21b9d5f16fed646bbdc997c7d83206bedc4c3762c38cc5",
+    "tests/framework/test_biological_gpu.py": "9553a71a35fad670c8a49be875a5e47b6bc143a27aea1a69a8833e157d7874a6",
+    "planning/nn-biological-meaning-2026-10-31/gpu/scripts/qualify.py": "f00dad0d4f314611f23a14a9ccb445602acf1d5617552b36701f2bee3ecd0b8d",
+    "planning/nn-biological-meaning-2026-10-31/gpu/docs/draft.md": "3f76cba01bd68471ca2c26837b8ebd3ba5d79e35e1c5cb4c4f4028dc237abadf"
+  },
+  "guidance_sha256": {
+    "/home/tumlinson/.agents/skills/cuda/SKILL.md": "3992c5b0e85409cce8002fcfe2c6caed63df6451daad9bae28ccd64a381d717a",
+    "/home/tumlinson/.agents/skills/cuda/references/execution/host-execution.md": "311edd1ea9055c70914bddebe7b5c6fbe36789cfaafa4491c153b2e713fbc90d",
+    "/home/tumlinson/.agents/skills/cuda/references/specialized/torch-extensions.md": "3f17b75c30401ec43e551aa213730614237455432699bdf96b9db7780b4cdaff",
+    "/home/tumlinson/.agents/skills/cuda/references/architectures/volta/router.md": "54f91d1e42395eac485862a0970d74ea641642f63b96ffbdc2381ca52a0096b7",
+    "/home/tumlinson/kda/docs/agent-entry.md": "e7f85c69274b6524c5fc4e13f3cffec8c7d42469f23a4e1e1c0555c47451bbc6",
+    "/home/tumlinson/kda/prompts/basic-flow.md": "5b09f4709b39f8543bcd56cc5ae0c4e00fe0e64cceb1bb1f80da604806b86e84"
+  },
+  "native_extension_path": "/tmp/cellerator-nn-grouped-linear-sm70/_modeling_cuda.cpython-313-x86_64-linux-gnu.so",
+  "native_extension_sha256": "d5ffa9284ae5a7dd96ce1e6f8adcbd347b86b58064d0a00496d04f1a8b6ec537",
+  "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+  "workload": {
+    "feature_binding": "FP32 named gene identities; model indices (7,2,11); repeated occurrence sequence",
+    "prepared_attention": "FP32 and FP16; packed source width 5, target width 3, 2 heads, duplicate edge and empty target; raw CSR plus independent target-row softmax oracle",
+    "query_readout": "FP32; 2 samples, 3 source features, width 4, 2 requested output features, conditioning and frozen/joint gradient paths",
+    "interaction_programs": "FP32; 4 feature occurrences, 3 overlapping programs, explicit empty program and context",
+    "grouped_linear_interop": "FP32 inputs/weights/output, FP32 accumulator; existing unchanged native operation and reference comparison"
+  },
+  "expected_test_count": 6
+}

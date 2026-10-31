@@ -261,6 +261,27 @@ behavior. Supplying context without support now raises rather than silently
 discarding it; callers that previously passed unused context must remove it or
 register an actual conditioning adapter.
 
+```python
+from torch import nn
+from cellerator.adapters.torch import GatedInteractor
+
+class GateConditioner(nn.Module):
+    def __init__(self, context_width):
+        super().__init__()
+        self.offset = nn.Linear(context_width, 1)
+
+    def forward(self, context):
+        return self.offset(context).unsqueeze(-2)  # [batch, 1, 1]
+
+interactor = GatedInteractor(width, hidden_width, width,
+                             conditioner=GateConditioner(context_width))
+updates = interactor(participants, context=context)
+```
+
+The existing `context_size=...` convenience path instead projects context into
+participant features; it and the explicit gate conditioner are alternative
+declared compositions. Neither path assigns context a biological interpretation.
+
 ## Reference learning compositions
 
 The [NN examples](../examples/nn_foundation/README.md) demonstrate two small
@@ -295,6 +316,9 @@ PYTHONPATH=python:. python examples/nn_foundation/train.py
 The [qualification record](../planning/nn-foundation-2026-10-31/VALIDATION.md)
 separates framework tests, native CPU composition, admitted CUDA autograd and
 memcheck, and isolated wheel validation.
+The subsequent [biological-meaning qualification](../planning/nn-biological-meaning-2026-10-31/VALIDATION.md)
+adds bound queries, supervision, semantic manifests, overlapping programs, and
+their bounded admitted V100 checks.
 
 ## Custom operations
 

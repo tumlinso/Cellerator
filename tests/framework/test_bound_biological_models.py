@@ -58,6 +58,37 @@ class BoundReferenceModelTests(unittest.TestCase):
         torch.testing.assert_close(canonical["expression"], reordered["expression"])
         self.assertEqual(model.encoder.feature_embedding.num_embeddings, 13)
 
+        hidden_observed = torch.ones_like(values, dtype=torch.bool)
+        hidden_observed[:, 1] = False
+        hidden_values = values.clone()
+        altered_hidden_values = values.clone()
+        altered_hidden_values[:, 1] = 1.0e6
+        hidden_batch = {
+            "feature_identities": binding.identities,
+            "values": hidden_values,
+            "observed": hidden_observed,
+        }
+        altered_batch = {
+            **hidden_batch,
+            "values": altered_hidden_values,
+        }
+        torch.testing.assert_close(
+            model(hidden_batch)["expression"], model(altered_batch)["expression"]
+        )
+
+        zero_batch = {
+            "feature_identities": binding.identities,
+            "values": torch.zeros_like(values),
+            "observed": torch.ones_like(values, dtype=torch.bool),
+        }
+        missing_batch = {
+            **zero_batch,
+            "observed": torch.zeros_like(values, dtype=torch.bool),
+        }
+        self.assertFalse(torch.equal(
+            model(zero_batch)["expression"], model(missing_batch)["expression"]
+        ))
+
     def test_bound_expression_can_use_optional_overlapping_program_composition(self):
         torch.manual_seed(302)
         binding = _binding(("gA", "gB", "gC"), (2, 7, 11), capacity=13)
@@ -360,9 +391,6 @@ class BoundReferenceModelTests(unittest.TestCase):
             validate_biological_manifest(
                 reconstructed, loaded, weights_path=weights
             )
-            state = torch.load(weights, map_location="cpu", weights_only=True)
-            reconstructed.load_state_dict(state)
-
             incompatible_binding = _binding(("gB", "gA"), (8, 3), capacity=10)
             incompatible = attach_expression_view(ExpressionReferenceModel(
                 10, 8, binding=incompatible_binding,
@@ -371,6 +399,8 @@ class BoundReferenceModelTests(unittest.TestCase):
                 validate_biological_manifest(
                     incompatible, loaded, weights_path=weights,
                 )
+            state = torch.load(weights, map_location="cpu", weights_only=True)
+            reconstructed.load_state_dict(state)
 
 
 if __name__ == "__main__":

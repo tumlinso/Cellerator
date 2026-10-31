@@ -25,10 +25,12 @@ from cellerator.torch.views import ModelWithViews
 class ExpressionReferenceModel(nn.Module):
     """Feature-aware expression reconstruction with learned interactions.
 
-    The model makes no normalization or feature-order assumption. A batch uses
-    ``feature_ids``, ``values``, and an explicit Boolean ``observed`` mask;
-    hidden measurements are sanitized by :class:`FeatureEncoder` before they
-    reach learned projections.
+    The model makes no normalization or feature-order assumption. A raw batch
+    uses ``feature_ids``, ``values``, and an explicit Boolean ``observed`` mask.
+    A bound batch can instead use named ``feature_identities``; values and the
+    mask are aligned to the declared binding before encoding. Hidden
+    measurements are sanitized by :class:`FeatureEncoder` before learned
+    projections.
     """
 
     def __init__(
@@ -64,15 +66,18 @@ class ExpressionReferenceModel(nn.Module):
             if isinstance(raw_identities, Tensor) or isinstance(raw_identities, (str, bytes)):
                 raise TypeError("feature_identities must be a host sequence of feature identities")
             source_ids = tuple(batch["feature_identities"])
+            if values.ndim < 2 or values.shape[-1] != len(source_ids):
+                raise ValueError("feature_identities must align with the final values axis")
+            if observed.shape != values.shape or observed.dtype != torch.bool:
+                raise ValueError("observed must be a Boolean mask matching values")
             alignment = self.binding.prepare(source_ids, self.binding.identities)
             positions = alignment.index_tensor(device=values.device)
             values = values.index_select(-1, positions)
             observed = observed.index_select(-1, positions)
-            named_ids = tuple(self.binding.identities for _ in range(values.shape[0]))
-            encoded = self.encoder.encode_bound(
-                named_ids, values, observed=observed
-            )
-            output_feature_ids = self.binding.identities
+            model_ids = alignment.index_tensor(kind="model", device=values.device)
+            model_ids = model_ids.unsqueeze(0).expand(values.shape[0], -1)
+            encoded = self.encoder(model_ids, values, observed=observed)
+            output_feature_ids = alignment.requested_ids
         else:
             try:
                 feature_ids = batch["feature_ids"]
@@ -325,10 +330,12 @@ def shifted_event_batch(
 class EventHistoryReferenceModel(nn.Module):
     """Packed autoregressive event model with causal, row-local interactions.
 
-    Integer identities and offsets are the event representation; repeated IDs
-    remain separate occurrences. A learned positional term captures order in
-    this example. Physical time and event payloads are optional model inputs and
-    are deliberately not inferred here.
+    IDs and offsets define the event representation; repeated IDs remain
+    separate ordered occurrences. With a binding, biological or explicitly
+    declared model-space IDs map to noncontiguous embedding rows while output
+    classes retain a separate biological identity order. A learned positional
+    term captures order in this example. Physical time and event payloads are
+    optional inputs and are deliberately not inferred here.
     """
 
     def __init__(
@@ -388,7 +395,7 @@ class EventHistoryReferenceModel(nn.Module):
             ):
                 raise ValueError("event_ids contain an identity outside the event vocabulary")
             event_input = event_ids
-            target_ids: tuple[Any, ...] = tuple(event_ids.tolist())
+            target_ids: tuple[Any, ...] = ()
             class_targets = None
         else:
             if id_space not in {"identity", "model"}:

@@ -49,6 +49,17 @@ class FeatureReadout(nn.Module):
         self.interactions = RelationAttention(width, heads=heads)
         self.projection = nn.Linear(width, output_size)
 
+    def cellerator_biological_descriptors(self, *, identity_codec=None):
+        """Declare the biological output axis and readout geometry for manifests."""
+        return {
+            "feature_readout": {
+                "binding": self.binding.to_manifest(codec=identity_codec),
+                "width": self.width,
+                "output_size": self.output_size,
+                "attention_heads": self.interactions.heads,
+            }
+        }
+
     def forward(self, context: Tensor) -> Tensor:
         """Read all bound output features in binding order."""
         return self.query(context, self.binding.model_indices)

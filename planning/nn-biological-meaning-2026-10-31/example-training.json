@@ -1,0 +1,57 @@
+{
+  "schema": "cellerator.biological-meaning.example-training.v1",
+  "metrics": {
+    "expression_masked_mse": {
+      "initial": 0.048773,
+      "final": 0.00066
+    },
+    "event_next_event_ce": {
+      "initial": 0.819076,
+      "final": 0.115528
+    },
+    "atac_frozen_base_bce": {
+      "initial": 0.660246,
+      "final": 0.295442
+    },
+    "atac_joint_base_bce": {
+      "initial": 0.660246,
+      "final": 7e-06
+    },
+    "history_atac_frozen_base_bce": {
+      "initial": 0.771511,
+      "final": 0.043997
+    },
+    "history_atac_joint_base_bce": {
+      "initial": 0.771511,
+      "final": 0.0
+    },
+    "history_atac_bound_frozen_base_bce": {
+      "initial": 0.72262,
+      "final": 0.509244
+    },
+    "history_atac_bound_joint_base_bce": {
+      "initial": 0.72262,
+      "final": 0.509226
+    },
+    "bound_expression_cell_mse": {
+      "initial": 0.676082,
+      "final": 0.007105
+    },
+    "bound_event_observation_ce": {
+      "initial": 0.691158,
+      "final": 0.159162
+    }
+  },
+  "source_sha256": {
+    "examples/nn_foundation/train.py": "2f683dbff9134e4bdae1633ad66ce829a6ca888945915bf2b4bf831fedae582a",
+    "examples/nn_foundation/reference_models.py": "ccb3bbc9e41f3fe6f8c34f83289da07c330773a91fddcfc8509925f10a8070a3",
+    "python/cellerator/biology.py": "d4ad3524bddaf69f9b4717e061eb93b497154bd35798c1f2429f4eed8deeb6e4",
+    "python/cellerator/torch/features.py": "e3db8901b97797a63bd0694329c08e280e78ed78df89002c5b70e03bbacc853a",
+    "python/cellerator/torch/views.py": "4097bcdbc1ee6c4d23c2302870d81d7134d7c99d0c18d8d9cc92435c48db088f",
+    "python/cellerator/torch/supervision.py": "3532a36fcfe0dd58fd99b5c1756e2963407c67339d088c688fbabd4dd79f2831",
+    "python/cellerator/torch/relation_attention.py": "19d5f6361347012ab563727ff32cdde40c7e0cc77fc84589d54e6377a4638f98",
+    "python/cellerator/torch/programs.py": "4fd4fa6a07602e4ef26692f62d297a5d00aef65cce4b3b861bb2ea6f774babdf"
+  },
+  "stdout": "expression_masked_mse: initial=0.048773 final=0.000660\nevent_next_event_ce: initial=0.819076 final=0.115528\natac_frozen_base_bce: initial=0.660246 final=0.295442\natac_joint_base_bce: initial=0.660246 final=0.000007\nhistory_atac_frozen_base_bce: initial=0.771511 final=0.043997\nhistory_atac_joint_base_bce: initial=0.771511 final=0.000000\nhistory_atac_bound_frozen_base_bce: initial=0.722620 final=0.509244\nhistory_atac_bound_joint_base_bce: initial=0.722620 final=0.509226\nbound_expression_cell_mse: initial=0.676082 final=0.007105\nbound_event_observation_ce: initial=0.691158 final=0.159162\n",
+  "limits": "Deterministic synthetic CPU training only; rounded losses, no biological or performance claim."
+}

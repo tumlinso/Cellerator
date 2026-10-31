@@ -164,6 +164,12 @@ class ModelWithViews(nn.Module):
             raise TypeError("source must be None, a mapping key, or callable")
         if output_binding is not None and not isinstance(output_binding, FeatureBinding):
             raise TypeError("output_binding must be a FeatureBinding or None")
+        module_binding = getattr(module, "binding", None)
+        if isinstance(module_binding, FeatureBinding) and output_binding is not None:
+            try:
+                module_binding.assert_compatible(output_binding, require_order=True)
+            except ValueError as exc:
+                raise ValueError("output_binding must match the readout module's FeatureBinding") from exc
         if source_id is not None and (not isinstance(source_id, str) or not source_id):
             raise ValueError("source_id must be a non-empty string or None")
         supports_query = callable(getattr(module, "query", None))
@@ -231,6 +237,12 @@ class ModelWithViews(nn.Module):
         if query.sample_ids is not None and input_ids is not None:
             if tuple(query.sample_ids) != input_ids:
                 raise ValueError("query sample_ids must match the declared batch order; select the batch first")
+        declared_prediction_offsets = _offset_tuple(
+            _declared_value(batch, "prediction_row_offsets")
+        )
+        if (query.row_offsets is not None and declared_prediction_offsets is not None
+                and query.row_offsets != declared_prediction_offsets):
+            raise ValueError("query row_offsets do not match declared input prediction_row_offsets")
 
     def _evaluate_query(self, view: _View, result: Any, batch: Any,
                         query: PredictionQuery, alignment: Any) -> Prediction:
@@ -276,7 +288,18 @@ class ModelWithViews(nn.Module):
         )
 
         result_offsets = _offset_tuple(_declared_value(result, "row_offsets"))
-        module_offsets = None if output_prediction is None else output_prediction.row_offsets
+        module_offsets = (
+            None if output_prediction is None
+            else _offset_tuple(output_prediction.row_offsets)
+        )
+        declared_offsets = tuple(
+            offsets for offsets in (
+                query.row_offsets, module_offsets, result_offsets,
+                _offset_tuple(_declared_value(batch, "prediction_row_offsets")),
+            ) if offsets is not None
+        )
+        if declared_offsets and any(offsets != declared_offsets[0] for offsets in declared_offsets[1:]):
+            raise ValueError("query, readout, base, and declared prediction row_offsets must agree")
         row_offsets = (
             query.row_offsets if query.row_offsets is not None else
             module_offsets if module_offsets is not None else result_offsets

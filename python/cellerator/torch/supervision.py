@@ -159,6 +159,8 @@ def align_prediction_targets(
     row_indices = torch.tensor(row_positions, dtype=torch.long, device=aligned_targets.device)
     aligned_targets = aligned_targets.index_select(0, row_indices)
     aligned_predictions = prediction.values
+    if aligned_predictions.shape != aligned_targets.shape:
+        raise ValueError("aligned prediction and target tensor shapes must match exactly")
     return aligned_predictions, aligned_targets
 
 

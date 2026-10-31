@@ -198,6 +198,76 @@ class GatedInteractorContextTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "align with participant groups"):
             module(participants, context=torch.ones(2, 4, 2))
 
+    def test_registered_conditioner_adds_broadcast_gate_contribution_and_trains(self):
+        class GateConditioner(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.projection = torch.nn.Linear(2, 1, bias=False)
+                self.calls = 0
+
+            def forward(self, context):
+                self.calls += 1
+                return self.projection(context).unsqueeze(-1)
+
+        torch.manual_seed(107)
+        conditioner = GateConditioner()
+        module = GatedInteractor(3, 5, 2, conditioner=conditioner).cpu().eval()
+        participants = torch.randn(2, 4, 3, requires_grad=True)
+        context = torch.tensor([[0.1, 0.7], [0.4, 0.3]], requires_grad=True)
+
+        conditioned = module(participants, context=context)
+
+        self.assertEqual(conditioner.calls, 1)
+        conditioned.square().sum().backward()
+        self.assertIsNotNone(participants.grad)
+        self.assertIsNotNone(context.grad)
+        self.assertIsNotNone(conditioner.projection.weight.grad)
+
+    def test_conditioner_is_skipped_for_none_context_and_rejects_invalid_outputs(self):
+        class Recording(torch.nn.Module):
+            def __init__(self, output):
+                super().__init__()
+                self.output = output
+                self.calls = 0
+
+            def forward(self, context):
+                self.calls += 1
+                return self.output(context) if callable(self.output) else self.output
+
+        torch.manual_seed(108)
+        legacy = GatedInteractor(3, 5, 2).cpu()
+        conditioner = Recording(lambda _context: torch.ones(2, 1, 1))
+        conditioned = GatedInteractor(3, 5, 2, conditioner=conditioner).cpu()
+        for name in ("encode", "gate", "joint"):
+            getattr(conditioned, name).load_state_dict(getattr(legacy, name).state_dict())
+        participants = torch.randn(2, 4, 3)
+        torch.testing.assert_close(
+            conditioned(participants, context=None), legacy(participants), rtol=0, atol=0
+        )
+        self.assertEqual(conditioner.calls, 0)
+
+        with self.assertRaisesRegex(ValueError, "mutually exclusive"):
+            GatedInteractor(3, 5, 2, context_size=2, conditioner=conditioner)
+
+        bad_shape = GatedInteractor(
+            3, 5, 2, conditioner=Recording(lambda _context: torch.ones(2, 4, 2))
+        ).cpu()
+        with self.assertRaisesRegex(ValueError, "broadcast"):
+            bad_shape(participants, context=torch.ones(2, 2))
+
+        bad_dtype = GatedInteractor(
+            3, 5, 2, conditioner=Recording(lambda _context: torch.ones(2, 1, 1, dtype=torch.double))
+        ).cpu()
+        with self.assertRaisesRegex(TypeError, "share a dtype"):
+            bad_dtype(participants, context=torch.ones(2, 2))
+
+        bad_device = GatedInteractor(
+            3, 5, 2,
+            conditioner=Recording(lambda _context: torch.empty(2, 1, 1, device="meta")),
+        ).cpu()
+        with self.assertRaisesRegex(ValueError, "share a device"):
+            bad_device(participants, context=torch.ones(2, 2))
+
 
 if __name__ == "__main__":
     unittest.main()
