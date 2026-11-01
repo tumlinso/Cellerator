@@ -2,6 +2,7 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 add_library(libCellerator STATIC
+    src/cell.cc
     src/compiler/driver/downstream_compiler_invocation.cc
     src/compiler/tooling/celleratord_architecture.cc)
 add_library(Cellerator::libCellerator ALIAS libCellerator)
@@ -41,4 +42,13 @@ install(FILES "${CELLERATOR_HOST_CONFIG}"
 if(CELLERATOR_BUILD_TESTS)
     enable_testing()
     include(cmake/compiler/CelleratorPartOneAcceptance.cmake)
+    add_subdirectory(tests/cell)
+    foreach(example event_forward multimodal)
+        set(target "cellerator_cell_${example}_example")
+        add_executable(${target} "${PROJECT_SOURCE_DIR}/examples/native_cell/${example}.cc")
+        target_compile_features(${target} PRIVATE cxx_std_20)
+        target_link_libraries(${target} PRIVATE Cellerator::libCellerator)
+        add_test(NAME ${target} COMMAND ${target})
+        set_tests_properties(${target} PROPERTIES LABELS "native_cell")
+    endforeach()
 endif()

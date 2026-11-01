@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/modeling/cell.hh>
+#include <Cellerator/cell.hh>
 
 #include <cmath>
 #include <cstdint>
@@ -53,6 +53,13 @@ struct IdentityObservation {
     const State& operator()(const State& state, const Context&) const noexcept { return state; }
 };
 
+// A retained const State snapshot. Holding this view pins the state object
+// after advancement; nested external resources follow the State's contract.
+template<class State>
+struct DynamicalStateSnapshotView {
+    std::shared_ptr<const State> state;
+};
+
 namespace detail {
 inline void validate_step_clock(double time, double dt) {
     if (!std::isfinite(time) || !std::isfinite(dt))
@@ -62,13 +69,6 @@ inline void validate_result_clock(const std::optional<double>& time) {
     if (time && !std::isfinite(*time)) throw std::invalid_argument("result time must be finite");
 }
 
-// Generic Cell resolves this live provider on each access, so the inherited
-// information/data view always follows the state adopted by a transition.
-template<class State>
-struct CurrentStateView {
-    std::shared_ptr<const State> current;
-    const State& operator()() const noexcept { return *current; }
-};
 } // namespace detail
 
 // Explicit state-transition behavior and parameter ownership. Generic learned
@@ -135,28 +135,39 @@ auto make_dynamical_model(Dynamics dynamics,
 // state without copying it.
 template<class ModelType, class Identity = std::uint64_t>
 class DynamicalCell final
-    : public Cell<std::shared_ptr<detail::CurrentStateView<typename ModelType::state_type>>, Identity> {
+    : public CellAccess<DynamicalStateSnapshotView<typename ModelType::state_type>>,
+      public CellAccess<CellIdentityView<Identity>> {
 public:
     using state_type = typename ModelType::state_type;
     using context_type = typename ModelType::context_type;
     using result_type = typename ModelType::result_type;
     using identity_type = Identity;
-    using state_view_type = detail::CurrentStateView<state_type>;
-    using base_type = Cell<std::shared_ptr<state_view_type>, Identity>;
+    using state_snapshot_view_type = DynamicalStateSnapshotView<state_type>;
+    using identity_view_type = CellIdentityView<Identity>;
 
     DynamicalCell(std::shared_ptr<const ModelType> model, state_type state,
                   Identity identity, double time = 0.0)
-        : DynamicalCell(std::move(model), make_state_view(std::move(state)),
-                        std::move(identity), time) {}
+        : model_(std::move(model)),
+          state_(std::make_shared<const state_type>(std::move(state))),
+          identity_(std::move(identity)), time_(time) {
+        if (!model_) throw std::invalid_argument("dynamical cell model cannot be null");
+        detail::validate_step_clock(time_, 0.0);
+    }
 
     DynamicalCell(const DynamicalCell&) = delete;
     DynamicalCell& operator=(const DynamicalCell&) = delete;
     DynamicalCell(DynamicalCell&&) = default;
     DynamicalCell& operator=(DynamicalCell&&) = default;
 
-    const state_type& state() const noexcept { return this->information(); }
-    std::shared_ptr<const state_type> state_handle() const noexcept { return state_view_->current; }
-    const std::shared_ptr<const ModelType>& model() const noexcept { return model_; }
+    const state_type& state() const & noexcept { return *state_; }
+    const state_type& state() const && = delete;
+    std::shared_ptr<const state_type> state_handle() const noexcept { return state_; }
+    const std::shared_ptr<const ModelType>& model() const & noexcept { return model_; }
+    const std::shared_ptr<const ModelType>& model() const && = delete;
+    const Identity& identity() const & noexcept { return identity_; }
+    const Identity& identity() const && = delete;
+    const Identity& id() const & noexcept { return identity_; }
+    const Identity& id() const && = delete;
     double time() const noexcept { return time_; }
     std::uint64_t value_generation() const noexcept { return value_generation_; }
 
@@ -180,35 +191,33 @@ public:
         // All callback, clock and allocation checks precede adoption. Callbacks
         // that mutate external handles still own their own rollback semantics.
         auto next_state = std::shared_ptr<const state_type>(result, &result->state);
-        state_view_->current = std::move(next_state);
+        state_ = std::move(next_state);
         time_ = next_time;
         ++value_generation_;
         return result;
     }
 
-    decltype(auto) observe(context_type context = {}) const {
+    decltype(auto) observe(context_type context = {}) const & {
         context.time = time_;
         context.dt = 0.0;
         return model_->observe(state(), std::move(context));
     }
 
+    void observe(context_type = {}) const && = delete;
+
+protected:
+    state_snapshot_view_type read(ViewTag<state_snapshot_view_type>) const & override {
+        return {state_};
+    }
+
+    identity_view_type read(ViewTag<identity_view_type>) const & override {
+        return {identity_};
+    }
+
 private:
-    static std::shared_ptr<state_view_type> make_state_view(state_type state) {
-        return std::make_shared<state_view_type>(
-            state_view_type{std::make_shared<const state_type>(std::move(state))});
-    }
-
-    DynamicalCell(std::shared_ptr<const ModelType> model,
-                  std::shared_ptr<state_view_type> state_view,
-                  Identity identity, double time)
-        : base_type(state_view, std::move(identity)), model_(std::move(model)),
-          state_view_(std::move(state_view)), time_(time) {
-        if (!model_) throw std::invalid_argument("dynamical cell model cannot be null");
-        detail::validate_step_clock(time_, 0.0);
-    }
-
     std::shared_ptr<const ModelType> model_;
-    std::shared_ptr<state_view_type> state_view_;
+    std::shared_ptr<const state_type> state_;
+    Identity identity_;
     double time_;
     std::uint64_t value_generation_ = 0;
 };
@@ -222,8 +231,8 @@ auto make_dynamical_cell(std::shared_ptr<ModelType> model,
         std::move(model), std::move(state), std::move(identity), time);
 }
 
-// The previous names remain available as narrow transition-only compatibility
-// shims. New generic cells use Cell<Information, Identity> from cell.hh.
+// The previous model names remain available as narrow transition-only
+// compatibility shims. Generic cells implement typed Cell access contracts.
 template<class State, class Context, class Dynamics,
          class Observation = IdentityObservation>
 using Model [[deprecated("use DynamicalModel for explicit state transitions")]] =
@@ -237,13 +246,6 @@ auto make_model(Dynamics dynamics,
                 Observation observation = {}) {
     return make_dynamical_model<State, Context>(
         std::move(dynamics), std::move(parameters), std::move(observation));
-}
-
-template<class ModelType, class Identity>
-[[deprecated("use make_dynamical_cell for explicit state transitions")]]
-auto make_cell(std::shared_ptr<ModelType> model, typename ModelType::state_type state,
-               Identity identity, double time = 0.0) {
-    return make_dynamical_cell(std::move(model), std::move(state), std::move(identity), time);
 }
 
 } // namespace cellerator::modeling

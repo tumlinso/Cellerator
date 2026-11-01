@@ -50,18 +50,54 @@ points to that map; it is not a duplicate source catalog.
 ## Current high-level routes
 
 ```text
-include/Cellerator/   public native contracts
+include/Cellerator/   public native contracts, including cell.hh and cells/
 src/                  native implementation (several owners and generations)
 bindings/python/      optional pybind Python extension
 bindings/torch/       optional compiled Torch adapters
 python/cellerator/    installed Python package and Torch modules
 tests/                native, Python, and subsystem checks
 examples/biology/      host-only typed biological relation examples
+examples/native_cell/  host-only native Cell capability examples
 bench/, experiments/  measured candidates and source-bound experiments
 docs/                 architecture, capability boundaries, and evidence links
 ```
 
 The [biological relation example](https://github.com/tumlinso/Cellerator/blob/main/examples/biology/README.md) exercises public typed-relation and execution-lifetime contracts on the host; it does not execute a numerical kernel or load a dataset.
+
+## Native Cell examples
+
+The [`event_forward.cc`](../examples/native_cell/event_forward.cc) and
+[`multimodal.cc`](../examples/native_cell/multimodal.cc) examples use the
+Torch-free public Cell and adapter headers. Their targets build with C++20
+because the dense-expression adapter uses `std::span`; they link the native
+`Cellerator::libCellerator` implementation for the out-of-line Cell
+destructor. Configure a host-only tree with Python, Torch, CUDA, NN,
+tokenization, and sparse support disabled, then build and run the examples:
+
+```sh
+cmake -S . -B build/cell-host \
+  -DCELLERATOR_ENABLE_CUDA=OFF \
+  -DCELLERATOR_ENABLE_PYTHON=OFF \
+  -DCELLERATOR_ENABLE_TORCH=OFF \
+  -DCELLERATOR_ENABLE_NN=OFF \
+  -DCELLERATOR_ENABLE_NN_CUDA=OFF \
+  -DCELLERATOR_ENABLE_TOKENIZATION=OFF \
+  -DCELLERATOR_ENABLE_SPARSE_SUPPORT=OFF \
+  -DCELLERATOR_ENABLE_CELLSHARD=OFF \
+  -DCELLERATOR_BUILD_TORCH_EXAMPLES=OFF \
+  -DCELLERATOR_BUILD_TESTS=ON
+cmake --build build/cell-host \
+  --target cellerator_cell_core_test cellerator_cell_adapters_test \
+    cellerator_cell_event_forward_example cellerator_cell_multimodal_example
+ctest --test-dir build/cell-host -R cell_ --output-on-failure
+```
+
+The event example uses a deterministic evaluator and storage-owned append to
+show prefix growth and rejection of a stale non-tail continuation. It is not a
+trained Karyoplast model. The multimodal example shows one cell providing event,
+dense-expression, identity, and application-defined typed access, with an
+explicit write through the expression edit contract. Device placement is
+preserved by the descriptors; these examples exercise host data only.
 
 Newer native organization includes `src/common`, `src/structure`, `src/support`,
 `src/indexing`, `src/gating`, `src/layout`, and `src/ops`. The public header

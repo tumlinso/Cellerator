@@ -99,7 +99,8 @@ target_include_directories(cellerator_nn PUBLIC
 target_compile_features(cellerator_nn PUBLIC cxx_std_20)
 target_link_libraries(cellerator_nn PUBLIC
     ${CELLERATOR_TORCH_LINK_TARGETS}
-    Cellerator::product2)
+    Cellerator::product2
+    Cellerator::libCellerator)
 target_link_libraries(cellerator_nn PRIVATE OpenSSL::Crypto)
 if(CELLERATOR_TORCH_CXX_OPTIONS)
     target_compile_options(cellerator_nn PUBLIC ${CELLERATOR_TORCH_CXX_OPTIONS})

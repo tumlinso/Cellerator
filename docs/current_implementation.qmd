@@ -7,17 +7,20 @@ title: "Current implementation"
 Cellerator is an early biological machine-learning framework. Models can use
 measurements, identity-addressed sparse fields, molecular events, regulatory
 relations, latent representations, spatial environments, or combinations of
-these. A general `Cell` binds cellular identity and caller-owned information
-to an optional shared learned program. Explicit state transitions use
-`DynamicalCell` and `DynamicalModel`; the legacy `Model` name aliases the latter.
-PyTorch supplies the current ordinary training integration while native
-operations and arbitrary representations remain first-class.
+these. The Python and native C++ APIs have distinct `Cell` contracts. Python's
+existing `modeling.Cell` API and bindings are unchanged here. Native C++
+`cellerator::Cell` is a model-independent capability interface for accessing
+cell-specific data in bulk storage. Explicit transitions remain optional and
+use `DynamicalCell` and `DynamicalModel`; the legacy Python `Model` name aliases
+the latter. PyTorch supplies the current ordinary training integration while
+native operations and arbitrary representations remain first-class.
 
 Implemented facilities have different backend and maturity boundaries. The 2026-10-29 framework expansion adds executable CPU reference mechanisms, C++ classes, optional bindings, and CUDA sources. A source file or namespace does not by itself establish numerical qualification, biological validity, or a performance advantage. In particular, topology planning and callback-based execution do not establish an autonomous distributed GPU service.
 
 ## Available package surfaces
 
-- `modeling` provides a general `Cell` information/program handle and explicit `DynamicalCell`/`DynamicalModel` transitions, step contexts/results, observations, and experiments. Legacy dynamic construction remains deprecated compatibility behavior. The package imports without Torch or a native extension.
+- The existing Python `modeling` package provides its general `Cell` information/program handle and explicit `DynamicalCell`/`DynamicalModel` transitions, step contexts/results, observations, and experiments. Legacy dynamic construction remains deprecated compatibility behavior. This Python API is unchanged by the native Cell replacement; the package imports without Torch or a native extension.
+- Native C++ `<Cellerator/cell.hh>` defines a non-templated `cellerator::Cell` with typed, optional read and edit capabilities. `<Cellerator/cells/event.hh>` and `<Cellerator/cells/expression.hh>` provide borrowed bulk-storage adapters. The base is C++17 and backend-independent; the supplied adapters require C++20. They do not attach a model, impose time or ancestry, or prescribe a trajectory container. The optional C++ `DynamicalCell` remains a separate state-transition utility.
 - `nn` and `torch.nn` expose bound `FeatureEncoder`, dense/packed/CSR `RelationAttention`, reusable `PreparedRelation`, shared `InteractionPrograms`, `FeatureReadout`, labelled `ModelWithViews` queries, supervision helpers, biological manifests, and functional/module grouped linear composition. The Torch-free root provides model-local `FeatureBinding` and borrowed-value prediction/query records. Ordinary Torch parameters and optimizers remain ordinary; existing canonical native owners retain their guarded update contracts. The source examples cover masked expression, causal event history, and paired auxiliary readouts.
 - `state`, `events`, and `dynamics` provide sparse/ragged/layout-aware state, generation-safe store references, event histories and trajectories, lineage, discrete/continuous/stochastic reference dynamics, and explicit composition. Quantization profiles can be shared across cells and feature orderings; exact-value overrides remain per-payload and caller-controlled.
 - `interactions` provides directed, bipartite, and joint hyperedge computations with explicit activity gates, aggregation, and native sparse worklist adapters. Native model, relation, layout, and field classes preserve semantic identities independently of storage slots. Incremental native execution invalidates declared dependencies and caches unaffected results.
@@ -42,8 +45,8 @@ The optional `Cellerator::nn` component provides native model authoring with
 ordinary typed structs, explicit parameter ownership/numeric groups, concrete
 feature encoding and attention, typed readout/query composition, biological
 bindings, prepared relations/targets, explicit conditioning, supervision,
-overlapping programs, and manifest/checkpoint IO. Generic native cells are
-separate from the renamed `DynamicalModel`/`DynamicalCell` transition classes.
+overlapping programs, and manifest/checkpoint IO. The generic native `Cell` is
+separate from the optional `DynamicalModel`/`DynamicalCell` transition utility.
 There is no required module registry, member visitor, model superclass, or
 universal tensor wrapper. ATen/autograd and ordinary optimizers supply the
 first trainable backend; generic biological bindings and cell handles have
@@ -61,6 +64,47 @@ for actual CPU, installed consumer, module, and V100 checks and their limits.
 The GPU records pin captured executables and source identities; later host-only
 group-checkpoint, query lifetime, and install/config changes do not become GPU-qualified merely
 by appearing in the same checkout. No speedup or biological validity follows.
+
+## Native Cell access and adapters, 2026-11-01
+
+The new non-templated `cellerator::Cell` at
+[`include/Cellerator/cell.hh`](../include/Cellerator/cell.hh) is an abstract
+interface for requesting cell-specific typed views. It has no required payload,
+model reference, clock, ancestry, or trajectory. Concrete cells implement
+`CellAccess<View>` for read access and may implement `CellEdit<View>` for
+explicit writable access; caller-defined capabilities need no central
+registry. Typed identity views preserve application-defined IDs without
+confusing them with row or buffer offsets.
+
+The event-prefix adapter selects an ordered token range by offset and prefix
+length over a caller-owned stable buffer descriptor. A storage owner controls
+allocation and append; returned cells preserve the old prefix length while a
+new handle can expose an extended prefix. Dense-expression adapters select a
+row from a caller-owned matrix descriptor and feature identity span, preserve
+row stride and placement, and expose mutable values only through an explicit
+edit view. Views borrow storage; owners define synchronization, generation,
+and invalidation rules. Device placement is propagated without transfers or
+host dereferences.
+
+The core interface is C++17-compatible and independent of optional numerical
+backends. The expression adapter and examples use C++20. The
+[`event_forward.cc`](../examples/native_cell/event_forward.cc) and
+[`multimodal.cc`](../examples/native_cell/multimodal.cc) examples exercise the
+contracts with host storage; the event evaluator is deterministic scaffolding,
+not a scientific or trained Karyoplast model. See the
+[native guide](native_nn.qmd#access-cell-representations-without-binding-a-model)
+for the interface and host build route. The Python package and its existing
+Cell API are unchanged.
+
+Validation covers the backend-disabled core, adapters and examples, affected
+host modeling and CPU NN/readout tests, and external installed-header
+consumers. The optional module add-on also builds and installs with CMake
+3.28.3, Ninja 1.11.1, and matching Clang and dependency scanner 18.1.3. Its
+external installed-package consumer exercises Cell access through an
+import-only translation unit, interoperates with ordinary headers, and runs
+CPU model forward, backward, and optimizer steps. Device-placement checks
+propagate descriptors only; this change has no GPU execution or performance
+qualification.
 
 ## NN foundation evidence, 2026-10-31
 

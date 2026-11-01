@@ -17,7 +17,8 @@ target_compile_features(cellerator_modeling PUBLIC cxx_std_17)
 target_include_directories(cellerator_modeling PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(cellerator_modeling PUBLIC Cellerator::support Cellerator::indexing)
+target_link_libraries(cellerator_modeling PUBLIC
+    Cellerator::libCellerator Cellerator::support Cellerator::indexing)
 
 if(CELLERATOR_ENABLE_PYTHON)
     # Python/pybind11 are already discovered by CelleratorPython.cmake.

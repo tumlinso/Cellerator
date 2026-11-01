@@ -2,11 +2,14 @@
 #undef NDEBUG
 #endif
 #include <Cellerator/modeling/model.hh>
+#include <Cellerator/cell.hh>
 
 #include <cassert>
 #include <limits>
+#include <memory>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 namespace m = cellerator::modeling;
 
@@ -21,6 +24,49 @@ struct Parameters { int scale; };
 struct Inputs { int offset; };
 using Context = m::StepContext<Parameters, Inputs>;
 
+template<class T, class = void>
+struct HasRvalueState : std::false_type {};
+template<class T>
+struct HasRvalueState<T, std::void_t<decltype(std::declval<T&&>().state())>>
+    : std::true_type {};
+
+template<class T, class = void>
+struct HasRvalueModel : std::false_type {};
+template<class T>
+struct HasRvalueModel<T, std::void_t<decltype(std::declval<T&&>().model())>>
+    : std::true_type {};
+
+template<class T, class = void>
+struct HasRvalueIdentity : std::false_type {};
+template<class T>
+struct HasRvalueIdentity<T, std::void_t<decltype(std::declval<T&&>().identity())>>
+    : std::true_type {};
+
+template<class T, class = void>
+struct HasRvalueId : std::false_type {};
+template<class T>
+struct HasRvalueId<T, std::void_t<decltype(std::declval<T&&>().id())>>
+    : std::true_type {};
+
+template<class T, class = void>
+struct HasRvalueObservation : std::false_type {};
+template<class T>
+struct HasRvalueObservation<T, std::void_t<decltype(std::declval<T&&>().observe())>>
+    : std::true_type {};
+
+template<class T, class = void>
+struct HasRvalueStateHandle : std::false_type {};
+template<class T>
+struct HasRvalueStateHandle<T, std::void_t<decltype(std::declval<T&&>().state_handle())>>
+    : std::true_type {};
+
+template<class T, class = void>
+struct HasRvalueSnapshotView : std::false_type {};
+template<class T>
+struct HasRvalueSnapshotView<T, std::void_t<decltype(
+    std::declval<T&&>().template view<m::DynamicalStateSnapshotView<int>>())>>
+    : std::true_type {};
+
 int main() {
     // Plain state-returning callbacks normalize to StepResult automatically.
     auto model = m::make_dynamical_model<int, Context>([](const int& state, const Context& context) {
@@ -28,11 +74,25 @@ int main() {
                      + (context.inputs ? context.inputs->offset : 0);
     }, std::make_shared<Parameters>(Parameters{2}));
     auto cell = m::make_dynamical_cell(model, 5, std::string("arbitrary-id"), 3.0);
-    const auto previous = cell.state_handle();
+    using CellType = decltype(cell);
+    static_assert(!HasRvalueState<CellType>::value);
+    static_assert(!HasRvalueModel<CellType>::value);
+    static_assert(!HasRvalueIdentity<CellType>::value);
+    static_assert(!HasRvalueId<CellType>::value);
+    static_assert(!HasRvalueObservation<CellType>::value);
+    static_assert(HasRvalueStateHandle<CellType>::value);
+    static_assert(!HasRvalueSnapshotView<CellType>::value);
+    static_assert(std::is_same_v<decltype(std::declval<CellType&&>().state_handle()),
+                                 std::shared_ptr<const int>>);
+    const auto previous = cell.view<m::DynamicalStateSnapshotView<int>>();
+    assert(cell.supports<m::DynamicalStateSnapshotView<int>>());
+    assert(cell.supports<cellerator::CellIdentityView<std::string>>());
     auto result = cell.advance(0.5);
     assert(result->state == 7 && *result->time == 3.5 && cell.time() == 3.5);
-    assert(cell.information() == cell.state() && cell.data() == cell.state());
-    assert(*previous == 5 && cell.id() == "arbitrary-id");
+    assert(cell.view<m::DynamicalStateSnapshotView<int>>().state == cell.state_handle());
+    assert(*previous.state == 5);
+    assert(cell.view<cellerator::CellIdentityView<std::string>>().value == "arbitrary-id");
+    assert(cell.id() == "arbitrary-id");
     assert(&cell.observe() == &cell.state()); // Default observer returns a view.
 
     Parameters override{10};
@@ -57,13 +117,15 @@ int main() {
         return {std::make_unique<int>(*state + 1), {"updated"}, {7}, context.time + 0.125, "caller metadata"};
     });
     auto movable = m::make_dynamical_cell(move_model, std::make_unique<int>(8), 42);
+    assert(movable.view<cellerator::CellIdentityView<int>>().value == 42);
     auto move_result = movable.advance(5.0);
     assert(**movable.state_handle() == 9 && movable.time() == 0.125);
     assert(move_result->events[0] == "updated" && move_result->effects[0] == 7);
     assert(move_result->metadata == "caller metadata");
+    auto move_snapshot = movable.view<m::DynamicalStateSnapshotView<State>>();
     movable.advance();
     assert(*move_result->state == 9 && *movable.state() == 10);
-    assert(&movable.information() == &movable.state());
+    assert(**move_snapshot.state == 9);
 
     // An exception or invalid result clock leaves the adopted state/time alone.
     auto bad_model = m::make_dynamical_model<int>([](const int& state, const m::StepContext<>& context) -> m::StepResult<int> {
@@ -92,12 +154,11 @@ int main() {
     auto legacy_model = m::make_model<int>(legacy_transition);
     using LegacyModel = m::Model<int, m::StepContext<>, decltype(legacy_transition)>;
     static_assert(std::is_same_v<LegacyModel, typename decltype(legacy_model)::element_type>);
-    auto legacy_cell = m::make_cell(legacy_model, 1, 101);
+    auto legacy_cell = m::make_dynamical_cell(legacy_model, 1, 101);
     legacy_cell.advance();
     assert(legacy_cell.state() == 2);
-    static_assert(std::is_base_of_v<typename decltype(legacy_cell)::base_type,
-                                    decltype(legacy_cell)>,
-                  "compatibility factory still returns a DynamicalCell");
+    static_assert(std::is_base_of_v<cellerator::Cell, decltype(legacy_cell)>,
+                  "DynamicalCell exposes the generic typed Cell interface");
 #if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
 #endif

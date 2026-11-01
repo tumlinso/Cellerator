@@ -9,10 +9,91 @@ for native model authoring rather than generated from Python classes. Both sit
 within Cellerator's [biological machine-learning scope](scope.qmd) and
 [modeling architecture](architecture.qmd#cpp-and-python-modeling).
 
+The generic native cell contract is a separate, Torch-free interface at
+[`<Cellerator/cell.hh>`](../include/Cellerator/cell.hh). It lets a caller
+request typed capabilities from a cell without binding that cell to a model,
+tensor library, time axis, or trajectory container. The adapter examples below
+show event-prefix and dense-expression access; this page's learned models remain
+ordinary C++ callables that consume the views they support.
+
 The native component uses C++20 and ATen/LibTorch tensors. Python is optional,
 but this is not a no-Torch library: LibTorch supplies tensor operations and can
 provide ordinary optimizers and autograd. Native models compose ordinary C++
 types and can return any result type their callers need.
+
+## Access cell representations without binding a model
+
+`cellerator::Cell` is an abstract, non-templated capability surface with no
+required data members. A concrete cell opts into one or more typed access
+contracts by implementing `CellAccess<View>` and, when appropriate,
+`CellEdit<View>`. Capability lookup uses RTTI; `supports<View>()` and
+`supports_edit<View>()` let a caller check support, while an unsupported
+`view<View>()` or `edit<View>()` throws `std::bad_cast`. Reads require an
+lvalue cell and work through const cells. Edits require a mutable lvalue.
+Implement `read` and `write` as protected hooks; callers use the public
+`view` and `edit` methods so the temporary-cell restrictions are preserved.
+
+The interface itself is C++17-compatible and has no Torch or CUDA dependency.
+The examples build with C++20; the dense-expression adapter uses `std::span`
+for feature identities, while the event adapter itself does not require it.
+Include the narrow adapter needed by the operation:
+
+```cpp
+#include <Cellerator/cells/event.hh>
+
+using EventView = cellerator::cells::EventView<Token>;
+
+Prediction forward_events(const cellerator::Cell& cell, const Model& model) {
+    const auto events = cell.view<EventView>();
+    return model(events);
+}
+```
+
+The operation selects and interprets the view; `Cell` does not own a model or
+promise that forwarding returns another cell. An application may define a new
+view type and add it through another `CellAccess` contract without registering
+it centrally. A concrete cell can expose event, expression, identity, and
+application-defined views together. `CellIdentityView<Identity>` borrows an
+application-defined identity; it does not impose a common numeric ID or treat a
+storage row as biological identity.
+
+The built-in adapters borrow stable descriptor objects and return lightweight
+typed descriptors. An event cell selects an ordered token prefix by offset and
+length. Repeated token occurrences remain present. The storage owner controls
+allocation and append, updates the stable buffer descriptor after growth, and
+must keep a cell's offsets valid; a view acquired before backing storage moves
+may be invalidated. A dense-expression cell selects a row by its row index,
+feature IDs, and explicit row stride, including padded rows. Read views expose
+const numeric values. `MutableDenseExpressionCell` exposes numeric writes only
+through `edit<MutableExpressionView<...>>()`; feature identity, selection, and
+layout remain read-only. The storage owner remains responsible for
+synchronization and value-generation or cache invalidation protocols.
+
+Descriptors retain the native memory-placement metadata. A device placement
+does not trigger a copy, transfer, or host dereference; the consumer must honor
+that placement. Capability lookup is a runtime interface boundary, not a
+per-element iteration API. Resolve a view for the operation and pass its plain
+descriptor into the compute path when that path needs tighter batching or
+execution control.
+
+One `view` request performs one RTTI capability lookup and one virtual read.
+The supplied adapters then validate the selection and return pointer, extent,
+placement, and feature metadata without allocating or copying the payload.
+Calling `supports` before `view` performs an additional lookup. A dynamical
+state view additionally retains a `shared_ptr<const State>`; this pins the
+state object, while any nested external resources retain their own mutation
+and lifetime contracts.
+
+[`event_forward.cc`](../examples/native_cell/event_forward.cc) demonstrates a
+deterministic event-prefix continuation whose append is owned by the backing
+store. The operation returns a cell with the same identity and offset and a
+longer prefix; the earlier handle keeps its original boundary. Its evaluator is
+an interface example, not a scientific or trained Karyoplast model.
+[`multimodal.cc`](../examples/native_cell/multimodal.cc) demonstrates one cell
+with event, dense-expression, identity, and caller-defined quality views, plus
+an explicit expression edit. See the
+[developer reference](developer_reference.qmd#native-cell-examples) for the
+host-only build route.
 
 ## Author a model as an ordinary C++ type
 

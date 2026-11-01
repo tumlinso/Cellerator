@@ -2,7 +2,9 @@
 
 #include <Cellerator/biology/coordinates.hh>
 #include <Cellerator/biology/feature_binding.hh>
-#include <Cellerator/modeling/cell.hh>
+#include <Cellerator/cell.hh>
+#include <Cellerator/cells/event.hh>
+#include <Cellerator/cells/expression.hh>
 #include <Cellerator/modeling/dynamical.hh>
 #include <Cellerator/modeling/model.hh>
 #include <Cellerator/nn/attention.hh>

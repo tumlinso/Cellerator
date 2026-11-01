@@ -187,9 +187,11 @@ have different backend and validation boundaries. The remaining work includes
 coherence and generalization of interfaces, not just adding more kernels or
 renaming existing classes.
 
-The first implementation now provides a general `Cell`, explicit dynamical
-wrappers, feature encoding, relation attention, shared readouts, and a trainable
-grouped-linear adapter. Read the [NN foundation guide](nn_foundation.qmd) and
+The 2026-10-31 implementation provides a general Python `Cell`, explicit
+dynamical wrappers, feature encoding, relation attention, shared readouts, and a
+trainable grouped-linear adapter. The native C++ `Cell` contract is a separate
+typed capability interface; the distinction is recorded in the Cells section
+below. Read the [NN foundation guide](nn_foundation.qmd) and
 [dated implementation record](current_implementation.qmd) for current contracts
 and qualification. The table below preserves the motivation for that work;
 the broader modeling capabilities remain open-ended.
@@ -351,21 +353,45 @@ every backend or the framework's full biological ML ambition.
 
 ## Cells, representations, and auxiliary views
 
-**Design request recorded 2026-10-31.** Preserve this requirement when refining
-the elementary classes. It is design intent, not an implemented API contract or
-authorization to resume development. Exact class boundaries and method names
-remain open. The public API should be intuitive and minimal, and its eventual
-implementation should support efficient native and batched execution.
+**Native interface implemented 2026-11-01.** The public C++ interface is a
+non-templated `cellerator::Cell` with no mandatory representation, identity,
+model binding, time, ancestry, or trajectory. Concrete cells provide optional
+typed access contracts such as event-prefix or dense-expression views. Each
+adapter decides how a cell selection maps into caller-owned bulk storage. This
+small interface is one implementation of the design request; it does not by
+itself provide batching, model execution, persistent caching, or a complete
+biological modeling API.
 
-A `Cell` should make a cellular subject and its associated information
-addressable in a learning problem. When bound to a learned model, it can be a
-lightweight handle to that model's representation or computational context for
-the cell. A "pointer to a latent" is a useful intuition, but must not become a
-requirement for one explicit, persistently materialized latent vector. Relevant
-information may be distributed across structured features, event history,
-attention context, recurrent memory, or several learned representations.
-History and behavior under specified conditions remain native modeling concepts;
-an instantaneous view is only one possible selection of cellular information.
+`view<View>()` acquires a borrowed typed read view from an lvalue cell;
+`edit<View>()` acquires an explicitly writable borrowed view from a mutable
+lvalue. The corresponding `supports` checks report whether the concrete cell
+implements each capability. Unsupported access throws `std::bad_cast`. A cell
+may implement several contracts, including caller-defined views, without a
+central registry. Identity is typed and supplied by the application. Physical
+row or token offsets are storage locators, not a universal or biological ID.
+
+The base interface is C++17 and independent of Torch and CUDA. The examples
+build with C++20; the dense-expression adapter uses `std::span` for feature
+identities, while the event adapter itself does not require it. Both adapters
+borrow stable descriptor objects and select subranges or rows without owning
+or copying the underlying arrays. Events retain order and repeated
+occurrences; the storage owner controls append and descriptor updates.
+Dense-expression selection retains caller-supplied feature identities and
+explicit row stride. Both views preserve memory placement and cause no
+implicit device transfer. Writable
+expression access changes values only; its owner retains synchronization and
+generation responsibilities. See the [native guide](native_nn.qmd#access-cell-representations-without-binding-a-model)
+and the [event example](../examples/native_cell/event_forward.cc).
+
+The broader modeling goal is to make a cellular subject and the information
+relevant to a learning problem addressable without requiring one explicit,
+persistently materialized latent vector. Relevant information may be distributed
+across structured features, event history, attention context, recurrent memory,
+or several learned representations. In native C++, a separate model operation
+selects and consumes the cell's typed views; the base `Cell` itself has no model
+binding. History and behavior under specified conditions remain native modeling
+concepts; an instantaneous view is only one possible selection of cellular
+information.
 
 ### Motivating request: an auxiliary ATAC model for Karyoplast
 
@@ -430,12 +456,15 @@ recurrent systems, and explicit dynamical models alike.
   model's declared information dependencies.
 
 These are design constraints and performance goals, not measured speedup
-claims. The 2026-10-31 implementation separates the old state/clock/`advance()`
-wrapper into `DynamicalCell`, supplies a general information-bound `Cell`, and
-adds `ModelWithViews` for explicitly selected shared readouts. See the
-[NN foundation guide](nn_foundation.qmd). It reuses one forward result within a
-call and introduces no persistent cache. Further representation, execution,
-and modeling capabilities still require their own scoped development.
+claims. The generic native `Cell` only exposes typed views; model operations
+remain separate and choose the concrete result types. `DynamicalCell` remains
+an optional state-transition utility with its own state snapshot, identity,
+clock, observation, and shared-model behavior. The native NN readout/query
+compositions are separate model-level facilities. The Python API is unchanged
+by this native interface. None of these interfaces makes a per-cell virtual
+call a batch execution strategy or introduces a persistent cache. Further
+representation, execution, and modeling capabilities still require their own
+scoped development.
 
 ## Scientific questions and identifiability
 
@@ -562,7 +591,7 @@ make dynamics the framework core or impose a ceiling on learned architectures.
 This clarification changes architectural intent, not implementation paths.
 
 ```text
-include/Cellerator/                 # public native contracts
+include/Cellerator/                 # public native contracts, including cell.hh and cells/
   structure/ support/ indexing/     # identity and reusable work preparation
   layout/                           # logical-to-physical mapping contracts
   ops/<family>/                     # open-ended native operation families

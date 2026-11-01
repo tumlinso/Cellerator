@@ -16,6 +16,38 @@ using ::at::ScalarType;
 using ::at::TensorOptions;
 }
 
+// Cell contracts and borrowed memory descriptors are part of the native
+// modeling surface re-exported by this module.
+export namespace cellerator {
+using ::cellerator::Cell;
+using ::cellerator::ViewTag;
+using ::cellerator::CellAccess;
+using ::cellerator::CellEdit;
+using ::cellerator::CellIdentityView;
+}
+
+export namespace cellerator::memory {
+using ::cellerator::memory::domain;
+using ::cellerator::memory::placement;
+using ::cellerator::memory::array_view;
+using ::cellerator::memory::const_array_view;
+using ::cellerator::memory::matrix_view;
+using ::cellerator::memory::const_matrix_view;
+}
+
+export namespace cellerator::cells {
+using ::cellerator::cells::EventView;
+using ::cellerator::cells::EventCell;
+using ::cellerator::cells::ExpressionView;
+using ::cellerator::cells::MutableExpressionView;
+using ::cellerator::cells::DenseExpressionCell;
+using ::cellerator::cells::MutableDenseExpressionCell;
+}
+
+export namespace cellerator::modeling {
+using ::cellerator::modeling::DynamicalStateSnapshotView;
+}
+
 // The module surface re-exports the canonical header declarations. Importers
 // and conventional-header users therefore use the same C++ types and ABI.
 export namespace cellerator::nn {

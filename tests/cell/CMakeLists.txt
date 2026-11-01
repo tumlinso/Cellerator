@@ -1,0 +1,14 @@
+add_executable(cellerator_cell_core_test
+    cell_core_test.cc
+)
+target_link_libraries(cellerator_cell_core_test PRIVATE Cellerator::libCellerator)
+target_compile_features(cellerator_cell_core_test PRIVATE cxx_std_17)
+
+add_executable(cellerator_cell_adapters_test
+    cell_adapters_test.cc
+)
+target_link_libraries(cellerator_cell_adapters_test PRIVATE Cellerator::libCellerator)
+target_compile_features(cellerator_cell_adapters_test PRIVATE cxx_std_20)
+
+add_test(NAME cellerator_cell_core_test COMMAND cellerator_cell_core_test)
+add_test(NAME cellerator_cell_adapters_test COMMAND cellerator_cell_adapters_test)

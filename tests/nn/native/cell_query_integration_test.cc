@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/cell.hh>
+#include <Cellerator/cell.hh>
 #include <Cellerator/nn/query.hh>
 
 #include <cassert>
@@ -9,8 +9,30 @@
 #include <tuple>
 #include <vector>
 
-namespace m = cellerator::modeling;
 namespace nn = cellerator::nn;
+
+struct InputView { const int& value; };
+
+class QueryCell final
+    : public cellerator::CellAccess<InputView>,
+      public cellerator::CellAccess<cellerator::CellIdentityView<std::string>> {
+public:
+    QueryCell(int& information, std::string identity)
+        : information_(information), identity_(std::move(identity)) {}
+
+protected:
+    InputView read(cellerator::ViewTag<InputView>) const & override {
+        return {information_};
+    }
+    cellerator::CellIdentityView<std::string> read(
+        cellerator::ViewTag<cellerator::CellIdentityView<std::string>>) const & override {
+        return {identity_};
+    }
+
+private:
+    int& information_;
+    std::string identity_;
+};
 
 struct BaseModel {
     int* calls;
@@ -46,7 +68,7 @@ struct Decoder {
 
 int main() {
     int information = 5;
-    auto cell = m::make_cell(std::ref(information), std::string("query-cell"));
+    QueryCell cell(information, "query-cell");
     int calls = 0;
     BaseModel model{&calls};
     Binding binding{{10, 20}};
@@ -60,20 +82,23 @@ int main() {
     auto first_request = nn::query(readout, first_targets, first_coordinates);
     auto second_request = nn::query(readout, second_targets, second_coordinates);
 
-    auto bound = cell.bind(model);
-    auto both = bound.predict(first_request, second_request);
+    // Cell supplies a typed input view; the operation owns evaluation and
+    // shares one base forward across both readout requests.
+    const auto& input = cell.view<InputView>().value;
+    auto both = nn::predict(model, input, first_request, second_request);
     static_assert(std::tuple_size_v<decltype(both)> == 2);
     // One base evaluation is shared across requests; source=(5*2+5)=15.
     assert(calls == 1);
     assert(std::get<0>(both).values == 20);
     assert(std::get<1>(both).values == 22);
 
-    // The query spelling uses the same ADL evaluation hook, and the borrowed
-    // information source is read again for each invocation.
+    // The second operation call re-reads the cell's live view.
     information = 8;
-    auto selected = bound.query(first_request);
+    const auto& changed_input = cell.view<InputView>().value;
+    auto selected = nn::predict_query(model, changed_input, first_request);
     assert(calls == 2 && selected.values == 29);
 
-    auto training = bound.predict(nn::Run{true}, first_request);
+    auto training = nn::predict(model, changed_input, nn::Run{true}, first_request);
     assert(calls == 3 && training.values == 1229);
+    assert(cell.view<cellerator::CellIdentityView<std::string>>().value == "query-cell");
 }
