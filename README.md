@@ -9,6 +9,11 @@ relationships, conditional activity, and geometry. The framework includes its
 own native numerical machinery, specialized operations, and layouts; dense
 tensor APIs are one option among several.
 
+The [cellular geometry definition](cellular_geometry.md) explains the central
+shortcut: constrain possible dependencies and the context needed to determine
+their conditions, then exploit that structure throughout learning, layout,
+and execution.
+
 Cellerator can compose with PyTorch for learned modules, autograd, and familiar
 training workflows. Torch is optional integration infrastructure, not the
 definition or limit of the framework. Cellerator supports model-native dense,
@@ -43,6 +48,8 @@ boundaries and evidence.
   and current versus proposed source organization.
 - [Scope](scope.md): what belongs in Cellerator and what remains with Torch,
   scientific consumers, or adjacent libraries.
+- [Cellular geometry](cellular_geometry.md): the scientific and computational
+  rationale for specializing around cellular dependencies and their conditions.
 - [Model building](docs/model_building.qmd): composing real operations and
   modules.
 - [Optional ggml quantization](docs/ggml.qmd): the separately enabled CPU

@@ -97,6 +97,98 @@ network or require every learning problem to be expressed as explicit cellular
 state transitions. Conventional neural modules and alternative representations
 must remain composable without adopting those APIs.
 
+## Virtual models and structural specialization {#virtual-models-and-structural-specialization}
+
+The [cellular geometry definition](cellular_geometry.qmd) establishes the
+scientific and computational rationale: some direct dependencies are excluded
+throughout a declared regime, while others have conditions determined by
+restricted context. Models define and evaluate those conditions. Cellerator
+enables their expression and exploits the declared dependencies throughout
+learning, layout, and execution. Hidden regulators and incomplete measurement
+can obscure this structure; broad observed context does not establish equally
+broad direct physical dependencies.
+
+This foundation should be as model-agnostic as possible. Structural knowledge
+should remain reusable across compatible architectures, objectives, and
+readouts, so a new question for a foundation model need not require learning
+the same core structure again. Execution preparation is one consequence of
+that reuse, rather than its entire purpose.
+
+Cellerator models are virtual: their logical entities, relationships, learned
+computations, and optional state are independent of the allocations, processes,
+and devices that realize them. One logical model may be materialized lazily,
+executed in parts, batched across cellular contexts, or distributed across
+devices. Its meaning survives changes in physical organization. Virtual refers
+to this separation of model meaning from storage and execution placement.
+
+This is a source of computational opportunity. Designing a model around a
+system whose structure can legitimately be established before repeated
+evaluation allows representation, neural composition, memory, and execution to
+be specialized together. Cellerator should make these choices accessible as
+reusable computational building blocks beneath cells and models. Their purpose
+is to make biological modeling more expressive and efficient, including during
+training, rather than merely to store a dataset in another format.
+
+### Structure can be prepared and reused
+
+Structure may be supplied, discovered from data, or learned. Predetermined
+structure includes admissibility restrictions and the inputs required to
+evaluate conditions, even while the active interactions change. Applicable
+biological or model constraints establish these restrictions; a reuse interval
+records how long preparation remains valid. Values, parameters, and activity
+may change while compatible structural preparation remains reusable. Changes to
+membership, connectivity, or the assumptions behind eligibility must invalidate
+the affected preparation explicitly.
+
+For example, labelled expression data can supply canonical feature identities
+and measurements from which Cellerator derives candidate feature groups and
+blocking layouts. A model may use dense learned interactions inside selected
+groups and selective or dense interactions between them. Reordering an existing
+computation preserves its logical interactions; choosing to exclude interactions
+is a separate model assumption or learned structural decision. Data-derived
+grouping alone does not establish biological independence or causality. Supplied
+and learned structure remain possible, and models that need ordinary dense
+computation remain first-class.
+
+With a reusable structure, Cellerator can aim to prepare address maps,
+incidences, work grouping, and operation-specific schedules once; reserve
+persistent buffers for the required extents and capacities; and specialize
+kernels around the resulting layouts. Many logical blocks can occupy one or a
+few large allocations with lightweight descriptors. A block is a unit of
+structure or work, not necessarily a separate allocation. Preparation can remove
+repeated discovery, indexing, allocation, and some conversion or routing from
+the repeated evaluation path. Forward and backward operations must preserve the
+mapping between physical values or gradients and their logical identities.
+
+### Physical realization and library reuse
+
+Cellerator owns useful specialist numerical representations and the kernels
+that consume them. Conventional dense and sparse representations, including CSR,
+should reuse established implementations such as ATen where suitable. Native
+C++ can link ATen directly and use its device buffers without Python dispatch.
+Specialist containers may use ATen allocations, native allocations, or borrowed
+external storage according to their contracts. Extending the available tensor
+representations does not require recreating a general tensor, autograd, or
+optimizer system. A universal tensor superclass, namespace reorganization, or
+one tensor allocation per biological module is not prescribed here.
+
+Distribution is another realization of the same logical model. Shared structure
+can describe blocks consumed by device-local learned heads or other components,
+with values and parameters placed where their computations benefit from
+locality. The runtime may share supported allocations, replicate data, or move
+it explicitly; actual device accessibility, ownership, synchronization, and
+communication costs remain part of the execution contract. A virtual model
+need not be fully materialized on every device or have one physical copy for
+every cell that uses shared computation.
+
+This section records design intent. The [implementation record](current_implementation.qmd)
+bounds existing containers, preparation, numerical operations, and distributed
+execution. The performance opportunity is to specialize around reusable system
+structure; a demonstrated advantage still requires measurements that include
+discovery, preparation, packing, movement, maintenance, and execution over the
+intended reuse interval. [Layout and execution](layout_execution.qmd) separates
+those lifetimes and costs.
+
 ## Modeling and neural-network backbone
 
 **Conceptual direction recorded 2026-10-31.** The missing backbone is the coherent

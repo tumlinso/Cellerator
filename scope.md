@@ -49,6 +49,15 @@ make alternatives and combinations equally natural to explore.
 
 ## Expressiveness, learning, and efficiency
 
+The [cellular geometry definition](https://github.com/tumlinso/Cellerator/blob/main/cellular_geometry.md) establishes the
+governing shortcut: exploit restrictions on possible dependencies and on the
+context required to determine their conditions. Models evaluate those
+conditions; Cellerator enables their expression and specializes learning,
+layout, and execution around the declared structure. This shortcut should be
+as model-agnostic as possible: compatible models and new questions for a
+foundation model should reuse core structural knowledge instead of having to
+relearn it from observations.
+
 - **Expressiveness:** make sophisticated biological representations and
   relationships easier to describe while preserving general neural-network
   capabilities. Dense networks, ordinary attention, transformers, recurrent
@@ -64,6 +73,15 @@ make alternatives and combinations equally natural to explore.
   including persistent information, overlapping modules, sparse dependencies,
   geometry, and repeated computational patterns. Structure should make computation
   more efficient or improve the model, rather than impose an expensive biological metaphor.
+
+Cellerator models are virtual: logical models independent of their physical
+storage and device realization. Structure that can legitimately be established
+before repeated execution creates opportunities to specialize representation,
+neural computation, persistent buffers, and distribution together. That structure
+may be supplied, discovered from data, or learned, and reused while values,
+parameters, or activity change. Cellerator owns the specialist numerical
+containers and kernels that make such structure useful, while reusing established
+tensor infrastructure where appropriate.
 
 These ambitions should reinforce one another. Sparsity is an opportunity, not
 a requirement: dense attention may be the right operation. A model need not

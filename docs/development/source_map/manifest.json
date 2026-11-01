@@ -1,11 +1,11 @@
 {
   "repository": ".",
-  "capture_head_provenance_only": "42b2bdfe20f0aed6b22398bfab6b7a036cfd821f",
-  "source_identity": "16e92a5f2dcc4d311dfddae661649da5835cc4b491569d3e85247992fcea06d4",
-  "source_index_sha256": "a0299dfd7ee23b8d388de1583b734e9253528d3a9b48fd2bc22822e17be427cf",
-  "source_worktree_sha256": "c19ef3c5e6615ddbc1f96f2cb9e89955e91ffeb5844d7b0a8330ccd86d01b386",
+  "capture_head_provenance_only": "2b63c771f3dd90d3cc1da07cf7455906dcf29faf",
+  "source_identity": "27503868394341a109984d25e84ded9f9fe0b862d38d8969a2d7c945b6808191",
+  "source_index_sha256": "917dee0254c2a33b3238bd89ab8e51098b925fb254d18589374783d19904809c",
+  "source_worktree_sha256": "41b99d41f09265854e42bf6a1501feb2a048ec17ec283ce8b9bed33dad8f15c9",
   "toolchain_sha256": {
-    "generator": "a1f4803adaae2db711350b4268946b4497b2870a4f1ccd7a020bad77b9deb940",
+    "generator": "a34749e3fd3cabddbe4eef31310d3d28bf43ece7d2231f083a293f5dade3b6a7",
     "validator": "5475fd29b2721a19cfa244ea5e9efef400f3712b9f4e1b17a4de3b730b19b5ee",
     "shared_snapshot": "089f30d46e53fdfd328ec2695757d1228fcf65cfb830cac9ba4342ba41035dcf"
   },
@@ -14,15 +14,15 @@
     "validator": "tools/maintenance/source_map/validate.py",
     "shared_snapshot": "tools/maintenance/source_map/common.py"
   },
-  "rules_sha256": "f471e3897d41e56ce5a54f62a8445cb38865e30755e59870dd1723910ea165b3",
+  "rules_sha256": "a213de9f2766221235b9c1f5523d0555e193a90faa0678f3f87faf8e76e55b90",
   "generated_output_sha256": {
-    "nontracked_inventory.json": "862587af9aeb0299d5ab26f3166e2e4bbec41f8c6a0404a38ce800168bd5aa9c",
-    "path_map.csv": "255c502786e12ce6383e705632e6d76e1a3d66bef963f9e30780d507a90dc434",
-    "path_map.jsonl": "8327bca5bdf0edf080d8a2369681b8525a6dd355c8846e2e48cd5ad4f27c770d",
-    "routing_rules.json": "f471e3897d41e56ce5a54f62a8445cb38865e30755e59870dd1723910ea165b3",
-    "validation.json": "942407b8933842f65195fb14fdcab1d66115a2d8284db4ae0b536bde966d0ab9"
+    "nontracked_inventory.json": "4795082b9509cac91825ee00d5255f2e45dd4a0e573fd070137e0875c3940cc8",
+    "path_map.csv": "8f959edda3f57240807d2f2d7bad78f92c344794ae3648e53c5f8ef28f0b1a1d",
+    "path_map.jsonl": "4b8596c7aaea887b872aad5cfc5a993ea76d18be6a00ccbd6a22969fc39f3307",
+    "routing_rules.json": "a213de9f2766221235b9c1f5523d0555e193a90faa0678f3f87faf8e76e55b90",
+    "validation.json": "614498a4a49a877cad4b700d8905f8a5161e9fd18da35e595cf1998c52fa91f7"
   },
-  "tracked_source_count": 10512,
+  "tracked_source_count": 10514,
   "untracked_source_paths": [],
   "generated_paths": [
     "docs/development/source_map/manifest.json",
@@ -33,38 +33,18 @@
     "docs/development/source_map/validation.json"
   ],
   "dirty_tracked_paths": [
-    "cmake/CelleratorModeling.cmake",
-    "cmake/CelleratorNN.cmake",
-    "cmake/compiler/CelleratorHostSdk.cmake",
+    "AGENTS.md",
+    "README.md",
+    "cellular_geometry.md",
+    "docs/_quarto.yml",
     "docs/architecture.qmd",
-    "docs/current_implementation.qmd",
-    "docs/developer_reference.qmd",
-    "docs/native_nn.qmd",
-    "examples/native_cell/event_forward.cc",
-    "examples/native_cell/multimodal.cc",
-    "include/Cellerator/cell.hh",
-    "include/Cellerator/cells/event.hh",
-    "include/Cellerator/cells/expression.hh",
-    "include/Cellerator/modeling/cell.hh",
-    "include/Cellerator/modeling/dynamical.hh",
-    "include/Cellerator/nn.hh",
-    "modules/native/cellerator.nn.ccm",
-    "src/cell.cc",
-    "tests/cell/CMakeLists.txt",
-    "tests/cell/cell_adapters_test.cc",
-    "tests/cell/cell_core_test.cc",
-    "tests/cell/install_consumer/CMakeLists.txt",
-    "tests/cell/install_consumer/adapters.cc",
-    "tests/cell/install_consumer/core.cc",
-    "tests/cell/install_consumer/nn.cc",
-    "tests/framework/native/model_contract_test.cc",
-    "tests/nn/modules/module_only.cc",
-    "tests/nn/native/cell_contract_test.cc",
-    "tests/nn/native/cell_query_integration_test.cc",
+    "docs/cellular_geometry.qmd",
+    "docs/layout_execution.qmd",
+    "scope.md",
     "tools/maintenance/source_map/generate.py"
   ],
   "intended_architecture": "High-performance PyTorch extension for cellular model building; Torch supplies general tensor/model facilities; biological structure guides specialized operations and execution; fields/compiler/live recompilation are experimental; classical single-cell analysis is a testbed.",
   "source_identity_contract": "HEAD is provenance only. Identity binds non-generated Git index paths/modes/blob OIDs, current worktree content and mode for tracked and non-ignored untracked files, and generator/validator/snapshot code. Generated outputs are metadata routes and excluded from inputs.",
   "authority": "The approved plan records intent; registered Project Control state records current task status.",
-  "manifest_sha256": "ab35d61d659dd7e1b0cfa908d97b0ad4693d5d5cc294ee2a2ceb70a371a925c3"
+  "manifest_sha256": "0034e80e6656d70a9788b27cfab178935fe601060ae8ee9a29497d9bb6561a4d"
 }

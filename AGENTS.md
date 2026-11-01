@@ -26,6 +26,18 @@ Read the [architecture](docs/architecture.qmd) for intent, [current implementati
 
 For source ownership, evidence boundaries, and path routing, see the [contributor routing guide](docs/development/routing.md). The source map linked there is not live task status or capability proof.
 
+## Protected cellular geometry definition
+
+Read [cellular_geometry.md](cellular_geometry.md) before designing or changing
+model-facing operations, Cell interfaces, layouts, or execution strategies.
+It is protected design authority. **Do not change, rewrite, weaken, or replace
+this document unless the user gives an explicit override authorizing a change
+to this document.** A general implementation, cleanup, documentation, or
+refactoring request does not grant that override. If another source or an
+implementation conflicts with it, report the conflict to the user; do not
+silently revise the definition to match. Keep its rendered include faithful
+to the canonical root text.
+
 ## Biological machine learning is the organizing principle
 
 Read [scope](scope.md) and [architecture](docs/architecture.qmd) before proposing

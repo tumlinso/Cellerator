@@ -2,6 +2,18 @@
 title: "Layout and execution"
 ---
 
+The [virtual-model architecture](architecture.qmd#virtual-models-and-structural-specialization)
+describes why Cellerator should specialize storage and computation around
+reusable system structure, including distributed realizations of one logical
+model. This page separates the lifetimes and execution contracts involved.
+
+The [cellular geometry definition](cellular_geometry.qmd) explains the shortcut
+that motivates these contracts: index admissible dependencies and the limited
+context needed by model-defined conditions, rather than constructing an
+unrestricted interaction space. Layouts and schedules must preserve condition
+inputs, indirect effects, and required derivative work. The logical state of
+a single Cell can be distributed across devices.
+
 ## One modeled system, several distinct lifetimes
 
 Biology can constrain computation because repeated model evaluations often
