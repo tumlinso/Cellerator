@@ -61,7 +61,7 @@ struct execution_export_v2 {
     const compute::decomposition::partial_result_algebra_v1
         *partial_algebras = nullptr;
     std::uint64_t partial_algebra_count = 0u;
-    const execution::order_id *persistent_orders = nullptr;
+    const ::cellerator::structure::order_id *persistent_orders = nullptr;
     std::uint64_t persistent_order_count = 0u;
     const execution::joint_compiler::atom_fragment_result_v1
         *candidate_frontier = nullptr;

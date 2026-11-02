@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/matrix/compressed.cuh>
+#include <Cellerator/interop/formats/compressed.cuh>
 #include <Cellerator/memory/image.hh>
 #include <Cellerator/memory/workspace.hh>
 
@@ -178,7 +178,7 @@ bool build_density_sample_plan(std::uint64_t total_rows,
                                sample_plan *out,
                                std::string *error = nullptr);
 
-bool build_csr_density_sample_plan(const ::cellerator::matrix::compressed *source,
+bool build_csr_density_sample_plan(const ::cellerator::interop::formats::CompressedPayload *source,
                                    const density_sample_spec &spec,
                                    const cell_identity_view &identities,
                                    sample_plan *out,

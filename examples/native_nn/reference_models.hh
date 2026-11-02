@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Cellerator/biology/coordinates.hh>
 #include <Cellerator/biology/feature_binding.hh>
 #include <Cellerator/nn/attention.hh>
 #include <Cellerator/nn/features.hh>
@@ -10,6 +9,7 @@
 #include <Cellerator/nn/relations.hh>
 #include <Cellerator/nn/supervision.hh>
 #include <Cellerator/nn/types.hh>
+#include <Cellerator/structure/coordinates.hh>
 
 #include <ATen/ATen.h>
 
@@ -208,7 +208,7 @@ struct EventResult {
     std::vector<FeatureId> target_ids;
     std::vector<std::int64_t> target_positions;
     std::vector<std::int64_t> context_offsets;
-    biology::OccurrenceCoordinates<HistoryTokenIdentity> context_order;
+    cellerator::structure::OccurrenceCoordinates<HistoryTokenIdentity> context_order;
     nn::ObservationCoordinates<std::string> event_coordinates;
 };
 
@@ -322,7 +322,8 @@ struct EventHistoryReferenceModel {
             && *std::max_element(order_positions.begin(), order_positions.end()) >= max_history) {
             throw std::invalid_argument("event context exceeds max_history");
         }
-        auto context_order = biology::OccurrenceCoordinates<HistoryTokenIdentity>::from_ids(
+        auto context_order =
+            cellerator::structure::OccurrenceCoordinates<HistoryTokenIdentity>::from_ids(
             std::move(context_identities), context_offsets, {}, batch.structure_generation);
         auto context_tensor = at::tensor(context_ids,
             at::TensorOptions().dtype(at::kLong).device(parameters.device()));

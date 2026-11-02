@@ -22,7 +22,7 @@ bool less_id(persistent_identity_v1 lhs, persistent_identity_v1 rhs) noexcept {
             && lhs.local_identity < rhs.local_identity);
 }
 
-bool less_order(order_id lhs, order_id rhs) noexcept {
+bool less_order(structure::order_id lhs, structure::order_id rhs) noexcept {
     return lhs.high < rhs.high || (lhs.high == rhs.high && lhs.low < rhs.low);
 }
 
@@ -39,7 +39,7 @@ atom_fragment_request_validation_result_v1 validate_index_space(
          component_index < space.component_count; ++component_index) {
         const hierarchical_index_component_v1 &component =
             space.components[component_index];
-        const local_index_space_view_v1 &local = component.index_space;
+        const layout::LocalIndexSpaceViewV1 &local = component.index_space;
         if (component.component_identity == 0u
             || (component_index != 0u
                 && component.component_identity <= previous_identity)
@@ -47,9 +47,9 @@ atom_fragment_request_validation_result_v1 validate_index_space(
             || local.partition_identity == 0u || local.local_extent == 0u
             || local.global_extent < local.local_extent
             || local.local_to_global == nullptr
-            || (local.local_width != local_index_width_v1::u16
-                && local.local_width != local_index_width_v1::u32
-                && local.local_width != local_index_width_v1::u64)
+            || (local.local_width != layout::LocalIndexWidth::u16
+                && local.local_width != layout::LocalIndexWidth::u32
+                && local.local_width != layout::LocalIndexWidth::u64)
             || expected_begin > std::numeric_limits<std::uint64_t>::max()
                 - local.local_extent)
             return failure(atom_fragment_request_validation_code_v1::

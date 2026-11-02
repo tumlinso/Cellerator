@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/projection/physical_feature_major.hh>
-#include <Cellerator/compute/projection/physical_transpose.hh>
+#include <Cellerator/execution/projection_binding.hh>
 
 #include <Cellerator/execution/execution_contract.hh>
 #include <Cellerator/parameters.hh>
@@ -12,6 +11,9 @@
 #include <type_traits>
 
 namespace cellerator::compute::math {
+
+using u32 = std::uint32_t;
+using u64 = std::uint64_t;
 
 inline constexpr u32 native_training_slice_schema_version = 1u;
 inline constexpr u32 native_training_dense_width = 16u;
@@ -44,8 +46,8 @@ struct native_training_prepared_state {
     std::int32_t device_ordinal = -1;
     u32 dense_width = native_training_dense_width;
     u32 reserved = 0u;
-    feature_major_projection_view forward{};
-    transpose_projection_view transpose{};
+    execution::FeatureMajorBinding forward{};
+    execution::TransposeBinding transpose{};
     execution::axis_identity feature_axis{};
     execution::axis_identity module_axis{};
     execution::axis_identity dense_axis{};
@@ -88,8 +90,8 @@ std::size_t native_training_workspace_bytes(
     u32 module_count, u32 nnz_count) noexcept;
 
 native_training_status prepare_native_training_slice(
-    const feature_major_projection_view &device_forward,
-    const transpose_projection_view &device_transpose,
+    const execution::FeatureMajorBinding &device_forward,
+    const execution::TransposeBinding &device_transpose,
     std::int32_t device_ordinal,
     execution::axis_identity feature_axis,
     execution::axis_identity module_axis,

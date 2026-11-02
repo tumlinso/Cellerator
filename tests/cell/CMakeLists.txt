@@ -12,3 +12,19 @@ target_compile_features(cellerator_cell_adapters_test PRIVATE cxx_std_20)
 
 add_test(NAME cellerator_cell_core_test COMMAND cellerator_cell_core_test)
 add_test(NAME cellerator_cell_adapters_test COMMAND cellerator_cell_adapters_test)
+
+add_executable(cellerator_cell_views_bridge_test cell_views_bridge_test.cc)
+target_link_libraries(cellerator_cell_views_bridge_test PRIVATE Cellerator::libCellerator)
+target_compile_features(cellerator_cell_views_bridge_test PRIVATE cxx_std_17)
+add_test(NAME cellerator_cell_views_bridge_test COMMAND cellerator_cell_views_bridge_test)
+
+# This consumer deliberately links no Cellerator runtime and disables RTTI.
+add_executable(cellerator_typed_core_no_rtti_test typed_core_no_rtti_test.cc)
+target_include_directories(cellerator_typed_core_no_rtti_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(cellerator_typed_core_no_rtti_test PRIVATE cxx_std_17)
+if(MSVC)
+    target_compile_options(cellerator_typed_core_no_rtti_test PRIVATE /GR-)
+else()
+    target_compile_options(cellerator_typed_core_no_rtti_test PRIVATE -fno-rtti)
+endif()
+add_test(NAME cellerator_typed_core_no_rtti_test COMMAND cellerator_typed_core_no_rtti_test)

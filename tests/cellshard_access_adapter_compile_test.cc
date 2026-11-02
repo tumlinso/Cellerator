@@ -4,11 +4,12 @@
 #include <cassert>
 
 int main() {
-    namespace ccm = cellerator::matrix;
+    namespace ccm = cellerator::interop::formats;
+    namespace ccf = cellerator::interop::formats;
     namespace cci = cellerator::interop;
     namespace csa = cellshard::access;
 
-    ccm::blocked_ell blocked{};
+    ccm::BlockedEllPayload blocked{};
     ccm::init(&blocked, 4u, 8u, 12u, 2u, 4u);
     auto blocked_binding = cci::make_cellshard_matrix_binding(blocked, 3u);
     auto blocked_view = csa::make_adapter_view(blocked_binding);
@@ -25,12 +26,12 @@ int main() {
     assert(blocked_archive.execution_format == cellshard::dataset_execution_format_blocked_ell);
     assert(cellshard::partition_aux(&blocked) == ccm::pack_blocked_ell_aux(2u, 2u));
 
-    cellshard::sharded<ccm::blocked_ell> blocked_sharded{};
+    cellshard::sharded<ccm::BlockedEllPayload> blocked_sharded{};
     cellshard::init(&blocked_sharded);
     blocked_sharded.cols = blocked.cols;
     blocked_sharded.num_partitions = 1u;
     blocked_sharded.partition_capacity = 1u;
-    ccm::blocked_ell *blocked_parts[] = {&blocked};
+    ccm::BlockedEllPayload *blocked_parts[] = {&blocked};
     unsigned long blocked_offsets[] = {0u, blocked.rows};
     unsigned long blocked_rows[] = {blocked.rows};
     unsigned long blocked_nnz[] = {blocked.nnz};
@@ -42,7 +43,7 @@ int main() {
     blocked_sharded.partition_aux = blocked_aux;
     assert(cellshard::partition_bytes(&blocked_sharded, 0u) == ccm::bytes(&blocked));
 
-    ccm::sliced_ell sliced{};
+    ccm::SlicedEllPayload sliced{};
     ccm::init(&sliced, 5u, 9u, 11u);
     auto sliced_binding = cci::make_cellshard_matrix_binding(sliced, 4u);
     auto sliced_view = csa::make_adapter_view(sliced_binding);
@@ -50,8 +51,8 @@ int main() {
     assert(sliced_archive.archive_format == cellshard::disk_format_sliced_ell);
     assert(sliced_archive.execution_format == cellshard::dataset_execution_format_sliced_ell);
 
-    ccm::quantized_blocked_ell quantized{};
-    ccm::init(&quantized, 6u, 10u, 14u, 2u, 4u, 4u, ccm::quantized_blocked_ell_decode_policy_per_gene_affine);
+    ccf::AffineBlockedEllCodec quantized{};
+    ccf::init(&quantized, 6u, 10u, 14u, 2u, 4u, 4u, ccf::quantized_blocked_ell_decode_policy_per_gene_affine);
     auto quantized_binding = cci::make_cellshard_matrix_binding(quantized, 5u);
     auto quantized_view = csa::make_adapter_view(quantized_binding);
     const cellshard::access::pack_descriptor quantized_pack = csa::describe_pack(quantized_view);

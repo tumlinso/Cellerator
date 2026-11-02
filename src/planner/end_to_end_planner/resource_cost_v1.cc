@@ -36,8 +36,8 @@ resource_status_v1 validate_candidate_resource_manifest_v1(
     if (manifest.schema_version != planning_resource_schema_v1
         || !valid_id(manifest.candidate) || !valid_id(manifest.provider)
         || !valid_id(manifest.capability)
-        || !execution::valid_identity(manifest.projection)
-        || !execution::valid_identity(manifest.geometry)
+        || !::cellerator::structure::valid_identity(manifest.projection)
+        || !::cellerator::structure::valid_identity(manifest.geometry)
         || manifest.stage_count == 0u || manifest.stages == nullptr
         || manifest.resource_count != manifest.stage_count
         || manifest.resources == nullptr) {

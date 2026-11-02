@@ -1,6 +1,7 @@
 #include <Cellerator/nn/ops.hh>
 #include <Cellerator/modeling/cuda/attention.hh>
 #include <Cellerator/modeling/cuda/grouped_linear.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDACachingAllocator.h>
 #include <c10/cuda/CUDAGuard.h>
@@ -16,6 +17,7 @@
 namespace cellerator::nn::ops {
 namespace {
 namespace native = cellerator::modeling::cuda;
+namespace resources = cellerator::memory::cuda;
 using torch::autograd::AutogradContext;
 using torch::autograd::variable_list;
 
@@ -114,10 +116,10 @@ public:
         if (event) (void)cudaEventDestroy(event);
     }
 };
-native::ConstDeviceView view(const at::Tensor& t) {
+resources::ConstDeviceView view(const at::Tensor& t) {
     return {t.const_data_ptr(), static_cast<std::size_t>(t.nbytes()), t.get_device()};
 }
-native::DeviceView writable(const at::Tensor& t) {
+resources::DeviceView writable(const at::Tensor& t) {
     return {t.data_ptr(), static_cast<std::size_t>(t.nbytes()), t.get_device()};
 }
 struct GroupState : torch::CustomClassHolder {
@@ -138,14 +140,14 @@ public:
         // Handle destruction can synchronize; defer it past queued use even
         // when no-grad discards the Function context immediately.
         hold.resource(state);
-        std::vector<native::ConstDeviceView> views;
+        std::vector<resources::ConstDeviceView> views;
         for (std::int64_t e = 0; e < w.size(0); ++e) views.push_back(view(w[e]));
         state->executor = std::make_unique<native::GroupedLinear>(
             x.size(1), w.size(1), std::move(offsets), std::move(views),
-            x.scalar_type() == at::kHalf ? native::DType::float16 : native::DType::float32,
+            x.scalar_type() == at::kHalf ? resources::DType::float16 : resources::DType::float32,
             x.get_device());
         record({input, weights, x, w, y}, stream);
-        state->executor->forward(view(x), writable(y), native::Stream::borrow(stream.stream(), x.get_device()));
+        state->executor->forward(view(x), writable(y), resources::Stream::borrow(stream.stream(), x.get_device()));
         ctx->save_for_backward({input, weights, x, w});
         ctx->saved_data["state"] = c10::IValue::make_capsule(std::move(state));
         return y;
@@ -164,12 +166,12 @@ public:
         auto state = c10::static_intrusive_pointer_cast<GroupState>(ctx->saved_data["state"].toCapsule());
         hold.resource(state);
         std::lock_guard<std::mutex> lock(state->mutex);
-        std::vector<native::DeviceView> views;
+        std::vector<resources::DeviceView> views;
         for (std::int64_t e = 0; e < w.size(0); ++e) views.push_back(writable(dw[e]));
         record(saved, stream); record({gradients[0], dy, dx, dw}, stream);
         state->executor->backward(view(x), view(dy), writable(dx), views,
             native::GradientMode::overwrite, native::GradientMode::overwrite,
-            native::Stream::borrow(stream.stream(), x.get_device()));
+            resources::Stream::borrow(stream.stream(), x.get_device()));
         return {dx, dw, at::Tensor()};
     }
 };
@@ -202,7 +204,7 @@ void attention_forward(const variable_list& s, at::Tensor& output, float scale,
         else status = native::sparse_attention_fp32(q.data_ptr<float>(), q.numel(),
                 k.data_ptr<float>(), k.numel(), v.data_ptr<float>(), v.numel(),
                 y.data_ptr<float>(), y.numel(), p, scale, workspace(s,h), stream);
-        native::check(status, "native staged CSR attention forward");
+        resources::check(status, "native staged CSR attention forward");
     }
 }
 class AttentionFunction : public torch::autograd::Function<AttentionFunction> {
@@ -273,7 +275,7 @@ public:
                     p,scale,workspace(s,h),dq[h].data_ptr<float>(),dq[h].numel(),
                     dk[h].data_ptr<float>(),dk[h].numel(),dv[h].data_ptr<float>(),dv[h].numel(),
                     native::GradientWriteMode::zero,stream.stream());
-            native::check(status,"native staged CSR attention backward");
+            resources::check(status,"native staged CSR attention backward");
         }
         auto restore = [&](const at::Tensor& t) { return t.permute({1,0,2}).to(s[0].scalar_type()).contiguous(); };
         auto gq=restore(dq), gk=restore(dk), gv=restore(dv);

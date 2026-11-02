@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compute/operation/operation_core.hh>
-#include <Cellerator/compute/projection/physical_transpose.hh>
+#include <Cellerator/execution/projection_binding.hh>
 
 #include <type_traits>
 
@@ -17,7 +17,7 @@ struct transpose_backward_prepared_state {
     std::int32_t device_ordinal = -1;
     std::uint32_t dense_width = 0u;
     std::uint32_t reserved = 0u;
-    transpose_projection_view projection{};
+    execution::TransposeBinding projection{};
     execution::axis_identity feature_axis{};
     execution::axis_identity row_axis{};
     execution::axis_identity dense_column_axis{};
@@ -41,7 +41,7 @@ operation_status prepare_transpose_backward_n1_operation(
     const projection_key &projection,
     const numeric_policy &numeric,
     const prepare_policy &policy,
-    const transpose_projection_view &device_projection,
+    const execution::TransposeBinding &device_projection,
     std::int32_t device_ordinal,
     execution::axis_identity feature_axis,
     execution::axis_identity row_axis,

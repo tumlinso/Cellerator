@@ -1,5 +1,5 @@
 #pragma once
-#include <Cellerator/compute/operation/indexed_mechanism/incidence.hh>
+#include <Cellerator/ops/mechanism/indexed/incidence.hh>
 #include <Cellerator/compute/operation/native_numeric/host_relation.hh>
 #include <Cellerator/geometry/evaluator.hh>
 #include <span>
@@ -8,7 +8,7 @@
 namespace cellerator::packing {
 namespace rel=compute::relation;
 namespace nn=compute::native_numeric;
-namespace ix=compute::operation::indexed;
+namespace ix=ops::mechanism::indexed;
 namespace ex=execution;
 enum class status {
     success, invalid_problem, invalid_identity, stale_structure, invalid_permutation,

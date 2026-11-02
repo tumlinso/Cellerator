@@ -119,17 +119,17 @@ operation_status prepare_catalog_row_masked(
 
 operation_status prepare_catalog_csr(
     const preparation_factory_request &request,
-    const execution_csr_view &projection,
+    const ::cellerator::layout::projection::CsrViewV1 &projection,
     prepared_operation *prepared) noexcept;
 
 operation_status prepare_catalog_feature_major(
     const preparation_factory_request &request,
-    const feature_major_projection_view &projection,
+    const execution::FeatureMajorBinding &projection,
     prepared_operation *prepared) noexcept;
 
 operation_status prepare_catalog_transpose(
     const preparation_factory_request &request,
-    const transpose_projection_view &projection,
+    const execution::TransposeBinding &projection,
     prepared_operation *prepared) noexcept;
 
 static_assert(

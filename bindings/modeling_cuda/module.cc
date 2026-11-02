@@ -1,5 +1,6 @@
 #include <Cellerator/modeling/cuda/plans.hh>
 #include <Cellerator/modeling/cuda/grouped_linear.hh>
+#include <Cellerator/tensor/state_codes/owner.hh>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -7,6 +8,8 @@
 
 namespace py = pybind11;
 using namespace cellerator::modeling::cuda;
+using namespace cellerator::memory::cuda;
+using namespace cellerator::tensor::state_codes;
 
 // A Python transfer ticket keeps its buffer/host/stream arguments alive via
 // keep_alive policies and waits before those references can be released.
@@ -101,23 +104,23 @@ PYBIND11_MODULE(_modeling_cuda, m) {
         .def("combine", [](const DispatchPlan& p, DeviceView input, DeviceView output, std::int64_t f, DType t, const Stream& s) { p.combine(input, output, f, t, s); })
         .def("gather_backward", [](const DispatchPlan& p, DeviceView input, DeviceView output, std::int64_t f, DType t, const Stream& s) { p.gather_backward(input, output, f, t, s); })
         .def("combine_backward", [](const DispatchPlan& p, DeviceView grad, DeviceView expert, DeviceView grad_expert, DeviceView grad_weight, std::int64_t f, DType t, const Stream& s) { p.combine_backward(grad, expert, grad_expert, grad_weight, f, t, s); });
-    py::class_<QuantizationProfile, std::shared_ptr<QuantizationProfile>>(m, "QuantizationProfile")
+    py::class_<Profile, std::shared_ptr<Profile>>(m, "QuantizationProfile")
         .def(py::init<std::vector<std::uint32_t>, std::vector<float>, std::vector<std::uint32_t>, std::uint32_t, const Stream&>(),
              py::arg("offsets"), py::arg("levels"), py::arg("feature_map"), py::arg("bits"), py::arg("stream"))
-        .def_property_readonly("device", &QuantizationProfile::device)
-        .def_property_readonly("feature_count", &QuantizationProfile::feature_count)
-        .def_property_readonly("bits", &QuantizationProfile::bits);
-    py::class_<QuantizedState>(m, "QuantizedState")
-        .def(py::init<std::shared_ptr<const QuantizationProfile>, std::uint32_t, std::uint32_t>(), py::arg("profile"), py::arg("rows"), py::arg("override_capacity") = 0)
-        .def("encode", [](QuantizedState& q, DeviceView v, DType t, py::object mask, const Stream& s) { q.encode(v, t, mask.is_none() ? ConstDeviceView{} : static_cast<ConstDeviceView>(mask.cast<DeviceView>()), s); })
-        .def("decode", &QuantizedState::decode)
-        .def("status", &QuantizedState::status, py::call_guard<py::gil_scoped_release>())
-        .def("override_count", &QuantizedState::override_count, py::call_guard<py::gil_scoped_release>())
-        .def_property_readonly("rows", &QuantizedState::rows)
-        .def_property_readonly("features", &QuantizedState::features)
-        .def_property_readonly("packed_bytes", &QuantizedState::packed_bytes)
-        .def_property_readonly("override_capacity", &QuantizedState::override_capacity)
-        .def_property_readonly("device", &QuantizedState::device);
+        .def_property_readonly("device", &Profile::device)
+        .def_property_readonly("feature_count", &Profile::feature_count)
+        .def_property_readonly("bits", &Profile::bits);
+    py::class_<NativeTensor>(m, "QuantizedState")
+        .def(py::init<std::shared_ptr<const Profile>, std::uint32_t, std::uint32_t>(), py::arg("profile"), py::arg("rows"), py::arg("override_capacity") = 0)
+        .def("encode", [](NativeTensor& q, DeviceView v, DType t, py::object mask, const Stream& s) { q.encode(v, t, mask.is_none() ? ConstDeviceView{} : static_cast<ConstDeviceView>(mask.cast<DeviceView>()), s); })
+        .def("decode", &NativeTensor::decode)
+        .def("status", &NativeTensor::status, py::call_guard<py::gil_scoped_release>())
+        .def("override_count", &NativeTensor::exact_override_count, py::call_guard<py::gil_scoped_release>())
+        .def_property_readonly("rows", &NativeTensor::rows)
+        .def_property_readonly("features", &NativeTensor::features)
+        .def_property_readonly("packed_bytes", &NativeTensor::packed_bytes)
+        .def_property_readonly("override_capacity", &NativeTensor::exact_override_capacity)
+        .def_property_readonly("device", &NativeTensor::device);
     py::enum_<GradientMode>(m, "GradientMode")
         .value("overwrite", GradientMode::overwrite).value("accumulate", GradientMode::accumulate);
     py::class_<GroupedLinear>(m, "GroupedLinear")

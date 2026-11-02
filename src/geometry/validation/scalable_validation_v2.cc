@@ -38,34 +38,34 @@ bool checked_multiply_u64_v2(std::uint64_t left, std::uint64_t right,
     return true;
 }
 
-bool local_width_can_represent_v2(execution::local_index_width_v1 width,
+bool local_width_can_represent_v2(layout::LocalIndexWidth width,
                                   std::uint64_t extent) noexcept {
     switch (width) {
-        case execution::local_index_width_v1::u16:
+        case layout::LocalIndexWidth::u16:
             return extent <= std::uint64_t{1} << 16u;
-        case execution::local_index_width_v1::u32:
+        case layout::LocalIndexWidth::u32:
             return extent <= std::uint64_t{1} << 32u;
-        case execution::local_index_width_v1::u64:
+        case layout::LocalIndexWidth::u64:
             return true;
     }
     return false;
 }
 
 bool load_compact_index_v2(const void *data,
-                           execution::local_index_width_v1 width,
+                           layout::LocalIndexWidth width,
                            std::uint64_t position,
                            std::uint64_t *out) noexcept {
     if (data == nullptr || out == nullptr) {
         return false;
     }
     switch (width) {
-        case execution::local_index_width_v1::u16:
+        case layout::LocalIndexWidth::u16:
             *out = static_cast<const std::uint16_t *>(data)[position];
             return true;
-        case execution::local_index_width_v1::u32:
+        case layout::LocalIndexWidth::u32:
             *out = static_cast<const std::uint32_t *>(data)[position];
             return true;
-        case execution::local_index_width_v1::u64:
+        case layout::LocalIndexWidth::u64:
             *out = static_cast<const std::uint64_t *>(data)[position];
             return true;
     }

@@ -2,7 +2,10 @@ module;
 
 #include <Cellerator/nn.hh>
 #include <Cellerator/biology/feature_binding.hh>
-#include <Cellerator/biology/coordinates.hh>
+#include <Cellerator/execution/dependency/feature_binding.hh>
+#include <Cellerator/layout/axis_binding.hh>
+#include <Cellerator/layout/occurrence_map.hh>
+#include <Cellerator/structure/coordinates.hh>
 
 export module cellerator.nn;
 
@@ -21,9 +24,12 @@ using ::at::TensorOptions;
 export namespace cellerator {
 using ::cellerator::Cell;
 using ::cellerator::ViewTag;
+using ::cellerator::CellViews;
 using ::cellerator::CellAccess;
 using ::cellerator::CellEdit;
 using ::cellerator::CellIdentityView;
+using ::cellerator::make_cell;
+using ::cellerator::make_cell_views;
 }
 
 export namespace cellerator::memory {
@@ -37,15 +43,29 @@ using ::cellerator::memory::const_matrix_view;
 
 export namespace cellerator::cells {
 using ::cellerator::cells::EventView;
-using ::cellerator::cells::EventCell;
+using ::cellerator::cells::EventPrefix;
 using ::cellerator::cells::ExpressionView;
 using ::cellerator::cells::MutableExpressionView;
-using ::cellerator::cells::DenseExpressionCell;
-using ::cellerator::cells::MutableDenseExpressionCell;
+using ::cellerator::cells::DenseExpressionRow;
+using ::cellerator::cells::MutableDenseExpressionRow;
 }
 
 export namespace cellerator::modeling {
 using ::cellerator::modeling::DynamicalStateSnapshotView;
+}
+
+export namespace cellerator::structure {
+using ::cellerator::structure::OccurrenceCoordinates;
+using ::cellerator::structure::OccurrenceOrderToken;
+}
+
+export namespace cellerator::layout {
+using ::cellerator::layout::AxisBinding;
+using ::cellerator::layout::OccurrenceMap;
+}
+
+export namespace cellerator::execution {
+using ::cellerator::execution::FeatureSourceBinding;
 }
 
 // The module surface re-exports the canonical header declarations. Importers
@@ -140,13 +160,9 @@ using ::cellerator::nn::ops::csr_scaled_dot_product_attention_cuda;
 }
 
 export namespace cellerator::biology {
-using ::cellerator::biology::AxisDescriptor;
-using ::cellerator::biology::OccurrenceCoordinates;
-using ::cellerator::biology::OccurrenceOrderToken;
 using ::cellerator::biology::UnknownIdentityPolicy;
 using ::cellerator::biology::FeatureBindingOptions;
 using ::cellerator::biology::FeatureBinding;
-using ::cellerator::biology::PreparedAlignment;
 using ::cellerator::biology::FeatureAlias;
 using ::cellerator::biology::EncodedFeatureAlias;
 using ::cellerator::biology::FeatureBindingDescriptor;

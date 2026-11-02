@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/execution/index_space/hierarchical_index_space_v1.hh>
+#include <Cellerator/layout/local_index_space.hh>
 #include <Cellerator/execution/joint_compiler/logical_coverage_v1.hh>
 
 #include <cstdint>
@@ -48,9 +48,9 @@ struct atom_requirement_v1 {
     const persistent_identity_v1 *required_planes = nullptr;
     std::uint64_t required_plane_count = 0u;
     atom_numeric_requirement_v1 numeric{};
-    local_index_width_v1 index_width = local_index_width_v1::u32;
+    layout::LocalIndexWidth index_width = layout::LocalIndexWidth::u32;
     std::uint8_t reserved0[3]{};
-    order_id required_order{};
+    structure::order_id required_order{};
     std::uint64_t minimum_alignment = 1u;
     contiguity_requirement_v1 contiguity = contiguity_requirement_v1::any;
     mutability_requirement_v1 mutability =

@@ -76,8 +76,8 @@ training_program_status compile_training_program(
     if (!native) return from_native(native);
 
     compiled.session = request.session;
-    compiled.forward_projection = request.forward.header.projection_identity;
-    compiled.transpose_projection = request.transpose.header.projection_identity;
+    compiled.forward_projection = request.forward.layout.header.projection_identity;
+    compiled.transpose_projection = request.transpose.layout.header.projection_identity;
     compiled.forward_output_order = preserved(request.module_axis, 0u, 0u);
     compiled.input_gradient_order = preserved(request.feature_axis, 0u, 1u);
     compiled.preparation_count = 1u;

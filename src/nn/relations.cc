@@ -30,7 +30,7 @@ struct GroupPosition {
 };
 
 std::vector<GroupPosition> group_positions(
-    const biology::OccurrenceOrderToken& order) {
+    const structure::OccurrenceOrderToken& order) {
     std::vector<GroupPosition> result(static_cast<std::size_t>(order.extent()));
     const auto& offsets = order.group_offsets();
     for (std::size_t group = 0; group + 1 < offsets.size(); ++group) {
@@ -79,23 +79,37 @@ void validate_csr_shape(const CsrSupport& support,
 
 PreparedRelation PreparedRelation::from_csr(
     CsrSupport support,
-    const biology::OccurrenceOrderToken& source_order,
-    const biology::OccurrenceOrderToken& target_order,
+    const structure::OccurrenceOrderToken& source_order,
+    const structure::OccurrenceOrderToken& target_order,
     std::uint64_t structural_generation,
-    at::Device device) {
+    at::Device device,
+    std::optional<layout::AxisBinding> source_layout,
+    std::optional<layout::AxisBinding> target_layout) {
     return prepare(std::move(support), source_order, target_order,
-                   structural_generation, device);
+                   structural_generation, device, std::move(source_layout),
+                   std::move(target_layout));
 }
 
 PreparedRelation PreparedRelation::prepare(
     CsrSupport support,
-    const biology::OccurrenceOrderToken& source_order,
-    const biology::OccurrenceOrderToken& target_order,
+    const structure::OccurrenceOrderToken& source_order,
+    const structure::OccurrenceOrderToken& target_order,
     std::uint64_t structural_generation,
-    at::Device device) {
+    at::Device device,
+    std::optional<layout::AxisBinding> source_layout,
+    std::optional<layout::AxisBinding> target_layout) {
     if (!source_order.valid() || !target_order.valid()) {
         throw std::invalid_argument("prepared relations require valid endpoint order tokens");
     }
+    const auto validate_layout = [](const auto& order, const auto& binding) {
+        if (!binding) return;
+        binding->validate();
+        if (!order.axis() || binding->logical != *order.axis()) {
+            throw std::invalid_argument("relation layout does not match endpoint logical axis");
+        }
+    };
+    validate_layout(source_order, source_layout);
+    validate_layout(target_order, target_layout);
     const auto source_count = source_order.extent();
     const auto target_count = target_order.extent();
     validate_csr_shape(support, source_count, target_count);
@@ -136,6 +150,8 @@ PreparedRelation PreparedRelation::prepare(
     result.device_ = device;
     result.source_order_ = source_order;
     result.target_order_ = target_order;
+    result.source_layout_ = std::move(source_layout);
+    result.target_layout_ = std::move(target_layout);
     result.host_row_ptr_ = std::move(support.row_ptr);
     result.host_col_indices_ = std::move(support.col_indices);
     result.host_rows_ = std::move(rows);
@@ -188,19 +204,20 @@ PreparedRelation PreparedRelation::causal() const {
         filtered.row_ptr.push_back(static_cast<std::int64_t>(filtered.col_indices.size()));
     }
     return prepare(std::move(filtered), source_order_, target_order_,
-                   structural_generation_, device_);
+                   structural_generation_, device_, source_layout_, target_layout_);
 }
 
 PreparedRelation PreparedRelation::to(at::Device device) const {
     validate_storage();
     if (device == device_) return *this;
     return prepare(CsrSupport{host_row_ptr_, host_col_indices_},
-                   source_order_, target_order_, structural_generation_, device);
+                   source_order_, target_order_, structural_generation_, device,
+                   source_layout_, target_layout_);
 }
 
 void PreparedRelation::validate_for(
-    const biology::OccurrenceOrderToken& source_order,
-    const biology::OccurrenceOrderToken& target_order,
+    const structure::OccurrenceOrderToken& source_order,
+    const structure::OccurrenceOrderToken& target_order,
     std::int64_t source_count,
     std::int64_t target_count,
     at::Device device) const {
@@ -210,8 +227,8 @@ void PreparedRelation::validate_for(
 }
 
 void PreparedRelation::validate_for(
-    const biology::OccurrenceOrderToken& source_order,
-    const biology::OccurrenceOrderToken& target_order,
+    const structure::OccurrenceOrderToken& source_order,
+    const structure::OccurrenceOrderToken& target_order,
     std::int64_t source_count,
     std::int64_t target_count,
     std::uint64_t structural_generation,
@@ -270,7 +287,7 @@ PreparedRelation PreparedRelation::transpose() const {
         reversed.row_ptr.push_back(static_cast<std::int64_t>(reversed.col_indices.size()));
     }
     return prepare(std::move(reversed), target_order_, source_order_,
-                   structural_generation_, device_);
+                   structural_generation_, device_, target_layout_, source_layout_);
 }
 
 } // namespace cellerator::nn

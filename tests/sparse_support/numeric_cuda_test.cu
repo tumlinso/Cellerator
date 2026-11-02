@@ -16,7 +16,7 @@
 #include <vector>
 
 namespace sparse = cellerator::compute::operation::sparse_support;
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 namespace persistence = cellpack::persistence;
 
 namespace {
@@ -42,7 +42,7 @@ std::size_t append_records(std::vector<unsigned char>* image,
 }
 
 std::vector<unsigned char> physical_image() {
-    std::vector<unsigned char> image(sizeof(projection::physical_mma_hybrid_header_v1));
+    std::vector<unsigned char> image(sizeof(projection::MmaHybridLayoutV1));
     projection::physical_group_v1 source{};
     source.group_id = 0u;
     source.semantic_component_id = 1u;
@@ -85,7 +85,7 @@ std::vector<unsigned char> physical_image() {
     maps[1].region_kind = projection::physical_region_kind_v1::residual;
     maps[1].region_index = 0u;
     maps[1].projection_slot = 0u;
-    projection::physical_mma_hybrid_header_v1 header{};
+    projection::MmaHybridLayoutV1 header{};
     header.structure_identity.identity_version = 1u;
     header.structure_identity.value = 0x101u;
     header.source_order.feature_count = 1u;

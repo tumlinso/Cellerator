@@ -1,4 +1,5 @@
 #include "Cellerator/geometry/cell_block_records.hh"
+#include <Cellerator/interop/formats/cellpack.hh>
 
 #include <algorithm>
 #include <cstdint>
@@ -139,6 +140,12 @@ void test_exact_host_contract() {
     const cellpack::frozen_packing_plan plan = make_fixture_plan();
     const ordered_fixture fixture;
     const record_storage records = build_records(plan, fixture.view());
+    const auto native = cellerator::interop::formats::borrow_validated_cellpack_records<u64>(plan, records.view, plan.feature_block_offsets());
+    require(native.values == records.view.values &&
+            native.layout.row_block_offsets == records.view.row_record_offsets &&
+            native.layout.feature_block_offsets == plan.feature_block_offsets(),
+        "native record import copied or detached payload/maps");
+    require(native.layout.stored_values == fixture.values.size(), "native record import count mismatch");
     require(plan.feature_block_geometry_identity() != 0u,
         "feature-block geometry identity is zero");
     require(records.view.feature_block_geometry_identity

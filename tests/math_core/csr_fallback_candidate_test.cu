@@ -195,16 +195,16 @@ int main() {
         __float2half(1.0f), __float2half(2.0f), __float2half(3.0f)});
     upload(weights, std::vector<float>{2.0f, 5.0f, 7.0f});
 
-    cm::execution_csr_view csr{};
+    ::cellerator::layout::projection::CsrViewV1 csr{};
     csr.row_count = 2u;
     csr.full_row_count = 2u;
     csr.feature_count = 3u;
     csr.nnz_count = 3u;
     csr.value_size_bytes = sizeof(__half);
     csr.row_domain_identity = 0x3003u;
-    csr.structure.identity_version = cm::execution_csr_structure_identity_version;
+    csr.structure.identity_version = ::cellerator::layout::projection::execution_csr_structure_identity_version;
     csr.structure.value = 0x7072u;
-    csr.feature_order.kind = cm::feature_order_kind::packed;
+    csr.feature_order.kind = ::cellerator::layout::projection::feature_order_kind::packed;
     csr.feature_order.feature_count = 3u;
     csr.feature_order.feature_axis_identity_version = 1u;
     csr.feature_order.feature_axis_identity = 0x5005u;
@@ -222,7 +222,7 @@ int main() {
     structures.count = 1u;
     structures.structures[0] = {{11u, 12u}, {21u, 1u}, {1u}};
     const core::projection_key projection{{31u, 32u}, {42u, 1u},
-        core::projection_kind::csr, cm::execution_csr_schema_version, 1u};
+        core::projection_kind::csr, ::cellerator::layout::projection::execution_csr_schema_version, 1u};
     test_registry_and_planner_coexistence(problem, structures, projection);
 
     core::csr_fallback_prepared_state state{};

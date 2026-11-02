@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace ix = cellerator::compute::operation::indexed;
+namespace ix = cellerator::ops::mechanism::indexed;
 
 namespace {
 void check(cudaError_t status) {

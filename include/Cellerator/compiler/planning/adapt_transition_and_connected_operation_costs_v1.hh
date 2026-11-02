@@ -17,8 +17,8 @@ enum connected_operation_effect_v1 : std::uint32_t {
 };
 
 struct connected_operation_transition_cost_v1 {
-    cellerator::execution::order_id source_order{};
-    cellerator::execution::order_id destination_order{};
+    ::cellerator::structure::order_id source_order{};
+    ::cellerator::structure::order_id destination_order{};
     std::uint32_t effects = 0u;
     double order_transform_nanoseconds = 0.0;
     double materialization_nanoseconds = 0.0;

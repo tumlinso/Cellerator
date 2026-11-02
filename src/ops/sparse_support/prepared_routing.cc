@@ -29,9 +29,9 @@ bool valid_identity(const prepared_routing_identity_v1 &identity) noexcept {
 
 compute::indexing::cuda_reverse_posting_view_v1
 prepared_entity_mechanism_index_v1::bind_device_view(
-    const compute::indexing::posting_term_v1 *terms,
+    const containers::PostingTerm *terms,
     const std::uint64_t *term_offsets,
-    const compute::indexing::indexed_work_item_v1 *items) const noexcept {
+    const containers::IndexedWorkItem *items) const noexcept {
     return {identity.relation_id, identity.structure_id, identity.structure_epoch,
         terms, term_offsets,
         static_cast<std::uint64_t>(device_terms.size()), items,
@@ -94,20 +94,20 @@ prepared_routing_status_v1 prepare_entity_mechanism_index_v1(
             candidate.participants.push_back({0u, 0u, entity_id});
     }
 
-    const compute::support::logical_support_view_v1 relation{
-        compute::support::logical_support_schema_version_v1, 0u,
+    const compact::ViewV1 relation{
+        compact::schema_version_v1, 0u,
         identity.relation_id, identity.structure_id, identity.structure_epoch,
         candidate.edges.empty() ? nullptr : candidate.edges.data(),
         static_cast<std::uint64_t>(candidate.edges.size()),
         candidate.participants.empty() ? nullptr : candidate.participants.data(),
         static_cast<std::uint64_t>(candidate.participants.size())};
-    const compute::support::support_snapshot_pair_v1 snapshot{
+    const compact::SnapshotPairV1 snapshot{
         &relation, nullptr, identity.structure_epoch};
-    if (compute::support::validate_support_snapshot_pair_v1(snapshot)
-        != compute::support::support_snapshot_status_v1::success)
+    if (compact::validate_snapshot(snapshot)
+        != compact::SnapshotStatusV1::success)
         return prepared_routing_status_v1::invalid_support;
 
-    const auto requirements = compute::indexing::query_reverse_posting_requirements_v1(
+    const auto requirements = geometry::dependency::posting_requirements(
         snapshot);
     if (requirements.record_capacity > std::numeric_limits<std::size_t>::max()
         || requirements.maximum_unique_entries > std::numeric_limits<std::size_t>::max())
@@ -116,13 +116,13 @@ prepared_routing_status_v1 prepare_entity_mechanism_index_v1(
         static_cast<std::size_t>(requirements.record_capacity));
     candidate.posting_entries.resize(
         static_cast<std::size_t>(requirements.maximum_unique_entries));
-    const auto posting_status = compute::indexing::build_reverse_postings_v1(
+    const auto posting_status = geometry::dependency::build_posting_index(
         snapshot,
         candidate.record_scratch.empty() ? nullptr : candidate.record_scratch.data(),
         requirements.record_capacity,
         candidate.posting_entries.empty() ? nullptr : candidate.posting_entries.data(),
         requirements.maximum_unique_entries, &candidate.host_postings);
-    if (posting_status != compute::indexing::posting_status_v1::success)
+    if (posting_status != geometry::dependency::PostingBuildStatus::success)
         return prepared_routing_status_v1::invalid_support;
 
     const auto projection = compute::indexing::cuda_posting_projection_requirements_v1(

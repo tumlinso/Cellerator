@@ -56,10 +56,10 @@ struct operation_contract {
 
 inline bool same_axis(const execution::persistent_axis_identity& a,
                       const execution::persistent_axis_identity& b) noexcept {
-    return execution::same_identity(a.domain, b.domain)
-        && execution::same_identity(a.order, b.order)
-        && execution::same_identity(a.geometry, b.geometry)
-        && execution::same_identity(a.partition, b.partition);
+    return ::cellerator::structure::same_identity(a.domain, b.domain)
+        && ::cellerator::structure::same_identity(a.order, b.order)
+        && ::cellerator::structure::same_identity(a.geometry, b.geometry)
+        && ::cellerator::structure::same_identity(a.partition, b.partition);
 }
 
 inline bool valid_operand(const operand_signature& operand) noexcept {
@@ -108,9 +108,9 @@ inline status match_operand(const operand_signature& expected,
 // Definition, structure, values and result caching have independent identity.
 struct prepared_identity {
     identity definition{};
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
-    execution::projection_id projection{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
+    ::cellerator::structure::projection_id projection{};
 };
 struct generation_stamp {
     identity instance{};
@@ -140,15 +140,15 @@ inline bool same_stamp(generation_stamp a, generation_stamp b) noexcept {
 inline bool same_preparation(const prepared_identity& a,
                              const prepared_identity& b) noexcept {
     return v2::same_stable_id(a.definition, b.definition)
-        && execution::same_identity(a.structure, b.structure)
+        && ::cellerator::structure::same_identity(a.structure, b.structure)
         && a.epoch.value == b.epoch.value
-        && execution::same_identity(a.projection, b.projection);
+        && ::cellerator::structure::same_identity(a.projection, b.projection);
 }
 inline status validate_instance(const prepared_identity& prepared,
                                 const instance_binding& binding) noexcept {
     if (!v2::valid_stable_id(prepared.definition)
-        || !execution::valid_identity(prepared.structure) || prepared.epoch.value == 0
-        || !execution::valid_identity(prepared.projection)) return status::invalid_identity;
+        || !::cellerator::structure::valid_identity(prepared.structure) || prepared.epoch.value == 0
+        || !::cellerator::structure::valid_identity(prepared.projection)) return status::invalid_identity;
     if (!same_preparation(prepared, binding.prepared)) return status::invalid_binding;
     if (!valid_stamp(binding.state) || !valid_stamp(binding.parameters, false))
         return status::stale_generation;
@@ -232,8 +232,8 @@ enum class approximation_kind : std::uint8_t {
     exact_declared_arithmetic, justified_bound, empirical, unassessed
 };
 struct support_contract {
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
     generation_stamp activity{};
     support_realization realization = support_realization::persistent;
     approximation_kind accuracy = approximation_kind::exact_declared_arithmetic;
@@ -248,7 +248,7 @@ enum invalidation : std::uint32_t {
     rebuild_projection = 4u, rebuild_structure = 8u, invalidate_primal = 16u
 };
 inline status validate_support(const support_contract& support) noexcept {
-    if (!execution::valid_identity(support.structure) || support.epoch.value == 0
+    if (!::cellerator::structure::valid_identity(support.structure) || support.epoch.value == 0
         || !valid_stamp(support.activity, false)) return status::invalid_identity;
     if (support.realization < support_realization::persistent
         || support.realization > support_realization::approximate_drop
@@ -273,7 +273,7 @@ inline bool may_drop_response(contribution_kind contribution,
 inline std::uint32_t invalidation_for(const support_contract& before,
                                      const support_contract& after,
                                      bool values_changed) noexcept {
-    if (!execution::same_identity(before.structure, after.structure)
+    if (!::cellerator::structure::same_identity(before.structure, after.structure)
         || before.epoch.value != after.epoch.value)
         return rebuild_structure | rebuild_projection | invalidate_primal;
     std::uint32_t result = values_changed ? rebind_values | invalidate_primal : invalidate_nothing;

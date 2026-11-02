@@ -1,6 +1,7 @@
 add_library(cellerator_gating STATIC
-    condition_program.cc
-    derivative_sampling.cc)
+    derivative_sampling.cc
+    "${PROJECT_SOURCE_DIR}/src/ops/condition/program.cc"
+    "${PROJECT_SOURCE_DIR}/src/execution/dependency/workset_view.cc")
 add_library(Cellerator::gating ALIAS cellerator_gating)
 target_include_directories(cellerator_gating PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>

@@ -11,9 +11,9 @@ namespace planner = cellerator::planner;
 namespace {
 
 struct fixture {
-    execution::partition_id root{1u, 90u};
-    execution::partition_id left{2u, 90u};
-    execution::partition_id right{3u, 90u};
+    ::cellerator::structure::partition_id root{1u, 90u};
+    ::cellerator::structure::partition_id left{2u, 90u};
+    ::cellerator::structure::partition_id right{3u, 90u};
     distributed::nested_partition partitions[3]{
         {root, {}, 0u, 0},
         {left, root, 1u, 0},
@@ -80,8 +80,8 @@ void test_nested_identity_and_shared_values() {
 
 void test_ordered_boundary_plan_and_cost() {
     fixture value;
-    const execution::order_id packed{30u, 90u};
-    const execution::order_id canonical{31u, 90u};
+    const ::cellerator::structure::order_id packed{30u, 90u};
+    const ::cellerator::structure::order_id canonical{31u, 90u};
     distributed::boundary_edge boundaries[3]{
         {0u, 1u, value.root, value.left, packed, packed,
             2u, 8u, true, {}},

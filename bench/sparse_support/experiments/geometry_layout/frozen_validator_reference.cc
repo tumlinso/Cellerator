@@ -1,14 +1,16 @@
-// Frozen differential oracle from Cellerator revision 4452dc117ad4b5240602d754506431f5f859d5f0.
-// Only the exported function name is changed so this copy can be linked beside
-// the optimized validator. Keep this file limited to the bounded probe.
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+// Bounded oracle copied from src/compute/projection/mma_physical_cover_validation.cc
+// at Cellerator revision 4452dc117ad4b5240602d754506431f5f859d5f0. The copy
+// and its pre-migration API spellings are preserved in Git at 8fa6c09e. This
+// probe copy keeps the validator logic and changes the exported entry-point,
+// namespace, header, and type spellings so it links beside today's validator.
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <limits>
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 namespace {
 
 constexpr std::uint64_t image_alignment = 64u;
@@ -42,7 +44,7 @@ bool section_range(std::uint64_t offset, std::uint64_t count,
         return offset == 0u;
     }
     std::uint64_t bytes = 0u;
-    return offset >= sizeof(physical_mma_hybrid_header_v1)
+    return offset >= sizeof(::cellerator::layout::projection::MmaHybridLayoutV1)
         && offset % image_alignment == 0u
         && multiply_u64(count, element_bytes, &bytes)
         && add_u64(offset, bytes, end)
@@ -71,15 +73,15 @@ std::uint32_t population_count(const mma_tile_v1 &tile) noexcept {
     return result;
 }
 
-bool valid_identity(const math::sparse_structure_identity &identity) noexcept {
-    return identity.schema_version == math::sparse_structure_identity_schema_version
+bool valid_identity(const layout::projection::SparseStructureIdentity &identity) noexcept {
+    return identity.schema_version == layout::projection::sparse_structure_identity_schema_version
         && identity.identity_version != 0u && identity.value != 0u;
 }
 
-bool valid_order(const math::feature_order_identity &identity) noexcept {
-    return identity.schema_version == math::feature_order_identity_schema_version
-        && (identity.kind == math::feature_order_kind::canonical
-            || identity.kind == math::feature_order_kind::packed)
+bool valid_order(const layout::projection::FeatureOrderIdentity &identity) noexcept {
+    return identity.schema_version == layout::projection::feature_order_identity_schema_version
+        && (identity.kind == layout::projection::feature_order_kind::canonical
+            || identity.kind == layout::projection::feature_order_kind::packed)
         && identity.feature_count != 0u
         && identity.feature_axis_identity_version != 0u
         && identity.feature_axis_identity != 0u;
@@ -89,10 +91,10 @@ bool valid_order(const math::feature_order_identity &identity) noexcept {
 
 bool validate_physical_mma_hybrid_image_v1_reference(
     const void *data, std::size_t bytes) noexcept {
-    if (data == nullptr || bytes < sizeof(physical_mma_hybrid_header_v1))
+    if (data == nullptr || bytes < sizeof(::cellerator::layout::projection::MmaHybridLayoutV1))
         return false;
     const auto *image = static_cast<const unsigned char *>(data);
-    physical_mma_hybrid_header_v1 header{};
+    ::cellerator::layout::projection::MmaHybridLayoutV1 header{};
     std::memcpy(&header, image, sizeof(header));
     if (header.schema_version != physical_mma_hybrid_schema_version_v1
         || header.header_bytes != sizeof(header)
@@ -367,4 +369,4 @@ bool validate_physical_mma_hybrid_image_v1_reference(
     return true;
 }
 
-} // namespace cellerator::compute::projection
+} // namespace cellerator::layout::projection

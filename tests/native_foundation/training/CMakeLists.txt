@@ -24,7 +24,7 @@ add_library(Cellerator::executable_program ALIAS ce_ml2_test_program)
 target_include_directories(ce_ml2_test_program PUBLIC "${CE_ROOT}/include")
 target_compile_features(ce_ml2_test_program PUBLIC cxx_std_17)
 
-add_subdirectory("${CE_ROOT}/src/compute/operation/indexed_mechanism" "${CMAKE_CURRENT_BINARY_DIR}/indexed_mechanism")
+add_subdirectory("${CE_ROOT}/src/ops/mechanism/indexed" "${CMAKE_CURRENT_BINARY_DIR}/indexed_mechanism")
 add_executable(ce_ml2_native_training training.cu)
 target_link_libraries(ce_ml2_native_training PRIVATE Cellerator::indexed_mechanism CUDA::cudart)
 target_compile_features(ce_ml2_native_training PRIVATE cxx_std_20)
@@ -34,7 +34,7 @@ set_tests_properties(ce_ml2_native_training PROPERTIES LABELS "ml2;cuda;native;s
 add_executable(ce_ml2_parameter_identity_validation parameter_identity_validation_test.cc)
 target_include_directories(ce_ml2_parameter_identity_validation PRIVATE
   "${CE_ROOT}/include"
-  "${CE_ROOT}/src/compute/operation/indexed_mechanism")
+  "${CE_ROOT}/src/ops/mechanism/indexed")
 target_compile_features(ce_ml2_parameter_identity_validation PRIVATE cxx_std_20)
 target_compile_options(ce_ml2_parameter_identity_validation PRIVATE -UNDEBUG)
 add_test(NAME ce_ml2_parameter_identity_validation

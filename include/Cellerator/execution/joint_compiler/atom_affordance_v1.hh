@@ -24,7 +24,7 @@ inline constexpr std::uint32_t known_atom_affordance_flags_v1 =
 
 struct atom_plane_affordance_v1 {
     persistent_identity_v1 plane_identity{};
-    order_id order{};
+    structure::order_id order{};
     numeric_type storage = numeric_type::invalid;
     numeric_type logical = numeric_type::invalid;
     mutability_requirement_v1 mutability = mutability_requirement_v1::immutable;

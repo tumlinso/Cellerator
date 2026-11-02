@@ -18,7 +18,7 @@ struct partial_result_atom_v1 {
     external_atom_plane_identity_v1 source_state_identity{};
     external_atom_plane_identity_v1 merge_algebra_identity{};
     axis_identity axis{};
-    order_id persistent_order{};
+    structure::order_id persistent_order{};
     value_generation generation{};
     value_numeric_policy numeric{};
     quantization_descriptor quantization{};

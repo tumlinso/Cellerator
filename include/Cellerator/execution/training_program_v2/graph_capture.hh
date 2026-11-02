@@ -13,7 +13,7 @@ namespace cellerator::execution::training_v2 {
 struct training_graph_capture_v2 {
     std::uint64_t program_identity = 0u;
     structure_handle structure{};
-    structure_epoch epoch{};
+    structure::structure_epoch epoch{};
     value_generation prepared_generation{};
     std::uint64_t stage_count = 0u;
     const std::uint64_t *stage_identities = nullptr;

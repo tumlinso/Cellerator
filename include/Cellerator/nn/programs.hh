@@ -5,7 +5,7 @@
 #include <Cellerator/nn/types.hh>
 #include <Cellerator/nn/attention.hh>
 #include <Cellerator/nn/relations.hh>
-#include <Cellerator/biology/coordinates.hh>
+#include <Cellerator/structure/coordinates.hh>
 
 #include <ATen/core/Tensor.h>
 
@@ -34,8 +34,8 @@ struct ProgramResult {
 // Offsets and views are borrowed for the duration of operator().
 struct ProgramCall {
     const PreparedRelation* relation = nullptr;
-    std::optional<biology::OccurrenceOrderToken> feature_order;
-    std::optional<biology::OccurrenceOrderToken> program_order;
+    std::optional<structure::OccurrenceOrderToken> feature_order;
+    std::optional<structure::OccurrenceOrderToken> program_order;
     std::span<const std::int64_t> feature_offsets{};
     std::span<const std::int64_t> program_offsets{};
     std::optional<std::span<const std::int64_t>> program_bank_indices;

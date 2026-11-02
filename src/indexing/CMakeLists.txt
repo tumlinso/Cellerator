@@ -1,6 +1,7 @@
 add_library(cellerator_indexing STATIC
-    reverse_postings.cc
-    temporal_occurrences.cc)
+    temporal_occurrences.cc
+    "${PROJECT_SOURCE_DIR}/src/containers/posting_index.cc"
+    "${PROJECT_SOURCE_DIR}/src/geometry/dependency/posting_index.cc")
 add_library(Cellerator::indexing ALIAS cellerator_indexing)
 target_include_directories(cellerator_indexing PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>

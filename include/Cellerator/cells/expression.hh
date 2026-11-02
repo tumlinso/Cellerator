@@ -32,18 +32,17 @@ struct MutableExpressionView {
 namespace detail {
 
 template<class Descriptor, class Scalar, class FeatureIdentity, class Identity>
-class ExpressionCellBase : public CellAccess<ExpressionView<Scalar, FeatureIdentity>>,
-                           public CellAccess<CellIdentityView<Identity>> {
+class ExpressionRowBase {
 public:
-    ExpressionCellBase(Descriptor& matrix, std::span<const FeatureIdentity> feature_ids,
-                       std::size_t row, Identity identity)
+    ExpressionRowBase(Descriptor& matrix, std::span<const FeatureIdentity> feature_ids,
+                      std::size_t row, Identity identity)
         : matrix_(&matrix), feature_ids_(feature_ids), row_(row),
           identity_(std::move(identity)) {
         validate(matrix, feature_ids, row);
     }
 
-    ExpressionCellBase(Descriptor&&, std::span<const FeatureIdentity>,
-                       std::size_t, Identity) = delete;
+    ExpressionRowBase(Descriptor&&, std::span<const FeatureIdentity>,
+                      std::size_t, Identity) = delete;
 
     std::size_t row() const noexcept { return row_; }
     const Identity& identity() const & noexcept { return identity_; }
@@ -61,9 +60,8 @@ public:
 
     void rebind(Descriptor&&, std::span<const FeatureIdentity>, std::size_t) & = delete;
 
-protected:
     ExpressionView<Scalar, FeatureIdentity>
-    read(ViewTag<ExpressionView<Scalar, FeatureIdentity>>) const & override {
+    read(ViewTag<ExpressionView<Scalar, FeatureIdentity>>) const & {
         const auto& matrix = *matrix_;
         validate(matrix, feature_ids_, row_);
         const Scalar* data = matrix.data;
@@ -73,11 +71,26 @@ protected:
             data += row_ * matrix.row_stride;
         return {{data, matrix.columns, matrix.where}, feature_ids_};
     }
+    ExpressionView<Scalar, FeatureIdentity>
+    read(ViewTag<ExpressionView<Scalar, FeatureIdentity>>) const && = delete;
 
-    CellIdentityView<Identity> read(ViewTag<CellIdentityView<Identity>>) const & override {
+    CellIdentityView<Identity> read(ViewTag<CellIdentityView<Identity>>) const & {
         return {identity_};
     }
+    CellIdentityView<Identity> read(ViewTag<CellIdentityView<Identity>>) const && = delete;
 
+    template<class View> static constexpr bool supports() noexcept {
+        return cellerator::detail::can_read<ExpressionRowBase, View>::value;
+    }
+    template<class View> static constexpr bool supports_edit() noexcept {
+        return cellerator::detail::can_write<ExpressionRowBase, View>::value;
+    }
+    template<class View, std::enable_if_t<
+        cellerator::detail::can_read<ExpressionRowBase, View>::value, int> = 0>
+    View view() const & { return read(ViewTag<View>{}); }
+    template<class View> void view() const && = delete;
+
+protected:
     static void validate(const Descriptor& matrix,
                          std::span<const FeatureIdentity> feature_ids,
                          std::size_t row) {
@@ -117,11 +130,11 @@ private:
 // handle. Underlying payload ownership, synchronization, and valid extents are
 // supplied by their owner. Read refreshes the descriptor's current pointer.
 template<class Scalar, class FeatureIdentity, class Identity>
-class DenseExpressionCell final
-    : public detail::ExpressionCellBase<const memory::const_matrix_view<Scalar>,
-                                        Scalar, FeatureIdentity, Identity> {
-    using Base = detail::ExpressionCellBase<const memory::const_matrix_view<Scalar>,
-                                            Scalar, FeatureIdentity, Identity>;
+class DenseExpressionRow final
+    : public detail::ExpressionRowBase<const memory::const_matrix_view<Scalar>,
+                                       Scalar, FeatureIdentity, Identity> {
+    using Base = detail::ExpressionRowBase<const memory::const_matrix_view<Scalar>,
+                                           Scalar, FeatureIdentity, Identity>;
 public:
     using Base::Base;
 };
@@ -130,18 +143,24 @@ public:
 // not publish a value generation: the owner must apply its own mutation and
 // invalidation protocol, including holding it for the entire write lifetime.
 template<class Scalar, class FeatureIdentity, class Identity>
-class MutableDenseExpressionCell final
-    : public detail::ExpressionCellBase<memory::matrix_view<Scalar>,
-                                        Scalar, FeatureIdentity, Identity>,
-      public CellEdit<MutableExpressionView<Scalar, FeatureIdentity>> {
-    using Base = detail::ExpressionCellBase<memory::matrix_view<Scalar>,
-                                            Scalar, FeatureIdentity, Identity>;
+class MutableDenseExpressionRow final
+    : public detail::ExpressionRowBase<memory::matrix_view<Scalar>,
+                                       Scalar, FeatureIdentity, Identity> {
+    using Base = detail::ExpressionRowBase<memory::matrix_view<Scalar>,
+                                           Scalar, FeatureIdentity, Identity>;
 public:
     using Base::Base;
 
-protected:
+    template<class View> static constexpr bool supports_edit() noexcept {
+        return cellerator::detail::can_write<MutableDenseExpressionRow, View>::value;
+    }
+    template<class View, std::enable_if_t<
+        cellerator::detail::can_write<MutableDenseExpressionRow, View>::value, int> = 0>
+    View edit() & { return write(ViewTag<View>{}); }
+    template<class View> void edit() && = delete;
+
     MutableExpressionView<Scalar, FeatureIdentity>
-    write(ViewTag<MutableExpressionView<Scalar, FeatureIdentity>>) & override {
+    write(ViewTag<MutableExpressionView<Scalar, FeatureIdentity>>) & {
         auto& matrix = this->descriptor();
         const auto feature_ids = this->feature_ids();
         const auto row = this->selected_row();
@@ -151,6 +170,8 @@ protected:
             data += row * matrix.row_stride;
         return {{data, matrix.columns, matrix.where}, feature_ids};
     }
+    MutableExpressionView<Scalar, FeatureIdentity>
+    write(ViewTag<MutableExpressionView<Scalar, FeatureIdentity>>) && = delete;
 };
 
 } // namespace cellerator::cells

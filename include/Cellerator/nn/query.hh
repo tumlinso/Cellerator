@@ -2,6 +2,7 @@
 
 #include <ATen/ATen.h>
 #include <Cellerator/biology/feature_binding.hh>
+#include <Cellerator/execution/dependency/feature_binding.hh>
 #include <Cellerator/nn/types.hh>
 
 #include <cstdint>
@@ -55,7 +56,7 @@ class PreparedTargets {
 public:
     using identity_type = FeatureId;
 
-    const biology::PreparedAlignment<FeatureId>& alignment() const noexcept {
+    const execution::FeatureSourceBinding<FeatureId>& alignment() const noexcept {
         return alignment_;
     }
     const std::vector<FeatureId>& canonical_ids() const noexcept {
@@ -75,13 +76,13 @@ public:
     at::Device device() const noexcept { return device_; }
 
 private:
-    PreparedTargets(biology::PreparedAlignment<FeatureId> alignment,
+    PreparedTargets(execution::FeatureSourceBinding<FeatureId> alignment,
                     at::Tensor model_indices, at::Tensor output_columns,
                     at::Device device)
         : alignment_(std::move(alignment)), model_indices_(std::move(model_indices)),
           output_columns_(std::move(output_columns)), device_(device) {}
 
-    biology::PreparedAlignment<FeatureId> alignment_;
+    execution::FeatureSourceBinding<FeatureId> alignment_;
     at::Tensor model_indices_;
     at::Tensor output_columns_;
     at::Device device_ = at::Device(at::kCPU);

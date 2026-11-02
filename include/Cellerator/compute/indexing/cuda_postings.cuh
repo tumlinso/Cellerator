@@ -1,12 +1,14 @@
 #pragma once
 
-#include <Cellerator/compute/indexing/reverse_postings.hh>
+#include <Cellerator/containers/posting_index.hh>
 
 #include <cuda_runtime_api.h>
 
 #include <cstdint>
 
 namespace cellerator::compute::indexing {
+
+namespace containers = ::cellerator::containers;
 
 enum class cuda_posting_code_v1 : std::uint32_t {
     success = 0u,
@@ -30,10 +32,10 @@ struct cuda_reverse_posting_view_v1 {
     std::uint64_t relation_id = 0u;
     std::uint64_t structure_id = 0u;
     std::uint64_t structure_epoch = 0u;
-    const posting_term_v1 *terms = nullptr;
+    const containers::PostingTerm *terms = nullptr;
     const std::uint64_t *term_offsets = nullptr; // term_count + 1
     std::uint64_t term_count = 0u;
-    const indexed_work_item_v1 *items = nullptr;
+    const containers::IndexedWorkItem *items = nullptr;
     std::uint64_t item_count = 0u;
 };
 
@@ -54,18 +56,18 @@ struct cuda_posting_prepare_requirements_v1 {
 // After copying these arrays to device storage, bind a device view with the
 // device addresses; the host index remains the canonical owner.
 cuda_posting_prepare_requirements_v1 cuda_posting_projection_requirements_v1(
-    const reverse_posting_view_v1 &host_index) noexcept;
+    const containers::PostingIndexView &host_index) noexcept;
 cuda_posting_prepare_status_v1 build_cuda_posting_projection_v1(
-    const reverse_posting_view_v1 &host_index, posting_term_v1 *terms,
+    const containers::PostingIndexView &host_index, containers::PostingTerm *terms,
     std::uint64_t term_capacity, std::uint64_t *term_offsets,
-    std::uint64_t term_offsets_capacity, indexed_work_item_v1 *items,
+    std::uint64_t term_offsets_capacity, containers::IndexedWorkItem *items,
     std::uint64_t item_capacity,
     cuda_posting_prepare_requirements_v1 *required) noexcept;
 
 struct cuda_posting_output_v1 {
     std::uint64_t *offsets = nullptr; // cell_count + 1
     std::uint64_t offsets_capacity = 0u;
-    indexed_work_item_v1 *items = nullptr;
+    containers::IndexedWorkItem *items = nullptr;
     std::uint64_t item_capacity = 0u;
 };
 
@@ -98,7 +100,7 @@ struct cuda_posting_scratch_v1 {
 cudaError_t cuda_query_reverse_postings_any_v1(
     const cuda_reverse_posting_view_v1 &index,
     std::uint64_t expected_structure_epoch, std::uint64_t cell_count,
-    const std::uint64_t *query_offsets, const posting_term_v1 *queries,
+    const std::uint64_t *query_offsets, const containers::PostingTerm *queries,
     std::uint64_t query_count, cuda_posting_output_v1 output,
     cuda_posting_scratch_v1 scratch, cudaStream_t stream) noexcept;
 

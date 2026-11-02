@@ -7,6 +7,8 @@
 namespace cellerator::compute::math::core {
 namespace {
 
+namespace projection_layout = ::cellerator::layout::projection;
+
 operation_status fail(operation_status_code code, const char *message) noexcept {
     return {code, execution::binding_validation_code::ok, message};
 }
@@ -34,16 +36,16 @@ bool supported_width(std::uint32_t columns) noexcept {
         || columns == 64u;
 }
 
-bool valid_device_csr(const execution_csr_view &view) noexcept {
-    return view.schema_version == execution_csr_schema_version
+bool valid_device_csr(const ::cellerator::layout::projection::CsrViewV1 &view) noexcept {
+    return view.schema_version == projection_layout::execution_csr_schema_version
         && view.structure.schema_version
-            == sparse_structure_identity_schema_version
+            == projection_layout::sparse_structure_identity_schema_version
         && view.structure.identity_version
-            == execution_csr_structure_identity_version
+            == projection_layout::execution_csr_structure_identity_version
         && view.structure.value != 0u
         && view.feature_order.schema_version
-            == feature_order_identity_schema_version
-        && view.feature_order.kind == feature_order_kind::packed
+            == projection_layout::feature_order_identity_schema_version
+        && view.feature_order.kind == projection_layout::feature_order_kind::packed
         && view.feature_order.feature_count == view.feature_count
         && view.feature_order.feature_axis_identity != 0u
         && view.feature_order.feature_axis_identity_version != 0u
@@ -203,7 +205,7 @@ operation_status prepare_impl(
         || problem.logical_work_items
             != static_cast<std::uint64_t>(state->projection.nnz_count)
                 * state->dense_columns
-        || projection.schema_version != execution_csr_schema_version
+        || projection.schema_version != projection_layout::execution_csr_schema_version
         || projection.variant != 1u)
         return fail(operation_status_code::unsupported_problem,
             "cuSPARSE CSR preparation metadata is incompatible");
@@ -308,7 +310,7 @@ operation_status prepare_cusparse_csr_operation(
     const projection_key &projection,
     const numeric_policy &numeric,
     const prepare_policy &policy,
-    const execution_csr_view &device_csr,
+    const ::cellerator::layout::projection::CsrViewV1 &device_csr,
     runtime::execution_session *session,
     std::uint32_t stream_index,
     std::uint32_t dense_columns,
@@ -343,7 +345,7 @@ operation_status prepare_cusparse_csr_operation(
         return fail(operation_status_code::unsupported_problem,
             "cuSPARSE CSR operation kind does not match dense width");
     if (projection.kind != projection_kind::csr
-        || projection.schema_version != execution_csr_schema_version
+        || projection.schema_version != projection_layout::execution_csr_schema_version
         || projection.variant != 1u)
         return fail(operation_status_code::unsupported_projection,
             "cuSPARSE CSR projection contract is incompatible");

@@ -5,8 +5,9 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/differential/CMakeL
     add_subdirectory(src/compute/operation/differential)
 endif()
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/indexed_mechanism/CMakeLists.txt")
-    add_subdirectory(src/compute/operation/indexed_mechanism)
+if(CELLERATOR_HAS_CUDA
+   AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ops/mechanism/indexed/CMakeLists.txt")
+    add_subdirectory(src/ops/mechanism/indexed)
 endif()
 
 if(CELLERATOR_ENABLE_SPARSE_SUPPORT)
@@ -109,6 +110,16 @@ endif()
 # Export the actual linked dependency closure, including the preserved program
 # and candidate owners. Consumers use these libraries, never source inclusion.
 set(_nf_pending cellerator_native_foundation)
+if(TARGET cellerator_cellpack_geometry)
+    # Export this physical-layout host API as its own target without making it
+    # a dependency of the broad native-foundation umbrella.
+    list(APPEND _nf_pending cellerator_cellpack_geometry)
+endif()
+if(TARGET cellerator_jbc_v1)
+    # The optional prepared-program CUDA adapter consumes this host API. Keep
+    # its real link closure installed for external native consumers.
+    list(APPEND _nf_pending cellerator_jbc_v1)
+endif()
 if(TARGET cellerator_training_program)
     # Keep the native training-program API available to optional bindings
     # without making the native owner depend on any framework adapter.

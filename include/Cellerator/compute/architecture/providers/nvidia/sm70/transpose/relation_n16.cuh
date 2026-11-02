@@ -10,14 +10,14 @@ inline constexpr stable_id transpose_backward_n16_candidate_id{
 // Internal provider launch for already validated CTP1 bindings. Both the
 // operation candidate and retained fused training consumer use this arithmetic.
 // No preparation or error-state consumption; callers check submission status.
-void launch_transpose_backward_n16(const transpose_projection_view&,
+void launch_transpose_backward_n16(const ::cellerator::layout::projection::TransposeViewV1&,
     const __half* forward_values, const float* row_input,
     float* feature_output, cudaStream_t) noexcept;
 operation_candidate transpose_backward_n16_candidate() noexcept;
 operation_status register_transpose_backward_n16_candidate(candidate_registry*) noexcept;
 operation_status prepare_transpose_backward_n16_operation(
     const operation_problem&, const structure_set_key&, const projection_key&,
-    const numeric_policy&, const prepare_policy&, const transpose_projection_view&,
+    const numeric_policy&, const prepare_policy&, const execution::TransposeBinding&,
     std::int32_t, execution::axis_identity, execution::axis_identity,
     execution::axis_identity, transpose_backward_prepared_state*, prepared_operation*) noexcept;
 } // namespace cellerator::compute::math::core

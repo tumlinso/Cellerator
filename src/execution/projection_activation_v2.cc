@@ -13,6 +13,10 @@ constexpr bool valid_stable_identity(stable_id identity) noexcept {
     return identity.low != 0u || identity.high != 0u;
 }
 
+constexpr bool empty_handle(projection_handle handle) noexcept {
+    return handle.slot == 0u && handle.generation == 0u;
+}
+
 constexpr bool valid_projection_kind(projection_kind kind) noexcept {
     const auto value = static_cast<std::uint16_t>(kind);
     return value >= static_cast<std::uint16_t>(
@@ -51,6 +55,12 @@ projection_reference_status_v2 validate_activated_projection_reference_v2(
         || !valid_handle(reference.key.runtime)
         || !valid_projection_kind(reference.key.kind))
         return projection_reference_status_v2::invalid_projection;
+    if (reference.key.kind == projection_kind::transpose_or_backward) {
+        if (!valid_handle(reference.runtime_forward_projection))
+            return projection_reference_status_v2::invalid_projection;
+    } else if (!empty_handle(reference.runtime_forward_projection)) {
+        return projection_reference_status_v2::invalid_projection;
+    }
     if (!valid_location(reference.location)
         || reference.location.residency == residency_kind::host)
         return projection_reference_status_v2::invalid_location;
@@ -70,6 +80,7 @@ projection_reference_status_v2 make_activated_projection_reference_v2(
 
     activated_projection_reference_v2 candidate{};
     candidate.key = binding.key;
+    candidate.runtime_forward_projection = binding.runtime_forward_projection;
     candidate.provider_identity = binding.provider_identity;
     candidate.capability_identity = binding.capability_identity;
     candidate.contract = binding.contract;

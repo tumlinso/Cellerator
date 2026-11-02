@@ -445,45 +445,46 @@ every backend or the framework's full biological ML ambition.
 
 ## Cells, representations, and auxiliary views
 
-**Native interface implemented 2026-11-01.** The public C++ interface is a
-non-templated `cellerator::Cell` with no mandatory representation, identity,
-model binding, time, ancestry, or trajectory. Concrete cells provide optional
-typed access contracts such as event-prefix or dense-expression views. Each
-adapter decides how a cell selection maps into caller-owned bulk storage. This
-small interface is one implementation of the design request; it does not by
-itself provide batching, model execution, persistent caching, or a complete
-biological modeling API.
+**Native interface revised 2026-11-01.** A native `Cell<Model, Instance>`
+is a continuing virtual instance that binds a shared model to instance-specific
+information. The same model can support different instance representations.
+Model and instance copying, ownership, and mutation semantics remain explicit;
+the primary binding adds no universal state vector, clock, identity, device,
+cache, or trajectory. Its meaning is independent of the physical placement of
+its values and parameters.
 
-`view<View>()` acquires a borrowed typed read view from an lvalue cell;
-`edit<View>()` acquires an explicitly writable borrowed view from a mutable
-lvalue. The corresponding `supports` checks report whether the concrete cell
-implements each capability. Unsupported access throws `std::bad_cast`. A cell
-may implement several contracts, including caller-defined views, without a
-central registry. Identity is typed and supplied by the application. Physical
-row or token offsets are storage locators, not a universal or biological ID.
+`forward(args...)` invokes the associated callable with the stored instance.
+It can update that same logical instance and return any model-defined result.
+Const forwarding is available only when the model and instance permit it.
+A logical update may replace or retain physical values for gradients,
+snapshots, or outstanding readers. Models and owners define those lifetimes,
+parameter consistency, and invalidation; Cell adds no implicit rollback,
+synchronization, or universal mutation tracking.
 
-The base interface is C++17 and independent of Torch and CUDA. The examples
-build with C++20; the dense-expression adapter uses `std::span` for feature
-identities, while the event adapter itself does not require it. Both adapters
-borrow stable descriptor objects and select subranges or rows without owning
-or copying the underlying arrays. Events retain order and repeated
-occurrences; the storage owner controls append and descriptor updates.
-Dense-expression selection retains caller-supplied feature identities and
-explicit row stride. Both views preserve memory placement and cause no
-implicit device transfer. Writable
-expression access changes values only; its owner retains synchronization and
-generation responsibilities. See the [native guide](native_nn.qmd#access-cell-representations-without-binding-a-model)
-and the [event example](../examples/native_cell/event_forward.cc).
+Optional typed view and edit access delegates to instance-defined contracts.
+Typed support checks are compile-time; unsupported typed acquisitions are
+ill-formed. `CellViews` retains an optional runtime capability boundary and
+`std::bad_cast` behavior through explicit borrowed bridges. Application-defined
+identities remain distinct from storage rows, token offsets, and physical
+placement. The native core is C++17 and independent of Torch and CUDA; the
+expression adapter and host examples use C++20.
 
-The broader modeling goal is to make a cellular subject and the information
-relevant to a learning problem addressable without requiring one explicit,
-persistently materialized latent vector. Relevant information may be distributed
-across structured features, event history, attention context, recurrent memory,
-or several learned representations. In native C++, a separate model operation
-selects and consumes the cell's typed views; the base `Cell` itself has no model
-binding. History and behavior under specified conditions remain native modeling
-concepts; an instantaneous view is only one possible selection of cellular
-information.
+`EventPrefix`, `DenseExpressionRow`, and `MutableDenseExpressionRow` select
+caller-owned bulk storage without prescribing the complete instance. Their
+views preserve token occurrences, feature identities, row stride, scalar type,
+and placement. Owners control append, movement, and mutation. A single Cell
+can contain shared or separately placed portions; operations can jointly read
+multiple Cells or batch pooled instances. This foundation does not implement
+an expert-residency scheduler, distributed transport, or automatic placement.
+See the [native guide](native_nn.qmd#bind-a-continuing-native-instance) and
+[event example](../examples/native_cell/event_forward.cc).
+
+The modeling goal remains to make the information relevant to a question
+addressable without requiring one complete, persistently materialized cell
+vector. Relevant information may be distributed across features, inferred
+context, event history, recurrent memory, or learned representations. Static
+and limited-domain objectives are first-class. A model evaluates conditions;
+the Cell interface enables access to the information its operations require.
 
 ### Motivating request: an auxiliary ATAC model for Karyoplast
 
@@ -548,8 +549,9 @@ recurrent systems, and explicit dynamical models alike.
   model's declared information dependencies.
 
 These are design constraints and performance goals, not measured speedup
-claims. The generic native `Cell` only exposes typed views; model operations
-remain separate and choose the concrete result types. `DynamicalCell` remains
+claims. The native `Cell` binds a model and instance while operations choose their
+concrete result types. Typed access and optional runtime bridges expose the
+representations those operations support. `DynamicalCell` remains
 an optional state-transition utility with its own state snapshot, identity,
 clock, observation, and shared-model behavior. The native NN readout/query
 compositions are separate model-level facilities. The Python API is unchanged
@@ -742,6 +744,12 @@ speedup. Preserve dense, sparse, and alternate candidates when evidence does
 not select one globally.
 
 ### Layout and execution semantics
+
+The [native data structures guide](native_data.qmd) describes the concrete C++
+boundaries for dependency knowledge, specialist value formats, physical maps,
+allocation owners and prepared bindings. Its connected CUDA example has a
+bounded operation/placement contract; it does not define every model or a
+general distributed scheduler.
 
 Layout describes how logical model values are represented physically. It
 must retain mappings that allow values, outputs, and derivatives to return to

@@ -1,7 +1,8 @@
 add_library(cellerator_support STATIC
-    logical_support.cc
     adaptive_support.cc
-    proposal_discovery.cc)
+    proposal_discovery.cc
+    "${PROJECT_SOURCE_DIR}/src/geometry/dependency/compact_support.cc"
+    "${PROJECT_SOURCE_DIR}/src/execution/dependency/support_lifecycle.cc")
 add_library(Cellerator::support ALIAS cellerator_support)
 target_include_directories(cellerator_support PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>

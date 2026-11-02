@@ -113,7 +113,7 @@ void forward_preserves_frozen_v1_semantics() {
         && core::validate_numeric_policy(mapped.numeric),
         "forward mapping did not produce valid operation-core inputs");
     require(mapped.structures.count == 1u
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             mapped.structures.structures[0].persistent,
             typed.relation.structure)
         && execution::same_handle(

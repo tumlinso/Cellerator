@@ -1,10 +1,10 @@
-#include <Cellerator/biology/coordinates.hh>
 #include <Cellerator/biology/feature_binding.hh>
 #include <Cellerator/nn/attention.hh>
 #include <Cellerator/nn/features.hh>
 #include <Cellerator/nn/programs.hh>
 #include <Cellerator/nn/readouts.hh>
 #include <Cellerator/nn/supervision.hh>
+#include <Cellerator/structure/coordinates.hh>
 
 #include <ATen/ATen.h>
 #include <c10/cuda/CUDAGuard.h>
@@ -94,7 +94,7 @@ void prepared_attention_matches_aten(const at::Device& device) {
               csr_attention.parameters().query.weight),
           "ATen and CSR attention must share the same parameter tensors");
 
-    const auto order = bio::OccurrenceCoordinates<std::int64_t>::from_ids(
+    const auto order = cellerator::structure::OccurrenceCoordinates<std::int64_t>::from_ids(
         {0, 1, 2, 3, 4, 5}, {0, 3, 6}, {}, 19);
     const auto relation = nn::PreparedRelation::from_csr(
         nn::CsrSupport{
@@ -164,11 +164,11 @@ std::pair<Tensor, Tensor> build_supervised_frozen_composition(
     const std::vector<std::string> requested_features{"g2", "g0"};
     const auto targets = nn::prepare_targets(binding, requested_features, device);
 
-    const auto feature_order = bio::OccurrenceCoordinates<std::string>::from_ids(
+    const auto feature_order = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"cell-a/g0", "cell-a/g1", "cell-a/g2",
          "cell-b/g0", "cell-b/g1", "cell-b/g2"},
         {0, 3, 6}, {}, 23);
-    const auto program_order = bio::OccurrenceCoordinates<std::string>::from_ids(
+    const auto program_order = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"module-a", "module-b", "empty",
          "module-a", "module-b", "empty"},
         {0, 3, 6}, {}, 23);
@@ -262,9 +262,9 @@ void overlapping_programs_produce_finite_vjps(const at::Device& device) {
         {4, width}, at::TensorOptions().dtype(at::kHalf).device(device));
     features.requires_grad_(true);
 
-    const auto feature_order = bio::OccurrenceCoordinates<std::string>::from_ids(
+    const auto feature_order = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"g0", "g1", "g2", "g3"}, {}, {}, 31);
-    const auto program_order = bio::OccurrenceCoordinates<std::string>::from_ids(
+    const auto program_order = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"module-a", "module-b", "empty"}, {}, {}, 31);
     const auto relation = nn::PreparedRelation::from_csr(
         nn::CsrSupport{{0, 3, 5, 5}, {0, 1, 1, 1, 2}},

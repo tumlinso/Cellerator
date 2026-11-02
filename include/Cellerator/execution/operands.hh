@@ -99,7 +99,7 @@ struct sparse_relation_view {
     axis_identity destination_axis;
     structure_handle structure;
     projection_handle projection;
-    structure_epoch epoch;
+    structure::structure_epoch epoch;
     const void *projection_data;
     u64 projection_bytes;
     u64 logical_edge_count;

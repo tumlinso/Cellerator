@@ -50,8 +50,8 @@ struct logical_coverage_view_v1 {
         logical_coverage_kind_v1::canonical_intervals;
     std::uint16_t reserved = 0u;
     std::uint32_t role_flags = certified_exact_coverage_role_v1;
-    structure_id structure{};
-    structure_epoch epoch{};
+    structure::structure_id structure{};
+    structure::structure_epoch epoch{};
     persistent_axis_identity source_axis{};
     persistent_axis_identity destination_axis{};
     std::uint64_t logical_count = 0u;

@@ -1,4 +1,4 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <algorithm>
 #include <cassert>
@@ -12,10 +12,9 @@
 #include <set>
 #include <vector>
 
-namespace projection = cellerator::compute::projection;
-namespace math = cellerator::compute::math;
+namespace projection = cellerator::layout::projection;
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 bool validate_physical_mma_hybrid_image_v1_reference(
     const void*, std::size_t) noexcept;
 }
@@ -38,7 +37,7 @@ void store_record(std::vector<unsigned char>* bytes, std::uint64_t offset,
 
 struct generated_image {
     std::vector<unsigned char> bytes;
-    projection::physical_mma_hybrid_header_v1 header{};
+    projection::MmaHybridLayoutV1 header{};
 };
 
 generated_image make_image(std::mt19937& rng, std::uint32_t trial) {
@@ -77,11 +76,11 @@ generated_image make_image(std::mt19937& rng, std::uint32_t trial) {
     projection::physical_mma_hybrid_build_request_v1 request{};
     request.structure_identity.identity_version = 1u;
     request.structure_identity.value = 0x1234567800000000ull + trial + 1u;
-    request.source_order.kind = math::feature_order_kind::canonical;
+    request.source_order.kind = projection::feature_order_kind::canonical;
     request.source_order.feature_count = entity_count;
     request.source_order.feature_axis_identity_version = 1u;
     request.source_order.feature_axis_identity = 0x101u;
-    request.destination_order.kind = math::feature_order_kind::canonical;
+    request.destination_order.kind = projection::feature_order_kind::canonical;
     request.destination_order.feature_count = entity_count;
     request.destination_order.feature_axis_identity_version = 1u;
     request.destination_order.feature_axis_identity = 0x202u;
@@ -97,7 +96,7 @@ generated_image make_image(std::mt19937& rng, std::uint32_t trial) {
     generated_image result{};
     assert(projection::build_physical_mma_hybrid_image_v1(request, &result.bytes)
         == projection::physical_image_build_status_v1::success);
-    result.header = load_record<projection::physical_mma_hybrid_header_v1>(
+    result.header = load_record<projection::MmaHybridLayoutV1>(
         result.bytes, 0u);
     return result;
 }

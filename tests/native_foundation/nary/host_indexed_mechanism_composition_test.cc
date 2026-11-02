@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/indexed_mechanism/evaluators.hh>
+#include <Cellerator/ops/mechanism/indexed/evaluators.hh>
 
 #include <array>
 #include <cmath>
@@ -6,7 +6,7 @@
 #include <limits>
 #include <stdexcept>
 
-namespace ix = cellerator::compute::operation::indexed;
+namespace ix = cellerator::ops::mechanism::indexed;
 void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
 int main() try {
     ix::registered_block composed{{300, 1}, ix::evaluator_opcode::first_minus_product_tail, 3};

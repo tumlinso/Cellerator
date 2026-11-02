@@ -21,10 +21,10 @@ bool valid_accumulation(gradient_accumulation_v1 accumulation) noexcept {
 
 bool same_axis(const execution::persistent_axis_identity &left,
     const execution::persistent_axis_identity &right) noexcept {
-    return execution::same_identity(left.domain, right.domain)
-        && execution::same_identity(left.order, right.order)
-        && execution::same_identity(left.geometry, right.geometry)
-        && execution::same_identity(left.partition, right.partition);
+    return ::cellerator::structure::same_identity(left.domain, right.domain)
+        && ::cellerator::structure::same_identity(left.order, right.order)
+        && ::cellerator::structure::same_identity(left.geometry, right.geometry)
+        && ::cellerator::structure::same_identity(left.partition, right.partition);
 }
 
 bool all_zero(const std::uint8_t *values, std::uint64_t count) noexcept {
@@ -94,8 +94,8 @@ training_gradient_validation_result_v1 validate_training_gradient_contract_v1(
             gradient.relation_index];
         if (gradient.target == gradient_target_v1::relation_values) {
             if (gradient.has_biological_axis
-                || !execution::valid_identity(gradient.logical_edge_order)
-                || !execution::same_identity(gradient.logical_edge_order,
+                || !::cellerator::structure::valid_identity(gradient.logical_edge_order)
+                || !::cellerator::structure::same_identity(gradient.logical_edge_order,
                     relation.logical_edge_order))
                 return failure(code::edge_identity_mismatch, index);
             if (!gradient.preserves_logical_edge_identity)
@@ -105,7 +105,7 @@ training_gradient_validation_result_v1 validate_training_gradient_contract_v1(
                 || execution::validate_persistent_axis_identity(
                     gradient.biological_axis)
                     != execution::biological_validation_code::ok
-                || execution::valid_identity(gradient.logical_edge_order))
+                || ::cellerator::structure::valid_identity(gradient.logical_edge_order))
                 return failure(code::invalid_axis_contract, index);
             const auto &expected = gradient.target
                     == gradient_target_v1::source_state

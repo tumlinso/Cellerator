@@ -25,7 +25,7 @@
 #include "compute/operation/relation_algebra.hh"
 #include "compute/operation/relation_algebra_catalog.hh"
 #include "compute/operation/relation_bundle.hh"
-#include "compute/projection/physical_mma_hybrid.hh"
+#include "layout/projection/mma_hybrid.hh"
 #include "compute/sampling.hh"
 #include "compute/sampling_materialization.hh"
 #include "compute/gene_support_bitset.hh"

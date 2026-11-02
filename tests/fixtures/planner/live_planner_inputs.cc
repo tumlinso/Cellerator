@@ -8,13 +8,13 @@ namespace cellerator::fixtures::planner_inputs {
 namespace {
 
 bool valid_identities(const relation_identity_input &identities) noexcept {
-    return execution::valid_identity(identities.source_domain)
-        && execution::valid_identity(identities.destination_domain)
-        && execution::valid_identity(identities.source_order)
-        && execution::valid_identity(identities.destination_order)
-        && execution::valid_identity(identities.geometry)
-        && execution::valid_identity(identities.partition)
-        && execution::valid_identity(identities.structure)
+    return ::cellerator::structure::valid_identity(identities.source_domain)
+        && ::cellerator::structure::valid_identity(identities.destination_domain)
+        && ::cellerator::structure::valid_identity(identities.source_order)
+        && ::cellerator::structure::valid_identity(identities.destination_order)
+        && ::cellerator::structure::valid_identity(identities.geometry)
+        && ::cellerator::structure::valid_identity(identities.partition)
+        && ::cellerator::structure::valid_identity(identities.structure)
         && identities.structure_epoch.value != 0u;
 }
 

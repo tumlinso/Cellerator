@@ -49,8 +49,8 @@ struct decomposition_alternative_v1 {
     const execution::joint_compiler::persistent_identity_v1
         *halo_coverages = nullptr;
     std::uint64_t halo_coverage_count = 0u;
-    execution::order_id input_order{};
-    execution::order_id output_order{};
+    ::cellerator::structure::order_id input_order{};
+    ::cellerator::structure::order_id output_order{};
     execution::joint_compiler::persistent_identity_v1 partial_algebra{};
     operation::v2::numerical_policy numerical{};
 };

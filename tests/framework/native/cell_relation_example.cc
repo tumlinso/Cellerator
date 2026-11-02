@@ -4,20 +4,29 @@
 #undef NDEBUG
 #endif
 #include <Cellerator/modeling/dynamical.hh>
+#include <Cellerator/layout/entity_layout.hh>
 #include <Cellerator/modeling/value_field.hh>
+#include <Cellerator/geometry/dependency/explicit_pattern.hh>
+#include <Cellerator/geometry/dependency/pattern_owner.hh>
+#include <Cellerator/execution/dependency/incidence.hh>
+#include <Cellerator/execution/dependency/workset.hh>
+#include <Cellerator/ops/incidence.hh>
 
 #include <cassert>
 #include <iostream>
 #include <string>
 
 namespace m = cellerator::modeling;
+namespace g = cellerator::geometry::dependency;
+namespace e = cellerator::execution;
+namespace oi = cellerator::ops::incidence;
 
 struct State {
     m::ValueField<float> field;
     std::string phase;
 };
 struct Parameters {
-    std::shared_ptr<const m::IncidencePlan> plan;
+    std::shared_ptr<const e::PreparedIncidence> plan;
     float coupling;
     float threshold;
 };
@@ -29,20 +38,20 @@ using Result = m::StepResult<State, std::vector<Event>>;
 int main() {
     // Overlapping directed hyperedges; edge 10 reads entity 200 twice. Physical
     // state order [300,100,200] differs from both identity and relation order.
-    auto relation = std::make_shared<m::SparseRelation>(std::vector<m::RelationEdge>{
+    auto relation = std::make_shared<g::ExplicitPattern>(std::vector<g::PatternEdge>{
         {20, {{0,0,100}, {0,0,200}, {1,0,300}}},
         {10, {{0,0,200}, {0,0,200}, {1,0,100}}}});
-    m::EntityLayout layout({300,100,200});
-    auto plan = std::make_shared<m::IncidencePlan>(m::ActivityState(relation).worklist(), layout);
+    cellerator::layout::EntityLayout layout({300,100,200});
+    auto plan = std::make_shared<e::PreparedIncidence>(e::ActivityState(relation).worklist(), layout);
     auto parameters = std::make_shared<Parameters>(Parameters{plan, 1.0f, 3.5f});
 
     auto transition = [](const State& state, const Context& context) -> Result {
         if (!context.parameters) throw std::invalid_argument("this transition requires parameters");
         const auto& parameters = *context.parameters;
         const auto& field = state.field;
-        const auto signals = m::joint_reduce<float,float,float>(
-            *parameters.plan, field.values(), field.features(), m::JointReduction::sum, 0);
-        auto increments = m::scatter_add(*parameters.plan, signals, field.features(), 1);
+        const auto signals = oi::joint_reduce<float,float,float>(
+            *parameters.plan, field.values(), field.features(), oi::JointReduction::sum, 0);
+        auto increments = oi::scatter_add(*parameters.plan, signals, field.features(), 1);
         auto values = field.values(); // State chooses its own ownership/copy policy.
         const float drive = context.inputs ? context.inputs->drive : 0.0f;
         for (std::size_t i = 0; i < values.size(); ++i)
@@ -81,19 +90,19 @@ int main() {
 
     // Publish a real topology edit while retaining the same cell/model. Disabled
     // activity and old results/plans survive by stable identity and ownership.
-    m::DynamicRelation dynamic(relation);
+    g::PatternOwner dynamic(relation);
     dynamic.stage_remove(10);
     dynamic.stage_add(30, {{0,0,300}, {1,0,200}});
     const auto changed = dynamic.publish();
-    const auto rebased = m::ActivityState(relation).rebase(changed);
-    auto new_plan = std::make_shared<m::IncidencePlan>(rebased.worklist(), layout);
+    const auto rebased = e::ActivityState(relation).rebase(changed);
+    auto new_plan = std::make_shared<e::PreparedIncidence>(rebased.worklist(), layout);
     model->set_parameters(std::make_shared<Parameters>(Parameters{new_plan, 1.0f, 3.5f}));
     auto after_edit = first.advance(0.5);
     assert(first.time() == 1.0 && first.state().field.generation().value == 2);
     assert((first.state().field.values() == std::vector<float>{7.0f, 3.0f, 4.25f}));
     assert(result->state.field.values()[0] == 4.5f); // Pinned previous result.
-    assert(parameters->plan->worklist().relation()->structure_epoch() == 1);
-    assert(new_plan->worklist().relation()->structure_epoch() == 2);
+    assert(parameters->plan->worklist().pattern()->structure_epoch() == 1);
+    assert(new_plan->worklist().pattern()->structure_epoch() == 2);
     assert(after_edit->events.size() == 2);
 
     // Shared model changes do not share cell state. Explicit inputs belong only
@@ -106,5 +115,5 @@ int main() {
     assert(second.time() == 0.25 && first.time() == 1.0);
     assert((second.state().field.values() == std::vector<float>{0.75f, 0.5f, 1.5f}));
     std::cout << first.id() << " time=" << first.time() << " observed=" << first.observe()
-              << " structure_epoch=" << new_plan->worklist().relation()->structure_epoch() << '\n';
+              << " structure_epoch=" << new_plan->worklist().pattern()->structure_epoch() << '\n';
 }

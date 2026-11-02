@@ -8,9 +8,10 @@
 #include <cuda_runtime.h>
 
 #include "benchmark_mutex.hh"
-#include <Cellerator/quantized/api.cuh>
+#include <Cellerator/ops/quantized/api.cuh>
 
-namespace msq = ::cellerator::quantized;
+namespace msq = ::cellerator::tensor::quantized;
+namespace mso = ::cellerator::ops::quantized;
 
 namespace {
 
@@ -236,7 +237,7 @@ static bool parse_options(int argc, char** argv, bench_options* options) {
                 options->bits_filter = 0;
             } else {
                 options->bits_filter = std::atoi(value);
-                if (!msq::valid_bits(options->bits_filter)) {
+                if (!mso::valid_bits(options->bits_filter)) {
                     print_usage(argv[0]);
                     return false;
                 }
@@ -300,7 +301,7 @@ static bool run_case(const bench_fixture& base, const bench_options& options, de
         }
     }
 
-    auto host_matrix = msq::make_matrix<Bits>(
+    auto host_matrix = msq::make_csr_view<Bits>(
         fixture.rows,
         fixture.cols,
         nnz,
@@ -342,7 +343,7 @@ static bool run_case(const bench_fixture& base, const bench_options& options, de
         const std::size_t packed_row_ptr_bytes = packed_row_ptr.size() * sizeof(int);
         const std::size_t values_bytes = fixture.values.size() * sizeof(float);
         const Metadata device_metadata = metadata_case<Metadata>::make_device(*workspace);
-        auto device_matrix = msq::make_matrix<Bits>(
+        auto device_matrix = msq::make_csr_view<Bits>(
             fixture.rows,
             fixture.cols,
             nnz,
@@ -373,8 +374,8 @@ static bool run_case(const bench_fixture& base, const bench_options& options, de
             return false;
         }
 
-        ok = check_cuda(msq::launch_quantize_block_v100(&device_matrix, full_block, workspace->d_input), "warmup quantize") && ok;
-        ok = check_cuda(msq::launch_dequantize_block_v100(&device_matrix, full_block, workspace->d_output), "warmup dequantize") && ok;
+        ok = check_cuda(mso::launch_quantize_block_v100(&device_matrix, full_block, workspace->d_input), "warmup quantize") && ok;
+        ok = check_cuda(mso::launch_dequantize_block_v100(&device_matrix, full_block, workspace->d_output), "warmup dequantize") && ok;
         ok = check_cuda(cudaDeviceSynchronize(), "warmup sync") && ok;
         if (!ok) {
             return false;
@@ -382,8 +383,8 @@ static bool run_case(const bench_fixture& base, const bench_options& options, de
 
         ok = check_cuda(cudaEventRecord(workspace->start), "event start") && ok;
         for (int iter = 0; iter < gpu_iters; ++iter) {
-            ok = check_cuda(msq::launch_quantize_block_v100(&device_matrix, full_block, workspace->d_input), "bench quantize") && ok;
-            ok = check_cuda(msq::launch_dequantize_block_v100(&device_matrix, full_block, workspace->d_output), "bench dequantize") && ok;
+            ok = check_cuda(mso::launch_quantize_block_v100(&device_matrix, full_block, workspace->d_input), "bench quantize") && ok;
+            ok = check_cuda(mso::launch_dequantize_block_v100(&device_matrix, full_block, workspace->d_output), "bench dequantize") && ok;
         }
         ok = check_cuda(cudaEventRecord(workspace->stop), "event stop") && ok;
         ok = check_cuda(cudaEventSynchronize(workspace->stop), "event sync") && ok;
@@ -428,7 +429,7 @@ static bool run_policy_suite(const bench_fixture& fixture, const bench_options& 
         if (options.bits_filter != 0 && options.bits_filter != bits) {
             continue;
         }
-        ok = msq::dispatch_bits(bits, [&](auto bits_tag) {
+        ok = mso::dispatch_bits(bits, [&](auto bits_tag) {
                  constexpr int Bits = decltype(bits_tag)::value;
                  return run_case<Bits, Metadata>(fixture, options, workspace);
              }) &&

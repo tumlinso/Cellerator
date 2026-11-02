@@ -25,7 +25,7 @@ planner::planning_keys keys(
     result.problem.identity = {0x7701u, 0x7702u};
     result.structures.count = 1u;
     result.structures.structures[0] = {
-        {0x7710u, sharing}, execution::structure_epoch{1u}};
+        {0x7710u, sharing}, ::cellerator::structure::structure_epoch{1u}};
     result.geometry.source_domain = {0x7720u, 1u};
     result.geometry.destination_domain = {0x7720u, 2u};
     result.geometry.geometry = {0x7720u, 3u};

@@ -22,8 +22,8 @@ struct canonical_fallback_request_v1 {
 
 struct canonical_fallback_v1 {
     atom_bound_candidate_v1 candidate{};
-    order_id input_order{};
-    order_id output_order{};
+    structure::order_id input_order{};
+    structure::order_id output_order{};
     canonical_fallback_reason_v1 reason =
         canonical_fallback_reason_v1::bounded_frontier_empty;
     bool requires_order_transform = false;

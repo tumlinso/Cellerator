@@ -22,9 +22,9 @@ enum value_pack_candidate_flags_v1 : u8 {
 struct value_pack_candidate_v1 {
     u64 candidate_identity = 0u;
     u64 provider_identity = 0u;
-    projection_id destination_projection{};
-    order_id source_order{};
-    order_id destination_order{};
+    structure::projection_id destination_projection{};
+    structure::order_id source_order{};
+    structure::order_id destination_order{};
     value_pack_path_v1 path = value_pack_path_v1::logical_repack;
     u8 flags = 0u;
     u8 reserved[6]{};
@@ -34,7 +34,7 @@ struct value_pack_candidate_v1 {
 
 struct value_pack_portfolio_v1 {
     structure_handle structure{};
-    structure_epoch structure_epoch_value{};
+    structure::structure_epoch structure_epoch_value{};
     const value_pack_candidate_v1 *candidates = nullptr;
     u32 candidate_count = 0u;
     u32 reserved = 0u;
@@ -44,9 +44,9 @@ struct value_pack_portfolio_v1 {
 // generation never changes structure epoch or slot-to-logical ownership maps.
 struct dynamic_value_gate_v1 {
     structure_handle structure{};
-    structure_epoch structure_epoch_value{};
+    structure::structure_epoch structure_epoch_value{};
     value_generation generation{};
-    order_id logical_edge_order{};
+    structure::order_id logical_edge_order{};
     const void *values = nullptr;
     u64 logical_edge_count = 0u;
     u64 value_bytes = 0u;
@@ -70,7 +70,7 @@ value_plane_status_v1 validate_value_pack_portfolio_v1(
 
 value_plane_status_v1 validate_dynamic_value_gate_v1(
     const relation_structure &structure,
-    order_id expected_logical_order,
+    structure::order_id expected_logical_order,
     const dynamic_value_gate_v1 &gate) noexcept;
 
 value_plane_status_v1 validate_value_pack_binding_v1(

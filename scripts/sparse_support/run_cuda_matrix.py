@@ -22,19 +22,48 @@ ROOT = Path(__file__).resolve().parents[2]
 TARGET = "cellerator_sparse_support_cuda_indexing_bench"
 SOURCE_INPUTS = [
     "CMakeLists.txt",
+    "cmake/CelleratorSparseSupport.cmake",
     "cmake/NativeFoundation.cmake",
+    "src/support/CMakeLists.txt",
+    "src/indexing/CMakeLists.txt",
+    "src/gating/CMakeLists.txt",
+    "src/layout/CMakeLists.txt",
     "bench/sparse_support/CMakeLists.txt",
     "bench/sparse_support/cuda_indexing_bench.cu",
-    "include/Cellerator/compute/support/logical_support.hh",
-    "src/support/logical_support.cc",
-    "include/Cellerator/compute/indexing/reverse_postings.hh",
+    "src/support/adaptive_support.cc",
+    "src/support/proposal_discovery.cc",
+    "src/geometry/dependency/compact_support.cc",
+    "src/execution/dependency/support_lifecycle.cc",
+    "src/indexing/temporal_occurrences.cc",
+    "src/containers/posting_index.cc",
+    "src/geometry/dependency/posting_index.cc",
+    "src/gating/derivative_sampling.cc",
+    "src/ops/condition/program.cc",
+    "src/execution/dependency/workset_view.cc",
+    "src/layout/projection/mma_hybrid.cc",
+    "src/layout/projection/mma_hybrid_builder.cc",
+    "src/layout/mma_physical_cover_validation.cc",
+    "include/Cellerator/compute/support/adaptive_support.hh",
+    "include/Cellerator/compute/support/proposal_discovery.hh",
+    "include/Cellerator/compute/indexing/temporal_occurrences.hh",
+    "include/Cellerator/compute/gating/derivative_sampling.hh",
+    "include/Cellerator/geometry/dependency/compact_support.hh",
+    "include/Cellerator/execution/dependency/support_lifecycle.hh",
+    "include/Cellerator/containers/posting_index.hh",
+    "include/Cellerator/geometry/dependency/posting_index.hh",
+    "include/Cellerator/ops/condition/program.hh",
+    "include/Cellerator/execution/dependency/workset_view.hh",
     "include/Cellerator/compute/indexing/cuda_postings.cuh",
-    "src/indexing/reverse_postings.cc",
     "src/indexing/cuda_postings.cu",
-    "include/Cellerator/compute/gating/condition_program.hh",
     "include/Cellerator/compute/gating/cuda_worksets.cuh",
-    "src/gating/condition_program.cc",
     "src/gating/cuda_worksets.cu",
+]
+
+HOST_LIBRARY_PATHS = [
+    "src/support/libcellerator_support.a",
+    "src/indexing/libcellerator_indexing.a",
+    "src/gating/libcellerator_gating.a",
+    "src/layout/libcellerator_layout.a",
 ]
 
 
@@ -121,11 +150,17 @@ def main() -> int:
         commands.append(command)
 
     build_dir = binary.parents[2]
+    host_library_hashes = {
+        rel: sha256(build_dir / rel) for rel in HOST_LIBRARY_PATHS
+    }
     artifacts = {
         "benchmark_binary_sha256": sha256(binary),
+        # Keep the primary-support digest for v1 readers and capture the full
+        # host archive closure now that the package has separate owners.
         "sparse_support_host_library_sha256": sha256(
-            build_dir / "src/support/libcellerator_sparse_support.a"
+            build_dir / HOST_LIBRARY_PATHS[0]
         ),
+        "sparse_support_host_libraries_sha256": host_library_hashes,
         "sparse_support_cuda_library_sha256": sha256(
             build_dir / "libcellerator_sparse_support_cuda.a"
         ),

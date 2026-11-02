@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/matrix/compressed.cuh>
-#include <Cellerator/matrix/coo.cuh>
+#include <Cellerator/types.cuh>
+
 
 #include <cstddef>
 

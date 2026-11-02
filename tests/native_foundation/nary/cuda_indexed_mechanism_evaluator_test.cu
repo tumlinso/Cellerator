@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/indexed_mechanism/evaluators.hh>
+#include <Cellerator/ops/mechanism/indexed/evaluators.hh>
 
 #include <cuda_runtime_api.h>
 
@@ -9,7 +9,7 @@
 #include <limits>
 #include <stdexcept>
 
-namespace ix = cellerator::compute::operation::indexed;
+namespace ix = cellerator::ops::mechanism::indexed;
 void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
 void cuda_check(cudaError_t status, const char* message) { check(status == cudaSuccess, message); }
 int main() try {

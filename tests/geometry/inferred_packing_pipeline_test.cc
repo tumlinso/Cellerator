@@ -21,7 +21,7 @@ namespace {
 
 namespace candidates = ::cellerator::compute::gene_candidates;
 namespace gene_support = ::cellerator::compute::gene_support;
-namespace matrix = ::cellerator::matrix;
+namespace matrix = ::cellerator::interop::formats;
 namespace sampling = ::cellerator::compute::sampling;
 namespace types = ::cellerator::types;
 
@@ -46,7 +46,7 @@ void require_status(const cellpack::validation_result &status, const char *conte
     if (!status) fail(std::string(context) + ": " + status.message);
 }
 
-bool fill_full_source(matrix::compressed *source) {
+bool fill_full_source(matrix::CompressedPayload *source) {
     const std::vector<types::ptr_t> row_offsets{0u, 3u, 5u, 7u, 10u, 12u, 14u, 17u, 20u};
     const std::vector<types::idx_t> features{
         0u, 1u, 4u,
@@ -108,7 +108,7 @@ struct optimizer_workspace {
 };
 
 void require_exact_round_trip(
-    const matrix::compressed &source,
+    const matrix::CompressedPayload &source,
     const cellpack::frozen_packing_plan &plan,
     const cellpack::ordered_plan_partition_view &ordered,
     const std::vector<types::idx_t> &ordered_features,
@@ -148,7 +148,7 @@ void require_exact_round_trip(
 }
 
 void run_pipeline() {
-    matrix::compressed source;
+    matrix::CompressedPayload source;
     matrix::init(&source);
     require(fill_full_source(&source), "failed to allocate full CSR fixture");
 

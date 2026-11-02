@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cellerator/compute/support/adaptive_support.hh>
+#include <Cellerator/geometry/dependency/compact_support.hh>
 
 #include <pybind11/pybind11.h>
 
@@ -10,15 +11,15 @@
 
 namespace cellerator::bindings::sparse_support {
 
-struct owned_logical_support_v1 {
-    std::uint32_t schema_version = cellerator::compute::support::logical_support_schema_version_v1;
+struct owned_compact_support_v1 {
+    std::uint32_t schema_version = cellerator::geometry::dependency::compact::schema_version_v1;
     std::uint64_t relation_id = 0u;
     std::uint64_t structure_id = 0u;
     std::uint64_t structure_epoch = 0u;
-    std::vector<cellerator::compute::support::logical_support_edge_v1> edges;
-    std::vector<cellerator::compute::support::logical_support_participant_v1> participants;
+    std::vector<cellerator::geometry::dependency::compact::EdgeV1> edges;
+    std::vector<cellerator::geometry::dependency::compact::ParticipantV1> participants;
 
-    cellerator::compute::support::logical_support_view_v1 view() const noexcept {
+    cellerator::geometry::dependency::compact::ViewV1 view() const noexcept {
         return {schema_version, 0u, relation_id, structure_id, structure_epoch,
             edges.empty() ? nullptr : edges.data(), edges.size(),
             participants.empty() ? nullptr : participants.data(), participants.size()};
@@ -26,8 +27,8 @@ struct owned_logical_support_v1 {
 };
 
 struct owned_support_snapshot_v1 {
-    owned_logical_support_v1 base;
-    owned_logical_support_v1 delta;
+    owned_compact_support_v1 base;
+    owned_compact_support_v1 delta;
     std::vector<cellerator::compute::support::support_promotion_record_v1>
         promotion_records;
     std::vector<std::uint64_t> revoked_edge_ids;
@@ -37,7 +38,7 @@ struct owned_support_snapshot_v1 {
 class native_support_handle_v1 final {
 public:
     explicit native_support_handle_v1(
-        const cellerator::compute::support::logical_support_view_v1 &base,
+        const cellerator::geometry::dependency::compact::ViewV1 &base,
         std::uint64_t delta_relation_id = 0u);
 
     cellerator::compute::support::adaptive_support_status_v1 stage_promotion(

@@ -1,7 +1,10 @@
-#include <Cellerator/compute/gating/condition_program.hh>
+#include <Cellerator/ops/condition/program.hh>
+#include <Cellerator/execution/dependency/workset_view.hh>
+#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/geometry/dependency/posting_index.hh>
 #include <Cellerator/compute/gating/cuda_worksets.cuh>
 #include <Cellerator/compute/indexing/cuda_postings.cuh>
-#include <Cellerator/compute/support/logical_support.hh>
+#include <Cellerator/geometry/dependency/compact_support.hh>
 
 #include <cuda_runtime.h>
 #include <cub/cub.cuh>
@@ -28,7 +31,13 @@
 #include <vector>
 
 namespace {
-using namespace cellerator::compute;
+namespace compact = cellerator::geometry::dependency::compact;
+namespace containers = cellerator::containers;
+namespace geometry = cellerator::geometry::dependency;
+namespace condition = cellerator::ops::condition;
+namespace execution = cellerator::execution;
+namespace gating = cellerator::compute::gating;
+namespace indexing = cellerator::compute::indexing;
 using host_clock = std::chrono::steady_clock;
 
 #define CUDA_CHECK(call) do { \
@@ -169,32 +178,32 @@ template <class T> std::vector<T> copy_from_device(const T *source, std::size_t 
 }
 
 std::uint64_t total_requested_device_bytes() {
-    return device_buffer<support::logical_support_edge_v1>::requested_bytes
-        + device_buffer<support::logical_support_participant_v1>::requested_bytes
-        + device_buffer<indexing::posting_term_v1>::requested_bytes
+    return device_buffer<compact::EdgeV1>::requested_bytes
+        + device_buffer<compact::ParticipantV1>::requested_bytes
+        + device_buffer<containers::PostingTerm>::requested_bytes
         + device_buffer<std::uint32_t>::requested_bytes
         + device_buffer<std::uint64_t>::requested_bytes
-        + device_buffer<indexing::indexed_work_item_v1>::requested_bytes
+        + device_buffer<containers::IndexedWorkItem>::requested_bytes
         + device_buffer<std::uint8_t>::requested_bytes
-        + device_buffer<gating::condition_node_v1>::requested_bytes
-        + device_buffer<gating::edge_condition_binding_v1>::requested_bytes
+        + device_buffer<condition::NodeV1>::requested_bytes
+        + device_buffer<condition::EdgeBindingV1>::requested_bytes
         + device_buffer<gating::cuda_workset_status_v1>::requested_bytes
         + device_buffer<indexing::cuda_posting_scratch_v1::cursor_v1>::requested_bytes
         + device_buffer<indexing::cuda_posting_status_v1>::requested_bytes;
 }
 
 struct relation_storage {
-    std::vector<support::logical_support_edge_v1> edges;
-    std::vector<support::logical_support_participant_v1> participants;
-    support::logical_support_view_v1 view{};
+    std::vector<compact::EdgeV1> edges;
+    std::vector<compact::ParticipantV1> participants;
+    compact::ViewV1 view{};
 };
 
 struct fixture {
     relation_storage base;
     relation_storage delta;
-    support::support_snapshot_pair_v1 snapshot{};
-    std::vector<support::logical_support_edge_v1> gpu_edges;
-    std::vector<support::logical_support_participant_v1> gpu_participants;
+    compact::SnapshotPairV1 snapshot{};
+    std::vector<compact::EdgeV1> gpu_edges;
+    std::vector<compact::ParticipantV1> gpu_participants;
     std::vector<std::uint64_t> query_offsets;
     std::vector<std::uint64_t> query_entities;
     std::vector<std::uint64_t> edge_sources;
@@ -356,12 +365,12 @@ fixture make_fixture(const options &cfg) {
         const auto source_edge_ids = read_raw_u64_array(directory, "edge_ids");
         if (source_indptr != expected_source_offsets || source_edge_ids != expected_source_ids)
             throw std::runtime_error("fixture source CSR does not match support endpoints");
-        f.base.view = {support::logical_support_schema_version_v1, 0u,
+        f.base.view = {compact::schema_version_v1, 0u,
             7001u, 9001u, 1u, f.base.edges.data(), f.base.edges.size(),
             f.base.participants.data(), f.base.participants.size()};
         f.snapshot = {&f.base.view, nullptr, 1u};
-        if (support::validate_support_snapshot_pair_v1(f.snapshot)
-            != support::support_snapshot_status_v1::success)
+        if (compact::validate_snapshot(f.snapshot)
+            != compact::SnapshotStatusV1::success)
             throw std::runtime_error("raw fixture support failed validation");
         f.gpu_edges = f.base.edges;
         f.gpu_participants = f.base.participants;
@@ -407,15 +416,15 @@ fixture make_fixture(const options &cfg) {
             f.digest = mix_hash(f.digest, cofactor);
             f.digest = mix_hash(f.digest, count_in_edge);
         }
-        r.view = {support::logical_support_schema_version_v1, 0u,
+        r.view = {compact::schema_version_v1, 0u,
             relation_id, 9001u, 1u, r.edges.data(), r.edges.size(),
             r.participants.data(), r.participants.size()};
     };
     fill(f.base, 0u, base_edges, 7001u);
     if (delta_edges) fill(f.delta, base_edges, delta_edges, 7002u);
     f.snapshot = {&f.base.view, delta_edges ? &f.delta.view : nullptr, 1u};
-    if (support::validate_support_snapshot_pair_v1(f.snapshot)
-        != support::support_snapshot_status_v1::success)
+    if (compact::validate_snapshot(f.snapshot)
+        != compact::SnapshotStatusV1::success)
         throw std::runtime_error("support fixture validation failed");
     f.gpu_edges.reserve(cfg.edges);
     f.gpu_participants.reserve(f.base.participants.size() + f.delta.participants.size());
@@ -438,7 +447,7 @@ struct host_candidates {
     std::vector<std::uint64_t> capacity_offsets;
     std::vector<std::uint64_t> row_capacities;
     std::vector<std::uint64_t> row_counts;
-    std::vector<indexing::indexed_work_item_v1> items;
+    std::vector<containers::IndexedWorkItem> items;
     std::uint64_t count = 0;
 };
 
@@ -458,16 +467,16 @@ host_candidates make_host_candidates(const options &cfg,
     return result;
 }
 
-std::uint64_t posting_degree(const indexing::reverse_posting_view_v1 &index,
-                             const indexing::posting_term_v1 &term) {
+std::uint64_t posting_degree(const containers::PostingIndexView &index,
+                             const containers::PostingTerm &term) {
     const auto key = std::pair<std::uint32_t, std::uint64_t>{term.role, term.entity_id};
     const auto *first = std::lower_bound(index.entries, index.entries + index.entry_count,
-        key, [](const indexing::reverse_posting_record_v1 &record, const auto &value) {
+        key, [](const containers::PostingRecord &record, const auto &value) {
             return record.role < value.first
                 || (record.role == value.first && record.entity_id < value.second);
         });
     const auto *last = std::upper_bound(first, index.entries + index.entry_count, key,
-        [](const auto &value, const indexing::reverse_posting_record_v1 &record) {
+        [](const auto &value, const containers::PostingRecord &record) {
             return value.first < record.role
                 || (value.first == record.role && value.second < record.entity_id);
         });
@@ -475,9 +484,9 @@ std::uint64_t posting_degree(const indexing::reverse_posting_view_v1 &index,
 }
 
 std::vector<std::uint64_t> candidate_row_capacity_upper_bounds(
-        const options &cfg, const indexing::reverse_posting_view_v1 &index,
+        const options &cfg, const containers::PostingIndexView &index,
         const std::vector<std::uint64_t> &query_offsets,
-        const std::vector<indexing::posting_term_v1> &terms) {
+        const std::vector<containers::PostingTerm> &terms) {
     std::vector<std::uint64_t> capacities(cfg.cells);
     for (std::uint64_t cell = 0; cell < cfg.cells; ++cell) {
         std::uint64_t upper = 0u;
@@ -498,7 +507,7 @@ void compact_host_candidate_rows(host_candidates &out) {
             throw std::runtime_error("candidate output exceeded its posting-degree upper bound");
         out.offsets[cell + 1u] = out.offsets[cell] + out.row_counts[cell];
     }
-    std::vector<indexing::indexed_work_item_v1> compact(
+    std::vector<containers::IndexedWorkItem> compact(
         static_cast<std::size_t>(out.offsets.back()));
     for (std::size_t cell = 0; cell < out.row_counts.size(); ++cell) {
         if (out.row_counts[cell] != 0u)
@@ -511,8 +520,8 @@ void compact_host_candidate_rows(host_candidates &out) {
 }
 
 struct inputs {
-    std::vector<indexing::posting_term_v1> primal_queries;
-    std::vector<indexing::posting_term_v1> derivative_queries;
+    std::vector<containers::PostingTerm> primal_queries;
+    std::vector<containers::PostingTerm> derivative_queries;
     std::vector<std::uint64_t> query_offsets;
     std::vector<std::uint64_t> local_dirty_offsets;
     std::vector<std::uint64_t> local_dirty_edges;
@@ -523,9 +532,9 @@ struct inputs {
     std::vector<std::uint8_t> predicates;
     std::vector<std::uint8_t> local_changed_predicates;
     std::vector<std::uint8_t> latent_changed_predicates;
-    std::vector<gating::condition_node_v1> nodes;
-    std::vector<gating::edge_condition_binding_v1> bindings;
-    gating::condition_program_view_v1 program{};
+    std::vector<condition::NodeV1> nodes;
+    std::vector<condition::EdgeBindingV1> bindings;
+    condition::ProgramViewV1 program{};
     std::uint32_t predicate_count = 0u;
     std::uint64_t local_dirty_total = 0u;
     std::uint64_t latent_dirty_total = 0u;
@@ -562,7 +571,7 @@ inputs make_inputs(const options &cfg, const fixture &f) {
         }
         in.query_offsets[cfg.cells] = cfg.cells;
     }
-    using gating::condition_opcode_v1;
+    using condition::OpcodeV1;
     if (f.biological_conditions) {
         const auto predicate_count = cfg.entities + f.module_count;
         if (predicate_count > std::numeric_limits<std::uint32_t>::max()
@@ -580,11 +589,11 @@ inputs make_inputs(const options &cfg, const fixture &f) {
                 if (in.nodes.size() > std::numeric_limits<std::uint32_t>::max() - 3u)
                     throw std::runtime_error("fixture condition program exceeds node-index limits");
                 const auto first_child = static_cast<std::uint32_t>(in.nodes.size());
-                in.nodes.push_back({condition_opcode_v1::predicate, 1u, 0u,
+                in.nodes.push_back({condition::OpcodeV1::predicate, 1u, 0u,
                     0u, 0u, static_cast<std::uint32_t>(key.first), 0u});
-                in.nodes.push_back({condition_opcode_v1::predicate, 1u, 0u,
+                in.nodes.push_back({condition::OpcodeV1::predicate, 1u, 0u,
                     0u, 0u, static_cast<std::uint32_t>(cfg.entities + key.second), 0u});
-                in.nodes.push_back({condition_opcode_v1::all_of, 1u, 0u,
+                in.nodes.push_back({condition::OpcodeV1::all_of, 1u, 0u,
                     first_child, 2u, 0u, 0u});
                 root = roots.emplace(key, first_child + 2u).first;
             }
@@ -679,13 +688,13 @@ inputs make_inputs(const options &cfg, const fixture &f) {
         for (const auto ordinal : in.latent_dirty_edges) in.digest = mix_hash(in.digest, ordinal);
     } else {
         in.nodes = {
-            {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 0u, 0u},
-            {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 1u, 0u},
-            {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 2u, 0u},
-            {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 3u, 0u},
-            {condition_opcode_v1::all_of, 1u, 0u, 0u, 2u, 0u, 0u},
-            {condition_opcode_v1::any_of, 1u, 0u, 2u, 2u, 0u, 0u},
-            {condition_opcode_v1::all_of, 1u, 0u, 0u, 3u, 0u, 0u},
+            {condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u, 0u, 0u},
+            {condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u, 1u, 0u},
+            {condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u, 2u, 0u},
+            {condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u, 3u, 0u},
+            {condition::OpcodeV1::all_of, 1u, 0u, 0u, 2u, 0u, 0u},
+            {condition::OpcodeV1::any_of, 1u, 0u, 2u, 2u, 0u, 0u},
+            {condition::OpcodeV1::all_of, 1u, 0u, 0u, 3u, 0u, 0u},
         };
         const auto dirty_per_cell = cfg.dirty_fraction == 0.0 ? 0u
             : std::max<std::uint64_t>(1u, static_cast<std::uint64_t>(
@@ -765,7 +774,7 @@ inputs make_inputs(const options &cfg, const fixture &f) {
 
 void host_scan(const options &cfg, const fixture &f,
                const std::vector<std::uint64_t> &query_offsets,
-               const std::vector<indexing::posting_term_v1> &terms,
+               const std::vector<containers::PostingTerm> &terms,
                host_candidates &out) {
     out.count = 0u;
     for (std::uint64_t cell = 0; cell < cfg.cells; ++cell) {
@@ -798,22 +807,22 @@ void host_scan(const options &cfg, const fixture &f,
 }
 
 void host_postings(const options &cfg,
-                   const indexing::reverse_posting_view_v1 &index,
+                   const containers::PostingIndexView &index,
                    const std::vector<std::uint64_t> &query_offsets,
-                   const std::vector<indexing::posting_term_v1> &terms,
-                   std::vector<indexing::indexed_work_item_v1> &scratch,
+                   const std::vector<containers::PostingTerm> &terms,
+                   std::vector<containers::IndexedWorkItem> &scratch,
                    host_candidates &out) {
     out.count = 0u;
     for (std::uint64_t cell = 0; cell < cfg.cells; ++cell) {
-        indexing::candidate_output_v1 output{
+        containers::CandidateOutput output{
             out.items.data() + out.capacity_offsets[cell],
             out.row_capacities[cell], 0u, 0u};
-        const auto status = indexing::query_reverse_postings_v1(index,
+        const auto status = containers::query_postings(index,
             terms.data() + query_offsets[cell],
             query_offsets[cell + 1u] - query_offsets[cell],
-            indexing::posting_match_v1::any,
+            containers::PostingMatch::any,
             {scratch.data(), scratch.size()}, &output);
-        if (status != indexing::posting_status_v1::success)
+        if (status != containers::PostingStatus::success)
             throw std::runtime_error("host posting query failed");
         out.row_counts[cell] = output.written;
     }
@@ -850,10 +859,10 @@ host_gate make_host_gate(const options &cfg, const fixture &f, const inputs &in)
     g.words_per_cell = cfg.edges / 64u + (cfg.edges % 64u != 0u);
     g.bitmap.resize(cfg.cells * g.words_per_cell);
     g.node_scratch.resize(in.nodes.size());
-    const auto status = gating::evaluate_condition_bitmaps_v1(in.program, cfg.cells,
+    const auto status = condition::evaluate_bitmaps(in.program, cfg.cells,
         in.predicates.data(), in.predicates.size(), g.bitmap.data(), g.bitmap.size(),
         g.node_scratch.data(), g.node_scratch.size());
-    if (status != gating::condition_status_v1::success)
+    if (status != condition::StatusV1::success)
         throw std::runtime_error("host bitmap oracle failed");
     if (f.biological_conditions
         && g.bitmap != direct_biological_gate_oracle(cfg, f, in, in.predicates))
@@ -866,10 +875,10 @@ host_gate make_host_gate(const options &cfg, const fixture &f, const inputs &in)
                               const char *label) {
         changed_bitmap.resize(cfg.cells * g.words_per_cell);
         std::vector<std::uint8_t> scratch(in.nodes.size());
-        const auto full_status = gating::evaluate_condition_bitmaps_v1(in.program, cfg.cells,
+        const auto full_status = condition::evaluate_bitmaps(in.program, cfg.cells,
             changed_predicates.data(), changed_predicates.size(), changed_bitmap.data(),
             changed_bitmap.size(), scratch.data(), scratch.size());
-        if (full_status != gating::condition_status_v1::success)
+        if (full_status != condition::StatusV1::success)
             throw std::runtime_error(std::string("host full changed bitmap failed: ") + label);
         if (f.biological_conditions
             && changed_bitmap != direct_biological_gate_oracle(cfg, f, in, changed_predicates))
@@ -881,11 +890,11 @@ host_gate make_host_gate(const options &cfg, const fixture &f, const inputs &in)
             const auto begin = dirty_offsets[cell];
             const auto end = dirty_offsets[cell + 1u];
             const auto *dirty = begin == end ? nullptr : dirty_edges.data() + begin;
-            const auto update_status = gating::update_condition_bitmap_v1(in.program,
+            const auto update_status = condition::update_bitmap(in.program,
                 changed_predicates.data() + cell * in.predicate_count, in.predicate_count,
                 dirty, end - begin, incrementally_updated.data() + cell * g.words_per_cell,
                 g.words_per_cell, scratch.data(), scratch.size());
-            if (update_status != gating::condition_status_v1::success)
+            if (update_status != condition::StatusV1::success)
                 throw std::runtime_error(std::string("host dirty bitmap update failed: ") + label);
         }
         if (incrementally_updated != changed_bitmap)
@@ -902,9 +911,9 @@ host_gate make_host_gate(const options &cfg, const fixture &f, const inputs &in)
 struct host_worksets {
     std::vector<std::uint64_t> primal_offsets;
     std::vector<std::uint64_t> derivative_offsets;
-    std::vector<indexing::indexed_work_item_v1> primal_items;
-    std::vector<indexing::indexed_work_item_v1> derivative_items;
-    gating::gate_workset_pair_v1 pair{};
+    std::vector<containers::IndexedWorkItem> primal_items;
+    std::vector<containers::IndexedWorkItem> derivative_items;
+    execution::dependency::ConditionWorksets pair{};
 };
 
 host_worksets make_host_worksets(const options &cfg,
@@ -927,13 +936,13 @@ void make_host_worksets_call(const options &cfg, const inputs &in,
                              const host_candidates &primal,
                              const host_candidates &derivative,
                              host_worksets &out) {
-    const gating::per_cell_candidate_view_v1 p{primal.offsets.data(),
+    const execution::dependency::CandidateBatchView p{primal.offsets.data(),
         primal.items.data(), primal.count};
-    const gating::per_cell_candidate_view_v1 d{derivative.offsets.data(),
+    const execution::dependency::CandidateBatchView d{derivative.offsets.data(),
         derivative.items.data(), derivative.count};
-    const auto status = gating::build_condition_worksets_v1(in.program, cfg.cells, 1u,
+    const auto status = execution::dependency::build_condition_worksets(in.program, cfg.cells, 1u,
         gate.bitmap.data(), gate.bitmap.size(), p, d, &out.pair);
-    if (status != gating::condition_status_v1::success)
+    if (status != condition::StatusV1::success)
         throw std::runtime_error("host workset oracle failed");
 }
 
@@ -948,12 +957,12 @@ void compare_candidates(const host_candidates &a, const host_candidates &b,
 }
 
 __global__ void mark_rescan_flags_kernel(
-    const support::logical_support_edge_v1 *edges,
-    const support::logical_support_participant_v1 *participants,
+    const compact::EdgeV1 *edges,
+    const compact::ParticipantV1 *participants,
     std::uint64_t edge_count, std::uint64_t cell_count,
     const std::uint64_t *query_offsets,
-    const indexing::posting_term_v1 *primal_queries,
-    const indexing::posting_term_v1 *derivative_queries,
+    const containers::PostingTerm *primal_queries,
+    const containers::PostingTerm *derivative_queries,
     std::uint64_t *primal_flags, std::uint64_t *derivative_flags) {
     const auto flat = static_cast<std::uint64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
     const auto total = edge_count * cell_count;
@@ -995,16 +1004,16 @@ __global__ void make_candidate_offsets_kernel(
 }
 
 __global__ void scatter_candidate_items_kernel(
-    const support::logical_support_edge_v1 *edges,
+    const compact::EdgeV1 *edges,
     std::uint64_t edge_count, std::uint64_t cells,
     const std::uint64_t *p_flags, const std::uint64_t *p_prefix,
     const std::uint64_t *d_flags, const std::uint64_t *d_prefix,
-    indexing::indexed_work_item_v1 *p_items,
-    indexing::indexed_work_item_v1 *d_items) {
+    containers::IndexedWorkItem *p_items,
+    containers::IndexedWorkItem *d_items) {
     const auto flat = static_cast<std::uint64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
     if (flat >= edge_count * cells) return;
     const auto ordinal = flat % edge_count;
-    const indexing::indexed_work_item_v1 item{edges[ordinal].logical_edge_id, ordinal};
+    const containers::IndexedWorkItem item{edges[ordinal].logical_edge_id, ordinal};
     if (p_flags[flat]) p_items[p_prefix[flat]] = item;
     if (d_flags[flat]) d_items[d_prefix[flat]] = item;
 }
@@ -1141,22 +1150,22 @@ void run(const options &cfg) {
     }
     f.snapshot = {&f.base.view, f.delta.edges.empty() ? nullptr : &f.delta.view,
         f.base.view.structure_epoch};
-    if (support::validate_support_snapshot_pair_v1(f.snapshot)
-        != support::support_snapshot_status_v1::success)
+    if (compact::validate_snapshot(f.snapshot)
+        != compact::SnapshotStatusV1::success)
         throw std::runtime_error("returned support fixture snapshot failed validation");
     const auto state_prepare_start = host_clock::now();
     inputs in = make_inputs(cfg, f);
     const double state_program_prepare_ms = std::chrono::duration<double, std::milli>(
         host_clock::now() - state_prepare_start).count();
-    const auto requirements = indexing::query_reverse_posting_requirements_v1(f.snapshot);
-    std::vector<indexing::reverse_posting_record_v1> posting_scratch(requirements.record_capacity);
-    std::vector<indexing::reverse_posting_record_v1> host_entries(requirements.maximum_unique_entries);
-    indexing::reverse_posting_view_v1 host_index{};
+    const auto requirements = geometry::posting_requirements(f.snapshot);
+    std::vector<containers::PostingRecord> posting_scratch(requirements.record_capacity);
+    std::vector<containers::PostingRecord> host_entries(requirements.maximum_unique_entries);
+    containers::PostingIndexView host_index{};
     auto build_host_index = [&] {
-        const auto status = indexing::build_reverse_postings_v1(f.snapshot,
+        const auto status = geometry::build_posting_index(f.snapshot,
             posting_scratch.data(), posting_scratch.size(), host_entries.data(),
             host_entries.size(), &host_index);
-        if (status != indexing::posting_status_v1::success)
+        if (status != geometry::PostingBuildStatus::success)
             throw std::runtime_error("host reverse posting build failed (status="
                 + std::to_string(static_cast<unsigned>(status)) + ", record_capacity="
                 + std::to_string(posting_scratch.size()) + ", entry_capacity="
@@ -1165,9 +1174,9 @@ void run(const options &cfg) {
     const auto host_index_stats = measure_host(cfg.warmup, cfg.samples, build_host_index);
     build_host_index();
     const auto projection_req = indexing::cuda_posting_projection_requirements_v1(host_index);
-    std::vector<indexing::posting_term_v1> projection_terms(projection_req.term_count);
+    std::vector<containers::PostingTerm> projection_terms(projection_req.term_count);
     std::vector<std::uint64_t> projection_offsets(projection_req.term_count + 1u);
-    std::vector<indexing::indexed_work_item_v1> projection_items(projection_req.item_count);
+    std::vector<containers::IndexedWorkItem> projection_items(projection_req.item_count);
     indexing::cuda_posting_prepare_requirements_v1 projection_required{};
     auto build_projection = [&] {
         if (indexing::build_cuda_posting_projection_v1(host_index,
@@ -1183,11 +1192,11 @@ void run(const options &cfg) {
     std::vector<std::uint32_t> host_root_node_by_edge(cfg.edges);
     std::uint64_t root_map_required = 0u;
     const auto root_map_prepare_start = host_clock::now();
-    const auto root_map_status = gating::prepare_condition_root_map_v1(in.program,
+    const auto root_map_status = condition::prepare_root_map(in.program,
         host_root_node_by_edge.data(), host_root_node_by_edge.size(), &root_map_required);
     const double root_map_prepare_ms = std::chrono::duration<double, std::milli>(
         host_clock::now() - root_map_prepare_start).count();
-    if (root_map_status != gating::condition_status_v1::success
+    if (root_map_status != condition::StatusV1::success
         || root_map_required != cfg.edges)
         throw std::runtime_error("condition root-map preparation failed");
 
@@ -1206,7 +1215,7 @@ void run(const options &cfg) {
     host_candidates expected_post_d = make_host_candidates(cfg, derivative_row_caps);
     host_scan(cfg, f, in.query_offsets, in.primal_queries, expected_p);
     host_scan(cfg, f, in.query_offsets, in.derivative_queries, expected_d);
-    std::vector<indexing::indexed_work_item_v1> host_query_scratch(
+    std::vector<containers::IndexedWorkItem> host_query_scratch(
         std::max<std::uint64_t>(1u, host_index.entry_count));
     host_postings(cfg, host_index, in.query_offsets, in.primal_queries,
                   host_query_scratch, expected_post_p);
@@ -1258,19 +1267,19 @@ void run(const options &cfg) {
     const std::uint64_t n = cfg.edges * cfg.cells;
     const std::uint64_t bitmap_words_per_cell = cfg.edges / 64u + (cfg.edges % 64u != 0u);
     const std::uint64_t bitmap_count = cfg.cells * bitmap_words_per_cell;
-    device_buffer<support::logical_support_edge_v1> d_edges(f.gpu_edges.size());
-    device_buffer<support::logical_support_participant_v1> d_participants(f.gpu_participants.size());
-    device_buffer<indexing::posting_term_v1> d_index_terms(projection_terms.size());
+    device_buffer<compact::EdgeV1> d_edges(f.gpu_edges.size());
+    device_buffer<compact::ParticipantV1> d_participants(f.gpu_participants.size());
+    device_buffer<containers::PostingTerm> d_index_terms(projection_terms.size());
     device_buffer<std::uint64_t> d_index_offsets(projection_offsets.size());
-    device_buffer<indexing::indexed_work_item_v1> d_index_items(projection_items.size());
+    device_buffer<containers::IndexedWorkItem> d_index_items(projection_items.size());
     device_buffer<std::uint32_t> d_root_node_by_edge(host_root_node_by_edge.size());
     device_buffer<std::uint64_t> d_query_offsets(in.query_offsets.size());
-    device_buffer<indexing::posting_term_v1> d_primal_queries(in.primal_queries.size());
-    device_buffer<indexing::posting_term_v1> d_derivative_queries(in.derivative_queries.size());
+    device_buffer<containers::PostingTerm> d_primal_queries(in.primal_queries.size());
+    device_buffer<containers::PostingTerm> d_derivative_queries(in.derivative_queries.size());
     device_buffer<std::uint8_t> d_predicates(in.predicates.size());
     device_buffer<std::uint8_t> d_changed_predicates(in.predicates.size());
-    device_buffer<gating::condition_node_v1> d_nodes(in.nodes.size());
-    device_buffer<gating::edge_condition_binding_v1> d_bindings(in.bindings.size());
+    device_buffer<condition::NodeV1> d_nodes(in.nodes.size());
+    device_buffer<condition::EdgeBindingV1> d_bindings(in.bindings.size());
     device_buffer<std::uint64_t> d_dirty_offsets(cfg.cells + 1u);
     device_buffer<std::uint64_t> d_dirty_edges(
         std::max(in.local_dirty_edges.size(), in.latent_dirty_edges.size()));
@@ -1292,7 +1301,7 @@ void run(const options &cfg) {
     copy_to_device(d_derivative_queries, in.derivative_queries, device.stream);
     copy_to_device(d_predicates, in.predicates, device.stream);
     copy_to_device(d_changed_predicates, in.local_changed_predicates, device.stream);
-    copy_to_device(d_nodes, std::vector<gating::condition_node_v1>(in.nodes.begin(), in.nodes.end()), device.stream);
+    copy_to_device(d_nodes, std::vector<condition::NodeV1>(in.nodes.begin(), in.nodes.end()), device.stream);
     copy_to_device(d_bindings, in.bindings, device.stream);
     copy_to_device(d_dirty_offsets, in.local_dirty_offsets, device.stream);
     copy_to_device(d_dirty_edges, in.local_dirty_edges, device.stream);
@@ -1301,7 +1310,7 @@ void run(const options &cfg) {
         host_index.relation_id, host_index.structure_id, host_index.structure_epoch,
         d_index_terms.data, d_index_offsets.data, projection_req.term_count,
         d_index_items.data, projection_req.item_count};
-    gating::condition_program_view_v1 device_program{in.program.structure_epoch,
+    condition::ProgramViewV1 device_program{in.program.structure_epoch,
         d_nodes.data, in.program.node_count, d_bindings.data,
         in.program.binding_count, in.program.edge_count, in.program.predicate_count, 0u};
     gating::cuda_condition_program_v1 device_prepared_program{
@@ -1313,7 +1322,7 @@ void run(const options &cfg) {
     device_buffer<std::uint64_t> d_p_counts(cfg.cells), d_d_counts(cfg.cells);
     device_buffer<indexing::cuda_posting_status_v1> d_p_post_status(1u), d_d_post_status(1u);
     device_buffer<std::uint64_t> d_p_post_offsets(cfg.cells + 1u), d_d_post_offsets(cfg.cells + 1u);
-    device_buffer<indexing::indexed_work_item_v1> d_p_post_items(primal_capacity),
+    device_buffer<containers::IndexedWorkItem> d_p_post_items(primal_capacity),
         d_d_post_items(derivative_capacity);
     indexing::cuda_posting_scratch_v1 p_post_scratch{
         d_p_cursors.data, in.primal_queries.size(), d_p_counts.data, d_p_post_status.data};
@@ -1327,7 +1336,7 @@ void run(const options &cfg) {
     // Full-scan baseline workspaces and CUB exclusive-scan scratch.
     device_buffer<std::uint64_t> d_p_flags(n), d_d_flags(n), d_p_prefix(n), d_d_prefix(n);
     device_buffer<std::uint64_t> d_p_scan_offsets(cfg.cells + 1u), d_d_scan_offsets(cfg.cells + 1u);
-    device_buffer<indexing::indexed_work_item_v1> d_p_scan_items(primal_capacity),
+    device_buffer<containers::IndexedWorkItem> d_p_scan_items(primal_capacity),
         d_d_scan_items(derivative_capacity);
     std::size_t p_scan_bytes = 0, d_scan_bytes = 0;
     CUDA_CHECK(cub::DeviceScan::ExclusiveSum(nullptr, p_scan_bytes,
@@ -1381,11 +1390,11 @@ void run(const options &cfg) {
     // Reserve only the posting-degree upper bounds. Per-row stage offsets keep
     // compact outputs bounded without truncating any possible candidate.
     device_buffer<std::uint64_t> d_p_stage_offsets(cfg.cells + 1u), d_d_stage_offsets(cfg.cells + 1u);
-    device_buffer<indexing::indexed_work_item_v1> d_p_stage_items(primal_capacity),
+    device_buffer<containers::IndexedWorkItem> d_p_stage_items(primal_capacity),
         d_d_stage_items(derivative_work_capacity);
     device_buffer<std::uint64_t> d_p_counts_work(cfg.cells), d_d_counts_work(cfg.cells);
     device_buffer<std::uint64_t> d_p_work_offsets(cfg.cells + 1u), d_d_work_offsets(cfg.cells + 1u);
-    device_buffer<indexing::indexed_work_item_v1> d_p_work_items(primal_capacity),
+    device_buffer<containers::IndexedWorkItem> d_p_work_items(primal_capacity),
         d_d_work_items(derivative_work_capacity);
     std::vector<std::uint64_t> p_stage_offsets(cfg.cells + 1u), d_stage_offsets(cfg.cells + 1u);
     for (std::uint64_t c = 0; c < cfg.cells; ++c) {
@@ -1468,7 +1477,7 @@ void run(const options &cfg) {
     copy_to_device(d_predicates, in.predicates, device.stream);
     copy_to_device(d_changed_predicates, in.local_changed_predicates, device.stream);
     copy_to_device(d_root_node_by_edge, host_root_node_by_edge, device.stream);
-    copy_to_device(d_nodes, std::vector<gating::condition_node_v1>(in.nodes.begin(), in.nodes.end()), device.stream);
+    copy_to_device(d_nodes, std::vector<condition::NodeV1>(in.nodes.begin(), in.nodes.end()), device.stream);
     copy_to_device(d_bindings, in.bindings, device.stream);
     copy_to_device(d_dirty_offsets, in.local_dirty_offsets, device.stream);
     copy_to_device(d_dirty_edges, in.local_dirty_edges, device.stream);
@@ -1484,7 +1493,7 @@ void run(const options &cfg) {
     const auto post_p_offsets = copy_from_device(d_p_post_offsets.data, cfg.cells + 1u);
     const auto post_d_offsets = copy_from_device(d_d_post_offsets.data, cfg.cells + 1u);
     auto copy_candidates = [](std::vector<std::uint64_t> offsets,
-                              std::vector<indexing::indexed_work_item_v1> items) {
+                              std::vector<containers::IndexedWorkItem> items) {
         host_candidates result;
         result.count = offsets.back();
         result.offsets = std::move(offsets);
@@ -1552,8 +1561,8 @@ void run(const options &cfg) {
     auto verify_worksets = [&](const host_worksets &expected,
                                const device_buffer<std::uint64_t> &p_offsets,
                                const device_buffer<std::uint64_t> &d_offsets,
-                               const device_buffer<indexing::indexed_work_item_v1> &p_items,
-                               const device_buffer<indexing::indexed_work_item_v1> &d_items,
+                               const device_buffer<containers::IndexedWorkItem> &p_items,
+                               const device_buffer<containers::IndexedWorkItem> &d_items,
                                const char *label) {
         const auto po = copy_from_device(p_offsets.data, cfg.cells + 1u);
         const auto d_o = copy_from_device(d_offsets.data, cfg.cells + 1u);
@@ -1625,10 +1634,10 @@ void run(const options &cfg) {
         build_host_index();
         build_projection();
         std::uint64_t required_root_map_entries = 0u;
-        if (gating::prepare_condition_root_map_v1(in.program,
+        if (condition::prepare_root_map(in.program,
                 host_root_node_by_edge.data(), host_root_node_by_edge.size(),
                 &required_root_map_entries)
-                != gating::condition_status_v1::success
+                != condition::StatusV1::success
             || required_root_map_entries != cfg.edges)
             throw std::runtime_error("condition root-map setup failed");
         copy_to_device(d_index_terms, projection_terms, device.stream);
@@ -1657,12 +1666,12 @@ void run(const options &cfg) {
     }
 
     const auto structure_bytes =
-        f.gpu_edges.size() * sizeof(support::logical_support_edge_v1)
-        + f.gpu_participants.size() * sizeof(support::logical_support_participant_v1);
+        f.gpu_edges.size() * sizeof(compact::EdgeV1)
+        + f.gpu_participants.size() * sizeof(compact::ParticipantV1);
     const auto projection_bytes =
-        projection_terms.size() * sizeof(indexing::posting_term_v1)
+        projection_terms.size() * sizeof(containers::PostingTerm)
         + projection_offsets.size() * sizeof(std::uint64_t)
-        + projection_items.size() * sizeof(indexing::indexed_work_item_v1);
+        + projection_items.size() * sizeof(containers::IndexedWorkItem);
     const auto posting_workspace_bytes =
         (in.primal_queries.size() + in.derivative_queries.size())
             * sizeof(indexing::cuda_posting_scratch_v1::cursor_v1)
@@ -1670,25 +1679,25 @@ void run(const options &cfg) {
         + 2u * sizeof(indexing::cuda_posting_status_v1)
         + 2u * (cfg.cells + 1u) * sizeof(std::uint64_t)
         + (primal_capacity + derivative_capacity)
-            * sizeof(indexing::indexed_work_item_v1);
+            * sizeof(containers::IndexedWorkItem);
     const auto rescan_workspace_bytes =
         4u * n * sizeof(std::uint64_t)
         + 2u * (cfg.cells + 1u) * sizeof(std::uint64_t)
         + (primal_capacity + derivative_capacity)
-            * sizeof(indexing::indexed_work_item_v1)
+            * sizeof(containers::IndexedWorkItem)
         + std::max(p_scan_bytes, d_scan_bytes);
     const auto workset_workspace_bytes =
         4u * (cfg.cells + 1u) * sizeof(std::uint64_t)
         + (4u * primal_capacity + 2u * derivative_capacity)
-            * sizeof(indexing::indexed_work_item_v1)
+            * sizeof(containers::IndexedWorkItem)
         + 2u * cfg.cells * sizeof(std::uint64_t);
     const auto state_and_gate_bytes =
         (cfg.cells + 1u) * sizeof(std::uint64_t)
         + (in.primal_queries.size() + in.derivative_queries.size())
-            * sizeof(indexing::posting_term_v1)
+            * sizeof(containers::PostingTerm)
         + 2u * in.predicates.size() * sizeof(std::uint8_t)
-        + in.nodes.size() * sizeof(gating::condition_node_v1)
-        + in.bindings.size() * sizeof(gating::edge_condition_binding_v1)
+        + in.nodes.size() * sizeof(condition::NodeV1)
+        + in.bindings.size() * sizeof(condition::EdgeBindingV1)
         + (cfg.cells + 1u) * sizeof(std::uint64_t)
         + std::max(in.local_dirty_edges.size(), in.latent_dirty_edges.size())
             * sizeof(std::uint64_t)

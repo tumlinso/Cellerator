@@ -53,10 +53,10 @@ bool valid_projection(
         && view.packed_slot_count
             == static_cast<std::uint64_t>(view.fragment_count)
                 * slots_per_fragment
-        && execution::valid_identity(view.persistent_structure)
+        && ::cellerator::structure::valid_identity(view.persistent_structure)
         && execution::valid_handle(view.runtime_structure)
         && view.structure_epoch.value != 0u
-        && execution::valid_identity(view.persistent_projection)
+        && ::cellerator::structure::valid_identity(view.persistent_projection)
         && execution::valid_handle(view.runtime_projection)
         && view.fragment_destination_bases != nullptr
         && view.fragment_source_bases != nullptr;
@@ -208,14 +208,14 @@ core::operation_status prepare_impl(
         || problem.logical_work_items
             != view.logical_edge_count * state->dense_width
         || structures.count != 1u
-        || !execution::same_identity(
+        || !::cellerator::structure::same_identity(
             structures.structures[0].persistent,
             view.persistent_structure)
         || !execution::same_handle(
             structures.structures[0].runtime, view.runtime_structure)
         || structures.structures[0].epoch.value
             != view.structure_epoch.value
-        || !execution::same_identity(
+        || !::cellerator::structure::same_identity(
             projection.persistent, view.persistent_projection)
         || !execution::same_handle(
             projection.runtime, view.runtime_projection)

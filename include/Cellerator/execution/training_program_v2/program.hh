@@ -97,7 +97,7 @@ struct training_program_v2 {
     const training_stage_v2 *stages = nullptr;
     std::uint64_t program_identity = 0u;
     structure_handle structure{};
-    structure_epoch epoch{};
+    structure::structure_epoch epoch{};
     value_generation prepared_generation{};
     axis_identity source_axis{};
     axis_identity destination_axis{};

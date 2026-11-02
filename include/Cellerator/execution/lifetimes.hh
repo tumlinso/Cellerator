@@ -51,7 +51,7 @@ struct quantization_descriptor {
 
 struct relation_structure {
     structure_handle identity;
-    structure_epoch epoch;
+    structure::structure_epoch epoch;
     axis_identity source_axis;
     axis_identity destination_axis;
     projection_catalog_handle projections;
@@ -60,12 +60,12 @@ struct relation_structure {
 
 struct structure_requirement {
     structure_handle identity;
-    structure_epoch epoch;
+    structure::structure_epoch epoch;
 };
 
 struct value_plane {
     structure_handle structure;
-    structure_epoch structure_epoch_value;
+    structure::structure_epoch structure_epoch_value;
     void *values;
     device_location location;
     value_numeric_policy numeric;

@@ -131,7 +131,7 @@ foreach(component IN LISTS _ce_selected)
     _ce_owner(${component} CAPABILITIES "fixed_stage_graph" SOURCES src/execution/program/program_v2.cc)
   elseif(component STREQUAL indexed_incidence)
     _ce_owner(${component} CAPABILITIES "host_ordered_incidence,no_evaluators,no_device_training" SOURCES
-      src/compute/operation/indexed_mechanism/incidence.cc)
+      src/ops/mechanism/indexed/incidence.cc)
   elseif(component STREQUAL cellpack)
     _ce_owner(${component} CAPABILITIES "host_geometry_planner,evaluator" SOURCES src/geometry/planner.cc src/geometry/evaluator.cc)
   elseif(component STREQUAL local_differential)

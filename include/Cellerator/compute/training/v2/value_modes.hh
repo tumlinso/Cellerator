@@ -7,7 +7,7 @@
 
 namespace cellerator::compute::training_v2 {
 
-using execution::structure_epoch;
+using ::cellerator::structure::structure_epoch;
 using execution::structure_handle;
 using execution::training_v2::training_result_v2;
 using execution::training_v2::training_value_mode_v2;

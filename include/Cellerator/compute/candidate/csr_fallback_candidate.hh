@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compute/operation/operation_core.hh>
-#include <Cellerator/compute/projection/physical_csr.hh>
+#include <Cellerator/layout/projection/csr.hh>
 
 #include <type_traits>
 
@@ -17,7 +17,7 @@ inline constexpr stable_id csr_fallback_candidate_id{
 struct csr_fallback_prepared_state {
     std::uint32_t schema_version = csr_fallback_candidate_schema_version;
     std::int32_t device_ordinal = -1;
-    execution_csr_view projection{};
+    ::cellerator::layout::projection::CsrViewV1 projection{};
     execution::axis_identity feature_axis{};
     execution::axis_identity row_axis{};
     execution::operand_axis_contract input_contract{};
@@ -43,7 +43,7 @@ operation_status prepare_csr_fallback_operation(
     const projection_key &projection,
     const numeric_policy &numeric,
     const prepare_policy &policy,
-    const execution_csr_view &device_csr,
+    const ::cellerator::layout::projection::CsrViewV1 &device_csr,
     std::int32_t device_ordinal,
     execution::axis_identity feature_axis,
     execution::axis_identity row_axis,

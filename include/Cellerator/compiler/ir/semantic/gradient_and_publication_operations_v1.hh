@@ -18,7 +18,7 @@ struct gradient_publication_stage_ir_v1 {
     gradient_publication_operation_ir_v1 kind = gradient_publication_operation_ir_v1::forward;
     relation_calculus::axis_descriptor input_axis{};
     relation_calculus::axis_descriptor output_axis{};
-    cellerator::execution::order_id gradient_order{};
+    ::cellerator::structure::order_id gradient_order{};
     std::uint64_t consumed_generation = 0;
     std::uint64_t published_generation = 0;
     std::uint32_t dependencies = 0;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/operation/indexed_mechanism/training.hh>
+#include <Cellerator/ops/mechanism/indexed/training.hh>
 
 #include <cstdint>
 #include <memory>
@@ -18,22 +18,22 @@ namespace cellerator::bindings {
 // declaration or create a second parameter store.
 class MechanismHandle final {
 public:
-    MechanismHandle(compute::operation::indexed::mechanism_declaration declaration,
+    MechanismHandle(ops::mechanism::indexed::mechanism_declaration declaration,
                     std::span<const float> initial_coefficients, int device) {
         if (declaration.coefficients.extent != initial_coefficients.size())
             throw std::invalid_argument("initial coefficients do not match coefficient axis extent");
-        owner_ = std::make_shared<compute::operation::indexed::mechanism_parameter_owner>(
+        owner_ = std::make_shared<ops::mechanism::indexed::mechanism_parameter_owner>(
             declaration.coefficients, declaration.coefficient_ids, initial_coefficients, device);
-        program_ = std::make_shared<compute::operation::indexed::prepared_mechanism_program>(
+        program_ = std::make_shared<ops::mechanism::indexed::prepared_mechanism_program>(
             std::move(declaration), owner_);
     }
     ~MechanismHandle() = default;
     MechanismHandle(const MechanismHandle&) = delete;
     MechanismHandle& operator=(const MechanismHandle&) = delete;
 
-    const compute::operation::indexed::mechanism_declaration& declaration() const { return program_->declaration(); }
-    const std::shared_ptr<compute::operation::indexed::mechanism_parameter_owner>& owner() const { return owner_; }
-    const std::shared_ptr<compute::operation::indexed::prepared_mechanism_program>& program() const { return program_; }
+    const ops::mechanism::indexed::mechanism_declaration& declaration() const { return program_->declaration(); }
+    const std::shared_ptr<ops::mechanism::indexed::mechanism_parameter_owner>& owner() const { return owner_; }
+    const std::shared_ptr<ops::mechanism::indexed::prepared_mechanism_program>& program() const { return program_; }
 
     std::vector<float> snapshot(void* stream = nullptr) const { return owner_->snapshot(stream); }
     void restore(std::span<const float> values, void* stream = nullptr) { owner_->restore(values, stream); }
@@ -62,8 +62,8 @@ public:
     }
 
 private:
-    std::shared_ptr<compute::operation::indexed::mechanism_parameter_owner> owner_;
-    std::shared_ptr<compute::operation::indexed::prepared_mechanism_program> program_;
+    std::shared_ptr<ops::mechanism::indexed::mechanism_parameter_owner> owner_;
+    std::shared_ptr<ops::mechanism::indexed::prepared_mechanism_program> program_;
     mutable std::mutex adapter_state_mutex_;
     std::shared_ptr<void> adapter_state_;
 };

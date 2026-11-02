@@ -1,11 +1,11 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <cassert>
 #include <cstdint>
 
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 bool build_row_owned_mma_residual_v1(
     std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t,
     const std::uint32_t *, const std::uint32_t *,

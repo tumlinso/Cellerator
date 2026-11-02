@@ -3,6 +3,8 @@
 #endif
 
 #include <Cellerator/nn/relations.hh>
+#include <Cellerator/layout/axis_binding.hh>
+#include <Cellerator/structure/coordinates.hh>
 
 #include <c10/core/InferenceMode.h>
 
@@ -14,13 +16,17 @@
 
 namespace {
 
-cellerator::biology::AxisDescriptor axis(std::uint64_t order, std::int64_t extent) {
+cellerator::structure::LogicalAxis axis(std::uint64_t order, std::int64_t extent) {
     return {
-        cellerator::execution::domain_id{1, 0},
-        cellerator::execution::order_id{order, 0},
-        cellerator::execution::geometry_id{3, 0},
-        cellerator::execution::partition_id{4, 0},
-        extent};
+        ::cellerator::structure::domain_id{1, 0},
+        ::cellerator::structure::order_id{order, 0},
+        static_cast<std::uint64_t>(extent)};
+}
+
+cellerator::layout::AxisBinding physical_axis(
+    const cellerator::structure::LogicalAxis& logical) {
+    return {logical, ::cellerator::structure::geometry_id{3, 0},
+            ::cellerator::structure::partition_id{4, 0}};
 }
 
 template<class Callback>
@@ -36,22 +42,25 @@ bool throws_invalid_argument(const Callback& callback) {
 } // namespace
 
 int main() {
-    using cellerator::biology::OccurrenceCoordinates;
+    using cellerator::structure::OccurrenceCoordinates;
     using cellerator::nn::CsrSupport;
     using cellerator::nn::PreparedRelation;
 
+    const auto source_axis = axis(2, 5);
+    const auto target_axis = axis(5, 4);
     auto source = OccurrenceCoordinates<std::string>::from_ids(
         {"gene-A", "gene-A", "gene-B", "gene-C", "gene-C"},
-        {0, 3, 5}, axis(2, 5), 11, {0, 1, 2, 3, 4});
+        {0, 3, 5}, source_axis, 11);
     auto target = OccurrenceCoordinates<std::string>::from_ids(
         {"program-A", "program-B", "program-C", "program-C"},
-        {0, 2, 4}, axis(5, 4), 11, {10, 11, 12, 13});
+        {0, 2, 4}, target_axis, 11);
 
     // CSR rows address target occurrences and columns address source
     // occurrences.  Duplicate edges and an empty target row are explicit.
     auto relation = PreparedRelation::from_csr(
         CsrSupport{{0, 2, 4, 6, 6}, {0, 0, 1, 2, 3, 4}},
-        source.order_token(), target.order_token(), 7);
+        source.order_token(), target.order_token(), 7, at::Device(at::kCPU),
+        physical_axis(source_axis), physical_axis(target_axis));
     assert(relation.source_count() == 5);
     assert(relation.target_count() == 4);
     assert(relation.edge_count() == 6);
@@ -59,6 +68,8 @@ int main() {
     assert(relation.device().is_cpu());
     assert(relation.source_axis() && relation.source_axis()->extent == 5);
     assert(relation.target_axis() && relation.target_axis()->extent == 4);
+    assert(relation.source_layout() == physical_axis(source_axis));
+    assert(relation.target_layout() == physical_axis(target_axis));
     assert((relation.source_offsets() == std::vector<std::int64_t>{0, 3, 5}));
     assert((relation.target_offsets() == std::vector<std::int64_t>{0, 2, 4}));
     assert((relation.host_rows() == std::vector<std::int64_t>{0, 0, 1, 1, 2, 2}));
@@ -79,6 +90,8 @@ int main() {
     assert((causal.host_col_indices() == std::vector<std::int64_t>{0, 0, 1, 3}));
     assert(causal.source_order_token().same_order(source.order_token()));
     assert(causal.target_order_token().same_order(target.order_token()));
+    assert(causal.source_layout() == relation.source_layout());
+    assert(causal.target_layout() == relation.target_layout());
 
     const auto reversed = relation.transpose();
     assert(reversed.source_count() == 4);
@@ -88,6 +101,8 @@ int main() {
     assert((reversed.host_col_indices() == std::vector<std::int64_t>{0, 0, 1, 1, 2, 2}));
     assert(reversed.source_order_token().same_order(target.order_token()));
     assert(reversed.target_order_token().same_order(source.order_token()));
+    assert(reversed.source_layout() == relation.target_layout());
+    assert(reversed.target_layout() == relation.source_layout());
 
     const auto cpu_copy = relation.to(at::Device(at::kCPU));
     assert(cpu_copy.host_row_ptr() == relation.host_row_ptr());
@@ -108,7 +123,7 @@ int main() {
     // the order token is structural identity, not a shape check.
     auto rebuilt_source = OccurrenceCoordinates<std::string>::from_ids(
         {"gene-A", "gene-A", "gene-B", "gene-C", "gene-C"},
-        {0, 3, 5}, axis(2, 5), 11, {0, 1, 2, 3, 4});
+        {0, 3, 5}, source_axis, 11);
     assert(throws_invalid_argument([&] {
         relation.validate_for(rebuilt_source.order_token(), target.order_token(),
                               5, 4, at::Device(at::kCPU));
@@ -126,6 +141,12 @@ int main() {
         (void)PreparedRelation::from_csr(
             CsrSupport{{0, 1, 1, 1, 1}, {3}},
             source.order_token(), target.order_token(), 7);
+    }));
+    assert(throws_invalid_argument([&] {
+        (void)PreparedRelation::from_csr(
+            CsrSupport{{0, 2, 4, 6, 6}, {0, 0, 1, 2, 3, 4}},
+            source.order_token(), target.order_token(), 7, at::Device(at::kCPU),
+            physical_axis(axis(99, 5)), physical_axis(target_axis));
     }));
 
     auto mutable_relation = PreparedRelation::from_csr(

@@ -1,4 +1,4 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
 
 #include <cassert>
@@ -7,11 +7,11 @@
 #include <cstring>
 #include <vector>
 
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 namespace persistence = cellpack::persistence;
 namespace execution = cellerator::execution;
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 bool validate_physical_mma_hybrid_image_v1(
     const void *, std::size_t) noexcept;
 bool make_physical_mma_hybrid_cpe2_source_v1(
@@ -37,7 +37,7 @@ std::size_t append_records(std::vector<unsigned char> *image,
 
 std::vector<unsigned char> physical_image() {
     std::vector<unsigned char> image(
-        sizeof(projection::physical_mma_hybrid_header_v1));
+        sizeof(projection::MmaHybridLayoutV1));
 
     projection::physical_group_v1 source{};
     source.group_id = 0u;
@@ -87,7 +87,7 @@ std::vector<unsigned char> physical_image() {
     maps[1].region_index = 0u;
     maps[1].projection_slot = 0u;
 
-    projection::physical_mma_hybrid_header_v1 header{};
+    projection::MmaHybridLayoutV1 header{};
     header.structure_identity.identity_version = 1u;
     header.structure_identity.value = 0x101u;
     header.source_order.feature_count = 1u;
@@ -198,7 +198,7 @@ int main() {
         prebound.payload, prebound.payload_bytes));
 
     std::vector<unsigned char> corrupt_physical = physical;
-    projection::physical_mma_hybrid_header_v1 bad_header{};
+    projection::MmaHybridLayoutV1 bad_header{};
     std::memcpy(&bad_header, corrupt_physical.data(), sizeof(bad_header));
     bad_header.value_map_offset = bad_header.image_bytes;
     std::memcpy(corrupt_physical.data(), &bad_header, sizeof(bad_header));
@@ -208,7 +208,7 @@ int main() {
     std::vector<unsigned char> corrupt_cpe2 = cpe2;
     const auto payload_offset = loaded.sections[4].offset;
     corrupt_cpe2[payload_offset + sizeof(
-        projection::physical_mma_hybrid_header_v1)] ^= 1u;
+        projection::MmaHybridLayoutV1)] ^= 1u;
     persistence::execution_image_v2_view rejected{};
     assert(!persistence::validate_execution_image_v2_host(
         corrupt_cpe2.data(), corrupt_cpe2.size(), expected, &rejected));

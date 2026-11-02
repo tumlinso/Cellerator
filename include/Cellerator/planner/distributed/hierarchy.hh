@@ -23,8 +23,8 @@ enum class hierarchy_status : std::uint8_t {
 };
 
 struct nested_partition {
-    execution::partition_id identity{};
-    execution::partition_id parent{};
+    ::cellerator::structure::partition_id identity{};
+    ::cellerator::structure::partition_id parent{};
     std::uint32_t level = 0u;
     std::int32_t device_ordinal = -1;
 };
@@ -34,14 +34,14 @@ struct nested_partition {
 // ancestry, or placement.
 struct partition_hierarchy_view {
     std::uint32_t schema_version = hierarchy_schema_version;
-    execution::partition_hierarchy_id identity{};
+    ::cellerator::structure::partition_hierarchy_id identity{};
     const nested_partition *partitions = nullptr;
     std::uint32_t partition_count = 0u;
 };
 
 struct shared_value_module {
     std::uint64_t identity = 0u;
-    execution::partition_id partition{};
+    ::cellerator::structure::partition_id partition{};
     std::uint32_t parent_module = invalid_hierarchy_index;
     std::uint32_t value_offset = 0u;
     std::uint32_t value_count = 0u;
@@ -52,9 +52,9 @@ struct shared_value_module {
 // existing mutable value plane.
 struct shared_value_hierarchy_view {
     std::uint32_t schema_version = hierarchy_schema_version;
-    execution::partition_hierarchy_id hierarchy{};
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::partition_hierarchy_id hierarchy{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
     const shared_value_module *modules = nullptr;
     const std::uint32_t *value_indices = nullptr;
     std::uint32_t module_count = 0u;
@@ -64,9 +64,9 @@ struct shared_value_hierarchy_view {
 
 // Per-generation activity is deliberately separate from the immutable index.
 struct module_activity_view {
-    execution::partition_hierarchy_id hierarchy{};
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::partition_hierarchy_id hierarchy{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
     execution::value_generation generation{};
     const std::uint8_t *active = nullptr;
     std::uint32_t module_count = 0u;
@@ -74,13 +74,13 @@ struct module_activity_view {
 
 struct active_module {
     std::uint32_t module_index = 0u;
-    execution::partition_id partition{};
+    ::cellerator::structure::partition_id partition{};
     std::uint32_t value_offset = 0u;
     std::uint32_t value_count = 0u;
 };
 
 struct active_module_plan {
-    execution::partition_hierarchy_id hierarchy{};
+    ::cellerator::structure::partition_hierarchy_id hierarchy{};
     execution::value_generation generation{};
     active_module *modules = nullptr;
     std::uint32_t capacity = 0u;
@@ -90,10 +90,10 @@ struct active_module_plan {
 struct boundary_edge {
     std::uint32_t source_module = 0u;
     std::uint32_t destination_module = 0u;
-    execution::partition_id source_partition{};
-    execution::partition_id destination_partition{};
-    execution::order_id source_order{};
-    execution::order_id destination_order{};
+    ::cellerator::structure::partition_id source_partition{};
+    ::cellerator::structure::partition_id destination_partition{};
+    ::cellerator::structure::order_id source_order{};
+    ::cellerator::structure::order_id destination_order{};
     std::uint64_t value_count = 0u;
     std::uint64_t byte_count = 0u;
     bool peer_access = false;
@@ -121,15 +121,15 @@ struct communication_step {
     execution::order_transition_kind order =
         execution::order_transition_kind::preserve;
     std::uint16_t reserved = 0u;
-    execution::partition_id source_partition{};
-    execution::partition_id destination_partition{};
+    ::cellerator::structure::partition_id source_partition{};
+    ::cellerator::structure::partition_id destination_partition{};
     std::int32_t source_device = -1;
     std::int32_t destination_device = -1;
     planner::phase_costs phases{};
 };
 
 struct communication_plan {
-    execution::partition_hierarchy_id hierarchy{};
+    ::cellerator::structure::partition_hierarchy_id hierarchy{};
     execution::value_generation activity_generation{};
     communication_step *steps = nullptr;
     std::uint32_t capacity = 0u;

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <Cellerator/execution/projection_value_plane/projection_value_plane_v1.hh>
+#include <Cellerator/execution/cell_packing_binding.hh>
 #include <Cellerator/geometry/relation_cover.hh>
-#include <Cellerator/geometry/semantic_geometry.hh>
+#include <Cellerator/layout/cell_packing_geometry.hh>
 #include <Cellerator/geometry/optimizer/device/device_assisted_disposition.h>
 #include <Cellerator/geometry/optimizer/portfolio_v1.hh>
 
@@ -24,7 +25,7 @@ optimizer_portfolio_readiness_v1
 validate_integrated_optimizer_portfolio_v1() noexcept;
 
 struct geometry_value_boundary_readiness_v1 {
-    std::uint32_t semantic_geometry_schema = 0;
+    std::uint32_t cell_packing_geometry_schema = 0;
     std::uint32_t semantic_cover_schema = 0;
     std::uint32_t projection_value_schema = 0;
     bool global_identifiers_are_64_bit = false;

@@ -1,7 +1,8 @@
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <Cellerator/compute/operators/sparse/ops.hh>
 #include <Cellerator/compute/candidate/sparse/project.hh>
-#include <Cellerator/matrix/blocked_ell.cuh>
+#include <Cellerator/interop/formats/blocked_ell.cuh>
+#include <Cellerator/memory/cuda/shared_buffer.hh>
 #include "benchmark_mutex.hh"
 #include "cellerator_cuda_mode.hh"
 
@@ -19,10 +20,11 @@
 #include <vector>
 
 namespace runtime = ::cellerator::runtime;
+namespace memory_cuda = ::cellerator::memory::cuda;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
 namespace sparse_project = ::cellerator::compute::sparse::project;
 namespace cs {
-namespace sparse = ::cellerator::matrix;
+namespace sparse = ::cellerator::interop::formats;
 }
 
 namespace {
@@ -184,7 +186,7 @@ csr_host_matrix make_host_matrix_for_cfg(const bench_config &cfg, std::uint32_t 
     return make_host_csr(cfg.rows, cfg.cols, cfg.nnz_per_row, column_seed);
 }
 
-bool build_blocked_ell_from_csr(const csr_host_matrix &src, std::uint32_t block_size, cs::sparse::blocked_ell *dst) {
+bool build_blocked_ell_from_csr(const csr_host_matrix &src, std::uint32_t block_size, cs::sparse::BlockedEllPayload *dst) {
     if (block_size == 0u) return false;
     const std::uint32_t row_blocks = (src.rows + block_size - 1u) / block_size;
     const std::uint32_t col_blocks = (src.cols + block_size - 1u) / block_size;
@@ -270,15 +272,15 @@ std::unique_ptr<__half[]> make_host_half_matrix(std::uint32_t rows, std::uint32_
 }
 
 template<typename T>
-runtime::device_buffer<T> allocate_on_device(int device, std::size_t count) {
-    runtime::cuda_require(cudaSetDevice(device), "cudaSetDevice(allocate_on_device)");
-    return runtime::allocate_device_buffer<T>(count);
+memory_cuda::SharedDeviceBuffer<T> allocate_on_device(int device, std::size_t count) {
+    return memory_cuda::SharedDeviceBuffer<T>::allocate(count, device);
 }
 
 template<typename T>
-void upload_on_device(int device, runtime::device_buffer<T> *dst, const T *src, std::size_t count) {
-    runtime::cuda_require(cudaSetDevice(device), "cudaSetDevice(upload_on_device)");
-    runtime::upload_device_buffer(dst, src, count);
+void upload_on_device(int device, memory_cuda::SharedDeviceBuffer<T> *dst, const T *src, std::size_t count) {
+    auto stream = memory_cuda::Stream(device);
+    dst->upload_async(src, count, stream);
+    stream.synchronize();
 }
 
 double elapsed_ms(const std::chrono::steady_clock::time_point &start, const std::chrono::steady_clock::time_point &stop) {
@@ -307,7 +309,7 @@ void print_summary(const bench_config &cfg, double total_ms, std::uint64_t total
         << '\n';
 }
 
-void print_blocked_ell_meta(const cs::sparse::blocked_ell &blocked, double convert_ms) {
+void print_blocked_ell_meta(const cs::sparse::BlockedEllPayload &blocked, double convert_ms) {
     const double logical = static_cast<double>(blocked.nnz);
     const double resident = static_cast<double>(blocked.rows) * blocked.ell_cols;
     const double fill = resident > 0.0 ? logical / resident : 1.0;
@@ -328,26 +330,26 @@ void run_base_spmv(const bench_config &cfg) {
     const csr_host_matrix matrix = make_host_matrix_for_cfg(cfg, 0u);
     const auto vector = make_host_vector(cfg.cols, 0u);
 
-    auto major_ptr = runtime::allocate_device_buffer<std::uint32_t>(static_cast<std::size_t>(cfg.rows) + 1u);
-    auto minor_idx = runtime::allocate_device_buffer<std::uint32_t>(matrix.nnz);
-    auto values = runtime::allocate_device_buffer<__half>(matrix.nnz);
-    auto dense = runtime::allocate_device_buffer<float>(cfg.cols);
-    auto out = runtime::allocate_device_buffer<float>(cfg.rows);
+    auto major_ptr = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(cfg.rows) + 1u, ctx.device);
+    auto minor_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(matrix.nnz, ctx.device);
+    auto values = memory_cuda::SharedDeviceBuffer<__half>::allocate(matrix.nnz, ctx.device);
+    auto dense = memory_cuda::SharedDeviceBuffer<float>::allocate(cfg.cols, ctx.device);
+    auto out = memory_cuda::SharedDeviceBuffer<float>::allocate(cfg.rows, ctx.device);
 
-    runtime::upload_device_buffer(&major_ptr, matrix.major_ptr.get(), static_cast<std::size_t>(cfg.rows) + 1u);
-    runtime::upload_device_buffer(&minor_idx, matrix.minor_idx.get(), matrix.nnz);
-    runtime::upload_device_buffer(&values, matrix.values.get(), matrix.nnz);
-    runtime::upload_device_buffer(&dense, vector.get(), cfg.cols);
+    major_ptr.upload_async(matrix.major_ptr.get(), static_cast<std::size_t>(cfg.rows) + 1u, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    minor_idx.upload_async(matrix.minor_idx.get(), matrix.nnz, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    values.upload_async(matrix.values.get(), matrix.nnz, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    dense.upload_async(vector.get(), cfg.cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(base setup)");
 
     for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
-        sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, major_ptr.data, minor_idx.data, values.data, cfg.rows, dense.data, out.data);
+        sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, major_ptr.data(), minor_idx.data(), values.data(), cfg.rows, dense.data(), out.data());
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(base warmup)");
 
     const auto start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0; i < cfg.iters; ++i) {
-        sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, major_ptr.data, minor_idx.data, values.data, cfg.rows, dense.data, out.data);
+        sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, major_ptr.data(), minor_idx.data(), values.data(), cfg.rows, dense.data(), out.data());
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(base timed)");
     const auto stop = std::chrono::steady_clock::now();
@@ -363,26 +365,26 @@ void run_base_csr_spmm(const bench_config &cfg) {
     const csr_host_matrix matrix = make_host_matrix_for_cfg(cfg, 0u);
     const auto rhs = make_host_matrix(cfg.cols, cfg.out_cols, 7u);
 
-    auto major_ptr = runtime::allocate_device_buffer<std::uint32_t>(static_cast<std::size_t>(cfg.rows) + 1u);
-    auto minor_idx = runtime::allocate_device_buffer<std::uint32_t>(matrix.nnz);
-    auto values = runtime::allocate_device_buffer<__half>(matrix.nnz);
-    auto dense = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(cfg.cols) * cfg.out_cols);
-    auto out = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(cfg.rows) * cfg.out_cols);
+    auto major_ptr = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(cfg.rows) + 1u, ctx.device);
+    auto minor_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(matrix.nnz, ctx.device);
+    auto values = memory_cuda::SharedDeviceBuffer<__half>::allocate(matrix.nnz, ctx.device);
+    auto dense = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(cfg.cols) * cfg.out_cols, ctx.device);
+    auto out = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(cfg.rows) * cfg.out_cols, ctx.device);
 
-    runtime::upload_device_buffer(&major_ptr, matrix.major_ptr.get(), static_cast<std::size_t>(cfg.rows) + 1u);
-    runtime::upload_device_buffer(&minor_idx, matrix.minor_idx.get(), matrix.nnz);
-    runtime::upload_device_buffer(&values, matrix.values.get(), matrix.nnz);
-    runtime::upload_device_buffer(&dense, rhs.get(), static_cast<std::size_t>(cfg.cols) * cfg.out_cols);
+    major_ptr.upload_async(matrix.major_ptr.get(), static_cast<std::size_t>(cfg.rows) + 1u, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    minor_idx.upload_async(matrix.minor_idx.get(), matrix.nnz, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    values.upload_async(matrix.values.get(), matrix.nnz, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    dense.upload_async(rhs.get(), static_cast<std::size_t>(cfg.cols) * cfg.out_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(csr spmm setup)");
 
     for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
-        sparse_project::csr_spmm_fwd_f16_f32(ctx, major_ptr.data, minor_idx.data, values.data, cfg.rows, cfg.cols, dense.data, cfg.out_cols, cfg.out_cols, out.data, cfg.out_cols);
+        sparse_project::csr_spmm_fwd_f16_f32(ctx, major_ptr.data(), minor_idx.data(), values.data(), cfg.rows, cfg.cols, dense.data(), cfg.out_cols, cfg.out_cols, out.data(), cfg.out_cols);
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(csr spmm warmup)");
 
     const auto start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0; i < cfg.iters; ++i) {
-        sparse_project::csr_spmm_fwd_f16_f32(ctx, major_ptr.data, minor_idx.data, values.data, cfg.rows, cfg.cols, dense.data, cfg.out_cols, cfg.out_cols, out.data, cfg.out_cols);
+        sparse_project::csr_spmm_fwd_f16_f32(ctx, major_ptr.data(), minor_idx.data(), values.data(), cfg.rows, cfg.cols, dense.data(), cfg.out_cols, cfg.out_cols, out.data(), cfg.out_cols);
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(csr spmm timed)");
     const auto stop = std::chrono::steady_clock::now();
@@ -397,33 +399,33 @@ void run_base_blocked_ell_spmm(const bench_config &cfg) {
 
     const csr_host_matrix matrix = make_host_matrix_for_cfg(cfg, 0u);
     const auto rhs = make_host_half_matrix(cfg.cols, cfg.out_cols, 7u);
-    cs::sparse::blocked_ell blocked;
+    cs::sparse::BlockedEllPayload blocked;
     const auto convert_start = std::chrono::steady_clock::now();
     cs::sparse::init(&blocked);
     require(build_blocked_ell_from_csr(matrix, cfg.block_size, &blocked), "blocked ell construction failed");
     const auto convert_stop = std::chrono::steady_clock::now();
 
-    auto block_col_idx = runtime::allocate_device_buffer<std::uint32_t>(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
-    auto blocked_values = runtime::allocate_device_buffer<__half>(static_cast<std::size_t>(blocked.rows) * blocked.ell_cols);
-    auto dense = runtime::allocate_device_buffer<__half>(static_cast<std::size_t>(cfg.cols) * cfg.out_cols);
-    auto out = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(cfg.rows) * cfg.out_cols);
+    auto block_col_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked), ctx.device);
+    auto blocked_values = memory_cuda::SharedDeviceBuffer<__half>::allocate(static_cast<std::size_t>(blocked.rows) * blocked.ell_cols, ctx.device);
+    auto dense = memory_cuda::SharedDeviceBuffer<__half>::allocate(static_cast<std::size_t>(cfg.cols) * cfg.out_cols, ctx.device);
+    auto out = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(cfg.rows) * cfg.out_cols, ctx.device);
     runtime::cusparse_cache cache;
     runtime::init(&cache);
 
-    runtime::upload_device_buffer(&block_col_idx, blocked.blockColIdx, static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
-    runtime::upload_device_buffer(&blocked_values, blocked.val, static_cast<std::size_t>(blocked.rows) * blocked.ell_cols);
-    runtime::upload_device_buffer(&dense, rhs.get(), static_cast<std::size_t>(cfg.cols) * cfg.out_cols);
+    block_col_idx.upload_async(blocked.blockColIdx, static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    blocked_values.upload_async(blocked.val, static_cast<std::size_t>(blocked.rows) * blocked.ell_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    dense.upload_async(rhs.get(), static_cast<std::size_t>(cfg.cols) * cfg.out_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked ell spmm setup)");
     print_blocked_ell_meta(blocked, elapsed_ms(convert_start, convert_stop));
 
     for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
-        sparse_project::blocked_ell_spmm_fwd_f16_f16_f32_lib(ctx, &cache, blocked.val, block_col_idx.data, blocked_values.data, blocked.rows, blocked.cols, blocked.block_size, blocked.ell_cols, dense.data, cfg.out_cols, cfg.out_cols, out.data, cfg.out_cols);
+        sparse_project::blocked_ell_spmm_fwd_f16_f16_f32_lib(ctx, &cache, blocked.val, block_col_idx.data(), blocked_values.data(), blocked.rows, blocked.cols, blocked.block_size, blocked.ell_cols, dense.data(), cfg.out_cols, cfg.out_cols, out.data(), cfg.out_cols);
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked ell spmm warmup)");
 
     const auto start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0; i < cfg.iters; ++i) {
-        sparse_project::blocked_ell_spmm_fwd_f16_f16_f32_lib(ctx, &cache, blocked.val, block_col_idx.data, blocked_values.data, blocked.rows, blocked.cols, blocked.block_size, blocked.ell_cols, dense.data, cfg.out_cols, cfg.out_cols, out.data, cfg.out_cols);
+        sparse_project::blocked_ell_spmm_fwd_f16_f16_f32_lib(ctx, &cache, blocked.val, block_col_idx.data(), blocked_values.data(), blocked.rows, blocked.cols, blocked.block_size, blocked.ell_cols, dense.data(), cfg.out_cols, cfg.out_cols, out.data(), cfg.out_cols);
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked ell spmm timed)");
     const auto stop = std::chrono::steady_clock::now();
@@ -476,12 +478,12 @@ void run_pair_row_spmv(const bench_config &cfg) {
     upload_on_device(device1, &values1, matrix1.values.get(), matrix1.nnz);
     upload_on_device(device1, &vector1, vector.get(), cfg.cols);
 
-    const std::uint32_t *major_ptrs[] = { major0.data, major1.data };
-    const std::uint32_t *minor_ptrs[] = { minor0.data, minor1.data };
-    const __half *value_ptrs[] = { values0.data, values1.data };
-    const float *vector_ptrs[] = { vector0.data, vector1.data };
+    const std::uint32_t *major_ptrs[] = { major0.data(), major1.data() };
+    const std::uint32_t *minor_ptrs[] = { minor0.data(), minor1.data() };
+    const __half *value_ptrs[] = { values0.data(), values1.data() };
+    const float *vector_ptrs[] = { vector0.data(), vector1.data() };
     const std::uint32_t rows[] = { rows0, rows1 };
-    float *out_ptrs[] = { out0.data, out1.data };
+    float *out_ptrs[] = { out0.data(), out1.data() };
 
     runtime::synchronize_slots(fleet, slots, 2u);
     for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
@@ -569,18 +571,18 @@ void run_fleet_feature_spmv(const bench_config &cfg) {
     upload_on_device(runtime::fleet_device_id(fleet, slots[3]), &values3, matrices[3].values.get(), matrices[3].nnz);
     upload_on_device(runtime::fleet_device_id(fleet, slots[3]), &vector3, vectors3.get(), cols_per_slot);
 
-    const std::uint32_t *major_ptrs[] = { major0.data, major1.data, major2.data, major3.data };
-    const std::uint32_t *minor_ptrs[] = { minor0.data, minor1.data, minor2.data, minor3.data };
-    const __half *value_ptrs[] = { values0.data, values1.data, values2.data, values3.data };
-    const float *vector_ptrs[] = { vector0.data, vector1.data, vector2.data, vector3.data };
+    const std::uint32_t *major_ptrs[] = { major0.data(), major1.data(), major2.data(), major3.data() };
+    const std::uint32_t *minor_ptrs[] = { minor0.data(), minor1.data(), minor2.data(), minor3.data() };
+    const __half *value_ptrs[] = { values0.data(), values1.data(), values2.data(), values3.data() };
+    const float *vector_ptrs[] = { vector0.data(), vector1.data(), vector2.data(), vector3.data() };
     const std::uint32_t rows[] = { cfg.rows, cfg.rows, cfg.rows, cfg.rows };
-    float *out_ptrs[] = { out0.data, out1.data, out2.data, out3.data };
-    const float *partial_ptrs[] = { out0.data, out1.data, out2.data, out3.data };
+    float *out_ptrs[] = { out0.data(), out1.data(), out2.data(), out3.data() };
+    const float *partial_ptrs[] = { out0.data(), out1.data(), out2.data(), out3.data() };
 
     runtime::synchronize_slots(fleet, slots, 4u);
     for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
         sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 4u, major_ptrs, minor_ptrs, value_ptrs, rows, vector_ptrs, out_ptrs);
-        sparse_ops::dist::reduce_sum_to_leader_f32(&fleet, slots, 4u, partial_ptrs, cfg.rows, reduced0.data);
+        sparse_ops::dist::reduce_sum_to_leader_f32(&fleet, slots, 4u, partial_ptrs, cfg.rows, reduced0.data());
     }
     const unsigned int leader_only[1] = { slots[0] };
     runtime::synchronize_slots(fleet, leader_only, 1u);
@@ -588,7 +590,7 @@ void run_fleet_feature_spmv(const bench_config &cfg) {
     const auto start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0; i < cfg.iters; ++i) {
         sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 4u, major_ptrs, minor_ptrs, value_ptrs, rows, vector_ptrs, out_ptrs);
-        sparse_ops::dist::reduce_sum_to_leader_f32(&fleet, slots, 4u, partial_ptrs, cfg.rows, reduced0.data);
+        sparse_ops::dist::reduce_sum_to_leader_f32(&fleet, slots, 4u, partial_ptrs, cfg.rows, reduced0.data());
     }
     runtime::synchronize_slots(fleet, leader_only, 1u);
     const auto stop = std::chrono::steady_clock::now();

@@ -1,9 +1,9 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <cstdint>
 #include <limits>
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 
 // Build one row-owned residual without changing the caller's pinned physical
 // edge order. Input edges must already be ordered by physical destination row;
@@ -87,4 +87,4 @@ bool build_row_owned_mma_residual_v1(
     return true;
 }
 
-} // namespace cellerator::compute::projection
+} // namespace cellerator::layout::projection

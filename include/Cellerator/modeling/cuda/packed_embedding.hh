@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/modeling/cuda/quantization.hh>
-#include <Cellerator/modeling/cuda/runtime.hh>
+#include <Cellerator/memory/cuda/resources.hh>
+#include <Cellerator/tensor/state_codes/view.hh>
 
 #include <cstddef>
 #include <cstdint>
@@ -31,7 +31,8 @@ struct PackedEmbeddingTableView {
     const std::uint64_t* feature_offsets = nullptr;
     std::size_t feature_offset_capacity = 0;
     std::uint32_t embedding_dim = 0;
-    DType dtype = DType::float16;
+    ::cellerator::memory::cuda::DType dtype =
+        ::cellerator::memory::cuda::DType::float16;
 };
 
 struct PackedEmbeddingGradientView {
@@ -42,18 +43,22 @@ struct PackedEmbeddingGradientView {
 };
 
 // Sparse weighted embedding-bag forward from packed state. The packed layout
-// is identical to QuantizationProfileView: 1/2/4/8-bit little-slot uint32 words
+// is the 1/2/4/8-bit little-slot uint32 state-code layout
 // over row-major state. Exact overrides are supported by continuous
 // interpolation between the adjacent codebook-level embeddings; the sidecar
 // must be sorted by logical index. Passing an empty override view asserts
 // bits-only semantics. All inputs are borrowed, launches are asynchronous,
 // and no dense state decode or hidden allocation occurs.
 cudaError_t packed_embedding_bag_forward(
-    ConstPackedStateView packed, std::uint32_t row_count,
-    QuantizationProfileView profile, ConstOverrideView exact_overrides,
+    ::cellerator::tensor::state_codes::ConstPackedView packed,
+    std::uint32_t row_count,
+    ::cellerator::tensor::state_codes::ProfileView profile,
+    ::cellerator::tensor::state_codes::ConstExactOverrideView exact_overrides,
     bool overrides_sorted_by_logical_index,
     PackedOccurrenceView occurrences, PackedEmbeddingTableView table,
-    DeviceView output, DeviceStatus status, cudaStream_t stream) noexcept;
+    ::cellerator::memory::cuda::DeviceView output,
+    ::cellerator::tensor::state_codes::DeviceStatus status,
+    cudaStream_t stream) noexcept;
 
 // Backward accumulates into an FP32 table-gradient buffer with atomic adds;
 // zero it before the call to overwrite or seed it for accumulation. Optional
@@ -61,12 +66,15 @@ cudaError_t packed_embedding_bag_forward(
 // feature mappings, selections, and exact values are treated as discrete/
 // conditioning inputs and receive no gradients.
 cudaError_t packed_embedding_bag_backward(
-    ConstPackedStateView packed, std::uint32_t row_count,
-    QuantizationProfileView profile, ConstOverrideView exact_overrides,
+    ::cellerator::tensor::state_codes::ConstPackedView packed,
+    std::uint32_t row_count,
+    ::cellerator::tensor::state_codes::ProfileView profile,
+    ::cellerator::tensor::state_codes::ConstExactOverrideView exact_overrides,
     bool overrides_sorted_by_logical_index,
     PackedOccurrenceView occurrences, PackedEmbeddingTableView table,
-    ConstDeviceView output_gradient,
-    PackedEmbeddingGradientView gradients, DeviceStatus status,
+    ::cellerator::memory::cuda::ConstDeviceView output_gradient,
+    PackedEmbeddingGradientView gradients,
+    ::cellerator::tensor::state_codes::DeviceStatus status,
     cudaStream_t stream) noexcept;
 
 }  // namespace cellerator::modeling::cuda

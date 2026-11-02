@@ -17,7 +17,7 @@ operation_core::stable_id stable(std::uint64_t low) {
     return {low, 1u};
 }
 
-execution::order_id order(std::uint64_t low) {
+::cellerator::structure::order_id order(std::uint64_t low) {
     return {low, 1u};
 }
 

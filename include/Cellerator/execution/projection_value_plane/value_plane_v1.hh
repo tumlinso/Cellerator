@@ -57,8 +57,8 @@ struct value_plane_status_v1 {
 // mutable generation. UINT64_MAX marks a permanent padding hole.
 struct projection_value_component_v1 {
     u64 component_identity = 0u;
-    projection_id projection{};
-    order_id physical_order{};
+    structure::projection_id projection{};
+    structure::order_id physical_order{};
     value_component_kind_v1 kind = value_component_kind_v1::residual;
     u8 flags = 0u;
     u8 reserved[6]{};
@@ -78,9 +78,9 @@ struct projection_value_plane_v1 {
     value_primary_mode_v1 primary_mode = value_primary_mode_v1::logical;
     u8 reserved0[3]{};
     structure_handle structure{};
-    structure_epoch structure_epoch_value{};
+    structure::structure_epoch structure_epoch_value{};
     value_generation generation{};
-    order_id logical_edge_order{};
+    structure::order_id logical_edge_order{};
     value_numeric_policy numeric{};
     quantization_descriptor quantization{};
     const projection_value_component_v1 *components = nullptr;

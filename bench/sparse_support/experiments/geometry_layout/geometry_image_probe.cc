@@ -7,8 +7,7 @@
 #include <limits>
 #include <vector>
 
-namespace projection = cellerator::compute::projection;
-namespace math = cellerator::compute::math;
+namespace projection = cellerator::layout::projection;
 
 namespace {
 
@@ -51,11 +50,11 @@ int main(int argc, char** argv) {
     projection::physical_mma_hybrid_build_request_v1 request{};
     request.structure_identity.identity_version = 1u;
     request.structure_identity.value = 0x47454f4d45545259ull;
-    request.source_order.kind = math::feature_order_kind::canonical;
+    request.source_order.kind = projection::feature_order_kind::canonical;
     request.source_order.feature_count = source_count;
     request.source_order.feature_axis_identity_version = 1u;
     request.source_order.feature_axis_identity = 0x534f555243455f31ull;
-    request.destination_order.kind = math::feature_order_kind::canonical;
+    request.destination_order.kind = projection::feature_order_kind::canonical;
     request.destination_order.feature_count = source_count;
     request.destination_order.feature_axis_identity_version = 1u;
     request.destination_order.feature_axis_identity = 0x444553545f415831ull;
@@ -81,7 +80,7 @@ int main(int argc, char** argv) {
                   << static_cast<unsigned>(status) << '\n';
         return 4;
     }
-    projection::physical_mma_hybrid_header_v1 header{};
+    projection::MmaHybridLayoutV1 header{};
     std::memcpy(&header, image.data(), sizeof(header));
     std::cout << "{\"image_bytes\":" << image.size()
               << ",\"tile_count\":" << header.tile_count

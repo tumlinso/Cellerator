@@ -4,7 +4,7 @@
 #include "residual.cuh"
 #include "value_pack.cuh"
 
-#include <Cellerator/compute/projection/identity.hh>
+#include <Cellerator/layout/projection/identity.hh>
 #include <Cellerator/planner/end_to_end_planner.hh>
 
 #include <cuda_runtime_api.h>
@@ -38,8 +38,8 @@ struct relation_apply_hybrid_request_v1 {
     std::uint64_t output_count = 0u;
     float alpha = 1.0f;
     float beta = 0.0f;
-    compute::math::feature_order_identity source_order{};
-    compute::math::feature_order_identity destination_order{};
+    layout::projection::FeatureOrderIdentity source_order{};
+    layout::projection::FeatureOrderIdentity destination_order{};
     planner::phase_costs hybrid_complete_cost{};
     planner::phase_costs pure_sparse_complete_cost{};
     pure_sparse_fallback_function_v1 pure_sparse_fallback = nullptr;

@@ -66,7 +66,7 @@ bool multiply_size(std::size_t a, std::size_t b,
 }
 
 __global__ void native_training_forward_kernel(
-    feature_major_projection_view projection,
+    ::cellerator::layout::projection::FeatureMajorViewV1 projection,
     const __half *values, const float *input, const float *bias,
     float epsilon, float *activated, float *inverse_rms, float *output) {
     const u32 lane = threadIdx.x;
@@ -143,7 +143,7 @@ __global__ void native_training_epilogue_backward_kernel(
 }
 
 __global__ void native_training_sparse_update_kernel(
-    feature_major_projection_view projection, __half *values,
+    ::cellerator::layout::projection::FeatureMajorViewV1 projection, __half *values,
     const float *input, const float *preactivation_gradient,
     float learning_rate, float *sparse_gradient) {
     const u32 lane = threadIdx.x;
@@ -203,8 +203,8 @@ std::size_t native_training_workspace_bytes(
 }
 
 native_training_status prepare_native_training_slice(
-    const feature_major_projection_view &forward,
-    const transpose_projection_view &transpose,
+    const execution::FeatureMajorBinding &forward,
+    const execution::TransposeBinding &transpose,
     std::int32_t device_ordinal,
     execution::axis_identity feature_axis,
     execution::axis_identity module_axis,
@@ -216,22 +216,28 @@ native_training_status prepare_native_training_slice(
         || !execution::valid_axis_identity(dense_axis))
         return fail(native_training_status_code::invalid_argument,
             "native training preparation arguments are invalid");
-    const auto &f = forward.header;
-    const auto &t = transpose.header;
-    if (f.schema_version != feature_major_projection_schema_version
-        || t.schema_version != transpose_projection_schema_version
-        || !execution::same_identity(f.structure_identity,
+    const auto &f = forward.layout.header;
+    const auto &t = transpose.layout.header;
+    if (f.schema_version != layout::projection::feature_major_projection_schema_version
+        || t.schema_version != layout::projection::transpose_projection_schema_version
+        || !::cellerator::structure::same_identity(f.structure_identity,
             t.structure_identity)
         || f.structure_epoch != t.structure_epoch
-        || !execution::same_identity(f.projection_identity,
+        || !::cellerator::structure::same_identity(f.projection_identity,
             t.forward_projection_identity)
         || f.row_count != t.row_count || f.feature_count != t.feature_count
         || f.nnz_count != t.nnz_count || f.value_size_bytes != sizeof(__half)
+        || !execution::valid_handle(forward.runtime_structure)
+        || !execution::valid_handle(forward.runtime_projection)
+        || !execution::valid_handle(transpose.runtime_structure)
+        || !execution::valid_handle(transpose.runtime_projection)
+        || !execution::valid_handle(transpose.runtime_forward_projection)
         || !execution::same_handle(forward.runtime_structure,
             transpose.runtime_structure)
         || !execution::same_handle(forward.runtime_projection,
             transpose.runtime_forward_projection)
-        || forward.payload_base == nullptr || transpose.payload_base == nullptr)
+        || forward.layout.payload_base == nullptr
+        || transpose.layout.payload_base == nullptr)
         return fail(native_training_status_code::incompatible_identity,
             "forward and transpose projections do not share frozen topology");
     native_training_prepared_state result{};
@@ -260,10 +266,11 @@ native_training_status run_native_training_step(
         || !std::isfinite(launch.normalization_epsilon))
         return fail(native_training_status_code::invalid_argument,
             "native training launch arguments are invalid");
-    const auto &projection = prepared.forward;
+    const auto &projection_binding = prepared.forward;
+    const auto &projection = projection_binding.layout;
     const auto &header = projection.header;
     if (!execution::same_handle(launch.structure.identity,
-            projection.runtime_structure)
+            projection_binding.runtime_structure)
         || launch.structure.epoch.value != header.structure_epoch
         || launch.structure.logical_edge_count != header.nnz_count
         || !execution::same_axis_identity(launch.structure.source_axis,
@@ -272,9 +279,9 @@ native_training_status run_native_training_step(
             prepared.module_axis))
         return fail(native_training_status_code::incompatible_identity,
             "native training structure binding is stale");
-    const execution::value_binding binding{
+    const execution::value_binding value_binding{
         launch.learned_values, launch.expected_generation};
-    if (execution::validate_value_binding(launch.structure, binding)
+    if (execution::validate_value_binding(launch.structure, value_binding)
             != execution::lifetime_validation_code::ok
         || launch.learned_values->layout
             != execution::value_layout_kind::projection_local_order
@@ -324,7 +331,7 @@ native_training_status run_native_training_step(
         static_cast<cudaStream_t>(launch.stream.stream);
     auto *values = static_cast<__half *>(launch.learned_values->values);
     native_training_forward_kernel<<<header.tile_count, 32u, 0u, stream>>>(
-        prepared.forward, values, static_cast<const float *>(launch.input.data),
+        prepared.forward.layout, values, static_cast<const float *>(launch.input.data),
         launch.bias, launch.normalization_epsilon, workspace.activated,
         workspace.inverse_rms, static_cast<float *>(launch.output.data));
     const u32 row_blocks = (header.row_count + 127u) / 128u;
@@ -332,11 +339,11 @@ native_training_status run_native_training_step(
         header.row_count, workspace.activated, workspace.inverse_rms,
         static_cast<const float *>(launch.output_gradient.data),
         workspace.preactivation_gradient);
-    core::launch_transpose_backward_n16(prepared.transpose, values,
+    core::launch_transpose_backward_n16(prepared.transpose.layout, values,
         workspace.preactivation_gradient,
         static_cast<float *>(launch.input_gradient.data), stream);
     native_training_sparse_update_kernel<<<header.tile_count, 32u, 0u, stream>>>(
-        prepared.forward, values, static_cast<const float *>(launch.input.data),
+        prepared.forward.layout, values, static_cast<const float *>(launch.input.data),
         workspace.preactivation_gradient, launch.learning_rate,
         workspace.sparse_gradient);
     native_training_bias_update_kernel<<<1u, native_training_dense_width,

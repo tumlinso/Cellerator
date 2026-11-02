@@ -15,28 +15,28 @@ Identity identity(std::uint64_t value) {
 }
 
 execution::persistent_axis_identity axis(std::uint64_t seed,
-    execution::domain_id domain) {
+    ::cellerator::structure::domain_id domain) {
     return {{execution::biological_abi_version,
                 execution::serialized_record_kind::persistent_axis_identity,
                 sizeof(execution::persistent_axis_identity)},
-        domain, identity<execution::order_id>(seed + 2u),
-        identity<execution::geometry_id>(seed + 4u),
-        identity<execution::partition_id>(seed + 6u)};
+        domain, identity<::cellerator::structure::order_id>(seed + 2u),
+        identity<::cellerator::structure::geometry_id>(seed + 4u),
+        identity<::cellerator::structure::partition_id>(seed + 6u)};
 }
 
 operation::operation_problem problem(operation::typed_relation (&relations)[3]) {
-    const auto source_a_domain = identity<execution::domain_id>(10u);
-    const auto source_b_domain = identity<execution::domain_id>(12u);
-    const auto destination_domain = identity<execution::domain_id>(20u);
+    const auto source_a_domain = identity<::cellerator::structure::domain_id>(10u);
+    const auto source_b_domain = identity<::cellerator::structure::domain_id>(12u);
+    const auto destination_domain = identity<::cellerator::structure::domain_id>(20u);
     const auto source_a = axis(30u, source_a_domain);
     const auto source_b = axis(40u, source_b_domain);
     const auto destination = axis(50u, destination_domain);
-    relations[0] = {identity<execution::structure_id>(60u), {1u}, source_a,
-        destination, identity<execution::order_id>(70u), 4u};
-    relations[1] = {identity<execution::structure_id>(62u), {1u}, source_a,
-        destination, identity<execution::order_id>(72u), 4u};
-    relations[2] = {identity<execution::structure_id>(64u), {1u}, source_b,
-        destination, identity<execution::order_id>(74u), 4u};
+    relations[0] = {identity<::cellerator::structure::structure_id>(60u), {1u}, source_a,
+        destination, identity<::cellerator::structure::order_id>(70u), 4u};
+    relations[1] = {identity<::cellerator::structure::structure_id>(62u), {1u}, source_a,
+        destination, identity<::cellerator::structure::order_id>(72u), 4u};
+    relations[2] = {identity<::cellerator::structure::structure_id>(64u), {1u}, source_b,
+        destination, identity<::cellerator::structure::order_id>(74u), 4u};
 
     operation::operation_problem result{};
     result.kind = operation::operation_kind::relation_bundle_apply;

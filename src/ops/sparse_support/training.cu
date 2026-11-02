@@ -74,7 +74,7 @@ __global__ void relation_ce_geo_residual_kernel(
     const std::uint64_t* offsets, const std::uint64_t* ordinals,
     const std::uint64_t* gate_indices, const std::uint64_t* edge_map_indices,
     std::uint64_t value_map_count,
-    const projection::projection_value_map_v1* value_maps,
+    const ::cellerator::layout::projection::projection_value_map_v1* value_maps,
     std::uint32_t residual_region_count, const std::uint64_t* projection_edge_ids,
     const std::uint32_t* sources, const std::uint32_t* destinations,
     const std::uint32_t* logical_source_to_physical,
@@ -94,7 +94,7 @@ __global__ void relation_ce_geo_residual_kernel(
     const std::uint64_t map_index = edge_map_indices[edge];
     if (map_index >= value_map_count) return;
     const auto map = value_maps[map_index];
-    if (map.region_kind != projection::physical_region_kind_v1::residual
+    if (map.region_kind != ::cellerator::layout::projection::physical_region_kind_v1::residual
         || map.region_index >= residual_region_count
         || map.logical_edge_id.value != projection_edge_ids[edge]) return;
     const auto source = sources[edge], destination = destinations[edge];
@@ -226,7 +226,7 @@ __global__ void pack_ce_geo_active_tiles_kernel(
     const std::uint64_t* item_offsets, const std::uint64_t* edge_ordinals,
     const std::uint64_t* gate_indices, const std::uint32_t* item_tile_work_indices,
     const std::uint64_t* edge_map_indices, std::uint64_t value_map_count,
-    const projection::projection_value_map_v1* value_maps,
+    const ::cellerator::layout::projection::projection_value_map_v1* value_maps,
     const std::uint32_t* active_tile_ids,
     const std::uint64_t* projection_edge_ids,
     const float* probabilities, const std::uint8_t* admitted,
@@ -241,8 +241,8 @@ __global__ void pack_ce_geo_active_tiles_kernel(
     const auto tile_work = item_tile_work_indices[item];
     const auto map_index = edge_map_indices[edge];
     if (tile_work >= active_tile_count || map_index >= value_map_count) return;
-    const projection::projection_value_map_v1 map = value_maps[map_index];
-    if (map.region_kind != projection::physical_region_kind_v1::mma
+    const ::cellerator::layout::projection::projection_value_map_v1 map = value_maps[map_index];
+    if (map.region_kind != ::cellerator::layout::projection::physical_region_kind_v1::mma
         || map.region_index != active_tile_ids[tile_work]
         || map.projection_slot >= 256u
         || map.logical_edge_id.value != projection_edge_ids[edge])
@@ -302,7 +302,7 @@ constexpr std::uint64_t invalid_sort_key = 0xffffffffffffffffull;
 __global__ void build_ce_geo_keys_kernel(
     const std::uint64_t* offsets, const std::uint64_t* ordinals,
     const std::uint64_t* gate_indices, const std::uint64_t* edge_map_indices,
-    const projection::projection_value_map_v1* maps,
+    const ::cellerator::layout::projection::projection_value_map_v1* maps,
     const std::uint32_t* tile_destination_groups,
     const std::uint64_t* edge_ids, const std::uint64_t* projection_edge_ids,
     const std::uint64_t* gate_ids,
@@ -320,7 +320,7 @@ __global__ void build_ce_geo_keys_kernel(
         || !admitted[gate] || gate_ordinals[gate] != edge
         || gate_ids[gate] != edge_ids[edge]) return;
     const auto map = maps[edge_map_indices[edge]];
-    if (map.region_kind != projection::physical_region_kind_v1::mma
+    if (map.region_kind != ::cellerator::layout::projection::physical_region_kind_v1::mma
         || map.region_index >= tile_count
         || map.logical_edge_id.value != projection_edge_ids[edge])
         return;
@@ -732,8 +732,8 @@ status_v1 relation_backward_cuda_v1(
 }
 
 status_v1 relation_forward_ce_geo_n64_cuda_v1(
-    const projection::physical_mma_hybrid_header_v1& projection_header,
-    const projection::projection_value_map_v1* device_value_maps,
+    const ::cellerator::layout::projection::MmaHybridLayoutV1& projection_header,
+    const ::cellerator::layout::projection::projection_value_map_v1* device_value_maps,
     std::uint64_t value_map_count,
     const std::uint64_t* device_edge_value_map_indices,
     const std::uint64_t* device_projection_edge_ids,
@@ -751,7 +751,7 @@ status_v1 relation_forward_ce_geo_n64_cuda_v1(
     if (!device_value_maps || !device_edge_value_map_indices
         || (edges.edge_count && !device_projection_edge_ids)
         || value_map_count != projection_header.value_map_count
-        || projection_header.schema_version != projection::physical_mma_hybrid_schema_version_v1
+        || projection_header.schema_version != ::cellerator::layout::projection::physical_mma_hybrid_schema_version_v1
         || projection_header.dense_width != width
         || projection_header.destination_group_count != physical_workset.destination_group_count
         || physical_workset.structure_epoch != edges.structure_epoch
@@ -871,13 +871,13 @@ std::uint64_t ce_geo_n64_compaction_temporary_bytes_v1(
 }
 
 status_v1 prepare_ce_geo_n64_workset_cuda_v1(
-    const projection::physical_mma_hybrid_header_v1& header,
+    const ::cellerator::layout::projection::MmaHybridLayoutV1& header,
     const edge_axis_view_v1& edges,
     const per_cell_edge_workset_view_v1& admitted,
     const edge_gate_values_view_v1& gates,
     const std::uint64_t* edge_map_indices,
     const std::uint64_t* projection_edge_ids,
-    const projection::projection_value_map_v1* maps,
+    const ::cellerator::layout::projection::projection_value_map_v1* maps,
     const std::uint32_t* tile_destination_groups,
     const std::uint32_t* tile_source_bases, std::uint32_t physical_sources,
     ce_geo_n64_workset_view_v1* output,
@@ -891,7 +891,7 @@ status_v1 prepare_ce_geo_n64_workset_cuda_v1(
         || (output->active_tile_capacity && (!output->active_tile_ids
             || !output->active_tile_source_bases))
         || !workset_matches(edges, admitted, gates)
-        || header.schema_version != projection::physical_mma_hybrid_schema_version_v1
+        || header.schema_version != ::cellerator::layout::projection::physical_mma_hybrid_schema_version_v1
         || header.dense_width != width || header.tile_count == 0
         || header.destination_group_count == 0
         || physical_sources != header.source_group_count * 16u

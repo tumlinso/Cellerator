@@ -74,9 +74,9 @@ atom_requirement_validation_result_v1 validate_atom_requirement_v1(
         || !valid_numeric(requirement.numeric.logical)
         || !valid_numeric(requirement.numeric.accumulation))
         return failure(atom_requirement_validation_code_v1::invalid_numeric);
-    if (requirement.index_width != local_index_width_v1::u16
-        && requirement.index_width != local_index_width_v1::u32
-        && requirement.index_width != local_index_width_v1::u64)
+    if (requirement.index_width != layout::LocalIndexWidth::u16
+        && requirement.index_width != layout::LocalIndexWidth::u32
+        && requirement.index_width != layout::LocalIndexWidth::u64)
         return failure(atom_requirement_validation_code_v1::invalid_index_width);
     if (!valid_identity(requirement.required_order))
         return failure(atom_requirement_validation_code_v1::invalid_order);

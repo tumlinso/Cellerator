@@ -116,6 +116,15 @@ calls keep their earlier behavior. `AnnDataView.align_features(...)` and
 `from_adata_bound(...)` perform explicit sparse-preserving boundary adaptation.
 Metadata does not automatically follow arbitrary neural transformations.
 
+Those are Python facade types with their existing Python meanings. In native
+C++, biological identity resolution remains in `biology::FeatureBinding`,
+ordered identities in `structure::OccurrenceCoordinates`, physical positions
+in `layout::OccurrenceMap`, and the prepared model mapping in
+`execution::FeatureSourceBinding`; see the [native guide](native_nn.qmd#bind-biological-identities-at-the-boundary).
+The Python `Axis` and `PreparedAlignment` APIs remain unchanged and are not
+aliases for those C++ types. Python's manifest reader continues to accept
+schema version 1 and explicitly rejects native version 2.
+
 `RelationAttention(width, heads=1, dropout=0.0)` supplies a concrete attention
 family. It supports ordinary dense source/target tensors and packed occurrences
 with optional group offsets and CSR support. Supplied relations select eligible

@@ -6,7 +6,7 @@ namespace cellerator::compute::operation::compatibility_detail {
 namespace {
 
 bool valid_projection(const core::projection_key &projection) noexcept {
-    return execution::valid_identity(projection.persistent)
+    return ::cellerator::structure::valid_identity(projection.persistent)
         && execution::valid_handle(projection.runtime)
         && projection.schema_version != 0u;
 }

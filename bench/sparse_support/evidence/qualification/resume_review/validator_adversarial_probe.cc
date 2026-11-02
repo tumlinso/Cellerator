@@ -1,4 +1,4 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <cassert>
 #include <cstddef>
@@ -7,10 +7,9 @@
 #include <iostream>
 #include <vector>
 
-namespace projection = cellerator::compute::projection;
-namespace math = cellerator::compute::math;
+namespace projection = cellerator::layout::projection;
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 bool validate_physical_mma_hybrid_image_v1_reference(
     const void*, std::size_t) noexcept;
 }
@@ -36,11 +35,11 @@ std::vector<unsigned char> build(const std::vector<std::uint32_t>& sources,
     projection::physical_mma_hybrid_build_request_v1 request{};
     request.structure_identity.identity_version = 1u;
     request.structure_identity.value = 0x123456789u;
-    request.source_order.kind = math::feature_order_kind::canonical;
+    request.source_order.kind = projection::feature_order_kind::canonical;
     request.source_order.feature_count = entities;
     request.source_order.feature_axis_identity_version = 1u;
     request.source_order.feature_axis_identity = 0x101u;
-    request.destination_order.kind = math::feature_order_kind::canonical;
+    request.destination_order.kind = projection::feature_order_kind::canonical;
     request.destination_order.feature_count = entities;
     request.destination_order.feature_axis_identity_version = 1u;
     request.destination_order.feature_axis_identity = 0x202u;
@@ -60,7 +59,7 @@ std::vector<unsigned char> build(const std::vector<std::uint32_t>& sources,
 
 void check_duplicate_physical_slot_rejection() {
     auto image = build({0u, 0u, 1u}, {0u, 1u, 0u}, 2u);
-    const auto header = load<projection::physical_mma_hybrid_header_v1>(image, 0u);
+    const auto header = load<projection::MmaHybridLayoutV1>(image, 0u);
     assert(header.tile_count == 1u && header.compact_slot_count >= 2u);
     auto first = load<projection::mma_compact_slot_v1>(
         image, header.compact_slot_offset, 0u);

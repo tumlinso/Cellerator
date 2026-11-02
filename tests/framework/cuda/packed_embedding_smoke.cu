@@ -1,4 +1,5 @@
 #include <Cellerator/modeling/cuda/packed_embedding.hh>
+#include <Cellerator/tensor/state_codes/operations.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -14,6 +15,8 @@
 #include <vector>
 
 namespace cuda = cellerator::modeling::cuda;
+namespace state_codes = cellerator::tensor::state_codes;
+namespace memory_cuda = cellerator::memory::cuda;
 
 #define CUDA_CHECK(expression) do { \
   const auto status_ = (expression); \
@@ -62,15 +65,15 @@ void close(float actual, float expected, float tolerance, const std::string& con
   }
 }
 
-float cast_to_table(float value, cuda::DType dtype) {
-  return dtype == cuda::DType::float16
+float cast_to_table(float value, memory_cuda::DType dtype) {
+  return dtype == memory_cuda::DType::float16
       ? __half2float(__float2half(value)) : value;
 }
 
 struct Fixture {
   std::uint32_t code_bits;
   std::uint32_t dimension;
-  cuda::DType dtype;
+  memory_cuda::DType dtype;
   std::uint32_t row_count = 3;
   std::uint32_t state_features = 3;
   std::uint32_t segment_count = 4;
@@ -92,7 +95,7 @@ struct Fixture {
   std::vector<float> expected_table_gradient;
   std::vector<float> expected_weight_gradient;
 
-  Fixture(std::uint32_t bits, std::uint32_t dim, cuda::DType value_type,
+  Fixture(std::uint32_t bits, std::uint32_t dim, memory_cuda::DType value_type,
           std::uint32_t segments = 4U, std::uint32_t occurrence_count = 8U)
       : code_bits(bits), dimension(dim), dtype(value_type),
         segment_count(segments) {
@@ -199,7 +202,7 @@ void run_case(const Fixture& fixture, bool benchmark = false) {
       " state_features=" + std::to_string(fixture.state_features) +
       " segments=" + std::to_string(fixture.segment_count) +
       " occurrences=" + std::to_string(fixture.occurrence_indices.size());
-  const auto stream = cuda::Stream(0);
+  const auto stream = memory_cuda::Stream(0);
   const std::uint32_t override_count = static_cast<std::uint32_t>(fixture.override_indices.size());
   const std::vector<std::uint32_t> host_override_count{override_count};
   Buffer<std::uint32_t> d_offsets(fixture.codebook_offsets.size()), d_features(fixture.feature_map.size());
@@ -232,20 +235,20 @@ void run_case(const Fixture& fixture, bool benchmark = false) {
   d_weights.upload(fixture.weights, stream.get());
   d_table_gradient.zero(stream.get());
 
-  cuda::QuantizationProfileView profile{
+  state_codes::ProfileView profile{
     d_offsets.get(), d_levels.get(), d_features.get(), 2, fixture.state_features,
     static_cast<std::uint32_t>(fixture.levels.size()), fixture.code_bits};
-  cuda::ConstOverrideView overrides{d_override_indices.get(), d_overrides.get(),
+  state_codes::ConstExactOverrideView overrides{d_override_indices.get(), d_overrides.get(),
                                       d_override_count.get(), override_count};
   cuda::PackedOccurrenceView occurrences{d_occurrences.get(), fixture.occurrence_indices.size(),
       d_weights.get(), fixture.weights.size(), d_segments.get(), fixture.segment_offsets.size(),
       static_cast<std::uint32_t>(fixture.occurrence_indices.size()), fixture.segment_count};
   cuda::PackedEmbeddingTableView table_view{d_table.get(), fixture.table.size(),
       d_table_offsets.get(), table_offsets.size(), fixture.dimension,
-      std::is_same_v<TableElement, __half> ? cuda::DType::float16 : cuda::DType::float32};
-  cuda::DeviceStatus status{d_status.get()};
-  CUDA_CHECK(cuda::reset_status(status, stream.get()));
-  CUDA_CHECK(cuda::validate_profile(profile, status, stream.get()));
+      std::is_same_v<TableElement, __half> ? memory_cuda::DType::float16 : memory_cuda::DType::float32};
+  state_codes::DeviceStatus status{d_status.get()};
+  CUDA_CHECK(state_codes::reset_status(status, stream.get()));
+  CUDA_CHECK(state_codes::validate_profile(profile, status, stream.get()));
   CUDA_CHECK(cuda::packed_embedding_bag_forward(
       {d_words.get(), fixture.packed_words.size()}, fixture.row_count, profile, overrides, true,
       occurrences, table_view, {d_output.get(), fixture.expected_output.size() * sizeof(TableElement), 0},
@@ -330,7 +333,7 @@ int main(int argc, char** argv) {
   if (argc == 2 && std::string(argv[1]) == "--reference-only") {
     for (const auto bits : {1U, 2U, 4U, 8U})
       for (const auto dimension : {7U, 33U})
-        for (const auto dtype : {cuda::DType::float16, cuda::DType::float32})
+        for (const auto dtype : {memory_cuda::DType::float16, memory_cuda::DType::float32})
           (void)Fixture(bits, dimension, dtype);
     std::cout << "packed embedding host oracle fixture passed\n";
     return 0;
@@ -341,15 +344,15 @@ int main(int argc, char** argv) {
   const bool performance = argc == 2 && std::string(argv[1]) == "--performance";
   for (const auto bits : {1U, 2U, 4U, 8U}) {
     for (const auto dimension : {7U, 33U}) {
-      for (const auto dtype : {cuda::DType::float16, cuda::DType::float32}) {
+      for (const auto dtype : {memory_cuda::DType::float16, memory_cuda::DType::float32}) {
         const Fixture fixture(bits, dimension, dtype);
-        if (dtype == cuda::DType::float16) run_case<__half>(fixture);
+        if (dtype == memory_cuda::DType::float16) run_case<__half>(fixture);
         else run_case<float>(fixture);
       }
     }
   }
   if (performance) {
-    const Fixture fixture(4U, 128U, cuda::DType::float32, 512U, 16384U);
+    const Fixture fixture(4U, 128U, memory_cuda::DType::float32, 512U, 16384U);
     run_case<float>(fixture, true);
   }
   std::cout << "packed embedding oracle smoke passed\n";

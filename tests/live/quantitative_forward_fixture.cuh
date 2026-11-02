@@ -2,7 +2,7 @@
 
 #include <Cellerator/compute/operation/builtin_catalog.hh>
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
-#include <Cellerator/compute/projection/physical_feature_major.hh>
+#include <Cellerator/layout/projection/feature_major.hh>
 #include <Cellerator/execution/program.hh>
 
 #include <cuda_fp16.h>
@@ -169,8 +169,8 @@ feature_major_host build_feature_major(const fixture_data &fixture) {
 }
 
 execution::program_axis make_axis(execution::axis_identity live,
-    execution::domain_id domain, execution::order_id order,
-    execution::geometry_id geometry, execution::partition_id partition) {
+    ::cellerator::structure::domain_id domain, ::cellerator::structure::order_id order,
+    ::cellerator::structure::geometry_id geometry, ::cellerator::structure::partition_id partition) {
     execution::persistent_axis_identity persistent{};
     persistent.header = {execution::biological_abi_version,
         execution::serialized_record_kind::persistent_axis_identity,
@@ -317,7 +317,7 @@ int main(int argc, char **argv) {
     require(properties.major == 7 && properties.minor == 0,
         "CE-LIVE-31 evidence requires the sm_70 V100 baseline");
 
-    execution::projection_id fmp_identity{
+    ::cellerator::structure::projection_id fmp_identity{
         0x31f0a5b9c8147001ull, 0xce1a1e31f0a5b9c8ull};
     execution::projection_handle fmp_handle{};
     require(execution::intern_identity(&registry, fmp_identity, &fmp_handle)
@@ -336,8 +336,8 @@ int main(int argc, char **argv) {
     upload(device_masks, host_projection.masks);
     upload(device_value_offsets, host_projection.value_offsets);
     upload(device_source_positions, host_projection.source_positions);
-    cm::feature_major_projection_view device_projection{};
-    auto &header = device_projection.header;
+    execution::FeatureMajorBinding device_projection{};
+    auto &header = device_projection.layout.header;
     header.payload_bytes = sizeof(header)
         + (host_projection.tile_offsets.size()
             + host_projection.features.size()
@@ -365,12 +365,12 @@ int main(int argc, char **argv) {
     header.value_size_bytes = sizeof(__half);
     device_projection.runtime_structure = relation.structure.identity;
     device_projection.runtime_projection = fmp_handle;
-    device_projection.payload_base = device_tile_offsets.data;
-    device_projection.tile_feature_offsets = device_tile_offsets.data;
-    device_projection.execution_feature_ids = device_features.data;
-    device_projection.participating_row_masks = device_masks.data;
-    device_projection.feature_value_offsets = device_value_offsets.data;
-    device_projection.source_value_positions = device_source_positions.data;
+    device_projection.layout.payload_base = device_tile_offsets.data;
+    device_projection.layout.tile_feature_offsets = device_tile_offsets.data;
+    device_projection.layout.execution_feature_ids = device_features.data;
+    device_projection.layout.participating_row_masks = device_masks.data;
+    device_projection.layout.feature_value_offsets = device_value_offsets.data;
+    device_projection.layout.source_value_positions = device_source_positions.data;
 
     device_buffer<__half> device_values_1(fixture.nnz);
     device_buffer<__half> device_values_2(fixture.nnz);
@@ -409,8 +409,8 @@ int main(int argc, char **argv) {
         {0xce310103u, 1u}, {0xce310104u, 1u});
     const core::projection_key projection_key{fmp_identity, fmp_handle,
         core::projection_kind::native_feature_major,
-        cm::feature_major_projection_schema_version,
-        cm::feature_major_projection_variant};
+        ::cellerator::layout::projection::feature_major_projection_schema_version,
+        ::cellerator::layout::projection::feature_major_projection_variant};
     const execution::activated_projection_reference projection =
         execution::program_projection(projection_key, device_projection);
     constexpr std::uint32_t widths[]{1u, 16u, 17u, 31u, 32u, 48u, 64u};

@@ -59,7 +59,7 @@ struct native_parameter_descriptor {
     parameter_descriptor storage{};
     native_parameter_kind kind = native_parameter_kind::relation_values;
     execution::structure_handle structure{};
-    execution::structure_epoch structure_epoch{};
+    ::cellerator::structure::structure_epoch structure_epoch{};
     execution::value_generation generation{};
     execution::axis_identity axes[2]{};
     std::uint8_t axis_count = 0u;

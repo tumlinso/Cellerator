@@ -41,7 +41,7 @@ void require(bool condition, const char *message) {
     std::abort();
 }
 
-void require(cm::physical_view_status status, const char *message) {
+void require(::cellerator::layout::projection::physical_view_status status, const char *message) {
     if (status) return;
     std::cerr << "native_training_slice_test: " << message
               << " (code=" << static_cast<unsigned>(status.code)
@@ -134,17 +134,17 @@ struct fixture {
     std::vector<__half> values;
     unsigned char image_byte = 0u;
     cp::persistent_packing_payload_view source{};
-    execution::structure_id structure_id{0x1188u, 0x1288u};
+    ::cellerator::structure::structure_id structure_id{0x1188u, 0x1288u};
     execution::structure_handle structure_handle{23u, 1u};
-    execution::structure_epoch epoch{8u};
-    execution::projection_id forward_id{0x3188u, 0x3288u};
+    ::cellerator::structure::structure_epoch epoch{8u};
+    ::cellerator::structure::projection_id forward_id{0x3188u, 0x3288u};
     execution::projection_handle forward_handle{43u, 1u};
-    execution::projection_id transpose_id{0x5188u, 0x5288u};
+    ::cellerator::structure::projection_id transpose_id{0x5188u, 0x5288u};
     execution::projection_handle transpose_handle{63u, 1u};
     std::vector<unsigned char> forward_payload;
     std::vector<unsigned char> transpose_payload;
-    cm::feature_major_projection_view forward_view{};
-    cm::transpose_projection_view transpose_view{};
+    execution::FeatureMajorBinding forward_view{};
+    execution::TransposeBinding transpose_view{};
 
     fixture() {
         for (float value : {0.5f, -0.25f, 0.75f, 0.125f,
@@ -208,29 +208,29 @@ struct fixture {
         source.tiles.row_block_value_offsets = value_offsets.data();
         source.tiles.values = values.data();
 
-        cm::feature_major_projection_build_request forward_request{};
-        forward_request.structure_identity = structure_id;
+        execution::FeatureMajorBindingBuildRequest forward_request{};
+        forward_request.layout.structure_identity = structure_id;
+        forward_request.layout.structure_epoch_value = epoch;
+        forward_request.layout.projection_identity = forward_id;
+        forward_request.layout.source = source;
         forward_request.runtime_structure = structure_handle;
-        forward_request.structure_epoch_value = epoch;
-        forward_request.projection_identity = forward_id;
         forward_request.runtime_projection = forward_handle;
-        forward_request.source = source;
-        cm::feature_major_projection_requirements forward_required{};
-        require(cm::query_feature_major_projection_requirements_host(
+        ::cellerator::layout::projection::feature_major_projection_requirements forward_required{};
+        require(execution::query_feature_major_binding_requirements_host(
             forward_request, &forward_required), "query FMP1");
         forward_payload.resize(forward_required.payload_bytes);
-        require(cm::build_feature_major_projection_host(forward_request,
+        require(execution::build_feature_major_binding_host(forward_request,
             {forward_payload.data(), forward_payload.size()}, &forward_view),
             "build FMP1");
-        cm::transpose_projection_build_request transpose_request{};
+        execution::TransposeBindingBuildRequest transpose_request{};
         transpose_request.projection_identity = transpose_id;
         transpose_request.runtime_projection = transpose_handle;
-        transpose_request.forward = forward_view;
-        cm::transpose_projection_requirements transpose_required{};
-        require(cm::query_transpose_projection_requirements_host(
+        transpose_request.forward = &forward_view;
+        ::cellerator::layout::projection::transpose_projection_requirements transpose_required{};
+        require(execution::query_transpose_binding_requirements_host(
             transpose_request, &transpose_required), "query CTP1");
         transpose_payload.resize(transpose_required.payload_bytes);
-        require(cm::build_transpose_projection_host(transpose_request,
+        require(execution::build_transpose_binding_host(transpose_request,
             {transpose_payload.data(), transpose_payload.size()},
             &transpose_view), "build CTP1");
     }
@@ -337,8 +337,8 @@ struct device_fixture {
     const fixture &host;
     device_array<unsigned char> forward_payload;
     device_array<unsigned char> transpose_payload;
-    cm::feature_major_projection_view forward{};
-    cm::transpose_projection_view transpose{};
+    execution::FeatureMajorBinding forward{};
+    execution::TransposeBinding transpose{};
     std::vector<__half> packed_values;
     device_array<__half> values;
     device_array<float> input;
@@ -363,13 +363,13 @@ struct device_fixture {
             f.forward_payload.size(), cudaMemcpyHostToDevice), "upload FMP1");
         require_cuda(cudaMemcpy(transpose_payload.data, f.transpose_payload.data(),
             f.transpose_payload.size(), cudaMemcpyHostToDevice), "upload CTP1");
-        require(cm::rebind_feature_major_projection(f.forward_view,
+        require(execution::rebind_feature_major_binding(f.forward_view,
             forward_payload.data, f.forward_payload.size(), &forward),
             "rebind FMP1");
-        require(cm::rebind_transpose_projection(f.transpose_view,
+        require(execution::rebind_transpose_binding(f.transpose_view,
             transpose_payload.data, f.transpose_payload.size(), &transpose),
             "rebind CTP1");
-        require(cm::pack_feature_major_values_host(f.forward_view,
+        require(::cellerator::layout::projection::pack_feature_major_values_host(f.forward_view.layout,
             f.values.data(), f.values.size() * sizeof(__half),
             {packed_values.data(), packed_values.size() * sizeof(__half)}),
             "pack learned values");
@@ -530,7 +530,8 @@ void run_correctness(const fixture &f, int device_ordinal) {
     const std::size_t sparse_offset = 5u * 16u * 2u + 5u;
     for (std::size_t position = 0u; position < 8u; ++position) {
         values_after[position] = __half2float(packed_after[position]);
-        const std::uint32_t logical = f.forward_view.source_value_positions[position];
+        const std::uint32_t logical =
+            f.forward_view.layout.source_value_positions[position];
         expected_packed[position] = expected.updated_values[logical];
         gradient_packed[position] = expected.sparse_gradient[logical];
     }
@@ -579,8 +580,8 @@ void run_correctness(const fixture &f, int device_ordinal) {
         "memory after steady training");
     require(free_before == free_after && total_before == total_after
         && plane.generation.value == 3u
-        && prepared.forward.payload_base == device.forward_payload.data
-        && prepared.transpose.payload_base == device.transpose_payload.data,
+        && prepared.forward.layout.payload_base == device.forward_payload.data
+        && prepared.transpose.layout.payload_base == device.transpose_payload.data,
         "steady training allocated or rebuilt topology");
     require(readiness.generation() == 3u
             && runtime::clear_value_readiness(&readiness)

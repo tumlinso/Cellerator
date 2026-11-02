@@ -1,10 +1,13 @@
 #pragma once
 
-#include <Cellerator/biology/coordinates.hh>
 #include <Cellerator/biology/feature_binding.hh>
 #include <Cellerator/cell.hh>
+#include <Cellerator/cells/access.hh>
 #include <Cellerator/cells/event.hh>
 #include <Cellerator/cells/expression.hh>
+#include <Cellerator/execution/dependency/feature_binding.hh>
+#include <Cellerator/layout/axis_binding.hh>
+#include <Cellerator/layout/occurrence_map.hh>
 #include <Cellerator/modeling/dynamical.hh>
 #include <Cellerator/modeling/model.hh>
 #include <Cellerator/nn/attention.hh>
@@ -20,3 +23,4 @@
 #include <Cellerator/nn/relations.hh>
 #include <Cellerator/nn/supervision.hh>
 #include <Cellerator/nn/types.hh>
+#include <Cellerator/structure/coordinates.hh>

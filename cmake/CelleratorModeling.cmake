@@ -1,6 +1,8 @@
 include(GNUInstallDirs)
 
-option(CELLERATOR_ENABLE_MODELING "Build host sparse modeling primitives" ${CELLERATOR_ENABLE_SPARSE_SUPPORT})
+option(CELLERATOR_ENABLE_MODELING
+    "Expose the C++ modeling API over native data and geometry owners"
+    ${CELLERATOR_ENABLE_SPARSE_SUPPORT})
 if(NOT CELLERATOR_ENABLE_MODELING)
     return()
 endif()
@@ -8,17 +10,16 @@ if(NOT TARGET Cellerator::support OR NOT TARGET Cellerator::indexing)
     message(FATAL_ERROR "CELLERATOR_ENABLE_MODELING requires CELLERATOR_ENABLE_SPARSE_SUPPORT")
 endif()
 
-add_library(cellerator_modeling STATIC
-    ${PROJECT_SOURCE_DIR}/src/modeling/sparse_relation.cc)
+add_library(cellerator_modeling INTERFACE)
 add_library(Cellerator::modeling ALIAS cellerator_modeling)
 set_target_properties(cellerator_modeling PROPERTIES
-    POSITION_INDEPENDENT_CODE ON EXPORT_NAME modeling)
-target_compile_features(cellerator_modeling PUBLIC cxx_std_17)
-target_include_directories(cellerator_modeling PUBLIC
+    EXPORT_NAME modeling)
+target_compile_features(cellerator_modeling INTERFACE cxx_std_20)
+target_include_directories(cellerator_modeling INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(cellerator_modeling PUBLIC
-    Cellerator::libCellerator Cellerator::support Cellerator::indexing)
+target_link_libraries(cellerator_modeling INTERFACE
+    Cellerator::libCellerator Cellerator::native_data)
 
 if(CELLERATOR_ENABLE_PYTHON)
     # Python/pybind11 are already discovered by CelleratorPython.cmake.

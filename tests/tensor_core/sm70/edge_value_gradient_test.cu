@@ -7,7 +7,7 @@
 #include <cmath>
 #include <cstdint>
 
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
 
 namespace { void require_cuda(cudaError_t status) { assert(status == cudaSuccess); } }

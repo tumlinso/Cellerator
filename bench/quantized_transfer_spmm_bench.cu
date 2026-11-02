@@ -1,7 +1,8 @@
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <Cellerator/compute/operators/sparse/ops.hh>
 #include <Cellerator/compute/candidate/sparse/project.hh>
-#include <Cellerator/quantized/api.cuh>
+#include <Cellerator/ops/quantized/api.cuh>
+#include <Cellerator/memory/cuda/shared_buffer.hh>
 #include <CellShard/formats/blocked_ell.cuh>
 #include "benchmark_mutex.hh"
 
@@ -22,10 +23,12 @@
 #include <vector>
 
 namespace runtime = ::cellerator::runtime;
+namespace memory_cuda = ::cellerator::memory::cuda;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
 namespace sparse_project = ::cellerator::compute::sparse::project;
 namespace cs = ::cellshard;
-namespace msq = ::cellerator::quantized;
+namespace msq = ::cellerator::tensor::quantized;
+namespace mso = ::cellerator::ops::quantized;
 
 namespace {
 
@@ -152,7 +155,7 @@ bench_config parse_args(int argc, char **argv) {
     require(cfg.out_cols != 0u, "out_cols must be positive");
     require(cfg.block_size != 0u, "block_size must be positive");
     require(cfg.iters != 0u, "iters must be positive");
-    require(msq::valid_bits(static_cast<int>(cfg.bits)), "bits must be 1, 2, 4, or 8");
+    require(mso::valid_bits(static_cast<int>(cfg.bits)), "bits must be 1, 2, 4, or 8");
     require(cfg.policy == "per_gene_affine" || cfg.policy == "column_scale_row_offset",
             "policy must be per_gene_affine or column_scale_row_offset");
     require(cfg.generator == "random" || cfg.generator == "block-structured",
@@ -430,7 +433,7 @@ bool pack_quantized_payload_impl(
 
     if (cfg.policy == "per_gene_affine") {
         out->decode_policy = msq::blocked_ell::decode_policy_per_gene_affine;
-        auto matrix = msq::blocked_ell::make_matrix<Bits>(
+        auto matrix = msq::make_blocked_ell_view<Bits>(
             static_cast<int>(blocked.rows),
             static_cast<int>(blocked.cols),
             static_cast<int>(blocked.nnz),
@@ -440,11 +443,11 @@ bool pack_quantized_payload_impl(
             blocked.blockColIdx,
             out->packed_values.data(),
             msq::make_per_gene_affine(out->column_scales.data(), out->column_offsets.data()));
-        return msq::blocked_ell::pack_row_major_values(&matrix, slot_values.data()) == 0;
+        return msq::blocked_ell::pack_row_major_values(&matrix, out->packed_values.data(), slot_values.data()) == 0;
     }
 
     out->decode_policy = msq::blocked_ell::decode_policy_column_scale_row_offset;
-    auto matrix = msq::blocked_ell::make_matrix<Bits>(
+    auto matrix = msq::make_blocked_ell_view<Bits>(
         static_cast<int>(blocked.rows),
         static_cast<int>(blocked.cols),
         static_cast<int>(blocked.nnz),
@@ -454,7 +457,7 @@ bool pack_quantized_payload_impl(
         blocked.blockColIdx,
         out->packed_values.data(),
         msq::make_column_scale_row_offset(out->column_scales.data(), out->row_offsets.data()));
-    return msq::blocked_ell::pack_row_major_values(&matrix, slot_values.data()) == 0;
+    return msq::blocked_ell::pack_row_major_values(&matrix, out->packed_values.data(), slot_values.data()) == 0;
 }
 
 quantized_host_payload build_quantized_payload(
@@ -473,7 +476,7 @@ quantized_host_payload build_quantized_payload(
         calibrate_column_scale_row_offset(blocked, slot_values, slot_columns, max_code, &out.column_scales, &out.row_offsets);
     }
 
-    const bool ok = msq::dispatch_bits(static_cast<int>(cfg.bits), [&](auto bit_tag) {
+    const bool ok = mso::dispatch_bits(static_cast<int>(cfg.bits), [&](auto bit_tag) {
         constexpr int kBits = decltype(bit_tag)::value;
         return pack_quantized_payload_impl<kBits>(blocked, slot_values, cfg, &out);
     });
@@ -512,18 +515,15 @@ bench_result run_blocked_ell_case(
     runtime::init(&ctx, 0);
     runtime::init(&cache);
 
-    auto block_col_idx = runtime::allocate_device_buffer<std::uint32_t>(
-        static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
-    auto blocked_values = runtime::allocate_device_buffer<__half>(static_cast<std::size_t>(blocked.rows) * blocked.ell_cols);
-    auto rhs = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
-    auto out_dev = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.rows) * cfg.out_cols);
+    auto block_col_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked), ctx.device);
+    auto blocked_values = memory_cuda::SharedDeviceBuffer<__half>::allocate(static_cast<std::size_t>(blocked.rows) * blocked.ell_cols, ctx.device);
+    auto rhs = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(blocked.cols) * cfg.out_cols, ctx.device);
+    auto out_dev = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(blocked.rows) * cfg.out_cols, ctx.device);
 
     const auto upload_start = std::chrono::steady_clock::now();
-    runtime::upload_device_buffer(&block_col_idx,
-                                   blocked.blockColIdx,
-                                   static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
-    runtime::upload_device_buffer(&blocked_values, blocked.val, static_cast<std::size_t>(blocked.rows) * blocked.ell_cols);
-    runtime::upload_device_buffer(&rhs, rhs_host, static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
+    block_col_idx.upload_async(blocked.blockColIdx, static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    blocked_values.upload_async(blocked.val, static_cast<std::size_t>(blocked.rows) * blocked.ell_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    rhs.upload_async(rhs_host, static_cast<std::size_t>(blocked.cols) * cfg.out_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked upload)");
     const auto upload_stop = std::chrono::steady_clock::now();
 
@@ -531,16 +531,16 @@ bench_result run_blocked_ell_case(
         sparse_project::blocked_ell_spmm_fwd_f16_f32_lib(ctx,
                                                          &cache,
                                                          blocked.val,
-                                                         block_col_idx.data,
-                                                         blocked_values.data,
+                                                         block_col_idx.data(),
+                                                         blocked_values.data(),
                                                          blocked.rows,
                                                          blocked.cols,
                                                          blocked.block_size,
                                                          blocked.ell_cols,
-                                                         rhs.data,
+                                                         rhs.data(),
                                                          cfg.out_cols,
                                                          cfg.out_cols,
-                                                         out_dev.data,
+                                                         out_dev.data(),
                                                          cfg.out_cols);
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked warmup)");
@@ -550,23 +550,24 @@ bench_result run_blocked_ell_case(
         sparse_project::blocked_ell_spmm_fwd_f16_f32_lib(ctx,
                                                          &cache,
                                                          blocked.val,
-                                                         block_col_idx.data,
-                                                         blocked_values.data,
+                                                         block_col_idx.data(),
+                                                         blocked_values.data(),
                                                          blocked.rows,
                                                          blocked.cols,
                                                          blocked.block_size,
                                                          blocked.ell_cols,
-                                                         rhs.data,
+                                                         rhs.data(),
                                                          cfg.out_cols,
                                                          cfg.out_cols,
-                                                         out_dev.data,
+                                                         out_dev.data(),
                                                          cfg.out_cols);
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked timed)");
     const auto kernel_stop = std::chrono::steady_clock::now();
 
     out.output.resize(static_cast<std::size_t>(blocked.rows) * cfg.out_cols, 0.0f);
-    runtime::download_device_buffer(out_dev, out.output.data(), out.output.size());
+    out_dev.download_async(out.output.data(), out.output.size(), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(download)");
 
     out.payload_bytes =
         static_cast<std::uint64_t>(cs::sparse::row_block_count(&blocked))
@@ -597,39 +598,36 @@ bench_result run_quantized_case(
     out.bits = cfg.bits;
     runtime::init(&ctx, 0);
 
-    auto block_col_idx = runtime::allocate_device_buffer<std::uint32_t>(
-        static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
-    auto packed_values = runtime::allocate_device_buffer<std::uint8_t>(payload.packed_values.size());
-    auto column_scales = runtime::allocate_device_buffer<float>(payload.column_scales.size());
-    auto rhs = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
-    auto out_dev = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.rows) * cfg.out_cols);
-    runtime::device_buffer<float> column_offsets;
-    runtime::device_buffer<float> row_offsets;
+    auto block_col_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked), ctx.device);
+    auto packed_values = memory_cuda::SharedDeviceBuffer<std::uint8_t>::allocate(payload.packed_values.size(), ctx.device);
+    auto column_scales = memory_cuda::SharedDeviceBuffer<float>::allocate(payload.column_scales.size(), ctx.device);
+    auto rhs = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(blocked.cols) * cfg.out_cols, ctx.device);
+    auto out_dev = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(blocked.rows) * cfg.out_cols, ctx.device);
+    memory_cuda::SharedDeviceBuffer<float> column_offsets;
+    memory_cuda::SharedDeviceBuffer<float> row_offsets;
 
     if (!payload.column_offsets.empty()) {
-        column_offsets = runtime::allocate_device_buffer<float>(payload.column_offsets.size());
+        column_offsets = memory_cuda::SharedDeviceBuffer<float>::allocate(payload.column_offsets.size(), ctx.device);
     }
     if (!payload.row_offsets.empty()) {
-        row_offsets = runtime::allocate_device_buffer<float>(payload.row_offsets.size());
+        row_offsets = memory_cuda::SharedDeviceBuffer<float>::allocate(payload.row_offsets.size(), ctx.device);
     }
 
     const auto upload_start = std::chrono::steady_clock::now();
-    runtime::upload_device_buffer(&block_col_idx,
-                                   blocked.blockColIdx,
-                                   static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
-    runtime::upload_device_buffer(&packed_values, payload.packed_values.data(), payload.packed_values.size());
-    runtime::upload_device_buffer(&column_scales, payload.column_scales.data(), payload.column_scales.size());
+    block_col_idx.upload_async(blocked.blockColIdx, static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    packed_values.upload_async(payload.packed_values.data(), payload.packed_values.size(), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    column_scales.upload_async(payload.column_scales.data(), payload.column_scales.size(), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     if (!payload.column_offsets.empty()) {
-        runtime::upload_device_buffer(&column_offsets, payload.column_offsets.data(), payload.column_offsets.size());
+        column_offsets.upload_async(payload.column_offsets.data(), payload.column_offsets.size(), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     }
     if (!payload.row_offsets.empty()) {
-        runtime::upload_device_buffer(&row_offsets, payload.row_offsets.data(), payload.row_offsets.size());
+        row_offsets.upload_async(payload.row_offsets.data(), payload.row_offsets.size(), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     }
-    runtime::upload_device_buffer(&rhs, rhs_host, static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
+    rhs.upload_async(rhs_host, static_cast<std::size_t>(blocked.cols) * cfg.out_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(quantized upload)");
     const auto upload_stop = std::chrono::steady_clock::now();
 
-    sparse_ops::quantized_blocked_ell_view view{};
+    ::cellerator::tensor::quantized::RuntimeBlockedEllView view{};
     view.rows = blocked.rows;
     view.cols = blocked.cols;
     view.nnz = blocked.nnz;
@@ -638,26 +636,27 @@ bench_result run_quantized_case(
     view.row_stride_bytes = payload.row_stride_bytes;
     view.bits = cfg.bits;
     view.decode_policy = payload.decode_policy;
-    view.block_col_idx = block_col_idx.data;
-    view.packed_values = packed_values.data;
-    view.column_scales = column_scales.data;
-    view.column_offsets = payload.column_offsets.empty() ? nullptr : column_offsets.data;
-    view.row_offsets = payload.row_offsets.empty() ? nullptr : row_offsets.data;
+    view.block_col_idx = block_col_idx.data();
+    view.packed_values = packed_values.data();
+    view.column_scales = column_scales.data();
+    view.column_offsets = payload.column_offsets.empty() ? nullptr : column_offsets.data();
+    view.row_offsets = payload.row_offsets.empty() ? nullptr : row_offsets.data();
 
     for (std::uint32_t i = 0u; i < cfg.warmup; ++i) {
-        sparse_project::quantized_blocked_ell_spmm_fwd_f32(ctx, view, rhs.data, cfg.out_cols, cfg.out_cols, out_dev.data, cfg.out_cols);
+        sparse_project::quantized_blocked_ell_spmm_fwd_f32(ctx, view, rhs.data(), cfg.out_cols, cfg.out_cols, out_dev.data(), cfg.out_cols);
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(quantized warmup)");
 
     const auto kernel_start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0u; i < cfg.iters; ++i) {
-        sparse_project::quantized_blocked_ell_spmm_fwd_f32(ctx, view, rhs.data, cfg.out_cols, cfg.out_cols, out_dev.data, cfg.out_cols);
+        sparse_project::quantized_blocked_ell_spmm_fwd_f32(ctx, view, rhs.data(), cfg.out_cols, cfg.out_cols, out_dev.data(), cfg.out_cols);
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(quantized timed)");
     const auto kernel_stop = std::chrono::steady_clock::now();
 
     out.output.resize(static_cast<std::size_t>(blocked.rows) * cfg.out_cols, 0.0f);
-    runtime::download_device_buffer(out_dev, out.output.data(), out.output.size());
+    out_dev.download_async(out.output.data(), out.output.size(), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(download)");
 
     out.payload_bytes =
         static_cast<std::uint64_t>(cs::sparse::row_block_count(&blocked))

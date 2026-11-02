@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compute/sampling.hh>
-#include <Cellerator/matrix/compressed.cuh>
+#include <Cellerator/interop/formats/compressed.cuh>
 
 #include <cstdint>
 #include <memory>
@@ -35,7 +35,7 @@ struct sampled_csr_image_view {
 std::size_t sampled_csr_image_bytes(std::uint64_t sampled_rows,
                                     std::uint64_t nnz) noexcept;
 bool materialize_sampled_csr_image(
-    const ::cellerator::matrix::compressed *source,
+    const ::cellerator::interop::formats::CompressedPayload *source,
     const sample_selection_view &selection,
     ::cellerator::memory::image_buffer image,
     sampled_csr_image_view *out,
@@ -103,7 +103,7 @@ private:
     sample_provenance provenance_;
 
     friend bool materialize_sampled_csr_structure(
-        const ::cellerator::matrix::compressed *,
+        const ::cellerator::interop::formats::CompressedPayload *,
         const sample_plan &,
         owned_sampled_csr_structure *,
         std::string *);
@@ -118,7 +118,7 @@ private:
 // caller supplies the selected rows in another order. Each complete source row
 // is copied structurally; expression values are neither retained nor exposed.
 bool materialize_sampled_csr_structure(
-    const ::cellerator::matrix::compressed *source,
+    const ::cellerator::interop::formats::CompressedPayload *source,
     const sample_plan &plan,
     owned_sampled_csr_structure *out,
     std::string *error = nullptr);

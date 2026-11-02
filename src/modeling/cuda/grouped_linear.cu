@@ -1,4 +1,5 @@
 #include <Cellerator/modeling/cuda/grouped_linear.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 
 #include <algorithm>
 #include <cmath>
@@ -6,6 +7,7 @@
 #include <string>
 
 namespace cellerator::modeling::cuda {
+namespace mc = ::cellerator::memory::cuda;
 namespace {
 
 void check_cublas(cublasStatus_t status, const char* operation) {
@@ -14,46 +16,46 @@ void check_cublas(cublasStatus_t status, const char* operation) {
                                  std::to_string(static_cast<int>(status)));
 }
 
-std::size_t matrix_bytes(std::int64_t rows, std::int64_t columns, DType dtype) {
+std::size_t matrix_bytes(std::int64_t rows, std::int64_t columns, mc::DType dtype) {
     if (rows < 0 || columns < 0 ||
         (columns != 0 && static_cast<std::uint64_t>(rows) >
                              std::numeric_limits<std::size_t>::max() /
                                  static_cast<std::uint64_t>(columns)))
         throw std::invalid_argument("grouped linear matrix shape overflows");
-    return checked_bytes(static_cast<std::size_t>(rows) *
+    return mc::checked_bytes(static_cast<std::size_t>(rows) *
                              static_cast<std::size_t>(columns),
-                         item_size(dtype));
+                         mc::item_size(dtype));
 }
 
-bool overlaps(ConstDeviceView a, std::size_t a_bytes,
-              ConstDeviceView b, std::size_t b_bytes) noexcept {
+bool overlaps(mc::ConstDeviceView a, std::size_t a_bytes,
+              mc::ConstDeviceView b, std::size_t b_bytes) noexcept {
     if (!a_bytes || !b_bytes) return false;
     const auto ap = reinterpret_cast<std::uintptr_t>(a.data);
     const auto bp = reinterpret_cast<std::uintptr_t>(b.data);
     return ap <= bp ? bp - ap < a_bytes : ap - bp < b_bytes;
 }
 
-void check_disjoint(ConstDeviceView a, std::size_t a_bytes,
-                    ConstDeviceView b, std::size_t b_bytes,
+void check_disjoint(mc::ConstDeviceView a, std::size_t a_bytes,
+                    mc::ConstDeviceView b, std::size_t b_bytes,
                     const char* description) {
     if (overlaps(a, a_bytes, b, b_bytes))
         throw std::invalid_argument(std::string(description) + " buffers overlap");
 }
 
-void check_aligned(ConstDeviceView view, DType dtype, const char* description) {
-    if (view.data && reinterpret_cast<std::uintptr_t>(view.data) % item_size(dtype))
+void check_aligned(mc::ConstDeviceView view, mc::DType dtype, const char* description) {
+    if (view.data && reinterpret_cast<std::uintptr_t>(view.data) % mc::item_size(dtype))
         throw std::invalid_argument(std::string(description) + " is misaligned");
 }
 
-ConstDeviceView as_const(DeviceView view) noexcept {
+mc::ConstDeviceView as_const(mc::DeviceView view) noexcept {
     return {view.data, view.bytes, view.device};
 }
 
-cudaDataType_t data_type(DType dtype) {
-    return dtype == DType::float16 ? CUDA_R_16F : CUDA_R_32F;
+cudaDataType_t data_type(mc::DType dtype) {
+    return dtype == mc::DType::float16 ? CUDA_R_16F : CUDA_R_32F;
 }
 
-void gemm(cublasHandle_t handle, DType dtype,
+void gemm(cublasHandle_t handle, mc::DType dtype,
           cublasOperation_t trans_a, cublasOperation_t trans_b,
           int m, int n, int k, const void* a, int lda,
           const void* b, int ldb, void* c, int ldc, float beta) {
@@ -71,8 +73,8 @@ void gemm(cublasHandle_t handle, DType dtype,
 GroupedLinear::GroupedLinear(std::int64_t input_features,
                              std::int64_t output_features,
                              std::vector<std::int64_t> row_offsets,
-                             std::vector<ConstDeviceView> expert_weights,
-                             DType dtype, int device)
+                             std::vector<mc::ConstDeviceView> expert_weights,
+                             mc::DType dtype, int device)
     : input_features_(input_features), output_features_(output_features),
       row_offsets_(std::move(row_offsets)), weights_(std::move(expert_weights)),
       dtype_(dtype), device_(device) {
@@ -91,15 +93,15 @@ GroupedLinear::GroupedLinear(std::int64_t input_features,
             throw std::invalid_argument("expert segment exceeds cuBLAS integer dimensions");
     const auto weight_bytes = matrix_bytes(output_features_, input_features_, dtype_);
     for (const auto& weight : weights_) {
-        require_view(weight, weight_bytes, device_, "grouped linear expert weight");
-        const auto alignment = item_size(dtype_);
+        mc::require_view(weight, weight_bytes, device_, "grouped linear expert weight");
+        const auto alignment = mc::item_size(dtype_);
         if (reinterpret_cast<std::uintptr_t>(weight.data) % alignment)
             throw std::invalid_argument("grouped linear weight is misaligned");
     }
 
-    DeviceGuard guard(device_);
+    mc::DeviceGuard guard(device_);
     check_cublas(cublasCreate(&handle_), "create grouped linear cuBLAS handle");
-    const auto mode = dtype_ == DType::float16 ? CUBLAS_TENSOR_OP_MATH : CUBLAS_DEFAULT_MATH;
+    const auto mode = dtype_ == mc::DType::float16 ? CUBLAS_TENSOR_OP_MATH : CUBLAS_DEFAULT_MATH;
     const auto status = cublasSetMathMode(handle_, mode);
     if (status != CUBLAS_STATUS_SUCCESS) {
         cublasDestroy(handle_);
@@ -119,20 +121,20 @@ GroupedLinear::~GroupedLinear() noexcept {
     }
 }
 
-void GroupedLinear::set_stream(const Stream& stream) const {
+void GroupedLinear::set_stream(const mc::Stream& stream) const {
     if (stream.device() != device_)
         throw std::invalid_argument("grouped linear/stream device mismatch");
-    DeviceGuard guard(device_);
+    mc::DeviceGuard guard(device_);
     check_cublas(cublasSetStream(handle_, stream.get()), "bind grouped linear stream");
 }
 
-void GroupedLinear::forward(ConstDeviceView input, DeviceView output,
-                            const Stream& stream) const {
+void GroupedLinear::forward(mc::ConstDeviceView input, mc::DeviceView output,
+                            const mc::Stream& stream) const {
     const auto total_rows = row_offsets_.back();
     const auto input_bytes = matrix_bytes(total_rows, input_features_, dtype_);
     const auto output_bytes = matrix_bytes(total_rows, output_features_, dtype_);
-    require_view(input, input_bytes, device_, "grouped linear input");
-    require_view(output, output_bytes, device_, "grouped linear output");
+    mc::require_view(input, input_bytes, device_, "grouped linear input");
+    mc::require_view(output, output_bytes, device_, "grouped linear output");
     check_aligned(input, dtype_, "grouped linear input");
     check_aligned(output, dtype_, "grouped linear output");
     check_disjoint(input, input_bytes, output, output_bytes, "grouped linear input/output");
@@ -140,8 +142,8 @@ void GroupedLinear::forward(ConstDeviceView input, DeviceView output,
         check_disjoint(output, output_bytes, weight, matrix_bytes(output_features_, input_features_, dtype_),
                        "grouped linear output/weight");
     set_stream(stream);
-    DeviceGuard guard(device_);
-    const auto type_size = item_size(dtype_);
+    mc::DeviceGuard guard(device_);
+    const auto type_size = mc::item_size(dtype_);
     for (std::size_t e = 0; e < weights_.size(); ++e) {
         const auto rows = row_offsets_[e + 1] - row_offsets_[e];
         if (rows == 0) continue;
@@ -159,13 +161,13 @@ void GroupedLinear::forward(ConstDeviceView input, DeviceView output,
     }
 }
 
-void GroupedLinear::backward(ConstDeviceView input,
-                             ConstDeviceView output_gradient,
-                             DeviceView input_gradient,
-                             const std::vector<DeviceView>& weight_gradients,
+void GroupedLinear::backward(mc::ConstDeviceView input,
+                             mc::ConstDeviceView output_gradient,
+                             mc::DeviceView input_gradient,
+                             const std::vector<mc::DeviceView>& weight_gradients,
                              GradientMode input_gradient_mode,
                              GradientMode weight_gradient_mode,
-                             const Stream& stream) const {
+                             const mc::Stream& stream) const {
     if ((input_gradient_mode != GradientMode::overwrite &&
          input_gradient_mode != GradientMode::accumulate) ||
         (weight_gradient_mode != GradientMode::overwrite &&
@@ -177,9 +179,9 @@ void GroupedLinear::backward(ConstDeviceView input,
     const auto input_bytes = matrix_bytes(total_rows, input_features_, dtype_);
     const auto output_bytes = matrix_bytes(total_rows, output_features_, dtype_);
     const auto weight_bytes = matrix_bytes(output_features_, input_features_, dtype_);
-    require_view(input, input_bytes, device_, "grouped linear backward input");
-    require_view(output_gradient, output_bytes, device_, "grouped linear output gradient");
-    require_view(input_gradient, input_bytes, device_, "grouped linear input gradient");
+    mc::require_view(input, input_bytes, device_, "grouped linear backward input");
+    mc::require_view(output_gradient, output_bytes, device_, "grouped linear output gradient");
+    mc::require_view(input_gradient, input_bytes, device_, "grouped linear input gradient");
     check_aligned(input, dtype_, "grouped linear backward input");
     check_aligned(output_gradient, dtype_, "grouped linear output gradient");
     check_aligned(input_gradient, dtype_, "grouped linear input gradient");
@@ -190,7 +192,7 @@ void GroupedLinear::backward(ConstDeviceView input,
         check_disjoint(input_gradient, input_bytes, weight, weight_bytes,
                        "input-gradient/weight");
     for (const auto& gradient : weight_gradients) {
-        require_view(gradient, weight_bytes, device_, "grouped linear weight gradient");
+        mc::require_view(gradient, weight_bytes, device_, "grouped linear weight gradient");
         check_aligned(gradient, dtype_, "grouped linear weight gradient");
         check_disjoint(input, input_bytes, gradient, weight_bytes, "input/weight-gradient");
         check_disjoint(output_gradient, output_bytes, gradient, weight_bytes,
@@ -207,8 +209,8 @@ void GroupedLinear::backward(ConstDeviceView input,
                            as_const(weight_gradients[j]), weight_bytes,
                            "distinct weight-gradient");
     set_stream(stream);
-    DeviceGuard guard(device_);
-    const auto type_size = item_size(dtype_);
+    mc::DeviceGuard guard(device_);
+    const auto type_size = mc::item_size(dtype_);
     const float beta_x = input_gradient_mode == GradientMode::accumulate ? 1.0f : 0.0f;
     const float beta_w = weight_gradient_mode == GradientMode::accumulate ? 1.0f : 0.0f;
     for (std::size_t e = 0; e < weights_.size(); ++e) {
@@ -216,7 +218,7 @@ void GroupedLinear::backward(ConstDeviceView input,
         if (rows == 0) {
             if (weight_gradient_mode == GradientMode::overwrite) {
                 const auto error = cudaMemsetAsync(weight_gradients[e].data, 0, weight_bytes, stream.get());
-                check(error, "zero empty-expert weight gradient");
+                mc::check(error, "zero empty-expert weight gradient");
             }
             continue;
         }

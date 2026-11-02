@@ -61,18 +61,18 @@ int main() {
     __half blocked_values[] = {__float2half(1.0f), __float2half(0.0f), __float2half(3.0f), __float2half(0.0f),
                                __float2half(0.0f), __float2half(2.0f), __float2half(0.0f), __float2half(4.0f)};
     auto *d_blocked_columns = device_copy(blocked_columns, 2u); auto *d_blocked_values = device_copy(blocked_values, 8u);
-    cellerator::matrix::device::blocked_ell_view blocked{2u, 4u, 4u, 2u, 4u, d_blocked_columns, d_blocked_values};
+    cellerator::interop::formats::device::BlockedEllView blocked{2u, 4u, 4u, 2u, 4u, d_blocked_columns, d_blocked_values};
 
     unsigned int offsets[] = {0u}, widths[] = {2u}, slots[] = {0u}, columns[] = {0u, 2u, 1u, 3u};
     __half values[] = {__float2half(1.0f), __float2half(3.0f), __float2half(2.0f), __float2half(4.0f)};
     auto *d_offsets = device_copy(offsets, 1u); auto *d_widths = device_copy(widths, 1u);
     auto *d_slots = device_copy(slots, 1u); auto *d_columns = device_copy(columns, 4u); auto *d_values = device_copy(values, 4u);
-    cellerator::matrix::device::sliced_ell_view sliced{2u, 4u, 4u, 1u, 2u, d_offsets, d_widths, d_slots, d_columns, d_values};
+    cellerator::interop::formats::device::SlicedEllView sliced{2u, 4u, 4u, 1u, 2u, d_offsets, d_widths, d_slots, d_columns, d_values};
 
     unsigned int pointers[] = {0u, 2u, 4u};
     auto *d_pointers = device_copy(pointers, 3u); auto *d_csr_columns = device_copy(columns, 4u); auto *d_csr_values = device_copy(values, 4u);
-    cellerator::matrix::device::compressed_view compressed{2u, 4u, 4u,
-        cellerator::matrix::device::compressed_by_row, d_pointers, d_csr_columns, d_csr_values};
+    cellerator::interop::formats::device::CompressedView compressed{2u, 4u, 4u,
+        cellerator::interop::formats::device::compressed_by_row, d_pointers, d_csr_columns, d_csr_values};
 
     const bool ok = d_mask != nullptr && run(blocked, d_mask) && run(sliced, d_mask) && run(compressed, d_mask);
     cudaFree(d_csr_values); cudaFree(d_csr_columns); cudaFree(d_pointers);

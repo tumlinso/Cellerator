@@ -12,7 +12,7 @@ target_include_directories(cellerator_planner PUBLIC
 )
 target_link_libraries(cellerator_planner PUBLIC
     Cellerator::operation_core
-    CellPack::semantic_geometry
+    Cellerator::cellpack_geometry
     CellPack::alternating_refinement
 )
 target_compile_features(cellerator_planner PUBLIC cxx_std_17)

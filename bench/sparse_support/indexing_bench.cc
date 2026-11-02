@@ -1,6 +1,8 @@
-#include <Cellerator/compute/gating/condition_program.hh>
-#include <Cellerator/compute/indexing/reverse_postings.hh>
-#include <Cellerator/compute/support/logical_support.hh>
+#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/execution/dependency/workset_view.hh>
+#include <Cellerator/geometry/dependency/compact_support.hh>
+#include <Cellerator/geometry/dependency/posting_index.hh>
+#include <Cellerator/ops/condition/program.hh>
 
 #include <algorithm>
 #include <array>
@@ -19,7 +21,11 @@
 #include <vector>
 
 namespace {
-using namespace cellerator::compute;
+namespace compact = cellerator::geometry::dependency::compact;
+namespace containers = cellerator::containers;
+namespace geometry = cellerator::geometry::dependency;
+namespace condition = cellerator::ops::condition;
+namespace execution = cellerator::execution;
 using clock_type = std::chrono::steady_clock;
 
 struct options {
@@ -121,15 +127,15 @@ options parse_options(int argc, char **argv) {
 }
 
 struct relation_storage {
-    std::vector<support::logical_support_edge_v1> edges;
-    std::vector<support::logical_support_participant_v1> participants;
-    support::logical_support_view_v1 view{};
+    std::vector<compact::EdgeV1> edges;
+    std::vector<compact::ParticipantV1> participants;
+    compact::ViewV1 view{};
 };
 
 struct fixture {
     relation_storage base;
     relation_storage delta;
-    support::support_snapshot_pair_v1 snapshot{};
+    compact::SnapshotPairV1 snapshot{};
     std::uint64_t hash = 1469598103934665603ull;
     std::uint64_t edge_count = 0;
     std::uint64_t participant_count = 0;
@@ -176,7 +182,7 @@ fixture make_fixture(const options &cfg) {
             result.hash = hash_mix(result.hash, cofactor);
             result.hash = hash_mix(result.hash, participant_count);
         }
-        relation.view = {support::logical_support_schema_version_v1, 0u,
+        relation.view = {compact::schema_version_v1, 0u,
             relation_id, 9001u, 1u, relation.edges.data(),
             relation.edges.size(), relation.participants.data(),
             relation.participants.size()};
@@ -187,20 +193,20 @@ fixture make_fixture(const options &cfg) {
         + result.delta.participants.size();
     result.snapshot = {&result.base.view,
         delta_count == 0u ? nullptr : &result.delta.view, 1u};
-    if (support::validate_support_snapshot_pair_v1(result.snapshot)
-        != support::support_snapshot_status_v1::success)
+    if (compact::validate_snapshot(result.snapshot)
+        != compact::SnapshotStatusV1::success)
         throw std::runtime_error("generated support fixture failed validation");
     return result;
 }
 
 struct term_batch {
-    std::vector<indexing::posting_term_v1> primary;
-    std::vector<indexing::posting_term_v1> derivative;
+    std::vector<containers::PostingTerm> primary;
+    std::vector<containers::PostingTerm> derivative;
     std::uint64_t hash = 1469598103934665603ull;
 };
 
-bool term_less(const indexing::posting_term_v1 &a,
-               const indexing::posting_term_v1 &b) {
+bool term_less(const containers::PostingTerm &a,
+               const containers::PostingTerm &b) {
     if (a.role != b.role) return a.role < b.role;
     return a.entity_id < b.entity_id;
 }
@@ -210,9 +216,9 @@ term_batch make_terms(const options &cfg, const fixture &support_fixture) {
     result.primary.reserve(cfg.cells * cfg.query_terms);
     result.derivative.reserve(cfg.cells * cfg.query_terms);
     std::uint64_t rng = cfg.seed ^ 0xd1b54a32d192ed03ull;
-    auto append_any = [&](std::vector<indexing::posting_term_v1> &terms,
+    auto append_any = [&](std::vector<containers::PostingTerm> &terms,
                           std::uint64_t cell, std::uint32_t role) {
-        std::vector<indexing::posting_term_v1> row;
+        std::vector<containers::PostingTerm> row;
         row.reserve(cfg.query_terms);
         for (std::uint32_t k = 0; k < cfg.query_terms; ++k) {
             for (;;) {
@@ -230,7 +236,7 @@ term_batch make_terms(const options &cfg, const fixture &support_fixture) {
         std::sort(row.begin(), row.end(), term_less);
         terms.insert(terms.end(), row.begin(), row.end());
     };
-    auto append_all = [&](std::vector<indexing::posting_term_v1> &terms,
+    auto append_all = [&](std::vector<containers::PostingTerm> &terms,
                           std::uint64_t edge_ordinal) {
         const relation_storage *relation = &support_fixture.base;
         std::uint64_t local = edge_ordinal;
@@ -266,25 +272,25 @@ term_batch make_terms(const options &cfg, const fixture &support_fixture) {
 
 struct candidate_buffer {
     std::vector<std::uint64_t> offsets;
-    std::vector<indexing::indexed_work_item_v1> items;
+    std::vector<containers::IndexedWorkItem> items;
     std::uint64_t written = 0;
 
     candidate_buffer(std::uint64_t cells, std::uint64_t edge_count)
         : offsets(cells + 1u, 0u), items(cells * edge_count) {}
 
-    gating::per_cell_candidate_view_v1 view() const {
+    execution::dependency::CandidateBatchView view() const {
         return {offsets.data(), items.data(), written};
     }
 };
 
-bool edge_matches(const support::logical_support_view_v1 &view,
-                  const support::logical_support_edge_v1 &edge,
-                  const indexing::posting_term_v1 *terms,
+bool edge_matches(const compact::ViewV1 &view,
+                  const compact::EdgeV1 &edge,
+                  const containers::PostingTerm *terms,
                   std::uint64_t term_count, bool all_terms) {
     std::array<std::uint8_t, 3> found{};
     for (std::uint32_t p = 0; p < edge.participant_count; ++p) {
         const auto &participant = view.participants[edge.participant_begin + p];
-        const indexing::posting_term_v1 needle{participant.role, 0u,
+        const containers::PostingTerm needle{participant.role, 0u,
                                                participant.entity_id};
         const auto *match = std::lower_bound(terms, terms + term_count,
                                              needle, term_less);
@@ -300,7 +306,7 @@ bool edge_matches(const support::logical_support_view_v1 &view,
 }
 
 bool edge_matches(const fixture &f, std::uint64_t ordinal,
-                  const indexing::posting_term_v1 *terms,
+                  const containers::PostingTerm *terms,
                   std::uint64_t term_count, bool all_terms) {
     const relation_storage *relation = &f.base;
     std::uint64_t local = ordinal;
@@ -313,7 +319,7 @@ bool edge_matches(const fixture &f, std::uint64_t ordinal,
 }
 
 void scan_batch(const fixture &f, const options &cfg,
-                const std::vector<indexing::posting_term_v1> &terms,
+                const std::vector<containers::PostingTerm> &terms,
                 candidate_buffer &out) {
     out.written = 0u;
     out.offsets[0] = 0u;
@@ -329,23 +335,23 @@ void scan_batch(const fixture &f, const options &cfg,
     }
 }
 
-void postings_batch(const indexing::reverse_posting_view_v1 &index,
+void postings_batch(const containers::PostingIndexView &index,
                     const options &cfg,
-                    const std::vector<indexing::posting_term_v1> &terms,
-                    std::vector<indexing::indexed_work_item_v1> &scratch,
+                    const std::vector<containers::PostingTerm> &terms,
+                    std::vector<containers::IndexedWorkItem> &scratch,
                     candidate_buffer &out) {
     out.written = 0u;
     out.offsets[0] = 0u;
     for (std::uint64_t cell = 0; cell < cfg.cells; ++cell) {
         const auto *cell_terms = terms.data() + cell * cfg.query_terms;
         auto *dest = out.items.data() + out.written;
-        indexing::candidate_output_v1 candidate{dest, cfg.edges, 0u, 0u};
-        const auto status = indexing::query_reverse_postings_v1(index,
+        containers::CandidateOutput candidate{dest, cfg.edges, 0u, 0u};
+        const auto status = containers::query_postings(index,
             cell_terms, cfg.query_terms,
-            cfg.all_terms ? indexing::posting_match_v1::all
-                          : indexing::posting_match_v1::any,
+            cfg.all_terms ? containers::PostingMatch::all
+                          : containers::PostingMatch::any,
             {scratch.data(), scratch.size()}, &candidate);
-        if (status != indexing::posting_status_v1::success)
+        if (status != containers::PostingStatus::success)
             throw std::runtime_error("reverse posting query failed, status="
                 + std::to_string(static_cast<unsigned>(status)));
         out.written += candidate.written;
@@ -353,24 +359,24 @@ void postings_batch(const indexing::reverse_posting_view_v1 &index,
     }
 }
 
-std::array<gating::condition_node_v1, 7> make_condition_nodes() {
-    using gating::condition_node_v1;
-    using gating::condition_opcode_v1;
+std::array<condition::NodeV1, 7> make_condition_nodes() {
+    using condition::NodeV1;
+    using condition::OpcodeV1;
     return {{
-        {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 0u, 0u},
-        {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 1u, 0u},
-        {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 2u, 0u},
-        {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 3u, 0u},
-        {condition_opcode_v1::all_of, 1u, 0u, 0u, 2u, 0u, 0u},
-        {condition_opcode_v1::any_of, 1u, 0u, 2u, 2u, 0u, 0u},
-        {condition_opcode_v1::all_of, 1u, 0u, 0u, 3u, 0u, 0u},
+        {OpcodeV1::predicate, 1u, 0u, 0u, 0u, 0u, 0u},
+        {OpcodeV1::predicate, 1u, 0u, 0u, 0u, 1u, 0u},
+        {OpcodeV1::predicate, 1u, 0u, 0u, 0u, 2u, 0u},
+        {OpcodeV1::predicate, 1u, 0u, 0u, 0u, 3u, 0u},
+        {OpcodeV1::all_of, 1u, 0u, 0u, 2u, 0u, 0u},
+        {OpcodeV1::any_of, 1u, 0u, 2u, 2u, 0u, 0u},
+        {OpcodeV1::all_of, 1u, 0u, 0u, 3u, 0u, 0u},
     }};
 }
 
 struct gate_fixture {
-    std::array<gating::condition_node_v1, 7> nodes = make_condition_nodes();
-    std::vector<gating::edge_condition_binding_v1> bindings;
-    gating::condition_program_view_v1 program{};
+    std::array<condition::NodeV1, 7> nodes = make_condition_nodes();
+    std::vector<condition::EdgeBindingV1> bindings;
+    condition::ProgramViewV1 program{};
     std::vector<std::uint8_t> predicates;
     std::vector<std::uint8_t> node_scratch;
     std::vector<std::uint64_t> bitmaps;
@@ -462,9 +468,9 @@ bool bitmap_test(const std::uint64_t *words, std::uint64_t ordinal) {
 struct workset_buffers {
     std::vector<std::uint64_t> primal_offsets;
     std::vector<std::uint64_t> derivative_offsets;
-    std::vector<indexing::indexed_work_item_v1> primal_items;
-    std::vector<indexing::indexed_work_item_v1> derivative_items;
-    gating::gate_workset_pair_v1 pair{};
+    std::vector<containers::IndexedWorkItem> primal_items;
+    std::vector<containers::IndexedWorkItem> derivative_items;
+    execution::dependency::ConditionWorksets pair{};
 
     workset_buffers(std::uint64_t cells, std::uint64_t edge_count)
         : primal_offsets(cells + 1u), derivative_offsets(cells + 1u),
@@ -480,10 +486,10 @@ void build_worksets(const gate_fixture &gate, const options &cfg,
                     const candidate_buffer &primal,
                     const candidate_buffer &derivative,
                     workset_buffers &out) {
-    const auto status = gating::build_condition_worksets_v1(gate.program,
+    const auto status = execution::dependency::build_condition_worksets(gate.program,
         cfg.cells, 1u, gate.bitmaps.data(), gate.bitmaps.size(),
         primal.view(), derivative.view(), &out.pair);
-    if (status != gating::condition_status_v1::success)
+    if (status != condition::StatusV1::success)
         throw std::runtime_error("condition workset build failed, status="
             + std::to_string(static_cast<unsigned>(status)));
 }
@@ -512,8 +518,8 @@ void validate_gate_oracle(const gate_fixture &gate, const options &cfg,
         throw std::runtime_error("condition workset epoch metadata mismatch");
     std::uint64_t derivative_only_count = 0u;
     for (std::uint64_t cell = 0; cell < cfg.cells; ++cell) {
-        std::vector<indexing::indexed_work_item_v1> expected_primal;
-        std::vector<indexing::indexed_work_item_v1> expected_derivative;
+        std::vector<containers::IndexedWorkItem> expected_primal;
+        std::vector<containers::IndexedWorkItem> expected_derivative;
         for (std::uint64_t i = primal.offsets[cell]; i < primal.offsets[cell + 1u]; ++i)
             if (condition_pass(gate, cell, primal.items[i].logical_edge_ordinal))
                 expected_primal.push_back(primal.items[i]);
@@ -639,17 +645,17 @@ void print_hex(std::uint64_t value) {
 void run(const options &cfg) {
     fixture f = make_fixture(cfg);
     const auto terms = make_terms(cfg, f);
-    const auto requirements = indexing::query_reverse_posting_requirements_v1(f.snapshot);
-    std::vector<indexing::reverse_posting_record_v1> record_scratch(
+    const auto requirements = geometry::posting_requirements(f.snapshot);
+    std::vector<containers::PostingRecord> record_scratch(
         requirements.record_capacity);
-    std::vector<indexing::reverse_posting_record_v1> posting_entries(
+    std::vector<containers::PostingRecord> posting_entries(
         requirements.maximum_unique_entries);
-    indexing::reverse_posting_view_v1 index{};
+    containers::PostingIndexView index{};
     auto build_index = [&]() -> std::uint64_t {
-        const auto status = indexing::build_reverse_postings_v1(f.snapshot,
+        const auto status = geometry::build_posting_index(f.snapshot,
             record_scratch.data(), record_scratch.size(), posting_entries.data(),
             posting_entries.size(), &index);
-        if (status != indexing::posting_status_v1::success)
+        if (status != geometry::PostingBuildStatus::success)
             throw std::runtime_error("reverse posting build failed, status="
                 + std::to_string(static_cast<unsigned>(status)));
         return index.entry_count;
@@ -661,7 +667,7 @@ void run(const options &cfg) {
     candidate_buffer scan_derivative(cfg.cells, cfg.edges);
     candidate_buffer post_primal(cfg.cells, cfg.edges);
     candidate_buffer post_derivative(cfg.cells, cfg.edges);
-    std::vector<indexing::indexed_work_item_v1> query_scratch(
+    std::vector<containers::IndexedWorkItem> query_scratch(
         std::max<std::uint64_t>(1u, index.entry_count * cfg.query_terms));
     auto do_scan_pair = [&]() -> std::uint64_t {
         scan_batch(f, cfg, terms.primary, scan_primal);
@@ -684,10 +690,10 @@ void run(const options &cfg) {
     validate_candidates_equal(scan_derivative, post_derivative, cfg.cells);
 
     gate_fixture gate = make_gate_fixture(cfg, f);
-    const auto bitmap_status = gating::evaluate_condition_bitmaps_v1(gate.program,
+    const auto bitmap_status = condition::evaluate_bitmaps(gate.program,
         cfg.cells, gate.predicates.data(), gate.predicates.size(), gate.bitmaps.data(),
         gate.bitmaps.size(), gate.node_scratch.data(), gate.node_scratch.size());
-    if (bitmap_status != gating::condition_status_v1::success)
+    if (bitmap_status != condition::StatusV1::success)
         throw std::runtime_error("condition bitmap build failed, status="
             + std::to_string(static_cast<unsigned>(bitmap_status)));
     validate_bitmap_oracle(gate, cfg);
@@ -701,10 +707,10 @@ void run(const options &cfg) {
         f.hash = hash_mix(f.hash, value.entity_id);
     }
     const auto bitmap_stats = measure(cfg.samples, iterations, [&]() -> std::uint64_t {
-        const auto status = gating::evaluate_condition_bitmaps_v1(gate.program,
+        const auto status = condition::evaluate_bitmaps(gate.program,
             cfg.cells, gate.predicates.data(), gate.predicates.size(), gate.bitmaps.data(),
             gate.bitmaps.size(), gate.node_scratch.data(), gate.node_scratch.size());
-        if (status != gating::condition_status_v1::success)
+        if (status != condition::StatusV1::success)
             throw std::runtime_error("timed bitmap evaluation failed");
         return gate.bitmaps.size();
     });
@@ -712,38 +718,38 @@ void run(const options &cfg) {
     auto changed_bitmap = std::vector<std::uint64_t>(
         gate.bitmaps.begin(), gate.bitmaps.begin() + gate.words_per_cell);
     auto expected_changed_bitmap = changed_bitmap;
-    const auto dirty_status = gating::update_condition_bitmap_v1(gate.program,
+    const auto dirty_status = condition::update_bitmap(gate.program,
         gate.changed_predicates.data(), gate.program.predicate_count,
         gate.dirty_ordinals.data(), gate.dirty_ordinals.size(),
         changed_bitmap.data(), changed_bitmap.size(), gate.node_scratch.data(),
         gate.node_scratch.size());
-    if (dirty_status != gating::condition_status_v1::success)
+    if (dirty_status != condition::StatusV1::success)
         throw std::runtime_error("dirty bitmap update failed");
-    const auto full_changed_status = gating::evaluate_condition_bitmaps_v1(
+    const auto full_changed_status = condition::evaluate_bitmaps(
         gate.program, 1u, gate.changed_predicates.data(), gate.program.predicate_count,
         expected_changed_bitmap.data(), expected_changed_bitmap.size(),
         gate.node_scratch.data(), gate.node_scratch.size());
-    if (full_changed_status != gating::condition_status_v1::success
+    if (full_changed_status != condition::StatusV1::success
         || !same_bitmap(changed_bitmap.data(), expected_changed_bitmap.data(),
                         gate.words_per_cell))
         throw std::runtime_error("dirty bitmap update differs from full recompute");
     const auto full_cell_bitmap_stats = measure(cfg.samples, iterations,
         [&]() -> std::uint64_t {
-            const auto status = gating::evaluate_condition_bitmaps_v1(gate.program,
+            const auto status = condition::evaluate_bitmaps(gate.program,
                 1u, gate.changed_predicates.data(), gate.program.predicate_count,
                 expected_changed_bitmap.data(), expected_changed_bitmap.size(),
                 gate.node_scratch.data(), gate.node_scratch.size());
-            if (status != gating::condition_status_v1::success)
+            if (status != condition::StatusV1::success)
                 throw std::runtime_error("timed one-cell bitmap evaluation failed");
             return gate.words_per_cell;
         });
     const auto dirty_stats = measure(cfg.samples, iterations, [&]() -> std::uint64_t {
-        const auto status = gating::update_condition_bitmap_v1(gate.program,
+        const auto status = condition::update_bitmap(gate.program,
             gate.changed_predicates.data(), gate.program.predicate_count,
             gate.dirty_ordinals.data(), gate.dirty_ordinals.size(),
             changed_bitmap.data(), changed_bitmap.size(), gate.node_scratch.data(),
             gate.node_scratch.size());
-        if (status != gating::condition_status_v1::success)
+        if (status != condition::StatusV1::success)
             throw std::runtime_error("timed dirty bitmap update failed");
         return gate.dirty_ordinals.size();
     });
@@ -802,11 +808,11 @@ void run(const options &cfg) {
         pipeline_scan_stats = measure(cfg.samples, iterations, [&]() -> std::uint64_t {
             scan_batch(f, cfg, terms.primary, scan_primal);
             scan_batch(f, cfg, terms.derivative, scan_derivative);
-            const auto status = gating::evaluate_condition_bitmaps_v1(gate.program,
+            const auto status = condition::evaluate_bitmaps(gate.program,
                 cfg.cells, gate.predicates.data(), gate.predicates.size(),
                 gate.bitmaps.data(), gate.bitmaps.size(), gate.node_scratch.data(),
                 gate.node_scratch.size());
-            if (status != gating::condition_status_v1::success)
+            if (status != condition::StatusV1::success)
                 throw std::runtime_error("scan pipeline bitmap failure");
             build_worksets(gate, cfg, scan_primal, scan_derivative, work_scan);
             return work_scan.pair.derivative.written;
@@ -814,11 +820,11 @@ void run(const options &cfg) {
         pipeline_post_stats = measure(cfg.samples, iterations, [&]() -> std::uint64_t {
             postings_batch(index, cfg, terms.primary, query_scratch, post_primal);
             postings_batch(index, cfg, terms.derivative, query_scratch, post_derivative);
-            const auto status = gating::evaluate_condition_bitmaps_v1(gate.program,
+            const auto status = condition::evaluate_bitmaps(gate.program,
                 cfg.cells, gate.predicates.data(), gate.predicates.size(),
                 gate.bitmaps.data(), gate.bitmaps.size(), gate.node_scratch.data(),
                 gate.node_scratch.size());
-            if (status != gating::condition_status_v1::success)
+            if (status != condition::StatusV1::success)
                 throw std::runtime_error("postings pipeline bitmap failure");
             build_worksets(gate, cfg, post_primal, post_derivative, work_post);
             return work_post.pair.derivative.written;
@@ -850,21 +856,21 @@ void run(const options &cfg) {
         << ",\"max_derivative_candidates_per_cell\":" << max_derivative_per_cell
         << ",\"query_iterations_per_sample\":" << iterations << "},"
         << "\"memory_bytes\":{\"support_base_delta\":"
-        << (f.base.edges.capacity() * sizeof(support::logical_support_edge_v1)
-            + f.base.participants.capacity() * sizeof(support::logical_support_participant_v1)
-            + f.delta.edges.capacity() * sizeof(support::logical_support_edge_v1)
-            + f.delta.participants.capacity() * sizeof(support::logical_support_participant_v1))
+        << (f.base.edges.capacity() * sizeof(compact::EdgeV1)
+            + f.base.participants.capacity() * sizeof(compact::ParticipantV1)
+            + f.delta.edges.capacity() * sizeof(compact::EdgeV1)
+            + f.delta.participants.capacity() * sizeof(compact::ParticipantV1))
         << ",\"posting_index\":" << posting_entries.capacity()
-            * sizeof(indexing::reverse_posting_record_v1)
+            * sizeof(containers::PostingRecord)
         << ",\"posting_build_scratch\":" << record_scratch.capacity()
-            * sizeof(indexing::reverse_posting_record_v1)
+            * sizeof(containers::PostingRecord)
         << ",\"query_scratch\":" << query_scratch.capacity()
-            * sizeof(indexing::indexed_work_item_v1)
+            * sizeof(containers::IndexedWorkItem)
         << ",\"query_terms\":" << (terms.primary.capacity()
-                + terms.derivative.capacity()) * sizeof(indexing::posting_term_v1)
+                + terms.derivative.capacity()) * sizeof(containers::PostingTerm)
         << ",\"condition_program\":"
-            << gate.bindings.capacity() * sizeof(gating::edge_condition_binding_v1)
-                + gate.nodes.size() * sizeof(gating::condition_node_v1)
+            << gate.bindings.capacity() * sizeof(condition::EdgeBindingV1)
+                + gate.nodes.size() * sizeof(condition::NodeV1)
         << ",\"condition_bitmaps\":" << gate.bitmaps.capacity() * sizeof(std::uint64_t)
         << ",\"condition_state_and_temporaries\":"
             << (gate.predicates.capacity() + gate.node_scratch.capacity()
@@ -874,14 +880,14 @@ void run(const options &cfg) {
         << ",\"candidate_buffers\":"
             << (scan_primal.items.capacity() + scan_derivative.items.capacity()
                 + post_primal.items.capacity() + post_derivative.items.capacity())
-                * sizeof(indexing::indexed_work_item_v1)
+                * sizeof(containers::IndexedWorkItem)
             + (scan_primal.offsets.capacity() + scan_derivative.offsets.capacity()
                 + post_primal.offsets.capacity() + post_derivative.offsets.capacity())
                 * sizeof(std::uint64_t)
         << ",\"gate_workset_buffers\":"
             << (work_scan.primal_items.capacity() + work_scan.derivative_items.capacity()
                 + work_post.primal_items.capacity() + work_post.derivative_items.capacity())
-                * sizeof(indexing::indexed_work_item_v1)
+                * sizeof(containers::IndexedWorkItem)
             + (work_scan.primal_offsets.capacity() + work_scan.derivative_offsets.capacity()
                 + work_post.primal_offsets.capacity() + work_post.derivative_offsets.capacity())
                 * sizeof(std::uint64_t)

@@ -32,7 +32,7 @@ int main() {
     const std::vector<unsigned char> valid = physical_image();
     assert(projection::validate_physical_mma_hybrid_image_v1(
         valid.data(), valid.size()));
-    const auto header = load_record<projection::physical_mma_hybrid_header_v1>(
+    const auto header = load_record<projection::MmaHybridLayoutV1>(
         valid, 0u);
 
     // A cover cannot omit an edge named by its logical cardinality.

@@ -201,12 +201,27 @@ install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/nn"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
     COMPONENT NN)
 install(FILES
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/biology/coordinates.hh"
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/structure/coordinates.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/structure"
+    COMPONENT NN)
+install(FILES
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/layout/axis_binding.hh"
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/layout/occurrence_map.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/layout"
+    COMPONENT NN)
+install(FILES
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/execution/dependency/feature_binding.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution/dependency"
+    COMPONENT NN)
+install(FILES
     "${PROJECT_SOURCE_DIR}/include/Cellerator/biology/feature_binding.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/biology"
     COMPONENT NN)
 install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/execution/identity.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution"
+    COMPONENT NN)
+install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/structure/identity.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/structure"
     COMPONENT NN)
 install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/nn.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
@@ -216,6 +231,9 @@ install(FILES
     "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/dynamical.hh"
     "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/model.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/modeling"
+    COMPONENT NN)
+install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/layout/entity_layout.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/layout"
     COMPONENT NN)
 install(TARGETS ${cellerator_nn_export_targets}
     EXPORT CelleratorNNTargets

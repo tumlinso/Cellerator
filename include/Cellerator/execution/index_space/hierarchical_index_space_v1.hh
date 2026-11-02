@@ -4,31 +4,9 @@
 #include <cstdint>
 #include <type_traits>
 
+#include <Cellerator/layout/local_index_space.hh>
+
 namespace cellerator::execution {
-
-// Width of an index into one independently bounded component.  The width is
-// part of the prepared contract; launch code must not infer it from a global
-// relation extent.
-enum class local_index_width_v1 : std::uint8_t {
-    u16 = 2u,
-    u32 = 4u,
-    u64 = 8u,
-};
-
-// Pointer-first description of one local index space.  local_to_global has
-// local_extent uint64 entries and recovers the global coordinate for every
-// local position.  global_identity_sidecar is optional; when present it has
-// local_extent uint64 entries and carries an identity distinct from position.
-// Neither pointer is owned by this view.
-struct local_index_space_view_v1 {
-    std::uint64_t global_extent = 0u;
-    std::uint64_t partition_identity = 0u;
-    std::uint64_t local_extent = 0u;
-    const std::uint64_t *local_to_global = nullptr;
-    const std::uint64_t *global_identity_sidecar = nullptr;
-    local_index_width_v1 local_width = local_index_width_v1::u32;
-    std::uint8_t reserved[7]{};
-};
 
 // One component of an aggregate relation.  aggregate_begin is a 64-bit
 // logical offset; local indices remain compact and are interpreted only within
@@ -36,7 +14,7 @@ struct local_index_space_view_v1 {
 struct hierarchical_index_component_v1 {
     std::uint64_t component_identity = 0u;
     std::uint64_t aggregate_begin = 0u;
-    local_index_space_view_v1 index_space{};
+    layout::LocalIndexSpaceViewV1 index_space{};
 };
 
 // A relation may exceed a single kernel-local index range by containing an
@@ -50,11 +28,26 @@ struct hierarchical_index_space_view_v1 {
     std::uint64_t component_count = 0u;
 };
 
-static_assert(std::is_trivially_copyable_v<local_index_space_view_v1>);
-static_assert(std::is_standard_layout_v<local_index_space_view_v1>);
 static_assert(std::is_trivially_copyable_v<hierarchical_index_component_v1>);
 static_assert(std::is_standard_layout_v<hierarchical_index_component_v1>);
 static_assert(std::is_trivially_copyable_v<hierarchical_index_space_view_v1>);
 static_assert(std::is_standard_layout_v<hierarchical_index_space_view_v1>);
+static_assert(offsetof(hierarchical_index_component_v1, component_identity) == 0u);
+static_assert(offsetof(hierarchical_index_component_v1, aggregate_begin) == 8u);
+static_assert(offsetof(hierarchical_index_component_v1, index_space) == 16u);
+static_assert(sizeof(hierarchical_index_component_v1)
+              == ((16u + sizeof(layout::LocalIndexSpaceViewV1)
+                   + alignof(hierarchical_index_component_v1) - 1u)
+                  / alignof(hierarchical_index_component_v1))
+                     * alignof(hierarchical_index_component_v1));
+static_assert(offsetof(hierarchical_index_space_view_v1, relation_identity) == 0u);
+static_assert(offsetof(hierarchical_index_space_view_v1, aggregate_extent) == 8u);
+static_assert(offsetof(hierarchical_index_space_view_v1, components) == 16u);
+static_assert(offsetof(hierarchical_index_space_view_v1, component_count) == 24u);
+static_assert(sizeof(hierarchical_index_space_view_v1)
+              == ((24u + sizeof(void *)
+                   + alignof(hierarchical_index_space_view_v1) - 1u)
+                  / alignof(hierarchical_index_space_view_v1))
+                     * alignof(hierarchical_index_space_view_v1));
 
 }  // namespace cellerator::execution

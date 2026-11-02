@@ -7,7 +7,7 @@ namespace cellerator::runtime {
 namespace {
 using result = relation_readiness_status;
 std::atomic<std::uint64_t> next_incarnation{1};
-bool equal(execution::structure_id a, execution::structure_id b) noexcept {
+bool equal(::cellerator::structure::structure_id a, ::cellerator::structure::structure_id b) noexcept {
     return a.low == b.low && a.high == b.high;
 }
 }
@@ -16,8 +16,8 @@ relation_value_readiness::~relation_value_readiness() noexcept {
     // than freeing events while an unreturned reader may still be submitted.
     (void)close();
 }
-result relation_value_readiness::initialize(execution::structure_id structure,
-    execution::structure_epoch epoch, int device, cudaStream_t owner,
+result relation_value_readiness::initialize(::cellerator::structure::structure_id structure,
+    ::cellerator::structure::structure_epoch epoch, int device, cudaStream_t owner,
     relation_event_api api) noexcept {
     if (initialized()) return result::invalid_state;
     if ((!structure.low && !structure.high) || !epoch.value || device < 0 ||
@@ -87,8 +87,8 @@ result relation_value_readiness::publish(execution::value_generation next,
     generation_ = next; ++ready_records_;
     return result::success;
 }
-result relation_value_readiness::wait_current(execution::structure_id structure,
-    execution::structure_epoch epoch, execution::value_generation generation,
+result relation_value_readiness::wait_current(::cellerator::structure::structure_id structure,
+    ::cellerator::structure::structure_epoch epoch, execution::value_generation generation,
     int device, cudaStream_t consumer) noexcept {
     if (!equal(structure, structure_) || epoch.value != epoch_.value)
         return result::identity_mismatch;
@@ -103,8 +103,8 @@ result relation_value_readiness::wait_current(execution::structure_id structure,
     }
     return result::success;
 }
-result relation_value_readiness::begin_read(execution::structure_id structure,
-    execution::structure_epoch epoch, execution::value_generation generation,
+result relation_value_readiness::begin_read(::cellerator::structure::structure_id structure,
+    ::cellerator::structure::structure_epoch epoch, execution::value_generation generation,
     int device, cudaStream_t consumer, relation_read_ticket* out) noexcept {
     if (!out) return result::invalid_argument;
     if (active_reader()) return result::busy;

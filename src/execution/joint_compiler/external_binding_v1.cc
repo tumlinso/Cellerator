@@ -42,7 +42,7 @@ external_binding_validation_result_v1 validate_external_binding_v1(
         return failure(external_binding_validation_code_v1::missing_extents);
 
     std::uint64_t expected_offset = 0u;
-    order_id expected_order{};
+    structure::order_id expected_order{};
     value_generation expected_generation{};
     for (std::uint64_t index = 0u; index < binding.extent_count; ++index) {
         const external_extent_v1 &extent = binding.extents[index];

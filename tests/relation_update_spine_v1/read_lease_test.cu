@@ -23,7 +23,7 @@ int main() {
     int *value{}, *observed{};
     CUDA(cudaMalloc(&value,sizeof(int))); CUDA(cudaMalloc(&observed,count*sizeof(int)));
     runtime::relation_value_readiness ready;
-    const execution::structure_id structure{1,99};
+    const ::cellerator::structure::structure_id structure{1,99};
     CHECK(ready.initialize(structure,{2},device,owner) == result::success);
     runtime::relation_read_ticket ticket{}, stale{};
     CHECK(ready.begin_read(structure,{2},{1},device,consumers[0],&ticket) == result::invalid_state);

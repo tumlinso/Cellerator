@@ -50,7 +50,7 @@ value_plane_status_v1 validate_value_pack_portfolio_v1(
 
 value_plane_status_v1 validate_dynamic_value_gate_v1(
     const relation_structure &structure,
-    order_id expected_logical_order,
+    structure::order_id expected_logical_order,
     const dynamic_value_gate_v1 &gate) noexcept {
     if (!same_structure_handle(structure.identity, gate.structure)) {
         return failure(value_plane_status_code_v1::invalid_structure, 0u);

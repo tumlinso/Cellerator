@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace geometry = cellerator::geometry;
-namespace execution = cellerator::execution;
+namespace layout = cellerator::layout;
 
 namespace {
 
@@ -25,10 +25,10 @@ geometry::support_component_view_v2 component(
     result.component_identity = id;
     result.source_space.global_extent = (std::uint64_t{1} << 32u) + 4096u;
     result.source_space.local_extent = 4u;
-    result.source_space.local_width = execution::local_index_width_v1::u32;
+    result.source_space.local_width = layout::LocalIndexWidth::u32;
     result.destination_space.global_extent = (std::uint64_t{1} << 32u) + 8192u;
     result.destination_space.local_extent = destinations;
-    result.destination_space.local_width = execution::local_index_width_v1::u32;
+    result.destination_space.local_width = layout::LocalIndexWidth::u32;
     result.destination_offsets = offsets;
     result.source_indices = sources;
     result.destination_count = destinations;
@@ -59,21 +59,21 @@ void global_identity_and_two_cover_regression() {
         geometry::validate_scalable_support_v2(support);
     require(support_result.code == geometry::scale_validation_code_v2::valid);
     require(support_result.operations <= 2u + 5u + 6u);
-    require(components[0].source_width == execution::local_index_width_v1::u32);
+    require(components[0].source_width == layout::LocalIndexWidth::u32);
     require(components[1].edge_map.global_identities[0] > (std::uint64_t{1} << 32u));
 
     const std::uint16_t semantic0[] = {0u, 1u, 2u};
     const std::uint16_t semantic1[] = {0u, 1u};
     const geometry::cover_work_item_view_v2 semantic_items[] = {
-        {1u, 100u, {semantic0, 3u, execution::local_index_width_v1::u16, {}}},
-        {2u, 200u, {semantic1, 2u, execution::local_index_width_v1::u16, {}}}};
+        {1u, 100u, {semantic0, 3u, layout::LocalIndexWidth::u16, {}}},
+        {2u, 200u, {semantic1, 2u, layout::LocalIndexWidth::u16, {}}}};
     const std::uint16_t physical0_a[] = {2u};
     const std::uint16_t physical0_b[] = {1u, 0u};
     const std::uint16_t physical1[] = {1u, 0u};
     const geometry::cover_work_item_view_v2 physical_items[] = {
-        {3u, 100u, {physical0_a, 1u, execution::local_index_width_v1::u16, {}}},
-        {4u, 100u, {physical0_b, 2u, execution::local_index_width_v1::u16, {}}},
-        {5u, 200u, {physical1, 2u, execution::local_index_width_v1::u16, {}}}};
+        {3u, 100u, {physical0_a, 1u, layout::LocalIndexWidth::u16, {}}},
+        {4u, 100u, {physical0_b, 2u, layout::LocalIndexWidth::u16, {}}},
+        {5u, 200u, {physical1, 2u, layout::LocalIndexWidth::u16, {}}}};
     std::uint64_t marks[3]{};
     geometry::cover_validation_workspace_v2 workspace{marks, 3u, 1u};
     const geometry::scalable_cover_view_v2 semantic{
@@ -108,7 +108,7 @@ void linear_scan_and_adversarial_bounds() {
                 counts.data(), count, offsets.data(), offsets.size(), nullptr)
             == geometry::scale_validation_code_v2::arithmetic_overflow);
     require(!geometry::local_width_can_represent_v2(
-        execution::local_index_width_v1::u32, (std::uint64_t{1} << 32u) + 1u));
+        layout::LocalIndexWidth::u32, (std::uint64_t{1} << 32u) + 1u));
 }
 
 }  // namespace

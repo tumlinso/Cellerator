@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <Cellerator/execution/index_space/hierarchical_index_space_v1.hh>
+#include <Cellerator/layout/local_index_space.hh>
 
 namespace cellerator::geometry::persistence {
 
@@ -43,8 +43,7 @@ struct chunk_manifest_record_v1 {
     std::uint64_t payload_checksum = 0u;
     std::uint32_t section_table_position = 0u;
     std::uint32_t element_stride = 0u;
-    execution::local_index_width_v1 local_width =
-        execution::local_index_width_v1::u32;
+    layout::LocalIndexWidth local_width = layout::LocalIndexWidth::u32;
     chunk_payload_domain_v1 domain = chunk_payload_domain_v1::semantic;
     std::uint8_t alignment_log2 = 0u;
     std::uint8_t reserved = 0u;
@@ -105,5 +104,9 @@ static_assert(std::is_trivially_copyable_v<chunk_manifest_header_v1>);
 static_assert(std::is_standard_layout_v<chunk_manifest_header_v1>);
 static_assert(std::is_trivially_copyable_v<chunk_manifest_record_v1>);
 static_assert(std::is_standard_layout_v<chunk_manifest_record_v1>);
+static_assert(offsetof(chunk_manifest_record_v1, local_width) == 72u);
+static_assert(offsetof(chunk_manifest_record_v1, domain) == 73u);
+static_assert(offsetof(chunk_manifest_record_v1, alignment_log2) == 74u);
+static_assert(offsetof(chunk_manifest_record_v1, reserved) == 75u);
 
 }  // namespace cellerator::geometry::persistence

@@ -32,12 +32,12 @@ bool has_coverage(const joint_compiler::logical_coverage_view_v1 *values,
     return false;
 }
 
-bool less_order(order_id lhs, order_id rhs) noexcept {
+bool less_order(structure::order_id lhs, structure::order_id rhs) noexcept {
     return lhs.high < rhs.high || (lhs.high == rhs.high && lhs.low < rhs.low);
 }
 
-bool has_order(const order_id *values, std::uint64_t count,
-    order_id target) noexcept {
+bool has_order(const structure::order_id *values, std::uint64_t count,
+    structure::order_id target) noexcept {
     std::uint64_t first = 0u;
     while (first < count) {
         const std::uint64_t middle = first + (count - first) / 2u;
@@ -66,7 +66,7 @@ bool same_numeric(const compute::operation::v2::numerical_policy &lhs,
 external_decomposition_validation_v1 validate_external_decomposition_v1(
     const compute::operation::v2::operation_problem &operation,
     const joint_compiler::logical_coverage_view_v1 *coverages,
-    std::uint64_t coverage_count, const order_id *orders,
+    std::uint64_t coverage_count, const structure::order_id *orders,
     std::uint64_t order_count,
     const compute::decomposition::decomposition_portfolio_v1 &portfolio)
     noexcept {

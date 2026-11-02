@@ -13,9 +13,9 @@ struct host_topology {
     std::span<const std::uint64_t> destinations;
 };
 struct value_identity {
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
-    execution::order_id edge_order{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
+    ::cellerator::structure::order_id edge_order{};
     execution::value_generation generation{};
 };
 

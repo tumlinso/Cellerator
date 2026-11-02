@@ -88,6 +88,8 @@ void construction_preserves_erased_contract() {
     assert(reference.contract.variant == 3u);
     assert(reference.key.schema_version == 7u);
     assert(reference.key.variant == 3u);
+    assert(reference.runtime_forward_projection.slot == 0u
+        && reference.runtime_forward_projection.generation == 0u);
 
     execution::activated_projection_reference_v2 duplicate{};
     assert(execution::make_activated_projection_reference_v2(input, &duplicate)
@@ -162,6 +164,21 @@ void malformed_references_are_rejected() {
     malformed.key.runtime.generation = 0u;
     assert(execution::validate_activated_projection_reference_v2(malformed)
         == execution::projection_reference_status_v2::invalid_projection);
+    malformed = reference;
+    malformed.runtime_forward_projection = {9u, 1u};
+    assert(execution::validate_activated_projection_reference_v2(malformed)
+        == execution::projection_reference_status_v2::invalid_projection);
+    auto transpose = binding(false);
+    transpose.key.kind = core::projection_kind::transpose_or_backward;
+    assert(execution::make_activated_projection_reference_v2(transpose,
+               &reference)
+        == execution::projection_reference_status_v2::invalid_projection);
+    transpose.runtime_forward_projection = {10u, 2u};
+    assert(execution::make_activated_projection_reference_v2(transpose,
+               &reference)
+        == execution::projection_reference_status_v2::success);
+    assert(reference.runtime_forward_projection.slot == 10u
+        && reference.runtime_forward_projection.generation == 2u);
     malformed = reference;
     malformed.location = {execution::residency_kind::host, {}, -1, 0u};
     assert(execution::validate_activated_projection_reference_v2(malformed)

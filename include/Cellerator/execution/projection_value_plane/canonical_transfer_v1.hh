@@ -26,7 +26,7 @@ struct canonical_value_buffer_v1 {
     u64 element_count = 0u;
     u32 element_bytes = 0u;
     u32 reserved = 0u;
-    order_id logical_order{};
+    structure::order_id logical_order{};
     value_generation generation{};
     device_location location{};
 };

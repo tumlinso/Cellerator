@@ -5,8 +5,8 @@
 namespace cellerator::compute::math {
 namespace {
 
-using status = physical_view_status;
-using code = physical_view_status_code;
+using status = layout::projection::physical_view_status;
+using code = layout::projection::physical_view_status_code;
 using plan_view = cellpack::feature_weighted_row_reduction_plan_view;
 using order_view = cellpack::local_cell_order_view;
 using tile_view = cellpack::warp_tile_view;
@@ -35,7 +35,7 @@ status validate_source(
     const plan_view &plan,
     const order_view &order,
     const tile_view &tiles) noexcept {
-    if (!physical_csr_detail::valid_plan(plan)) return fail(
+    if (!layout::projection::physical_csr_detail::valid_plan(plan)) return fail(
         code::invalid_argument, "invalid native plan");
     if (order.order_schema_version != cellpack::local_cell_order_schema_version
         || order.signature_algorithm_version
@@ -140,7 +140,7 @@ status validate_source(
 
 } // namespace native_tile_detail
 
-physical_view_status build_native_tile_view_host(
+layout::projection::physical_view_status build_native_tile_view_host(
     const plan_view &plan,
     const order_view &order,
     const tile_view &tiles,
@@ -191,7 +191,7 @@ physical_view_status build_native_tile_view_host(
     return {};
 }
 
-physical_view_status decode_native_tile_value_host(
+layout::projection::physical_view_status decode_native_tile_value_host(
     const native_view &view,
     u32 value_index,
     decoded_value *out) noexcept {

@@ -353,10 +353,10 @@ int main(int argc, char **argv) {
         refresh_payload(source);
         // benchmark_case owns these runtime keys; each trace is fully torn down
         // before the next immutable structure is materialized.
-        const execution::structure_id structure_id{0x7611u, 0x7612u};
+        const ::cellerator::structure::structure_id structure_id{0x7611u, 0x7612u};
         const execution::structure_handle structure_handle{76u, 1u};
-        const execution::structure_epoch epoch{1u};
-        const execution::projection_id feature_id{
+        const ::cellerator::structure::structure_epoch epoch{1u};
+        const ::cellerator::structure::projection_id feature_id{
             0x7641u, source.sharing_groups};
         const execution::projection_handle feature_handle{
             79u, source.sharing_groups};

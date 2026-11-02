@@ -16,10 +16,10 @@ execution::persistent_axis_identity axis(std::uint64_t seed) {
     return {{execution::biological_abi_version,
                 execution::serialized_record_kind::persistent_axis_identity,
                 sizeof(execution::persistent_axis_identity)},
-        identity<execution::domain_id>(seed),
-        identity<execution::order_id>(seed + 2u),
-        identity<execution::geometry_id>(seed + 4u),
-        identity<execution::partition_id>(seed + 6u)};
+        identity<::cellerator::structure::domain_id>(seed),
+        identity<::cellerator::structure::order_id>(seed + 2u),
+        identity<::cellerator::structure::geometry_id>(seed + 4u),
+        identity<::cellerator::structure::partition_id>(seed + 6u)};
 }
 
 }  // namespace

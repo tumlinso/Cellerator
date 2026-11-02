@@ -31,8 +31,8 @@ struct economics_status_v1 {
 
 struct operation_economics_v1 {
     operation_core::stable_id candidate{};
-    execution::order_id input_order{};
-    execution::order_id output_order{};
+    ::cellerator::structure::order_id input_order{};
+    ::cellerator::structure::order_id output_order{};
     phase_costs phases{};
     planner_value_mode_v1 value_mode = planner_value_mode_v1::logical_primary;
     std::uint8_t reserved0[7]{};
@@ -47,8 +47,8 @@ struct operation_economics_v1 {
 };
 
 struct layout_transition_economics_v1 {
-    execution::order_id source_order{};
-    execution::order_id destination_order{};
+    ::cellerator::structure::order_id source_order{};
+    ::cellerator::structure::order_id destination_order{};
     double transform_ns = 0.0;
     double fusion_savings_ns = 0.0;
     std::uint64_t transient_bytes = 0u;
@@ -61,7 +61,7 @@ struct connected_program_economics_v1 {
     std::uint64_t operation_count = 0u;
     const layout_transition_economics_v1 *transitions = nullptr;
     std::uint64_t transition_count = 0u;
-    execution::order_id canonical_output_order{};
+    ::cellerator::structure::order_id canonical_output_order{};
     double final_canonicalization_ns = 0.0;
     std::uint64_t final_canonicalization_bytes = 0u;
 };

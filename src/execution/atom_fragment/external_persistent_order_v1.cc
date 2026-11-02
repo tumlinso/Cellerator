@@ -3,12 +3,12 @@
 namespace cellerator::execution::atom_fragment {
 namespace {
 
-bool less(order_id lhs, order_id rhs) noexcept {
+bool less(structure::order_id lhs, structure::order_id rhs) noexcept {
     return lhs.high < rhs.high || (lhs.high == rhs.high && lhs.low < rhs.low);
 }
 
-bool contains(const order_id *orders, std::uint64_t count,
-    order_id target) noexcept {
+bool contains(const structure::order_id *orders, std::uint64_t count,
+    structure::order_id target) noexcept {
     std::uint64_t first = 0u;
     while (first < count) {
         const std::uint64_t middle = first + (count - first) / 2u;
@@ -28,7 +28,7 @@ external_persistent_order_validation_v1
 validate_external_persistent_orders_v1(
     const compute::operation::v2::operation_problem &operation,
     const compute::decomposition::decomposition_portfolio_v1 &decomposition,
-    const order_id *orders, std::uint64_t order_count) noexcept {
+    const structure::order_id *orders, std::uint64_t order_count) noexcept {
     using code = external_persistent_order_validation_code_v1;
     if (!compute::operation::v2::validate_operation_problem(operation))
         return {code::invalid_operation, 0u, 0u};
@@ -44,7 +44,7 @@ validate_external_persistent_orders_v1(
             return {code::duplicate_or_unordered_order, index, 0u};
     }
 
-    const order_id operation_orders[] = {
+    const structure::order_id operation_orders[] = {
         operation.values_axis.order,
         operation.result_axis.order,
         operation.logical_edge_order,
@@ -60,7 +60,7 @@ validate_external_persistent_orders_v1(
     for (std::uint64_t index = 0u;
          index < operation.relations.relation_count; ++index) {
         const auto &relation = operation.relations.relations[index];
-        const order_id relation_orders[] = {
+        const structure::order_id relation_orders[] = {
             relation.source_axis.order,
             relation.destination_axis.order,
             relation.logical_edge_order,

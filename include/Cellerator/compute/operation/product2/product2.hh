@@ -2,11 +2,11 @@
 #include "Cellerator/compute/operation/product2/c_api.h"
 #include "Cellerator/execution/program/program_v2.h"
 #include <vector>
-#include "Cellerator/compute/operation/indexed_mechanism/incidence.hh"
+#include "Cellerator/ops/mechanism/indexed/incidence.hh"
 namespace cellerator::compute::product2 {
 enum class operation { forward, vjp, jvp };
 struct descriptor { uint64_t input_count=0, product_count=0, structure_generation=0; const int64_t *a=nullptr,*b=nullptr; uint64_t a_count=0,b_count=0; bool binds_axes=false;
- ::cellerator::compute::operation::indexed::indexed_axis input_axis{},product_axis{},coefficient_axis{}; };
+ ::cellerator::ops::mechanism::indexed::indexed_axis input_axis{},product_axis{},coefficient_axis{}; };
 struct bound_view { ce_product2_binding numeric{}; execution::persistent_axis_identity input_axis{},product_axis{},coefficient_axis{}; };
 class prepared_owner {
  public:

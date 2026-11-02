@@ -38,19 +38,19 @@ activated_projection_reference program_projection(
     const cellpack::persistent_packing_payload_view &view) noexcept;
 activated_projection_reference program_projection(
     operation_core::projection_key key,
-    const compute::math::execution_csr_view &view) noexcept;
+    const ::cellerator::layout::projection::CsrViewV1 &view) noexcept;
 activated_projection_reference program_projection(
     operation_core::projection_key key,
-    const compute::math::feature_major_projection_view &view) noexcept;
+    const FeatureMajorBinding &view) noexcept;
 activated_projection_reference program_projection(
     operation_core::projection_key key,
-    const compute::math::transpose_projection_view &view) noexcept;
+    const TransposeBinding &view) noexcept;
 
 // Complete costs are supplied by the existing measurement/model layer. The
 // executable program never substitutes kernel-only ranking.
 struct program_candidate_cost {
     operation_core::stable_id candidate{};
-    projection_id projection{};
+    structure::projection_id projection{};
     planner::phase_costs phases{};
     std::uint32_t planner_flags = 0u;
     std::uint32_t reserved = 0u;
@@ -186,7 +186,7 @@ executable_program_status compile_executable_program_v2(
 struct executable_program_launch {
     launch_bindings bindings{};
     const runtime::value_readiness_record *value_readiness = nullptr;
-    structure_epoch expected_structure_epoch{};
+    structure::structure_epoch expected_structure_epoch{};
     value_generation expected_value_generation{};
 };
 
@@ -197,7 +197,7 @@ struct executable_program_result {
     planner::total_cost expected_cost{};
     const output_axis_contract *output_orders = nullptr;
     std::uint32_t output_order_count = 0u;
-    structure_epoch structure_epoch_value{};
+    structure::structure_epoch structure_epoch_value{};
     value_generation consumed_generation{};
     stream_context completion_stream{};
     bool enqueued = false;

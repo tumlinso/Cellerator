@@ -13,7 +13,7 @@ using u32 = std::uint32_t;
 inline constexpr u32 work_window_schema_version = 1u;
 
 struct work_window_tag;
-using work_window_id = execution::persistent_identity<work_window_tag>;
+using work_window_id = ::cellerator::structure::persistent_identity<work_window_tag>;
 
 // A work window binds one caller-selected set of real work items to exactly
 // one biological axis. The kind states how the bound axis participates in the
@@ -80,7 +80,7 @@ constexpr work_window_validation_result validate_work_window(
     if (window.reserved[0] != 0u || window.reserved[1] != 0u
         || window.reserved[2] != 0u)
         return {work_window_validation_code::nonzero_reserved, 0u};
-    if (!execution::valid_identity(window.identity))
+    if (!::cellerator::structure::valid_identity(window.identity))
         return {work_window_validation_code::invalid_identity, 0u};
     if (!execution::valid_axis_identity(window.axis))
         return {work_window_validation_code::invalid_axis, 0u};

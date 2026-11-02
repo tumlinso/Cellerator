@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/compute/operation/indexed_mechanism/training.hh>
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/ops/mechanism/indexed/training.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <cstddef>
 #include <cstdint>
@@ -29,16 +29,20 @@ struct parameter_block_v1 {
 // parameters. The indexed-mechanism owner supplies reader/writer fencing.
 class sparse_parameter_owner_v1 {
 public:
-    sparse_parameter_owner_v1(indexed::indexed_axis parameter_axis,
-                              std::vector<indexed::identity> block_ids,
-                              std::span<const float> initial,
-                              std::vector<parameter_block_v1> blocks,
-                              int device, std::uint32_t reader_capacity = 32);
-    const std::shared_ptr<indexed::mechanism_parameter_owner>& native_owner() const noexcept;
+    sparse_parameter_owner_v1(
+        ::cellerator::ops::mechanism::indexed::indexed_axis parameter_axis,
+        std::vector<::cellerator::ops::mechanism::indexed::identity> block_ids,
+        std::span<const float> initial,
+        std::vector<parameter_block_v1> blocks,
+        int device, std::uint32_t reader_capacity = 32);
+    const std::shared_ptr<
+        ::cellerator::ops::mechanism::indexed::mechanism_parameter_owner>&
+    native_owner() const noexcept;
     const std::vector<parameter_block_v1>& blocks() const noexcept;
     std::uint64_t parameter_count() const noexcept;
 private:
-    std::shared_ptr<indexed::mechanism_parameter_owner> owner_;
+    std::shared_ptr<
+        ::cellerator::ops::mechanism::indexed::mechanism_parameter_owner> owner_;
     std::vector<parameter_block_v1> blocks_;
 };
 
@@ -164,7 +168,7 @@ struct ce_geo_n64_compaction_workspace_v1 {
 struct ce_geo_n64_projection_binding_v1 {
     std::uint64_t structure_epoch = 0;
     std::uint64_t projection_id = 0;
-    projection::physical_mma_hybrid_header_v1 header{};
+    ::cellerator::layout::projection::MmaHybridLayoutV1 header{};
     // Projection-local logical edge IDs in support-ordinal order. These may
     // differ from stable support identities while value-map indices remain
     // aligned to the same support ordinals.
@@ -198,13 +202,13 @@ std::uint64_t ce_geo_n64_compaction_temporary_bytes_v1(
     std::uint64_t max_items) noexcept;
 
 status_v1 prepare_ce_geo_n64_workset_cuda_v1(
-    const projection::physical_mma_hybrid_header_v1& projection_header,
+    const ::cellerator::layout::projection::MmaHybridLayoutV1& projection_header,
     const edge_axis_view_v1& edges,
     const per_cell_edge_workset_view_v1& admitted_mma_workset,
     const edge_gate_values_view_v1& gates,
     const std::uint64_t* edge_value_map_indices,
     const std::uint64_t* projection_edge_ids,
-    const projection::projection_value_map_v1* value_maps,
+    const ::cellerator::layout::projection::projection_value_map_v1* value_maps,
     const std::uint32_t* tile_destination_groups,
     const std::uint32_t* tile_source_bases,
     std::uint32_t physical_source_count,
@@ -237,8 +241,8 @@ status_v1 relation_backward_cuda_v1(
 // derivative work remains an independent SIMT candidate set. Residual-covered
 // edges are supplied separately and accumulate into the logical output.
 status_v1 relation_forward_ce_geo_n64_cuda_v1(
-    const projection::physical_mma_hybrid_header_v1& projection_header,
-    const projection::projection_value_map_v1* device_value_maps,
+    const ::cellerator::layout::projection::MmaHybridLayoutV1& projection_header,
+    const ::cellerator::layout::projection::projection_value_map_v1* device_value_maps,
     std::uint64_t value_map_count,
     const std::uint64_t* device_edge_value_map_indices,
     const std::uint64_t* device_projection_edge_ids,

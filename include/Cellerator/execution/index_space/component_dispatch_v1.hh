@@ -4,7 +4,7 @@
 #include <limits>
 #include <type_traits>
 
-#include <Cellerator/execution/index_space/hierarchical_index_space_v1.hh>
+#include <Cellerator/layout/local_index_space.hh>
 
 #if defined(__CUDACC__)
 #define CELLERATOR_INDEX_HOST_DEVICE __host__ __device__
@@ -18,18 +18,18 @@ namespace cellerator::execution {
 // binds one width, so kernels do not inspect aggregate relation size.
 struct local_index_device_view_v1 {
     const void *data = nullptr;
-    local_index_width_v1 width = local_index_width_v1::u32;
+    layout::LocalIndexWidth width = layout::LocalIndexWidth::u32;
     std::uint8_t reserved[7]{};
 };
 
 CELLERATOR_INDEX_HOST_DEVICE inline std::uint64_t load_local_index_v1(
     const local_index_device_view_v1 &view, std::uint32_t position) noexcept {
     switch (view.width) {
-        case local_index_width_v1::u16:
+        case layout::LocalIndexWidth::u16:
             return static_cast<const std::uint16_t *>(view.data)[position];
-        case local_index_width_v1::u32:
+        case layout::LocalIndexWidth::u32:
             return static_cast<const std::uint32_t *>(view.data)[position];
-        case local_index_width_v1::u64:
+        case layout::LocalIndexWidth::u64:
             return static_cast<const std::uint64_t *>(view.data)[position];
     }
     return 0u;
@@ -47,7 +47,7 @@ struct component_dispatch_v1 {
     std::uint32_t block_threads = 0u;
     std::uint32_t grid_x = 0u;
     std::uint32_t grid_y = 0u;
-    local_index_width_v1 local_width = local_index_width_v1::u32;
+    layout::LocalIndexWidth local_width = layout::LocalIndexWidth::u32;
     std::uint8_t reserved[7]{};
 };
 

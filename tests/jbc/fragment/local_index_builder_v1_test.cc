@@ -4,6 +4,7 @@
 
 namespace fragment = cellerator::execution::atom_fragment;
 namespace execution = cellerator::execution;
+namespace layout = cellerator::layout;
 
 int main() {
     const std::uint64_t first[] = {1u, 4u, 7u};
@@ -25,7 +26,7 @@ int main() {
     assert(result.components[0].aggregate_begin == 0u);
     assert(result.components[1].aggregate_begin == 3u);
     assert(result.components[0].index_space.local_width
-        == execution::local_index_width_v1::u16);
+        == layout::LocalIndexWidth::u16);
     assert(result.components[1].index_space.global_identity_sidecar[1] == 101u);
 
     auto malformed = sources[1];

@@ -3,20 +3,16 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <Cellerator/execution/index_space/hierarchical_index_space_v1.hh>
+#include <Cellerator/layout/local_index_space.hh>
 
 namespace cellerator::geometry {
-
-using execution::hierarchical_index_space_view_v1;
-using execution::local_index_space_view_v1;
-using execution::local_index_width_v1;
 
 // Non-owning array of component-local indices.  data points to count values
 // whose scalar type is selected by width.
 struct compact_index_array_view_v2 {
     const void *data = nullptr;
     std::uint64_t count = 0u;
-    local_index_width_v1 width = local_index_width_v1::u32;
+    layout::LocalIndexWidth width = layout::LocalIndexWidth::u32;
     std::uint8_t reserved[7]{};
 };
 
@@ -37,14 +33,14 @@ struct aggregate_index_map_view_v2 {
 // are caller-owned and may use compact widths independently.
 struct support_component_view_v2 {
     std::uint64_t component_identity = 0u;
-    local_index_space_view_v1 source_space{};
-    local_index_space_view_v1 destination_space{};
+    layout::LocalIndexSpaceViewV1 source_space{};
+    layout::LocalIndexSpaceViewV1 destination_space{};
     const void *destination_offsets = nullptr;
     const void *source_indices = nullptr;
     std::uint64_t destination_count = 0u;
     std::uint64_t local_edge_count = 0u;
-    local_index_width_v1 offset_width = local_index_width_v1::u32;
-    local_index_width_v1 source_width = local_index_width_v1::u32;
+    layout::LocalIndexWidth offset_width = layout::LocalIndexWidth::u32;
+    layout::LocalIndexWidth source_width = layout::LocalIndexWidth::u32;
     std::uint8_t reserved[6]{};
     aggregate_index_map_view_v2 edge_map{};
 };

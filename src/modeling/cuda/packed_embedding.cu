@@ -1,23 +1,26 @@
 #include <Cellerator/modeling/cuda/packed_embedding.hh>
 
+#include <cuda_fp16.h>
 #include <cuda_runtime.h>
 
 #include <limits>
 
 namespace cellerator::modeling::cuda {
+namespace memory_cuda = ::cellerator::memory::cuda;
+namespace state_codes = ::cellerator::tensor::state_codes;
 namespace {
 constexpr unsigned kThreads = 256;
 constexpr std::uint32_t kBadInput = 1U;
 constexpr std::uint32_t kOverrideOverflow = 2U;
 constexpr std::uint32_t kNonFinite = 4U;
 
-__device__ inline float read_value(const void* ptr, DType type, std::uint64_t i) {
-    return type == DType::float16
+__device__ inline float read_value(const void* ptr, memory_cuda::DType type, std::uint64_t i) {
+    return type == memory_cuda::DType::float16
                ? __half2float(static_cast<const __half*>(ptr)[i])
                : static_cast<const float*>(ptr)[i];
 }
-__device__ inline void write_value(void* ptr, DType type, std::uint64_t i, float value) {
-    if (type == DType::float16)
+__device__ inline void write_value(void* ptr, memory_cuda::DType type, std::uint64_t i, float value) {
+    if (type == memory_cuda::DType::float16)
         static_cast<__half*>(ptr)[i] = __float2half_rn(value);
     else
         static_cast<float*>(ptr)[i] = value;
@@ -36,13 +39,13 @@ __device__ inline std::uint32_t read_code(const std::uint32_t* words,
 // before dereferencing the returned table offsets.
 __device__ bool resolve(std::uint32_t logical,
                         std::uint32_t rows,
-                        QuantizationProfileView p,
-                        ConstPackedStateView packed,
-                        ConstOverrideView overrides,
+                        state_codes::ProfileView p,
+                        state_codes::ConstPackedView packed,
+                        state_codes::ConstExactOverrideView overrides,
                         const std::uint64_t* table_offsets,
                         std::uint64_t table_capacity,
                         std::uint32_t dim,
-                        DeviceStatus status,
+                        state_codes::DeviceStatus status,
                         std::uint32_t* feature_out,
                         std::uint32_t* lo_out,
                         std::uint32_t* hi_out,
@@ -129,7 +132,7 @@ __device__ bool resolve(std::uint32_t logical,
 __device__ bool locate_segment(const PackedOccurrenceView& occurrences,
                                std::uint32_t occurrence,
                                std::uint32_t* segment,
-                               DeviceStatus status) {
+                               state_codes::DeviceStatus status) {
     std::uint32_t left = 0U, right = occurrences.segment_count;
     while (left < right) {
         const auto mid = left + (right - left) / 2U;
@@ -147,7 +150,7 @@ __device__ bool locate_segment(const PackedOccurrenceView& occurrences,
 }
 
 __global__ void validate_segments(const PackedOccurrenceView occurrences,
-                                  DeviceStatus status) {
+                                  state_codes::DeviceStatus status) {
     const auto i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i == 0U && occurrences.segment_offsets[0] != 0U)
         atomicOr(status.bits, kBadInput);
@@ -159,15 +162,15 @@ __global__ void validate_segments(const PackedOccurrenceView occurrences,
         atomicOr(status.bits, kBadInput);
 }
 
-__global__ void forward_kernel(ConstPackedStateView packed,
+__global__ void forward_kernel(state_codes::ConstPackedView packed,
                                std::uint32_t rows,
-                               QuantizationProfileView profile,
-                               ConstOverrideView overrides,
+                               state_codes::ProfileView profile,
+                               state_codes::ConstExactOverrideView overrides,
                                PackedOccurrenceView occurrences,
                                PackedEmbeddingTableView table,
                                void* output,
                                std::uint64_t output_count,
-                               DeviceStatus status) {
+                               state_codes::DeviceStatus status) {
     const std::uint64_t index = static_cast<std::uint64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
     if (index >= output_count) return;
     if ((*status.bits & kBadInput) != 0U) {
@@ -206,15 +209,15 @@ __global__ void forward_kernel(ConstPackedStateView packed,
     write_value(output, table.dtype, index, sum);
 }
 
-__global__ void backward_kernel(ConstPackedStateView packed,
+__global__ void backward_kernel(state_codes::ConstPackedView packed,
                                 std::uint32_t rows,
-                                QuantizationProfileView profile,
-                                ConstOverrideView overrides,
+                                state_codes::ProfileView profile,
+                                state_codes::ConstExactOverrideView overrides,
                                 PackedOccurrenceView occurrences,
                                 PackedEmbeddingTableView table,
-                                ConstDeviceView output_gradient,
+                                memory_cuda::ConstDeviceView output_gradient,
                                 PackedEmbeddingGradientView gradients,
-                                DeviceStatus status) {
+                                state_codes::DeviceStatus status) {
     const std::uint32_t o = blockIdx.x * blockDim.x + threadIdx.x;
     if (o >= occurrences.occurrence_count) return;
     if ((*status.bits & kBadInput) != 0U) return;
@@ -259,15 +262,15 @@ __global__ void backward_kernel(ConstPackedStateView packed,
 // one warp owning each sparse occurrence. The optional compile definition keeps
 // the public API and caller contract identical for matched experiments.
 #if defined(CELLERATOR_PACKED_EMBEDDING_WARP_BACKWARD)
-__global__ void backward_warp_kernel(ConstPackedStateView packed,
+__global__ void backward_warp_kernel(state_codes::ConstPackedView packed,
                                      std::uint32_t rows,
-                                     QuantizationProfileView profile,
-                                     ConstOverrideView overrides,
+                                     state_codes::ProfileView profile,
+                                     state_codes::ConstExactOverrideView overrides,
                                      PackedOccurrenceView occurrences,
                                      PackedEmbeddingTableView table,
-                                     ConstDeviceView output_gradient,
+                                     memory_cuda::ConstDeviceView output_gradient,
                                      PackedEmbeddingGradientView gradients,
-                                     DeviceStatus status) {
+                                     state_codes::DeviceStatus status) {
     const std::uint32_t occurrence = blockIdx.x * 4U + threadIdx.y;
     if (occurrence >= occurrences.occurrence_count) return;
     if ((*status.bits & kBadInput) != 0U) return;
@@ -347,12 +350,12 @@ std::uint32_t blocks(std::uint64_t n) {
     return static_cast<std::uint32_t>(b);
 }
 
-cudaError_t validate(const ConstPackedStateView& packed, std::uint32_t rows,
-                     const QuantizationProfileView& p,
-                     const ConstOverrideView& overrides, bool sorted,
+cudaError_t validate(const state_codes::ConstPackedView& packed, std::uint32_t rows,
+                     const state_codes::ProfileView& p,
+                     const state_codes::ConstExactOverrideView& overrides, bool sorted,
                      const PackedOccurrenceView& occurrences,
                      const PackedEmbeddingTableView& table,
-                     DeviceStatus status, std::uint64_t* output_count) {
+                     state_codes::DeviceStatus status, std::uint64_t* output_count) {
     if (status.bits == nullptr || packed.words == nullptr ||
         p.codebook_offsets == nullptr || p.levels == nullptr || p.feature_map == nullptr ||
         p.profile_feature_count == 0U || p.state_feature_count == 0U ||
@@ -360,7 +363,7 @@ cudaError_t validate(const ConstPackedStateView& packed, std::uint32_t rows,
                                  p.code_bits == 4U || p.code_bits == 8U) ||
         table.values == nullptr || table.feature_offsets == nullptr ||
         table.embedding_dim == 0U ||
-        !(table.dtype == DType::float16 || table.dtype == DType::float32) ||
+        !(table.dtype == memory_cuda::DType::float16 || table.dtype == memory_cuda::DType::float32) ||
         occurrences.segment_offsets == nullptr ||
         occurrences.segment_offset_capacity < static_cast<std::size_t>(occurrences.segment_count) + 1U ||
         (occurrences.occurrence_count != 0U &&
@@ -385,7 +388,7 @@ cudaError_t validate(const ConstPackedStateView& packed, std::uint32_t rows,
     *output_count = elements(occurrences.segment_count, table.embedding_dim);
     if (*output_count > static_cast<std::uint64_t>(2147483647U) * kThreads)
         return cudaErrorInvalidValue;
-    const auto out_bytes = elements(*output_count, item_size(table.dtype));
+    const auto out_bytes = elements(*output_count, memory_cuda::item_size(table.dtype));
     if (out_bytes > std::numeric_limits<std::size_t>::max()) return cudaErrorInvalidValue;
     return cudaSuccess;
 }
@@ -393,18 +396,18 @@ cudaError_t validate(const ConstPackedStateView& packed, std::uint32_t rows,
 }  // namespace
 
 cudaError_t packed_embedding_bag_forward(
-    ConstPackedStateView packed, std::uint32_t rows,
-    QuantizationProfileView profile, ConstOverrideView overrides,
+    state_codes::ConstPackedView packed, std::uint32_t rows,
+    state_codes::ProfileView profile, state_codes::ConstExactOverrideView overrides,
     bool sorted, PackedOccurrenceView occurrences,
-    PackedEmbeddingTableView table, DeviceView output,
-    DeviceStatus status, cudaStream_t stream) noexcept {
+    PackedEmbeddingTableView table, memory_cuda::DeviceView output,
+    state_codes::DeviceStatus status, cudaStream_t stream) noexcept {
     std::uint64_t count = 0;
     cudaError_t error;
     try { error = validate(packed, rows, profile, overrides, sorted, occurrences, table, status, &count); }
     catch (...) { return cudaErrorInvalidValue; }
     if (error != cudaSuccess) return error;
     std::uint64_t bytes;
-    try { bytes = elements(count, item_size(table.dtype)); }
+    try { bytes = elements(count, memory_cuda::item_size(table.dtype)); }
     catch (...) { return cudaErrorInvalidValue; }
     if (output.bytes < bytes || (bytes && output.data == nullptr)) return cudaErrorInvalidValue;
     validate_segments<<<blocks(static_cast<std::uint64_t>(occurrences.segment_count) + 1U),
@@ -417,11 +420,11 @@ cudaError_t packed_embedding_bag_forward(
 }
 
 cudaError_t packed_embedding_bag_backward(
-    ConstPackedStateView packed, std::uint32_t rows,
-    QuantizationProfileView profile, ConstOverrideView overrides,
+    state_codes::ConstPackedView packed, std::uint32_t rows,
+    state_codes::ProfileView profile, state_codes::ConstExactOverrideView overrides,
     bool sorted, PackedOccurrenceView occurrences,
-    PackedEmbeddingTableView table, ConstDeviceView output_gradient,
-    PackedEmbeddingGradientView gradients, DeviceStatus status,
+    PackedEmbeddingTableView table, memory_cuda::ConstDeviceView output_gradient,
+    PackedEmbeddingGradientView gradients, state_codes::DeviceStatus status,
     cudaStream_t stream) noexcept {
     std::uint64_t output_count = 0;
     cudaError_t error;
@@ -430,7 +433,7 @@ cudaError_t packed_embedding_bag_backward(
     if (error != cudaSuccess) return error;
     std::uint64_t grad_bytes, table_gradient_bytes;
     try {
-        grad_bytes = elements(output_count, item_size(table.dtype));
+        grad_bytes = elements(output_count, memory_cuda::item_size(table.dtype));
         table_gradient_bytes = elements(table.value_capacity, sizeof(float));
     } catch (...) { return cudaErrorInvalidValue; }
     if ((grad_bytes && output_gradient.data == nullptr) || output_gradient.bytes < grad_bytes ||

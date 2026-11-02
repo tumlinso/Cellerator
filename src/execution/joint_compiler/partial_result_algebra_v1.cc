@@ -74,10 +74,10 @@ validate_partial_result_algebra_v1(
             missing_reconstruction_rule};
 
     const bool ordered = (algebra.flags & ordered_only_v1) != 0u;
-    if (ordered && !execution::valid_identity(algebra.required_merge_order))
+    if (ordered && !::cellerator::structure::valid_identity(algebra.required_merge_order))
         return {
             partial_result_algebra_validation_code_v1::invalid_order_constraint};
-    if (!ordered && execution::valid_identity(algebra.required_merge_order))
+    if (!ordered && ::cellerator::structure::valid_identity(algebra.required_merge_order))
         return {partial_result_algebra_validation_code_v1::
             unexpected_order_constraint};
 

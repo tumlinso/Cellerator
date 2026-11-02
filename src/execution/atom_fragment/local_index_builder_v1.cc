@@ -5,12 +5,12 @@
 namespace cellerator::execution::atom_fragment {
 namespace {
 
-local_index_width_v1 width_for(std::uint64_t count) noexcept {
+layout::LocalIndexWidth width_for(std::uint64_t count) noexcept {
     if (count <= std::numeric_limits<std::uint16_t>::max())
-        return local_index_width_v1::u16;
+        return layout::LocalIndexWidth::u16;
     if (count <= std::numeric_limits<std::uint32_t>::max())
-        return local_index_width_v1::u32;
-    return local_index_width_v1::u64;
+        return layout::LocalIndexWidth::u32;
+    return layout::LocalIndexWidth::u64;
 }
 
 } // namespace

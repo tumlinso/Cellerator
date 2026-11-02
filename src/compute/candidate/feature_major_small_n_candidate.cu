@@ -50,19 +50,20 @@ bool same_location(
 }
 
 bool valid_device_projection(
-    const feature_major_projection_view &view,
+    const execution::FeatureMajorBinding &binding,
     std::int32_t device_ordinal) noexcept {
+    const auto &view = binding.layout;
     const auto &header = view.header;
-    return header.schema_version == feature_major_projection_schema_version
-        && header.payload_kind == feature_major_projection_payload_kind
+    return header.schema_version == layout::projection::feature_major_projection_schema_version
+        && header.payload_kind == layout::projection::feature_major_projection_payload_kind
         && header.header_bytes == sizeof(header)
-        && header.alignment == feature_major_projection_alignment
+        && header.alignment == layout::projection::feature_major_projection_alignment
         && header.payload_bytes != 0u
-        && execution::valid_identity(header.structure_identity)
+        && ::cellerator::structure::valid_identity(header.structure_identity)
         && header.structure_epoch != 0u
-        && execution::valid_identity(header.projection_identity)
-        && execution::valid_handle(view.runtime_structure)
-        && execution::valid_handle(view.runtime_projection)
+        && ::cellerator::structure::valid_identity(header.projection_identity)
+        && execution::valid_handle(binding.runtime_structure)
+        && execution::valid_handle(binding.runtime_projection)
         && view.payload_base != nullptr
         && header.feature_block_geometry_identity != 0u
         && header.ordering_identity != 0u
@@ -84,7 +85,7 @@ bool valid_device_projection(
 }
 
 __global__ void feature_major_small_n_kernel(
-    feature_major_projection_view projection,
+    ::cellerator::layout::projection::FeatureMajorViewV1 projection,
     const __half *values,
     const float *dense_rhs,
     std::uint32_t dense_width,
@@ -93,8 +94,8 @@ __global__ void feature_major_small_n_kernel(
     const std::uint32_t tile = blockIdx.x;
     if (lane >= 32u || tile >= projection.header.tile_count) return;
 
-    float accumulators[feature_major_small_n_maximum]{};
-    __shared__ float dense_feature[feature_major_small_n_maximum];
+    float accumulators[layout::projection::feature_major_small_n_maximum]{};
+    __shared__ float dense_feature[layout::projection::feature_major_small_n_maximum];
     const std::uint32_t record_begin = projection.tile_feature_offsets[tile];
     const std::uint32_t record_end = projection.tile_feature_offsets[tile + 1u];
     for (std::uint32_t record = record_begin;
@@ -115,7 +116,7 @@ __global__ void feature_major_small_n_kernel(
             const float sparse = __half2float(values[value]);
             #pragma unroll
             for (std::uint32_t column = 0u;
-                 column < feature_major_small_n_maximum; ++column)
+                 column < layout::projection::feature_major_small_n_maximum; ++column)
                 if (column < dense_width)
                     accumulators[column] += sparse * dense_feature[column];
         }
@@ -126,7 +127,7 @@ __global__ void feature_major_small_n_kernel(
         && row < projection.header.row_count) {
         #pragma unroll
         for (std::uint32_t column = 0u;
-             column < feature_major_small_n_maximum; ++column)
+             column < layout::projection::feature_major_small_n_maximum; ++column)
             if (column < dense_width)
                 output[static_cast<std::size_t>(row) * dense_width + column]
                     = accumulators[column];
@@ -137,7 +138,7 @@ __global__ void feature_major_small_n_kernel(
 // one row and split the N columns by warp. Each dense feature element is
 // fetched once into shared memory before all participating rows consume it.
 __global__ void feature_major_cta_medium_n_kernel(
-    feature_major_projection_view projection,
+    ::cellerator::layout::projection::FeatureMajorViewV1 projection,
     const __half *values,
     const float *dense_rhs,
     std::uint32_t dense_width,
@@ -222,12 +223,13 @@ operation_status run_feature_major(
     const auto &output = launch.outputs[0].storage.dense;
     const execution::value_plane &values = *launch.values[0].plane;
     const execution::relation_structure &structure = launch.structures[0];
-    const auto &projection = state.projection;
+    const auto &binding = state.projection;
+    const auto &projection = binding.layout;
     if (!execution::same_axis_identity(structure.source_axis, state.feature_axis)
         || !execution::same_axis_identity(
             structure.destination_axis, state.row_axis)
         || !execution::same_handle(
-            structure.identity, projection.runtime_structure)
+            structure.identity, binding.runtime_structure)
         || structure.epoch.value != projection.header.structure_epoch
         || structure.logical_edge_count != projection.header.nnz_count
         || rhs.value_type != execution::numeric_type::f32 || rhs.rank != 2u
@@ -301,12 +303,13 @@ operation_status prepare_impl(
         ? feature_major_execution_regime::small_n_warp
         : feature_major_execution_regime::medium_n_cta;
     const std::uint32_t minimum_n = small_candidate
-        ? feature_major_small_n_minimum
+        ? layout::projection::feature_major_small_n_minimum
         : feature_major_cta_medium_n_minimum;
     const std::uint32_t maximum_n = small_candidate
-        ? feature_major_small_n_maximum
+        ? layout::projection::feature_major_small_n_maximum
         : feature_major_cta_medium_n_maximum;
-    const auto &view = state->projection;
+    const auto &binding = state->projection;
+    const auto &view = binding.layout;
     const auto &header = view.header;
     const bool work_overflows = state->dense_width != 0u
         && header.nnz_count > std::numeric_limits<std::uint64_t>::max()
@@ -314,7 +317,7 @@ operation_status prepare_impl(
     if ((!small_candidate && !medium_candidate)
         || state->schema_version != feature_major_small_n_candidate_schema_version
         || state->regime != expected_regime
-        || !valid_device_projection(view, state->device_ordinal)
+        || !valid_device_projection(binding, state->device_ordinal)
         || !execution::valid_axis_identity(state->feature_axis)
         || !execution::valid_axis_identity(state->row_axis)
         || !execution::valid_axis_identity(state->dense_column_axis)
@@ -324,16 +327,16 @@ operation_status prepare_impl(
         || problem.output_count != 1u || work_overflows
         || problem.logical_work_items
             != static_cast<std::uint64_t>(header.nnz_count) * state->dense_width
-        || !execution::same_identity(
+        || !::cellerator::structure::same_identity(
             structures.structures[0].persistent, header.structure_identity)
         || !execution::same_handle(
-            structures.structures[0].runtime, view.runtime_structure)
+            structures.structures[0].runtime, binding.runtime_structure)
         || structures.structures[0].epoch.value != header.structure_epoch
-        || !execution::same_identity(
+        || !::cellerator::structure::same_identity(
             projection.persistent, header.projection_identity)
-        || !execution::same_handle(projection.runtime, view.runtime_projection)
-        || projection.schema_version != feature_major_projection_schema_version
-        || projection.variant != feature_major_projection_variant) {
+        || !execution::same_handle(projection.runtime, binding.runtime_projection)
+        || projection.schema_version != layout::projection::feature_major_projection_schema_version
+        || projection.variant != layout::projection::feature_major_projection_variant) {
         return fail(operation_status_code::unsupported_problem,
             "feature-major preparation metadata or N regime is incompatible");
     }
@@ -436,7 +439,7 @@ operation_status prepare_feature_major_small_n_operation(
     const projection_key &projection,
     const numeric_policy &numeric,
     const prepare_policy &policy,
-    const feature_major_projection_view &device_projection,
+    const execution::FeatureMajorBinding &device_projection,
     std::int32_t device_ordinal,
     std::uint32_t dense_width,
     execution::axis_identity feature_axis,
@@ -468,7 +471,7 @@ operation_status prepare_feature_major_cta_medium_n_operation(
     const projection_key &projection,
     const numeric_policy &numeric,
     const prepare_policy &policy,
-    const feature_major_projection_view &device_projection,
+    const execution::FeatureMajorBinding &device_projection,
     std::int32_t device_ordinal,
     std::uint32_t dense_width,
     execution::axis_identity feature_axis,

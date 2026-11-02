@@ -11,13 +11,18 @@
 namespace {
 
 using Token = std::uint32_t;
-using EventCell = cellerator::cells::EventCell<Token, std::string>;
+using EventPrefix = cellerator::cells::EventPrefix<Token, std::string>;
 using EventView = cellerator::cells::EventView<Token>;
 
-// The owner publishes vector growth through one stable descriptor. Production
-// stores can use their own capacity and invalidation policy.
+// This owner controls vector growth and publishes the current descriptor.
+// Prefix handles borrow that descriptor and retain their own logical boundary.
 class EventBuffer {
 public:
+    struct AppendResult {
+        Token token;
+        std::size_t new_limit;
+    };
+
     explicit EventBuffer(std::vector<Token> initial, std::string identity)
         : tokens_(std::move(initial)), identity_(std::move(identity)) {
         refresh_descriptor();
@@ -28,11 +33,11 @@ public:
     EventBuffer(EventBuffer&&) = delete;
     EventBuffer& operator=(EventBuffer&&) = delete;
 
-    EventCell cell() const {
-        return EventCell(descriptor_, 0, tokens_.size(), identity_);
+    EventPrefix prefix() const {
+        return EventPrefix(descriptor_, 0, tokens_.size(), identity_);
     }
 
-    void require_current_tail(const EventCell& prefix) const {
+    void require_current_tail(const EventPrefix& prefix) const {
         if (&prefix.buffer_descriptor() != &descriptor_) {
             throw std::logic_error("cannot append from a prefix owned by another buffer");
         }
@@ -43,19 +48,19 @@ public:
         }
     }
 
-    EventCell append_continuation(const EventCell& prefix, Token token) {
-        require_current_tail(prefix);
-
-        // vector growth is amortized; copying the full history on every step
-        // would make constructing a trajectory quadratic in its length.
+    AppendResult append(const EventPrefix& current, Token token) {
+        // Validate again at the storage boundary before changing the buffer.
+        require_current_tail(current);
         tokens_.push_back(token);
         refresh_descriptor();
         ++append_count_;
-
-        return EventCell(descriptor_, prefix.offset(), prefix.limit() + 1,
-                         prefix.identity());
+        return {token, tokens_.size()};
     }
 
+    const EventPrefix::buffer_type& descriptor() const & noexcept {
+        return descriptor_;
+    }
+    const EventPrefix::buffer_type& descriptor() const && = delete;
     std::size_t size() const noexcept { return tokens_.size(); }
     std::size_t append_count() const noexcept { return append_count_; }
 
@@ -71,8 +76,8 @@ private:
     std::size_t append_count_ = 0;
 };
 
-// A deterministic interface example only. It is neither a trained model nor
-// a scientific Karyoplast predictor.
+// This deterministic callable illustrates the interface only. It is not a
+// trained model or a scientific Karyoplast predictor.
 struct DeterministicEvaluator {
     std::size_t& calls;
 
@@ -84,49 +89,54 @@ struct DeterministicEvaluator {
     }
 };
 
-// The operation reads a typed view; storage owns the append and returned
-// prefix. No model binding or trajectory container is part of Cell.
+// The Cell's EventPrefix instance is the mutable logical boundary. Storage
+// owns the append; the operation updates this same instance after its append
+// succeeds, while copied Cells keep their earlier boundary.
 struct EventContinuation {
     DeterministicEvaluator evaluator;
 
-    EventCell forward(EventBuffer& storage, const EventCell& prefix) const {
+    Token operator()(EventPrefix& prefix, EventBuffer& storage) const {
         storage.require_current_tail(prefix);
-        const auto input = prefix.view<EventView>();
+        const auto input = prefix.read(cellerator::ViewTag<EventView>{});
         const auto next = evaluator(input);
-        return storage.append_continuation(prefix, next);
+        const auto result = storage.append(prefix, next);
+        prefix.rebind(storage.descriptor(), prefix.offset(), result.new_limit);
+        return result.token;
     }
 };
 
-void print_events(const char* label, const EventCell& cell) {
-    const auto events = cell.view<EventView>().tokens;
-    std::cout << label << " identity=" << cell.identity() << " prefix=[";
+void print_events(const char* label, const EventPrefix& prefix) {
+    const auto events = prefix.read(cellerator::ViewTag<EventView>{}).tokens;
+    const auto identity = prefix.read(
+        cellerator::ViewTag<cellerator::CellIdentityView<std::string>>{});
+    std::cout << label << " identity=" << identity.value << " prefix=[";
     for (std::size_t i = 0; i < events.count; ++i) {
         if (i != 0) std::cout << ',';
         std::cout << events.data[i];
     }
-    std::cout << "] limit=" << cell.limit() << '\n';
+    std::cout << "] limit=" << prefix.limit() << '\n';
 }
 
 } // namespace
 
 int main() {
     EventBuffer storage({2, 5, 5}, "cell-K");
-    std::size_t prediction_calls = 0;
-    const EventContinuation operation{DeterministicEvaluator{prediction_calls}};
-
-    auto initial = storage.cell();
-    print_events("initial", initial);
-
-    // Equal identity and prefix length are not sufficient: the handle must
-    // refer to this exact storage owner before evaluating or appending.
     EventBuffer other_storage({2, 5, 5}, "cell-K");
-    const auto foreign_prefix = other_storage.cell();
+    std::size_t prediction_calls = 0;
+    EventContinuation operation{DeterministicEvaluator{prediction_calls}};
+
+    auto cell = cellerator::make_cell(operation, storage.prefix());
+    print_events("initial", cell.instance());
+
+    // Equal identity and prefix length are not sufficient: a foreign handle
+    // must be rejected before model evaluation or storage mutation.
+    auto foreign_cell = cellerator::make_cell(operation, other_storage.prefix());
     const auto size_before_rejection = storage.size();
     const auto appends_before_rejection = storage.append_count();
     const auto predictions_before_rejection = prediction_calls;
     try {
-        (void)operation.forward(storage, foreign_prefix);
-        std::cerr << "expected a same-ID prefix from another buffer to be rejected\n";
+        (void)foreign_cell.forward(storage);
+        std::cerr << "expected a prefix from another buffer to be rejected\n";
         return 1;
     } catch (const std::logic_error& error) {
         if (std::string(error.what()) !=
@@ -144,24 +154,33 @@ int main() {
         return 1;
     }
 
-    auto extended = operation.forward(storage, initial);
-    print_events("extended", extended);
-    print_events("earlier handle", initial);
+    // This copy is an old boundary. The successful call extends only `cell`'s
+    // instance; the storage owner keeps the same vector and publishes growth.
+    auto old_prefix = cell;
+    const Token appended = cell.forward(storage);
+    if (cell.instance().limit() != 4 || old_prefix.instance().limit() != 3) {
+        std::cerr << "append did not update only the selected Cell boundary\n";
+        return 1;
+    }
+    std::cout << "appended token=" << appended << '\n';
+    print_events("extended cell", cell.instance());
+    print_events("copied earlier prefix", old_prefix.instance());
 
-    const auto prediction_calls_before_branch = prediction_calls;
+    const auto predictions_before_stale = prediction_calls;
     try {
-        (void)operation.forward(storage, initial);
-        std::cerr << "expected the old prefix to be rejected as non-tail\n";
+        (void)old_prefix.forward(storage);
+        std::cerr << "expected copied old prefix to be rejected as stale\n";
         return 1;
     } catch (const std::logic_error& error) {
-        std::cout << "branch rejected: " << error.what() << '\n';
+        std::cout << "stale prefix rejected: " << error.what() << '\n';
     }
-    if (prediction_calls != prediction_calls_before_branch ||
-        storage.size() != extended.limit() || storage.append_count() != 1) {
+    if (prediction_calls != predictions_before_stale ||
+        storage.size() != cell.instance().limit() || storage.append_count() != 1) {
         std::cerr << "stale-prefix rejection changed storage or ran prediction\n";
         return 1;
     }
 
-    auto second = operation.forward(storage, extended);
-    print_events("second extension", second);
+    const Token second = cell.forward(storage);
+    std::cout << "second appended token=" << second << '\n';
+    print_events("second extension", cell.instance());
 }

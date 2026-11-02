@@ -30,8 +30,8 @@ struct forward_relation_apply_storage_v1 {
 // structure arrays are caller-owned and contain no mutable value pointers.
 struct forward_relation_apply_view_v1 {
     support_family_identity_v1 family{};
-    execution::projection_id projection_identity{};
-    execution::order_id physical_edge_order{};
+    ::cellerator::structure::projection_id projection_identity{};
+    ::cellerator::structure::order_id physical_edge_order{};
     const std::uint64_t *destination_offsets = nullptr;
     const std::uint64_t *source_indices = nullptr;
     const std::uint64_t *logical_edge_ids = nullptr;
@@ -78,8 +78,8 @@ struct forward_relation_apply_result_v1 {
 [[nodiscard]] inline forward_relation_apply_result_v1
 build_forward_relation_apply_view_v1(
     const support_family_descriptor_v1 &family,
-    execution::projection_id projection_identity,
-    execution::order_id physical_edge_order,
+    ::cellerator::structure::projection_id projection_identity,
+    ::cellerator::structure::order_id physical_edge_order,
     std::uint64_t source_count,
     std::uint64_t destination_count,
     const logical_relation_edge_v1 *edges,
@@ -95,10 +95,10 @@ build_forward_relation_apply_view_v1(
             family, support_relation_apply_v1)) {
         return {forward_relation_apply_code_v1::operation_not_supported};
     }
-    if (!execution::valid_identity(projection_identity)) {
+    if (!::cellerator::structure::valid_identity(projection_identity)) {
         return {forward_relation_apply_code_v1::invalid_projection_identity};
     }
-    if (!execution::valid_identity(physical_edge_order)) {
+    if (!::cellerator::structure::valid_identity(physical_edge_order)) {
         return {forward_relation_apply_code_v1::invalid_physical_order};
     }
     if (source_count == 0) {

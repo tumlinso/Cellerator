@@ -1,13 +1,15 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/incremental.hh>
+#include <Cellerator/geometry/dependency/explicit_pattern.hh>
+#include <Cellerator/execution/dependency/incremental.hh>
 
 #include <cassert>
 #include <iostream>
 #include <map>
 
-namespace m = cellerator::modeling;
+namespace g = cellerator::geometry::dependency;
+namespace e = cellerator::execution;
 template<class E, class F> void rejects(F f) {
     bool caught = false;
     try { f(); } catch (const E&) { caught = true; }
@@ -15,20 +17,20 @@ template<class E, class F> void rejects(F f) {
 }
 
 int main() {
-    auto relation = std::make_shared<m::SparseRelation>(std::vector<m::RelationEdge>{
+    auto relation = std::make_shared<g::ExplicitPattern>(std::vector<g::PatternEdge>{
         {40, {{0,0,400}}}, {20, {{0,0,200}, {0,0,300}}},
         {10, {{0,0,100}, {0,0,200}, {0,0,200}}}}, 11, 12, 5);
     std::size_t calls = 0;
     bool fail = false;
-    auto evaluator = [&](std::uint64_t id, const m::SourceReadSnapshot<double>& reads,
-                          m::EvaluationEpochs epochs) {
+    auto evaluator = [&](std::uint64_t id, const e::SourceReadSnapshot<double>& reads,
+                          e::EvaluationEpochs epochs) {
         ++calls;
         if (fail && id == 20) throw std::runtime_error("callback failure");
         double sum = 0;
         for (std::size_t i = 0; i < reads.size(); ++i) sum += reads.at(i).value;
         return sum * (1 + epochs.parameters) + epochs.context;
     };
-    m::IncrementalInteractions<double, double> cache(relation,
+    e::IncrementalInteractions<double, double> cache(relation,
         {{{0,0,100}, 0, 1}, {{0,0,200}, 0, 2}, {{0,0,300}, 0, 3}, {{0,0,400}, 0, 4}}, evaluator);
     assert(cache.pending_invalid() == 3);
     rejects<std::logic_error>([&] { cache.result(10); });
@@ -80,7 +82,7 @@ int main() {
     fail = true;
     rejects<std::runtime_error>([&] { cache.step({{{0,0,200},2,100}}, {3,4}); });
     assert(cache.step_generation() == generation && cache.source({0,0,200})->value == 7);
-    assert(cache.epochs() == m::EvaluationEpochs({2,3}));
+    assert(cache.epochs() == e::EvaluationEpochs({2,3}));
     assert(cache.result(10) == 69 && cache.pending_invalid() == 0);
     fail = false;
     cache.step({{{0,0,200},2,100}}, {3,4});
@@ -89,23 +91,30 @@ int main() {
     // CSR reuses native posting deduplication despite duplicate incidences.
     const auto& incidence = cache.incidence();
     assert(incidence.offsets() == std::vector<std::uint64_t>({0,1,3,4,5}));
-    assert(incidence.ordinals() == std::vector<std::uint64_t>({0,0,1,1,2}));
+    assert(incidence.posting_view().entries == relation->posting_records().data());
+    assert(incidence.posting_count() == 5);
+    std::vector<std::uint64_t> posting_ordinals;
+    for (std::size_t i = 0; i < incidence.posting_count(); ++i)
+        posting_ordinals.push_back(incidence.posting_record(i).logical_edge_ordinal);
+    assert(posting_ordinals == std::vector<std::uint64_t>({0,0,1,1,2}));
+    assert(incidence.make_device_ordinal_projection() == posting_ordinals);
     assert(incidence.source_ordinal({0,0,300}) == 2);
-    auto other = std::make_shared<m::SparseRelation>(*relation);
-    m::ActiveWorklist wrong(other, {0});
+    auto other = std::make_shared<g::ExplicitPattern>(*relation);
+    e::ActiveWorklist wrong(other, {0});
     rejects<std::invalid_argument>([&] { cache.step({}, {3,4}, &wrong); });
 
     // Role is part of source identity. Numeric type is caller-selected.
-    auto roles = std::make_shared<m::SparseRelation>(std::vector<m::RelationEdge>{
+    auto roles = std::make_shared<g::ExplicitPattern>(std::vector<g::PatternEdge>{
         {1, {{0,0,5}, {1,0,5}}}});
-    m::IncrementalInteractions<int,int> typed(roles,
+    e::IncrementalInteractions<int,int> typed(roles,
         {{{0,0,5},0,2},{{1,0,5},0,8}},
         [](auto, const auto& reads, auto) { return reads.at(0).value - reads.at(1).value; });
     typed.step({}, {});
     assert(typed.result(1) == -6);
-    auto empty = std::make_shared<m::SparseRelation>(std::vector<m::RelationEdge>{});
-    m::IncrementalInteractions<int,int> zero(empty, {}, [](auto, const auto&, auto) { return 0; });
+    auto empty = std::make_shared<g::ExplicitPattern>(std::vector<g::PatternEdge>{});
+    e::IncrementalInteractions<int,int> zero(empty, {}, [](auto, const auto&, auto) { return 0; });
     assert(zero.step({}, {}).evaluated_ids.empty());
     assert(zero.incidence().offsets() == std::vector<std::uint64_t>{0});
+    assert(zero.incidence().make_device_ordinal_projection().empty());
     std::cout << "incremental interactions: full recompute agreement; 1 vs 3 localized callbacks; rollback and eligibility passed\n";
 }

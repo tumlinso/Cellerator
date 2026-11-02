@@ -16,7 +16,7 @@ void require(bool value) {
 }
 
 template <class Tag>
-execution::persistent_identity<Tag> identity(std::uint64_t seed) {
+::cellerator::structure::persistent_identity<Tag> identity(std::uint64_t seed) {
     return {seed, seed + 1u};
 }
 
@@ -25,10 +25,10 @@ execution::persistent_axis_identity axis(std::uint64_t seed) {
     result.header.schema_version = execution::biological_abi_version;
     result.header.kind = execution::serialized_record_kind::persistent_axis_identity;
     result.header.byte_count = sizeof(result);
-    result.domain = identity<execution::domain_tag>(seed);
-    result.order = identity<execution::order_tag>(seed + 2u);
-    result.geometry = identity<execution::geometry_tag>(seed + 4u);
-    result.partition = identity<execution::partition_tag>(seed + 6u);
+    result.domain = identity<::cellerator::structure::domain_tag>(seed);
+    result.order = identity<::cellerator::structure::order_tag>(seed + 2u);
+    result.geometry = identity<::cellerator::structure::geometry_tag>(seed + 4u);
+    result.partition = identity<::cellerator::structure::partition_tag>(seed + 6u);
     return result;
 }
 
@@ -36,12 +36,12 @@ op::relation_algebra_problem_v1 baseline_problem() {
     op::relation_algebra_problem_v1 result{};
     result.kind = op::relation_algebra_kind_v1::relation_apply;
     result.operation_identity = {11u, 12u};
-    result.relation.structure = identity<execution::structure_tag>(20u);
+    result.relation.structure = identity<::cellerator::structure::structure_tag>(20u);
     result.relation.epoch.value = 3u;
     result.relation.source_axis = axis(30u);
     result.relation.destination_axis = axis(50u);
     result.relation.logical_edge_count = (std::uint64_t{1} << 32u) + 17u;
-    result.logical_edge_order = identity<execution::order_tag>(70u);
+    result.logical_edge_order = identity<::cellerator::structure::order_tag>(70u);
     result.dense_width = 16u;
     result.numeric.relation_storage = execution::numeric_type::f32;
     result.numeric.state_storage = execution::numeric_type::f32;
@@ -93,11 +93,11 @@ void baseline_rejections_remain_fail_closed() {
             == v2::schema_status_code::invalid_argument);
 
     v2::typed_relation relation{};
-    relation.structure = identity<execution::structure_tag>(200u);
+    relation.structure = identity<::cellerator::structure::structure_tag>(200u);
     relation.epoch.value = 1u;
     relation.source_axis = axis(210u);
     relation.destination_axis = axis(230u);
-    relation.logical_edge_order = identity<execution::order_tag>(250u);
+    relation.logical_edge_order = identity<::cellerator::structure::order_tag>(250u);
     relation.logical_edge_count = 4u;
     v2::operation_problem problem{};
     problem.persistent_problem_identity = {1u, 2u};

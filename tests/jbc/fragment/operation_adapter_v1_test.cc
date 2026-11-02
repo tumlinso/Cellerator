@@ -8,7 +8,7 @@ namespace execution = cellerator::execution;
 namespace operation = cellerator::compute::operation::v2;
 
 template<typename Tag>
-execution::persistent_identity<Tag> id(std::uint64_t value) {
+::cellerator::structure::persistent_identity<Tag> id(std::uint64_t value) {
     return {value, value + 100u};
 }
 
@@ -16,9 +16,9 @@ execution::persistent_axis_identity axis(std::uint64_t seed) {
     return {{execution::biological_abi_version,
                 execution::serialized_record_kind::persistent_axis_identity,
                 sizeof(execution::persistent_axis_identity)},
-        id<execution::domain_tag>(seed), id<execution::order_tag>(seed + 1u),
-        id<execution::geometry_tag>(seed + 2u),
-        id<execution::partition_tag>(seed + 3u)};
+        id<::cellerator::structure::domain_tag>(seed), id<::cellerator::structure::order_tag>(seed + 1u),
+        id<::cellerator::structure::geometry_tag>(seed + 2u),
+        id<::cellerator::structure::partition_tag>(seed + 3u)};
 }
 
 void numeric(operation::numerical_policy *value) {
@@ -32,11 +32,11 @@ void numeric(operation::numerical_policy *value) {
 
 int main() {
     operation::typed_relation relation{};
-    relation.structure = id<execution::structure_tag>(1u);
+    relation.structure = id<::cellerator::structure::structure_tag>(1u);
     relation.epoch = {2u};
     relation.source_axis = axis(10u);
     relation.destination_axis = axis(20u);
-    relation.logical_edge_order = id<execution::order_tag>(30u);
+    relation.logical_edge_order = id<::cellerator::structure::order_tag>(30u);
     relation.logical_edge_count = 8u;
     operation::operation_problem source{};
     source.persistent_problem_identity = {1u, 2u};

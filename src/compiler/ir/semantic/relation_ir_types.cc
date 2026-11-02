@@ -6,12 +6,12 @@ namespace Cellerator::compiler::ir::semantic {
 namespace {
 
 template<typename Tag>
-semantic_identity_v1 identity(cellerator::execution::persistent_identity<Tag> value) noexcept {
+semantic_identity_v1 identity(::cellerator::structure::persistent_identity<Tag> value) noexcept {
     return {value.low, value.high};
 }
 
 template<typename Tag>
-cellerator::execution::persistent_identity<Tag> identity(semantic_identity_v1 value) noexcept {
+::cellerator::structure::persistent_identity<Tag> identity(semantic_identity_v1 value) noexcept {
     return {value.low, value.high};
 }
 
@@ -74,22 +74,22 @@ typed_relation_from_relation_ir_v1(const relation_ir_type_v1& relation) noexcept
     if (validate_relation_ir_type_v1(relation) != relation_ir_validation_code_v1::success)
         return std::nullopt;
     cellerator::compute::operation::v2::typed_relation result;
-    result.structure = identity<cellerator::execution::structure_tag>(relation.structure_identity);
+    result.structure = identity<::cellerator::structure::structure_tag>(relation.structure_identity);
     result.epoch = {relation.structure_epoch};
     const auto persistent_axis = [](const axis_ir_type_v1& axis) {
         return cellerator::execution::persistent_axis_identity{
             {cellerator::execution::biological_abi_version,
              cellerator::execution::serialized_record_kind::persistent_axis_identity,
              sizeof(cellerator::execution::persistent_axis_identity)},
-            identity<cellerator::execution::domain_tag>(axis.domain.identity),
-            identity<cellerator::execution::order_tag>(axis.order.identity),
-            identity<cellerator::execution::geometry_tag>(axis.geometry.identity),
-            identity<cellerator::execution::partition_tag>(axis.partition.identity)};
+            identity<::cellerator::structure::domain_tag>(axis.domain.identity),
+            identity<::cellerator::structure::order_tag>(axis.order.identity),
+            identity<::cellerator::structure::geometry_tag>(axis.geometry.identity),
+            identity<::cellerator::structure::partition_tag>(axis.partition.identity)};
     };
     result.source_axis = persistent_axis(relation.source_axis);
     result.destination_axis = persistent_axis(relation.destination_axis);
     result.logical_edge_order =
-        identity<cellerator::execution::order_tag>(relation.logical_edge_order);
+        identity<::cellerator::structure::order_tag>(relation.logical_edge_order);
     result.logical_edge_count = relation.logical_edge_count;
     return result;
 }

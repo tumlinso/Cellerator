@@ -16,17 +16,17 @@ execution::persistent_axis_identity axis(std::uint64_t seed) {
     return {{execution::biological_abi_version,
                 execution::serialized_record_kind::persistent_axis_identity,
                 sizeof(execution::persistent_axis_identity)},
-        identity<execution::domain_id>(seed),
-        identity<execution::order_id>(seed + 2u),
-        identity<execution::geometry_id>(seed + 4u),
-        identity<execution::partition_id>(seed + 6u)};
+        identity<::cellerator::structure::domain_id>(seed),
+        identity<::cellerator::structure::order_id>(seed + 2u),
+        identity<::cellerator::structure::geometry_id>(seed + 4u),
+        identity<::cellerator::structure::partition_id>(seed + 6u)};
 }
 
 operation::relation_algebra_problem problem(operation::typed_relation &relation) {
     const auto source = axis(10u);
     const auto destination = axis(20u);
-    relation = {identity<execution::structure_id>(30u), {1u}, source,
-        destination, identity<execution::order_id>(40u), 8u};
+    relation = {identity<::cellerator::structure::structure_id>(30u), {1u}, source,
+        destination, identity<::cellerator::structure::order_id>(40u), 8u};
     operation::relation_algebra_problem result{};
     result.core.kind = operation::operation_kind::segment_reduce;
     result.core.persistent_problem_identity = {50u, 51u};

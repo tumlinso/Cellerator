@@ -27,13 +27,13 @@ int main() {
             state, state.generation, {1u, 30u}, &result)
         || !atom::validate_persistent_order_dense_result_atom_v1(state, result)
         || result.values != state.values
-        || !execution::same_identity(
+        || !::cellerator::structure::same_identity(
             result.persistent_order, state.persistent_order)) {
         return 1;
     }
     // Emission aliases the selected persistent order and never canonicalizes.
-    if (execution::same_identity(result.persistent_order,
-            execution::order_id{99u, 1u})) {
+    if (::cellerator::structure::same_identity(result.persistent_order,
+            ::cellerator::structure::order_id{99u, 1u})) {
         return 2;
     }
     atom::dense_result_atom_v1 rejected{};

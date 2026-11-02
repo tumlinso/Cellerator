@@ -11,7 +11,7 @@ namespace cellerator::compute::sampling {
 
 namespace {
 
-namespace cm = ::cellerator::matrix;
+namespace cm = ::cellerator::interop::formats;
 namespace ct = ::cellerator::types;
 
 struct staged_csr_structure {
@@ -221,7 +221,7 @@ bool allocate_structure(std::uint64_t sampled_rows,
     return true;
 }
 
-bool validate_source_row_ptr(const cm::compressed *source, std::string *error) {
+bool validate_source_row_ptr(const cm::CompressedPayload *source, std::string *error) {
     if (source == nullptr) {
         set_error(error, "source CSR matrix is null");
         return false;
@@ -254,7 +254,7 @@ bool validate_source_row_ptr(const cm::compressed *source, std::string *error) {
     return true;
 }
 
-bool gather_in_memory_structure(const cm::compressed *source,
+bool gather_in_memory_structure(const cm::CompressedPayload *source,
                                 const std::vector<std::uint64_t> &rows,
                                 staged_csr_structure *out,
                                 std::string *error) {
@@ -356,7 +356,7 @@ std::size_t sampled_csr_image_bytes(std::uint64_t sampled_rows,
                         &mapping_offset) ? bytes : 0u;
 }
 
-bool materialize_sampled_csr_image(const cm::compressed *source,
+bool materialize_sampled_csr_image(const cm::CompressedPayload *source,
                                    const sample_selection_view &selection,
                                    ::cellerator::memory::image_buffer image,
                                    sampled_csr_image_view *out,
@@ -526,7 +526,7 @@ const sample_provenance &owned_sampled_csr_structure::sampling_provenance() cons
     return provenance_;
 }
 
-bool materialize_sampled_csr_structure(const cm::compressed *source,
+bool materialize_sampled_csr_structure(const cm::CompressedPayload *source,
                                        const sample_plan &plan,
                                        owned_sampled_csr_structure *out,
                                        std::string *error) {

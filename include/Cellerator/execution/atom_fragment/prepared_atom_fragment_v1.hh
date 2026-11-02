@@ -8,8 +8,8 @@ namespace cellerator::execution::atom_fragment {
 struct prepared_atom_fragment_v1 {
     atom_bound_candidate_v1 candidate{};
     const program::prepared_program_v2 *program = nullptr;
-    order_id input_order{};
-    order_id output_order{};
+    structure::order_id input_order{};
+    structure::order_id output_order{};
     std::uint64_t binding_count = 0u;
     std::uint64_t maximum_binding_workspace_bytes = 0u;
 };
@@ -37,8 +37,8 @@ struct prepared_atom_fragment_status_v1 {
 prepared_atom_fragment_status_v1 prepare_atom_fragment_v1(
     const atom_bound_candidate_v1 &candidate,
     const program::prepared_program_v2 &program,
-    order_id input_order,
-    order_id output_order,
+    structure::order_id input_order,
+    structure::order_id output_order,
     prepared_atom_fragment_v1 *output) noexcept;
 
 } // namespace cellerator::execution::atom_fragment

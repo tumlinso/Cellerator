@@ -25,8 +25,9 @@
 
 namespace py = pybind11;
 namespace ss = cellerator::compute::operation::sparse_support;
-namespace ix = cellerator::compute::operation::indexed;
+namespace ix = cellerator::ops::mechanism::indexed;
 namespace sb = cellerator::bindings::sparse_support;
+namespace ce_compact = cellerator::geometry::dependency::compact;
 
 namespace cellerator::bindings::sparse_support {
 
@@ -438,7 +439,7 @@ torch::Tensor sparse_relation_forward_packed(
     compaction.temporary_storage = temporary.data_ptr<std::uint8_t>();
     compaction.temporary_storage_bytes = temporary_bytes;
     const auto* image = packed->image.data_ptr<std::uint8_t>();
-    const auto* value_maps = reinterpret_cast<const cellerator::compute::projection::projection_value_map_v1*>(
+    const auto* value_maps = reinterpret_cast<const cellerator::layout::projection::projection_value_map_v1*>(
         image + header.value_map_offset);
     check_status(ss::prepare_ce_geo_n64_workset_cuda_v1(
         header, edge_view(handle), primal, gates,
@@ -1021,7 +1022,7 @@ SparseHandlePtr sparse_create_handle(
                 "support manager and relation handle structure epochs differ");
     std::vector<std::pair<std::uint64_t, std::pair<std::uint32_t, std::uint32_t>>>
         snapshot_edges;
-    auto append_snapshot_edges = [&](const cellerator::compute::support::logical_support_view_v1* view) {
+    auto append_snapshot_edges = [&](const ce_compact::ViewV1* view) {
         TORCH_CHECK(view != nullptr, "support snapshot is incomplete");
         for (std::uint64_t i = 0; i < view->edge_count; ++i) {
             const auto& edge = view->edges[i];
@@ -1111,7 +1112,7 @@ SparseHandlePtr sparse_rebind_handle(
     TORCH_CHECK(snapshot.structure_epoch == structure_epoch,
                 "replacement sparse support epoch is not published");
     std::vector<std::pair<std::uint64_t, std::pair<std::uint32_t, std::uint32_t>>> expected;
-    auto append = [&](const cellerator::compute::support::logical_support_view_v1* view) {
+    auto append = [&](const ce_compact::ViewV1* view) {
         TORCH_CHECK(view != nullptr, "replacement support snapshot is incomplete");
         for (std::uint64_t i = 0; i < view->edge_count; ++i) {
             const auto& edge = view->edges[i];

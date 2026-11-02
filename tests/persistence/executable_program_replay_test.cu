@@ -212,26 +212,26 @@ std::string temporary_path() {
 } // namespace
 
 int main() {
-    const execution::structure_id structure{0x1134u, 0x1234u};
+    const ::cellerator::structure::structure_id structure{0x1134u, 0x1234u};
     const execution::structure_handle structure_handle{21u, 1u};
-    const execution::structure_epoch epoch{7u};
-    const execution::projection_id projection_id{0x3134u, 0x3234u};
+    const ::cellerator::structure::structure_epoch epoch{7u};
+    const ::cellerator::structure::projection_id projection_id{0x3134u, 0x3234u};
     const execution::projection_handle projection_handle{41u, 1u};
     source_fixture source;
-    cm::feature_major_projection_build_request projection_request{};
-    projection_request.structure_identity = structure;
+    execution::FeatureMajorBindingBuildRequest projection_request{};
+    projection_request.layout.structure_identity = structure;
+    projection_request.layout.structure_epoch_value = epoch;
+    projection_request.layout.projection_identity = projection_id;
+    projection_request.layout.source = source.payload;
     projection_request.runtime_structure = structure_handle;
-    projection_request.structure_epoch_value = epoch;
-    projection_request.projection_identity = projection_id;
     projection_request.runtime_projection = projection_handle;
-    projection_request.source = source.payload;
-    cm::feature_major_projection_requirements projection_requirements{};
-    require(cm::query_feature_major_projection_requirements_host(
+    ::cellerator::layout::projection::feature_major_projection_requirements projection_requirements{};
+    require(execution::query_feature_major_binding_requirements_host(
         projection_request, &projection_requirements), "query FMP1 projection");
     std::vector<unsigned char> projection_payload(
         projection_requirements.payload_bytes);
-    cm::feature_major_projection_view built_projection{};
-    require(cm::build_feature_major_projection_host(projection_request,
+    execution::FeatureMajorBinding built_projection{};
+    require(execution::build_feature_major_binding_host(projection_request,
         {projection_payload.data(), projection_payload.size()}, &built_projection),
         "build pointer-free FMP1 projection");
 
@@ -249,7 +249,7 @@ int main() {
     sections[3] = {persistence::execution_section_kind::semantic_geometry,
         1u, 0u, 8u, 4u, 1u, geometry.data(), geometry.size(), 1u, 8u};
     sections[4] = {persistence::execution_section_kind::projection_payload,
-        cm::feature_major_projection_schema_version,
+        ::cellerator::layout::projection::feature_major_projection_schema_version,
         persistence::directory_device_readable, 64u,
         projection_id.low, projection_id.high, projection_payload.data(),
         projection_payload.size(), 0u, 0u};
@@ -258,7 +258,7 @@ int main() {
     entry.identity_low = projection_id.low;
     entry.identity_high = projection_id.high;
     entry.kind = persistence::execution_projection_kind::native_feature_major;
-    entry.schema_version = cm::feature_major_projection_schema_version;
+    entry.schema_version = ::cellerator::layout::projection::feature_major_projection_schema_version;
     entry.flags = persistence::directory_device_readable
         | persistence::projection_forward_capable;
     entry.operation_family = static_cast<std::uint32_t>(
@@ -332,8 +332,8 @@ int main() {
     persistence::prebound_projection_view_v1 host_prebound{};
     require(persistence::prebind_execution_projection_host(
         validated.image.host_image, 0u, &host_prebound), "prebind reloaded FMP1");
-    cm::feature_major_projection_view validated_projection{};
-    require(cm::validate_feature_major_projection_payload_host(
+    execution::FeatureMajorBinding validated_projection{};
+    require(execution::validate_feature_major_binding_payload_host(
         host_prebound.payload, host_prebound.payload_bytes, structure, epoch,
         projection_id, structure_handle, projection_handle,
         &validated_projection), "validate reloaded typed FMP1");
@@ -356,15 +356,15 @@ int main() {
     activation.projection = projection_id;
     activation.runtime_projection = projection_handle;
     activation.location = location(device);
-    cm::feature_major_projection_view device_projection{};
+    execution::FeatureMajorBinding device_projection{};
     require(execution::activate_feature_major_projection(
         bound.projection, activation, validated_projection, &device_projection),
         "activate non-owning typed FMP1 device view");
-    require(device_projection.payload_base == bound.projection.payload,
+    require(device_projection.layout.payload_base == bound.projection.payload,
         "typed activation does not alias the uploaded CPE2 image");
 
     std::vector<__half> packed_values(source.values.size());
-    require(cm::pack_feature_major_values_host(validated_projection,
+    require(::cellerator::layout::projection::pack_feature_major_values_host(validated_projection.layout,
         source.values.data(), source.values.size() * sizeof(__half),
         {packed_values.data(), packed_values.size() * sizeof(__half)}),
         "pack mutable values outside CPE2");
@@ -386,8 +386,8 @@ int main() {
         "initialize sole execution session");
     const core::projection_key projection_key{projection_id, projection_handle,
         core::projection_kind::native_feature_major,
-        cm::feature_major_projection_schema_version,
-        cm::feature_major_projection_variant};
+        ::cellerator::layout::projection::feature_major_projection_schema_version,
+        ::cellerator::layout::projection::feature_major_projection_variant};
     const auto projection = execution::program_projection(
         projection_key, device_projection);
     execution::program_candidate_cost cost{};

@@ -6,9 +6,10 @@
 
 #include <cuda_runtime.h>
 
-#include <Cellerator/quantized/api.cuh>
+#include <Cellerator/ops/quantized/api.cuh>
 
-namespace msq = ::cellerator::quantized;
+namespace msq = ::cellerator::tensor::quantized;
+namespace mso = ::cellerator::ops::quantized;
 
 namespace {
 
@@ -108,7 +109,7 @@ bool run_host_case() {
     fixture.packed_values.assign(static_cast<std::size_t>(fixture.packed_row_ptr.back()), 0u);
     fill_fixture_inputs<Bits, Metadata>(&fixture);
 
-    auto matrix = msq::make_matrix<Bits>(
+    auto matrix = msq::make_csr_view<Bits>(
         fixture.rows,
         fixture.cols,
         static_cast<int>(fixture.col_idx.size()),
@@ -198,7 +199,7 @@ bool run_device_case() {
     fill_fixture_inputs<Bits, Metadata>(&fixture);
 
     {
-        auto host_matrix = msq::make_matrix<Bits>(
+        auto host_matrix = msq::make_csr_view<Bits>(
             fixture.rows,
             fixture.cols,
             static_cast<int>(fixture.col_idx.size()),
@@ -288,7 +289,7 @@ bool run_device_case() {
             }
         }(fixture, d_scales, d_offsets, d_row_offsets);
 
-        auto host_matrix = msq::make_matrix<Bits>(
+        auto host_matrix = msq::make_csr_view<Bits>(
             fixture.rows,
             fixture.cols,
             static_cast<int>(fixture.col_idx.size()),
@@ -299,7 +300,7 @@ bool run_device_case() {
             fixture.block_row_ptr.data(),
             fixture.packed_values.data(),
             host_metadata);
-        auto device_matrix = msq::make_matrix<Bits>(
+        auto device_matrix = msq::make_csr_view<Bits>(
             fixture.rows,
             fixture.cols,
             static_cast<int>(fixture.col_idx.size()),
@@ -314,7 +315,7 @@ bool run_device_case() {
         for (int block = 0; block < block_count; ++block) {
             const auto block_view = msq::get_block(&host_matrix, block);
 
-            ok = check_cuda(msq::launch_quantize_block_v100(&device_matrix, block_view, d_input + block_view.nnz_begin),
+            ok = check_cuda(mso::launch_quantize_block_v100(&device_matrix, block_view, d_input + block_view.nnz_begin),
                             "launch quantize block") && ok;
         }
         ok = check_cuda(cudaDeviceSynchronize(), "sync after quantize") && ok;
@@ -342,7 +343,7 @@ bool run_device_case() {
         for (int block = 0; block < block_count; ++block) {
             const auto block_view = msq::get_block(&host_matrix, block);
 
-            ok = check_cuda(msq::launch_dequantize_block_v100(&device_matrix, block_view, d_output + block_view.nnz_begin),
+            ok = check_cuda(mso::launch_dequantize_block_v100(&device_matrix, block_view, d_output + block_view.nnz_begin),
                             "launch dequantize block") && ok;
         }
         ok = check_cuda(cudaDeviceSynchronize(), "sync after dequantize") && ok;
@@ -389,7 +390,7 @@ bool run_policy_suite() {
     bool ok = true;
 
     for (int bits : {1, 2, 4, 8}) {
-        ok = msq::dispatch_bits(bits, [&](auto bits_tag) {
+        ok = mso::dispatch_bits(bits, [&](auto bits_tag) {
                  constexpr int Bits = decltype(bits_tag)::value;
                  return run_host_case<Bits, Metadata>() && run_device_case<Bits, Metadata>();
              }) &&

@@ -1,19 +1,19 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <cassert>
 #include <cstdint>
 #include <type_traits>
 
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 
 int main() {
     static_assert(std::is_standard_layout<
-        projection::physical_mma_hybrid_header_v1>::value);
+        projection::MmaHybridLayoutV1>::value);
     static_assert(std::is_standard_layout<projection::mma_tile_v1>::value);
     static_assert(std::is_standard_layout<
         projection::projection_value_map_v1>::value);
 
-    projection::physical_mma_hybrid_header_v1 header{};
+    projection::MmaHybridLayoutV1 header{};
     header.image_bytes = sizeof(header);
     header.logical_edge_count = 2u;
     header.dense_width = 64u;

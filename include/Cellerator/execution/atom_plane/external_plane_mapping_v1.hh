@@ -28,8 +28,8 @@ struct external_atom_plane_descriptor_v1 {
     external_atom_plane_identity_v1 plane_identity{};
     external_atom_plane_identity_v1 primary_plane_identity{};
     u64 component_identity = 0u;
-    projection_id projection{};
-    order_id physical_order{};
+    structure::projection_id projection{};
+    structure::order_id physical_order{};
     projection_value_plane::value_component_kind_v1 component_kind =
         projection_value_plane::value_component_kind_v1::residual;
     external_atom_plane_role_v1 role = external_atom_plane_role_v1::primary;
@@ -50,9 +50,9 @@ struct external_plane_mapping_request_v1 {
         projection_value_plane::value_primary_mode_v1::logical;
     u8 reserved[3]{};
     structure_handle structure{};
-    structure_epoch structure_epoch_value{};
+    structure::structure_epoch structure_epoch_value{};
     value_generation generation{};
-    order_id logical_edge_order{};
+    structure::order_id logical_edge_order{};
     value_numeric_policy numeric{};
     quantization_descriptor quantization{};
     const external_atom_plane_descriptor_v1 *planes = nullptr;

@@ -5,9 +5,9 @@
 #include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
 #include <Cellerator/compute/candidate/transpose_backward_candidate.hh>
 
-#include <Cellerator/compute/projection/physical_csr.hh>
-#include <Cellerator/compute/projection/physical_feature_major.hh>
-#include <Cellerator/compute/projection/physical_transpose.hh>
+#include <Cellerator/layout/projection/csr.hh>
+#include <Cellerator/layout/projection/feature_major.hh>
+#include <Cellerator/layout/projection/transpose.hh>
 
 #include <Cellerator/geometry/persistent_packing_payload.hh>
 
@@ -17,6 +17,8 @@
 
 namespace cellerator::compute::math::core {
 namespace {
+
+namespace projection_layout = ::cellerator::layout::projection;
 
 constexpr std::uint32_t common_projection_requirements =
     catalog_prebound_typed_projection
@@ -78,7 +80,7 @@ const built_in_candidate_descriptor catalog_entries[builtin_candidate_count]{
         backend_kind::native_direct,
         0u,
         candidate_deterministic | candidate_persistent_preprocessing,
-        execution_csr_schema_version,
+        ::cellerator::layout::projection::execution_csr_schema_version,
         1u,
         1u,
         1u,
@@ -105,8 +107,8 @@ const built_in_candidate_descriptor catalog_entries[builtin_candidate_count]{
         0u,
         candidate_deterministic | candidate_graph_capture
             | candidate_persistent_preprocessing,
-        feature_major_projection_schema_version,
-        feature_major_projection_variant,
+        projection_layout::feature_major_projection_schema_version,
+        projection_layout::feature_major_projection_variant,
         1u,
         16u,
         sizeof(feature_major_small_n_prepared_state),
@@ -133,8 +135,8 @@ const built_in_candidate_descriptor catalog_entries[builtin_candidate_count]{
         0u,
         candidate_deterministic | candidate_graph_capture
             | candidate_persistent_preprocessing,
-        feature_major_projection_schema_version,
-        feature_major_projection_variant,
+        projection_layout::feature_major_projection_schema_version,
+        projection_layout::feature_major_projection_variant,
         feature_major_cta_medium_n_minimum,
         feature_major_cta_medium_n_maximum,
         sizeof(feature_major_small_n_prepared_state),
@@ -161,8 +163,8 @@ const built_in_candidate_descriptor catalog_entries[builtin_candidate_count]{
         0u,
         candidate_deterministic | candidate_graph_capture
             | candidate_persistent_preprocessing,
-        transpose_projection_schema_version,
-        transpose_projection_variant,
+        projection_layout::transpose_projection_schema_version,
+        projection_layout::transpose_projection_variant,
         1u,
         1u,
         sizeof(transpose_backward_prepared_state),

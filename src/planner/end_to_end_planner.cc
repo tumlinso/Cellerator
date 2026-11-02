@@ -43,7 +43,7 @@ bool valid_structure_set(
     for (std::uint32_t index = 0u; index < structures.count; ++index) {
         const persistent_structure_dependency &current =
             structures.structures[index];
-        if (!execution::valid_identity(current.identity)
+        if (!::cellerator::structure::valid_identity(current.identity)
             || current.epoch.value == 0u)
             return false;
         if (index != 0u
@@ -59,7 +59,7 @@ bool same_structure_set(
     const persistent_structure_set_key &rhs) noexcept {
     if (lhs.count != rhs.count) return false;
     for (std::uint32_t index = 0u; index < lhs.count; ++index)
-        if (!execution::same_identity(
+        if (!::cellerator::structure::same_identity(
                 lhs.structures[index].identity,
                 rhs.structures[index].identity)
             || lhs.structures[index].epoch.value
@@ -71,13 +71,13 @@ bool same_structure_set(
 bool same_geometry_key(
     const semantic_geometry_key &lhs,
     const semantic_geometry_key &rhs) noexcept {
-    return execution::same_identity(lhs.source_domain, rhs.source_domain)
-        && execution::same_identity(
+    return ::cellerator::structure::same_identity(lhs.source_domain, rhs.source_domain)
+        && ::cellerator::structure::same_identity(
             lhs.destination_domain, rhs.destination_domain)
-        && execution::same_identity(lhs.geometry, rhs.geometry)
-        && execution::same_identity(lhs.source_order, rhs.source_order)
-        && execution::same_identity(lhs.destination_order, rhs.destination_order)
-        && execution::same_identity(lhs.partition, rhs.partition);
+        && ::cellerator::structure::same_identity(lhs.geometry, rhs.geometry)
+        && ::cellerator::structure::same_identity(lhs.source_order, rhs.source_order)
+        && ::cellerator::structure::same_identity(lhs.destination_order, rhs.destination_order)
+        && ::cellerator::structure::same_identity(lhs.partition, rhs.partition);
 }
 
 candidate_rejection reject_candidate(
@@ -90,7 +90,7 @@ candidate_rejection reject_candidate(
                 : candidate.operation->identity)
         || candidate.name == nullptr
         || candidate.operation->operation != problem.kind
-        || !execution::valid_identity(candidate.projection.persistent)
+        || !::cellerator::structure::valid_identity(candidate.projection.persistent)
         || !execution::valid_handle(candidate.projection.runtime)
         || candidate.projection.schema_version == 0u
         || candidate.projection.kind != candidate.operation->projection
@@ -262,7 +262,7 @@ bool make_persistent_structure_set_key(
     *persistent = {};
     persistent->count = live.count;
     for (std::uint32_t index = 0u; index < live.count; ++index) {
-        if (!execution::valid_identity(live.structures[index].persistent)
+        if (!::cellerator::structure::valid_identity(live.structures[index].persistent)
             || live.structures[index].epoch.value == 0u)
             return false;
         persistent->structures[index] = {
@@ -277,7 +277,7 @@ bool make_persistent_structure_set_key(
 bool same_persistent_projection_key(
     const persistent_projection_key &persistent,
     const operation_core::projection_key &live) noexcept {
-    return execution::same_identity(persistent.identity, live.persistent)
+    return ::cellerator::structure::same_identity(persistent.identity, live.persistent)
         && persistent.kind == live.kind
         && persistent.schema_version == live.schema_version
         && persistent.variant == live.variant;
@@ -299,12 +299,12 @@ planner_status plan_end_to_end(
         || !operation_core::same_stable_id(
             request.problem.operation, request.keys.problem.identity)
         || !valid_structure_set(request.keys.structures)
-        || !execution::valid_identity(request.keys.geometry.source_domain)
-        || !execution::valid_identity(request.keys.geometry.destination_domain)
-        || !execution::valid_identity(request.keys.geometry.geometry)
-        || !execution::valid_identity(request.keys.geometry.source_order)
-        || !execution::valid_identity(request.keys.geometry.destination_order)
-        || !execution::valid_identity(request.keys.geometry.partition)
+        || !::cellerator::structure::valid_identity(request.keys.geometry.source_domain)
+        || !::cellerator::structure::valid_identity(request.keys.geometry.destination_domain)
+        || !::cellerator::structure::valid_identity(request.keys.geometry.geometry)
+        || !::cellerator::structure::valid_identity(request.keys.geometry.source_order)
+        || !::cellerator::structure::valid_identity(request.keys.geometry.destination_order)
+        || !::cellerator::structure::valid_identity(request.keys.geometry.partition)
         || request.keys.device.vendor == 0u
         || request.keys.device.performance_class == 0u
         || request.keys.build.runtime == 0u
@@ -554,7 +554,7 @@ bool same_connected_planning_keys(
     const connected_planning_keys &rhs) noexcept {
     if (!operation_core::same_stable_id(
             lhs.graph_identity, rhs.graph_identity)
-        || !execution::same_identity(lhs.hierarchy, rhs.hierarchy)
+        || !::cellerator::structure::same_identity(lhs.hierarchy, rhs.hierarchy)
         || lhs.stage_count != rhs.stage_count
         || lhs.stage_count == 0u
         || lhs.stage_count > maximum_connected_operations)
@@ -578,7 +578,7 @@ planner_status plan_connected_operations(
     };
     if (request.schema_version != connected_planner_schema_version
         || !stable_present(request.graph_identity)
-        || !execution::valid_identity(request.hierarchy)
+        || !::cellerator::structure::valid_identity(request.hierarchy)
         || request.stages == nullptr || request.stage_count < 2u
         || request.stage_count > maximum_connected_operations
         || request.transitions == nullptr || request.transition_count == 0u
@@ -610,12 +610,12 @@ planner_status plan_connected_operations(
             || !operation_core::same_stable_id(
                 node.problem.operation, node.keys.problem.identity)
             || !valid_structure_set(node.keys.structures)
-            || !execution::valid_identity(node.keys.geometry.source_domain)
-            || !execution::valid_identity(node.keys.geometry.destination_domain)
-            || !execution::valid_identity(node.keys.geometry.geometry)
-            || !execution::valid_identity(node.keys.geometry.source_order)
-            || !execution::valid_identity(node.keys.geometry.destination_order)
-            || !execution::valid_identity(node.keys.geometry.partition)
+            || !::cellerator::structure::valid_identity(node.keys.geometry.source_domain)
+            || !::cellerator::structure::valid_identity(node.keys.geometry.destination_domain)
+            || !::cellerator::structure::valid_identity(node.keys.geometry.geometry)
+            || !::cellerator::structure::valid_identity(node.keys.geometry.source_order)
+            || !::cellerator::structure::valid_identity(node.keys.geometry.destination_order)
+            || !::cellerator::structure::valid_identity(node.keys.geometry.partition)
             || node.keys.device.vendor == 0u
             || node.keys.device.performance_class == 0u
             || node.keys.build.runtime == 0u
@@ -820,7 +820,7 @@ planner_status plan_connected_operations(
         for (std::uint32_t stage = 0u; stage < lhs.stage_count; ++stage)
             if (!operation_core::same_stable_id(
                     lhs.candidates[stage], rhs.candidates[stage])
-                || !execution::same_identity(lhs.projections[stage].identity,
+                || !::cellerator::structure::same_identity(lhs.projections[stage].identity,
                     rhs.projections[stage].identity)
                 || lhs.projections[stage].kind != rhs.projections[stage].kind
                 || lhs.projections[stage].schema_version

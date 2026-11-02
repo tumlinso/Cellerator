@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/indexing/reverse_postings.hh>
+#include <Cellerator/containers/posting_index.hh>
 
 #include <cstdint>
 #include <type_traits>
@@ -23,7 +23,7 @@ enum class derivative_sample_status_v1 : std::uint8_t {
 
 struct derivative_candidate_csr_view_v1 {
     const std::uint64_t* cell_offsets = nullptr;
-    const indexing::indexed_work_item_v1* items = nullptr;
+    const containers::IndexedWorkItem* items = nullptr;
     std::uint64_t cell_count = 0u;
     std::uint64_t item_count = 0u;
 };
@@ -42,7 +42,7 @@ struct derivative_sample_request_v1 {
 struct derivative_sample_output_v1 {
     std::uint64_t* cell_offsets = nullptr; // cell_count + 1
     std::uint64_t cell_offsets_capacity = 0u;
-    indexing::indexed_work_item_v1* items = nullptr;
+    containers::IndexedWorkItem* items = nullptr;
     std::uint64_t item_capacity = 0u;
     std::uint64_t* eligible_dormant_by_cell = nullptr;
     std::uint64_t* selected_dormant_by_cell = nullptr;

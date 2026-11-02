@@ -1,5 +1,5 @@
 #pragma once
-#include <Cellerator/modeling/cuda/runtime.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 #include <cstdint>
 
 namespace cellerator::modeling::cuda {
@@ -8,9 +8,9 @@ namespace cellerator::modeling::cuda {
 // unique species slots and nonzero int64 deltas. Biological IDs are mapped by
 // the caller; physical species slots are not interpreted as identities.
 struct ReactionBank {
-    ConstDeviceView offsets;       // uint64[reaction_count+1]
-    ConstDeviceView species_slots; // uint64[change_count]
-    ConstDeviceView deltas;        // int64[change_count]
+    ::cellerator::memory::cuda::ConstDeviceView offsets;       // uint64[reaction_count+1]
+    ::cellerator::memory::cuda::ConstDeviceView species_slots; // uint64[change_count]
+    ::cellerator::memory::cuda::ConstDeviceView deltas;        // int64[change_count]
     std::uint64_t reaction_count = 0;
     std::uint64_t change_count = 0;
     std::uint64_t species_count = 0;
@@ -21,9 +21,9 @@ struct ReactionBank {
 // event_indices[position] indexes an event-major reaction_ids array. The caller
 // supplies grouping and ordering; this operation does not sort event times.
 struct ReactionEventWorklist {
-    ConstDeviceView cell_offsets;  // uint64[cell_count+1]
-    ConstDeviceView reaction_ids;  // uint64[event_count]
-    ConstDeviceView event_indices; // optional uint64[reference_count]
+    ::cellerator::memory::cuda::ConstDeviceView cell_offsets;  // uint64[cell_count+1]
+    ::cellerator::memory::cuda::ConstDeviceView reaction_ids;  // uint64[event_count]
+    ::cellerator::memory::cuda::ConstDeviceView event_indices; // optional uint64[reference_count]
     std::uint64_t event_count = 0;
     std::uint64_t reference_count = 0;
 };
@@ -31,7 +31,7 @@ struct ReactionEventWorklist {
 struct ReactionCountBatch {
     // Initial logical counts must be nonnegative. Only event-touched slots are
     // checked by the sparse kernel; padding and unrelated slots are not scanned.
-    DeviceView counts;             // int64[cell_count*cell_stride]
+    ::cellerator::memory::cuda::DeviceView counts; // int64[cell_count*cell_stride]
     std::uint64_t cell_count = 0;
     std::uint64_t cell_stride = 0;  // >= bank.species_count
 };
@@ -61,8 +61,8 @@ struct ReactionCellStatus {
 // empty source_ordinals view output is LOCAL species slots, requiring caller
 // mapping before using an identity-sensitive frontier. Output cells are disjoint.
 struct ReactionChangeOutput {
-    DeviceView sources;                  // uint64[cell_count*capacity_per_cell]
-    ConstDeviceView source_ordinals;      // optional uint64[cell_count*species_count]
+    ::cellerator::memory::cuda::DeviceView sources; // uint64[cell_count*capacity_per_cell]
+    ::cellerator::memory::cuda::ConstDeviceView source_ordinals; // optional uint64[cell_count*species_count]
     std::uint64_t capacity_per_cell = 0;
     bool enabled = false;
 };
@@ -77,7 +77,9 @@ struct ReactionChangeOutput {
 // suffix after resolving the cause. statuses: ReactionCellStatus[cell_count].
 // This applies supplied events; it computes no propensities or SSA sampling.
 void apply_reaction_events(ReactionBank bank, ReactionEventWorklist events,
-                           ReactionCountBatch batch, DeviceView statuses,
-                           ReactionChangeOutput changed, const Stream& stream);
+                           ReactionCountBatch batch,
+                           ::cellerator::memory::cuda::DeviceView statuses,
+                           ReactionChangeOutput changed,
+                           const ::cellerator::memory::cuda::Stream& stream);
 
 } // namespace cellerator::modeling::cuda

@@ -2,6 +2,7 @@
 #undef NDEBUG
 #endif
 #include <Cellerator/modeling/cuda/parameter_transfer.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 #include <cassert>
 #include <cstring>
 #include <iostream>
@@ -10,6 +11,7 @@
 
 namespace cc = cellerator::execution::conditional;
 namespace cu = cellerator::modeling::cuda;
+namespace mem = cellerator::memory::cuda;
 
 cc::ParameterBuffers buffers(const std::vector<unsigned char>& bytes, std::string device = "host") {
     auto owner = std::make_shared<std::vector<unsigned char>>(bytes);
@@ -33,7 +35,7 @@ void host_contracts() {
     store.publish(key, {10, 6}, buffers({1, 2, 3}));
     assert(store.retire(key));
     assert(pinned[0].key() == key && static_cast<const unsigned char*>(pinned[0].buffers().parameters.data)[1] == 255);
-    auto stream = cu::Stream::borrow(nullptr, 0); // No CUDA calls in borrow/destruction.
+    auto stream = mem::Stream::borrow(nullptr, 0); // No CUDA calls in borrow/destruction.
     rejects<std::out_of_range>([&] { cu::ParameterTransfer::upload(store, key, stream); });
     pinned[0].release();
     rejects<std::logic_error>([&] { cu::ParameterTransfer::required_memory(pinned[0]); });
@@ -52,8 +54,8 @@ int main(int argc, char** argv) {
     const cc::ExpertKey key{20, 8};
     store.register_initial(key, buffers(expected));
     std::weak_ptr<const void> source_owner = store.acquire(key).buffers().parameters.owner;
-    cu::Stream transfer_stream(0), consumer_stream(0);
-    cu::PinnedBuffer output(expected.size());
+    mem::Stream transfer_stream(0), consumer_stream(0);
+    mem::PinnedBuffer output(expected.size());
     std::optional<cu::ParameterExecutionLease> execution;
     {
         auto ticket = cu::ParameterTransfer::upload(store, key, transfer_stream);
@@ -61,8 +63,8 @@ int main(int argc, char** argv) {
         execution.emplace(ticket.acquire_on(consumer_stream));
         auto device = execution->view();
         assert(device.bytes == expected.size() && device.device == 0);
-        cu::check(cudaMemcpyAsync(output.data(), device.data, device.bytes, cudaMemcpyDeviceToHost,
-                                  consumer_stream.get()), "consumer parameter download");
+        mem::check(cudaMemcpyAsync(output.data(), device.data, device.bytes, cudaMemcpyDeviceToHost,
+                                   consumer_stream.get()), "consumer parameter download");
         execution->finish();
         rejects<std::logic_error>([&] { execution->view(); });
         store.publish(key, {20, 9}, buffers({9, 9, 9}));
@@ -82,8 +84,8 @@ int main(int argc, char** argv) {
     {
         auto use = latest.acquire_on(consumer_stream);
         const auto device = use.view();
-        cu::check(cudaMemcpyAsync(output.data(), device.data, device.bytes, cudaMemcpyDeviceToHost,
-                                  consumer_stream.get()), "consumer parameter download");
+        mem::check(cudaMemcpyAsync(output.data(), device.data, device.bytes, cudaMemcpyDeviceToHost,
+                                   consumer_stream.get()), "consumer parameter download");
     }
     assert(std::memcmp(output.data(), "\x09\x09\x09", 3) == 0);
 

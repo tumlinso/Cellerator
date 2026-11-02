@@ -17,8 +17,8 @@ void require(bool condition, const char *message) {
     }
 }
 
-cm::feature_order_identity canonical_order(cm::u32 features) {
-    cm::feature_order_identity order;
+::cellerator::layout::projection::FeatureOrderIdentity canonical_order(cm::u32 features) {
+    ::cellerator::layout::projection::FeatureOrderIdentity order;
     order.feature_count = features;
     order.feature_axis_identity_version = 1u;
     order.feature_axis_identity = 0x12345678ull;
@@ -83,7 +83,7 @@ void test_signature_and_order_identity() {
         "sparse structure is absent from operation signature");
 
     request = request_fixture();
-    request.dense_feature_order.kind = cm::feature_order_kind::packed;
+    request.dense_feature_order.kind = ::cellerator::layout::projection::feature_order_kind::packed;
     request.dense_feature_order.packing_geometry_identity = 0xabcdu;
     const auto mismatch = cm::validate_spmm_request(request);
     require(mismatch.code == cm::request_validation_code::feature_order_mismatch,
@@ -199,8 +199,8 @@ void test_explicit_gelu_semantics() {
 
 void test_packed_plan_identity_mismatch() {
     cm::spmm_request request = request_fixture();
-    request.sparse_feature_order.kind = cm::feature_order_kind::packed;
-    request.dense_feature_order.kind = cm::feature_order_kind::packed;
+    request.sparse_feature_order.kind = ::cellerator::layout::projection::feature_order_kind::packed;
+    request.dense_feature_order.kind = ::cellerator::layout::projection::feature_order_kind::packed;
     request.sparse_feature_order.packing_geometry_identity = 0x100u;
     request.dense_feature_order.packing_geometry_identity = 0x200u;
     require(cm::validate_spmm_request(request).code

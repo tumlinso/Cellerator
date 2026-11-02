@@ -1,4 +1,4 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <algorithm>
 #include <cstring>
@@ -7,7 +7,7 @@
 #include <tuple>
 #include <utility>
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 namespace {
 
 constexpr std::size_t image_alignment = 64u;
@@ -37,15 +37,15 @@ std::uint64_t append_records(std::vector<std::uint8_t>* image,
     return offset;
 }
 
-bool valid_identity(const math::sparse_structure_identity& identity) noexcept {
-    return identity.schema_version == math::sparse_structure_identity_schema_version
+bool valid_identity(const layout::projection::SparseStructureIdentity& identity) noexcept {
+    return identity.schema_version == layout::projection::sparse_structure_identity_schema_version
         && identity.identity_version != 0u && identity.value != 0u;
 }
 
-bool valid_order(const math::feature_order_identity& identity,
+bool valid_order(const layout::projection::FeatureOrderIdentity& identity,
                  std::uint32_t count) noexcept {
-    return identity.schema_version == math::feature_order_identity_schema_version
-        && identity.kind == math::feature_order_kind::canonical
+    return identity.schema_version == layout::projection::feature_order_identity_schema_version
+        && identity.kind == layout::projection::feature_order_kind::canonical
         && identity.feature_count == count
         && identity.feature_axis_identity_version != 0u
         && identity.feature_axis_identity != 0u;
@@ -280,8 +280,8 @@ physical_image_build_status_v1 build_physical_mma_hybrid_image_probe_v1(
             schedule.push_back(entry);
         }
 
-        std::vector<std::uint8_t> image(sizeof(physical_mma_hybrid_header_v1), 0u);
-        physical_mma_hybrid_header_v1 header{};
+        std::vector<std::uint8_t> image(sizeof(::cellerator::layout::projection::MmaHybridLayoutV1), 0u);
+        ::cellerator::layout::projection::MmaHybridLayoutV1 header{};
         header.structure_identity = request.structure_identity;
         header.source_order = request.source_order;
         header.destination_order = request.destination_order;
@@ -327,4 +327,4 @@ physical_image_build_status_v1 build_physical_mma_hybrid_image_probe_v1(
     }
 }
 
-} // namespace cellerator::compute::projection
+} // namespace cellerator::layout::projection

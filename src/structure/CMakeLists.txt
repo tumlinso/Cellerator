@@ -1,5 +1,5 @@
-# Stable biological identity ABI and its preparation-time registry are
-# structure-owned; the public execution namespace remains ABI-compatible.
+# Persistent semantic identities are header-only structure types. The registry
+# stores execution-owned handles resolved from those identities.
 add_library(cellerator_biological_abi INTERFACE)
 add_library(Cellerator::biological_abi ALIAS cellerator_biological_abi)
 target_include_directories(cellerator_biological_abi INTERFACE

@@ -17,8 +17,8 @@ struct transpose_integration_profile_v1 {
     std::uint64_t device_class_id = 0u;
     std::uint64_t projection_type_id = 0u;
     std::uint64_t capability_id = 0u;
-    execution::projection_id projection{};
-    execution::geometry_id geometry{};
+    ::cellerator::structure::projection_id projection{};
+    ::cellerator::structure::geometry_id geometry{};
     std::uint64_t logical_edge_count = 0u;
     std::uint64_t physical_work_items = 0u;
     std::uint64_t padded_work_items = 0u;

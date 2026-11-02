@@ -116,7 +116,7 @@ struct projection_fixture {
     device_array<std::uint32_t> csr_features{3u};
     device_array<__half> values{3u};
     cp::persistent_packing_payload_view cpk1{};
-    cm::execution_csr_view csr{};
+    ::cellerator::layout::projection::CsrViewV1 csr{};
 
     projection_fixture() {
         upload(feature_offsets, std::vector<cp::u32>{0u, 3u});
@@ -192,9 +192,9 @@ struct projection_fixture {
         csr.nnz_count = 3u;
         csr.value_size_bytes = sizeof(__half);
         csr.row_domain_identity = 0x3003u;
-        csr.structure.identity_version = cm::execution_csr_structure_identity_version;
+        csr.structure.identity_version = ::cellerator::layout::projection::execution_csr_structure_identity_version;
         csr.structure.value = 0x7073u;
-        csr.feature_order.kind = cm::feature_order_kind::packed;
+        csr.feature_order.kind = ::cellerator::layout::projection::feature_order_kind::packed;
         csr.feature_order.feature_count = 3u;
         csr.feature_order.feature_axis_identity_version = 1u;
         csr.feature_order.feature_axis_identity = 0x5005u;
@@ -263,7 +263,7 @@ int main() {
         core::projection_kind::native_row_masked,
         cp::persistent_packing_payload_schema_version, 1u};
     const core::projection_key csr_projection{{33u, 34u}, {42u, 1u},
-        core::projection_kind::csr, cm::execution_csr_schema_version, 1u};
+        core::projection_kind::csr, ::cellerator::layout::projection::execution_csr_schema_version, 1u};
     const core::prepare_policy prepare_policy{true, false, true, true,
         8u, 0u, 0u};
     core::row_masked_n1_prepared_state row_state{};

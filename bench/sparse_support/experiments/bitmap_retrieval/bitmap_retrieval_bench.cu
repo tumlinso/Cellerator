@@ -1,3 +1,4 @@
+#include <Cellerator/containers/posting_index.hh>
 #include <Cellerator/compute/indexing/cuda_postings.cuh>
 
 #include <cuda_runtime.h>
@@ -20,6 +21,7 @@
 #include <tuple>
 #include <vector>
 
+namespace containers = cellerator::containers;
 namespace ix = cellerator::compute::indexing;
 using clock_type = std::chrono::steady_clock;
 
@@ -75,12 +77,6 @@ struct edge {
     std::uint64_t cofactor;
 };
 
-struct posting_record {
-    std::uint32_t role;
-    std::uint64_t entity;
-    std::uint64_t logical_id;
-    std::uint64_t ordinal;
-};
 
 struct fixture {
     std::vector<edge> edges;
@@ -121,7 +117,7 @@ fixture make_fixture(const config &cfg) {
 
 struct query_set {
     std::vector<std::uint64_t> offsets;
-    std::vector<ix::posting_term_v1> terms;
+    std::vector<containers::PostingTerm> terms;
 };
 
 query_set make_queries(const config &cfg) {
@@ -183,28 +179,28 @@ std::uint64_t combined_fixture_digest(const config &cfg,
 }
 
 struct posting_projection {
-    std::vector<ix::posting_term_v1> terms;
+    std::vector<containers::PostingTerm> terms;
     std::vector<std::uint64_t> offsets;
-    std::vector<ix::indexed_work_item_v1> items;
+    std::vector<containers::IndexedWorkItem> items;
     std::uint64_t raw_incidence_count = 0;
 };
 
 posting_projection make_postings(const fixture &f) {
-    std::vector<posting_record> records;
+    std::vector<containers::PostingRecord> records;
     records.reserve(f.edges.size() * 4);
     for (std::uint64_t ordinal = 0; ordinal < f.edges.size(); ++ordinal) {
         const auto &e = f.edges[ordinal];
         const auto id = ordinal + 1;
-        records.push_back({0, e.source, id, ordinal});
-        records.push_back({1, e.target, id, ordinal});
-        records.push_back({2, e.cofactor, id, ordinal});
+        records.push_back({0, 0u, e.source, id, ordinal});
+        records.push_back({1, 0u, e.target, id, ordinal});
+        records.push_back({2, 0u, e.cofactor, id, ordinal});
         if (ordinal % 31 == 0)
-            records.push_back({0, e.source, id, ordinal});
+            records.push_back({0, 0u, e.source, id, ordinal});
     }
     posting_projection p;
     p.raw_incidence_count = records.size();
-    auto key = [](const posting_record &x) {
-        return std::tie(x.role, x.entity, x.logical_id);
+    auto key = [](const containers::PostingRecord &x) {
+        return std::tie(x.role, x.entity_id, x.logical_edge_id);
     };
     std::sort(records.begin(), records.end(), [&](const auto &a, const auto &b) {
         return key(a) < key(b);
@@ -216,11 +212,11 @@ posting_projection make_postings(const fixture &f) {
     for (std::size_t i = 0; i < records.size(); ++i) {
         const auto &r = records[i];
         if (i == 0 || records[i - 1].role != r.role
-            || records[i - 1].entity != r.entity) {
+            || records[i - 1].entity_id != r.entity_id) {
             if (i != 0) p.offsets.push_back(p.items.size());
-            p.terms.push_back({r.role, 0, r.entity});
+            p.terms.push_back({r.role, 0, r.entity_id});
         }
-        p.items.push_back({r.logical_id, r.ordinal});
+        p.items.push_back({r.logical_edge_id, r.logical_edge_ordinal});
     }
     p.offsets.push_back(p.items.size());
     return p;
@@ -253,10 +249,10 @@ bitmap_projection make_bitmaps(const fixture &f, const config &cfg) {
     return b;
 }
 
-std::vector<std::vector<ix::indexed_work_item_v1>> scalar_oracle(
+std::vector<std::vector<containers::IndexedWorkItem>> scalar_oracle(
     const fixture &f, const query_set &q) {
     const auto rows = q.offsets.size() - 1;
-    std::vector<std::vector<ix::indexed_work_item_v1>> out(rows);
+    std::vector<std::vector<containers::IndexedWorkItem>> out(rows);
     for (std::uint64_t row = 0; row < rows; ++row) {
         for (std::uint64_t ordinal = 0; ordinal < f.edges.size(); ++ordinal) {
             const auto &e = f.edges[ordinal];
@@ -303,7 +299,7 @@ struct candidate_status {
 };
 
 __global__ void bitmap_union_count_kernel(
-    const std::uint64_t *query_offsets, const ix::posting_term_v1 *queries,
+    const std::uint64_t *query_offsets, const containers::PostingTerm *queries,
     std::uint64_t query_count, std::uint64_t rows, std::uint64_t entities,
     std::uint64_t edge_count, std::uint64_t words_per_row,
     const std::uint32_t *term_bitmaps, std::uint32_t *union_words,
@@ -365,7 +361,7 @@ __global__ void bitmap_emit_kernel(
     std::uint64_t rows, std::uint64_t edge_count,
     std::uint64_t words_per_row, const std::uint32_t *union_words,
     const std::uint64_t *word_prefix, const std::uint64_t *logical_ids,
-    ix::indexed_work_item_v1 *output, candidate_status *status) {
+    containers::IndexedWorkItem *output, candidate_status *status) {
     const std::uint64_t word_index = static_cast<std::uint64_t>(blockIdx.x) * blockDim.x
         + threadIdx.x;
     if (word_index >= rows * words_per_row || status->code != 0) return;
@@ -384,7 +380,7 @@ __global__ void bitmap_emit_kernel(
 constexpr unsigned bitmap_block_threads = 128;
 
 __global__ void bitmap_row_build_kernel(
-    const std::uint64_t *query_offsets, const ix::posting_term_v1 *queries,
+    const std::uint64_t *query_offsets, const containers::PostingTerm *queries,
     std::uint64_t query_count, std::uint64_t rows, std::uint64_t entities,
     std::uint64_t edge_count, std::uint64_t words_per_row,
     const std::uint32_t *term_bitmaps, std::uint32_t *union_words,
@@ -434,7 +430,7 @@ __global__ void bitmap_row_compact_kernel(
     std::uint64_t words_per_row, std::uint64_t output_capacity,
     const std::uint32_t *union_words, const std::uint32_t *word_counts,
     const std::uint64_t *row_counts, const std::uint64_t *logical_ids,
-    std::uint64_t *output_offsets, ix::indexed_work_item_v1 *output,
+    std::uint64_t *output_offsets, containers::IndexedWorkItem *output,
     candidate_status *status) {
     using block_scan = cub::BlockScan<std::uint32_t, bitmap_block_threads,
         cub::BLOCK_SCAN_RAKING>;
@@ -496,21 +492,21 @@ __global__ void bitmap_row_compact_kernel(
 
 struct common_device {
     device_buffer<std::uint64_t> query_offsets;
-    device_buffer<ix::posting_term_v1> query_terms;
+    device_buffer<containers::PostingTerm> query_terms;
     std::uint64_t memory_bytes = 0;
     double allocation_ms = 0;
     double h2d_ms = 0;
 };
 
 struct baseline_device {
-    device_buffer<ix::posting_term_v1> terms;
+    device_buffer<containers::PostingTerm> terms;
     device_buffer<std::uint64_t> term_offsets;
-    device_buffer<ix::indexed_work_item_v1> items;
+    device_buffer<containers::IndexedWorkItem> items;
     device_buffer<ix::cuda_posting_scratch_v1::cursor_v1> cursors;
     device_buffer<std::uint64_t> counts;
     device_buffer<ix::cuda_posting_status_v1> status;
     device_buffer<std::uint64_t> output_offsets;
-    device_buffer<ix::indexed_work_item_v1> output_items;
+    device_buffer<containers::IndexedWorkItem> output_items;
     ix::cuda_reverse_posting_view_v1 view{};
     ix::cuda_posting_scratch_v1 scratch{};
     ix::cuda_posting_output_v1 output{};
@@ -527,7 +523,7 @@ struct bitmap_device {
     device_buffer<std::uint32_t> word_counts;
     device_buffer<std::uint64_t> word_prefix;
     device_buffer<std::uint64_t> output_offsets;
-    device_buffer<ix::indexed_work_item_v1> output_items;
+    device_buffer<containers::IndexedWorkItem> output_items;
     device_buffer<candidate_status> status;
     device_buffer<std::uint8_t> scan_scratch;
     std::size_t scan_scratch_bytes = 0;
@@ -549,7 +545,7 @@ struct bitmap_two_kernel_device {
     device_buffer<std::uint32_t> word_counts;
     device_buffer<std::uint64_t> row_counts;
     device_buffer<std::uint64_t> output_offsets;
-    device_buffer<ix::indexed_work_item_v1> output_items;
+    device_buffer<containers::IndexedWorkItem> output_items;
     device_buffer<candidate_status> status;
     std::uint64_t output_capacity = 0;
     std::uint64_t rows = 0;
@@ -585,7 +581,7 @@ common_device prepare_common(const query_set &q) {
     common_device d;
     const auto alloc_begin = clock_type::now();
     d.query_offsets = device_buffer<std::uint64_t>(q.offsets.size());
-    d.query_terms = device_buffer<ix::posting_term_v1>(q.terms.size());
+    d.query_terms = device_buffer<containers::PostingTerm>(q.terms.size());
     d.allocation_ms = std::chrono::duration<double, std::milli>(clock_type::now() - alloc_begin).count();
     d.memory_bytes = d.query_offsets.bytes() + d.query_terms.bytes();
     d.h2d_ms = measure_copy_batch([&] {
@@ -603,14 +599,14 @@ baseline_device prepare_baseline(const posting_projection &p,
     baseline_device d;
     const auto capacity = rows * edge_count;
     const auto alloc_begin = clock_type::now();
-    d.terms = device_buffer<ix::posting_term_v1>(p.terms.size());
+    d.terms = device_buffer<containers::PostingTerm>(p.terms.size());
     d.term_offsets = device_buffer<std::uint64_t>(p.offsets.size());
-    d.items = device_buffer<ix::indexed_work_item_v1>(p.items.size());
+    d.items = device_buffer<containers::IndexedWorkItem>(p.items.size());
     d.cursors = device_buffer<ix::cuda_posting_scratch_v1::cursor_v1>(query_count);
     d.counts = device_buffer<std::uint64_t>(rows);
     d.status = device_buffer<ix::cuda_posting_status_v1>(1);
     d.output_offsets = device_buffer<std::uint64_t>(rows + 1);
-    d.output_items = device_buffer<ix::indexed_work_item_v1>(capacity);
+    d.output_items = device_buffer<containers::IndexedWorkItem>(capacity);
     d.allocation_ms = std::chrono::duration<double, std::milli>(clock_type::now() - alloc_begin).count();
     d.index_bytes = d.terms.bytes() + d.term_offsets.bytes() + d.items.bytes();
     d.workspace_output_bytes = d.cursors.bytes() + d.counts.bytes() + d.status.bytes()
@@ -651,7 +647,7 @@ bitmap_device prepare_bitmap(const bitmap_projection &b,
     d.word_counts = device_buffer<std::uint32_t>(total_words);
     d.word_prefix = device_buffer<std::uint64_t>(total_words);
     d.output_offsets = device_buffer<std::uint64_t>(rows + 1);
-    d.output_items = device_buffer<ix::indexed_work_item_v1>(d.output_capacity);
+    d.output_items = device_buffer<containers::IndexedWorkItem>(d.output_capacity);
     d.status = device_buffer<candidate_status>(1);
     std::size_t temp_bytes = 0;
     CUDA_CHECK(cub::DeviceScan::ExclusiveSum(nullptr, temp_bytes,
@@ -692,7 +688,7 @@ bitmap_two_kernel_device prepare_bitmap_two_kernel(
     d.word_counts = device_buffer<std::uint32_t>(total_words);
     d.row_counts = device_buffer<std::uint64_t>(rows);
     d.output_offsets = device_buffer<std::uint64_t>(rows + 1);
-    d.output_items = device_buffer<ix::indexed_work_item_v1>(d.output_capacity);
+    d.output_items = device_buffer<containers::IndexedWorkItem>(d.output_capacity);
     d.status = device_buffer<candidate_status>(1);
     d.allocation_ms = std::chrono::duration<double, std::milli>(
         clock_type::now() - alloc_begin).count();
@@ -761,7 +757,7 @@ void launch_baseline(baseline_device &d, const common_device &c,
 }
 
 std::uint64_t check_baseline(const baseline_device &d,
-    const std::vector<std::vector<ix::indexed_work_item_v1>> &oracle,
+    const std::vector<std::vector<containers::IndexedWorkItem>> &oracle,
     std::uint64_t rows) {
     CUDA_CHECK(cudaDeviceSynchronize());
     ix::cuda_posting_status_v1 status{};
@@ -771,7 +767,7 @@ std::uint64_t check_baseline(const baseline_device &d,
         offsets.size() * sizeof(std::uint64_t), cudaMemcpyDeviceToHost));
     if (status.code != static_cast<std::uint32_t>(ix::cuda_posting_code_v1::success))
         throw std::runtime_error("posting baseline returned status " + std::to_string(status.code));
-    std::vector<ix::indexed_work_item_v1> items(status.required);
+    std::vector<containers::IndexedWorkItem> items(status.required);
     if (!items.empty()) CUDA_CHECK(cudaMemcpy(items.data(), d.output_items.ptr,
         items.size() * sizeof(items[0]), cudaMemcpyDeviceToHost));
     if (offsets.back() != status.required) throw std::runtime_error("posting total offset mismatch");
@@ -787,7 +783,7 @@ std::uint64_t check_baseline(const baseline_device &d,
 }
 
 std::uint64_t check_bitmap(const bitmap_device &d,
-    const std::vector<std::vector<ix::indexed_work_item_v1>> &oracle,
+    const std::vector<std::vector<containers::IndexedWorkItem>> &oracle,
     std::uint64_t rows) {
     CUDA_CHECK(cudaDeviceSynchronize());
     candidate_status status{};
@@ -796,7 +792,7 @@ std::uint64_t check_bitmap(const bitmap_device &d,
     CUDA_CHECK(cudaMemcpy(offsets.data(), d.output_offsets.ptr,
         offsets.size() * sizeof(std::uint64_t), cudaMemcpyDeviceToHost));
     if (status.code != 0) throw std::runtime_error("bitmap candidate returned status " + std::to_string(status.code));
-    std::vector<ix::indexed_work_item_v1> items(status.required);
+    std::vector<containers::IndexedWorkItem> items(status.required);
     if (!items.empty()) CUDA_CHECK(cudaMemcpy(items.data(), d.output_items.ptr,
         items.size() * sizeof(items[0]), cudaMemcpyDeviceToHost));
     if (offsets.back() != status.required) throw std::runtime_error("bitmap total offset mismatch");
@@ -812,7 +808,7 @@ std::uint64_t check_bitmap(const bitmap_device &d,
 }
 
 std::uint64_t check_bitmap_two_kernel(const bitmap_two_kernel_device &d,
-    const std::vector<std::vector<ix::indexed_work_item_v1>> &oracle,
+    const std::vector<std::vector<containers::IndexedWorkItem>> &oracle,
     std::uint64_t rows) {
     CUDA_CHECK(cudaDeviceSynchronize());
     candidate_status status{};
@@ -822,7 +818,7 @@ std::uint64_t check_bitmap_two_kernel(const bitmap_two_kernel_device &d,
         offsets.size() * sizeof(std::uint64_t), cudaMemcpyDeviceToHost));
     if (status.code != 0)
         throw std::runtime_error("two-kernel bitmap candidate returned status " + std::to_string(status.code));
-    std::vector<ix::indexed_work_item_v1> items(status.required);
+    std::vector<containers::IndexedWorkItem> items(status.required);
     if (!items.empty()) CUDA_CHECK(cudaMemcpy(items.data(), d.output_items.ptr,
         items.size() * sizeof(items[0]), cudaMemcpyDeviceToHost));
     if (offsets.back() != status.required)
@@ -904,8 +900,8 @@ paired_timing_samples time_paired_variants(baseline_device &baseline,
 
 void test_bitmap_overflow(bitmap_device &d, const common_device &c,
     const query_set &q, std::uint64_t expected) {
-    const auto sentinel = ix::indexed_work_item_v1{0xfedcba9876543210ull, 0xfedcba9876543210ull};
-    std::vector<ix::indexed_work_item_v1> fill(std::min<std::uint64_t>(expected, 128), sentinel);
+    const auto sentinel = containers::IndexedWorkItem{0xfedcba9876543210ull, 0xfedcba9876543210ull};
+    std::vector<containers::IndexedWorkItem> fill(std::min<std::uint64_t>(expected, 128), sentinel);
     if (!fill.empty()) CUDA_CHECK(cudaMemcpy(d.output_items.ptr, fill.data(),
         fill.size() * sizeof(fill[0]), cudaMemcpyHostToDevice));
     cudaStream_t stream{};
@@ -919,7 +915,7 @@ void test_bitmap_overflow(bitmap_device &d, const common_device &c,
     if (expected == 0 && status.code != 0)
         throw std::runtime_error("bitmap empty overflow probe did not succeed");
     if (!fill.empty()) {
-        std::vector<ix::indexed_work_item_v1> observed(fill.size());
+        std::vector<containers::IndexedWorkItem> observed(fill.size());
         CUDA_CHECK(cudaMemcpy(observed.data(), d.output_items.ptr,
             observed.size() * sizeof(observed[0]), cudaMemcpyDeviceToHost));
         for (const auto &x : observed)
@@ -933,9 +929,9 @@ void test_bitmap_overflow(bitmap_device &d, const common_device &c,
 void test_bitmap_two_kernel_overflow(bitmap_two_kernel_device &d,
     const bitmap_device &index, const common_device &c, const query_set &q,
     std::uint64_t expected) {
-    const auto sentinel = ix::indexed_work_item_v1{
+    const auto sentinel = containers::IndexedWorkItem{
         0xfedcba9876543210ull, 0xfedcba9876543210ull};
-    std::vector<ix::indexed_work_item_v1> fill(
+    std::vector<containers::IndexedWorkItem> fill(
         std::min<std::uint64_t>(expected, 128), sentinel);
     if (!fill.empty()) CUDA_CHECK(cudaMemcpy(d.output_items.ptr, fill.data(),
         fill.size() * sizeof(fill[0]), cudaMemcpyHostToDevice));
@@ -951,7 +947,7 @@ void test_bitmap_two_kernel_overflow(bitmap_two_kernel_device &d,
     if (expected == 0 && status.code != 0)
         throw std::runtime_error("two-kernel bitmap empty overflow probe failed");
     if (!fill.empty()) {
-        std::vector<ix::indexed_work_item_v1> observed(fill.size());
+        std::vector<containers::IndexedWorkItem> observed(fill.size());
         CUDA_CHECK(cudaMemcpy(observed.data(), d.output_items.ptr,
             observed.size() * sizeof(observed[0]), cudaMemcpyDeviceToHost));
         for (const auto &x : observed)

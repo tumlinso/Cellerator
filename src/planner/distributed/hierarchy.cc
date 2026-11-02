@@ -5,17 +5,17 @@
 namespace cellerator::distributed {
 namespace {
 
-bool same_partition(execution::partition_id lhs,
-    execution::partition_id rhs) noexcept {
-    return execution::same_identity(lhs, rhs);
+bool same_partition(::cellerator::structure::partition_id lhs,
+    ::cellerator::structure::partition_id rhs) noexcept {
+    return ::cellerator::structure::same_identity(lhs, rhs);
 }
 
-bool same_order(execution::order_id lhs, execution::order_id rhs) noexcept {
-    return execution::same_identity(lhs, rhs);
+bool same_order(::cellerator::structure::order_id lhs, ::cellerator::structure::order_id rhs) noexcept {
+    return ::cellerator::structure::same_identity(lhs, rhs);
 }
 
 bool find_partition(const partition_hierarchy_view &hierarchy,
-    execution::partition_id identity, std::uint32_t *index) noexcept {
+    ::cellerator::structure::partition_id identity, std::uint32_t *index) noexcept {
     for (std::uint32_t candidate = 0u;
          candidate < hierarchy.partition_count; ++candidate)
         if (same_partition(hierarchy.partitions[candidate].identity, identity)) {
@@ -53,19 +53,19 @@ hierarchy_status validate_partition_hierarchy(
     if (hierarchy.schema_version != hierarchy_schema_version
         || hierarchy.partitions == nullptr || hierarchy.partition_count == 0u)
         return hierarchy_status::invalid_argument;
-    if (!execution::valid_identity(hierarchy.identity))
+    if (!::cellerator::structure::valid_identity(hierarchy.identity))
         return hierarchy_status::invalid_identity;
     std::uint32_t root_count = 0u;
     for (std::uint32_t index = 0u; index < hierarchy.partition_count; ++index) {
         const nested_partition &partition = hierarchy.partitions[index];
-        if (!execution::valid_identity(partition.identity)
+        if (!::cellerator::structure::valid_identity(partition.identity)
             || partition.device_ordinal < 0)
             return hierarchy_status::invalid_partition;
         for (std::uint32_t prior = 0u; prior < index; ++prior)
             if (same_partition(
                     hierarchy.partitions[prior].identity, partition.identity))
                 return hierarchy_status::invalid_partition;
-        if (!execution::valid_identity(partition.parent)) {
+        if (!::cellerator::structure::valid_identity(partition.parent)) {
             if (partition.level != 0u) return hierarchy_status::invalid_partition;
             ++root_count;
             continue;
@@ -87,12 +87,12 @@ hierarchy_status validate_shared_value_hierarchy(
         validate_partition_hierarchy(hierarchy);
     if (hierarchy_valid != hierarchy_status::ok) return hierarchy_valid;
     if (values.schema_version != hierarchy_schema_version
-        || !execution::same_identity(hierarchy.identity, values.hierarchy)
+        || !::cellerator::structure::same_identity(hierarchy.identity, values.hierarchy)
         || values.modules == nullptr || values.module_count == 0u
         || (values.value_index_count != 0u && values.value_indices == nullptr)
         || values.shared_value_count == 0u)
         return hierarchy_status::invalid_argument;
-    if (!execution::valid_identity(values.structure))
+    if (!::cellerator::structure::valid_identity(values.structure))
         return hierarchy_status::invalid_identity;
     if (values.epoch.value == 0u) return hierarchy_status::stale_structure;
     std::uint64_t expected_offset = 0u;
@@ -128,14 +128,14 @@ hierarchy_status build_active_module_plan(
     if (values.schema_version != hierarchy_schema_version
         || values.modules == nullptr || values.module_count == 0u)
         return hierarchy_status::invalid_argument;
-    if (!execution::same_identity(values.hierarchy, activity.hierarchy)
-        || !execution::same_identity(values.structure, activity.structure)
+    if (!::cellerator::structure::same_identity(values.hierarchy, activity.hierarchy)
+        || !::cellerator::structure::same_identity(values.structure, activity.structure)
         || values.epoch.value != activity.epoch.value)
         return hierarchy_status::stale_structure;
     if (activity.generation.value == 0u || activity.active == nullptr
         || activity.module_count != values.module_count)
         return hierarchy_status::stale_values;
-    if (!execution::same_identity(plan->hierarchy, values.hierarchy)
+    if (!::cellerator::structure::same_identity(plan->hierarchy, values.hierarchy)
         || plan->generation.value != activity.generation.value
         || (plan->capacity != 0u && plan->modules == nullptr))
         return hierarchy_status::stale_values;
@@ -171,13 +171,13 @@ hierarchy_status plan_boundary_communication(
     if (validate_shared_value_hierarchy(hierarchy, values)
             != hierarchy_status::ok)
         return hierarchy_status::invalid_module;
-    if (!execution::same_identity(values.hierarchy, activity.hierarchy)
-        || !execution::same_identity(values.structure, activity.structure)
+    if (!::cellerator::structure::same_identity(values.hierarchy, activity.hierarchy)
+        || !::cellerator::structure::same_identity(values.structure, activity.structure)
         || values.epoch.value != activity.epoch.value)
         return hierarchy_status::stale_structure;
     if (activity.generation.value == 0u || activity.active == nullptr
         || activity.module_count != values.module_count
-        || !execution::same_identity(plan->hierarchy, hierarchy.identity)
+        || !::cellerator::structure::same_identity(plan->hierarchy, hierarchy.identity)
         || plan->activity_generation.value != activity.generation.value
         || (plan->capacity != 0u && plan->steps == nullptr))
         return hierarchy_status::stale_values;
@@ -187,8 +187,8 @@ hierarchy_status plan_boundary_communication(
         if (edge.source_module >= values.module_count
             || edge.destination_module >= values.module_count
             || edge.value_count == 0u || edge.byte_count == 0u
-            || !execution::valid_identity(edge.source_order)
-            || !execution::valid_identity(edge.destination_order)
+            || !::cellerator::structure::valid_identity(edge.source_order)
+            || !::cellerator::structure::valid_identity(edge.destination_order)
             || !same_partition(values.modules[edge.source_module].partition,
                 edge.source_partition)
             || !same_partition(values.modules[edge.destination_module].partition,

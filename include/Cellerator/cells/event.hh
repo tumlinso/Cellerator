@@ -18,24 +18,23 @@ struct EventView {
 };
 
 // An identified prefix into caller-owned bulk storage. The descriptor object
-// must outlive this Cell. The owner maintains the data, its logical ordering,
+// must outlive this adapter. The owner maintains the data, its logical ordering,
 // and synchronization. Updating the descriptor after growth permits an existing
 // handle to reacquire the new pointer; already returned views may be invalid.
 // Reordering requires constructing a new handle or explicitly calling rebind().
 template<class Token, class Identity>
-class EventCell final : public CellAccess<EventView<Token>>,
-                        public CellAccess<CellIdentityView<Identity>> {
+class EventPrefix final {
 public:
     using buffer_type = memory::const_array_view<Token>;
 
-    EventCell(const buffer_type& buffer, std::size_t offset, std::size_t limit,
-              Identity identity)
+    EventPrefix(const buffer_type& buffer, std::size_t offset, std::size_t limit,
+                Identity identity)
         : buffer_(&buffer), offset_(offset), limit_(limit),
           identity_(std::move(identity)) {
         validate(buffer, offset, limit);
     }
 
-    EventCell(const buffer_type&&, std::size_t, std::size_t, Identity) = delete;
+    EventPrefix(const buffer_type&&, std::size_t, std::size_t, Identity) = delete;
 
     std::size_t offset() const noexcept { return offset_; }
     std::size_t limit() const noexcept { return limit_; }
@@ -57,18 +56,32 @@ public:
 
     void rebind(const buffer_type&&, std::size_t, std::size_t) & = delete;
 
-protected:
-    EventView<Token> read(ViewTag<EventView<Token>>) const & override {
+    EventView<Token> read(ViewTag<EventView<Token>>) const & {
         const auto& buffer = *buffer_;
         validate(buffer, offset_, limit_);
         const Token* data = buffer.data;
         if (offset_ != 0) data += offset_;
         return {{data, limit_, buffer.where}};
     }
+    EventView<Token> read(ViewTag<EventView<Token>>) const && = delete;
 
-    CellIdentityView<Identity> read(ViewTag<CellIdentityView<Identity>>) const & override {
+    CellIdentityView<Identity> read(ViewTag<CellIdentityView<Identity>>) const & {
         return {identity_};
     }
+    CellIdentityView<Identity> read(ViewTag<CellIdentityView<Identity>>) const && = delete;
+
+    // Standalone conveniences delegate directly to the public typed hooks.
+    // Generic model bindings use these same hooks without runtime lookup.
+    template<class View> static constexpr bool supports() noexcept {
+        return cellerator::detail::can_read<EventPrefix, View>::value;
+    }
+    template<class View> static constexpr bool supports_edit() noexcept {
+        return cellerator::detail::can_write<EventPrefix, View>::value;
+    }
+    template<class View, std::enable_if_t<
+        cellerator::detail::can_read<EventPrefix, View>::value, int> = 0>
+    View view() const & { return read(ViewTag<View>{}); }
+    template<class View> void view() const && = delete;
 
 private:
     static void validate(const buffer_type& buffer, std::size_t offset, std::size_t limit) {

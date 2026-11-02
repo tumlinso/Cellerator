@@ -82,6 +82,15 @@ option(CELLERATOR_ENABLE_NN_CUDA
 option(CELLERATOR_BUILD_TORCH_EXAMPLES "Build optional CellShard-dependent Torch examples" OFF)
 option(CELLERATOR_ENABLE_CELLSHARD "Build the embedded CellShard component" OFF)
 option(CELLERATOR_BUILD_TESTS "Build Cellerator test executables" ON)
+option(CELLERATOR_BUILD_NATIVE_DATA_TESTS
+    "Build focused native data and cellular geometry tests" OFF)
+option(CELLERATOR_BUILD_NATIVE_DATA_BENCHMARKS
+    "Build the optional Torch/CUDA native-data comparison benchmark" OFF)
+if(CELLERATOR_BUILD_NATIVE_DATA_BENCHMARKS
+   AND CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
+    message(FATAL_ERROR
+        "CELLERATOR_BUILD_NATIVE_DATA_BENCHMARKS requires CUDA; configure with CELLERATOR_ENABLE_CUDA=AUTO or ON")
+endif()
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visible CUDA device capability at configure time." ON)
 option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the default CMAKE_CUDA_ARCHITECTURES when the user did not provide one." ON)
@@ -118,10 +127,28 @@ endif()
 # dependency boundary from the CUDA mechanism Torch adapters below.
 include(cmake/CelleratorTokenization.cmake)
 include(cmake/CelleratorSparseSupport.cmake)
+# Data and geometry owners precede the modeling umbrella so model contracts
+# compose these native targets without compiling duplicate relation sources.
+include(cmake/CelleratorNativeData.cmake)
+if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
+    # The host-only sparse-support export is already imported, so the native
+    # data package can load here before the modeling umbrella that depends on
+    # it.
+    cellerator_append_native_data_package_config()
+endif()
 include(cmake/CelleratorModeling.cmake)
+if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
+    enable_testing()
+endif()
+cellerator_add_native_data_tests()
 include(cmake/CelleratorConditional.cmake)
 include(cmake/CelleratorGGML.cmake)
+# Native data CUDA realizations are layered over the host owners below.
 include(cmake/CelleratorFrameworkCUDA.cmake)
+# With framework CUDA disabled, the root CUDA configuration still exposes the
+# independent native-data CUDA targets. The module is include-guarded because
+# FrameworkCUDA also includes it when that optional SDK is enabled.
+include(cmake/CelleratorNativeDataCUDA.cmake)
 include(cmake/CelleratorNN.cmake)
 
 macro(cellerator_append_component_validation)
@@ -504,6 +531,7 @@ endif()
 include(cmake/providers/CelleratorProviderTargets.cmake)
 cellerator_finalize_cuda_provider_targets()
 include(src/geometry/owned_targets.cmake)
+include(cmake/CelleratorCellpackInterop.cmake)
 include(src/planner/CMakeLists.txt)
 
 # CE-EXOP core-contract fan-in.  Keep the portfolio and profiling surfaces
@@ -550,6 +578,7 @@ target_compile_features(cellerator_profiling_v1 PUBLIC cxx_std_17)
 file(GLOB_RECURSE CELLERATOR_JBC_V1_SOURCES CONFIGURE_DEPENDS
     src/compute/candidate/jbc_multi_extent/*.cc
     src/compute/decomposition/*.cc
+    src/execution/decomposition/*.cc
     src/execution/atom_fragment/*.cc
     src/execution/atom_plane/*.cc
     src/execution/joint_compiler/*.cc
@@ -571,6 +600,10 @@ target_link_libraries(cellerator_jbc_v1 PUBLIC
     Cellerator::projection_value_plane_v1
 )
 target_compile_features(cellerator_jbc_v1 PUBLIC cxx_std_17)
+if(TARGET cellerator_dependency_execution_cuda)
+    target_link_libraries(cellerator_dependency_execution_cuda PUBLIC
+        Cellerator::jbc_v1 Cellerator::gated_product)
+endif()
 
 if(CELLERATOR_BUILD_TESTS)
     add_executable(cellerator_operation_core_v2_test
@@ -730,6 +763,17 @@ add_subdirectory(compat)
 include(compat/cp_math_v1/CMakeLists.txt)
 
 include(cmake/NativeFoundation.cmake)
+
+# NativeData exports depend on host owners exported by NativeFoundation in a
+# CUDA build. Append these package includes only after both export files have
+# been added so installed imported targets exist before their consumers.
+cellerator_append_native_data_package_config()
+if(COMMAND cellerator_append_native_data_cuda_package_config)
+    cellerator_append_native_data_cuda_package_config()
+endif()
+if(COMMAND cellerator_append_cellpack_interop_package_config)
+    cellerator_append_cellpack_interop_package_config()
+endif()
 
 if(CELLERATOR_ENABLE_SPARSE_SUPPORT AND CELLERATOR_BUILD_TESTS)
     add_subdirectory(tests/sparse_support)

@@ -15,8 +15,8 @@ void copy_name(const char *source, char (&destination)[48]) noexcept {
 bool valid_profile(const transpose_integration_profile_v1 &profile) noexcept {
     return profile.device_class_id != 0u && profile.projection_type_id != 0u
         && profile.capability_id != 0u
-        && execution::valid_identity(profile.projection)
-        && execution::valid_identity(profile.geometry)
+        && ::cellerator::structure::valid_identity(profile.projection)
+        && ::cellerator::structure::valid_identity(profile.geometry)
         && profile.logical_edge_count != 0u
         && profile.physical_work_items >= profile.logical_edge_count
         && profile.padded_work_items

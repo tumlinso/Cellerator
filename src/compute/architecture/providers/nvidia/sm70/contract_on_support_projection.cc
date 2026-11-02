@@ -1,8 +1,10 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <cstdint>
 
 namespace cellerator::compute::architecture::providers::nvidia::sm70 {
+
+namespace projection = ::cellerator::layout::projection;
 
 enum class contract_projection_status_v1 : std::uint8_t {
     success = 0u,

@@ -53,10 +53,10 @@ struct geometry_acquisition_reuse_diagnostics_v1 {
         geometry_acquisition_diagnostics_schema_version_v1;
     std::uint32_t record_bytes =
         sizeof(geometry_acquisition_reuse_diagnostics_v1);
-    structure_id structure{};
-    structure_epoch epoch{};
-    geometry_id semantic_geometry{};
-    projection_id projection{};
+    structure::structure_id structure{};
+    structure::structure_epoch epoch{};
+    structure::geometry_id semantic_geometry{};
+    structure::projection_id projection{};
     value_generation values{};
     compute::math::core::stable_id dense_layout{};
     geometry::work_window_id work_window{};

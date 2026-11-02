@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
+#include <Cellerator/memory/cuda/shared_buffer.hh>
 #include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cuda_fp16.h>
@@ -108,23 +109,23 @@ struct StateReduceModel {
     bool fleet_ready = false;
     std::uint64_t step = 0u;
 
-    runtime::device_buffer<float> encoder_weight;
-    runtime::device_buffer<float> encoder_bias;
-    runtime::device_buffer<float> decoder_factor;
-    runtime::device_buffer<float> gene_dictionary;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_weight;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_bias;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> decoder_factor;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> gene_dictionary;
 
-    runtime::device_buffer<float> encoder_weight_m1;
-    runtime::device_buffer<float> encoder_weight_m2;
-    runtime::device_buffer<float> encoder_bias_m1;
-    runtime::device_buffer<float> encoder_bias_m2;
-    runtime::device_buffer<float> decoder_factor_m1;
-    runtime::device_buffer<float> decoder_factor_m2;
-    runtime::device_buffer<float> gene_dictionary_m1;
-    runtime::device_buffer<float> gene_dictionary_m2;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_weight_m1;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_weight_m2;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_bias_m1;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_bias_m2;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> decoder_factor_m1;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> decoder_factor_m2;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> gene_dictionary_m1;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> gene_dictionary_m2;
 
-    runtime::device_buffer<__half> decoder_factor_half;
-    runtime::device_buffer<__half> gene_dictionary_half;
-    runtime::device_buffer<float> row_ones;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<__half> decoder_factor_half;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<__half> gene_dictionary_half;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> row_ones;
 };
 
 void init(
@@ -134,7 +135,7 @@ void init(
 
 void clear(StateReduceModel *model);
 
-runtime::device_buffer<float> infer_embeddings(
+::cellerator::memory::cuda::SharedDeviceBuffer<float> infer_embeddings(
     StateReduceModel *model,
     const StateReduceBatchView &batch);
 

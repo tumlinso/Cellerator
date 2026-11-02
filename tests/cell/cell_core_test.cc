@@ -4,218 +4,129 @@
 #include <Cellerator/cell.hh>
 
 #include <cassert>
+#include <future>
+#include <memory>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <utility>
 
 namespace {
-
-struct TokenView {
-    const int* data = nullptr;
-    std::size_t count = 0;
-};
-
-struct ExpressionView {
-    const float* data = nullptr;
-    std::size_t count = 0;
-};
-
-struct MutableExpressionView {
-    float* data = nullptr;
-    std::size_t count = 0;
-};
-
-struct CustomView {
-    const char* data = nullptr;
-};
-
-struct MissingView {};
-
-class MultiModalCell final : public cellerator::CellAccess<TokenView>,
-                             public cellerator::CellAccess<ExpressionView>,
-                             public cellerator::CellEdit<MutableExpressionView>,
-                             public cellerator::CellAccess<CustomView> {
-public:
-    explicit MultiModalCell(std::string identity)
-        : identity_(std::move(identity)) {}
-
-protected:
-    TokenView read(cellerator::ViewTag<TokenView>) const & override {
-        return {tokens_, 3};
-    }
-
-    ExpressionView read(cellerator::ViewTag<ExpressionView>) const & override {
-        return {expression_, 2};
-    }
-
-    MutableExpressionView write(
-        cellerator::ViewTag<MutableExpressionView>) & override {
-        return {expression_, 2};
-    }
-
-    CustomView read(cellerator::ViewTag<CustomView>) const & override {
-        return {custom_};
-    }
-
-private:
-    std::string identity_;
-    int tokens_[3]{4, 4, 9};
-    float expression_[2]{1.0f, 2.0f};
-    const char* custom_ = "extended";
-};
-
-class StringIdentityCell final
-    : public cellerator::CellAccess<cellerator::CellIdentityView<std::string>> {
-public:
-    explicit StringIdentityCell(std::string value) : value_(std::move(value)) {}
-
-protected:
+struct View { const int* value; };
+struct Edit { int* value; };
+struct Missing {};
+struct Instance {
+    int value;
+    std::string id;
+    View read(cellerator::ViewTag<View>) const & { return {&value}; }
     cellerator::CellIdentityView<std::string> read(
-        cellerator::ViewTag<cellerator::CellIdentityView<std::string>>) const & override {
-        return {value_};
-    }
-
-private:
-    std::string value_;
+        cellerator::ViewTag<cellerator::CellIdentityView<std::string>>) const & { return {id}; }
+    Edit write(cellerator::ViewTag<Edit>) & { return {&value}; }
+};
+struct WrongView {
+    View& read(cellerator::ViewTag<View>) const &;
+};
+struct MutableModel {
+    int& operator()(Instance& i) { return i.value; }
+    std::unique_ptr<int> operator()(Instance& i, int delta) { return std::make_unique<int>(i.value + delta); }
+    void operator()(Instance& i, bool) { ++i.value; }
+    int operator()(Instance&, const char*) { throw std::runtime_error("model failure"); }
+    std::future<int> operator()(Instance& i, double) { return std::async(std::launch::deferred, [n=i.value] { return n; }); }
+};
+struct ConstModel {
+    int operator()(const Instance& i) const { return i.value; }
+};
+struct AddressModel {
+    AddressModel* operator&() = delete;
+    int operator()(const Instance& i) const { return i.value; }
+};
+struct NonCallable {};
+struct MoveOnly {
+    std::unique_ptr<int> value = std::make_unique<int>(1);
+};
+struct CopyOnly {
+    CopyOnly() = default;
+    CopyOnly(const CopyOnly&) = default;
+    CopyOnly& operator=(const CopyOnly&) = default;
+    CopyOnly(CopyOnly&&) = delete;
+    CopyOnly& operator=(CopyOnly&&) = delete;
 };
 
-class IntegerIdentityCell final
-    : public cellerator::CellAccess<cellerator::CellIdentityView<int>> {
-public:
-    explicit IntegerIdentityCell(int value) : value_(value) {}
-
-protected:
-    cellerator::CellIdentityView<int> read(
-        cellerator::ViewTag<cellerator::CellIdentityView<int>>) const & override {
-        return {value_};
-    }
-
-private:
-    int value_;
-};
-
-class EmptyCell final : public cellerator::Cell {
-};
-
-template<class T, class = void>
-struct HasRvalueView : std::false_type {};
-
-template<class T>
-struct HasRvalueView<T, std::void_t<decltype(
-    std::declval<T&&>().template view<TokenView>())>> : std::true_type {};
-
-template<class T, class = void>
-struct HasConstEdit : std::false_type {};
-
-template<class T>
-struct HasConstEdit<T, std::void_t<decltype(
-    std::declval<const T&>().template edit<MutableExpressionView>())>>
-    : std::true_type {};
-
-template<class T, class = void>
-struct HasRvalueEdit : std::false_type {};
-
-template<class T>
-struct HasRvalueEdit<T, std::void_t<decltype(
-    std::declval<T&&>().template edit<MutableExpressionView>())>>
-    : std::true_type {};
-
-template<class T, class View, class = void>
-struct HasPublicRead : std::false_type {};
-
-template<class T, class View>
-struct HasPublicRead<T, View, std::void_t<decltype(
-    std::declval<const T&>().read(cellerator::ViewTag<View>{}))>> : std::true_type {};
-
-template<class T, class View, class = void>
-struct HasPublicWrite : std::false_type {};
-
-template<class T, class View>
-struct HasPublicWrite<T, View, std::void_t<decltype(
-    std::declval<T&>().write(cellerator::ViewTag<View>{}))>> : std::true_type {};
-
+template<class T, class = void> struct HasConstForward : std::false_type {};
+template<class T> struct HasConstForward<T, std::void_t<decltype(std::declval<const T&>().forward())>> : std::true_type {};
+template<class T, class = void> struct HasRvalueForward : std::false_type {};
+template<class T> struct HasRvalueForward<T, std::void_t<decltype(std::declval<T&&>().forward())>> : std::true_type {};
+template<class T, class = void> struct HasRvalueModel : std::false_type {};
+template<class T> struct HasRvalueModel<T, std::void_t<decltype(std::declval<T&&>().model())>> : std::true_type {};
+template<class T, class = void> struct HasRvalueInstance : std::false_type {};
+template<class T> struct HasRvalueInstance<T, std::void_t<decltype(std::declval<T&&>().instance())>> : std::true_type {};
+template<class T, class V, class = void> struct HasView : std::false_type {};
+template<class T, class V> struct HasView<T, V, std::void_t<decltype(std::declval<T>().template view<V>())>> : std::true_type {};
+template<class T, class V, class = void> struct HasEdit : std::false_type {};
+template<class T, class V> struct HasEdit<T, V, std::void_t<decltype(std::declval<T>().template edit<V>())>> : std::true_type {};
+template<class T, class = void> struct CanBorrowTemporary : std::false_type {};
+template<class T> struct CanBorrowTemporary<T, std::void_t<decltype(cellerator::make_cell(std::declval<T&&>(), 0))>> : std::true_type {};
 } // namespace
 
 int main() {
     using namespace cellerator;
-    static_assert(std::is_abstract<Cell>::value,
-        "Cell must remain an interface");
-    static_assert(!HasRvalueView<MultiModalCell>::value,
-        "views must not be acquired from temporary cells");
-    static_assert(!HasConstEdit<MultiModalCell>::value,
-        "const cells must not expose edit access");
-    static_assert(!HasRvalueEdit<MultiModalCell>::value,
-        "edits must not be acquired from temporary cells");
-    static_assert(!HasPublicRead<CellAccess<TokenView>, TokenView>::value,
-        "read hook must be protected on the access contract");
-    static_assert(!HasPublicWrite<CellEdit<MutableExpressionView>, MutableExpressionView>::value,
-        "write hook must be protected on the edit contract");
-    static_assert(!HasPublicRead<MultiModalCell, TokenView>::value,
-        "concrete cell must not expose the read hook publicly");
-    static_assert(!HasPublicWrite<MultiModalCell, MutableExpressionView>::value,
-        "concrete cell must not expose the write hook publicly");
+    using C = Cell<MutableModel, Instance>;
+    static_assert(C::supports<View>() && C::supports<CellIdentityView<std::string>>());
+    static_assert(C::supports_edit<Edit>() && !C::supports<Missing>() && !C::supports_edit<View>());
+    static_assert(!Cell<NonCallable, WrongView>::supports<View>());
+    static_assert(HasView<C&, View>::value && HasView<const C&, View>::value);
+    static_assert(!HasView<C&&, View>::value && !HasView<C&, Missing>::value);
+    static_assert(HasEdit<C&, Edit>::value && !HasEdit<const C&, Edit>::value && !HasEdit<C&&, Edit>::value);
+    static_assert(!HasRvalueModel<C>::value && !HasRvalueInstance<C>::value && !HasRvalueForward<C>::value);
+    static_assert(!HasConstForward<C>::value && HasConstForward<Cell<ConstModel, Instance>>::value);
+    static_assert(!CanBorrowTemporary<MutableModel>::value);
+    static_assert(!CanBorrowTemporary<const MutableModel>::value);
+    static_assert(std::is_copy_constructible_v<C> && std::is_move_constructible_v<C>);
+    static_assert(!std::is_copy_constructible_v<Cell<MutableModel, MoveOnly>> && std::is_move_constructible_v<Cell<MutableModel, MoveOnly>>);
+    static_assert(std::is_copy_constructible_v<Cell<MutableModel, CopyOnly>> == std::is_copy_constructible_v<CopyOnly>);
+    static_assert(std::is_move_constructible_v<Cell<MutableModel, CopyOnly>> == std::is_move_constructible_v<CopyOnly>);
+    static_assert(std::is_copy_assignable_v<Cell<MutableModel, CopyOnly>> == std::is_copy_assignable_v<CopyOnly>);
+    static_assert(std::is_move_assignable_v<Cell<MutableModel, CopyOnly>> == std::is_move_assignable_v<CopyOnly>);
+    static_assert(!std::is_copy_assignable_v<Cell<MutableModel, MoveOnly>> && std::is_move_assignable_v<Cell<MutableModel, MoveOnly>>);
+    static_assert(std::is_same_v<decltype(std::declval<const C&>().model()), const MutableModel&>);
+    static_assert(std::is_same_v<decltype(std::declval<const C&>().instance()), const Instance&>);
 
-    MultiModalCell cell("cell-A");
-    const MultiModalCell& const_cell = cell;
-
-    assert(cell.supports<TokenView>());
-    assert(cell.supports<ExpressionView>());
-    assert(cell.supports<CustomView>());
-    assert(!cell.supports<MutableExpressionView>());
-    assert(cell.supports_edit<MutableExpressionView>());
-    assert(!cell.supports_edit<ExpressionView>());
-    assert(const_cell.supports<TokenView>());
-
-    const TokenView tokens = const_cell.view<TokenView>();
-    assert(tokens.count == 3);
-    assert(tokens.data[0] == 4 && tokens.data[1] == 4 && tokens.data[2] == 9);
-
-    const ExpressionView read = const_cell.view<ExpressionView>();
-    assert(read.count == 2 && read.data[0] == 1.0f);
-    const CustomView extension = cell.view<CustomView>();
-    assert(std::string(extension.data) == "extended");
-
-    const CellAccess<TokenView>& token_access = cell;
-    assert(token_access.view<TokenView>().count == tokens.count);
-
-    MutableExpressionView edit = cell.edit<MutableExpressionView>();
-    edit.data[1] = 17.0f;
-    assert(const_cell.view<ExpressionView>().data[1] == 17.0f);
-    CellEdit<MutableExpressionView>& edit_access = cell;
-    assert(edit_access.edit<MutableExpressionView>().data == edit.data);
-
-    bool missing_read_threw = false;
-    try {
-        (void)cell.view<MissingView>();
-    } catch (const std::bad_cast&) {
-        missing_read_threw = true;
-    }
-    assert(missing_read_threw);
-
-    bool missing_edit_threw = false;
-    try {
-        (void)cell.edit<ExpressionView>();
-    } catch (const std::bad_cast&) {
-        missing_edit_threw = true;
-    }
-    assert(missing_edit_threw);
-
-    StringIdentityCell string_cell("bio:cell/42");
-    const auto string_identity = string_cell.view<CellIdentityView<std::string>>();
-    assert(string_identity.value == "bio:cell/42");
-
-    IntegerIdentityCell integer_cell(8675309);
-    const auto integer_identity = integer_cell.view<CellIdentityView<int>>();
-    assert(integer_identity.value == 8675309);
-
-    EmptyCell empty;
-    assert(!empty.supports<TokenView>());
-    assert(!empty.supports_edit<MutableExpressionView>());
-    bool empty_lookup_threw = false;
-    try {
-        (void)empty.view<TokenView>();
-    } catch (const std::bad_cast&) {
-        empty_lookup_threw = true;
-    }
-    assert(empty_lookup_threw);
+    MutableModel model;
+    AddressModel address_model;
+    auto address_cell = make_cell(address_model, Instance{4, "address"});
+    assert(std::addressof(address_cell.model()) == std::addressof(address_model));
+    assert(address_cell.forward() == 4);
+    try { (void)C(nullptr, Instance{1, "null"}); assert(false); }
+    catch (const std::invalid_argument&) {}
+    C directly_bound(&model, Instance{2, "direct"});
+    assert(&directly_bound.model() == &model);
+    auto cell = make_cell(model, Instance{3, "bio:42"});
+    auto copy = cell;
+    assert(&copy.model() == &model && &copy.instance() != &cell.instance());
+    cell.forward() = 7;
+    assert(cell.instance().value == 7 && copy.instance().value == 3);
+    assert(*cell.forward(4) == 11);
+    cell.forward(true);
+    assert(cell.forward(0.0).get() == 8);
+    try { cell.forward("fail"); assert(false); } catch (const std::runtime_error&) {}
+    assert(cell.instance().value == 8);
+    auto edit = cell.edit<Edit>(); *edit.value = 9;
+    assert(*cell.view<View>().value == 9);
+    assert(cell.view<CellIdentityView<std::string>>().value == "bio:42");
+    const ConstModel const_model;
+    auto const_binding = make_cell(const_model, Instance{12, "id"});
+    static_assert(std::is_same_v<decltype(const_binding.model()), const ConstModel&>);
+    assert(std::as_const(const_binding).forward() == 12);
+    auto owned = std::make_shared<ConstModel>();
+    auto owned_cell = make_cell(owned, Instance{5, "owned"});
+    assert(owned.use_count() == 2);
+    owned.reset();
+    assert(owned_cell.forward() == 5);
+    auto temporary_owner = make_cell(std::make_shared<ConstModel>(), Instance{6, "temporary owner"});
+    assert(temporary_owner.forward() == 6);
+    try { (void)make_cell(std::shared_ptr<ConstModel>{}, Instance{1, "null"}); assert(false); }
+    catch (const std::invalid_argument&) {}
+    CopyOnly copy_instance;
+    auto copy_only = make_cell(model, copy_instance);
+    (void)copy_only;
 }

@@ -9,91 +9,130 @@ for native model authoring rather than generated from Python classes. Both sit
 within Cellerator's [biological machine-learning scope](scope.qmd) and
 [modeling architecture](architecture.qmd#cpp-and-python-modeling).
 
-The generic native cell contract is a separate, Torch-free interface at
-[`<Cellerator/cell.hh>`](../include/Cellerator/cell.hh). It lets a caller
-request typed capabilities from a cell without binding that cell to a model,
-tensor library, time axis, or trajectory container. The adapter examples below
-show event-prefix and dense-expression access; this page's learned models remain
-ordinary C++ callables that consume the views they support.
+The native Cell contract is a separate, Torch-free interface at
+[`<Cellerator/cell.hh>`](../include/Cellerator/cell.hh). A Cell is a continuing
+virtual instance: it binds a shared model to instance-specific information,
+independently of its physical layout or device placement. Its representation
+can be a borrowed row, pooled state, a structured owner, or a handle to
+separately placed portions. Python's existing Cell API is unchanged.
 
-The native component uses C++20 and ATen/LibTorch tensors. Python is optional,
-but this is not a no-Torch library: LibTorch supplies tensor operations and can
-provide ordinary optimizers and autograd. Native models compose ordinary C++
-types and can return any result type their callers need.
+The optional NN component uses C++20 and ATen/LibTorch tensors. Python is
+optional; LibTorch supplies tensor operations, ordinary optimizers, and
+autograd. Native models remain ordinary C++ callables with their own result
+types. The Cell core itself uses C++17 and the standard library only.
 
-## Access cell representations without binding a model
+## Bind a continuing native instance
 
-`cellerator::Cell` is an abstract, non-templated capability surface with no
-required data members. A concrete cell opts into one or more typed access
-contracts by implementing `CellAccess<View>` and, when appropriate,
-`CellEdit<View>`. Capability lookup uses RTTI; `supports<View>()` and
-`supports_edit<View>()` let a caller check support, while an unsupported
-`view<View>()` or `edit<View>()` throws `std::bad_cast`. Reads require an
-lvalue cell and work through const cells. Edits require a mutable lvalue.
-Implement `read` and `write` as protected hooks; callers use the public
-`view` and `edit` methods so the temporary-cell restrictions are preserved.
-
-The interface itself is C++17-compatible and has no Torch or CUDA dependency.
-The examples build with C++20; the dense-expression adapter uses `std::span`
-for feature identities, while the event adapter itself does not require it.
-Include the narrow adapter needed by the operation:
+`Cell<Model, Instance, ModelHandle = Model*>` stores the selected model handle
+and instance value. It adds no mandatory virtual base, allocation, identity,
+clock, trajectory, device, cache, or mutation tracker. Model and instance types
+are independent, so the same model can support different representations.
 
 ```cpp
-#include <Cellerator/cells/event.hh>
+#include <Cellerator/cell.hh>
 
-using EventView = cellerator::cells::EventView<Token>;
+struct Reading { double value; };
+struct Scale {
+    double weight;
+    double operator()(Reading& instance, double input) const {
+        instance.value += input;
+        return weight * instance.value;
+    }
+};
 
-Prediction forward_events(const cellerator::Cell& cell, const Model& model) {
-    const auto events = cell.view<EventView>();
-    return model(events);
-}
+Scale model{2.0};
+auto cell = cellerator::make_cell(model, Reading{1.0});
+auto prediction = cell.forward(3.0); // 8.0; the same instance now contains 4.0
 ```
 
-The operation selects and interprets the view; `Cell` does not own a model or
-promise that forwarding returns another cell. An application may define a new
-view type and add it through another `CellAccess` contract without registering
-it centrally. A concrete cell can expose event, expression, identity, and
-application-defined views together. `CellIdentityView<Identity>` borrows an
-application-defined identity; it does not impose a common numeric ID or treat a
-storage row as biological identity.
+`make_cell(model, instance)` borrows an lvalue model and stores a decayed
+instance value, copying an lvalue or moving an rvalue. The model must outlive
+the Cell. Passing an explicit `std::shared_ptr<Model>` instead retains shared
+model ownership; null owners are rejected. Copying a Cell follows its stored
+instance and handle semantics: a row or pooled handle can alias storage, while
+an owning representation can duplicate private information or forbid copying.
+No operation implicitly clones state or generates a biological identity.
 
-The built-in adapters borrow stable descriptor objects and return lightweight
-typed descriptors. An event cell selects an ordered token prefix by offset and
-length. Repeated token occurrences remain present. The storage owner controls
-allocation and append, updates the stable buffer descriptor after growth, and
-must keep a cell's offsets valid; a view acquired before backing storage moves
-may be invalidated. A dense-expression cell selects a row by its row index,
-feature IDs, and explicit row stride, including padded rows. Read views expose
-const numeric values. `MutableDenseExpressionCell` exposes numeric writes only
-through `edit<MutableExpressionView<...>>()`; feature identity, selection, and
-layout remain read-only. The storage owner remains responsible for
-synchronization and value-generation or cache invalidation protocols.
+`forward(args...)` invokes `model(instance, args...)` and preserves the exact
+result, including references, `void`, move-only values, and completion handles.
+Const forwarding requires a callable accepting a const model and const
+instance. `model()` and `instance()` expose const-correct lvalue references.
+Temporary access is rejected; moved-from Cells require reassignment before
+further operations unless their model and instance explicitly permit more.
 
-Descriptors retain the native memory-placement metadata. A device placement
-does not trigger a copy, transfer, or host dereference; the consumer must honor
-that placement. Capability lookup is a runtime interface boundary, not a
-per-element iteration API. Resolve a view for the operation and pass its plain
-descriptor into the compute path when that path needs tighter batching or
-execution control.
+Logical in-place mutation does not require overwriting the same physical
+buffers. A model can replace a state tensor while retaining earlier values for
+backward, share a prefix, or relocate a portion through its owner. Models and
+owners define cache validity, parameter revisions, asynchronous readiness,
+retained-result lifetimes, and exception guarantees. Cell adds no automatic
+rollback or synchronization. A reference returned by an operation is valid
+only under that operation's lifetime contract.
 
-One `view` request performs one RTTI capability lookup and one virtual read.
-The supplied adapters then validate the selection and return pointer, extent,
-placement, and feature metadata without allocating or copying the payload.
-Calling `supports` before `view` performs an additional lookup. A dynamical
-state view additionally retains a `shared_ptr<const State>`; this pins the
-state object, while any nested external resources retain their own mutation
-and lifetime contracts.
+### Typed information access
 
-[`event_forward.cc`](../examples/native_cell/event_forward.cc) demonstrates a
-deterministic event-prefix continuation whose append is owned by the backing
-store. The operation returns a cell with the same identity and offset and a
-longer prefix; the earlier handle keeps its original boundary. Its evaluator is
-an interface example, not a scientific or trained Karyoplast model.
-[`multimodal.cc`](../examples/native_cell/multimodal.cc) demonstrates one cell
-with event, dense-expression, identity, and caller-defined quality views, plus
-an explicit expression edit. See the
-[developer reference](developer_reference.qmd#native-cell-examples) for the
-host-only build route.
+A representation can expose ordinary public hooks
+`View read(ViewTag<View>) const &` and
+`View write(ViewTag<View>) &`. `cell.view<View>()` and `cell.edit<View>()`
+delegate to those hooks. `supports<View>()` and `supports_edit<View>()` detect
+contracts at compile time; an unsupported typed acquisition is ill-formed.
+Reads require lvalues and edits require mutable lvalues. Capability presence
+does not establish data readiness, bounds validity, or cache freshness.
+
+The event and expression headers provide `EventPrefix`, `DenseExpressionRow`,
+and `MutableDenseExpressionRow`. These are storage selections, not complete
+Cells: bind a model to one, or include it in a richer instance representation.
+They borrow stable buffer or matrix descriptor objects, retain typed
+application identities, and reacquire pointers when producing views. Event
+prefixes preserve order and repeated occurrences. Dense rows preserve scalar
+type, feature IDs, explicit stride, and padding. Numeric writes use an explicit
+edit view; feature identity and layout remain read-only through that view.
+The expression adapter uses C++20 `std::span`.
+
+Descriptors retain native placement metadata and cause no transfer or host
+dereference of device data. The owner controls allocation, synchronization,
+reordering, and invalidation of existing borrowed views. Physical offsets are
+storage locations, not universal biological IDs. Caller-defined views need no
+central registry, and representations without views need no access boilerplate.
+
+### Optional runtime access
+
+Include [`<Cellerator/cells/access.hh>`](../include/Cellerator/cells/access.hh)
+when a heterogeneous consumer needs runtime view discovery. `CellViews` is the
+polymorphic access boundary, with protected `CellAccess<View>` and
+`CellEdit<View>` implementation hooks. An explicit borrowed bridge exposes only
+the selected capabilities:
+
+```cpp
+// event_cell is a typed Cell whose instance supplies EventView.
+auto bridge = cellerator::make_cell_views<
+    cellerator::CellAccess<EventView>>(event_cell);
+const cellerator::CellViews& runtime = bridge;
+auto events = runtime.view<EventView>();
+```
+
+Selected bridge contracts must be supported by the source; a const source
+cannot supply edits. Other runtime requests throw `std::bad_cast`, and runtime
+capability checks return false. The bridge borrows the Cell object: that object
+must outlive it and remain at the same address. Returned views separately obey
+their backing-storage contracts. The bridge cannot bind a temporary Cell.
+
+The typed path uses no RTTI or virtual call and needs no runtime destructor
+link. The optional runtime path performs one RTTI lookup and virtual dispatch
+per view acquisition and links `Cellerator::libCellerator` for `CellViews`'s
+out-of-line destructor. These are structural costs, not measured speedups.
+
+[`event_forward.cc`](../examples/native_cell/event_forward.cc) demonstrates
+storage-owned append extending the same Cell's prefix and returning an
+operation result. Copied prefix selections retain earlier boundaries; stale
+and foreign continuations are rejected. Its evaluator is deterministic
+scaffolding, not a scientific Karyoplast model.
+[`multimodal.cc`](../examples/native_cell/multimodal.cc) combines event,
+expression, identity, and custom views with an optional runtime bridge.
+[`foundation.cc`](../examples/native_cell/foundation.cc) explores shared and
+pooled portions, joint operations, host placement choices, cache revisions, and
+resource-retaining asynchronous results. Its supplied cost estimates do not
+constitute a placement engine or performance qualification. See the
+[host build route](developer_reference.qmd#native-cell-examples).
 
 ## Author a model as an ordinary C++ type
 
@@ -195,14 +234,87 @@ numerical operations still have their ordinary allocation costs.
 
 ## Bind biological identities at the boundary
 
-[`FeatureBinding`](../include/Cellerator/biology/feature_binding.hh) maps
-canonical feature identities to model rows. A prepared alignment separately
-records source-column positions, model indices, canonical indices when
-supplied, and optional physical positions.
+[`biology::FeatureBinding`](../include/Cellerator/biology/feature_binding.hh)
+resolves canonical biological identities to model rows. Its preparation returns
+[`execution::FeatureSourceBinding`](../include/Cellerator/execution/dependency/feature_binding.hh),
+which records source gather positions, canonical indices when supplied, model
+indices, and an optional projected physical map. These are coordinates for
+aligning values; the caller retains the numerical storage.
 `FeatureInput::ids` are numerical model rows; they are not canonical IDs. The
 caller prepares the binding and aligns measurements before passing tensors to
-the encoder. This keeps source order, canonical biological identity, model
-index, repeated occurrence, and physical position distinct.
+the encoder. A source position, biological identity, model index, occurrence
+ordinal, and physical offset are different coordinates.
+
+The native C++ types keep logical structure separate from its physical
+realization:
+
+- [`structure::LogicalAxis`](../include/Cellerator/structure/identity.hh)
+  declares a semantic domain, logical order, and extent. It does not declare a
+  partition, geometry, or buffer.
+- [`structure::OccurrenceCoordinates`](../include/Cellerator/structure/coordinates.hh)
+  declares ordered identities, group offsets, an optional logical axis, and a
+  structure generation. Repeated identities are valid occurrences.
+  `structure::OccurrenceOrderToken` identifies that exact declaration, so
+  equal extents do not make distinct orders compatible.
+- [`layout::AxisBinding`](../include/Cellerator/layout/axis_binding.hh)
+  associates physical geometry and partition identities with a logical axis.
+  [`layout::OccurrenceMap`](../include/Cellerator/layout/occurrence_map.hh)
+  associates occurrence ordinals with physical buffer positions and retains
+  the order token it was built for.
+- `execution::FeatureSourceBinding` is the prepared source-to-model mapping.
+  `FeatureBinding::prepare(...)` aligns a unique feature axis;
+  `FeatureBinding::map_occurrences(...)` maps occurrences independently and
+  retains repeated identities. Neither path owns or coerces the value tensor.
+
+`FeatureBindingOptions` and `FeatureBindingDescriptor` keep `axis` (the
+`structure::LogicalAxis`) separate from `physical_axis` (the
+`layout::AxisBinding`). Native descriptor serialization keeps no-axis and
+full, nonempty physical-axis records at schema version 1. Version 2 represents
+logical-only axes and zero-extent axes; a zero-extent physical binding retains
+its geometry and partition identities. This descriptor capability does not relax
+`FeatureBinding::from_ids`' requirement for at least one canonical identity.
+The current Python `FeatureBinding.from_manifest` reader accepts version 1 and
+explicitly rejects native version 2; the C++ namespace split does not add a
+Python axis or layout API.
+
+For example, an ordered source `("gene-B", "gene-A", "gene-B")` can map to
+model indices `(11, 7, 11)` while an `OccurrenceMap` maps its occurrence
+ordinals `(0, 1, 2)` to physical buffer positions `(2, 0, 1)`. Reordering the
+buffer changes that physical map, not the logical identities or model mapping.
+
+```cpp
+#include <Cellerator/biology/feature_binding.hh>
+#include <Cellerator/layout/occurrence_map.hh>
+#include <Cellerator/structure/coordinates.hh>
+
+#include <cassert>
+#include <cstdint>
+#include <string>
+#include <vector>
+
+int main() {
+    using Identity = std::string;
+    const cellerator::structure::LogicalAxis source_axis{
+        cellerator::structure::domain_id{1, 0},
+        cellerator::structure::order_id{2, 0}, 3};
+    const auto source =
+        cellerator::structure::OccurrenceCoordinates<Identity>::from_ids(
+            std::vector<Identity>{"gene-B", "gene-A", "gene-B"},
+            std::vector<std::int64_t>{0, 3}, source_axis);
+    const cellerator::layout::AxisBinding physical_axis{
+        source_axis, cellerator::structure::geometry_id{3, 0},
+        cellerator::structure::partition_id{4, 0}};
+    const auto physical = cellerator::layout::OccurrenceMap::from_positions(
+        source.order_token(), std::vector<std::int64_t>{2, 0, 1}, physical_axis);
+    const auto genes = cellerator::biology::FeatureBinding<Identity>::from_ids(
+        std::vector<Identity>{"gene-A", "gene-B"},
+        std::vector<std::int64_t>{7, 11});
+    const auto prepared = genes.map_occurrences(source, &physical);
+    assert((prepared.source_positions() == std::vector<std::int64_t>{0, 1, 2}));
+    assert((prepared.model_indices() == std::vector<std::int64_t>{11, 7, 11}));
+    assert((prepared.physical_positions() == std::vector<std::int64_t>{2, 0, 1}));
+}
+```
 
 `nn::FeatureEncoder` combines model-row embeddings with optional values,
 observation status, and aligned attributes. Its `FeatureInput` explicitly
@@ -210,18 +322,15 @@ contains `ids`, optional `values`, optional Boolean `observed`, and optional
 `attributes`. It does not infer aliases, normalize measurements, rank features,
 or assign biological meaning to integer rows.
 
-For ordered or repeated participants, use
-[`OccurrenceCoordinates`](../include/Cellerator/biology/coordinates.hh).
-Repeated labels may denote distinct
-occurrences; group offsets, an optional declared axis, structural generation,
-and physical positions are separate coordinates. Its order token identifies
-that exact declaration, so equal tensor extents do not imply compatible
-biological order.
+For ordered or repeated participants, use `structure::OccurrenceCoordinates`
+and pass any physical placement separately through `layout::OccurrenceMap`.
 
 [`PreparedRelation`](../include/Cellerator/nn/relations.hh) binds CSR support
 to source and target occurrence-order tokens, group declarations, structural
 generation, and an explicit device.
-CSR rows address target occurrences and columns address source occurrences.
+CSR rows address target occurrence ordinals and columns address source
+occurrence ordinals. Optional layout bindings preserve the physical
+realization separately.
 Preparation owns copies of host structure and can explicitly realize it on a
 device with `.to(device)`; duplicate edges and empty neighborhoods are
 retained. `.causal()` constructs a prefix-only relation while preserving its
@@ -325,9 +434,10 @@ or biological claim.
 
 The canonical header entry point is
 [`<Cellerator/nn.hh>`](../include/Cellerator/nn.hh), with focused declarations
-under [`include/Cellerator/nn`](../include/Cellerator/nn/) and biological
-identity types under
-[`include/Cellerator/biology`](../include/Cellerator/biology/). The optional
+under [`include/Cellerator/nn`](https://github.com/tumlinso/Cellerator/tree/main/include/Cellerator/nn).
+Biological identity resolution remains under `biology`; logical identities and
+occurrences live under `structure`, physical bindings under `layout`, and
+prepared source mappings under `execution`. The optional
 C++20 `Cellerator::nn` target is independent of Python bindings but depends on
 LibTorch and the native Product2 target. A standalone CPU configure can enable
 the component and reference executable:

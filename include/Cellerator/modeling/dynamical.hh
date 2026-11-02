@@ -69,6 +69,24 @@ inline void validate_result_clock(const std::optional<double>& time) {
     if (time && !std::isfinite(*time)) throw std::invalid_argument("result time must be finite");
 }
 
+template<class State, class Identity>
+struct dynamical_cell_instance {
+    std::shared_ptr<const State> state;
+    Identity identity;
+
+    DynamicalStateSnapshotView<State>
+    read(ViewTag<DynamicalStateSnapshotView<State>>) const & {
+        return {state};
+    }
+    DynamicalStateSnapshotView<State>
+    read(ViewTag<DynamicalStateSnapshotView<State>>) const && = delete;
+
+    CellIdentityView<Identity> read(ViewTag<CellIdentityView<Identity>>) const & {
+        return {identity};
+    }
+    CellIdentityView<Identity> read(ViewTag<CellIdentityView<Identity>>) const && = delete;
+};
+
 } // namespace detail
 
 // Explicit state-transition behavior and parameter ownership. Generic learned
@@ -134,9 +152,7 @@ auto make_dynamical_model(Dynamics dynamics,
 // specialized Cell. Results remain immutable snapshots and may hold move-only
 // state without copying it.
 template<class ModelType, class Identity = std::uint64_t>
-class DynamicalCell final
-    : public CellAccess<DynamicalStateSnapshotView<typename ModelType::state_type>>,
-      public CellAccess<CellIdentityView<Identity>> {
+class DynamicalCell final {
 public:
     using state_type = typename ModelType::state_type;
     using context_type = typename ModelType::context_type;
@@ -144,12 +160,16 @@ public:
     using identity_type = Identity;
     using state_snapshot_view_type = DynamicalStateSnapshotView<state_type>;
     using identity_view_type = CellIdentityView<Identity>;
+    using model_type = std::remove_const_t<ModelType>;
+    using instance_type = detail::dynamical_cell_instance<state_type, Identity>;
+    using binding_type = Cell<const model_type, instance_type, const model_type*>;
 
     DynamicalCell(std::shared_ptr<const ModelType> model, state_type state,
                   Identity identity, double time = 0.0)
         : model_(std::move(model)),
-          state_(std::make_shared<const state_type>(std::move(state))),
-          identity_(std::move(identity)), time_(time) {
+          binding_(model_.get(), instance_type{
+              std::make_shared<const state_type>(std::move(state)), std::move(identity)}),
+          time_(time) {
         if (!model_) throw std::invalid_argument("dynamical cell model cannot be null");
         detail::validate_step_clock(time_, 0.0);
     }
@@ -159,17 +179,30 @@ public:
     DynamicalCell(DynamicalCell&&) = default;
     DynamicalCell& operator=(DynamicalCell&&) = default;
 
-    const state_type& state() const & noexcept { return *state_; }
+    const state_type& state() const & noexcept { return *binding_.instance().state; }
     const state_type& state() const && = delete;
-    std::shared_ptr<const state_type> state_handle() const noexcept { return state_; }
+    std::shared_ptr<const state_type> state_handle() const noexcept {
+        return binding_.instance().state;
+    }
     const std::shared_ptr<const ModelType>& model() const & noexcept { return model_; }
     const std::shared_ptr<const ModelType>& model() const && = delete;
-    const Identity& identity() const & noexcept { return identity_; }
+    const Identity& identity() const & noexcept { return binding_.instance().identity; }
     const Identity& identity() const && = delete;
-    const Identity& id() const & noexcept { return identity_; }
+    const Identity& id() const & noexcept { return binding_.instance().identity; }
     const Identity& id() const && = delete;
     double time() const noexcept { return time_; }
     std::uint64_t value_generation() const noexcept { return value_generation_; }
+
+    template<class View> static constexpr bool supports() noexcept {
+        return binding_type::template supports<View>();
+    }
+    template<class View> static constexpr bool supports_edit() noexcept {
+        return binding_type::template supports_edit<View>();
+    }
+    template<class View, std::enable_if_t<
+        binding_type::template supports<View>(), int> = 0>
+    View view() const & { return binding_.template view<View>(); }
+    template<class View> void view() const && = delete;
 
     std::shared_ptr<const result_type> advance(double dt = 1.0) {
         context_type context;
@@ -191,7 +224,7 @@ public:
         // All callback, clock and allocation checks precede adoption. Callbacks
         // that mutate external handles still own their own rollback semantics.
         auto next_state = std::shared_ptr<const state_type>(result, &result->state);
-        state_ = std::move(next_state);
+        binding_.instance().state = std::move(next_state);
         time_ = next_time;
         ++value_generation_;
         return result;
@@ -205,19 +238,9 @@ public:
 
     void observe(context_type = {}) const && = delete;
 
-protected:
-    state_snapshot_view_type read(ViewTag<state_snapshot_view_type>) const & override {
-        return {state_};
-    }
-
-    identity_view_type read(ViewTag<identity_view_type>) const & override {
-        return {identity_};
-    }
-
 private:
     std::shared_ptr<const ModelType> model_;
-    std::shared_ptr<const state_type> state_;
-    Identity identity_;
+    binding_type binding_;
     double time_;
     std::uint64_t value_generation_ = 0;
 };

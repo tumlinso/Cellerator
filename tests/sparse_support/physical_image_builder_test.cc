@@ -1,11 +1,11 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <vector>
 
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 
 namespace {
 
@@ -42,7 +42,7 @@ void builds_and_validates_dense_geometry_ordinals() {
         == projection::physical_image_build_status_v1::success);
     assert(projection::validate_physical_mma_hybrid_image_v1(
         image.data(), image.size()));
-    const auto header = read_record<projection::physical_mma_hybrid_header_v1>(
+    const auto header = read_record<projection::MmaHybridLayoutV1>(
         image, 0u, 0u);
     assert(header.logical_edge_count == 5u);
     assert(header.dense_width == 64u);

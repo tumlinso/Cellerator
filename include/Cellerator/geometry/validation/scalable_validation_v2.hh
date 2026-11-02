@@ -46,10 +46,10 @@ bool checked_add_u64_v2(std::uint64_t left, std::uint64_t right,
                         std::uint64_t *out) noexcept;
 bool checked_multiply_u64_v2(std::uint64_t left, std::uint64_t right,
                              std::uint64_t *out) noexcept;
-bool local_width_can_represent_v2(execution::local_index_width_v1 width,
+bool local_width_can_represent_v2(layout::LocalIndexWidth width,
                                   std::uint64_t extent) noexcept;
 bool load_compact_index_v2(const void *data,
-                           execution::local_index_width_v1 width,
+                           layout::LocalIndexWidth width,
                            std::uint64_t position,
                            std::uint64_t *out) noexcept;
 

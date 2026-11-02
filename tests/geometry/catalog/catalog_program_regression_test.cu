@@ -214,7 +214,7 @@ execution::executable_program_request_v2 request(
 
 execution::program_candidate_cost cost(
     core::stable_id candidate,
-    execution::projection_id projection,
+    ::cellerator::structure::projection_id projection,
     double kernel_ns) {
     execution::program_candidate_cost result{};
     result.candidate = candidate;

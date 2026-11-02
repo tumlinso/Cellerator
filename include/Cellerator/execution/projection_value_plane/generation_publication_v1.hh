@@ -16,7 +16,7 @@ enum class generation_publication_phase_v1 : u8 {
 // storage with one byte per required component; no value storage is owned here.
 struct generation_publication_v1 {
     structure_handle structure{};
-    structure_epoch structure_epoch_value{};
+    structure::structure_epoch structure_epoch_value{};
     value_generation generation{};
     u8 *ready_components = nullptr;
     u32 ready_capacity = 0u;
@@ -29,8 +29,8 @@ struct generation_publication_v1 {
 
 struct direct_gradient_component_v1 {
     u64 component_identity = 0u;
-    projection_id projection{};
-    order_id physical_order{};
+    structure::projection_id projection{};
+    structure::order_id physical_order{};
     void *gradients = nullptr;
     const u64 *slot_to_logical_edge = nullptr;
     u64 slot_count = 0u;

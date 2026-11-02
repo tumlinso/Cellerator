@@ -57,3 +57,9 @@ install(DIRECTORY
     "${PROJECT_SOURCE_DIR}/include/Cellerator/compute/indexing"
     "${PROJECT_SOURCE_DIR}/include/Cellerator/compute/gating"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/compute")
+install(DIRECTORY
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/containers"
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/geometry/dependency"
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/execution/dependency"
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/ops/condition"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")

@@ -2,11 +2,11 @@
 
 #include <CellShard/access/adapter.cuh>
 
-#include <Cellerator/matrix/blocked_ell.cuh>
-#include <Cellerator/matrix/compressed.cuh>
-#include <Cellerator/matrix/dense.cuh>
-#include <Cellerator/matrix/quantized_blocked_ell.cuh>
-#include <Cellerator/matrix/sliced_ell.cuh>
+#include <Cellerator/interop/formats/blocked_ell.cuh>
+#include <Cellerator/interop/formats/compressed.cuh>
+#include <Cellerator/interop/formats/dense.cuh>
+#include <Cellerator/interop/formats/affine_blocked_ell.hh>
+#include <Cellerator/interop/formats/sliced_ell.cuh>
 
 #include <cstddef>
 #include <cstdint>
@@ -24,7 +24,7 @@ template<class MatrixT>
 struct cellshard_matrix_traits;
 
 template<>
-struct cellshard_matrix_traits<matrix::dense> {
+struct cellshard_matrix_traits<formats::DensePayload> {
     static constexpr cellshard::disk_format archive_format = cellshard::disk_format_dense;
     static constexpr std::uint32_t execution_format = cellshard::dataset_execution_format_dense;
     static constexpr std::uint64_t capabilities =
@@ -32,15 +32,15 @@ struct cellshard_matrix_traits<matrix::dense> {
         cellshard::access::capability_cell_span_copy |
         cellshard::access::capability_feature_span_copy;
 
-    static std::uint64_t rows(const matrix::dense *m) { return m != nullptr ? m->rows : 0u; }
-    static std::uint64_t cols(const matrix::dense *m) { return m != nullptr ? m->cols : 0u; }
-    static std::uint64_t nnz(const matrix::dense *m) { return m != nullptr ? (std::uint64_t) m->rows * (std::uint64_t) m->cols : 0u; }
-    static std::size_t payload_bytes(const matrix::dense *m) { return m != nullptr ? matrix::payload_bytes(m) : 0u; }
-    static std::uint32_t value_code(const matrix::dense *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
+    static std::uint64_t rows(const formats::DensePayload *m) { return m != nullptr ? m->rows : 0u; }
+    static std::uint64_t cols(const formats::DensePayload *m) { return m != nullptr ? m->cols : 0u; }
+    static std::uint64_t nnz(const formats::DensePayload *m) { return m != nullptr ? (std::uint64_t) m->rows * (std::uint64_t) m->cols : 0u; }
+    static std::size_t payload_bytes(const formats::DensePayload *m) { return m != nullptr ? formats::payload_bytes(m) : 0u; }
+    static std::uint32_t value_code(const formats::DensePayload *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
 };
 
 template<>
-struct cellshard_matrix_traits<matrix::compressed> {
+struct cellshard_matrix_traits<formats::CompressedPayload> {
     static constexpr cellshard::disk_format archive_format = cellshard::disk_format_compressed;
     static constexpr std::uint32_t execution_format = cellshard::dataset_execution_format_compressed;
     static constexpr std::uint64_t capabilities =
@@ -49,56 +49,56 @@ struct cellshard_matrix_traits<matrix::compressed> {
         cellshard::access::capability_feature_span_copy |
         cellshard::access::capability_pinned_host_staging;
 
-    static std::uint64_t rows(const matrix::compressed *m) { return m != nullptr ? m->rows : 0u; }
-    static std::uint64_t cols(const matrix::compressed *m) { return m != nullptr ? m->cols : 0u; }
-    static std::uint64_t nnz(const matrix::compressed *m) { return m != nullptr ? m->nnz : 0u; }
-    static std::size_t payload_bytes(const matrix::compressed *m) { return m != nullptr ? matrix::bytes(m) : 0u; }
-    static std::uint32_t value_code(const matrix::compressed *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
+    static std::uint64_t rows(const formats::CompressedPayload *m) { return m != nullptr ? m->rows : 0u; }
+    static std::uint64_t cols(const formats::CompressedPayload *m) { return m != nullptr ? m->cols : 0u; }
+    static std::uint64_t nnz(const formats::CompressedPayload *m) { return m != nullptr ? m->nnz : 0u; }
+    static std::size_t payload_bytes(const formats::CompressedPayload *m) { return m != nullptr ? formats::bytes(m) : 0u; }
+    static std::uint32_t value_code(const formats::CompressedPayload *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
 };
 
 template<>
-struct cellshard_matrix_traits<matrix::blocked_ell> {
+struct cellshard_matrix_traits<formats::BlockedEllPayload> {
     static constexpr cellshard::disk_format archive_format = cellshard::disk_format_blocked_ell;
     static constexpr std::uint32_t execution_format = cellshard::dataset_execution_format_blocked_ell;
     static constexpr std::uint64_t capabilities =
         cellshard::access::capability_contiguous_payload |
         cellshard::access::capability_pinned_host_staging;
 
-    static std::uint64_t rows(const matrix::blocked_ell *m) { return m != nullptr ? m->rows : 0u; }
-    static std::uint64_t cols(const matrix::blocked_ell *m) { return m != nullptr ? m->cols : 0u; }
-    static std::uint64_t nnz(const matrix::blocked_ell *m) { return m != nullptr ? m->nnz : 0u; }
-    static std::size_t payload_bytes(const matrix::blocked_ell *m) { return m != nullptr ? matrix::bytes(m) : 0u; }
-    static std::uint32_t value_code(const matrix::blocked_ell *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
+    static std::uint64_t rows(const formats::BlockedEllPayload *m) { return m != nullptr ? m->rows : 0u; }
+    static std::uint64_t cols(const formats::BlockedEllPayload *m) { return m != nullptr ? m->cols : 0u; }
+    static std::uint64_t nnz(const formats::BlockedEllPayload *m) { return m != nullptr ? m->nnz : 0u; }
+    static std::size_t payload_bytes(const formats::BlockedEllPayload *m) { return m != nullptr ? formats::bytes(m) : 0u; }
+    static std::uint32_t value_code(const formats::BlockedEllPayload *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
 };
 
 template<>
-struct cellshard_matrix_traits<matrix::sliced_ell> {
+struct cellshard_matrix_traits<formats::SlicedEllPayload> {
     static constexpr cellshard::disk_format archive_format = cellshard::disk_format_sliced_ell;
     static constexpr std::uint32_t execution_format = cellshard::dataset_execution_format_sliced_ell;
     static constexpr std::uint64_t capabilities =
         cellshard::access::capability_contiguous_payload |
         cellshard::access::capability_pinned_host_staging;
 
-    static std::uint64_t rows(const matrix::sliced_ell *m) { return m != nullptr ? m->rows : 0u; }
-    static std::uint64_t cols(const matrix::sliced_ell *m) { return m != nullptr ? m->cols : 0u; }
-    static std::uint64_t nnz(const matrix::sliced_ell *m) { return m != nullptr ? m->nnz : 0u; }
-    static std::size_t payload_bytes(const matrix::sliced_ell *m) { return m != nullptr ? matrix::bytes(m) : 0u; }
-    static std::uint32_t value_code(const matrix::sliced_ell *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
+    static std::uint64_t rows(const formats::SlicedEllPayload *m) { return m != nullptr ? m->rows : 0u; }
+    static std::uint64_t cols(const formats::SlicedEllPayload *m) { return m != nullptr ? m->cols : 0u; }
+    static std::uint64_t nnz(const formats::SlicedEllPayload *m) { return m != nullptr ? m->nnz : 0u; }
+    static std::size_t payload_bytes(const formats::SlicedEllPayload *m) { return m != nullptr ? formats::bytes(m) : 0u; }
+    static std::uint32_t value_code(const formats::SlicedEllPayload *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
 };
 
 template<>
-struct cellshard_matrix_traits<matrix::quantized_blocked_ell> {
+struct cellshard_matrix_traits<formats::AffineBlockedEllCodec> {
     static constexpr cellshard::disk_format archive_format = cellshard::disk_format_quantized_blocked_ell;
     static constexpr std::uint32_t execution_format = cellshard::dataset_execution_format_quantized_blocked_ell;
     static constexpr std::uint64_t capabilities =
         cellshard::access::capability_contiguous_payload |
         cellshard::access::capability_pinned_host_staging;
 
-    static std::uint64_t rows(const matrix::quantized_blocked_ell *m) { return m != nullptr ? m->rows : 0u; }
-    static std::uint64_t cols(const matrix::quantized_blocked_ell *m) { return m != nullptr ? m->cols : 0u; }
-    static std::uint64_t nnz(const matrix::quantized_blocked_ell *m) { return m != nullptr ? m->nnz : 0u; }
-    static std::size_t payload_bytes(const matrix::quantized_blocked_ell *m) { return m != nullptr ? matrix::bytes(m) : 0u; }
-    static std::uint32_t value_code(const matrix::quantized_blocked_ell *) { return 0u; }
+    static std::uint64_t rows(const formats::AffineBlockedEllCodec *m) { return m != nullptr ? m->rows : 0u; }
+    static std::uint64_t cols(const formats::AffineBlockedEllCodec *m) { return m != nullptr ? m->cols : 0u; }
+    static std::uint64_t nnz(const formats::AffineBlockedEllCodec *m) { return m != nullptr ? m->nnz : 0u; }
+    static std::size_t payload_bytes(const formats::AffineBlockedEllCodec *m) { return m != nullptr ? formats::bytes(m) : 0u; }
+    static std::uint32_t value_code(const formats::AffineBlockedEllCodec *) { return 0u; }
 };
 
 template<class MatrixT>
@@ -121,8 +121,8 @@ inline cellshard_matrix_binding<MatrixT> make_cellshard_matrix_binding(
 namespace cellshard::access {
 
 template<>
-struct payload_traits<cellerator::matrix::blocked_ell> {
-    using matrix_type = cellerator::matrix::blocked_ell;
+struct payload_traits<cellerator::interop::formats::BlockedEllPayload> {
+    using matrix_type = cellerator::interop::formats::BlockedEllPayload;
 
     __host__ __device__ __forceinline__ static std::uint64_t rows(const matrix_type *matrix) { return matrix != nullptr ? matrix->rows : 0u; }
     __host__ __device__ __forceinline__ static std::uint64_t cols(const matrix_type *matrix) { return matrix != nullptr ? matrix->cols : 0u; }
@@ -130,7 +130,7 @@ struct payload_traits<cellerator::matrix::blocked_ell> {
 
     __host__ __device__ __forceinline__ static std::uint64_t aux(const matrix_type *matrix) {
         return matrix != nullptr
-            ? cellerator::matrix::pack_blocked_ell_aux(matrix->block_size, cellerator::matrix::ell_width_blocks(matrix))
+            ? cellerator::interop::formats::pack_blocked_ell_aux(matrix->block_size, cellerator::interop::formats::ell_width_blocks(matrix))
             : 0u;
     }
 
@@ -140,9 +140,9 @@ struct payload_traits<cellerator::matrix::blocked_ell> {
         std::uint64_t,
         std::uint64_t,
         std::uint64_t aux_value) {
-        const std::uint32_t block_size = cellerator::matrix::unpack_blocked_ell_block_size(aux_value);
-        const std::uint64_t ell_width = cellerator::matrix::unpack_blocked_ell_ell_width(aux_value);
-        return matrix != nullptr ? cellerator::matrix::bytes(matrix)
+        const std::uint32_t block_size = cellerator::interop::formats::unpack_blocked_ell_block_size(aux_value);
+        const std::uint64_t ell_width = cellerator::interop::formats::unpack_blocked_ell_ell_width(aux_value);
+        return matrix != nullptr ? cellerator::interop::formats::bytes(matrix)
                                  : sizeof(matrix_type)
                                      + static_cast<std::size_t>((rows + block_size - 1u) / block_size) * static_cast<std::size_t>(ell_width) * sizeof(cellerator::types::idx_t)
                                      + static_cast<std::size_t>(rows) * static_cast<std::size_t>(ell_width * block_size) * sizeof(cellerator::real::storage_t);
@@ -152,13 +152,13 @@ struct payload_traits<cellerator::matrix::blocked_ell> {
         const matrix_type *matrix,
         std::uint64_t row,
         cellshard::types::idx_t col) {
-        return cellerator::matrix::at(matrix, static_cast<cellerator::types::dim_t>(row), col);
+        return cellerator::interop::formats::at(matrix, static_cast<cellerator::types::dim_t>(row), col);
     }
 };
 
 template<>
-struct payload_traits<cellerator::matrix::sliced_ell> {
-    using matrix_type = cellerator::matrix::sliced_ell;
+struct payload_traits<cellerator::interop::formats::SlicedEllPayload> {
+    using matrix_type = cellerator::interop::formats::SlicedEllPayload;
 
     __host__ __device__ __forceinline__ static std::uint64_t rows(const matrix_type *matrix) { return matrix != nullptr ? matrix->rows : 0u; }
     __host__ __device__ __forceinline__ static std::uint64_t cols(const matrix_type *matrix) { return matrix != nullptr ? matrix->cols : 0u; }
@@ -166,7 +166,7 @@ struct payload_traits<cellerator::matrix::sliced_ell> {
 
     __host__ __device__ __forceinline__ static std::uint64_t aux(const matrix_type *matrix) {
         return matrix != nullptr
-            ? cellerator::matrix::pack_sliced_ell_aux(matrix->slice_count, cellerator::matrix::total_slots(matrix))
+            ? cellerator::interop::formats::pack_sliced_ell_aux(matrix->slice_count, cellerator::interop::formats::total_slots(matrix))
             : 0u;
     }
 
@@ -176,9 +176,9 @@ struct payload_traits<cellerator::matrix::sliced_ell> {
         std::uint64_t,
         std::uint64_t,
         std::uint64_t aux_value) {
-        const std::uint32_t slice_count = cellerator::matrix::unpack_sliced_ell_slice_count(aux_value);
-        const std::uint32_t total_slot_count = cellerator::matrix::unpack_sliced_ell_total_slots(aux_value);
-        return matrix != nullptr ? cellerator::matrix::bytes(matrix)
+        const std::uint32_t slice_count = cellerator::interop::formats::unpack_sliced_ell_slice_count(aux_value);
+        const std::uint32_t total_slot_count = cellerator::interop::formats::unpack_sliced_ell_total_slots(aux_value);
+        return matrix != nullptr ? cellerator::interop::formats::bytes(matrix)
                                  : sizeof(matrix_type)
                                      + static_cast<std::size_t>(slice_count + 1u) * sizeof(cellerator::types::u32)
                                      + static_cast<std::size_t>(slice_count) * sizeof(cellerator::types::u32)
@@ -190,13 +190,13 @@ struct payload_traits<cellerator::matrix::sliced_ell> {
         const matrix_type *matrix,
         std::uint64_t row,
         cellshard::types::idx_t col) {
-        return cellerator::matrix::at(matrix, static_cast<cellerator::types::dim_t>(row), col);
+        return cellerator::interop::formats::at(matrix, static_cast<cellerator::types::dim_t>(row), col);
     }
 };
 
 template<>
-struct payload_traits<cellerator::matrix::quantized_blocked_ell> {
-    using matrix_type = cellerator::matrix::quantized_blocked_ell;
+struct payload_traits<cellerator::interop::formats::AffineBlockedEllCodec> {
+    using matrix_type = cellerator::interop::formats::AffineBlockedEllCodec;
 
     __host__ __device__ __forceinline__ static std::uint64_t rows(const matrix_type *matrix) { return matrix != nullptr ? matrix->rows : 0u; }
     __host__ __device__ __forceinline__ static std::uint64_t cols(const matrix_type *matrix) { return matrix != nullptr ? matrix->cols : 0u; }
@@ -204,7 +204,7 @@ struct payload_traits<cellerator::matrix::quantized_blocked_ell> {
 
     __host__ __device__ __forceinline__ static std::uint64_t aux(const matrix_type *matrix) {
         return matrix != nullptr
-            ? cellerator::matrix::pack_quantized_blocked_ell_aux(matrix->bits, matrix->block_size, cellerator::matrix::ell_width_blocks(matrix))
+            ? cellerator::interop::formats::pack_quantized_blocked_ell_aux(matrix->bits, matrix->block_size, cellerator::interop::formats::ell_width_blocks(matrix))
             : 0u;
     }
 
@@ -214,17 +214,17 @@ struct payload_traits<cellerator::matrix::quantized_blocked_ell> {
         std::uint64_t cols,
         std::uint64_t,
         std::uint64_t aux_value) {
-        const std::uint64_t bits = cellerator::matrix::unpack_quantized_blocked_ell_bits(aux_value);
-        const std::uint64_t block_size = cellerator::matrix::unpack_quantized_blocked_ell_block_size(aux_value);
-        const std::uint64_t ell_cols = cellerator::matrix::unpack_quantized_blocked_ell_cols(aux_value);
-        const std::uint64_t row_stride_bytes = cellerator::matrix::quantized_blocked_ell_aligned_row_bytes(
-            static_cast<cellerator::matrix::u32>(bits),
-            static_cast<cellerator::matrix::u32>(ell_cols));
+        const std::uint64_t bits = cellerator::interop::formats::unpack_quantized_blocked_ell_bits(aux_value);
+        const std::uint64_t block_size = cellerator::interop::formats::unpack_quantized_blocked_ell_block_size(aux_value);
+        const std::uint64_t ell_cols = cellerator::interop::formats::unpack_quantized_blocked_ell_cols(aux_value);
+        const std::uint64_t row_stride_bytes = cellerator::interop::formats::quantized_blocked_ell_aligned_row_bytes(
+            static_cast<cellerator::types::u32>(bits),
+            static_cast<cellerator::types::u32>(ell_cols));
         const std::uint64_t row_blocks = block_size == 0u ? 0u : (rows + block_size - 1u) / block_size;
         const std::uint64_t ell_width = block_size == 0u ? 0u : ell_cols / block_size;
-        return matrix != nullptr ? cellerator::matrix::bytes(matrix)
+        return matrix != nullptr ? cellerator::interop::formats::bytes(matrix)
                                  : sizeof(matrix_type)
-                                     + static_cast<std::size_t>(row_blocks * ell_width) * sizeof(cellerator::matrix::idx_t)
+                                     + static_cast<std::size_t>(row_blocks * ell_width) * sizeof(cellerator::types::idx_t)
                                      + static_cast<std::size_t>(rows * row_stride_bytes)
                                      + static_cast<std::size_t>(cols) * sizeof(float)
                                      + static_cast<std::size_t>(cols) * sizeof(float)

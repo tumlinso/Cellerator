@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/modeling/cuda/runtime.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 
 #include <cublas_v2.h>
 
@@ -29,8 +29,8 @@ public:
     GroupedLinear(std::int64_t input_features,
                   std::int64_t output_features,
                   std::vector<std::int64_t> row_offsets,
-                  std::vector<ConstDeviceView> expert_weights,
-                  DType dtype,
+                  std::vector<::cellerator::memory::cuda::ConstDeviceView> expert_weights,
+                  ::cellerator::memory::cuda::DType dtype,
                   int device);
     ~GroupedLinear() noexcept;
     GroupedLinear(const GroupedLinear&) = delete;
@@ -44,33 +44,35 @@ public:
     std::int64_t row_count() const noexcept { return row_offsets_.back(); }
     std::int64_t input_features() const noexcept { return input_features_; }
     std::int64_t output_features() const noexcept { return output_features_; }
-    DType dtype() const noexcept { return dtype_; }
+    ::cellerator::memory::cuda::DType dtype() const noexcept { return dtype_; }
     int device() const noexcept { return device_; }
 
     // y[e] = x[e] * W[e]^T. Output is fully overwritten. Empty expert
     // segments are skipped and do not evaluate their parameter matrices.
-    void forward(ConstDeviceView input, DeviceView output,
-                 const Stream& stream) const;
+    void forward(::cellerator::memory::cuda::ConstDeviceView input,
+                 ::cellerator::memory::cuda::DeviceView output,
+                 const ::cellerator::memory::cuda::Stream& stream) const;
 
     // Reverse mode for forward():
     //   dX[e] = dY[e] * W[e]
     //   dW[e] = dY[e]^T * X[e]
     // dX and dW each have an explicit write/accumulate policy. Gradient
     // buffers are per expert for dW, in the same row-major shape as W[e].
-    void backward(ConstDeviceView input, ConstDeviceView output_gradient,
-                  DeviceView input_gradient,
-                  const std::vector<DeviceView>& weight_gradients,
+    void backward(::cellerator::memory::cuda::ConstDeviceView input,
+                  ::cellerator::memory::cuda::ConstDeviceView output_gradient,
+                  ::cellerator::memory::cuda::DeviceView input_gradient,
+                  const std::vector<::cellerator::memory::cuda::DeviceView>& weight_gradients,
                   GradientMode input_gradient_mode,
                   GradientMode weight_gradient_mode,
-                  const Stream& stream) const;
+                  const ::cellerator::memory::cuda::Stream& stream) const;
 
 private:
-    void set_stream(const Stream& stream) const;
+    void set_stream(const ::cellerator::memory::cuda::Stream& stream) const;
     std::int64_t input_features_;
     std::int64_t output_features_;
     std::vector<std::int64_t> row_offsets_;
-    std::vector<ConstDeviceView> weights_;
-    DType dtype_;
+    std::vector<::cellerator::memory::cuda::ConstDeviceView> weights_;
+    ::cellerator::memory::cuda::DType dtype_;
     int device_;
     mutable cublasHandle_t handle_ = nullptr;
 };

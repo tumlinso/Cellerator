@@ -1,6 +1,6 @@
 #include <Cellerator/compute/operation/host_contracts.hh>
 #include <Cellerator/compute/operation/native_numeric/host_relation.hh>
-#include <Cellerator/compute/operation/indexed_mechanism/incidence.hh>
+#include <Cellerator/ops/mechanism/indexed/incidence.hh>
 #include <Cellerator/geometry/evaluator.hh>
 #include <ce_moon/reference.hpp>
 #include <ce_moon/effects.hpp>
@@ -12,7 +12,7 @@
 #include <source_location>
 #include <iostream>
 namespace nn=cellerator::compute::native_numeric;
-namespace ix=cellerator::compute::operation::indexed;
+namespace ix=cellerator::ops::mechanism::indexed;
 namespace pg=cellerator::execution::program;
 void require(bool value, std::source_location location=std::source_location::current()) {
     if(!value) throw std::runtime_error("installed native consumer failed at line "+std::to_string(location.line()));

@@ -1,0 +1,68 @@
+{
+  "atol": 2e-05,
+  "baseline_backend": "aten_eager_two_device",
+  "baseline_binary_sha256": "ef87da3bb6736f34674bde4cbbe5fa114323b5ff2a8a3388bd64003fcddfe620",
+  "baseline_result_sha256": "a5b21d984fad6be10eb665e9958b3a9ca108383897b9b557e32c61e82a711d66",
+  "candidate_backend": "cellerator_distributed_gated_product",
+  "candidate_binary_sha256": "97991508be64309c6276d9ea1e2121f3aa3842ddee1db8c99105ff926a6f55de",
+  "candidate_result_sha256": "1d9cd433d68ecd8704fce2f3352795fc935aa1f52394c50b0a10460df726c09d",
+  "case": "high_activity_overlap_32",
+  "fields": {
+    "dphi": {
+      "elements": 64,
+      "max_abs_error": 2.7940000001114296e-09,
+      "max_relative_error": 5.739326185165109e-07,
+      "passed": true
+    },
+    "dtau": {
+      "elements": 64,
+      "max_abs_error": 7.4499999988542065e-09,
+      "max_relative_error": 5.525987889066126e-07,
+      "passed": true
+    },
+    "dtheta": {
+      "elements": 64,
+      "max_abs_error": 7.45999999968161e-09,
+      "max_relative_error": 4.503567209608029e-07,
+      "passed": true
+    },
+    "dx": {
+      "elements": 16400,
+      "max_abs_error": 1.49000000115862e-08,
+      "max_relative_error": 1.1895749353669769e-07,
+      "passed": true
+    },
+    "dz": {
+      "elements": 128,
+      "max_abs_error": 3.730000003310252e-09,
+      "max_relative_error": 5.838214015313281e-06,
+      "passed": true
+    },
+    "output": {
+      "elements": 16400,
+      "max_abs_error": 0.0,
+      "max_relative_error": 0.0,
+      "passed": true
+    },
+    "post_update_output": {
+      "elements": 16400,
+      "max_abs_error": 0.0,
+      "max_relative_error": 0.0,
+      "passed": true
+    },
+    "theta_after_update": {
+      "elements": 64,
+      "max_abs_error": 0.0,
+      "max_relative_error": 0.0,
+      "passed": true
+    }
+  },
+  "passed": true,
+  "rtol": 2e-05,
+  "schema": "cellerator.native_data.backend_comparison.v1",
+  "workload_identity": {
+    "algorithm": "fnv1a64-little-endian-v1",
+    "canonical_f32": "872ee6680b48fd82",
+    "x_fp16": "3d4159cafbd5d373"
+  }
+}

@@ -104,7 +104,7 @@ struct csr_fixture {
     device_buffer<std::uint32_t> rows{3u};
     device_buffer<std::uint32_t> features{3u};
     device_buffer<__half> values{3u};
-    cm::execution_csr_view view{};
+    ::cellerator::layout::projection::CsrViewV1 view{};
 
     csr_fixture() {
         const std::uint32_t host_rows[]{0u, 2u, 3u};
@@ -121,9 +121,9 @@ struct csr_fixture {
         view.value_size_bytes = sizeof(__half);
         view.row_domain_identity = 0x3003u;
         view.structure.identity_version =
-            cm::execution_csr_structure_identity_version;
+            ::cellerator::layout::projection::execution_csr_structure_identity_version;
         view.structure.value = 0x7073u;
-        view.feature_order.kind = cm::feature_order_kind::packed;
+        view.feature_order.kind = ::cellerator::layout::projection::feature_order_kind::packed;
         view.feature_order.feature_count = 3u;
         view.feature_order.feature_axis_identity_version = 1u;
         view.feature_order.feature_axis_identity = 0x5005u;
@@ -222,7 +222,7 @@ int main() {
         core::projection_kind::native_row_masked,
         cellpack::persistent_packing_payload_schema_version, 1u};
     const core::projection_key csr_key{{33u, 34u}, {42u, 1u},
-        core::projection_kind::csr, cm::execution_csr_schema_version, 1u};
+        core::projection_kind::csr, ::cellerator::layout::projection::execution_csr_schema_version, 1u};
     const execution::activated_projection_reference projections[]{
         execution::program_projection(row_key, activated_row),
         execution::program_projection(csr_key, fixture.view)};

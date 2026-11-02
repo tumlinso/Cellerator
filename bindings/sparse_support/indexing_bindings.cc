@@ -1,8 +1,11 @@
 #include "indexing_bindings.hh"
 
-#include <Cellerator/compute/gating/condition_program.hh>
+#include <Cellerator/ops/condition/program.hh>
+#include <Cellerator/execution/dependency/workset_view.hh>
+#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/geometry/dependency/compact_support.hh>
+#include <Cellerator/geometry/dependency/posting_index.hh>
 #include <Cellerator/compute/gating/derivative_sampling.hh>
-#include <Cellerator/compute/indexing/reverse_postings.hh>
 #include <Cellerator/compute/indexing/temporal_occurrences.hh>
 #include <Cellerator/compute/support/proposal_discovery.hh>
 
@@ -20,6 +23,11 @@
 namespace py = pybind11;
 namespace ce = cellerator::compute;
 namespace ce_support = cellerator::compute::support;
+namespace ce_compact = cellerator::geometry::dependency::compact;
+namespace ce_geometry = cellerator::geometry::dependency;
+namespace ce_containers = cellerator::containers;
+namespace ce_condition = cellerator::ops::condition;
+namespace ce_execution = cellerator::execution;
 namespace ce_indexing = cellerator::compute::indexing;
 namespace ce_gating = cellerator::compute::gating;
 namespace ce_bindings = cellerator::bindings::sparse_support;
@@ -68,7 +76,7 @@ void require_adaptive(ce_support::adaptive_support_status_v1 status,
             + " failed (status " + std::to_string(static_cast<unsigned>(status)) + ")");
 }
 
-py::dict relation_dict(const ce_support::logical_support_view_v1 &view) {
+py::dict relation_dict(const ce_compact::ViewV1 &view) {
     std::vector<std::int64_t> ids;
     std::vector<std::int64_t> offsets;
     std::vector<std::int32_t> roles;
@@ -101,7 +109,7 @@ py::dict relation_dict(const ce_support::logical_support_view_v1 &view) {
     return result;
 }
 
-ce_bindings::owned_logical_support_v1 relation_from_dict(
+ce_bindings::owned_compact_support_v1 relation_from_dict(
         const py::dict& value, std::uint64_t expected_epoch) {
     auto ids = require_vector<std::int64_t>(value["edge_ids"], "edge_ids");
     auto offsets = require_vector<std::int64_t>(value["participant_offsets"],
@@ -110,7 +118,7 @@ ce_bindings::owned_logical_support_v1 relation_from_dict(
                                                "participant_roles");
     auto entities = require_vector<std::int64_t>(value["participant_entity_ids"],
                                                   "participant_entity_ids");
-    ce_bindings::owned_logical_support_v1 result;
+    ce_bindings::owned_compact_support_v1 result;
     result.relation_id = py::cast<std::uint64_t>(value["relation_id"]);
     result.structure_id = py::cast<std::uint64_t>(value["structure_id"]);
     result.structure_epoch = py::cast<std::uint64_t>(value["structure_epoch"]);
@@ -221,15 +229,15 @@ public:
         auto owned = handle_->snapshot_copy();
         auto base_view = owned.base.view();
         auto delta_view = owned.delta.view();
-        ce_support::support_snapshot_pair_v1 snapshot{
+        ce_compact::SnapshotPairV1 snapshot{
             &base_view, &delta_view, owned.structure_epoch};
-        requirements_ = ce_indexing::query_reverse_posting_requirements_v1(snapshot);
+        requirements_ = ce_geometry::posting_requirements(snapshot);
         record_scratch_.resize(requirements_.record_capacity);
         entries_.resize(requirements_.maximum_unique_entries);
-        const auto status = ce_indexing::build_reverse_postings_v1(snapshot,
+        const auto status = ce_geometry::build_posting_index(snapshot,
             record_scratch_.data(), record_scratch_.size(), entries_.data(),
             entries_.size(), &index_);
-        if (status != ce_indexing::posting_status_v1::success)
+        if (status != ce_geometry::PostingBuildStatus::success)
             throw std::runtime_error("native reverse posting preparation failed");
     }
 
@@ -240,7 +248,7 @@ public:
         auto entities = require_vector<std::int64_t>(entities_arg, "entity_ids");
         if (roles.size() != entities.size())
             throw py::value_error("roles and entity_ids must have equal lengths");
-        std::vector<ce_indexing::posting_term_v1> terms(
+        std::vector<ce_containers::PostingTerm> terms(
             static_cast<std::size_t>(roles.size()));
         for (py::ssize_t i = 0; i < roles.size(); ++i) {
             if (roles.data()[i] < 0 || entities.data()[i] <= 0)
@@ -257,18 +265,18 @@ public:
                 throw std::overflow_error("posting query workspace extent overflow");
             scratch_count += count;
         }
-        std::vector<ce_indexing::indexed_work_item_v1> scratch(scratch_count);
-        std::vector<ce_indexing::indexed_work_item_v1> output(output_capacity);
-        ce_indexing::candidate_output_v1 output_view{
+        std::vector<ce_containers::IndexedWorkItem> scratch(scratch_count);
+        std::vector<ce_containers::IndexedWorkItem> output(output_capacity);
+        ce_containers::CandidateOutput output_view{
             output.empty() ? nullptr : output.data(), output_capacity, 0u, 0u};
-        const auto status = ce_indexing::query_reverse_postings_v1(index_,
-            terms.data(), terms.size(), all ? ce_indexing::posting_match_v1::all
-                : ce_indexing::posting_match_v1::any,
+        const auto status = ce_containers::query_postings(index_,
+            terms.data(), terms.size(), all ? ce_containers::PostingMatch::all
+                : ce_containers::PostingMatch::any,
             {scratch.empty() ? nullptr : scratch.data(), scratch.size()}, &output_view);
-        if (status == ce_indexing::posting_status_v1::output_overflow)
+        if (status == ce_containers::PostingStatus::output_overflow)
             throw std::overflow_error("posting result needs "
                 + std::to_string(output_view.required) + " work items");
-        if (status != ce_indexing::posting_status_v1::success)
+        if (status != ce_containers::PostingStatus::success)
             throw py::value_error("native posting query rejected its input or workspace");
         output.resize(output_view.written);
         std::vector<std::int64_t> ids;
@@ -294,7 +302,7 @@ public:
 
 private:
     std::pair<std::uint64_t, std::uint64_t> posting_range(
-        const ce_indexing::posting_term_v1 &term) const noexcept {
+        const ce_containers::PostingTerm &term) const noexcept {
         std::uint64_t first = 0u, last = index_.entry_count;
         while (first < last) {
             const auto middle = first + (last - first) / 2u;
@@ -319,10 +327,10 @@ private:
     }
 
     std::shared_ptr<ce_bindings::native_support_handle_v1> handle_;
-    ce_indexing::reverse_posting_requirements_v1 requirements_{};
-    std::vector<ce_indexing::reverse_posting_record_v1> record_scratch_;
-    std::vector<ce_indexing::reverse_posting_record_v1> entries_;
-    ce_indexing::reverse_posting_view_v1 index_{};
+    ce_containers::PostingRequirements requirements_{};
+    std::vector<ce_containers::PostingRecord> record_scratch_;
+    std::vector<ce_containers::PostingRecord> entries_;
+    ce_containers::PostingIndexView index_{};
 };
 
 class NativeTemporalOccurrenceRing final {
@@ -454,17 +462,17 @@ py::dict build_native_condition_worksets(
         || child_count.size() != opcodes.size() || predicate_index.size() != opcodes.size()
         || binding_ordinals.size() != binding_roots.size())
         throw py::value_error("condition node/binding arrays have inconsistent lengths");
-    std::vector<ce_gating::condition_node_v1> nodes(node_count);
+    std::vector<ce_condition::NodeV1> nodes(node_count);
     for (std::uint64_t i = 0u; i < node_count; ++i) {
-        nodes[i] = {static_cast<ce_gating::condition_opcode_v1>(opcodes.data()[i]),
+        nodes[i] = {static_cast<ce_condition::OpcodeV1>(opcodes.data()[i]),
             expected.data()[i], 0u, first_child.data()[i], child_count.data()[i],
             predicate_index.data()[i], 0u};
     }
-    std::vector<ce_gating::edge_condition_binding_v1> bindings(binding_ordinals.size());
+    std::vector<ce_condition::EdgeBindingV1> bindings(binding_ordinals.size());
     for (py::ssize_t i = 0; i < binding_ordinals.size(); ++i)
         bindings[static_cast<std::size_t>(i)] = {
             binding_ordinals.data()[i], binding_roots.data()[i], 0u};
-    const ce_gating::condition_program_view_v1 program{structure_epoch,
+    const ce_condition::ProgramViewV1 program{structure_epoch,
         nodes.empty() ? nullptr : nodes.data(), node_count,
         bindings.empty() ? nullptr : bindings.data(), bindings.size(),
         edge_count, static_cast<std::uint32_t>(predicate_count), 0u};
@@ -475,11 +483,11 @@ py::dict build_native_condition_worksets(
         throw std::overflow_error("condition bitmap extent overflow");
     std::vector<std::uint64_t> bitmaps(words_per_cell * cells);
     std::vector<std::uint8_t> node_scratch(node_count);
-    const auto bitmap_status = ce_gating::evaluate_condition_bitmaps_v1(program,
+    const auto bitmap_status = ce_condition::evaluate_bitmaps(program,
         cells, predicate_values, cells * predicate_count,
         bitmaps.empty() ? nullptr : bitmaps.data(), bitmaps.size(),
         node_scratch.empty() ? nullptr : node_scratch.data(), node_scratch.size());
-    if (bitmap_status != ce_gating::condition_status_v1::success)
+    if (bitmap_status != ce_condition::StatusV1::success)
         throw py::value_error("native condition program rejected its inputs");
 
     auto primal_offsets_array = require_vector<std::int64_t>(primal_offsets_arg,
@@ -497,7 +505,7 @@ py::dict build_native_condition_worksets(
                                    const py::array_t<std::int64_t> &ids,
                                    const py::array_t<std::int64_t> &ordinals,
                                    std::vector<std::uint64_t> *owned_offsets,
-                                   std::vector<ce_indexing::indexed_work_item_v1> *owned_items) {
+                                   std::vector<ce_containers::IndexedWorkItem> *owned_items) {
         if (offsets.size() != static_cast<py::ssize_t>(cells + 1u)
             || ids.size() != ordinals.size())
             throw py::value_error("candidate CSR arrays have inconsistent lengths");
@@ -516,33 +524,33 @@ py::dict build_native_condition_worksets(
                 static_cast<std::uint64_t>(ids.data()[i]),
                 static_cast<std::uint64_t>(ordinals.data()[i])};
         }
-        return ce_gating::per_cell_candidate_view_v1{
+        return ce_execution::dependency::CandidateBatchView{
             owned_offsets->data(), owned_items->data(), owned_items->size()};
     };
     std::vector<std::uint64_t> p_offsets, d_offsets;
-    std::vector<ce_indexing::indexed_work_item_v1> p_items, d_items;
+    std::vector<ce_containers::IndexedWorkItem> p_items, d_items;
     const auto p_view = make_candidates(primal_offsets_array, primal_ids_array,
         primal_ordinals_array, &p_offsets, &p_items);
     const auto d_view = make_candidates(derivative_offsets_array,
         derivative_ids_array, derivative_ordinals_array, &d_offsets, &d_items);
     std::vector<std::uint64_t> p_out_offsets(cells + 1u), d_out_offsets(cells + 1u);
-    std::vector<ce_indexing::indexed_work_item_v1> p_out(primal_capacity),
+    std::vector<ce_containers::IndexedWorkItem> p_out(primal_capacity),
         d_out(derivative_capacity);
-    ce_gating::gate_workset_pair_v1 output{
+    ce_execution::dependency::ConditionWorksets output{
         {p_out_offsets.data(), p_out_offsets.size(),
          p_out.empty() ? nullptr : p_out.data(), p_out.size(), 0u, 0u},
         {d_out_offsets.data(), d_out_offsets.size(),
          d_out.empty() ? nullptr : d_out.data(), d_out.size(), 0u, 0u}};
-    const auto workset_status = ce_gating::build_condition_worksets_v1(program,
+    const auto workset_status = ce_execution::dependency::build_condition_worksets(program,
         cells, state_generation, bitmaps.empty() ? nullptr : bitmaps.data(), bitmaps.size(),
         p_view, d_view, &output);
-    if (workset_status == ce_gating::condition_status_v1::primal_workset_overflow)
+    if (workset_status == ce_condition::StatusV1::primal_workset_overflow)
         throw std::overflow_error("primal candidate capacity requires "
             + std::to_string(output.primal.required) + " items");
-    if (workset_status == ce_gating::condition_status_v1::derivative_workset_overflow)
+    if (workset_status == ce_condition::StatusV1::derivative_workset_overflow)
         throw std::overflow_error("derivative candidate capacity requires "
             + std::to_string(output.derivative.required) + " items");
-    if (workset_status != ce_gating::condition_status_v1::success)
+    if (workset_status != ce_condition::StatusV1::success)
         throw py::value_error("native gate workset builder rejected its inputs");
     p_out.resize(output.primal.written);
     d_out.resize(output.derivative.written);
@@ -631,7 +639,7 @@ py::dict build_native_derivative_sample(
     auto copy_items = [](const py::array_t<std::int64_t>& ids,
                          const py::array_t<std::int64_t>& ordinals,
                          const char* name) {
-        std::vector<ce_indexing::indexed_work_item_v1> result(
+        std::vector<ce_containers::IndexedWorkItem> result(
             static_cast<std::size_t>(ids.size()));
         for (py::ssize_t i = 0; i < ids.size(); ++i) {
             if (ids.data()[i] < 0 || ordinals.data()[i] < 0)
@@ -661,7 +669,7 @@ py::dict build_native_derivative_sample(
     const auto capacity = admitted_items.size() + dormant_items.size();
     std::vector<std::uint64_t> output_offsets(
         static_cast<std::size_t>(cell_count) + 1u);
-    std::vector<ce_indexing::indexed_work_item_v1> output_items(capacity);
+    std::vector<ce_containers::IndexedWorkItem> output_items(capacity);
     std::vector<std::uint64_t> eligible(static_cast<std::size_t>(cell_count));
     std::vector<std::uint64_t> selected(static_cast<std::size_t>(cell_count));
     std::vector<std::uint64_t> remaining(static_cast<std::size_t>(cell_count));
@@ -860,7 +868,7 @@ py::dict propose_native_support(
 } // namespace
 
 ce_bindings::native_support_handle_v1::native_support_handle_v1(
-    const ce_support::logical_support_view_v1 &base,
+    const ce_compact::ViewV1 &base,
     std::uint64_t delta_relation_id) {
     require_adaptive(manager_.initialize(base, delta_relation_id), "initialize");
 }
@@ -873,10 +881,10 @@ ce_bindings::native_support_handle_v1::snapshot_copy() const {
 
 ce_bindings::owned_support_snapshot_v1
 ce_bindings::native_support_handle_v1::snapshot_copy_locked() const {
-    ce_support::support_snapshot_pair_v1 pair{};
+    ce_compact::SnapshotPairV1 pair{};
     require_adaptive(manager_.snapshot(&pair), "snapshot");
-    auto copy_relation = [](const ce_support::logical_support_view_v1 &view) {
-        ce_bindings::owned_logical_support_v1 result;
+    auto copy_relation = [](const ce_compact::ViewV1 &view) {
+        ce_bindings::owned_compact_support_v1 result;
         result.schema_version = view.schema_version;
         result.relation_id = view.relation_id;
         result.structure_id = view.structure_id;
@@ -914,7 +922,7 @@ ce_bindings::native_support_handle_v1::restore_snapshot(
     std::lock_guard<std::mutex> lock(mutex_);
     const auto base = snapshot.base.view();
     const auto delta = snapshot.delta.view();
-    const ce_support::support_snapshot_pair_v1 pair{
+    const ce_compact::SnapshotPairV1 pair{
         &base, &delta, snapshot.structure_epoch};
     return manager_.restore_snapshot(pair,
         snapshot.revoked_edge_ids.empty() ? nullptr : snapshot.revoked_edge_ids.data(),
@@ -941,9 +949,9 @@ void bind_sparse_support_indexing(py::module_ &module) {
                 || offsets.data()[0] != 0 || offsets.data()[offsets.size() - 1]
                     != entities.size() || roles.size() != entities.size())
                 throw py::value_error("support CSR offsets and participant arrays disagree");
-            std::vector<ce_support::logical_support_edge_v1> edges(
+            std::vector<ce_compact::EdgeV1> edges(
                 static_cast<std::size_t>(edge_ids.size()));
-            std::vector<ce_support::logical_support_participant_v1> participants(
+            std::vector<ce_compact::ParticipantV1> participants(
                 static_cast<std::size_t>(entities.size()));
             for (py::ssize_t i = 0; i < edge_ids.size(); ++i) {
                 if (edge_ids.data()[i] <= 0 || offsets.data()[i] < 0
@@ -963,8 +971,8 @@ void bind_sparse_support_indexing(py::module_ &module) {
                     static_cast<std::uint32_t>(roles.data()[i]), 0u,
                     static_cast<std::uint64_t>(entities.data()[i])};
             }
-            const ce_support::logical_support_view_v1 view{
-                ce_support::logical_support_schema_version_v1, 0u, relation_id,
+            const ce_compact::ViewV1 view{
+                ce_compact::schema_version_v1, 0u, relation_id,
                 structure_id, structure_epoch,
                 edges.empty() ? nullptr : edges.data(), edges.size(),
                 participants.empty() ? nullptr : participants.data(), participants.size()};
@@ -986,7 +994,7 @@ void bind_sparse_support_indexing(py::module_ &module) {
             if (roles.size() != entities.size()
                 || roles.size() > std::numeric_limits<std::uint32_t>::max())
                 throw py::value_error("promotion participant arrays disagree");
-            std::vector<ce_support::logical_support_participant_v1> participants(
+            std::vector<ce_compact::ParticipantV1> participants(
                 static_cast<std::size_t>(roles.size()));
             for (py::ssize_t i = 0; i < roles.size(); ++i) {
                 if (roles.data()[i] < 0 || entities.data()[i] <= 0)

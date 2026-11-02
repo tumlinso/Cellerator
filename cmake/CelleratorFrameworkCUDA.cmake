@@ -12,12 +12,16 @@ if(NOT CELLERATOR_ENABLE_FRAMEWORK_CUDA)
 endif()
 enable_language(CUDA)
 find_package(CUDAToolkit REQUIRED)
+if(NOT COMMAND cellerator_add_native_data_memory_cuda_owner)
+    message(FATAL_ERROR
+        "CelleratorNativeData.cmake must be included before FrameworkCUDA")
+endif()
+cellerator_add_native_data_memory_cuda_owner(CelleratorFrameworkCUDATargets)
+include("${CMAKE_CURRENT_LIST_DIR}/CelleratorNativeDataCUDA.cmake")
 get_filename_component(_cellerator_framework_root "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 add_library(cellerator_framework_cuda STATIC
-    "${_cellerator_framework_root}/src/modeling/cuda/runtime.cu"
     "${_cellerator_framework_root}/src/modeling/cuda/plans.cu"
     "${_cellerator_framework_root}/src/modeling/cuda/dispatch.cu"
-    "${_cellerator_framework_root}/src/modeling/cuda/quantization.cu"
     "${_cellerator_framework_root}/src/modeling/cuda/memory.cu"
     "${_cellerator_framework_root}/src/modeling/cuda/frontier.cu"
     "${_cellerator_framework_root}/src/modeling/cuda/attention.cu"
@@ -34,6 +38,9 @@ target_include_directories(cellerator_framework_cuda PUBLIC
     $<BUILD_INTERFACE:${_cellerator_framework_root}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(cellerator_framework_cuda PUBLIC CUDA::cudart CUDA::cublas)
+target_link_libraries(cellerator_framework_cuda PUBLIC
+    Cellerator::memory_cuda
+    Cellerator::state_codes_cuda)
 if(CELLERATOR_ENABLE_FRAMEWORK_CUDA_PYTHON)
     find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
     find_package(pybind11 CONFIG REQUIRED)

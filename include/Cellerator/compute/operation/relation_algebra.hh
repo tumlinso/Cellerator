@@ -69,8 +69,8 @@ enum relation_algebra_semantic_flag_v1 : std::uint32_t {
 // Persistent identity, axes, and epoch describe one immutable typed relation.
 // Values and their generations remain launch bindings.
 struct typed_relation_v1 {
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
     execution::persistent_axis_identity source_axis{};
     execution::persistent_axis_identity destination_axis{};
     std::uint64_t logical_edge_count = 0u;
@@ -110,7 +110,7 @@ struct relation_algebra_problem_v1 {
     // contraction this is the stable logical-edge result axis.
     execution::persistent_axis_identity values_axis{};
     execution::persistent_axis_identity result_axis{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::order_id logical_edge_order{};
     relation_numeric_semantics_v1 numeric{};
     std::uint32_t semantic_flags = 0u;
     std::uint32_t dense_width = 0u;
@@ -136,15 +136,15 @@ struct operation_core_transition_v1 {
 constexpr bool same_persistent_axis(
     const execution::persistent_axis_identity &left,
     const execution::persistent_axis_identity &right) noexcept {
-    return execution::same_identity(left.domain, right.domain)
-        && execution::same_identity(left.order, right.order)
-        && execution::same_identity(left.geometry, right.geometry)
-        && execution::same_identity(left.partition, right.partition);
+    return ::cellerator::structure::same_identity(left.domain, right.domain)
+        && ::cellerator::structure::same_identity(left.order, right.order)
+        && ::cellerator::structure::same_identity(left.geometry, right.geometry)
+        && ::cellerator::structure::same_identity(left.partition, right.partition);
 }
 
 constexpr bool valid_typed_relation_v1(
     const typed_relation_v1 &relation) noexcept {
-    return execution::valid_identity(relation.structure)
+    return ::cellerator::structure::valid_identity(relation.structure)
         && relation.epoch.value != 0u
         && execution::validate_persistent_axis_identity(relation.source_axis)
             == execution::biological_validation_code::ok
@@ -216,7 +216,7 @@ constexpr relation_algebra_status_v1 validate_relation_algebra_problem_v1(
         return problem.dense_width != 0u
                 && execution::validate_persistent_axis_identity(problem.result_axis)
                     == execution::biological_validation_code::ok
-                && execution::valid_identity(problem.logical_edge_order)
+                && ::cellerator::structure::valid_identity(problem.logical_edge_order)
                 && (problem.semantic_flags & stable_logical_edge_output) != 0u
             ? relation_algebra_status_v1::ok
             : relation_algebra_status_v1::invalid_operation_semantics;
@@ -252,7 +252,7 @@ constexpr relation_algebra_status_v1 validate_relation_algebra_problem_v1(
     }
     if (problem.kind == relation_algebra_kind_v1::edge_map_or_gate) {
         return problem.edge != edge_operation_v1::none
-                && execution::valid_identity(problem.logical_edge_order)
+                && ::cellerator::structure::valid_identity(problem.logical_edge_order)
                 && (problem.semantic_flags & projection_aware_edge_values) != 0u
             ? relation_algebra_status_v1::ok
             : relation_algebra_status_v1::invalid_operation_semantics;

@@ -16,8 +16,8 @@ struct relation_event_api {
     cudaError_t (*wait)(cudaStream_t, cudaEvent_t, unsigned) = cudaStreamWaitEvent;
 };
 struct relation_read_ticket {
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
     execution::value_generation generation{};
     std::uint64_t incarnation = 0, nonce = 0;
     int device = -1;
@@ -30,8 +30,8 @@ public:
     ~relation_value_readiness() noexcept;
     relation_value_readiness(const relation_value_readiness&) = delete;
     relation_value_readiness& operator=(const relation_value_readiness&) = delete;
-    relation_readiness_status initialize(execution::structure_id,
-        execution::structure_epoch, int device, cudaStream_t owner,
+    relation_readiness_status initialize(::cellerator::structure::structure_id,
+        ::cellerator::structure::structure_epoch, int device, cudaStream_t owner,
         relation_event_api = {}) noexcept;
     // Validate BEFORE enqueueing any producer work. Initial publication uses
     // expected=0; subsequent mutations require the exact published generation.
@@ -43,13 +43,13 @@ public:
         cudaStream_t owner, cudaError_t producer_enqueue_status) noexcept;
     // Producer-ready edge only. External borrowing must use begin/end_read;
     // a bare wait does not protect storage from a later writer.
-    relation_readiness_status wait_current(execution::structure_id,
-        execution::structure_epoch, execution::value_generation, int device,
+    relation_readiness_status wait_current(::cellerator::structure::structure_id,
+        ::cellerator::structure::structure_epoch, execution::value_generation, int device,
         cudaStream_t consumer) noexcept;
     // One outstanding host lease is a bounded runtime policy, not mathematics.
     // Failure preserves *out; successful acquisition installs an exact ticket.
-    relation_readiness_status begin_read(execution::structure_id,
-        execution::structure_epoch, execution::value_generation, int device,
+    relation_readiness_status begin_read(::cellerator::structure::structure_id,
+        ::cellerator::structure::structure_epoch, execution::value_generation, int device,
         cudaStream_t consumer, relation_read_ticket* out) noexcept;
     // Successful return records done and submits the owner wait before recycle.
     // Event failure retains the ticket and poisons. A matching return may retry
@@ -68,8 +68,8 @@ private:
     relation_readiness_status check_stream(cudaStream_t, bool allow_poison = false) const noexcept;
     cudaEvent_t ready_ = nullptr, done_ = nullptr;
     cudaStream_t owner_ = nullptr, consumer_ = nullptr;
-    execution::structure_id structure_{};
-    execution::structure_epoch epoch_{};
+    ::cellerator::structure::structure_id structure_{};
+    ::cellerator::structure::structure_epoch epoch_{};
     execution::value_generation generation_{};
     std::uint64_t incarnation_ = 0, nonce_ = 0, active_nonce_ = 0;
     std::uint64_t ready_records_ = 0, reader_returns_ = 0;

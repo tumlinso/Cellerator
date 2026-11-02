@@ -20,7 +20,7 @@ void reset_program(executable_program *program) noexcept {
     ::new (static_cast<void *>(program)) executable_program;
 }
 
-bool same_projection_id(projection_id lhs, projection_id rhs) noexcept {
+bool same_projection_id(structure::projection_id lhs, structure::projection_id rhs) noexcept {
     return same_identity(lhs, rhs);
 }
 
@@ -85,7 +85,7 @@ const program_candidate_cost *find_cost(
     const program_candidate_cost *costs,
     std::uint32_t cost_count,
     operation_core::stable_id candidate,
-    projection_id projection) noexcept {
+    structure::projection_id projection) noexcept {
     for (std::uint32_t index = 0u; index < cost_count; ++index)
         if (operation_core::same_stable_id(
                 costs[index].candidate, candidate)
@@ -110,11 +110,11 @@ std::uint64_t compatibility_view_bytes(
     case activated_projection_type::row_masked:
         return sizeof(cellpack::persistent_packing_payload_view);
     case activated_projection_type::csr:
-        return sizeof(compute::math::execution_csr_view);
+        return sizeof(::cellerator::layout::projection::CsrViewV1);
     case activated_projection_type::feature_major:
-        return sizeof(compute::math::feature_major_projection_view);
+        return sizeof(::cellerator::layout::projection::FeatureMajorViewV1);
     case activated_projection_type::transpose:
-        return sizeof(compute::math::transpose_projection_view);
+        return sizeof(::cellerator::layout::projection::TransposeViewV1);
     }
     return 0u;
 }
@@ -131,6 +131,9 @@ bool same_contract_v2(
 bool projection_matches_candidate_v2(
     const activated_projection_reference_v2 &projection,
     const operation_core::candidate_descriptor_v2 &candidate) noexcept {
+    if (validate_activated_projection_reference_v2(projection)
+        != projection_reference_status_v2::success)
+        return false;
     if (projection.schema_version
             != activated_projection_reference_schema_version_v2
         || projection.record_bytes != sizeof(activated_projection_reference_v2)
@@ -201,19 +204,19 @@ activated_projection_reference program_projection(
 
 activated_projection_reference program_projection(
     operation_core::projection_key key,
-    const compute::math::execution_csr_view &view) noexcept {
+    const ::cellerator::layout::projection::CsrViewV1 &view) noexcept {
     return {key, activated_projection_type::csr, &view};
 }
 
 activated_projection_reference program_projection(
     operation_core::projection_key key,
-    const compute::math::feature_major_projection_view &view) noexcept {
+    const FeatureMajorBinding &view) noexcept {
     return {key, activated_projection_type::feature_major, &view};
 }
 
 activated_projection_reference program_projection(
     operation_core::projection_key key,
-    const compute::math::transpose_projection_view &view) noexcept {
+    const TransposeBinding &view) noexcept {
     return {key, activated_projection_type::transpose, &view};
 }
 
@@ -431,7 +434,19 @@ executable_program_status compile_executable_program(
         converted.location = {
             residency_kind::device, {}, request.session == nullptr
                 ? -1 : request.session->device, 0u};
-        converted.view = legacy.view;
+        if (legacy.type == activated_projection_type::feature_major) {
+            const auto &binding = *static_cast<const FeatureMajorBinding *>(
+                legacy.view);
+            converted.view = &binding.layout;
+        } else if (legacy.type == activated_projection_type::transpose) {
+            const auto &binding = *static_cast<const TransposeBinding *>(
+                legacy.view);
+            converted.view = &binding.layout;
+            converted.runtime_forward_projection =
+                binding.runtime_forward_projection;
+        } else {
+            converted.view = legacy.view;
+        }
         converted.view_bytes = compatibility_view_bytes(legacy.type);
         projections[projection_count++] = converted;
     }

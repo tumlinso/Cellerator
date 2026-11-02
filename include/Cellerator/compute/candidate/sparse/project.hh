@@ -114,7 +114,7 @@ void blocked_ell_spmm_fwd_f16_f32(
 
 void quantized_blocked_ell_spmm_fwd_f32(
     const runtime::execution_context &ctx,
-    const sparse_ops::quantized_blocked_ell_view &matrix,
+    const ::cellerator::tensor::quantized::RuntimeBlockedEllView &matrix,
     const float *rhs,
     std::int64_t rhs_ld,
     std::int64_t out_cols,

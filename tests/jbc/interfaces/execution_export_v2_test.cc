@@ -105,7 +105,7 @@ int main() {
     frontier.no_candidate_reason =
         joint_compiler::no_candidate_reason_v1::unmet_atom_requirement;
 
-    const execution::order_id orders[] = {
+    const ::cellerator::structure::order_id orders[] = {
         alternative.input_order, alternative.output_order};
     const export_v2::atom_execution_stage_v2 stage = {{80u, 1u}, {81u, 1u},
         coverage.coverage_identity, coverage.coverage_identity, nullptr, 0u, 1u};

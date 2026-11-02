@@ -9,7 +9,9 @@
 using namespace cellerator::modeling;
 
 int main() {
-    ExchangePlan plan(EntityLayout({42, 7}), EntityLayout({90}), EntityLayout({5, 12}),
+    ExchangePlan plan(cellerator::layout::EntityLayout({42, 7}),
+                      cellerator::layout::EntityLayout({90}),
+                      cellerator::layout::EntityLayout({5, 12}),
                       {{100, 42, 90, 1.0}, {200, 7, 90, 1.0}});
     const ExchangeState<double> state{{4., 0., 0., 2.}, {0., 4.}};
     const auto result = plan.step(state, {2., 1.}, {4.}, {1., 0.5}, 0.25L);
@@ -38,7 +40,9 @@ int main() {
     try { (void)plan.step(state, {2., 1.}, {4.}, {1., 0.5}, 2.L); }
     catch (const std::invalid_argument&) { rejected = true; }
     assert(rejected);
-    ExchangePlan reversed(EntityLayout({7, 42}), EntityLayout({90}), EntityLayout({12, 5}),
+    ExchangePlan reversed(cellerator::layout::EntityLayout({7, 42}),
+                          cellerator::layout::EntityLayout({90}),
+                          cellerator::layout::EntityLayout({12, 5}),
                           {{200, 7, 90, 1.0}, {100, 42, 90, 1.0}});
     const ExchangeState<float> reordered{{2.f, 0.f, 0.f, 4.f}, {4.f, 0.f}};
     const auto float_result = reversed.step(reordered, {1.f, 2.f}, {4.f}, {0.5f, 1.f}, 0.25L);
@@ -52,7 +56,9 @@ int main() {
         environment_ids.push_back(i);
         fanout_links.push_back({i, 1, i, 1.});
     }
-    ExchangePlan fanout(EntityLayout({1}), EntityLayout(environment_ids), EntityLayout({1}), fanout_links);
+    ExchangePlan fanout(cellerator::layout::EntityLayout({1}),
+                        cellerator::layout::EntityLayout(environment_ids),
+                        cellerator::layout::EntityLayout({1}), fanout_links);
     const auto spread = fanout.step(ExchangeState<double>{{1.}, std::vector<double>(1000)},
                                     std::vector<double>{1.}, std::vector<double>(1000, 1.),
                                     std::vector<double>{1.}, 10.L, {}, DonorPolicy::limit, false);

@@ -68,8 +68,8 @@ enum relation_semantic_flag : std::uint32_t {
 };
 
 struct relation_value_binding_contract {
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
     execution::value_generation generation{};
     execution::value_layout_kind layout = execution::value_layout_kind::logical_edge_order;
     value_ownership_mode ownership = value_ownership_mode::logical_primary;

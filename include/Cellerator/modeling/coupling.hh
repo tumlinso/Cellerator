@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/modeling/entity_layout.hh>
+#include <Cellerator/layout/entity_layout.hh>
 
 #include <algorithm>
 #include <cmath>
@@ -44,7 +44,9 @@ template<class Scalar> struct ExchangeResult {
 // by the caller; multiply/accumulation use long double, outputs use Scalar.
 class ExchangePlan final {
 public:
-    ExchangePlan(EntityLayout cells, EntityLayout compartments, EntityLayout species,
+    ExchangePlan(::cellerator::layout::EntityLayout cells,
+                 ::cellerator::layout::EntityLayout compartments,
+                 ::cellerator::layout::EntityLayout species,
                  std::vector<ExchangeLink> links)
         : cells_(std::move(cells)), compartments_(std::move(compartments)),
           species_(std::move(species)), links_(std::move(links)) {
@@ -64,9 +66,9 @@ public:
         }
     }
 
-    const EntityLayout& cells() const noexcept { return cells_; }
-    const EntityLayout& compartments() const noexcept { return compartments_; }
-    const EntityLayout& species() const noexcept { return species_; }
+    const ::cellerator::layout::EntityLayout& cells() const noexcept { return cells_; }
+    const ::cellerator::layout::EntityLayout& compartments() const noexcept { return compartments_; }
+    const ::cellerator::layout::EntityLayout& species() const noexcept { return species_; }
     const std::vector<ExchangeLink>& links() const noexcept { return links_; }
 
     template<class Scalar>
@@ -232,7 +234,7 @@ private:
         return result;
     }
 
-    EntityLayout cells_, compartments_, species_;
+    ::cellerator::layout::EntityLayout cells_, compartments_, species_;
     std::vector<ExchangeLink> links_;
     std::vector<std::size_t> cell_slots_, compartment_slots_;
 };

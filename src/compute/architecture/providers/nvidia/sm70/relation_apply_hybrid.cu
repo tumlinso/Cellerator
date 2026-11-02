@@ -10,9 +10,9 @@
 namespace cellerator::compute::architecture::providers::nvidia::sm70 {
 namespace {
 
-bool valid_order(const compute::math::feature_order_identity &order) noexcept {
+bool valid_order(const layout::projection::FeatureOrderIdentity &order) noexcept {
     return order.schema_version
-            == compute::math::feature_order_identity_schema_version
+            == layout::projection::feature_order_identity_schema_version
         && order.feature_count != 0u && order.feature_axis_identity != 0u;
 }
 

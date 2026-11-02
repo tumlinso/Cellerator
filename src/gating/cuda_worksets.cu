@@ -7,39 +7,39 @@
 namespace cellerator::compute::gating {
 namespace {
 
-std::uint64_t host_words_per_cell(const condition_program_view_v1 &p) {
+std::uint64_t host_words_per_cell(const ops_condition::ProgramViewV1 &p) {
     return p.edge_count / 64u + (p.edge_count % 64u != 0u);
 }
 
 __device__ __forceinline__ std::uint64_t words_per_cell(
-    const condition_program_view_v1 &p) {
+    const ops_condition::ProgramViewV1 &p) {
     return p.edge_count / 64u + (p.edge_count % 64u != 0u);
 }
 
 __device__ __forceinline__ bool eval_nodes(
-    const condition_program_view_v1 &p, const std::uint8_t *predicates,
+    const ops_condition::ProgramViewV1 &p, const std::uint8_t *predicates,
     std::uint8_t *scratch) {
     for (std::uint64_t i = 0; i < p.node_count; ++i) {
         const auto &n = p.nodes[i];
         switch (n.opcode) {
-        case condition_opcode_v1::predicate:
+        case ops_condition::OpcodeV1::predicate:
             scratch[i] = predicates[n.predicate_index] == n.expected_value;
             break;
-        case condition_opcode_v1::all_of: {
+        case ops_condition::OpcodeV1::all_of: {
             bool value = true;
             for (std::uint32_t j = 0; j < n.child_count; ++j)
                 value = value && scratch[n.first_child + j] != 0;
             scratch[i] = value;
             break;
         }
-        case condition_opcode_v1::any_of: {
+        case ops_condition::OpcodeV1::any_of: {
             bool value = false;
             for (std::uint32_t j = 0; j < n.child_count; ++j)
                 value = value || scratch[n.first_child + j] != 0;
             scratch[i] = value;
             break;
         }
-        case condition_opcode_v1::logical_not:
+        case ops_condition::OpcodeV1::logical_not:
             scratch[i] = scratch[n.first_child] == 0;
             break;
         default:
@@ -49,8 +49,8 @@ __device__ __forceinline__ bool eval_nodes(
     return true;
 }
 
-__device__ __forceinline__ const edge_condition_binding_v1 *find_binding(
-    const condition_program_view_v1 &p, std::uint64_t ordinal) {
+__device__ __forceinline__ const ops_condition::EdgeBindingV1 *find_binding(
+    const ops_condition::ProgramViewV1 &p, std::uint64_t ordinal) {
     std::uint64_t lo = 0, hi = p.binding_count;
     while (lo < hi) {
         const auto mid = lo + (hi - lo) / 2;
@@ -63,13 +63,13 @@ __device__ __forceinline__ const edge_condition_binding_v1 *find_binding(
 
 template <bool use_prepared_map>
 __device__ __forceinline__ bool condition_root_for_edge(
-    const condition_program_view_v1 &p,
+    const ops_condition::ProgramViewV1 &p,
     const std::uint32_t *root_node_by_edge_ordinal,
     std::uint64_t ordinal, std::uint32_t *root,
     cuda_workset_status_v1 *status) {
     if constexpr (use_prepared_map) {
         *root = root_node_by_edge_ordinal[ordinal];
-        if (*root != unbound_condition_root_v1 && *root >= p.node_count) {
+        if (*root != ops_condition::unbound_root_v1 && *root >= p.node_count) {
             atomicCAS(&status->code, 0u,
                 static_cast<std::uint32_t>(cuda_workset_code_v1::invalid_argument));
             return false;
@@ -77,14 +77,14 @@ __device__ __forceinline__ bool condition_root_for_edge(
         return true;
     } else {
         const auto *binding = find_binding(p, ordinal);
-        *root = binding == nullptr ? unbound_condition_root_v1 : binding->root_node;
+        *root = binding == nullptr ? ops_condition::unbound_root_v1 : binding->root_node;
         return true;
     }
 }
 
 __device__ __forceinline__ bool eligible(
-    const condition_program_view_v1 &p, const std::uint64_t *bitmap,
-    const indexing::indexed_work_item_v1 &item) {
+    const ops_condition::ProgramViewV1 &p, const std::uint64_t *bitmap,
+    const containers::IndexedWorkItem &item) {
     return ((bitmap[item.logical_edge_ordinal / 64u]
              >> (item.logical_edge_ordinal % 64u)) & 1u) != 0;
 }
@@ -95,7 +95,7 @@ __global__ void clear_status(cuda_workset_status_v1 *status) {
 
 template <bool use_prepared_map>
 __global__ void bitmap_full_kernel(
-    condition_program_view_v1 p, std::uint64_t cells,
+    ops_condition::ProgramViewV1 p, std::uint64_t cells,
     const std::uint8_t *predicates, std::uint64_t *bitmaps,
     std::uint8_t *node_scratch, cuda_workset_status_v1 *status,
     const std::uint32_t *root_node_by_edge_ordinal) {
@@ -117,10 +117,10 @@ __global__ void bitmap_full_kernel(
     for (std::uint64_t w = threadIdx.x; w < words; w += blockDim.x) bitmap[w] = 0;
     __syncthreads();
     for (std::uint64_t edge = threadIdx.x; edge < p.edge_count; edge += blockDim.x) {
-        std::uint32_t root = unbound_condition_root_v1;
+        std::uint32_t root = ops_condition::unbound_root_v1;
         if (!condition_root_for_edge<use_prepared_map>(p,
                 root_node_by_edge_ordinal, edge, &root, status)) continue;
-        const bool pass = root == unbound_condition_root_v1 || nodes[root] != 0;
+        const bool pass = root == ops_condition::unbound_root_v1 || nodes[root] != 0;
         if (pass)
             atomicOr(reinterpret_cast<unsigned long long *>(&bitmap[edge / 64u]),
                      static_cast<unsigned long long>(std::uint64_t{1} << (edge % 64u)));
@@ -129,7 +129,7 @@ __global__ void bitmap_full_kernel(
 
 template <bool use_prepared_map>
 __global__ void bitmap_dirty_kernel(
-    condition_program_view_v1 p, std::uint64_t cells,
+    ops_condition::ProgramViewV1 p, std::uint64_t cells,
     const std::uint8_t *predicates, const std::uint64_t *dirty_offsets,
     const std::uint64_t *dirty_edges, std::uint64_t *bitmaps,
     std::uint8_t *node_scratch, cuda_workset_status_v1 *status,
@@ -156,10 +156,10 @@ __global__ void bitmap_dirty_kernel(
         : bitmaps + cell * words_per_cell(p);
     for (auto i = begin + threadIdx.x; i < end; i += blockDim.x) {
         const auto edge = dirty_edges[i];
-        std::uint32_t root = unbound_condition_root_v1;
+        std::uint32_t root = ops_condition::unbound_root_v1;
         if (!condition_root_for_edge<use_prepared_map>(p,
                 root_node_by_edge_ordinal, edge, &root, status)) continue;
-        const bool pass = root == unbound_condition_root_v1 || nodes[root] != 0;
+        const bool pass = root == ops_condition::unbound_root_v1 || nodes[root] != 0;
         const auto bit = std::uint64_t{1} << (edge % 64u);
         auto *word = reinterpret_cast<unsigned long long *>(&bitmap[edge / 64u]);
         if (pass) atomicOr(word, static_cast<unsigned long long>(bit));
@@ -168,11 +168,11 @@ __global__ void bitmap_dirty_kernel(
 }
 
 __global__ void stage_worksets_kernel(
-    condition_program_view_v1 p, std::uint64_t cells,
+    ops_condition::ProgramViewV1 p, std::uint64_t cells,
     const std::uint64_t *bitmaps, cuda_candidate_csr_v1 primal,
     cuda_candidate_csr_v1 derivative, std::uint64_t *p_stage_offsets,
-    indexing::indexed_work_item_v1 *p_stage, std::uint64_t *d_stage_offsets,
-    indexing::indexed_work_item_v1 *d_stage, std::uint64_t *p_counts,
+    containers::IndexedWorkItem *p_stage, std::uint64_t *d_stage_offsets,
+    containers::IndexedWorkItem *d_stage, std::uint64_t *p_counts,
     std::uint64_t *d_counts, std::uint64_t p_capacity,
     std::uint64_t d_capacity, std::uint64_t p_offsets_capacity,
     std::uint64_t d_offsets_capacity, cuda_workset_status_v1 *status) {
@@ -278,9 +278,9 @@ __global__ void prepare_offsets_kernel(
 __global__ void scatter_worksets_kernel(
     std::uint64_t cells, const std::uint64_t *p_counts,
     const std::uint64_t *d_counts, const std::uint64_t *p_stage_offsets,
-    const indexing::indexed_work_item_v1 *p_stage,
+    const containers::IndexedWorkItem *p_stage,
     const std::uint64_t *d_stage_offsets,
-    const indexing::indexed_work_item_v1 *d_stage,
+    const containers::IndexedWorkItem *d_stage,
     cuda_output_csr_v1 p_out, cuda_output_csr_v1 d_out,
     const cuda_workset_status_v1 *status) {
     if (status->code != 0) return;
@@ -300,7 +300,7 @@ bool mul_overflow(std::uint64_t a, std::uint64_t b, std::uint64_t *out) {
 
 template <bool use_prepared_map>
 cudaError_t evaluate_condition_bitmaps_impl(
-    const condition_program_view_v1 &p,
+    const ops_condition::ProgramViewV1 &p,
     const std::uint32_t *root_node_by_edge_ordinal,
     std::uint64_t root_map_capacity, std::uint64_t cells,
     const std::uint8_t *predicates, std::uint64_t predicate_count,
@@ -336,7 +336,7 @@ cudaError_t evaluate_condition_bitmaps_impl(
 
 template <bool use_prepared_map>
 cudaError_t update_condition_bitmaps_impl(
-    const condition_program_view_v1 &p,
+    const ops_condition::ProgramViewV1 &p,
     const std::uint32_t *root_node_by_edge_ordinal,
     std::uint64_t root_map_capacity, std::uint64_t cells,
     const std::uint8_t *predicates, std::uint64_t predicate_count,
@@ -374,7 +374,7 @@ cudaError_t update_condition_bitmaps_impl(
 } // namespace
 
 cudaError_t cuda_evaluate_condition_bitmaps_v1(
-    const condition_program_view_v1 &p, std::uint64_t cells,
+    const ops_condition::ProgramViewV1 &p, std::uint64_t cells,
     const std::uint8_t *predicates, std::uint64_t predicate_count,
     std::uint64_t *bitmaps, std::uint64_t bitmap_capacity,
     std::uint8_t *node_scratch, std::uint64_t scratch_capacity,
@@ -397,7 +397,7 @@ cudaError_t cuda_evaluate_condition_bitmaps_v1(
 }
 
 cudaError_t cuda_update_condition_bitmaps_v1(
-    const condition_program_view_v1 &p, std::uint64_t cells,
+    const ops_condition::ProgramViewV1 &p, std::uint64_t cells,
     const std::uint8_t *predicates, std::uint64_t predicate_count,
     const std::uint64_t *dirty_offsets, const std::uint64_t *dirty_edges,
     std::uint64_t dirty_count, std::uint64_t *bitmaps,
@@ -425,7 +425,7 @@ cudaError_t cuda_update_condition_bitmaps_v1(
 }
 
 cudaError_t cuda_build_condition_worksets_v1(
-    const condition_program_view_v1 &p, std::uint64_t cells,
+    const ops_condition::ProgramViewV1 &p, std::uint64_t cells,
     const std::uint64_t *bitmaps, std::uint64_t bitmap_count,
     const cuda_candidate_csr_v1 &primal, const cuda_candidate_csr_v1 &derivative,
     cuda_output_csr_v1 p_out, cuda_output_csr_v1 d_out,

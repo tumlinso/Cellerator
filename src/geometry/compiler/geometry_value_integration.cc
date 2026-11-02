@@ -8,8 +8,8 @@ namespace cellerator::geometry::compiler {
 geometry_value_boundary_readiness_v1
 validate_integrated_geometry_value_boundaries_v1() noexcept {
     geometry_value_boundary_readiness_v1 result{};
-    result.semantic_geometry_schema =
-            cellpack::cp_bp_v1_semantic_geometry_schema_version;
+    result.cell_packing_geometry_schema =
+            layout::cell_packing_geometry_schema_version;
     result.semantic_cover_schema = relation_cover_schema_version;
     result.projection_value_schema = execution::projection_value_plane::
             projection_value_plane_schema_v1;

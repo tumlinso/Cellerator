@@ -11,7 +11,7 @@
 #include <vector>
 
 
-namespace cm = cellerator::matrix;
+namespace cm = cellerator::interop::formats;
 namespace cs = cellerator::compute::sampling;
 namespace ct = cellerator::types;
 
@@ -20,7 +20,7 @@ int require(bool ok, const char *label) {
     return ok ? 1 : 0;
 }
 
-bool fill_source(cm::compressed *matrix) {
+bool fill_source(cm::CompressedPayload *matrix) {
     cm::init(matrix, 6u, 5u, 7u, cm::compressed_by_row);
     if (!cm::allocate(matrix)) return false;
     const ct::ptr_t row_ptr[] = {0u, 2u, 2u, 3u, 5u, 5u, 7u};
@@ -47,7 +47,7 @@ bool build_exact_plan(std::uint64_t total_rows,
     return cs::build_sample_plan(total_rows, spec, identities, out, error);
 }
 
-bool matches_complete_source_rows(const cm::compressed &source,
+bool matches_complete_source_rows(const cm::CompressedPayload &source,
                                   const cs::sampled_csr_structure_view &sampled) {
     if (sampled.row_ptr == nullptr || sampled.provenance == nullptr) return false;
     if (sampled.sampled_row_count != sampled.provenance->selected_rows) return false;
@@ -74,7 +74,7 @@ int test_in_memory_complete_rows_and_ordering() {
                       ct::idx_t>::value,
                   "sampled CSR columns must use Cellerator's canonical index type");
 
-    cm::compressed source;
+    cm::CompressedPayload source;
     cs::sample_plan plan, unsorted;
     cs::owned_sampled_csr_structure bundle;
     std::string error;
@@ -114,7 +114,7 @@ int test_in_memory_complete_rows_and_ordering() {
 }
 
 int test_zero_rows_and_input_validation() {
-    cm::compressed source;
+    cm::CompressedPayload source;
     cs::sample_plan all_rows, zero_rows, invalid;
     cs::owned_sampled_csr_structure bundle;
     std::string error;

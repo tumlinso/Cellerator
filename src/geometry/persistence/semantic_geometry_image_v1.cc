@@ -149,10 +149,10 @@ bool valid_persistent_axis(
     const execution::persistent_axis_identity &axis) noexcept {
     return execution::validate_persistent_axis_identity(axis)
             == execution::biological_validation_code::ok
-        && execution::valid_identity(axis.domain)
-        && execution::valid_identity(axis.order)
-        && execution::valid_identity(axis.geometry)
-        && execution::valid_identity(axis.partition);
+        && ::cellerator::structure::valid_identity(axis.domain)
+        && ::cellerator::structure::valid_identity(axis.order)
+        && ::cellerator::structure::valid_identity(axis.geometry)
+        && ::cellerator::structure::valid_identity(axis.partition);
 }
 
 void write_identity(u8 *base, u64 offset, u64 low, u64 high) noexcept {
@@ -440,8 +440,8 @@ semantic_geometry_image_status_v1
 query_semantic_geometry_image_requirements_v1(
     const semantic_geometry_image_build_request_v1 &request,
     semantic_geometry_image_requirements_v1 *requirements) noexcept {
-    if (!execution::valid_identity(request.relation)
-        || !execution::valid_identity(request.structure)
+    if (!::cellerator::structure::valid_identity(request.relation)
+        || !::cellerator::structure::valid_identity(request.structure)
         || request.structure_epoch.value == 0u
         || !valid_persistent_axis(request.source_axis)
         || !valid_persistent_axis(request.destination_axis))
@@ -726,11 +726,11 @@ semantic_geometry_image_status_v1 validate_semantic_geometry_image_v1(
     result.work_count = read_u32(image, header_work_count_offset);
     result.component_count = read_u32(image, header_component_count_offset);
     result.section_count = section_count;
-    if (!execution::valid_identity(result.geometry_identity)
-        || !execution::valid_identity(result.relation)
-        || !execution::valid_identity(result.structure)
+    if (!::cellerator::structure::valid_identity(result.geometry_identity)
+        || !::cellerator::structure::valid_identity(result.relation)
+        || !::cellerator::structure::valid_identity(result.structure)
         || result.structure_epoch.value == 0u
-        || !execution::valid_identity(result.work_window)
+        || !::cellerator::structure::valid_identity(result.work_window)
         || !valid_persistent_axis(result.source_axis)
         || !valid_persistent_axis(result.destination_axis))
         return semantic_geometry_image_status_v1::invalid_semantic_data;

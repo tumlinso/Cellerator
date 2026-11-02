@@ -1,9 +1,11 @@
 #include <Cellerator/modeling/cuda/reactions.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 #include <cuda_runtime.h>
 #include <algorithm>
 #include <limits>
 
 namespace cellerator::modeling::cuda {
+namespace mc = ::cellerator::memory::cuda;
 namespace {
 __global__ void apply_events_kernel(ReactionBank bank, ReactionEventWorklist events,
                                    ReactionCountBatch batch, ReactionCellStatus* statuses,
@@ -99,22 +101,22 @@ __global__ void apply_events_kernel(ReactionBank bank, ReactionEventWorklist eve
 std::size_t extent(std::uint64_t count, std::size_t size) {
     if (count > std::numeric_limits<std::size_t>::max())
         throw std::overflow_error("reaction extent overflows size_t");
-    return checked_bytes(static_cast<std::size_t>(count), size);
+    return mc::checked_bytes(static_cast<std::size_t>(count), size);
 }
 std::uint64_t product(std::uint64_t a, std::uint64_t b) {
     if (b && a > UINT64_MAX / b) throw std::overflow_error("reaction shape overflow");
     return a * b;
 }
-void require(ConstDeviceView view, std::uint64_t count, std::size_t size, int device, const char* what) {
-    require_view(view, extent(count, size), device, what);
+void require(mc::ConstDeviceView view, std::uint64_t count, std::size_t size, int device, const char* what) {
+    mc::require_view(view, extent(count, size), device, what);
     if (count && reinterpret_cast<std::uintptr_t>(view.data) % size != 0)
         throw std::invalid_argument("misaligned reaction array");
 }
 } // namespace
 
 void apply_reaction_events(ReactionBank bank, ReactionEventWorklist events,
-                           ReactionCountBatch batch, DeviceView statuses,
-                           ReactionChangeOutput changed, const Stream& stream) {
+                           ReactionCountBatch batch, mc::DeviceView statuses,
+                           ReactionChangeOutput changed, const mc::Stream& stream) {
     const auto device = stream.device();
     if (bank.reaction_count == UINT64_MAX || batch.cell_count == UINT64_MAX)
         throw std::overflow_error("reaction offset shape overflow");
@@ -130,7 +132,7 @@ void apply_reaction_events(ReactionBank bank, ReactionEventWorklist events,
     else if (events.reference_count > events.event_count)
         throw std::invalid_argument("direct event references exceed event array");
     require(batch.counts, product(batch.cell_count, batch.cell_stride), sizeof(std::int64_t), device, "reaction counts");
-    require_view(statuses, extent(batch.cell_count, sizeof(ReactionCellStatus)), device, "reaction statuses");
+    mc::require_view(statuses, extent(batch.cell_count, sizeof(ReactionCellStatus)), device, "reaction statuses");
     if (batch.cell_count && reinterpret_cast<std::uintptr_t>(statuses.data) % alignof(ReactionCellStatus))
         throw std::invalid_argument("misaligned reaction status");
     if (changed.enabled) {
@@ -139,11 +141,11 @@ void apply_reaction_events(ReactionBank bank, ReactionEventWorklist events,
             require(changed.source_ordinals, product(batch.cell_count, bank.species_count), sizeof(std::uint64_t), device, "reaction source ordinal map");
     }
     if (!batch.cell_count) return;
-    DeviceGuard guard(device);
+    mc::DeviceGuard guard(device);
     constexpr unsigned threads = 128;
     const auto blocks = static_cast<unsigned>(std::min<std::uint64_t>((batch.cell_count - 1) / threads + 1, 65535));
     apply_events_kernel<<<blocks, threads, 0, stream.get()>>>(bank, events, batch,
         static_cast<ReactionCellStatus*>(statuses.data), changed);
-    check(cudaGetLastError(), "apply reaction events");
+    mc::check(cudaGetLastError(), "apply reaction events");
 }
 } // namespace cellerator::modeling::cuda

@@ -1,4 +1,4 @@
-#include <Cellerator/modeling/cuda/quantization.hh>
+#include <Cellerator/tensor/state_codes/operations.hh>
 
 #include <cuda_runtime.h>
 
@@ -18,7 +18,7 @@
 #undef NDEBUG
 #endif
 
-namespace m = cellerator::modeling::cuda;
+namespace m = cellerator::tensor::state_codes;
 
 void check(cudaError_t error) {
   if (error != cudaSuccess) throw std::runtime_error(cudaGetErrorString(error));
@@ -175,27 +175,27 @@ void run_case(unsigned bits, bool short_profile = false) {
     feature_map.upload(profile.feature_map, stream);
     values.upload(input, stream);
     exact_mask.upload(mask, stream);
-    const m::QuantizationProfileView view{
+    const m::ProfileView view{
         offsets.data, levels.data, feature_map.data,
         static_cast<std::uint32_t>(profile.offsets.size() - 1), features,
         static_cast<std::uint32_t>(profile.levels.size()), bits};
     const m::DeviceStatus device_status{status.data};
-    m::PackedStateView packed_view{packed.data, packed.size};
-    m::OverrideView override_view{override_positions.data, nullptr, override_count.data, count};
+    m::PackedView packed_view{packed.data, packed.size};
+    m::ExactOverrideView override_view{override_positions.data, nullptr, override_count.data, count};
     // The sidecar stores original FP32 values even when the input is FP16.
     DeviceBuffer<float> override_values(count);
     override_view.values = override_values.data;
-    const m::ConstOverrideView const_override{
+    const m::ConstExactOverrideView const_override{
         override_positions.data, override_values.data, override_count.data, count};
 
     check(m::reset_status(device_status, stream));
     check(m::validate_profile(view, device_status, stream));
-    check(m::reset_override_count(override_view, stream));
+    check(m::reset_exact_override_count(override_view, stream));
     if constexpr (std::is_same_v<T, float>)
-      check(m::encode_state_fp32(values.data, rows, view, packed_view, exact_mask.data,
+      check(m::encode_fp32(values.data, rows, view, packed_view, exact_mask.data,
                                  override_view, device_status, stream));
     else
-      check(m::encode_state_fp16(values.data, rows, view, packed_view, exact_mask.data,
+      check(m::encode_fp16(values.data, rows, view, packed_view, exact_mask.data,
                                  override_view, device_status, stream));
     assert(packed.download(stream) == expected_words);
     const auto written_overrides = override_count.download(stream)[0];
@@ -213,10 +213,10 @@ void run_case(unsigned bits, bool short_profile = false) {
     assert(found == override_indices);
 
     if constexpr (std::is_same_v<T, float>)
-      check(m::decode_state_fp32({packed.data, packed.size}, rows, view,
+      check(m::decode_fp32({packed.data, packed.size}, rows, view,
                                  const_override, output.data, device_status, stream));
     else
-      check(m::decode_state_fp16({packed.data, packed.size}, rows, view,
+      check(m::decode_fp16({packed.data, packed.size}, rows, view,
                                  const_override, output.data, device_status, stream));
     auto expected_output = decode_oracle(profile, codes, represented, override_indices);
     const auto actual_output = output.download(stream);
@@ -249,10 +249,10 @@ void run_case(unsigned bits, bool short_profile = false) {
           profile, bits, updates[u] % features, as_float(typed_updates[u]));
     const auto updated_output = decode_oracle(profile, updated_codes, represented, override_indices);
     if constexpr (std::is_same_v<T, float>)
-      check(m::decode_state_fp32({packed.data, packed.size}, rows, view,
+      check(m::decode_fp32({packed.data, packed.size}, rows, view,
                                  const_override, output.data, device_status, stream));
     else
-      check(m::decode_state_fp16({packed.data, packed.size}, rows, view,
+      check(m::decode_fp16({packed.data, packed.size}, rows, view,
                                  const_override, output.data, device_status, stream));
     const auto after = output.download(stream);
     for (std::size_t i = 0; i < after.size(); ++i)
@@ -280,23 +280,23 @@ void test_invalid_values_and_profiles() {
     offsets.upload(profile.offsets, stream);
     levels.upload(profile.levels, stream);
     map.upload(profile.feature_map, stream);
-    const m::QuantizationProfileView view{offsets.data, levels.data, map.data, 3, 3, 8, bits};
-    const m::PackedStateView output{packed.data, packed.size};
+    const m::ProfileView view{offsets.data, levels.data, map.data, 3, 3, 8, bits};
+    const m::PackedView output{packed.data, packed.size};
     const m::DeviceStatus device_status{status.data};
     std::vector<float> invalid{0.2f, std::numeric_limits<float>::quiet_NaN(), 1.0f};
     input.upload(invalid, stream);
     check(m::reset_status(device_status, stream));
     check(m::validate_profile(view, device_status, stream));
-    check(m::encode_state_fp32(input.data, rows, view, output, nullptr, {}, device_status, stream));
+    check(m::encode_fp32(input.data, rows, view, output, nullptr, {}, device_status, stream));
     const auto bad_value_status = status.download(stream)[0];
     assert((bad_value_status & 4U) != 0U);
 
     // Invalid host arguments reject immediately without touching device memory.
-    assert(m::encode_state_fp32(input.data, rows, view, {packed.data, 0}, nullptr,
+    assert(m::encode_fp32(input.data, rows, view, {packed.data, 0}, nullptr,
                                 {}, device_status, stream) == cudaErrorInvalidValue);
     assert(m::update_codes_fp32(nullptr, nullptr, 1, rows, view, output,
                                 device_status, stream) == cudaErrorInvalidValue);
-    assert(m::decode_state_fp32({}, rows, view, {}, nullptr,
+    assert(m::decode_fp32({}, rows, view, {}, nullptr,
                                 device_status, stream) == cudaErrorInvalidValue);
   }
   check(cudaStreamDestroy(stream));

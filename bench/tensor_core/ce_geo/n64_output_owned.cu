@@ -300,14 +300,17 @@ result run_scenario(std::uint32_t destination_groups,
     structures.count = 1u;
     structures.structures[0] = {{11u, 12u}, {21u, 1u}, {1u}};
     const core::projection_key projection{{31u, 32u}, {42u, 1u},
-        core::projection_kind::csr, math::execution_csr_schema_version, 1u};
-    math::execution_csr_view csr{};
+        core::projection_kind::csr,
+        cellerator::layout::projection::execution_csr_schema_version, 1u};
+    ::cellerator::layout::projection::CsrViewV1 csr{};
     csr.full_row_count = rows; csr.row_count = rows; csr.feature_count = sources;
     csr.nnz_count = nnz; csr.value_size_bytes = sizeof(__half);
     csr.row_domain_identity = 0x3003u;
-    csr.structure.identity_version = math::execution_csr_structure_identity_version;
+    csr.structure.identity_version =
+        cellerator::layout::projection::execution_csr_structure_identity_version;
     csr.structure.value = 0x7072u;
-    csr.feature_order.kind = math::feature_order_kind::packed;
+    csr.feature_order.kind =
+        cellerator::layout::projection::feature_order_kind::packed;
     csr.feature_order.feature_count = sources;
     csr.feature_order.feature_axis_identity_version = 1u;
     csr.feature_order.feature_axis_identity = 0x5005u;

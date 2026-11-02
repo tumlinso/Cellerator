@@ -19,10 +19,10 @@ struct structural_atom_plane_binding_v1 {
     external_atom_plane_identity_v1 persistent_order_identity{};
     const relation_structure *structure = nullptr;
     structure_handle structure_identity{};
-    structure_epoch structure_epoch_value{};
+    structure::structure_epoch structure_epoch_value{};
     order_handle source_order{};
     order_handle destination_order{};
-    order_id logical_edge_order{};
+    structure::order_id logical_edge_order{};
     const void *source_descriptor = nullptr;
     u64 source_descriptor_bytes = 0u;
     u64 logical_edge_count = 0u;
