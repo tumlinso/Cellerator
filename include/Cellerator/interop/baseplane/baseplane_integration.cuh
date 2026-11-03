@@ -35,8 +35,8 @@ enum class sequence_strategy : std::uint8_t {
 // launch/cache identity, not a performance-model dimension.
 struct sequence_measurement_key {
     std::uint64_t predicate_semantic_hash = 0u;
-    execution::order_id coordinate_order{};
-    execution::projection_id regulatory_projection{};
+    ::cellerator::structure::order_id coordinate_order{};
+    ::cellerator::structure::projection_id regulatory_projection{};
     execution::device_performance_class device{};
     std::uint64_t runtime_build_identity = 0u;
     std::uint32_t local_base_count = 0u;
@@ -106,10 +106,10 @@ struct sequence_prepare_policy {
 struct sequence_prepare_request {
     const baseplane::seq::sequence_predicate_program *program = nullptr;
     const baseplane::seq::prepared_predicate_plan *baseplane_plan = nullptr;
-    execution::structure_id persistent_coordinate_structure{};
-    execution::structure_id persistent_regulatory_structure{};
-    execution::order_id persistent_coordinate_order{};
-    execution::projection_id persistent_projection{};
+    ::cellerator::structure::structure_id persistent_coordinate_structure{};
+    ::cellerator::structure::structure_id persistent_regulatory_structure{};
+    ::cellerator::structure::order_id persistent_coordinate_order{};
+    ::cellerator::structure::projection_id persistent_projection{};
     execution::projection_handle projection{};
     execution::relation_structure coordinate_to_regulatory{};
     execution::relation_structure regulatory_to_gene{};
@@ -130,8 +130,8 @@ struct prepared_sequence_state {
     baseplane::seq::motif32_exact motif{};
     std::uint16_t predicate_id = 0u;
     std::uint16_t output_flags = 0u;
-    execution::structure_id persistent_coordinate_structure{};
-    execution::order_id persistent_coordinate_order{};
+    ::cellerator::structure::structure_id persistent_coordinate_structure{};
+    ::cellerator::structure::order_id persistent_coordinate_order{};
     execution::sequence_domain source_domain{};
     execution::axis_identity regulatory_relation_axis{};
     regulatory_projection_view regulatory{};
@@ -148,8 +148,8 @@ struct prepared_sequence_state {
 struct predicate_materialization_key {
     execution::value_generation sequence_generation{};
     std::uint64_t predicate_semantic_hash = 0u;
-    execution::structure_id coordinate_structure{};
-    execution::order_id coordinate_order{};
+    ::cellerator::structure::structure_id coordinate_structure{};
+    ::cellerator::structure::order_id coordinate_order{};
     std::uint16_t predicate_id = 0u;
     std::uint16_t output_flags = 0u;
     std::uint32_t reserved = 0u;
@@ -177,9 +177,9 @@ struct predicate_cache_run_result {
 struct regulatory_relation_materialization_key {
     execution::value_generation sequence_generation{};
     std::uint64_t predicate_semantic_hash = 0u;
-    execution::structure_id coordinate_structure{};
-    execution::order_id coordinate_order{};
-    execution::projection_id regulatory_projection{};
+    ::cellerator::structure::structure_id coordinate_structure{};
+    ::cellerator::structure::order_id coordinate_order{};
+    ::cellerator::structure::projection_id regulatory_projection{};
     std::uint16_t predicate_id = 0u;
     std::uint16_t output_flags = 0u;
 };

@@ -1,0 +1,60 @@
+[benchmark]
+name = "cellerator-native-data-gated-product-timing"
+revision = 1
+
+[source]
+# Reuse the already frozen harness tree; this registration lives outside it.
+include = ["bench/native_data/**"]
+
+[data]
+paths = [
+  ".autobench/data/cellerator-native-data-gated-product-scale/source-closure-v3.tar",
+  ".autobench/data/cellerator-native-data-gated-product-scale/source-closure-v3.manifest.json",
+  ".autobench/data/cellerator-native-data-gated-product-scale/build-v4.log",
+  ".autobench/data/cellerator-native-data-gated-product-scale/aten/cellerator_native_data_aten_bench",
+  ".autobench/data/cellerator-native-data-gated-product-scale/aten/external_build_manifest.json",
+  ".autobench/data/cellerator-native-data-gated-product-scale/specialist/cellerator_native_data_specialist_bench",
+  ".autobench/data/cellerator-native-data-gated-product-scale/specialist/external_build_manifest.json",
+]
+
+[[packet]]
+name = "low-high-scale-timing"
+kind = "timing"
+argv = [
+  "python3", "{snapshot}/bench/native_data/run_native_data_campaign.py",
+  "--phase", "scale-timing",
+  "--source-root", "{snapshot}",
+  "--aten-binary", "{snapshot}/.autobench/data/cellerator-native-data-gated-product-scale/aten/cellerator_native_data_aten_bench",
+  "--aten-artifact-manifest", "{snapshot}/.autobench/data/cellerator-native-data-gated-product-scale/aten/external_build_manifest.json",
+  "--specialist-binary", "{snapshot}/.autobench/data/cellerator-native-data-gated-product-scale/specialist/cellerator_native_data_specialist_bench",
+  "--specialist-artifact-manifest", "{snapshot}/.autobench/data/cellerator-native-data-gated-product-scale/specialist/external_build_manifest.json",
+  "--output-dir", "{output}/scale-timing",
+  "--expected-uuid0", "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+  "--expected-uuid1", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--device0-index", "1",
+  "--device1-index", "0",
+  "--warmup", "2",
+  "--samples", "7",
+  "--learning-rate", "0.01",
+]
+expected_seconds = 90
+kill_seconds = 120
+
+[packet.resources]
+priority = "background"
+preemptible = true
+tags = ["gpu.exclusive"]
+
+[[packet.resources.scheduler]]
+kind = "gpu"
+quantities = { memory_bytes = 1073741824 }
+mode = "exclusive"
+same_host = true
+selectors = { uuid = "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" }
+
+[[packet.resources.scheduler]]
+kind = "gpu"
+quantities = { memory_bytes = 1073741824 }
+mode = "exclusive"
+same_host = true
+selectors = { uuid = "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505" }

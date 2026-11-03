@@ -27,7 +27,7 @@ bool less_id(identity lhs, identity rhs) noexcept {
             && lhs.local_identity < rhs.local_identity);
 }
 
-bool less_order(execution::order_id lhs, execution::order_id rhs) noexcept {
+bool less_order(::cellerator::structure::order_id lhs, ::cellerator::structure::order_id rhs) noexcept {
     return lhs.high < rhs.high || (lhs.high == rhs.high && lhs.low < rhs.low);
 }
 
@@ -122,7 +122,7 @@ execution_export_validation_result_v2 validate_execution_export_v2(
         return failure(execution_export_validation_code_v2::missing_orders);
     for (std::uint64_t index = 0u; index < value.persistent_order_count;
          ++index) {
-        if (!execution::valid_identity(value.persistent_orders[index]))
+        if (!::cellerator::structure::valid_identity(value.persistent_orders[index]))
             return failure(
                 execution_export_validation_code_v2::invalid_order, index);
         if (index != 0u && !less_order(value.persistent_orders[index - 1u],

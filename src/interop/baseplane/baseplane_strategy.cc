@@ -18,8 +18,8 @@ bool same_measurement_key(
     const sequence_measurement_key &left,
     const sequence_measurement_key &right) noexcept {
     return left.predicate_semantic_hash == right.predicate_semantic_hash
-        && execution::same_identity(left.coordinate_order, right.coordinate_order)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(left.coordinate_order, right.coordinate_order)
+        && ::cellerator::structure::same_identity(
             left.regulatory_projection, right.regulatory_projection)
         && same_device_class(left.device, right.device)
         && left.runtime_build_identity == right.runtime_build_identity

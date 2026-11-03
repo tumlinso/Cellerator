@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 bool make_physical_mma_hybrid_cpe2_source_v1(
     const void *, std::size_t, std::uint64_t, std::uint64_t, std::uint64_t,
     std::uint64_t, std::uint32_t,
@@ -174,7 +174,7 @@ bool realize_mma_provider_projection_v1(
 
     persistence::execution_section_source payload{};
     persistence::execution_projection_source projection{};
-    if (!compute::projection::make_physical_mma_hybrid_cpe2_source_v1(
+    if (!layout::projection::make_physical_mma_hybrid_cpe2_source_v1(
             host_payload, payload_bytes, section_identity.low,
             section_identity.high, projection_identity.low,
             projection_identity.high, payload_section_index, &payload,

@@ -1,8 +1,9 @@
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <Cellerator/compute/operators/sparse/ops.hh>
 #include <Cellerator/compute/candidate/sparse/project.hh>
-#include <Cellerator/quantized/api.cuh>
+#include <Cellerator/ops/quantized/api.cuh>
 #include <Cellerator/interop/cellshard_access.cuh>
+#include <Cellerator/memory/cuda/shared_buffer.hh>
 #include <CellShard/formats/blocked_ell.cuh>
 
 #include <cmath>
@@ -12,10 +13,12 @@
 #include <vector>
 
 namespace runtime = ::cellerator::runtime;
+namespace memory_cuda = ::cellerator::memory::cuda;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
 namespace sparse_project = ::cellerator::compute::sparse::project;
 namespace cs = ::cellshard;
-namespace msq = ::cellerator::quantized;
+namespace msq = ::cellerator::tensor::quantized;
+namespace mso = ::cellerator::ops::quantized;
 
 namespace {
 
@@ -108,21 +111,36 @@ void compute_quantize_reference(
 }
 
 template<typename T>
-runtime::device_buffer<T> allocate_on_device(int device, std::size_t count) {
-    runtime::cuda_require(cudaSetDevice(device), "cudaSetDevice(allocate_on_device)");
-    return runtime::allocate_device_buffer<T>(count);
+memory_cuda::SharedDeviceBuffer<T> allocate_on_device(int device, std::size_t count) {
+    return memory_cuda::SharedDeviceBuffer<T>::allocate(count, device);
 }
 
 template<typename T>
-void upload_on_device(int device, runtime::device_buffer<T> *dst, const T *src, std::size_t count) {
-    runtime::cuda_require(cudaSetDevice(device), "cudaSetDevice(upload_on_device)");
-    runtime::upload_device_buffer(dst, src, count);
+void upload_on_device(int device, memory_cuda::SharedDeviceBuffer<T> *dst, const T *src, std::size_t count) {
+    auto stream = memory_cuda::Stream(device);
+    dst->upload_async(src, count, stream);
+    stream.synchronize();
 }
 
 template<typename T>
-void download_on_device(int device, const runtime::device_buffer<T> &src, T *dst, std::size_t count) {
-    runtime::cuda_require(cudaSetDevice(device), "cudaSetDevice(download_on_device)");
-    runtime::download_device_buffer(src, dst, count);
+void download_on_device(int device, const memory_cuda::SharedDeviceBuffer<T> &src, T *dst, std::size_t count) {
+    auto stream = memory_cuda::Stream(device);
+    src.download_async(dst, count, stream);
+    stream.synchronize();
+}
+
+template<typename T>
+void upload_and_wait(memory_cuda::SharedDeviceBuffer<T> &dst, const T *src,
+                     std::size_t count, const memory_cuda::Stream &stream) {
+    dst.upload_async(src, count, stream);
+    stream.synchronize();
+}
+
+template<typename T>
+void download_and_wait(const memory_cuda::SharedDeviceBuffer<T> &src, T *dst,
+                       std::size_t count, const memory_cuda::Stream &stream) {
+    src.download_async(dst, count, stream);
+    stream.synchronize();
 }
 
 } // namespace
@@ -134,6 +152,7 @@ int main() {
 
     runtime::execution_context ctx;
     runtime::init(&ctx);
+    auto transfer_stream = memory_cuda::Stream::borrow(ctx.stream, ctx.device);
 
     runtime::scratch_arena scratch;
     runtime::init(&scratch);
@@ -161,135 +180,135 @@ int main() {
         5.0f, 6.0f
     };
 
-    auto major_ptr = runtime::allocate_device_buffer<std::uint32_t>(4);
-    auto minor_idx = runtime::allocate_device_buffer<std::uint32_t>(5);
-    auto values = runtime::allocate_device_buffer<__half>(5);
-    auto row_scales = runtime::allocate_device_buffer<float>(3);
-    auto ones_grad = runtime::allocate_device_buffer<float>(5);
-    auto vector = runtime::allocate_device_buffer<float>(3);
-    auto rhs = runtime::allocate_device_buffer<float>(6);
-    auto grad_out_spmm = runtime::allocate_device_buffer<float>(6);
+    auto major_ptr = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(4, ctx.device);
+    auto minor_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(5, ctx.device);
+    auto values = memory_cuda::SharedDeviceBuffer<__half>::allocate(5, ctx.device);
+    auto row_scales = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
+    auto ones_grad = memory_cuda::SharedDeviceBuffer<float>::allocate(5, ctx.device);
+    auto vector = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
+    auto rhs = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
+    auto grad_out_spmm = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
 
-    runtime::upload_device_buffer(&major_ptr, major_ptr_host, 4);
-    runtime::upload_device_buffer(&minor_idx, minor_idx_host, 5);
-    runtime::upload_device_buffer(&values, values_host, 5);
-    runtime::upload_device_buffer(&row_scales, row_scales_host, 3);
-    runtime::upload_device_buffer(&ones_grad, ones_grad_host, 5);
-    runtime::upload_device_buffer(&vector, vector_host, 3);
-    runtime::upload_device_buffer(&rhs, rhs_host, 6);
-    runtime::upload_device_buffer(&grad_out_spmm, grad_out_spmm_host, 6);
+    upload_and_wait(major_ptr, major_ptr_host, 4, transfer_stream);
+    upload_and_wait(minor_idx, minor_idx_host, 5, transfer_stream);
+    upload_and_wait(values, values_host, 5, transfer_stream);
+    upload_and_wait(row_scales, row_scales_host, 3, transfer_stream);
+    upload_and_wait(ones_grad, ones_grad_host, 5, transfer_stream);
+    upload_and_wait(vector, vector_host, 3, transfer_stream);
+    upload_and_wait(rhs, rhs_host, 6, transfer_stream);
+    upload_and_wait(grad_out_spmm, grad_out_spmm_host, 6, transfer_stream);
 
-    auto scaled_values = runtime::allocate_device_buffer<float>(5);
+    auto scaled_values = memory_cuda::SharedDeviceBuffer<float>::allocate(5, ctx.device);
     sparse_ops::base::csr_row_scale_fwd_f16_f32(
         ctx,
-        major_ptr.data,
-        values.data,
-        row_scales.data,
+        major_ptr.data(),
+        values.data(),
+        row_scales.data(),
         3,
-        scaled_values.data);
+        scaled_values.data());
     float scaled_host[5] = {};
-    runtime::download_device_buffer(scaled_values, scaled_host, 5);
+    download_and_wait(scaled_values, scaled_host, 5, transfer_stream);
     require(close_value(scaled_host[0], 2.0f), "scaled value 0 mismatch");
     require(close_value(scaled_host[1], 4.0f), "scaled value 1 mismatch");
     require(close_value(scaled_host[2], 9.0f), "scaled value 2 mismatch");
     require(close_value(scaled_host[3], 12.0f), "scaled value 3 mismatch");
     require(close_value(scaled_host[4], 20.0f), "scaled value 4 mismatch");
 
-    auto grad_values = runtime::allocate_device_buffer<float>(5);
+    auto grad_values = memory_cuda::SharedDeviceBuffer<float>::allocate(5, ctx.device);
     sparse_ops::base::csr_row_scale_bwd_values_f16_f32(
         ctx,
-        major_ptr.data,
-        ones_grad.data,
-        row_scales.data,
+        major_ptr.data(),
+        ones_grad.data(),
+        row_scales.data(),
         3,
-        grad_values.data);
+        grad_values.data());
     float grad_values_host[5] = {};
-    runtime::download_device_buffer(grad_values, grad_values_host, 5);
+    download_and_wait(grad_values, grad_values_host, 5, transfer_stream);
     require(close_value(grad_values_host[0], 2.0f), "row-scale grad value 0 mismatch");
     require(close_value(grad_values_host[1], 2.0f), "row-scale grad value 1 mismatch");
     require(close_value(grad_values_host[2], 3.0f), "row-scale grad value 2 mismatch");
     require(close_value(grad_values_host[3], 3.0f), "row-scale grad value 3 mismatch");
     require(close_value(grad_values_host[4], 4.0f), "row-scale grad value 4 mismatch");
 
-    auto grad_scales = runtime::allocate_device_buffer<float>(3);
+    auto grad_scales = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
     sparse_ops::base::csr_row_scale_bwd_scales_f16_f32(
         ctx,
-        major_ptr.data,
-        values.data,
-        ones_grad.data,
+        major_ptr.data(),
+        values.data(),
+        ones_grad.data(),
         3,
-        grad_scales.data);
+        grad_scales.data());
     float grad_scales_host[3] = {};
-    runtime::download_device_buffer(grad_scales, grad_scales_host, 3);
+    download_and_wait(grad_scales, grad_scales_host, 3, transfer_stream);
     require(close_value(grad_scales_host[0], 3.0f), "row-scale grad scale 0 mismatch");
     require(close_value(grad_scales_host[1], 7.0f), "row-scale grad scale 1 mismatch");
     require(close_value(grad_scales_host[2], 5.0f), "row-scale grad scale 2 mismatch");
 
-    auto scalar_sum = runtime::allocate_device_buffer<float>(1);
-    sparse_ops::base::sparse_value_sum_f16_f32(ctx, &scratch, values.data, 5, scalar_sum.data);
+    auto scalar_sum = memory_cuda::SharedDeviceBuffer<float>::allocate(1, ctx.device);
+    sparse_ops::base::sparse_value_sum_f16_f32(ctx, &scratch, values.data(), 5, scalar_sum.data());
     float scalar_sum_host = 0.0f;
-    runtime::download_device_buffer(scalar_sum, &scalar_sum_host, 1);
+    download_and_wait(scalar_sum, &scalar_sum_host, 1, transfer_stream);
     require(close_value(scalar_sum_host, 15.0f), "sparse value sum mismatch");
 
-    auto fill_grad = runtime::allocate_device_buffer<float>(5);
-    sparse_ops::base::sparse_value_sum_bwd_fill_f32(ctx, scalar_sum.data, 5, fill_grad.data);
+    auto fill_grad = memory_cuda::SharedDeviceBuffer<float>::allocate(5, ctx.device);
+    sparse_ops::base::sparse_value_sum_bwd_fill_f32(ctx, scalar_sum.data(), 5, fill_grad.data());
     float fill_grad_host[5] = {};
-    runtime::download_device_buffer(fill_grad, fill_grad_host, 5);
+    download_and_wait(fill_grad, fill_grad_host, 5, transfer_stream);
     for (float value : fill_grad_host) require(close_value(value, 15.0f), "sparse value fill mismatch");
 
-    auto spmv_out = runtime::allocate_device_buffer<float>(3);
-    sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, major_ptr.data, minor_idx.data, values.data, 3, vector.data, spmv_out.data);
+    auto spmv_out = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
+    sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, major_ptr.data(), minor_idx.data(), values.data(), 3, vector.data(), spmv_out.data());
     float spmv_out_host[3] = {};
-    runtime::download_device_buffer(spmv_out, spmv_out_host, 3);
+    download_and_wait(spmv_out, spmv_out_host, 3, transfer_stream);
     require(close_value(spmv_out_host[0], 201.0f), "spmv out 0 mismatch");
     require(close_value(spmv_out_host[1], 430.0f), "spmv out 1 mismatch");
     require(close_value(spmv_out_host[2], 5.0f), "spmv out 2 mismatch");
 
-    auto spmv_grad_values = runtime::allocate_device_buffer<float>(5);
+    auto spmv_grad_values = memory_cuda::SharedDeviceBuffer<float>::allocate(5, ctx.device);
     sparse_ops::base::csr_spmv_bwd_values_f16_f32(
         ctx,
-        major_ptr.data,
-        minor_idx.data,
-        spmv_out.data,
-        vector.data,
+        major_ptr.data(),
+        minor_idx.data(),
+        spmv_out.data(),
+        vector.data(),
         3,
-        spmv_grad_values.data);
+        spmv_grad_values.data());
     float spmv_grad_values_host[5] = {};
-    runtime::download_device_buffer(spmv_grad_values, spmv_grad_values_host, 5);
+    download_and_wait(spmv_grad_values, spmv_grad_values_host, 5, transfer_stream);
     require(close_value(spmv_grad_values_host[0], 201.0f), "spmv grad value 0 mismatch");
     require(close_value(spmv_grad_values_host[1], 20100.0f), "spmv grad value 1 mismatch");
 
-    auto spmv_grad_vector = runtime::allocate_device_buffer<float>(3);
+    auto spmv_grad_vector = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
     sparse_ops::base::csr_spmv_bwd_vector_f16_f32(
         ctx,
-        major_ptr.data,
-        minor_idx.data,
-        values.data,
-        spmv_out.data,
+        major_ptr.data(),
+        minor_idx.data(),
+        values.data(),
+        spmv_out.data(),
         3,
         3,
-        spmv_grad_vector.data);
+        spmv_grad_vector.data());
     float spmv_grad_vector_host[3] = {};
-    runtime::download_device_buffer(spmv_grad_vector, spmv_grad_vector_host, 3);
+    download_and_wait(spmv_grad_vector, spmv_grad_vector_host, 3, transfer_stream);
     require(close_value(spmv_grad_vector_host[0], 226.0f), "spmv grad vector 0 mismatch");
     require(close_value(spmv_grad_vector_host[1], 1290.0f), "spmv grad vector 1 mismatch");
     require(close_value(spmv_grad_vector_host[2], 2122.0f), "spmv grad vector 2 mismatch");
 
-    auto spmm_out = runtime::allocate_device_buffer<float>(6);
+    auto spmm_out = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
     sparse_project::csr_spmm_fwd_f16_f32(
         ctx,
-        major_ptr.data,
-        minor_idx.data,
-        values.data,
+        major_ptr.data(),
+        minor_idx.data(),
+        values.data(),
         3,
         3,
-        rhs.data,
+        rhs.data(),
         2,
         2,
-        spmm_out.data,
+        spmm_out.data(),
         2);
     float spmm_out_host[6] = {};
-    runtime::download_device_buffer(spmm_out, spmm_out_host, 6);
+    download_and_wait(spmm_out, spmm_out_host, 6, transfer_stream);
     require(close_value(spmm_out_host[0], 201.0f), "spmm out 0 mismatch");
     require(close_value(spmm_out_host[1], 402.0f), "spmm out 1 mismatch");
     require(close_value(spmm_out_host[2], 430.0f), "spmm out 2 mismatch");
@@ -311,50 +330,50 @@ int main() {
     };
     std::memcpy(blocked_host.blockColIdx, block_col_idx_host, sizeof(block_col_idx_host));
     std::memcpy(blocked_host.val, blocked_values_host, sizeof(blocked_values_host));
-    auto blocked_idx = runtime::allocate_device_buffer<std::uint32_t>(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host));
-    auto blocked_values = runtime::allocate_device_buffer<__half>(static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols);
-    runtime::upload_device_buffer(&blocked_idx, blocked_host.blockColIdx, static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host));
-    runtime::upload_device_buffer(&blocked_values, blocked_host.val, static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols);
+    auto blocked_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host), ctx.device);
+    auto blocked_values = memory_cuda::SharedDeviceBuffer<__half>::allocate(static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols, ctx.device);
+    upload_and_wait(blocked_idx, blocked_host.blockColIdx, static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host), transfer_stream);
+    upload_and_wait(blocked_values, blocked_host.val, static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols, transfer_stream);
 
-    auto blocked_spmm_ref = runtime::allocate_device_buffer<float>(6);
+    auto blocked_spmm_ref = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
     sparse_project::blocked_ell_spmm_fwd_f16_f32(
         ctx,
-        blocked_idx.data,
-        blocked_values.data,
+        blocked_idx.data(),
+        blocked_values.data(),
         blocked_host.rows,
         blocked_host.cols,
         blocked_host.block_size,
         blocked_host.ell_cols,
-        rhs.data,
+        rhs.data(),
         2,
         2,
-        blocked_spmm_ref.data,
+        blocked_spmm_ref.data(),
         2);
     float blocked_spmm_ref_host[6] = {};
-    runtime::download_device_buffer(blocked_spmm_ref, blocked_spmm_ref_host, 6);
+    download_and_wait(blocked_spmm_ref, blocked_spmm_ref_host, 6, transfer_stream);
     require(close_value(blocked_spmm_ref_host[0], 201.0f), "blocked ell ref out 0 mismatch");
     require(close_value(blocked_spmm_ref_host[3], 860.0f), "blocked ell ref out 3 mismatch");
 
     runtime::cusparse_cache blocked_cache;
     runtime::init(&blocked_cache);
-    auto blocked_spmm_lib = runtime::allocate_device_buffer<float>(6);
+    auto blocked_spmm_lib = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
     sparse_project::blocked_ell_spmm_fwd_f16_f32_lib(
         ctx,
         &blocked_cache,
         blocked_host.val,
-        blocked_idx.data,
-        blocked_values.data,
+        blocked_idx.data(),
+        blocked_values.data(),
         blocked_host.rows,
         blocked_host.cols,
         blocked_host.block_size,
         blocked_host.ell_cols,
-        rhs.data,
+        rhs.data(),
         2,
         2,
-        blocked_spmm_lib.data,
+        blocked_spmm_lib.data(),
         2);
     float blocked_spmm_lib_host[6] = {};
-    runtime::download_device_buffer(blocked_spmm_lib, blocked_spmm_lib_host, 6);
+    download_and_wait(blocked_spmm_lib, blocked_spmm_lib_host, 6, transfer_stream);
     require(close_value(blocked_spmm_lib_host[0], 201.0f), "blocked ell lib out 0 mismatch");
     require(close_value(blocked_spmm_lib_host[5], 10.0f), "blocked ell lib out 5 mismatch");
 
@@ -368,7 +387,7 @@ int main() {
         static_cast<std::size_t>(blocked_host.rows)
             * static_cast<std::size_t>(msq::blocked_ell::row_bytes<8>(blocked_host.ell_cols)),
         0u);
-    auto quantized_host = msq::blocked_ell::make_matrix<8>(
+    auto quantized_host = msq::make_blocked_ell_view<8>(
         static_cast<int>(blocked_host.rows),
         static_cast<int>(blocked_host.cols),
         static_cast<int>(blocked_host.nnz),
@@ -378,14 +397,14 @@ int main() {
         blocked_host.blockColIdx,
         quantized_packed_values.data(),
         msq::make_per_gene_affine(per_gene_scales_host));
-    require(msq::blocked_ell::pack_row_major_values(&quantized_host, blocked_slot_values.data()) == 0,
+    require(msq::blocked_ell::pack_row_major_values(&quantized_host, quantized_packed_values.data(), blocked_slot_values.data()) == 0,
             "quantized blocked ell host pack failed");
 
-    auto quantized_blocked_values = runtime::allocate_device_buffer<std::uint8_t>(quantized_packed_values.size());
-    auto per_gene_scales = runtime::allocate_device_buffer<float>(3);
-    runtime::upload_device_buffer(&quantized_blocked_values, quantized_packed_values.data(), quantized_packed_values.size());
-    runtime::upload_device_buffer(&per_gene_scales, per_gene_scales_host, 3);
-    sparse_ops::quantized_blocked_ell_view quantized_view{};
+    auto quantized_blocked_values = memory_cuda::SharedDeviceBuffer<std::uint8_t>::allocate(quantized_packed_values.size(), ctx.device);
+    auto per_gene_scales = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
+    upload_and_wait(quantized_blocked_values, quantized_packed_values.data(), quantized_packed_values.size(), transfer_stream);
+    upload_and_wait(per_gene_scales, per_gene_scales_host, 3, transfer_stream);
+    ::cellerator::tensor::quantized::RuntimeBlockedEllView quantized_view{};
     quantized_view.rows = blocked_host.rows;
     quantized_view.cols = blocked_host.cols;
     quantized_view.nnz = blocked_host.nnz;
@@ -394,21 +413,21 @@ int main() {
     quantized_view.row_stride_bytes = static_cast<std::uint32_t>(msq::blocked_ell::row_bytes<8>(blocked_host.ell_cols));
     quantized_view.bits = 8u;
     quantized_view.decode_policy = msq::blocked_ell::decode_policy_per_gene_affine;
-    quantized_view.block_col_idx = blocked_idx.data;
-    quantized_view.packed_values = quantized_blocked_values.data;
-    quantized_view.column_scales = per_gene_scales.data;
+    quantized_view.block_col_idx = blocked_idx.data();
+    quantized_view.packed_values = quantized_blocked_values.data();
+    quantized_view.column_scales = per_gene_scales.data();
 
-    auto quantized_spmm_out = runtime::allocate_device_buffer<float>(6);
+    auto quantized_spmm_out = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
     sparse_project::quantized_blocked_ell_spmm_fwd_f32(
         ctx,
         quantized_view,
-        rhs.data,
+        rhs.data(),
         2,
         2,
-        quantized_spmm_out.data,
+        quantized_spmm_out.data(),
         2);
     float quantized_spmm_host[6] = {};
-    runtime::download_device_buffer(quantized_spmm_out, quantized_spmm_host, 6);
+    download_and_wait(quantized_spmm_out, quantized_spmm_host, 6, transfer_stream);
     require(close_value(quantized_spmm_host[0], blocked_spmm_ref_host[0]), "quantized blocked ell per_gene out 0 mismatch");
     require(close_value(quantized_spmm_host[5], blocked_spmm_ref_host[5]), "quantized blocked ell per_gene out 5 mismatch");
 
@@ -418,7 +437,7 @@ int main() {
         static_cast<std::size_t>(blocked_host.rows)
             * static_cast<std::size_t>(msq::blocked_ell::row_bytes<4>(blocked_host.ell_cols)),
         0u);
-    auto quantized_row_offset_host = msq::blocked_ell::make_matrix<4>(
+    auto quantized_row_offset_host = msq::make_blocked_ell_view<4>(
         static_cast<int>(blocked_host.rows),
         static_cast<int>(blocked_host.cols),
         static_cast<int>(blocked_host.nnz),
@@ -428,17 +447,17 @@ int main() {
         blocked_host.blockColIdx,
         quantized_row_offset_packed.data(),
         msq::make_column_scale_row_offset(column_scales_host, row_offsets_host));
-    require(msq::blocked_ell::pack_row_major_values(&quantized_row_offset_host, blocked_slot_values.data()) == 0,
+    require(msq::blocked_ell::pack_row_major_values(&quantized_row_offset_host, quantized_row_offset_packed.data(), blocked_slot_values.data()) == 0,
             "quantized blocked ell row-offset host pack failed");
 
-    auto quantized_row_offset_values = runtime::allocate_device_buffer<std::uint8_t>(quantized_row_offset_packed.size());
-    auto row_offsets = runtime::allocate_device_buffer<float>(3);
-    auto column_scales = runtime::allocate_device_buffer<float>(3);
-    runtime::upload_device_buffer(&quantized_row_offset_values, quantized_row_offset_packed.data(), quantized_row_offset_packed.size());
-    runtime::upload_device_buffer(&row_offsets, row_offsets_host, 3);
-    runtime::upload_device_buffer(&column_scales, column_scales_host, 3);
+    auto quantized_row_offset_values = memory_cuda::SharedDeviceBuffer<std::uint8_t>::allocate(quantized_row_offset_packed.size(), ctx.device);
+    auto row_offsets = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
+    auto column_scales = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
+    upload_and_wait(quantized_row_offset_values, quantized_row_offset_packed.data(), quantized_row_offset_packed.size(), transfer_stream);
+    upload_and_wait(row_offsets, row_offsets_host, 3, transfer_stream);
+    upload_and_wait(column_scales, column_scales_host, 3, transfer_stream);
 
-    sparse_ops::quantized_blocked_ell_view quantized_row_offset_view{};
+    ::cellerator::tensor::quantized::RuntimeBlockedEllView quantized_row_offset_view{};
     quantized_row_offset_view.rows = blocked_host.rows;
     quantized_row_offset_view.cols = blocked_host.cols;
     quantized_row_offset_view.nnz = blocked_host.nnz;
@@ -447,22 +466,22 @@ int main() {
     quantized_row_offset_view.row_stride_bytes = static_cast<std::uint32_t>(msq::blocked_ell::row_bytes<4>(blocked_host.ell_cols));
     quantized_row_offset_view.bits = 4u;
     quantized_row_offset_view.decode_policy = msq::blocked_ell::decode_policy_column_scale_row_offset;
-    quantized_row_offset_view.block_col_idx = blocked_idx.data;
-    quantized_row_offset_view.packed_values = quantized_row_offset_values.data;
-    quantized_row_offset_view.column_scales = column_scales.data;
-    quantized_row_offset_view.row_offsets = row_offsets.data;
+    quantized_row_offset_view.block_col_idx = blocked_idx.data();
+    quantized_row_offset_view.packed_values = quantized_row_offset_values.data();
+    quantized_row_offset_view.column_scales = column_scales.data();
+    quantized_row_offset_view.row_offsets = row_offsets.data();
 
-    auto quantized_row_offset_out = runtime::allocate_device_buffer<float>(6);
+    auto quantized_row_offset_out = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
     sparse_project::quantized_blocked_ell_spmm_fwd_f32(
         ctx,
         quantized_row_offset_view,
-        rhs.data,
+        rhs.data(),
         2,
         2,
-        quantized_row_offset_out.data,
+        quantized_row_offset_out.data(),
         2);
     float quantized_row_offset_host_out[6] = {};
-    runtime::download_device_buffer(quantized_row_offset_out, quantized_row_offset_host_out, 6);
+    download_and_wait(quantized_row_offset_out, quantized_row_offset_host_out, 6, transfer_stream);
     require(close_value(quantized_row_offset_host_out[1], blocked_spmm_ref_host[1]), "quantized blocked ell row-offset out 1 mismatch");
     require(close_value(quantized_row_offset_host_out[4], blocked_spmm_ref_host[4]), "quantized blocked ell row-offset out 4 mismatch");
 
@@ -481,14 +500,14 @@ int main() {
     quantize_config.range_weight = 0.05f;
     quantize_config.min_dynamic_range = 1.25f;
 
-    auto quantize_log_scale = runtime::allocate_device_buffer<float>(3);
-    auto quantize_offset = runtime::allocate_device_buffer<float>(3);
-    auto quantize_reconstruction = runtime::allocate_device_buffer<float>(1);
-    auto quantize_range = runtime::allocate_device_buffer<float>(1);
-    auto quantize_grad_log = runtime::allocate_device_buffer<float>(3);
-    auto quantize_grad_offset = runtime::allocate_device_buffer<float>(3);
-    runtime::upload_device_buffer(&quantize_log_scale, quantize_log_scale_host, 3);
-    runtime::upload_device_buffer(&quantize_offset, quantize_offset_host, 3);
+    auto quantize_log_scale = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
+    auto quantize_offset = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
+    auto quantize_reconstruction = memory_cuda::SharedDeviceBuffer<float>::allocate(1, ctx.device);
+    auto quantize_range = memory_cuda::SharedDeviceBuffer<float>::allocate(1, ctx.device);
+    auto quantize_grad_log = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
+    auto quantize_grad_offset = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
+    upload_and_wait(quantize_log_scale, quantize_log_scale_host, 3, transfer_stream);
+    upload_and_wait(quantize_offset, quantize_offset_host, 3, transfer_stream);
 
     float quantize_ref_reconstruction = 0.0f;
     float quantize_ref_range = 0.0f;
@@ -508,27 +527,27 @@ int main() {
 
     sparse_ops::base::csr_feature_affine_quantize_fwd_bwd_f16_f32(
         ctx,
-        major_ptr.data,
-        minor_idx.data,
-        values.data,
+        major_ptr.data(),
+        minor_idx.data(),
+        values.data(),
         3u,
         3u,
-        quantize_log_scale.data,
-        quantize_offset.data,
+        quantize_log_scale.data(),
+        quantize_offset.data(),
         quantize_config,
-        quantize_reconstruction.data,
-        quantize_range.data,
-        quantize_grad_log.data,
-        quantize_grad_offset.data);
+        quantize_reconstruction.data(),
+        quantize_range.data(),
+        quantize_grad_log.data(),
+        quantize_grad_offset.data());
 
     float quantize_reconstruction_host = 0.0f;
     float quantize_range_host = 0.0f;
     float quantize_grad_log_host[3] = {};
     float quantize_grad_offset_host[3] = {};
-    runtime::download_device_buffer(quantize_reconstruction, &quantize_reconstruction_host, 1);
-    runtime::download_device_buffer(quantize_range, &quantize_range_host, 1);
-    runtime::download_device_buffer(quantize_grad_log, quantize_grad_log_host, 3);
-    runtime::download_device_buffer(quantize_grad_offset, quantize_grad_offset_host, 3);
+    download_and_wait(quantize_reconstruction, &quantize_reconstruction_host, 1, transfer_stream);
+    download_and_wait(quantize_range, &quantize_range_host, 1, transfer_stream);
+    download_and_wait(quantize_grad_log, quantize_grad_log_host, 3, transfer_stream);
+    download_and_wait(quantize_grad_offset, quantize_grad_offset_host, 3, transfer_stream);
     require(close_value(quantize_reconstruction_host, quantize_ref_reconstruction, 1.0e-4f), "csr quantize reconstruction loss mismatch");
     require(close_value(quantize_range_host, quantize_ref_range, 1.0e-4f), "csr quantize range loss mismatch");
     for (int i = 0; i < 3; ++i) {
@@ -538,23 +557,23 @@ int main() {
 
     sparse_ops::base::blocked_ell_feature_affine_quantize_fwd_bwd_f16_f32(
         ctx,
-        blocked_idx.data,
-        blocked_values.data,
+        blocked_idx.data(),
+        blocked_values.data(),
         blocked_host.rows,
         blocked_host.cols,
         blocked_host.block_size,
         blocked_host.ell_cols,
-        quantize_log_scale.data,
-        quantize_offset.data,
+        quantize_log_scale.data(),
+        quantize_offset.data(),
         quantize_config,
-        quantize_reconstruction.data,
-        quantize_range.data,
-        quantize_grad_log.data,
-        quantize_grad_offset.data);
-    runtime::download_device_buffer(quantize_reconstruction, &quantize_reconstruction_host, 1);
-    runtime::download_device_buffer(quantize_range, &quantize_range_host, 1);
-    runtime::download_device_buffer(quantize_grad_log, quantize_grad_log_host, 3);
-    runtime::download_device_buffer(quantize_grad_offset, quantize_grad_offset_host, 3);
+        quantize_reconstruction.data(),
+        quantize_range.data(),
+        quantize_grad_log.data(),
+        quantize_grad_offset.data());
+    download_and_wait(quantize_reconstruction, &quantize_reconstruction_host, 1, transfer_stream);
+    download_and_wait(quantize_range, &quantize_range_host, 1, transfer_stream);
+    download_and_wait(quantize_grad_log, quantize_grad_log_host, 3, transfer_stream);
+    download_and_wait(quantize_grad_offset, quantize_grad_offset_host, 3, transfer_stream);
     require(close_value(quantize_reconstruction_host, quantize_ref_reconstruction, 1.0e-4f), "blocked ell quantize reconstruction loss mismatch");
     require(close_value(quantize_range_host, quantize_ref_range, 1.0e-4f), "blocked ell quantize range loss mismatch");
     for (int i = 0; i < 3; ++i) {
@@ -565,40 +584,40 @@ int main() {
     runtime::clear(&blocked_cache);
     cs::sparse::clear(&blocked_host);
 
-    auto spmm_grad_values = runtime::allocate_device_buffer<float>(5);
+    auto spmm_grad_values = memory_cuda::SharedDeviceBuffer<float>::allocate(5, ctx.device);
     sparse_ops::base::csr_spmm_bwd_values_f16_f32(
         ctx,
-        major_ptr.data,
-        minor_idx.data,
-        grad_out_spmm.data,
-        rhs.data,
+        major_ptr.data(),
+        minor_idx.data(),
+        grad_out_spmm.data(),
+        rhs.data(),
         3,
         2,
         2,
-        spmm_grad_values.data);
+        spmm_grad_values.data());
     float spmm_grad_values_host[5] = {};
-    runtime::download_device_buffer(spmm_grad_values, spmm_grad_values_host, 5);
+    download_and_wait(spmm_grad_values, spmm_grad_values_host, 5, transfer_stream);
     require(close_value(spmm_grad_values_host[0], 5.0f), "spmm grad value 0 mismatch");
     require(close_value(spmm_grad_values_host[1], 500.0f), "spmm grad value 1 mismatch");
     require(close_value(spmm_grad_values_host[2], 110.0f), "spmm grad value 2 mismatch");
     require(close_value(spmm_grad_values_host[3], 1100.0f), "spmm grad value 3 mismatch");
     require(close_value(spmm_grad_values_host[4], 17.0f), "spmm grad value 4 mismatch");
 
-    auto spmm_grad_rhs = runtime::allocate_device_buffer<float>(6);
+    auto spmm_grad_rhs = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
     sparse_ops::base::csr_spmm_bwd_rhs_f16_f32(
         ctx,
-        major_ptr.data,
-        minor_idx.data,
-        values.data,
-        grad_out_spmm.data,
+        major_ptr.data(),
+        minor_idx.data(),
+        values.data(),
+        grad_out_spmm.data(),
         3,
         3,
         2,
         2,
-        spmm_grad_rhs.data,
+        spmm_grad_rhs.data(),
         2);
     float spmm_grad_rhs_host[6] = {};
-    runtime::download_device_buffer(spmm_grad_rhs, spmm_grad_rhs_host, 6);
+    download_and_wait(spmm_grad_rhs, spmm_grad_rhs_host, 6, transfer_stream);
     require(close_value(spmm_grad_rhs_host[0], 26.0f), "spmm grad rhs 0 mismatch");
     require(close_value(spmm_grad_rhs_host[1], 32.0f), "spmm grad rhs 1 mismatch");
     require(close_value(spmm_grad_rhs_host[2], 9.0f), "spmm grad rhs 2 mismatch");
@@ -653,12 +672,12 @@ int main() {
         upload_on_device(pair_device1, &pair_values1, pair_values1_host, 1);
         upload_on_device(pair_device1, &pair_vector1, vector_host, 3);
 
-        const std::uint32_t *pair_major_ptrs[] = { pair_major0.data, pair_major1.data };
-        const std::uint32_t *pair_minor_ptrs[] = { pair_minor0.data, pair_minor1.data };
-        const __half *pair_value_ptrs[] = { pair_values0.data, pair_values1.data };
-        const float *pair_vector_ptrs[] = { pair_vector0.data, pair_vector1.data };
+        const std::uint32_t *pair_major_ptrs[] = { pair_major0.data(), pair_major1.data() };
+        const std::uint32_t *pair_minor_ptrs[] = { pair_minor0.data(), pair_minor1.data() };
+        const __half *pair_value_ptrs[] = { pair_values0.data(), pair_values1.data() };
+        const float *pair_vector_ptrs[] = { pair_vector0.data(), pair_vector1.data() };
         const std::uint32_t pair_rows[] = { 2u, 1u };
-        float *pair_out_ptrs[] = { pair_out0.data, pair_out1.data };
+        float *pair_out_ptrs[] = { pair_out0.data(), pair_out1.data() };
 
         sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(
             &fleet,
@@ -688,14 +707,14 @@ int main() {
             auto subset_sum0 = allocate_on_device<float>(pair_device0, 2);
             upload_on_device(pair_device0, &subset_partial0, subset_partial0_host, 2);
             upload_on_device(pair_device1, &subset_partial1, subset_partial1_host, 2);
-            const float *subset_partial_ptrs[] = { subset_partial0.data, subset_partial1.data };
+            const float *subset_partial_ptrs[] = { subset_partial0.data(), subset_partial1.data() };
             sparse_ops::dist::reduce_sum_to_leader_f32(
                 &fleet,
                 pair_slots,
                 2,
                 subset_partial_ptrs,
                 2,
-                subset_sum0.data);
+                subset_sum0.data());
             const unsigned int pair_leader_slot[] = { pair_slots[0] };
             runtime::synchronize_slots(fleet, pair_leader_slot, 1);
             float subset_sum_host[2] = {};
@@ -782,35 +801,35 @@ int main() {
             upload_on_device(fleet_device3, &feature_vector3, feature_vector_slot3_host, 1);
 
             const std::uint32_t *feature_major_ptrs[] = {
-                feature_major0.data,
-                feature_major1.data,
-                feature_major2.data,
-                feature_major3.data
+                feature_major0.data(),
+                feature_major1.data(),
+                feature_major2.data(),
+                feature_major3.data()
             };
             const std::uint32_t *feature_minor_ptrs[] = {
-                feature_minor0.data,
-                feature_minor1.data,
-                feature_minor2.data,
-                feature_minor3.data
+                feature_minor0.data(),
+                feature_minor1.data(),
+                feature_minor2.data(),
+                feature_minor3.data()
             };
             const __half *feature_value_ptrs[] = {
-                feature_values0.data,
-                feature_values1.data,
-                feature_values2.data,
-                feature_values3.data
+                feature_values0.data(),
+                feature_values1.data(),
+                feature_values2.data(),
+                feature_values3.data()
             };
             const float *feature_vector_ptrs[] = {
-                feature_vector0.data,
-                feature_vector1.data,
-                feature_vector2.data,
-                feature_vector3.data
+                feature_vector0.data(),
+                feature_vector1.data(),
+                feature_vector2.data(),
+                feature_vector3.data()
             };
             const std::uint32_t feature_rows[] = { 2u, 2u, 2u, 2u };
             float *feature_out_ptrs[] = {
-                feature_out0.data,
-                feature_out1.data,
-                feature_out2.data,
-                feature_out3.data
+                feature_out0.data(),
+                feature_out1.data(),
+                feature_out2.data(),
+                feature_out3.data()
             };
 
             sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(
@@ -829,7 +848,7 @@ int main() {
                 4,
                 const_cast<const float *const *>(feature_out_ptrs),
                 2,
-                feature_sum0.data);
+                feature_sum0.data());
 
             const unsigned int leader_slot_only[] = { fleet_slots[0] };
             runtime::synchronize_slots(fleet, leader_slot_only, 1);

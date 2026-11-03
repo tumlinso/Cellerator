@@ -5,40 +5,33 @@
 #include <Cellerator/nn/query.hh>
 
 #include <cassert>
+#include <cstdint>
 #include <string>
 #include <tuple>
 #include <vector>
 
 namespace nn = cellerator::nn;
 
-struct InputView { const int& value; };
+struct InputView { int value; };
 
-class QueryCell final
-    : public cellerator::CellAccess<InputView>,
-      public cellerator::CellAccess<cellerator::CellIdentityView<std::string>> {
-public:
-    QueryCell(int& information, std::string identity)
-        : information_(information), identity_(std::move(identity)) {}
+struct QueryInstance {
+    int information;
+    std::string identity;
 
-protected:
-    InputView read(cellerator::ViewTag<InputView>) const & override {
-        return {information_};
+    InputView read(cellerator::ViewTag<InputView>) const & {
+        return {information};
     }
-    cellerator::CellIdentityView<std::string> read(
-        cellerator::ViewTag<cellerator::CellIdentityView<std::string>>) const & override {
-        return {identity_};
+    cellerator::CellIdentityView<std::string>
+    read(cellerator::ViewTag<cellerator::CellIdentityView<std::string>>) const & {
+        return {identity};
     }
-
-private:
-    int& information_;
-    std::string identity_;
 };
 
 struct BaseModel {
     int* calls;
-    int operator()(const int& input, nn::Run run) const {
+    int operator()(const InputView& input, nn::Run run) const {
         ++*calls;
-        return input + (run.training ? 100 : 0);
+        return input.value + (run.training ? 100 : 0);
     }
 };
 
@@ -62,18 +55,22 @@ struct Coordinates { int row; };
 struct Decoder {
     int query(const int& source, const Targets& targets,
               const Coordinates& coordinates, nn::Run run) const {
-        return source + targets.columns.front() + coordinates.row + (run.training ? 1000 : 0);
+        return source + targets.columns.front() + coordinates.row +
+            (run.training ? 1000 : 0);
     }
 };
 
 int main() {
-    int information = 5;
-    QueryCell cell(information, "query-cell");
     int calls = 0;
     BaseModel model{&calls};
+    auto cell = cellerator::make_cell(
+        model, QueryInstance{5, "query-cell"});
+
     Binding binding{{10, 20}};
     Decoder decoder;
-    auto selector = [](const int& result, const int& input) { return result * 2 + input; };
+    auto selector = [](const int& result, const InputView& input) {
+        return result * 2 + input.value;
+    };
     auto readout = nn::readout(decoder, selector, binding);
     Targets first_targets{{20}, {10, 20}, {1}};
     Targets second_targets{{10}, {10, 20}, {0}};
@@ -82,23 +79,24 @@ int main() {
     auto first_request = nn::query(readout, first_targets, first_coordinates);
     auto second_request = nn::query(readout, second_targets, second_coordinates);
 
-    // Cell supplies a typed input view; the operation owns evaluation and
-    // shares one base forward across both readout requests.
-    const auto& input = cell.view<InputView>().value;
-    auto both = nn::predict(model, input, first_request, second_request);
+    // The binding exposes a model-specific typed input. Batched NN readouts
+    // stay ordinary operations and share one base evaluation.
+    const auto input = cell.view<InputView>();
+    auto both = nn::predict(cell.model(), input, first_request, second_request);
     static_assert(std::tuple_size_v<decltype(both)> == 2);
-    // One base evaluation is shared across requests; source=(5*2+5)=15.
     assert(calls == 1);
     assert(std::get<0>(both).values == 20);
     assert(std::get<1>(both).values == 22);
 
-    // The second operation call re-reads the cell's live view.
-    information = 8;
-    const auto& changed_input = cell.view<InputView>().value;
-    auto selected = nn::predict_query(model, changed_input, first_request);
+    // Reacquiring the typed view observes the live model-specific instance.
+    cell.instance().information = 8;
+    const auto changed_input = cell.view<InputView>();
+    auto selected = nn::predict_query(
+        cell.model(), changed_input, first_request);
     assert(calls == 2 && selected.values == 29);
 
-    auto training = nn::predict(model, changed_input, nn::Run{true}, first_request);
+    auto training = nn::predict(
+        cell.model(), changed_input, nn::Run{true}, first_request);
     assert(calls == 3 && training.values == 1229);
     assert(cell.view<cellerator::CellIdentityView<std::string>>().value == "query-cell");
 }

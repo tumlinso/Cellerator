@@ -17,14 +17,14 @@ enum class live_input_status : std::uint8_t {
 };
 
 struct relation_identity_input {
-    execution::domain_id source_domain{};
-    execution::domain_id destination_domain{};
-    execution::order_id source_order{};
-    execution::order_id destination_order{};
-    execution::geometry_id geometry{};
-    execution::partition_id partition{};
-    execution::structure_id structure{};
-    execution::structure_epoch structure_epoch{};
+    ::cellerator::structure::domain_id source_domain{};
+    ::cellerator::structure::domain_id destination_domain{};
+    ::cellerator::structure::order_id source_order{};
+    ::cellerator::structure::order_id destination_order{};
+    ::cellerator::structure::geometry_id geometry{};
+    ::cellerator::structure::partition_id partition{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch structure_epoch{};
 };
 
 struct quantitative_relation_input {

@@ -51,4 +51,21 @@ if(CELLERATOR_BUILD_TESTS)
         add_test(NAME ${target} COMMAND ${target})
         set_tests_properties(${target} PROPERTIES LABELS "native_cell")
     endforeach()
+
+    # The typed-only example intentionally needs neither RTTI nor the optional
+    # CellViews destructor from libCellerator; it also stays within C++17.
+    set(foundation_target "cellerator_cell_foundation_example")
+    add_executable(${foundation_target} "${PROJECT_SOURCE_DIR}/examples/native_cell/foundation.cc")
+    target_compile_features(${foundation_target} PRIVATE cxx_std_17)
+    set_target_properties(${foundation_target} PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO)
+    if(MSVC)
+        target_compile_options(${foundation_target} PRIVATE /GR-)
+    else()
+        target_compile_options(${foundation_target} PRIVATE -fno-rtti)
+    endif()
+    add_test(NAME ${foundation_target} COMMAND ${foundation_target})
+    set_tests_properties(${foundation_target} PROPERTIES LABELS "native_cell")
 endif()

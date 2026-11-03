@@ -17,7 +17,7 @@ bool same_location(execution::device_location lhs,
 }
 
 __global__ void transpose_backward_n16_kernel(
-    transpose_projection_view projection,
+    ::cellerator::layout::projection::TransposeViewV1 projection,
     const __half *forward_values,
     const float *row_input,
     float *feature_output) {
@@ -61,13 +61,14 @@ operation_status run_impl(const prepared_operation &prepared,
     const auto &output = launch.outputs[0].storage.dense;
     const auto &values = *launch.values[0].plane;
     const auto &structure = launch.structures[0];
-    const auto &projection = state.projection;
+    const auto &binding = state.projection;
+    const auto &projection = binding.layout;
     if (!execution::same_axis_identity(structure.source_axis,
             state.feature_axis)
         || !execution::same_axis_identity(structure.destination_axis,
             state.row_axis)
         || !execution::same_handle(structure.identity,
-            projection.runtime_structure)
+            binding.runtime_structure)
         || structure.epoch.value != projection.header.structure_epoch
         || structure.logical_edge_count != projection.header.nnz_count
         || input.value_type != execution::numeric_type::f32
@@ -117,7 +118,7 @@ operation_status prepare_impl(const operation_candidate& candidate,
         const_cast<void*>(prepared->persistent.data));
     if (!same_stable_id(candidate.identity, transpose_backward_n16_candidate_id) ||
         state->dense_width != 16 || problem.logical_work_items !=
-            std::uint64_t(state->projection.header.nnz_count) * 16)
+            std::uint64_t(state->projection.layout.header.nnz_count) * 16)
         return fail(operation_status_code::unsupported_problem, "N16 transpose work geometry incompatible");
     // Reuse the existing CTP1 identity/binding validation and contracts at cold
     // preparation only. The resulting plan has its own N16 identity and runner.
@@ -135,7 +136,7 @@ operation_status prepare_impl(const operation_candidate& candidate,
     return validate_prepared_operation(*prepared);
 }
 } // namespace
-void launch_transpose_backward_n16(const transpose_projection_view& projection,
+void launch_transpose_backward_n16(const ::cellerator::layout::projection::TransposeViewV1& projection,
     const __half* forward_values, const float* row_input,
     float* feature_output, cudaStream_t stream) noexcept {
     constexpr std::uint32_t threads = 128u;
@@ -157,7 +158,7 @@ operation_status register_transpose_backward_n16_candidate(candidate_registry* r
 operation_status prepare_transpose_backward_n16_operation(
     const operation_problem& problem, const structure_set_key& structures,
     const projection_key& projection, const numeric_policy& numeric,
-    const prepare_policy& policy, const transpose_projection_view& view,
+    const prepare_policy& policy, const execution::TransposeBinding& view,
     std::int32_t device, execution::axis_identity source, execution::axis_identity destination,
     execution::axis_identity columns, transpose_backward_prepared_state* state,
     prepared_operation* prepared) noexcept {

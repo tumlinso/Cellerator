@@ -1,9 +1,7 @@
 #pragma once
 
 #include <Cellerator/compute/architecture/provider.hh>
-#include <Cellerator/compute/projection/physical_csr.hh>
-#include <Cellerator/compute/projection/physical_feature_major.hh>
-#include <Cellerator/compute/projection/physical_transpose.hh>
+#include <Cellerator/execution/projection_binding.hh>
 #include <Cellerator/execution/identity.hh>
 
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
@@ -48,10 +46,10 @@ enum class relation_orientation : std::uint16_t {
 // pointer. The activation routines consume a directory entry that was already
 // validated and prebound by the CPE2 loader.
 struct projection_activation_context {
-    structure_id structure{};
+    structure::structure_id structure{};
     structure_handle runtime_structure{};
-    structure_epoch epoch{};
-    projection_id projection{};
+    structure::structure_epoch epoch{};
+    structure::projection_id projection{};
     projection_handle runtime_projection{};
     device_location location{};
 };
@@ -122,20 +120,20 @@ projection_activation_status activate_row_masked_projection(
 projection_activation_status activate_feature_major_projection(
     const cellpack::persistence::prebound_projection_view_v1 &prebound,
     const projection_activation_context &context,
-    const compute::math::feature_major_projection_view &validated_host,
-    compute::math::feature_major_projection_view *out) noexcept;
+    const FeatureMajorBinding &validated_host,
+    FeatureMajorBinding *out) noexcept;
 
 struct transpose_projection_activation_context {
     projection_activation_context projection{};
-    projection_id forward_projection{};
+    structure::projection_id forward_projection{};
     projection_handle runtime_forward_projection{};
 };
 
 projection_activation_status activate_transpose_projection(
     const cellpack::persistence::prebound_projection_view_v1 &prebound,
     const transpose_projection_activation_context &context,
-    const compute::math::transpose_projection_view &validated_host,
-    compute::math::transpose_projection_view *out) noexcept;
+    const TransposeBinding &validated_host,
+    TransposeBinding *out) noexcept;
 
 // CSR is currently a caller-prepared runtime view, not a durable CPE2 payload.
 // Activation therefore validates and aliases that view; construction,
@@ -144,8 +142,8 @@ projection_activation_status activate_transpose_projection(
 projection_activation_status activate_csr_projection(
     const cellpack::persistence::prebound_projection_view_v1 &prebound,
     const projection_activation_context &context,
-    const compute::math::execution_csr_view &prepared_view,
-    compute::math::execution_csr_view *out) noexcept;
+    const ::cellerator::layout::projection::CsrViewV1 &prepared_view,
+    ::cellerator::layout::projection::CsrViewV1 *out) noexcept;
 
 static_assert(std::is_trivially_copyable<projection_activation_context>::value,
     "projection activation context must remain pointer-free");

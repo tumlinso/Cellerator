@@ -15,8 +15,8 @@ enum class training_program_backend : std::uint8_t {
 
 struct training_program_request {
     std::uint32_t schema_version = training_program_schema_version;
-    compute::math::feature_major_projection_view forward{};
-    compute::math::transpose_projection_view transpose{};
+    FeatureMajorBinding forward{};
+    TransposeBinding transpose{};
     axis_identity feature_axis{};
     axis_identity module_axis{};
     axis_identity dense_axis{};
@@ -33,8 +33,8 @@ struct training_program {
     std::uint8_t reserved[3]{};
     compute::math::native_training_prepared_state prepared{};
     runtime::execution_session *session = nullptr;
-    projection_id forward_projection{};
-    projection_id transpose_projection{};
+    structure::projection_id forward_projection{};
+    structure::projection_id transpose_projection{};
     output_axis_contract forward_output_order{};
     output_axis_contract input_gradient_order{};
     std::uint64_t preparation_count = 0u;
@@ -78,11 +78,11 @@ struct training_program_launch {
 struct training_program_result {
     training_program_backend backend =
         training_program_backend::native_feature_major_n16;
-    projection_id forward_projection{};
-    projection_id transpose_projection{};
+    structure::projection_id forward_projection{};
+    structure::projection_id transpose_projection{};
     output_axis_contract forward_output_order{};
     output_axis_contract input_gradient_order{};
-    structure_epoch structure_epoch_value{};
+    structure::structure_epoch structure_epoch_value{};
     value_generation consumed_generation{};
     value_generation published_generation{};
     stream_context completion_stream{};

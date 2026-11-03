@@ -1,13 +1,21 @@
 #pragma once
 
 #include <Cellerator/types.cuh>
-#include <Cellerator/compute/projection/identity.hh>
+#include <Cellerator/layout/projection/identity.hh>
 
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
 
 namespace cellerator::compute::math {
+
+using ::cellerator::types::u32;
+using ::cellerator::types::u64;
+using ::cellerator::layout::projection::feature_order_kind;
+using feature_order_identity =
+    ::cellerator::layout::projection::FeatureOrderIdentity;
+using sparse_structure_identity =
+    ::cellerator::layout::projection::SparseStructureIdentity;
 
 inline constexpr u32 operation_contract_schema_version = 1u;
 

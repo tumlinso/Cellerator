@@ -6,10 +6,10 @@ namespace {
 bool same_axis(
     const execution::persistent_axis_identity &left,
     const execution::persistent_axis_identity &right) noexcept {
-    return execution::same_identity(left.domain, right.domain)
-        && execution::same_identity(left.order, right.order)
-        && execution::same_identity(left.geometry, right.geometry)
-        && execution::same_identity(left.partition, right.partition);
+    return ::cellerator::structure::same_identity(left.domain, right.domain)
+        && ::cellerator::structure::same_identity(left.order, right.order)
+        && ::cellerator::structure::same_identity(left.geometry, right.geometry)
+        && ::cellerator::structure::same_identity(left.partition, right.partition);
 }
 
 bool valid_numeric_type(execution::numeric_type type) noexcept {
@@ -19,9 +19,9 @@ bool valid_numeric_type(execution::numeric_type type) noexcept {
 }  // namespace
 
 schema_status validate_typed_relation(const typed_relation &relation) noexcept {
-    if (!execution::valid_identity(relation.structure)
+    if (!::cellerator::structure::valid_identity(relation.structure)
         || relation.epoch.value == 0
-        || !execution::valid_identity(relation.logical_edge_order)) {
+        || !::cellerator::structure::valid_identity(relation.logical_edge_order)) {
         return {schema_status_code::invalid_identity, 0};
     }
     if (execution::validate_persistent_axis_identity(relation.source_axis)

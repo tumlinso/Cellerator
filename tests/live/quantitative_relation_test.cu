@@ -46,22 +46,22 @@ Identity digest_identity(const char *hex) {
 
 fixture::quantitative_fixture_identities fixture_identities() {
     fixture::quantitative_fixture_identities ids{};
-    ids.observation_domain = digest_identity<execution::domain_id>(
+    ids.observation_domain = digest_identity<::cellerator::structure::domain_id>(
         "44ea28be6b4a74a8a64e9cbe7cd5a916ac00a6f722e3c3aa58106aaddb9a5723");
-    ids.feature_domain = digest_identity<execution::domain_id>(
+    ids.feature_domain = digest_identity<::cellerator::structure::domain_id>(
         "8420274d629c50bfd3f9afe1d87ea84e2284c14deb62f9cf97fc806a7711410f");
-    ids.observation_order = digest_identity<execution::order_id>(
+    ids.observation_order = digest_identity<::cellerator::structure::order_id>(
         "8f983e4ce7db7e74a051d86afb000c99a011ec9280875714babc7a6e52439179");
-    ids.feature_order = digest_identity<execution::order_id>(
+    ids.feature_order = digest_identity<::cellerator::structure::order_id>(
         "9e94b86f247b755cb856accf23c0fa667ccd16e2fbe45ca2bdb8d4ae109c0cde");
-    ids.geometry = digest_identity<execution::geometry_id>(
+    ids.geometry = digest_identity<::cellerator::structure::geometry_id>(
         "0d63d9dd8fd3fd8e61e3e62ef58e75ea9cba861550bc318db0f1b430aabf75f1");
-    ids.partition = digest_identity<execution::partition_id>(
+    ids.partition = digest_identity<::cellerator::structure::partition_id>(
         "5afe26a676eab57a8b77485d2880f609a03a4650c649fffc215fef6ac5095f43");
-    ids.structure = digest_identity<execution::structure_id>(
+    ids.structure = digest_identity<::cellerator::structure::structure_id>(
         "154872f3501eebdf01b7dcb7d021ffae46bb7ac36c4cfac628af8daa3022d8ce");
     // Tagged SHA-256 of the CE-LIVE destination-row CSR projection name.
-    ids.destination_row_csr_projection = digest_identity<execution::projection_id>(
+    ids.destination_row_csr_projection = digest_identity<::cellerator::structure::projection_id>(
         "1efb5340f3ed9e74baad47cfb63aeef46393c9e2eb0ed89585ccfa430f3ac98d");
     return ids;
 }
@@ -132,11 +132,11 @@ void verify_generation(const float *host_values, float *device_values,
 int main() {
     const fixture::quantitative_fixture_identities pbmc_ids =
         fixture::pbmc3k_quantitative_v1_identities();
-    require(execution::same_identity(pbmc_ids.feature_domain,
-                digest_identity<execution::domain_id>(
+    require(::cellerator::structure::same_identity(pbmc_ids.feature_domain,
+                digest_identity<::cellerator::structure::domain_id>(
                     "46c0b8e197efcc3099e90064f068b973261c39b25708879910b9395aa19903fd"))
-            && execution::same_identity(pbmc_ids.structure,
-                digest_identity<execution::structure_id>(
+            && ::cellerator::structure::same_identity(pbmc_ids.structure,
+                digest_identity<::cellerator::structure::structure_id>(
                     "5ec566e0bd56b468e9025ffe7c75fc54a4cf0eae2bc93107ae570fae188a7ccb")),
         "PBMC3K manifest identities drifted");
     execution::identity_registry registry{};
@@ -159,15 +159,15 @@ int main() {
             && relation.projection.source_count == source_count
             && relation.projection.destination_count == destination_count,
         "feature-source to cell-destination orientation changed");
-    execution::domain_id resolved_source{}, resolved_destination{};
+    ::cellerator::structure::domain_id resolved_source{}, resolved_destination{};
     require(execution::resolve_identity(registry,
                 relation.structure.source_axis.domain, &resolved_source)
             == execution::identity_registry_status::ok
             && execution::resolve_identity(registry,
                 relation.structure.destination_axis.domain, &resolved_destination)
             == execution::identity_registry_status::ok
-            && execution::same_identity(resolved_source, ids.feature_domain)
-            && execution::same_identity(resolved_destination, ids.observation_domain),
+            && ::cellerator::structure::same_identity(resolved_source, ids.feature_domain)
+            && ::cellerator::structure::same_identity(resolved_destination, ids.observation_domain),
         "persistent feature/cell identities were not preserved");
     const execution::value_binding binding_1{&relation.generations[0], {1u}};
     const execution::value_binding binding_2{&relation.generations[1], {2u}};

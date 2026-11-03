@@ -37,7 +37,7 @@ void require(core::operation_status status, const char *message) {
     std::abort();
 }
 
-void require(cm::physical_view_status status, const char *message) {
+void require(::cellerator::layout::projection::physical_view_status status, const char *message) {
     if (status) return;
     std::cerr << "transpose_backward_candidate_test: " << message
               << " (code=" << static_cast<unsigned>(status.code)
@@ -154,17 +154,17 @@ struct fixture {
     std::vector<__half> values_b;
     unsigned char image_byte = 0u;
     cp::persistent_packing_payload_view source{};
-    execution::structure_id structure_id{0x1185u, 0x1285u};
+    ::cellerator::structure::structure_id structure_id{0x1185u, 0x1285u};
     execution::structure_handle structure_handle{22u, 1u};
-    execution::structure_epoch epoch{8u};
-    execution::projection_id forward_id{0x3185u, 0x3285u};
+    ::cellerator::structure::structure_epoch epoch{8u};
+    ::cellerator::structure::projection_id forward_id{0x3185u, 0x3285u};
     execution::projection_handle forward_handle{42u, 1u};
-    execution::projection_id transpose_id{0x5185u, 0x5285u};
+    ::cellerator::structure::projection_id transpose_id{0x5185u, 0x5285u};
     execution::projection_handle transpose_handle{62u, 1u};
     std::vector<unsigned char> forward_payload;
     std::vector<unsigned char> transpose_payload;
-    cm::feature_major_projection_view forward_view{};
-    cm::transpose_projection_view transpose_view{};
+    execution::FeatureMajorBinding forward_view{};
+    execution::TransposeBinding transpose_view{};
 
     fixture() {
         for (float value : {1.0f, 2.0f, 3.0f, 4.0f,
@@ -231,37 +231,37 @@ struct fixture {
         source.tiles.row_block_value_offsets = value_offsets.data();
         source.tiles.values = values_a.data();
 
-        cm::feature_major_projection_build_request forward_request{};
-        forward_request.structure_identity = structure_id;
+        execution::FeatureMajorBindingBuildRequest forward_request{};
+        forward_request.layout.structure_identity = structure_id;
+        forward_request.layout.structure_epoch_value = epoch;
+        forward_request.layout.projection_identity = forward_id;
+        forward_request.layout.source = source;
         forward_request.runtime_structure = structure_handle;
-        forward_request.structure_epoch_value = epoch;
-        forward_request.projection_identity = forward_id;
         forward_request.runtime_projection = forward_handle;
-        forward_request.source = source;
-        cm::feature_major_projection_requirements forward_required{};
-        require(cm::query_feature_major_projection_requirements_host(
+        ::cellerator::layout::projection::feature_major_projection_requirements forward_required{};
+        require(execution::query_feature_major_binding_requirements_host(
             forward_request, &forward_required), "query FMP1");
         forward_payload.resize(forward_required.payload_bytes);
-        require(cm::build_feature_major_projection_host(forward_request,
+        require(execution::build_feature_major_binding_host(forward_request,
             {forward_payload.data(), forward_payload.size()}, &forward_view),
             "build FMP1");
 
-        cm::transpose_projection_build_request transpose_request{};
+        execution::TransposeBindingBuildRequest transpose_request{};
         transpose_request.projection_identity = transpose_id;
         transpose_request.runtime_projection = transpose_handle;
-        transpose_request.forward = forward_view;
-        cm::transpose_projection_requirements transpose_required{};
-        require(cm::query_transpose_projection_requirements_host(
+        transpose_request.forward = &forward_view;
+        ::cellerator::layout::projection::transpose_projection_requirements transpose_required{};
+        require(execution::query_transpose_binding_requirements_host(
             transpose_request, &transpose_required), "query CTP1");
         transpose_payload.resize(transpose_required.payload_bytes);
-        require(cm::build_transpose_projection_host(transpose_request,
+        require(execution::build_transpose_binding_host(transpose_request,
             {transpose_payload.data(), transpose_payload.size()},
             &transpose_view), "build CTP1");
     }
 };
 
 void test_projection(const fixture &f) {
-    const auto &view = f.transpose_view;
+    const auto &view = f.transpose_view.layout;
     const std::array<cp::u32, 6> offsets{{0u, 2u, 3u, 6u, 8u, 8u}};
     const std::array<cp::u32, 8> rows{{0u, 3u, 2u, 0u, 2u, 4u, 2u, 4u}};
     const std::array<cp::u32, 8> forward{{0u, 1u, 2u, 3u, 4u, 6u, 5u, 7u}};
@@ -276,41 +276,41 @@ void test_projection(const fixture &f) {
         && std::equal(inverse.begin(), inverse.end(),
             view.logical_to_transpose),
         "exact transpose projection and bidirectional edge identity");
-    require(execution::same_identity(view.header.structure_identity,
-            f.forward_view.header.structure_identity)
-        && view.header.structure_epoch == f.forward_view.header.structure_epoch
-        && execution::same_identity(view.header.forward_projection_identity,
+    require(::cellerator::structure::same_identity(view.header.structure_identity,
+            f.forward_view.layout.header.structure_identity)
+        && view.header.structure_epoch == f.forward_view.layout.header.structure_epoch
+        && ::cellerator::structure::same_identity(view.header.forward_projection_identity,
             f.forward_id)
-        && execution::same_identity(view.header.projection_identity,
+        && ::cellerator::structure::same_identity(view.header.projection_identity,
             f.transpose_id)
-        && !execution::same_identity(view.header.projection_identity,
+        && !::cellerator::structure::same_identity(view.header.projection_identity,
             view.header.forward_projection_identity),
         "shared structure and distinct forward/transpose projection identities");
     execution::relation_structure relation{f.structure_handle, f.epoch,
         axis(10u), axis(20u), {1u, 1u}, 8u};
-    const auto map = cm::transpose_value_position_map(view,
+    const auto map = ::cellerator::execution::transpose_value_position_map(f.transpose_view,
         {execution::residency_kind::host, {}, -1, 0u});
     require(execution::validate_value_position_map(relation, map)
             == execution::order_validation_code::ok,
         "transpose value map contract");
-    cm::transpose_projection_view rejected{};
-    execution::projection_id mismatch = f.transpose_id;
+    execution::TransposeBinding rejected{};
+    ::cellerator::structure::projection_id mismatch = f.transpose_id;
     mismatch.low += 1u;
-    require(cm::validate_transpose_projection_payload_host(
+    require(::cellerator::execution::validate_transpose_binding_payload_host(
             f.transpose_payload.data(), f.transpose_payload.size(),
             f.structure_id, f.epoch, mismatch, f.forward_id,
             f.structure_handle, f.transpose_handle, f.forward_handle,
             &rejected).code
-            == cm::physical_view_status_code::incompatible_identity,
+            == ::cellerator::layout::projection::physical_view_status_code::incompatible_identity,
         "mismatched transpose ProjectionId rejection");
-    execution::structure_epoch stale = f.epoch;
+    ::cellerator::structure::structure_epoch stale = f.epoch;
     stale.value += 1u;
-    require(cm::validate_transpose_projection_payload_host(
+    require(::cellerator::execution::validate_transpose_binding_payload_host(
             f.transpose_payload.data(), f.transpose_payload.size(),
             f.structure_id, stale, f.transpose_id, f.forward_id,
             f.structure_handle, f.transpose_handle, f.forward_handle,
             &rejected).code
-            == cm::physical_view_status_code::incompatible_identity,
+            == ::cellerator::layout::projection::physical_view_status_code::incompatible_identity,
         "stale transpose structure epoch rejection");
 }
 
@@ -320,10 +320,10 @@ void test_execution_image(const fixture &f) {
     const std::array<unsigned char, 8> relation{{3,4,5,6,7,8,9,10}};
     const std::array<unsigned char, 8> geometry{{4,5,6,7,8,9,10,11}};
     std::array<cp::u32, 16> transpose_map{};
-    std::copy(f.transpose_view.logical_to_transpose,
-        f.transpose_view.logical_to_transpose + 8u, transpose_map.begin());
-    std::copy(f.transpose_view.transpose_to_logical,
-        f.transpose_view.transpose_to_logical + 8u,
+    std::copy(f.transpose_view.layout.logical_to_transpose,
+        f.transpose_view.layout.logical_to_transpose + 8u, transpose_map.begin());
+    std::copy(f.transpose_view.layout.transpose_to_logical,
+        f.transpose_view.layout.transpose_to_logical + 8u,
         transpose_map.begin() + 8u);
     persistence::execution_section_source sections[6]{};
     sections[0] = {persistence::execution_section_kind::domain_table,
@@ -335,7 +335,7 @@ void test_execution_image(const fixture &f) {
     sections[3] = {persistence::execution_section_kind::semantic_geometry,
         1u, 0u, 8u, 4u, 1u, geometry.data(), geometry.size(), 1u, 8u};
     sections[4] = {persistence::execution_section_kind::projection_payload,
-        cm::transpose_projection_schema_version,
+        ::cellerator::layout::projection::transpose_projection_schema_version,
         persistence::directory_device_readable, 64u,
         f.transpose_id.low, f.transpose_id.high,
         f.transpose_payload.data(), f.transpose_payload.size(), 0u, 0u};
@@ -349,7 +349,7 @@ void test_execution_image(const fixture &f) {
     entry.identity_low = f.transpose_id.low;
     entry.identity_high = f.transpose_id.high;
     entry.kind = persistence::execution_projection_kind::transpose_backward;
-    entry.schema_version = cm::transpose_projection_schema_version;
+    entry.schema_version = ::cellerator::layout::projection::transpose_projection_schema_version;
     entry.flags = persistence::directory_device_readable
         | persistence::projection_transpose_capable;
     entry.operation_family = static_cast<std::uint32_t>(
@@ -393,8 +393,8 @@ void test_execution_image(const fixture &f) {
         && prebound.descriptor.kind
             == persistence::execution_projection_kind::transpose_backward,
         "CPE2 transpose payload/map and capability binding");
-    cm::transpose_projection_view typed{};
-    require(cm::validate_transpose_projection_payload_host(prebound.payload,
+    execution::TransposeBinding typed{};
+    require(::cellerator::execution::validate_transpose_binding_payload_host(prebound.payload,
         prebound.payload_bytes, f.structure_id, f.epoch, f.transpose_id,
         f.forward_id, f.structure_handle, f.transpose_handle,
         f.forward_handle, &typed), "typed CPE2 transpose validation");
@@ -426,7 +426,7 @@ std::vector<double> reference(const fixture &f,
     request.workspace.kind = cm::workspace_policy_kind::no_additional_workspace;
     request.reuse.kind = cm::expected_reuse_kind::persistent;
     request.reuse.expected_run_count = 0u;
-    request.sparse_feature_order.kind = cm::feature_order_kind::packed;
+    request.sparse_feature_order.kind = ::cellerator::layout::projection::feature_order_kind::packed;
     request.sparse_feature_order.feature_count = 5u;
     request.sparse_feature_order.feature_axis_identity_version = 1u;
     request.sparse_feature_order.feature_axis_identity = 0x500585u;
@@ -449,16 +449,16 @@ void run_candidate(const fixture &f, int device) {
     device_array<unsigned char> device_payload(f.transpose_payload.size());
     require_cuda(cudaMemcpy(device_payload.data, f.transpose_payload.data(),
         f.transpose_payload.size(), cudaMemcpyHostToDevice), "upload CTP1");
-    cm::transpose_projection_view device_view{};
-    require(cm::rebind_transpose_projection(f.transpose_view,
+    execution::TransposeBinding device_view{};
+    require(::cellerator::execution::rebind_transpose_binding(f.transpose_view,
         device_payload.data, f.transpose_payload.size(), &device_view),
         "rebind CTP1");
     std::vector<__half> packed_a(8u), packed_b(8u);
-    require(cm::pack_feature_major_values_host(f.forward_view,
+    require(::cellerator::layout::projection::pack_feature_major_values_host(f.forward_view.layout,
         f.values_a.data(), f.values_a.size() * sizeof(__half),
         {packed_a.data(), packed_a.size() * sizeof(__half)}),
         "pack forward generation A");
-    require(cm::pack_feature_major_values_host(f.forward_view,
+    require(::cellerator::layout::projection::pack_feature_major_values_host(f.forward_view.layout,
         f.values_b.data(), f.values_b.size() * sizeof(__half),
         {packed_b.data(), packed_b.size() * sizeof(__half)}),
         "pack forward generation B");
@@ -485,8 +485,8 @@ void run_candidate(const fixture &f, int device) {
     structures.structures[0] = {f.structure_id, f.structure_handle, f.epoch};
     core::projection_key projection{f.transpose_id, f.transpose_handle,
         core::projection_kind::transpose_or_backward,
-        cm::transpose_projection_schema_version,
-        cm::transpose_projection_variant};
+        ::cellerator::layout::projection::transpose_projection_schema_version,
+        ::cellerator::layout::projection::transpose_projection_variant};
     core::operation_problem problem{core::operation_core_schema_version,
         core::operation_kind::sparse_dense_multiply, 0u,
         core::transpose_backward_n1_candidate_id, 1u, 1u, 8u};

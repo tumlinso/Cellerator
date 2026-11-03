@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Cellerator/biology/coordinates.hh>
+#include <Cellerator/structure/coordinates.hh>
+#include <Cellerator/layout/axis_binding.hh>
 
 #include <ATen/ATen.h>
 
@@ -38,10 +39,12 @@ class PreparedRelation {
 public:
     static PreparedRelation from_csr(
         CsrSupport support,
-        const biology::OccurrenceOrderToken& source_order,
-        const biology::OccurrenceOrderToken& target_order,
+        const structure::OccurrenceOrderToken& source_order,
+        const structure::OccurrenceOrderToken& target_order,
         std::uint64_t structural_generation = 0,
-        at::Device device = at::Device(at::kCPU));
+        at::Device device = at::Device(at::kCPU),
+        std::optional<layout::AxisBinding> source_layout = {},
+        std::optional<layout::AxisBinding> target_layout = {});
 
     template<class Index,
              std::enable_if_t<std::is_integral<Index>::value
@@ -49,10 +52,12 @@ public:
                               int> = 0>
     static PreparedRelation from_csr(
         CsrView<Index> support,
-        const biology::OccurrenceOrderToken& source_order,
-        const biology::OccurrenceOrderToken& target_order,
+        const structure::OccurrenceOrderToken& source_order,
+        const structure::OccurrenceOrderToken& target_order,
         std::uint64_t structural_generation = 0,
-        at::Device device = at::Device(at::kCPU)) {
+        at::Device device = at::Device(at::kCPU),
+        std::optional<layout::AxisBinding> source_layout = {},
+        std::optional<layout::AxisBinding> target_layout = {}) {
         static_assert(sizeof(Index) <= sizeof(std::int64_t),
                       "CSR view indices must not exceed int64 width");
         if (support.row_ptr_count != 0 && support.row_ptr == nullptr) {
@@ -80,7 +85,8 @@ public:
             owned.col_indices.push_back(checked_index(support.col_indices[i]));
         }
         return from_csr(std::move(owned), source_order, target_order,
-                        structural_generation, device);
+                        structural_generation, device, std::move(source_layout),
+                        std::move(target_layout));
     }
 
     std::int64_t source_count() const noexcept { return n_sources_; }
@@ -92,10 +98,10 @@ public:
     std::uint64_t generation() const noexcept { return structural_generation_; }
     at::Device device() const noexcept { return device_; }
 
-    const biology::OccurrenceOrderToken& source_order_token() const noexcept {
+    const structure::OccurrenceOrderToken& source_order_token() const noexcept {
         return source_order_;
     }
-    const biology::OccurrenceOrderToken& target_order_token() const noexcept {
+    const structure::OccurrenceOrderToken& target_order_token() const noexcept {
         return target_order_;
     }
     const std::vector<std::int64_t>& source_offsets() const {
@@ -104,11 +110,17 @@ public:
     const std::vector<std::int64_t>& target_offsets() const {
         return target_order_.group_offsets();
     }
-    const std::optional<biology::AxisDescriptor>& source_axis() const {
+    const std::optional<structure::LogicalAxis>& source_axis() const {
         return source_order_.axis();
     }
-    const std::optional<biology::AxisDescriptor>& target_axis() const {
+    const std::optional<structure::LogicalAxis>& target_axis() const {
         return target_order_.axis();
+    }
+    const std::optional<layout::AxisBinding>& source_layout() const noexcept {
+        return source_layout_;
+    }
+    const std::optional<layout::AxisBinding>& target_layout() const noexcept {
+        return target_layout_;
     }
 
     // Device tensors are borrowed read-only structure.  They remain owned by
@@ -148,15 +160,15 @@ public:
     PreparedRelation to(at::Device device) const;
 
     void validate_for(
-        const biology::OccurrenceOrderToken& source_order,
-        const biology::OccurrenceOrderToken& target_order,
+        const structure::OccurrenceOrderToken& source_order,
+        const structure::OccurrenceOrderToken& target_order,
         std::int64_t source_count,
         std::int64_t target_count,
         at::Device device) const;
 
     void validate_for(
-        const biology::OccurrenceOrderToken& source_order,
-        const biology::OccurrenceOrderToken& target_order,
+        const structure::OccurrenceOrderToken& source_order,
+        const structure::OccurrenceOrderToken& target_order,
         std::int64_t source_count,
         std::int64_t target_count,
         std::uint64_t structural_generation,
@@ -169,17 +181,21 @@ private:
 
     static PreparedRelation prepare(
         CsrSupport support,
-        const biology::OccurrenceOrderToken& source_order,
-        const biology::OccurrenceOrderToken& target_order,
+        const structure::OccurrenceOrderToken& source_order,
+        const structure::OccurrenceOrderToken& target_order,
         std::uint64_t structural_generation,
-        at::Device device);
+        at::Device device,
+        std::optional<layout::AxisBinding> source_layout,
+        std::optional<layout::AxisBinding> target_layout);
 
     std::int64_t n_sources_ = 0;
     std::int64_t n_targets_ = 0;
     std::uint64_t structural_generation_ = 0;
     at::Device device_ = at::Device(at::kCPU);
-    biology::OccurrenceOrderToken source_order_;
-    biology::OccurrenceOrderToken target_order_;
+    structure::OccurrenceOrderToken source_order_;
+    structure::OccurrenceOrderToken target_order_;
+    std::optional<layout::AxisBinding> source_layout_;
+    std::optional<layout::AxisBinding> target_layout_;
     std::vector<std::int64_t> host_row_ptr_;
     std::vector<std::int64_t> host_col_indices_;
     std::vector<std::int64_t> host_rows_;

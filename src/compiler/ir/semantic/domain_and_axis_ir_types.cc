@@ -11,7 +11,7 @@ constexpr bool same(semantic_identity_v1 left, semantic_identity_v1 right) noexc
 
 template<typename Tag>
 constexpr bool same(semantic_identity_v1 left,
-                    cellerator::execution::persistent_identity<Tag> right) noexcept {
+                    ::cellerator::structure::persistent_identity<Tag> right) noexcept {
     return left.low == right.low && left.high == right.high;
 }
 

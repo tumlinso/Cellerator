@@ -1,0 +1,149 @@
+{
+  "architecture": "sm_70",
+  "build_argv": [
+    "cmake",
+    "--build",
+    "/tmp/cellerator-shared-product-circuit-build-v1/cmake",
+    "--parallel",
+    "2",
+    "--target",
+    "shared_product_circuit_runner"
+  ],
+  "build_log_sha256": "339dbeca383a38d05873bbe232fe957154cab52230c156be5b6d35a830b67051",
+  "configure_argv": [
+    "cmake",
+    "-S",
+    "/home/tumlinson/Cellerator/bench/factorized_interactions/prototypes/shared_product_circuit",
+    "-B",
+    "/tmp/cellerator-shared-product-circuit-build-v1/cmake",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_CXX_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12",
+    "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12",
+    "-DCUDAToolkit_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+    "-DCMAKE_CUDA_ARCHITECTURES=70",
+    "-DCELLERATOR_SOURCE_ROOT=/home/tumlinson/Cellerator"
+  ],
+  "execution": "compiled only; CUDA binary was not executed",
+  "fast_math": false,
+  "runner": "cmake/shared_product_circuit_runner",
+  "runner_binary_sha256": "f948d55a649f6e7c8f78f95a1f4ab324a1b31a88d161e56657362f8022e7f52a",
+  "runner_bytes": 8699336,
+  "schema": "cellerator.shared_product_circuit.build.v1",
+  "source_closure_sha256": "01153b93dc18ecb6914f7af9dbfdd676cb739d7d6955a8358f3f9c36031f3522",
+  "source_files": [
+    {
+      "bytes": 1440,
+      "path": "bench/factorized_interactions/prototypes/shared_product_circuit/CMakeLists.txt",
+      "sha256": "3a6406c3ebaa05be76353feb837ad06a4b4d8dfeed6112e6ec9d656dbf4ddf83"
+    },
+    {
+      "bytes": 832,
+      "path": "bench/factorized_interactions/prototypes/shared_product_circuit/PROVENANCE.json",
+      "sha256": "276fdc54fbefbc0cada6c1f984dd3e3fded35dd0bf1fc9cc72cb3c916954c41a"
+    },
+    {
+      "bytes": 6947,
+      "path": "bench/factorized_interactions/prototypes/shared_product_circuit/build_runner.py",
+      "sha256": "e296d467dd16bd4c963c32dd608286e722bf678f713ff4dde628d4b31159cbde"
+    },
+    {
+      "bytes": 10977,
+      "path": "bench/factorized_interactions/prototypes/shared_product_circuit/circuit_kernels.cuh",
+      "sha256": "fc75e9905d4fc0db50e64b93ba82adb67e90937b9df34a3e95a9df2a8686048c"
+    },
+    {
+      "bytes": 35629,
+      "path": "bench/factorized_interactions/prototypes/shared_product_circuit/circuit_runner.cu",
+      "sha256": "441393b6fb3b0a67c892ceb1e9bfe76f9582fc88c367b76813f7ebb6bd4addf6"
+    },
+    {
+      "bytes": 5353,
+      "path": "bench/factorized_interactions/prototypes/shared_product_circuit/docs/draft.md",
+      "sha256": "6946c3fda627210be7e1f50dad521300bb1a9362c98cc2011f51f1cacedaafbe"
+    },
+    {
+      "bytes": 2799,
+      "path": "bench/factorized_interactions/wire_input.hh",
+      "sha256": "cafa296b71e50876ea23e681c0ad3cbd5c7b0f55e2e6dab98f66b931c929ba42"
+    },
+    {
+      "bytes": 7979,
+      "path": "include/Cellerator/layout/factorized_interaction.hh",
+      "sha256": "da09a5334276f27d1709f622d8740e32e6af054165e6b92f646acd2e66a64c6f"
+    },
+    {
+      "bytes": 5162,
+      "path": "include/Cellerator/memory/cuda/resources.hh",
+      "sha256": "0194790201c7d1c4d27226cf3142ebc081f6c4e0d2e8a11834b871453b60acde"
+    },
+    {
+      "bytes": 7922,
+      "path": "include/Cellerator/modeling/cuda/factorized_interaction.hh",
+      "sha256": "68ebfc89e51a54c9b6370aa50ca4df61af5a4818c8c68021b7453aa55ee2969c"
+    },
+    {
+      "bytes": 51527,
+      "path": "src/layout/factorized_interaction.cc",
+      "sha256": "c22b9d347c7a37ac6f1e69249fb9e6f22728ae06b42d2b7410c481cb8d222a85"
+    },
+    {
+      "bytes": 863,
+      "path": "src/layout/factorized_interaction_test_support.hh",
+      "sha256": "c129df4b5165b720ccce4e86f2c739e8561265168009c3fbb17b948464766958"
+    },
+    {
+      "bytes": 9361,
+      "path": "src/memory/cuda/resources.cu",
+      "sha256": "180a1af878aba79f424e300da2d4fe12e439aeb897deca140aaaa2958fc28a03"
+    },
+    {
+      "bytes": 34069,
+      "path": "src/modeling/cuda/factorized_interaction.cu",
+      "sha256": "dd0d93671d21aacb52c4ae43ff295eafd3c3c2f2c40fc2ca6f93c208f91257cb"
+    },
+    {
+      "bytes": 42493,
+      "path": "src/modeling/cuda/factorized_interaction_direct.cu",
+      "sha256": "881a1654e6fc98c6729b7f4353f23c3f5f3eb89b245411e7c031194dd69d1562"
+    },
+    {
+      "bytes": 3331,
+      "path": "src/modeling/cuda/factorized_interaction_numerics.cuh",
+      "sha256": "a719bf6356c4ac52f946668ca85a407671ea743166c4b0372aa85f4b612e4dc4"
+    },
+    {
+      "bytes": 23815,
+      "path": "src/modeling/cuda/factorized_interaction_stable.cu",
+      "sha256": "b02611db4eeaf68552c754731865f1ebe46a3f02fdbcab30502506837d53c055"
+    },
+    {
+      "bytes": 1635,
+      "path": "src/modeling/cuda/factorized_interaction_stable.cuh",
+      "sha256": "dcbd3897c78c839c642e03f12f214a67e1e1bcc12b4188f2616b297ef7ac12c9"
+    },
+    {
+      "bytes": 11189,
+      "path": "src/modeling/cuda/prepared_factorized_interaction.cu",
+      "sha256": "2f79a1e6c3fe3fd3a9e581e6ec378a37da16c7ef4aa1479f96fbae608944a135"
+    }
+  ],
+  "source_root": "/home/tumlinson/Cellerator",
+  "toolchain": {
+    "cmake": {
+      "path": "/usr/bin/cmake",
+      "sha256": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+      "version": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n"
+    },
+    "host_cxx": {
+      "path": "/usr/bin/x86_64-linux-gnu-g++-12",
+      "sha256": "1cfb9704049655d08accca3b1aeefd6fc749ef2cfb992ec95a81f39091d7b3ce",
+      "version": "x86_64-linux-gnu-g++-12 (Ubuntu 12.4.0-2ubuntu1~24.04.1) 12.4.0\nCopyright (C) 2022 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
+    },
+    "nvcc": {
+      "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "sha256": "df9974db233a0b7a6c6d59c0e5d74e011566104098bcb3553495ff1b95bdeaf6",
+      "version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0\n"
+    }
+  }
+}

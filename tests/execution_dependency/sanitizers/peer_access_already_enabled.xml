@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The transfer constructor explicitly handles and clears CUDA status 704.
+     This matches only that API result and the transfer-setup call chain.
+     Memory/leak checks and every other API error remain enabled. -->
+<ComputeSanitizerOutput>
+  <record>
+    <kind>Api</kind>
+    <what>
+      <api>^cudaGetLastError$</api>
+      <error>^cudaErrorPeerAccessAlreadyEnabled$</error>
+      <result>704</result>
+    </what>
+    <hostStack>
+      <saveLocation>error</saveLocation>
+      <frame/>
+      <frame><func>^cudaGetLastError$</func></frame>
+      <frame><func>^cellerator::execution::dependency::$</func></frame>
+      <frame><func>^cellerator::execution::dependency::PreparedTransfer::PreparedTransfer$</func></frame>
+    </hostStack>
+  </record>
+</ComputeSanitizerOutput>

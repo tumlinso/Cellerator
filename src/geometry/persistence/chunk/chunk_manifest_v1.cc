@@ -34,14 +34,14 @@ bool checked_multiply(std::uint64_t left, std::uint64_t right,
     return true;
 }
 
-bool width_valid(execution::local_index_width_v1 width,
+bool width_valid(layout::LocalIndexWidth width,
                  std::uint64_t extent) noexcept {
     switch (width) {
-        case execution::local_index_width_v1::u16:
+        case layout::LocalIndexWidth::u16:
             return extent <= (std::uint64_t{1} << 16u);
-        case execution::local_index_width_v1::u32:
+        case layout::LocalIndexWidth::u32:
             return extent <= (std::uint64_t{1} << 32u);
-        case execution::local_index_width_v1::u64:
+        case layout::LocalIndexWidth::u64:
             return true;
     }
     return false;

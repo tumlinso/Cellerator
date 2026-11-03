@@ -366,7 +366,7 @@ set_target_properties(cellerator_csr_fallback_candidate PROPERTIES
 # Construction and value packing are explicit host preparation; prepared
 # execution consumes the native feature-major payload directly for N=1..16.
 add_library(cellerator_feature_major_projection STATIC
-    src/layout/physical_feature_major.cc
+    src/layout/projection/feature_major.cc
 )
 add_library(Cellerator::feature_major_projection ALIAS
     cellerator_feature_major_projection)
@@ -382,7 +382,7 @@ target_link_libraries(cellerator_feature_major_projection PUBLIC
 target_compile_features(cellerator_feature_major_projection PUBLIC cxx_std_17)
 
 add_library(cellerator_transpose_projection STATIC
-    src/layout/physical_transpose.cc
+    src/layout/projection/transpose.cc
 )
 add_library(Cellerator::transpose_projection ALIAS
     cellerator_transpose_projection)

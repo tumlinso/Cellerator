@@ -1,9 +1,11 @@
 #include <Cellerator/modeling/cuda/parameter_transfer.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 #include <cstring>
 #include <exception>
 #include <limits>
 
 namespace cellerator::modeling::cuda {
+namespace mc = ::cellerator::memory::cuda;
 namespace {
 template<class F> void drain_or_terminate(F&& drain) noexcept {
     try { drain(); } catch (...) { std::terminate(); }
@@ -12,9 +14,9 @@ template<class F> void drain_or_terminate(F&& drain) noexcept {
 namespace detail {
 struct ParameterTransferState {
     execution::conditional::ParameterLease source;
-    PinnedBuffer staging;
-    DeviceBuffer device;
-    Event uploaded;
+    mc::PinnedBuffer staging;
+    mc::DeviceBuffer device;
+    mc::Event uploaded;
     ParameterTransferState(execution::conditional::ParameterLease lease, int target)
         : source(std::move(lease)), staging(source.buffers().parameters.bytes),
           device(source.buffers().parameters.bytes, target), uploaded(target) {}
@@ -25,11 +27,11 @@ struct ParameterTransferState {
 
 struct ParameterUseState {
     std::shared_ptr<ParameterTransferState> transfer;
-    Stream stream;
-    Event completed;
+    mc::Stream stream;
+    mc::Event completed;
     bool finished = false;
-    ParameterUseState(std::shared_ptr<ParameterTransferState> owner, const Stream& consumer)
-        : transfer(std::move(owner)), stream(Stream::borrow(consumer.get(), consumer.device())),
+    ParameterUseState(std::shared_ptr<ParameterTransferState> owner, const mc::Stream& consumer)
+        : transfer(std::move(owner)), stream(mc::Stream::borrow(consumer.get(), consumer.device())),
           completed(consumer.device()) {
         stream.wait(transfer->uploaded);
     }
@@ -56,7 +58,7 @@ ParameterTransferMemory ParameterTransfer::required_memory(const ParameterLease&
     }
     return {retained, buffer.bytes, buffer.bytes};
 }
-ParameterTransfer ParameterTransfer::upload(ParameterLease source, const Stream& stream) {
+ParameterTransfer ParameterTransfer::upload(ParameterLease source, const mc::Stream& stream) {
     const auto budget = required_memory(source); // Before allocation or CUDA initialization.
     auto state = std::make_shared<detail::ParameterTransferState>(std::move(source), stream.device());
     if (budget.pinned_staging_bytes)
@@ -73,7 +75,7 @@ ParameterTransfer ParameterTransfer::upload(ParameterLease source, const Stream&
     return ParameterTransfer(std::move(state));
 }
 ParameterTransfer ParameterTransfer::upload(const execution::conditional::ParameterStore& store,
-                                             ExpertKey exact, const Stream& stream) {
+                                             ExpertKey exact, const mc::Stream& stream) {
     return upload(store.acquire(exact), stream);
 }
 ParameterTransfer::ParameterTransfer(std::shared_ptr<detail::ParameterTransferState> state)
@@ -87,11 +89,11 @@ std::string ParameterTransfer::dtype() const { return checked().source.buffers()
 ParameterTransferMemory ParameterTransfer::memory() const { return required_memory(checked().source); }
 bool ParameterTransfer::ready() const { return checked().uploaded.ready(); }
 void ParameterTransfer::wait() const { checked().uploaded.synchronize(); }
-ConstDeviceView ParameterTransfer::view() const {
+mc::ConstDeviceView ParameterTransfer::view() const {
     if (!ready()) throw std::logic_error("parameter transfer has not completed");
     return checked().device.view();
 }
-ParameterExecutionLease ParameterTransfer::acquire_on(const Stream& consumer) const {
+ParameterExecutionLease ParameterTransfer::acquire_on(const mc::Stream& consumer) const {
     if (checked().device.device() != consumer.device()) throw std::invalid_argument("parameter execution device mismatch");
     return ParameterExecutionLease(std::make_unique<detail::ParameterUseState>(state_, consumer));
 }
@@ -106,7 +108,7 @@ detail::ParameterUseState& ParameterExecutionLease::checked() const {
     return *state_;
 }
 execution::conditional::ExpertKey ParameterExecutionLease::key() const { return checked().transfer->source.key(); }
-ConstDeviceView ParameterExecutionLease::view() const {
+mc::ConstDeviceView ParameterExecutionLease::view() const {
     const auto& state = checked();
     if (state.finished) throw std::logic_error("execution lease is sealed");
     return state.transfer->device.view();

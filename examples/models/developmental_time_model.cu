@@ -1,5 +1,7 @@
 #include <Cellerator/examples/models/developmental_time/dT_model.hh>
 #include <Cellerator/compute/candidate/sparse/project.hh>
+#include <Cellerator/interop/formats/blocked_ell.cuh>
+#include <Cellerator/interop/formats/sliced_ell.cuh>
 
 #include <cuda_runtime.h>
 
@@ -14,8 +16,9 @@ namespace cellerator::models::developmental_time {
 
 namespace {
 
-namespace css = ::cellerator::matrix;
+namespace css = ::cellerator::interop::formats;
 namespace sparse_project = ::cellerator::compute::sparse::project;
+namespace memory = ::cellerator::memory;
 
 constexpr int kScalarThreads = 256;
 
@@ -38,11 +41,25 @@ inline void require_batch_(const DevelopmentalTimeBatchView &batch, const char *
 }
 
 template<typename T>
-runtime::device_buffer<T> allocate_device_zeroed_(int device, std::size_t count, const char *label) {
-    runtime::cuda_require(cudaSetDevice(device), "cudaSetDevice(allocate_device_zeroed)");
-    runtime::device_buffer<T> out = runtime::allocate_device_buffer<T>(count);
-    if (count != 0u) runtime::cuda_require(cudaMemset(out.data, 0, count * sizeof(T)), label);
+memory::cuda::SharedDeviceBuffer<T> allocate_device_zeroed_(
+    const runtime::execution_context &ctx, std::size_t count, const char *label) {
+    auto out = memory::cuda::SharedDeviceBuffer<T>::allocate(count, ctx.device);
+    auto stream = memory::cuda::Stream::borrow(ctx.stream, ctx.device);
+    try {
+        out.zero_async(stream);
+    } catch (const std::exception &error) {
+        throw std::runtime_error(std::string(label) + ": " + error.what());
+    }
     return out;
+}
+
+template<typename T>
+void download_on_stream_(const memory::cuda::SharedDeviceBuffer<T> &source,
+                         T *destination, std::size_t count,
+                         const runtime::execution_context &ctx) {
+    auto stream = memory::cuda::Stream::borrow(ctx.stream, ctx.device);
+    source.download_async(destination, count, stream);
+    stream.synchronize();
 }
 
 __device__ __forceinline__ float sigmoid_(float x) {
@@ -387,7 +404,7 @@ inline void encode_batch_(DevelopmentalTimeModel *model, const DevelopmentalTime
                 view.cols,
                 view.block_size,
                 view.ell_cols,
-                model->encoder_weight.data,
+                model->encoder_weight.data(),
                 static_cast<std::int64_t>(model->config.stem_dim),
                 static_cast<std::int64_t>(model->config.stem_dim),
                 stem_out,
@@ -401,7 +418,7 @@ inline void encode_batch_(DevelopmentalTimeModel *model, const DevelopmentalTime
                 view.cols,
                 view.block_size,
                 view.ell_cols,
-                model->encoder_weight.data,
+                model->encoder_weight.data(),
                 static_cast<std::int64_t>(model->config.stem_dim),
                 static_cast<std::int64_t>(model->config.stem_dim),
                 stem_out,
@@ -412,54 +429,54 @@ inline void encode_batch_(DevelopmentalTimeModel *model, const DevelopmentalTime
         const dim3 grid((model->config.stem_dim + block.x - 1u) / block.x, (batch.rows + block.y - 1u) / block.y);
         sliced_ell_spmm_fwd_kernel_<<<grid, block, 0, model->ctx.stream>>>(
             batch.sliced_ell,
-            model->encoder_weight.data,
+            model->encoder_weight.data(),
             model->config.stem_dim,
             stem_out);
         runtime::cuda_require(cudaGetLastError(), "developmental_time sliced_ell_spmm_fwd_kernel");
     }
-    if (model->config.use_encoder_bias) launch_bias_(model->ctx, stem_out, model->encoder_bias.data, batch.rows, model->config.stem_dim);
+    if (model->config.use_encoder_bias) launch_bias_(model->ctx, stem_out, model->encoder_bias.data(), batch.rows, model->config.stem_dim);
 }
 
 struct forward_buffers_ {
-    runtime::device_buffer<float> stem_linear;
-    runtime::device_buffer<float> stem_activated;
-    runtime::device_buffer<float> hidden_linear;
-    runtime::device_buffer<float> hidden_activated;
-    runtime::device_buffer<float> predicted;
+    memory::cuda::SharedDeviceBuffer<float> stem_linear;
+    memory::cuda::SharedDeviceBuffer<float> stem_activated;
+    memory::cuda::SharedDeviceBuffer<float> hidden_linear;
+    memory::cuda::SharedDeviceBuffer<float> hidden_activated;
+    memory::cuda::SharedDeviceBuffer<float> predicted;
 };
 
 inline forward_buffers_ run_forward_(DevelopmentalTimeModel *model, const DevelopmentalTimeBatchView &batch) {
     forward_buffers_ out{
-        allocate_device_zeroed_<float>(model->ctx.device, static_cast<std::size_t>(batch.rows) * model->config.stem_dim, "cudaMemset(developmental_time stem_linear)"),
-        allocate_device_zeroed_<float>(model->ctx.device, static_cast<std::size_t>(batch.rows) * model->config.stem_dim, "cudaMemset(developmental_time stem_activated)"),
-        allocate_device_zeroed_<float>(model->ctx.device, static_cast<std::size_t>(batch.rows) * model->config.hidden_dim, "cudaMemset(developmental_time hidden_linear)"),
-        allocate_device_zeroed_<float>(model->ctx.device, static_cast<std::size_t>(batch.rows) * model->config.hidden_dim, "cudaMemset(developmental_time hidden_activated)"),
-        allocate_device_zeroed_<float>(model->ctx.device, batch.rows, "cudaMemset(developmental_time predicted)")
+        allocate_device_zeroed_<float>(model->ctx, static_cast<std::size_t>(batch.rows) * model->config.stem_dim, "cudaMemset(developmental_time stem_linear)"),
+        allocate_device_zeroed_<float>(model->ctx, static_cast<std::size_t>(batch.rows) * model->config.stem_dim, "cudaMemset(developmental_time stem_activated)"),
+        allocate_device_zeroed_<float>(model->ctx, static_cast<std::size_t>(batch.rows) * model->config.hidden_dim, "cudaMemset(developmental_time hidden_linear)"),
+        allocate_device_zeroed_<float>(model->ctx, static_cast<std::size_t>(batch.rows) * model->config.hidden_dim, "cudaMemset(developmental_time hidden_activated)"),
+        allocate_device_zeroed_<float>(model->ctx, batch.rows, "cudaMemset(developmental_time predicted)")
     };
 
-    encode_batch_(model, batch, out.stem_linear.data);
-    launch_silu_forward_(model->ctx, out.stem_linear.data, out.stem_activated.data, batch.rows * model->config.stem_dim);
+    encode_batch_(model, batch, out.stem_linear.data());
+    launch_silu_forward_(model->ctx, out.stem_linear.data(), out.stem_activated.data(), batch.rows * model->config.stem_dim);
     launch_dense_fwd_(
         model->ctx,
-        out.stem_activated.data,
-        model->hidden_weight.data,
+        out.stem_activated.data(),
+        model->hidden_weight.data(),
         batch.rows,
         model->config.stem_dim,
         model->config.hidden_dim,
-        out.hidden_linear.data);
+        out.hidden_linear.data());
     if (model->config.use_hidden_bias) {
-        launch_bias_(model->ctx, out.hidden_linear.data, model->hidden_bias.data, batch.rows, model->config.hidden_dim);
+        launch_bias_(model->ctx, out.hidden_linear.data(), model->hidden_bias.data(), batch.rows, model->config.hidden_dim);
     }
-    launch_silu_forward_(model->ctx, out.hidden_linear.data, out.hidden_activated.data, batch.rows * model->config.hidden_dim);
+    launch_silu_forward_(model->ctx, out.hidden_linear.data(), out.hidden_activated.data(), batch.rows * model->config.hidden_dim);
     launch_dense_fwd_(
         model->ctx,
-        out.hidden_activated.data,
-        model->output_weight.data,
+        out.hidden_activated.data(),
+        model->output_weight.data(),
         batch.rows,
         model->config.hidden_dim,
         1u,
-        out.predicted.data);
-    if (model->config.use_output_bias) launch_bias_(model->ctx, out.predicted.data, model->output_bias.data, batch.rows, 1u);
+        out.predicted.data());
+    if (model->config.use_output_bias) launch_bias_(model->ctx, out.predicted.data(), model->output_bias.data(), batch.rows, 1u);
     return out;
 }
 
@@ -470,18 +487,18 @@ inline DevelopmentalTimeMetrics compute_loss_(
     const forward_buffers_ &forward,
     float *grad_predicted) {
     DevelopmentalTimeMetrics metrics{};
-    auto loss = allocate_device_zeroed_<float>(model->ctx.device, 1u, "cudaMemset(developmental_time loss)");
+    auto loss = allocate_device_zeroed_<float>(model->ctx, 1u, "cudaMemset(developmental_time loss)");
     const int blocks = static_cast<int>((batch.rows + kScalarThreads - 1u) / kScalarThreads);
     huber_loss_kernel_<<<blocks, kScalarThreads, 0, model->ctx.stream>>>(
-        forward.predicted.data,
+        forward.predicted.data(),
         batch.target_time,
         batch.rows,
         loss_config.huber_delta,
         1.0f / static_cast<float>(batch.rows),
-        loss.data,
+        loss.data(),
         grad_predicted);
     runtime::cuda_require(cudaGetLastError(), "developmental_time huber_loss_kernel");
-    runtime::download_device_buffer(loss, &metrics.regression, 1u);
+    download_on_stream_(loss, &metrics.regression, 1u, model->ctx);
     metrics.total = metrics.regression;
     return metrics;
 }
@@ -525,12 +542,12 @@ inline void apply_optimizer_(
         runtime::cuda_require(cudaGetLastError(), "developmental_time adamw_update_kernel");
     };
 
-    launch_update(model->encoder_weight.data, model->encoder_weight_m1.data, model->encoder_weight_m2.data, grad_encoder_weight, encoder_weight_count);
-    launch_update(model->encoder_bias.data, model->encoder_bias_m1.data, model->encoder_bias_m2.data, grad_encoder_bias, encoder_bias_count);
-    launch_update(model->hidden_weight.data, model->hidden_weight_m1.data, model->hidden_weight_m2.data, grad_hidden_weight, hidden_weight_count);
-    launch_update(model->hidden_bias.data, model->hidden_bias_m1.data, model->hidden_bias_m2.data, grad_hidden_bias, hidden_bias_count);
-    launch_update(model->output_weight.data, model->output_weight_m1.data, model->output_weight_m2.data, grad_output_weight, output_weight_count);
-    launch_update(model->output_bias.data, model->output_bias_m1.data, model->output_bias_m2.data, grad_output_bias, output_bias_count);
+    launch_update(model->encoder_weight.data(), model->encoder_weight_m1.data(), model->encoder_weight_m2.data(), grad_encoder_weight, encoder_weight_count);
+    launch_update(model->encoder_bias.data(), model->encoder_bias_m1.data(), model->encoder_bias_m2.data(), grad_encoder_bias, encoder_bias_count);
+    launch_update(model->hidden_weight.data(), model->hidden_weight_m1.data(), model->hidden_weight_m2.data(), grad_hidden_weight, hidden_weight_count);
+    launch_update(model->hidden_bias.data(), model->hidden_bias_m1.data(), model->hidden_bias_m2.data(), grad_hidden_bias, hidden_bias_count);
+    launch_update(model->output_weight.data(), model->output_weight_m1.data(), model->output_weight_m2.data(), grad_output_weight, output_weight_count);
+    launch_update(model->output_bias.data(), model->output_bias_m1.data(), model->output_bias_m2.data(), grad_output_bias, output_bias_count);
 }
 
 inline void fill_host_weights_(std::vector<float> &values, float scale, float phase) {
@@ -562,25 +579,25 @@ void init(DevelopmentalTimeModel *model, DevelopmentalTimeModelConfig config) {
     const std::uint32_t output_weight_count = config.hidden_dim;
     const std::uint32_t output_bias_count = config.use_output_bias ? 1u : 0u;
 
-    model->encoder_weight = runtime::allocate_device_buffer<float>(encoder_weight_count);
-    model->encoder_bias = runtime::allocate_device_buffer<float>(encoder_bias_count);
-    model->hidden_weight = runtime::allocate_device_buffer<float>(hidden_weight_count);
-    model->hidden_bias = runtime::allocate_device_buffer<float>(hidden_bias_count);
-    model->output_weight = runtime::allocate_device_buffer<float>(output_weight_count);
-    model->output_bias = runtime::allocate_device_buffer<float>(output_bias_count);
+    model->encoder_weight = memory::cuda::SharedDeviceBuffer<float>::allocate(encoder_weight_count, model->ctx.device);
+    model->encoder_bias = memory::cuda::SharedDeviceBuffer<float>::allocate(encoder_bias_count, model->ctx.device);
+    model->hidden_weight = memory::cuda::SharedDeviceBuffer<float>::allocate(hidden_weight_count, model->ctx.device);
+    model->hidden_bias = memory::cuda::SharedDeviceBuffer<float>::allocate(hidden_bias_count, model->ctx.device);
+    model->output_weight = memory::cuda::SharedDeviceBuffer<float>::allocate(output_weight_count, model->ctx.device);
+    model->output_bias = memory::cuda::SharedDeviceBuffer<float>::allocate(output_bias_count, model->ctx.device);
 
-    model->encoder_weight_m1 = allocate_device_zeroed_<float>(model->ctx.device, encoder_weight_count, "cudaMemset(developmental_time encoder_weight_m1)");
-    model->encoder_weight_m2 = allocate_device_zeroed_<float>(model->ctx.device, encoder_weight_count, "cudaMemset(developmental_time encoder_weight_m2)");
-    model->encoder_bias_m1 = allocate_device_zeroed_<float>(model->ctx.device, encoder_bias_count, "cudaMemset(developmental_time encoder_bias_m1)");
-    model->encoder_bias_m2 = allocate_device_zeroed_<float>(model->ctx.device, encoder_bias_count, "cudaMemset(developmental_time encoder_bias_m2)");
-    model->hidden_weight_m1 = allocate_device_zeroed_<float>(model->ctx.device, hidden_weight_count, "cudaMemset(developmental_time hidden_weight_m1)");
-    model->hidden_weight_m2 = allocate_device_zeroed_<float>(model->ctx.device, hidden_weight_count, "cudaMemset(developmental_time hidden_weight_m2)");
-    model->hidden_bias_m1 = allocate_device_zeroed_<float>(model->ctx.device, hidden_bias_count, "cudaMemset(developmental_time hidden_bias_m1)");
-    model->hidden_bias_m2 = allocate_device_zeroed_<float>(model->ctx.device, hidden_bias_count, "cudaMemset(developmental_time hidden_bias_m2)");
-    model->output_weight_m1 = allocate_device_zeroed_<float>(model->ctx.device, output_weight_count, "cudaMemset(developmental_time output_weight_m1)");
-    model->output_weight_m2 = allocate_device_zeroed_<float>(model->ctx.device, output_weight_count, "cudaMemset(developmental_time output_weight_m2)");
-    model->output_bias_m1 = allocate_device_zeroed_<float>(model->ctx.device, output_bias_count, "cudaMemset(developmental_time output_bias_m1)");
-    model->output_bias_m2 = allocate_device_zeroed_<float>(model->ctx.device, output_bias_count, "cudaMemset(developmental_time output_bias_m2)");
+    model->encoder_weight_m1 = allocate_device_zeroed_<float>(model->ctx, encoder_weight_count, "cudaMemset(developmental_time encoder_weight_m1)");
+    model->encoder_weight_m2 = allocate_device_zeroed_<float>(model->ctx, encoder_weight_count, "cudaMemset(developmental_time encoder_weight_m2)");
+    model->encoder_bias_m1 = allocate_device_zeroed_<float>(model->ctx, encoder_bias_count, "cudaMemset(developmental_time encoder_bias_m1)");
+    model->encoder_bias_m2 = allocate_device_zeroed_<float>(model->ctx, encoder_bias_count, "cudaMemset(developmental_time encoder_bias_m2)");
+    model->hidden_weight_m1 = allocate_device_zeroed_<float>(model->ctx, hidden_weight_count, "cudaMemset(developmental_time hidden_weight_m1)");
+    model->hidden_weight_m2 = allocate_device_zeroed_<float>(model->ctx, hidden_weight_count, "cudaMemset(developmental_time hidden_weight_m2)");
+    model->hidden_bias_m1 = allocate_device_zeroed_<float>(model->ctx, hidden_bias_count, "cudaMemset(developmental_time hidden_bias_m1)");
+    model->hidden_bias_m2 = allocate_device_zeroed_<float>(model->ctx, hidden_bias_count, "cudaMemset(developmental_time hidden_bias_m2)");
+    model->output_weight_m1 = allocate_device_zeroed_<float>(model->ctx, output_weight_count, "cudaMemset(developmental_time output_weight_m1)");
+    model->output_weight_m2 = allocate_device_zeroed_<float>(model->ctx, output_weight_count, "cudaMemset(developmental_time output_weight_m2)");
+    model->output_bias_m1 = allocate_device_zeroed_<float>(model->ctx, output_bias_count, "cudaMemset(developmental_time output_bias_m1)");
+    model->output_bias_m2 = allocate_device_zeroed_<float>(model->ctx, output_bias_count, "cudaMemset(developmental_time output_bias_m2)");
 
     std::vector<float> encoder_weight_host(encoder_weight_count, 0.0f);
     std::vector<float> encoder_bias_host(encoder_bias_count, 0.0f);
@@ -592,34 +609,36 @@ void init(DevelopmentalTimeModel *model, DevelopmentalTimeModelConfig config) {
     fill_host_weights_(hidden_weight_host, 0.05f, 0.29f);
     fill_host_weights_(output_weight_host, 0.05f, 0.43f);
 
-    runtime::upload_device_buffer(&model->encoder_weight, encoder_weight_host.data(), encoder_weight_host.size());
-    if (encoder_bias_count != 0u) runtime::upload_device_buffer(&model->encoder_bias, encoder_bias_host.data(), encoder_bias_host.size());
-    runtime::upload_device_buffer(&model->hidden_weight, hidden_weight_host.data(), hidden_weight_host.size());
-    if (hidden_bias_count != 0u) runtime::upload_device_buffer(&model->hidden_bias, hidden_bias_host.data(), hidden_bias_host.size());
-    runtime::upload_device_buffer(&model->output_weight, output_weight_host.data(), output_weight_host.size());
-    if (output_bias_count != 0u) runtime::upload_device_buffer(&model->output_bias, output_bias_host.data(), output_bias_host.size());
+    auto upload_stream = memory::cuda::Stream::borrow(model->ctx.stream, model->ctx.device);
+    model->encoder_weight.upload_async(encoder_weight_host.data(), encoder_weight_host.size(), upload_stream);
+    if (encoder_bias_count != 0u) model->encoder_bias.upload_async(encoder_bias_host.data(), encoder_bias_host.size(), upload_stream);
+    model->hidden_weight.upload_async(hidden_weight_host.data(), hidden_weight_host.size(), upload_stream);
+    if (hidden_bias_count != 0u) model->hidden_bias.upload_async(hidden_bias_host.data(), hidden_bias_host.size(), upload_stream);
+    model->output_weight.upload_async(output_weight_host.data(), output_weight_host.size(), upload_stream);
+    if (output_bias_count != 0u) model->output_bias.upload_async(output_bias_host.data(), output_bias_host.size(), upload_stream);
+    upload_stream.synchronize();
 }
 
 void clear(DevelopmentalTimeModel *model) {
     require_model_(model, "developmental_time::clear");
-    model->encoder_weight = runtime::device_buffer<float>();
-    model->encoder_bias = runtime::device_buffer<float>();
-    model->hidden_weight = runtime::device_buffer<float>();
-    model->hidden_bias = runtime::device_buffer<float>();
-    model->output_weight = runtime::device_buffer<float>();
-    model->output_bias = runtime::device_buffer<float>();
-    model->encoder_weight_m1 = runtime::device_buffer<float>();
-    model->encoder_weight_m2 = runtime::device_buffer<float>();
-    model->encoder_bias_m1 = runtime::device_buffer<float>();
-    model->encoder_bias_m2 = runtime::device_buffer<float>();
-    model->hidden_weight_m1 = runtime::device_buffer<float>();
-    model->hidden_weight_m2 = runtime::device_buffer<float>();
-    model->hidden_bias_m1 = runtime::device_buffer<float>();
-    model->hidden_bias_m2 = runtime::device_buffer<float>();
-    model->output_weight_m1 = runtime::device_buffer<float>();
-    model->output_weight_m2 = runtime::device_buffer<float>();
-    model->output_bias_m1 = runtime::device_buffer<float>();
-    model->output_bias_m2 = runtime::device_buffer<float>();
+    model->encoder_weight = memory::cuda::SharedDeviceBuffer<float>();
+    model->encoder_bias = memory::cuda::SharedDeviceBuffer<float>();
+    model->hidden_weight = memory::cuda::SharedDeviceBuffer<float>();
+    model->hidden_bias = memory::cuda::SharedDeviceBuffer<float>();
+    model->output_weight = memory::cuda::SharedDeviceBuffer<float>();
+    model->output_bias = memory::cuda::SharedDeviceBuffer<float>();
+    model->encoder_weight_m1 = memory::cuda::SharedDeviceBuffer<float>();
+    model->encoder_weight_m2 = memory::cuda::SharedDeviceBuffer<float>();
+    model->encoder_bias_m1 = memory::cuda::SharedDeviceBuffer<float>();
+    model->encoder_bias_m2 = memory::cuda::SharedDeviceBuffer<float>();
+    model->hidden_weight_m1 = memory::cuda::SharedDeviceBuffer<float>();
+    model->hidden_weight_m2 = memory::cuda::SharedDeviceBuffer<float>();
+    model->hidden_bias_m1 = memory::cuda::SharedDeviceBuffer<float>();
+    model->hidden_bias_m2 = memory::cuda::SharedDeviceBuffer<float>();
+    model->output_weight_m1 = memory::cuda::SharedDeviceBuffer<float>();
+    model->output_weight_m2 = memory::cuda::SharedDeviceBuffer<float>();
+    model->output_bias_m1 = memory::cuda::SharedDeviceBuffer<float>();
+    model->output_bias_m2 = memory::cuda::SharedDeviceBuffer<float>();
     runtime::clear(&model->sparse_cache);
     runtime::clear(&model->scratch);
     runtime::clear(&model->ctx);
@@ -627,7 +646,7 @@ void clear(DevelopmentalTimeModel *model) {
     model->config = DevelopmentalTimeModelConfig();
 }
 
-runtime::device_buffer<float> infer_time(DevelopmentalTimeModel *model, const DevelopmentalTimeBatchView &batch) {
+memory::cuda::SharedDeviceBuffer<float> infer_time(DevelopmentalTimeModel *model, const DevelopmentalTimeBatchView &batch) {
     require_model_(model, "developmental_time::infer_time");
     require_batch_(batch, "developmental_time::infer_time", false);
     runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(developmental_time::infer_time)");
@@ -644,11 +663,11 @@ DevelopmentalTimeMetrics evaluate(
     runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(developmental_time::evaluate)");
 
     forward_buffers_ forward = run_forward_(model, batch);
-    runtime::device_buffer<float> grad_predicted = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_predicted = allocate_device_zeroed_<float>(
+        model->ctx,
         batch.rows,
         "cudaMemset(developmental_time eval grad_predicted)");
-    return compute_loss_(model, batch, loss_config, forward, grad_predicted.data);
+    return compute_loss_(model, batch, loss_config, forward, grad_predicted.data());
 }
 
 DevelopmentalTimeMetrics train_step(
@@ -661,146 +680,146 @@ DevelopmentalTimeMetrics train_step(
     runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(developmental_time::train_step)");
 
     forward_buffers_ forward = run_forward_(model, batch);
-    runtime::device_buffer<float> grad_predicted = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_predicted = allocate_device_zeroed_<float>(
+        model->ctx,
         batch.rows,
         "cudaMemset(developmental_time grad_predicted)");
-    DevelopmentalTimeMetrics metrics = compute_loss_(model, batch, loss_config, forward, grad_predicted.data);
+    DevelopmentalTimeMetrics metrics = compute_loss_(model, batch, loss_config, forward, grad_predicted.data());
 
-    runtime::device_buffer<float> grad_hidden_activated = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_hidden_activated = allocate_device_zeroed_<float>(
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.hidden_dim,
         "cudaMemset(developmental_time grad_hidden_activated)");
-    runtime::device_buffer<float> grad_hidden_linear = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_hidden_linear = allocate_device_zeroed_<float>(
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.hidden_dim,
         "cudaMemset(developmental_time grad_hidden_linear)");
-    runtime::device_buffer<float> grad_output_weight = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_output_weight = allocate_device_zeroed_<float>(
+        model->ctx,
         model->config.hidden_dim,
         "cudaMemset(developmental_time grad_output_weight)");
-    runtime::device_buffer<float> grad_output_bias = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_output_bias = allocate_device_zeroed_<float>(
+        model->ctx,
         model->config.use_output_bias ? 1u : 0u,
         "cudaMemset(developmental_time grad_output_bias)");
-    runtime::device_buffer<float> grad_stem_activated = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_stem_activated = allocate_device_zeroed_<float>(
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.stem_dim,
         "cudaMemset(developmental_time grad_stem_activated)");
-    runtime::device_buffer<float> grad_stem_linear = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_stem_linear = allocate_device_zeroed_<float>(
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.stem_dim,
         "cudaMemset(developmental_time grad_stem_linear)");
-    runtime::device_buffer<float> grad_hidden_weight = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_hidden_weight = allocate_device_zeroed_<float>(
+        model->ctx,
         static_cast<std::size_t>(model->config.stem_dim) * model->config.hidden_dim,
         "cudaMemset(developmental_time grad_hidden_weight)");
-    runtime::device_buffer<float> grad_hidden_bias = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_hidden_bias = allocate_device_zeroed_<float>(
+        model->ctx,
         model->config.use_hidden_bias ? model->config.hidden_dim : 0u,
         "cudaMemset(developmental_time grad_hidden_bias)");
-    runtime::device_buffer<float> grad_encoder_weight = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_encoder_weight = allocate_device_zeroed_<float>(
+        model->ctx,
         static_cast<std::size_t>(model->config.input_genes) * model->config.stem_dim,
         "cudaMemset(developmental_time grad_encoder_weight)");
-    runtime::device_buffer<float> grad_encoder_bias = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> grad_encoder_bias = allocate_device_zeroed_<float>(
+        model->ctx,
         model->config.use_encoder_bias ? model->config.stem_dim : 0u,
         "cudaMemset(developmental_time grad_encoder_bias)");
 
     launch_dense_left_grad_(
         model->ctx,
-        grad_predicted.data,
-        model->output_weight.data,
+        grad_predicted.data(),
+        model->output_weight.data(),
         batch.rows,
         model->config.hidden_dim,
         1u,
-        grad_hidden_activated.data);
+        grad_hidden_activated.data());
     launch_dense_right_grad_(
         model->ctx,
-        forward.hidden_activated.data,
-        grad_predicted.data,
+        forward.hidden_activated.data(),
+        grad_predicted.data(),
         batch.rows,
         model->config.hidden_dim,
         1u,
-        grad_output_weight.data);
+        grad_output_weight.data());
     if (model->config.use_output_bias) {
-        row_sum_kernel_<<<1, 1, 0, model->ctx.stream>>>(grad_predicted.data, batch.rows, 1u, grad_output_bias.data);
+        row_sum_kernel_<<<1, 1, 0, model->ctx.stream>>>(grad_predicted.data(), batch.rows, 1u, grad_output_bias.data());
         runtime::cuda_require(cudaGetLastError(), "developmental_time row_sum output_bias");
     }
 
     launch_silu_backward_(
         model->ctx,
-        grad_hidden_activated.data,
-        forward.hidden_linear.data,
-        grad_hidden_linear.data,
+        grad_hidden_activated.data(),
+        forward.hidden_linear.data(),
+        grad_hidden_linear.data(),
         batch.rows * model->config.hidden_dim);
     launch_dense_left_grad_(
         model->ctx,
-        grad_hidden_linear.data,
-        model->hidden_weight.data,
+        grad_hidden_linear.data(),
+        model->hidden_weight.data(),
         batch.rows,
         model->config.stem_dim,
         model->config.hidden_dim,
-        grad_stem_activated.data);
+        grad_stem_activated.data());
     launch_dense_right_grad_(
         model->ctx,
-        forward.stem_activated.data,
-        grad_hidden_linear.data,
+        forward.stem_activated.data(),
+        grad_hidden_linear.data(),
         batch.rows,
         model->config.stem_dim,
         model->config.hidden_dim,
-        grad_hidden_weight.data);
+        grad_hidden_weight.data());
     if (model->config.use_hidden_bias) {
         const int blocks = static_cast<int>((model->config.hidden_dim + kScalarThreads - 1u) / kScalarThreads);
         row_sum_kernel_<<<blocks, kScalarThreads, 0, model->ctx.stream>>>(
-            grad_hidden_linear.data,
+            grad_hidden_linear.data(),
             batch.rows,
             model->config.hidden_dim,
-            grad_hidden_bias.data);
+            grad_hidden_bias.data());
         runtime::cuda_require(cudaGetLastError(), "developmental_time row_sum hidden_bias");
     }
 
     launch_silu_backward_(
         model->ctx,
-        grad_stem_activated.data,
-        forward.stem_linear.data,
-        grad_stem_linear.data,
+        grad_stem_activated.data(),
+        forward.stem_linear.data(),
+        grad_stem_linear.data(),
         batch.rows * model->config.stem_dim);
     if (batch.layout == DevelopmentalTimeLayout::blocked_ell) {
         blocked_ell_encoder_grad_kernel_<<<batch.rows, model->config.stem_dim, 0, model->ctx.stream>>>(
             batch.blocked_ell,
-            grad_stem_linear.data,
+            grad_stem_linear.data(),
             model->config.stem_dim,
-            grad_encoder_weight.data);
+            grad_encoder_weight.data());
         runtime::cuda_require(cudaGetLastError(), "developmental_time blocked_ell_encoder_grad_kernel");
     } else {
         sliced_ell_encoder_grad_kernel_<<<batch.rows, model->config.stem_dim, 0, model->ctx.stream>>>(
             batch.sliced_ell,
-            grad_stem_linear.data,
+            grad_stem_linear.data(),
             model->config.stem_dim,
-            grad_encoder_weight.data);
+            grad_encoder_weight.data());
         runtime::cuda_require(cudaGetLastError(), "developmental_time sliced_ell_encoder_grad_kernel");
     }
     if (model->config.use_encoder_bias) {
         const int blocks = static_cast<int>((model->config.stem_dim + kScalarThreads - 1u) / kScalarThreads);
         row_sum_kernel_<<<blocks, kScalarThreads, 0, model->ctx.stream>>>(
-            grad_stem_linear.data,
+            grad_stem_linear.data(),
             batch.rows,
             model->config.stem_dim,
-            grad_encoder_bias.data);
+            grad_encoder_bias.data());
         runtime::cuda_require(cudaGetLastError(), "developmental_time row_sum encoder_bias");
     }
 
     apply_optimizer_(
         model,
         optimizer_config,
-        grad_encoder_weight.data,
-        grad_encoder_bias.data,
-        grad_hidden_weight.data,
-        grad_hidden_bias.data,
-        grad_output_weight.data,
-        grad_output_bias.data);
+        grad_encoder_weight.data(),
+        grad_encoder_bias.data(),
+        grad_hidden_weight.data(),
+        grad_hidden_bias.data(),
+        grad_output_weight.data(),
+        grad_output_bias.data());
     return metrics;
 }
 

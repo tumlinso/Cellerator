@@ -5,8 +5,9 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/differential/CMakeL
     add_subdirectory(src/compute/operation/differential)
 endif()
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/indexed_mechanism/CMakeLists.txt")
-    add_subdirectory(src/compute/operation/indexed_mechanism)
+if(CELLERATOR_HAS_CUDA
+   AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ops/mechanism/indexed/CMakeLists.txt")
+    add_subdirectory(src/ops/mechanism/indexed)
 endif()
 
 if(CELLERATOR_ENABLE_SPARSE_SUPPORT)
@@ -109,6 +110,16 @@ endif()
 # Export the actual linked dependency closure, including the preserved program
 # and candidate owners. Consumers use these libraries, never source inclusion.
 set(_nf_pending cellerator_native_foundation)
+if(TARGET cellerator_cellpack_geometry)
+    # Export this physical-layout host API as its own target without making it
+    # a dependency of the broad native-foundation umbrella.
+    list(APPEND _nf_pending cellerator_cellpack_geometry)
+endif()
+if(TARGET cellerator_jbc_v1)
+    # The optional prepared-program CUDA adapter consumes this host API. Keep
+    # its real link closure installed for external native consumers.
+    list(APPEND _nf_pending cellerator_jbc_v1)
+endif()
 if(TARGET cellerator_training_program)
     # Keep the native training-program API available to optional bindings
     # without making the native owner depend on any framework adapter.
@@ -158,12 +169,38 @@ while(_nf_pending)
         set_target_properties("${_nf_target}" PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${_nf_public_includes}")
     endif()
 endwhile()
+
+# These two C++17 host targets are the narrow structural dependency closure of
+# the optional factorized-interaction CUDA component.  Export them once in a
+# small shared set so both that component and the full native-foundation set
+# can load them without defining a partial second copy of the targets.
+set(_nf_buildtree_exports "${_nf_exports}")
+if(CMAKE_CUDA_COMPILER_LOADED
+   AND TARGET cellerator_factorized_interaction_cuda
+   AND TARGET cellerator_support
+   AND TARGET cellerator_layout)
+    list(REMOVE_ITEM _nf_exports cellerator_support cellerator_layout)
+    install(TARGETS cellerator_support cellerator_layout
+        EXPORT CelleratorFactorizedInteractionBaseTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT FactorizedInteractionCUDA)
+    install(EXPORT CelleratorFactorizedInteractionBaseTargets NAMESPACE Cellerator::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator
+        COMPONENT FactorizedInteractionCUDA)
+    file(APPEND "${CELLERATOR_HOST_CONFIG}"
+        "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFactorizedInteractionBaseTargets.cmake\")\n")
+endif()
+
 install(TARGETS ${_nf_exports} EXPORT CelleratorNativeTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(EXPORT CelleratorNativeTargets NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
-export(EXPORT CelleratorNativeTargets NAMESPACE Cellerator::
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/CelleratorNativeTargets.cmake")
+# The build-tree convenience export remains a single complete closure even
+# though the installed CUDA component has shared narrow export sets.
+if(_nf_buildtree_exports)
+    export(TARGETS ${_nf_buildtree_exports} NAMESPACE Cellerator::
+        FILE "${CMAKE_CURRENT_BINARY_DIR}/CelleratorNativeTargets.cmake")
+endif()
 # Extend the host package rather than replace its existing compiler contract.
 file(APPEND "${CELLERATOR_HOST_CONFIG}"
     "include(CMakeFindDependencyMacro)\nfind_dependency(CUDAToolkit)\n"

@@ -117,11 +117,11 @@ struct determinism_contract {
 };
 
 struct typed_relation {
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
     execution::persistent_axis_identity source_axis{};
     execution::persistent_axis_identity destination_axis{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::order_id logical_edge_order{};
     std::uint64_t logical_edge_count = 0;
 };
 
@@ -131,8 +131,8 @@ struct typed_relation_view {
 };
 
 struct value_generation_contract {
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
     execution::value_generation generation{};
     value_ownership_mode ownership = value_ownership_mode::logical_primary;
     std::uint8_t reserved[7]{};
@@ -148,7 +148,7 @@ struct operation_problem {
     typed_relation_view relations{};
     execution::persistent_axis_identity values_axis{};
     execution::persistent_axis_identity result_axis{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::order_id logical_edge_order{};
     execution::value_generation expected_value_generation{};
     numerical_policy numeric{};
     output_contract output{};

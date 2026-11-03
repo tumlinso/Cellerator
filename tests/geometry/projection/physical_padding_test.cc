@@ -1,13 +1,13 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 #include <Cellerator/geometry/work_layout.hh>
 
 #include <cassert>
 #include <cstdint>
 
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 namespace geometry = cellerator::geometry;
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 bool build_mma_physical_work_layout_v1(
     const geometry::work_layout_view_v1 &, std::uint32_t, std::uint32_t *,
     std::uint32_t, std::uint32_t *, std::uint32_t, std::uint32_t *) noexcept;

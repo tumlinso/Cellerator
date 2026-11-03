@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace cs = ::cellerator::compute::sampling;
-namespace cm = ::cellerator::matrix;
+namespace cm = ::cellerator::interop::formats;
 namespace ct = ::cellerator::types;
 
 int main() {
@@ -39,7 +39,7 @@ int main() {
 
     ct::ptr_t row_ptr[] = {0u, 0u, 1u, 3u, 4u, 6u, 7u};
     ct::idx_t columns[] = {0u, 0u, 1u, 2u, 0u, 2u, 1u};
-    cm::compressed source{};
+    cm::CompressedPayload source{};
     source.rows = 6u;
     source.cols = 3u;
     source.nnz = 7u;

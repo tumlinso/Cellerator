@@ -11,7 +11,8 @@
 
 using namespace cellerator::compute::gating;
 using namespace cellerator::compute::indexing;
-using cellerator::compute::indexing::indexed_work_item_v1;
+namespace containers = cellerator::containers;
+namespace condition = cellerator::ops::condition;
 
 namespace {
 template <class T> T *device_copy(const T *src, std::size_t n) {
@@ -47,23 +48,23 @@ int main(int argc, char **argv) {
 
     // Edge 0 requires predicate 0, edge 1 is unbound, edge 2 requires NOT
     // predicate 0. The cell-major bitmap therefore changes across cells.
-    const condition_node_v1 nodes[] = {
-        {condition_opcode_v1::predicate, 1, 0, 0, 0, 0, 0},
-        {condition_opcode_v1::logical_not, 1, 0, 0, 1, 0, 0},
+    const condition::NodeV1 nodes[] = {
+        {condition::OpcodeV1::predicate, 1, 0, 0, 0, 0, 0},
+        {condition::OpcodeV1::logical_not, 1, 0, 0, 1, 0, 0},
     };
-    const edge_condition_binding_v1 bindings[] = {{0, 0, 0}, {2, 1, 0}};
-    condition_program_view_v1 host_program{17, nodes, 2, bindings, 2, 3, 1, 0};
+    const condition::EdgeBindingV1 bindings[] = {{0, 0, 0}, {2, 1, 0}};
+    condition::ProgramViewV1 host_program{17, nodes, 2, bindings, 2, 3, 1, 0};
     std::uint32_t host_root_map[3]{};
     std::uint64_t root_map_required = 0u;
-    assert(prepare_condition_root_map_v1(host_program, host_root_map, 3,
-        &root_map_required) == condition_status_v1::success);
+    assert(condition::prepare_root_map(host_program, host_root_map, 3,
+        &root_map_required) == condition::StatusV1::success);
     assert(root_map_required == 3
         && host_root_map[0] == 0
-        && host_root_map[1] == unbound_condition_root_v1
+        && host_root_map[1] == condition::unbound_root_v1
         && host_root_map[2] == 1);
     auto *d_nodes = device_copy(nodes, 2);
     auto *d_bindings = device_copy(bindings, 2);
-    condition_program_view_v1 program{17, d_nodes, 2, d_bindings, 2, 3, 1, 0};
+    condition::ProgramViewV1 program{17, d_nodes, 2, d_bindings, 2, 3, 1, 0};
     auto *d_root_map = device_copy(host_root_map, 3);
     cuda_condition_program_v1 prepared_program{program, d_root_map, 3};
     const std::uint8_t predicates[] = {1, 0};
@@ -90,10 +91,10 @@ int main(int argc, char **argv) {
         d_bitmaps, 2, d_node_scratch, 4, d_status, nullptr) == cudaErrorInvalidValue);
 
     const std::uint64_t candidate_offsets[] = {0, 3, 5};
-    const indexed_work_item_v1 primal_items[] = {{10, 0}, {20, 1}, {30, 2},
+    const containers::IndexedWorkItem primal_items[] = {{10, 0}, {20, 1}, {30, 2},
                                                   {10, 0}, {30, 2}};
     const std::uint64_t derivative_offsets[] = {0, 2, 4};
-    const indexed_work_item_v1 derivative_items[] = {{20, 1}, {30, 2},
+    const containers::IndexedWorkItem derivative_items[] = {{20, 1}, {30, 2},
                                                       {10, 0}, {20, 1}};
     auto *d_candidate_offsets = device_copy(candidate_offsets, 3);
     auto *d_primal_items = device_copy(primal_items, 5);
@@ -108,7 +109,7 @@ int main(int argc, char **argv) {
                       cudaMemcpyHostToDevice) == cudaSuccess);
     assert(cudaMemcpy(d_d_stage_offsets, d_stage_offsets, sizeof(d_stage_offsets),
                       cudaMemcpyHostToDevice) == cudaSuccess);
-    indexed_work_item_v1 *d_p_stage = nullptr, *d_d_stage = nullptr;
+    containers::IndexedWorkItem *d_p_stage = nullptr, *d_d_stage = nullptr;
     assert(cudaMalloc(&d_p_stage, 5 * sizeof(*d_p_stage)) == cudaSuccess);
     assert(cudaMalloc(&d_d_stage, 9 * sizeof(*d_d_stage)) == cudaSuccess);
     std::uint64_t *d_p_counts = nullptr, *d_d_counts = nullptr;
@@ -117,7 +118,7 @@ int main(int argc, char **argv) {
     std::uint64_t *d_p_out_offsets = nullptr, *d_d_out_offsets = nullptr;
     assert(cudaMalloc(&d_p_out_offsets, 3 * sizeof(std::uint64_t)) == cudaSuccess);
     assert(cudaMalloc(&d_d_out_offsets, 3 * sizeof(std::uint64_t)) == cudaSuccess);
-    indexed_work_item_v1 *d_p_out = nullptr, *d_d_out = nullptr;
+    containers::IndexedWorkItem *d_p_out = nullptr, *d_d_out = nullptr;
     assert(cudaMalloc(&d_p_out, 5 * sizeof(*d_p_out)) == cudaSuccess);
     assert(cudaMalloc(&d_d_out, 8 * sizeof(*d_d_out)) == cudaSuccess);
     cuda_candidate_csr_v1 primal{d_candidate_offsets, d_primal_items, 5};
@@ -157,16 +158,16 @@ int main(int argc, char **argv) {
     // The device postings path searches only the selected entity lists and
     // merges them in stable-ID order; it does not inspect unrelated edges.
     using namespace cellerator::compute::indexing;
-    const reverse_posting_record_v1 host_records[] = {
+    const containers::PostingRecord host_records[] = {
         {1, 0, 100, 10, 0}, {1, 0, 100, 30, 2},
         {1, 0, 200, 20, 1}, {1, 0, 200, 30, 2},
     };
-    reverse_posting_view_v1 host_index{5, 7, 17, host_records, 4};
+    containers::PostingIndexView host_index{5, 7, 17, host_records, 4};
     const auto requirements = cuda_posting_projection_requirements_v1(host_index);
     assert(requirements.term_count == 2 && requirements.item_count == 4);
-    posting_term_v1 host_terms[2]{};
+    containers::PostingTerm host_terms[2]{};
     std::uint64_t host_term_offsets[3]{};
-    indexed_work_item_v1 host_items[4]{};
+    containers::IndexedWorkItem host_items[4]{};
     cuda_posting_prepare_requirements_v1 prepared{};
     assert(build_cuda_posting_projection_v1(host_index, host_terms, 2,
         host_term_offsets, 3, host_items, 4, &prepared)
@@ -177,7 +178,7 @@ int main(int argc, char **argv) {
     cuda_reverse_posting_view_v1 posting_index{
         5, 7, 17, d_terms, d_term_offsets, 2, d_posting_items, 4};
     const std::uint64_t query_offsets[] = {0, 1, 3};
-    const posting_term_v1 host_queries[] = {{1, 0, 100}, {1, 0, 100}, {1, 0, 200}};
+    const containers::PostingTerm host_queries[] = {{1, 0, 100}, {1, 0, 100}, {1, 0, 200}};
     auto *d_query_offsets = device_copy(query_offsets, 3);
     auto *d_queries = device_copy(host_queries, 3);
     cuda_posting_scratch_v1 posting_scratch{};
@@ -188,7 +189,7 @@ int main(int argc, char **argv) {
     assert(cudaMalloc(&posting_scratch.status, sizeof(cuda_posting_status_v1))
            == cudaSuccess);
     std::uint64_t *d_posting_offsets = nullptr;
-    indexed_work_item_v1 *d_union_items = nullptr;
+    containers::IndexedWorkItem *d_union_items = nullptr;
     assert(cudaMalloc(&d_posting_offsets, 3 * sizeof(std::uint64_t)) == cudaSuccess);
     assert(cudaMalloc(&d_union_items, 5 * sizeof(*d_union_items)) == cudaSuccess);
     cuda_posting_output_v1 posting_output{d_posting_offsets, 3, d_union_items, 5};
@@ -209,9 +210,9 @@ int main(int argc, char **argv) {
            && posting_result[3].logical_edge_id == 20
            && posting_result[4].logical_edge_id == 30);
 
-    indexed_work_item_v1 sentinel{999, 999};
+    containers::IndexedWorkItem sentinel{999, 999};
     std::uint64_t offset_sentinel = 999;
-    indexed_work_item_v1 *d_small_items = nullptr;
+    containers::IndexedWorkItem *d_small_items = nullptr;
     std::uint64_t *d_small_offsets = nullptr;
     assert(cudaMalloc(&d_small_items, 4 * sizeof(*d_small_items)) == cudaSuccess);
     assert(cudaMalloc(&d_small_offsets, 3 * sizeof(std::uint64_t)) == cudaSuccess);
@@ -231,7 +232,7 @@ int main(int argc, char **argv) {
     assert(posting_status.code
            == static_cast<std::uint32_t>(cuda_posting_code_v1::output_overflow));
     assert(posting_status.required == 5);
-    indexed_work_item_v1 unchanged{};
+    containers::IndexedWorkItem unchanged{};
     std::uint64_t unchanged_offset = 0;
     assert(cudaMemcpy(&unchanged, d_small_items, sizeof(unchanged),
                       cudaMemcpyDeviceToHost) == cudaSuccess);
@@ -242,19 +243,19 @@ int main(int argc, char **argv) {
     // Source-ordered unique terms whose posting ranges are globally disjoint
     // use the parallel count/concatenate path. The other rows deliberately
     // violate its precondition and must retain exact merge behavior.
-    const reverse_posting_record_v1 disjoint_records[] = {
+    const containers::PostingRecord disjoint_records[] = {
         {1, 0, 100, 10, 0}, {1, 0, 100, 20, 1},
         {1, 0, 200, 30, 2}, {1, 0, 200, 40, 3},
         {1, 0, 300, 20, 4}, {1, 0, 300, 50, 5},
         {1, 0, 400, 60, 6},
     };
-    reverse_posting_view_v1 disjoint_host_index{
+    containers::PostingIndexView disjoint_host_index{
         8, 9, 18, disjoint_records, 7};
     const auto disjoint_requirements =
         cuda_posting_projection_requirements_v1(disjoint_host_index);
-    posting_term_v1 disjoint_terms[4]{};
+    containers::PostingTerm disjoint_terms[4]{};
     std::uint64_t disjoint_term_offsets[5]{};
-    indexed_work_item_v1 disjoint_items[7]{};
+    containers::IndexedWorkItem disjoint_items[7]{};
     cuda_posting_prepare_requirements_v1 disjoint_prepared{};
     assert(build_cuda_posting_projection_v1(disjoint_host_index,
         disjoint_terms, 4, disjoint_term_offsets, 5, disjoint_items, 7,
@@ -268,7 +269,7 @@ int main(int argc, char **argv) {
         8, 9, 18, d_disjoint_terms, d_disjoint_term_offsets, 4,
         d_disjoint_items, 7};
     const std::uint64_t disjoint_query_offsets[] = {0, 3, 5, 7, 9, 10};
-    const posting_term_v1 disjoint_queries[] = {
+    const containers::PostingTerm disjoint_queries[] = {
         {1, 0, 100}, {1, 0, 200}, {1, 0, 400}, // verified concat
         {1, 0, 400}, {1, 0, 100},             // unsorted fallback
         {1, 0, 100}, {1, 0, 300},             // overlap fallback
@@ -286,11 +287,11 @@ int main(int argc, char **argv) {
     assert(cudaMalloc(&disjoint_scratch.status,
         sizeof(cuda_posting_status_v1)) == cudaSuccess);
     std::uint64_t *d_disjoint_output_offsets = nullptr;
-    indexed_work_item_v1 *d_disjoint_output_items = nullptr;
+    containers::IndexedWorkItem *d_disjoint_output_items = nullptr;
     assert(cudaMalloc(&d_disjoint_output_offsets,
         6 * sizeof(std::uint64_t)) == cudaSuccess);
     assert(cudaMalloc(&d_disjoint_output_items,
-        13 * sizeof(indexed_work_item_v1)) == cudaSuccess);
+        13 * sizeof(containers::IndexedWorkItem)) == cudaSuccess);
     cuda_posting_output_v1 disjoint_output{
         d_disjoint_output_offsets, 6, d_disjoint_output_items, 13};
     assert(cuda_query_reverse_postings_any_v1(disjoint_index, 18, 5,

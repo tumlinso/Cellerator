@@ -28,7 +28,7 @@ struct value_gradient_identity_v1 {
     execution::value_generation value_generation{};
     operation::v2::stable_id gradient_identity{};
     execution::value_generation gradient_generation{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::order_id logical_edge_order{};
     std::uint64_t logical_edge_count = 0;
     std::uint32_t flags = 0;
     std::uint32_t reserved = 0;
@@ -82,10 +82,10 @@ validate_value_gradient_identity_v1(
     if (identity.value_generation.value == 0) {
         return {value_gradient_identity_code_v1::missing_value_generation};
     }
-    if (!execution::valid_identity(identity.logical_edge_order)) {
+    if (!::cellerator::structure::valid_identity(identity.logical_edge_order)) {
         return {value_gradient_identity_code_v1::invalid_logical_edge_order};
     }
-    if (!execution::same_identity(
+    if (!::cellerator::structure::same_identity(
             identity.logical_edge_order, identity.family.logical_edge_order)) {
         return {value_gradient_identity_code_v1::
                     logical_edge_order_mismatch};
@@ -135,7 +135,7 @@ validate_value_gradient_identity_v1(
     return same_support_family_identity_v1(lhs.family, rhs.family)
         && operation::v2::same_stable_id(
             lhs.value_identity, rhs.value_identity)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             lhs.logical_edge_order, rhs.logical_edge_order)
         && lhs.logical_edge_count == rhs.logical_edge_count;
 }

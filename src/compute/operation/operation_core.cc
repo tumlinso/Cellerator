@@ -10,7 +10,7 @@ bool valid_stable_id(stable_id value) noexcept {
 }
 
 bool valid_structure_key(const structure_key &key) noexcept {
-    return execution::valid_identity(key.persistent)
+    return ::cellerator::structure::valid_identity(key.persistent)
         && execution::valid_handle(key.runtime)
         && key.epoch.value != 0u;
 }
@@ -22,7 +22,7 @@ bool valid_structure_set_key(const structure_set_key &keys) noexcept {
     for (std::uint32_t index = 0u; index < keys.count; ++index) {
         if (!valid_structure_key(keys.structures[index])) return false;
         for (std::uint32_t previous = 0u; previous < index; ++previous)
-            if (execution::same_identity(
+            if (::cellerator::structure::same_identity(
                     keys.structures[previous].persistent,
                     keys.structures[index].persistent)
                 || execution::same_handle(
@@ -34,7 +34,7 @@ bool valid_structure_set_key(const structure_set_key &keys) noexcept {
 }
 
 bool valid_projection_key(const projection_key &key) noexcept {
-    return execution::valid_identity(key.persistent)
+    return ::cellerator::structure::valid_identity(key.persistent)
         && execution::valid_handle(key.runtime)
         && key.schema_version != 0u;
 }

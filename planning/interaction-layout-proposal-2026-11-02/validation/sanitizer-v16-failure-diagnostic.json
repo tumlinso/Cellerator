@@ -1,0 +1,66 @@
+{
+  "schema": "cellerator.factorized_interactions.sanitizer_failure_diagnostic.v1",
+  "registration": {
+    "benchmark": "cellerator-factorized-interactions",
+    "revision": 16,
+    "packet": "cuda-sanitizer",
+    "packet_index": 3,
+    "packet_fingerprint": "5179aebddde68024e10dfd57ed90093adcbbdc3b61e0b55d0e7563330b3432b5"
+  },
+  "identity": {
+    "source_closure_sha256": "9afe1e5a6e119f5f1565ac02c2971cdf5ad4117453f0aa9f604f69371bb582a6",
+    "source_fingerprint": "07173fdb049eb5312c0e18eccb4da845fe57f0945c8ab610a2a8d6890b4a1f31",
+    "build_fingerprint": "5a2ae37ebdb637ade195994448f8b15bc048e29a45f610f5573a8cc5504f9543",
+    "build_output_identity": "76b7e4cefcd57130b3ba5d7c9038ed99c899add154dd48552467f12c8f31c882",
+    "runner_sha256": "a208a0f31d2ca8ccde929bf99532faa623f7f99267adb8aa37b5e0b6ce41dd02",
+    "sanitizer_suite_sha256": "c5af5b41e14b2a182d8ed479902f8e60e79cb45bc46bd77f59f6b1a10afc0c08",
+    "compute_sanitizer_wrapper_sha256": "26a4ca6e5f433b7b214d923a0d35307cfd80ade2188fd40fd501e7e510407d7a",
+    "selected_compute_sanitizer_binary_sha256": "979adf037f4e3434a976b7f0912b0a05ce3b062e31b2a73397a1bf1cd5f57547"
+  },
+  "scheduler": {
+    "autobench_attempt_id": "62bda0e3-e058-472b-b2c7-d6cddfe48ff4",
+    "scheduler_job_id": "f2d39ec4-a898-4545-a7ea-a4ce2e4fd08c",
+    "scheduler_attempt_id": "8c588608-5379-4f4a-a0c5-45a332576288",
+    "job_state": "succeeded",
+    "cleanup_verified": true,
+    "resource": "Tesla V100-SXM2-16GB",
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "precondition": "two idle/quiescence samples recorded before execution",
+    "autobench_packet_state": "failed",
+    "worker_returncode": 1,
+    "worker_duration_seconds": 3.184568628999841
+  },
+  "observed_failure": {
+    "exception": "json.decoder.JSONDecodeError",
+    "traceback_site": "run_sanitizer_suite.py:142",
+    "expression": "json.loads(proc.stdout)",
+    "message": "Expecting value: line 1 column 1 (char 0)",
+    "ordering_evidence": "The preceding `if proc.returncode: raise RuntimeError(...)` did not run, so the validator subprocess returned zero; its captured stdout did not begin with JSON accepted by json.loads.",
+    "first_suite_case": {
+      "tool": "memcheck",
+      "route": "packet",
+      "workload": "correctness_ordered_tied_zero",
+      "activation_dtype": "fp16",
+      "parameter_dtype": "fp16",
+      "output_dtype": "fp16",
+      "leak_check": "full"
+    }
+  },
+  "evidence_availability": {
+    "retained_autobench_worker_stderr": true,
+    "case_stdout_and_stderr_files_written_by_suite_before_parse": true,
+    "failed_packet_output_imported": false,
+    "packet_index_3_evidence_directory_present": false,
+    "attempt_scratch_present": false,
+    "scheduler_job_logs": "read denied: permission_denied, entity belongs to another principal; no alternate principal or log path used",
+    "validator_child_stdout_or_stderr_available": false
+  },
+  "assessment": {
+    "leading_hypothesis": "validate_runner.py forwards the wrapped runner's stdout because subprocess.run(command, check=True) has no capture_output setting; a Compute Sanitizer banner before the validator JSON could trigger the char-zero parse error. Raw bytes are not retained, so this remains unconfirmed pending the direct packet.",
+    "sanitizer_case_result": "unknown",
+    "sanitizer_finding_observed": false,
+    "sanitizer_suite_qualified": false,
+    "timing_qualified": false,
+    "next_diagnostic_needed": "Capture validator child returncode, stdout and stderr directly in a managed packet result before attempting the full strict suite again."
+  }
+}

@@ -66,8 +66,8 @@ struct acquisition_request {
     cpe2_disposition cpe2 = cpe2_disposition::not_applicable;
     fallback_policy fallback = fallback_policy::reject;
     std::uint8_t required_value_modes = logical_primary_values;
-    structure_id structure{};
-    structure_epoch epoch{};
+    structure::structure_id structure{};
+    structure::structure_epoch epoch{};
     immutable_byte_span source{};
     const projection_requirement *projection_requirements = nullptr;
     std::uint64_t projection_requirement_count = 0;

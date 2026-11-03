@@ -1,0 +1,19 @@
+[benchmark]
+name = "cgs-ste-2"
+revision = 3
+[source]
+include = ["scripts/triage_binary.py", "experiment.json"]
+[data]
+paths = [".autobench/data/closure.tar.gz", ".autobench/data/frozen-binary", ".autobench/data/frozen-build.json"]
+[build]
+argv = ["python3", "{snapshot}/scripts/triage_binary.py", "build", "--archive", "{snapshot}/.autobench/data/closure.tar.gz", "--archive-sha256", "6aec4e10d969c602d418dcd45b50f8a6ba002b68d4e1bf11843e3df9fa1bf4b9", "--binary", "{snapshot}/.autobench/data/frozen-binary", "--receipt", "{snapshot}/.autobench/data/frozen-build.json", "--build", "{build}"]
+expected_seconds = 60
+kill_seconds = 240
+resources = { cpu_cores = 2, host_memory_bytes = 2147483648 }
+[[packet]]
+name = "full-chain-triage"
+kind = "correctness"
+argv = ["python3", "{snapshot}/scripts/triage_binary.py", "run", "--build", "{build}", "--config", "{snapshot}/experiment.json", "--uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a", "--output", "{output}/triage-packet"]
+expected_seconds = 300
+kill_seconds = 600
+resources = { tags = ["gpu.exclusive"], scheduler = [{kind = "cpu", quantities = {cores = 2}, mode = "shared"}, {kind = "memory", quantities = {bytes = 2147483648}, mode = "shared"}, {kind = "gpu", quantities = {memory_bytes = 2147483648}, mode = "exclusive", selectors = {resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"}}] }

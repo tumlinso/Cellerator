@@ -1,0 +1,20 @@
+{
+  "schema": "cellerator.native_data.build_configuration_recheck.v1",
+  "changes": {
+    "cmake/CelleratorNativeData.cmake": {
+      "original_sha256": "21ba1bbef468efb7fc10b56c1bca1066c4d687afedc02fd621fac7e71b90cb0f",
+      "current_sha256": "a7d57d78f2fca86871e47e1abd2f9151d23b8ce9ac1f9a421c1b534716b60d5d",
+      "change": "remove trailing blank line only"
+    },
+    "cmake/CelleratorNativeDataCUDA.cmake": {
+      "original_sha256": "1a04e8c9d526adf336cb71125ea6c32567d6ee84713452528bc621ad7e7a7bb4",
+      "current_sha256": "9e9d474d070fa974c154edeb67cbed23e2aa519e1ff7119051e5a84ac3e5496a",
+      "change": "remove trailing blank line only"
+    }
+  },
+  "command": "cmake --build /tmp/cellerator-native-data-sm70-gcc12 --target <all six recorded executables> --parallel 4",
+  "result": "pass",
+  "binary_hashes_unchanged": 6,
+  "compile_link_records_identical": 432,
+  "interpretation": "Only terminal blank lines changed after qualification; all compiled source/header bytes and generated compile/link commands remain identical, and rebuilding produces the same qualified binary hashes."
+}

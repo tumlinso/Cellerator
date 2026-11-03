@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compat/cp_math_v1/operation.hh>
-#include <Cellerator/compute/projection/physical_csr.hh>
+#include <Cellerator/layout/projection/csr.hh>
 
 #include <cuda_runtime_api.h>
 
@@ -9,6 +9,9 @@
 #include <type_traits>
 
 namespace cellerator::compute::math {
+
+using physical_view_status =
+    ::cellerator::layout::projection::physical_view_status;
 
 inline constexpr u32 packed_dense_operand_schema_version = 1u;
 

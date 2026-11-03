@@ -1,4 +1,8 @@
-#include <Cellerator/compute/gating/condition_program.hh>
+#include <Cellerator/ops/condition/program.hh>
+#include <Cellerator/execution/dependency/workset_view.hh>
+#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/geometry/dependency/compact_support.hh>
+#include <Cellerator/geometry/dependency/posting_index.hh>
 #include <Cellerator/compute/indexing/temporal_occurrences.hh>
 #include <Cellerator/compute/support/adaptive_support.hh>
 #include <Cellerator/compute/support/proposal_discovery.hh>
@@ -8,25 +12,30 @@
 #include <limits>
 
 using namespace cellerator::compute;
+namespace compact = cellerator::geometry::dependency::compact;
+namespace containers = cellerator::containers;
+namespace condition = cellerator::ops::condition;
+namespace execution = cellerator::execution;
+namespace geometry = cellerator::geometry;
 
 int main() {
-    const support::logical_support_edge_v1 base_edges[] = {{10u, 0u, 2u, 0u}, {20u, 2u, 2u, 0u}};
-    const support::logical_support_participant_v1 base_parts[] = {
+    const compact::EdgeV1 base_edges[] = {{10u, 0u, 2u, 0u}, {20u, 2u, 2u, 0u}};
+    const compact::ParticipantV1 base_parts[] = {
         {0u, 0u, 101u}, {1u, 0u, 201u}, {0u, 0u, 102u}, {1u, 0u, 201u}};
-    const support::logical_support_edge_v1 delta_edges[] = {{30u, 0u, 2u, 0u}};
-    const support::logical_support_participant_v1 delta_parts[] = {
+    const compact::EdgeV1 delta_edges[] = {{30u, 0u, 2u, 0u}};
+    const compact::ParticipantV1 delta_parts[] = {
         {0u, 0u, 101u}, {1u, 0u, 202u}};
-    const support::logical_support_view_v1 base{1u, 0u, 7u, 99u, 3u,
+    const compact::ViewV1 base{1u, 0u, 7u, 99u, 3u,
         base_edges, 2u, base_parts, 4u};
-    const support::logical_support_view_v1 delta{1u, 0u, 8u, 99u, 3u,
+    const compact::ViewV1 delta{1u, 0u, 8u, 99u, 3u,
         delta_edges, 1u, delta_parts, 2u};
-    const support::support_snapshot_pair_v1 snapshot{&base, &delta, 3u};
-    assert(support::validate_support_snapshot_pair_v1(snapshot)
-        == support::support_snapshot_status_v1::success);
+    const compact::SnapshotPairV1 snapshot{&base, &delta, 3u};
+    assert(compact::validate_snapshot(snapshot)
+        == compact::SnapshotStatusV1::success);
 
     support::adaptive_support_manager_v1 manager;
     assert(manager.initialize(base, 8u) == support::adaptive_support_status_v1::success);
-    const support::logical_support_participant_v1 promoted_parts[] = {
+    const compact::ParticipantV1 promoted_parts[] = {
         {0u, 0u, 103u}, {1u, 0u, 203u}};
     assert(manager.stage_promotion({40u, promoted_parts, 2u, 0u, 11u, 4u, 0.75f})
         == support::adaptive_support_status_v1::success);
@@ -36,10 +45,10 @@ int main() {
         == support::adaptive_support_status_v1::live_forward_tapes);
     assert(manager.retire_forward_tape(3u) == support::adaptive_support_status_v1::success);
     assert(manager.publish_pending(4u) == support::adaptive_support_status_v1::success);
-    support::support_snapshot_pair_v1 managed_snapshot{};
+    compact::SnapshotPairV1 managed_snapshot{};
     assert(manager.snapshot(&managed_snapshot) == support::adaptive_support_status_v1::success);
-    assert(support::validate_support_snapshot_pair_v1(managed_snapshot)
-        == support::support_snapshot_status_v1::success);
+    assert(compact::validate_snapshot(managed_snapshot)
+        == compact::SnapshotStatusV1::success);
     assert(managed_snapshot.base->edge_count == 1u
         && managed_snapshot.base->edges[0].logical_edge_id == 20u
         && managed_snapshot.delta->edge_count == 1u
@@ -61,7 +70,7 @@ int main() {
     assert(manager.promotion_records().size() == 2u
         && manager.promotion_records()[1].scorer_generation == 5u);
 
-    const support::logical_support_view_v1 initial_base{1u, 0u, 7u, 99u, 1u,
+    const compact::ViewV1 initial_base{1u, 0u, 7u, 99u, 1u,
         base_edges, 2u, base_parts, 4u};
     support::adaptive_support_manager_v1 restored_manager;
     assert(restored_manager.initialize(initial_base, 8u)
@@ -80,7 +89,7 @@ int main() {
         revoked_ids.data(), revoked_ids.size(), promotion_records.data(),
         promotion_records.size())
         == support::adaptive_support_status_v1::success);
-    support::support_snapshot_pair_v1 restored_snapshot{};
+    compact::SnapshotPairV1 restored_snapshot{};
     assert(restored_manager.snapshot(&restored_snapshot)
         == support::adaptive_support_status_v1::success);
     assert(restored_snapshot.snapshot_structure_epoch == 5u
@@ -97,9 +106,9 @@ int main() {
         == support::adaptive_support_status_v1::duplicate_logical_edge);
 
     support::adaptive_support_manager_v1 conflicting_manager;
-    const support::logical_support_participant_v1 conflicting_parts[] = {
+    const compact::ParticipantV1 conflicting_parts[] = {
         {0u, 0u, 101u}, {1u, 0u, 201u}, {0u, 0u, 999u}, {1u, 0u, 201u}};
-    const support::logical_support_view_v1 conflicting_base{1u, 0u, 7u, 99u, 1u,
+    const compact::ViewV1 conflicting_base{1u, 0u, 7u, 99u, 1u,
         base_edges, 2u, conflicting_parts, 4u};
     assert(conflicting_manager.initialize(conflicting_base, 8u)
         == support::adaptive_support_status_v1::success);
@@ -109,49 +118,49 @@ int main() {
         == support::adaptive_support_status_v1::invalid_snapshot);
     assert(conflicting_manager.structure_epoch() == 1u);
 
-    indexing::reverse_posting_record_v1 records[6]{}, entries[6]{};
-    indexing::reverse_posting_view_v1 index{};
-    assert(indexing::build_reverse_postings_v1(snapshot, records, 6u,
-        entries, 6u, &index) == indexing::posting_status_v1::success);
-    const indexing::posting_term_v1 terms[] = {{0u, 0u, 101u}, {1u, 0u, 202u}};
-    indexing::indexed_work_item_v1 scratch[4]{}, output_items[2]{};
-    indexing::candidate_output_v1 output{output_items, 2u, 0u, 0u};
-    assert(indexing::query_reverse_postings_v1(index, terms, 2u,
-        indexing::posting_match_v1::any, {scratch, 4u}, &output)
-        == indexing::posting_status_v1::success);
+    containers::PostingRecord records[6]{}, entries[6]{};
+    containers::PostingIndexView index{};
+    assert(geometry::dependency::build_posting_index(snapshot, records, 6u,
+        entries, 6u, &index) == geometry::dependency::PostingBuildStatus::success);
+    const containers::PostingTerm terms[] = {{0u, 0u, 101u}, {1u, 0u, 202u}};
+    containers::IndexedWorkItem scratch[4]{}, output_items[2]{};
+    containers::CandidateOutput output{output_items, 2u, 0u, 0u};
+    assert(containers::query_postings(index, terms, 2u,
+        containers::PostingMatch::any, {scratch, 4u}, &output)
+        == containers::PostingStatus::success);
     assert(output.written == 2u && output_items[0].logical_edge_id == 10u
         && output_items[1].logical_edge_id == 30u);
-    const indexing::posting_term_v1 all_terms[] = {{0u, 0u, 101u}, {1u, 0u, 202u}};
+    const containers::PostingTerm all_terms[] = {{0u, 0u, 101u}, {1u, 0u, 202u}};
     output.written = output.required = 0u;
-    assert(indexing::query_reverse_postings_v1(index, all_terms, 2u,
-        indexing::posting_match_v1::all, {scratch, 4u}, &output)
-        == indexing::posting_status_v1::success);
+    assert(containers::query_postings(index, all_terms, 2u,
+        containers::PostingMatch::all, {scratch, 4u}, &output)
+        == containers::PostingStatus::success);
     assert(output.written == 1u && output_items[0].logical_edge_id == 30u);
-    indexing::candidate_output_v1 posting_too_small{output_items, 1u, 0u, 0u};
-    assert(indexing::query_reverse_postings_v1(index, terms, 2u,
-        indexing::posting_match_v1::any, {scratch, 4u}, &posting_too_small)
-        == indexing::posting_status_v1::output_overflow);
+    containers::CandidateOutput posting_too_small{output_items, 1u, 0u, 0u};
+    assert(containers::query_postings(index, terms, 2u,
+        containers::PostingMatch::any, {scratch, 4u}, &posting_too_small)
+        == containers::PostingStatus::output_overflow);
     assert(posting_too_small.written == 0u && posting_too_small.required == 2u);
 
-    const support::logical_support_edge_v1 repeated_edge[] = {{40u, 0u, 2u, 0u}};
-    const support::logical_support_participant_v1 repeated_parts[] = {
+    const compact::EdgeV1 repeated_edge[] = {{40u, 0u, 2u, 0u}};
+    const compact::ParticipantV1 repeated_parts[] = {
         {0u, 0u, 77u}, {0u, 0u, 77u}};
-    const support::logical_support_view_v1 repeated_support{1u, 0u, 9u, 99u, 4u,
+    const compact::ViewV1 repeated_support{1u, 0u, 9u, 99u, 4u,
         repeated_edge, 1u, repeated_parts, 2u};
-    const support::support_snapshot_pair_v1 repeated_snapshot{
+    const compact::SnapshotPairV1 repeated_snapshot{
         &repeated_support, nullptr, 4u};
-    indexing::reverse_posting_record_v1 repeated_scratch[2]{}, repeated_entries[2]{};
-    indexing::reverse_posting_view_v1 repeated_index{};
-    assert(indexing::build_reverse_postings_v1(repeated_snapshot,
+    containers::PostingRecord repeated_scratch[2]{}, repeated_entries[2]{};
+    containers::PostingIndexView repeated_index{};
+    assert(geometry::dependency::build_posting_index(repeated_snapshot,
         repeated_scratch, 2u, repeated_entries, 2u, &repeated_index)
-        == indexing::posting_status_v1::success);
+        == geometry::dependency::PostingBuildStatus::success);
     assert(repeated_index.entry_count == 1u);
 
-    support::snapshot_lifecycle_v1 lifecycle{3u, 0u};
-    assert(lifecycle.pin_forward_tape(3u) == support::snapshot_lifecycle_status_v1::success);
-    assert(lifecycle.publish_structure(4u) == support::snapshot_lifecycle_status_v1::live_forward_tapes);
-    assert(lifecycle.retire_forward_tape(3u) == support::snapshot_lifecycle_status_v1::success);
-    assert(lifecycle.publish_structure(4u) == support::snapshot_lifecycle_status_v1::success);
+    execution::dependency::SupportSnapshotLifecycle lifecycle{3u, 0u};
+    assert(lifecycle.pin_forward_tape(3u) == execution::dependency::SupportLifecycleStatus::success);
+    assert(lifecycle.publish_structure(4u) == execution::dependency::SupportLifecycleStatus::live_forward_tapes);
+    assert(lifecycle.retire_forward_tape(3u) == execution::dependency::SupportLifecycleStatus::success);
+    assert(lifecycle.publish_structure(4u) == execution::dependency::SupportLifecycleStatus::success);
 
     indexing::temporal_occurrence_v1 storage[3]{}, occurrence_output[2]{};
     indexing::temporal_event_ring_v1 ring{};
@@ -210,61 +219,60 @@ int main() {
         == indexing::occurrence_status_v1::success);
     assert(occurrence_result.written == 3u && mixed_output[0].ordinal == 2u);
 
-    using namespace gating;
-    const condition_node_v1 nodes[] = {
-        {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 0u, 0u},
-        {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 1u, 0u},
-        {condition_opcode_v1::all_of, 1u, 0u, 0u, 2u, 0u, 0u}};
-    const edge_condition_binding_v1 bindings[] = {{0u, 2u, 0u}, {2u, 0u, 0u}};
-    const condition_program_view_v1 program{3u, nodes, 3u, bindings, 2u, 3u, 2u, 0u};
+        const condition::NodeV1 nodes[] = {
+        {condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u, 0u, 0u},
+        {condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u, 1u, 0u},
+        {condition::OpcodeV1::all_of, 1u, 0u, 0u, 2u, 0u, 0u}};
+    const condition::EdgeBindingV1 bindings[] = {{0u, 2u, 0u}, {2u, 0u, 0u}};
+    const condition::ProgramViewV1 program{3u, nodes, 3u, bindings, 2u, 3u, 2u, 0u};
     const std::uint8_t predicates[] = {1u, 1u, 0u, 1u};
     std::uint64_t bitmaps[2]{};
     std::uint8_t node_scratch[3]{};
-    assert(evaluate_condition_bitmaps_v1(program, 2u, predicates, 4u,
-        bitmaps, 2u, node_scratch, 3u) == condition_status_v1::success);
+    assert(condition::evaluate_bitmaps(program, 2u, predicates, 4u,
+        bitmaps, 2u, node_scratch, 3u) == condition::StatusV1::success);
     assert(bitmaps[0] == 7u && bitmaps[1] == 2u);
     std::uint32_t roots[3] = {99u, 99u, 99u};
     std::uint64_t required_roots = 0u;
-    assert(prepare_condition_root_map_v1(program, roots, 3u, &required_roots)
-        == condition_status_v1::success);
+    assert(condition::prepare_root_map(program, roots, 3u, &required_roots)
+        == condition::StatusV1::success);
     assert(required_roots == 3u && roots[0] == 2u
-        && roots[1] == unbound_condition_root_v1 && roots[2] == 0u);
+        && roots[1] == condition::unbound_root_v1 && roots[2] == 0u);
     std::uint32_t short_roots[2] = {77u, 88u};
-    assert(prepare_condition_root_map_v1(program, short_roots, 2u,
-        &required_roots) == condition_status_v1::insufficient_root_map_capacity);
+    assert(condition::prepare_root_map(program, short_roots, 2u,
+        &required_roots) == condition::StatusV1::insufficient_root_map_capacity);
     assert(required_roots == 3u && short_roots[0] == 77u && short_roots[1] == 88u);
     const std::uint64_t dirty[] = {0u};
     const std::uint8_t active[] = {1u, 1u};
-    assert(update_condition_bitmap_v1(program, active, 2u, dirty, 1u,
-        &bitmaps[1], 1u, node_scratch, 3u) == condition_status_v1::success);
+    assert(condition::update_bitmap(program, active, 2u, dirty, 1u,
+        &bitmaps[1], 1u, node_scratch, 3u) == condition::StatusV1::success);
     assert(bitmaps[1] == 3u);
     const std::uint64_t invalid_dirty[] = {0u, 3u};
     const auto bitmap_before_invalid_update = bitmaps[1];
-    assert(update_condition_bitmap_v1(program, active, 2u, invalid_dirty, 2u,
-        &bitmaps[1], 1u, node_scratch, 3u) == condition_status_v1::invalid_argument);
+    assert(condition::update_bitmap(program, active, 2u, invalid_dirty, 2u,
+        &bitmaps[1], 1u, node_scratch, 3u) == condition::StatusV1::invalid_argument);
     assert(bitmaps[1] == bitmap_before_invalid_update);
 
     const std::uint64_t offsets[] = {0u, 3u, 6u}, dormant_offsets[] = {0u, 1u, 2u};
-    const indexing::indexed_work_item_v1 candidates[] = {
+    const containers::IndexedWorkItem candidates[] = {
         {10u, 0u}, {20u, 1u}, {30u, 2u}, {10u, 0u}, {20u, 1u}, {30u, 2u}};
-    const indexing::indexed_work_item_v1 dormant[] = {{30u, 2u}, {10u, 0u}};
-    const per_cell_candidate_view_v1 primal_input{offsets, candidates, 6u};
-    const per_cell_candidate_view_v1 derivative_input{dormant_offsets, dormant, 2u};
+    const containers::IndexedWorkItem dormant[] = {{30u, 2u}, {10u, 0u}};
+    const execution::dependency::CandidateBatchView primal_input{offsets, candidates, 6u};
+    const execution::dependency::CandidateBatchView derivative_input{dormant_offsets, dormant, 2u};
     std::uint64_t po[3]{}, doff[3]{};
-    indexing::indexed_work_item_v1 pi[6]{}, di[6]{};
-    gate_workset_pair_v1 worksets{{po, 3u, pi, 6u, 0u, 0u},
+    containers::IndexedWorkItem pi[6]{}, di[6]{};
+    execution::dependency::ConditionWorksets worksets{{po, 3u, pi, 6u, 0u, 0u},
                                   {doff, 3u, di, 6u, 0u, 0u}};
-    assert(build_condition_worksets_v1(program, 2u, 9u, bitmaps, 2u,
-        primal_input, derivative_input, &worksets) == condition_status_v1::success);
+    assert(execution::dependency::build_condition_worksets(program, 2u, 9u, bitmaps, 2u,
+        primal_input, derivative_input, &worksets) == condition::StatusV1::success);
     assert(worksets.primal.written == 5u && worksets.derivative.written == 5u);
     assert(worksets.primal.structure_epoch == 3u
         && worksets.derivative.state_generation == 9u);
-    indexing::indexed_work_item_v1 tiny[1]{};
+    containers::IndexedWorkItem tiny[1]{};
     worksets.primal.items = tiny;
     worksets.primal.item_capacity = 1u;
-    assert(build_condition_worksets_v1(program, 2u, 9u, bitmaps, 2u,
+    assert(execution::dependency::build_condition_worksets(program, 2u, 9u, bitmaps, 2u,
         primal_input, derivative_input, &worksets)
-        == condition_status_v1::primal_workset_overflow);
+        == condition::StatusV1::primal_workset_overflow);
     assert(worksets.primal.written == 0u && worksets.primal.required == 5u);
 
     const std::uint64_t entities[] = {101u, 102u, 103u}, mechanisms[] = {501u, 502u};

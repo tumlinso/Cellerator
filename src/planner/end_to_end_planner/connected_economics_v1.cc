@@ -48,7 +48,7 @@ economics_status_v1 compute_connected_economics_v1(
         || program.transition_count == std::numeric_limits<std::uint64_t>::max()
         || program.transition_count + 1u != program.operation_count
         || (program.transition_count != 0u && program.transitions == nullptr)
-        || !execution::valid_identity(program.canonical_output_order)
+        || !::cellerator::structure::valid_identity(program.canonical_output_order)
         || !finite_nonnegative(program.final_canonicalization_ns)) {
         return failure(economics_status_code_v1::invalid_argument, 0u);
     }
@@ -56,8 +56,8 @@ economics_status_v1 compute_connected_economics_v1(
     for (std::uint64_t index = 0u; index < program.operation_count; ++index) {
         const operation_economics_v1 &operation = program.operations[index];
         if (!valid_id(operation.candidate)
-            || !execution::valid_identity(operation.input_order)
-            || !execution::valid_identity(operation.output_order)
+            || !::cellerator::structure::valid_identity(operation.input_order)
+            || !::cellerator::structure::valid_identity(operation.output_order)
             || (operation.value_mode != planner_value_mode_v1::logical_primary
                 && operation.value_mode
                     != planner_value_mode_v1::projection_primary)
@@ -112,16 +112,16 @@ economics_status_v1 compute_connected_economics_v1(
             const layout_transition_economics_v1 &transition =
                 program.transitions[index];
             const operation_economics_v1 &next = program.operations[index + 1u];
-            if (!execution::same_identity(transition.source_order,
+            if (!::cellerator::structure::same_identity(transition.source_order,
                     operation.output_order)
-                || !execution::same_identity(transition.destination_order,
+                || !::cellerator::structure::same_identity(transition.destination_order,
                     next.input_order)
                 || !finite_nonnegative(transition.transform_ns)
                 || !finite_nonnegative(transition.fusion_savings_ns)
-                || (execution::same_identity(operation.output_order,
+                || (::cellerator::structure::same_identity(operation.output_order,
                         next.input_order)
                     && transition.transform_ns != 0.0)
-                || (!execution::same_identity(operation.output_order,
+                || (!::cellerator::structure::same_identity(operation.output_order,
                         next.input_order)
                     && transition.transform_ns == 0.0)
                 || (!transition.fused && transition.fusion_savings_ns != 0.0)) {
@@ -136,7 +136,7 @@ economics_status_v1 compute_connected_economics_v1(
     const operation_economics_v1 &last =
         program.operations[program.operation_count - 1u];
     if (last.canonical_output_required
-        && !execution::same_identity(last.output_order,
+        && !::cellerator::structure::same_identity(last.output_order,
             program.canonical_output_order)) {
         if (program.final_canonicalization_ns == 0.0) {
             return failure(economics_status_code_v1::invalid_order,

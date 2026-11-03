@@ -1,16 +1,16 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/entity_layout.hh>
+#include <Cellerator/layout/entity_layout.hh>
 
 #include <cassert>
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
 
-using cellerator::execution::domain_id;
-using cellerator::execution::order_id;
-using cellerator::modeling::EntityLayout;
+using ::cellerator::structure::domain_id;
+using ::cellerator::structure::order_id;
+using cellerator::layout::EntityLayout;
 
 template<typename Exception, typename Callable>
 void expect_throw(Callable &&callable) {

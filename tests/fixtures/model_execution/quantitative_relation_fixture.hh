@@ -18,14 +18,14 @@ enum class quantitative_fixture_status : std::uint8_t {
 };
 
 struct quantitative_fixture_identities {
-    execution::domain_id feature_domain;
-    execution::domain_id observation_domain;
-    execution::order_id feature_order;
-    execution::order_id observation_order;
-    execution::geometry_id geometry;
-    execution::partition_id partition;
-    execution::structure_id structure;
-    execution::projection_id destination_row_csr_projection;
+    ::cellerator::structure::domain_id feature_domain;
+    ::cellerator::structure::domain_id observation_domain;
+    ::cellerator::structure::order_id feature_order;
+    ::cellerator::structure::order_id observation_order;
+    ::cellerator::structure::geometry_id geometry;
+    ::cellerator::structure::partition_id partition;
+    ::cellerator::structure::structure_id structure;
+    ::cellerator::structure::projection_id destination_row_csr_projection;
 };
 
 // Physical rows are destinations (cells); column indices are logical sources

@@ -1,4 +1,11 @@
-#include <Cellerator/matrix.cuh>
+#include <Cellerator/interop/formats/dense.cuh>
+#include <Cellerator/interop/formats/compressed.cuh>
+#include <Cellerator/interop/formats/coo.cuh>
+#include <Cellerator/interop/formats/blocked_ell.cuh>
+#include <Cellerator/interop/formats/sliced_ell.cuh>
+#include <Cellerator/compute/matrix/convert/bucket.cuh>
+#include <Cellerator/compute/matrix/convert/compressed.cuh>
+#include <Cellerator/compute/matrix/convert/transpose.cuh>
 #include <Baseplane/seq/dna2.cuh>
 
 #include <cub/cub.cuh>
@@ -13,7 +20,7 @@
 
 namespace convert = ::cellerator::compute::matrix::convert;
 namespace bucket = ::cellerator::compute::matrix::convert::bucket;
-namespace matrix = ::cellerator::matrix;
+namespace matrix = ::cellerator::interop::formats;
 namespace sequence = ::baseplane::seq;
 
 namespace {
@@ -55,7 +62,7 @@ void check_dense_layouts() {
         __float2half(1.0f), __float2half(2.0f), __float2half(3.0f), __float2half(-1.0f),
         __float2half(4.0f), __float2half(5.0f), __float2half(6.0f), __float2half(-1.0f)
     };
-    matrix::dense row_major{};
+    matrix::DensePayload row_major{};
     matrix::attach(&row_major, 2u, 3u, row_values, matrix::dense_row_major, 4u);
     require(close_half(*matrix::at(&row_major, 1u, 2u), 6.0f), "dense row-major access mismatch");
     require(matrix::at(&row_major, 2u, 0u) == nullptr, "dense row-major bounds check failed");
@@ -65,16 +72,16 @@ void check_dense_layouts() {
         __float2half(1.0f), __float2half(2.0f), __float2half(3.0f), __float2half(-1.0f),
         __float2half(4.0f), __float2half(5.0f), __float2half(6.0f), __float2half(-1.0f)
     };
-    matrix::dense col_major{};
+    matrix::DensePayload col_major{};
     matrix::attach(&col_major, 3u, 2u, col_values, matrix::dense_col_major, 4u);
     require(close_half(*matrix::at(&col_major, 2u, 1u), 6.0f), "dense column-major access mismatch");
     require(matrix::payload_elements(&col_major) == 8u, "dense column-major payload size mismatch");
     matrix::clear(&col_major);
 
-    matrix::dense owned{};
+    matrix::DensePayload owned{};
     matrix::init(&owned, 2u, 3u);
     require(matrix::payload_elements(&owned) == 6u, "dense packed payload size mismatch");
-    require(matrix::bytes(&owned) == sizeof(matrix::dense) + 6u * sizeof(::cellerator::real::storage_t),
+    require(matrix::bytes(&owned) == sizeof(matrix::DensePayload) + 6u * sizeof(::cellerator::real::storage_t),
             "dense byte count mismatch");
     require(matrix::allocate(&owned) != 0, "dense allocate failed");
     *matrix::at(&owned, 1u, 2u) = __float2half(7.0f);

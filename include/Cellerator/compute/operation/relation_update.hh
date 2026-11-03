@@ -12,22 +12,22 @@ struct gradient_preparation_options {
 };
 struct operand_version { std::uint64_t identity = 0, version = 0; };
 struct edge_layout_view {
-    execution::order_id order{};
+    ::cellerator::structure::order_id order{};
     std::uint64_t count = 0;
     const std::uint32_t* logical_to_physical = nullptr; // host; immutable through pair lifetime
 };
 struct edge_plane_view {
     void* f32_data = nullptr;
     std::uint64_t count = 0;
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
-    execution::order_id order{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
+    ::cellerator::structure::order_id order{};
     std::int32_t device_ordinal = 0;
 };
 struct gradient_stamp {
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
-    execution::order_id order{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
+    ::cellerator::structure::order_id order{};
     execution::value_generation forward_generation{};
     operand_version input{}, cotangent{};
     std::uint64_t producer_serial = 0;
@@ -44,12 +44,12 @@ struct value_update_request {
 struct value_read_lease {
     const void* physical_f16_values = nullptr;
     std::uint64_t count = 0;
-    execution::order_id order{};
+    ::cellerator::structure::order_id order{};
     execution::value_generation generation{};
     std::uint64_t nonce = 0; // opaque token; never user-authored
     std::uint64_t pair_incarnation = 0; // rejects cross-pair and address-reuse replay
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
     std::int32_t device_ordinal = -1;
 };
 struct relation_update_report {

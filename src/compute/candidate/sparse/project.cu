@@ -1,8 +1,9 @@
 #include <Cellerator/compute/candidate/sparse/project.hh>
-#include <Cellerator/matrix/blocked_ell.cuh>
+#include <Cellerator/interop/formats/blocked_ell.cuh>
 #include "../../operators/sparse/primitives/common.cuh"
-#include <Cellerator/quantized/dispatch.cuh>
-#include <Cellerator/quantized/metadata.cuh>
+#include <Cellerator/ops/quantized/dispatch.cuh>
+#include <Cellerator/tensor/quantized/blocked_ell.cuh>
+#include <Cellerator/tensor/quantized/metadata.cuh>
 
 #include <stdexcept>
 #include <string>
@@ -17,7 +18,7 @@ constexpr int kValueThreads = 256;
 constexpr int kSpmmColsThreads = 128;
 
 namespace cs {
-namespace sparse = ::cellerator::matrix;
+namespace sparse = ::cellerator::interop::formats;
 }
 namespace primitives = ::cellerator::compute::sparse::ops::primitives;
 
@@ -194,16 +195,16 @@ namespace {
 template<int Bits, typename Metadata>
 void launch_quantized_blocked_ell_spmm_(
     const runtime::execution_context &ctx,
-    const sparse_ops::quantized_blocked_ell_view &view,
+    const ::cellerator::tensor::quantized::RuntimeBlockedEllView &view,
     Metadata metadata,
     const float *rhs,
     std::int64_t rhs_ld,
     std::int64_t out_cols,
     float *out,
     std::int64_t out_ld) {
-    using matrix_t = ::cellerator::quantized::blocked_ell::matrix<Bits, float, Metadata>;
+    using matrix_t = ::cellerator::tensor::quantized::BlockedEllView<Bits, float, Metadata>;
 
-    const matrix_t matrix = ::cellerator::quantized::blocked_ell::make_matrix<Bits>(
+    const matrix_t matrix = ::cellerator::tensor::quantized::make_blocked_ell_view<Bits>(
         static_cast<int>(view.rows),
         static_cast<int>(view.cols),
         static_cast<int>(view.nnz),
@@ -211,7 +212,7 @@ void launch_quantized_blocked_ell_spmm_(
         static_cast<int>(view.ell_cols),
         static_cast<int>(view.row_stride_bytes),
         view.block_col_idx,
-        const_cast<unsigned char *>(reinterpret_cast<const unsigned char *>(view.packed_values)),
+        reinterpret_cast<const unsigned char *>(view.packed_values),
         metadata);
     const dim3 grid(view.rows, static_cast<unsigned int>((out_cols + kSpmmColsThreads - 1) / kSpmmColsThreads), 1u);
 
@@ -229,7 +230,7 @@ void launch_quantized_blocked_ell_spmm_(
 
 void quantized_blocked_ell_spmm_fwd_f32(
     const runtime::execution_context &ctx,
-    const sparse_ops::quantized_blocked_ell_view &matrix,
+    const ::cellerator::tensor::quantized::RuntimeBlockedEllView &matrix,
     const float *rhs,
     std::int64_t rhs_ld,
     std::int64_t out_cols,
@@ -240,7 +241,7 @@ void quantized_blocked_ell_spmm_fwd_f32(
     if (matrix.block_col_idx == nullptr || matrix.packed_values == nullptr) {
         throw std::invalid_argument("quantized_blocked_ell_spmm_fwd requires packed values and block columns");
     }
-    if (!::cellerator::quantized::valid_bits(static_cast<int>(matrix.bits))) {
+    if (!::cellerator::ops::quantized::valid_bits(static_cast<int>(matrix.bits))) {
         throw std::invalid_argument("quantized_blocked_ell_spmm_fwd requires 1/2/4/8-bit quantization");
     }
     if (matrix.row_stride_bytes == 0u) {
@@ -248,16 +249,16 @@ void quantized_blocked_ell_spmm_fwd_f32(
     }
 
     switch (matrix.decode_policy) {
-        case ::cellerator::quantized::blocked_ell::decode_policy_per_gene_affine:
+        case ::cellerator::tensor::quantized::blocked_ell::decode_policy_per_gene_affine:
             if (matrix.column_scales == nullptr) {
                 throw std::invalid_argument("quantized_blocked_ell_spmm_fwd per_gene_affine requires column_scales");
             }
-            ::cellerator::quantized::dispatch_bits(static_cast<int>(matrix.bits), [&](auto bit_tag) {
+            ::cellerator::ops::quantized::dispatch_bits(static_cast<int>(matrix.bits), [&](auto bit_tag) {
                 constexpr int kBits = decltype(bit_tag)::value;
-                launch_quantized_blocked_ell_spmm_<kBits, ::cellerator::quantized::per_gene_affine<float>>(
+                launch_quantized_blocked_ell_spmm_<kBits, ::cellerator::tensor::quantized::per_gene_affine<float>>(
                     ctx,
                     matrix,
-                    ::cellerator::quantized::make_per_gene_affine(matrix.column_scales, matrix.column_offsets),
+                    ::cellerator::tensor::quantized::make_per_gene_affine(matrix.column_scales, matrix.column_offsets),
                     rhs,
                     rhs_ld,
                     out_cols,
@@ -266,16 +267,16 @@ void quantized_blocked_ell_spmm_fwd_f32(
                 return 0;
             });
             return;
-        case ::cellerator::quantized::blocked_ell::decode_policy_column_scale_row_offset:
+        case ::cellerator::tensor::quantized::blocked_ell::decode_policy_column_scale_row_offset:
             if (matrix.column_scales == nullptr || matrix.row_offsets == nullptr) {
                 throw std::invalid_argument("quantized_blocked_ell_spmm_fwd column_scale_row_offset requires column_scales and row_offsets");
             }
-            ::cellerator::quantized::dispatch_bits(static_cast<int>(matrix.bits), [&](auto bit_tag) {
+            ::cellerator::ops::quantized::dispatch_bits(static_cast<int>(matrix.bits), [&](auto bit_tag) {
                 constexpr int kBits = decltype(bit_tag)::value;
-                launch_quantized_blocked_ell_spmm_<kBits, ::cellerator::quantized::column_scale_row_offset<float>>(
+                launch_quantized_blocked_ell_spmm_<kBits, ::cellerator::tensor::quantized::column_scale_row_offset<float>>(
                     ctx,
                     matrix,
-                    ::cellerator::quantized::make_column_scale_row_offset(matrix.column_scales, matrix.row_offsets),
+                    ::cellerator::tensor::quantized::make_column_scale_row_offset(matrix.column_scales, matrix.row_offsets),
                     rhs,
                     rhs_ld,
                     out_cols,

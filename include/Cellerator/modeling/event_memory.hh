@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/modeling/entity_layout.hh>
+#include <Cellerator/layout/entity_layout.hh>
 
 #include <algorithm>
 #include <cmath>
@@ -32,7 +32,7 @@ template<class Storage = float>
 class TraceBank final {
     static_assert(std::is_arithmetic_v<Storage>, "TraceBank storage must be an arithmetic type");
 public:
-    TraceBank(EntityLayout layout, std::vector<double> time_constants,
+    TraceBank(::cellerator::layout::EntityLayout layout, std::vector<double> time_constants,
               double initial_time = 0.0)
         : layout_(std::move(layout)), tau_(std::move(time_constants)),
           anchor_time_(layout_.size(), initial_time),
@@ -44,7 +44,7 @@ public:
                 throw std::invalid_argument("time constants must be finite and positive");
     }
 
-    const EntityLayout& layout() const noexcept { return layout_; }
+    const ::cellerator::layout::EntityLayout& layout() const noexcept { return layout_; }
     std::size_t channels() const noexcept { return tau_.size(); }
     const std::vector<double>& time_constants() const noexcept { return tau_; }
     const std::vector<double>& anchor_times() const noexcept { return anchor_time_; }
@@ -111,7 +111,7 @@ private:
             throw std::length_error("trace bank shape overflows size_t");
         return entities * channels;
     }
-    EntityLayout layout_;
+    ::cellerator::layout::EntityLayout layout_;
     std::vector<double> tau_;
     std::vector<double> anchor_time_;
     std::vector<Storage> values_;

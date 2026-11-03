@@ -22,7 +22,7 @@ struct cpbp_v1_semantic_binding_v1 {
     u32 schema_version = cpbp_v1_semantic_adapter_schema_version;
     u32 reserved = 0u;
     execution::structure_handle structure{};
-    execution::structure_epoch structure_epoch{};
+    ::cellerator::structure::structure_epoch structure_epoch{};
     execution::axis_identity source_feature_axis{};
     execution::axis_identity destination_row_axis{};
     work_window_view_v1 work_window{};

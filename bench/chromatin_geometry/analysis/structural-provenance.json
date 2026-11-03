@@ -1,0 +1,46 @@
+{
+  "schema": "cgs.structural-counts.v1",
+  "evidence_kind": "CPU logical/source accounting; no GPU execution or traffic measurement",
+  "compiler": "13.3.0",
+  "rows": 160,
+  "source_sha256": {
+    "contract.hh": "a5a3c75770262427cf2f7e930c5318dc330a254c9ac1b7dcc5548068bd9b451b",
+    "workloads.hh": "2613f372d3fae2b881ab3e1f739a394d02255d86d8c39b409f79978f7493d2dd",
+    "workloads.cc": "79aedb356e240549d1ced02c92dfc5d493c9529aa30cdcf3e2b3a9bf524e3c24",
+    "reference/reference.hh": "57f7b6c5440d09612f77205a736cc6dafc261181dd0a7f68135583817f4e04d3",
+    "reference/reference.cc": "2be62bc7358a8f334d872d6c469f66f658a17b8955436e0d53222b21dcb0ec8e",
+    "backends/consumer_fixture.hh": "d5ff3ecf437f38200966bc1dd5585682ba2aea9932a97b57db5f9c63438eb9ca",
+    "backends/consumer_fixture.cc": "f7042977f72128cd5263efcbbbea6c1859c9778f1e3db7ee14bd47e081220bd4",
+    "backends/consumers.cu": "5ddda9421c96f4ac053f6dea8ed434cbfd1363cf61a8cf8cd1ad1dd2d7af51e6",
+    "backends/conditions.cu": "f0299db6a02599bffe77005aa01326a71035f1e6e11d18827bb5a1388972c393",
+    "backends/grouped_linear_library.cu": "524847add461a0925952b8b4d9b12e522d78243e13a31d8bbd0e87e99d4d8800",
+    "data/replay.hh": "272cfca633583872381e37eef87309ff4a0b5f2dec61fa1ad4991f677ae975ec",
+    "data/replay.cc": "029dfe27959b8d1fbba072394675e2b369a13f624aad9715770e0b8ed7dc4279",
+    "campaign_runner.cu": "aa3f6c3cde61a3cc1be64b707a82d0ec983606fc92e5c84d37d6dcf8614d7624",
+    "analysis/structural_counts.cc": "f16c927b8f2eee0375e6151193b45ece895752bef596545e786631714cf3b776",
+    "analysis/structural-counts.csv": "4c3730dad8735c75b81b9a61688c4dbf47edba940592b33b1f5add86e66a043c",
+    "analysis/structural-analysis.md": "9dd1868de98b2a72bfa9c6fa0c6df074ec7106cfffb7137b9ddf38b5eb7c6a0b",
+    "analysis/padded-row-probe.md": "020e4fe8eaf9eaa767361b7cadef84516475345d4652c764bc052bc6832847fa",
+    "backends/DESIGN.md": "8440fd8ed34c71923d7c65badaefe3f294351d6eec76c8c24edbafb0cad2428a"
+  },
+  "native_product_precedent_sha256": "75b353059e398b97e0e80be415f0549895edf60bc2d5f84e7f3dc016a55edaf8",
+  "cpu_binary_sha256": "67a3929a160138f8bcd1969d37e1a0173dcb02e7d34144f3fa3ccb0f41622f0b",
+  "replay_payload_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3",
+  "replay_payload_bytes": 95881576,
+  "input_selection": "first spec.cells source cells and first spec.features source peaks; after-state controlled leaf flips; see data/replay.cc",
+  "documentation_note": "Clarified dense-capacity dispatch and added the matched two-tile cached control. Original count CSV and original source identities remain unchanged.",
+  "matched_two_tile_extension": {
+    "evidence_kind": "source and targeted compilation; no inherited timing claim",
+    "backend": "cohort-direct-two-tile",
+    "cell_tiles_per_cta": 2,
+    "feature_staging": false,
+    "staging_buffers": 0,
+    "source_sha256": {
+      "contract.hh": "714106c5a18f99132d41878e41beee5f7e3604bc38020ac585bff21f14207794",
+      "backends/consumers.cu": "28ef73728405f9d8dcb10d81ffdd80fd1ea869ebce899aac5ed396e5a6897245",
+      "backends/consumer_tests.cu": "a60a6d0983376d630895c2fe09f9b81767b395cead8788277d42e3aaadba4214",
+      "analysis/matched-two-tile-source-check.json": "033ff7e7d805a82383cd202bb2f22c4b75eed239d9e840783eeecdd0ed9cc1cb"
+    },
+    "counts_note": "Original CSV counts and their original source identities are retained. The new cached control keeps per-tile membership and arithmetic; its matched CTA relationship is documented separately."
+  }
+}

@@ -1,10 +1,10 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 #include <Cellerator/geometry/work_layout.hh>
 
 #include <cstdint>
 #include <limits>
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 
 // Build a provider-local padded schedule over portable execution positions.
 // The portable work layout is read only: sentinels exist solely in the
@@ -56,4 +56,4 @@ bool build_mma_physical_work_layout_v1(
     return true;
 }
 
-} // namespace cellerator::compute::projection
+} // namespace cellerator::layout::projection

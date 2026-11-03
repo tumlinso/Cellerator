@@ -161,10 +161,10 @@ bool image_record(const std::byte* image, std::size_t bytes,
 } // namespace
 
 sparse_parameter_owner_v1::sparse_parameter_owner_v1(
-    indexed::indexed_axis axis, std::vector<indexed::identity> ids,
+    ::cellerator::ops::mechanism::indexed::indexed_axis axis, std::vector<::cellerator::ops::mechanism::indexed::identity> ids,
     std::span<const float> initial, std::vector<parameter_block_v1> blocks,
     int device, std::uint32_t reader_capacity)
-    : owner_(std::make_shared<indexed::mechanism_parameter_owner>(axis,
+    : owner_(std::make_shared<::cellerator::ops::mechanism::indexed::mechanism_parameter_owner>(axis,
           std::move(ids), initial, device, reader_capacity)), blocks_(std::move(blocks)) {
     std::uint64_t cursor = 0;
     for (std::size_t block_index = 0; block_index < blocks_.size(); ++block_index) {
@@ -187,7 +187,7 @@ sparse_parameter_owner_v1::sparse_parameter_owner_v1(
         throw std::invalid_argument("sparse parameter blocks do not cover the parameter vector");
 }
 
-const std::shared_ptr<indexed::mechanism_parameter_owner>&
+const std::shared_ptr<::cellerator::ops::mechanism::indexed::mechanism_parameter_owner>&
 sparse_parameter_owner_v1::native_owner() const noexcept { return owner_; }
 const std::vector<parameter_block_v1>&
 sparse_parameter_owner_v1::blocks() const noexcept { return blocks_; }
@@ -208,9 +208,9 @@ status_v1 prepare_ce_geo_n64_projection_v1(
     if (!data || !output || !structure_epoch || !projection_id
         || support_sources.size() != projection_edge_ids.size()
         || support_destinations.size() != projection_edge_ids.size()
-        || !projection::validate_physical_mma_hybrid_image_v1(data, bytes))
+        || !::cellerator::layout::projection::validate_physical_mma_hybrid_image_v1(data, bytes))
         return status_v1::invalid_projection;
-    projection::physical_mma_hybrid_header_v1 header{};
+    ::cellerator::layout::projection::MmaHybridLayoutV1 header{};
     if (bytes < sizeof(header)) return status_v1::invalid_projection;
     std::memcpy(&header, data, sizeof(header));
     if (header.dense_width != 64 || logical_source_count == 0
@@ -243,7 +243,7 @@ status_v1 prepare_ce_geo_n64_projection_v1(
         std::vector<std::pair<std::uint64_t, std::uint64_t>> maps;
         maps.reserve(header.value_map_count);
         for (std::uint64_t i = 0; i < header.value_map_count; ++i) {
-            projection::projection_value_map_v1 map{};
+            ::cellerator::layout::projection::projection_value_map_v1 map{};
             if (!image_record(image, bytes, header.value_map_offset, i, &map))
                 return status_v1::invalid_projection;
             maps.emplace_back(map.logical_edge_id.value, i);
@@ -261,7 +261,7 @@ status_v1 prepare_ce_geo_n64_projection_v1(
         }
 
         for (std::uint32_t g = 0; g < header.source_group_count; ++g) {
-            projection::physical_group_v1 group{};
+            ::cellerator::layout::projection::physical_group_v1 group{};
             if (!image_record(image, bytes, header.source_group_offset, g, &group)
                 || group.member_count > 16 || group.padded_count != 16
                 || group.group_id != g || group.member_offset > source_members.size()
@@ -282,7 +282,7 @@ status_v1 prepare_ce_geo_n64_projection_v1(
                 result.source_members[base + i] = std::numeric_limits<std::uint32_t>::max();
         }
         for (std::uint32_t g = 0; g < header.destination_group_count; ++g) {
-            projection::physical_group_v1 group{};
+            ::cellerator::layout::projection::physical_group_v1 group{};
             if (!image_record(image, bytes, header.destination_group_offset, g, &group)
                 || group.member_count > 16 || group.padded_count != 16
                 || group.group_id != g || group.member_offset > destination_members.size()
@@ -300,7 +300,7 @@ status_v1 prepare_ce_geo_n64_projection_v1(
                 result.destination_members[base + i] = std::numeric_limits<std::uint32_t>::max();
         }
         for (std::uint32_t t = 0; t < header.tile_count; ++t) {
-            projection::mma_tile_v1 tile{};
+            ::cellerator::layout::projection::mma_tile_v1 tile{};
             if (!image_record(image, bytes, header.tile_offset, t, &tile)
                 || tile.source_group_index >= header.source_group_count
                 || tile.destination_group_index >= header.destination_group_count)
@@ -311,18 +311,18 @@ status_v1 prepare_ce_geo_n64_projection_v1(
         for (std::size_t edge = 0; edge < projection_edge_ids.size(); ++edge) {
             const auto map_index = result.edge_value_map_indices[edge];
             if (map_index == std::numeric_limits<std::uint64_t>::max()) continue;
-            projection::projection_value_map_v1 map{};
+            ::cellerator::layout::projection::projection_value_map_v1 map{};
             if (!image_record(image, bytes, header.value_map_offset, map_index, &map)
                 || map.logical_edge_id.value != projection_edge_ids[edge])
                 return status_v1::invalid_projection;
-            if (map.region_kind == projection::physical_region_kind_v1::mma) {
-                projection::mma_tile_v1 tile{};
+            if (map.region_kind == ::cellerator::layout::projection::physical_region_kind_v1::mma) {
+                ::cellerator::layout::projection::mma_tile_v1 tile{};
                 if (map.region_index >= header.tile_count
                     || !image_record(image, bytes, header.tile_offset, map.region_index, &tile))
                     return status_v1::invalid_projection;
                 bool matched = false;
                 for (std::uint32_t local = 0; local < tile.compact_slot_count; ++local) {
-                    projection::mma_compact_slot_v1 slot{};
+                    ::cellerator::layout::projection::mma_compact_slot_v1 slot{};
                     if (!image_record(image, bytes, header.compact_slot_offset,
                             tile.compact_slot_offset + local, &slot))
                         return status_v1::invalid_projection;
@@ -340,7 +340,7 @@ status_v1 prepare_ce_geo_n64_projection_v1(
                 }
                 if (!matched) return status_v1::invalid_projection;
             } else {
-                projection::residual_region_v1 region{};
+                ::cellerator::layout::projection::residual_region_v1 region{};
                 if (map.region_index >= header.residual_region_count
                     || !image_record(image, bytes, header.residual_region_offset,
                         map.region_index, &region)

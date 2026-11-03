@@ -5,7 +5,7 @@
 namespace Cellerator::compiler::planning {
 namespace {
 
-bool stable(cellerator::execution::order_id value) noexcept {
+bool stable(::cellerator::structure::order_id value) noexcept {
     return value.high != 0u || value.low != 0u;
 }
 

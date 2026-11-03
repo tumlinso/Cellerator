@@ -1,0 +1,95 @@
+{
+  "schema": "cgs.pause-resources.v1",
+  "captured_at_utc": "2026-11-02T22:42:03.754977+00:00",
+  "status": "paused after the authorized next-milestone attempt; comparison is unqualified",
+  "budget": {
+    "total_gpu_seconds": 14400,
+    "settled_gpu_seconds": 2052.7148084640503,
+    "remaining_gpu_seconds": 12347.28519153595,
+    "open_or_unknown_gpu_reservations": []
+  },
+  "parent_autobench": {
+    "project": "/home/tumlinson/Cellerator",
+    "paused": true
+  },
+  "study_lanes": [
+    {
+      "lane": 0,
+      "active": false,
+      "paused": true
+    },
+    {
+      "lane": 1,
+      "active": false,
+      "paused": true
+    },
+    {
+      "lane": 2,
+      "active": false,
+      "paused": true
+    },
+    {
+      "lane": 3,
+      "active": false,
+      "paused": true
+    }
+  ],
+  "latest_qualified_v3": {
+    "archive_path": "bench/chromatin_geometry/.autobench/data/closures/811ab1f225dbef7d7e2e3665ed8a69e32b1fb1ea08aadb7960def2c71c2db3af.tar.gz",
+    "archive_sha256": "f131948000849270e22c392459264fa599566f4a1d51492a09e72d9e1d8f72c7",
+    "binary_path": "bench/chromatin_geometry/runs/builds/b0292b309e12751655b8a476c4d34e23d1c877549e175d33c5dcdca12aa25ddf/binary",
+    "binary_sha256": "b0292b309e12751655b8a476c4d34e23d1c877549e175d33c5dcdca12aa25ddf",
+    "build_receipt_path": "bench/chromatin_geometry/runs/builds/b0292b309e12751655b8a476c4d34e23d1c877549e175d33c5dcdca12aa25ddf/312aca1771a6c362e8f92726ac16923170f6c3ecab0a0ba7300c4f1bc8886bed.json",
+    "build_receipt_sha256": "312aca1771a6c362e8f92726ac16923170f6c3ecab0a0ba7300c4f1bc8886bed",
+    "contract_path": "planning/chromatin-geometry-study-2026-11-02/contract-freeze-v3.json",
+    "contract_sha256": "4033eea4a8168f5e898212873252c8782943d12f5325e5a31ca45487f9751f06",
+    "component_correctness_job": "c1d43a4c-dba9-4162-aa79-50ca6533130e",
+    "public_replay_correctness_job": "384b43b3-3229-47cb-b91b-7aeb3db25df4"
+  },
+  "accepted_v2_measurement": {
+    "job_id": "47b853d3-ddfa-47f4-b1d3-601629c9663f",
+    "summary": "bench/chromatin_geometry/analysis/qualification-summary.md",
+    "binary_sha256": "02a282c431888966d9cb5172c6794b441d0464f5ee76d06115fae66d4dcdc8a5",
+    "archive_sha256": "f9bfbd356e0fde90ca9defdada2c73e48b974c3e9c02fa44d5b7f9f486f22d6f"
+  },
+  "resume_frontier": [
+    "Await explicit user resumption; do not automatically resume study lanes.",
+    "Investigate and retry the v3 same-device matched staging and update comparison only with clean telemetry and explicit budget admission; the prior attempt is unqualified.",
+    "Independently qualify any clean result, then continue remaining frozen scenarios and required profiles only when authorized."
+  ],
+  "limits": "Study incomplete; no runtime or performance result is implied by CPU staging. Parent workspace pause must remain intact.",
+  "v3_sanitizer_jobs": {
+    "memcheck": "720ad1a6-616b-4fa7-b3d3-fca24a91aaad",
+    "racecheck": "622a7cb7-e319-42f3-86e5-6e5f1d757059",
+    "initcheck": "5031bf45-2e2d-4ff0-9cba-5ad26775301c",
+    "synccheck": "5b6d63ea-f325-4f3f-9625-b3f0bcf334ec"
+  },
+  "v3_comparison": {
+    "job_id": "45bab455-239f-4e32-8ebd-fd33ae03e979",
+    "worker_status": "failed",
+    "cleanup_verified": true,
+    "charged_gpu_seconds": 166.02970099449158,
+    "packet": "bench/chromatin_geometry/runs/packets/45bab455-239f-4e32-8ebd-fd33ae03e979",
+    "supplemental_raw_records": 48,
+    "update_ablation_raw_records": 96,
+    "telemetry_samples": 263,
+    "rejected_samples": 1,
+    "reason": "one sampled GPU compute process was not attributable to the study; timing is unqualified and must not be interpreted"
+  },
+  "unreserved_resume_incident": {
+    "jobs": [
+      {
+        "job_id": "f16ecce8-8c95-42d4-8a6e-6c56bdf84b9c",
+        "charged_gpu_seconds": 22.411698818206787
+      },
+      {
+        "job_id": "1dd519df-ba2b-4883-945d-9208dbea3492",
+        "charged_gpu_seconds": 0
+      }
+    ],
+    "terminal_state": "cancelled",
+    "cleanup_verified": true,
+    "evidence": "bench/chromatin_geometry/runs/failures/",
+    "note": "autobench resume briefly activated study service; exact two jobs cancelled and charged conservatively; both unqualified"
+  }
+}

@@ -10,7 +10,7 @@ The production candidate kernels and layouts are unchanged by this harness.
 #include <Cellerator/compute/candidate/csr_fallback_candidate.hh>
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
 #include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
-#include <Cellerator/compute/projection/physical_csr.hh>
+#include <Cellerator/layout/projection/csr.hh>
 
 #include <Cellerator/geometry/persistent_packing_payload.hh>
 
@@ -75,7 +75,7 @@ void require(core::operation_status status, const char *message) {
     std::exit(1);
 }
 
-void require(cm::physical_view_status status, const char *message) {
+void require(::cellerator::layout::projection::physical_view_status status, const char *message) {
     if (status) return;
     std::fprintf(stderr,
         "celleratorCeArch76CandidateBench: %s (code=%u detail=%s)\n",
@@ -356,15 +356,15 @@ void refresh_payload(host_case &source) {
 }
 
 struct host_projections {
-    cm::lazy_execution_csr_requirements csr_requirements{};
+    ::cellerator::layout::projection::lazy_execution_csr_requirements csr_requirements{};
     std::vector<cp::u32> csr_rows;
     std::vector<cp::u32> csr_features;
     std::vector<cp::u32> csr_cursors;
     std::vector<unsigned char> csr_values;
-    cm::execution_csr_view csr{};
-    cm::feature_major_projection_requirements feature_requirements{};
+    ::cellerator::layout::projection::CsrViewV1 csr{};
+    ::cellerator::layout::projection::feature_major_projection_requirements feature_requirements{};
     std::vector<unsigned char> feature_payload;
-    cm::feature_major_projection_view feature{};
+    execution::FeatureMajorBinding feature{};
     std::vector<unsigned char> feature_values;
     double csr_query_ms = 0.0;
     double csr_build_ms = 0.0;
@@ -374,14 +374,14 @@ struct host_projections {
 };
 
 host_projections build_projections(const host_case &source,
-    execution::structure_id structure_id,
+    ::cellerator::structure::structure_id structure_id,
     execution::structure_handle structure_handle,
-    execution::structure_epoch epoch,
-    execution::projection_id feature_id,
+    ::cellerator::structure::structure_epoch epoch,
+    ::cellerator::structure::projection_id feature_id,
     execution::projection_handle feature_handle) {
     host_projections result;
     auto begin = clock_type::now();
-    require(cm::query_lazy_execution_csr_requirements(
+    require(::cellerator::layout::projection::query_lazy_execution_csr_requirements(
         source.payload, &result.csr_requirements), "query CSR projection");
     auto end = clock_type::now();
     result.csr_query_ms = milliseconds(begin, end);
@@ -389,32 +389,32 @@ host_projections build_projections(const host_case &source,
     result.csr_features.resize(result.csr_requirements.execution_feature_count);
     result.csr_cursors.resize(result.csr_requirements.row_cursor_count);
     result.csr_values.resize(result.csr_requirements.value_bytes);
-    cm::lazy_execution_csr_buffers csr_buffers{
+    ::cellerator::layout::projection::lazy_execution_csr_buffers csr_buffers{
         result.csr_rows.size(), result.csr_features.size(),
         result.csr_values.size(), result.csr_cursors.size(),
         result.csr_rows.data(), result.csr_features.data(),
         result.csr_values.data(), result.csr_cursors.data()};
     begin = clock_type::now();
-    require(cm::materialize_execution_csr_from_cpk1_host(
+    require(::cellerator::layout::projection::materialize_execution_csr_from_cpk1_host(
         source.payload, csr_buffers, &result.csr), "build CSR projection");
     end = clock_type::now();
     result.csr_build_ms = milliseconds(begin, end);
 
-    cm::feature_major_projection_build_request request{};
-    request.structure_identity = structure_id;
+    execution::FeatureMajorBindingBuildRequest request{};
+    request.layout.structure_identity = structure_id;
+    request.layout.structure_epoch_value = epoch;
+    request.layout.projection_identity = feature_id;
+    request.layout.source = source.payload;
     request.runtime_structure = structure_handle;
-    request.structure_epoch_value = epoch;
-    request.projection_identity = feature_id;
     request.runtime_projection = feature_handle;
-    request.source = source.payload;
     begin = clock_type::now();
-    require(cm::query_feature_major_projection_requirements_host(
+    require(execution::query_feature_major_binding_requirements_host(
         request, &result.feature_requirements), "query feature projection");
     end = clock_type::now();
     result.feature_query_ms = milliseconds(begin, end);
     result.feature_payload.resize(result.feature_requirements.payload_bytes);
     begin = clock_type::now();
-    require(cm::build_feature_major_projection_host(request,
+    require(execution::build_feature_major_binding_host(request,
         {result.feature_payload.data(), result.feature_payload.size()},
         &result.feature), "build feature projection");
     end = clock_type::now();
@@ -422,7 +422,7 @@ host_projections build_projections(const host_case &source,
     result.feature_values.resize(static_cast<std::size_t>(
         source.payload.tiles.nnz_count) * source.payload.tiles.value_size_bytes);
     begin = clock_type::now();
-    require(cm::pack_feature_major_values_host(result.feature,
+    require(::cellerator::layout::projection::pack_feature_major_values_host(result.feature.layout,
         source.tile_values.data(), source.tile_values.size() * sizeof(storage_t),
         {result.feature_values.data(), result.feature_values.size()}),
         "pack feature projection values");
@@ -683,14 +683,14 @@ void benchmark_case(const host_case &source,
     int sm,
     int driver,
     int runtime) {
-    const execution::structure_id structure_id{0x7611u, 0x7612u};
+    const ::cellerator::structure::structure_id structure_id{0x7611u, 0x7612u};
     const execution::structure_handle structure_handle{76u, 1u};
-    const execution::structure_epoch epoch{1u};
-    const execution::projection_id row_id{0x7621u, source.sharing_groups};
+    const ::cellerator::structure::structure_epoch epoch{1u};
+    const ::cellerator::structure::projection_id row_id{0x7621u, source.sharing_groups};
     const execution::projection_handle row_handle{77u, source.sharing_groups};
-    const execution::projection_id csr_id{0x7631u, source.sharing_groups};
+    const ::cellerator::structure::projection_id csr_id{0x7631u, source.sharing_groups};
     const execution::projection_handle csr_handle{78u, source.sharing_groups};
-    const execution::projection_id feature_id{0x7641u, source.sharing_groups};
+    const ::cellerator::structure::projection_id feature_id{0x7641u, source.sharing_groups};
     const execution::projection_handle feature_handle{79u, source.sharing_groups};
     const execution::axis_identity feature_axis = axis(10u);
     const execution::axis_identity row_axis = axis(20u);
@@ -747,12 +747,12 @@ void benchmark_case(const host_case &source,
     row_view.tiles.row_block_gene_masks = d_gene_masks.data;
     row_view.tiles.row_block_value_offsets = d_value_offsets.data;
     row_view.tiles.values = d_row_values.data;
-    cm::execution_csr_view csr_view = host_views.csr;
+    ::cellerator::layout::projection::CsrViewV1 csr_view = host_views.csr;
     csr_view.row_offsets = d_csr_rows.data;
     csr_view.execution_feature_ids = d_csr_features.data;
     csr_view.values = d_csr_values.data;
-    cm::feature_major_projection_view feature_view{};
-    require(cm::rebind_feature_major_projection(host_views.feature,
+    execution::FeatureMajorBinding feature_view{};
+    require(execution::rebind_feature_major_binding(host_views.feature,
         d_feature_payload.data, host_views.feature_payload.size(), &feature_view),
         "rebind feature projection");
 
@@ -770,11 +770,11 @@ void benchmark_case(const host_case &source,
         core::projection_kind::native_row_masked,
         cp::persistent_packing_payload_schema_version, 1u};
     const core::projection_key csr_key{csr_id, csr_handle,
-        core::projection_kind::csr, cm::execution_csr_schema_version, 1u};
+        core::projection_kind::csr, ::cellerator::layout::projection::execution_csr_schema_version, 1u};
     const core::projection_key feature_key{feature_id, feature_handle,
         core::projection_kind::native_feature_major,
-        cm::feature_major_projection_schema_version,
-        cm::feature_major_projection_variant};
+        ::cellerator::layout::projection::feature_major_projection_schema_version,
+        ::cellerator::layout::projection::feature_major_projection_variant};
     const core::prepare_policy prepare_policy{true, false, true, true,
         static_cast<std::uint32_t>(expected_reuse), 0u, 0u};
     core::row_masked_n1_prepared_state row_state{};
@@ -1024,10 +1024,10 @@ int main(int argc, char **argv) {
         host_case source = make_case(
             regime.name, rows, features, regime.sharing);
         refresh_payload(source);
-        const execution::structure_id structure_id{0x7611u, 0x7612u};
+        const ::cellerator::structure::structure_id structure_id{0x7611u, 0x7612u};
         const execution::structure_handle structure_handle{76u, 1u};
-        const execution::structure_epoch epoch{1u};
-        const execution::projection_id feature_id{0x7641u, regime.sharing};
+        const ::cellerator::structure::structure_epoch epoch{1u};
+        const ::cellerator::structure::projection_id feature_id{0x7641u, regime.sharing};
         const execution::projection_handle feature_handle{79u, regime.sharing};
         const host_projections projections = build_projections(source,
             structure_id, structure_handle, epoch, feature_id, feature_handle);

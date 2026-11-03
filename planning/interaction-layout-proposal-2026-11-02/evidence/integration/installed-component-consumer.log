@@ -1,0 +1,51 @@
+$ bash -lc cmake --install /tmp/cellerator-factorized-interaction-install-build --prefix /tmp/cellerator-factorized-interaction-component-prefix-v2 --component FactorizedInteractionCUDA && cmake -S tests/factorized_interactions/installed_consumer -B /tmp/cellerator-factorized-interaction-installed-consumer-v4 -DCMAKE_PREFIX_PATH=/tmp/cellerator-factorized-interaction-component-prefix-v2 -DCUDAToolkit_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9 && cmake --build /tmp/cellerator-factorized-interaction-installed-consumer-v4 --target factorized_interaction_installed_consumer -j2
+-- Install configuration: "Release"
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/libcellerator_memory_cuda.a
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/cmake/Cellerator/CelleratorFactorizedInteractionMemoryTargets.cmake
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/cmake/Cellerator/CelleratorFactorizedInteractionMemoryTargets-release.cmake
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/include/Cellerator/memory/cuda
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/include/Cellerator/memory/cuda/resources.hh
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/include/Cellerator/memory/cuda/shared_buffer.hh
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/libcellerator_factorized_interaction_cuda.a
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/cmake/Cellerator/CelleratorFactorizedInteractionTargets.cmake
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/cmake/Cellerator/CelleratorFactorizedInteractionTargets-release.cmake
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/include/Cellerator/layout/factorized_interaction.hh
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/include/Cellerator/modeling/cuda/factorized_interaction.hh
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/libcellerator_support.a
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/libcellerator_layout.a
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/cmake/Cellerator/CelleratorFactorizedInteractionBaseTargets.cmake
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/cmake/Cellerator/CelleratorFactorizedInteractionBaseTargets-release.cmake
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/cmake/Cellerator/CelleratorConfig.cmake
+-- Up-to-date: /tmp/cellerator-factorized-interaction-component-prefix-v2/lib/cmake/Cellerator/CelleratorConfigVersion.cmake
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-factorized-interaction-installed-consumer-v4
+[100%] Built target factorized_interaction_installed_consumer
+
+exit_code=0
+
+## v3 package-order and optional-component retest
+
+Commands:
+
+```sh
+cmake -S /home/tumlinson/Cellerator -B /tmp/cellerator-factorized-interaction-install-build
+cmake --build /tmp/cellerator-factorized-interaction-install-build \
+  --target cellerator_support cellerator_layout cellerator_memory_cuda \
+           cellerator_factorized_interaction_cuda -j2
+cmake --install /tmp/cellerator-factorized-interaction-install-build \
+  --prefix /tmp/cellerator-factorized-interaction-component-prefix-v3 \
+  --component FactorizedInteractionCUDA
+cmake -S tests/factorized_interactions/installed_consumer \
+  -B /tmp/cellerator-factorized-interaction-installed-consumer-v5 \
+  -DCMAKE_PREFIX_PATH=/tmp/cellerator-factorized-interaction-component-prefix-v3 \
+  -DCUDAToolkit_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
+cmake --build /tmp/cellerator-factorized-interaction-installed-consumer-v5 \
+  --target factorized_interaction_installed_consumer -j2
+```
+
+All four commands exited zero. The consumer's configure checks the required
+factorized component plus optional `nn`, verifies `Cellerator_nn_FOUND` is
+false, repeats the exact factorized request, and confirms the canonical
+`Cellerator::memory_cuda` archive identity is unchanged. The external CXX
+consumer compiled and linked. It was not executed.

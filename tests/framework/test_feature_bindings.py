@@ -16,6 +16,19 @@ from cellerator.torch.features import FeatureEncoder
 
 
 class FeatureBindingTests(unittest.TestCase):
+    def test_native_v2_manifest_is_explicitly_rejected(self):
+        descriptor = FeatureBinding.from_ids(("gene-a",)).to_manifest()
+        descriptor["schema_version"] = 2
+        descriptor["axis"] = {
+            "domain": {"low": 1, "high": 2},
+            "order": {"low": 3, "high": 4},
+            "extent": 1,
+            "geometry": None,
+            "partition": None,
+        }
+        with self.assertRaisesRegex(ValueError, "unsupported FeatureBinding manifest version"):
+            FeatureBinding.from_manifest(descriptor)
+
     def test_named_alignment_preserves_requested_order_and_gradient(self):
         binding = FeatureBinding.from_ids(
             ("gene-A", "gene-B", "gene-C"),

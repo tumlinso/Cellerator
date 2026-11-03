@@ -40,7 +40,7 @@ struct native_view_metadata {
     native_view_access access = native_view_access::read_only;
     int device_ordinal = -1;
     cellerator::execution::structure_handle structure{};
-    cellerator::execution::structure_epoch structure_epoch{};
+    ::cellerator::structure::structure_epoch structure_epoch{};
     cellerator::execution::value_generation generation{};
     cellerator::execution::axis_identity axes[
         cellerator::execution::biological_operand_max_axes]{};

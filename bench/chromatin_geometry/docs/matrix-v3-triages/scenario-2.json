@@ -1,0 +1,71 @@
+{
+  "schema": "cgs.triage.v1",
+  "runs": [
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "teacher",
+      "body": "product",
+      "backend": "scalar",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-2"
+    },
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "teacher",
+      "body": "product",
+      "backend": "bitmap",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-2"
+    },
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "teacher",
+      "body": "product",
+      "backend": "direct",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-2"
+    },
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "teacher",
+      "body": "product",
+      "backend": "cohort-direct",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-2"
+    },
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "teacher",
+      "body": "product",
+      "backend": "cohort-direct-two-tile",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-2"
+    },
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "teacher",
+      "body": "product",
+      "backend": "cohort-shared",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-2"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dT_dataloader.hh"
+#include <Cellerator/memory/cuda/shared_buffer.hh>
 
 #include <cstdint>
 
@@ -46,25 +47,25 @@ struct DevelopmentalTimeModel {
     runtime::cusparse_cache sparse_cache{};
     std::uint64_t step = 0u;
 
-    runtime::device_buffer<float> encoder_weight;
-    runtime::device_buffer<float> encoder_bias;
-    runtime::device_buffer<float> hidden_weight;
-    runtime::device_buffer<float> hidden_bias;
-    runtime::device_buffer<float> output_weight;
-    runtime::device_buffer<float> output_bias;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_weight;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_bias;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> hidden_weight;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> hidden_bias;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> output_weight;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> output_bias;
 
-    runtime::device_buffer<float> encoder_weight_m1;
-    runtime::device_buffer<float> encoder_weight_m2;
-    runtime::device_buffer<float> encoder_bias_m1;
-    runtime::device_buffer<float> encoder_bias_m2;
-    runtime::device_buffer<float> hidden_weight_m1;
-    runtime::device_buffer<float> hidden_weight_m2;
-    runtime::device_buffer<float> hidden_bias_m1;
-    runtime::device_buffer<float> hidden_bias_m2;
-    runtime::device_buffer<float> output_weight_m1;
-    runtime::device_buffer<float> output_weight_m2;
-    runtime::device_buffer<float> output_bias_m1;
-    runtime::device_buffer<float> output_bias_m2;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_weight_m1;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_weight_m2;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_bias_m1;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> encoder_bias_m2;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> hidden_weight_m1;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> hidden_weight_m2;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> hidden_bias_m1;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> hidden_bias_m2;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> output_weight_m1;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> output_weight_m2;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> output_bias_m1;
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> output_bias_m2;
 };
 
 void init(
@@ -73,7 +74,7 @@ void init(
 
 void clear(DevelopmentalTimeModel *model);
 
-runtime::device_buffer<float> infer_time(
+::cellerator::memory::cuda::SharedDeviceBuffer<float> infer_time(
     DevelopmentalTimeModel *model,
     const DevelopmentalTimeBatchView &batch);
 

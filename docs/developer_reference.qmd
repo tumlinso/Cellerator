@@ -66,12 +66,21 @@ The [biological relation example](https://github.com/tumlinso/Cellerator/blob/ma
 
 ## Native Cell examples
 
-The [`event_forward.cc`](../examples/native_cell/event_forward.cc) and
-[`multimodal.cc`](../examples/native_cell/multimodal.cc) examples use the
-Torch-free public Cell and adapter headers. Their targets build with C++20
-because the dense-expression adapter uses `std::span`; they link the native
-`Cellerator::libCellerator` implementation for the out-of-line Cell
-destructor. Configure a host-only tree with Python, Torch, CUDA, NN,
+The [native data guide](native_data.qmd) covers canonical dependency patterns,
+specialist tensor owners/views, layout maps and prepared multi-device bindings
+below cells and models. Host consumers link `Cellerator::native_data`; the
+smaller `Cellerator::tensor` surface and optional `Cellerator::native_data_cuda`
+keep numerical format and CUDA dependencies explicit. The focused
+`CELLERATOR_BUILD_NATIVE_DATA_TESTS=ON` route builds without the unrelated
+compiler suite when `CELLERATOR_BUILD_TESTS=OFF`.
+
+The [`event_forward.cc`](../examples/native_cell/event_forward.cc),
+[`multimodal.cc`](../examples/native_cell/multimodal.cc), and
+[`foundation.cc`](../examples/native_cell/foundation.cc) examples use the
+Torch-free typed Cell and adapter headers. The core is C++17; dense-expression
+selection uses C++20 `std::span`. The optional `CellViews` runtime bridge links
+`Cellerator::libCellerator` for its out-of-line destructor; the typed binding
+needs neither that symbol nor RTTI. Configure a host-only tree with Python, Torch, CUDA, NN,
 tokenization, and sparse support disabled, then build and run the examples:
 
 ```sh
@@ -83,21 +92,30 @@ cmake -S . -B build/cell-host \
   -DCELLERATOR_ENABLE_NN_CUDA=OFF \
   -DCELLERATOR_ENABLE_TOKENIZATION=OFF \
   -DCELLERATOR_ENABLE_SPARSE_SUPPORT=OFF \
+  -DCELLERATOR_ENABLE_MODELING=OFF \
+  -DCELLERATOR_ENABLE_CONDITIONAL=OFF \
+  -DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF \
   -DCELLERATOR_ENABLE_CELLSHARD=OFF \
   -DCELLERATOR_BUILD_TORCH_EXAMPLES=OFF \
   -DCELLERATOR_BUILD_TESTS=ON
 cmake --build build/cell-host \
-  --target cellerator_cell_core_test cellerator_cell_adapters_test \
-    cellerator_cell_event_forward_example cellerator_cell_multimodal_example
+  --target cellerator_cell_core_test cellerator_cell_views_bridge_test \
+    cellerator_typed_core_no_rtti_test cellerator_cell_adapters_test \
+    cellerator_cell_event_forward_example cellerator_cell_multimodal_example \
+    cellerator_cell_foundation_example
 ctest --test-dir build/cell-host -R cell_ --output-on-failure
 ```
 
 The event example uses a deterministic evaluator and storage-owned append to
-show prefix growth and rejection of a stale non-tail continuation. It is not a
-trained Karyoplast model. The multimodal example shows one cell providing event,
-dense-expression, identity, and application-defined typed access, with an
-explicit write through the expression edit contract. Device placement is
-preserved by the descriptors; these examples exercise host data only.
+extend the continuing instance while copied prefix selections retain prior
+boundaries. It rejects stale or foreign continuations and is not a trained
+Karyoplast model. The multimodal example demonstrates event, expression,
+identity, and custom access with explicit edits and an optional runtime bridge.
+The foundation example explores shared portions, joint operations, pooled
+batching, host-buffer movement and caller-supplied execution costs, cache
+validity, and retained asynchronous resources. These are host contracts, not a
+distributed scheduler or a performance measurement. Device-placement checks
+propagate metadata without executing on a GPU.
 
 Newer native organization includes `src/common`, `src/structure`, `src/support`,
 `src/indexing`, `src/gating`, `src/layout`, and `src/ops`. The public header

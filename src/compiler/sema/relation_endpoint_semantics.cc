@@ -15,10 +15,10 @@ execution::persistent_axis_identity persist(const axis_type &axis) noexcept {
 
 bool same_axis(const execution::persistent_axis_identity &a,
                const execution::persistent_axis_identity &b) noexcept {
-    return execution::same_identity(a.domain, b.domain)
-        && execution::same_identity(a.order, b.order)
-        && execution::same_identity(a.geometry, b.geometry)
-        && execution::same_identity(a.partition, b.partition);
+    return ::cellerator::structure::same_identity(a.domain, b.domain)
+        && ::cellerator::structure::same_identity(a.order, b.order)
+        && ::cellerator::structure::same_identity(a.geometry, b.geometry)
+        && ::cellerator::structure::same_identity(a.partition, b.partition);
 }
 
 }  // namespace
@@ -34,11 +34,11 @@ bool agrees_with_runtime_relation(
     const relation_endpoint_semantics &source,
     const compute::operation::v2::typed_relation &runtime) noexcept {
     const auto expected = to_runtime_relation(source);
-    return execution::same_identity(expected.structure, runtime.structure)
+    return ::cellerator::structure::same_identity(expected.structure, runtime.structure)
         && expected.epoch.value == runtime.epoch.value
         && same_axis(expected.source_axis, runtime.source_axis)
         && same_axis(expected.destination_axis, runtime.destination_axis)
-        && execution::same_identity(expected.logical_edge_order,
+        && ::cellerator::structure::same_identity(expected.logical_edge_order,
                                     runtime.logical_edge_order)
         && expected.logical_edge_count == runtime.logical_edge_count;
 }

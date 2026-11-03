@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cellerator/compute/decomposition/decomposition_v1.hh>
+#include <Cellerator/execution/index_space/hierarchical_index_space_v1.hh>
 #include <Cellerator/execution/joint_compiler/atom_affordance_v1.hh>
 
 #include <cstdint>
@@ -25,7 +26,7 @@ struct atom_fragment_request_v1 {
     std::uint64_t exact_coverage_count = 0u;
     const hierarchical_index_space_view_v1 *local_index_spaces = nullptr;
     std::uint64_t local_index_space_count = 0u;
-    const order_id *external_orders = nullptr;
+    const structure::order_id *external_orders = nullptr;
     std::uint64_t external_order_count = 0u;
     const compute::decomposition::decomposition_portfolio_v1 *decomposition =
         nullptr;

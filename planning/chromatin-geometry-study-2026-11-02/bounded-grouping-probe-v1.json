@@ -1,0 +1,93 @@
+{
+  "schema": "cgs.bounded-grouping-plan.v1",
+  "authorized": "user-requested implementation, 2026-11-03",
+  "question": "Does exact local cohort preparation/traversal repay its resident cost relative to contiguous masking?",
+  "source_base_case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+  "probe_ids": [
+    "probe-grouping-coherent-hard-frozen-r1-change0",
+    "probe-grouping-coherent-hard-frozen-r16-change0"
+  ],
+  "fixture": {
+    "seed": 2388773429,
+    "cells": 256,
+    "features": 4096,
+    "groups": 64,
+    "condition_edges": 64,
+    "dag_nodes": 7,
+    "role": "complete_consumer",
+    "program_pattern": "coherent",
+    "activity_pattern": "dense",
+    "overlap_pattern": "high",
+    "parameter_pattern": "frozen",
+    "predicate_change_percent": 0,
+    "reuse_horizons": [
+      1,
+      16
+    ],
+    "gate": "supplied",
+    "body": "product",
+    "precision": "fp16 input storage; fp32 computation, outputs and VJPs",
+    "maps_and_values": "retain base-case generation; both probes differ only in id and reuse horizon"
+  },
+  "arms": {
+    "control": "masked-direct-two-tile",
+    "candidate": "cohort-direct-two-tile",
+    "cell_tile": 32,
+    "cell_tiles_per_cta": 2,
+    "global_cached_loads": true,
+    "shared_staging": false
+  },
+  "measurement": {
+    "primary": "recurrent_complete_horizon_ms",
+    "boundary": "one prepare pass + clears + all forward/backward evaluations + completion synchronization and status checks",
+    "cold_and_output_recovery": "reported separately",
+    "diagnostic_phases": "not confirmation samples",
+    "independent_rounds": 6,
+    "orders": [
+      "AB",
+      "BA",
+      "AB",
+      "BA",
+      "AB",
+      "BA"
+    ],
+    "warmups_per_invocation": 1,
+    "measured_sequences_per_invocation": 3,
+    "within_round_summary": "median",
+    "paired_bootstrap_samples": 10000,
+    "bootstrap_seed": 20261102,
+    "decision": "strict median resident latency reduction >5 percent AND paired95percent speedup interval lower bound>1; scope is this matched pair only"
+  },
+  "limits": {
+    "aggregate_gpu_seconds": 600,
+    "maximum_gpu_jobs": 3,
+    "original_study_gpu_seconds": 14400,
+    "original_used_at_start": 2332.120188474655,
+    "automatic_retries": false,
+    "cpu_preparation_started_utc": "2026-11-03T14:36:59Z",
+    "cpu_readiness_deadline_utc": "2026-11-03T14:56:59Z",
+    "on_deadline": "pause and report preparation checkpoint",
+    "on_failed_qualification_or_contaminated_timing": "stop, retain evidence and verified cleanup, no retry"
+  },
+  "qualification": [
+    "independent scalar outputs/VJPs",
+    "exact gate membership and mappings",
+    "empty and65cell tails",
+    "repeated andzero participants; arity32/33",
+    "poisoned excluded-forward inputs",
+    "stale descriptor rejection",
+    "representative memcheck racecheck initcheck synccheck for supplied-product scope"
+  ],
+  "delivery": "one two-row R1/R16 table with paired results, preparation cost and uncertainty; fresh independent review; pause for discussion",
+  "exclusions": [
+    "wider workload matrix",
+    "STE andteacher timing",
+    "shared-memory andpadding tuning",
+    "newpublicAPI",
+    "kerneloptimization",
+    "cross-binary orcross-device pooling",
+    "universal reuse threshold",
+    "production specialization recommendation"
+  ],
+  "workflow": "existing user-approved workflow exception remains; no native task acceptance inferred"
+}

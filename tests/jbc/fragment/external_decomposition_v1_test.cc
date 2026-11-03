@@ -54,7 +54,7 @@ int main() {
     portfolio.portfolio_identity = {22u, 1u};
     portfolio.alternatives = &alternative;
     portfolio.alternative_count = 1u;
-    const execution::order_id orders[] = {{30u, 1u}, {30u, 2u}};
+    const ::cellerator::structure::order_id orders[] = {{30u, 1u}, {30u, 2u}};
     assert(fragment::validate_external_decomposition_v1(
         problem, coverages, 2u, orders, 2u, portfolio));
 

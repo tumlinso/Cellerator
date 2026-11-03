@@ -15,8 +15,8 @@ inline constexpr std::uint32_t relation_bundle_schema_version_v1 = 1u;
 struct relation_bundle_type_fragment_v1 {
     std::uint64_t first_relation = 0u;
     std::uint64_t relation_count = 0u;
-    execution::domain_id source_domain{};
-    execution::domain_id destination_domain{};
+    ::cellerator::structure::domain_id source_domain{};
+    ::cellerator::structure::domain_id destination_domain{};
 };
 
 struct relation_bundle_type_decomposition_v1 {

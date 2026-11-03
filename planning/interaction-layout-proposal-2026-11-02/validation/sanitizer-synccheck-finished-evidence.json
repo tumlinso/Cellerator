@@ -1,0 +1,175 @@
+{
+  "autobench_results_row": {
+    "benchmark": "factorized-sanitizer-partitions",
+    "created": 1793657846.7294757,
+    "error": null,
+    "fingerprint": "f209002698580bf0a0f7820ac765de398fa6442a4b62c9bf7d250c491b9d528e",
+    "id": "566d281d-2fbf-4088-a52c-035c258238d2",
+    "job_id": "aa28c2c6-d482-432c-9110-b736b879bf6f",
+    "packet_index": 3,
+    "result_json": "{\"job\": {\"attempt_count\": 1, \"attempt_id\": \"a8c6361d-59aa-4a76-a91e-3e024ca823be\", \"blocked_reason\": null, \"cleanup_verified\": true, \"created_at\": \"2026-11-02T22:17:27.823926Z\", \"decision_id\": \"801e0780-1a40-42cd-b393-d7c29bb48bb5\", \"id\": \"aa28c2c6-d482-432c-9110-b736b879bf6f\", \"job_id\": \"aa28c2c6-d482-432c-9110-b736b879bf6f\", \"lease_binding\": null, \"lease_fencing_token\": 1784, \"lease_id\": \"94f1346f-305c-4c86-b0d2-bdf9cd120fd2\", \"owner\": \"autobench\", \"owner_id\": \"autobench\", \"reservation_id\": null, \"reservation_phase_id\": null, \"result\": {\"active_state\": \"active\", \"adapter\": \"systemd-user-unit/v1\", \"cleanup_verified\": true, \"evidence\": {\"adapter\": \"systemd-user-unit/v1\", \"control_group\": \"/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-99fb9178f955afe0812392f53856b6de.service\", \"invocation_id\": \"ee9a9124e89e4146b0729fa219f656f3\", \"main_code\": \"1\", \"unit_description\": \"Device Scheduler attempt a8c6361d-59aa-4a76-a91e-3e024ca823be\"}, \"exit_code\": 0, \"invocation_id\": \"ee9a9124e89e4146b0729fa219f656f3\", \"logs_error\": null, \"logs_truncated\": false, \"result\": \"success\", \"state\": \"succeeded\", \"substate\": \"exited\", \"unit_name\": \"device-scheduler-attempt-99fb9178f955afe0812392f53856b6de.service\", \"stdout_bytes\": 0}, \"spec\": {\"argv\": [\"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python\", \"-m\", \"autobench.worker\", \"/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/state/packets/566d281d-2fbf-4088-a52c-035c258238d2.json\"], \"deadline\": null, \"dependencies\": [], \"environment\": {}, \"event_trigger\": null, \"expected_duration_seconds\": 480.0, \"flexible\": true, \"idempotency_key\": \"autobench-v1:1794262646:566d281d-2fbf-4088-a52c-035c258238d2\", \"interruption\": {\"cancellation_supported\": true, \"checkpoint_supported\": false, \"cooperative_yield\": false, \"restart_safe\": false}, \"kill_timeout_seconds\": 600.0, \"max_attempts\": 1, \"not_before\": null, \"owner_id\": \"autobench\", \"preconditions\": [{\"name\": \"gpu.quiescence\", \"parameters\": {\"consecutive_samples\": 2, \"interval_seconds\": 1, \"max_utilization_percent\": 0, \"timeout_seconds\": 30}, \"schema_version\": 1}], \"preemption_action\": \"abandon\", \"priority\": 10, \"priority_class\": \"background\", \"profile_id\": null, \"resources\": [{\"kind\": \"gpu\", \"mode\": \"exclusive\", \"quantities\": {\"memory_bytes\": 6442450944.0}, \"same_host\": true, \"schema_version\": 1, \"selectors\": {\"resource_id\": \"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}, \"topology_constraints\": {}}, {\"kind\": \"cpu\", \"mode\": \"shared\", \"quantities\": {\"cores\": 2.0}, \"same_host\": true, \"schema_version\": 1, \"selectors\": {}, \"topology_constraints\": {}}, {\"kind\": \"memory\", \"mode\": \"shared\", \"quantities\": {\"bytes\": 8589934592.0}, \"same_host\": true, \"schema_version\": 1, \"selectors\": {}, \"topology_constraints\": {}}], \"retention_policy\": \"autobench\", \"schema_version\": 1, \"secret_refs\": [], \"tags\": [\"benchmark:factorized-sanitizer-partitions\", \"gpu.exclusive\", \"autobench\", \"kind:correctness\"], \"termination_grace_seconds\": 5.0, \"timeout_seconds\": 610.0, \"working_directory\": \"/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement-performance\"}, \"state\": \"succeeded\", \"updated_at\": \"2026-11-02T22:18:53.890583Z\", \"attempt\": {\"attempt_id\": \"a8c6361d-59aa-4a76-a91e-3e024ca823be\", \"cleanup_verified\": true, \"created_at\": \"2026-11-02T22:17:41.077316Z\", \"error\": {}, \"evidence\": [{\"adapter_errors\": [], \"kind\": \"execution_preconditions\", \"operation_id\": \"preconditions:a8c6361d-59aa-4a76-a91e-3e024ca823be\", \"preconditions\": [{\"name\": \"gpu.quiescence\", \"reports\": [{\"adapter_id\": \"nvidia-smi\", \"evidence\": {\"observation\": {\"consecutive_samples\": 2, \"samples\": [{\"gpus\": [{\"gpu_uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"inventory_observed_at\": \"2026-11-02T22:17:41.178539+00:00\", \"memory_free_bytes\": 16929259520, \"memory_total_bytes\": 17179869184, \"process_ids\": [], \"process_observed_at\": \"2026-11-02T22:17:41.218450+00:00\", \"required_free_bytes\": 6979321856, \"resource_id\": \"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"utilization_percent\": 0}], \"inventory_observed_at\": \"2026-11-02T22:17:41.178539+00:00\", \"process_observed_at\": \"2026-11-02T22:17:41.218450+00:00\", \"process_scope\": \"nvidia-smi-visible-compute-applications\", \"reason\": null, \"state\": \"idle\"}, {\"gpus\": [{\"gpu_uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"inventory_observed_at\": \"2026-11-02T22:17:42.299864+00:00\", \"memory_free_bytes\": 16929259520, \"memory_total_bytes\": 17179869184, \"process_ids\": [], \"process_observed_at\": \"2026-11-02T22:17:42.339641+00:00\", \"required_free_bytes\": 6979321856, \"resource_id\": \"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"utilization_percent\": 0}], \"inventory_observed_at\": \"2026-11-02T22:17:42.299864+00:00\", \"process_observed_at\": \"2026-11-02T22:17:42.339641+00:00\", \"process_scope\": \"nvidia-smi-visible-compute-applications\", \"reason\": null, \"state\": \"idle\"}], \"state\": \"observed\"}, \"parameters\": {\"consecutive_samples\": 2, \"interval_seconds\": 1.0, \"max_utilization_percent\": 0, \"minimum_free_bytes\": [6979321856], \"timeout_seconds\": 30.0}, \"precondition_index\": 0}, \"name\": \"gpu.quiescence\", \"resource_ids\": [\"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"], \"schema_version\": 1, \"state\": \"verified\"}], \"state\": \"verified\"}], \"state\": \"verified\"}], \"execution_context\": {\"allocations\": [{\"mode\": \"exclusive\", \"quantities\": {\"memory_bytes\": 6442450944.0}, \"resource_id\": \"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}, {\"mode\": \"shared\", \"quantities\": {\"cores\": 2.0}, \"resource_id\": \"host:testlsserver:cpu\"}, {\"mode\": \"shared\", \"quantities\": {\"bytes\": 8589934592.0}, \"resource_id\": \"host:testlsserver:memory\"}], \"claim_id\": \"94f1346f-305c-4c86-b0d2-bdf9cd120fd2\", \"fencing_token\": 1784, \"purpose\": \"job\", \"resources\": [{\"attributes\": {\"index_observation\": 3, \"inventory_observed_at\": \"2026-11-02T22:17:24.850988+00:00\", \"managed_process_ids\": [], \"memory_enforcement\": \"accounting_only\", \"memory_free_bytes_observation\": 16929259520, \"name\": \"Tesla V100-SXM2-16GB\", \"pci_bus_id\": \"00000000:84:00.0\", \"process_count_observation\": 0, \"process_identity_unknown_count\": 0, \"process_mapping_state\": \"unknown\", \"process_observed_at\": \"2026-11-02T22:17:24.850988+00:00\", \"process_telemetry\": \"compute-apps-visible\", \"process_telemetry_state\": \"observed\", \"processes_observation\": [], \"unmanaged_process_count\": 0, \"utilization_percent_observation\": 0, \"uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"}, \"capabilities\": [\"whole-device-exclusive-admission\", \"shared-admission\", \"memory-accounting-only\", \"nvidia-smi-compute-process-telemetry\"], \"capacities\": {\"memory_bytes\": 17179869184.0}, \"conflict_domains\": [\"gpu-exclusive:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"], \"host_id\": \"testlsserver\", \"kind\": \"gpu\", \"resource_id\": \"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"schema_version\": 1, \"topology\": {\"links\": [{\"relation\": \"SYS\", \"source_gpu_uuid\": \"GPU-21131915-1488-23af-38dd-1743ae1f5cc8\", \"target_gpu_uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"type\": \"sys\"}, {\"relation\": \"NV6\", \"source_gpu_uuid\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\", \"target_gpu_uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"type\": \"nvlink\"}, {\"relation\": \"PHB\", \"source_gpu_uuid\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\", \"target_gpu_uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"type\": \"pcie\"}], \"pci_bus_id\": \"00000000:84:00.0\", \"topology_state\": \"observed\"}}, {\"attributes\": {\"observed_logical_cpus\": 80, \"scope\": \"whole host\"}, \"capabilities\": [\"systemd-cgroup-request-dependent\", \"supervised-lease-job-only\"], \"capacities\": {\"cores\": 80.0}, \"conflict_domains\": [], \"host_id\": \"testlsserver\", \"kind\": \"cpu\", \"resource_id\": \"host:testlsserver:cpu\", \"schema_version\": 1, \"topology\": {}}, {\"attributes\": {\"available_bytes\": 55253905408}, \"capabilities\": [\"systemd-cgroup-request-dependent\", \"supervised-lease-job-only\"], \"capacities\": {\"bytes\": 67362455552.0}, \"conflict_domains\": [], \"host_id\": \"testlsserver\", \"kind\": \"memory\", \"resource_id\": \"host:testlsserver:memory\", \"schema_version\": 1, \"topology\": {}}], \"schema_version\": 1}, \"execution_handle\": {\"adapter_id\": \"systemd-user-unit\", \"external_id\": \"device-scheduler-attempt-99fb9178f955afe0812392f53856b6de.service\", \"identity\": \"a8c6361d-59aa-4a76-a91e-3e024ca823be\", \"metadata\": {\"control_group\": \"/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-99fb9178f955afe0812392f53856b6de.service\", \"description\": \"Device Scheduler attempt a8c6361d-59aa-4a76-a91e-3e024ca823be\", \"execution_root\": \"/home/tumlinson/.local/state/device-scheduler/executions\", \"handle_version\": 1, \"invocation_id\": \"ee9a9124e89e4146b0729fa219f656f3\", \"profile_id\": null, \"profile_version\": null}, \"started_at\": \"2026-11-02T22:17:42.418328Z\"}, \"finished_at\": \"2026-11-02T22:18:53.890583Z\", \"id\": \"a8c6361d-59aa-4a76-a91e-3e024ca823be\", \"job_id\": \"aa28c2c6-d482-432c-9110-b736b879bf6f\", \"operation_id\": \"start:a8c6361d-59aa-4a76-a91e-3e024ca823be\", \"precondition_receipt\": {\"adapter_errors\": [], \"operation_id\": \"preconditions:a8c6361d-59aa-4a76-a91e-3e024ca823be\", \"preconditions\": [{\"name\": \"gpu.quiescence\", \"reports\": [{\"adapter_id\": \"nvidia-smi\", \"evidence\": {\"observation\": {\"consecutive_samples\": 2, \"samples\": [{\"gpus\": [{\"gpu_uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"inventory_observed_at\": \"2026-11-02T22:17:41.178539+00:00\", \"memory_free_bytes\": 16929259520, \"memory_total_bytes\": 17179869184, \"process_ids\": [], \"process_observed_at\": \"2026-11-02T22:17:41.218450+00:00\", \"required_free_bytes\": 6979321856, \"resource_id\": \"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"utilization_percent\": 0}], \"inventory_observed_at\": \"2026-11-02T22:17:41.178539+00:00\", \"process_observed_at\": \"2026-11-02T22:17:41.218450+00:00\", \"process_scope\": \"nvidia-smi-visible-compute-applications\", \"reason\": null, \"state\": \"idle\"}, {\"gpus\": [{\"gpu_uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"inventory_observed_at\": \"2026-11-02T22:17:42.299864+00:00\", \"memory_free_bytes\": 16929259520, \"memory_total_bytes\": 17179869184, \"process_ids\": [], \"process_observed_at\": \"2026-11-02T22:17:42.339641+00:00\", \"required_free_bytes\": 6979321856, \"resource_id\": \"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"utilization_percent\": 0}], \"inventory_observed_at\": \"2026-11-02T22:17:42.299864+00:00\", \"process_observed_at\": \"2026-11-02T22:17:42.339641+00:00\", \"process_scope\": \"nvidia-smi-visible-compute-applications\", \"reason\": null, \"state\": \"idle\"}], \"state\": \"observed\"}, \"parameters\": {\"consecutive_samples\": 2, \"interval_seconds\": 1.0, \"max_utilization_percent\": 0, \"minimum_free_bytes\": [6979321856], \"timeout_seconds\": 30.0}, \"precondition_index\": 0}, \"name\": \"gpu.quiescence\", \"resource_ids\": [\"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\"], \"schema_version\": 1, \"state\": \"verified\"}], \"state\": \"verified\"}], \"state\": \"verified\"}, \"result\": {\"active_state\": \"active\", \"adapter\": \"systemd-user-unit/v1\", \"cleanup_verified\": true, \"evidence\": {\"adapter\": \"systemd-user-unit/v1\", \"control_group\": \"/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-99fb9178f955afe0812392f53856b6de.service\", \"invocation_id\": \"ee9a9124e89e4146b0729fa219f656f3\", \"main_code\": \"1\", \"unit_description\": \"Device Scheduler attempt a8c6361d-59aa-4a76-a91e-3e024ca823be\"}, \"exit_code\": 0, \"invocation_id\": \"ee9a9124e89e4146b0729fa219f656f3\", \"logs_error\": null, \"logs_truncated\": false, \"result\": \"success\", \"state\": \"succeeded\", \"substate\": \"exited\", \"unit_name\": \"device-scheduler-attempt-99fb9178f955afe0812392f53856b6de.service\", \"stdout_bytes\": 0}, \"started_at\": \"2026-11-02T22:17:42.418443Z\", \"state\": \"succeeded\"}, \"lease_state\": \"released\"}, \"worker\": {\"duration_seconds\": 54.877219708003395, \"returncode\": 0, \"scheduler_attempt_id\": \"a8c6361d-59aa-4a76-a91e-3e024ca823be\", \"scheduler_job_id\": \"aa28c2c6-d482-432c-9110-b736b879bf6f\", \"status\": \"succeeded\", \"stderr_bytes\": 0, \"stderr_truncated\": false, \"stdout_bytes\": 164, \"stdout_truncated\": false}, \"identity\": {\"protocol_fingerprint\": \"53ea3234c9355258230742357d2b7e55b018cd5920f2fb260abc03adeb429d24\", \"source_fingerprint\": \"b0cfb0dcc9e45a78f53970b2edb1d1739e23ecd75f3f31ec985303d17235ffc0\", \"build_fingerprint\": \"fdd93c8ba45f26659ff75dd9416f980654adf0273e09c8ba2a0b708a5d006941\", \"data_fingerprint\": \"3ef42a04c0b4fc32afe862ecf0364ae51214e1275f5afa9037851f89cf62acfb\", \"device_identity\": [{\"resource_id\": \"gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"kind\": \"gpu\", \"host_id\": \"testlsserver\", \"quantities\": {\"memory_bytes\": 6442450944.0}, \"uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"name\": \"Tesla V100-SXM2-16GB\", \"pci_bus_id\": \"00000000:84:00.0\", \"topology\": {\"links\": [{\"relation\": \"SYS\", \"source_gpu_uuid\": \"GPU-21131915-1488-23af-38dd-1743ae1f5cc8\", \"target_gpu_uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"type\": \"sys\"}, {\"relation\": \"NV6\", \"source_gpu_uuid\": \"GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505\", \"target_gpu_uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"type\": \"nvlink\"}, {\"relation\": \"PHB\", \"source_gpu_uuid\": \"GPU-d745da9c-7649-8334-41f1-483afa6f3206\", \"target_gpu_uuid\": \"GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a\", \"type\": \"pcie\"}], \"pci_bus_id\": \"00000000:84:00.0\", \"topology_state\": \"observed\"}}, {\"resource_id\": \"host:testlsserver:cpu\", \"kind\": \"cpu\", \"host_id\": \"testlsserver\", \"quantities\": {\"cores\": 2.0}, \"uuid\": null, \"name\": null, \"pci_bus_id\": null, \"topology\": {}}, {\"resource_id\": \"host:testlsserver:memory\", \"kind\": \"memory\", \"host_id\": \"testlsserver\", \"quantities\": {\"bytes\": 8589934592.0}, \"uuid\": null, \"name\": null, \"pci_bus_id\": null, \"topology\": {}}]}}",
+    "revision": 5,
+    "state": "succeeded",
+    "updated": 1793657966.8890183
+  },
+  "current_pointer": {
+    "attempt": "566d281d-2fbf-4088-a52c-035c258238d2",
+    "build_fingerprint": "fdd93c8ba45f26659ff75dd9416f980654adf0273e09c8ba2a0b708a5d006941",
+    "build_output_identity": "9525f0bcf4f2ddb670dcfabe0bdf2aa74a1424738454a795a5e8723c4d23c3bc",
+    "cleanup_verified": true,
+    "data_fingerprint": "3ef42a04c0b4fc32afe862ecf0364ae51214e1275f5afa9037851f89cf62acfb",
+    "data_manifest": {
+      ".autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered-manifest.json": "84071adc04a37f3c50f0f5c73b96af1ae78e2656b8dd29896f45d4aaf82f6b6a",
+      ".autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered.tar": "203fe5e743a1a2928afcdcb1b8085e6b2c86defebbbdc0a6e497d178a43e0078",
+      ".autobench/data/factorized-interactions/prebuilt-native-1/materialize_prebuilt.py": "4cc2f083edfe712cd87af28ac61688e448368506cdd06904079c0e6d7e3f217a",
+      ".autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native-manifest.json": "0cb93ca3395f72e26db2336d9f6e893ba4ad14506b2dcef1daaf07a813ad463c",
+      ".autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native.tar": "34ed1254850a9217ff6da1be127a14ae24f5ba4db2ad45093be5813085b9d871",
+      ".autobench/data/factorized-interactions/sanitizer-wrapper-4/sanitizer-minimal-dispatch-fixture.json": "e26d688ceccf25f8f98a29a8f2bf522d84a2653d2e643d5c7102125e5e45e0d3",
+      ".autobench/data/factorized-interactions/sanitizer-wrapper-4/sanitizer_tool_partition.py": "e5bafd545ecaaae4a093f533da9e96276f6795e6f91691de25180dcf0ad04de7",
+      ".autobench/data/factorized-interactions/sanitizer-wrapper-4/test_sanitizer_tool_partition.py": "1159a37b48d48f8b0bc43c592f19fab9ef6d6e1403bd03ac7e35024cd62565d3"
+    },
+    "device_identity": [
+      {
+        "host_id": "testlsserver",
+        "kind": "gpu",
+        "name": "Tesla V100-SXM2-16GB",
+        "pci_bus_id": "00000000:84:00.0",
+        "quantities": {
+          "memory_bytes": 6442450944.0
+        },
+        "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+        "topology": {
+          "links": [
+            {
+              "relation": "SYS",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "sys"
+            },
+            {
+              "relation": "NV6",
+              "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "nvlink"
+            },
+            {
+              "relation": "PHB",
+              "source_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "pcie"
+            }
+          ],
+          "pci_bus_id": "00000000:84:00.0",
+          "topology_state": "observed"
+        },
+        "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      },
+      {
+        "host_id": "testlsserver",
+        "kind": "cpu",
+        "name": null,
+        "pci_bus_id": null,
+        "quantities": {
+          "cores": 2.0
+        },
+        "resource_id": "host:testlsserver:cpu",
+        "topology": {},
+        "uuid": null
+      },
+      {
+        "host_id": "testlsserver",
+        "kind": "memory",
+        "name": null,
+        "pci_bus_id": null,
+        "quantities": {
+          "bytes": 8589934592.0
+        },
+        "resource_id": "host:testlsserver:memory",
+        "topology": {},
+        "uuid": null
+      }
+    ],
+    "fingerprint": "f209002698580bf0a0f7820ac765de398fa6442a4b62c9bf7d250c491b9d528e",
+    "metrics": {},
+    "protocol": {
+      "argv": [
+        "python3",
+        "{snapshot}/.autobench/data/factorized-interactions/sanitizer-wrapper-4/sanitizer_tool_partition.py",
+        "--source",
+        "{build}/source",
+        "--tool",
+        "synccheck",
+        "--runner",
+        "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_baseline_runner",
+        "--build-manifest",
+        "{build}/native_candidate/native_build/factorized_interactions_baseline_build_manifest.json",
+        "--expected-uuid",
+        "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+        "--output-root",
+        "{output}",
+        "--artifact-dir",
+        "{output}/cases",
+        "--output",
+        "{output}/partition.json"
+      ],
+      "environment_sha256": {
+        "NVCOMPILER_COMPUTE_SANITIZER_HOME": "f8eca28d00a8d9e23def829df1538eb667d17f3eee58206a58644c460d14e514",
+        "OPENBLAS_NUM_THREADS": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+        "PYTHONDONTWRITEBYTECODE": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+      },
+      "kind": "correctness",
+      "recipe_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "registered": {},
+      "resources": {
+        "scheduler": [
+          {
+            "kind": "gpu",
+            "mode": "exclusive",
+            "quantities": {
+              "memory_bytes": 6442450944
+            },
+            "selectors": {
+              "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          },
+          {
+            "kind": "cpu",
+            "mode": "shared",
+            "quantities": {
+              "cores": 2
+            }
+          },
+          {
+            "kind": "memory",
+            "mode": "shared",
+            "quantities": {
+              "bytes": 8589934592
+            }
+          }
+        ],
+        "tags": [
+          "gpu.exclusive"
+        ]
+      },
+      "schema_version": 1
+    },
+    "protocol_fingerprint": "53ea3234c9355258230742357d2b7e55b018cd5920f2fb260abc03adeb429d24",
+    "result": {
+      "duration_seconds": 54.877219708003395,
+      "returncode": 0,
+      "scheduler_attempt_id": "a8c6361d-59aa-4a76-a91e-3e024ca823be",
+      "scheduler_job_id": "aa28c2c6-d482-432c-9110-b736b879bf6f",
+      "status": "succeeded",
+      "stderr_bytes": 0,
+      "stderr_truncated": false,
+      "stdout_bytes": 164,
+      "stdout_truncated": false
+    },
+    "scheduler_job_id": "aa28c2c6-d482-432c-9110-b736b879bf6f",
+    "source_fingerprint": "b0cfb0dcc9e45a78f53970b2edb1d1739e23ecd75f3f31ec985303d17235ffc0",
+    "source_manifest_ref": "state/manifests/b0cfb0dcc9e45a78f53970b2edb1d1739e23ecd75f3f31ec985303d17235ffc0.json"
+  },
+  "report_path": "/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/evidence/factorized-sanitizer-partitions/3/f209002698580bf0a0f7820ac765de398fa6442a4b62c9bf7d250c491b9d528e/partition.json",
+  "report_sha256": "b27e4bf7d5dd0647b17dd2ab2fb9f2bf870ebfea0086bf8ce7ba4f02752e3264",
+  "schema": "cellerator.factorized_interactions.finished_receipt.v1"
+}

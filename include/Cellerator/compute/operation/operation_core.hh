@@ -80,9 +80,9 @@ struct operation_problem {
 // Semantic structure identity and its hot runtime binding are both explicit.
 // Neither is derived from a pointer.
 struct structure_key {
-    execution::structure_id persistent{};
+    ::cellerator::structure::structure_id persistent{};
     execution::structure_handle runtime{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_epoch epoch{};
 };
 
 struct structure_set_key {
@@ -92,7 +92,7 @@ struct structure_set_key {
 };
 
 struct projection_key {
-    execution::projection_id persistent{};
+    ::cellerator::structure::projection_id persistent{};
     execution::projection_handle runtime{};
     projection_kind kind = projection_kind::native_row_masked;
     std::uint16_t schema_version = 0u;

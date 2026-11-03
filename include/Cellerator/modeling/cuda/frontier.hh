@@ -5,11 +5,12 @@
 
 namespace cellerator::modeling::cuda {
 
-// Device-resident CSR reverse dependencies. Upload DependencyIncidence::offsets
-// and ::ordinals from incremental.hh; changed_sources contains dense source
-// ordinals obtained from DependencyIncidence::source_ordinal. Entity IDs and
-// roles are never cast to dense ordinals. Retain the immutable relation snapshot
-// associated with this projection until device work completes.
+// Device-resident compact CSR. Upload PreparedReadIndex::offsets and the
+// explicit make_device_ordinal_projection() result; the latter costs one
+// uint64 copy per posting and avoids strided reads through the larger host
+// posting records. changed_sources uses dense source ordinals from
+// PreparedReadIndex::source_ordinal. Retain both the immutable pattern snapshot
+// and projection storage until device work completes.
 struct FrontierPostings {
     const std::uint64_t* offsets = nullptr;       // source_count + 1
     const std::uint64_t* interaction_ordinals = nullptr; // posting_count

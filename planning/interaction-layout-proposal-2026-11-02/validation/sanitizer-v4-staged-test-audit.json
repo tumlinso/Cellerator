@@ -1,0 +1,30 @@
+{
+  "schema": "cellerator.factorized_interactions.sanitizer_graph_staged_test_audit.v1",
+  "reviewed_at": "2026-11-02",
+  "graph": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/sanitizer-partitions-v4.toml",
+    "sha256": "849942a8b5e67dfdabd4d76d1f2d254cf2d6a79709b97aabb4a27e8ac5a1a43d",
+    "revision": 4,
+    "packet_count": 4,
+    "expected_tool_partition_case_count": 14
+  },
+  "staged_files": {
+    "wrapper_sha256": "e5bafd545ecaaae4a093f533da9e96276f6795e6f91691de25180dcf0ad04de7",
+    "dispatch_fixture_sha256": "e26d688ceccf25f8f98a29a8f2bf522d84a2653d2e643d5c7102125e5e45e0d3",
+    "test_sha256": "9f57511ae6d6a700dd3712f8673a8756b506226519ab579185207ea535a3ee4d"
+  },
+  "review": {
+    "graph_argv_and_resource_identity": "pass",
+    "wrapper_copy_matches_reviewed_source": true,
+    "fixture_copy_matches_actual_dtype32_fixture": true,
+    "staged_test_copy_matches_current_source": false,
+    "staged_test_cpu_result": "7 passed, 1 failed with FileNotFoundError resolving the external dtype report beneath the staged .autobench parent",
+    "failure_kind": "test-fixture-path portability; not a CUDA result"
+  },
+  "current_test_fix": {
+    "source_test_sha256": "1159a37b48d48f8b0bc43c592f19fab9ef6d6e1403bd03ac7e35024cd62565d3",
+    "source_cpu_result": "8 tests passed under the exact Autobench Python 3.12 interpreter",
+    "fix": "Locate the dtype report by searching ancestors; skip only the external report comparison when evidence is not present in a portable copy. The self-contained dispatch metadata fixture remains checked by the full wrapper tests."
+  },
+  "disposition": "The v4 wrapper and runtime argv are sound, but its staged test copy is stale. Refresh that exact data input and capture a new managed definition revision before relying on the staged CPU suite. No GPU action was taken by this verifier."
+}

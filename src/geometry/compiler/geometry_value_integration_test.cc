@@ -10,7 +10,7 @@ namespace values = cellerator::execution::projection_value_plane;
 int main() {
     const auto readiness = geometry::compiler::
             validate_integrated_geometry_value_boundaries_v1();
-    if (readiness.semantic_geometry_schema != 1U
+    if (readiness.cell_packing_geometry_schema != 1U
         || readiness.semantic_cover_schema != 1U
         || readiness.projection_value_schema != 1U
         || !readiness.global_identifiers_are_64_bit

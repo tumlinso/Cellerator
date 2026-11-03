@@ -2,6 +2,7 @@
 
 #include <ATen/ATen.h>
 #include <Cellerator/biology/feature_binding.hh>
+#include <Cellerator/execution/dependency/feature_binding.hh>
 #include <Cellerator/nn/attention.hh>
 #include <Cellerator/nn/layers.hh>
 #include <Cellerator/nn/query.hh>
@@ -21,7 +22,7 @@ void validate_feature_readout_context(const at::Tensor& context,
 
 // A biological feature readout which answers only the requested target set.
 // Target identities select distinct model embedding rows through the
-// PreparedAlignment; output columns are not inferred from model indices.
+// FeatureSourceBinding; output columns are not inferred from model indices.
 template<class FeatureId>
 class FeatureReadout {
 public:
@@ -62,7 +63,7 @@ public:
     template<class ObservationId>
     at::Tensor query(
         const at::Tensor& context,
-        const biology::PreparedAlignment<FeatureId>& targets,
+        const execution::FeatureSourceBinding<FeatureId>& targets,
         const ObservationCoordinates<ObservationId>& coordinates,
         Run run = {}) const {
         (void)coordinates;

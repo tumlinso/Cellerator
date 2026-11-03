@@ -1,0 +1,107 @@
+{
+  "project": "cellerator",
+  "action": "open_run",
+  "intent": {
+    "plan_revision_id": "accepted-d42e1195be751597010af0bb8ca1ba3b818ffe87aca848e4e15a60111f68749a",
+    "schedule": {
+      "run_id": "cgs-chromatin-study-20261102-v1",
+      "lanes": [
+        {
+          "lane_id": "cgs-00-lane",
+          "queue_policy": "serial",
+          "isolation_policy": "shared_scopes"
+        },
+        {
+          "lane_id": "cgs-10-lane",
+          "queue_policy": "serial",
+          "isolation_policy": "shared_scopes"
+        },
+        {
+          "lane_id": "cgs-20-lane",
+          "queue_policy": "serial",
+          "isolation_policy": "shared_scopes"
+        },
+        {
+          "lane_id": "cgs-30-lane",
+          "queue_policy": "serial",
+          "isolation_policy": "shared_scopes"
+        },
+        {
+          "lane_id": "cgs-40-lane",
+          "queue_policy": "serial",
+          "isolation_policy": "shared_scopes"
+        },
+        {
+          "lane_id": "cgs-50-lane",
+          "queue_policy": "serial",
+          "isolation_policy": "shared_scopes"
+        },
+        {
+          "lane_id": "cgs-60-lane",
+          "queue_policy": "serial",
+          "isolation_policy": "shared_scopes"
+        },
+        {
+          "lane_id": "cgs-70-lane",
+          "queue_policy": "serial",
+          "isolation_policy": "shared_scopes"
+        },
+        {
+          "lane_id": "cgs-80-lane",
+          "queue_policy": "serial",
+          "isolation_policy": "shared_scopes"
+        }
+      ],
+      "work": [
+        {
+          "work_item_id": "CGS-00",
+          "lane_id": "cgs-00-lane"
+        },
+        {
+          "work_item_id": "CGS-10",
+          "lane_id": "cgs-10-lane"
+        },
+        {
+          "work_item_id": "CGS-20",
+          "lane_id": "cgs-20-lane"
+        },
+        {
+          "work_item_id": "CGS-30",
+          "lane_id": "cgs-30-lane"
+        },
+        {
+          "work_item_id": "CGS-40",
+          "lane_id": "cgs-40-lane"
+        },
+        {
+          "work_item_id": "CGS-50",
+          "lane_id": "cgs-50-lane"
+        },
+        {
+          "work_item_id": "CGS-60",
+          "lane_id": "cgs-60-lane"
+        },
+        {
+          "work_item_id": "CGS-70",
+          "lane_id": "cgs-70-lane"
+        },
+        {
+          "work_item_id": "CGS-80",
+          "lane_id": "cgs-80-lane"
+        }
+      ],
+      "charter": {
+        "objective": "Execute and independently assess the approved native CUDA chromatin-conditioned study.",
+        "boundaries": [
+          "Preserve unrelated active work and protected cellular_geometry.md.",
+          "All GPU execution through admitted Scheduler-backed Autobench packets with 240 aggregate GPU-minutes and per-job 15-minute caps.",
+          "Retain exact source identities and separate supplied, STE and teacher gate semantics."
+        ],
+        "acceptance_conditions": [
+          "Native execution and training correctness and required sanitizer coverage validated.",
+          "Matched complete-cost measurement evidence or explicit unfinished coverage at the budget limit."
+        ]
+      }
+    }
+  }
+}

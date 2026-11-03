@@ -65,8 +65,8 @@ struct atom_fragment_candidate_v1 {
     std::uint64_t projection_requirement_count = 0u;
     persistent_identity_v1 output_affordance{};
     persistent_identity_v1 partial_affordance{};
-    order_id input_order{};
-    order_id output_order{};
+    structure::order_id input_order{};
+    structure::order_id output_order{};
     fragment_resource_vector_v1 resources{};
     fragment_complete_cost_v1 complete_cost{};
     empirical_status_v1 empirical_status = empirical_status_v1::analytical_only;

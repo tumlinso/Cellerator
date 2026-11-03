@@ -18,7 +18,7 @@ struct active_support_overlay_atom_plane_v1 {
     const relation_value_atom_plane_v1 *relation_values = nullptr;
     value_generation relation_generation{};
     value_generation overlay_generation{};
-    order_id logical_edge_order{};
+    structure::order_id logical_edge_order{};
     const u64 *active_words = nullptr;
     device_location location{};
     u64 word_count = 0u;

@@ -9,9 +9,11 @@
       "gpu_status": "GPU-measured",
       "summary": "Exact role-aware reverse postings and capacity-checked variable-size retrieval.",
       "sources": [
-        "src/indexing/reverse_postings.cc",
+        "src/containers/posting_index.cc",
+        "src/geometry/dependency/posting_index.cc",
         "src/indexing/cuda_postings.cu",
-        "include/Cellerator/compute/indexing/reverse_postings.hh"
+        "include/Cellerator/containers/posting_index.hh",
+        "include/Cellerator/geometry/dependency/posting_index.hh"
       ],
       "evidence": [
         "bench/sparse_support/evidence/experiments/scaled_sparse_campaign_20261027/native_ordered_fastpath_20261028/REPORT.md",
@@ -40,9 +42,11 @@
       "gpu_status": "GPU-correctness and sanitizer evidence; workload win is conditional",
       "summary": "Shared condition DAGs, cross-cell bitmaps, sparse state updates, and separate primal/derivative worksets.",
       "sources": [
-        "src/gating/condition_program.cc",
+        "src/ops/condition/program.cc",
+        "src/execution/dependency/workset_view.cc",
         "src/gating/cuda_worksets.cu",
-        "include/Cellerator/compute/gating/condition_program.hh"
+        "include/Cellerator/ops/condition/program.hh",
+        "include/Cellerator/execution/dependency/workset_view.hh"
       ],
       "evidence": [
         "bench/sparse_support/experiments/shared_conditions/evidence/timing_20261027_02/summary.json",
@@ -85,7 +89,7 @@
       "summary": "Shared trainable entity/mechanism parameters, latent transitions, sigmoid gates, pruning STE, and bounded derivative candidates.",
       "sources": [
         "python/cellerator/torch/sparse_support.py",
-        "src/compute/operation/sparse_support/training.cu"
+        "src/ops/sparse_support/training.cu"
       ],
       "evidence": [
         "bench/sparse_support/evidence/qualification/learning/v9_corrected/REPORT.md",
@@ -99,8 +103,8 @@
       "gpu_status": "GPU-measured and gradient-validated",
       "summary": "Irregular per-cell sparse relation forward and SIMT VJP; exact fallback for less regular work.",
       "sources": [
-        "src/compute/operation/sparse_support/training.cu",
-        "include/Cellerator/compute/operation/sparse_support/training.hh"
+        "src/ops/sparse_support/training.cu",
+        "include/Cellerator/ops/sparse_support/training.hh"
       ],
       "evidence": [
         "bench/sparse_support/evidence/qualification/lifecycle/v9-gradient-scatter/REPORT.md"
@@ -113,8 +117,8 @@
       "gpu_status": "GPU-measured at width 64; current backward uses SIMT VJP",
       "summary": "CE-GEO tiled forward with residual routing and direct logical/physical maps. Width 64 is a physical anchor, not a logical input-size limit.",
       "sources": [
-        "src/compute/operation/sparse_support/training.cu",
-        "include/Cellerator/compute/operation/sparse_support/training.hh"
+        "src/ops/sparse_support/training.cu",
+        "include/Cellerator/ops/sparse_support/training.hh"
       ],
       "evidence": [
         "bench/sparse_support/evidence/experiments/packed_training_v9_confirmation/run_001/REPORT.md",
@@ -224,5 +228,6 @@
         "bench/sparse_support/experiments/bitmap_retrieval/evidence/memcheck_v100_20261027.json"
       ]
     }
-  ]
+  ],
+  "source_path_policy": "sources lists current navigation paths; historical evidence retains its original source and binary identities and does not qualify later API migrations."
 }

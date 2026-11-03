@@ -1,4 +1,5 @@
 #include <Cellerator/compute/gating/cuda_worksets.cuh>
+#include <Cellerator/ops/condition/program.hh>
 
 #include <cuda_runtime.h>
 
@@ -20,6 +21,7 @@
 #include <vector>
 
 using namespace cellerator::compute::gating;
+namespace condition = cellerator::ops::condition;
 
 namespace {
 
@@ -115,8 +117,8 @@ struct Fixture {
 };
 
 struct Compiled {
-    std::vector<condition_node_v1> nodes;
-    std::vector<edge_condition_binding_v1> bindings;
+    std::vector<condition::NodeV1> nodes;
+    std::vector<condition::EdgeBindingV1> bindings;
     std::vector<std::uint32_t> root_node_by_edge;
     std::vector<std::uint32_t> edge_root;
     std::vector<RootPair> roots;
@@ -367,11 +369,11 @@ Compiled compile_condition_geometry(const Fixture &f) {
     c.root_node_by_edge.resize(f.edges);
     for (std::uint32_t root = 0; root < c.roots.size(); ++root) {
         const auto base = static_cast<std::uint32_t>(c.nodes.size());
-        c.nodes.push_back({condition_opcode_v1::predicate, 1u, 0u, 0u, 0u,
+        c.nodes.push_back({condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u,
                            c.roots[root].first, 0u});
-        c.nodes.push_back({condition_opcode_v1::predicate, 1u, 0u, 0u, 0u,
+        c.nodes.push_back({condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u,
                            c.roots[root].second, 0u});
-        c.nodes.push_back({condition_opcode_v1::all_of, 1u, 0u, base, 2u, 0u, 0u});
+        c.nodes.push_back({condition::OpcodeV1::all_of, 1u, 0u, base, 2u, 0u, 0u});
     }
     for (std::uint64_t edge = 0; edge < f.edges; ++edge) {
         const auto root_node = 3u * c.edge_root[edge] + 2u;
@@ -649,11 +651,11 @@ class Runner {
 public:
     Fixture f;
     Compiled c;
-    condition_program_view_v1 host_program{};
-    condition_program_view_v1 device_program{};
+    condition::ProgramViewV1 host_program{};
+    condition::ProgramViewV1 device_program{};
     cuda_condition_program_v1 prepared_program{};
-    DeviceArray<condition_node_v1> d_nodes;
-    DeviceArray<edge_condition_binding_v1> d_bindings;
+    DeviceArray<condition::NodeV1> d_nodes;
+    DeviceArray<condition::EdgeBindingV1> d_bindings;
     DeviceArray<std::uint32_t> d_root_nodes;
     DeviceArray<std::uint32_t> d_edge_roots;
     DeviceArray<RootPair> d_roots;
@@ -689,12 +691,12 @@ public:
           warmups(warmup_count) {
         host_program = {1u, c.nodes.data(), c.nodes.size(), c.bindings.data(),
                         c.bindings.size(), f.edges, f.predicates, 0u};
-        if (validate_condition_program_v1(host_program) != condition_status_v1::success)
+        if (condition::validate(host_program) != condition::StatusV1::success)
             throw std::runtime_error("compiled condition program failed host validation");
         std::uint64_t required = 0u;
         c.root_node_by_edge.resize(f.edges);
-        if (prepare_condition_root_map_v1(host_program, c.root_node_by_edge.data(),
-                c.root_node_by_edge.size(), &required) != condition_status_v1::success
+        if (condition::prepare_root_map(host_program, c.root_node_by_edge.data(),
+                c.root_node_by_edge.size(), &required) != condition::StatusV1::success
             || required != f.edges)
             throw std::runtime_error("could not prepare condition root map");
         f.expected_initial_bitmap = oracle_bitmap(f, f.initial_predicates);
@@ -916,8 +918,8 @@ public:
                                           f.latent_changes.cells.size());
         const auto max_dirty = std::max(f.local_changes.dirty_edge_count,
                                         f.latent_changes.dirty_edge_count);
-        return c.nodes.size() * sizeof(condition_node_v1)
-            + c.bindings.size() * sizeof(edge_condition_binding_v1)
+        return c.nodes.size() * sizeof(condition::NodeV1)
+            + c.bindings.size() * sizeof(condition::EdgeBindingV1)
             + c.root_node_by_edge.size() * sizeof(std::uint32_t)
             + static_cast<std::uint64_t>(f.cells) * c.nodes.size() * sizeof(std::uint8_t)
             + (static_cast<std::uint64_t>(f.cells) + 1u) * sizeof(std::uint64_t)

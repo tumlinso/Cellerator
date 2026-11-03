@@ -1,7 +1,7 @@
 #include "../../../src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cuh"
 #include "../../benchmark_mutex.hh"
 
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -20,9 +20,9 @@
 #include <vector>
 
 namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 bool build_row_owned_mma_residual_v1(
     std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t,
     const std::uint32_t *, const std::uint32_t *,
@@ -111,10 +111,10 @@ bool sparse_fallback(void *context, cudaStream_t) noexcept {
     return context != nullptr;
 }
 
-cellerator::compute::math::feature_order_identity order(
+cellerator::layout::projection::FeatureOrderIdentity order(
     std::uint64_t identity, std::uint32_t count) {
-    cellerator::compute::math::feature_order_identity result{};
-    result.kind = cellerator::compute::math::feature_order_kind::packed;
+    cellerator::layout::projection::FeatureOrderIdentity result{};
+    result.kind = cellerator::layout::projection::feature_order_kind::packed;
     result.feature_count = count;
     result.feature_axis_identity_version = 1u;
     result.feature_axis_identity = identity;

@@ -2,6 +2,29 @@
 title: "Current implementation"
 ---
 
+## Consolidation checkpoint, 2026-11-03
+
+This checkpoint brings the native-data branch and the pending implementation,
+tests, documentation and study records together on `main`. Consolidation
+preserves partial work; it does not establish completion of the architecture
+or extend the qualification recorded below.
+
+- Native cellular-geometry data and execution foundations are described in the
+  [native data guide](native_data.qmd) and their
+  [implementation record](../planning/native-data-geometry-2026-11-01/IMPLEMENTATION.md).
+- The experimental factorized joint operation has a bounded correctness and
+  usability milestone. Its [qualification record](../planning/interaction-layout-proposal-2026-11-02/VALIDATION.md)
+  and [pause checkpoint](../planning/interaction-layout-proposal-2026-11-02/PAUSED.md)
+  distinguish delivered behavior from unfinished performance work.
+- The chromatin execution study remains partial. Its
+  [study guide](../bench/chromatin_geometry/README.md) and
+  [latest pause record](../planning/chromatin-geometry-study-2026-11-02/PAUSED.md)
+  retain the failed qualification packet and the limits on accepted results.
+
+Private Todo recovery databases and ignored build, dataset and measurement
+payloads remain local. Their preservation does not make them package source
+or authorize restarting a paused study.
+
 ## Package boundary
 
 Cellerator is an early biological machine-learning framework. Models can use
@@ -9,8 +32,9 @@ measurements, identity-addressed sparse fields, molecular events, regulatory
 relations, latent representations, spatial environments, or combinations of
 these. The Python and native C++ APIs have distinct `Cell` contracts. Python's
 existing `modeling.Cell` API and bindings are unchanged here. Native C++
-`cellerator::Cell` is a model-independent capability interface for accessing
-cell-specific data in bulk storage. Explicit transitions remain optional and
+`cellerator::Cell<Model, Instance>` is a continuing typed binding between a
+shared model and model-specific instance information. Optional runtime view
+discovery is exposed separately through `CellViews`. Explicit transitions remain optional and
 use `DynamicalCell` and `DynamicalModel`; the legacy Python `Model` name aliases
 the latter. PyTorch supplies the current ordinary training integration while
 native operations and arbitrary representations remain first-class.
@@ -20,7 +44,7 @@ Implemented facilities have different backend and maturity boundaries. The 2026-
 ## Available package surfaces
 
 - The existing Python `modeling` package provides its general `Cell` information/program handle and explicit `DynamicalCell`/`DynamicalModel` transitions, step contexts/results, observations, and experiments. Legacy dynamic construction remains deprecated compatibility behavior. This Python API is unchanged by the native Cell replacement; the package imports without Torch or a native extension.
-- Native C++ `<Cellerator/cell.hh>` defines a non-templated `cellerator::Cell` with typed, optional read and edit capabilities. `<Cellerator/cells/event.hh>` and `<Cellerator/cells/expression.hh>` provide borrowed bulk-storage adapters. The base is C++17 and backend-independent; the supplied adapters require C++20. They do not attach a model, impose time or ancestry, or prescribe a trajectory container. The optional C++ `DynamicalCell` remains a separate state-transition utility.
+- Native C++ `<Cellerator/cell.hh>` defines `Cell<Model, Instance>` and inferred factories with borrowed or explicit shared model ownership. Forwarding invokes the associated callable and preserves its result type; copying follows the instance representation. Typed read/edit access is optional, and `<Cellerator/cells/access.hh>` supplies the separate runtime `CellViews` boundary. `EventPrefix` and dense-expression row selections borrow bulk storage. The core is C++17 and backend-independent; the expression adapter uses C++20. Time, ancestry, caches, and trajectories are not mandatory. Optional `DynamicalCell` preserves its explicit transition behavior.
 - `nn` and `torch.nn` expose bound `FeatureEncoder`, dense/packed/CSR `RelationAttention`, reusable `PreparedRelation`, shared `InteractionPrograms`, `FeatureReadout`, labelled `ModelWithViews` queries, supervision helpers, biological manifests, and functional/module grouped linear composition. The Torch-free root provides model-local `FeatureBinding` and borrowed-value prediction/query records. Ordinary Torch parameters and optimizers remain ordinary; existing canonical native owners retain their guarded update contracts. The source examples cover masked expression, causal event history, and paired auxiliary readouts.
 - `state`, `events`, and `dynamics` provide sparse/ragged/layout-aware state, generation-safe store references, event histories and trajectories, lineage, discrete/continuous/stochastic reference dynamics, and explicit composition. Quantization profiles can be shared across cells and feature orderings; exact-value overrides remain per-payload and caller-controlled.
 - `interactions` provides directed, bipartite, and joint hyperedge computations with explicit activity gates, aggregation, and native sparse worklist adapters. Native model, relation, layout, and field classes preserve semantic identities independently of storage slots. Incremental native execution invalidates declared dependencies and caches unaffected results.
@@ -65,43 +89,119 @@ The GPU records pin captured executables and source identities; later host-only
 group-checkpoint, query lifetime, and install/config changes do not become GPU-qualified merely
 by appearing in the same checkout. No speedup or biological validity follows.
 
-## Native Cell access and adapters, 2026-11-01
+## Factorized joint CUDA component, 2026-11-02
 
-The new non-templated `cellerator::Cell` at
-[`include/Cellerator/cell.hh`](../include/Cellerator/cell.hh) is an abstract
-interface for requesting cell-specific typed views. It has no required payload,
-model reference, clock, ancestry, or trajectory. Concrete cells implement
-`CellAccess<View>` for read access and may implement `CellEdit<View>` for
-explicit writable access; caller-defined capabilities need no central
-registry. Typed identity views preserve application-defined IDs without
-confusing them with row or buffer offsets.
+The experimental [factorized-interaction component](factorized_interactions.qmd)
+provides a Torch-independent C++/CUDA sigmoid-gated joint-product law with two,
+three or four ordered participant slots, repeated roles, explicit numerical
+conditioning, independently shared parameter banks and overlapping outputs.
+Deterministic host preparation emits reusable packet dictionaries and
+forward/reverse mappings. Activation, parameter and output storage independently
+choose FP16 or FP32; native arithmetic and all five VJPs use FP32. Large
+reductions select a shared compensated backend, reported separately from the
+requested packet or direct route. A checked `ExplicitPattern` bridge preserves
+logical identity separately from numerical occurrence positions.
 
-The event-prefix adapter selects an ordered token range by offset and prefix
-length over a caller-owned stable buffer descriptor. A storage owner controls
-allocation and append; returned cells preserve the old prefix length while a
-new handle can expose an extended prefix. Dense-expression adapters select a
-row from a caller-owned matrix descriptor and feature identity span, preserve
-row stride and placement, and expose mutable values only through an explicit
-edit view. Views borrow storage; owners define synchronization, generation,
-and invalidation rules. Device placement is propagated without transfers or
-host dereferences.
+The native install component and external C++ consumer compile and link without
+Torch. The C++ example performs explicit parameter updates; the optional prepared
+Torch adapter reuses structural uploads and provides first-order autograd with
+saved-tensor version checks and stream-lifetime handling.
 
-The core interface is C++17-compatible and independent of optional numerical
-backends. The expression adapter and examples use C++20. The
-[`event_forward.cc`](../examples/native_cell/event_forward.cc) and
-[`multimodal.cc`](../examples/native_cell/multimodal.cc) examples exercise the
-contracts with host storage; the event evaluator is deterministic scaffolding,
-not a scientific or trained Karyoplast model. See the
-[native guide](native_nn.qmd#access-cell-representations-without-binding-a-model)
-for the interface and host build route. The Python package and its existing
-Cell API are unchanged.
+An admitted V100-SXM2 run passed 29 forward/VJP comparisons, including repeated
+and zero participants, tied fields, context gradients, output contention,
+cancellation, saturation, empty cases, repeated VJPs and 100k/1M fan-in. A
+subsequent native-only run passed all 32 combinations of eight storage-type
+triples and four execution/control modes, including repeated VJPs. The initial
+run also passed 200 native C++ updates and prepared Torch gradient, update,
+mutation and cross-stream checks. The
+[qualification record](../planning/interaction-layout-proposal-2026-11-02/VALIDATION.md)
+binds the exact source, binaries, UUID and receipt. Sanitizer and performance
+qualification remain separate: the four strict device tools subsequently pass
+56 cases with retained logs and finished receipts, and both twelve-case
+adversarial partitions pass on the native-only binaries. Performance selection
+is paused with no accepted timing results. The bounded native delivery milestone
+has an independent review; the current API still defaults to experimental packet
+execution with an explicit direct option. No measured winner has been selected.
+The [pause checkpoint](../planning/interaction-layout-proposal-2026-11-02/PAUSED.md)
+records remaining performance work. No packet speedup or biological validity
+follows from correctness checks alone.
+
+## Native cellular-geometry data, 2026-11-02
+
+The [native data surface](native_data.qmd) separates logical identities and
+occurrences, dependency knowledge, concrete encodings, physical maps and live
+execution. Prepared condition indexes support selective source/time
+invalidation and checked cached outcomes. Specialist block-masked, low-bit and
+state-code representations have typed views and bulk owners. Ordinary
+dense/CSR/COO and autograd remain established-library concerns. Existing
+CellPack payloads have explicit native-view bridges; persisted formats retain
+their declared meanings.
+
+A connected two-device gated joint-product operation now uses real atom-plane
+bindings and prepared-program callbacks on both devices. An admitted V100 run
+passed staged and direct peer paths, repeated/overlapping participants, a
+32-argument case, first-order VJPs, canonical updates, replica refresh,
+saved-backward read boundaries, invalid admission and overflow-publication
+checks. Expression storage is FP16; regulators, parameters, multiplication,
+accumulation, outputs and VJPs are FP32 for this operation. Host, installed
+consumer and optional module checks have their own evidence in the
+[implementation record](../planning/native-data-geometry-2026-11-01/IMPLEMENTATION.md).
+
+This is a bounded prepared operation with explicit homes and device ownership,
+not a general distributed-autograd service. A wholly inactive remote projection
+omits participant transfer; mixed activity still transfers its full prepared
+projection. Memcheck with full leak checking and synccheck passed the same six frozen
+programs; the record identifies the narrowly scoped handled peer-status
+suppression. Both representative scale workloads also pass an independent
+scalar reference and ATen comparison. Timing attempts were refused by the idle
+admission gate, so no speedup is claimed. These checks do not establish
+scientific biological validity or higher-order derivatives.
+
+## Continuing native Cell instances, 2026-11-01
+
+The C++17 [`Cell<Model, Instance>`](../include/Cellerator/cell.hh) binds a
+shared model to a decayed instance value. The default factory borrows an
+lvalue model; an explicit shared owner retains its lifetime. The same model
+can accept several instance representations. The core has no mandatory
+virtual base, allocation, common ID, time, device, cache, or mutation tracker.
+Copy/move availability and sharing follow the stored representation. Forward
+returns the callable's exact result and normally acts on the continuing
+instance; owners determine physical mutation and retained-value lifetimes.
+
+Typed views use ordinary instance read/write hooks. The optional
+[`CellViews` bridge](../include/Cellerator/cells/access.hh) provides runtime
+capabilities with RTTI and an out-of-line destructor in `libCellerator`.
+Unsupported typed access is ill-formed; unsupported runtime requests throw
+`std::bad_cast`. Biological identity, when supplied, remains application-defined.
+
+`EventPrefix` retains ordered token occurrences and a prefix boundary over a
+stable borrowed descriptor. Its example appends through storage and extends
+the same Cell instance; explicit prefix copies preserve prior boundaries.
+`DenseExpressionRow` and `MutableDenseExpressionRow` preserve feature spans,
+row stride, placement, and numeric aliasing. Owners control synchronization,
+generations, reordering, and borrowed-view invalidation. Device descriptors do
+not cause transfers or host dereferences.
+
+The [event](../examples/native_cell/event_forward.cc),
+[multimodal](../examples/native_cell/multimodal.cc), and
+[foundation](../examples/native_cell/foundation.cc) examples use host storage.
+They demonstrate representation choice, shared/pooled portions, joint
+operations, caller-estimated host execution choices, model-owned cache validity,
+and retained asynchronous resources. They do not implement distributed
+transport or an expert-residency scheduler. See the
+[native guide](native_nn.qmd#bind-a-continuing-native-instance). The Python API
+and bindings are unchanged.
 
 Validation covers the backend-disabled core, adapters and examples, affected
 host modeling and CPU NN/readout tests, and external installed-header
-consumers. The optional module add-on also builds and installs with CMake
+consumers. A C++17 typed-only consumer compiles without RTTI and without a
+runtime library link under GCC 12 and Clang 18. CPU recurrent autograd checks
+retain earlier tensors while the same logical Cell advances, and multiple
+readouts preserve one shared base forward. The optional module add-on also builds and installs with CMake
 3.28.3, Ninja 1.11.1, and matching Clang and dependency scanner 18.1.3. Its
-external installed-package consumer exercises Cell access through an
-import-only translation unit, interoperates with ordinary headers, and runs
+external installed-package consumer passes typed Cell values and runtime
+CellViews references between import-only and ordinary-header translation
+units, and runs
 CPU model forward, backward, and optimizer steps. Device-placement checks
 propagate descriptors only; this change has no GPU execution or performance
 qualification.

@@ -24,7 +24,7 @@ bool same_candidate(
     const candidate_measurement_entry &entry,
     const planner_candidate &candidate) noexcept {
     return operation_core::same_stable_id(entry.candidate, candidate.identity)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             entry.projection.persistent, candidate.projection.persistent)
         && execution::same_handle(
             entry.projection.runtime, candidate.projection.runtime)
@@ -165,7 +165,7 @@ bool measure_prepared_candidate(
         || entry->private_launch.stream.device_ordinal < 0
         || !operation_core::same_stable_id(
             entry->prepared->kernel, candidate.identity)
-        || !execution::same_identity(entry->projection.persistent,
+        || !::cellerator::structure::same_identity(entry->projection.persistent,
             entry->prepared->projection.persistent)
         || !execution::same_handle(entry->projection.runtime,
             entry->prepared->projection.runtime)

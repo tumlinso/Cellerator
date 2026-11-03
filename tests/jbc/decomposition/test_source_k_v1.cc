@@ -18,17 +18,17 @@ execution::persistent_axis_identity axis(std::uint64_t seed) {
     return {{execution::biological_abi_version,
                 execution::serialized_record_kind::persistent_axis_identity,
                 sizeof(execution::persistent_axis_identity)},
-        identity<execution::domain_id>(seed),
-        identity<execution::order_id>(seed + 2u),
-        identity<execution::geometry_id>(seed + 4u),
-        identity<execution::partition_id>(seed + 6u)};
+        identity<::cellerator::structure::domain_id>(seed),
+        identity<::cellerator::structure::order_id>(seed + 2u),
+        identity<::cellerator::structure::geometry_id>(seed + 4u),
+        identity<::cellerator::structure::partition_id>(seed + 6u)};
 }
 
 operation::operation_problem problem(operation::typed_relation &relation) {
     const auto source = axis(10u);
     const auto destination = axis(20u);
-    relation = {identity<execution::structure_id>(30u),
-        {1u}, source, destination, identity<execution::order_id>(40u), 12u};
+    relation = {identity<::cellerator::structure::structure_id>(30u),
+        {1u}, source, destination, identity<::cellerator::structure::order_id>(40u), 12u};
 
     operation::operation_problem result{};
     result.persistent_problem_identity = {50u, 51u};

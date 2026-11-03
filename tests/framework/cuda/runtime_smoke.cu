@@ -1,4 +1,6 @@
 #include <Cellerator/modeling/cuda/plans.hh>
+#include <Cellerator/memory/cuda/resources.hh>
+#include <Cellerator/tensor/state_codes/owner.hh>
 #include <cassert>
 #include <cmath>
 #include <cstring>
@@ -7,6 +9,8 @@
 #include <limits>
 #include <vector>
 using namespace cellerator::modeling::cuda;
+using namespace cellerator::memory::cuda;
+namespace state_codes = cellerator::tensor::state_codes;
 
 int main(int argc, char** argv) {
     assert(checked_bytes(7, 4) == 28);
@@ -81,8 +85,10 @@ int main(int argc, char** argv) {
     std::memcpy(actual.data(), output.data(), output.bytes());
     const std::vector<float> expected{1, 2, 0, 0, 10, 12};
     assert(actual == expected);
-    auto profile = std::make_shared<QuantizationProfile>(std::vector<std::uint32_t>{0, 2, 4}, std::vector<float>{0, 4, 0, 8}, std::vector<std::uint32_t>{0, 1}, 1, stream);
-    QuantizedState packed(profile, 3);
+    auto profile = std::make_shared<state_codes::Profile>(
+        std::vector<std::uint32_t>{0, 2, 4}, std::vector<float>{0, 4, 0, 8},
+        std::vector<std::uint32_t>{0, 1}, 1, stream);
+    state_codes::NativeTensor packed(profile, 3);
     packed.encode(input_view, DType::float32, {}, stream);
     packed.decode(result.view(), DType::float32, stream);
     assert(packed.status(stream) == 0);

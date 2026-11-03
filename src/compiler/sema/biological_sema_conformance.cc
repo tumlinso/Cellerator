@@ -30,10 +30,10 @@ output_effect effect(destination_update update) noexcept {
 
 bool same_id(execution::persistent_axis_identity a,
              execution::persistent_axis_identity b) noexcept {
-    return execution::same_identity(a.domain, b.domain)
-        && execution::same_identity(a.order, b.order)
-        && execution::same_identity(a.geometry, b.geometry)
-        && execution::same_identity(a.partition, b.partition);
+    return ::cellerator::structure::same_identity(a.domain, b.domain)
+        && ::cellerator::structure::same_identity(a.order, b.order)
+        && ::cellerator::structure::same_identity(a.geometry, b.geometry)
+        && ::cellerator::structure::same_identity(a.partition, b.partition);
 }
 
 bool same_core(const operation_problem &a, const operation_problem &b) noexcept {
@@ -44,7 +44,7 @@ bool same_core(const operation_problem &a, const operation_problem &b) noexcept 
         || a.relations.relations != b.relations.relations
         || a.relations.relation_count != b.relations.relation_count
         || !same_id(a.values_axis, b.values_axis) || !same_id(a.result_axis, b.result_axis)
-        || !execution::same_identity(a.logical_edge_order, b.logical_edge_order)
+        || !::cellerator::structure::same_identity(a.logical_edge_order, b.logical_edge_order)
         || a.expected_value_generation.value != b.expected_value_generation.value
         || a.logical_work_items != b.logical_work_items || a.dense_width != b.dense_width
         || a.requirement_flags != b.requirement_flags)

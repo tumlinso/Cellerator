@@ -1,4 +1,6 @@
 #include <Cellerator/compute/gating/cuda_worksets.cuh>
+#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/ops/condition/program.hh>
 
 #include <cuda_runtime.h>
 
@@ -20,7 +22,8 @@
 #include <vector>
 
 namespace gate = cellerator::compute::gating;
-namespace indexing = cellerator::compute::indexing;
+namespace condition = cellerator::ops::condition;
+namespace containers = cellerator::containers;
 
 #define CUDA_CHECK(expr) do { \
     const auto cuda_status = (expr); \
@@ -77,7 +80,7 @@ template <class T> std::vector<T> download(const device_buffer<T> &src,
 }
 
 __global__ void transpose_leaf_planes(
-    const gate::condition_node_v1 *nodes, const std::uint32_t *leaf_ids,
+    const condition::NodeV1 *nodes, const std::uint32_t *leaf_ids,
     std::uint64_t leaf_count, std::uint64_t cells, std::uint32_t predicates_count,
     const std::uint8_t *predicates, std::uint32_t groups, std::uint32_t *planes) {
     const auto group = static_cast<std::uint32_t>(blockIdx.x);
@@ -104,29 +107,29 @@ __device__ __forceinline__ std::uint32_t valid_cell_mask(
 }
 
 __device__ __forceinline__ bool evaluate_scalar_nodes(
-    const gate::condition_program_view_v1 &p, const std::uint8_t *predicates,
+    const condition::ProgramViewV1 &p, const std::uint8_t *predicates,
     std::uint8_t *scratch) {
     for (std::uint64_t i = 0; i < p.node_count; ++i) {
         const auto &n = p.nodes[i];
         switch (n.opcode) {
-        case gate::condition_opcode_v1::predicate:
+        case condition::OpcodeV1::predicate:
             scratch[i] = predicates[n.predicate_index] == n.expected_value;
             break;
-        case gate::condition_opcode_v1::all_of: {
+        case condition::OpcodeV1::all_of: {
             bool value = true;
             for (std::uint32_t j = 0; j < n.child_count; ++j)
                 value = value && scratch[n.first_child + j] != 0;
             scratch[i] = value;
             break;
         }
-        case gate::condition_opcode_v1::any_of: {
+        case condition::OpcodeV1::any_of: {
             bool value = false;
             for (std::uint32_t j = 0; j < n.child_count; ++j)
                 value = value || scratch[n.first_child + j] != 0;
             scratch[i] = value;
             break;
         }
-        case gate::condition_opcode_v1::logical_not:
+        case condition::OpcodeV1::logical_not:
             scratch[i] = scratch[n.first_child] == 0;
             break;
         default:
@@ -137,7 +140,7 @@ __device__ __forceinline__ bool evaluate_scalar_nodes(
 }
 
 __global__ void evaluate_condition_plane_level(
-    const gate::condition_node_v1 *nodes, const std::uint32_t *node_ids,
+    const condition::NodeV1 *nodes, const std::uint32_t *node_ids,
     std::uint64_t node_count, std::uint64_t cells, std::uint32_t groups,
     const std::uint32_t *planes, std::uint32_t *output_planes) {
     const auto group = static_cast<std::uint32_t>(blockIdx.x);
@@ -146,13 +149,13 @@ __global__ void evaluate_condition_plane_level(
     const auto node_id = node_ids[node_at];
     const auto &node = nodes[node_id];
     const auto valid = valid_cell_mask(group, groups, cells);
-    std::uint32_t value = node.opcode == gate::condition_opcode_v1::all_of
+    std::uint32_t value = node.opcode == condition::OpcodeV1::all_of
         ? valid : 0u;
     for (std::uint32_t i = 0; i < node.child_count; ++i) {
         const auto child = planes[static_cast<std::uint64_t>(node.first_child + i) * groups + group];
-        if (node.opcode == gate::condition_opcode_v1::all_of) value &= child;
-        else if (node.opcode == gate::condition_opcode_v1::any_of) value |= child;
-        else if (node.opcode == gate::condition_opcode_v1::logical_not) value = ~child;
+        if (node.opcode == condition::OpcodeV1::all_of) value &= child;
+        else if (node.opcode == condition::OpcodeV1::any_of) value |= child;
+        else if (node.opcode == condition::OpcodeV1::logical_not) value = ~child;
     }
     output_planes[static_cast<std::uint64_t>(node_id) * groups + group] = value & valid;
 }
@@ -177,7 +180,7 @@ __global__ void materialize_full_bitmaps(
 }
 
 __global__ void direct_map_full_bitmaps(
-    gate::condition_program_view_v1 program, std::uint64_t cells,
+    condition::ProgramViewV1 program, std::uint64_t cells,
     const std::uint8_t *predicates, const std::uint32_t *root_by_edge,
     std::uint64_t *bitmaps, std::uint8_t *node_scratch) {
     const auto cell = static_cast<std::uint64_t>(blockIdx.x);
@@ -225,7 +228,7 @@ __global__ void update_dirty_bitmaps(
 }
 
 __global__ void direct_map_dirty_bitmaps(
-    gate::condition_program_view_v1 program, std::uint64_t cells,
+    condition::ProgramViewV1 program, std::uint64_t cells,
     const std::uint8_t *predicates, const std::uint64_t *dirty_offsets,
     const std::uint64_t *dirty_edges, const std::uint32_t *root_by_edge,
     std::uint64_t *bitmaps, std::uint8_t *node_scratch) {
@@ -267,9 +270,9 @@ struct options {
 struct fixture {
     options cfg;
     std::uint32_t predicate_count = 0;
-    std::vector<gate::condition_node_v1> nodes;
-    std::vector<gate::edge_condition_binding_v1> bindings;
-    gate::condition_program_view_v1 program{};
+    std::vector<condition::NodeV1> nodes;
+    std::vector<condition::EdgeBindingV1> bindings;
+    condition::ProgramViewV1 program{};
     std::vector<std::uint32_t> root_by_edge;
     std::vector<std::vector<std::uint32_t>> composite_levels;
     std::vector<std::uint32_t> leaf_nodes;
@@ -279,8 +282,8 @@ struct fixture {
     std::vector<std::uint8_t> changed_predicates;
     std::vector<std::uint64_t> dirty_offsets;
     std::vector<std::uint64_t> dirty_edges;
-    std::vector<indexing::indexed_work_item_v1> primal_items;
-    std::vector<indexing::indexed_work_item_v1> derivative_items;
+    std::vector<containers::IndexedWorkItem> primal_items;
+    std::vector<containers::IndexedWorkItem> derivative_items;
     std::vector<std::uint64_t> primal_offsets;
     std::vector<std::uint64_t> derivative_offsets;
     std::vector<bool> depends_on_changed;
@@ -301,16 +304,15 @@ fixture make_fixture(const options &cfg) {
     if (cfg.sharing != "few" && cfg.sharing != "weak")
         throw std::runtime_error("--sharing must be few or weak");
 
-    using gate::condition_opcode_v1;
     if (cfg.sharing == "few") {
         f.nodes = {
-            {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 0u, 0u},
-            {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 1u, 0u},
-            {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 2u, 0u},
-            {condition_opcode_v1::predicate, 1u, 0u, 0u, 0u, 3u, 0u},
-            {condition_opcode_v1::all_of, 1u, 0u, 0u, 2u, 0u, 0u},
-            {condition_opcode_v1::any_of, 1u, 0u, 2u, 2u, 0u, 0u},
-            {condition_opcode_v1::all_of, 1u, 0u, 0u, 3u, 0u, 0u},
+            {condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u, 0u, 0u},
+            {condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u, 1u, 0u},
+            {condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u, 2u, 0u},
+            {condition::OpcodeV1::predicate, 1u, 0u, 0u, 0u, 3u, 0u},
+            {condition::OpcodeV1::all_of, 1u, 0u, 0u, 2u, 0u, 0u},
+            {condition::OpcodeV1::any_of, 1u, 0u, 2u, 2u, 0u, 0u},
+            {condition::OpcodeV1::all_of, 1u, 0u, 0u, 3u, 0u, 0u},
         };
         f.root_by_edge.resize(cfg.edges);
         const auto dirty_fraction = 1.0 / 16.0;
@@ -329,7 +331,7 @@ fixture make_fixture(const options &cfg) {
     } else {
         f.nodes.reserve(f.predicate_count + cfg.edges);
         for (std::uint32_t p = 0; p < f.predicate_count; ++p)
-            f.nodes.push_back({condition_opcode_v1::predicate, 1u, 0u, 0u,
+            f.nodes.push_back({condition::OpcodeV1::predicate, 1u, 0u, 0u,
                                0u, p, 0u});
         f.root_by_edge.resize(cfg.edges);
         // Every edge gets its own conjunction over a distinct contiguous
@@ -340,7 +342,7 @@ fixture make_fixture(const options &cfg) {
         for (std::uint64_t edge = 0; edge < cfg.edges; ++edge) {
             if (width > f.predicate_count) throw std::runtime_error("weak fixture exhausted unique roots");
             const auto root = static_cast<std::uint32_t>(f.nodes.size());
-            f.nodes.push_back({condition_opcode_v1::all_of, 1u, 0u,
+            f.nodes.push_back({condition::OpcodeV1::all_of, 1u, 0u,
                                start, width, 0u, 0u});
             f.root_by_edge[edge] = root;
             ++start;
@@ -356,14 +358,14 @@ fixture make_fixture(const options &cfg) {
         f.bindings.push_back({edge, f.root_by_edge[edge], 0u});
     f.program = {1u, f.nodes.data(), f.nodes.size(), f.bindings.data(),
                  f.bindings.size(), cfg.edges, f.predicate_count, 0u};
-    if (gate::validate_condition_program_v1(f.program) != gate::condition_status_v1::success)
+    if (condition::validate(f.program) != condition::StatusV1::success)
         throw std::runtime_error("condition fixture validation failed");
 
     std::vector<std::uint32_t> depth(f.nodes.size(), 0u);
     f.depends_on_changed.resize(f.nodes.size(), false);
     for (std::uint32_t i = 0; i < f.nodes.size(); ++i) {
         const auto &n = f.nodes[i];
-        if (n.opcode == condition_opcode_v1::predicate) {
+        if (n.opcode == condition::OpcodeV1::predicate) {
             f.leaf_nodes.push_back(i);
             f.depends_on_changed[i] = n.predicate_index == 0u;
         } else {
@@ -379,7 +381,7 @@ fixture make_fixture(const options &cfg) {
     f.composite_levels.resize(max_depth + 1u);
     f.changed_composite_levels.resize(max_depth + 1u);
     for (std::uint32_t i = 0; i < f.nodes.size(); ++i) {
-        if (f.nodes[i].opcode == condition_opcode_v1::predicate) {
+        if (f.nodes[i].opcode == condition::OpcodeV1::predicate) {
             if (f.nodes[i].predicate_index == 0u) f.changed_leaf_nodes.push_back(i);
         } else {
             f.composite_levels[depth[i]].push_back(i);
@@ -439,19 +441,19 @@ std::vector<std::uint8_t> scalar_nodes(const fixture &f,
     for (std::size_t i = 0; i < f.nodes.size(); ++i) {
         const auto &n = f.nodes[i];
         switch (n.opcode) {
-        case gate::condition_opcode_v1::predicate:
+        case condition::OpcodeV1::predicate:
             values[i] = predicates[n.predicate_index] == n.expected_value;
             break;
-        case gate::condition_opcode_v1::all_of:
+        case condition::OpcodeV1::all_of:
             values[i] = 1u;
             for (std::uint32_t j = 0; j < n.child_count; ++j)
                 values[i] = values[i] && values[n.first_child + j];
             break;
-        case gate::condition_opcode_v1::any_of:
+        case condition::OpcodeV1::any_of:
             for (std::uint32_t j = 0; j < n.child_count; ++j)
                 values[i] = values[i] || values[n.first_child + j];
             break;
-        case gate::condition_opcode_v1::logical_not:
+        case condition::OpcodeV1::logical_not:
             values[i] = !values[n.first_child];
             break;
         }
@@ -473,8 +475,8 @@ std::vector<std::uint64_t> scalar_bitmap(const fixture &f,
 }
 
 struct device_inputs {
-    device_buffer<gate::condition_node_v1> nodes;
-    device_buffer<gate::edge_condition_binding_v1> bindings;
+    device_buffer<condition::NodeV1> nodes;
+    device_buffer<condition::EdgeBindingV1> bindings;
     device_buffer<std::uint32_t> root_by_edge;
     device_buffer<std::uint8_t> initial_predicates;
     device_buffer<std::uint8_t> changed_predicates;
@@ -485,7 +487,7 @@ struct device_inputs {
     std::vector<device_buffer<std::uint32_t>> composite_levels;
     std::vector<device_buffer<std::uint32_t>> changed_composite_levels;
     std::uint32_t groups = 0;
-    gate::condition_program_view_v1 program{};
+    condition::ProgramViewV1 program{};
 
     explicit device_inputs(const fixture &f,
                            const std::vector<std::uint32_t> &compiled_roots)
@@ -525,16 +527,16 @@ struct workset_buffers {
     std::uint64_t derivative_per_cell = 0;
     device_buffer<std::uint64_t> primal_input_offsets;
     device_buffer<std::uint64_t> derivative_input_offsets;
-    device_buffer<indexing::indexed_work_item_v1> primal_input_items;
-    device_buffer<indexing::indexed_work_item_v1> derivative_input_items;
+    device_buffer<containers::IndexedWorkItem> primal_input_items;
+    device_buffer<containers::IndexedWorkItem> derivative_input_items;
     device_buffer<std::uint64_t> primal_output_offsets;
     device_buffer<std::uint64_t> derivative_output_offsets;
-    device_buffer<indexing::indexed_work_item_v1> primal_output_items;
-    device_buffer<indexing::indexed_work_item_v1> derivative_output_items;
+    device_buffer<containers::IndexedWorkItem> primal_output_items;
+    device_buffer<containers::IndexedWorkItem> derivative_output_items;
     device_buffer<std::uint64_t> primal_stage_offsets;
     device_buffer<std::uint64_t> derivative_stage_offsets;
-    device_buffer<indexing::indexed_work_item_v1> primal_stage_items;
-    device_buffer<indexing::indexed_work_item_v1> derivative_stage_items;
+    device_buffer<containers::IndexedWorkItem> primal_stage_items;
+    device_buffer<containers::IndexedWorkItem> derivative_stage_items;
     device_buffer<std::uint64_t> primal_counts;
     device_buffer<std::uint64_t> derivative_counts;
     device_buffer<gate::cuda_workset_status_v1> status;
@@ -564,7 +566,7 @@ struct workset_buffers {
         upload(derivative_stage_offsets, d_stage);
     }
 
-    void build(const gate::condition_program_view_v1 &program, const fixture &f,
+    void build(const condition::ProgramViewV1 &program, const fixture &f,
                const std::uint64_t *bitmaps) {
         gate::cuda_candidate_csr_v1 primal{
             primal_input_offsets.get(), primal_input_items.get(),
@@ -788,7 +790,7 @@ bool check_worksets(const workset_buffers &w, const fixture &f,
                   << status.derivative_required << '\n';
         return false;
     }
-    std::vector<indexing::indexed_work_item_v1> expected_p, expected_d;
+    std::vector<containers::IndexedWorkItem> expected_p, expected_d;
     std::vector<std::uint64_t> expected_po(f.cfg.cells + 1u), expected_do(f.cfg.cells + 1u);
     for (std::uint64_t cell = 0; cell < f.cfg.cells; ++cell) {
         expected_po[cell] = expected_p.size();
@@ -1068,7 +1070,7 @@ void run_one(options cfg) {
                                                   : std::numeric_limits<double>::infinity();
     const auto bitmap_bytes = bitmap_words * sizeof(std::uint64_t);
     const auto plane_bytes = plane_words * sizeof(std::uint32_t);
-    const auto binding_bytes = f.bindings.size() * sizeof(gate::edge_condition_binding_v1);
+    const auto binding_bytes = f.bindings.size() * sizeof(condition::EdgeBindingV1);
     const auto root_map_bytes = f.root_by_edge.size() * sizeof(std::uint32_t);
     const auto node_scratch_bytes = cfg.cells * f.nodes.size() * sizeof(std::uint8_t);
 

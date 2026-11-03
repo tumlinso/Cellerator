@@ -1,0 +1,82 @@
+{
+  "schema": "cellerator.factorized_interactions.sanitizer_diagnostic_result.v1",
+  "registration": {
+    "benchmark": "cellerator-factorized-sanitizer-diagnostic",
+    "revision": 8,
+    "packet": "first-memcheck-case-output-diagnostic",
+    "fingerprint": "6053be0830bbe075db2b226a4c715b5a79c54867708c23e84882b25cc761fda1"
+  },
+  "identity": {
+    "source_closure_sha256": "9afe1e5a6e119f5f1565ac02c2971cdf5ad4117453f0aa9f604f69371bb582a6",
+    "source_fingerprint": "07173fdb049eb5312c0e18eccb4da845fe57f0945c8ab610a2a8d6890b4a1f31",
+    "build_fingerprint": "5a2ae37ebdb637ade195994448f8b15bc048e29a45f610f5573a8cc5504f9543",
+    "build_output_identity": "76b7e4cefcd57130b3ba5d7c9038ed99c899add154dd48552467f12c8f31c882",
+    "build_manifest": "planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/builds/5a2ae37ebdb637ade195994448f8b15bc048e29a45f610f5573a8cc5504f9543/factorized_interactions_build_manifest.json",
+    "build_manifest_sha256": "fd295661b00ae47a96e8edda51437dba74e7f52840287dafeb25532346ac8f44",
+    "runner_sha256": "a208a0f31d2ca8ccde929bf99532faa623f7f99267adb8aa37b5e0b6ce41dd02",
+    "captured_validator_sha256": "5f645de32c0381de68ce31eb8e37e0f6e19a0a80c279f1a22c75aa1424cbf4cc"
+  },
+  "case": {
+    "workload": "correctness_ordered_tied_zero",
+    "route": "packet",
+    "selected_backend": "packet",
+    "activation_storage": "fp16",
+    "parameter_storage": "fp16",
+    "output_storage": "fp16",
+    "gradient_mode": "overwrite",
+    "validated": true,
+    "timed": false,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "input_case_sha256": "e572d40cbb23ecceb9ee5ffc3d062d5c8ae9677c724b5995cf59da819ce9394e",
+    "max_error_to_allowance": {
+      "y": 0.0,
+      "dx": 0.004093127551835366,
+      "dz": 0.0010426694577924341,
+      "dalpha": 0.002049089336577434,
+      "dbias": 0.0004272287293074348,
+      "dgamma": 0.0010604061653978424
+    }
+  },
+  "sanitizer": {
+    "name": "compute-sanitizer",
+    "toolkit": "CUDA 12.9",
+    "version": "2025.2.1.0 (build 35969825)",
+    "wrapper_sha256": "26a4ca6e5f433b7b214d923a0d35307cfd80ade2188fd40fd501e7e510407d7a",
+    "binary_sha256": "979adf037f4e3434a976b7f0912b0a05ce3b062e31b2a73397a1bf1cd5f57547",
+    "mode": "memcheck",
+    "arguments": [
+      "--error-exitcode", "99",
+      "--leak-check", "full"
+    ],
+    "observed_stdout_banner": [
+      "========= COMPUTE-SANITIZER",
+      "========= LEAK SUMMARY: 0 bytes leaked in 0 allocations",
+      "========= ERROR SUMMARY: 0 errors"
+    ],
+    "single_case_result": "passed"
+  },
+  "scheduler": {
+    "autobench_attempt_id": "356229a9-bb73-4bf2-98fe-4201dd1ec897",
+    "scheduler_job_id": "91887f86-fc85-4a7d-b148-b3abe4280411",
+    "scheduler_attempt_id": "c6681e80-e109-446d-bffe-fa578eee32eb",
+    "state": "succeeded",
+    "worker_returncode": 0,
+    "resource": "Tesla V100-SXM2-16GB",
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "gpu_quiescence_precondition": "verified; two idle samples before launch",
+    "cleanup_verified": true
+  },
+  "artifacts": {
+    "directory": "planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/evidence/cellerator-factorized-sanitizer-diagnostic/0/6053be0830bbe075db2b226a4c715b5a79c54867708c23e84882b25cc761fda1",
+    "stdout_sha256": "6d9372c62fb561a43f6ff00d3e9a51ffa23feb930218e22ddbb615ec1845c4b2",
+    "stderr_sha256": "fa7b8d33bfd476867c50823a323983cd10b028725171c9db7eb07bf149030124",
+    "worker_result_sha256": "9eb6c18f9830d664cd62921027a9c925d686ec88d710891233c256d6d02fae7d",
+    "case_result_metadata_sha256": "d8eea1b086f07b19197565b20e05d7b422e03a5d054afd39a1788f155de51f0a"
+  },
+  "assessment": {
+    "confirmed_protocol_cause": "The v15 validator subprocess inherited Compute Sanitizer stdout. Its banner precedes the validator JSON in the captured packet stdout, so the frozen suite's json.loads(proc.stdout) fails at character zero even though the validator returns success.",
+    "scope_limit": "This qualifies one packet-route FP16 case under memcheck with leak checking. It does not qualify racecheck, initcheck, synccheck, the full sanitizer suite, the eight-dtype matrix, or performance.",
+    "overall_sanitizer_suite_qualified": false,
+    "timing_qualified": false
+  }
+}

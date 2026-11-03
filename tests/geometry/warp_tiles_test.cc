@@ -1,4 +1,5 @@
 #include "Cellerator/geometry/warp_tiles.hh"
+#include <Cellerator/interop/formats/cellpack.hh>
 
 #include <algorithm>
 #include <cstdlib>
@@ -392,6 +393,24 @@ void test_exact_host_contract_and_metrics() {
         "warp-tile byte metrics are wrong");
 }
 
+void test_native_borrowed_tile_view() {
+    const auto plan=make_plan();
+    const auto source=make_width_fixture(1);
+    const auto records=make_records(plan,source);
+    const auto order=make_order(records.view(),32,32);
+    const auto tiles=make_tiles(plan,records.view(),order.view());
+    const auto legacy=tiles.view();
+    const auto native=cellerator::interop::formats::borrow_validated_cellpack_tiles<unsigned char>(plan,legacy,plan.feature_block_offsets());
+    require(native.values==legacy.values && native.layout.block_ids==legacy.tile_block_ids &&
+            native.layout.feature_block_offsets==plan.feature_block_offsets(),
+        "native tile import copied or detached payload/maps");
+    require(native.layout.stored_values==source.canonical_ids.size(),"native tile import count mismatch");
+    bool wrong_type=false;
+    try { (void)cellerator::interop::formats::borrow_validated_cellpack_tiles<u64>(plan,legacy,plan.feature_block_offsets()); }
+    catch (const std::invalid_argument&) { wrong_type=true; }
+    require(wrong_type,"native tile import accepted mismatched numeric width");
+}
+
 void test_empty_inputs_and_value_widths() {
     const auto plan = make_plan();
     for (u32 value_size : {1u, 3u, 8u}) {
@@ -540,6 +559,7 @@ void test_capacity_and_validation_failures() {
 } // namespace
 
 int main() {
+    test_native_borrowed_tile_view();
     test_exact_host_contract_and_metrics();
     test_empty_inputs_and_value_widths();
     test_capacity_and_validation_failures();

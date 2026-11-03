@@ -1,5 +1,5 @@
 #include <Cellerator/nn/attention.hh>
-#include <Cellerator/biology/coordinates.hh>
+#include <Cellerator/structure/coordinates.hh>
 #include <ATen/Functions.h>
 #include <torch/csrc/autograd/autograd.h>
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 namespace nn = cellerator::nn;
-namespace bio = cellerator::biology;
 
 void require(bool value, const char* message) {
     if (!value) throw std::runtime_error(message);
@@ -22,7 +21,7 @@ int main() {
     nn::RelationAttention attention(group, {.width=4, .heads=2});
     auto x = at::randn({2, 3, 4}, group.options()).set_requires_grad(true);
     const std::array<std::int64_t, 3> boundaries{0, 3, 6};
-    auto order = bio::OccurrenceCoordinates<std::int64_t>::from_ids(
+    auto order = cellerator::structure::OccurrenceCoordinates<std::int64_t>::from_ids(
         {1, 2, 1, 3, 2, 1}, {0, 3, 6});
     nn::CsrSupport support;
     support.row_ptr.push_back(0);

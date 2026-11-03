@@ -1,7 +1,7 @@
 #include "geometry_bindings.hh"
 
 #include <Cellerator/compute/operation/sparse_support/training.hh>
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <pybind11/stl.h>
 
@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace py = pybind11;
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 namespace sparse = cellerator::compute::operation::sparse_support;
 
 namespace {
@@ -59,12 +59,12 @@ py::dict compile_sparse_support_ce_geo(
     projection::physical_mma_hybrid_build_request_v1 request{};
     request.structure_identity.identity_version = 1u;
     request.structure_identity.value = nonzero_hash(identity);
-    request.source_order.kind = cellerator::compute::math::feature_order_kind::canonical;
+    request.source_order.kind = cellerator::layout::projection::feature_order_kind::canonical;
     request.source_order.feature_count = source_count;
     request.source_order.feature_axis_identity_version = 1u;
     request.source_order.feature_axis_identity = nonzero_hash(
         hash_word(14695981039346656037ull, source_count));
-    request.destination_order.kind = cellerator::compute::math::feature_order_kind::canonical;
+    request.destination_order.kind = cellerator::layout::projection::feature_order_kind::canonical;
     request.destination_order.feature_count = destination_count;
     request.destination_order.feature_axis_identity_version = 1u;
     request.destination_order.feature_axis_identity = nonzero_hash(

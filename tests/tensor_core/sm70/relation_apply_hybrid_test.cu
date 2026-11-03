@@ -1,6 +1,6 @@
 #include "../../../src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cuh"
 
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -9,7 +9,7 @@
 #include <cmath>
 #include <cstdint>
 
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
 
 namespace {
@@ -22,10 +22,10 @@ bool pure_sparse_fallback(void *context, cudaStream_t stream) noexcept {
     return context != nullptr && stream != nullptr;
 }
 
-cellerator::compute::math::feature_order_identity order(
+cellerator::layout::projection::FeatureOrderIdentity order(
     std::uint64_t identity) {
-    cellerator::compute::math::feature_order_identity result{};
-    result.kind = cellerator::compute::math::feature_order_kind::packed;
+    cellerator::layout::projection::FeatureOrderIdentity result{};
+    result.kind = cellerator::layout::projection::feature_order_kind::packed;
     result.feature_count = 16u;
     result.feature_axis_identity_version = 1u;
     result.feature_axis_identity = identity;

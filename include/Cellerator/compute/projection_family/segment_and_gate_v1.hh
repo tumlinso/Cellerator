@@ -24,8 +24,8 @@ struct segment_physical_storage_v1 {
 
 struct segment_physical_view_v1 {
     support_family_identity_v1 family{};
-    execution::projection_id projection_identity{};
-    execution::order_id physical_edge_order{};
+    ::cellerator::structure::projection_id projection_identity{};
+    ::cellerator::structure::order_id physical_edge_order{};
     const std::uint64_t *segment_offsets = nullptr;
     const std::uint64_t *logical_edge_ids = nullptr;
     std::uint64_t segment_count = 0;
@@ -36,8 +36,8 @@ struct segment_physical_view_v1 {
 
 struct gate_physical_view_v1 {
     support_family_identity_v1 family{};
-    execution::projection_id projection_identity{};
-    execution::order_id physical_edge_order{};
+    ::cellerator::structure::projection_id projection_identity{};
+    ::cellerator::structure::order_id physical_edge_order{};
     const std::uint64_t *logical_edge_ids = nullptr;
     const std::uint64_t *gate_indices = nullptr;
     std::uint64_t gate_count = 0;
@@ -105,8 +105,8 @@ struct gate_physical_result_v1 {
 build_segment_physical_view_v1(
     const support_family_descriptor_v1 &family,
     support_family_operation_flag_v1 operation,
-    execution::projection_id projection_identity,
-    execution::order_id physical_edge_order,
+    ::cellerator::structure::projection_id projection_identity,
+    ::cellerator::structure::order_id physical_edge_order,
     std::uint64_t segment_count,
     const logical_edge_segment_v1 *assignments,
     std::uint64_t assignment_count,
@@ -124,10 +124,10 @@ build_segment_physical_view_v1(
     if (!support_family_supports_v1(family, operation)) {
         return {segment_physical_code_v1::operation_not_supported};
     }
-    if (!execution::valid_identity(projection_identity)) {
+    if (!::cellerator::structure::valid_identity(projection_identity)) {
         return {segment_physical_code_v1::invalid_projection_identity};
     }
-    if (!execution::valid_identity(physical_edge_order)) {
+    if (!::cellerator::structure::valid_identity(physical_edge_order)) {
         return {segment_physical_code_v1::invalid_physical_order};
     }
     if (segment_count == 0) {
@@ -209,8 +209,8 @@ build_segment_physical_view_v1(
 
 [[nodiscard]] inline gate_physical_result_v1 build_gate_physical_view_v1(
     const support_family_descriptor_v1 &family,
-    execution::projection_id projection_identity,
-    execution::order_id physical_edge_order,
+    ::cellerator::structure::projection_id projection_identity,
+    ::cellerator::structure::order_id physical_edge_order,
     std::uint64_t gate_count,
     const std::uint64_t *logical_edge_ids,
     const std::uint64_t *gate_indices,
@@ -226,10 +226,10 @@ build_segment_physical_view_v1(
     if (!support_family_supports_v1(family, support_edge_map_or_gate_v1)) {
         return {gate_physical_code_v1::operation_not_supported};
     }
-    if (!execution::valid_identity(projection_identity)) {
+    if (!::cellerator::structure::valid_identity(projection_identity)) {
         return {gate_physical_code_v1::invalid_projection_identity};
     }
-    if (!execution::valid_identity(physical_edge_order)) {
+    if (!::cellerator::structure::valid_identity(physical_edge_order)) {
         return {gate_physical_code_v1::invalid_physical_order};
     }
     if (gate_count == 0) return {gate_physical_code_v1::empty_gate_set};

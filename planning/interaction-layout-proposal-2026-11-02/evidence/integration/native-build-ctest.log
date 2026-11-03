@@ -1,0 +1,64 @@
+$ bash -lc cmake --build /tmp/cellerator-factorized-interaction-build --target cellerator_factorized_interaction_runner cellerator_factorized_interaction_training cellerator_factorized_interaction_cuda_contract_test cellerator_factorized_interaction_preparation_test cellerator_factorized_interaction_pattern_test -j2 && ctest --test-dir /tmp/cellerator-factorized-interaction-build --output-on-failure -R "^factorized_interaction_"
+[ 25%] Built target cellerator_memory_cuda
+[ 50%] Built target cellerator_support
+[ 75%] Built target cellerator_layout
+[100%] Built target cellerator_factorized_interaction_cuda
+[100%] Building CUDA object factorized_interactions_validator/CMakeFiles/cellerator_factorized_interaction_runner.dir/native_runner.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[100%] Linking CXX executable cellerator_factorized_interaction_runner
+[100%] Built target cellerator_factorized_interaction_runner
+[ 25%] Built target cellerator_memory_cuda
+[ 50%] Built target cellerator_support
+[ 75%] Built target cellerator_layout
+[100%] Built target cellerator_factorized_interaction_cuda
+[100%] Built target cellerator_factorized_interaction_training
+[ 25%] Built target cellerator_support
+[ 50%] Built target cellerator_memory_cuda
+[ 75%] Built target cellerator_layout
+[100%] Built target cellerator_factorized_interaction_cuda
+[100%] Built target cellerator_factorized_interaction_cuda_contract_test
+[ 33%] Built target cellerator_support
+[ 66%] Built target cellerator_layout
+[100%] Built target cellerator_factorized_interaction_preparation_test
+[ 25%] Built target cellerator_support
+[ 25%] Built target cellerator_indexing
+[ 50%] Built target cellerator_layout
+[100%] Built target cellerator_dependency_geometry
+[100%] Built target cellerator_factorized_interaction_pattern_test
+Internal ctest changing into directory: /tmp/cellerator-factorized-interaction-build
+Test project /tmp/cellerator-factorized-interaction-build
+    Start 1: factorized_interaction_preparation
+1/3 Test #1: factorized_interaction_preparation ..........   Passed    0.02 sec
+    Start 2: factorized_interaction_pattern_binding
+2/3 Test #2: factorized_interaction_pattern_binding ......   Passed    0.00 sec
+    Start 3: factorized_interaction_cuda_host_contract
+3/3 Test #3: factorized_interaction_cuda_host_contract ...   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Label Time Summary:
+cuda_compile              =   0.00 sec*proc (1 test)
+factorized_interaction    =   0.02 sec*proc (3 tests)
+host_only                 =   0.02 sec*proc (3 tests)
+
+Total Test time (real) =   0.03 sec
+
+exit_code=0
+
+## Final package-order reconfigure and host CTest retest
+
+```sh
+cmake -S /home/tumlinson/Cellerator -B /tmp/cellerator-factorized-interaction-build
+cmake --build /tmp/cellerator-factorized-interaction-build \
+  --target cellerator_factorized_interaction_runner \
+           cellerator_factorized_interaction_training \
+           cellerator_factorized_interaction_cuda_contract_test \
+           cellerator_factorized_interaction_preparation_test \
+           cellerator_factorized_interaction_pattern_test -j2
+ctest --test-dir /tmp/cellerator-factorized-interaction-build \
+  --output-on-failure -R '^factorized_interaction_'
+```
+
+Reconfigure and build exited zero. CTest passed 3/3: preparation,
+ExplicitPattern binding and CUDA host-contract checks. No CUDA workload was
+executed locally.

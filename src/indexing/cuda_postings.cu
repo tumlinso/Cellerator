@@ -17,18 +17,18 @@ __global__ void clear_status(cuda_posting_status_v1 *status) {
     if (blockIdx.x == 0 && threadIdx.x == 0) *status = {};
 }
 
-__device__ __forceinline__ bool term_less(const posting_term_v1 &a,
-                                           const posting_term_v1 &b) {
+__device__ __forceinline__ bool term_less(const containers::PostingTerm &a,
+                                           const containers::PostingTerm &b) {
     return a.role < b.role || (a.role == b.role && a.entity_id < b.entity_id);
 }
 
-__device__ __forceinline__ bool same_term(const posting_term_v1 &a,
-                                           const posting_term_v1 &b) {
+__device__ __forceinline__ bool same_term(const containers::PostingTerm &a,
+                                           const containers::PostingTerm &b) {
     return a.role == b.role && a.entity_id == b.entity_id;
 }
 
 __device__ __forceinline__ std::uint64_t find_term(
-    cuda_reverse_posting_view_v1 index, const posting_term_v1 &query) {
+    cuda_reverse_posting_view_v1 index, const containers::PostingTerm &query) {
     std::uint64_t lo = 0, hi = index.term_count;
     while (lo < hi) {
         const auto mid = lo + (hi - lo) / 2;
@@ -41,9 +41,9 @@ __device__ __forceinline__ std::uint64_t find_term(
 
 __device__ void merge_cell(
     cuda_reverse_posting_view_v1 index, const std::uint64_t *query_offsets,
-    const posting_term_v1 *queries, std::uint64_t cell,
+    const containers::PostingTerm *queries, std::uint64_t cell,
     cuda_posting_scratch_v1::cursor_v1 *cursors,
-    indexed_work_item_v1 *destination, std::uint64_t *count,
+    containers::IndexedWorkItem *destination, std::uint64_t *count,
     cuda_posting_status_v1 *status) {
     const auto qb = query_offsets[cell], qe = query_offsets[cell + 1];
     if (qb > qe) {
@@ -72,7 +72,7 @@ __device__ void merge_cell(
     for (;;) {
         bool have_value = false;
         std::uint64_t minimum_id = 0;
-        indexed_work_item_v1 minimum{};
+        containers::IndexedWorkItem minimum{};
         for (auto qi = qb; qi < qe; ++qi) {
             const auto c = cursors[qi];
             if (c.position >= c.end) continue;
@@ -105,14 +105,14 @@ __device__ void merge_cell(
 // sequence. Any unsupported row falls back to merge_cell.
 __device__ bool try_ordered_disjoint_cell(
     cuda_reverse_posting_view_v1 index, const std::uint64_t *query_offsets,
-    const posting_term_v1 *queries, std::uint64_t cell,
+    const containers::PostingTerm *queries, std::uint64_t cell,
     cuda_posting_scratch_v1::cursor_v1 *cursors,
     std::uint64_t *count, cuda_posting_status_v1 *status,
     bool query_cursors_prepared) {
     const auto qb = query_offsets[cell], qe = query_offsets[cell + 1];
     bool have_previous_term = false;
     bool have_previous_posting = false;
-    posting_term_v1 previous_term{};
+    containers::PostingTerm previous_term{};
     std::uint64_t previous_last_id = 0;
     std::uint64_t prefix = 0;
 
@@ -158,7 +158,7 @@ __device__ bool try_ordered_disjoint_cell(
 }
 
 __global__ void query_term_lookup_kernel(
-    cuda_reverse_posting_view_v1 index, const posting_term_v1 *queries,
+    cuda_reverse_posting_view_v1 index, const containers::PostingTerm *queries,
     std::uint64_t query_count,
     cuda_posting_scratch_v1::cursor_v1 *cursors,
     cuda_posting_status_v1 *status) {
@@ -180,7 +180,7 @@ __global__ void query_term_lookup_kernel(
 
 __global__ void query_counts_kernel(
     cuda_reverse_posting_view_v1 index, std::uint64_t cells,
-    const std::uint64_t *query_offsets, const posting_term_v1 *queries,
+    const std::uint64_t *query_offsets, const containers::PostingTerm *queries,
     std::uint64_t query_count,
     cuda_posting_scratch_v1::cursor_v1 *cursors,
     std::uint64_t *counts, cuda_posting_status_v1 *status) {
@@ -241,7 +241,7 @@ __global__ void query_counts_kernel(
 // BlockScan yields the exact row-relative destination prefix for concatenation.
 __global__ void query_counts_parallel_rows_kernel(
     cuda_reverse_posting_view_v1 index, std::uint64_t cells,
-    const std::uint64_t *query_offsets, const posting_term_v1 *queries,
+    const std::uint64_t *query_offsets, const containers::PostingTerm *queries,
     std::uint64_t query_count,
     cuda_posting_scratch_v1::cursor_v1 *cursors,
     std::uint64_t *counts, cuda_posting_status_v1 *status) {
@@ -378,7 +378,7 @@ __device__ std::uint64_t query_cell_for_index(
 
 __global__ void query_scatter_kernel(
     cuda_reverse_posting_view_v1 index, std::uint64_t cells,
-    const std::uint64_t *query_offsets, const posting_term_v1 *queries,
+    const std::uint64_t *query_offsets, const containers::PostingTerm *queries,
     std::uint64_t query_count,
     cuda_posting_scratch_v1::cursor_v1 *cursors,
     const std::uint64_t *counts, cuda_posting_output_v1 output,
@@ -423,7 +423,7 @@ __global__ void query_scatter_kernel(
 } // namespace
 
 cuda_posting_prepare_requirements_v1 cuda_posting_projection_requirements_v1(
-    const reverse_posting_view_v1 &host) noexcept {
+    const containers::PostingIndexView &host) noexcept {
     cuda_posting_prepare_requirements_v1 result{};
     if (host.relation_id == 0 || host.structure_id == 0
         || host.structure_epoch == 0 || (host.entry_count && host.entries == nullptr))
@@ -437,9 +437,9 @@ cuda_posting_prepare_requirements_v1 cuda_posting_projection_requirements_v1(
 }
 
 cuda_posting_prepare_status_v1 build_cuda_posting_projection_v1(
-    const reverse_posting_view_v1 &host, posting_term_v1 *terms,
+    const containers::PostingIndexView &host, containers::PostingTerm *terms,
     std::uint64_t term_capacity, std::uint64_t *term_offsets,
-    std::uint64_t term_offsets_capacity, indexed_work_item_v1 *items,
+    std::uint64_t term_offsets_capacity, containers::IndexedWorkItem *items,
     std::uint64_t item_capacity,
     cuda_posting_prepare_requirements_v1 *required) noexcept {
     if (required == nullptr) return cuda_posting_prepare_status_v1::invalid_host_index;
@@ -471,7 +471,7 @@ cuda_posting_prepare_status_v1 build_cuda_posting_projection_v1(
 cudaError_t cuda_query_reverse_postings_any_v1(
     const cuda_reverse_posting_view_v1 &index,
     std::uint64_t expected_epoch, std::uint64_t cells,
-    const std::uint64_t *query_offsets, const posting_term_v1 *queries,
+    const std::uint64_t *query_offsets, const containers::PostingTerm *queries,
     std::uint64_t query_count, cuda_posting_output_v1 output,
     cuda_posting_scratch_v1 scratch, cudaStream_t stream) noexcept {
     if (index.relation_id == 0 || index.structure_id == 0

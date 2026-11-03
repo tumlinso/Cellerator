@@ -1,0 +1,253 @@
+{
+  "state": "submitted",
+  "reconciled": 0,
+  "benchmark": "shared-product-circuit-validation",
+  "kind": "correctness",
+  "submitted": 1,
+  "forecast": {
+    "generated_at": "2026-11-03T14:51:37.378558Z",
+    "horizon_seconds": 600.0,
+    "current_resources": [
+      {
+        "resource_id": "gpu:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        "host_id": "testlsserver",
+        "kind": "gpu",
+        "capacities": {
+          "memory_bytes": 17179869184.0
+        },
+        "topology": {
+          "links": [
+            {
+              "relation": "PHB",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "type": "pcie"
+            },
+            {
+              "relation": "NV6",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "type": "nvlink"
+            },
+            {
+              "relation": "SYS",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "sys"
+            }
+          ],
+          "pci_bus_id": "00000000:02:00.0",
+          "topology_state": "observed"
+        }
+      },
+      {
+        "resource_id": "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+        "host_id": "testlsserver",
+        "kind": "gpu",
+        "capacities": {
+          "memory_bytes": 17179869184.0
+        },
+        "topology": {
+          "links": [
+            {
+              "relation": "SYS",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "sys"
+            },
+            {
+              "relation": "NV6",
+              "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "nvlink"
+            },
+            {
+              "relation": "PHB",
+              "source_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "pcie"
+            }
+          ],
+          "pci_bus_id": "00000000:84:00.0",
+          "topology_state": "observed"
+        }
+      },
+      {
+        "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+        "host_id": "testlsserver",
+        "kind": "gpu",
+        "capacities": {
+          "memory_bytes": 17179869184.0
+        },
+        "topology": {
+          "links": [
+            {
+              "relation": "PHB",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "type": "pcie"
+            },
+            {
+              "relation": "SYS",
+              "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "type": "sys"
+            },
+            {
+              "relation": "NV6",
+              "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "nvlink"
+            }
+          ],
+          "pci_bus_id": "00000000:03:00.0",
+          "topology_state": "observed"
+        }
+      },
+      {
+        "resource_id": "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        "host_id": "testlsserver",
+        "kind": "gpu",
+        "capacities": {
+          "memory_bytes": 17179869184.0
+        },
+        "topology": {
+          "links": [
+            {
+              "relation": "NV6",
+              "source_gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+              "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "type": "nvlink"
+            },
+            {
+              "relation": "SYS",
+              "source_gpu_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+              "target_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "type": "sys"
+            },
+            {
+              "relation": "PHB",
+              "source_gpu_uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+              "target_gpu_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+              "type": "pcie"
+            }
+          ],
+          "pci_bus_id": "00000000:83:00.0",
+          "topology_state": "observed"
+        }
+      },
+      {
+        "resource_id": "host:testlsserver:cpu",
+        "host_id": "testlsserver",
+        "kind": "cpu",
+        "capacities": {
+          "cores": 80.0
+        },
+        "topology": {}
+      },
+      {
+        "resource_id": "host:testlsserver:domain:gpu-topology:9be0ea407f2b0f0f",
+        "host_id": "testlsserver",
+        "kind": "isolation",
+        "capacities": {
+          "slots": 1.0
+        },
+        "topology": {
+          "member_resource_ids": [
+            "gpu:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+            "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+            "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+            "gpu:testlsserver:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+          ]
+        }
+      },
+      {
+        "resource_id": "host:testlsserver:memory",
+        "host_id": "testlsserver",
+        "kind": "memory",
+        "capacities": {
+          "bytes": 67362467840.0
+        },
+        "topology": {}
+      }
+    ],
+    "current_allocations": [
+      {
+        "resource_id": "gpu:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        "quantities": {
+          "memory_bytes": 6442450944.0
+        },
+        "lease_state": "reclaiming"
+      },
+      {
+        "resource_id": "host:testlsserver:cpu",
+        "quantities": {
+          "cores": 4.0
+        },
+        "lease_state": "reclaiming"
+      },
+      {
+        "resource_id": "host:testlsserver:memory",
+        "quantities": {
+          "bytes": 8589934592.0
+        },
+        "lease_state": "reclaiming"
+      }
+    ],
+    "known_queued_interactive_jobs": 0,
+    "known_pending_priority_demands": 0,
+    "known_schedules": [],
+    "candidates": [
+      {
+        "candidate_id": "atomic-request",
+        "resource_ids": [
+          "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "host:testlsserver:cpu",
+          "host:testlsserver:memory"
+        ],
+        "allocations": [
+          {
+            "resource_id": "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+            "quantities": {
+              "memory_bytes": 1073741824.0
+            },
+            "mode": "exclusive"
+          },
+          {
+            "resource_id": "host:testlsserver:cpu",
+            "quantities": {
+              "cores": 2.0
+            },
+            "mode": "shared"
+          },
+          {
+            "resource_id": "host:testlsserver:memory",
+            "quantities": {
+              "bytes": 4294967296.0
+            },
+            "mode": "shared"
+          }
+        ],
+        "compatible_resource_ids": [
+          "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "host:testlsserver:cpu",
+          "host:testlsserver:memory"
+        ],
+        "earliest_start": "2026-11-03T14:51:37.378558Z",
+        "available_until": "2026-11-03T15:01:37.378558Z",
+        "window_seconds": 600.0,
+        "window_end_basis": "forecast_horizon_only",
+        "latest_start": "2026-11-03T15:01:37.378558Z",
+        "expected_release": null,
+        "uncertainty_seconds": 0.0,
+        "feasible_now": true,
+        "feasible": true,
+        "projected_feasible": true,
+        "window_basis": "forecast_horizon_only",
+        "blocking_reasons": []
+      }
+    ],
+    "advisory_only": true,
+    "window_semantics": "available_until is bounded by the forecast horizon and any known overlapping future interactive job, not a reservation or guarantee; expected_release is a start-time estimate only"
+  }
+}

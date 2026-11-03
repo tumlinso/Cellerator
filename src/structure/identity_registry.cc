@@ -1,4 +1,4 @@
-#include <Cellerator/structure/identity_registry.hh>
+#include <Cellerator/execution/identity_registry.hh>
 
 namespace cellerator::execution {
 namespace {

@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/indexed_mechanism/training.hh>
+#include <Cellerator/ops/mechanism/indexed/training.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -14,7 +14,7 @@
 #include <thread>
 #include <vector>
 
-namespace ix = cellerator::compute::operation::indexed;
+namespace ix = cellerator::ops::mechanism::indexed;
 namespace ex = cellerator::execution;
 
 namespace {

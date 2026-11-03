@@ -9,10 +9,10 @@ namespace operation = cellerator::compute::operation::v2;
 
 bool same_axis(const cellerator::execution::persistent_axis_identity& lhs,
                const cellerator::execution::persistent_axis_identity& rhs) noexcept {
-    return cellerator::execution::same_identity(lhs.domain, rhs.domain) &&
-        cellerator::execution::same_identity(lhs.order, rhs.order) &&
-        cellerator::execution::same_identity(lhs.geometry, rhs.geometry) &&
-        cellerator::execution::same_identity(lhs.partition, rhs.partition);
+    return ::cellerator::structure::same_identity(lhs.domain, rhs.domain) &&
+        ::cellerator::structure::same_identity(lhs.order, rhs.order) &&
+        ::cellerator::structure::same_identity(lhs.geometry, rhs.geometry) &&
+        ::cellerator::structure::same_identity(lhs.partition, rhs.partition);
 }
 
 operation::stable_id field_problem_identity(execution_field_identity_v1 field,

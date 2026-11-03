@@ -1,0 +1,32 @@
+{
+  "child_pid_namespace": 3,
+  "child_reaped": true,
+  "command": [
+    "/home/tumlinson/autobench/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "bench/factorized_interactions/bounded/tests/test_recorded_engine.py",
+    "bench/factorized_interactions/bounded/tests/test_recorded_policy_guard.py",
+    "bench/factorized_interactions/bounded/tests/test_recorded_dataset.py",
+    "bench/factorized_interactions/bounded/tests/test_run_timing_partition.py",
+    "bench/factorized_interactions/bounded/tests/test_recorded_qualification.py",
+    "-k",
+    "candidate_source_gzip or archive_bytes_must_match or stable_stable or non_packet_backend or missing_or_drifting or kda_upstream_evidence or kda_compact_observation or changed_timing_sidecar or hashes_staged_sidecars or relocated_portable or portable_qualification or relocation or first_validator_call or sidecar_mutation or receipt_helper_mutation"
+  ],
+  "cwd": "/home/tumlinson/Cellerator",
+  "elapsed_seconds": 4.691,
+  "end_utc": "2026-11-02T22:32:42.591208+00:00",
+  "exit_code": 0,
+  "limitations": [
+    "No GPU or scheduler use.",
+    "Synthetic full KDA replay was not rerun in this focused closure.",
+    "Collector 357d acceptance was pending at last operator notice.",
+    "Earlier CPU synthetic test exact timing and CPU use were not recorded; overlap with earlier invalid timing attempts cannot be ruled out."
+  ],
+  "process_group_namespace": 1,
+  "start_utc": "2026-11-02T22:32:37.900500+00:00",
+  "wrapper_pid_namespace": 2
+}

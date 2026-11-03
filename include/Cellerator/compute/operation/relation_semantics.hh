@@ -11,11 +11,11 @@ struct axis_descriptor {
     std::uint64_t extent = 0;
 };
 struct topology_descriptor {
-    execution::structure_id identity{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_id identity{};
+    ::cellerator::structure::structure_epoch epoch{};
     axis_descriptor source{};
     axis_descriptor destination{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::order_id logical_edge_order{};
     std::uint64_t edge_count = 0;
 };
 enum class orientation : std::uint8_t { forward, transpose };

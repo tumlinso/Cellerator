@@ -14,10 +14,10 @@ using code = relation::status_code;
 bool axis_matches(const relation::axis_descriptor& x,const relation::axis_descriptor& y) noexcept {
     return x.extent==y.extent
         && execution::validate_persistent_axis_identity(y.identity)==execution::biological_validation_code::ok
-        && execution::same_identity(x.identity.domain,y.identity.domain)
-        && execution::same_identity(x.identity.order,y.identity.order)
-        && execution::same_identity(x.identity.geometry,y.identity.geometry)
-        && execution::same_identity(x.identity.partition,y.identity.partition);
+        && ::cellerator::structure::same_identity(x.identity.domain,y.identity.domain)
+        && ::cellerator::structure::same_identity(x.identity.order,y.identity.order)
+        && ::cellerator::structure::same_identity(x.identity.geometry,y.identity.geometry)
+        && ::cellerator::structure::same_identity(x.identity.partition,y.identity.partition);
 }
 bool overlaps(const void* a,std::size_t an,const void* b,std::size_t bn) noexcept {
     if(!an || !bn) return false;
@@ -79,9 +79,9 @@ relation::status host_relation::execute(value_identity identity,std::span<const 
     constexpr auto type=std::is_same_v<T,float>?execution::numeric_type::f32:execution::numeric_type::f64;
     const auto& op=descriptor_;const auto& t=op.topology;
     if(op.arithmetic.relation_storage!=type)return {code::unsupported_numeric_policy,"binding type differs from prepared arithmetic"};
-    if(!execution::same_identity(identity.structure,t.identity) || identity.epoch.value!=t.epoch.value)
+    if(!::cellerator::structure::same_identity(identity.structure,t.identity) || identity.epoch.value!=t.epoch.value)
         return {code::stale_structure,"value structure or epoch differs"};
-    if(!execution::same_identity(identity.edge_order,t.logical_edge_order))
+    if(!::cellerator::structure::same_identity(identity.edge_order,t.logical_edge_order))
         return {code::incompatible_order,"values are not in declared logical edge order"};
     if(identity.generation.value==0)return {code::stale_generation,"value generation must be nonzero"};
     if(!axis_matches(t.source,input_axis) || !axis_matches(t.destination,output_axis))

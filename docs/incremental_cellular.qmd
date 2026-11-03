@@ -2,23 +2,25 @@
 title: "Incremental cellular computation"
 ---
 
-The native `IncrementalInteractions<State, Output>` class evaluates pure
-interaction callbacks from declared state dependencies and caches their
-results. A localized state update invalidates only incident interactions.
-Parameter or context epoch changes invalidate the whole cache. An explicit
-eligibility worklist determines which invalid results may be recomputed now.
-This is reusable computation machinery; a consumer supplies the biological
-interpretation, equations, event semantics, and scientific validation.
+The native `execution::IncrementalInteractions<State, Output>` class evaluates
+pure callbacks from a declared `geometry::dependency::ExplicitPattern` and
+caches their results. A localized source update invalidates only interactions
+that read that source. Parameter or context epoch changes invalidate the whole
+cache. An explicit eligibility worklist determines which invalid results may
+be recomputed now. This is reusable computation machinery; a consumer supplies
+the biological interpretation, equations, event semantics, and scientific
+validation.
 
 ## Dependency and cache contract
 
-An immutable `SparseRelation` declares callback **read dependencies**. Its
-stable edge IDs identify interactions; each participant identifies a source by
-`(role, entity_id)`. Role is part of source identity. A destination that is only
-written by the consumer does not need to be a read dependency. Repeated
-participants remain repeated callback inputs, even though reverse postings
-deduplicate them for invalidation. The relation's structure epoch remains
-separate from source generations and parameter/context epochs.
+An immutable `geometry::dependency::ExplicitPattern` declares callback
+**read dependencies**. Its stable edge IDs identify interactions; each
+participant identifies a source by `(role, entity_id)`. Role is part of source
+identity. A destination that is only written by the consumer does not need to
+be a read dependency. Repeated participants remain repeated callback inputs,
+even though the pattern's reverse postings deduplicate them for invalidation.
+The pattern's structure epoch remains separate from source generations and
+parameter/context epochs.
 
 The cache is exact under these requirements:
 
@@ -41,17 +43,19 @@ owns the approximation and its validation.
 
 `SourceReadSnapshot` records each input's role, stable entity ID, generation,
 and immutable value in original participant order. Each cached record owns its
-snapshot and output. Retaining a `cached(id).record` keeps an old evaluation
+reads and output. Retaining a `cached(id).record` keeps an old evaluation
 inspectable after subsequent steps. `result(id)` returns a reference valid
 until its record is replaced; retain the record when a longer lifetime is
-needed.
+needed. `PreparedReadIndex`, exposed by `cache.incidence()`, builds a dense
+source-key lookup over the pattern's existing postings; it does not duplicate
+their ownership.
 
 ## State change, events, and publication
 
 `step(updates, epochs)` recomputes all dirty interactions. Its optional
 `ActiveWorklist` restricts eligibility. A null eligibility pointer means all
 dirty work; an empty worklist means no work. `event_eligibility(event_sources)`
-forms a worklist through the existing native reverse-posting query. A clean
+forms a worklist through the pattern's native reverse-posting query. A clean
 interaction receiving an event remains cached; an event that changes the
 callback's mathematical inputs must also update a source or context epoch.
 
@@ -67,43 +71,70 @@ cached results intact. External callback side effects cannot be rolled back
 and violate the purity requirement. The engine is single-owner host code;
 concurrent mutation is unsupported.
 
-Eligibility must retain the same immutable relation object as the cache.
+Eligibility must retain the same immutable pattern object as the cache.
 Changes to dependency structure require a new cache for the new snapshot;
 cross-epoch cache migration and dependency discovery are not implemented.
 
 ## Native usage
 
 ```cpp
-#include <Cellerator/modeling/incremental.hh>
-namespace m = cellerator::modeling;
+#include <Cellerator/geometry/dependency/explicit_pattern.hh>
+#include <Cellerator/execution/dependency/incremental.hh>
 
-auto reads = std::make_shared<m::SparseRelation>(
-    std::vector<m::RelationEdge>{
-        {10, {{0,0,100}, {0,0,200}}},
-        {20, {{0,0,200}, {0,0,300}}},
-        {30, {{0,0,400}}}});
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <vector>
 
-m::IncrementalInteractions<float,float> cache(reads,
-    {{{0,0,100},0,1}, {{0,0,200},0,2},
-     {{0,0,300},0,3}, {{0,0,400},0,4}},
-    [](auto interaction_id, const auto& snapshot, auto epochs) {
-        float total = 0;
-        for (std::size_t i = 0; i < snapshot.size(); ++i)
-            total += snapshot.at(i).value;
-        return total;
-    });
+namespace dep = cellerator::geometry::dependency;
+namespace execution = cellerator::execution;
 
-cache.step({}, {}); // three callbacks; results 3, 5, 4
-auto changed = cache.step({{{0,0,100},1,8}}, {});
-// changed.evaluated_ids == {10}; results 10, 5, 4
+int main() {
+    auto reads = std::make_shared<dep::ExplicitPattern>(
+        std::vector<dep::PatternEdge>{
+            {10, {{0,0,100}, {0,0,200}}},
+            {20, {{0,0,200}, {0,0,300}}},
+            {30, {{0,0,400}}}});
 
-auto no_events = cache.event_eligibility({});
-cache.step({{{0,0,200},1,7}}, {}, &no_events);
-// 10 and 20 are dirty; prior records are inspectable but invalid.
-auto event = cache.event_eligibility({{0,0,100}});
-cache.step({}, {}, &event); // evaluates 10; 20 remains dirty
-cache.step({}, {});         // evaluates 20 from latest sources
+    execution::IncrementalInteractions<float,float> cache(reads,
+        {{{0,0,100},0,1}, {{0,0,200},0,2},
+         {{0,0,300},0,3}, {{0,0,400},0,4}},
+        [](auto interaction_id, const auto& snapshot, auto epochs) {
+            (void)interaction_id;
+            (void)epochs;
+            float total = 0;
+            for (std::size_t i = 0; i < snapshot.size(); ++i)
+                total += snapshot.at(i).value;
+            return total;
+        });
+
+    const execution::PreparedReadIndex& index = cache.incidence();
+    assert(index.source_ordinal({0,0,100}) == 0);
+    auto initial = cache.step({}, {});
+    assert((initial.evaluated_ids == std::vector<std::uint64_t>{10, 20, 30}));
+    assert(cache.result(10) == 3 && cache.result(20) == 5 && cache.result(30) == 4);
+
+    auto changed = cache.step({{{0,0,100},1,8}}, {});
+    assert((changed.evaluated_ids == std::vector<std::uint64_t>{10}));
+    assert(cache.result(10) == 10 && cache.result(20) == 5 && cache.result(30) == 4);
+
+    auto no_events = cache.event_eligibility({});
+    cache.step({{{0,0,200},1,7}}, {}, &no_events);
+    assert(cache.pending_invalid() == 2);
+    auto event = cache.event_eligibility({{0,0,100}});
+    cache.step({}, {}, &event); // evaluates 10; 20 remains dirty
+    assert(cache.result(10) == 15 && cache.pending_invalid() == 1);
+    cache.step({}, {});            // evaluates 20 from latest sources
+    assert(cache.result(20) == 10);
+}
 ```
+
+`PreparedReadIndex` handles source-to-interaction invalidation. For numerical
+operations over values in a physical entity layout, `execution::PreparedIncidence`
+supplies addresses and `ops::incidence` supplies gather, joint-reduce, and
+scatter arithmetic. Those APIs solve a separate addressing-and-computation
+problem; the callback cache does not require them.
 
 The executable [native test](../tests/framework/native/incremental_test.cc)
 uses an independent full-recompute loop to verify identical outputs after a
@@ -114,18 +145,26 @@ reduction is not a measured elapsed-time speedup.
 
 ## CUDA changed-source frontier
 
-`DependencyIncidence` prepares a source-key CSR projection through the existing
-native reverse-posting implementation. It exposes stable source keys, CSR
-offsets and dense interaction ordinals. Upload the offsets/ordinals and map
-changed keys with `source_ordinal`; never cast biological entity IDs directly
-to dense slots. The caller retains the associated immutable relation snapshot.
+`execution::PreparedReadIndex` exposes source keys and CSR offsets while
+borrowing postings owned by `ExplicitPattern`. Its
+`make_device_ordinal_projection()` explicitly creates dense interaction
+ordinals for upload. Map changed keys with `source_ordinal`; never cast
+biological entity IDs directly to dense slots. Retain the immutable pattern and
+the projection buffer through device use.
 
-`cuda::build_changed_frontier` visits those changed-source posting rows and
+`cellerator::modeling::cuda::build_changed_frontier` visits those
+changed-source posting rows and
 forms a compact, deduplicated interaction worklist. A warp processes a changed
 source row; device-wide atomic claims handle duplicates across rows. It uses
 no numerical arithmetic, dense all-pairs scan, allocation, device switch,
 implicit synchronization or host status copy. Its output order is unspecified;
 sort separately when a consumer requires stable edge order.
+
+The declaration is in `<Cellerator/modeling/cuda/frontier.hh>` and its current
+CUDA owner is `Cellerator::framework_cuda`. The host pattern and read index
+remain available through `Cellerator::native_data` or `Cellerator::modeling`;
+the frontier accepts explicit device buffers and does not synchronize or
+publish host-cache state for the caller.
 
 The borrowed device buffers, explicit CUDA stream, scratch capacity and output
 capacity are part of the call. Scratch/status storage cannot be used
@@ -151,13 +190,22 @@ caller owns transfers and GPU callback dispatch.
 
 ## Validation boundary
 
-The focused native check passed with C++17, `-Wall -Wextra -Werror`:
+The complete example above and the focused native check compiled with C++20,
+`-Wall -Wextra -Werror`, against the current host owners. The installed
+consumer interface remains `Cellerator::native_data` or its composing
+`Cellerator::modeling` target; this source-tree command validates the test
+contract directly:
 
 ```sh
-g++ -std=c++17 -Wall -Wextra -Werror -Iinclude \
-  tests/framework/native/incremental_test.cc src/modeling/sparse_relation.cc \
-  src/support/logical_support.cc src/support/adaptive_support.cc \
-  src/indexing/reverse_postings.cc -o /tmp/cellerator-incremental-test
+g++ -std=c++20 -Wall -Wextra -Werror -Iinclude \
+  tests/framework/native/incremental_test.cc \
+  src/containers/posting_index.cc \
+  src/geometry/dependency/compact_support.cc \
+  src/geometry/dependency/explicit_pattern.cc \
+  src/geometry/dependency/posting_index.cc \
+  src/execution/dependency/read_index.cc \
+  src/execution/dependency/workset.cc \
+  -o /tmp/cellerator-incremental-test
 /tmp/cellerator-incremental-test
 ```
 

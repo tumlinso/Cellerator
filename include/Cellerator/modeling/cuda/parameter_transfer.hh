@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/execution/conditional/parameter_store.hh>
-#include <Cellerator/modeling/cuda/runtime.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 #include <memory>
 
 namespace cellerator::modeling::cuda {
@@ -26,9 +26,11 @@ public:
     // Pure host validation/accounting: does not call CUDA. Source device must
     // be exactly "host"; pointers/immutability remain the ParameterStore contract.
     static ParameterTransferMemory required_memory(const ParameterLease& source);
-    static ParameterTransfer upload(ParameterLease source, const Stream& stream);
+    static ParameterTransfer upload(
+        ParameterLease source, const ::cellerator::memory::cuda::Stream& stream);
     static ParameterTransfer upload(const execution::conditional::ParameterStore& store,
-                                    ExpertKey exact, const Stream& stream);
+                                    ExpertKey exact,
+                                    const ::cellerator::memory::cuda::Stream& stream);
 
     ExpertKey key() const;
     std::string dtype() const;
@@ -37,8 +39,9 @@ public:
     void wait() const;
     // Requires transfer completion. The returned view borrows this ticket's
     // ownership; use acquire_on() to retain it through asynchronous consumers.
-    ConstDeviceView view() const;
-    ParameterExecutionLease acquire_on(const Stream& consumer) const;
+    ::cellerator::memory::cuda::ConstDeviceView view() const;
+    ParameterExecutionLease acquire_on(
+        const ::cellerator::memory::cuda::Stream& consumer) const;
 
 private:
     friend class ParameterExecutionLease;
@@ -61,7 +64,7 @@ public:
     ParameterExecutionLease(const ParameterExecutionLease&) = delete;
     ParameterExecutionLease& operator=(const ParameterExecutionLease&) = delete;
     execution::conditional::ExpertKey key() const;
-    ConstDeviceView view() const; // Refuses new view access after finish().
+    ::cellerator::memory::cuda::ConstDeviceView view() const; // Refuses new view access after finish().
     void finish();               // Idempotent; seals this execution lease.
     bool ready() const;          // False until finish() and completion.
     void wait();                // Records finish if needed, then waits.

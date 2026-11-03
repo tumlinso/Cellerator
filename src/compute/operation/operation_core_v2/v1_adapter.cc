@@ -63,7 +63,7 @@ schema_status adapt_relation_algebra_v1(
         || request.storage.relations == nullptr
         || request.storage.bindings == nullptr
         || request.storage.value_bindings == nullptr
-        || !execution::valid_identity(source.logical_edge_order)) {
+        || !::cellerator::structure::valid_identity(source.logical_edge_order)) {
         return {schema_status_code::invalid_argument, relation_count};
     }
 

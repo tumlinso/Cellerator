@@ -20,7 +20,7 @@ bool valid_edge_operation(edge_operation operation) noexcept {
 
 schema_status validate_relation_value_binding(
     const relation_value_binding_contract &binding) noexcept {
-    if (!execution::valid_identity(binding.structure) || binding.epoch.value == 0) {
+    if (!::cellerator::structure::valid_identity(binding.structure) || binding.epoch.value == 0) {
         return {schema_status_code::invalid_identity, 0};
     }
     if (binding.generation.value == 0) {

@@ -29,11 +29,14 @@ bool same_projection_contract_v2(
 bool projection_matches_candidate_v2(
     const execution::activated_projection_reference_v2 &projection,
     const candidate_descriptor_v2 &candidate) noexcept {
+    if (execution::validate_activated_projection_reference_v2(projection)
+        != execution::projection_reference_status_v2::success)
+        return false;
     if (projection.schema_version
             != execution::activated_projection_reference_schema_version_v2
         || projection.record_bytes
             != sizeof(execution::activated_projection_reference_v2)
-        || !execution::valid_identity(projection.key.persistent)
+        || !::cellerator::structure::valid_identity(projection.key.persistent)
         || !execution::valid_handle(projection.key.runtime)
         || !execution::valid_location(projection.location)
         || projection.location.residency == execution::residency_kind::host
@@ -181,12 +184,12 @@ operation_status prepare_csr_v2(
     const candidate_preparation_request_v2 &request,
     const execution::activated_projection_reference_v2 &projection,
     prepared_operation *prepared) noexcept {
-    if (projection.view_bytes != sizeof(execution_csr_view))
+    if (projection.view_bytes != sizeof(::cellerator::layout::projection::CsrViewV1))
         return fail(operation_status_code::unsupported_projection,
             "CSR activated view size is incompatible");
     return prepare_csr_fallback_operation(request.problem,
         request.structures, projection.key, request.numeric, request.policy,
-        *static_cast<const execution_csr_view *>(projection.view),
+        *static_cast<const ::cellerator::layout::projection::CsrViewV1 *>(projection.view),
         request.session->device, request.feature_axis, request.row_axis,
         static_cast<csr_fallback_prepared_state *>(request.state.data),
         prepared);
@@ -197,12 +200,16 @@ operation_status prepare_feature_major_small_n_v2(
     const candidate_preparation_request_v2 &request,
     const execution::activated_projection_reference_v2 &projection,
     prepared_operation *prepared) noexcept {
-    if (projection.view_bytes != sizeof(feature_major_projection_view))
+    if (projection.view_bytes != sizeof(::cellerator::layout::projection::FeatureMajorViewV1))
         return fail(operation_status_code::unsupported_projection,
             "feature-major activated view size is incompatible");
+    const execution::FeatureMajorBinding binding{
+        *static_cast<const ::cellerator::layout::projection::FeatureMajorViewV1 *>(
+            projection.view),
+        request.structures.structures[0].runtime, projection.key.runtime};
     return prepare_feature_major_small_n_operation(request.problem,
         request.structures, projection.key, request.numeric, request.policy,
-        *static_cast<const feature_major_projection_view *>(projection.view),
+        binding,
         request.session->device, request.dense_width, request.feature_axis,
         request.row_axis, request.dense_column_axis,
         static_cast<feature_major_small_n_prepared_state *>(
@@ -215,12 +222,16 @@ operation_status prepare_feature_major_cta_v2(
     const candidate_preparation_request_v2 &request,
     const execution::activated_projection_reference_v2 &projection,
     prepared_operation *prepared) noexcept {
-    if (projection.view_bytes != sizeof(feature_major_projection_view))
+    if (projection.view_bytes != sizeof(::cellerator::layout::projection::FeatureMajorViewV1))
         return fail(operation_status_code::unsupported_projection,
             "feature-major activated view size is incompatible");
+    const execution::FeatureMajorBinding binding{
+        *static_cast<const ::cellerator::layout::projection::FeatureMajorViewV1 *>(
+            projection.view),
+        request.structures.structures[0].runtime, projection.key.runtime};
     return prepare_feature_major_cta_medium_n_operation(request.problem,
         request.structures, projection.key, request.numeric, request.policy,
-        *static_cast<const feature_major_projection_view *>(projection.view),
+        binding,
         request.session->device, request.dense_width, request.feature_axis,
         request.row_axis, request.dense_column_axis,
         static_cast<feature_major_small_n_prepared_state *>(
@@ -233,12 +244,17 @@ operation_status prepare_transpose_v2(
     const candidate_preparation_request_v2 &request,
     const execution::activated_projection_reference_v2 &projection,
     prepared_operation *prepared) noexcept {
-    if (projection.view_bytes != sizeof(transpose_projection_view))
+    if (projection.view_bytes != sizeof(::cellerator::layout::projection::TransposeViewV1))
         return fail(operation_status_code::unsupported_projection,
             "transpose activated view size is incompatible");
+    const execution::TransposeBinding binding{
+        *static_cast<const ::cellerator::layout::projection::TransposeViewV1 *>(
+            projection.view),
+        request.structures.structures[0].runtime, projection.key.runtime,
+        projection.runtime_forward_projection};
     return prepare_transpose_backward_n1_operation(request.problem,
         request.structures, projection.key, request.numeric, request.policy,
-        *static_cast<const transpose_projection_view *>(projection.view),
+        binding,
         request.session->device, request.feature_axis, request.row_axis,
         request.dense_column_axis,
         static_cast<transpose_backward_prepared_state *>(request.state.data),
@@ -395,7 +411,7 @@ operation_status prepare_catalog_row_masked(
 
 operation_status prepare_catalog_csr(
     const preparation_factory_request &request,
-    const execution_csr_view &projection,
+    const ::cellerator::layout::projection::CsrViewV1 &projection,
     prepared_operation *prepared) noexcept {
     return prepare_and_cache(request, preparation_family::csr_n1,
         prepared, [&]() noexcept {
@@ -410,7 +426,7 @@ operation_status prepare_catalog_csr(
 
 operation_status prepare_catalog_feature_major(
     const preparation_factory_request &request,
-    const feature_major_projection_view &projection,
+    const execution::FeatureMajorBinding &projection,
     prepared_operation *prepared) noexcept {
     if (request.catalog_entry == nullptr)
         return fail(operation_status_code::invalid_argument,
@@ -439,7 +455,7 @@ operation_status prepare_catalog_feature_major(
 
 operation_status prepare_catalog_transpose(
     const preparation_factory_request &request,
-    const transpose_projection_view &projection,
+    const execution::TransposeBinding &projection,
     prepared_operation *prepared) noexcept {
     return prepare_and_cache(request, preparation_family::transpose_backward_n1,
         prepared, [&]() noexcept {

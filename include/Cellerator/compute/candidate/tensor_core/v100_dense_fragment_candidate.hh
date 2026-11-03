@@ -26,10 +26,10 @@ struct v100_dense_fragment_projection_view {
     std::uint32_t source_count = 0u;
     std::uint64_t logical_edge_count = 0u;
     std::uint64_t packed_slot_count = 0u;
-    execution::structure_id persistent_structure{};
+    ::cellerator::structure::structure_id persistent_structure{};
     execution::structure_handle runtime_structure{};
-    execution::structure_epoch structure_epoch{};
-    execution::projection_id persistent_projection{};
+    ::cellerator::structure::structure_epoch structure_epoch{};
+    ::cellerator::structure::projection_id persistent_projection{};
     execution::projection_handle runtime_projection{};
     const std::uint32_t *fragment_destination_bases = nullptr;
     const std::uint32_t *fragment_source_bases = nullptr;

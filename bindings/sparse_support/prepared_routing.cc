@@ -23,12 +23,13 @@
 namespace py = pybind11;
 namespace ce_indexing = cellerator::compute::indexing;
 namespace ce_routing = cellerator::ops::sparse_support;
+namespace ce_containers = cellerator::containers;
 
 namespace {
 
-static_assert(sizeof(ce_indexing::posting_term_v1) == 16u,
+static_assert(sizeof(ce_containers::PostingTerm) == 16u,
               "posting terms must remain a compact two-word CUDA record");
-static_assert(sizeof(ce_indexing::indexed_work_item_v1) == 16u,
+static_assert(sizeof(ce_containers::IndexedWorkItem) == 16u,
               "posting outputs must remain a compact two-word CUDA record");
 static_assert(sizeof(ce_indexing::cuda_posting_scratch_v1::cursor_v1) == 32u,
               "posting query cursors must remain four int64 words");
@@ -42,9 +43,9 @@ struct QueryWorkspace {
     std::uint64_t query_capacity = 0u;
     std::uint64_t cell_capacity = 0u;
     std::uint64_t output_capacity = 0u;
-    TorchTensor queries;       // int64 [query_capacity, 2], posting_term_v1 view
+    TorchTensor queries;       // int64 [query_capacity, 2], PostingTerm view
     TorchTensor query_offsets; // int64 [cell_capacity + 1]
-    TorchTensor output_items;  // int64 [output_capacity, 2], indexed_work_item_v1
+    TorchTensor output_items;  // int64 [output_capacity, 2], IndexedWorkItem
     TorchTensor cursors;       // int64 [query_capacity, 4]
     TorchTensor counts;        // int64 [cell_capacity]
     TorchTensor device_status; // int64 [2], cuda_posting_status_v1
@@ -204,12 +205,12 @@ public:
             {static_cast<std::int64_t>(cells + 1u)}, at::kLong, device_);
         auto output_mechanisms = TorchTensor{};
         const auto query_terms = requirements.query_count == 0u ? nullptr
-            : reinterpret_cast<ce_indexing::posting_term_v1 *>(
+            : reinterpret_cast<ce_containers::PostingTerm *>(
                 workspace->queries.data_ptr<std::int64_t>());
         const auto query_offsets = reinterpret_cast<std::uint64_t *>(
             workspace->query_offsets.data_ptr<std::int64_t>());
         auto *output_items = requirements.output_item_capacity == 0u ? nullptr
-            : reinterpret_cast<ce_indexing::indexed_work_item_v1 *>(
+            : reinterpret_cast<ce_containers::IndexedWorkItem *>(
                 workspace->output_items.data_ptr<std::int64_t>());
         auto *cursors = requirements.query_count == 0u ? nullptr
             : reinterpret_cast<ce_indexing::cuda_posting_scratch_v1::cursor_v1 *>(
@@ -219,11 +220,11 @@ public:
         auto *device_status = reinterpret_cast<ce_indexing::cuda_posting_status_v1 *>(
             workspace->device_status.data_ptr<std::int64_t>());
         auto device_index = index_.bind_device_view(
-            reinterpret_cast<const ce_indexing::posting_term_v1 *>(
+            reinterpret_cast<const ce_containers::PostingTerm *>(
                 device_terms_.data_ptr<std::int64_t>()),
             reinterpret_cast<const std::uint64_t *>(
                 device_term_offsets_.data_ptr<std::int64_t>()),
-            reinterpret_cast<const ce_indexing::indexed_work_item_v1 *>(
+            reinterpret_cast<const ce_containers::IndexedWorkItem *>(
                 device_items_.data_ptr<std::int64_t>()));
         const ce_indexing::cuda_posting_output_v1 output{
             reinterpret_cast<std::uint64_t *>(output_offsets.data_ptr<std::int64_t>()),

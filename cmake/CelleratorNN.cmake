@@ -47,14 +47,18 @@ if(NOT cellerator_nn_sources)
     message(FATAL_ERROR "CELLERATOR_ENABLE_NN=ON found no native NN sources")
 endif()
 
-# The CUDA adapter target depends only on ATen/Torch and the existing generic
-# framework CUDA runtime. It intentionally has no link edge back to Cellerator::nn;
-# the NN target links it when enabled, avoiding a static-library cycle.
+# The CUDA adapter target depends on ATen/Torch, the generic framework runtime,
+# and the independently exported factorized-interaction component. It has no
+# link edge back to Cellerator::nn, avoiding a static-library cycle.
 set(cellerator_nn_export_targets)
 if(CELLERATOR_ENABLE_NN_CUDA)
     if(NOT TARGET Cellerator::framework_cuda)
         message(FATAL_ERROR
             "CELLERATOR_ENABLE_NN_CUDA requires CELLERATOR_ENABLE_FRAMEWORK_CUDA=ON")
+    endif()
+    if(NOT TARGET Cellerator::factorized_interaction_cuda)
+        message(FATAL_ERROR
+            "CELLERATOR_ENABLE_NN_CUDA requires the native factorized-interaction CUDA component")
     endif()
     if(NOT CMAKE_CUDA_COMPILER_LOADED)
         message(FATAL_ERROR
@@ -79,7 +83,8 @@ if(CELLERATOR_ENABLE_NN_CUDA)
         ${CELLERATOR_TORCH_LINK_TARGETS}
         torch_cuda
         c10_cuda
-        Cellerator::framework_cuda)
+        Cellerator::framework_cuda
+        Cellerator::factorized_interaction_cuda)
     if(CELLERATOR_TORCH_CXX_OPTIONS)
         target_compile_options(cellerator_nn_cuda PUBLIC
             ${CELLERATOR_TORCH_CXX_OPTIONS})
@@ -201,12 +206,27 @@ install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/nn"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
     COMPONENT NN)
 install(FILES
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/biology/coordinates.hh"
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/structure/coordinates.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/structure"
+    COMPONENT NN)
+install(FILES
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/layout/axis_binding.hh"
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/layout/occurrence_map.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/layout"
+    COMPONENT NN)
+install(FILES
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/execution/dependency/feature_binding.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution/dependency"
+    COMPONENT NN)
+install(FILES
     "${PROJECT_SOURCE_DIR}/include/Cellerator/biology/feature_binding.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/biology"
     COMPONENT NN)
 install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/execution/identity.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution"
+    COMPONENT NN)
+install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/structure/identity.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/structure"
     COMPONENT NN)
 install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/nn.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
@@ -217,6 +237,9 @@ install(FILES
     "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/model.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/modeling"
     COMPONENT NN)
+install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/layout/entity_layout.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/layout"
+    COMPONENT NN)
 install(TARGETS ${cellerator_nn_export_targets}
     EXPORT CelleratorNNTargets
     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT NN
@@ -225,7 +248,10 @@ install(EXPORT CelleratorNNTargets NAMESPACE Cellerator::
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator"
     COMPONENT NN)
 
-if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
+function(cellerator_append_nn_package_config)
+    if(NOT DEFINED CELLERATOR_HOST_CONFIG OR NOT EXISTS "${CELLERATOR_HOST_CONFIG}")
+        return()
+    endif()
     set(cellerator_nn_cuda_config "")
     if(CELLERATOR_ENABLE_NN_CUDA)
         string(CONCAT cellerator_nn_cuda_config
@@ -254,4 +280,4 @@ if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
         "if(\"nn_cuda\" IN_LIST Cellerator_FIND_COMPONENTS)\n"
         "  set(Cellerator_nn_cuda_FOUND TRUE)\n"
         "endif()\n")
-endif()
+endfunction()

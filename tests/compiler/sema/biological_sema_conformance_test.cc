@@ -9,24 +9,24 @@ using namespace cellerator;
 
 namespace {
 template<typename Tag>
-execution::persistent_identity<Tag> identity(std::uint64_t seed) {
+::cellerator::structure::persistent_identity<Tag> identity(std::uint64_t seed) {
     return {seed, seed + 1};
 }
 execution::persistent_axis_identity axis(std::uint64_t seed) {
     return {{execution::biological_abi_version,
              execution::serialized_record_kind::persistent_axis_identity,
              sizeof(execution::persistent_axis_identity)},
-            identity<execution::domain_tag>(seed), identity<execution::order_tag>(seed + 2),
-            identity<execution::geometry_tag>(seed + 4),
-            identity<execution::partition_tag>(seed + 6)};
+            identity<::cellerator::structure::domain_tag>(seed), identity<::cellerator::structure::order_tag>(seed + 2),
+            identity<::cellerator::structure::geometry_tag>(seed + 4),
+            identity<::cellerator::structure::partition_tag>(seed + 6)};
 }
 }  // namespace
 
 int main() {
     using namespace compiler::sema::v1;
     namespace op = compute::operation::v2;
-    op::typed_relation relation{identity<execution::structure_tag>(10), {2}, axis(20),
-                                axis(40), identity<execution::order_tag>(60), 17};
+    op::typed_relation relation{identity<::cellerator::structure::structure_tag>(10), {2}, axis(20),
+                                axis(40), identity<::cellerator::structure::order_tag>(60), 17};
     op::relation_binding_contract binding{0, 0, 1, 0};
     op::relation_value_binding_contract values{};
     values.structure = relation.structure;

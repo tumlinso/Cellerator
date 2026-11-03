@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cellerator/nn/relations.hh>
+#include <Cellerator/structure/coordinates.hh>
 
 #include <filesystem>
 #include <cstddef>
@@ -78,9 +79,10 @@ struct BiologicalManifest {
 [[nodiscard]] std::string serialize_biological_manifest(
     const BiologicalManifest& manifest);
 
-// Render the typed native FeatureBinding descriptor using the same v1 wire
-// fields as Python FeatureBinding.to_manifest(). The descriptor's encoded ID
-// values are opaque JSON fragments produced by its explicit identity codec.
+// Render a typed native FeatureBinding descriptor. Version 1 retains the
+// Python-compatible physical-axis fields; native version 2 represents a
+// logical-only axis explicitly. Encoded IDs are opaque JSON fragments
+// produced by the caller's identity codec.
 [[nodiscard]] std::string serialize_feature_binding_descriptor(
     const cellerator::biology::FeatureBindingDescriptor<std::string>& descriptor);
 
@@ -136,7 +138,7 @@ struct relation_persistent_identity_traits {
 };
 
 template<class Tag>
-struct relation_persistent_identity_traits<cellerator::execution::persistent_identity<Tag>> {
+struct relation_persistent_identity_traits<::cellerator::structure::persistent_identity<Tag>> {
     static constexpr bool value = true;
 };
 
@@ -202,8 +204,8 @@ template<class SourceIdentity, class TargetIdentity,
          class TargetCodec = std::nullptr_t>
 [[nodiscard]] std::string serialize_relation_descriptor(
     const PreparedRelation& relation,
-    const cellerator::biology::OccurrenceCoordinates<SourceIdentity>& source,
-    const cellerator::biology::OccurrenceCoordinates<TargetIdentity>& target,
+    const cellerator::structure::OccurrenceCoordinates<SourceIdentity>& source,
+    const cellerator::structure::OccurrenceCoordinates<TargetIdentity>& target,
     SourceCodec source_codec = {},
     TargetCodec target_codec = {},
     std::optional<std::uint64_t> expected_generation = std::nullopt,

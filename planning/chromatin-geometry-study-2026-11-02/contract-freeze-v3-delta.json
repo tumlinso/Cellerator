@@ -1,0 +1,20 @@
+{
+  "schema": "cgs.freeze-revision.v1",
+  "previous_sha256": "237da579f5068fc26469f52c79b7ae33beb1ab0af057129a27c186193c5c8147",
+  "current_sha256": "4033eea4a8168f5e898212873252c8782943d12f5325e5a31ca45487f9751f06",
+  "reason": "Add a retained matched two-tile cached cohort control to separate CTA ownership from shared-memory staging; preserve original backend ordinals and all numerical oracles, bounds and fixture values.",
+  "unchanged": {
+    "workloads": true,
+    "public_replay": true,
+    "product_bound": true,
+    "grouped_linear_bound": true,
+    "frozen_checks": true
+  },
+  "changed_existing_sources": [
+    "bench/chromatin_geometry/contract.hh",
+    "bench/chromatin_geometry/contract_smoke.cc",
+    "bench/chromatin_geometry/backends/consumer_tests.cu",
+    "bench/chromatin_geometry/campaign_runner.cu"
+  ],
+  "added_sources": []
+}

@@ -1,0 +1,61 @@
+[benchmark]
+name = "cellerator-native-data-gated-product"
+revision = 5
+
+[source]
+include = [
+  "bench/native_data/benchmark_main.cc",
+  "bench/native_data/workload.cc",
+  "bench/native_data/workload.hh",
+  "bench/native_data/reference_workload.cc",
+  "bench/native_data/aten_baseline.cc",
+  "bench/native_data/aten_baseline.hh",
+  "bench/native_data/run_native_data_bench.py",
+  "bench/native_data/run_baseline_correctness.py",
+  "bench/native_data/validate_reference.py",
+  "cmake/CelleratorTorchDependency.cmake",
+  "tests/native_data/reference/fixture.hh",
+  "tests/native_data/reference/exact_oracle.py",
+]
+
+[data]
+paths = [
+  ".autobench/data/cellerator-native-data-aten-build/**",
+  ".autobench/data/cellerator-native-data-aten-v2/**",
+]
+
+[[packet]]
+name = "aten-reference-correctness"
+kind = "correctness"
+argv = [
+  "python3", "{snapshot}/bench/native_data/run_baseline_correctness.py",
+  "--binary", "{snapshot}/.autobench/data/cellerator-native-data-aten-v2/cellerator_native_data_aten_bench",
+  "--artifact-manifest", "{snapshot}/.autobench/data/cellerator-native-data-aten-v2/external_build_manifest.json",
+  "--source-root", "{snapshot}",
+  "--output-dir", "{output}/reference-correctness",
+  "--expected-uuid0", "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+  "--expected-uuid1", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--device0-index", "1",
+  "--device1-index", "0",
+]
+expected_seconds = 90
+kill_seconds = 120
+
+[packet.resources]
+priority = "background"
+preemptible = true
+tags = ["gpu.exclusive"]
+
+[[packet.resources.scheduler]]
+kind = "gpu"
+quantities = { memory_bytes = 1073741824 }
+mode = "exclusive"
+same_host = true
+selectors = { uuid = "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" }
+
+[[packet.resources.scheduler]]
+kind = "gpu"
+quantities = { memory_bytes = 1073741824 }
+mode = "exclusive"
+same_host = true
+selectors = { uuid = "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505" }

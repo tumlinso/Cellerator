@@ -144,10 +144,10 @@ struct execution_projection_source {
 };
 
 struct execution_image_v2_build_request {
-    cellerator::execution::structure_id structure_identity{};
+    ::cellerator::structure::structure_id structure_identity{};
     u64 structure_epoch = 0u;
-    cellerator::execution::geometry_id semantic_geometry_identity{};
-    cellerator::execution::projection_id projection_catalog_identity{};
+    ::cellerator::structure::geometry_id semantic_geometry_identity{};
+    ::cellerator::structure::projection_id projection_catalog_identity{};
     u64 initial_value_generation = 0u;
     cellerator::execution::persistent_axis_identity source_axis{};
     cellerator::execution::persistent_axis_identity destination_axis{};
@@ -170,10 +170,10 @@ struct execution_image_v2_buffer {
 };
 
 struct execution_image_v2_expected {
-    cellerator::execution::structure_id structure_identity{};
+    ::cellerator::structure::structure_id structure_identity{};
     u64 structure_epoch = 0u;
-    cellerator::execution::geometry_id semantic_geometry_identity{};
-    cellerator::execution::projection_id projection_catalog_identity{};
+    ::cellerator::structure::geometry_id semantic_geometry_identity{};
+    ::cellerator::structure::projection_id projection_catalog_identity{};
     u64 image_identity = 0u;
 };
 

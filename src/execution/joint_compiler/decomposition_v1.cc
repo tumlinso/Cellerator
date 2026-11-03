@@ -164,8 +164,8 @@ decomposition_validation_result_v1 validate_decomposition_portfolio_v1(
             return failure(
                 decomposition_validation_code_v1::invalid_halo_flag, index);
         }
-        if (!execution::valid_identity(alternative.input_order)
-            || !execution::valid_identity(alternative.output_order))
+        if (!::cellerator::structure::valid_identity(alternative.input_order)
+            || !::cellerator::structure::valid_identity(alternative.output_order))
             return failure(
                 decomposition_validation_code_v1::invalid_order, index);
         const bool partial =

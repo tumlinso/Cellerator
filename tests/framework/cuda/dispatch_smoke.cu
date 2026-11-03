@@ -1,4 +1,5 @@
 #include <Cellerator/modeling/cuda/plans.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 
 #include <cassert>
 #include <cmath>
@@ -10,6 +11,7 @@
 
 namespace {
 using namespace cellerator::modeling::cuda;
+using namespace cellerator::memory::cuda;
 
 float as_float(float value) { return value; }
 float as_float(__half value) { return __half2float(value); }
@@ -211,6 +213,7 @@ void check_empty_dispatches(const Stream& stream) {
 
 int main() {
   using namespace cellerator::modeling::cuda;
+  using namespace cellerator::memory::cuda;
   int device_count = 0;
   check(cudaGetDeviceCount(&device_count), "cudaGetDeviceCount");
   assert(device_count > 0);

@@ -50,9 +50,9 @@ struct edge_map_or_gate_plan_v1 {
         execution::value_map_direction::forward;
     std::uint8_t reserved[3]{};
     execution::structure_requirement structure{};
-    execution::projection_id projection_identity{};
+    ::cellerator::structure::projection_id projection_identity{};
     execution::projection_handle projection{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::order_id logical_edge_order{};
     std::uint64_t logical_edge_count = 0u;
     execution::numeric_type input_type = execution::numeric_type::f32;
     execution::numeric_type output_type = execution::numeric_type::f32;
@@ -65,7 +65,7 @@ struct edge_map_or_gate_plan_v1 {
 struct logical_edge_gate_view_v1 {
     const void *values = nullptr;
     execution::device_location location{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::order_id logical_edge_order{};
     execution::numeric_type value_type = execution::numeric_type::invalid;
     std::uint8_t reserved[7]{};
     std::uint64_t logical_edge_count = 0u;

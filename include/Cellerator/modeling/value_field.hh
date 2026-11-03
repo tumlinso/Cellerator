@@ -1,6 +1,16 @@
 #pragma once
 
-#include <Cellerator/modeling/incidence_plan.hh>
+#include <Cellerator/execution/identity.hh>
+#include <Cellerator/containers/value_shape.hh>
+#include <Cellerator/layout/entity_layout.hh>
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <stdexcept>
+#include <utility>
+#include <vector>
 
 namespace cellerator::modeling {
 
@@ -10,12 +20,12 @@ namespace cellerator::modeling {
 template<class Storage>
 class ValueField final {
 public:
-    ValueField(EntityLayout layout, std::size_t features, std::vector<Storage> values)
+    ValueField(::cellerator::layout::EntityLayout layout, std::size_t features, std::vector<Storage> values)
         : layout_(std::move(layout)), features_(features), values_(std::move(values)) {
-        if (values_.size() != checked_value_count(layout_.size(), features_))
+        if (values_.size() != ::cellerator::containers::checked_value_count(layout_.size(), features_))
             throw std::invalid_argument("field value shape does not match entity layout");
     }
-    const EntityLayout& layout() const noexcept { return layout_; }
+    const ::cellerator::layout::EntityLayout& layout() const noexcept { return layout_; }
     std::size_t features() const noexcept { return features_; }
     const std::vector<Storage>& values() const noexcept { return values_; }
     execution::value_generation generation() const noexcept { return {generation_}; }
@@ -27,7 +37,7 @@ public:
     // Duplicate entity writes are rejected to avoid an implicit conflict policy.
     // All identity and shape checks finish before any state is changed.
     void update(const std::vector<std::uint64_t>& ids, const std::vector<Storage>& values) {
-        if (values.size() != checked_value_count(ids.size(), features_))
+        if (values.size() != ::cellerator::containers::checked_value_count(ids.size(), features_))
             throw std::invalid_argument("sparse field write shape mismatch");
         std::vector<std::size_t> slots;
         slots.reserve(ids.size());
@@ -48,7 +58,7 @@ private:
             throw std::overflow_error("value generation overflow");
         ++generation_;
     }
-    EntityLayout layout_;
+    ::cellerator::layout::EntityLayout layout_;
     std::size_t features_;
     std::vector<Storage> values_;
     std::uint64_t generation_ = 0;

@@ -23,7 +23,7 @@ int main() {
     requirement.required_plane_count = 2u;
     requirement.numeric = {execution::numeric_type::f16,
         execution::numeric_type::f32, execution::numeric_type::f32, 0u};
-    requirement.index_width = execution::local_index_width_v1::u32;
+    requirement.index_width = cellerator::layout::LocalIndexWidth::u32;
     requirement.required_order = {5u, 1u};
     requirement.minimum_alignment = 128u;
     requirement.contiguity =

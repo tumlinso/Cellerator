@@ -454,7 +454,7 @@ std::string serialize_biological_manifest(const BiologicalManifest& manifest) {
 
 std::string serialize_feature_binding_descriptor(
     const cellerator::biology::FeatureBindingDescriptor<std::string>& descriptor) {
-    if (descriptor.schema_version != 1)
+    if (descriptor.schema_version != 1 && descriptor.schema_version != 2)
         throw std::invalid_argument("unsupported native FeatureBinding descriptor version");
     if (descriptor.identity_codec_name.empty() || descriptor.identity_codec_version <= 0)
         throw std::invalid_argument("native FeatureBinding identity codec must declare a name and version");
@@ -492,14 +492,34 @@ std::string serialize_feature_binding_descriptor(
 
     Json axis = nullptr;
     if (descriptor.axis) {
-        descriptor.axis->validate();
+        if (!structure::valid_logical_axis(*descriptor.axis))
+            throw std::invalid_argument("invalid native FeatureBinding logical axis");
         axis = Json{
             {"domain", identity128(descriptor.axis->domain.low, descriptor.axis->domain.high)},
-            {"order", identity128(descriptor.axis->order.low, descriptor.axis->order.high)},
-            {"geometry", identity128(descriptor.axis->geometry.low, descriptor.axis->geometry.high)},
-            {"partition", identity128(descriptor.axis->partition.low, descriptor.axis->partition.high)},
+            {"order", identity128(descriptor.axis->logical_order.low, descriptor.axis->logical_order.high)},
             {"extent", descriptor.axis->extent},
         };
+        if (descriptor.schema_version == 1) {
+            if (!descriptor.physical_axis || descriptor.axis->extent == 0)
+                throw std::invalid_argument("v1 FeatureBinding axis requires a nonempty physical binding");
+            descriptor.physical_axis->validate();
+            if (descriptor.physical_axis->logical != *descriptor.axis)
+                throw std::invalid_argument("FeatureBinding physical axis differs from logical axis");
+            axis["geometry"] = identity128(descriptor.physical_axis->geometry.low, descriptor.physical_axis->geometry.high);
+            axis["partition"] = identity128(descriptor.physical_axis->partition.low, descriptor.physical_axis->partition.high);
+        } else {
+            axis["geometry"] = nullptr;
+            axis["partition"] = nullptr;
+            if (descriptor.physical_axis) {
+                descriptor.physical_axis->validate();
+                if (descriptor.physical_axis->logical != *descriptor.axis)
+                    throw std::invalid_argument("FeatureBinding physical axis differs from logical axis");
+                axis["geometry"] = identity128(descriptor.physical_axis->geometry.low, descriptor.physical_axis->geometry.high);
+                axis["partition"] = identity128(descriptor.physical_axis->partition.low, descriptor.physical_axis->partition.high);
+            }
+        }
+    } else if (descriptor.physical_axis || descriptor.schema_version == 2) {
+        throw std::invalid_argument("FeatureBinding descriptor axis and version disagree");
     }
 
     Json canonical_indices = nullptr;
@@ -652,23 +672,39 @@ std::string serialize_prepared_relation_descriptor(
         target_order.push_back(std::move(value));
     }
 
-    const auto axis_json = [](const std::optional<biology::AxisDescriptor>& axis) -> Json {
+    const auto axis_json = [](const std::optional<structure::LogicalAxis>& axis,
+                              const std::optional<layout::AxisBinding>& binding) -> Json {
         if (!axis) return nullptr;
-        axis->validate();
+        if (!structure::valid_logical_axis(*axis))
+            throw std::invalid_argument("invalid relation logical axis");
         const auto identity = [](std::uint64_t low, std::uint64_t high) {
             return Json{{"low", low}, {"high", high}};
         };
-        return Json{
+        Json result{
             {"domain", identity(axis->domain.low, axis->domain.high)},
-            {"order", identity(axis->order.low, axis->order.high)},
-            {"geometry", identity(axis->geometry.low, axis->geometry.high)},
-            {"partition", identity(axis->partition.low, axis->partition.high)},
+            {"order", identity(axis->logical_order.low, axis->logical_order.high)},
+            {"geometry", nullptr},
+            {"partition", nullptr},
             {"extent", axis->extent},
         };
+        if (binding) {
+            binding->validate();
+            if (binding->logical != *axis)
+                throw std::invalid_argument("relation layout differs from logical axis");
+            result["geometry"] = identity(binding->geometry.low, binding->geometry.high);
+            result["partition"] = identity(binding->partition.low, binding->partition.high);
+        }
+        return result;
     };
 
+    const auto needs_v2 = [](const auto& axis, const auto& binding) {
+        return axis && (!binding || axis->extent == 0);
+    };
+    const bool v2 = needs_v2(relation.source_axis(), relation.source_layout()) ||
+                    needs_v2(relation.target_axis(), relation.target_layout());
+
     return Json{
-        {"kind", "cellerator.prepared_relation.v1"},
+        {"kind", v2 ? "cellerator.prepared_relation.v2" : "cellerator.prepared_relation.v1"},
         {"source_order", std::move(source_order)},
         {"target_order", std::move(target_order)},
         {"source_offsets", relation.source_offsets()},
@@ -677,8 +713,8 @@ std::string serialize_prepared_relation_descriptor(
         {"target_extent", relation.target_count()},
         {"row_ptr", relation.host_row_ptr()},
         {"col_indices", relation.host_col_indices()},
-        {"source_axis", axis_json(relation.source_axis())},
-        {"target_axis", axis_json(relation.target_axis())},
+        {"source_axis", axis_json(relation.source_axis(), relation.source_layout())},
+        {"target_axis", axis_json(relation.target_axis(), relation.target_layout())},
         {"structural_generation", relation.generation()},
     }.dump(-1, ' ', false, Json::error_handler_t::strict);
 }

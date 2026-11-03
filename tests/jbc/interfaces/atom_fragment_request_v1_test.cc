@@ -8,7 +8,7 @@ namespace operation = cellerator::compute::operation::v2;
 namespace decomposition = cellerator::compute::decomposition;
 
 template<typename Tag>
-execution::persistent_identity<Tag> persistent(std::uint64_t value) {
+::cellerator::structure::persistent_identity<Tag> persistent(std::uint64_t value) {
     return {value, value + 100u};
 }
 
@@ -16,10 +16,10 @@ execution::persistent_axis_identity axis(std::uint64_t seed) {
     return {{execution::biological_abi_version,
                 execution::serialized_record_kind::persistent_axis_identity,
                 sizeof(execution::persistent_axis_identity)},
-        persistent<execution::domain_tag>(seed),
-        persistent<execution::order_tag>(seed + 1u),
-        persistent<execution::geometry_tag>(seed + 2u),
-        persistent<execution::partition_tag>(seed + 3u)};
+        persistent<::cellerator::structure::domain_tag>(seed),
+        persistent<::cellerator::structure::order_tag>(seed + 1u),
+        persistent<::cellerator::structure::geometry_tag>(seed + 2u),
+        persistent<::cellerator::structure::partition_tag>(seed + 3u)};
 }
 
 void set_numeric(operation::numerical_policy *numeric) {
@@ -33,11 +33,11 @@ void set_numeric(operation::numerical_policy *numeric) {
 
 int main() {
     operation::typed_relation relation{};
-    relation.structure = persistent<execution::structure_tag>(1u);
+    relation.structure = persistent<::cellerator::structure::structure_tag>(1u);
     relation.epoch = {1u};
     relation.source_axis = axis(10u);
     relation.destination_axis = axis(20u);
-    relation.logical_edge_order = persistent<execution::order_tag>(30u);
+    relation.logical_edge_order = persistent<::cellerator::structure::order_tag>(30u);
     relation.logical_edge_count = 2u;
     operation::operation_problem problem{};
     problem.persistent_problem_identity = {1u, 2u};
@@ -87,15 +87,15 @@ int main() {
     alternative.required_input_coverages = &input_coverage;
     alternative.required_input_coverage_count = 1u;
     alternative.output_coverage = {22u, 1u};
-    alternative.input_order = persistent<execution::order_tag>(60u);
-    alternative.output_order = persistent<execution::order_tag>(61u);
+    alternative.input_order = persistent<::cellerator::structure::order_tag>(60u);
+    alternative.output_order = persistent<::cellerator::structure::order_tag>(61u);
     set_numeric(&alternative.numerical);
     decomposition::decomposition_portfolio_v1 portfolio{};
     portfolio.portfolio_identity = {23u, 1u};
     portfolio.alternatives = &alternative;
     portfolio.alternative_count = 1u;
 
-    const execution::order_id external_orders[] = {
+    const ::cellerator::structure::order_id external_orders[] = {
         {1u, 1u}, {2u, 1u}};
     const joint_compiler::atom_binding_request_v1 binding{
         {30u, 1u}, {30u, 2u}, {30u, 3u}};

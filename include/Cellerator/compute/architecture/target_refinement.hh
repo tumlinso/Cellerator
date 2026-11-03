@@ -105,7 +105,7 @@ struct target_refinement_solution_v1 {
     std::uint32_t reserved0 = 0u;
     architecture_identity_v1 provider_identity{};
     execution::structure_handle structure{};
-    execution::structure_epoch structure_epoch{};
+    ::cellerator::structure::structure_epoch structure_epoch{};
     target_refinement_cover_view_v1 pure_sparse{};
     target_refinement_cover_view_v1 conservative_hybrid{};
     target_refinement_cover_view_v1 aggressive_hybrid{};

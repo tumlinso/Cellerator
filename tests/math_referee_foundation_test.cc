@@ -25,8 +25,8 @@ void require(bool condition, const char *message) {
     }
 }
 
-cm::feature_order_identity canonical_order(cm::u32 features) {
-    cm::feature_order_identity order;
+::cellerator::layout::projection::FeatureOrderIdentity canonical_order(cm::u32 features) {
+    ::cellerator::layout::projection::FeatureOrderIdentity order;
     order.feature_count = features;
     order.feature_axis_identity_version = 1u;
     order.feature_axis_identity = 0x08aull;

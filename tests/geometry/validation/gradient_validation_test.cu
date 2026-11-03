@@ -18,7 +18,7 @@
 
 namespace sm70 =
     cellerator::compute::architecture::providers::nvidia::sm70;
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 namespace segment = cellerator::compute::segment;
 namespace execution = cellerator::execution;
 

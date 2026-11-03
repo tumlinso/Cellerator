@@ -33,11 +33,11 @@ struct support_family_identity_v1 {
     std::uint32_t record_bytes = sizeof(support_family_identity_v1);
     operation::v2::stable_id family_identity{};
     operation::v2::stable_id exact_support_identity{};
-    execution::structure_id structure_identity{};
-    execution::structure_epoch structure_epoch{};
+    ::cellerator::structure::structure_id structure_identity{};
+    ::cellerator::structure::structure_epoch structure_epoch{};
     execution::persistent_axis_identity source_axis{};
     execution::persistent_axis_identity destination_axis{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::order_id logical_edge_order{};
     std::uint64_t logical_edge_count = 0;
 };
 
@@ -93,7 +93,7 @@ validate_support_family_identity_v1(
         return {support_family_validation_code_v1::
                     invalid_exact_support_identity};
     }
-    if (!execution::valid_identity(identity.structure_identity)) {
+    if (!::cellerator::structure::valid_identity(identity.structure_identity)) {
         return {support_family_validation_code_v1::
                     invalid_structure_identity};
     }
@@ -112,7 +112,7 @@ validate_support_family_identity_v1(
         return {support_family_validation_code_v1::invalid_destination_axis,
                 static_cast<std::uint32_t>(destination_status)};
     }
-    if (!execution::valid_identity(identity.logical_edge_order)) {
+    if (!::cellerator::structure::valid_identity(identity.logical_edge_order)) {
         return {support_family_validation_code_v1::
                     invalid_logical_edge_order};
     }
@@ -148,7 +148,7 @@ validate_support_family_descriptor_v1(
                lhs.family_identity, rhs.family_identity)
         && operation::v2::same_stable_id(
             lhs.exact_support_identity, rhs.exact_support_identity)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             lhs.structure_identity, rhs.structure_identity)
         && lhs.structure_epoch.value == rhs.structure_epoch.value
         && lhs.source_axis.header.schema_version
@@ -156,26 +156,26 @@ validate_support_family_descriptor_v1(
         && lhs.source_axis.header.kind == rhs.source_axis.header.kind
         && lhs.source_axis.header.byte_count
                == rhs.source_axis.header.byte_count
-        && execution::same_identity(lhs.source_axis.domain, rhs.source_axis.domain)
-        && execution::same_identity(lhs.source_axis.order, rhs.source_axis.order)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(lhs.source_axis.domain, rhs.source_axis.domain)
+        && ::cellerator::structure::same_identity(lhs.source_axis.order, rhs.source_axis.order)
+        && ::cellerator::structure::same_identity(
             lhs.source_axis.geometry, rhs.source_axis.geometry)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             lhs.source_axis.partition, rhs.source_axis.partition)
         && lhs.destination_axis.header.schema_version
                == rhs.destination_axis.header.schema_version
         && lhs.destination_axis.header.kind == rhs.destination_axis.header.kind
         && lhs.destination_axis.header.byte_count
                == rhs.destination_axis.header.byte_count
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             lhs.destination_axis.domain, rhs.destination_axis.domain)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             lhs.destination_axis.order, rhs.destination_axis.order)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             lhs.destination_axis.geometry, rhs.destination_axis.geometry)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             lhs.destination_axis.partition, rhs.destination_axis.partition)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             lhs.logical_edge_order, rhs.logical_edge_order)
         && lhs.logical_edge_count == rhs.logical_edge_count;
 }

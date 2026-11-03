@@ -86,7 +86,7 @@ core::preparation_factory_request request(
     result.structures.count = 1u;
     result.structures.structures[0] = {{11u, 12u}, {21u, 1u}, {7u}};
     result.projection = {{31u, 32u}, {41u, 1u},
-        core::projection_kind::csr, cm::execution_csr_schema_version, 1u};
+        core::projection_kind::csr, ::cellerator::layout::projection::execution_csr_schema_version, 1u};
     result.numeric = csr_numeric();
     result.policy = {true, false, true, true, 8u, 0u, 0u};
     result.session = session;
@@ -98,17 +98,17 @@ core::preparation_factory_request request(
     return result;
 }
 
-cm::execution_csr_view csr(const device_fixture &device) {
-    cm::execution_csr_view result{};
+::cellerator::layout::projection::CsrViewV1 csr(const device_fixture &device) {
+    ::cellerator::layout::projection::CsrViewV1 result{};
     result.row_count = 2u;
     result.full_row_count = 2u;
     result.feature_count = 3u;
     result.nnz_count = 3u;
     result.value_size_bytes = sizeof(__half);
     result.row_domain_identity = 0x3003u;
-    result.structure.identity_version = cm::execution_csr_structure_identity_version;
+    result.structure.identity_version = ::cellerator::layout::projection::execution_csr_structure_identity_version;
     result.structure.value = 0x7072u;
-    result.feature_order.kind = cm::feature_order_kind::packed;
+    result.feature_order.kind = ::cellerator::layout::projection::feature_order_kind::packed;
     result.feature_order.feature_count = 3u;
     result.feature_order.feature_axis_identity_version = 1u;
     result.feature_order.feature_axis_identity = 0x5005u;
@@ -165,7 +165,7 @@ void test_typed_csr_factory_and_session_cache() {
         "candidate state capacity rejection");
 
     factory_request.state = {&rejected_state, sizeof(rejected_state)};
-    cm::feature_major_projection_view wrong_typed_projection{};
+    execution::FeatureMajorBinding wrong_typed_projection{};
     require(core::prepare_catalog_feature_major(factory_request,
         wrong_typed_projection, &prepared).code
             == core::operation_status_code::unsupported_projection,

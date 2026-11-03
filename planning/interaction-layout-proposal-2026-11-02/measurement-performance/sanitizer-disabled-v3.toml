@@ -1,0 +1,112 @@
+[benchmark]
+name = "factorized-sanitizer-partitions"
+revision = 3
+enabled = false
+
+[data]
+paths = [
+  ".autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered.tar",
+  ".autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered-manifest.json",
+  ".autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native.tar",
+  ".autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native-manifest.json",
+  ".autobench/data/factorized-interactions/prebuilt-native-1/materialize_prebuilt.py",
+  ".autobench/data/factorized-interactions/sanitizer-wrapper-2/sanitizer_tool_partition.py",
+  ".autobench/data/factorized-interactions/sanitizer-wrapper-2/test_sanitizer_tool_partition.py",
+]
+
+[build]
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/prebuilt-native-1/materialize_prebuilt.py",
+  "--source-archive", "{snapshot}/.autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered.tar",
+  "--source-manifest", "{snapshot}/.autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered-manifest.json",
+  "--bundle", "{snapshot}/.autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native.tar",
+  "--bundle-manifest", "{snapshot}/.autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native-manifest.json",
+  "--build", "{build}",
+]
+expected_seconds = 90
+kill_seconds = 180
+resources = { cpu_cores = 2, host_memory_bytes = 4294967296 }
+
+[[packet]]
+name = "sanitizer-memcheck"
+kind = "correctness"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1", NVCOMPILER_COMPUTE_SANITIZER_HOME = "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/sanitizer-wrapper-2/sanitizer_tool_partition.py",
+  "--source", "{build}/source", "--tool", "memcheck",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_baseline_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_baseline_build_manifest.json",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--output-root", "{output}", "--artifact-dir", "{output}/cases",
+  "--output", "{output}/partition.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "sanitizer-racecheck"
+kind = "correctness"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1", NVCOMPILER_COMPUTE_SANITIZER_HOME = "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/sanitizer-wrapper-2/sanitizer_tool_partition.py",
+  "--source", "{build}/source", "--tool", "racecheck",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_baseline_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_baseline_build_manifest.json",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--output-root", "{output}", "--artifact-dir", "{output}/cases",
+  "--output", "{output}/partition.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "sanitizer-initcheck"
+kind = "correctness"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1", NVCOMPILER_COMPUTE_SANITIZER_HOME = "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/sanitizer-wrapper-2/sanitizer_tool_partition.py",
+  "--source", "{build}/source", "--tool", "initcheck",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_baseline_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_baseline_build_manifest.json",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--output-root", "{output}", "--artifact-dir", "{output}/cases",
+  "--output", "{output}/partition.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "sanitizer-synccheck"
+kind = "correctness"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1", NVCOMPILER_COMPUTE_SANITIZER_HOME = "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/sanitizer-wrapper-2/sanitizer_tool_partition.py",
+  "--source", "{build}/source", "--tool", "synccheck",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_baseline_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_baseline_build_manifest.json",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--output-root", "{output}", "--artifact-dir", "{output}/cases",
+  "--output", "{output}/partition.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }

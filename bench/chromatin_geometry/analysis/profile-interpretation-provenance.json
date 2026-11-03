@@ -1,0 +1,247 @@
+{
+  "schema": "cgs.profile-interpretation.v1",
+  "scope": "Retained f9bf/02a diagnostic interpretation at historical campaign pause; not throughput or promotion evidence",
+  "matched_v3_profiles": "unfinished at interpretation cutoff; not consumed",
+  "profiles": {
+    "ncu": {
+      "packet": "b7f04ad8-b97a-4791-a9cd-0030e810beb1",
+      "scheduler_job_id": "b7f04ad8-b97a-4791-a9cd-0030e810beb1",
+      "scheduler_attempt_id": "ed0e14af-4d49-4b54-b0a0-10005116f091",
+      "source_archive_sha256": "f9bfbd356e0fde90ca9defdada2c73e48b974c3e9c02fa44d5b7f9f486f22d6f",
+      "binary_sha256": "02a282c431888966d9cb5172c6794b441d0464f5ee76d06115fae66d4dcdc8a5",
+      "device_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "workload_sha256": "cf2d7bdffc0735c85fbd2422196e971daf5d31c8cc169ae630a3b007ecd0e1fb",
+      "experiment": {
+        "schema": "cgs.profile.v1",
+        "tool": "ncu",
+        "source_archive_sha256": "f9bfbd356e0fde90ca9defdada2c73e48b974c3e9c02fa44d5b7f9f486f22d6f",
+        "binary_sha256": "02a282c431888966d9cb5172c6794b441d0464f5ee76d06115fae66d4dcdc8a5",
+        "case": "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100",
+        "backend": "cohort-shared",
+        "gate": "supplied",
+        "body": "product",
+        "precision": "fp16",
+        "condition_update": "incremental",
+        "tile": 64,
+        "stages": 1,
+        "kernel_name_regex": "shared_consumer"
+      },
+      "profiler_version": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)\n",
+      "profiler_sha256": "a44ff2c735c4dcf66c78f3f430155805d6a0b1f74f26331f98ecec03bfbf3f1a",
+      "file_sha256": {
+        "metrics.json": "e1afa9edb900b4f70f562256413775cdbec0ec8073d65034268fbdcd8f159f26",
+        "experiment.json": "c09a5b9286033a3454319693c57e178f7b5a415056ffbd49695d64b851664d38",
+        "profile/summary.json": "994333ac3c60f0e814946a32e1061d614b82e1cbabab60a48feef2bca4eb5955",
+        "profile/campaign.json": "ab8426e5109e129aef071922c6c39911951d0e7e0aa342764208ee89a311f592",
+        "profile/kernel.ncu-rep": "6a56efbb95e1c72eaeb1c050b0bc52a4b6ab4da4364b5145cc941d35521b4b0c"
+      }
+    },
+    "nsys": {
+      "packet": "02252219-5bed-4350-94a3-ad5feeb47507",
+      "scheduler_job_id": "02252219-5bed-4350-94a3-ad5feeb47507",
+      "scheduler_attempt_id": "ad32b742-c5e2-4bf1-aa58-ee544a40842b",
+      "source_archive_sha256": "f9bfbd356e0fde90ca9defdada2c73e48b974c3e9c02fa44d5b7f9f486f22d6f",
+      "binary_sha256": "02a282c431888966d9cb5172c6794b441d0464f5ee76d06115fae66d4dcdc8a5",
+      "device_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "workload_sha256": "cf2d7bdffc0735c85fbd2422196e971daf5d31c8cc169ae630a3b007ecd0e1fb",
+      "experiment": {
+        "schema": "cgs.profile.v1",
+        "tool": "nsys",
+        "source_archive_sha256": "f9bfbd356e0fde90ca9defdada2c73e48b974c3e9c02fa44d5b7f9f486f22d6f",
+        "binary_sha256": "02a282c431888966d9cb5172c6794b441d0464f5ee76d06115fae66d4dcdc8a5",
+        "case": "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100",
+        "backend": "cohort-shared",
+        "gate": "supplied",
+        "body": "product",
+        "precision": "fp16",
+        "condition_update": "incremental",
+        "tile": 64,
+        "stages": 1
+      },
+      "profiler_version": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0\n",
+      "profiler_sha256": "525f35a10de49b396e91a3831ae40e98a8631d619b7c8bbb4c54469b8c08a72e",
+      "file_sha256": {
+        "metrics.json": "6b10701b5fa314371a742d6bd7a4b71ae269a684e59fb57e8fc786f91d98b95c",
+        "experiment.json": "7710af040c6f0059a9548f5d15953d2acb7d4a67debb3a2f65d735d02e845be5",
+        "profile/summary.json": "09ea2facb6444315779635dcf1fd6dfe3991d17aa2822d5200d870a1ab3f11cc",
+        "profile/campaign.json": "e1d3cefff6c7765d0a4c2bc3499a066176a92407fa345d305696b8f4d4f9ac65",
+        "profile/timeline.nsys-rep": "e6fa1410628f87b175bf75031c0644ce7e9a90daceb4ee5c934f95a2bebc3fd9",
+        "profile/timeline.sqlite": "b9b85d33c26fd92ef86aa889c1b12129a36aeaa446c5156eda92ea2bff1fe961"
+      },
+      "phase_probe_device_ms": {
+        "condition": [
+          0.0279360003769
+        ],
+        "clear": [
+          0.0252480003983
+        ],
+        "gate": [
+          0
+        ],
+        "prepare": [
+          0.0305279996246
+        ],
+        "forward": [
+          0.0608640015125
+        ],
+        "backward": [
+          0.0615039989352
+        ],
+        "score_gradient_update": [
+          0
+        ],
+        "model_update": [
+          0.00812800042331
+        ]
+      },
+      "phase_probe_host_ms": {
+        "condition": [
+          0.022482
+        ],
+        "clear": [
+          0.019052
+        ],
+        "gate": [
+          0
+        ],
+        "prepare": [
+          0.010756
+        ],
+        "forward": [
+          0.010831
+        ],
+        "backward": [
+          0.009808
+        ],
+        "score_gradient_update": [
+          0
+        ],
+        "model_update": [
+          0.008999
+        ]
+      }
+    }
+  },
+  "ncu_selected_metrics_explicit_csv_units": {
+    "gpu__time_duration.sum": {
+      "value": "58.816000",
+      "unit": "us"
+    },
+    "dram__bytes_read.sum": {
+      "value": "71.872000",
+      "unit": "Kbyte"
+    },
+    "dram__bytes_write.sum": {
+      "value": "0",
+      "unit": "byte"
+    },
+    "gpu__dram_throughput.avg.pct_of_peak_sustained_elapsed": {
+      "value": "0.136573",
+      "unit": "%"
+    },
+    "lts__t_sectors.sum": {
+      "value": "6339.000000",
+      "unit": "sector"
+    },
+    "lts__t_sector_hit_rate.pct": {
+      "value": "71.572803",
+      "unit": "%"
+    },
+    "l1tex__t_sector_hit_rate.pct": {
+      "value": "96.059662",
+      "unit": "%"
+    },
+    "l1tex__data_bank_conflicts_pipe_lsu_mem_shared_op_ld.sum": {
+      "value": "8",
+      "unit": ""
+    },
+    "l1tex__data_bank_conflicts_pipe_lsu_mem_shared_op_st.sum": {
+      "value": "0",
+      "unit": ""
+    },
+    "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum": {
+      "value": "114",
+      "unit": ""
+    },
+    "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_st.sum": {
+      "value": "42",
+      "unit": ""
+    },
+    "smsp__sass_inst_executed_op_local_ld.sum": {
+      "value": "0",
+      "unit": "inst"
+    },
+    "smsp__sass_inst_executed_op_local_st.sum": {
+      "value": "0",
+      "unit": "inst"
+    },
+    "l1tex__t_requests_pipe_lsu_mem_local_op_ld.sum": {
+      "value": "0",
+      "unit": ""
+    },
+    "l1tex__t_requests_pipe_lsu_mem_local_op_st.sum": {
+      "value": "0",
+      "unit": ""
+    },
+    "smsp__warps_active.avg.per_cycle_active": {
+      "value": "0.999596",
+      "unit": "warp"
+    },
+    "smsp__warps_eligible.avg.per_cycle_active": {
+      "value": "0.099006",
+      "unit": "warp"
+    },
+    "profiler__replayer_passes": {
+      "value": "81.000000",
+      "unit": "pass"
+    }
+  },
+  "shared_wavefronts": {
+    "actual": 156,
+    "ideal": 148,
+    "excess": 8,
+    "excess_fraction": 0.05128205128205128,
+    "not_kernel_time_fraction": true
+  },
+  "source_correlation": {
+    "sampled_pcs": 197,
+    "mapped_pcs": 197,
+    "frozen_consumer_sha256": "5ddda9421c96f4ac053f6dea8ed434cbfd1363cf61a8cf8cd1ad1dd2d7af51e6",
+    "barrier_samples": 124,
+    "intertile_adjacent_line491_samples": 88,
+    "demand_barrier_adjacent_line475_samples": 32,
+    "leading_metadata_long_scoreboard_lines": [
+      437,
+      438
+    ]
+  },
+  "source_input_envelope": {
+    "evidence_kind": "reconstructed frozen fixture, not an NCU metric",
+    "before_primal_groups": 6545,
+    "after_primal_groups": 11,
+    "group_capacity": 16384,
+    "after_forward_argument_uses": 88,
+    "after_distinct_participant_values": 88
+  },
+  "csv_sha256": {
+    "ncu-shared-case3.csv": "d8d7fafb82bd450f1f3061697615c229a118a6b3f4107b2e9d96a87341ec4edb",
+    "ncu-shared-case3-raw.csv": "37533bb730ad9a9dd7b09f7069151fc4079dd450ad6dd609e5632aefcf34d22b",
+    "structural-counts.csv": "4c3730dad8735c75b81b9a61688c4dbf47edba940592b33b1f5add86e66a043c"
+  },
+  "analysis_sha256": "4f6faa5613fe784eaa2b42a4edfc9295f50dc9622a5ceb85cd9daaf2c0f4918e",
+  "offline_extraction": {
+    "methods": [
+      "retained NCU CSV exports",
+      "KDA analyze_reports.py and extract_stall_hotspots.py without --binary",
+      "read-only SELECT on retained Nsys SQLite export"
+    ],
+    "helper_root": "/home/tumlinson/kda/skills/ncu-report-skill",
+    "duration_units": "explicit raw CSV us, not unscaled helper base-unit label",
+    "gpu_work_performed_for_interpretation": false,
+    "implementation_changed_by_interpretation": false
+  },
+  "excluded_comparison": {
+    "packet": "26d99412-0fac-4754-8d6f-5e69ad338561",
+    "reason": "different source/binary and GPU; no cross-device speedup computed"
+  }
+}

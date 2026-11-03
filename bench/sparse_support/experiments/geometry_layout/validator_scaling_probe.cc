@@ -1,4 +1,4 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <algorithm>
 #include <chrono>
@@ -10,10 +10,9 @@
 #include <numeric>
 #include <vector>
 
-namespace projection = cellerator::compute::projection;
-namespace math = cellerator::compute::math;
+namespace projection = cellerator::layout::projection;
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 bool validate_physical_mma_hybrid_image_v1_reference(
     const void*, std::size_t) noexcept;
 }
@@ -44,11 +43,11 @@ int run_case(std::uint64_t edge_count) {
     projection::physical_mma_hybrid_build_request_v1 request{};
     request.structure_identity.identity_version = 1u;
     request.structure_identity.value = 0x56414c4944415445ull;
-    request.source_order.kind = math::feature_order_kind::canonical;
+    request.source_order.kind = projection::feature_order_kind::canonical;
     request.source_order.feature_count = entities;
     request.source_order.feature_axis_identity_version = 1u;
     request.source_order.feature_axis_identity = 0x101u;
-    request.destination_order.kind = math::feature_order_kind::canonical;
+    request.destination_order.kind = projection::feature_order_kind::canonical;
     request.destination_order.feature_count = entities;
     request.destination_order.feature_axis_identity_version = 1u;
     request.destination_order.feature_axis_identity = 0x202u;
@@ -95,7 +94,7 @@ int run_case(std::uint64_t edge_count) {
     }
     const double stdev = samples.size() > 1u
         ? std::sqrt(squared / static_cast<double>(samples.size() - 1u)) : 0.0;
-    projection::physical_mma_hybrid_header_v1 header{};
+    projection::MmaHybridLayoutV1 header{};
     std::memcpy(&header, image.data(), sizeof(header));
     std::vector<double> reference_samples;
     if (edge_count <= 10000u) {

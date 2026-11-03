@@ -19,7 +19,7 @@ int main() {
     CUDA(cudaStreamCreateWithFlags(&consumer,cudaStreamNonBlocking));
     int *value{}, *copy{}; CUDA(cudaMalloc(&value,sizeof(int))); CUDA(cudaMalloc(&copy,sizeof(int)));
     runtime::relation_value_readiness ready;
-    const execution::structure_id structure{41,52};
+    const ::cellerator::structure::structure_id structure{41,52};
     CHECK(ready.initialize(structure,{7},device,owner) == result::success);
     const auto incarnation = ready.incarnation(); CHECK(incarnation != 0);
     CUDA(cudaStreamBeginCapture(owner,cudaStreamCaptureModeThreadLocal));

@@ -49,7 +49,8 @@ for compilation; these configuration flags do not grant execution authority.
 
 ## Resources, ownership and ordering
 
-`Cellerator/modeling/cuda/runtime.hh` defines:
+`Cellerator/memory/cuda/resources.hh` defines the reusable
+`cellerator::memory::cuda` resources:
 
 - `Stream`: move-only owned or explicitly borrowed stream; owned destruction
   synchronizes pending stream work before destruction. Borrowed destruction
@@ -89,16 +90,17 @@ Native callers may construct directly from a host plan:
 
 ```cpp
 namespace gpu = cellerator::modeling::cuda;
-gpu::Stream stream(device);
+namespace mem = cellerator::memory::cuda;
+mem::Stream stream(device);
 gpu::DispatchPlan device_plan(host_dispatch_plan, stream);
-gpu::DeviceBuffer gathered(
-    gpu::checked_bytes(gpu::checked_bytes(device_plan.selection_count(), features), 2), device);
+mem::DeviceBuffer gathered(
+    mem::checked_bytes(mem::checked_bytes(device_plan.selection_count(), features), 2), device);
 device_plan.gather(input.view(), gathered.view(), features,
-                   gpu::DType::float16, stream);
+                   mem::DType::float16, stream);
 // Apply each chosen expert to its contiguous expert_offsets() range.
 // The caller retains exact module identity and revision from the host plan.
 device_plan.combine(expert_output.view(), output.view(), features,
-                    gpu::DType::float16, stream);
+                    mem::DType::float16, stream);
 ```
 
 Inputs are `[origin, feature]`; gathered/expert values are
@@ -117,13 +119,14 @@ input and output storage and undersized buffers.
 
 ## Reusable quantization profiles
 
-`QuantizationProfile` owns finite, strictly increasing FP32 per-feature
+`tensor::state_codes::Profile`, declared in
+`Cellerator/tensor/state_codes/owner.hh`, owns finite, strictly increasing FP32 per-feature
 codebooks with 1, 2, 4 or 8 code bits. A separate feature map connects physical
 columns to profile columns. Profile construction checks host arrays before
 upload. Converting a higher-precision codebook to FP32 can merge levels; such
 profiles are rejected rather than silently changing their interpretation.
 
-`QuantizedState` retains its profile and owns packed words, validation status
+`tensor::state_codes::NativeTensor` retains its profile and owns packed words, validation status
 and optional exact overrides. Encoding chooses the nearest codebook level;
 ties choose the lower level. Exact masks store selected values in an FP32
 sidecar indexed by logical position. A mask currently requires capacity for
@@ -136,11 +139,17 @@ and bit 2 nonfinite state values. `status(stream)` synchronizes to retrieve the
 bits. The Python wrapper checks by default; `check=False` permits deferred
 validation, which the caller must perform before trusting numerical results.
 
-The lower-level `quantization.hh` API additionally supports sparse code edits
+The lower-level `tensor/state_codes/operations.hh` API additionally supports sparse code edits
 with compare/exchange on packed words. Distinct edited indexes may share a
 word safely; duplicate edited indexes in one launch are forbidden. Edits do
 not update exact sidecars. These routines borrow all storage and require
 caller validation and explicit status management.
+
+These are codebook values, distinct from the affine low-bit CSR/BELL formats.
+The Python adapter retains its existing profile/state labels; it adapts the
+canonical native owners rather than defining another native representation.
+See [native data structures](native_data.qmd) for the owner/view and execution
+boundaries shared with other specialist formats.
 
 ## Python interoperability
 

@@ -13,7 +13,7 @@
 namespace cellerator::execution {
 
 struct order_transform_tag;
-using order_transform_id = persistent_identity<order_transform_tag>;
+using order_transform_id = structure::persistent_identity<order_transform_tag>;
 using order_transform_handle = identity_handle<order_transform_tag>;
 
 enum class order_transition_kind : u8 {
@@ -51,7 +51,7 @@ struct output_axis_contract {
 
 struct value_position_map_view {
     structure_handle structure;
-    structure_epoch epoch;
+    structure::structure_epoch epoch;
     value_map_direction direction;
     u8 reserved[7];
     const u32 *logical_to_projection;

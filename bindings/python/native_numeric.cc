@@ -5,7 +5,7 @@
 #include <Cellerator/compute/operation/native_numeric/device_linear.hh>
 #include <Cellerator/compute/operation/prepared_relation.hh>
 #include <Cellerator/compute/operation/relation_update.hh>
-#include <Cellerator/runtime/device_buffer.cuh>
+#include <Cellerator/memory/cuda/shared_buffer.hh>
 #include <dlpack/dlpack.h>
 #include <cuda_runtime_api.h>
 
@@ -172,8 +172,9 @@ public:
             throw std::overflow_error("buffer byte extent overflow");
         nbytes_ = static_cast<std::size_t>(count_) * sizeof(float);
         DeviceScope scope(stream_->device());
-        storage_ = cellerator::runtime::allocate_device_buffer<float>(static_cast<std::size_t>(count_));
-        data_ = storage_.data;
+        storage_ = cellerator::memory::cuda::SharedDeviceBuffer<float>::allocate(
+            static_cast<std::size_t>(count_), stream_->device());
+        data_ = storage_.data();
         owned_ = true;
     }
 
@@ -193,7 +194,9 @@ public:
     cudaStream_t native_stream() const noexcept { return stream_->native(); }
     const std::shared_ptr<Stream>& stream() const noexcept { return stream_; }
     bool owned() const noexcept { return owned_; }
-    const std::shared_ptr<void>& native_owner() const noexcept { return storage_.owner; }
+    std::shared_ptr<const cellerator::memory::cuda::DeviceBuffer> native_owner() const noexcept {
+        return storage_.retained_owner();
+    }
 
     void upload(py::array value) {
         auto array = strict_float_array(value, "upload input", static_cast<int>(shape_.size()));
@@ -271,7 +274,7 @@ private:
     std::shared_ptr<Stream> stream_;
     std::uint64_t count_ = 0;
     std::size_t nbytes_ = 0;
-    cellerator::runtime::device_buffer<float> storage_{};
+    cellerator::memory::cuda::SharedDeviceBuffer<float> storage_{};
     bool owned_ = false;
     py::object owner_ = py::none();
     void* data_ = nullptr;
@@ -298,7 +301,7 @@ numeric::resident_vector resident(Buffer& buffer) {
 }
 
 struct DLPackContext {
-    std::shared_ptr<void> owner;
+    std::shared_ptr<const cellerator::memory::cuda::DeviceBuffer> owner;
     std::vector<std::int64_t> shape;
     DLManagedTensor tensor{};
 };

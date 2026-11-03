@@ -1,0 +1,84 @@
+{
+  "schema": "cellerator.factorized_interactions.sanitizer_partition_independent_acceptance.v1",
+  "status": "accepted_bounded_initcheck_partition",
+  "basis": "Independent read-only verification of the imported fixed initcheck suite, all retained case artifacts, source-bound native build, sanitizer identity, and finished Scheduler receipt. No GPU workload was rerun.",
+  "report": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/evidence/factorized-sanitizer-partitions/2/9784f89ea7ec5cfd00282ddc811729145853f6e91a2adfe534b30010d7e3e570/partition.json",
+    "sha256": "c7cdae6871b147546527cdeee3c49897e312fa54241838f22df2be54e3e93178",
+    "envelope_path": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer-initcheck-finished-evidence.json",
+    "envelope_sha256": "ac8add75fe19f79261b97ddb3f196580a307010838a9f9d3b5529f3bb66617cc",
+    "current_pointer_cleanup_verified": true
+  },
+  "build": {
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "source_file_count": 3979,
+    "baseline_manifest_sha256": "4591a763182aac829e51e13c14f8d0bffbafda4f2e5416d1680f102437e8bb2d",
+    "baseline_runner_sha256": "f388b997e513f927072fad314a4e2cabce6d38a55b9017df143bf5ed3a4d8275",
+    "candidate_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+    "candidate_runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+    "shared_native_library_sha256": "73f4f987db9dc4480d0efef371bc358c24b64ad6be3b472412936289fd0a574c",
+    "fixed_validator_sha256": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31"
+  },
+  "tool": {
+    "name": "initcheck",
+    "command_contract": "The frozen suite supplies --tool initcheck --error-exitcode 99 for every validator child.",
+    "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "version": "NVIDIA Compute Sanitizer 2025.2.1.0 (build 35969825)",
+    "binary_sha256": "979adf037f4e3434a976b7f0912b0a05ce3b062e31b2a73397a1bf1cd5f57547",
+    "support_tree_sha256": "1b7010f3f1f4ffce726282f85c2d25c30495ad1d567c3fbecb0f18ed4f6bcf65",
+    "support_file_count": 136,
+    "suite_sha256": "c5af5b41e14b2a182d8ed479902f8e60e79cb45bc46bd77f59f6b1a10afc0c08",
+    "partition_wrapper_sha256": "e5bafd545ecaaae4a093f533da9e96276f6795e6f91691de25180dcf0ad04de7"
+  },
+  "coverage": {
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "device_model": "Tesla V100-SXM2-16GB",
+    "timed": false,
+    "expected_cases": 14,
+    "passed_cases": 14,
+    "baseline_cases": 12,
+    "candidate_cases": [
+      "direct_unique_output / packet_a4_m32_u16",
+      "minimal_direct / correctness_ordered_tied_zero"
+    ],
+    "baseline_workloads_each_run_on_packet_and_direct": [
+      "correctness_ordered_tied_zero",
+      "correctness_context_cancellation_middle",
+      "correctness_context_cancellation_tail",
+      "correctness_fma_product_residual_cancellation",
+      "a4_m256_u32_fanin64_tied",
+      "correctness_empty_mechanisms"
+    ],
+    "numerical_metrics_checked": 84,
+    "max_error_to_frozen_allowance_ratio": 0.5654892994183374,
+    "retained_case_logs_with_zero_initcheck_errors": 14,
+    "artifact_inventory_entries_rehashed": 70,
+    "repeated_vjp_checked_by_this_suite": false
+  },
+  "scheduler_receipt": {
+    "autobench_attempt_id": "6081879d-686d-48fa-9c16-669da41d0b71",
+    "autobench_fingerprint": "9784f89ea7ec5cfd00282ddc811729145853f6e91a2adfe534b30010d7e3e570",
+    "scheduler_job_id": "8584c81c-8eb0-40b0-a2bb-eb2a7322e1ab",
+    "scheduler_attempt_id": "0fd1172e-aa3e-419f-9e40-b1e10f8fd132",
+    "result": "succeeded",
+    "exit_code": 0,
+    "cleanup_verified": true,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "unit_name": "device-scheduler-attempt-a227385fa0baa439be5f444e800632ce.service",
+    "observed_cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-a227385fa0baa439be5f444e800632ce.service"
+  },
+  "checks": {
+    "source_and_native_build_manifest_verification": "passed",
+    "baseline_candidate_binary_and_library_identity_verification": "passed",
+    "fixed_suite_and_all_14_case_validation": "passed",
+    "all_84_output_and_five_vjp_bound_checks": "passed",
+    "all_14_initcheck_logs": "0 errors",
+    "artifact_inventory_hashes": "passed",
+    "scheduler_receipt_and_current_pointer_binding": "passed"
+  },
+  "limits": [
+    "This is the initcheck partition only; memcheck and racecheck have separate evidence, and synccheck remains pending.",
+    "The strict sanitizer suite checks output and five primary VJPs once per case; repeated-VJP correctness is covered by separate qualification, not this suite.",
+    "A sanitizer pass establishes these 14 tested cases on this source and binary identity; it does not establish general CUDA correctness or performance."
+  ]
+}

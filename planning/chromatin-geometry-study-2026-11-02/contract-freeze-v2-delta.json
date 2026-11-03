@@ -1,0 +1,25 @@
+{
+  "schema": "cgs.freeze-revision.v1",
+  "previous_sha256": "df9902560d7532cb8bff27c623906cc0500652d29f1037d5e3d5ed2cc0b0a6a8",
+  "current_sha256": "237da579f5068fc26469f52c79b7ae33beb1ab0af057129a27c186193c5c8147",
+  "reason": "Separate actual replay input preparation and host layout preparation from reference-only setup; retain semantic fixture and numerical bounds unchanged before performance timing.",
+  "unchanged": {
+    "workloads": true,
+    "public_replay": true,
+    "product_bound": true,
+    "grouped_linear_bound": true,
+    "frozen_checks": true
+  },
+  "changed_existing_sources": [
+    "bench/chromatin_geometry/data/replay.cc",
+    "planning/chromatin-geometry-study-2026-11-02/freeze-contract.cc"
+  ],
+  "added_sources": [
+    "bench/chromatin_geometry/campaign_layout_test.cc",
+    "bench/chromatin_geometry/campaign_runner.cu",
+    "bench/chromatin_geometry/campaign_runner.hh",
+    "bench/chromatin_geometry/data/replay.hh",
+    "bench/chromatin_geometry/data/replay_timing_test.cc",
+    "planning/chromatin-geometry-study-2026-11-02/archive/freeze-contract-v1.cc"
+  ]
+}

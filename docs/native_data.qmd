@@ -1,0 +1,208 @@
+---
+title: "Native data structures and cellular geometry"
+---
+
+Cellerator separates reusable dependency knowledge, concrete numerical data
+representations and their execution bindings. These building blocks work
+without a `Cell`, model superclass, Python runtime or universal tensor facade.
+The [cellular geometry definition](cellular_geometry.qmd) supplies the design
+authority; physical packing does not establish a biological restriction.
+
+## Native boundaries
+
+| Namespace | Responsibility |
+|---|---|
+| `structure` | Persistent domain/order/entity/occurrence identities and logical axes; runtime registry handles remain in execution. |
+| `geometry::dependency` | Applicability, possible explicit/implicit participant patterns, declared condition inputs and the scope of dependency knowledge. |
+| `containers` | Reusable storage/count/shape primitives without biological or scheduling meaning. |
+| `tensor` | Concrete specialist encodings with typed views and separate owners. Ordinary dense/CSR/COO use established libraries or caller storage. |
+| `layout` | Physical permutations, local coordinate maps, immutable projections and canonical/gradient recovery. |
+| `memory::cuda` | Explicit-device resources, borrowing and allocation lifetime. |
+| `ops` | Numerical computation, access/effects, derivative requests and operation-specific omission contracts. |
+| `execution` | Prepared source association, current work, generations, retained contents, readiness and device realization. |
+
+Canonical semantic identity is defined in
+`<Cellerator/structure/identity.hh>`. An entity ID, occurrence ID, logical
+coordinate and physical slot are different concepts. Domain-local zero is a
+valid entity/occurrence ID; an all-zero persistent domain identity is invalid.
+Matching counts or pointers do not establish matching logical order.
+
+## Patterns, conditions and actual operations
+
+`geometry::dependency::ExplicitPattern` owns ordered/repeated participant
+incidence and its prepared postings. `PatternOwner` publishes structural
+snapshots. `JointGroups`, `CartesianPattern` and `UnionPattern` can describe
+possible interactions without first enumerating every pair. A `FoundationView`
+also declares applicability, coverage and whether its knowledge is a model
+restriction, established restriction, prior or hint. Partial knowledge cannot
+justify deleting otherwise admitted computation.
+
+The model defines and evaluates its conditions. `ConditionReads` identifies
+their required sources. An `ops::mechanism::AccessContract` states actual reads,
+writes, output effects and phase-specific needs. An omission rule is tied to
+that operation, revision, selected membership, outcome, numerical semantics and
+supported derivative order. Reusing a selection ID with different membership
+does not broaden a certificate.
+
+The concrete `PreparedGatedProductBinding` binds one joint-operation family to
+source domains/orders, condition/participant selections and scoped omission
+rules. Its coordinate domain is explicitly associated with source axes;
+preparation does not invent biological entity identities from array positions.
+
+`execution::PreparedConditionIndex` indexes the selections read by conditions.
+`ConditionState` tracks source and time revisions, invalidates affected cached
+outcomes and rejects stale or reused evaluation tickets. Unaffected outcomes
+can remain cached. These stamps do not pin numerical contents or establish
+device readiness; the source owner still supplies those guarantees.
+
+The example operation is a baseline plus conditionally gated, ordered products
+with overlapping output contributions. Its squared-positive-part gate has an
+explicit inactive branch and first-order derivative contract. That permits
+specific participant work to be skipped; a generic learned numerical zero
+does not imply the same derivative omission. The host forward returns an
+owning one-shot tape. The [native C++ model interface](native_nn.qmd) remains
+ordinary structs/callables and can consume these facilities directly.
+
+For example, a host model can share prepared geometry and keep ordinary typed
+parameter storage. Its instance supplies values and their logical association:
+
+```cpp
+namespace mech = cellerator::ops::mechanism;
+namespace dep = cellerator::geometry::dependency;
+
+struct Samples {
+    std::size_t batch;
+    std::span<const float> expression, regulators;
+    std::span<const dep::SourceDescriptor> sources;
+};
+
+struct GeometryModel {
+    std::shared_ptr<const mech::PreparedGatedProductBinding> geometry;
+    std::vector<float> theta, phi, tau;
+
+    auto operator()(const Samples& samples) const {
+        if (!geometry->validate_sources(samples.sources))
+            throw std::invalid_argument("incompatible logical sources");
+        return mech::gated_product_forward(
+            geometry->topology(), samples.batch,
+            samples.expression, samples.regulators, theta, phi, tau, 0.25f);
+    }
+};
+```
+
+The result contains values and an owning tape for
+`mech::gated_product_backward`. A `Cell` may bind this callable to an instance;
+direct and batched callers use the same types. The host reference snapshots
+needed inputs. Device execution uses retained reads and completion events
+instead. The checked [host example](../tests/native_data/reference/native_data_reference_test.cc)
+and [two-device example](../tests/execution_dependency/distributed_cuda_test.cu)
+exercise the complete preparation and gradient paths.
+
+## Concrete storage and physical realization
+
+`tensor::block_masked::Structure` owns immutable host row/feature maps,
+tile/block offsets and masks. A `LayoutView` borrows format metadata; a typed
+`View<T>` adds numerical storage. Allocated masks describe valid stored slots,
+including numerical zeros. A missing required coordinate is an error, not a
+value inferred to be zero.
+
+`DeviceStructure` owns a device-local immutable metadata replica.
+`NativeTensor<T>` owns a bulk value allocation and exposes explicit reads and
+edits. A retained read pins actual published contents through its consumers;
+an unresolved read prevents in-place edits. Allocation retention or a
+generation counter alone cannot preserve values overwritten before backward.
+The execution owner retains reads through actual CUDA completion.
+
+Codebook values live in `tensor::state_codes`; affine low-bit sparse views live
+in `tensor::quantized`. They have different encodings. Useful persisted legacy
+payloads have explicit format codecs; native namespace moves do not silently
+reinterpret serialized bytes. A logical group need not have an allocation of
+its own, and overlapping groups need not duplicate canonical values.
+
+Logical occurrence coordinates and their order token live in `structure`.
+`layout::OccurrenceMap` supplies a separate physical association, and
+`layout::AxisBinding` associates a logical axis with its realization.
+`execution::FeatureSourceBinding` owns the prepared source-to-model mapping;
+biological labels and annotations remain in `biology`.
+
+`layout::EntityLayout` and projection maps retain physical addressing/recovery.
+`execution::PreparedIncidence` holds prepared addressing; numerical
+gather/reduce/scatter live in `ops::incidence`. A prepared read index can reuse
+one semantic posting owner while producing an explicit compact device ordinal
+projection. That projection has preparation and memory cost of its own.
+The [CellPack bridge](development/cellpack_interop.md) retains existing payload
+encodings while separating physical summaries from live execution bindings.
+
+## Connected execution
+
+The existing execution machinery supplies atom requirements, logical coverage,
+multi-extent ports, structural/value planes, output effects and prepared
+programs. Dependency bindings associate semantic sources with these contracts.
+Streams, current values, workspace and readiness remain invocation state.
+
+`execution::dependency::DeviceExtentBinding` checks identity/order, structure,
+device/placement, value generation, readiness association and capacity.
+The concrete `PreparedDistributedGatedProduct` demonstrates a connected
+two-device realization. The caller chooses two device ordinals and group
+ownership. This bounded operation fixes expression/output/parameter homes at
+device slot 0 and regulator home at slot 1; it is not a general placement or
+population scheduler.
+
+Preparation requires explicit physical-order identities independently of
+logical order. Canonical row IDs map to batch ordinals; they are never used
+directly as regulator-array offsets. The caller's device ordinals may differ
+from physical inventory indices or logical owner slots.
+
+Both devices consume native packed views. The bound flat-gate rule permits
+condition-first participant projection. Inactive entries are not read; when
+all remote participant work is inactive, its transfer is skipped. Mixed work
+currently transfers the full prepared projection, including zero placeholders
+for inactive entries. The tape retains forward contents, returns/reduces gradients to
+their owners, and supports a canonical update with explicit replica refresh.
+The scalar update changes theta only; explicit per-group learning rates can
+also change gate parameters. Gate revisions are separate from theta revisions
+so an unrelated parameter update does not invalidate participant projections.
+
+This distributed realization requires output-producing groups and nonempty
+participant coverage on each device. Unsupported topologies fail at
+preparation; the more general host reference remains available for empty or
+outputless compositions.
+
+The first CUDA operation stores expression values in FP16, regulators and
+parameters in FP32, and multiplies/accumulates/returns outputs and VJPs in
+FP32. An explicit FP32 expression alternative remains available for local
+operations. Declared precision and first-order scope bound these APIs; they
+do not establish arbitrary higher-order or distributed autograd.
+
+## Build and use
+
+Host consumers use C++20 and an installed component:
+
+```cmake
+find_package(Cellerator REQUIRED COMPONENTS native_data)
+target_link_libraries(my_model PRIVATE Cellerator::native_data)
+```
+
+`Cellerator::tensor` is the smaller host format surface. Optional
+`Cellerator::native_data_cuda` composes CUDA owners and execution; these
+dependencies are not required by host semantic headers. CUDA execution headers
+using `std::span` require CUDA C++20; the kernel-facing format views remain
+C++17-compatible. Named module tooling is optional.
+
+Build the focused host checks without the unrelated compiler test suite:
+
+```sh
+cmake -S . -B /tmp/cellerator-native-data-host \
+  -DCELLERATOR_ENABLE_CUDA=OFF -DCELLERATOR_BUILD_TESTS=OFF \
+  -DCELLERATOR_BUILD_NATIVE_DATA_TESTS=ON
+cmake --build /tmp/cellerator-native-data-host --target cellerator_native_data
+ctest --test-dir /tmp/cellerator-native-data-host -R '^native_data_' --output-on-failure
+```
+
+GPU executables are buildable without being automatically launched by CTest.
+Actual correctness, sanitizers and benchmarks require Scheduler admission.
+Complete-cost comparisons include preparation, retained memory, projection
+maintenance, movement, readiness, forward/backward and observable conversion.
+The [implementation record](current_implementation.qmd) states demonstrated
+coverage; API/source presence alone does not qualify a distributed capability
+or performance claim.

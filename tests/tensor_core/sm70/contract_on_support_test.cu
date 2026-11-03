@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
 
 namespace {

@@ -115,6 +115,10 @@ cuda_profile*.log
 .todo-orchestrator/state.sqlite-shm
 .todo-orchestrator/state.sqlite-wal
 
+# Private maintenance recovery database and its SQLite sidecars stay local.
+# The adjacent manifest and verification records remain versioned.
+/.todo-orchestrator/maintenance/ce-is1-bypass-20261102/authority-before.sqlite3*
+
 # Local fixture payloads. The scaffold under data/test is tracked, but large
 # biological inputs and generated conversion outputs remain local.
 /data/**/*.h5ad

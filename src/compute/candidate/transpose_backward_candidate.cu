@@ -44,25 +44,26 @@ bool same_location(execution::device_location lhs,
         && lhs.address_space == rhs.address_space;
 }
 
-bool valid_device_projection(const transpose_projection_view &view,
+bool valid_device_projection(const execution::TransposeBinding &binding,
     std::int32_t device) noexcept {
+    const auto &view = binding.layout;
     const auto &header = view.header;
-    return header.schema_version == transpose_projection_schema_version
-        && header.payload_kind == transpose_projection_payload_kind
+    return header.schema_version == layout::projection::transpose_projection_schema_version
+        && header.payload_kind == layout::projection::transpose_projection_payload_kind
         && header.header_bytes == sizeof(header)
-        && header.alignment == transpose_projection_alignment
+        && header.alignment == layout::projection::transpose_projection_alignment
         && header.payload_bytes != 0u
-        && execution::valid_identity(header.structure_identity)
-        && execution::valid_identity(header.projection_identity)
-        && execution::valid_identity(header.forward_projection_identity)
-        && !execution::same_identity(header.projection_identity,
+        && ::cellerator::structure::valid_identity(header.structure_identity)
+        && ::cellerator::structure::valid_identity(header.projection_identity)
+        && ::cellerator::structure::valid_identity(header.forward_projection_identity)
+        && !::cellerator::structure::same_identity(header.projection_identity,
             header.forward_projection_identity)
         && header.structure_epoch != 0u && header.nnz_count != 0u
         && header.row_count != 0u && header.feature_count != 0u
         && header.value_size_bytes == sizeof(__half)
-        && execution::valid_handle(view.runtime_structure)
-        && execution::valid_handle(view.runtime_projection)
-        && execution::valid_handle(view.runtime_forward_projection)
+        && execution::valid_handle(binding.runtime_structure)
+        && execution::valid_handle(binding.runtime_projection)
+        && execution::valid_handle(binding.runtime_forward_projection)
         && view.payload_base != nullptr && view.feature_offsets != nullptr
         && view.execution_row_ids != nullptr
         && view.forward_value_positions != nullptr
@@ -71,7 +72,7 @@ bool valid_device_projection(const transpose_projection_view &view,
 }
 
 __global__ void transpose_backward_n1_kernel(
-    transpose_projection_view projection,
+    ::cellerator::layout::projection::TransposeViewV1 projection,
     const __half *forward_values,
     const float *row_input,
     float *feature_output) {
@@ -110,13 +111,14 @@ operation_status run_impl(const prepared_operation &prepared,
     const auto &output = launch.outputs[0].storage.dense;
     const auto &values = *launch.values[0].plane;
     const auto &structure = launch.structures[0];
-    const auto &projection = state.projection;
+    const auto &binding = state.projection;
+    const auto &projection = binding.layout;
     if (!execution::same_axis_identity(structure.source_axis,
             state.feature_axis)
         || !execution::same_axis_identity(structure.destination_axis,
             state.row_axis)
         || !execution::same_handle(structure.identity,
-            projection.runtime_structure)
+            binding.runtime_structure)
         || structure.epoch.value != projection.header.structure_epoch
         || structure.logical_edge_count != projection.header.nnz_count
         || input.value_type != execution::numeric_type::f32
@@ -171,31 +173,32 @@ operation_status prepare_impl(const operation_candidate &candidate,
             "transpose backward requires caller-owned prebound state");
     auto *state = static_cast<transpose_backward_prepared_state *>(
         const_cast<void *>(prepared->persistent.data));
-    const auto &view = state->projection;
+    const auto &binding = state->projection;
+    const auto &view = binding.layout;
     const auto &header = view.header;
     if (!same_stable_id(candidate.identity,
             transpose_backward_n1_candidate_id)
         || state->schema_version != transpose_backward_candidate_schema_version
         || state->dense_width != 1u
-        || !valid_device_projection(view, state->device_ordinal)
+        || !valid_device_projection(binding, state->device_ordinal)
         || !execution::valid_axis_identity(state->feature_axis)
         || !execution::valid_axis_identity(state->row_axis)
         || !execution::valid_axis_identity(state->dense_column_axis)
         || structures.count != 1u || problem.input_count != 1u
         || problem.output_count != 1u
         || problem.logical_work_items != header.nnz_count
-        || !execution::same_identity(structures.structures[0].persistent,
+        || !::cellerator::structure::same_identity(structures.structures[0].persistent,
             header.structure_identity)
         || !execution::same_handle(structures.structures[0].runtime,
-            view.runtime_structure)
+            binding.runtime_structure)
         || structures.structures[0].epoch.value != header.structure_epoch
-        || !execution::same_identity(projection.persistent,
+        || !::cellerator::structure::same_identity(projection.persistent,
             header.projection_identity)
         || !execution::same_handle(projection.runtime,
-            view.runtime_projection)
+            binding.runtime_projection)
         || projection.kind != projection_kind::transpose_or_backward
-        || projection.schema_version != transpose_projection_schema_version
-        || projection.variant != transpose_projection_variant)
+        || projection.schema_version != layout::projection::transpose_projection_schema_version
+        || projection.variant != layout::projection::transpose_projection_variant)
         return fail(operation_status_code::unsupported_problem,
             "transpose backward preparation metadata is incompatible");
 
@@ -273,7 +276,7 @@ operation_status prepare_transpose_backward_n1_operation(
     const projection_key &projection,
     const numeric_policy &numeric,
     const prepare_policy &policy,
-    const transpose_projection_view &device_projection,
+    const execution::TransposeBinding &device_projection,
     std::int32_t device_ordinal,
     execution::axis_identity feature_axis,
     execution::axis_identity row_axis,

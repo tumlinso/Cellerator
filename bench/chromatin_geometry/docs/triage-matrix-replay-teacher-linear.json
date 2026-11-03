@@ -1,0 +1,96 @@
+{
+  "schema": "cgs.triage.v1",
+  "runs": [
+    {
+      "case": "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100",
+      "gate": "teacher",
+      "body": "linear",
+      "backend": "scalar",
+      "precision": "fp32",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "teacher-linear",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100",
+      "gate": "teacher",
+      "body": "linear",
+      "backend": "direct",
+      "precision": "fp32",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "teacher-linear",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100",
+      "gate": "teacher",
+      "body": "linear",
+      "backend": "library",
+      "precision": "fp32",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "teacher-linear",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100",
+      "gate": "teacher",
+      "body": "linear",
+      "backend": "library-batched",
+      "precision": "fp32",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "teacher-linear",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100",
+      "gate": "teacher",
+      "body": "linear",
+      "backend": "bitmap",
+      "precision": "fp32",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "teacher-linear",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100",
+      "gate": "teacher",
+      "body": "linear",
+      "backend": "cohort-direct",
+      "precision": "fp32",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "teacher-linear",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100",
+      "gate": "teacher",
+      "body": "linear",
+      "backend": "cohort-shared",
+      "precision": "fp32",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "teacher-linear",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    }
+  ]
+}

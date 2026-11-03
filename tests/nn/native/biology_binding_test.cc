@@ -3,6 +3,8 @@
 #endif
 
 #include <Cellerator/biology/feature_binding.hh>
+#include <Cellerator/layout/occurrence_map.hh>
+#include <Cellerator/structure/coordinates.hh>
 
 #include <cassert>
 #include <array>
@@ -36,7 +38,8 @@ struct SparseValues {
 int main() {
     using cellerator::biology::FeatureBinding;
     using cellerator::biology::FeatureBindingOptions;
-    using cellerator::biology::OccurrenceCoordinates;
+    using cellerator::layout::OccurrenceMap;
+    using cellerator::structure::OccurrenceCoordinates;
 
     FeatureBindingOptions options;
     options.domain = "gene";
@@ -48,8 +51,10 @@ int main() {
     // Feature identity, canonical vocabulary index, model row, event order,
     // and physical position are independent coordinates.
     auto events = OccurrenceCoordinates<std::string>::from_ids(
-        {"gene-A", "gene-B", "gene-A"}, {0, 3}, {}, 5, {100, 104, 110});
-    auto mapped = genes.map_occurrences(events);
+        {"gene-A", "gene-B", "gene-A"}, {0, 3}, {}, 5);
+    auto event_map = OccurrenceMap::from_positions(
+        events.order_token(), {100, 104, 110});
+    auto mapped = genes.map_occurrences(events, &event_map);
     assert((mapped.canonical_ids() == std::vector<std::string>{
         "gene-A", "gene-B", "gene-A"}));
     assert((mapped.source_positions() == std::vector<std::int64_t>{0, 1, 2}));
@@ -60,10 +65,28 @@ int main() {
     assert(mapped.has_physical_positions());
     genes.validate_alignment(mapped);
 
+    const auto logical_only = genes.map_occurrences(events);
+    assert(!logical_only.has_physical_positions());
+    assert(logical_only.physical_positions().empty());
+
+    const auto different_order = OccurrenceCoordinates<std::string>::from_ids(
+        {"gene-B", "gene-A", "gene-A"}, {0, 3}, {}, 5);
+    const auto wrong_order_map = OccurrenceMap::from_positions(
+        different_order.order_token(), {100, 104, 110});
+    bool rejected_wrong_order = false;
+    try {
+        static_cast<void>(genes.map_occurrences(events, &wrong_order_map));
+    } catch (const std::invalid_argument&) {
+        rejected_wrong_order = true;
+    }
+    assert(rejected_wrong_order);
+
     // Target columns are source positions, never the token/embedding IDs.
     auto output_axis = OccurrenceCoordinates<std::string>::from_ids(
-        {"gene-B", "gene-A"}, {0, 2}, {}, 5, {20, 10});
-    auto target = genes.prepare(output_axis, {"gene-A", "gene-B"});
+        {"gene-B", "gene-A"}, {0, 2}, {}, 5);
+    auto output_map = OccurrenceMap::from_positions(
+        output_axis.order_token(), {20, 10});
+    auto target = genes.prepare(output_axis, {"gene-A", "gene-B"}, &output_map);
     assert((target.canonical_ids() == std::vector<std::string>{"gene-A", "gene-B"}));
     assert((target.source_positions() == std::vector<std::int64_t>{1, 0}));
     assert(target.output_columns() == target.source_positions());
@@ -71,7 +94,7 @@ int main() {
     assert((target.physical_positions() == std::vector<std::int64_t>{10, 20}));
 
     // Gather indices are explicit; no values or sparse representation are
-    // retained by the prepared alignment.
+    // retained by the prepared source binding.
     const std::vector<int> source_values{5, 7};
     std::vector<int> gathered;
     for (const auto position : target.gather_positions()) {
@@ -111,9 +134,10 @@ int main() {
         std::span<const std::int64_t>(model_view));
     auto span_coordinates = OccurrenceCoordinates<FeatureKey>::from_ids(
         std::span<const FeatureKey>(id_view),
-        std::span<const std::int64_t>(group_view), {}, 6,
-        std::span<const std::int64_t>(physical_view));
-    const auto span_occurrences = span_binding.map_occurrences(span_coordinates);
+        std::span<const std::int64_t>(group_view), {}, 6);
+    const auto span_map = OccurrenceMap::from_positions(
+        span_coordinates.order_token(), std::span<const std::int64_t>(physical_view));
+    const auto span_occurrences = span_binding.map_occurrences(span_coordinates, &span_map);
     assert((span_occurrences.model_indices() == std::vector<std::int64_t>{12, 14}));
     assert((span_occurrences.physical_positions() == std::vector<std::int64_t>{21, 34}));
     const std::array<FeatureKey, 1> requested_view{{{8}}};

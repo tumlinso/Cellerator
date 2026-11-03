@@ -9,10 +9,10 @@ void require(bool b, const char* why) { if(!b) throw std::invalid_argument(why);
 bool finite(std::span<const double> x) { return std::all_of(x.begin(),x.end(),[](double v){return std::isfinite(v);}); }
 void valid_context(const context& c) {
     const auto& g=c.generations;
-    require(execution::valid_identity(g.structure) && g.epoch.value && g.values.value
+    require(::cellerator::structure::valid_identity(g.structure) && g.epoch.value && g.values.value
         && g.activity.value && g.parameters.value,"invalid generations");
     require(!c.program_query_dependencies.empty() && finite(c.world) && finite(c.parameters),"incomplete context");
-    for(const auto& x:c.coordinates) require(execution::valid_identity(x.actor) && x.incarnation,"invalid coordinate");
+    for(const auto& x:c.coordinates) require(::cellerator::structure::valid_identity(x.actor) && x.incarnation,"invalid coordinate");
 }
 double difference(std::span<const double> a,std::span<const double> b) {
     require(a.size()==b.size(),"extent mismatch"); double d=0;
@@ -54,7 +54,7 @@ delta_result delta_ledger::update(const context& c,std::span<const double> x,dou
     // match. Sent values themselves provide the remembered value dependency.
     auto guard=c; guard.generations.values=context_.generations.values;
     bool reset=!ready_ || !same_context(guard,context_) || sent_.size()!=x.size();
-    if(ready_ && execution::same_identity(c.generations.structure,context_.generations.structure))
+    if(ready_ && ::cellerator::structure::same_identity(c.generations.structure,context_.generations.structure))
         require(c.generations.epoch.value>=context_.generations.epoch.value
             && c.generations.values.value>=context_.generations.values.value
             && c.generations.activity.value>=context_.generations.activity.value
@@ -79,7 +79,7 @@ rewrite_report publication::publish(const supplied_rewrite& r) {
     auto next=r.candidate; const auto& old=snapshot_; auto n=old.values.size(),m=next.values.size();
     require(next.outputs==old.outputs && r.forward.size()==m*n && r.backward.size()==n*m
         && finite(r.forward) && finite(r.backward) && r.optimizer_from.size()==m,"rewrite extents");
-    require(execution::same_identity(next.generations.structure,old.generations.structure)
+    require(::cellerator::structure::same_identity(next.generations.structure,old.generations.structure)
         && next.generations.epoch.value>old.generations.epoch.value
         && next.generations.parameters.value>old.generations.parameters.value
         && next.generations.values.value>old.generations.values.value

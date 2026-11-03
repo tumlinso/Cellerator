@@ -22,7 +22,7 @@ cudaError_t wait_event(cudaStream_t stream, cudaEvent_t event, unsigned flags) {
     return cudaStreamWaitEvent(stream,event,flags);
 }
 const runtime::relation_event_api api{record_event,wait_event};
-const execution::structure_id structure{91,73};
+const ::cellerator::structure::structure_id structure{91,73};
 __global__ void delay(unsigned long long cycles) {
     const auto start = clock64();
     while (clock64()-start < cycles) {}

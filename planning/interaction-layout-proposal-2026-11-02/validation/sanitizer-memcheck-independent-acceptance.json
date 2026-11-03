@@ -1,0 +1,85 @@
+{
+  "schema": "cellerator.factorized_interactions.sanitizer_partition_independent_acceptance.v1",
+  "status": "accepted_bounded_memcheck_partition",
+  "basis": "Independent read-only verification of the imported fixed memcheck suite, all retained case artifacts, the accepted source-bound native build, tool identity, and the finished Scheduler receipt. No GPU workload was rerun.",
+  "report": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/evidence/factorized-sanitizer-partitions/0/5b2d413fd913b7ede1e13fdd8078019e40d4b74d1812e988ecebf4abc7faf05b/partition.json",
+    "sha256": "724142ba5e2fde82e5e5c333faf0ccf1265085fe8717469b1f7c17b04c49a010",
+    "envelope_path": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer-memcheck-finished-evidence.json",
+    "envelope_sha256": "e729f66c5bc3853e07feaf4fb064de957440a9b87150edf08d43e57932ad158b",
+    "current_pointer_cleanup_verified": true
+  },
+  "build": {
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "source_file_count": 3979,
+    "baseline_manifest_sha256": "4591a763182aac829e51e13c14f8d0bffbafda4f2e5416d1680f102437e8bb2d",
+    "baseline_runner_sha256": "f388b997e513f927072fad314a4e2cabce6d38a55b9017df143bf5ed3a4d8275",
+    "candidate_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+    "candidate_runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+    "shared_native_library_sha256": "73f4f987db9dc4480d0efef371bc358c24b64ad6be3b472412936289fd0a574c",
+    "fixed_validator_sha256": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31"
+  },
+  "tool": {
+    "name": "memcheck",
+    "command_contract": "The frozen suite supplies --tool memcheck --error-exitcode 99 --leak-check full for every validator child.",
+    "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "version": "NVIDIA Compute Sanitizer 2025.2.1.0 (build 35969825)",
+    "binary_sha256": "979adf037f4e3434a976b7f0912b0a05ce3b062e31b2a73397a1bf1cd5f57547",
+    "support_tree_sha256": "1b7010f3f1f4ffce726282f85c2d25c30495ad1d567c3fbecb0f18ed4f6bcf65",
+    "support_file_count": 136,
+    "suite_sha256": "c5af5b41e14b2a182d8ed479902f8e60e79cb45bc46bd77f59f6b1a10afc0c08",
+    "partition_wrapper_sha256": "e5bafd545ecaaae4a093f533da9e96276f6795e6f91691de25180dcf0ad04de7"
+  },
+  "coverage": {
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "device_model": "Tesla V100-SXM2-16GB",
+    "timed": false,
+    "expected_cases": 14,
+    "passed_cases": 14,
+    "baseline_cases": 12,
+    "candidate_cases": [
+      "direct_unique_output / packet_a4_m32_u16",
+      "minimal_direct / correctness_ordered_tied_zero"
+    ],
+    "baseline_workloads_each_run_on_packet_and_direct": [
+      "correctness_ordered_tied_zero",
+      "correctness_context_cancellation_middle",
+      "correctness_context_cancellation_tail",
+      "correctness_fma_product_residual_cancellation",
+      "a4_m256_u32_fanin64_tied",
+      "correctness_empty_mechanisms"
+    ],
+    "numerical_metrics_checked": 84,
+    "max_error_to_frozen_allowance_ratio": 0.5654892994183374,
+    "retained_case_logs_with_zero_memcheck_errors": 14,
+    "retained_case_logs_with_zero_reported_leaks": 14,
+    "artifact_inventory_entries_rehashed": 70,
+    "repeated_vjp_checked_by_this_suite": false
+  },
+  "scheduler_receipt": {
+    "autobench_attempt_id": "df9922a7-b55a-4690-9366-557814d42190",
+    "autobench_fingerprint": "5b2d413fd913b7ede1e13fdd8078019e40d4b74d1812e988ecebf4abc7faf05b",
+    "scheduler_job_id": "31568109-317c-4335-9f6d-d50a3be4ccf9",
+    "scheduler_attempt_id": "7903e725-00b0-45d6-81ed-76bccf4c7966",
+    "result": "succeeded",
+    "exit_code": 0,
+    "cleanup_verified": true,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "unit_name": "device-scheduler-attempt-8cfc4ee9cb5045748d3d5cb547ea8651.service",
+    "observed_cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-8cfc4ee9cb5045748d3d5cb547ea8651.service"
+  },
+  "checks": {
+    "source_and_native_build_manifest_verification": "passed",
+    "candidate_and_baseline_binary_identity_verification": "passed",
+    "fixed_suite_and_all_14_case_validation": "passed",
+    "all_84_output_and_five_vjp_bound_checks": "passed",
+    "all_14_memcheck_error_and_full_leak_summaries": "zero errors and zero bytes leaked",
+    "artifact_inventory_hashes": "passed",
+    "scheduler_receipt_and_current_pointer_binding": "passed"
+  },
+  "limits": [
+    "This is the memcheck partition only; racecheck, initcheck, and synccheck remain separate evidence items.",
+    "The strict sanitizer suite checks output and five primary VJPs once per case; repeated-VJP correctness is covered by separate qualification, not this suite.",
+    "A sanitizer pass establishes these 14 tested cases on this source and binary identity; it does not establish general CUDA correctness or performance."
+  ]
+}

@@ -23,7 +23,7 @@ inline constexpr u32 semantic_geometry_mandatory_section_count_v1 = 5u;
 inline constexpr u32 semantic_geometry_first_optional_section_kind_v1 = 0x100u;
 
 struct relation_identity_tag;
-using relation_id = execution::persistent_identity<relation_identity_tag>;
+using relation_id = ::cellerator::structure::persistent_identity<relation_identity_tag>;
 
 enum class semantic_geometry_section_kind_v1 : u32 {
     work_window_members = 1u,
@@ -44,8 +44,8 @@ struct semantic_geometry_optional_section_v1 {
 
 struct semantic_geometry_image_build_request_v1 {
     relation_id relation{};
-    execution::structure_id structure{};
-    execution::structure_epoch structure_epoch{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch structure_epoch{};
     execution::persistent_axis_identity source_axis{};
     execution::persistent_axis_identity destination_axis{};
     work_window_view_v1 work_window{};
@@ -78,10 +78,10 @@ struct semantic_geometry_image_validation_workspace_v1 {
 struct semantic_geometry_image_view_v1 {
     const void *image_base = nullptr;
     u64 image_bytes = 0u;
-    execution::geometry_id geometry_identity{};
+    ::cellerator::structure::geometry_id geometry_identity{};
     relation_id relation{};
-    execution::structure_id structure{};
-    execution::structure_epoch structure_epoch{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch structure_epoch{};
     execution::persistent_axis_identity source_axis{};
     execution::persistent_axis_identity destination_axis{};
     work_window_id work_window{};

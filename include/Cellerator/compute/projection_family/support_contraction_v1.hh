@@ -20,8 +20,8 @@ struct support_contraction_workspace_v1 {
 // numerical value and gradient planes are deliberately not bound here.
 struct support_contraction_view_v1 {
     support_family_identity_v1 family{};
-    execution::projection_id projection_identity{};
-    execution::order_id physical_edge_order{};
+    ::cellerator::structure::projection_id projection_identity{};
+    ::cellerator::structure::order_id physical_edge_order{};
     const geometry::semantic_component_v1 *components = nullptr;
     const std::uint64_t *logical_edge_ids = nullptr;
     std::uint32_t component_count = 0;
@@ -70,8 +70,8 @@ struct support_contraction_result_v1 {
 [[nodiscard]] inline support_contraction_result_v1
 build_support_contraction_view_v1(
     const support_family_descriptor_v1 &family,
-    execution::projection_id projection_identity,
-    execution::order_id physical_edge_order,
+    ::cellerator::structure::projection_id projection_identity,
+    ::cellerator::structure::order_id physical_edge_order,
     const geometry::relation_cover_view_v1 &cover,
     support_contraction_workspace_v1 workspace,
     support_contraction_view_v1 *output) noexcept {
@@ -83,10 +83,10 @@ build_support_contraction_view_v1(
     if (!support_family_supports_v1(family, support_contract_on_support_v1)) {
         return {support_contraction_code_v1::operation_not_supported};
     }
-    if (!execution::valid_identity(projection_identity)) {
+    if (!::cellerator::structure::valid_identity(projection_identity)) {
         return {support_contraction_code_v1::invalid_projection_identity};
     }
-    if (!execution::valid_identity(physical_edge_order)) {
+    if (!::cellerator::structure::valid_identity(physical_edge_order)) {
         return {support_contraction_code_v1::invalid_physical_order};
     }
     if (cover.schema_version != geometry::relation_cover_schema_version) {

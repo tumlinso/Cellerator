@@ -1,7 +1,7 @@
-#include <Cellerator/cell.hh>
+#include <Cellerator/cells/access.hh>
 
 namespace cellerator {
 
-Cell::~Cell() = default;
+CellViews::~CellViews() = default;
 
 } // namespace cellerator

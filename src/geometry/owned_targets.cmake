@@ -277,32 +277,39 @@ if(TARGET CellShard::inspect)
     cellerator_enable_perf(cellPackPersistentPackingPayloadTest)
 endif()
 
-# CE-ARCH-60: recovered architecture foundations are reusable targets rather
-# than standalone source bursts. CellPack remains the owner of semantic
-# geometry and relocatable execution images; Cellerator owns planning.
-add_library(cellpack_semantic_geometry STATIC
-    src/geometry/semantic_geometry.cc
+# CP-BP physical metadata summaries and their execution association are native
+# host contracts. CellPack continues to own its packing payload and codecs.
+add_library(cellerator_cellpack_geometry STATIC
+    src/layout/cell_packing_geometry.cc
+    src/execution/cell_packing_binding.cc
 )
-add_library(CellPack::semantic_geometry ALIAS cellpack_semantic_geometry)
-target_include_directories(cellpack_semantic_geometry PUBLIC
+add_library(Cellerator::cellpack_geometry ALIAS cellerator_cellpack_geometry)
+set_target_properties(cellerator_cellpack_geometry PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    EXPORT_NAME cellpack_geometry)
+target_include_directories(cellerator_cellpack_geometry PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(cellpack_semantic_geometry PUBLIC
+target_link_libraries(cellerator_cellpack_geometry PUBLIC
     CellPack::cellpack
     Cellerator::biological_abi
 )
-target_compile_features(cellpack_semantic_geometry PUBLIC cxx_std_17)
+target_compile_features(cellerator_cellpack_geometry PUBLIC cxx_std_17)
 
-add_executable(cellPackSemanticGeometryAdapterTest
-    tests/geometry/semantic_geometry_adapter_test.cc
+add_executable(cellPackingBindingTest
+    tests/layout/cell_packing_binding_test.cc
 )
-target_link_libraries(cellPackSemanticGeometryAdapterTest PRIVATE
-    CellPack::semantic_geometry
+target_link_libraries(cellPackingBindingTest PRIVATE
+    Cellerator::cellpack_geometry
 )
-set_target_properties(cellPackSemanticGeometryAdapterTest PROPERTIES
+set_target_properties(cellPackingBindingTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
 )
+if(CELLERATOR_BUILD_TESTS)
+    add_test(NAME cell_packing_binding COMMAND cellPackingBindingTest)
+endif()
 add_library(cellpack_execution_image_v2 STATIC
     src/geometry/persistence/execution_image_v2.cc
     src/geometry/persistence/execution_image_v2_cpk1.cc
@@ -313,7 +320,6 @@ target_include_directories(cellpack_execution_image_v2 PUBLIC
 )
 target_link_libraries(cellpack_execution_image_v2 PUBLIC
     CellPack::persistent_packing_payload
-    CellPack::semantic_geometry
     Cellerator::biological_abi
 )
 target_compile_features(cellpack_execution_image_v2 PUBLIC cxx_std_17)

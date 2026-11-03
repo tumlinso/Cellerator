@@ -1,0 +1,113 @@
+{
+  "analysis_source_sha256": "3107cffbe5e606e00605c6d12462af1f8e0dfd9f9a64bab60af30f6967e98717",
+  "bootstrap": {
+    "confidence": 0.95,
+    "samples": 10000,
+    "seed": 20261103
+  },
+  "build_identity": {
+    "architecture": "sm_70",
+    "build_schema": "cellerator.shared_product_circuit.build.v1",
+    "fast_math": false,
+    "manifest_path": "/home/tumlinson/Cellerator/bench/factorized_interactions/prototypes/shared_product_circuit/measurement/.autobench/state/snapshots/788134c9496fb22b3182b1cebba3aba20989f17eb5818b02d8595fc5c8af3682/inputs/build/build_manifest.json",
+    "manifest_sha256": "b759ac045f320f1b97b101cdfba9ad65dd3681ea7ea30c32ddd650b673adc82c",
+    "runner_binary_sha256": "f948d55a649f6e7c8f78f95a1f4ab324a1b31a88d161e56657362f8022e7f52a",
+    "runner_path": "/home/tumlinson/Cellerator/bench/factorized_interactions/prototypes/shared_product_circuit/measurement/.autobench/scratch/e6e12f3a-bc0c-4b16-a34e-3a0d254d3460/measurement/staged-runner",
+    "source_closure_sha256": "01153b93dc18ecb6914f7af9dbfdd676cb739d7d6955a8358f3f9c36031f3522",
+    "source_file_count": 19,
+    "source_root": "/tmp/cellerator-shared-product-circuit-frozen-v1/source"
+  },
+  "case_sha256": "6fe42c01e6316613265587e5be204bf792dcc02f9fa2a25b4147e17df1c5c37c",
+  "kda_exploratory_paired_interval": {
+    "ci_high": 1.0692535785887534,
+    "ci_low": 1.0443460213888092,
+    "eligible": true,
+    "per_case": {
+      "timed_seed_0": {
+        "ci_high": 1.0692535785887534,
+        "ci_low": 1.0443460213888092,
+        "eligible": true,
+        "score": 1.0652934714210986
+      }
+    },
+    "reason": "confirmed",
+    "score": 1.0652934714210986
+  },
+  "kda_primary_ranking": [
+    {
+      "candidate_id": "circuit",
+      "score": 1.0652934714210986
+    },
+    {
+      "candidate_id": "unfactored",
+      "score": 1.0
+    }
+  ],
+  "kda_selection_sha256": "a244dbeab370c902d4e80566f2ae4d25cb1f0aee9896a84e803d1109f7b87ca4",
+  "kda_selection_source": "/home/tumlinson/kda/kda_experiments/selection.py",
+  "measurement_summary_path": "/home/tumlinson/Cellerator/bench/factorized_interactions/prototypes/shared_product_circuit/measurement/.autobench/evidence/shared-product-circuit-measurement/0/d1ab1263364a4926ce4ee924dee489b077400e1957f3291efcbf792bc862e31e/measurement/driver/measurement_summary.json",
+  "measurement_summary_sha256": "ca98ac7f4ba66c325fabcd0f204fd83e8984a8690cab8a19f18d00edfeead9a5",
+  "median_host_mean_ms": {
+    "circuit": 0.0477281,
+    "native_direct": 6.7223125,
+    "unfactored": 0.050844433333333335
+  },
+  "paired_unfactored_over_circuit_ratios": [
+    1.0683580532223156,
+    1.0717826400089552,
+    1.0443887352916859,
+    1.0544516738903877,
+    1.0192024168455098,
+    1.0676000423678103,
+    1.0692535785887534
+  ],
+  "production_selection": false,
+  "raw_host_mean_ms": {
+    "circuit": [
+      0.0477281,
+      0.04734756666666667,
+      0.04757513333333333,
+      0.0485207,
+      0.0497177,
+      0.04846446666666667,
+      0.04755133333333333
+    ],
+    "native_direct": [
+      7.2247332,
+      6.730222466666667,
+      6.7223125,
+      6.7219761,
+      6.7201705,
+      6.722927299999999,
+      6.7199523999999995
+    ],
+    "unfactored": [
+      0.05099070000000001,
+      0.0507463,
+      0.04968693333333333,
+      0.051162733333333335,
+      0.0506724,
+      0.051740666666666664,
+      0.050844433333333335
+    ]
+  },
+  "receipt_acceptance": "Original execution and cleanup require separate operator/verifier acceptance",
+  "scheduler_context": {
+    "device_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+    "scheduler_attempt_id": "fde01660-d71e-4f39-9ee0-1156405e6f25",
+    "scheduler_job_id": "f3b54ee8-316b-476f-b851-9d4a9e3c9ba4"
+  },
+  "schema": "cellerator.shared_product_circuit.analysis.v1",
+  "scope": "Exploratory analysis of seven original paired CUDA blocks; no fresh measurements",
+  "selected_backends": {
+    "circuit": [
+      "shared_product_circuit"
+    ],
+    "native_direct": [
+      "stable"
+    ],
+    "unfactored": [
+      "literal_unfactored"
+    ]
+  }
+}

@@ -44,9 +44,11 @@ int main() {
 
     const auto genes = bio::FeatureBinding<std::string>::from_ids(
         {"gene-A", "gene-B", "gene-C"}, {2, 0, 1});
-    const auto observations = bio::OccurrenceCoordinates<std::string>::from_ids(
+    const auto observations =
+        cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"gene-B", "gene-A", "gene-C", "gene-B"}, {0, 4});
-    const auto aligned = genes.map_occurrences(observations);
+    const cellerator::execution::FeatureSourceBinding<std::string> aligned =
+        genes.map_occurrences(observations);
     assert((aligned.model_indices() == std::vector<std::int64_t>{0, 2, 1, 0}));
 
     nn::FeatureEncoder encoder(

@@ -73,8 +73,8 @@ work_layout_validation_result validate_work_layout(
     if (!validate_work_window(window))
         return validation_failure(
             work_layout_validation_code::invalid_work_window);
-    if (!execution::valid_identity(layout.work_window)
-        || !execution::same_identity(layout.work_window, window.identity))
+    if (!::cellerator::structure::valid_identity(layout.work_window)
+        || !::cellerator::structure::same_identity(layout.work_window, window.identity))
         return validation_failure(
             work_layout_validation_code::invalid_work_window_identity);
     if (!execution::same_axis_identity(layout.axis, window.axis))

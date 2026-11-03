@@ -21,7 +21,7 @@ struct mutable_state_atom_plane_v1 {
     u32 reserved = 0u;
     external_atom_plane_identity_v1 plane_identity{};
     axis_identity axis{};
-    order_id persistent_order{};
+    structure::order_id persistent_order{};
     value_generation generation{};
     value_numeric_policy numeric{};
     quantization_descriptor quantization{};

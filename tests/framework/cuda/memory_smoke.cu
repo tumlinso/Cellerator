@@ -2,7 +2,7 @@
 #undef NDEBUG
 #endif
 #include <Cellerator/modeling/cuda/memory.hh>
-#include <Cellerator/modeling/cuda/runtime.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -12,6 +12,7 @@
 #include <vector>
 
 using namespace cellerator::modeling::cuda;
+using namespace cellerator::memory::cuda;
 template<class T> DeviceBuffer upload(const std::vector<T>& x, const Stream& s) {
     DeviceBuffer b(x.size()*sizeof(T), s.device());
     if (!x.empty()) b.upload_async(x.data(), b.bytes(), s);

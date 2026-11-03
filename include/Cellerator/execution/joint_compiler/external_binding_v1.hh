@@ -23,7 +23,7 @@ struct external_extent_v1 {
     std::uint64_t plane_byte_offset = 0u;
     std::uint64_t bytes = 0u;
     std::uint64_t alignment = 1u;
-    order_id order{};
+    structure::order_id order{};
     value_generation generation{};
     opaque_runtime_token_v1 readiness{};
     opaque_runtime_token_v1 lease{};

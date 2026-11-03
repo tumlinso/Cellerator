@@ -35,7 +35,7 @@ bool valid_structure_dependencies(
         || structures.count > execution::maximum_operation_structures)
         return false;
     for (std::uint32_t index = 0u; index < structures.count; ++index)
-        if (!execution::valid_identity(structures.structures[index].identity)
+        if (!::cellerator::structure::valid_identity(structures.structures[index].identity)
             || structures.structures[index].epoch.value == 0u)
             return false;
     return true;

@@ -12,7 +12,7 @@ namespace joint = execution::joint_compiler;
 namespace program = execution::program;
 
 template<typename Tag>
-execution::persistent_identity<Tag> id(std::uint64_t value) {
+::cellerator::structure::persistent_identity<Tag> id(std::uint64_t value) {
     return {value, value + 100u};
 }
 
@@ -20,9 +20,9 @@ execution::persistent_axis_identity axis(std::uint64_t seed) {
     return {{execution::biological_abi_version,
                 execution::serialized_record_kind::persistent_axis_identity,
                 sizeof(execution::persistent_axis_identity)},
-        id<execution::domain_tag>(seed), id<execution::order_tag>(seed + 1u),
-        id<execution::geometry_tag>(seed + 2u),
-        id<execution::partition_tag>(seed + 3u)};
+        id<::cellerator::structure::domain_tag>(seed), id<::cellerator::structure::order_tag>(seed + 1u),
+        id<::cellerator::structure::geometry_tag>(seed + 2u),
+        id<::cellerator::structure::partition_tag>(seed + 3u)};
 }
 
 struct relation_state {
@@ -56,11 +56,11 @@ fragment::fragment_compile_status_code_v1 compile_fragment(
 
 int main() {
     compute::typed_relation relation{};
-    relation.structure = id<execution::structure_tag>(1u);
+    relation.structure = id<::cellerator::structure::structure_tag>(1u);
     relation.epoch = {1u};
     relation.source_axis = axis(10u);
     relation.destination_axis = axis(20u);
-    relation.logical_edge_order = id<execution::order_tag>(30u);
+    relation.logical_edge_order = id<::cellerator::structure::order_tag>(30u);
     relation.logical_edge_count = 3u;
     compute::operation_problem operation{};
     operation.persistent_problem_identity = {1u, 1u};
@@ -193,6 +193,6 @@ int main() {
     fragment::canonical_fallback_diagnostic_v1 diagnostic{};
     assert(fragment::make_canonical_fallback_v1(operation, &bound, 1u,
         fallback_request, &fallback, &diagnostic));
-    assert(execution::same_identity(
+    assert(::cellerator::structure::same_identity(
         fallback.output_order, operation.result_axis.order));
 }

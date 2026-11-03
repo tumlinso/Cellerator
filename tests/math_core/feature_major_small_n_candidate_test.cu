@@ -42,7 +42,7 @@ void require(core::operation_status status, const char *message) {
     std::abort();
 }
 
-void require(cm::physical_view_status status, const char *message) {
+void require(::cellerator::layout::projection::physical_view_status status, const char *message) {
     if (status) return;
     std::cerr << "feature_major_small_n_candidate_test: " << message
               << " (code=" << static_cast<unsigned>(status.code)
@@ -231,27 +231,27 @@ struct host_source_fixture {
 };
 
 struct projection_fixture {
-    execution::structure_id structure_id{0x1175u, 0x1275u};
+    ::cellerator::structure::structure_id structure_id{0x1175u, 0x1275u};
     execution::structure_handle structure_handle{21u, 1u};
-    execution::structure_epoch epoch{7u};
-    execution::projection_id projection_id{0x3175u, 0x3275u};
+    ::cellerator::structure::structure_epoch epoch{7u};
+    ::cellerator::structure::projection_id projection_id{0x3175u, 0x3275u};
     execution::projection_handle projection_handle{41u, 1u};
-    cm::feature_major_projection_build_request request{};
-    cm::feature_major_projection_requirements requirements{};
+    execution::FeatureMajorBindingBuildRequest request{};
+    ::cellerator::layout::projection::feature_major_projection_requirements requirements{};
     std::vector<unsigned char> payload;
-    cm::feature_major_projection_view host_view{};
+    execution::FeatureMajorBinding host_view{};
 
     explicit projection_fixture(host_source_fixture &source) {
-        request.structure_identity = structure_id;
+        request.layout.structure_identity = structure_id;
+        request.layout.structure_epoch_value = epoch;
+        request.layout.projection_identity = projection_id;
+        request.layout.source = source.payload;
         request.runtime_structure = structure_handle;
-        request.structure_epoch_value = epoch;
-        request.projection_identity = projection_id;
         request.runtime_projection = projection_handle;
-        request.source = source.payload;
-        require(cm::query_feature_major_projection_requirements_host(
+        require(execution::query_feature_major_binding_requirements_host(
             request, &requirements), "query feature-major projection");
         payload.resize(requirements.payload_bytes);
-        require(cm::build_feature_major_projection_host(request,
+        require(execution::build_feature_major_binding_host(request,
             {payload.data(), payload.size()}, &host_view),
             "build feature-major projection");
     }
@@ -260,7 +260,7 @@ struct projection_fixture {
 void test_exact_projection_and_value_reconstruction(
     const host_source_fixture &source,
     const projection_fixture &projection) {
-    const auto &view = projection.host_view;
+    const auto &view = projection.host_view.layout;
     require(view.header.feature_record_count == 6u
         && view.header.nnz_count == 8u
         && view.tile_feature_offsets[0] == 0u
@@ -282,7 +282,7 @@ void test_exact_projection_and_value_reconstruction(
         "exact feature-major reconstruction");
 
     std::vector<__half> packed(source.values_a.size());
-    require(cm::pack_feature_major_values_host(view, source.values_a.data(),
+    require(::cellerator::layout::projection::pack_feature_major_values_host(view, source.values_a.data(),
         source.values_a.size() * sizeof(__half),
         {packed.data(), packed.size() * sizeof(__half)}),
         "pack first feature-major value generation");
@@ -307,7 +307,7 @@ void test_execution_image_integration(const projection_fixture &projection) {
     sections[3] = {persistence::execution_section_kind::semantic_geometry,
         1u, 0u, 8u, 4u, 1u, geometry.data(), geometry.size(), 1u, 8u};
     sections[4] = {persistence::execution_section_kind::projection_payload,
-        cm::feature_major_projection_schema_version,
+        ::cellerator::layout::projection::feature_major_projection_schema_version,
         persistence::directory_device_readable, 64u,
         projection.projection_id.low, projection.projection_id.high,
         projection.payload.data(), projection.payload.size(), 0u, 0u};
@@ -316,7 +316,7 @@ void test_execution_image_integration(const projection_fixture &projection) {
     entry.identity_low = projection.projection_id.low;
     entry.identity_high = projection.projection_id.high;
     entry.kind = persistence::execution_projection_kind::native_feature_major;
-    entry.schema_version = cm::feature_major_projection_schema_version;
+    entry.schema_version = ::cellerator::layout::projection::feature_major_projection_schema_version;
     entry.flags = persistence::directory_device_readable
         | persistence::projection_forward_capable;
     entry.operation_family = static_cast<std::uint32_t>(
@@ -354,15 +354,15 @@ void test_execution_image_integration(const projection_fixture &projection) {
     persistence::prebound_projection_view_v1 prebound{};
     require(persistence::prebind_execution_projection_host(
         image_view, 0u, &prebound), "prebind CPE2 feature-major projection");
-    cm::feature_major_projection_view typed{};
-    require(cm::validate_feature_major_projection_payload_host(
+    execution::FeatureMajorBinding typed{};
+    require(execution::validate_feature_major_binding_payload_host(
         prebound.payload, prebound.payload_bytes, projection.structure_id,
-        projection.epoch, projection.projection_id,
-        projection.structure_handle, projection.projection_handle, &typed),
+        projection.epoch, projection.projection_id, projection.structure_handle,
+        projection.projection_handle, &typed),
         "typed CPE2 feature-major payload validation");
-    require(typed.header.feature_record_count
-            == projection.host_view.header.feature_record_count
-        && typed.header.projection_identity.low == projection.projection_id.low,
+    require(typed.layout.header.feature_record_count
+            == projection.host_view.layout.header.feature_record_count
+        && typed.layout.header.projection_identity.low == projection.projection_id.low,
         "CPE2 projection identity and typed payload parity");
 }
 
@@ -459,7 +459,7 @@ std::vector<double> build_reference(const host_source_fixture &source,
     request.workspace.kind = cm::workspace_policy_kind::no_additional_workspace;
     request.reuse.kind = cm::expected_reuse_kind::persistent;
     request.reuse.expected_run_count = 0u;
-    request.sparse_feature_order.kind = cm::feature_order_kind::packed;
+    request.sparse_feature_order.kind = ::cellerator::layout::projection::feature_order_kind::packed;
     request.sparse_feature_order.feature_count = 4u;
     request.sparse_feature_order.feature_axis_identity_version = 1u;
     request.sparse_feature_order.feature_axis_identity = 0x500575u;
@@ -487,8 +487,8 @@ void run_supported_boundary(std::uint32_t dense_width,
     require_cuda(cudaMemcpy(device_payload.data, projection.payload.data(),
         projection.payload.size(), cudaMemcpyHostToDevice),
         "upload feature-major payload");
-    cm::feature_major_projection_view device_view{};
-    require(cm::rebind_feature_major_projection(projection.host_view,
+    execution::FeatureMajorBinding device_view{};
+    require(execution::rebind_feature_major_binding(projection.host_view,
         device_payload.data, projection.payload.size(), &device_view),
         "rebind feature-major device projection");
 
@@ -498,11 +498,11 @@ void run_supported_boundary(std::uint32_t dense_width,
             rhs[feature * dense_width + column] =
                 static_cast<float>((feature + 1u) * 3u + column) * 0.125f;
     std::vector<__half> packed_a(8u), packed_b(8u);
-    require(cm::pack_feature_major_values_host(projection.host_view,
+    require(::cellerator::layout::projection::pack_feature_major_values_host(projection.host_view.layout,
         source.values_a.data(), source.values_a.size() * sizeof(__half),
         {packed_a.data(), packed_a.size() * sizeof(__half)}),
         "pack generation A");
-    require(cm::pack_feature_major_values_host(projection.host_view,
+    require(::cellerator::layout::projection::pack_feature_major_values_host(projection.host_view.layout,
         source.values_b.data(), source.values_b.size() * sizeof(__half),
         {packed_b.data(), packed_b.size() * sizeof(__half)}),
         "pack generation B");
@@ -524,12 +524,12 @@ void run_supported_boundary(std::uint32_t dense_width,
     const core::projection_key projection_key{projection.projection_id,
         projection.projection_handle,
         core::projection_kind::native_feature_major,
-        cm::feature_major_projection_schema_version,
-        cm::feature_major_projection_variant};
+        ::cellerator::layout::projection::feature_major_projection_schema_version,
+        ::cellerator::layout::projection::feature_major_projection_variant};
     const core::operation_problem problem{core::operation_core_schema_version,
         core::operation_kind::sparse_dense_multiply, 0u, {75u, dense_width},
         1u, 1u, static_cast<std::uint64_t>(8u) * dense_width};
-    if (dense_width == cm::feature_major_small_n_minimum)
+    if (dense_width == ::cellerator::layout::projection::feature_major_small_n_minimum)
         test_registry_and_planner(problem, structures, projection_key);
 
     const bool medium_n = dense_width
@@ -557,7 +557,7 @@ void run_supported_boundary(std::uint32_t dense_width,
             == execution::output_update_kind::overwrite,
         "feature-major workspace, order, and output effect");
     const void *const prepared_state = prepared.persistent.data;
-    const void *const prepared_records = state.projection.execution_feature_ids;
+    const void *const prepared_records = state.projection.layout.execution_feature_ids;
 
     execution::relation_structure relation{};
     relation.identity = projection.structure_handle;
@@ -646,7 +646,7 @@ void run_supported_boundary(std::uint32_t dense_width,
         "compare generation B referee");
     require(comparison.within_tolerance && comparison.mismatch_count == 0u
         && prepared.persistent.data == prepared_state
-        && state.projection.execution_feature_ids == prepared_records,
+        && state.projection.layout.execution_feature_ids == prepared_records,
         "generation B parity and immutable prepared structure reuse");
 
     binding.expected_generation.value = 3u;
@@ -715,9 +715,9 @@ int main() {
     projection_fixture projection(source);
     test_exact_projection_and_value_reconstruction(source, projection);
     test_execution_image_integration(projection);
-    run_supported_boundary(cm::feature_major_small_n_minimum,
+    run_supported_boundary(::cellerator::layout::projection::feature_major_small_n_minimum,
         source, projection, device);
-    run_supported_boundary(cm::feature_major_small_n_maximum,
+    run_supported_boundary(::cellerator::layout::projection::feature_major_small_n_maximum,
         source, projection, device);
     run_supported_boundary(core::feature_major_cta_medium_n_minimum,
         source, projection, device);

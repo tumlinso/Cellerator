@@ -22,7 +22,7 @@ struct fragment_output_affordance_v1 {
     joint_compiler::persistent_identity_v1 affordance_identity{};
     joint_compiler::persistent_identity_v1 plane_identity{};
     joint_compiler::persistent_identity_v1 exact_coverage{};
-    order_id order{};
+    structure::order_id order{};
     numeric_type storage = numeric_type::invalid;
     numeric_type logical = numeric_type::invalid;
     value_generation generation{};

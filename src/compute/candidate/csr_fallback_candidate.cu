@@ -11,6 +11,7 @@ namespace cellerator::compute::math::core {
 namespace {
 
 namespace primitives = compute::sparse::ops::primitives;
+namespace projection_layout = ::cellerator::layout::projection;
 
 #include "compute/operators/sparse/kernels/base_sparse/csr_spmv_fwd_kernel_.cuh"
 
@@ -34,15 +35,16 @@ bool supports_numeric(const numeric_policy &numeric) noexcept {
 }
 
 bool valid_preconstructed_device_csr(
-    const execution_csr_view &view, std::int32_t device_ordinal) noexcept {
-    return view.schema_version == execution_csr_schema_version
-        && view.structure.schema_version == sparse_structure_identity_schema_version
+    const ::cellerator::layout::projection::CsrViewV1 &view, std::int32_t device_ordinal) noexcept {
+    return view.schema_version == projection_layout::execution_csr_schema_version
+        && view.structure.schema_version
+            == projection_layout::sparse_structure_identity_schema_version
         && view.structure.identity_version
-            == execution_csr_structure_identity_version
+            == projection_layout::execution_csr_structure_identity_version
         && view.structure.value != 0u
         && view.feature_order.schema_version
-            == feature_order_identity_schema_version
-        && view.feature_order.kind == feature_order_kind::packed
+            == projection_layout::feature_order_identity_schema_version
+        && view.feature_order.kind == projection_layout::feature_order_kind::packed
         && view.feature_order.feature_count == view.feature_count
         && view.feature_order.feature_axis_identity != 0u
         && view.feature_order.feature_axis_identity_version != 0u
@@ -149,7 +151,7 @@ operation_status prepare_impl(
         || structures.count != 1u || problem.input_count != 1u
         || problem.output_count != 1u
         || problem.logical_work_items != state->projection.nnz_count
-        || projection.schema_version != execution_csr_schema_version
+        || projection.schema_version != projection_layout::execution_csr_schema_version
         || projection.variant != 1u)
         return fail(operation_status_code::unsupported_problem,
             "CSR fallback preparation metadata is incompatible");
@@ -223,7 +225,7 @@ operation_status prepare_csr_fallback_operation(
     const projection_key &projection,
     const numeric_policy &numeric,
     const prepare_policy &policy,
-    const execution_csr_view &device_csr,
+    const ::cellerator::layout::projection::CsrViewV1 &device_csr,
     std::int32_t device_ordinal,
     execution::axis_identity feature_axis,
     execution::axis_identity row_axis,

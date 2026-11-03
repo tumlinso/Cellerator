@@ -17,11 +17,11 @@ enum class relation_mutation_policy : std::uint8_t {
 struct relation_endpoint_semantics {
     axis_type source{};
     axis_type destination{};
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
     semantic_identity logical_edge_identity{};
     semantic_identity exact_support{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::order_id logical_edge_order{};
     relation_orientation orientation = relation_orientation::forward;
     semantic_identity value_plane{};
     relation_mutation_policy mutation = relation_mutation_policy::immutable_structure;

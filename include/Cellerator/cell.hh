@@ -1,77 +1,155 @@
 #pragma once
 
-#include <typeinfo>
+#include <functional>
+#include <memory>
+#include <stdexcept>
+#include <type_traits>
+#include <utility>
 
 namespace cellerator {
 
 template<class View> struct ViewTag {};
-template<class View> struct CellAccess;
-template<class View> struct CellEdit;
 
-// A cell exposes only the access contracts implemented by its concrete type.
-// The storage and lifetime of information exposed through a view are defined
-// by that contract. Acquiring a view never implies ownership or a data copy.
-class Cell {
-public:
-    virtual ~Cell() = 0;
-
-    template<class View> View view() const &;
-    template<class View> View view() const && = delete;
-    template<class View> bool supports() const noexcept;
-
-    template<class View> View edit() &;
-    template<class View> View edit() && = delete;
-    template<class View> bool supports_edit() const noexcept;
-};
-
-// read() is the protected implementation hook for a read-only contract.
-// Cell::view() is the public entry point; a concrete Cell may implement any
-// number of independent view types, including caller-defined types. Overrides
-// should remain non-public so they cannot bypass the facade's rvalue guard.
-template<class View>
-struct CellAccess : virtual Cell {
-protected:
-    friend class Cell;
-    virtual View read(ViewTag<View>) const & = 0;
-};
-
-// write() is the protected implementation hook for the separate edit
-// capability. Cell::edit() is the public entry point. The owner of the
-// returned borrowed view controls synchronization, generations, and
-// invalidation; Cell does not infer or publish changes to backing data.
-// Overrides should remain non-public and use the Cell::edit() facade.
-template<class View>
-struct CellEdit : virtual Cell {
-protected:
-    friend class Cell;
-    virtual View write(ViewTag<View>) & = 0;
-};
-
-// A typed view of an application-defined biological identity. This reference
-// is borrowed and cannot outlive the identity that the concrete Cell exposes.
-template<class Identity>
-struct CellIdentityView {
+template<class Identity> struct CellIdentityView {
     const Identity& value;
 };
 
-template<class View>
-View Cell::view() const & {
-    return dynamic_cast<const CellAccess<View>&>(*this).read(ViewTag<View>{});
+namespace detail {
+template<class T> struct is_shared_ptr : std::false_type {};
+template<class T> struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
+
+template<class Instance, class View, class = void>
+struct can_read : std::false_type {};
+template<class Instance, class View>
+struct can_read<Instance, View, std::void_t<decltype(
+    std::declval<const Instance&>().read(ViewTag<View>{}))>>
+    : std::is_same<decltype(std::declval<const Instance&>().read(ViewTag<View>{})), View> {};
+
+template<class Instance, class View, class = void>
+struct can_write : std::false_type {};
+template<class Instance, class View>
+struct can_write<Instance, View, std::void_t<decltype(
+    std::declval<Instance&>().write(ViewTag<View>{}))>>
+    : std::is_same<decltype(std::declval<Instance&>().write(ViewTag<View>{})), View> {};
+} // namespace detail
+
+// The binding holds no state beyond the selected handle and instance. Owners
+// determine their lifetimes, synchronization, and any model state or history.
+namespace detail {
+template<class Model, class Instance, class ModelHandle>
+class cell_storage {
+public:
+    template<class H, class I,
+             std::enable_if_t<std::is_constructible_v<ModelHandle, H&&> &&
+                              std::is_constructible_v<Instance, I&&>, int> = 0>
+    explicit cell_storage(H&& handle, I&& instance)
+        : handle_(std::forward<H>(handle)), instance_(std::forward<I>(instance)) {
+        if constexpr (std::is_pointer_v<ModelHandle> || detail::is_shared_ptr<ModelHandle>::value) {
+            if (!handle_) throw std::invalid_argument("Cell requires a non-null model handle");
+        }
+    }
+
+    Model& model() & { return *handle_; }
+    const Model& model() const & { return *handle_; }
+    Model& model() && = delete;
+    const Model& model() const && = delete;
+    Instance& instance() & { return instance_; }
+    const Instance& instance() const & { return instance_; }
+    Instance& instance() && = delete;
+    const Instance& instance() const && = delete;
+
+    template<class... Args, std::enable_if_t<
+        std::is_invocable_v<Model&, Instance&, Args&&...>, int> = 0>
+    decltype(auto) forward(Args&&... args) & {
+        return std::invoke(model(), instance(), std::forward<Args>(args)...);
+    }
+    template<class... Args, std::enable_if_t<
+        std::is_invocable_v<const Model&, const Instance&, Args&&...>, int> = 0>
+    decltype(auto) forward(Args&&... args) const & {
+        return std::invoke(model(), instance(), std::forward<Args>(args)...);
+    }
+    template<class... Args> void forward(Args&&...) && = delete;
+    template<class... Args> void forward(Args&&...) const && = delete;
+
+    template<class View> static constexpr bool supports() noexcept {
+        return detail::can_read<Instance, View>::value;
+    }
+    template<class View> static constexpr bool supports_edit() noexcept {
+        return detail::can_write<Instance, View>::value;
+    }
+    template<class View, std::enable_if_t<detail::can_read<Instance, View>::value, int> = 0>
+    View view() const & { return instance_.read(ViewTag<View>{}); }
+    template<class View> void view() const && = delete;
+    template<class View, std::enable_if_t<detail::can_write<Instance, View>::value, int> = 0>
+    View edit() & { return instance_.write(ViewTag<View>{}); }
+    template<class View> void edit() && = delete;
+
+private:
+    ModelHandle handle_;
+    Instance instance_;
+};
+
+// A deleted defaulted move is ignored by overload resolution, which would let
+// a copy-only instance make Cell appear movable. Explicitly delete unavailable
+// operations so all four traits track the stored handle and instance.
+template<class Model, class Instance, class ModelHandle = Model*,
+         bool CopyConstruct = std::is_copy_constructible_v<ModelHandle> && std::is_copy_constructible_v<Instance>,
+         bool MoveConstruct = std::is_move_constructible_v<ModelHandle> && std::is_move_constructible_v<Instance>,
+         bool CopyAssign = std::is_copy_assignable_v<ModelHandle> && std::is_copy_assignable_v<Instance>,
+         bool MoveAssign = std::is_move_assignable_v<ModelHandle> && std::is_move_assignable_v<Instance>>
+class cell_impl;
+
+#define CELLERATOR_CELL_SPECIALIZATION(CC, MC, CA, MA, COPY_CTOR, MOVE_CTOR, COPY_ASSIGN, MOVE_ASSIGN) \
+ template<class Model, class Instance, class ModelHandle> \
+ class cell_impl<Model, Instance, ModelHandle, CC, MC, CA, MA> \
+     : public detail::cell_storage<Model, Instance, ModelHandle> { \
+     using base = detail::cell_storage<Model, Instance, ModelHandle>; \
+ public: \
+     using base::base; \
+     cell_impl(const cell_impl&) = COPY_CTOR; \
+     cell_impl(cell_impl&&) = MOVE_CTOR; \
+     cell_impl& operator=(const cell_impl&) = COPY_ASSIGN; \
+     cell_impl& operator=(cell_impl&&) = MOVE_ASSIGN; \
+ };
+CELLERATOR_CELL_SPECIALIZATION(false, false, false, false, delete, delete, delete, delete)
+CELLERATOR_CELL_SPECIALIZATION(false, false, false, true, delete, delete, delete, default)
+CELLERATOR_CELL_SPECIALIZATION(false, false, true, false, delete, delete, default, delete)
+CELLERATOR_CELL_SPECIALIZATION(false, false, true, true, delete, delete, default, default)
+CELLERATOR_CELL_SPECIALIZATION(false, true, false, false, delete, default, delete, delete)
+CELLERATOR_CELL_SPECIALIZATION(false, true, false, true, delete, default, delete, default)
+CELLERATOR_CELL_SPECIALIZATION(false, true, true, false, delete, default, default, delete)
+CELLERATOR_CELL_SPECIALIZATION(false, true, true, true, delete, default, default, default)
+CELLERATOR_CELL_SPECIALIZATION(true, false, false, false, default, delete, delete, delete)
+CELLERATOR_CELL_SPECIALIZATION(true, false, false, true, default, delete, delete, default)
+CELLERATOR_CELL_SPECIALIZATION(true, false, true, false, default, delete, default, delete)
+CELLERATOR_CELL_SPECIALIZATION(true, false, true, true, default, delete, default, default)
+CELLERATOR_CELL_SPECIALIZATION(true, true, false, false, default, default, delete, delete)
+CELLERATOR_CELL_SPECIALIZATION(true, true, false, true, default, default, delete, default)
+CELLERATOR_CELL_SPECIALIZATION(true, true, true, false, default, default, default, delete)
+CELLERATOR_CELL_SPECIALIZATION(true, true, true, true, default, default, default, default)
+#undef CELLERATOR_CELL_SPECIALIZATION
+} // namespace detail
+
+template<class Model, class Instance, class ModelHandle = Model*>
+using Cell = detail::cell_impl<Model, Instance, ModelHandle>;
+
+template<class Model, class Instance,
+         std::enable_if_t<!detail::is_shared_ptr<std::remove_cv_t<Model>>::value, int> = 0>
+auto make_cell(Model& model, Instance&& instance) {
+    return Cell<Model, std::decay_t<Instance>>(
+        std::addressof(model), std::forward<Instance>(instance));
 }
 
-template<class View>
-bool Cell::supports() const noexcept {
-    return dynamic_cast<const CellAccess<View>*>(this) != nullptr;
-}
+// A deduced const Model& can bind an rvalue; borrowing it would dangle.
+template<class Model, class Instance,
+         std::enable_if_t<!std::is_lvalue_reference_v<Model> &&
+                          !detail::is_shared_ptr<std::remove_cv_t<Model>>::value, int> = 0>
+void make_cell(Model&&, Instance&&) = delete;
 
-template<class View>
-View Cell::edit() & {
-    return dynamic_cast<CellEdit<View>&>(*this).write(ViewTag<View>{});
-}
-
-template<class View>
-bool Cell::supports_edit() const noexcept {
-    return dynamic_cast<const CellEdit<View>*>(this) != nullptr;
+template<class Model, class Instance>
+auto make_cell(std::shared_ptr<Model> model, Instance&& instance) {
+    return Cell<Model, std::decay_t<Instance>, std::shared_ptr<Model>>(
+        std::move(model), std::forward<Instance>(instance));
 }
 
 } // namespace cellerator

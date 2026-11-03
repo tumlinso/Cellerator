@@ -67,12 +67,22 @@ struct HasRvalueSnapshotView<T, std::void_t<decltype(
     std::declval<T&&>().template view<m::DynamicalStateSnapshotView<int>>())>>
     : std::true_type {};
 
+template<class T, class = void>
+struct HasForward : std::false_type {};
+template<class T>
+struct HasForward<T, std::void_t<decltype(std::declval<T&>().forward())>>
+    : std::true_type {};
+
 int main() {
     // Plain state-returning callbacks normalize to StepResult automatically.
     auto model = m::make_dynamical_model<int, Context>([](const int& state, const Context& context) {
         return state + (context.parameters ? context.parameters->scale : 1)
                      + (context.inputs ? context.inputs->offset : 0);
     }, std::make_shared<Parameters>(Parameters{2}));
+    using ModelType = typename decltype(model)::element_type;
+    static_assert(!HasForward<ModelType>::value,
+                  "DynamicalModel remains an explicit transition model");
+    static_assert(!std::is_invocable_v<ModelType&>);
     auto cell = m::make_dynamical_cell(model, 5, std::string("arbitrary-id"), 3.0);
     using CellType = decltype(cell);
     static_assert(!HasRvalueState<CellType>::value);
@@ -84,9 +94,16 @@ int main() {
     static_assert(!HasRvalueSnapshotView<CellType>::value);
     static_assert(std::is_same_v<decltype(std::declval<CellType&&>().state_handle()),
                                  std::shared_ptr<const int>>);
+    static_assert(!HasForward<CellType>::value,
+                  "DynamicalCell does not turn forward into step or observe");
+    static_assert(!std::is_polymorphic_v<CellType>,
+                  "typed snapshots do not require runtime CellViews inheritance");
+    static_assert(CellType::template supports<m::DynamicalStateSnapshotView<int>>());
+    static_assert(!CellType::template supports_edit<m::DynamicalStateSnapshotView<int>>());
     const auto previous = cell.view<m::DynamicalStateSnapshotView<int>>();
     assert(cell.supports<m::DynamicalStateSnapshotView<int>>());
     assert(cell.supports<cellerator::CellIdentityView<std::string>>());
+    assert(cell.model().get() == model.get());
     auto result = cell.advance(0.5);
     assert(result->state == 7 && *result->time == 3.5 && cell.time() == 3.5);
     assert(cell.view<m::DynamicalStateSnapshotView<int>>().state == cell.state_handle());
@@ -157,8 +174,8 @@ int main() {
     auto legacy_cell = m::make_dynamical_cell(legacy_model, 1, 101);
     legacy_cell.advance();
     assert(legacy_cell.state() == 2);
-    static_assert(std::is_base_of_v<cellerator::Cell, decltype(legacy_cell)>,
-                  "DynamicalCell exposes the generic typed Cell interface");
+    static_assert(!HasForward<decltype(legacy_cell)>::value,
+                  "legacy transition names do not add a generic forward");
 #if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
 #endif

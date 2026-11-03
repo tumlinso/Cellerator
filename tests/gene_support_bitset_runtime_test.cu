@@ -14,7 +14,7 @@
 #include <vector>
 
 namespace cg = ::cellerator::compute::gene_support;
-namespace cm = ::cellerator::matrix;
+namespace cm = ::cellerator::interop::formats;
 namespace cs = ::cellerator::compute::sampling;
 namespace ct = ::cellerator::types;
 
@@ -23,7 +23,7 @@ int require(bool ok, const char *label) {
     return ok ? 1 : 0;
 }
 
-bool fill_patterned_source(ct::dim_t rows, ct::dim_t genes, cm::compressed *source) {
+bool fill_patterned_source(ct::dim_t rows, ct::dim_t genes, cm::CompressedPayload *source) {
     std::vector<ct::ptr_t> row_ptr((std::size_t) rows + 1u, 0u);
     std::vector<ct::idx_t> columns;
     for (ct::dim_t row = 0u; row < rows; ++row) {
@@ -45,7 +45,7 @@ bool fill_patterned_source(ct::dim_t rows, ct::dim_t genes, cm::compressed *sour
     return true;
 }
 
-bool build_exact_sample(const cm::compressed &source,
+bool build_exact_sample(const cm::CompressedPayload &source,
                         std::uint64_t requested,
                         const char *split,
                         cs::owned_sampled_csr_structure *sampled,
@@ -118,7 +118,7 @@ bool results_equal(const cg::gene_support_bitset_view &lhs,
 }
 
 int test_sample_count_boundary(std::uint64_t cell_count, bool gpu_available) {
-    cm::compressed source;
+    cm::CompressedPayload source;
     cs::owned_sampled_csr_structure sampled;
     cg::owned_gene_support_bitsets cpu, gpu;
     std::vector<cg::support_word_t> expected_support;
@@ -159,7 +159,7 @@ int test_sample_count_boundary(std::uint64_t cell_count, bool gpu_available) {
 }
 
 int test_deterministic_subset_alignment(bool gpu_available) {
-    cm::compressed source;
+    cm::CompressedPayload source;
     cs::owned_sampled_csr_structure first_sample, second_sample;
     cg::owned_gene_support_bitsets first, second, gpu;
     std::string error;
@@ -195,7 +195,7 @@ int test_deterministic_subset_alignment(bool gpu_available) {
 int test_zero_cells_and_zero_genes(bool gpu_available) {
     std::string error;
     {
-        cm::compressed source;
+        cm::CompressedPayload source;
         cs::owned_sampled_csr_structure sampled;
         cg::owned_gene_support_bitsets cpu, gpu;
         cm::init(&source);
@@ -216,7 +216,7 @@ int test_zero_cells_and_zero_genes(bool gpu_available) {
         cm::clear(&source);
     }
     {
-        cm::compressed source;
+        cm::CompressedPayload source;
         cs::sample_plan plan;
         cs::sample_spec spec;
         cs::cell_identity_view identities;

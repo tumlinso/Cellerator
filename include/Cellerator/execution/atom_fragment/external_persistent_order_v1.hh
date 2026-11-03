@@ -34,6 +34,6 @@ external_persistent_order_validation_v1
 validate_external_persistent_orders_v1(
     const compute::operation::v2::operation_problem &operation,
     const compute::decomposition::decomposition_portfolio_v1 &decomposition,
-    const order_id *orders, std::uint64_t order_count) noexcept;
+    const structure::order_id *orders, std::uint64_t order_count) noexcept;
 
 } // namespace cellerator::execution::atom_fragment

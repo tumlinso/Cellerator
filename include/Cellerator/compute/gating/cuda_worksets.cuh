@@ -1,12 +1,16 @@
 #pragma once
 
-#include <Cellerator/compute/gating/condition_program.hh>
+#include <Cellerator/ops/condition/program.hh>
+#include <Cellerator/containers/posting_index.hh>
 
 #include <cuda_runtime_api.h>
 
 #include <cstdint>
 
 namespace cellerator::compute::gating {
+
+namespace ops_condition = ::cellerator::ops::condition;
+namespace containers = ::cellerator::containers;
 
 // Asynchronous CUDA implementation of the condition bitmap and workset
 // contracts. All pointers in the views below refer to device storage. The
@@ -37,23 +41,23 @@ struct cuda_workset_status_v1 {
 // then retain this descriptor while its structure epoch is in use. No storage
 // is allocated or discovered by an evaluation/update launch. The dense map
 // contains one root node per edge ordinal, or
-// unbound_condition_root_v1 for an unbound edge.
+// ops_condition::unbound_root_v1 for an unbound edge.
 struct cuda_condition_program_v1 {
-    condition_program_view_v1 program{}; // nodes and edges are device pointers
+    ops_condition::ProgramViewV1 program{}; // nodes and edges are device pointers
     const std::uint32_t *root_node_by_edge_ordinal = nullptr; // device storage
     std::uint64_t root_map_capacity = 0u;
 };
 
 struct cuda_candidate_csr_v1 {
     const std::uint64_t *offsets = nullptr; // cell_count + 1
-    const indexing::indexed_work_item_v1 *items = nullptr;
+    const containers::IndexedWorkItem *items = nullptr;
     std::uint64_t item_count = 0u;
 };
 
 struct cuda_output_csr_v1 {
     std::uint64_t *offsets = nullptr; // cell_count + 1
     std::uint64_t offsets_capacity = 0u;
-    indexing::indexed_work_item_v1 *items = nullptr;
+    containers::IndexedWorkItem *items = nullptr;
     std::uint64_t item_capacity = 0u;
 };
 
@@ -62,10 +66,10 @@ struct cuda_workset_scratch_v1 {
     // reserve at least primal_candidate_count and
     // primal_candidate_count+derivative_candidate_count items per cell.
     std::uint64_t *primal_offsets = nullptr; // cell_count + 1
-    indexing::indexed_work_item_v1 *primal_items = nullptr;
+    containers::IndexedWorkItem *primal_items = nullptr;
     std::uint64_t primal_item_capacity = 0u;
     std::uint64_t *derivative_offsets = nullptr; // cell_count + 1
-    indexing::indexed_work_item_v1 *derivative_items = nullptr;
+    containers::IndexedWorkItem *derivative_items = nullptr;
     std::uint64_t derivative_item_capacity = 0u;
     std::uint64_t *primal_counts = nullptr; // cell_count
     std::uint64_t *derivative_counts = nullptr; // cell_count
@@ -79,7 +83,7 @@ struct cuda_workset_scratch_v1 {
 // [cell_count,node_count]. Condition nodes use the validated topological
 // order, so child values are available before their parents.
 cudaError_t cuda_evaluate_condition_bitmaps_v1(
-    const condition_program_view_v1 &device_program,
+    const ops_condition::ProgramViewV1 &device_program,
     std::uint64_t cell_count, const std::uint8_t *predicate_values,
     std::uint64_t predicate_value_count, std::uint64_t *bitmap_words,
     std::uint64_t bitmap_word_capacity, std::uint8_t *node_scratch,
@@ -100,7 +104,7 @@ cudaError_t cuda_evaluate_condition_bitmaps_v1(
 // unchanged bits are preserved. Nodes are recomputed for each cell with at
 // least one dirty edge.
 cudaError_t cuda_update_condition_bitmaps_v1(
-    const condition_program_view_v1 &device_program,
+    const ops_condition::ProgramViewV1 &device_program,
     std::uint64_t cell_count, const std::uint8_t *predicate_values,
     std::uint64_t predicate_value_count,
     const std::uint64_t *dirty_offsets,
@@ -131,7 +135,7 @@ cudaError_t cuda_update_condition_bitmaps_v1(
 // A device preflight computes exact requirements; if either output is short,
 // no output rows are written and status reports both required totals.
 cudaError_t cuda_build_condition_worksets_v1(
-    const condition_program_view_v1 &device_program,
+    const ops_condition::ProgramViewV1 &device_program,
     std::uint64_t cell_count, const std::uint64_t *bitmap_words,
     std::uint64_t bitmap_word_count,
     const cuda_candidate_csr_v1 &primal_candidates,

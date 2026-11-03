@@ -13,7 +13,7 @@ if(TARGET CellShard::runtime)
         bench/quantized_transfer_spmm_bench.cu
     )
     target_include_directories(quantizedTransferSpmmBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(quantizedTransferSpmmBench PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet CellShard::runtime CUDA::cudart CUDA::cusparse)
+    target_link_libraries(quantizedTransferSpmmBench PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse)
     set_target_properties(quantizedTransferSpmmBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
     cellerator_enable_perf(quantizedTransferSpmmBench)
 endif()
@@ -22,7 +22,7 @@ add_executable(sparseOpsBench
     bench/sparse_ops_bench.cu
 )
 target_include_directories(sparseOpsBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(sparseOpsBench PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet CUDA::cudart CUDA::cusparse)
+target_link_libraries(sparseOpsBench PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CUDA::cudart CUDA::cusparse)
 set_target_properties(sparseOpsBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(sparseOpsBench)
 
@@ -44,3 +44,7 @@ set_target_properties(geneCandidateDiscoveryBench PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(geneCandidateDiscoveryBench)
+
+if(CELLERATOR_BUILD_NATIVE_DATA_BENCHMARKS)
+    add_subdirectory(bench/native_data)
+endif()

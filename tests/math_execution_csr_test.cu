@@ -45,15 +45,15 @@ struct plan_fixture {
     }
 };
 
-cm::feature_order_identity canonical_order() {
-    cm::feature_order_identity order;
+::cellerator::layout::projection::FeatureOrderIdentity canonical_order() {
+    ::cellerator::layout::projection::FeatureOrderIdentity order;
     order.feature_count = 4u;
     order.feature_axis_identity_version = 1u;
     order.feature_axis_identity = 0x0303a11ull;
     return order;
 }
 
-cm::execution_csr_view test_ordered_plan_adaptation(const plan_fixture &fixture) {
+::cellerator::layout::projection::CsrViewV1 test_ordered_plan_adaptation(const plan_fixture &fixture) {
     static const cm::u32 rows[]{0u, 2u, 4u};
     const cm::u32 blocks[]{0u, 0u, 1u, 1u};
     const cm::u32 locals[]{0u, 1u, 0u, 1u};
@@ -75,8 +75,8 @@ cm::execution_csr_view test_ordered_plan_adaptation(const plan_fixture &fixture)
     ordered.canonical_feature_ids = canonical;
     ordered.values = values;
     static cm::u32 execution_features[4]{};
-    cm::execution_csr_view result;
-    require(static_cast<bool>(cm::build_execution_csr_view_host(
+    ::cellerator::layout::projection::CsrViewV1 result;
+    require(static_cast<bool>(::cellerator::layout::projection::build_execution_csr_view_host(
         fixture.view(), ordered, {4u, execution_features}, &result)),
         "ordered-plan adaptation failed");
     for (cm::u32 i = 0u; i < 4u; ++i) {
@@ -84,7 +84,7 @@ cm::execution_csr_view test_ordered_plan_adaptation(const plan_fixture &fixture)
             "ordered feature did not map to execution order");
     }
     require(result.values == values && result.row_offsets == rows
-            && result.feature_order.kind == cm::feature_order_kind::packed
+            && result.feature_order.kind == ::cellerator::layout::projection::feature_order_kind::packed
             && result.structure.value != 0u,
         "execution CSR did not preserve aliases or identities");
     return result;
@@ -142,7 +142,7 @@ cm::packed_dense_operand_view test_dense_pack(const plan_fixture &fixture) {
 }
 
 void test_packed_math(
-    const cm::execution_csr_view &sparse,
+    const ::cellerator::layout::projection::CsrViewV1 &sparse,
     const cm::packed_dense_operand_view &dense) {
     const cm::u64 rows[]{0u, 2u, 4u};
     cm::logical_csr_view logical_sparse{2u, 4u, 4u, rows,
@@ -211,8 +211,8 @@ void test_lazy_cpk1_reconstruction(const plan_fixture &fixture) {
     tiles.values = values;
     cm::u32 rows[3]{}, features[4]{}, cursors[2]{};
     float reconstructed[4]{};
-    cm::execution_csr_view result;
-    require(static_cast<bool>(cm::materialize_execution_csr_from_cpk1_host(payload,
+    ::cellerator::layout::projection::CsrViewV1 result;
+    require(static_cast<bool>(::cellerator::layout::projection::materialize_execution_csr_from_cpk1_host(payload,
         {3u, 4u, sizeof(reconstructed), 2u,
          rows, features, reconstructed, cursors}, &result)),
         "lazy CPK1 reconstruction failed");
@@ -227,7 +227,7 @@ void test_lazy_cpk1_reconstruction(const plan_fixture &fixture) {
 
 int main() {
     const plan_fixture fixture;
-    const cm::execution_csr_view sparse = test_ordered_plan_adaptation(fixture);
+    const ::cellerator::layout::projection::CsrViewV1 sparse = test_ordered_plan_adaptation(fixture);
     const cm::packed_dense_operand_view dense = test_dense_pack(fixture);
     test_packed_math(sparse, dense);
     test_lazy_cpk1_reconstruction(fixture);

@@ -23,8 +23,8 @@ struct transpose_relation_apply_storage_v1 {
 
 struct transpose_relation_apply_view_v1 {
     support_family_identity_v1 family{};
-    execution::projection_id projection_identity{};
-    execution::order_id physical_edge_order{};
+    ::cellerator::structure::projection_id projection_identity{};
+    ::cellerator::structure::order_id physical_edge_order{};
     const std::uint64_t *source_offsets = nullptr;
     const std::uint64_t *destination_indices = nullptr;
     const std::uint64_t *logical_edge_ids = nullptr;
@@ -71,8 +71,8 @@ struct transpose_relation_apply_result_v1 {
 build_transpose_relation_apply_view_v1(
     const support_family_descriptor_v1 &family,
     const forward_relation_apply_view_v1 &forward,
-    execution::projection_id projection_identity,
-    execution::order_id physical_edge_order,
+    ::cellerator::structure::projection_id projection_identity,
+    ::cellerator::structure::order_id physical_edge_order,
     transpose_relation_apply_storage_v1 storage,
     transpose_relation_apply_view_v1 *output) noexcept {
     const auto family_status = validate_support_family_descriptor_v1(family);
@@ -87,10 +87,10 @@ build_transpose_relation_apply_view_v1(
     if (!same_support_family_identity_v1(family.identity, forward.family)) {
         return {transpose_relation_apply_code_v1::family_mismatch};
     }
-    if (!execution::valid_identity(projection_identity)) {
+    if (!::cellerator::structure::valid_identity(projection_identity)) {
         return {transpose_relation_apply_code_v1::invalid_projection_identity};
     }
-    if (!execution::valid_identity(physical_edge_order)) {
+    if (!::cellerator::structure::valid_identity(physical_edge_order)) {
         return {transpose_relation_apply_code_v1::invalid_physical_order};
     }
     if (forward.source_count == 0 || forward.destination_count == 0

@@ -26,7 +26,7 @@ struct gradient_decomposition_v1 {
     gradient_target_v1 target = gradient_target_v1::source_state;
     std::uint64_t relation_index = 0u;
     execution::persistent_axis_identity biological_axis{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::order_id logical_edge_order{};
     split_axis_kind_v1 split_axis = split_axis_kind_v1::none;
     gradient_accumulation_v1 accumulation =
         gradient_accumulation_v1::independent;

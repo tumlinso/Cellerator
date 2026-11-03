@@ -31,6 +31,9 @@ enum class projection_reference_status_v2 : std::uint8_t {
 // candidate that does not require an architecture capability.
 struct projection_reference_binding_v2 {
     compute::math::core::projection_key key{};
+    // Runtime association to the forward projection for transpose views.
+    // This is execution metadata only and never enters persistent image bytes.
+    projection_handle runtime_forward_projection{};
     compute::math::core::stable_id provider_identity{};
     compute::math::core::stable_id capability_identity{};
     compute::math::core::candidate_projection_contract_v2 contract{};
@@ -47,6 +50,7 @@ struct activated_projection_reference_v2 {
         activated_projection_reference_schema_version_v2;
     std::uint32_t record_bytes = sizeof(activated_projection_reference_v2);
     compute::math::core::projection_key key{};
+    projection_handle runtime_forward_projection{};
     compute::math::core::stable_id provider_identity{};
     compute::math::core::stable_id capability_identity{};
     compute::math::core::candidate_projection_contract_v2 contract{};

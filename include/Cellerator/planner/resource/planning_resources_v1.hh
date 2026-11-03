@@ -96,8 +96,8 @@ struct candidate_resource_manifest_v1 {
     operation_core::stable_id candidate{};
     operation_core::stable_id provider{};
     operation_core::stable_id capability{};
-    execution::projection_id projection{};
-    execution::geometry_id geometry{};
+    ::cellerator::structure::projection_id projection{};
+    ::cellerator::structure::geometry_id geometry{};
     mechanism_statistics_v1 mechanism{};
     const planning_stage_v1 *stages = nullptr;
     const stage_resource_receipt_v1 *resources = nullptr;

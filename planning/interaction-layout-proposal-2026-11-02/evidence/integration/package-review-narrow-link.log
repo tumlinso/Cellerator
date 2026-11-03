@@ -1,0 +1,22 @@
+command: cmake -S tests/factorized_interactions/installed_consumer -B /tmp/cellerator-package-review-recheck/real-narrow-consumer -DCMAKE_PREFIX_PATH=/tmp/cellerator-factorized-interaction-component-prefix-v3 -DCUDAToolkit_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
+exit: 0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version "12.9.86") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Configuring done (0.6s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-package-review-recheck/real-narrow-consumer
+
+command: cmake --build /tmp/cellerator-package-review-recheck/real-narrow-consumer --target factorized_interaction_installed_consumer -j2
+exit: 0
+[ 50%] Building CXX object CMakeFiles/factorized_interaction_installed_consumer.dir/main.cc.o
+[100%] Linking CXX executable factorized_interaction_installed_consumer
+[100%] Built target factorized_interaction_installed_consumer
+

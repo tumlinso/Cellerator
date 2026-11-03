@@ -93,13 +93,13 @@ struct fixture {
     static constexpr std::uint32_t features = 3u;
     static constexpr std::uint32_t nnz = 3u;
 
-    execution::structure_id persistent_structure{0x101u, 0x102u};
-    execution::projection_id persistent_forward{0x201u, 0x202u};
-    execution::projection_id persistent_transpose{0x301u, 0x302u};
+    ::cellerator::structure::structure_id persistent_structure{0x101u, 0x102u};
+    ::cellerator::structure::projection_id persistent_forward{0x201u, 0x202u};
+    ::cellerator::structure::projection_id persistent_transpose{0x301u, 0x302u};
     execution::structure_handle structure{11u, 1u};
     execution::projection_handle forward_handle{21u, 1u};
     execution::projection_handle transpose_handle{22u, 1u};
-    execution::structure_epoch epoch{7u};
+    ::cellerator::structure::structure_epoch epoch{7u};
     execution::axis_identity feature_axis = axis(100u);
     execution::axis_identity module_axis = axis(200u);
     execution::axis_identity dense_axis = axis(300u);
@@ -115,8 +115,8 @@ struct fixture {
     device_buffer<std::uint32_t> logical_to_transpose{3u};
     device_buffer<std::uint32_t> transpose_to_logical{3u};
     device_buffer<__half> values{3u};
-    cm::feature_major_projection_view forward{};
-    cm::transpose_projection_view transpose{};
+    execution::FeatureMajorBinding forward{};
+    execution::TransposeBinding transpose{};
 
     fixture() {
         upload(tile_offsets, std::vector<std::uint32_t>{0u, 3u});
@@ -136,44 +136,44 @@ struct fixture {
         upload(values, std::vector<__half>{
             __float2half(1.0f), __float2half(2.0f), __float2half(3.0f)});
 
-        forward.header.structure_identity = persistent_structure;
-        forward.header.projection_identity = persistent_forward;
-        forward.header.structure_epoch = epoch.value;
-        forward.header.row_count = rows;
-        forward.header.full_row_count = rows;
-        forward.header.feature_count = features;
-        forward.header.tile_row_width = rows;
-        forward.header.tile_count = 1u;
-        forward.header.feature_record_count = nnz;
-        forward.header.nnz_count = nnz;
-        forward.header.value_size_bytes = sizeof(__half);
+        forward.layout.header.structure_identity = persistent_structure;
+        forward.layout.header.projection_identity = persistent_forward;
+        forward.layout.header.structure_epoch = epoch.value;
+        forward.layout.header.row_count = rows;
+        forward.layout.header.full_row_count = rows;
+        forward.layout.header.feature_count = features;
+        forward.layout.header.tile_row_width = rows;
+        forward.layout.header.tile_count = 1u;
+        forward.layout.header.feature_record_count = nnz;
+        forward.layout.header.nnz_count = nnz;
+        forward.layout.header.value_size_bytes = sizeof(__half);
         forward.runtime_structure = structure;
         forward.runtime_projection = forward_handle;
-        forward.payload_base = tile_offsets.data;
-        forward.tile_feature_offsets = tile_offsets.data;
-        forward.execution_feature_ids = feature_ids.data;
-        forward.participating_row_masks = masks.data;
-        forward.feature_value_offsets = value_offsets.data;
-        forward.source_value_positions = source_positions.data;
+        forward.layout.payload_base = tile_offsets.data;
+        forward.layout.tile_feature_offsets = tile_offsets.data;
+        forward.layout.execution_feature_ids = feature_ids.data;
+        forward.layout.participating_row_masks = masks.data;
+        forward.layout.feature_value_offsets = value_offsets.data;
+        forward.layout.source_value_positions = source_positions.data;
 
-        transpose.header.structure_identity = persistent_structure;
-        transpose.header.projection_identity = persistent_transpose;
-        transpose.header.forward_projection_identity = persistent_forward;
-        transpose.header.structure_epoch = epoch.value;
-        transpose.header.row_count = rows;
-        transpose.header.full_row_count = rows;
-        transpose.header.feature_count = features;
-        transpose.header.nnz_count = nnz;
-        transpose.header.value_size_bytes = sizeof(__half);
+        transpose.layout.header.structure_identity = persistent_structure;
+        transpose.layout.header.projection_identity = persistent_transpose;
+        transpose.layout.header.forward_projection_identity = persistent_forward;
+        transpose.layout.header.structure_epoch = epoch.value;
+        transpose.layout.header.row_count = rows;
+        transpose.layout.header.full_row_count = rows;
+        transpose.layout.header.feature_count = features;
+        transpose.layout.header.nnz_count = nnz;
+        transpose.layout.header.value_size_bytes = sizeof(__half);
         transpose.runtime_structure = structure;
         transpose.runtime_projection = transpose_handle;
         transpose.runtime_forward_projection = forward_handle;
-        transpose.payload_base = transpose_offsets.data;
-        transpose.feature_offsets = transpose_offsets.data;
-        transpose.execution_row_ids = transpose_rows.data;
-        transpose.forward_value_positions = transpose_positions.data;
-        transpose.logical_to_transpose = logical_to_transpose.data;
-        transpose.transpose_to_logical = transpose_to_logical.data;
+        transpose.layout.payload_base = transpose_offsets.data;
+        transpose.layout.feature_offsets = transpose_offsets.data;
+        transpose.layout.execution_row_ids = transpose_rows.data;
+        transpose.layout.forward_value_positions = transpose_positions.data;
+        transpose.layout.logical_to_transpose = logical_to_transpose.data;
+        transpose.layout.transpose_to_logical = transpose_to_logical.data;
     }
 };
 
@@ -203,9 +203,9 @@ int main() {
         "compile native training program");
     require(program.preparation_count == 1u && program.run_count == 0u
             && program.session == &session
-            && execution::same_identity(program.forward_projection,
+            && ::cellerator::structure::same_identity(program.forward_projection,
                 f.persistent_forward)
-            && execution::same_identity(program.transpose_projection,
+            && ::cellerator::structure::same_identity(program.transpose_projection,
                 f.persistent_transpose)
             && execution::validate_output_axis_contract(
                 program.forward_output_order)
@@ -218,7 +218,7 @@ int main() {
             == execution::training_program_status_code::invalid_argument,
         "unsupported training width was accepted");
     unsupported = request;
-    unsupported.transpose.header.forward_projection_identity = {999u, 1u};
+    unsupported.transpose.layout.header.forward_projection_identity = {999u, 1u};
     require(execution::compile_training_program(unsupported, &program).code
             == execution::training_program_status_code::incompatible_identity,
         "transpose with different logical edge identity was accepted");
@@ -354,7 +354,7 @@ int main() {
     require(program.preparation_count == 1u && program.run_count == 2u
             && plane.generation.value == 3u
             && readiness.generation() == 3u
-            && program.prepared.forward.payload_base == f.tile_offsets.data,
+            && program.prepared.forward.layout.payload_base == f.tile_offsets.data,
         "pointer or generation change rebuilt immutable topology");
 
     auto stale = second;

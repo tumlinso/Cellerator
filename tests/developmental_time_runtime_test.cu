@@ -1,4 +1,5 @@
 #include <Cellerator/examples/models/developmental_time/developmentalTime.hh>
+#include <Cellerator/memory/cuda/shared_buffer.hh>
 
 #include <Cellerator/interop/cellshard_access.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>
@@ -13,7 +14,7 @@
 
 namespace dt = ::cellerator::models::developmental_time;
 namespace runtime = ::cellerator::runtime;
-namespace css = ::cellerator::matrix;
+namespace css = ::cellerator::interop::formats;
 namespace csv = ::cellshard::device;
 
 namespace {
@@ -22,7 +23,7 @@ void require(bool condition, const char *message) {
     if (!condition) throw std::runtime_error(message);
 }
 
-bool populate_blocked_ell(css::blocked_ell *matrix, const std::vector<float> &dense, unsigned int rows, unsigned int cols) {
+bool populate_blocked_ell(css::BlockedEllPayload *matrix, const std::vector<float> &dense, unsigned int rows, unsigned int cols) {
     css::init(matrix, rows, cols, rows * cols, 1u, cols);
     if (!css::allocate(matrix)) return false;
     for (unsigned int row = 0; row < rows; ++row) {
@@ -34,7 +35,7 @@ bool populate_blocked_ell(css::blocked_ell *matrix, const std::vector<float> &de
     return true;
 }
 
-bool populate_sliced_ell(css::sliced_ell *matrix, const std::vector<float> &dense, unsigned int rows, unsigned int cols) {
+bool populate_sliced_ell(css::SlicedEllPayload *matrix, const std::vector<float> &dense, unsigned int rows, unsigned int cols) {
     std::vector<unsigned int> slice_offsets(rows + 1u, 0u), slice_widths(rows, cols);
     for (unsigned int row = 0; row <= rows; ++row) slice_offsets[row] = row;
     css::init(matrix, rows, cols, rows * cols);
@@ -49,7 +50,7 @@ bool populate_sliced_ell(css::sliced_ell *matrix, const std::vector<float> &dens
     return true;
 }
 
-csv::blocked_ell_view make_blocked_view(const css::blocked_ell &host, const csv::partition_record<css::blocked_ell> &record) {
+csv::blocked_ell_view make_blocked_view(const css::BlockedEllPayload &host, const csv::partition_record<css::BlockedEllPayload> &record) {
     csv::blocked_ell_view out{};
     out.rows = host.rows;
     out.cols = host.cols;
@@ -61,7 +62,7 @@ csv::blocked_ell_view make_blocked_view(const css::blocked_ell &host, const csv:
     return out;
 }
 
-csv::sliced_ell_view make_sliced_view(const css::sliced_ell &host, const csv::partition_record<css::sliced_ell> &record) {
+csv::sliced_ell_view make_sliced_view(const css::SlicedEllPayload &host, const csv::partition_record<css::SlicedEllPayload> &record) {
     csv::sliced_ell_view out{};
     const std::size_t offsets_bytes = static_cast<std::size_t>(host.slice_count + 1u) * sizeof(unsigned int);
     const std::size_t widths_offset = csv::align_up_bytes(offsets_bytes, alignof(unsigned int));
@@ -80,9 +81,12 @@ csv::sliced_ell_view make_sliced_view(const css::sliced_ell &host, const csv::pa
     return out;
 }
 
-float download_first(const runtime::device_buffer<float> &buf) {
+float download_first(const ::cellerator::memory::cuda::SharedDeviceBuffer<float> &buf,
+                    const runtime::execution_context &ctx) {
     float value = 0.0f;
-    runtime::download_device_buffer(buf, &value, 1u);
+    auto stream = ::cellerator::memory::cuda::Stream::borrow(ctx.stream, ctx.device);
+    buf.download_async(&value, 1u, stream);
+    stream.synchronize();
     return value;
 }
 
@@ -103,8 +107,8 @@ void run_case(const dt::DevelopmentalTimeBatchView &batch, dt::DevelopmentalTime
     require(std::isfinite(final.total), "final developmental_time loss must be finite");
     require(final.total <= initial.total, "developmental_time loss should not increase after training");
 
-    runtime::device_buffer<float> predicted = dt::infer_time(&model, batch);
-    require(std::isfinite(download_first(predicted)), "developmental_time inference should be finite");
+    ::cellerator::memory::cuda::SharedDeviceBuffer<float> predicted = dt::infer_time(&model, batch);
+    require(std::isfinite(download_first(predicted, model.ctx)), "developmental_time inference should be finite");
     dt::clear(&model);
 }
 
@@ -127,23 +131,27 @@ int main() {
         }
     }
 
-    css::blocked_ell blocked{};
-    css::sliced_ell sliced{};
+    css::BlockedEllPayload blocked{};
+    css::SlicedEllPayload sliced{};
     require(populate_blocked_ell(&blocked, dense, rows, cols), "populate_blocked_ell failed");
     require(populate_sliced_ell(&sliced, dense, rows, cols), "populate_sliced_ell failed");
 
-    csv::partition_record<css::blocked_ell> blocked_record{};
-    csv::partition_record<css::sliced_ell> sliced_record{};
+    csv::partition_record<css::BlockedEllPayload> blocked_record{};
+    csv::partition_record<css::SlicedEllPayload> sliced_record{};
     require(csv::upload(&blocked, &blocked_record) == cudaSuccess, "blocked upload failed");
     require(csv::upload(&sliced, &sliced_record) == cudaSuccess, "sliced upload failed");
 
-    runtime::device_buffer<float> d_target = runtime::allocate_device_buffer<float>(target.size());
-    runtime::upload_device_buffer(&d_target, target.data(), target.size());
+    int device = 0;
+    require(cudaGetDevice(&device) == cudaSuccess, "cudaGetDevice failed");
+    auto d_target = ::cellerator::memory::cuda::SharedDeviceBuffer<float>::allocate(target.size(), device);
+    ::cellerator::memory::cuda::Stream upload_stream(device);
+    d_target.upload_async(target.data(), target.size(), upload_stream);
+    upload_stream.synchronize();
 
     const dt::DevelopmentalTimeBatchView blocked_batch =
-        dt::make_developmental_time_blocked_ell_batch(make_blocked_view(blocked, blocked_record), d_target.data);
+        dt::make_developmental_time_blocked_ell_batch(make_blocked_view(blocked, blocked_record), d_target.data());
     const dt::DevelopmentalTimeBatchView sliced_batch =
-        dt::make_developmental_time_sliced_ell_batch(make_sliced_view(sliced, sliced_record), d_target.data);
+        dt::make_developmental_time_sliced_ell_batch(make_sliced_view(sliced, sliced_record), d_target.data());
 
     run_case(blocked_batch, dt::DevelopmentalTimeBackend::tensor_cusparse);
     run_case(blocked_batch, dt::DevelopmentalTimeBackend::custom_wmma);

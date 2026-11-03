@@ -40,7 +40,7 @@ void init(
 
 void clear(DevelopmentalTimeTrajectoryModel *model);
 
-dt::runtime::device_buffer<float> infer_time(
+::cellerator::memory::cuda::SharedDeviceBuffer<float> infer_time(
     DevelopmentalTimeTrajectoryModel *model,
     const DevelopmentalTimeTrajectoryBatchView &batch,
     float graph_mix = 0.5f);

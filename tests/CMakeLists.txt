@@ -262,7 +262,7 @@ if(TARGET CellShard::runtime)
         tests/sparse_ops_runtime_test.cu
     )
     target_include_directories(sparseOpsRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(sparseOpsRuntimeTest PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet CellShard::runtime CUDA::cudart CUDA::cusparse)
+    target_link_libraries(sparseOpsRuntimeTest PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse)
     set_target_properties(sparseOpsRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
     cellerator_enable_perf(sparseOpsRuntimeTest)
 endif()
@@ -420,7 +420,7 @@ add_executable(stateReduceRuntimeTest
     tests/state_reduce_runtime_test.cu
 )
 target_include_directories(stateReduceRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(stateReduceRuntimeTest PRIVATE cellerator_state_reduce_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet CellShard::runtime CUDA::cudart CUDA::cusparse CUDA::cublas)
+target_link_libraries(stateReduceRuntimeTest PRIVATE cellerator_state_reduce_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse CUDA::cublas)
 set_target_properties(stateReduceRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(stateReduceRuntimeTest)
 
@@ -436,7 +436,7 @@ add_executable(developmentalTimeRuntimeTest
     tests/developmental_time_runtime_test.cu
 )
 target_include_directories(developmentalTimeRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(developmentalTimeRuntimeTest PRIVATE cellerator_developmental_time_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet CellShard::runtime CUDA::cudart CUDA::cusparse)
+target_link_libraries(developmentalTimeRuntimeTest PRIVATE cellerator_developmental_time_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse)
 set_target_properties(developmentalTimeRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(developmentalTimeRuntimeTest)
 
@@ -444,7 +444,7 @@ add_executable(developmentalTimeTrajectoryRuntimeTest
     tests/developmental_time_trajectory_runtime_test.cu
 )
 target_include_directories(developmentalTimeTrajectoryRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(developmentalTimeTrajectoryRuntimeTest PRIVATE cellerator_developmental_time_trajectory_cuda cellerator_developmental_time_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet CellShard::runtime CUDA::cudart CUDA::cusparse)
+target_link_libraries(developmentalTimeTrajectoryRuntimeTest PRIVATE cellerator_developmental_time_trajectory_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse)
 set_target_properties(developmentalTimeTrajectoryRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(developmentalTimeTrajectoryRuntimeTest)
 endif()

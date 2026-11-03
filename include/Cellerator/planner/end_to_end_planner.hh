@@ -23,12 +23,12 @@ struct mathematical_problem_key {
 };
 
 struct semantic_geometry_key {
-    execution::domain_id source_domain{};
-    execution::domain_id destination_domain{};
-    execution::geometry_id geometry{};
-    execution::order_id source_order{};
-    execution::order_id destination_order{};
-    execution::partition_id partition{};
+    ::cellerator::structure::domain_id source_domain{};
+    ::cellerator::structure::domain_id destination_domain{};
+    ::cellerator::structure::geometry_id geometry{};
+    ::cellerator::structure::order_id source_order{};
+    ::cellerator::structure::order_id destination_order{};
+    ::cellerator::structure::partition_id partition{};
 };
 
 struct device_performance_key {
@@ -46,8 +46,8 @@ struct runtime_build_key {
 };
 
 struct persistent_structure_dependency {
-    execution::structure_id identity{};
-    execution::structure_epoch epoch{};
+    ::cellerator::structure::structure_id identity{};
+    ::cellerator::structure::structure_epoch epoch{};
 };
 
 struct persistent_structure_set_key {
@@ -58,7 +58,7 @@ struct persistent_structure_set_key {
 };
 
 struct persistent_projection_key {
-    execution::projection_id identity{};
+    ::cellerator::structure::projection_id identity{};
     operation_core::projection_kind kind =
         operation_core::projection_kind::native_row_masked;
     std::uint16_t schema_version = 0u;
@@ -342,7 +342,7 @@ struct connected_plan_path {
 
 struct connected_planning_keys {
     operation_core::stable_id graph_identity{};
-    execution::partition_hierarchy_id hierarchy{};
+    ::cellerator::structure::partition_hierarchy_id hierarchy{};
     std::uint32_t stage_count = 0u;
     std::uint32_t reserved = 0u;
     planning_keys stages[maximum_connected_operations]{};
@@ -391,7 +391,7 @@ struct connected_plan_cache_hooks {
 struct connected_planner_request {
     std::uint32_t schema_version = connected_planner_schema_version;
     operation_core::stable_id graph_identity{};
-    execution::partition_hierarchy_id hierarchy{};
+    ::cellerator::structure::partition_hierarchy_id hierarchy{};
     const connected_operation_stage *stages = nullptr;
     std::uint32_t stage_count = 0u;
     std::uint32_t reserved = 0u;

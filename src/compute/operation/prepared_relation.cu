@@ -97,7 +97,7 @@ namespace cm = cellerator::compute::math;
 namespace gradient_provider = cellerator::compute::architecture::providers::nvidia::sm70::edge_value_gradient;
 namespace gradient_contract = cellerator::compute::architecture::providers::nvidia::sm70::contract;
 namespace {
-status physical(cm::physical_view_status s) {
+status physical(::cellerator::layout::projection::physical_view_status s) {
     return s ? status{} : status{status_code::invalid_argument, s.message};
 }
 status cuda_status(cudaError_t s) {
@@ -225,8 +225,8 @@ struct prepared_relation_structure {
     std::uint32_t *csr_forward=nullptr,*csr_transpose=nullptr;
     std::uint64_t csr_forward_bytes=0,csr_transpose_bytes=0;
     std::uint32_t* logical_map=nullptr;
-    cm::feature_major_projection_view forward_view{};
-    cm::transpose_projection_view transpose_view{};
+    execution::FeatureMajorBinding forward_view{};
+    execution::TransposeBinding transpose_view{};
     std::vector<std::uint32_t> logical_to_physical,physical_to_logical;
     std::vector<gradient_contract::edge_ref_v1> physical_edges;
     gradient_contract::edge_ref_v1* device_edges=nullptr;
@@ -270,7 +270,7 @@ struct prepared_relation_pair {
     std::uint64_t persistent_limit = 0, incarnation = 0;
 
     __half *source_scratch = nullptr, *cotangent_scratch = nullptr;
-    execution::order_id physical_order{};
+    ::cellerator::structure::order_id physical_order{};
     bool gradient_prepared = false;
     relation_calculus_descriptor calculus{};
     gradient_preparation_options gradient_options{};
@@ -342,28 +342,32 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
         p->incarnation=id;p->structure->identity=id;p->derive_f16=options.derive_f16;p->persistent_limit=options.persistent_byte_limit;
         p->physical_order=forward.topology.logical_edge_order;
         p->physical_order.high^=0x464d503147524144ULL;
-        if(!execution::valid_identity(p->physical_order))p->physical_order.low=1;
+        if(!::cellerator::structure::valid_identity(p->physical_order))p->physical_order.low=1;
         auto& report=p->report;report.structure=forward.topology.identity;report.epoch=forward.topology.epoch;
         // Pair-local projection registry identities distinguish the two actual layouts.
         report.forward_projection={forward.topology.identity.low ^ 0x464d5031ULL,forward.topology.identity.high ^ 0x535331ULL};
-        if(!execution::valid_identity(report.forward_projection))report.forward_projection.low=1;
+        if(!::cellerator::structure::valid_identity(report.forward_projection))report.forward_projection.low=1;
         report.transpose_projection=report.forward_projection;report.transpose_projection.high^=0x43545031ULL;
         // XOR can map a valid biological identity to the reserved zero ID.
         // Here forward.low is zero and forward.high is nonzero, so low=1
         // also keeps the two pair-local projection identities distinct.
-        if(!execution::valid_identity(report.transpose_projection))report.transpose_projection.low=1;
+        if(!::cellerator::structure::valid_identity(report.transpose_projection))report.transpose_projection.low=1;
         report.forward_candidate=core::feature_major_small_n_candidate().name;
         report.transpose_candidate=forward.dense_width==1 ? core::transpose_backward_n1_candidate().name : core::transpose_backward_n16_candidate().name;
         if(forward.topology.edge_count) {
             cold_tiles cold(forward.topology,topology);
-            cm::feature_major_projection_build_request request{forward.topology.identity,{1,1},forward.topology.epoch,report.forward_projection,{1,1},cold.view};
-            cm::feature_major_projection_requirements fr{};
-            s=physical(cm::query_feature_major_projection_requirements_host(request,&fr));if(!s)return s;
-            std::vector<unsigned char> fh(fr.payload_bytes);cm::feature_major_projection_view fv{};
-            s=physical(cm::build_feature_major_projection_host(request,{fh.data(),fh.size()},&fv));if(!s)return s;
+            layout::projection::feature_major_projection_build_request layout_request{
+                forward.topology.identity,forward.topology.epoch,
+                report.forward_projection,cold.view};
+            execution::FeatureMajorBindingBuildRequest request{
+                layout_request,{1,1},{1,1}};
+            layout::projection::feature_major_projection_requirements fr{};
+            s=physical(execution::query_feature_major_binding_requirements_host(request,&fr));if(!s)return s;
+            std::vector<unsigned char> fh(fr.payload_bytes);execution::FeatureMajorBinding fv{};
+            s=physical(execution::build_feature_major_binding_host(request,{fh.data(),fh.size()},&fv));if(!s)return s;
             // FMP source-value positions originally name cold CP-BP order. Compose
             // with CSR logical positions before CTP derives its bidirectional maps.
-            auto* map=reinterpret_cast<std::uint32_t*>(fh.data()+fv.header.source_value_positions_offset);
+            auto* map=reinterpret_cast<std::uint32_t*>(fh.data()+fv.layout.header.source_value_positions_offset);
             for(std::uint64_t i=0;i<forward.topology.edge_count;++i)map[i]=cold.logical[map[i]];
             p->structure->physical_to_logical.assign(map,map+forward.topology.edge_count);
             p->structure->logical_to_physical.resize(forward.topology.edge_count);
@@ -375,10 +379,12 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
                 auto logical=map[slot];p->structure->logical_to_physical[logical]=slot;
                 p->structure->physical_edges[slot]={topology.source_indices[logical],logical_rows[logical],slot};
             }
-            cm::transpose_projection_build_request tr{report.transpose_projection,{2,1},fv};
-            cm::transpose_projection_requirements rr{};s=physical(cm::query_transpose_projection_requirements_host(tr,&rr));if(!s)return s;
-            std::vector<unsigned char> th(rr.payload_bytes);cm::transpose_projection_view tv{};
-            s=physical(cm::build_transpose_projection_host(tr,{th.data(),th.size()},&tv));if(!s)return s;
+            execution::TransposeBindingBuildRequest tr{
+                report.transpose_projection,{2,1},&fv};
+            layout::projection::transpose_projection_requirements rr{};
+            s=physical(execution::query_transpose_binding_requirements_host(tr,&rr));if(!s)return s;
+            std::vector<unsigned char> th(rr.payload_bytes);execution::TransposeBinding tv{};
+            s=physical(execution::build_transpose_binding_host(tr,{th.data(),th.size()},&tv));if(!s)return s;
             const auto weight_type=forward.arithmetic.relation_storage;
             const bool f32=weight_type==execution::numeric_type::f32;
             const bool f64=weight_type==execution::numeric_type::f64;
@@ -434,11 +440,11 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             }
             // Cold host arrays cease to be borrowed when preparation returns.
             s=cuda_status(cudaStreamSynchronize(stream));if(!s)return s;
-            s=physical(cm::rebind_feature_major_projection(fv,p->structure->forward_payload,fh.size(),&p->structure->forward_view));if(!s)return s;
-            s=physical(cm::rebind_transpose_projection(tv,p->structure->transpose_payload,th.size(),&p->structure->transpose_view));if(!s)return s;
+            s=physical(execution::rebind_feature_major_binding(fv,p->structure->forward_payload,fh.size(),&p->structure->forward_view));if(!s)return s;
+            s=physical(execution::rebind_transpose_binding(tv,p->structure->transpose_payload,th.size(),&p->structure->transpose_view));if(!s)return s;
             if (weight_type==execution::numeric_type::f16 || (f32 && p->derive_f16)) {
-                core::projection_key fk{report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
-                core::projection_key tk{report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
+                core::projection_key fk{report.forward_projection,{1,1},core::projection_kind::native_feature_major,::cellerator::layout::projection::feature_major_projection_schema_version,::cellerator::layout::projection::feature_major_projection_variant};
+                core::projection_key tk{report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,::cellerator::layout::projection::transpose_projection_schema_version,::cellerator::layout::projection::transpose_projection_variant};
                 auto projected_numeric=f.numeric;projected_numeric.sparse_storage=execution::numeric_type::f16;
                 auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,projected_numeric,{},p->structure->forward_view,current,forward.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
                 if(!fs)return {status_code::unsupported_semantics,fs.message};
@@ -486,8 +492,8 @@ status create_relation_instance(const prepared_relation_pair& source,cudaStream_
                 // Candidate launch state points into the new instance, while views
                 // refer to the one counted structure. No projection is rebuilt.
                 const auto& f=p->forward;const auto& t=p->transpose;
-                core::projection_key fk{p->report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
-                core::projection_key tk{p->report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
+                core::projection_key fk{p->report.forward_projection,{1,1},core::projection_kind::native_feature_major,::cellerator::layout::projection::feature_major_projection_schema_version,::cellerator::layout::projection::feature_major_projection_variant};
+                core::projection_key tk{p->report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,::cellerator::layout::projection::transpose_projection_schema_version,::cellerator::layout::projection::transpose_projection_variant};
                 auto projected_numeric=f.numeric;projected_numeric.sparse_storage=execution::numeric_type::f16;
                 auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,projected_numeric,{},p->structure->forward_view,current,f.semantic.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
                 if(!fs)return {status_code::unsupported_semantics,fs.message};
@@ -609,8 +615,8 @@ bool protected_overlap(const prepared_relation_pair& p,const void* data,std::uin
         || overlaps(data,bytes,p.authoritative_f32,p.authoritative_f32?edges*4:0)
         || overlaps(data,bytes,p.authoritative_f64,p.authoritative_f64?edges*8:0)
         || overlaps(data,bytes,p.structure->csr_forward,p.structure->csr_forward_bytes) || overlaps(data,bytes,p.structure->csr_transpose,p.structure->csr_transpose_bytes) || overlaps(data,bytes,p.structure->logical_map,edges*4)
-        || overlaps(data,bytes,p.structure->forward_payload,p.structure->forward_view.header.payload_bytes)
-        || overlaps(data,bytes,p.structure->transpose_payload,p.structure->transpose_view.header.payload_bytes)
+        || overlaps(data,bytes,p.structure->forward_payload,p.structure->forward_view.layout.header.payload_bytes)
+        || overlaps(data,bytes,p.structure->transpose_payload,p.structure->transpose_view.layout.header.payload_bytes)
         || overlaps(data,bytes,p.structure->device_edges,edges*sizeof(gradient_contract::edge_ref_v1))
         || (p.source_scratch && overlaps(data,bytes,p.source_scratch,p.forward.semantic.topology.source.extent*32))
         || (p.cotangent_scratch && overlaps(data,bytes,p.cotangent_scratch,p.forward.semantic.topology.destination.extent*32));
@@ -631,9 +637,9 @@ status publish_values(prepared_relation_pair& p,const device_values_binding& bin
     if(capture!=cudaStreamCaptureStatusNone)
         return {status_code::unsupported_semantics,"value publication during stream capture is unsupported"};
     const auto& topology=p.forward.semantic.topology;
-    if(!execution::same_identity(binding.structure,topology.identity) || binding.epoch.value!=topology.epoch.value)
+    if(!::cellerator::structure::same_identity(binding.structure,topology.identity) || binding.epoch.value!=topology.epoch.value)
         return {status_code::stale_structure,"value structure or epoch differs from prepared topology"};
-    if(!execution::same_identity(binding.logical_edge_order,topology.logical_edge_order))
+    if(!::cellerator::structure::same_identity(binding.logical_edge_order,topology.logical_edge_order))
         return {status_code::incompatible_order,"value logical edge order differs from prepared topology"};
     if(!binding.generation.value || binding.generation.value<=p.report.latest_enqueued_generation.value)
         return {status_code::stale_generation,"publication requires a strictly increasing nonzero generation"};
@@ -662,8 +668,8 @@ bool matching_axis(const axis_descriptor& a,const axis_descriptor& b) noexcept {
     const auto& x=a.identity;const auto& y=b.identity;
     return a.extent==b.extent && x.header.schema_version==y.header.schema_version
         && x.header.kind==y.header.kind && x.header.byte_count==y.header.byte_count
-        && execution::same_identity(x.domain,y.domain) && execution::same_identity(x.order,y.order)
-        && execution::same_identity(x.geometry,y.geometry) && execution::same_identity(x.partition,y.partition);
+        && ::cellerator::structure::same_identity(x.domain,y.domain) && ::cellerator::structure::same_identity(x.order,y.order)
+        && ::cellerator::structure::same_identity(x.geometry,y.geometry) && ::cellerator::structure::same_identity(x.partition,y.partition);
 }
 status check_launch(const prepared_relation_pair& p,const operation_descriptor& op,
     const device_state_view& input,const device_result_view& output,
@@ -672,7 +678,7 @@ status check_launch(const prepared_relation_pair& p,const operation_descriptor& 
     if(output.device_ordinal!=p.device)return {status_code::incompatible_device,"output belongs to another device"};
     native_contract checked{};s=adapt(op,checked);if(!s)return s;
     const auto& prepared=op.direction==orientation::forward?p.forward.semantic:p.transpose.semantic;
-    if(!execution::same_identity(op.topology.identity,prepared.topology.identity) || op.topology.epoch.value!=prepared.topology.epoch.value)
+    if(!::cellerator::structure::same_identity(op.topology.identity,prepared.topology.identity) || op.topology.epoch.value!=prepared.topology.epoch.value)
         return {status_code::stale_structure,"launch topology identity or epoch is stale"};
     if(!equivalent(op,prepared))return {status_code::invalid_argument,"launch semantics differ from prepared contract"};
     if(input.dtype!=op.arithmetic.input_storage || output.dtype!=op.arithmetic.output_storage)
@@ -773,9 +779,9 @@ status check_edge_plane(const prepared_relation_pair& p,const edge_plane_view& p
     if(!float_gradient_contract(p))
         return {status_code::unsupported_numeric_policy,"edge updates and gradient planes require the FP32 relation contract"};
     const auto& t=p.forward.semantic.topology;
-    if(!execution::same_identity(plane.structure,t.identity)||plane.epoch.value!=t.epoch.value)
+    if(!::cellerator::structure::same_identity(plane.structure,t.identity)||plane.epoch.value!=t.epoch.value)
         return {status_code::stale_structure,"edge plane structure or epoch mismatch"};
-    if(!execution::same_identity(plane.order,p.physical_order))
+    if(!::cellerator::structure::same_identity(plane.order,p.physical_order))
         return {status_code::incompatible_order,"edge plane must use prepared physical order"};
     if(plane.device_ordinal!=p.device)return {status_code::incompatible_device,"edge plane device mismatch"};
     if(plane.count<t.edge_count)return {status_code::insufficient_capacity,"edge plane capacity too small"};
@@ -937,8 +943,8 @@ bool same_version(operand_version a,operand_version b) noexcept {
 }
 bool same_stamp(const gradient_stamp& a,const gradient_stamp& b) noexcept {
     return a.producer_serial && a.producer_serial==b.producer_serial &&
-        a.pair_incarnation==b.pair_incarnation && execution::same_identity(a.structure,b.structure) &&
-        a.epoch.value==b.epoch.value && execution::same_identity(a.order,b.order) &&
+        a.pair_incarnation==b.pair_incarnation && ::cellerator::structure::same_identity(a.structure,b.structure) &&
+        a.epoch.value==b.epoch.value && ::cellerator::structure::same_identity(a.order,b.order) &&
         a.forward_generation.value==b.forward_generation.value &&
         same_version(a.input,b.input)&&same_version(a.cotangent,b.cotangent)&&a.arithmetic==b.arithmetic;
 }
@@ -993,7 +999,7 @@ status end_value_read(prepared_relation_pair& p,value_read_lease& lease,cudaStre
     const auto& a=p.active_lease;
     if(!lease.nonce||lease.nonce!=a.nonce||lease.pair_incarnation!=a.pair_incarnation||
         lease.physical_f16_values!=a.physical_f16_values||lease.count!=a.count||
-        !execution::same_identity(lease.order,a.order)||!execution::same_identity(lease.structure,a.structure)||
+        !::cellerator::structure::same_identity(lease.order,a.order)||!::cellerator::structure::same_identity(lease.structure,a.structure)||
         lease.epoch.value!=a.epoch.value||lease.generation.value!=a.generation.value||lease.device_ordinal!=a.device_ordinal)
         return {status_code::invalid_argument,"lease does not match outstanding reader"};
     auto s=readiness_status(p.readiness.end_read(p.reader_ticket,consumer));
@@ -1026,7 +1032,7 @@ status check_logical_atom(const prepared_relation_pair& p,
     const auto& topology=p.forward.semantic.topology;
     if(plane.primary_mode!=vp::value_primary_mode_v1::logical || plane.component_count!=1)
         return {status_code::unsupported_semantics,"native atom route requires logical primary ownership"};
-    if(!execution::same_identity(plane.logical_edge_order,topology.logical_edge_order) ||
+    if(!::cellerator::structure::same_identity(plane.logical_edge_order,topology.logical_edge_order) ||
        plane.logical_edge_count!=topology.edge_count ||
        plane.structure_epoch_value.value!=topology.epoch.value)
         return {status_code::stale_structure,"atom topology differs from prepared structure"};
@@ -1095,9 +1101,9 @@ template<class T> status publish_typed_values(prepared_relation_pair& p,
     cudaStreamCaptureStatus capture{};s=cuda_status(cudaStreamIsCapturing(stream,&capture));if(!s)return s;
     if(capture!=cudaStreamCaptureStatusNone)return {status_code::unsupported_semantics,"publication capture unsupported"};
     const auto& t=p.forward.semantic.topology;
-    if(!execution::same_identity(binding.structure,t.identity)||binding.epoch.value!=t.epoch.value)
+    if(!::cellerator::structure::same_identity(binding.structure,t.identity)||binding.epoch.value!=t.epoch.value)
         return {status_code::stale_structure,"typed publication topology differs"};
-    if(!execution::same_identity(binding.logical_edge_order,t.logical_edge_order))
+    if(!::cellerator::structure::same_identity(binding.logical_edge_order,t.logical_edge_order))
         return {status_code::incompatible_order,"typed logical order differs"};
     if(!binding.generation.value||binding.generation.value<=p.report.latest_enqueued_generation.value)
         return {status_code::stale_generation,"publication requires a strictly increasing nonzero generation"};
@@ -1145,7 +1151,7 @@ status replace_relation_epoch(prepared_relation_pair** slot,const operation_desc
     auto& old=**slot;auto s=check_context(old,options.device_ordinal,stream);if(!s)return s;
     s=reject_capture(stream);if(!s)return s;
     if(old.readiness.active_reader())return {status_code::invalid_state,"live borrow prevents epoch replacement"};
-    if(!execution::same_identity(forward.topology.identity,old.forward.semantic.topology.identity) ||
+    if(!::cellerator::structure::same_identity(forward.topology.identity,old.forward.semantic.topology.identity) ||
        forward.topology.epoch.value<=old.forward.semantic.topology.epoch.value)
         return {status_code::stale_structure,"replacement requires same identity and strictly newer epoch"};
     prepared_relation_pair* candidate=nullptr;

@@ -1,0 +1,225 @@
+{
+  "build": {
+    "build_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "validator_sha256": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31"
+  },
+  "direct_unique_output": {
+    "dtype32_case": {
+      "activation": "fp16",
+      "actual_implementation": "direct_unique_output",
+      "build_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+      "mode": "direct_unique_output",
+      "output": "fp32",
+      "parameter": "fp16",
+      "route": "direct",
+      "runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+      "selected_backend": "direct",
+      "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+      "status": "pass",
+      "structural_layout": "canonical_direct",
+      "validator_sha256": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31",
+      "workload": "packet_a4_m32_u16"
+    },
+    "native_execution": {
+      "actual_implementation": "direct_unique_output",
+      "candidate": "direct_unique_output",
+      "cells": 64,
+      "channels": 64,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "gradient_mode": "overwrite",
+      "mechanisms": 32,
+      "memory_bytes": {
+        "backward_scratch": 8192,
+        "forward_scratch": 0,
+        "persistent_layout": 5632,
+        "tape": 16384
+      },
+      "outputs": 32,
+      "requested_route": "direct",
+      "scheduler_job_id": "680577b0-865f-4de2-a87f-aa2b41eb0991",
+      "schema": "cellerator.factorized_interactions.runner.v1",
+      "selected_backend": "direct",
+      "structural_layout": "canonical_direct",
+      "structural_maxima": {
+        "alpha_mechanisms": 1,
+        "bias_mechanisms": 1,
+        "context_terms": 16,
+        "gamma_terms": 1,
+        "input_roles": 8,
+        "mechanism_terms": 4,
+        "output_mechanisms": 1
+      },
+      "terms": 128
+    },
+    "validator_summary_relative_path": "cases/direct_unique_output.afp16.pfp16.ofp32/validator.stdout.json",
+    "validator_summary_sha256": "cfa8fd5d9a8ea236eb467180a54a0e72f7ad5d112cd7c6d5fa364a2447c6ba22"
+  },
+  "dtype32_case": {
+    "activation_storage": "fp16",
+    "actual_implementation": "direct",
+    "candidate": "minimal_direct",
+    "output_storage": "fp16",
+    "parameter_storage": "fp16",
+    "route": "direct",
+    "selected_backend": "direct",
+    "status": "pass",
+    "structural_layout": "canonical_direct",
+    "workload": "packet_a4_m32_u16"
+  },
+  "fixed_sanitizer_row_contract": {
+    "candidate_expectation": {
+      "actual_implementation": "direct",
+      "candidate": "minimal_direct",
+      "note": "actual_implementation is the selected backend label for this candidate; candidate preserves the requested mode.",
+      "selected_backend": "direct",
+      "structural_layout": "canonical_direct"
+    },
+    "row_keys": [
+      "tool",
+      "route",
+      "candidate",
+      "workload",
+      "exit_code",
+      "validation"
+    ],
+    "validation_keys": [
+      "schema",
+      "validated",
+      "timed",
+      "workload",
+      "route",
+      "activation_storage",
+      "parameter_storage",
+      "output_storage",
+      "gradient_mode",
+      "scheduler_job_id",
+      "build_provenance",
+      "contract_evidence",
+      "native_execution"
+    ]
+  },
+  "minimal_direct": {
+    "dtype32_case": {
+      "activation": "fp16",
+      "actual_implementation": "direct",
+      "build_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+      "mode": "minimal_direct",
+      "output": "fp16",
+      "parameter": "fp16",
+      "route": "direct",
+      "runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+      "selected_backend": "direct",
+      "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+      "status": "pass",
+      "structural_layout": "canonical_direct",
+      "validator_sha256": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31",
+      "workload": "packet_a4_m32_u16"
+    },
+    "native_execution": {
+      "actual_implementation": "direct",
+      "candidate": "minimal_direct",
+      "cells": 64,
+      "channels": 64,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "gradient_mode": "overwrite",
+      "mechanisms": 32,
+      "memory_bytes": {
+        "backward_scratch": 8192,
+        "forward_scratch": 524288,
+        "persistent_layout": 5632,
+        "tape": 16384
+      },
+      "outputs": 32,
+      "requested_route": "direct",
+      "scheduler_job_id": "680577b0-865f-4de2-a87f-aa2b41eb0991",
+      "schema": "cellerator.factorized_interactions.runner.v1",
+      "selected_backend": "direct",
+      "structural_layout": "canonical_direct",
+      "structural_maxima": {
+        "alpha_mechanisms": 1,
+        "bias_mechanisms": 1,
+        "context_terms": 16,
+        "gamma_terms": 1,
+        "input_roles": 8,
+        "mechanism_terms": 4,
+        "output_mechanisms": 1
+      },
+      "terms": 128
+    },
+    "validator_summary_relative_path": "cases/minimal_direct.afp16.pfp16.ofp16/validator.stdout.json",
+    "validator_summary_sha256": "75325104c1afef34e10f921fb52ac994f07fa1fa4a09c118a8c4c0a823639547"
+  },
+  "native_execution": {
+    "actual_implementation": "direct",
+    "candidate": "minimal_direct",
+    "cells": 64,
+    "channels": 64,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "gradient_mode": "overwrite",
+    "mechanisms": 32,
+    "memory_bytes": {
+      "backward_scratch": 8192,
+      "forward_scratch": 524288,
+      "persistent_layout": 5632,
+      "tape": 16384
+    },
+    "outputs": 32,
+    "requested_route": "direct",
+    "scheduler_job_id": "680577b0-865f-4de2-a87f-aa2b41eb0991",
+    "schema": "cellerator.factorized_interactions.runner.v1",
+    "selected_backend": "direct",
+    "structural_layout": "canonical_direct",
+    "structural_maxima": {
+      "alpha_mechanisms": 1,
+      "bias_mechanisms": 1,
+      "context_terms": 16,
+      "gamma_terms": 1,
+      "input_roles": 8,
+      "mechanism_terms": 4,
+      "output_mechanisms": 1
+    },
+    "terms": 128
+  },
+  "purpose": "Ground the sanitizer wrapper candidate-dispatch expectation in the actual accepted dtype32 case. This is not sanitizer evidence.",
+  "sanitizer_workload_facts": {
+    "alpha_rows": 3,
+    "biases": 3,
+    "cells": 2,
+    "channels": 3,
+    "contexts": 3,
+    "gammas": 3,
+    "inputs": 5,
+    "maxima": {
+      "alpha_mechanisms": 3,
+      "bias_mechanisms": 3,
+      "context_terms": 4,
+      "gamma_terms": 4,
+      "input_roles": 5,
+      "mechanism_terms": 2,
+      "output_mechanisms": 3
+    },
+    "mechanisms": 5,
+    "outputs": 2,
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "stable": false,
+    "strongest_direct_mode": "minimal_direct",
+    "total_terms": 8,
+    "unique": false,
+    "workload": "correctness_ordered_tied_zero"
+  },
+  "schema": "cellerator.factorized_interactions.sanitizer_candidate_dispatch_fixture.v1",
+  "source_dtype_report": {
+    "autobench_attempt_id": "a8768b4f-93eb-49b8-9309-f19ea276270d",
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/evidence/factorized-native-performance/0/df42e7d0698e6991e7b8a87910599baa66a927e8791a66184b91bc4af9e64cfc/dtype-qualification.json",
+    "scheduler_attempt_id": "845bb953-308c-44cd-96f7-f0e9f6ddb9c0",
+    "scheduler_job_id": "680577b0-865f-4de2-a87f-aa2b41eb0991",
+    "sha256": "d23113d02e26bbe87f823c488d8e939d2ba306015dc7ca4917ff95ad044f1dd5"
+  },
+  "source_validator_summary": {
+    "relative_path": "cases/minimal_direct.afp16.pfp16.ofp16/validator.stdout.json",
+    "sha256": "75325104c1afef34e10f921fb52ac994f07fa1fa4a09c118a8c4c0a823639547"
+  }
+}

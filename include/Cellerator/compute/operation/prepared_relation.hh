@@ -22,18 +22,18 @@ struct preparation_options {
 struct device_values_binding {
     const void* f16_data = nullptr; // IEEE binary16 bytes in logical edge order
     std::uint64_t count = 0;
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
+    ::cellerator::structure::order_id logical_edge_order{};
     execution::value_generation generation{};
     int device_ordinal = 0;
 };
 template<class T> struct device_numeric_values_binding {
     const T* data = nullptr;
     std::uint64_t count = 0;
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
-    execution::order_id logical_edge_order{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
+    ::cellerator::structure::order_id logical_edge_order{};
     execution::value_generation generation{};
     int device_ordinal = 0;
 };
@@ -55,10 +55,10 @@ struct device_result_view {
 };
 struct prepared_relation_pair; // owns cold preparation; no general-purpose container API
 struct preparation_report {
-    execution::structure_id structure{};
-    execution::structure_epoch epoch{};
-    execution::projection_id forward_projection{};
-    execution::projection_id transpose_projection{};
+    ::cellerator::structure::structure_id structure{};
+    ::cellerator::structure::structure_epoch epoch{};
+    ::cellerator::structure::projection_id forward_projection{};
+    ::cellerator::structure::projection_id transpose_projection{};
     execution::value_generation latest_enqueued_generation{};
     std::uint64_t topology_preparations = 0;
     std::uint64_t value_refreshes = 0;

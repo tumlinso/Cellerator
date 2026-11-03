@@ -1,0 +1,29 @@
+{
+  "command": [
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "/home/tumlinson/.local/state/autobench/current/venv/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/factorized_interactions",
+    "-p",
+    "test_*.py"
+  ],
+  "exit_code": 0,
+  "files": [
+    {
+      "path": "tests/factorized_interactions/reference_cache.py",
+      "sha256": "b38871907815e44bcb54dc2782ec8c5fc9a1e229abdadb3ecaabe94d5d4982ee"
+    },
+    {
+      "path": "tests/factorized_interactions/test_reference_cache.py",
+      "sha256": "fe68b0a678bee5a17c15554e637d4d685b2f79e180dceaa62dfef802a1ed570d"
+    }
+  ],
+  "observed_at_utc": "2026-11-02T19:56:27.761978+00:00",
+  "schema": "cellerator.factorized_interactions.reference_cache_cpu_evidence.v1",
+  "scope": "CPU-only Python oracle, transport, validator protocol, and reference-cache tests; no CUDA execution",
+  "stdout_stderr": "42 tests in 8.756s; OK"
+}

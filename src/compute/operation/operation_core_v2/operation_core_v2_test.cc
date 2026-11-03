@@ -14,8 +14,8 @@ void require(bool condition) {
 }
 
 template <class Tag>
-execution::persistent_identity<Tag> persistent(std::uint64_t low) {
-    execution::persistent_identity<Tag> result{};
+::cellerator::structure::persistent_identity<Tag> persistent(std::uint64_t low) {
+    ::cellerator::structure::persistent_identity<Tag> result{};
     result.low = low;
     result.high = low + 1;
     return result;
@@ -26,10 +26,10 @@ execution::persistent_axis_identity axis(std::uint64_t seed) {
     result.header.schema_version = execution::biological_abi_version;
     result.header.kind = execution::serialized_record_kind::persistent_axis_identity;
     result.header.byte_count = sizeof(result);
-    result.domain = persistent<execution::domain_tag>(seed);
-    result.order = persistent<execution::order_tag>(seed + 2);
-    result.geometry = persistent<execution::geometry_tag>(seed + 4);
-    result.partition = persistent<execution::partition_tag>(seed + 6);
+    result.domain = persistent<::cellerator::structure::domain_tag>(seed);
+    result.order = persistent<::cellerator::structure::order_tag>(seed + 2);
+    result.geometry = persistent<::cellerator::structure::geometry_tag>(seed + 4);
+    result.partition = persistent<::cellerator::structure::partition_tag>(seed + 6);
     return result;
 }
 
@@ -48,11 +48,11 @@ void set_common_policies(operation_problem *problem) {
 
 void test_schema_v2_problem() {
     typed_relation relation{};
-    relation.structure = persistent<execution::structure_tag>(10);
+    relation.structure = persistent<::cellerator::structure::structure_tag>(10);
     relation.epoch.value = 3;
     relation.source_axis = axis(20);
     relation.destination_axis = axis(40);
-    relation.logical_edge_order = persistent<execution::order_tag>(60);
+    relation.logical_edge_order = persistent<::cellerator::structure::order_tag>(60);
     relation.logical_edge_count = (std::uint64_t{1} << 32) + 17;
 
     operation_problem problem{};
@@ -89,11 +89,11 @@ operation_problem relation_problem(
 
 void test_complete_relation_algebra_bindings() {
     typed_relation relation{};
-    relation.structure = persistent<execution::structure_tag>(100);
+    relation.structure = persistent<::cellerator::structure::structure_tag>(100);
     relation.epoch.value = 5;
     relation.source_axis = axis(120);
     relation.destination_axis = axis(140);
-    relation.logical_edge_order = persistent<execution::order_tag>(160);
+    relation.logical_edge_order = persistent<::cellerator::structure::order_tag>(160);
     relation.logical_edge_count = 19;
 
     relation_value_binding_contract values{};
@@ -151,7 +151,7 @@ void test_output_order_and_determinism_contracts() {
     problem.logical_work_items = 8;
     set_common_policies(&problem);
     problem.output.order = output_order_requirement::canonical_required;
-    problem.output.canonical_axis.order = persistent<execution::order_tag>(500);
+    problem.output.canonical_axis.order = persistent<::cellerator::structure::order_tag>(500);
     require(validate_operation_problem(problem).code
         == schema_status_code::invalid_output_contract);
     problem.output.explicit_order_transform = true;
@@ -198,12 +198,12 @@ void test_v1_adapter_uses_persistent_identity() {
     cellerator::compute::operation::relation_algebra_problem_v1 source{};
     source.kind = cellerator::compute::operation::relation_algebra_kind_v1::relation_apply;
     source.operation_identity = {71, 72};
-    source.relation.structure = persistent<execution::structure_tag>(700);
+    source.relation.structure = persistent<::cellerator::structure::structure_tag>(700);
     source.relation.epoch.value = 2;
     source.relation.source_axis = axis(720);
     source.relation.destination_axis = axis(740);
     source.relation.logical_edge_count = 23;
-    source.logical_edge_order = persistent<execution::order_tag>(760);
+    source.logical_edge_order = persistent<::cellerator::structure::order_tag>(760);
     source.dense_width = 8;
     source.numeric.relation_storage = execution::numeric_type::f32;
     source.numeric.state_storage = execution::numeric_type::f32;

@@ -10,8 +10,8 @@
 #include <span>
 #include <vector>
 
-namespace ix = cellerator::compute::operation::indexed;
-namespace detail = cellerator::compute::operation::indexed::detail;
+namespace ix = cellerator::ops::mechanism::indexed;
+namespace detail = cellerator::ops::mechanism::indexed::detail;
 namespace v2 = cellerator::compute::operation::v2;
 
 detail::parameter_input_validation reference_validate(

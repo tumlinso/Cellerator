@@ -23,9 +23,13 @@ _SPARSE_SUPPORT_EXPORTS = {
     "prepare_sparse_slice", "sparse_parameter_layout",
     "PreparedEntityMechanismRouting", "PreparedRoutingIdentity",
 }
+_FACTORING_EXPORTS = {"PreparedFactorizedInteraction"}
 
 
 def __getattr__(name: str):
+    if name in _FACTORING_EXPORTS:
+        from .factorized_interaction import PreparedFactorizedInteraction
+        return PreparedFactorizedInteraction
     if name in _SPARSE_SUPPORT_EXPORTS:
         if name in {"SupportSpec", "ParameterBlock", "PerCellWorkset", "GateValues",
                     "sparse_parameter_layout"}:
@@ -63,4 +67,4 @@ def __getattr__(name: str):
 
 __all__ = sorted(_MECHANISM_EXPORTS | _SPARSE_SUPPORT_EXPORTS | {
     "Product2Module", "SharedSupportSpec", "prepare_product2", "product2", "product2_jvp",
-})
+} | _FACTORING_EXPORTS)

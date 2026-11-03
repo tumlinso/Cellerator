@@ -1,0 +1,32 @@
+--- a/src/autobench/engine.py
++++ b/src/autobench/engine.py
+@@ -911,11 +911,14 @@
+         current_usage = _disk_usage(self.autobench)
+         outstanding = self._reserved_bytes(current_usage)
+         if _disk_usage(self.autobench) + outstanding + reservation > cap:
+-            self._evict_safe(required_free=outstanding + reservation)
++            self._evict_safe(required_free=outstanding + reservation,
++                             protected_paths=(snapshot, build))
+             current_usage = _disk_usage(self.autobench)
+             outstanding = self._reserved_bytes(current_usage)
+         if current_usage + outstanding + reservation > cap:
+             raise AutobenchError("retained-data cap reached; scratch reservation cannot fit safely")
++        if not snapshot.is_dir():
++            raise AutobenchError("captured source snapshot is unavailable before submission")
+         owner_id = await self._owner_id()
+         attempt_id = str(uuid.uuid4())
+         staged = self.autobench / "scratch" / attempt_id
+@@ -1224,10 +1227,11 @@
+                 self.store.db.execute("UPDATE attempts SET result_json=NULL WHERE id=?", (row["id"],))
+         self.store.db.commit()
+ 
+-    def _evict_safe(self, required_free: int = 0) -> None:
++    def _evict_safe(self, required_free: int = 0, *,
++                    protected_paths: tuple[Path, ...] = ()) -> None:
+         # Snapshot cache is reproducible from live source. Preserve snapshots referenced by
+         # unresolved jobs and the last registered source fingerprints.
+-        pinned: set[str] = set()
++        pinned: set[str] = {str(path) for path in protected_paths}
+         cap = min(int(self.store.get("retained_cap_bytes", 1024**3)), self.limits["retained_cap_bytes"])
+         target = max(0, cap - max(0, required_free))
+         for row in self.store.db.execute("SELECT key,value FROM settings WHERE key LIKE 'last-good-build:%'"):

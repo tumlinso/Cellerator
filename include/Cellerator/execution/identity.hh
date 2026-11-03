@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <type_traits>
 
+#include <Cellerator/structure/identity.hh>
+
 #if defined(__CUDACC__)
 #define CELLERATOR_EXECUTION_IDENTITY_HD __host__ __device__
 #else
@@ -50,40 +52,18 @@ struct serialized_record_header {
 };
 
 template<typename Tag>
-struct persistent_identity {
-    u64 low;
-    u64 high;
-};
-
-template<typename Tag>
 struct identity_handle {
     u32 slot;
     u32 generation;
 };
 
-struct domain_tag;
-struct order_tag;
-struct geometry_tag;
-struct partition_tag;
-struct partition_hierarchy_tag;
-struct structure_tag;
-struct projection_tag;
-
-using domain_id = persistent_identity<domain_tag>;
-using order_id = persistent_identity<order_tag>;
-using geometry_id = persistent_identity<geometry_tag>;
-using partition_id = persistent_identity<partition_tag>;
-using partition_hierarchy_id = persistent_identity<partition_hierarchy_tag>;
-using structure_id = persistent_identity<structure_tag>;
-using projection_id = persistent_identity<projection_tag>;
-
-using domain_handle = identity_handle<domain_tag>;
-using order_handle = identity_handle<order_tag>;
-using geometry_handle = identity_handle<geometry_tag>;
-using partition_handle = identity_handle<partition_tag>;
-using partition_hierarchy_handle = identity_handle<partition_hierarchy_tag>;
-using structure_handle = identity_handle<structure_tag>;
-using projection_handle = identity_handle<projection_tag>;
+using domain_handle = identity_handle<structure::domain_tag>;
+using order_handle = identity_handle<structure::order_tag>;
+using geometry_handle = identity_handle<structure::geometry_tag>;
+using partition_handle = identity_handle<structure::partition_tag>;
+using partition_hierarchy_handle = identity_handle<structure::partition_hierarchy_tag>;
+using structure_handle = identity_handle<structure::structure_tag>;
+using projection_handle = identity_handle<structure::projection_tag>;
 
 // Hot operand records carry compact, generation-checked handles. A registry
 // resolves each handle to its persistent identity before preparation.
@@ -96,14 +76,10 @@ struct axis_identity {
 
 struct persistent_axis_identity {
     serialized_record_header header;
-    domain_id domain;
-    order_id order;
-    geometry_id geometry;
-    partition_id partition;
-};
-
-struct structure_epoch {
-    u64 value;
+    structure::domain_id domain;
+    structure::order_id order;
+    structure::geometry_id geometry;
+    structure::partition_id partition;
 };
 
 struct value_generation {
@@ -143,22 +119,9 @@ CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool valid_location(
 }
 
 template<typename Tag>
-CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool valid_identity(
-    const persistent_identity<Tag> &identity) noexcept {
-    return identity.low != 0u || identity.high != 0u;
-}
-
-template<typename Tag>
 CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool valid_handle(
     const identity_handle<Tag> &handle) noexcept {
     return handle.slot != invalid_identity_slot && handle.generation != 0u;
-}
-
-template<typename Tag>
-CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool same_identity(
-    const persistent_identity<Tag> &lhs,
-    const persistent_identity<Tag> &rhs) noexcept {
-    return lhs.low == rhs.low && lhs.high == rhs.high;
 }
 
 template<typename Tag>
@@ -191,8 +154,10 @@ validate_persistent_axis_identity(
     if (axis.header.kind != serialized_record_kind::persistent_axis_identity
         || axis.header.byte_count != sizeof(persistent_axis_identity))
         return biological_validation_code::invalid_count;
-    if (!valid_identity(axis.domain) || !valid_identity(axis.order)
-        || !valid_identity(axis.geometry) || !valid_identity(axis.partition))
+    if (!structure::valid_identity(axis.domain)
+        || !structure::valid_identity(axis.order)
+        || !structure::valid_identity(axis.geometry)
+        || !structure::valid_identity(axis.partition))
         return biological_validation_code::invalid_identity;
     return biological_validation_code::ok;
 }

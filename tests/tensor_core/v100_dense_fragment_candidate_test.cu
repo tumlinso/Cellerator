@@ -200,10 +200,10 @@ int main() {
         "test requires the task's sm_70 resource");
 
     constexpr std::uint32_t width = 32u;
-    const execution::structure_id structure_id{101u, 102u};
+    const ::cellerator::structure::structure_id structure_id{101u, 102u};
     const execution::structure_handle structure_handle{11u, 1u};
-    const execution::structure_epoch epoch{7u};
-    const execution::projection_id projection_id{201u, 202u};
+    const ::cellerator::structure::structure_epoch epoch{7u};
+    const ::cellerator::structure::projection_id projection_id{201u, 202u};
     const execution::projection_handle projection_handle{21u, 1u};
     const execution::axis_identity source_axis = axis(10u);
     const execution::axis_identity destination_axis = axis(20u);

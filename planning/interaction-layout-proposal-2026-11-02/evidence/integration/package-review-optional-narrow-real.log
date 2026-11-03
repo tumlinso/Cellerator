@@ -1,0 +1,23 @@
+Package parsing review. Full-prefix cases use generated exports with placeholder archives and stub Torch; no linking. Real narrow cases use the v3 component install.
+command: cmake -S /tmp/cellerator-package-review-recheck/project-optional-narrow-real -B /tmp/cellerator-package-review-recheck/build-optional-narrow-real -DCMAKE_PREFIX_PATH=/tmp/cellerator-factorized-interaction-component-prefix-v3 -DTorch_DIR=/tmp/cellerator-package-review-recheck/fake-torch -DCUDAToolkit_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
+exit: 0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version "12.9.86") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- narrow_optional_nn: memory archive /tmp/cellerator-factorized-interaction-component-prefix-v3/lib/libcellerator_memory_cuda.a
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    Torch_DIR
+
+
+-- Build files have been written to: /tmp/cellerator-package-review-recheck/build-optional-narrow-real

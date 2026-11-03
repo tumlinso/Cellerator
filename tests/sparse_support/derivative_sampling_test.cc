@@ -7,13 +7,13 @@
 #include <vector>
 
 namespace gating = cellerator::compute::gating;
-namespace indexing = cellerator::compute::indexing;
+namespace containers = cellerator::containers;
 
 namespace {
 
 struct sample_storage {
     std::vector<std::uint64_t> offsets;
-    std::vector<indexing::indexed_work_item_v1> items;
+    std::vector<containers::IndexedWorkItem> items;
     std::vector<std::uint64_t> eligible;
     std::vector<std::uint64_t> selected;
     std::vector<std::uint64_t> remaining;
@@ -25,10 +25,10 @@ struct sample_storage {
 
 void preserves_admitted_work_and_reports_per_cell_coverage() {
     const std::uint64_t admitted_offsets[]{0u, 2u, 2u, 5u};
-    const indexing::indexed_work_item_v1 admitted_items[]{
+    const containers::IndexedWorkItem admitted_items[]{
         {2u, 2u}, {8u, 8u}, {100u, 100u}, {200u, 200u}, {300u, 300u}};
     const std::uint64_t dormant_offsets[]{0u, 5u, 9u, 16u};
-    const indexing::indexed_work_item_v1 dormant_items[]{
+    const containers::IndexedWorkItem dormant_items[]{
         {1u, 1u}, {2u, 2u}, {4u, 4u}, {6u, 6u}, {9u, 9u},
         {10u, 10u}, {11u, 11u}, {12u, 12u}, {13u, 13u},
         {100u, 100u}, {101u, 101u}, {200u, 200u}, {201u, 201u},
@@ -38,7 +38,7 @@ void preserves_admitted_work_and_reports_per_cell_coverage() {
         {admitted_offsets, admitted_items, 3u, 5u},
         {dormant_offsets, dormant_items, 3u, 16u}, budgets};
     sample_storage storage{{0u, 0u, 0u, 0u},
-        std::vector<indexing::indexed_work_item_v1>(11u),
+        std::vector<containers::IndexedWorkItem>(11u),
         std::vector<std::uint64_t>(3u), std::vector<std::uint64_t>(3u),
         std::vector<std::uint64_t>(3u)};
     auto output = storage.view();
@@ -79,7 +79,7 @@ void preserves_admitted_work_and_reports_per_cell_coverage() {
 void rotation_covers_frozen_dormant_candidates() {
     const std::uint64_t admitted_offsets[]{0u, 0u, 0u};
     const std::uint64_t dormant_offsets[]{0u, 0u, 5u};
-    const indexing::indexed_work_item_v1 dormant[]{
+    const containers::IndexedWorkItem dormant[]{
         {10u, 0u}, {20u, 1u}, {30u, 2u}, {40u, 3u}, {50u, 4u}};
     const std::uint64_t budgets[]{0u, 2u};
     const gating::derivative_candidate_csr_view_v1 empty_admitted{
@@ -91,7 +91,7 @@ void rotation_covers_frozen_dormant_candidates() {
         const gating::derivative_sample_request_v1 request{1u, 1u, window,
             123u, 2u, empty_admitted, dormant_view, budgets};
         std::uint64_t result_offsets[3]{}, eligible[2]{}, selected[2]{}, remaining[2]{};
-        indexing::indexed_work_item_v1 result_items[2]{};
+        containers::IndexedWorkItem result_items[2]{};
         gating::derivative_sample_output_v1 output{result_offsets, 3u,
             result_items, 2u, eligible, selected, remaining, 2u};
         assert(gating::build_derivative_sample_v1(request, &output)
@@ -108,13 +108,13 @@ void rotation_covers_frozen_dormant_candidates() {
 
 void preflights_capacities_and_rejects_duplicate_admission() {
     const std::uint64_t offsets[]{0u, 1u};
-    const indexing::indexed_work_item_v1 admitted[]{ {5u, 5u} };
-    const indexing::indexed_work_item_v1 dormant[]{ {8u, 8u} };
+    const containers::IndexedWorkItem admitted[]{ {5u, 5u} };
+    const containers::IndexedWorkItem dormant[]{ {8u, 8u} };
     const std::uint64_t budget[]{1u};
     const gating::derivative_sample_request_v1 request{1u, 1u, 0u, 3u, 1u,
         {offsets, admitted, 1u, 1u}, {offsets, dormant, 1u, 1u}, budget};
     std::uint64_t result_offsets[]{91u, 92u}, eligible[]{93u}, selected[]{94u}, remaining[]{95u};
-    indexing::indexed_work_item_v1 result_items[]{ {96u, 96u} };
+    containers::IndexedWorkItem result_items[]{ {96u, 96u} };
     gating::derivative_sample_output_v1 too_small{result_offsets, 2u,
         result_items, 1u, eligible, selected, remaining, 1u};
     assert(gating::build_derivative_sample_v1(request, &too_small)
@@ -123,7 +123,7 @@ void preflights_capacities_and_rejects_duplicate_admission() {
     assert((result_offsets[0] == 91u && result_offsets[1] == 92u
         && result_items[0].logical_edge_id == 96u && eligible[0] == 93u));
 
-    const indexing::indexed_work_item_v1 duplicate_admitted[]{ {5u, 5u}, {5u, 5u} };
+    const containers::IndexedWorkItem duplicate_admitted[]{ {5u, 5u}, {5u, 5u} };
     const std::uint64_t duplicate_offsets[]{0u, 2u};
     const gating::derivative_sample_request_v1 invalid{1u, 1u, 0u, 3u, 1u,
         {duplicate_offsets, duplicate_admitted, 1u, 2u},
@@ -135,13 +135,13 @@ void preflights_capacities_and_rejects_duplicate_admission() {
 
 void all_active_and_zero_budget_are_exact_admitted_sets() {
     const std::uint64_t offsets[]{0u, 2u};
-    const indexing::indexed_work_item_v1 admitted[]{ {3u, 3u}, {9u, 9u} };
-    const indexing::indexed_work_item_v1 dormant[]{ {3u, 3u}, {9u, 9u} };
+    const containers::IndexedWorkItem admitted[]{ {3u, 3u}, {9u, 9u} };
+    const containers::IndexedWorkItem dormant[]{ {3u, 3u}, {9u, 9u} };
     const std::uint64_t budget[]{8u};
     const gating::derivative_sample_request_v1 request{4u, 5u, 0u, 0u, 1u,
         {offsets, admitted, 1u, 2u}, {offsets, dormant, 1u, 2u}, budget};
     std::uint64_t result_offsets[2]{}, eligible[1]{}, selected[1]{}, remaining[1]{};
-    indexing::indexed_work_item_v1 result_items[2]{};
+    containers::IndexedWorkItem result_items[2]{};
     gating::derivative_sample_output_v1 output{result_offsets, 2u, result_items,
         2u, eligible, selected, remaining, 1u};
     assert(gating::build_derivative_sample_v1(request, &output)

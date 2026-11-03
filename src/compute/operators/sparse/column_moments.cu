@@ -22,7 +22,7 @@ __global__ void count_rows_kernel(unsigned int rows, const std::uint8_t *mask, f
     if (local != 0.0f) atomicAdd(count, local);
 }
 
-__global__ void blocked_ell_kernel(matrix::device::blocked_ell_view matrix,
+__global__ void blocked_ell_kernel(::cellerator::interop::formats::device::BlockedEllView matrix,
                                    const std::uint8_t *row_mask,
                                    column_moments_view moments) {
     const unsigned long stride = static_cast<unsigned long>(gridDim.x * blockDim.x);
@@ -44,7 +44,7 @@ __global__ void blocked_ell_kernel(matrix::device::blocked_ell_view matrix,
     }
 }
 
-__global__ void sliced_ell_kernel(matrix::device::sliced_ell_view matrix,
+__global__ void sliced_ell_kernel(::cellerator::interop::formats::device::SlicedEllView matrix,
                                   const std::uint8_t *row_mask,
                                   column_moments_view moments) {
     const unsigned int lane = threadIdx.x & 31u;
@@ -65,7 +65,7 @@ __global__ void sliced_ell_kernel(matrix::device::sliced_ell_view matrix,
     }
 }
 
-__global__ void compressed_kernel(matrix::device::compressed_view matrix,
+__global__ void compressed_kernel(::cellerator::interop::formats::device::CompressedView matrix,
                                   const std::uint8_t *row_mask,
                                   column_moments_view moments) {
     const unsigned int lane = threadIdx.x & 31u;
@@ -111,7 +111,7 @@ int zero_column_moments(column_moments_view *moments, cudaStream_t stream) {
         || cudaMemsetAsync(moments->active_row_count, 0, sizeof(float), stream) == cudaSuccess;
 }
 
-int accumulate_column_moments(const matrix::device::blocked_ell_view *matrix,
+int accumulate_column_moments(const ::cellerator::interop::formats::device::BlockedEllView *matrix,
                               const std::uint8_t *row_mask,
                               column_moments_view *moments,
                               cudaStream_t stream) {
@@ -124,7 +124,7 @@ int accumulate_column_moments(const matrix::device::blocked_ell_view *matrix,
     return cudaGetLastError() == cudaSuccess && count_rows(matrix->rows, row_mask, moments, stream);
 }
 
-int accumulate_column_moments(const matrix::device::sliced_ell_view *matrix,
+int accumulate_column_moments(const ::cellerator::interop::formats::device::SlicedEllView *matrix,
                               const std::uint8_t *row_mask,
                               column_moments_view *moments,
                               cudaStream_t stream) {
@@ -133,12 +133,12 @@ int accumulate_column_moments(const matrix::device::sliced_ell_view *matrix,
     return cudaGetLastError() == cudaSuccess && count_rows(matrix->rows, row_mask, moments, stream);
 }
 
-int accumulate_column_moments(const matrix::device::compressed_view *matrix,
+int accumulate_column_moments(const ::cellerator::interop::formats::device::CompressedView *matrix,
                               const std::uint8_t *row_mask,
                               column_moments_view *moments,
                               cudaStream_t stream) {
     if (matrix == nullptr || !valid(moments) || moments->columns != matrix->cols
-        || matrix->axis != ::cellerator::matrix::device::compressed_by_row) return 0;
+        || matrix->axis != ::cellerator::interop::formats::device::compressed_by_row) return 0;
     compressed_kernel<<<row_blocks(matrix->rows), 256, 0, stream>>>(*matrix, row_mask, *moments);
     return cudaGetLastError() == cudaSuccess && count_rows(matrix->rows, row_mask, moments, stream);
 }

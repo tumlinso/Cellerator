@@ -1,0 +1,52 @@
+{
+  "schema": "cgs.grouping-probe-cpu-checkpoint.v1",
+  "status": "paused: CPU readiness missed deadline; no GPU work authorized after cutoff",
+  "deadline_utc": "2026-11-03T14:56:59Z",
+  "adapter_preflight_completed_utc": "2026-11-03T14:57:06.922018092Z",
+  "scope": "bounded supplied-product masked-versus-cohort grouping probe, no public replay",
+  "contract_path": "planning/chromatin-geometry-study-2026-11-02/contract-freeze-grouping-probe-v3.json",
+  "contract_sha256": "410bd5cf83d49eb2f19acce2bd22ddad3e44c23189ad57774ef129e3cb443306",
+  "archive_path": "bench/chromatin_geometry/.autobench/data/closures/9a4e485a21e8926e814e6fd0c832c674a09ecaecf81e7719cf0cfbcf664844a5.tar.gz",
+  "archive_sha256": "5a96d8fc2ca95ea39e071748f70f297b4ffdef6f92e11c84f8cb454f9c866237",
+  "study_binary_sha256": "19b0dc4828ee2547adb6a1b682fa50b7260eb681e88d7ac5be464f49341de1ab",
+  "study_build_receipt_sha256": "c6a0f82462649bdaa97fcac56946f3452b4de82b408f06db4df484a6cb69547d",
+  "qualification_binary_sha256": "a0b741167010682869b85bc597c53f92784adcd345db45be1a5a3e4eb9232a7d",
+  "qualification_build_receipt_sha256": "995b8f3dc617dc5c15e9539cc20a6a8c4f519d563667f5809585204ed465f864",
+  "adapter_preflight_receipt_sha256": "b8d1c2776ca4d61d57e7ab4963b1bac36eba06f9bfe78e2d9dbbdd6a046dd94c",
+  "binary_root": "bench/chromatin_geometry/runs/grouping-probe-v1/cpu-build",
+  "local_budget_path": "bench/chromatin_geometry/runs/grouping-probe-v1/probe-budget.json",
+  "local_budget_seconds": 600,
+  "local_gpu_jobs": 0,
+  "local_gpu_seconds": 0,
+  "global_charged_gpu_seconds": 2332.120188474655,
+  "unresolved_gpu_reservations": [],
+  "study_lane_root": "bench/chromatin_geometry/runs/grouping-probe-v1/lanes",
+  "study_lanes": [
+    {
+      "lane": 0,
+      "active": false,
+      "paused": true,
+      "attempts": 0
+    },
+    {
+      "lane": 1,
+      "active": false,
+      "paused": true,
+      "attempts": 0
+    },
+    {
+      "lane": 2,
+      "active": false,
+      "paused": true,
+      "attempts": 0
+    }
+  ],
+  "parent_paused": true,
+  "review_findings": [
+    "comparison uses ratio of separate arm medians instead of the approved paired median",
+    "pair order differs from the frozen AB/BA sequence"
+  ],
+  "gpu_qualification": "not run",
+  "gpu_timing": "not run",
+  "next_step": "Await user direction; reconcile independent review findings and scope before resuming. No automatic retry or continuation."
+}

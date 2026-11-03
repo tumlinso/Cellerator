@@ -50,9 +50,9 @@ void test_candidate_surface() {
 void test_quantitative_planner_bridge() {
     const auto fixture_ids =
         cellerator::fixtures::quantitative_relation::pbmc3k_quantitative_v1_identities();
-    require(execution::valid_identity(fixture_ids.feature_domain)
-            && execution::valid_identity(fixture_ids.observation_domain)
-            && execution::valid_identity(fixture_ids.structure),
+    require(::cellerator::structure::valid_identity(fixture_ids.feature_domain)
+            && ::cellerator::structure::valid_identity(fixture_ids.observation_domain)
+            && ::cellerator::structure::valid_identity(fixture_ids.structure),
         "checksum-pinned fixture identities are unavailable");
 
     constexpr std::uint64_t offsets[]{0u, 2u, 3u};

@@ -87,9 +87,9 @@ edge_map_or_gate_result_v1 validate_edge_map_or_gate_plan_v1(
             "edge map-or-gate operation is invalid");
     if (!execution::valid_handle(plan.structure.identity)
         || plan.structure.epoch.value == 0u
-        || !execution::valid_identity(plan.projection_identity)
+        || !::cellerator::structure::valid_identity(plan.projection_identity)
         || !execution::valid_handle(plan.projection)
-        || !execution::valid_identity(plan.logical_edge_order))
+        || !::cellerator::structure::valid_identity(plan.logical_edge_order))
         return error(edge_map_or_gate_status_v1::invalid_identity,
             "edge map-or-gate identity is invalid");
     const bool valid_input_layout =
@@ -189,7 +189,7 @@ edge_map_or_gate_result_v1 run_edge_map_or_gate_v1(
         if (gate.values == nullptr
             || gate.logical_edge_count != plan.logical_edge_count
             || gate.value_type != plan.gate_type
-            || !execution::same_identity(
+            || !::cellerator::structure::same_identity(
                 gate.logical_edge_order, plan.logical_edge_order))
             return error(edge_map_or_gate_status_v1::invalid_shape,
                 "edge map-or-gate logical gate contract is invalid");

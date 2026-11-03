@@ -1,0 +1,11 @@
+$ cmake --build /tmp/cellerator-factorized-interaction-build --target cellerator_factorized_interaction_training -j2
+[ 25%] Built target cellerator_support
+[ 50%] Built target cellerator_memory_cuda
+[ 75%] Built target cellerator_layout
+[100%] Built target cellerator_factorized_interaction_cuda
+[100%] Building CUDA object CMakeFiles/cellerator_factorized_interaction_training.dir/examples/native_cuda/factorized_interaction_training.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[100%] Linking CXX executable cellerator_factorized_interaction_training
+[100%] Built target cellerator_factorized_interaction_training
+
+exit_code=0

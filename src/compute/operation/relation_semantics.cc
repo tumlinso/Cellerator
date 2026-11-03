@@ -11,10 +11,10 @@ bool same_axis(const axis_descriptor& a, const axis_descriptor& b) noexcept {
     return a.extent == b.extent
         && x.header.schema_version == y.header.schema_version
         && x.header.kind == y.header.kind && x.header.byte_count == y.header.byte_count
-        && execution::same_identity(x.domain, y.domain)
-        && execution::same_identity(x.order, y.order)
-        && execution::same_identity(x.geometry, y.geometry)
-        && execution::same_identity(x.partition, y.partition);
+        && ::cellerator::structure::same_identity(x.domain, y.domain)
+        && ::cellerator::structure::same_identity(x.order, y.order)
+        && ::cellerator::structure::same_identity(x.geometry, y.geometry)
+        && ::cellerator::structure::same_identity(x.partition, y.partition);
 }
 std::uint64_t float_bytes(execution::numeric_type type) noexcept {
     switch (type) {
@@ -32,8 +32,8 @@ bool fits(std::uint64_t extent, std::uint64_t width, std::uint64_t bytes) noexce
 
 status validate(const operation_descriptor& op) noexcept {
     const auto& t = op.topology;
-    if (!execution::valid_identity(t.identity) || t.epoch.value == 0
-        || !execution::valid_identity(t.logical_edge_order))
+    if (!::cellerator::structure::valid_identity(t.identity) || t.epoch.value == 0
+        || !::cellerator::structure::valid_identity(t.logical_edge_order))
         return {status_code::invalid_identity, "topology, epoch and edge order must be identified"};
     if (execution::validate_persistent_axis_identity(t.source.identity)
             != execution::biological_validation_code::ok
@@ -77,10 +77,10 @@ bool equivalent(const operation_descriptor& x, const operation_descriptor& y) no
     const auto& b = y.topology;
     const auto& p = x.arithmetic;
     const auto& q = y.arithmetic;
-    return execution::same_identity(a.identity, b.identity)
+    return ::cellerator::structure::same_identity(a.identity, b.identity)
         && a.epoch.value == b.epoch.value
         && same_axis(a.source, b.source) && same_axis(a.destination, b.destination)
-        && execution::same_identity(a.logical_edge_order, b.logical_edge_order)
+        && ::cellerator::structure::same_identity(a.logical_edge_order, b.logical_edge_order)
         && a.edge_count == b.edge_count && x.direction == y.direction
         && p.relation_storage == q.relation_storage && p.input_storage == q.input_storage
         && p.multiply == q.multiply && p.accumulation == q.accumulation

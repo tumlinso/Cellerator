@@ -1,0 +1,27 @@
+[benchmark]
+name = "shared-product-circuit-measurement"
+revision = 1
+
+[source]
+include = ["operator/stage_runner.py", "inputs/**", "validation-ready.json"]
+
+[[packet]]
+name = "paired-full-forward-vjp"
+kind = "timing"
+argv = [
+  "python3", "{snapshot}/operator/stage_runner.py",
+  "--runner", "{snapshot}/inputs/build/runner", "--output", "{output}/measurement", "--",
+  "python3", "{snapshot}/inputs/bench/factorized_interactions/prototypes/shared_product_circuit/driver.py", "measure",
+  "--case-manifest", "{snapshot}/inputs/bench/factorized_interactions/prototypes/shared_product_circuit/evidence/frozen-fixtures-v1/manifest.json",
+  "--runner", "@RUNNER@", "--build-manifest", "{snapshot}/inputs/build/build_manifest.json",
+  "--validation-summary", "{snapshot}/validation-ready.json",
+  "--expected-uuid", "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+  "--artifact-dir", "{output}/measurement/driver", "--wall-budget-seconds", "165",
+]
+expected_seconds = 145
+kill_seconds = 170
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 1073741824 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 4294967296 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }

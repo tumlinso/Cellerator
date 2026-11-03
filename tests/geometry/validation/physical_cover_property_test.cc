@@ -1,4 +1,4 @@
-#include <Cellerator/compute/projection/physical_mma_hybrid.hh>
+#include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <algorithm>
 #include <cassert>
@@ -10,9 +10,9 @@
 #include <random>
 #include <vector>
 
-namespace projection = cellerator::compute::projection;
+namespace projection = cellerator::layout::projection;
 
-namespace cellerator::compute::projection {
+namespace cellerator::layout::projection {
 bool validate_physical_mma_hybrid_image_v1(
     const void *, std::size_t) noexcept;
 }
@@ -50,7 +50,7 @@ void store_record(std::vector<unsigned char> *image,
 
 struct generated_image {
     std::vector<unsigned char> bytes;
-    projection::physical_mma_hybrid_header_v1 header{};
+    projection::MmaHybridLayoutV1 header{};
     std::uint32_t mma_edges = 0u;
     std::uint32_t residual_edges = 0u;
 };
@@ -145,7 +145,7 @@ generated_image make_valid_image(std::mt19937 &random,
     }
 
     generated_image result{};
-    result.bytes.resize(sizeof(projection::physical_mma_hybrid_header_v1));
+    result.bytes.resize(sizeof(projection::MmaHybridLayoutV1));
     auto &header = result.header;
     header.structure_identity.identity_version = 1u;
     header.structure_identity.value = 0x101u;

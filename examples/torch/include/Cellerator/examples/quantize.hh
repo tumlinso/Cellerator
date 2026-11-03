@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/quantized/layout.cuh>
-#include <Cellerator/quantized/packing.cuh>
+#include <Cellerator/tensor/quantized/layout.cuh>
+#include <Cellerator/tensor/quantized/packing.cuh>
 
 #include <torch/torch.h>
 
@@ -17,7 +17,8 @@
 
 namespace cellerator::examples::quantize {
 
-namespace msq = ::cellerator::quantized;
+namespace msq = ::cellerator::tensor::quantized;
+namespace mso = ::cellerator::ops::quantized;
 
 // Primitive/training wrapper around the lower-level quantized backend.
 
@@ -189,7 +190,7 @@ inline PackedDenseQuantizedMatrix pack_dense_quantized_matrix_impl_(
     msq::build_uniform_block_row_ptr(rows, rows_per_block, packed.block_row_ptr.data());
     packed.packed_values.assign(static_cast<std::size_t>(packed.packed_row_ptr.back()), 0u);
 
-    auto matrix = msq::make_matrix<Bits>(
+    auto matrix = msq::make_csr_view<Bits>(
         packed.rows,
         packed.cols,
         packed.nnz,
@@ -210,7 +211,7 @@ inline PackedDenseQuantizedMatrix pack_dense_quantized_matrix_impl_(
 template<int Bits>
 inline torch::Tensor unpack_dense_quantized_matrix_impl_(const PackedDenseQuantizedMatrix &packed) {
     std::vector<float> unpacked(static_cast<std::size_t>(packed.nnz), 0.0f);
-    auto matrix = msq::make_matrix<Bits>(
+    auto matrix = msq::make_csr_view<Bits>(
         packed.rows,
         packed.cols,
         packed.nnz,

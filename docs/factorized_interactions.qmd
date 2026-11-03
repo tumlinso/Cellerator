@@ -1,0 +1,188 @@
+---
+title: "Factorized joint interactions"
+---
+
+The experimental native factorized-interaction component executes an explicit
+conditional joint law over ordered participant occurrences. It provides a
+shared-input packet route and an independently implemented direct CUDA route.
+It is independent of Torch, Python, a model superclass, and a Cell lifecycle.
+The [qualification record](../planning/interaction-layout-proposal-2026-11-02/VALIDATION.md)
+separates host checks, actual device checks and measured performance.
+
+## Operation and numerical types
+
+For mechanism `m`, cell `c` and channel `d`, the operation is:
+
+```text
+gate[m,c] = sigmoid(bias[bias_id[m]]
+                  + sum_k gamma[gamma_id[m,k]] * z[context[m,k],c])
+y[target[m],d,c] += gate[m,c] * alpha[alpha_id[m],d]
+                   * product_r x[participant[m,r],d,c]
+```
+
+Every forward overwrites the output, starting from zero. A mechanism has two,
+three or four ordered input slots. Repeated slots and context terms preserve
+multiplicity. Parameter-bank indices are independent of mechanism IDs, so
+different mechanisms can share alpha rows, bias scalars or gamma scalars.
+An empty context list produces `sigmoid(bias)`.
+
+The layout distinguishes operation-local numerical occurrence ordinals from
+canonical biological identity. It does not discover regulatory structure or
+assign biological meaning. The [checked pattern adapter](../include/Cellerator/layout/factorized_interaction_pattern.hh)
+binds an existing `ExplicitPattern` through an explicit ordered incidence map;
+raw preparation instead accepts the caller's identity/epoch assertions.
+This is one numerical law, distinct from the existing positive-part-squared
+gated-product family.
+
+| Numerical value | Axes |
+| --- | --- |
+| Participant values | `x[occurrence, channel, cell]` |
+| Conditioning values | `z[context, cell]` |
+| Per-channel coefficients | `alpha[parameter_row, channel]` |
+| Gate scalars | `bias[bias_id]`, `gamma[gamma_id]` |
+| Output | `y[target, channel, cell]` |
+
+Activation storage, parameter storage and output storage explicitly select
+FP16 or FP32; defaults are FP16. Products, gates and reductions use FP32.
+Output cotangents and all five native VJP buffers are FP32. FP32 atomic
+reductions may change summation order; the operation does not promise bitwise
+reproducibility. There is no threshold pruning of sigmoid values, and product
+derivatives remain valid when participant values are zero.
+
+Long conditioning sums use compensated FP32 arithmetic, including multiplication
+residuals. The per-invocation tape saves gates and stable sigmoid slopes, so a
+gate rounded to one does not silently erase a small derivative. High-fan-in
+problems use a shared compensated-reduction backend. The backend query reports
+`packet`, `direct`, or `stable`; two requests using `stable` do not constitute a
+comparison of the packet layout against direct execution.
+
+The main numerical qualification domain uses finite `x`, `z`, `alpha` and
+`gamma` in `[-1, 1]` and bias in `[-4, 4]`. The fixed corpus also declares
+literal cancellation and sigmoid-saturation adversaries, including FP32 values
+slightly above unit magnitude. Values outside the main domain are not clamped or scanned by
+the low-level API; their accuracy requires separate qualification.
+
+## Prepare topology and execute
+
+[`factorized_interaction.hh`](../include/Cellerator/layout/factorized_interaction.hh)
+defines the host records. Preparation groups compatible mechanisms into bounded
+packets with distinct input/context dictionaries, local role references and
+forward/reverse postings. It retains stable mechanism IDs and structure epochs.
+Changing topology or the numerical binding of occurrences requires preparation
+of a new compatible layout; changing values or parameters does not.
+
+```cpp
+#include <Cellerator/layout/factorized_interaction.hh>
+
+namespace layout = cellerator::layout;
+layout::FactorizedInteractionMechanism mechanism;
+mechanism.logical_id = 1;
+mechanism.arity = 3;
+mechanism.inputs = {0, 1, 0, 0}; // Input 0 participates twice.
+mechanism.target = 0;
+mechanism.alpha = 0;
+mechanism.bias = 0;
+mechanism.terms = {{0, 0}, {1, 1}};
+
+auto prepared = layout::prepare_factorized_interactions(
+    {mechanism}, layout::FactorizedInteractionExtents{2, 2, 1, 1, 1, 2});
+```
+
+[`modeling/cuda/factorized_interaction.hh`](../include/Cellerator/modeling/cuda/factorized_interaction.hh)
+supplies the device owner, workspace query and asynchronous forward/VJP calls.
+`FactorizedInteractionDeviceLayout` owns uploaded structural buffers; its
+readiness and numerical-use lifetimes follow the declared stream contract.
+It owns no numerical inputs, parameters or tapes.
+
+Low-level calls allocate no memory and perform no synchronization. Callers
+provide disjoint output, scratch and gradient buffers, and a per-invocation tape
+for saved gates and slopes. They retain structure, immutable primals, parameters and tape
+through backward and queued stream completion. Repeated VJPs need private
+scratch/gradient destinations; a different stream requires an event dependency.
+Opaque borrowed buffers do not acquire automatic mutation tracking or snapshots.
+Structural descriptors and posting arrays must also remain disjoint from all
+writable numerical buffers. Argument checks do not prove the provenance or
+non-aliasing of every borrowed device allocation.
+
+The [C++ training example](../examples/native_cuda/factorized_interaction_training.cu)
+shows preparation, allocation, forward, all five VJPs and explicit parameter
+updates. Allocation owners remain separate from model computation. The example
+is buildable without a Torch dependency; running it requires admitted CUDA
+execution.
+
+## Optional Torch adaptation
+
+The optional adapter exposes the same native law through ordinary Torch tensors
+and first-order autograd. A prepared plan caches immutable structural uploads
+per device; each invocation owns its tape and scratch. Numerical values and
+parameters remain caller-owned tensors.
+
+```python
+import torch
+from cellerator.torch import PreparedFactorizedInteraction
+
+interaction = PreparedFactorizedInteraction(
+    [{"logical_id": 1, "inputs": [0, 1, 0], "target": 0,
+      "alpha": 0, "bias": 0, "terms": [(0, 0), (1, 1)]}],
+    inputs=2, contexts=2, outputs=1, alpha_rows=1, biases=1, gammas=2,
+)
+x = torch.rand(2, 8, 32, device="cuda", dtype=torch.float16,
+               requires_grad=True)
+z = torch.rand(2, 32, device="cuda", dtype=torch.float16,
+               requires_grad=True)
+alpha = torch.nn.Parameter(torch.ones(1, 8, device="cuda"))
+bias = torch.nn.Parameter(torch.zeros(1, device="cuda"))
+gamma = torch.nn.Parameter(torch.ones(2, device="cuda"))
+optimizer = torch.optim.SGD([alpha, bias, gamma], lr=1e-3)
+
+optimizer.zero_grad()
+y = interaction(x, z, alpha, bias, gamma, output_dtype=torch.float32)
+y.square().mean().backward()
+optimizer.step()
+```
+
+All tensors must satisfy the declared contiguous shapes and CUDA device/dtype
+contract. Autograd returns each gradient in its input tensor's dtype; the native
+VJP computes in FP32. Saved tensors use Torch's version checks. Higher-order
+derivatives are rejected explicitly. The `route="direct"` option selects the
+direct control request; high-fan-in workloads may select the shared stable
+backend for either request. The host-layout C++ adapter is a convenience path
+that prepares and uploads on each call; use a persistent prepared owner for
+repeated execution.
+
+## Build and evidence boundary
+
+An installed native CUDA-enabled package exposes:
+
+```cmake
+find_package(Cellerator REQUIRED COMPONENTS factorized_interaction_cuda)
+target_link_libraries(my_model PRIVATE Cellerator::factorized_interaction_cuda)
+```
+
+For a source build, follow the CUDA configuration in the
+[developer reference](developer_reference.qmd) and enable
+`CELLERATOR_BUILD_FACTORIZED_INTERACTION_EXAMPLE=ON`. The example target and
+focused install component are:
+
+```sh
+cmake --build build --target cellerator_factorized_interaction_training
+cmake --install build --prefix /path/to/prefix --component FactorizedInteractionCUDA
+```
+
+Packet preparation and host validation can be checked without executing CUDA.
+CUDA compilation does not establish device correctness. The independent scalar
+oracle and frozen workloads live in `tests/factorized_interactions` and
+`bench/factorized_interactions`. Device validation, sanitizers and timing run
+through the canonical Autobench/Scheduler route.
+
+The packet representation is an experimental candidate. Reduced operand counts
+are not measured memory traffic or a speedup. Preparation, upload, boundary
+conversion, forward, backward, reductions and parameter refresh contribute to
+the caller's complete cost. Use the qualification record for the exact cases
+and supported performance conclusions; no biological validation follows.
+
+The native delivery milestone is complete and independently reviewed.
+Performance work is [paused](../planning/interaction-layout-proposal-2026-11-02/PAUSED.md)
+with no accepted timing results. The current API defaults to the experimental
+packet request; direct execution is explicit. No measured winner or production
+route-selection policy has been integrated.

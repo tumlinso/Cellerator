@@ -1,4 +1,5 @@
 #include <Cellerator/modeling/cuda/grouped_linear.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 
 #include <cuda_fp16.h>
 
@@ -18,6 +19,7 @@
 
 namespace {
 using namespace cellerator::modeling::cuda;
+namespace mem = cellerator::memory::cuda;
 
 template <class T> float as_float(T value) { return static_cast<float>(value); }
 template <> float as_float(__half value) { return __half2float(value); }
@@ -30,7 +32,7 @@ float fp16_ulp(float value) {
   return std::ldexp(1.0f, std::ilogb(magnitude) - 10);
 }
 
-float allowed_error(DType dtype, float expected, int dot_length,
+float allowed_error(mem::DType dtype, float expected, int dot_length,
                     float sum_abs_products) {
   // Two dot implementations can each incur a gamma_(2n) error; FP16 also
   // rounds the final FP32 accumulator to a half output value.
@@ -40,7 +42,7 @@ float allowed_error(DType dtype, float expected, int dot_length,
   const float accumulation_bound = static_cast<float>(
       (2.0 * ku / (1.0 - ku)) * sum_abs_products);
   return accumulation_bound +
-      (dtype == DType::float16 ? fp16_ulp(expected) : 0.0f);
+      (dtype == mem::DType::float16 ? fp16_ulp(expected) : 0.0f);
 }
 
 struct GroupedGemmPlan {
@@ -50,16 +52,16 @@ struct GroupedGemmPlan {
   std::vector<float> alpha, beta;
   std::vector<const void*> a, b;
   std::vector<void*> c;
-  DeviceBuffer device_a, device_b, device_c;
+  mem::DeviceBuffer device_a, device_b, device_c;
 };
 
 GroupedGemmPlan grouped_plan(const std::vector<std::int64_t>& offsets,
                              std::int64_t inputs, std::int64_t outputs,
-                             const std::vector<ConstDeviceView>& weights,
-                             ConstDeviceView x, DeviceView y, DType dtype,
-                             const Stream& stream) {
+                             const std::vector<mem::ConstDeviceView>& weights,
+                             mem::ConstDeviceView x, mem::DeviceView y, mem::DType dtype,
+                             const mem::Stream& stream) {
   GroupedGemmPlan plan;
-  const auto size = item_size(dtype);
+  const auto size = mem::item_size(dtype);
   for (std::size_t e = 0; e + 1 < offsets.size(); ++e) {
     const auto rows = offsets[e + 1] - offsets[e];
     if (rows == 0) continue;
@@ -82,9 +84,9 @@ GroupedGemmPlan grouped_plan(const std::vector<std::int64_t>& offsets,
   }
   const auto pointer_bytes = plan.a.size() * sizeof(const void*);
   if (pointer_bytes) {
-    plan.device_a = DeviceBuffer(pointer_bytes, x.device);
-    plan.device_b = DeviceBuffer(pointer_bytes, x.device);
-    plan.device_c = DeviceBuffer(plan.c.size() * sizeof(void*), x.device);
+    plan.device_a = mem::DeviceBuffer(pointer_bytes, x.device);
+    plan.device_b = mem::DeviceBuffer(pointer_bytes, x.device);
+    plan.device_c = mem::DeviceBuffer(plan.c.size() * sizeof(void*), x.device);
     plan.device_a.upload_async(plan.a.data(), pointer_bytes, stream);
     plan.device_b.upload_async(plan.b.data(), pointer_bytes, stream);
     plan.device_c.upload_async(plan.c.data(), plan.c.size() * sizeof(void*), stream);
@@ -93,9 +95,9 @@ GroupedGemmPlan grouped_plan(const std::vector<std::int64_t>& offsets,
 }
 
 void run_grouped_gemm(cublasHandle_t handle, const GroupedGemmPlan& plan,
-                      DType dtype) {
+                      mem::DType dtype) {
   if (plan.m.empty()) return;
-  const auto type = dtype == DType::float16 ? CUDA_R_16F : CUDA_R_32F;
+  const auto type = dtype == mem::DType::float16 ? CUDA_R_16F : CUDA_R_32F;
   const auto status = cublasGemmGroupedBatchedEx(
       handle, plan.trans_a.data(), plan.trans_b.data(), plan.m.data(),
       plan.n.data(), plan.k.data(), plan.alpha.data(),
@@ -113,7 +115,7 @@ void run_grouped_gemm(cublasHandle_t handle, const GroupedGemmPlan& plan,
 void compare(const char* label, const std::vector<float>& actual,
              const std::vector<float>& expected,
              const std::vector<float>& sum_abs_products,
-             int dot_length, DType dtype) {
+             int dot_length, mem::DType dtype) {
   assert(actual.size() == expected.size());
   assert(actual.size() == sum_abs_products.size());
   float max_error = 0.0f;
@@ -151,7 +153,7 @@ std::vector<float> decode(const std::vector<T>& input) {
 
 template <class T>
 void verify_case(const std::vector<std::int64_t>& offsets, int inputs,
-                 int outputs, DType dtype, int device, const char* tag) {
+                 int outputs, mem::DType dtype, int device, const char* tag) {
   const auto experts = offsets.size() - 1;
   const auto rows = static_cast<std::size_t>(offsets.back());
   std::mt19937 rng(0xCE11E + static_cast<unsigned>(inputs * 31 + outputs));
@@ -162,8 +164,8 @@ void verify_case(const std::vector<std::int64_t>& offsets, int inputs,
 
   std::vector<std::vector<float>> weights(experts);
   std::vector<std::vector<T>> device_weights(experts);
-  std::vector<ConstDeviceView> weight_views;
-  std::vector<DeviceBuffer> weight_buffers;
+  std::vector<mem::ConstDeviceView> weight_views;
+  std::vector<mem::DeviceBuffer> weight_buffers;
   weight_buffers.reserve(experts);
   weight_views.reserve(experts);
   for (std::size_t e = 0; e < experts; ++e) {
@@ -175,11 +177,11 @@ void verify_case(const std::vector<std::int64_t>& offsets, int inputs,
   }
 
   const auto x_t = encode<T>(x), dy_t = encode<T>(dy);
-  DeviceBuffer input_buffer(x_t.size() * sizeof(T), device);
-  DeviceBuffer dy_buffer(dy_t.size() * sizeof(T), device);
-  DeviceBuffer y_buffer(rows * outputs * sizeof(T), device);
-  DeviceBuffer dx_buffer(rows * inputs * sizeof(T), device);
-  Stream stream(device);
+  mem::DeviceBuffer input_buffer(x_t.size() * sizeof(T), device);
+  mem::DeviceBuffer dy_buffer(dy_t.size() * sizeof(T), device);
+  mem::DeviceBuffer y_buffer(rows * outputs * sizeof(T), device);
+  mem::DeviceBuffer dx_buffer(rows * inputs * sizeof(T), device);
+  mem::Stream stream(device);
   input_buffer.upload_async(x_t.data(), x_t.size() * sizeof(T), stream);
   dy_buffer.upload_async(dy_t.data(), dy_t.size() * sizeof(T), stream);
   for (std::size_t e = 0; e < experts; ++e)
@@ -217,7 +219,7 @@ void verify_case(const std::vector<std::int64_t>& offsets, int inputs,
 
   // One-call cuBLAS grouped GEMM is a library alternative and provides a
   // separate device implementation of the same forward oracle.
-  DeviceBuffer grouped_y_buffer(rows * outputs * sizeof(T), device);
+  mem::DeviceBuffer grouped_y_buffer(rows * outputs * sizeof(T), device);
   std::vector<T> grouped_seed(rows * outputs, from_float<T>(-7.0f));
   grouped_y_buffer.upload_async(grouped_seed.data(), grouped_seed.size() * sizeof(T), stream);
   auto plan = grouped_plan(offsets, inputs, outputs, weight_views,
@@ -225,7 +227,7 @@ void verify_case(const std::vector<std::int64_t>& offsets, int inputs,
   cublasHandle_t grouped_handle = nullptr;
   assert(cublasCreate(&grouped_handle) == CUBLAS_STATUS_SUCCESS);
   assert(cublasSetStream(grouped_handle, stream.get()) == CUBLAS_STATUS_SUCCESS);
-  assert(cublasSetMathMode(grouped_handle, dtype == DType::float16
+  assert(cublasSetMathMode(grouped_handle, dtype == mem::DType::float16
       ? CUBLAS_TENSOR_OP_MATH : CUBLAS_DEFAULT_MATH) == CUBLAS_STATUS_SUCCESS);
   run_grouped_gemm(grouped_handle, plan, dtype);
   stream.synchronize();
@@ -272,10 +274,10 @@ void verify_case(const std::vector<std::int64_t>& offsets, int inputs,
 
   std::vector<T> dx_seed(rows * inputs, from_float<T>(0.25f));
   dx_buffer.upload_async(dx_seed.data(), dx_seed.size() * sizeof(T), stream);
-  std::vector<DeviceBuffer> dw_buffers;
+  std::vector<mem::DeviceBuffer> dw_buffers;
   std::vector<std::vector<T>> dw_host(experts,
       std::vector<T>(static_cast<std::size_t>(outputs) * inputs, from_float<T>(-0.5f)));
-  std::vector<DeviceView> dw_views;
+  std::vector<mem::DeviceView> dw_views;
   dw_buffers.reserve(experts);
   dw_views.reserve(experts);
   for (std::size_t e = 0; e < experts; ++e) {
@@ -334,14 +336,14 @@ void verify_case(const std::vector<std::int64_t>& offsets, int inputs,
             static_cast<int>(offsets[e + 1] - offsets[e]) + 1, dtype);
   }
   std::cout << "PASS " << tag << " dtype="
-            << (dtype == DType::float16 ? "fp16" : "fp32")
+            << (dtype == mem::DType::float16 ? "fp16" : "fp32")
             << " experts=" << experts << " rows=" << rows
             << " in=" << inputs << " out=" << outputs << '\n';
 }
 
 template <class T>
 void benchmark_case(int experts, int rows_per_expert, int inputs,
-                    int outputs, DType dtype, int device) {
+                    int outputs, mem::DType dtype, int device) {
   const std::size_t rows = static_cast<std::size_t>(experts) * rows_per_expert;
   std::vector<std::int64_t> offsets(experts + 1);
   for (int e = 0; e <= experts; ++e) offsets[e] = e * rows_per_expert;
@@ -350,9 +352,9 @@ void benchmark_case(int experts, int rows_per_expert, int inputs,
   std::vector<float> x(rows * inputs);
   for (auto& value : x) value = dist(rng);
   auto x_t = encode<T>(x);
-  std::vector<DeviceBuffer> weights;
+  std::vector<mem::DeviceBuffer> weights;
   std::vector<std::vector<T>> weight_data(experts);
-  std::vector<ConstDeviceView> weight_views;
+  std::vector<mem::ConstDeviceView> weight_views;
   weights.reserve(experts);
   weight_views.reserve(experts);
   for (int e = 0; e < experts; ++e) {
@@ -362,9 +364,9 @@ void benchmark_case(int experts, int rows_per_expert, int inputs,
     weights.emplace_back(weight_data[e].size() * sizeof(T), device);
     weight_views.push_back(weights.back().view());
   }
-  DeviceBuffer input(rows * inputs * sizeof(T), device);
-  DeviceBuffer output(rows * outputs * sizeof(T), device);
-  Stream stream(device);
+  mem::DeviceBuffer input(rows * inputs * sizeof(T), device);
+  mem::DeviceBuffer output(rows * outputs * sizeof(T), device);
+  mem::Stream stream(device);
   input.upload_async(x_t.data(), x_t.size() * sizeof(T), stream);
   for (int e = 0; e < experts; ++e)
     weights[e].upload_async(weight_data[e].data(), weight_data[e].size() * sizeof(T), stream);
@@ -375,7 +377,7 @@ void benchmark_case(int experts, int rows_per_expert, int inputs,
   constexpr int repeats = 48;
   constexpr int samples = 7;
   std::vector<float> gpu_ms, wall_ms;
-  Event begin(device, true), end(device, true);
+  mem::Event begin(device, true), end(device, true);
   for (int sample = 0; sample < samples; ++sample) {
     const auto wall_begin = std::chrono::steady_clock::now();
     begin.record(stream);
@@ -390,7 +392,7 @@ void benchmark_case(int experts, int rows_per_expert, int inputs,
     std::sort(values.begin(), values.end());
     return values[values.size() / 2];
   };
-  std::cout << "BENCH grouped_linear," << (dtype == DType::float16 ? "fp16" : "fp32")
+  std::cout << "BENCH grouped_linear," << (dtype == mem::DType::float16 ? "fp16" : "fp32")
             << ',' << experts << ',' << rows_per_expert << ',' << inputs << ',' << outputs
             << ",gpu_event_median_ms=" << median(gpu_ms)
             << ",submit_sync_median_ms=" << median(wall_ms)
@@ -407,9 +409,9 @@ void gpu_tests(int device) {
         ? std::vector<std::int64_t>{0, 3, 3, 5, 9}
         : test[2] == 1 ? std::vector<std::int64_t>{0, 1, 9, 17}
                        : std::vector<std::int64_t>{0, 2, 7, 8};
-    verify_case<float>(offsets, input_features, output_features, DType::float32, device,
+    verify_case<float>(offsets, input_features, output_features, mem::DType::float32, device,
                        ("ragged_" + std::to_string(test[2])).c_str());
-    verify_case<__half>(offsets, input_features, output_features, DType::float16, device,
+    verify_case<__half>(offsets, input_features, output_features, mem::DType::float16, device,
                         ("ragged_" + std::to_string(test[2])).c_str());
   }
 }
@@ -420,8 +422,8 @@ void benchmark(int device) {
                             {32, 2, 64, 64}, {8, 16, 128, 128},
                             {16, 8, 256, 256}};
   for (const auto& config : configs) {
-    benchmark_case<__half>(config[0], config[1], config[2], config[3], DType::float16, device);
-    benchmark_case<float>(config[0], config[1], config[2], config[3], DType::float32, device);
+    benchmark_case<__half>(config[0], config[1], config[2], config[3], mem::DType::float16, device);
+    benchmark_case<float>(config[0], config[1], config[2], config[3], mem::DType::float32, device);
   }
 }
 
@@ -441,13 +443,13 @@ int main(int argc, char** argv) {
     return 0;
   }
   int device_count = 0;
-  check(cudaGetDeviceCount(&device_count), "get visible CUDA device count");
+  mem::check(cudaGetDeviceCount(&device_count), "get visible CUDA device count");
   if (device_count <= 0) throw std::runtime_error("no CUDA device is visible");
   int device = 0;
-  check(cudaGetDevice(&device), "get scheduler-selected CUDA device");
+  mem::check(cudaGetDevice(&device), "get scheduler-selected CUDA device");
   if (device >= device_count) throw std::runtime_error("selected CUDA device is not visible");
   cudaDeviceProp properties{};
-  check(cudaGetDeviceProperties(&properties, device), "get selected CUDA properties");
+  mem::check(cudaGetDeviceProperties(&properties, device), "get selected CUDA properties");
   std::cout << "DEVICE name=" << properties.name << " cc=" << properties.major << '.'
             << properties.minor << " visible_index=" << device << '\n';
   if (properties.major != 7 || properties.minor != 0)

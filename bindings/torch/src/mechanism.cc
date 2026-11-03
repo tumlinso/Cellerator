@@ -14,7 +14,7 @@
 
 namespace cellerator::bindings::torch {
 namespace {
-namespace ix = cellerator::compute::operation::indexed;
+namespace ix = cellerator::ops::mechanism::indexed;
 
 std::uintptr_t version(const ::torch::Tensor& t) {
     return static_cast<std::uintptr_t>(t.unsafeGetTensorImpl()->version_counter().current_version());

@@ -2,12 +2,14 @@
 #undef NDEBUG
 #endif
 #include <Cellerator/modeling/cuda/reactions.hh>
+#include <Cellerator/memory/cuda/resources.hh>
 #include <cassert>
 #include <cstdlib>
 #include <cstdint>
 #include <limits>
 #include <string>
 #include <vector>
+namespace mem = cellerator::memory::cuda;
 using namespace cellerator::modeling::cuda;
 
 struct ReactionFixture {
@@ -20,9 +22,9 @@ struct ReactionFixture {
 };
 
 template<class T>
-DeviceBuffer upload(const std::vector<T>& values, const Stream& stream);
+mem::DeviceBuffer upload(const std::vector<T>& values, const mem::Stream& stream);
 template<class T>
-std::vector<T> download(const DeviceBuffer& buffer, std::size_t count, const Stream& stream);
+std::vector<T> download(const mem::DeviceBuffer& buffer, std::size_t count, const mem::Stream& stream);
 
 // Deliberately simple CPU interpreter: it walks the event sequence and applies
 // each stoichiometric row in order. Generated counts ensure valid events here;
@@ -65,8 +67,8 @@ ReactionFixture make_fixture() {
 }
 
 std::vector<std::uint64_t> download_changed_prefixes(
-    const DeviceBuffer& buffer, const std::vector<ReactionCellStatus>& statuses,
-    std::uint64_t capacity_per_cell, const Stream& stream) {
+    const mem::DeviceBuffer& buffer, const std::vector<ReactionCellStatus>& statuses,
+    std::uint64_t capacity_per_cell, const mem::Stream& stream) {
     std::vector<std::uint64_t> result(statuses.size() * capacity_per_cell, UINT64_MAX);
     for (std::size_t c = 0; c < statuses.size(); ++c) {
         const auto written = statuses[c].changed_written;
@@ -80,7 +82,7 @@ std::vector<std::uint64_t> download_changed_prefixes(
     return result;
 }
 
-void check_device_fixture(const Stream& stream) {
+void check_device_fixture(const mem::Stream& stream) {
     auto x = make_fixture();
     auto offsets = upload(x.offsets, stream);
     auto slots = upload(x.slots, stream);
@@ -89,8 +91,8 @@ void check_device_fixture(const Stream& stream) {
     auto reaction_ids = upload(x.reactions, stream);
     auto counts = upload(x.initial, stream);
     auto source_map = upload(x.source_map, stream);
-    DeviceBuffer status(x.cells * sizeof(ReactionCellStatus));
-    DeviceBuffer sources(x.cells * x.capacity * sizeof(std::uint64_t));
+    mem::DeviceBuffer status(x.cells * sizeof(ReactionCellStatus));
+    mem::DeviceBuffer sources(x.cells * x.capacity * sizeof(std::uint64_t));
     ReactionBank bank{offsets.view(), slots.view(), deltas.view(), 4, x.slots.size(), x.species};
     ReactionEventWorklist work{cell_offsets.view(), reaction_ids.view(), {},
                                x.reactions.size(), x.reactions.size()};
@@ -116,15 +118,15 @@ void check_device_fixture(const Stream& stream) {
 }
 
 template<class T>
-DeviceBuffer upload(const std::vector<T>& values, const Stream& stream) {
-    DeviceBuffer out(values.size() * sizeof(T), stream.device());
+mem::DeviceBuffer upload(const std::vector<T>& values, const mem::Stream& stream) {
+    mem::DeviceBuffer out(values.size() * sizeof(T), stream.device());
     out.upload_async(values.data(), values.size() * sizeof(T), stream);
     // Keep caller-owned ordinary host storage alive until transfer completion.
     stream.synchronize();
     return out;
 }
 template<class T>
-std::vector<T> download(const DeviceBuffer& buffer, std::size_t count, const Stream& stream) {
+std::vector<T> download(const mem::DeviceBuffer& buffer, std::size_t count, const mem::Stream& stream) {
     std::vector<T> result(count);
     buffer.download_async(result.data(), count * sizeof(T), stream);
     stream.synchronize();
@@ -141,7 +143,7 @@ int main(int argc, char** argv) {
     int device = 0;
     if (argc == 3 && std::string(argv[1]) == "--device") device = std::atoi(argv[2]);
     else assert(argc == 1);
-    Stream stream(device);
+    mem::Stream stream(device);
     check_device_fixture(stream);
     auto offsets = upload<std::uint64_t>({0, 2, 4, 5}, stream);
     auto slots = upload<std::uint64_t>({0, 1, 0, 1, 2}, stream);
@@ -155,8 +157,8 @@ int main(int argc, char** argv) {
     const std::vector<std::int64_t> initial{4, 0, 0, 0, 1, 0, 0, 0, INT64_MAX};
     auto counts = upload(initial, stream);
     auto ordinal_map = upload<std::uint64_t>({100, 101, 102, 200, 201, 202, 300, 301, 302}, stream);
-    DeviceBuffer statuses(3 * sizeof(ReactionCellStatus));
-    DeviceBuffer changed(18 * sizeof(std::uint64_t));
+    mem::DeviceBuffer statuses(3 * sizeof(ReactionCellStatus));
+    mem::DeviceBuffer changed(18 * sizeof(std::uint64_t));
     ReactionCountBatch batch{counts.view(), 3, 3};
     ReactionChangeOutput frontier{changed.view(), ordinal_map.view(), 6, true};
     apply_reaction_events(bank, events, batch, statuses.view(), frontier, stream);

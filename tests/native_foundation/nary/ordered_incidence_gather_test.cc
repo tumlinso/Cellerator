@@ -1,9 +1,9 @@
-#include <Cellerator/compute/operation/indexed_mechanism/incidence.hh>
+#include <Cellerator/ops/mechanism/indexed/incidence.hh>
 #include <algorithm>
 #include <array>
 #include <iostream>
 #include <stdexcept>
-namespace ix=cellerator::compute::operation::indexed;namespace ex=cellerator::execution;
+namespace ix=cellerator::ops::mechanism::indexed;namespace ex=cellerator::execution;
 void check(bool b,const char* s){if(!b)throw std::runtime_error(s);}
 ex::persistent_axis_identity axis(unsigned id) {
     return {{ex::biological_abi_version,ex::serialized_record_kind::persistent_axis_identity,sizeof(ex::persistent_axis_identity)},

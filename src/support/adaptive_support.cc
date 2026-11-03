@@ -7,12 +7,12 @@
 namespace cellerator::compute::support {
 namespace {
 
-bool edge_id_less(const logical_support_edge_v1 &edge,
+bool edge_id_less(const compact_support::EdgeV1 &edge,
                   std::uint64_t id) noexcept {
     return edge.logical_edge_id < id;
 }
 
-bool contains_sorted(const std::vector<logical_support_edge_v1> &edges,
+bool contains_sorted(const std::vector<compact_support::EdgeV1> &edges,
                      std::uint64_t id) noexcept {
     const auto it = std::lower_bound(edges.begin(), edges.end(), id, edge_id_less);
     return it != edges.end() && it->logical_edge_id == id;
@@ -24,11 +24,11 @@ bool contains_id(const std::vector<std::uint64_t> &ids,
 }
 
 void copy_active_relation(
-    const std::vector<logical_support_edge_v1> &source_edges,
-    const std::vector<logical_support_participant_v1> &source_participants,
+    const std::vector<compact_support::EdgeV1> &source_edges,
+    const std::vector<compact_support::ParticipantV1> &source_participants,
     const std::vector<std::uint64_t> &revoked,
-    std::vector<logical_support_edge_v1> *active_edges,
-    std::vector<logical_support_participant_v1> *active_participants) {
+    std::vector<compact_support::EdgeV1> *active_edges,
+    std::vector<compact_support::ParticipantV1> *active_participants) {
     active_edges->clear();
     active_participants->clear();
     for (const auto &edge : source_edges) {
@@ -42,12 +42,12 @@ void copy_active_relation(
     }
 }
 
-logical_support_view_v1 make_view(
+compact_support::ViewV1 make_view(
     std::uint64_t relation_id, std::uint64_t structure_id,
     std::uint64_t epoch,
-    const std::vector<logical_support_edge_v1> &edges,
-    const std::vector<logical_support_participant_v1> &participants) noexcept {
-    return {logical_support_schema_version_v1, 0u, relation_id, structure_id,
+    const std::vector<compact_support::EdgeV1> &edges,
+    const std::vector<compact_support::ParticipantV1> &participants) noexcept {
+    return {compact_support::schema_version_v1, 0u, relation_id, structure_id,
             epoch, edges.empty() ? nullptr : edges.data(), edges.size(),
             participants.empty() ? nullptr : participants.data(),
             participants.size()};
@@ -56,18 +56,18 @@ logical_support_view_v1 make_view(
 } // namespace
 
 adaptive_support_status_v1 adaptive_support_manager_v1::initialize(
-    const logical_support_view_v1 &base,
+    const compact_support::ViewV1 &base,
     std::uint64_t delta_relation_id) {
     if (lifecycle_.current_structure_epoch != 0u)
         return adaptive_support_status_v1::already_initialized;
-    if (validate_logical_support_v1(base) != logical_support_status_v1::success)
+    if (compact_support::validate(base) != compact_support::ValidationStatusV1::success)
         return adaptive_support_status_v1::invalid_support;
     base_relation_id_ = base.relation_id;
     delta_relation_id_ = delta_relation_id == 0u ? base.relation_id : delta_relation_id;
     if (delta_relation_id_ == 0u)
         return adaptive_support_status_v1::invalid_support;
-    std::vector<logical_support_edge_v1> new_base_edges;
-    std::vector<logical_support_participant_v1> new_base_participants;
+    std::vector<compact_support::EdgeV1> new_base_edges;
+    std::vector<compact_support::ParticipantV1> new_base_participants;
     new_base_edges.reserve(base.edge_count);
     for (std::uint64_t i = 0u; i < base.edge_count; ++i) {
         const auto &edge = base.edges[i];
@@ -76,8 +76,8 @@ adaptive_support_status_v1 adaptive_support_manager_v1::initialize(
             new_base_participants.push_back(base.participants[edge.participant_begin + j]);
         new_base_edges.push_back({edge.logical_edge_id, begin, edge.participant_count, 0u});
     }
-    std::vector<logical_support_edge_v1> new_active_edges;
-    std::vector<logical_support_participant_v1> new_active_participants;
+    std::vector<compact_support::EdgeV1> new_active_edges;
+    std::vector<compact_support::ParticipantV1> new_active_participants;
     copy_active_relation(new_base_edges, new_base_participants, {},
         &new_active_edges, &new_active_participants);
     base_relation_id_ = base.relation_id;
@@ -189,8 +189,8 @@ adaptive_support_status_v1 adaptive_support_manager_v1::publish_pending(
 
     auto next_base_edges = base_edges_;
     auto next_base_participants = base_participants_;
-    auto next_delta_edges = std::vector<logical_support_edge_v1>{};
-    auto next_delta_participants = std::vector<logical_support_participant_v1>{};
+    auto next_delta_edges = std::vector<compact_support::EdgeV1>{};
+    auto next_delta_participants = std::vector<compact_support::ParticipantV1>{};
     next_base_edges.reserve(next_base_edges.size() + staged_base_promotions_.size());
     next_base_participants.reserve(next_base_participants.size()
                                    + delta_participants_.size());
@@ -223,7 +223,7 @@ adaptive_support_status_v1 adaptive_support_manager_v1::publish_pending(
         }
     }
     std::sort(next_base_edges.begin(), next_base_edges.end(),
-        [](const logical_support_edge_v1 &a, const logical_support_edge_v1 &b) {
+        [](const compact_support::EdgeV1 &a, const compact_support::EdgeV1 &b) {
             return a.logical_edge_id < b.logical_edge_id;
         });
     const auto participant_offset = static_cast<std::uint64_t>(next_delta_participants.size());
@@ -233,7 +233,7 @@ adaptive_support_status_v1 adaptive_support_manager_v1::publish_pending(
         next_delta_edges.push_back({edge.logical_edge_id,
             participant_offset + edge.participant_begin, edge.participant_count, 0u});
     std::sort(next_delta_edges.begin(), next_delta_edges.end(),
-        [](const logical_support_edge_v1 &a, const logical_support_edge_v1 &b) {
+        [](const compact_support::EdgeV1 &a, const compact_support::EdgeV1 &b) {
             return a.logical_edge_id < b.logical_edge_id;
         });
 
@@ -246,21 +246,21 @@ adaptive_support_status_v1 adaptive_support_manager_v1::publish_pending(
     auto next_evidence = promotion_records_;
     next_evidence.insert(next_evidence.end(), staged_evidence_.begin(),
                          staged_evidence_.end());
-    std::vector<logical_support_edge_v1> next_active_base_edges;
-    std::vector<logical_support_participant_v1> next_active_base_participants;
-    std::vector<logical_support_edge_v1> next_active_delta_edges;
-    std::vector<logical_support_participant_v1> next_active_delta_participants;
+    std::vector<compact_support::EdgeV1> next_active_base_edges;
+    std::vector<compact_support::ParticipantV1> next_active_base_participants;
+    std::vector<compact_support::EdgeV1> next_active_delta_edges;
+    std::vector<compact_support::ParticipantV1> next_active_delta_participants;
     copy_active_relation(next_base_edges, next_base_participants, next_revoked,
         &next_active_base_edges, &next_active_base_participants);
     copy_active_relation(next_delta_edges, next_delta_participants, next_revoked,
         &next_active_delta_edges, &next_active_delta_participants);
 
     const auto life = lifecycle_.publish_structure(next_epoch);
-    if (life == snapshot_lifecycle_status_v1::live_forward_tapes)
+    if (life == support_execution::SupportLifecycleStatus::live_forward_tapes)
         return adaptive_support_status_v1::live_forward_tapes;
-    if (life == snapshot_lifecycle_status_v1::stale_epoch)
+    if (life == support_execution::SupportLifecycleStatus::stale_epoch)
         return adaptive_support_status_v1::stale_epoch;
-    if (life != snapshot_lifecycle_status_v1::success)
+    if (life != support_execution::SupportLifecycleStatus::success)
         return adaptive_support_status_v1::invalid_epoch;
 
     delta_edges_.swap(next_delta_edges);
@@ -283,7 +283,7 @@ adaptive_support_status_v1 adaptive_support_manager_v1::publish_pending(
 }
 
 adaptive_support_status_v1 adaptive_support_manager_v1::restore_snapshot(
-    const support_snapshot_pair_v1 &snapshot,
+    const compact_support::SnapshotPairV1 &snapshot,
     const std::uint64_t *revoked_edge_ids,
     std::uint64_t revoked_edge_count,
     const support_promotion_record_v1 *promotion_records,
@@ -291,8 +291,8 @@ adaptive_support_status_v1 adaptive_support_manager_v1::restore_snapshot(
     if (lifecycle_.current_structure_epoch == 0u)
         return adaptive_support_status_v1::not_initialized;
     if (snapshot.base == nullptr || snapshot.delta == nullptr
-        || validate_support_snapshot_pair_v1(snapshot)
-            != support_snapshot_status_v1::success
+        || compact_support::validate_snapshot(snapshot)
+            != compact_support::SnapshotStatusV1::success
         || snapshot.base->edge_count > std::numeric_limits<std::size_t>::max()
         || snapshot.base->participant_count > std::numeric_limits<std::size_t>::max()
         || snapshot.delta->edge_count > std::numeric_limits<std::size_t>::max()
@@ -345,17 +345,17 @@ adaptive_support_status_v1 adaptive_support_manager_v1::restore_snapshot(
 
     auto target_has_active = [&](std::uint64_t id) {
         std::uint64_t ordinal = 0u;
-        return find_logical_edge_ordinal_v1(*snapshot.base, id, &ordinal)
-            || find_logical_edge_ordinal_v1(*snapshot.delta, id, &ordinal);
+        return compact_support::find_edge_ordinal(*snapshot.base, id, &ordinal)
+            || compact_support::find_edge_ordinal(*snapshot.delta, id, &ordinal);
     };
     auto target_has_tombstone = [&](std::uint64_t id) {
         return std::binary_search(next_revoked.begin(), next_revoked.end(), id);
     };
-    auto active_edge_matches = [&](const logical_support_edge_v1 &current_edge,
-                                   const std::vector<logical_support_participant_v1>& current_participants,
-                                   const logical_support_view_v1& target) {
+    auto active_edge_matches = [&](const compact_support::EdgeV1 &current_edge,
+                                   const std::vector<compact_support::ParticipantV1>& current_participants,
+                                   const compact_support::ViewV1& target) {
         std::uint64_t ordinal = 0u;
-        if (!find_logical_edge_ordinal_v1(target, current_edge.logical_edge_id,
+        if (!compact_support::find_edge_ordinal(target, current_edge.logical_edge_id,
                                           &ordinal))
             return false;
         const auto& target_edge = target.edges[ordinal];
@@ -373,8 +373,8 @@ adaptive_support_status_v1 adaptive_support_manager_v1::restore_snapshot(
         return true;
     };
     auto validate_current_relation = [&](
-            const std::vector<logical_support_edge_v1>& edges,
-            const std::vector<logical_support_participant_v1>& participants) {
+            const std::vector<compact_support::EdgeV1>& edges,
+            const std::vector<compact_support::ParticipantV1>& participants) {
         for (const auto& edge : edges) {
             const bool target_active = target_has_active(edge.logical_edge_id);
             if (!target_active && !target_has_tombstone(edge.logical_edge_id))
@@ -415,9 +415,9 @@ adaptive_support_status_v1 adaptive_support_manager_v1::restore_snapshot(
             return adaptive_support_status_v1::invalid_snapshot;
     }
 
-    auto copy_relation = [](const logical_support_view_v1 &view,
-                            std::vector<logical_support_edge_v1> *edges,
-                            std::vector<logical_support_participant_v1> *participants) {
+    auto copy_relation = [](const compact_support::ViewV1 &view,
+                            std::vector<compact_support::EdgeV1> *edges,
+                            std::vector<compact_support::ParticipantV1> *participants) {
         edges->clear();
         participants->clear();
         edges->reserve(static_cast<std::size_t>(view.edge_count));
@@ -432,14 +432,14 @@ adaptive_support_status_v1 adaptive_support_manager_v1::restore_snapshot(
         }
     };
 
-    std::vector<logical_support_edge_v1> next_base_edges;
-    std::vector<logical_support_participant_v1> next_base_participants;
-    std::vector<logical_support_edge_v1> next_delta_edges;
-    std::vector<logical_support_participant_v1> next_delta_participants;
-    std::vector<logical_support_edge_v1> next_active_base_edges;
-    std::vector<logical_support_participant_v1> next_active_base_participants;
-    std::vector<logical_support_edge_v1> next_active_delta_edges;
-    std::vector<logical_support_participant_v1> next_active_delta_participants;
+    std::vector<compact_support::EdgeV1> next_base_edges;
+    std::vector<compact_support::ParticipantV1> next_base_participants;
+    std::vector<compact_support::EdgeV1> next_delta_edges;
+    std::vector<compact_support::ParticipantV1> next_delta_participants;
+    std::vector<compact_support::EdgeV1> next_active_base_edges;
+    std::vector<compact_support::ParticipantV1> next_active_base_participants;
+    std::vector<compact_support::EdgeV1> next_active_delta_edges;
+    std::vector<compact_support::ParticipantV1> next_active_delta_participants;
     copy_relation(*snapshot.base, &next_base_edges, &next_base_participants);
     copy_relation(*snapshot.delta, &next_delta_edges, &next_delta_participants);
     copy_relation(*snapshot.base, &next_active_base_edges,
@@ -475,9 +475,9 @@ adaptive_support_status_v1 adaptive_support_manager_v1::restore_snapshot(
 adaptive_support_status_v1 adaptive_support_manager_v1::pin_forward_tape(
     std::uint64_t expected_epoch) noexcept {
     const auto result = lifecycle_.pin_forward_tape(expected_epoch);
-    if (result == snapshot_lifecycle_status_v1::success)
+    if (result == support_execution::SupportLifecycleStatus::success)
         return adaptive_support_status_v1::success;
-    return result == snapshot_lifecycle_status_v1::stale_epoch
+    return result == support_execution::SupportLifecycleStatus::stale_epoch
         ? adaptive_support_status_v1::stale_epoch
         : adaptive_support_status_v1::invalid_epoch;
 }
@@ -485,17 +485,17 @@ adaptive_support_status_v1 adaptive_support_manager_v1::pin_forward_tape(
 adaptive_support_status_v1 adaptive_support_manager_v1::retire_forward_tape(
     std::uint64_t expected_epoch) noexcept {
     const auto result = lifecycle_.retire_forward_tape(expected_epoch);
-    if (result == snapshot_lifecycle_status_v1::success)
+    if (result == support_execution::SupportLifecycleStatus::success)
         return adaptive_support_status_v1::success;
-    if (result == snapshot_lifecycle_status_v1::stale_epoch)
+    if (result == support_execution::SupportLifecycleStatus::stale_epoch)
         return adaptive_support_status_v1::stale_epoch;
-    if (result == snapshot_lifecycle_status_v1::no_live_forward_tapes)
+    if (result == support_execution::SupportLifecycleStatus::no_live_forward_tapes)
         return adaptive_support_status_v1::no_live_forward_tapes;
     return adaptive_support_status_v1::invalid_epoch;
 }
 
 adaptive_support_status_v1 adaptive_support_manager_v1::snapshot(
-    support_snapshot_pair_v1 *out) const noexcept {
+    compact_support::SnapshotPairV1 *out) const noexcept {
     if (out == nullptr) return adaptive_support_status_v1::invalid_support;
     if (lifecycle_.current_structure_epoch == 0u)
         return adaptive_support_status_v1::not_initialized;

@@ -4,6 +4,8 @@
 
 #include <Cellerator/nn/manifest.hh>
 #include <Cellerator/biology/feature_binding.hh>
+#include <Cellerator/layout/axis_binding.hh>
+#include <Cellerator/structure/coordinates.hh>
 
 #include <cassert>
 #include <chrono>
@@ -80,7 +82,7 @@ void shared_v1_json_roundtrip() {
             "changed biological declarations must reject");
 }
 
-void native_feature_binding_uses_the_python_wire_schema() {
+void native_feature_binding_serialization_versions() {
     using cellerator::biology::FeatureBinding;
     using cellerator::biology::FeatureBindingOptions;
     FeatureBindingOptions options;
@@ -102,6 +104,48 @@ void native_feature_binding_uses_the_python_wire_schema() {
     assert(json.find("\"model_indices\":[7]") != std::string::npos);
     assert(json.find("\"canonical_indices\":[0]") != std::string::npos);
     assert(json.find("identity_codec_name") == std::string::npos);
+
+    const cellerator::structure::LogicalAxis logical_axis{
+        cellerator::structure::domain_id{1, 0},
+        cellerator::structure::order_id{2, 0}, 1};
+    auto logical_options = FeatureBindingOptions{};
+    logical_options.domain = "gene";
+    logical_options.axis = logical_axis;
+    const auto logical_binding = FeatureBinding<std::string>::from_ids(
+        {"gene-a"}, {0}, logical_options);
+    const auto logical_descriptor = logical_binding.to_descriptor(
+        "cellerator.json", 1,
+        [](const std::string& identity) { return feature_identity_json(identity); });
+    assert(logical_descriptor.schema_version == 2);
+    const auto logical_json = serialize_feature_binding_descriptor(logical_descriptor);
+    assert(logical_json.find("\"schema_version\":2") != std::string::npos);
+    assert(logical_json.find(
+        "\"domain\":{\"high\":0,\"low\":1,\"type\":\"identity128\"}")
+           != std::string::npos);
+    assert(logical_json.find(
+        "\"order\":{\"high\":0,\"low\":2,\"type\":\"identity128\"}")
+           != std::string::npos);
+    assert(logical_json.find("\"geometry\":null") != std::string::npos);
+    assert(logical_json.find("\"partition\":null") != std::string::npos);
+
+    auto physical_options = logical_options;
+    physical_options.physical_axis = cellerator::layout::AxisBinding{
+        logical_axis, cellerator::structure::geometry_id{3, 0},
+        cellerator::structure::partition_id{4, 0}};
+    const auto physical_binding = FeatureBinding<std::string>::from_ids(
+        {"gene-a"}, {0}, physical_options);
+    const auto physical_descriptor = physical_binding.to_descriptor(
+        "cellerator.json", 1,
+        [](const std::string& identity) { return feature_identity_json(identity); });
+    assert(physical_descriptor.schema_version == 1);
+    const auto physical_json = serialize_feature_binding_descriptor(physical_descriptor);
+    assert(physical_json.find("\"schema_version\":1") != std::string::npos);
+    assert(physical_json.find(
+        "\"geometry\":{\"high\":0,\"low\":3,\"type\":\"identity128\"}")
+           != std::string::npos);
+    assert(physical_json.find(
+        "\"partition\":{\"high\":0,\"low\":4,\"type\":\"identity128\"}")
+           != std::string::npos);
 
     struct CustomIdentity {
         int value = 0;
@@ -133,7 +177,7 @@ void native_feature_binding_uses_the_python_wire_schema() {
 }
 
 void prepared_relations_require_and_serialize_identity_endpoints() {
-    using cellerator::biology::OccurrenceCoordinates;
+    using cellerator::structure::OccurrenceCoordinates;
     using cellerator::nn::CsrSupport;
     using cellerator::nn::PreparedRelation;
     const auto source = OccurrenceCoordinates<std::string>::from_ids(
@@ -146,6 +190,8 @@ void prepared_relations_require_and_serialize_identity_endpoints() {
 
     const auto descriptor = serialize_relation_descriptor(
         relation, source, target, {}, {}, 9, at::Device(at::kCPU));
+    assert(descriptor.find("\"kind\":\"cellerator.prepared_relation.v1\"")
+           != std::string::npos);
     assert(descriptor.find("\"source_order\":[\"gene-a\",\"gene-a\",\"gene-b\"]")
            != std::string::npos);
     assert(descriptor.find("\"target_order\":[\"program-a\",\"program-b\"]")
@@ -153,6 +199,70 @@ void prepared_relations_require_and_serialize_identity_endpoints() {
     assert(descriptor.find("\"row_ptr\":[0,2,3]") != std::string::npos);
     assert(descriptor.find("\"col_indices\":[0,0,2]") != std::string::npos);
     assert(descriptor.find("\"structural_generation\":9") != std::string::npos);
+
+    const cellerator::structure::LogicalAxis source_axis{
+        cellerator::structure::domain_id{11, 0},
+        cellerator::structure::order_id{12, 0}, 3};
+    const cellerator::structure::LogicalAxis target_axis{
+        cellerator::structure::domain_id{13, 0},
+        cellerator::structure::order_id{14, 0}, 2};
+    const auto physical_source = OccurrenceCoordinates<std::string>::from_ids(
+        {"gene-a", "gene-a", "gene-b"}, {0, 2, 3}, source_axis, 4);
+    const auto physical_target = OccurrenceCoordinates<std::string>::from_ids(
+        {"program-a", "program-b"}, {0, 1, 2}, target_axis, 4);
+    const cellerator::layout::AxisBinding source_binding{
+        source_axis, cellerator::structure::geometry_id{15, 0},
+        cellerator::structure::partition_id{16, 0}};
+    const cellerator::layout::AxisBinding target_binding{
+        target_axis, cellerator::structure::geometry_id{17, 0},
+        cellerator::structure::partition_id{18, 0}};
+    const auto physical_relation = PreparedRelation::from_csr(
+        CsrSupport{{0, 2, 3}, {0, 0, 2}},
+        physical_source.order_token(), physical_target.order_token(), 9,
+        at::Device(at::kCPU), source_binding, target_binding);
+    const auto physical_descriptor = serialize_relation_descriptor(
+        physical_relation, physical_source, physical_target, {}, {}, 9,
+        at::Device(at::kCPU));
+    assert(physical_descriptor.find(
+        "\"kind\":\"cellerator.prepared_relation.v1\"") != std::string::npos);
+    assert(physical_descriptor.find("\"geometry\":{\"high\":0,\"low\":15}")
+           != std::string::npos);
+    assert(physical_descriptor.find("\"partition\":{\"high\":0,\"low\":16}")
+           != std::string::npos);
+
+    const auto logical_relation = PreparedRelation::from_csr(
+        CsrSupport{{0, 2, 3}, {0, 0, 2}},
+        physical_source.order_token(), physical_target.order_token(), 9);
+    const auto logical_descriptor = serialize_relation_descriptor(
+        logical_relation, physical_source, physical_target, {}, {}, 9,
+        at::Device(at::kCPU));
+    assert(logical_descriptor.find(
+        "\"kind\":\"cellerator.prepared_relation.v2\"") != std::string::npos);
+    assert(logical_descriptor.find("\"geometry\":null") != std::string::npos);
+    assert(logical_descriptor.find("\"partition\":null") != std::string::npos);
+
+    const cellerator::structure::LogicalAxis empty_source_axis{
+        cellerator::structure::domain_id{19, 0},
+        cellerator::structure::order_id{20, 0}, 0};
+    const auto empty_source = OccurrenceCoordinates<std::string>::from_ids(
+        std::vector<std::string>{}, {0, 0, 0}, empty_source_axis, 4);
+    const cellerator::layout::AxisBinding empty_source_binding{
+        empty_source_axis, cellerator::structure::geometry_id{21, 0},
+        cellerator::structure::partition_id{22, 0}};
+    const auto empty_relation = PreparedRelation::from_csr(
+        CsrSupport{{0, 0, 0}, {}}, empty_source.order_token(),
+        physical_target.order_token(), 9, at::Device(at::kCPU),
+        empty_source_binding, target_binding);
+    const auto empty_descriptor = serialize_relation_descriptor(
+        empty_relation, empty_source, physical_target, {}, {}, 9,
+        at::Device(at::kCPU));
+    assert(empty_descriptor.find(
+        "\"kind\":\"cellerator.prepared_relation.v2\"") != std::string::npos);
+    assert(empty_descriptor.find("\"extent\":0") != std::string::npos);
+    assert(empty_descriptor.find("\"geometry\":{\"high\":0,\"low\":21}")
+           != std::string::npos);
+    assert(empty_descriptor.find("\"partition\":{\"high\":0,\"low\":22}")
+           != std::string::npos);
 
     const auto changed_order = OccurrenceCoordinates<std::string>::from_ids(
         {"gene-b", "gene-a", "gene-a"}, {0, 2, 3}, {}, 4);
@@ -254,7 +364,7 @@ void sidecar_hash_and_parser_guards() {
 
 int main() {
     shared_v1_json_roundtrip();
-    native_feature_binding_uses_the_python_wire_schema();
+    native_feature_binding_serialization_versions();
     prepared_relations_require_and_serialize_identity_endpoints();
     sidecar_hash_and_parser_guards();
 }

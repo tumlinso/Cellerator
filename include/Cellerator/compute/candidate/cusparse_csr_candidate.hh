@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compute/operation/operation_core.hh>
-#include <Cellerator/compute/projection/physical_csr.hh>
+#include <Cellerator/layout/projection/csr.hh>
 #include <Cellerator/runtime/session.cuh>
 
 #include <cusparse.h>
@@ -44,7 +44,7 @@ struct cusparse_csr_prepared_state {
     std::uint8_t reserved[3]{};
     std::int32_t device_ordinal = -1;
     std::uint32_t dense_columns = 0u;
-    execution_csr_view projection{};
+    ::cellerator::layout::projection::CsrViewV1 projection{};
     execution::axis_identity feature_axis{};
     execution::axis_identity row_axis{};
     execution::axis_identity column_axis{};
@@ -79,7 +79,7 @@ operation_status prepare_cusparse_csr_operation(
     const projection_key &projection,
     const numeric_policy &numeric,
     const prepare_policy &policy,
-    const execution_csr_view &device_csr,
+    const ::cellerator::layout::projection::CsrViewV1 &device_csr,
     runtime::execution_session *session,
     std::uint32_t stream_index,
     std::uint32_t dense_columns,

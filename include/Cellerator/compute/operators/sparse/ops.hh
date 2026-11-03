@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
-#include <Cellerator/quantized/blocked_ell.cuh>
+#include <Cellerator/tensor/quantized/blocked_ell.hh>
 
 #include <cuda_runtime.h>
 #include <cusparse.h>
@@ -23,22 +23,6 @@ struct feature_affine_quantize_config {
     float reconstruction_weight = 1.0f;
     float range_weight = 0.01f;
     float min_dynamic_range = 0.25f;
-};
-
-struct quantized_blocked_ell_view {
-    std::uint32_t rows = 0u;
-    std::uint32_t cols = 0u;
-    std::uint32_t nnz = 0u;
-    std::uint32_t block_size = 0u;
-    std::uint32_t ell_cols = 0u;
-    std::uint32_t row_stride_bytes = 0u;
-    std::uint32_t bits = 0u;
-    std::uint32_t decode_policy = ::cellerator::quantized::blocked_ell::decode_policy_unknown;
-    const std::uint32_t *block_col_idx = nullptr;
-    const std::uint8_t *packed_values = nullptr;
-    const float *column_scales = nullptr;
-    const float *column_offsets = nullptr;
-    const float *row_offsets = nullptr;
 };
 
 namespace base {

@@ -1,4 +1,5 @@
 #include <Cellerator/examples/models/state_reduce/stateReduce.hh>
+#include <Cellerator/memory/cuda/shared_buffer.hh>
 
 #include <Cellerator/interop/cellshard_access.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>
@@ -15,7 +16,7 @@
 namespace sr = ::cellerator::models::state_reduce;
 namespace runtime = ::cellerator::runtime;
 namespace cs = ::cellshard;
-namespace css = ::cellerator::matrix;
+namespace css = ::cellerator::interop::formats;
 namespace csv = ::cellshard::device;
 
 namespace {
@@ -28,7 +29,7 @@ bool close_value(float lhs, float rhs, float tol = 1.0e-4f) {
     return std::fabs(lhs - rhs) <= tol;
 }
 
-bool populate_blocked_ell(css::blocked_ell *matrix,
+bool populate_blocked_ell(css::BlockedEllPayload *matrix,
                           const std::vector<float> &dense,
                           unsigned int rows,
                           unsigned int cols) {
@@ -44,7 +45,7 @@ bool populate_blocked_ell(css::blocked_ell *matrix,
     return true;
 }
 
-bool populate_sliced_ell(css::sliced_ell *matrix,
+bool populate_sliced_ell(css::SlicedEllPayload *matrix,
                          const std::vector<float> &dense,
                          unsigned int rows,
                          unsigned int cols) {
@@ -63,8 +64,8 @@ bool populate_sliced_ell(css::sliced_ell *matrix,
     return true;
 }
 
-csv::blocked_ell_view make_blocked_view(const css::blocked_ell &host,
-                                        const csv::partition_record<css::blocked_ell> &record) {
+csv::blocked_ell_view make_blocked_view(const css::BlockedEllPayload &host,
+                                        const csv::partition_record<css::BlockedEllPayload> &record) {
     csv::blocked_ell_view out{};
     out.rows = host.rows;
     out.cols = host.cols;
@@ -76,8 +77,8 @@ csv::blocked_ell_view make_blocked_view(const css::blocked_ell &host,
     return out;
 }
 
-csv::sliced_ell_view make_sliced_view(const css::sliced_ell &host,
-                                      const csv::partition_record<css::sliced_ell> &record) {
+csv::sliced_ell_view make_sliced_view(const css::SlicedEllPayload &host,
+                                      const csv::partition_record<css::SlicedEllPayload> &record) {
     csv::sliced_ell_view out{};
     const std::size_t offsets_bytes = static_cast<std::size_t>(host.slice_count + 1u) * sizeof(unsigned int);
     const std::size_t widths_offset = csv::align_up_bytes(offsets_bytes, alignof(unsigned int));
@@ -98,11 +99,14 @@ csv::sliced_ell_view make_sliced_view(const css::sliced_ell &host,
     return out;
 }
 
-std::vector<float> download_embeddings(const runtime::device_buffer<float> &latent,
+std::vector<float> download_embeddings(const ::cellerator::memory::cuda::SharedDeviceBuffer<float> &latent,
+                                       const runtime::execution_context &ctx,
                                        std::size_t rows,
                                        std::size_t cols) {
     std::vector<float> host(rows * cols, 0.0f);
-    runtime::download_device_buffer(latent, host.data(), host.size());
+    auto stream = ::cellerator::memory::cuda::Stream::borrow(ctx.stream, ctx.device);
+    latent.download_async(host.data(), host.size(), stream);
+    stream.synchronize();
     return host;
 }
 
@@ -140,8 +144,8 @@ void run_case(const sr::StateReduceBatchView &batch,
     require(final.total <= initial.total, "state_reduce loss should not increase after training");
 
     if (require_graph_geometry) {
-        runtime::device_buffer<float> latent = sr::infer_embeddings(&model, batch);
-        const std::vector<float> embedding = download_embeddings(latent, batch.rows, config.latent_dim);
+        ::cellerator::memory::cuda::SharedDeviceBuffer<float> latent = sr::infer_embeddings(&model, batch);
+        const std::vector<float> embedding = download_embeddings(latent, model.ctx, batch.rows, config.latent_dim);
         const float same_pair = row_distance_sq(embedding, batch.rows, config.latent_dim, 0u, 1u);
         const float cross_pair = row_distance_sq(embedding, batch.rows, config.latent_dim, 0u, 8u);
         require(same_pair < cross_pair, "graph-linked rows should embed closer than cross-state rows");
@@ -170,13 +174,13 @@ int main() {
         }
     }
 
-    css::blocked_ell blocked{};
-    css::sliced_ell sliced{};
+    css::BlockedEllPayload blocked{};
+    css::SlicedEllPayload sliced{};
     require(populate_blocked_ell(&blocked, dense, rows, cols), "populate_blocked_ell failed");
     require(populate_sliced_ell(&sliced, dense, rows, cols), "populate_sliced_ell failed");
 
-    csv::partition_record<css::blocked_ell> blocked_record{};
-    csv::partition_record<css::sliced_ell> sliced_record{};
+    csv::partition_record<css::BlockedEllPayload> blocked_record{};
+    csv::partition_record<css::SlicedEllPayload> sliced_record{};
     require(csv::upload(&blocked, &blocked_record) == cudaSuccess, "blocked upload failed");
     require(csv::upload(&sliced, &sliced_record) == cudaSuccess, "sliced upload failed");
 
@@ -188,18 +192,22 @@ int main() {
         graph_weight.push_back(1.0f);
     }
 
-    runtime::device_buffer<std::uint32_t> d_src = runtime::allocate_device_buffer<std::uint32_t>(graph_src.size());
-    runtime::device_buffer<std::uint32_t> d_dst = runtime::allocate_device_buffer<std::uint32_t>(graph_dst.size());
-    runtime::device_buffer<float> d_weight = runtime::allocate_device_buffer<float>(graph_weight.size());
-    runtime::upload_device_buffer(&d_src, graph_src.data(), graph_src.size());
-    runtime::upload_device_buffer(&d_dst, graph_dst.data(), graph_dst.size());
-    runtime::upload_device_buffer(&d_weight, graph_weight.data(), graph_weight.size());
+    int device = 0;
+    require(cudaGetDevice(&device) == cudaSuccess, "cudaGetDevice failed");
+    auto d_src = ::cellerator::memory::cuda::SharedDeviceBuffer<std::uint32_t>::allocate(graph_src.size(), device);
+    auto d_dst = ::cellerator::memory::cuda::SharedDeviceBuffer<std::uint32_t>::allocate(graph_dst.size(), device);
+    auto d_weight = ::cellerator::memory::cuda::SharedDeviceBuffer<float>::allocate(graph_weight.size(), device);
+    ::cellerator::memory::cuda::Stream upload_stream(device);
+    d_src.upload_async(graph_src.data(), graph_src.size(), upload_stream);
+    d_dst.upload_async(graph_dst.data(), graph_dst.size(), upload_stream);
+    d_weight.upload_async(graph_weight.data(), graph_weight.size(), upload_stream);
+    upload_stream.synchronize();
 
     const sr::StateReduceGraphView graph{
         static_cast<std::uint32_t>(graph_src.size()),
-        d_src.data,
-        d_dst.data,
-        d_weight.data
+        d_src.data(),
+        d_dst.data(),
+        d_weight.data()
     };
 
     const sr::StateReduceBatchView blocked_batch =

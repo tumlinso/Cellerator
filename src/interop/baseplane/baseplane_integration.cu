@@ -54,9 +54,9 @@ bool same_cache_key(
     const predicate_materialization_key &right) noexcept {
     return left.sequence_generation.value == right.sequence_generation.value
         && left.predicate_semantic_hash == right.predicate_semantic_hash
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             left.coordinate_structure, right.coordinate_structure)
-        && execution::same_identity(left.coordinate_order, right.coordinate_order)
+        && ::cellerator::structure::same_identity(left.coordinate_order, right.coordinate_order)
         && left.predicate_id == right.predicate_id
         && left.output_flags == right.output_flags;
 }
@@ -66,10 +66,10 @@ bool same_relation_cache_key(
     const regulatory_relation_materialization_key &right) noexcept {
     return left.sequence_generation.value == right.sequence_generation.value
         && left.predicate_semantic_hash == right.predicate_semantic_hash
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(
             left.coordinate_structure, right.coordinate_structure)
-        && execution::same_identity(left.coordinate_order, right.coordinate_order)
-        && execution::same_identity(
+        && ::cellerator::structure::same_identity(left.coordinate_order, right.coordinate_order)
+        && ::cellerator::structure::same_identity(
             left.regulatory_projection, right.regulatory_projection)
         && left.predicate_id == right.predicate_id
         && left.output_flags == right.output_flags;
@@ -538,12 +538,12 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
             != execution::lifetime_validation_code::ok
         || execution::validate_sequence_domain(request.source_domain)
             != execution::biological_validation_code::ok
-        || !execution::valid_identity(
+        || !::cellerator::structure::valid_identity(
             request.persistent_coordinate_structure)
-        || !execution::valid_identity(
+        || !::cellerator::structure::valid_identity(
             request.persistent_regulatory_structure)
-        || !execution::valid_identity(request.persistent_coordinate_order)
-        || !execution::valid_identity(request.persistent_projection)
+        || !::cellerator::structure::valid_identity(request.persistent_coordinate_order)
+        || !::cellerator::structure::valid_identity(request.persistent_projection)
         || !execution::valid_handle(request.projection)
         || !execution::same_handle(
             request.coordinate_to_regulatory.source_axis.domain,

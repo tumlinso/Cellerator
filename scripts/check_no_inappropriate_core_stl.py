@@ -23,8 +23,8 @@ FAMILIES = (
 SOURCE_SUFFIXES = {".h", ".hh", ".hpp", ".cuh", ".cc", ".cpp", ".cu"}
 PRODUCTION_ROOTS = ("include/Cellerator", "src")
 
-# Existing migration debt only. Values are non-increasing ceilings, not quotas.
-# Every entry names the semantic migration lane; no entry authorizes a new owner.
+# Explicit core ownership exceptions and existing migration debt only. Values
+# are non-increasing ceilings, not quotas. Every entry names its ownership lane.
 ALLOWLIST: dict[str, dict[str, tuple[int, str]]] = {
     "include/Cellerator/compute/operators/graph/forward_candidates.cuh": {"vector": (3, "CE-PTR-10 bounded edge table")},
     "include/Cellerator/compute/operators/graph/forward_prune.cuh": {"vector": (10, "CE-PTR-10 fixed-width graph relation")},
@@ -41,7 +41,7 @@ ALLOWLIST: dict[str, dict[str, tuple[int, str]]] = {
     "include/Cellerator/geometry/layout_selector.hh": {"vector": (1, "CE-PTR-04 region selection table")},
     "include/Cellerator/geometry/pack.hh": {"vector": (4, "CE-PTR-04 direct image compilation")},
     "include/Cellerator/geometry/planner.hh": {"vector": (11, "CE-PTR-03 static plan image")},
-    "include/Cellerator/runtime/device_buffer.cuh": {"shared_ptr": (2, "CE-PTR-13 session allocation handles")},
+    "include/Cellerator/memory/cuda/shared_buffer.hh": {"shared_ptr": (2, "M05 retained handle over canonical DeviceBuffer")},
     "src/compute/dataset/sampling.cc": {"vector": (18, "CE-PTR-07 sample workspaces"), "priority_queue": (2, "CE-PTR-07 bounded selection")},
     "src/compute/dataset/sampling_materialization.cc": {"vector": (5, "CE-PTR-07 sampled CSR image")},
     "src/compute/neighbors/scoring/cuvs_sharded_knn.cu": {"vector": (1, "CE-PTR-12 move or retire legacy staging")},

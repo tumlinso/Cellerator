@@ -1,0 +1,55 @@
+{
+  "schema": "cellerator.factorized_interactions.sanitizer_diagnostic_path_audit.v1",
+  "registration": {
+    "name": "cellerator-factorized-sanitizer-diagnostic",
+    "revision": 8,
+    "registry_file": "planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/registry/cellerator-factorized-sanitizer-diagnostic.toml",
+    "build_fingerprint": "5a2ae37ebdb637ade195994448f8b15bc048e29a45f610f5573a8cc5504f9543",
+    "build_output_identity": "76b7e4cefcd57130b3ba5d7c9038ed99c899add154dd48552467f12c8f31c882"
+  },
+  "build": {
+    "manifest": "planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/builds/5a2ae37ebdb637ade195994448f8b15bc048e29a45f610f5573a8cc5504f9543/factorized_interactions_build_manifest.json",
+    "manifest_sha256": "fd295661b00ae47a96e8edda51437dba74e7f52840287dafeb25532346ac8f44",
+    "source_closure_sha256": "9afe1e5a6e119f5f1565ac02c2971cdf5ad4117453f0aa9f604f69371bb582a6",
+    "runner": "planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/builds/5a2ae37ebdb637ade195994448f8b15bc048e29a45f610f5573a8cc5504f9543/cmake/factorized_interactions_validator/cellerator_factorized_interaction_runner",
+    "runner_sha256": "a208a0f31d2ca8ccde929bf99532faa623f7f99267adb8aa37b5e0b6ce41dd02",
+    "checks": {
+      "manifest_path_exists": true,
+      "runner_path_matches_manifest": true,
+      "runner_sha_matches_manifest": true,
+      "validator_in_captured_source_exists": true,
+      "validator_sha256": "5f645de32c0381de68ce31eb8e37e0f6e19a0a80c279f1a22c75aa1424cbf4cc"
+    }
+  },
+  "sanitizer": {
+    "wrapper": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/compilers/bin/compute-sanitizer",
+    "wrapper_sha256": "26a4ca6e5f433b7b214d923a0d35307cfd80ade2188fd40fd501e7e510407d7a",
+    "selected_home": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer",
+    "selected_binary": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "selected_binary_exists": true,
+    "previous_cpu_version_check": "Version 2025.2.1.0 (build 35969825)"
+  },
+  "case": {
+    "workload": "correctness_ordered_tied_zero",
+    "route": "packet",
+    "activation_dtype": "fp16",
+    "parameter_dtype": "fp16",
+    "output_dtype": "fp16",
+    "gradient_mode": "overwrite",
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "runner_command": "compute-sanitizer --tool memcheck --error-exitcode 99 --leak-check full <manifest-bound-runner>",
+    "manifest_argument_matches_registered_plural_filename": true
+  },
+  "worker_output_paths": {
+    "artifact_dir": "{output}/case",
+    "cuda_cache": "{output}/cuda-cache",
+    "tmpdir_temp_tmp": "{output}/temp",
+    "all_expanded_paths_are_strict_descendants_of_output": true,
+    "temporary_cleanup_can_remove_output_root": false
+  },
+  "execution": {
+    "audit_type": "CPU-only static path and hash check; no CUDA tool or kernel was launched",
+    "verified_against_autobench_worker": "_scoped_child_environment constrains temporary/cache paths to attempt scratch and removes only their top-level child directories",
+    "direct_diagnostic_submitted_after_this_audit": false
+  }
+}

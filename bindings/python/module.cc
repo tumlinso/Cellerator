@@ -21,7 +21,7 @@
 #endif
 
 namespace py = pybind11;
-namespace ix = cellerator::compute::operation::indexed;
+namespace ix = cellerator::ops::mechanism::indexed;
 namespace {
 
 using ProductContext = std::unique_ptr<ce_product2_context, decltype(&ce_product2_destroy)>;

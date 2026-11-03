@@ -13,8 +13,8 @@ bool valid(joint_compiler::persistent_identity_v1 value) noexcept {
 prepared_atom_fragment_status_v1 prepare_atom_fragment_v1(
     const atom_bound_candidate_v1 &candidate,
     const program::prepared_program_v2 &program_value,
-    order_id input_order,
-    order_id output_order,
+    structure::order_id input_order,
+    structure::order_id output_order,
     prepared_atom_fragment_v1 *output) noexcept {
     using code = prepared_atom_fragment_status_code_v1;
     if (output == nullptr)

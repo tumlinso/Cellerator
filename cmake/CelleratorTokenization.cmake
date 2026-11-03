@@ -100,12 +100,26 @@ install(FILES include/Cellerator/biology/gene_feature_binding.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/biology
     COMPONENT Tokenization)
 install(FILES
-    include/Cellerator/biology/coordinates.hh
-    include/Cellerator/biology/feature_binding.hh
+    include/Cellerator/structure/coordinates.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/structure
+    COMPONENT Tokenization)
+install(FILES
+    include/Cellerator/layout/axis_binding.hh
+    include/Cellerator/layout/occurrence_map.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/layout
+    COMPONENT Tokenization)
+install(FILES
+    include/Cellerator/execution/dependency/feature_binding.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution/dependency
+    COMPONENT Tokenization)
+install(FILES include/Cellerator/biology/feature_binding.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/biology
     COMPONENT Tokenization)
 install(FILES include/Cellerator/execution/identity.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution
+    COMPONENT Tokenization)
+install(FILES include/Cellerator/structure/identity.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/structure
     COMPONENT Tokenization)
 
 # Extend the package config produced by the host SDK so downstream C++ users

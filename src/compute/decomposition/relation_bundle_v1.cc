@@ -70,17 +70,17 @@ validate_relation_bundle_type_decomposition_v1(
             fragment.first_relation + fragment.relation_count;
         if (relation_end > relation_count)
             return failure(code::relation_range_overflow, fragment_index);
-        if (!execution::valid_identity(fragment.source_domain)
-            || !execution::valid_identity(fragment.destination_domain))
+        if (!::cellerator::structure::valid_identity(fragment.source_domain)
+            || !::cellerator::structure::valid_identity(fragment.destination_domain))
             return failure(code::invalid_relation_type, fragment_index);
 
         for (std::uint64_t relation_index = fragment.first_relation;
              relation_index < relation_end; ++relation_index) {
             const auto &relation =
                 decomposition.problem->relations.relations[relation_index];
-            if (!execution::same_identity(
+            if (!::cellerator::structure::same_identity(
                     relation.source_axis.domain, fragment.source_domain)
-                || !execution::same_identity(relation.destination_axis.domain,
+                || !::cellerator::structure::same_identity(relation.destination_axis.domain,
                     fragment.destination_domain))
                 return failure(code::relation_type_mismatch, fragment_index,
                     relation_index);

@@ -1,5 +1,7 @@
 #include <Cellerator/examples/models/state_reduce/stateReduce.hh>
 #include <Cellerator/compute/candidate/sparse/project.hh>
+#include <Cellerator/interop/formats/blocked_ell.cuh>
+#include <Cellerator/interop/formats/sliced_ell.cuh>
 
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
@@ -15,8 +17,9 @@ namespace cellerator::models::state_reduce {
 namespace {
 
 namespace cs = ::cellshard;
-namespace css = ::cellerator::matrix;
+namespace css = ::cellerator::interop::formats;
 namespace sparse_project = ::cellerator::compute::sparse::project;
+namespace memory = ::cellerator::memory;
 
 constexpr int kScalarThreads = 256;
 
@@ -51,13 +54,25 @@ inline void cublas_require_(cublasStatus_t status, const char *label) {
 }
 
 template<typename T>
-runtime::device_buffer<T> allocate_device_zeroed_(int device, std::size_t count, const char *label) {
-    runtime::cuda_require(cudaSetDevice(device), "cudaSetDevice(allocate_device_zeroed)");
-    runtime::device_buffer<T> out = runtime::allocate_device_buffer<T>(count);
-    if (count != 0u) {
-        runtime::cuda_require(cudaMemset(out.data, 0, count * sizeof(T)), label);
+memory::cuda::SharedDeviceBuffer<T> allocate_device_zeroed_(
+    const runtime::execution_context &ctx, std::size_t count, const char *label) {
+    auto out = memory::cuda::SharedDeviceBuffer<T>::allocate(count, ctx.device);
+    auto stream = memory::cuda::Stream::borrow(ctx.stream, ctx.device);
+    try {
+        out.zero_async(stream);
+    } catch (const std::exception &error) {
+        throw std::runtime_error(std::string(label) + ": " + error.what());
     }
     return out;
+}
+
+template<typename T>
+void download_on_stream_(const memory::cuda::SharedDeviceBuffer<T> &source,
+                         T *destination, std::size_t count,
+                         const runtime::execution_context &ctx) {
+    auto stream = memory::cuda::Stream::borrow(ctx.stream, ctx.device);
+    source.download_async(destination, count, stream);
+    stream.synchronize();
 }
 
 __global__ void float_to_half_kernel_(const float *src, __half *dst, std::uint32_t count) {
@@ -320,11 +335,12 @@ __global__ void adamw_update_kernel_(
 }
 
 inline void ensure_row_ones_(StateReduceModel *model, std::uint32_t rows) {
-    if (rows == 0u || model->row_ones.count >= rows) return;
-    runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce row ones)");
-    model->row_ones = runtime::allocate_device_buffer<float>(rows);
+    if (rows == 0u || model->row_ones.size() >= rows) return;
+    model->row_ones = memory::cuda::SharedDeviceBuffer<float>::allocate(rows, model->ctx.device);
     std::vector<float> ones(rows, 1.0f);
-    runtime::upload_device_buffer(&model->row_ones, ones.data(), ones.size());
+    auto stream = memory::cuda::Stream::borrow(model->ctx.stream, model->ctx.device);
+    model->row_ones.upload_async(ones.data(), ones.size(), stream);
+    stream.synchronize();
 }
 
 inline void launch_bias_(StateReduceModel *model, float *dst, const float *bias, std::uint32_t rows, std::uint32_t cols) {
@@ -340,7 +356,7 @@ inline void launch_bias_(StateReduceModel *model, float *dst, const float *bias,
             &alpha,
             bias,
             1,
-            model->row_ones.data,
+            model->row_ones.data(),
             1,
             dst,
             static_cast<int>(cols)),
@@ -497,7 +513,7 @@ inline void launch_row_sum_(StateReduceModel *model, const float *src, std::uint
             &alpha,
             src,
             static_cast<int>(cols),
-            model->row_ones.data,
+            model->row_ones.data(),
             1,
             &beta,
             dst,
@@ -531,7 +547,7 @@ inline void encode_batch_(
                 view.cols,
                 view.block_size,
                 view.ell_cols,
-                model->encoder_weight.data,
+                model->encoder_weight.data(),
                 static_cast<std::int64_t>(latent_dim),
                 static_cast<std::int64_t>(latent_dim),
                 latent_out,
@@ -545,7 +561,7 @@ inline void encode_batch_(
                 view.cols,
                 view.block_size,
                 view.ell_cols,
-                model->encoder_weight.data,
+                model->encoder_weight.data(),
                 static_cast<std::int64_t>(latent_dim),
                 static_cast<std::int64_t>(latent_dim),
                 latent_out,
@@ -556,53 +572,53 @@ inline void encode_batch_(
         const dim3 grid((latent_dim + block.x - 1u) / block.x, (rows + block.y - 1u) / block.y);
         sliced_ell_spmm_fwd_kernel_<<<grid, block, 0, model->ctx.stream>>>(
             batch.sliced_ell,
-            model->encoder_weight.data,
+            model->encoder_weight.data(),
             latent_dim,
             latent_out);
         runtime::cuda_require(cudaGetLastError(), "state_reduce sliced_ell_spmm_fwd_kernel");
     }
-    if (model->config.use_encoder_bias) launch_bias_(model, latent_out, model->encoder_bias.data, rows, latent_dim);
+    if (model->config.use_encoder_bias) launch_bias_(model, latent_out, model->encoder_bias.data(), rows, latent_dim);
 }
 
 inline void refresh_half_mirrors_(StateReduceModel *model) {
     launch_float_to_half_(
         model->ctx,
-        model->decoder_factor.data,
-        model->decoder_factor_half.data,
+        model->decoder_factor.data(),
+        model->decoder_factor_half.data(),
         model->config.latent_dim * model->config.factor_dim);
     launch_float_to_half_(
         model->ctx,
-        model->gene_dictionary.data,
-        model->gene_dictionary_half.data,
+        model->gene_dictionary.data(),
+        model->gene_dictionary_half.data(),
         model->config.factor_dim * model->config.input_genes);
 }
 
 struct forward_buffers_ {
-    runtime::device_buffer<float> latent;
-    runtime::device_buffer<float> factors;
-    runtime::device_buffer<float> reconstruction;
-    runtime::device_buffer<__half> factors_half;
+    memory::cuda::SharedDeviceBuffer<float> latent;
+    memory::cuda::SharedDeviceBuffer<float> factors;
+    memory::cuda::SharedDeviceBuffer<float> reconstruction;
+    memory::cuda::SharedDeviceBuffer<__half> factors_half;
 };
 
 inline forward_buffers_ run_forward_(
     StateReduceModel *model,
     const StateReduceBatchView &batch) {
     forward_buffers_ out{
-        allocate_device_zeroed_<float>(model->ctx.device, static_cast<std::size_t>(batch.rows) * model->config.latent_dim, "cudaMemset(state_reduce latent)"),
-        allocate_device_zeroed_<float>(model->ctx.device, static_cast<std::size_t>(batch.rows) * model->config.factor_dim, "cudaMemset(state_reduce factors)"),
-        allocate_device_zeroed_<float>(model->ctx.device, static_cast<std::size_t>(batch.rows) * model->config.input_genes, "cudaMemset(state_reduce reconstruction)"),
-        allocate_device_zeroed_<__half>(model->ctx.device, static_cast<std::size_t>(batch.rows) * model->config.factor_dim, "cudaMemset(state_reduce factors_half)")
+        allocate_device_zeroed_<float>(model->ctx, static_cast<std::size_t>(batch.rows) * model->config.latent_dim, "cudaMemset(state_reduce latent)"),
+        allocate_device_zeroed_<float>(model->ctx, static_cast<std::size_t>(batch.rows) * model->config.factor_dim, "cudaMemset(state_reduce factors)"),
+        allocate_device_zeroed_<float>(model->ctx, static_cast<std::size_t>(batch.rows) * model->config.input_genes, "cudaMemset(state_reduce reconstruction)"),
+        allocate_device_zeroed_<__half>(model->ctx, static_cast<std::size_t>(batch.rows) * model->config.factor_dim, "cudaMemset(state_reduce factors_half)")
     };
 
-    encode_batch_(model, batch, out.latent.data);
+    encode_batch_(model, batch, out.latent.data());
     launch_dense_fwd_(
         model,
-        out.latent.data,
-        model->decoder_factor.data,
+        out.latent.data(),
+        model->decoder_factor.data(),
         batch.rows,
         model->config.latent_dim,
         model->config.factor_dim,
-        out.factors.data);
+        out.factors.data());
 
     if (model->config.backend == StateReduceBackend::wmma_fused
         && (batch.rows % 16u) == 0u
@@ -610,26 +626,26 @@ inline forward_buffers_ run_forward_(
         && (model->config.input_genes % 16u) == 0u) {
         launch_float_to_half_(
             model->ctx,
-            out.factors.data,
-            out.factors_half.data,
+            out.factors.data(),
+            out.factors_half.data(),
             batch.rows * model->config.factor_dim);
         launch_half_dense_fwd_(
             model,
-            out.factors_half.data,
-            model->gene_dictionary_half.data,
+            out.factors_half.data(),
+            model->gene_dictionary_half.data(),
             batch.rows,
             model->config.factor_dim,
             model->config.input_genes,
-            out.reconstruction.data);
+            out.reconstruction.data());
     } else {
         launch_dense_fwd_(
             model,
-            out.factors.data,
-            model->gene_dictionary.data,
+            out.factors.data(),
+            model->gene_dictionary.data(),
             batch.rows,
             model->config.factor_dim,
             model->config.input_genes,
-            out.reconstruction.data);
+            out.reconstruction.data());
     }
     return out;
 }
@@ -642,37 +658,37 @@ inline StateReduceTrainMetrics compute_loss_(
     float *grad_reconstruction,
     float *grad_graph) {
     StateReduceTrainMetrics metrics{};
-    auto recon_loss = allocate_device_zeroed_<float>(model->ctx.device, 1u, "cudaMemset(state_reduce recon loss)");
-    auto graph_loss = allocate_device_zeroed_<float>(model->ctx.device, 1u, "cudaMemset(state_reduce graph loss)");
+    auto recon_loss = allocate_device_zeroed_<float>(model->ctx, 1u, "cudaMemset(state_reduce recon loss)");
+    auto graph_loss = allocate_device_zeroed_<float>(model->ctx, 1u, "cudaMemset(state_reduce graph loss)");
     const float inv_total = 1.0f / static_cast<float>(static_cast<double>(batch.rows) * static_cast<double>(model->config.input_genes));
     const float baseline_scale = loss_config.reconstruction_weight * loss_config.zero_weight * inv_total;
     const float positive_scale = loss_config.reconstruction_weight * loss_config.nonzero_weight * inv_total;
     const int recon_blocks = static_cast<int>((batch.rows * model->config.input_genes + kScalarThreads - 1u) / kScalarThreads);
     reconstruction_zero_baseline_kernel_<<<recon_blocks, kScalarThreads, 0, model->ctx.stream>>>(
-        forward.reconstruction.data,
+        forward.reconstruction.data(),
         batch.rows,
         model->config.input_genes,
         baseline_scale,
-        recon_loss.data,
+        recon_loss.data(),
         grad_reconstruction);
     runtime::cuda_require(cudaGetLastError(), "state_reduce reconstruction_zero_baseline_kernel");
 
     if (batch.layout == StateReduceLayout::blocked_ell) {
         reconstruction_positive_blocked_ell_kernel_<<<batch.rows, 128, 0, model->ctx.stream>>>(
             batch.blocked_ell,
-            forward.reconstruction.data,
+            forward.reconstruction.data(),
             positive_scale,
             baseline_scale,
-            recon_loss.data,
+            recon_loss.data(),
             grad_reconstruction);
         runtime::cuda_require(cudaGetLastError(), "state_reduce reconstruction_positive_blocked_ell_kernel");
     } else {
         reconstruction_positive_sliced_ell_kernel_<<<batch.rows, 128, 0, model->ctx.stream>>>(
             batch.sliced_ell,
-            forward.reconstruction.data,
+            forward.reconstruction.data(),
             positive_scale,
             baseline_scale,
-            recon_loss.data,
+            recon_loss.data(),
             grad_reconstruction);
         runtime::cuda_require(cudaGetLastError(), "state_reduce reconstruction_positive_sliced_ell_kernel");
     }
@@ -680,18 +696,20 @@ inline StateReduceTrainMetrics compute_loss_(
     if (batch.graph.edge_count != 0u && loss_config.graph_weight != 0.0f) {
         const float graph_scale = loss_config.graph_weight / static_cast<float>(batch.graph.edge_count);
         graph_loss_kernel_<<<batch.graph.edge_count, 128, 0, model->ctx.stream>>>(
-            forward.latent.data,
+            forward.latent.data(),
             batch.rows,
             model->config.latent_dim,
             batch.graph,
             graph_scale,
-            graph_loss.data,
+            graph_loss.data(),
             grad_graph);
         runtime::cuda_require(cudaGetLastError(), "state_reduce graph_loss_kernel");
     }
 
-    runtime::download_device_buffer(recon_loss, &metrics.reconstruction, 1u);
-    runtime::download_device_buffer(graph_loss, &metrics.graph, 1u);
+    auto readback_stream = memory::cuda::Stream::borrow(model->ctx.stream, model->ctx.device);
+    recon_loss.download_async(&metrics.reconstruction, 1u, readback_stream);
+    graph_loss.download_async(&metrics.graph, 1u, readback_stream);
+    readback_stream.synchronize();
     metrics.total = metrics.reconstruction + metrics.graph;
     return metrics;
 }
@@ -732,27 +750,27 @@ inline void apply_optimizer_(
     };
 
     launch_update(
-        model->encoder_weight.data,
-        model->encoder_weight_m1.data,
-        model->encoder_weight_m2.data,
+        model->encoder_weight.data(),
+        model->encoder_weight_m1.data(),
+        model->encoder_weight_m2.data(),
         grad_encoder_weight,
         encoder_weight_count);
     launch_update(
-        model->encoder_bias.data,
-        model->encoder_bias_m1.data,
-        model->encoder_bias_m2.data,
+        model->encoder_bias.data(),
+        model->encoder_bias_m1.data(),
+        model->encoder_bias_m2.data(),
         grad_encoder_bias,
         encoder_bias_count);
     launch_update(
-        model->decoder_factor.data,
-        model->decoder_factor_m1.data,
-        model->decoder_factor_m2.data,
+        model->decoder_factor.data(),
+        model->decoder_factor_m1.data(),
+        model->decoder_factor_m2.data(),
         grad_decoder_factor,
         decoder_factor_count);
     launch_update(
-        model->gene_dictionary.data,
-        model->gene_dictionary_m1.data,
-        model->gene_dictionary_m2.data,
+        model->gene_dictionary.data(),
+        model->gene_dictionary_m1.data(),
+        model->gene_dictionary_m2.data(),
         grad_gene_dictionary,
         gene_dictionary_count);
     refresh_half_mirrors_(model);
@@ -798,21 +816,21 @@ void init(
     const std::uint32_t gene_dictionary_count = config.factor_dim * config.input_genes;
 
     runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce init)");
-    model->encoder_weight = runtime::allocate_device_buffer<float>(encoder_weight_count);
-    model->encoder_bias = runtime::allocate_device_buffer<float>(encoder_bias_count);
-    model->decoder_factor = runtime::allocate_device_buffer<float>(decoder_factor_count);
-    model->gene_dictionary = runtime::allocate_device_buffer<float>(gene_dictionary_count);
-    model->encoder_weight_m1 = allocate_device_zeroed_<float>(model->ctx.device, encoder_weight_count, "cudaMemset(state_reduce encoder_weight_m1)");
-    model->encoder_weight_m2 = allocate_device_zeroed_<float>(model->ctx.device, encoder_weight_count, "cudaMemset(state_reduce encoder_weight_m2)");
-    model->encoder_bias_m1 = allocate_device_zeroed_<float>(model->ctx.device, encoder_bias_count, "cudaMemset(state_reduce encoder_bias_m1)");
-    model->encoder_bias_m2 = allocate_device_zeroed_<float>(model->ctx.device, encoder_bias_count, "cudaMemset(state_reduce encoder_bias_m2)");
-    model->decoder_factor_m1 = allocate_device_zeroed_<float>(model->ctx.device, decoder_factor_count, "cudaMemset(state_reduce decoder_factor_m1)");
-    model->decoder_factor_m2 = allocate_device_zeroed_<float>(model->ctx.device, decoder_factor_count, "cudaMemset(state_reduce decoder_factor_m2)");
-    model->gene_dictionary_m1 = allocate_device_zeroed_<float>(model->ctx.device, gene_dictionary_count, "cudaMemset(state_reduce gene_dictionary_m1)");
-    model->gene_dictionary_m2 = allocate_device_zeroed_<float>(model->ctx.device, gene_dictionary_count, "cudaMemset(state_reduce gene_dictionary_m2)");
-    model->decoder_factor_half = runtime::allocate_device_buffer<__half>(decoder_factor_count);
-    model->gene_dictionary_half = runtime::allocate_device_buffer<__half>(gene_dictionary_count);
-    model->row_ones = runtime::device_buffer<float>();
+    model->encoder_weight = memory::cuda::SharedDeviceBuffer<float>::allocate(encoder_weight_count, model->ctx.device);
+    model->encoder_bias = memory::cuda::SharedDeviceBuffer<float>::allocate(encoder_bias_count, model->ctx.device);
+    model->decoder_factor = memory::cuda::SharedDeviceBuffer<float>::allocate(decoder_factor_count, model->ctx.device);
+    model->gene_dictionary = memory::cuda::SharedDeviceBuffer<float>::allocate(gene_dictionary_count, model->ctx.device);
+    model->encoder_weight_m1 = allocate_device_zeroed_<float>(model->ctx, encoder_weight_count, "cudaMemset(state_reduce encoder_weight_m1)");
+    model->encoder_weight_m2 = allocate_device_zeroed_<float>(model->ctx, encoder_weight_count, "cudaMemset(state_reduce encoder_weight_m2)");
+    model->encoder_bias_m1 = allocate_device_zeroed_<float>(model->ctx, encoder_bias_count, "cudaMemset(state_reduce encoder_bias_m1)");
+    model->encoder_bias_m2 = allocate_device_zeroed_<float>(model->ctx, encoder_bias_count, "cudaMemset(state_reduce encoder_bias_m2)");
+    model->decoder_factor_m1 = allocate_device_zeroed_<float>(model->ctx, decoder_factor_count, "cudaMemset(state_reduce decoder_factor_m1)");
+    model->decoder_factor_m2 = allocate_device_zeroed_<float>(model->ctx, decoder_factor_count, "cudaMemset(state_reduce decoder_factor_m2)");
+    model->gene_dictionary_m1 = allocate_device_zeroed_<float>(model->ctx, gene_dictionary_count, "cudaMemset(state_reduce gene_dictionary_m1)");
+    model->gene_dictionary_m2 = allocate_device_zeroed_<float>(model->ctx, gene_dictionary_count, "cudaMemset(state_reduce gene_dictionary_m2)");
+    model->decoder_factor_half = memory::cuda::SharedDeviceBuffer<__half>::allocate(decoder_factor_count, model->ctx.device);
+    model->gene_dictionary_half = memory::cuda::SharedDeviceBuffer<__half>::allocate(gene_dictionary_count, model->ctx.device);
+    model->row_ones = memory::cuda::SharedDeviceBuffer<float>();
 
     std::vector<float> encoder_weight_host(encoder_weight_count, 0.0f);
     std::vector<float> encoder_bias_host(encoder_bias_count, 0.0f);
@@ -822,30 +840,32 @@ void init(
     fill_host_weights_(decoder_factor_host, 0.05f, 0.29f);
     fill_host_weights_(gene_dictionary_host, 0.05f, 0.47f);
 
-    runtime::upload_device_buffer(&model->encoder_weight, encoder_weight_host.data(), encoder_weight_host.size());
-    if (encoder_bias_count != 0u) runtime::upload_device_buffer(&model->encoder_bias, encoder_bias_host.data(), encoder_bias_host.size());
-    runtime::upload_device_buffer(&model->decoder_factor, decoder_factor_host.data(), decoder_factor_host.size());
-    runtime::upload_device_buffer(&model->gene_dictionary, gene_dictionary_host.data(), gene_dictionary_host.size());
+    auto upload_stream = memory::cuda::Stream::borrow(model->ctx.stream, model->ctx.device);
+    model->encoder_weight.upload_async(encoder_weight_host.data(), encoder_weight_host.size(), upload_stream);
+    if (encoder_bias_count != 0u) model->encoder_bias.upload_async(encoder_bias_host.data(), encoder_bias_host.size(), upload_stream);
+    model->decoder_factor.upload_async(decoder_factor_host.data(), decoder_factor_host.size(), upload_stream);
+    model->gene_dictionary.upload_async(gene_dictionary_host.data(), gene_dictionary_host.size(), upload_stream);
+    upload_stream.synchronize();
     refresh_half_mirrors_(model);
 }
 
 void clear(StateReduceModel *model) {
     require_model_(model, "state_reduce::clear");
-    model->encoder_weight = runtime::device_buffer<float>();
-    model->encoder_bias = runtime::device_buffer<float>();
-    model->decoder_factor = runtime::device_buffer<float>();
-    model->gene_dictionary = runtime::device_buffer<float>();
-    model->encoder_weight_m1 = runtime::device_buffer<float>();
-    model->encoder_weight_m2 = runtime::device_buffer<float>();
-    model->encoder_bias_m1 = runtime::device_buffer<float>();
-    model->encoder_bias_m2 = runtime::device_buffer<float>();
-    model->decoder_factor_m1 = runtime::device_buffer<float>();
-    model->decoder_factor_m2 = runtime::device_buffer<float>();
-    model->gene_dictionary_m1 = runtime::device_buffer<float>();
-    model->gene_dictionary_m2 = runtime::device_buffer<float>();
-    model->decoder_factor_half = runtime::device_buffer<__half>();
-    model->gene_dictionary_half = runtime::device_buffer<__half>();
-    model->row_ones = runtime::device_buffer<float>();
+    model->encoder_weight = memory::cuda::SharedDeviceBuffer<float>();
+    model->encoder_bias = memory::cuda::SharedDeviceBuffer<float>();
+    model->decoder_factor = memory::cuda::SharedDeviceBuffer<float>();
+    model->gene_dictionary = memory::cuda::SharedDeviceBuffer<float>();
+    model->encoder_weight_m1 = memory::cuda::SharedDeviceBuffer<float>();
+    model->encoder_weight_m2 = memory::cuda::SharedDeviceBuffer<float>();
+    model->encoder_bias_m1 = memory::cuda::SharedDeviceBuffer<float>();
+    model->encoder_bias_m2 = memory::cuda::SharedDeviceBuffer<float>();
+    model->decoder_factor_m1 = memory::cuda::SharedDeviceBuffer<float>();
+    model->decoder_factor_m2 = memory::cuda::SharedDeviceBuffer<float>();
+    model->gene_dictionary_m1 = memory::cuda::SharedDeviceBuffer<float>();
+    model->gene_dictionary_m2 = memory::cuda::SharedDeviceBuffer<float>();
+    model->decoder_factor_half = memory::cuda::SharedDeviceBuffer<__half>();
+    model->gene_dictionary_half = memory::cuda::SharedDeviceBuffer<__half>();
+    model->row_ones = memory::cuda::SharedDeviceBuffer<float>();
     if (model->fleet_ready) runtime::clear(&model->fleet);
     runtime::clear(&model->dense_cache);
     runtime::clear(&model->sparse_cache);
@@ -857,18 +877,18 @@ void clear(StateReduceModel *model) {
     model->distributed = StateReduceDistributedConfig();
 }
 
-runtime::device_buffer<float> infer_embeddings(
+memory::cuda::SharedDeviceBuffer<float> infer_embeddings(
     StateReduceModel *model,
     const StateReduceBatchView &batch) {
     require_model_(model, "state_reduce::infer_embeddings");
     require_batch_(batch, "state_reduce::infer_embeddings");
     require_runtime_mode_(model, "state_reduce::infer_embeddings");
     runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce::infer_embeddings)");
-    runtime::device_buffer<float> latent = allocate_device_zeroed_<float>(
-        model->ctx.device,
+    memory::cuda::SharedDeviceBuffer<float> latent = allocate_device_zeroed_<float>(
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.latent_dim,
         "cudaMemset(state_reduce infer latent)");
-    encode_batch_(model, batch, latent.data);
+    encode_batch_(model, batch, latent.data());
     return latent;
 }
 
@@ -882,14 +902,14 @@ StateReduceTrainMetrics evaluate(
     runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce::evaluate)");
     const forward_buffers_ forward = run_forward_(model, batch);
     auto grad_reconstruction = allocate_device_zeroed_<float>(
-        model->ctx.device,
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.input_genes,
         "cudaMemset(state_reduce eval grad_reconstruction)");
     auto grad_graph = allocate_device_zeroed_<float>(
-        model->ctx.device,
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.latent_dim,
         "cudaMemset(state_reduce eval grad_graph)");
-    return compute_loss_(model, batch, loss_config, forward, grad_reconstruction.data, grad_graph.data);
+    return compute_loss_(model, batch, loss_config, forward, grad_reconstruction.data(), grad_graph.data());
 }
 
 StateReduceTrainMetrics train_step(
@@ -904,11 +924,11 @@ StateReduceTrainMetrics train_step(
 
     const forward_buffers_ forward = run_forward_(model, batch);
     auto grad_reconstruction = allocate_device_zeroed_<float>(
-        model->ctx.device,
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.input_genes,
         "cudaMemset(state_reduce grad_reconstruction)");
     auto grad_graph = allocate_device_zeroed_<float>(
-        model->ctx.device,
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.latent_dim,
         "cudaMemset(state_reduce grad_graph)");
     const StateReduceTrainMetrics metrics = compute_loss_(
@@ -916,99 +936,99 @@ StateReduceTrainMetrics train_step(
         batch,
         loss_config,
         forward,
-        grad_reconstruction.data,
-        grad_graph.data);
+        grad_reconstruction.data(),
+        grad_graph.data());
 
     auto grad_factors = allocate_device_zeroed_<float>(
-        model->ctx.device,
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.factor_dim,
         "cudaMemset(state_reduce grad_factors)");
     auto grad_gene_dictionary = allocate_device_zeroed_<float>(
-        model->ctx.device,
+        model->ctx,
         static_cast<std::size_t>(model->config.factor_dim) * model->config.input_genes,
         "cudaMemset(state_reduce grad_gene_dictionary)");
     auto grad_latent = allocate_device_zeroed_<float>(
-        model->ctx.device,
+        model->ctx,
         static_cast<std::size_t>(batch.rows) * model->config.latent_dim,
         "cudaMemset(state_reduce grad_latent)");
     auto grad_decoder_factor = allocate_device_zeroed_<float>(
-        model->ctx.device,
+        model->ctx,
         static_cast<std::size_t>(model->config.latent_dim) * model->config.factor_dim,
         "cudaMemset(state_reduce grad_decoder_factor)");
     auto grad_encoder_weight = allocate_device_zeroed_<float>(
-        model->ctx.device,
+        model->ctx,
         static_cast<std::size_t>(model->config.input_genes) * model->config.latent_dim,
         "cudaMemset(state_reduce grad_encoder_weight)");
     auto grad_encoder_bias = allocate_device_zeroed_<float>(
-        model->ctx.device,
+        model->ctx,
         model->config.use_encoder_bias ? model->config.latent_dim : 0u,
         "cudaMemset(state_reduce grad_encoder_bias)");
 
     launch_dense_left_grad_(
         model,
-        grad_reconstruction.data,
-        model->gene_dictionary.data,
+        grad_reconstruction.data(),
+        model->gene_dictionary.data(),
         batch.rows,
         model->config.factor_dim,
         model->config.input_genes,
-        grad_factors.data);
+        grad_factors.data());
     launch_dense_right_grad_(
         model,
-        forward.factors.data,
-        grad_reconstruction.data,
+        forward.factors.data(),
+        grad_reconstruction.data(),
         batch.rows,
         model->config.factor_dim,
         model->config.input_genes,
-        grad_gene_dictionary.data);
+        grad_gene_dictionary.data());
     launch_dense_left_grad_(
         model,
-        grad_factors.data,
-        model->decoder_factor.data,
+        grad_factors.data(),
+        model->decoder_factor.data(),
         batch.rows,
         model->config.latent_dim,
         model->config.factor_dim,
-        grad_latent.data);
+        grad_latent.data());
     launch_dense_right_grad_(
         model,
-        forward.latent.data,
-        grad_factors.data,
+        forward.latent.data(),
+        grad_factors.data(),
         batch.rows,
         model->config.latent_dim,
         model->config.factor_dim,
-        grad_decoder_factor.data);
+        grad_decoder_factor.data());
 
     const std::uint32_t latent_count = batch.rows * model->config.latent_dim;
     if (batch.graph.edge_count != 0u && loss_config.graph_weight != 0.0f) {
-        launch_axpy_(model, grad_latent.data, grad_graph.data, latent_count);
+        launch_axpy_(model, grad_latent.data(), grad_graph.data(), latent_count);
     }
 
     if (batch.layout == StateReduceLayout::blocked_ell) {
         blocked_ell_encoder_grad_kernel_<<<batch.rows, model->config.latent_dim, 0, model->ctx.stream>>>(
             batch.blocked_ell,
-            grad_latent.data,
+            grad_latent.data(),
             model->config.latent_dim,
-            grad_encoder_weight.data);
+            grad_encoder_weight.data());
         runtime::cuda_require(cudaGetLastError(), "state_reduce blocked_ell_encoder_grad_kernel");
     } else {
         sliced_ell_encoder_grad_kernel_<<<batch.rows, model->config.latent_dim, 0, model->ctx.stream>>>(
             batch.sliced_ell,
-            grad_latent.data,
+            grad_latent.data(),
             model->config.latent_dim,
-            grad_encoder_weight.data);
+            grad_encoder_weight.data());
         runtime::cuda_require(cudaGetLastError(), "state_reduce sliced_ell_encoder_grad_kernel");
     }
 
     if (model->config.use_encoder_bias) {
-        launch_row_sum_(model, grad_latent.data, batch.rows, model->config.latent_dim, grad_encoder_bias.data);
+        launch_row_sum_(model, grad_latent.data(), batch.rows, model->config.latent_dim, grad_encoder_bias.data());
     }
 
     apply_optimizer_(
         model,
         optimizer_config,
-        grad_encoder_weight.data,
-        grad_encoder_bias.data,
-        grad_decoder_factor.data,
-        grad_gene_dictionary.data);
+        grad_encoder_weight.data(),
+        grad_encoder_bias.data(),
+        grad_decoder_factor.data(),
+        grad_gene_dictionary.data());
     return metrics;
 }
 

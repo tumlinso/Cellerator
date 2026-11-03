@@ -41,7 +41,7 @@ struct relation_cover_view_v1 {
     u32 schema_version = relation_cover_schema_version;
     u32 reserved = 0u;
     execution::structure_handle structure{};
-    execution::structure_epoch structure_epoch{};
+    ::cellerator::structure::structure_epoch structure_epoch{};
     execution::axis_identity source_axis{};
     execution::axis_identity destination_axis{};
     u64 logical_edge_count = 0u;

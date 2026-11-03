@@ -33,7 +33,7 @@ struct partial_result_algebra_v1 {
     std::uint64_t state_alignment = 1u;
     std::uint32_t flags = 0u;
     std::uint32_t reserved = 0u;
-    execution::order_id required_merge_order{};
+    ::cellerator::structure::order_id required_merge_order{};
     execution::joint_compiler::persistent_identity_v1
         deterministic_tree_identity{};
     operation::v2::numerical_policy numerical{};

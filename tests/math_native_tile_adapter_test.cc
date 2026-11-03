@@ -16,7 +16,7 @@ void require(bool condition, const char *message) {
     std::abort();
 }
 
-void require(math::physical_view_status status, const char *message) {
+void require(::cellerator::layout::projection::physical_view_status status, const char *message) {
     require(static_cast<bool>(status), message);
 }
 

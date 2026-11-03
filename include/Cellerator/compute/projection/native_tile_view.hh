@@ -1,14 +1,18 @@
 #pragma once
 
-#include <Cellerator/compute/projection/physical_csr.hh>
+#include <Cellerator/layout/projection/csr.hh>
 
 #include <Cellerator/geometry/persistent_packing_payload.hh>
 
 #include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <type_traits>
 
 namespace cellerator::compute::math {
+
+using u32 = std::uint32_t;
+using u64 = std::uint64_t;
 
 inline constexpr u32 native_tile_view_schema_version = 1u;
 
@@ -66,19 +70,19 @@ struct native_tile_decoded_value {
 };
 
 namespace native_tile_detail {
-physical_view_status validate_source(
+layout::projection::physical_view_status validate_source(
     const cellpack::feature_weighted_row_reduction_plan_view &plan,
     const cellpack::local_cell_order_view &order,
     const cellpack::warp_tile_view &tiles) noexcept;
 } // namespace native_tile_detail
 
-inline physical_view_status query_native_tile_requirements_host(
+inline layout::projection::physical_view_status query_native_tile_requirements_host(
     const cellpack::feature_weighted_row_reduction_plan_view &plan,
     const cellpack::local_cell_order_view &order,
     const cellpack::warp_tile_view &tiles,
     native_tile_requirements *out) noexcept {
     if (out == nullptr) return {
-        physical_view_status_code::invalid_argument, "null requirements output"};
+        layout::projection::physical_view_status_code::invalid_argument, "null requirements output"};
     const auto checked = native_tile_detail::validate_source(plan, order, tiles);
     if (!checked) return checked;
     native_tile_requirements result;
@@ -89,7 +93,7 @@ inline physical_view_status query_native_tile_requirements_host(
         || result.packed_offset_count > std::numeric_limits<std::size_t>::max() / sizeof(u32)
         || result.block_metric_count > std::numeric_limits<std::size_t>::max()
             / sizeof(native_tile_block_metrics)) {
-        return {physical_view_status_code::overflow, "sidecar size overflow"};
+        return {layout::projection::physical_view_status_code::overflow, "sidecar size overflow"};
     }
     result.sidecar_bytes = (result.union_mask_count + result.packed_offset_count)
         * sizeof(u32) + result.block_metric_count * sizeof(native_tile_block_metrics);
@@ -97,35 +101,35 @@ inline physical_view_status query_native_tile_requirements_host(
     return {};
 }
 
-physical_view_status build_native_tile_view_host(
+layout::projection::physical_view_status build_native_tile_view_host(
     const cellpack::feature_weighted_row_reduction_plan_view &plan,
     const cellpack::local_cell_order_view &order,
     const cellpack::warp_tile_view &tiles,
     const native_tile_buffers &buffers,
     native_tile_view *out) noexcept;
 
-inline physical_view_status query_native_tile_requirements_from_cpk1_host(
+inline layout::projection::physical_view_status query_native_tile_requirements_from_cpk1_host(
     const cellpack::persistent_packing_payload_view &payload,
     native_tile_requirements *out) noexcept {
-    if (!physical_csr_detail::valid_payload_metadata(payload)) {
-        return {physical_view_status_code::invalid_argument, "invalid CPK1 view"};
+    if (!layout::projection::physical_csr_detail::valid_payload_metadata(payload)) {
+        return {layout::projection::physical_view_status_code::invalid_argument, "invalid CPK1 view"};
     }
     return query_native_tile_requirements_host(
         payload.plan, payload.order, payload.tiles, out);
 }
 
-inline physical_view_status build_native_tile_view_from_cpk1_host(
+inline layout::projection::physical_view_status build_native_tile_view_from_cpk1_host(
     const cellpack::persistent_packing_payload_view &payload,
     const native_tile_buffers &buffers,
     native_tile_view *out) noexcept {
-    if (!physical_csr_detail::valid_payload_metadata(payload)) {
-        return {physical_view_status_code::invalid_argument, "invalid CPK1 view"};
+    if (!layout::projection::physical_csr_detail::valid_payload_metadata(payload)) {
+        return {layout::projection::physical_view_status_code::invalid_argument, "invalid CPK1 view"};
     }
     return build_native_tile_view_host(
         payload.plan, payload.order, payload.tiles, buffers, out);
 }
 
-physical_view_status decode_native_tile_value_host(
+layout::projection::physical_view_status decode_native_tile_value_host(
     const native_tile_view &view,
     u32 value_index,
     native_tile_decoded_value *out) noexcept;

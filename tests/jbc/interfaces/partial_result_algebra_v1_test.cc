@@ -76,7 +76,7 @@ int main() {
         candidate.flags = flags;
         candidate.required_merge_order =
             (flags & decomposition::ordered_only_v1) != 0u
-                ? execution::order_id{3u, 1u} : execution::order_id{};
+                ? ::cellerator::structure::order_id{3u, 1u} : ::cellerator::structure::order_id{};
         candidate.deterministic_tree_identity =
             (flags & decomposition::deterministic_tree_required_v1) != 0u
                 ? execution::joint_compiler::persistent_identity_v1{2u, 1u}

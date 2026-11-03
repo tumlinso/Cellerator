@@ -6,7 +6,7 @@ get_filename_component(CE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../.." ABSOLUTE)
 # Native integration links their full component targets when configured.
 add_subdirectory("${CE_ROOT}/src/compute/operation/native_numeric" native-numeric)
 if(NOT TARGET Cellerator::indexed_incidence AND NOT TARGET Cellerator::indexed_mechanism)
-  add_library(ce_pack_host_incidence STATIC "${CE_ROOT}/src/compute/operation/indexed_mechanism/incidence.cc")
+  add_library(ce_pack_host_incidence STATIC "${CE_ROOT}/src/ops/mechanism/indexed/incidence.cc")
   target_include_directories(ce_pack_host_incidence PUBLIC "${CE_ROOT}/include")
   target_compile_features(ce_pack_host_incidence PUBLIC cxx_std_20)
   add_library(Cellerator::indexed_incidence ALIAS ce_pack_host_incidence)

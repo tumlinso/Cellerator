@@ -38,8 +38,9 @@ namespace cellerator::biology {
 // global alias registry or tying the result to the caller's vocabulary object.
 inline FeatureBinding<std::string> from_gene_vocabulary(
     const tokenization::GeneVocabulary& vocabulary,
-    std::optional<AxisDescriptor> axis = {},
-    std::optional<std::int64_t> model_capacity = {}) {
+    std::optional<structure::LogicalAxis> axis = {},
+    std::optional<std::int64_t> model_capacity = {},
+    std::optional<layout::AxisBinding> physical_axis = {}) {
     const auto& genes = vocabulary.genes();
     if (genes.empty()) {
         throw std::invalid_argument("GeneVocabulary must contain at least one gene");
@@ -50,6 +51,7 @@ inline FeatureBinding<std::string> from_gene_vocabulary(
     FeatureBindingOptions options;
     options.domain = "gene";
     options.axis = std::move(axis);
+    options.physical_axis = std::move(physical_axis);
     options.model_capacity = model_capacity;
     canonical_ids.reserve(genes.size());
     model_indices.reserve(genes.size());

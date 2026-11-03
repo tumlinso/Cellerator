@@ -1,0 +1,42 @@
+{
+  "nvcc": {
+    "argv": [
+      "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "--version"
+    ],
+    "returncode": 0,
+    "output": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+  },
+  "cmake": {
+    "argv": [
+      "cmake",
+      "--version"
+    ],
+    "returncode": 0,
+    "output": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+  },
+  "gxx12": {
+    "argv": [
+      "g++-12",
+      "--version"
+    ],
+    "returncode": 0,
+    "output": "g++-12 (Ubuntu 12.4.0-2ubuntu1~24.04.1) 12.4.0\nCopyright (C) 2022 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+  },
+  "sanitizer": {
+    "argv": [
+      "/home/tumlinson/Software/cuda-sanitizer-12.9/usr/local/cuda-12.9/bin/compute-sanitizer",
+      "--version"
+    ],
+    "returncode": 0,
+    "output": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+  },
+  "autobench": {
+    "argv": [
+      "autobench",
+      "--version"
+    ],
+    "returncode": 0,
+    "output": "0.1.0"
+  }
+}

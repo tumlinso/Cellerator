@@ -5,7 +5,7 @@
 add_library(cellerator_math_v1_evidence STATIC EXCLUDE_FROM_ALL
     compat/cp_math_v1/src/operation.cc
     compat/cp_math_v1/src/operation_signature.cc
-    src/layout/physical_csr.cc
+    src/layout/projection/csr.cc
     compat/cp_math_v1/src/physical_bell.cc
     compat/cp_math_v1/src/physical_bell_candidates.cc
     src/layout/native_tile_view.cc

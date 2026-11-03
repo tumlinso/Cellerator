@@ -1,6 +1,9 @@
 #pragma once
 
-#include <Cellerator/biology/coordinates.hh>
+#include <Cellerator/execution/dependency/feature_binding.hh>
+#include <Cellerator/layout/axis_binding.hh>
+#include <Cellerator/layout/occurrence_map.hh>
+#include <Cellerator/structure/coordinates.hh>
 
 #include <algorithm>
 #include <cstdint>
@@ -94,7 +97,8 @@ inline const char* unknown_policy_name(UnknownIdentityPolicy policy) noexcept {
 struct FeatureBindingOptions {
     std::string domain = "feature";
     std::vector<std::optional<std::int64_t>> canonical_indices;
-    std::optional<AxisDescriptor> axis;
+    std::optional<structure::LogicalAxis> axis;
+    std::optional<layout::AxisBinding> physical_axis;
     std::optional<std::int64_t> model_capacity;
     UnknownIdentityPolicy unknown_policy = UnknownIdentityPolicy::error;
     std::optional<std::int64_t> unknown_model_index;
@@ -125,82 +129,12 @@ struct FeatureBindingDescriptor {
     std::optional<std::vector<std::int64_t>> canonical_indices;
     std::vector<std::int64_t> model_indices;
     std::vector<EncodedFeatureAlias<EncodedIdentity>> aliases;
-    std::optional<AxisDescriptor> axis;
+    std::optional<structure::LogicalAxis> axis;
+    std::optional<layout::AxisBinding> physical_axis;
     std::map<std::string, std::string> metadata;
     UnknownIdentityPolicy unknown_policy = UnknownIdentityPolicy::error;
     std::optional<std::int64_t> unknown_model_index;
     std::optional<std::int64_t> model_capacity;
-};
-
-template<class Identity>
-class PreparedAlignment {
-public:
-    const std::vector<Identity>& canonical_ids() const noexcept {
-        return canonical_ids_;
-    }
-    const std::vector<Identity>& source_ids() const noexcept { return source_ids_; }
-    const std::vector<std::int64_t>& source_positions() const noexcept {
-        return source_positions_;
-    }
-    const std::vector<std::int64_t>& gather_positions() const noexcept {
-        return source_positions_;
-    }
-    const std::vector<std::int64_t>& output_columns() const noexcept {
-        return source_positions_;
-    }
-    const std::vector<std::optional<std::int64_t>>& canonical_indices() const noexcept {
-        return canonical_indices_;
-    }
-    const std::vector<std::int64_t>& model_indices() const noexcept {
-        return model_indices_;
-    }
-    const std::vector<Identity>& dropped_ids() const noexcept { return dropped_ids_; }
-    const std::vector<std::int64_t>& physical_positions() const noexcept {
-        return physical_positions_;
-    }
-    bool has_physical_positions() const noexcept { return has_physical_positions_; }
-
-    // Sparse or externally managed values opt into explicit gathering through
-    // their own representation.  The alignment never densifies or owns them.
-    template<class Values>
-        requires requires(Values&& values,
-                          const std::vector<std::int64_t>& positions) {
-            std::forward<Values>(values).gather_feature_axis(positions, 0);
-        }
-    auto gather(Values&& values, int axis) const
-        -> decltype(std::forward<Values>(values).gather_feature_axis(
-            std::declval<const std::vector<std::int64_t>&>(),
-            std::declval<int>())) {
-        return std::forward<Values>(values).gather_feature_axis(source_positions_, axis);
-    }
-
-    template<class Values>
-        requires (!requires(Values&& values,
-                            const std::vector<std::int64_t>& positions) {
-            std::forward<Values>(values).gather_feature_axis(positions, 0);
-        } && requires(Values&& values,
-                      const std::vector<std::int64_t>& positions) {
-            std::forward<Values>(values).gather_feature_columns(positions);
-        })
-    auto gather(Values&& values, int) const
-        -> decltype(std::forward<Values>(values).gather_feature_columns(
-            std::declval<const std::vector<std::int64_t>&>())) {
-        return std::forward<Values>(values).gather_feature_columns(source_positions_);
-    }
-
-private:
-    std::vector<Identity> canonical_ids_;
-    std::vector<Identity> source_ids_;
-    std::vector<std::int64_t> source_positions_;
-    std::vector<std::optional<std::int64_t>> canonical_indices_;
-    std::vector<std::int64_t> model_indices_;
-    std::vector<Identity> dropped_ids_;
-    std::vector<std::int64_t> physical_positions_;
-    bool has_physical_positions_ = false;
-    std::shared_ptr<const std::uint8_t> binding_identity_;
-
-    template<class Id>
-    friend class FeatureBinding;
 };
 
 // A model-local mapping from canonical biological identities to model rows.
@@ -277,13 +211,23 @@ public:
         default:
             throw std::invalid_argument("unknown identity policy is not supported");
         }
-        if (options.axis) {
-            options.axis->validate();
-            if (options.axis->extent
-                != static_cast<std::int64_t>(canonical_ids.size())) {
+        if (options.axis
+            && (!structure::valid_logical_axis(*options.axis)
+                || options.axis->extent != canonical_ids.size())) {
+            throw std::invalid_argument(
+                "logical axis must be valid and match the ordered feature identities");
+        }
+        if (options.physical_axis) {
+            options.physical_axis->validate();
+            if (options.physical_axis->logical.extent != canonical_ids.size()) {
                 throw std::invalid_argument(
-                    "axis extent must match the ordered feature identities");
+                    "physical axis binding extent must match the ordered feature identities");
             }
+            if (options.axis && *options.axis != options.physical_axis->logical) {
+                throw std::invalid_argument(
+                    "physical axis binding must refer to the declared logical axis");
+            }
+            if (!options.axis) options.axis = options.physical_axis->logical;
         }
         if (options.model_capacity) {
             if (*options.model_capacity <= 0) {
@@ -346,7 +290,12 @@ public:
         return canonical_indices_declared_;
     }
     const std::string& domain() const noexcept { return options_.domain; }
-    const std::optional<AxisDescriptor>& axis() const noexcept { return options_.axis; }
+    const std::optional<structure::LogicalAxis>& axis() const noexcept {
+        return options_.axis;
+    }
+    const std::optional<layout::AxisBinding>& physical_axis() const noexcept {
+        return options_.physical_axis;
+    }
     const std::optional<std::int64_t>& model_capacity() const noexcept {
         return options_.model_capacity;
     }
@@ -393,63 +342,66 @@ public:
         return resolved->model_index;
     }
 
-    PreparedAlignment<Identity> prepare(
+    execution::FeatureSourceBinding<Identity> prepare(
         const std::vector<Identity>& source_order) const {
-        return prepare_impl(source_order, source_order, {});
+        return prepare_impl(source_order, source_order, nullptr);
     }
 
-    PreparedAlignment<Identity> prepare(
+    execution::FeatureSourceBinding<Identity> prepare(
         std::span<const Identity> source_order) const {
         const std::vector<Identity> owned_source(source_order.begin(), source_order.end());
-        return prepare_impl(owned_source, owned_source, {});
+        return prepare_impl(owned_source, owned_source, nullptr);
     }
 
-    PreparedAlignment<Identity> prepare(
+    execution::FeatureSourceBinding<Identity> prepare(
         const std::vector<Identity>& source_order,
         const std::vector<Identity>& requested_ids) const {
-        return prepare_impl(source_order, requested_ids, {});
+        return prepare_impl(source_order, requested_ids, nullptr);
     }
 
-    PreparedAlignment<Identity> prepare(
+    execution::FeatureSourceBinding<Identity> prepare(
         std::span<const Identity> source_order,
         std::span<const Identity> requested_ids) const {
         return prepare_impl(
             std::vector<Identity>(source_order.begin(), source_order.end()),
-            std::vector<Identity>(requested_ids.begin(), requested_ids.end()), {});
+            std::vector<Identity>(requested_ids.begin(), requested_ids.end()), nullptr);
     }
 
-    PreparedAlignment<Identity> prepare(
-        const OccurrenceCoordinates<Identity>& source,
-        const std::vector<Identity>& requested_ids) const {
-        return prepare_impl(source.identities(), requested_ids,
-                            source.has_physical_positions()
-                                ? &source.physical_positions() : nullptr);
+    execution::FeatureSourceBinding<Identity> prepare(
+        const structure::OccurrenceCoordinates<Identity>& source,
+        const std::vector<Identity>& requested_ids,
+        const layout::OccurrenceMap* physical = nullptr) const {
+        validate_physical_map(source, physical);
+        return prepare_impl(source.identities(), requested_ids, physical);
     }
 
-    PreparedAlignment<Identity> prepare(
-        const OccurrenceCoordinates<Identity>& source) const {
-        return prepare(source, source.identities());
+    execution::FeatureSourceBinding<Identity> prepare(
+        const structure::OccurrenceCoordinates<Identity>& source,
+        const layout::OccurrenceMap* physical = nullptr) const {
+        return prepare(source, source.identities(), physical);
     }
 
     // Map every occurrence independently; repeated canonical IDs are retained.
-    PreparedAlignment<Identity> map_occurrences(
+    execution::FeatureSourceBinding<Identity> map_occurrences(
         const std::vector<Identity>& source_order) const {
         return map_occurrences_impl(source_order, nullptr);
     }
 
-    PreparedAlignment<Identity> map_occurrences(
+    execution::FeatureSourceBinding<Identity> map_occurrences(
         std::span<const Identity> source_order) const {
         return map_occurrences_impl(
             std::vector<Identity>(source_order.begin(), source_order.end()), nullptr);
     }
 
-    PreparedAlignment<Identity> map_occurrences(
-        const OccurrenceCoordinates<Identity>& source) const {
-        return map_occurrences_impl(source.identities(),
-            source.has_physical_positions() ? &source.physical_positions() : nullptr);
+    execution::FeatureSourceBinding<Identity> map_occurrences(
+        const structure::OccurrenceCoordinates<Identity>& source,
+        const layout::OccurrenceMap* physical = nullptr) const {
+        validate_physical_map(source, physical);
+        return map_occurrences_impl(source.identities(), physical);
     }
 
-    void validate_alignment(const PreparedAlignment<Identity>& alignment) const {
+    void validate_alignment(
+        const execution::FeatureSourceBinding<Identity>& alignment) const {
         if (alignment.binding_identity_ != binding_identity_) {
             throw std::invalid_argument(
                 "prepared alignment belongs to a different feature binding");
@@ -472,6 +424,10 @@ public:
         result.identity_codec_version = codec_version;
         result.domain = options_.domain;
         result.axis = options_.axis;
+        result.physical_axis = options_.physical_axis;
+        if (options_.axis && (!options_.physical_axis || options_.axis->extent == 0)) {
+            result.schema_version = 2;
+        }
         result.metadata = options_.metadata;
         result.unknown_policy = options_.unknown_policy;
         result.unknown_model_index = options_.unknown_model_index;
@@ -509,19 +465,25 @@ private:
 
     friend struct binding_detail::FeatureBindingAdapterAccess<Identity>;
 
-    PreparedAlignment<Identity> prepare_impl(
+    static void validate_physical_map(
+        const structure::OccurrenceCoordinates<Identity>& source,
+        const layout::OccurrenceMap* physical) {
+        if (physical && !physical->matches(source.order_token())) {
+            throw std::invalid_argument(
+                "physical occurrence map belongs to a different occurrence order");
+        }
+    }
+
+    execution::FeatureSourceBinding<Identity> prepare_impl(
         const std::vector<Identity>& source_order,
         const std::vector<Identity>& requested_ids,
-        const std::vector<std::int64_t>* physical_positions) const {
+        const layout::OccurrenceMap* physical) const {
         if (source_order.size() > static_cast<std::size_t>(
                 std::numeric_limits<std::int64_t>::max())) {
             throw std::overflow_error("source occurrence count exceeds int64 range");
         }
-        if (physical_positions && physical_positions->size() != source_order.size()) {
-            throw std::invalid_argument("physical positions must match source occurrence count");
-        }
 
-        PreparedAlignment<Identity> result;
+        execution::FeatureSourceBinding<Identity> result;
         result.source_ids_.reserve(source_order.size());
         result.binding_identity_ = binding_identity_;
         binding_detail::IdentityPositions<Identity> positions;
@@ -559,26 +521,22 @@ private:
             result.source_positions_.push_back(position);
             result.canonical_indices_.push_back(resolved->canonical_index);
             result.model_indices_.push_back(resolved->model_index);
-            if (physical_positions) {
-                result.physical_positions_.push_back(
-                    physical_positions->at(static_cast<std::size_t>(position)));
-            }
         }
-        result.has_physical_positions_ = physical_positions != nullptr;
+        if (physical) {
+            result.occurrence_map_ = physical->project(
+                std::span<const std::int64_t>(result.source_positions_));
+        }
         return result;
     }
 
-    PreparedAlignment<Identity> map_occurrences_impl(
+    execution::FeatureSourceBinding<Identity> map_occurrences_impl(
         const std::vector<Identity>& source_order,
-        const std::vector<std::int64_t>* physical_positions) const {
+        const layout::OccurrenceMap* physical) const {
         if (source_order.size() > static_cast<std::size_t>(
                 std::numeric_limits<std::int64_t>::max())) {
             throw std::overflow_error("source occurrence count exceeds int64 range");
         }
-        if (physical_positions && physical_positions->size() != source_order.size()) {
-            throw std::invalid_argument("physical positions must match source occurrence count");
-        }
-        PreparedAlignment<Identity> result;
+        execution::FeatureSourceBinding<Identity> result;
         result.source_ids_.reserve(source_order.size());
         result.binding_identity_ = binding_identity_;
         for (std::size_t i = 0; i < source_order.size(); ++i) {
@@ -593,9 +551,11 @@ private:
             result.source_positions_.push_back(static_cast<std::int64_t>(i));
             result.canonical_indices_.push_back(resolved->canonical_index);
             result.model_indices_.push_back(resolved->model_index);
-            if (physical_positions) result.physical_positions_.push_back(physical_positions->at(i));
         }
-        result.has_physical_positions_ = physical_positions != nullptr;
+        if (physical) {
+            result.occurrence_map_ = physical->project(
+                std::span<const std::int64_t>(result.source_positions_));
+        }
         return result;
     }
 

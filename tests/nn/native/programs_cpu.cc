@@ -2,6 +2,7 @@
 #undef NDEBUG
 #endif
 #include <Cellerator/nn/programs.hh>
+#include <Cellerator/structure/coordinates.hh>
 
 #include <ATen/ATen.h>
 
@@ -14,7 +15,6 @@
 #include <vector>
 
 namespace nn = cellerator::nn;
-namespace bio = cellerator::biology;
 
 namespace {
 
@@ -70,9 +70,9 @@ void dense_programs_preserve_gradients() {
 
 void prepared_overlapping_programs_keep_duplicates_and_empty_rows() {
     at::manual_seed(302);
-    const auto features = bio::OccurrenceCoordinates<std::string>::from_ids(
+    const auto features = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"g0", "g1", "g2", "g3", "g4"}, {0, 3, 5, 5}, {}, 7);
-    const auto programs = bio::OccurrenceCoordinates<std::string>::from_ids(
+    const auto programs = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"p0", "p1", "empty", "p0", "p1", "empty",
          "p0", "p1", "empty"},
         {0, 3, 6, 9}, {}, 7);
@@ -105,9 +105,9 @@ void prepared_overlapping_programs_keep_duplicates_and_empty_rows() {
     assert(at::allclose(output.program_features.select(0, 8), at::zeros({4})));
     assert(at::allclose(output.feature_updates.select(0, 4), at::zeros({4})));
 
-    const auto local_features = bio::OccurrenceCoordinates<std::string>::from_ids(
+    const auto local_features = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"g0", "g1", "g2"}, {}, {}, 7);
-    const auto local_programs = bio::OccurrenceCoordinates<std::string>::from_ids(
+    const auto local_programs = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"p0", "p1", "empty"}, {}, {}, 7);
     const auto local_relation = nn::PreparedRelation::from_csr(
         nn::CsrSupport{{0, 3, 5, 5}, {0, 0, 1, 1, 2}},
@@ -142,7 +142,7 @@ void prepared_overlapping_programs_keep_duplicates_and_empty_rows() {
     assert(!at::allclose(output.program_features.select(0, 0),
                          deduplicated.program_features.select(0, 0)));
 
-    const auto stale = bio::OccurrenceCoordinates<std::string>::from_ids(
+    const auto stale = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"g0", "g1", "g2", "g3", "g4"}, {0, 3, 5, 5}, {}, 7);
     call.feature_order = stale.order_token();
     bool rejected_stale_order = false;
