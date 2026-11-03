@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <limits>
+#include <utility>
 
 namespace cellerator::planner::portfolio {
 namespace {
@@ -22,11 +23,6 @@ bool less_id(operation_core::stable_id lhs,
         || (lhs.high == rhs.high && lhs.low < rhs.low);
 }
 
-bool same_id(operation_core::stable_id lhs,
-    operation_core::stable_id rhs) noexcept {
-    return operation_core::same_stable_id(lhs, rhs);
-}
-
 bool finite_nonnegative(double value) noexcept {
     return std::isfinite(value) && value >= 0.0;
 }
@@ -36,15 +32,13 @@ bool candidate_less(
     std::uint64_t rhs,
     const portfolio_candidate_v1 *candidates,
     const candidate_workspace_v1 &workspace) noexcept {
-    const double lhs_cost = workspace.scalar_costs[lhs];
-    const double rhs_cost = workspace.scalar_costs[rhs];
-    if (lhs_cost != rhs_cost) {
-        return lhs_cost < rhs_cost;
-    }
+    const double lhs_cost = workspace.scalar_costs[lhs],
+                 rhs_cost = workspace.scalar_costs[rhs];
+    if (lhs_cost != rhs_cost) return lhs_cost < rhs_cost;
     const auto &left = *candidates[lhs].manifest;
     const auto &right = *candidates[rhs].manifest;
-    const std::uint64_t lhs_memory = left.persistent_bytes + left.transient_bytes;
-    const std::uint64_t rhs_memory = right.persistent_bytes + right.transient_bytes;
+    const std::uint64_t lhs_memory = left.persistent_bytes + left.transient_bytes,
+                        rhs_memory = right.persistent_bytes + right.transient_bytes;
     return lhs_memory < rhs_memory
         || (lhs_memory == rhs_memory
             && less_id(candidates[lhs].identity, candidates[rhs].identity));
@@ -56,9 +50,7 @@ void sift_down(
     std::uint64_t count,
     const portfolio_candidate_v1 *candidates,
     const candidate_workspace_v1 &workspace) noexcept {
-    if (count < 2u) {
-        return;
-    }
+    if (count < 2u) return;
     while (root <= (count - 2u) / 2u) {
         std::uint64_t child = root * 2u + 1u;
         if (child + 1u < count
@@ -67,12 +59,8 @@ void sift_down(
             ++child;
         }
         if (!candidate_less(indices[root], indices[child], candidates,
-                workspace)) {
-            return;
-        }
-        const std::uint64_t temporary = indices[root];
-        indices[root] = indices[child];
-        indices[child] = temporary;
+                workspace)) return;
+        std::swap(indices[root], indices[child]);
         root = child;
     }
 }
@@ -82,16 +70,11 @@ void heap_sort(
     std::uint64_t count,
     const portfolio_candidate_v1 *candidates,
     const candidate_workspace_v1 &workspace) noexcept {
-    if (count < 2u) {
-        return;
-    }
-    for (std::uint64_t root = count / 2u; root != 0u; --root) {
+    if (count < 2u) return;
+    for (std::uint64_t root = count / 2u; root != 0u; --root)
         sift_down(indices, root - 1u, count, candidates, workspace);
-    }
     for (std::uint64_t remaining = count; remaining > 1u; --remaining) {
-        const std::uint64_t temporary = indices[0];
-        indices[0] = indices[remaining - 1u];
-        indices[remaining - 1u] = temporary;
+        std::swap(indices[0], indices[remaining - 1u]);
         sift_down(indices, 0u, remaining - 1u, candidates, workspace);
     }
 }
@@ -109,10 +92,9 @@ workspace_status_v1 build_pareto_portfolio_v1(
         || workspace->ordering_capacity < candidate_count
         || workspace->pareto_capacity < candidate_count
         || workspace->state_capacity < candidate_count
-        || workspace->scalar_cost_capacity < candidate_count) {
+        || workspace->scalar_cost_capacity < candidate_count)
         return failure(workspace_status_code_v1::invalid_argument,
             candidate_count);
-    }
     *result = {};
     result->forced_candidate_index = invalid_candidate_index_v1;
     std::uint64_t compatible_count = 0u;
@@ -121,7 +103,8 @@ workspace_status_v1 build_pareto_portfolio_v1(
         const portfolio_candidate_v1 &candidate = candidates[index];
         if (!valid_id(candidate.identity) || candidate.manifest == nullptr
             || (index != 0u && !less_id(previous_identity, candidate.identity))
-            || !same_id(candidate.identity, candidate.manifest->candidate)
+            || !operation_core::same_stable_id(
+                candidate.identity, candidate.manifest->candidate)
             || !resource::validate_candidate_resource_manifest_v1(
                 *candidate.manifest)
             || !finite_nonnegative(candidate.predicted_end_to_end_ns)
@@ -139,10 +122,9 @@ workspace_status_v1 build_pareto_portfolio_v1(
         }
         previous_identity = candidate.identity;
         const bool forced = valid_id(policy.forced_candidate)
-            && same_id(candidate.identity, policy.forced_candidate);
-        if (forced) {
-            result->forced_candidate_index = index;
-        }
+            && operation_core::same_stable_id(
+                candidate.identity, policy.forced_candidate);
+        if (forced) result->forced_candidate_index = index;
         const bool experimental = (candidate.flags
             & portfolio_candidate_experimental_v1) != 0u;
         const bool allowed_experimental = policy.allow_experimental
@@ -169,17 +151,14 @@ workspace_status_v1 build_pareto_portfolio_v1(
                     workspace_candidate_compatible_v1)
                 : static_cast<std::uint16_t>(0u), 0u};
         workspace->scalar_costs[index] = candidate.predicted_end_to_end_ns;
-        if (compatible) {
-            workspace->ordering[compatible_count++] = index;
-        }
+        if (compatible) workspace->ordering[compatible_count++] = index;
     }
     if (valid_id(policy.forced_candidate)
         && (result->forced_candidate_index == invalid_candidate_index_v1
             || (workspace->states[result->forced_candidate_index].flags
-                & workspace_candidate_compatible_v1) == 0u)) {
+                & workspace_candidate_compatible_v1) == 0u))
         return failure(workspace_status_code_v1::invalid_argument,
             result->forced_candidate_index);
-    }
     heap_sort(workspace->ordering, compatible_count, candidates, *workspace);
     std::uint64_t best_memory = std::numeric_limits<std::uint64_t>::max();
     for (std::uint64_t rank = 0u; rank < compatible_count; ++rank) {

@@ -322,9 +322,7 @@ ProgramResult InteractionPrograms::apply(const at::Tensor& features,
             "prepared overlapping relations require packed [N, width] features");
     }
 
-    std::vector<std::int64_t> source_offsets;
-    std::vector<std::int64_t> target_offsets;
-    std::vector<std::int64_t> bank_indices;
+    std::vector<std::int64_t> source_offsets, target_offsets, bank_indices;
     std::int64_t target_count = 0;
     if (call.relation != nullptr) {
         if (!call.feature_order || !call.program_order) {
@@ -359,11 +357,9 @@ ProgramResult InteractionPrograms::apply(const at::Tensor& features,
             throw std::invalid_argument(
                 "dense attention uses the batch dimension for grouping; offsets are packed-only");
         }
-        if (call.program_bank_indices) {
-            target_count = static_cast<std::int64_t>(call.program_bank_indices->size());
-        } else {
-            target_count = num_programs_;
-        }
+        target_count = call.program_bank_indices
+            ? static_cast<std::int64_t>(call.program_bank_indices->size())
+            : num_programs_;
         target_offsets = {0, target_count};
         bank_indices = selected_bank_indices(
             call, target_offsets, target_count, num_programs_);

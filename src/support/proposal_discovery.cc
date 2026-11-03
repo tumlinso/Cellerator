@@ -236,8 +236,7 @@ proposal_status_v1 propose_support_candidates_v1(
                     candidate, slot, next_random(rng),
                     &candidate.participant_ids[slot]);
         }
-        bool duplicate = false;
-        if (same_as_known(candidate, input)) duplicate = true;
+        bool duplicate = same_as_known(candidate, input);
         for (std::uint64_t i = 0u; i < result->written; ++i)
             if (proposal_equal(output[i], candidate)) {
                 duplicate = true;

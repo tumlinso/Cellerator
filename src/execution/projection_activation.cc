@@ -10,6 +10,7 @@ using cellpack::persistence::execution_projection_kind;
 using cellpack::persistence::prebound_projection_view_v1;
 using cellpack::persistence::projection_forward_capable;
 using cellpack::persistence::projection_transpose_capable;
+using compute::architecture::same_architecture_identity_v1;
 
 constexpr bool same_projection(
     const prebound_projection_view_v1 &prebound,
@@ -34,15 +35,13 @@ projection_activation_status validate_common(
         || !valid_identity(context.projection)
         || !valid_handle(context.runtime_structure)
         || !valid_handle(context.runtime_projection)
-        || context.epoch.value == 0u) {
+        || context.epoch.value == 0u)
         return {projection_activation_code::invalid_argument,
             "activation needs valid structure, projection, epoch, and handles"};
-    }
     if (!device_readable(context.location)
-        || (prebound.descriptor.flags & directory_device_readable) == 0u) {
+        || (prebound.descriptor.flags & directory_device_readable) == 0u)
         return {projection_activation_code::location_mismatch,
             "projection payload is not declared device-readable"};
-    }
     if (prebound.descriptor.kind != kind)
         return {projection_activation_code::kind_mismatch,
             "CPE2 projection kind does not match typed activation"};
@@ -50,10 +49,9 @@ projection_activation_status validate_common(
         return {projection_activation_code::schema_mismatch,
             "CPE2 projection schema does not match typed payload"};
     if (prebound.descriptor.orientation
-        != static_cast<std::uint16_t>(orientation)) {
+        != static_cast<std::uint16_t>(orientation))
         return {projection_activation_code::orientation_mismatch,
             "CPE2 projection orientation does not match requested relation view"};
-    }
     if ((prebound.descriptor.flags & capability) == 0u)
         return {projection_activation_code::orientation_mismatch,
             "CPE2 projection lacks the requested orientation capability"};
@@ -78,17 +76,11 @@ bool no_maps(const prebound_projection_view_v1 &prebound) noexcept {
         && prebound.transpose_map_bytes == 0u;
 }
 
-constexpr bool same_architecture_identity(
-    compute::architecture::architecture_identity_v1 lhs,
-    compute::architecture::architecture_identity_v1 rhs) noexcept {
-    return compute::architecture::same_architecture_identity_v1(lhs, rhs);
-}
-
 const compute::architecture::matrix_engine_capability_v1 *find_capability(
     const compute::architecture::architecture_provider_v1 &provider,
     compute::architecture::architecture_identity_v1 identity) noexcept {
     for (std::uint32_t index = 0u; index < provider.capability_count; ++index) {
-        if (same_architecture_identity(provider.capabilities[index].identity,
+        if (same_architecture_identity_v1(provider.capabilities[index].identity,
                 identity))
             return provider.capabilities + index;
     }
@@ -134,7 +126,7 @@ projection_activation_status validate_projection_provider_descriptor_v1(
     if (capability == nullptr
         || compute::architecture::validate_matrix_engine_capability_v1(*capability)
             != compute::architecture::capability_status_v1::success
-        || !same_architecture_identity(capability->provider_identity,
+        || !same_architecture_identity_v1(capability->provider_identity,
             provider.architecture->identity))
         return {projection_activation_code::provider_mismatch,
             "projection provider capability is not source-linked"};
@@ -198,9 +190,9 @@ projection_activation_status validate_and_activate_projection_via_provider_v1(
         manifest.provider_identity_low, manifest.provider_identity_high};
     const compute::architecture::architecture_identity_v1 manifest_capability{
         manifest.capability_identity_low, manifest.capability_identity_high};
-    if (!same_architecture_identity(manifest_provider,
+    if (!same_architecture_identity_v1(manifest_provider,
             provider.architecture->identity)
-        || !same_architecture_identity(manifest_capability,
+        || !same_architecture_identity_v1(manifest_capability,
             provider.capability_identity))
         return {projection_activation_code::provider_mismatch,
             "projection capability manifest does not match source-linked provider"};

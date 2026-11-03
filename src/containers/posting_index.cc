@@ -126,8 +126,10 @@ PostingStatus query_postings(const PostingIndexView& index,
         const auto range = find_posting_range(index, terms[term_index]);
         const std::uint64_t count = range.second - range.first;
         if (count == 0u) {
-            if (match == PostingMatch::all) result_count = 0u;
-            if (match == PostingMatch::all) break;
+            if (match == PostingMatch::all) {
+                result_count = 0u;
+                break;
+            }
             continue;
         }
         if (match == PostingMatch::any || first_nonempty) {
