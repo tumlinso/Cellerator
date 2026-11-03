@@ -1,0 +1,71 @@
+{
+  "schema": "cgs.triage.v1",
+  "runs": [
+    {
+      "case": "dag7-legacy-complete-consumer-sparse-low-frozen-r1-change0",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "scalar",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-0"
+    },
+    {
+      "case": "dag7-legacy-complete-consumer-sparse-low-frozen-r1-change0",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "bitmap",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-0"
+    },
+    {
+      "case": "dag7-legacy-complete-consumer-sparse-low-frozen-r1-change0",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "direct",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-0"
+    },
+    {
+      "case": "dag7-legacy-complete-consumer-sparse-low-frozen-r1-change0",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "cohort-direct",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-0"
+    },
+    {
+      "case": "dag7-legacy-complete-consumer-sparse-low-frozen-r1-change0",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "cohort-direct-two-tile",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-0"
+    },
+    {
+      "case": "dag7-legacy-complete-consumer-sparse-low-frozen-r1-change0",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "cohort-shared",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-0"
+    }
+  ]
+}

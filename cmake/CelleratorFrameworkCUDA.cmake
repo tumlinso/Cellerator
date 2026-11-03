@@ -16,7 +16,7 @@ if(NOT COMMAND cellerator_add_native_data_memory_cuda_owner)
     message(FATAL_ERROR
         "CelleratorNativeData.cmake must be included before FrameworkCUDA")
 endif()
-cellerator_add_native_data_memory_cuda_owner(CelleratorFrameworkCUDATargets)
+cellerator_add_native_data_memory_cuda_owner()
 include("${CMAKE_CURRENT_LIST_DIR}/CelleratorNativeDataCUDA.cmake")
 get_filename_component(_cellerator_framework_root "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 add_library(cellerator_framework_cuda STATIC
@@ -75,14 +75,6 @@ install(TARGETS cellerator_framework_cuda EXPORT CelleratorFrameworkCUDATargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(EXPORT CelleratorFrameworkCUDATargets NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
-if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
-    file(APPEND "${CELLERATOR_HOST_CONFIG}"
-        "include(CMakeFindDependencyMacro)\n"
-        "find_dependency(CUDAToolkit)\n"
-        "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFrameworkCUDATargets.cmake\")\n"
-        "set(Cellerator_framework_cuda_FOUND TRUE)\n")
-endif()
-
 # The revision-aware transfer bridge depends on the small host conditional
 # owner, so keep it in a separate target/export from the numerical CUDA library.
 set(_cellerator_parameter_transfer_default OFF)
@@ -119,12 +111,32 @@ if(CELLERATOR_ENABLE_FRAMEWORK_PARAMETER_TRANSFER)
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
     install(EXPORT CelleratorFrameworkParameterTransferTargets NAMESPACE Cellerator::
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
-    if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
+endif()
+
+# Append these exports after NativeDataCUDA and its host dependencies. The
+# framework export references Cellerator::state_codes_cuda, while the optional
+# transfer export references both framework_cuda and conditional.
+function(cellerator_append_framework_cuda_package_config)
+    if(NOT DEFINED CELLERATOR_HOST_CONFIG OR NOT EXISTS "${CELLERATOR_HOST_CONFIG}")
+        return()
+    endif()
+    if(TARGET cellerator_framework_cuda)
+        file(APPEND "${CELLERATOR_HOST_CONFIG}"
+            "include(CMakeFindDependencyMacro)\n"
+            "find_dependency(CUDAToolkit)\n"
+            "if(NOT TARGET Cellerator::framework_cuda)\n"
+            "  include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFrameworkCUDATargets.cmake\")\n"
+            "endif()\n"
+            "set(Cellerator_framework_cuda_FOUND TRUE)\n")
+    endif()
+    if(TARGET cellerator_framework_parameter_transfer)
         file(APPEND "${CELLERATOR_HOST_CONFIG}"
             "if(NOT TARGET Cellerator::conditional)\n"
             "  include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorConditionalTargets.cmake\")\n"
             "endif()\n"
-            "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFrameworkParameterTransferTargets.cmake\")\n"
+            "if(NOT TARGET Cellerator::framework_parameter_transfer)\n"
+            "  include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFrameworkParameterTransferTargets.cmake\")\n"
+            "endif()\n"
             "set(Cellerator_framework_parameter_transfer_FOUND TRUE)\n")
     endif()
-endif()
+endfunction()

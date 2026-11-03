@@ -1,0 +1,652 @@
+{
+  "operation_id": "operator-ce-is1-bypass-20261102",
+  "instruction": "Bypass all CE-IS1. You can edit sqlite directly if necessary.",
+  "expected_revision": 381,
+  "previous_plan_revision": "accepted-dfad4b2798933a3d68eef85b54b8728d6a229105cac3a987586fab1e75261972",
+  "new_plan_revision": "accepted-1df122f40ee2e35da0eddd04887b365a277e272b39e1b0f4730c1ed6f89d7b13",
+  "snapshot_digest": "edf5735afb89cb824e9567175201da737d642e340f43665ff724912ec39b6640",
+  "metadata": {
+    "operation_id": "operator-ce-is1-bypass-20261102",
+    "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "authority_id": "c4f019fe-f445-51c2-b444-a7cf24d6be34",
+    "authority_revision": 381,
+    "parent_plan_revision_id": "accepted-dfad4b2798933a3d68eef85b54b8728d6a229105cac3a987586fab1e75261972",
+    "retired_work_refs": [
+      {
+        "entity_id": "CE-IS1-000",
+        "definition_revision_id": "definition-561b08cf71f58867a8964d90bdc34ebba664fb2d17da3e7d076c47c2805ec454",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-ADAPT",
+        "definition_revision_id": "definition-2e375267255b7aed45f2db7d40563ac5b5099040bb12bc2c3be2865a02816dfc",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-ADOPT",
+        "definition_revision_id": "definition-f0fa326ee149eef4188cb835c778823ff2a11575191833ed86ab2061ed1db981",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-BUILD",
+        "definition_revision_id": "definition-4d5c5a2d23ebc701599bd39154cec30f5e99254251035bcef16a5e7339175acb",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-CLOSE",
+        "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-DIFF",
+        "definition_revision_id": "definition-b26e8e4a5ed5b081f7c4583f2a25b91f7a1b62882073888a230dc66cdaaf06ca",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-DOCS",
+        "definition_revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-EFFECTS",
+        "definition_revision_id": "definition-e18759b13f7e4d6dc44a39e99024915459e29f96e01ba430010b39c52abd1eb9",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-EXEC",
+        "definition_revision_id": "definition-dbc5a7091707aa98306a8ed03c5a32fadfe3a1d89976828d526b02949ad0eaaa",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-INTEGRATE",
+        "definition_revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-LOWER",
+        "definition_revision_id": "definition-bf07c5b53817bf5f0875d83cf1d7305b03644651bc9db871f35638323a5cb129",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-MATH",
+        "definition_revision_id": "definition-963231de5469f90c0015e004aca3145424d54a53d464385477ad3123c5d39b26",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-MERGE-A",
+        "definition_revision_id": "definition-86dd3ec06acc4a57d277f0ac8919a536da8aeb00ff45598db503c967c6767d25",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-MERGE-B",
+        "definition_revision_id": "definition-b9422a68fc0f008401128a65b8fe62344190e53c0f66ea685953dc3fd6fd0715",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-OPS",
+        "definition_revision_id": "definition-6c2dc3d809d03efae8656801fd6a094a8b80467a27ae232981e4f8f130005fea",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-PACK",
+        "definition_revision_id": "definition-333139f1ed0d868f13c99a2e217516c6246899cb3e259ab9be3d0bd031aefaa2",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-QUALIFY",
+        "definition_revision_id": "definition-9ba0c0a399779602934c210cd4216ff4d261ec619859acaedeca3aa852678b30",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-STATE",
+        "definition_revision_id": "definition-ca7d3636ea998d707d6b6cbb876bb3d5e5a14beb40c9d32b794b3b00a860a31c",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-STRATEGIES",
+        "definition_revision_id": "definition-99b3f1cd0b8c9ed8424e07e4fc9d9062d56f42bc55313794e41c52ecfe9c1acd",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "CE-IS1-TORCH",
+        "definition_revision_id": "definition-5d56f9dcef75d72d0642177d5a74770d10533ce1604d88664f0e6ed2371c8d65",
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      }
+    ],
+    "retired_requirement_refs": [
+      {
+        "entity_id": "legacy-attention-0e097c6f4932281f7ca4813ac157c8c65ec6eb9c",
+        "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-1474465824f74be4ac47ba474b82beb701df74e3",
+        "definition_revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-19c2133698889e176f84ab3d2c17afef10109be4",
+        "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-1e661f321169acbb23db6786dcff051c972f3952",
+        "definition_revision_id": "definition-86dd3ec06acc4a57d277f0ac8919a536da8aeb00ff45598db503c967c6767d25",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-297bcdc2ef0e74bb48d5bc70a2685a004829baa1",
+        "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-396c3a8c9be6b3377a63bc9f9b672081ef068ead",
+        "definition_revision_id": "definition-f0fa326ee149eef4188cb835c778823ff2a11575191833ed86ab2061ed1db981",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-3a3de0a37aa0b6d06f65800b7e6bbb6e3e673acb",
+        "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-3ce02d134c10c405c410412a616f4d7b251ee097",
+        "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-56d878c7fffd6f995287fa65f63b3b05e3240b2e",
+        "definition_revision_id": "definition-5d56f9dcef75d72d0642177d5a74770d10533ce1604d88664f0e6ed2371c8d65",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-5a398e556cd16b65c9d6c2977c8de472c133f042",
+        "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-5a957fd6ad60d5e1da0817dceedb47c20de675e4",
+        "definition_revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-5b7bc9536863d1b34f4322c6bf8f2b6bd9de2785",
+        "definition_revision_id": "definition-86dd3ec06acc4a57d277f0ac8919a536da8aeb00ff45598db503c967c6767d25",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-5edd6e053ef5c2b0ecdf3e2c5bdb7282ecd4ae0b",
+        "definition_revision_id": "definition-b9422a68fc0f008401128a65b8fe62344190e53c0f66ea685953dc3fd6fd0715",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-5f2a81d86fe285383214ef4d74a4b9dc277a6266",
+        "definition_revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-615557c85191530a36a29bdfe48c0661c054b8da",
+        "definition_revision_id": "definition-f0fa326ee149eef4188cb835c778823ff2a11575191833ed86ab2061ed1db981",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-6b3a4ab722ff018d5f1d5ccd82e2e19b257f453d",
+        "definition_revision_id": "definition-9ba0c0a399779602934c210cd4216ff4d261ec619859acaedeca3aa852678b30",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-6d91a5c709a52b18a6d63fae6a76a90d1c0fe3b9",
+        "definition_revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-6ecbfec037df0dfa86373310690f7f47888b613a",
+        "definition_revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-6f74b30c0508c02b7f4c882ebd6fbc16738f2a84",
+        "definition_revision_id": "definition-5d56f9dcef75d72d0642177d5a74770d10533ce1604d88664f0e6ed2371c8d65",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-724401b85607577f847f9c9d046d360c7eb330f7",
+        "definition_revision_id": "definition-86dd3ec06acc4a57d277f0ac8919a536da8aeb00ff45598db503c967c6767d25",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-7bb6d369e85c82779e0c76991ff0bc9d2892aaeb",
+        "definition_revision_id": "definition-b9422a68fc0f008401128a65b8fe62344190e53c0f66ea685953dc3fd6fd0715",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-7bc3b59edda483e8544f87541a27437f8c1b9c5f",
+        "definition_revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-846d8836db8ffe3e7eb064beef0f117057765bba",
+        "definition_revision_id": "definition-5d56f9dcef75d72d0642177d5a74770d10533ce1604d88664f0e6ed2371c8d65",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-884386651c941de3831e6a28348d657bd4897051",
+        "definition_revision_id": "definition-b9422a68fc0f008401128a65b8fe62344190e53c0f66ea685953dc3fd6fd0715",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-925b55c40cae43391689cf14789c26eb44a78f11",
+        "definition_revision_id": "definition-9ba0c0a399779602934c210cd4216ff4d261ec619859acaedeca3aa852678b30",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-a58a8a76d9d7493f49c9db87417cca13977f578f",
+        "definition_revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-ab161af004212fc099df2fe7ab6a5811d9e04c57",
+        "definition_revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-ad6b1b787e7f3c8c0e97656f8caad6ebacadbf5e",
+        "definition_revision_id": "definition-86dd3ec06acc4a57d277f0ac8919a536da8aeb00ff45598db503c967c6767d25",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-b2aa50eb797c990ba31a2c9ade3cf9f73765e1d3",
+        "definition_revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-bd6ed121d370b07b56a46eaabab161c8e431d8f4",
+        "definition_revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-d565256b8187b595895e7caa224d62e8ebd5b4b6",
+        "definition_revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-d65caac741c9f30221dc4c4ae69c95dc794682cd",
+        "definition_revision_id": "definition-9ba0c0a399779602934c210cd4216ff4d261ec619859acaedeca3aa852678b30",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-d7c6eb71e2608e8b2aff8480b8e6a16174f93cd4",
+        "definition_revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-e119299e01c7be2980e9a90f0ecdead9e7d5a46a",
+        "definition_revision_id": "definition-5d56f9dcef75d72d0642177d5a74770d10533ce1604d88664f0e6ed2371c8d65",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-e2c72671ebd6f3855c1bd356c797072f9a085074",
+        "definition_revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-e51ce5614cfe3e079f98091d0898e96faa9ecaae",
+        "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-e7c966a7fbc618709a96c46928bea2f0c6d35416",
+        "definition_revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-e898d0be4a81590d0a5182ff0a12f2c4c5d07d5c",
+        "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-e8d687b4b9d70e7d42d52daf9d30a197c6a62d4c",
+        "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-ee84835d90d524bff014351cdf0460ede1b52248",
+        "definition_revision_id": "definition-b9422a68fc0f008401128a65b8fe62344190e53c0f66ea685953dc3fd6fd0715",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-f02573ab0505907f522718ed78d542ced2534be5",
+        "definition_revision_id": "definition-9ba0c0a399779602934c210cd4216ff4d261ec619859acaedeca3aa852678b30",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      {
+        "entity_id": "legacy-attention-f68378e556e803956e67b6b04ca98f9d86fe6763",
+        "definition_revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8",
+        "kind": "requirement",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      }
+    ],
+    "actor": {
+      "entity_id": "actor-23ae9c6b1b3bc9dac1cd2672e345382eccf407b70bacdb2a057745a01956f639",
+      "incarnation_id": "inc-63b7508117a94a0294fcef2afd53e81b"
+    },
+    "operation_manifest_sha256": "1df122f40ee2e35da0eddd04887b365a277e272b39e1b0f4730c1ed6f89d7b13",
+    "new_plan_revision_id": "accepted-1df122f40ee2e35da0eddd04887b365a277e272b39e1b0f4730c1ed6f89d7b13",
+    "new_snapshot_sha256": "edf5735afb89cb824e9567175201da737d642e340f43665ff724912ec39b6640",
+    "removed_work_count": 20,
+    "removed_requirement_count": 42,
+    "removed_group_count": 9,
+    "surviving_work_count": 1242,
+    "surviving_requirement_count": 206,
+    "surviving_group_count": 125,
+    "surviving_bundle_count": 1242,
+    "graph_node_count": 1920,
+    "graph_edge_count": 847,
+    "graph_lineage_edge_count": 1074,
+    "remaining_retired_references": [],
+    "preserved_historical_supersedes": [
+      {
+        "relation": "supersedes",
+        "path": "$/work_items/supersedes",
+        "source": {
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-10",
+          "revision_id": "definition-ae6c0f36cacc18a21d30d812dfb84610add46fc44335aef43533d40806650bb2"
+        },
+        "target": {
+          "kind": "work_item",
+          "entity_id": "CE-IS1-CLOSE",
+          "revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5"
+        }
+      },
+      {
+        "relation": "supersedes",
+        "path": "$/work_items/supersedes",
+        "source": {
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-10",
+          "revision_id": "definition-ae6c0f36cacc18a21d30d812dfb84610add46fc44335aef43533d40806650bb2"
+        },
+        "target": {
+          "kind": "work_item",
+          "entity_id": "CE-IS1-DOCS",
+          "revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a"
+        }
+      },
+      {
+        "relation": "supersedes",
+        "path": "$/work_items/supersedes",
+        "source": {
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-10",
+          "revision_id": "definition-ae6c0f36cacc18a21d30d812dfb84610add46fc44335aef43533d40806650bb2"
+        },
+        "target": {
+          "kind": "work_item",
+          "entity_id": "CE-IS1-INTEGRATE",
+          "revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8"
+        }
+      },
+      {
+        "relation": "supersedes",
+        "path": "$/work_items/supersedes",
+        "source": {
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-10",
+          "revision_id": "definition-ae6c0f36cacc18a21d30d812dfb84610add46fc44335aef43533d40806650bb2"
+        },
+        "target": {
+          "kind": "work_item",
+          "entity_id": "CE-IS1-QUALIFY",
+          "revision_id": "definition-9ba0c0a399779602934c210cd4216ff4d261ec619859acaedeca3aa852678b30"
+        }
+      },
+      {
+        "relation": "supersedes",
+        "path": "$/work_items/supersedes",
+        "source": {
+          "kind": "work_item",
+          "entity_id": "CE-COHERE-10",
+          "revision_id": "definition-ae6c0f36cacc18a21d30d812dfb84610add46fc44335aef43533d40806650bb2"
+        },
+        "target": {
+          "kind": "work_item",
+          "entity_id": "CE-IS1-TORCH",
+          "revision_id": "definition-5d56f9dcef75d72d0642177d5a74770d10533ce1604d88664f0e6ed2371c8d65"
+        }
+      }
+    ],
+    "validation": "graph and explicit retired-reference scan pass; typed codec and surviving bundles match"
+  },
+  "legacy_links": [
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-000",
+      "native_work_item_id": "CE-IS1-000",
+      "definition_revision_id": "definition-561b08cf71f58867a8964d90bdc34ebba664fb2d17da3e7d076c47c2805ec454",
+      "detail_json": "{\"source_status\":\"planned\",\"source_title\":\"Cellerator integrated mathematical substrate\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-ADAPT",
+      "native_work_item_id": "CE-IS1-ADAPT",
+      "definition_revision_id": "definition-2e375267255b7aed45f2db7d40563ac5b5099040bb12bc2c3be2865a02816dfc",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Integrate reuse, structural rewrites and trainable regrowth\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-ADOPT",
+      "native_work_item_id": "CE-IS1-ADOPT",
+      "definition_revision_id": "definition-f0fa326ee149eef4188cb835c778823ff2a11575191833ed86ab2061ed1db981",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Reconcile finished predecessors and publish the small shared foundation\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-BUILD",
+      "native_work_item_id": "CE-IS1-BUILD",
+      "definition_revision_id": "definition-4d5c5a2d23ebc701599bd39154cec30f5e99254251035bcef16a5e7339175acb",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Make components installable without dependency cycles\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-CLOSE",
+      "native_work_item_id": "CE-IS1-CLOSE",
+      "definition_revision_id": "definition-616f696f94d5e2dfdafe8d03ff77b2ae3e01e61ad886adc67426f962211d2fa5",
+      "detail_json": "{\"source_status\":\"blocked\",\"source_title\":\"Accept the deliberate, extensible mathematical library\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-DIFF",
+      "native_work_item_id": "CE-IS1-DIFF",
+      "definition_revision_id": "definition-b26e8e4a5ed5b081f7c4583f2a25b91f7a1b62882073888a230dc66cdaaf06ca",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Compile and integrate requested response computation\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-DOCS",
+      "native_work_item_id": "CE-IS1-DOCS",
+      "definition_revision_id": "definition-8e90e0be546edbc8c14b7bfb06d1a1b41286710d8acf03134de031a4c184651a",
+      "detail_json": "{\"source_status\":\"blocked\",\"source_title\":\"Make the library legible to users and future implementers\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-EFFECTS",
+      "native_work_item_id": "CE-IS1-EFFECTS",
+      "definition_revision_id": "definition-e18759b13f7e4d6dc44a39e99024915459e29f96e01ba430010b39c52abd1eb9",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Integrate composable effects, residuals and port algebra\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-EXEC",
+      "native_work_item_id": "CE-IS1-EXEC",
+      "definition_revision_id": "definition-dbc5a7091707aa98306a8ed03c5a32fadfe3a1d89976828d526b02949ad0eaaa",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Make prepared resident execution the normal path\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-INTEGRATE",
+      "native_work_item_id": "CE-IS1-INTEGRATE",
+      "definition_revision_id": "definition-da54338198dd89b7bfae2ece42b0b48cc1b764f9f55dde9caf5fa7ff288aeaf8",
+      "detail_json": "{\"source_status\":\"blocked\",\"source_title\":\"Publish the installed numerical capability handoff\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-LOWER",
+      "native_work_item_id": "CE-IS1-LOWER",
+      "definition_revision_id": "definition-bf07c5b53817bf5f0875d83cf1d7305b03644651bc9db871f35638323a5cb129",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Search and integrate useful Volta-native realizations\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-MATH",
+      "native_work_item_id": "CE-IS1-MATH",
+      "definition_revision_id": "definition-963231de5469f90c0015e004aca3145424d54a53d464385477ad3123c5d39b26",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Extend the algebra with executable frontier operators\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-MERGE-A",
+      "native_work_item_id": "CE-IS1-MERGE-A",
+      "definition_revision_id": "definition-86dd3ec06acc4a57d277f0ac8919a536da8aeb00ff45598db503c967c6767d25",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Integrate the first usable mathematical substrate\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-MERGE-B",
+      "native_work_item_id": "CE-IS1-MERGE-B",
+      "definition_revision_id": "definition-b9422a68fc0f008401128a65b8fe62344190e53c0f66ea685953dc3fd6fd0715",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Integrate strategies, responses and frontier math\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-OPS",
+      "native_work_item_id": "CE-IS1-OPS",
+      "definition_revision_id": "definition-6c2dc3d809d03efae8656801fd6a094a8b80467a27ae232981e4f8f130005fea",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Integrate the current matrix and process mathematics\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-PACK",
+      "native_work_item_id": "CE-IS1-PACK",
+      "definition_revision_id": "definition-333139f1ed0d868f13c99a2e217516c6246899cb3e259ab9be3d0bd031aefaa2",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Publish a format-independent packing strategy seam\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-QUALIFY",
+      "native_work_item_id": "CE-IS1-QUALIFY",
+      "definition_revision_id": "definition-9ba0c0a399779602934c210cd4216ff4d261ec619859acaedeca3aa852678b30",
+      "detail_json": "{\"source_status\":\"blocked\",\"source_title\":\"Measure complete-path performance and extension friction\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-STATE",
+      "native_work_item_id": "CE-IS1-STATE",
+      "definition_revision_id": "definition-ca7d3636ea998d707d6b6cbb876bb3d5e5a14beb40c9d32b794b3b00a860a31c",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Unify structured state, support and readout objects\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-STRATEGIES",
+      "native_work_item_id": "CE-IS1-STRATEGIES",
+      "definition_revision_id": "definition-99b3f1cd0b8c9ed8424e07e4fc9d9062d56f42bc55313794e41c52ecfe9c1acd",
+      "detail_json": "{\"source_status\":\"done\",\"source_title\":\"Add genuinely different packing and repair strategies\"}"
+    },
+    {
+      "import_id": "legacy-import-6c75c67ee837df8b71794e2d9b4a492a92ebdea8edb7f932",
+      "source_table": "tasks",
+      "source_id": "CE-IS1-TORCH",
+      "native_work_item_id": "CE-IS1-TORCH",
+      "definition_revision_id": "definition-5d56f9dcef75d72d0642177d5a74770d10533ce1604d88664f0e6ed2371c8d65",
+      "detail_json": "{\"source_status\":\"blocked\",\"source_title\":\"Expose native mathematics through optional Cellerator Torch bindings\"}"
+    }
+  ],
+  "unfinished_ids": [
+    "CE-IS1-000",
+    "CE-IS1-CLOSE",
+    "CE-IS1-DOCS",
+    "CE-IS1-INTEGRATE",
+    "CE-IS1-QUALIFY",
+    "CE-IS1-TORCH"
+  ]
+}

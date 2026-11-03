@@ -1,0 +1,43 @@
+{
+  "schema": "cgs.masked-two-tile-local-validation.v1",
+  "scope": "SM70 compilation/linking and retained-function source equality only; no CUDA execution",
+  "backend": "masked-direct-two-tile",
+  "enum_ordinal": 6,
+  "source_sha256": {
+    "contract.hh": "03ae008f4196e8fb021f7a405312a50b6627939ecab429018d529114ae4b7769",
+    "main.cc": "3aa7fc5bba6121f37e7ea6395ad3cba6f3b28df7440ab3850d4d1a66f9eaf50d",
+    "body_runner.cc": "bb0d3fd8455acb1cfb081e1581dd7c2e4f1cc3a6ff1cfd2f2cc193bd3aaaf28b",
+    "campaign_runner.cu": "a40f2b38017d81d2888ca9487bda1a8419cf70aff294430c945b49c9acaa13bd",
+    "backends/consumers.cu": "63ff1f2d162279b600afea85da9feb6708732c5ac94d104c0ef7f3e2ca83a18f",
+    "backends/consumer_tests.cu": "dc4186e895d637113917c0f6ceb9c35275192fb7e22c65a77df9a497ed56f86f",
+    "backends/DESIGN.md": "d5703d1f96019d0b880428c7e914c2a66d973a27ad9922dd3f2ec5f5780c5e2c",
+    "analysis/masked-tiles-ablation-audit.md": "c0b067331d00e1f40093c6731bdc54522159f145ac0457252cecdbd3fb2d865f",
+    "analysis/masked-two-tile-source-check.json": "b58cf82633c02fa52bfcd139bcd9452a6ab3b5384f62a4e0326d3b4c071b264f"
+  },
+  "build_directory": "/tmp/cgs-masked-build",
+  "build_type": "Release",
+  "architectures": [
+    "70"
+  ],
+  "cuda_compiler": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+  "host_compiler": "/usr/bin/g++-12",
+  "parallel_build_jobs": 2,
+  "successful_build_targets": [
+    "cgs_consumers",
+    "cgs_consumer_tests",
+    "cgs_study",
+    "cgs_campaign_layout_test",
+    "cgs_contract_smoke"
+  ],
+  "binary_sha256": {
+    "cgs_study": "02fb301d83db27c2a4e4261cb2da3355ae119f53a25f893a4608d12abfe0fca6",
+    "cgs_consumer_tests": "523bb6323ea1c9af507b347608356d399dbe7f4bd542e3fec21095d5b3c4118d",
+    "cgs_campaign_layout_test": "ab051a5d478d84af203cadab52efd0ba45f334fd0ad66df3ed0784ddcc07bb37",
+    "cgs_contract_smoke": "9d25d3d45d1cbe97193189f23336647117271a13980f268b4ddd6d73cef9ca16"
+  },
+  "host_tests": "Integrator owns combined host CTests; not claimed by this record",
+  "gpu_execution": false,
+  "gpu_qualification": "pending separate coherent capture via campaign",
+  "retained_primary_archive": "6aec4e10d969c602d418dcd45b50f8a6ba002b68d4e1bf11843e3df9fa1bf4b9",
+  "retained_primary_binary": "24040eb390dd5166806671b7999a68cb2d6f29f8a7ea42ad4f7e86bbd1bc584d"
+}

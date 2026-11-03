@@ -774,6 +774,12 @@ endif()
 if(COMMAND cellerator_append_cellpack_interop_package_config)
     cellerator_append_cellpack_interop_package_config()
 endif()
+if(COMMAND cellerator_append_framework_cuda_package_config)
+    cellerator_append_framework_cuda_package_config()
+endif()
+if(COMMAND cellerator_append_nn_package_config)
+    cellerator_append_nn_package_config()
+endif()
 
 if(CELLERATOR_ENABLE_SPARSE_SUPPORT AND CELLERATOR_BUILD_TESTS)
     add_subdirectory(tests/sparse_support)
@@ -804,3 +810,56 @@ if(CELLERATOR_ENABLE_TORCH)
 endif()
 
 cellerator_append_component_validation()
+
+# Keep the native factorized-interaction component independently installable.
+# Its narrow package path loads only the shared structural base, CUDA memory,
+# and factorized executor exports.  The conventional package path retains the
+# complete existing Cellerator config, which is needed for every other request.
+if(TARGET cellerator_factorized_interaction_cuda
+   AND DEFINED CELLERATOR_HOST_CONFIG
+   AND EXISTS "${CELLERATOR_HOST_CONFIG}")
+    set(_cellerator_full_config
+        "${CMAKE_CURRENT_BINARY_DIR}/CelleratorFullConfig.cmake")
+    configure_file("${CELLERATOR_HOST_CONFIG}" "${_cellerator_full_config}" COPYONLY)
+    file(WRITE "${CELLERATOR_HOST_CONFIG}"
+        "set(_cellerator_factorized_only_request FALSE)\n"
+        "list(LENGTH Cellerator_FIND_COMPONENTS _cellerator_requested_component_count)\n"
+        "if(_cellerator_requested_component_count EQUAL 1 AND Cellerator_FIND_COMPONENTS STREQUAL \"factorized_interaction_cuda\")\n"
+        "  set(_cellerator_factorized_only_request TRUE)\n"
+        "endif()\n"
+        "if(_cellerator_factorized_only_request OR NOT EXISTS \"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFullConfig.cmake\")\n"
+        "  if(NOT \"factorized_interaction_cuda\" IN_LIST Cellerator_FIND_COMPONENTS)\n"
+        "    set(Cellerator_FOUND FALSE)\n"
+        "    set(Cellerator_NOT_FOUND_MESSAGE \"This component-only installation provides only factorized_interaction_cuda\")\n"
+        "    return()\n"
+        "  endif()\n"
+        "  include(CMakeFindDependencyMacro)\n"
+        "  find_dependency(CUDAToolkit REQUIRED)\n"
+        "  include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFactorizedInteractionBaseTargets.cmake\")\n"
+        "  include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFactorizedInteractionMemoryTargets.cmake\")\n"
+        "  include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFactorizedInteractionTargets.cmake\")\n"
+        "  set(Cellerator_factorized_interaction_cuda_FOUND TRUE)\n"
+        "  foreach(_cellerator_requested_component IN LISTS Cellerator_FIND_COMPONENTS)\n"
+        "    if(NOT _cellerator_requested_component STREQUAL \"factorized_interaction_cuda\")\n"
+        "      set(Cellerator_\${_cellerator_requested_component}_FOUND FALSE)\n"
+        "    endif()\n"
+        "  endforeach()\n"
+        "  foreach(_cellerator_requested_component IN LISTS Cellerator_FIND_COMPONENTS)\n"
+        "    if(Cellerator_FIND_REQUIRED_\${_cellerator_requested_component} AND NOT Cellerator_\${_cellerator_requested_component}_FOUND)\n"
+        "      set(Cellerator_FOUND FALSE)\n"
+        "      set(Cellerator_NOT_FOUND_MESSAGE \"Required Cellerator component '\${_cellerator_requested_component}' is unavailable\")\n"
+        "    endif()\n"
+        "  endforeach()\n"
+        "elseif(EXISTS \"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFullConfig.cmake\")\n"
+        "  include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFullConfig.cmake\")\n"
+        "else()\n"
+        "  set(Cellerator_FOUND FALSE)\n"
+        "  set(Cellerator_NOT_FOUND_MESSAGE \"This component-only installation provides only factorized_interaction_cuda\")\n"
+        "endif()\n")
+    install(FILES "${_cellerator_full_config}"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator")
+    install(FILES "${CELLERATOR_HOST_CONFIG}"
+                  "${CMAKE_CURRENT_BINARY_DIR}/CelleratorConfigVersion.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator"
+        COMPONENT FactorizedInteractionCUDA)
+endif()

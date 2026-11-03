@@ -1,0 +1,28 @@
+{
+  "schema": "cellerator.factorized_interactions.sanitizer_wrapper_failed_attempt.v1",
+  "reported_by": "autobench_build_identity",
+  "attempt_id_prefix": "d58e0418",
+  "scheduler_job_id_prefix": "cbf8bd1d",
+  "outer_status": "failed_wrapper_validation",
+  "outer_cleanup_verified": true,
+  "reported_error": "candidate sanitizer case did not select its intended layout",
+  "raw_inner_suite_report_imported": false,
+  "actual_sanitizer_case_results_available": false,
+  "source_diagnosis": {
+    "status": "confirmed_wrapper_expectation_mismatch",
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "candidate_runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+    "candidate_build_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+    "accepted_dtype_report_sha256": "d23113d02e26bbe87f823c488d8e939d2ba306015dc7ca4917ff95ad044f1dd5",
+    "accepted_dtype_report_path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/evidence/factorized-native-performance/0/df42e7d0698e6991e7b8a87910599baa66a927e8791a66184b91bc4af9e64cfc/dtype-qualification.json",
+    "observed_minimal_direct_metadata": {
+      "candidate": "minimal_direct",
+      "selected_backend": "direct",
+      "actual_implementation": "direct",
+      "structural_layout": "canonical_direct"
+    },
+    "wrapper_v2_expected_actual_implementation": "minimal_direct",
+    "wrapper_v2_wrong_expectation": "actual_implementation is the selected implementation/backend label, not the requested candidate mode"
+  },
+  "disposition": "This is a wrapper rejection after the sanitizer process; it is not a CUDA sanitizer finding. The inner per-case result is unavailable, so no memory/race/init/sync pass or failure is claimed."
+}

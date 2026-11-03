@@ -1,0 +1,83 @@
+{
+  "schema": "cgs.triage.v1",
+  "runs": [
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "ste",
+      "body": "product",
+      "backend": "scalar",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-6",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "ste",
+      "body": "product",
+      "backend": "bitmap",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-6",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "ste",
+      "body": "product",
+      "backend": "direct",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-6",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "ste",
+      "body": "product",
+      "backend": "cohort-direct",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-6",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "ste",
+      "body": "product",
+      "backend": "cohort-direct-two-tile",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-6",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+      "gate": "ste",
+      "body": "product",
+      "backend": "cohort-shared",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-6",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    }
+  ]
+}

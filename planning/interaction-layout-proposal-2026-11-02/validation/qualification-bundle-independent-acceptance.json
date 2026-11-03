@@ -1,0 +1,434 @@
+{
+  "assessment": "accepted_as_timing_prerequisite",
+  "bundle": {
+    "declared_status": "validated_pending_independent_review",
+    "independent_reconstruction": "pass on a fresh relocated copy; reconstructed nine reports equal supplied bundle",
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+    "portable_evidence_root": ".",
+    "relocated_copy_bundle_sha256": "f651836abbbcfe5705a96aa0296b36756044ad899cad2c0c389b98281b9dcced",
+    "schema": "cellerator.factorized_interactions.recorded_qualification.v1",
+    "sha256": "f651836abbbcfe5705a96aa0296b36756044ad899cad2c0c389b98281b9dcced"
+  },
+  "coverage": {
+    "aux_packet": 12,
+    "aux_strongest_direct": 12,
+    "dtype": 32,
+    "sanitizer": {
+      "initcheck": 14,
+      "memcheck": 14,
+      "racecheck": 14,
+      "synccheck": 14
+    }
+  },
+  "limitations": [
+    "No GPU work or timing was performed during this independent review.",
+    "The 1M-case peak is 50 ms sampled evidence and may miss shorter-lived transients; it is not a hard peak-memory bound.",
+    "The prebuilt materialization proves byte identity and path viability, not a new compile.",
+    "The qualification remains bounded to the frozen native synthetic corpus; it establishes neither biological validity nor a universal speedup.",
+    "Post-timing CPU analysis must bind and run the reviewed selection guard; timing collection itself does not select a production backend."
+  ],
+  "official_copy_audit": {
+    "all_allocation_quiescence_preconditions_verified": true,
+    "all_nine_finished_receipt_wrappers_preserve_complete_official_row_and_current_pointer_values": true,
+    "all_success_exit0_cleanup_verified": true,
+    "all_v100_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "exported_receipt_pointer_values_exactly_match_original_envelopes": true,
+    "receipt_and_pointer_copies_are_byte_identical_within_bundle": true,
+    "receipt_pointer_bytes_verified_against_exported_official_row_and_current_pointer": true,
+    "report_trees": {
+      "aux_packet_high_fanin_1m": {
+        "changed": 0,
+        "copied_report_tree_files": 11,
+        "missing": 0,
+        "only_extra_file": "finished-receipt.json",
+        "receipt_and_pointer_digests_match": true,
+        "report_bytes_equal": true,
+        "source_report_tree_files": 10
+      },
+      "aux_packet_regular": {
+        "changed": 0,
+        "copied_report_tree_files": 61,
+        "missing": 0,
+        "only_extra_file": "finished-receipt.json",
+        "receipt_and_pointer_digests_match": true,
+        "report_bytes_equal": true,
+        "source_report_tree_files": 60
+      },
+      "aux_strongest_direct_high_fanin_1m": {
+        "changed": 0,
+        "copied_report_tree_files": 11,
+        "missing": 0,
+        "only_extra_file": "finished-receipt.json",
+        "receipt_and_pointer_digests_match": true,
+        "report_bytes_equal": true,
+        "source_report_tree_files": 10
+      },
+      "aux_strongest_direct_regular": {
+        "changed": 0,
+        "copied_report_tree_files": 61,
+        "missing": 0,
+        "only_extra_file": "finished-receipt.json",
+        "receipt_and_pointer_digests_match": true,
+        "report_bytes_equal": true,
+        "source_report_tree_files": 60
+      },
+      "dtype": {
+        "changed": 0,
+        "copied_report_tree_files": 173,
+        "missing": 0,
+        "only_extra_file": "finished-receipt.json",
+        "receipt_and_pointer_digests_match": true,
+        "report_bytes_equal": true,
+        "source_report_tree_files": 172
+      },
+      "sanitizer_initcheck": {
+        "changed": 0,
+        "copied_report_tree_files": 78,
+        "missing": 0,
+        "only_extra_file": "finished-receipt.json",
+        "receipt_and_pointer_digests_match": true,
+        "report_bytes_equal": true,
+        "source_report_tree_files": 77
+      },
+      "sanitizer_memcheck": {
+        "changed": 0,
+        "copied_report_tree_files": 78,
+        "missing": 0,
+        "only_extra_file": "finished-receipt.json",
+        "receipt_and_pointer_digests_match": true,
+        "report_bytes_equal": true,
+        "source_report_tree_files": 77
+      },
+      "sanitizer_racecheck": {
+        "changed": 0,
+        "copied_report_tree_files": 78,
+        "missing": 0,
+        "only_extra_file": "finished-receipt.json",
+        "receipt_and_pointer_digests_match": true,
+        "report_bytes_equal": true,
+        "source_report_tree_files": 77
+      },
+      "sanitizer_synccheck": {
+        "changed": 0,
+        "copied_report_tree_files": 78,
+        "missing": 0,
+        "only_extra_file": "finished-receipt.json",
+        "receipt_and_pointer_digests_match": true,
+        "report_bytes_equal": true,
+        "source_report_tree_files": 77
+      }
+    },
+    "unique_autobench_attempts": 9,
+    "unique_scheduler_attempts": 9,
+    "unique_scheduler_jobs": 9
+  },
+  "qualification_rows": [
+    {
+      "autobench_attempt_id": "a8768b4f-93eb-49b8-9309-f19ea276270d",
+      "build_fingerprint": "e408fb47ba6d245cca936dceb8ce45b39c2e5bef333c8e65db74011399a9b413",
+      "build_output_identity": "6999c76178474be3cf2d82764947ff3c4ea1ed3c0705d80b3b58297f8bdd0ec6",
+      "case_count": 32,
+      "cleanup_verified": true,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "kind": "dtype",
+      "lease_state": "released",
+      "official_envelope_sha256": "df7062c6ee1b9d6cc99592cebed46867c90182cd3036afa526c28be1f8842e19",
+      "official_evidence_envelope": "planning/interaction-layout-proposal-2026-11-02/validation/dtype32-finished-evidence.json",
+      "report_path": "dtype/dtype-qualification.json",
+      "report_sha256": "d23113d02e26bbe87f823c488d8e939d2ba306015dc7ca4917ff95ad044f1dd5",
+      "result_state": "succeeded",
+      "scheduler_attempt_id": "845bb953-308c-44cd-96f7-f0e9f6ddb9c0",
+      "scheduler_job_id": "680577b0-865f-4de2-a87f-aa2b41eb0991",
+      "source_fingerprint": "e7f80e700238448f8ec79af87ea8ef47beeafaab424965d06b5dec69a405af95",
+      "unit_name": "device-scheduler-attempt-2eca3d0c40a5dbe4acc28de8d4f1ce0c.service",
+      "worker_returncode": 0
+    },
+    {
+      "autobench_attempt_id": "0c778a8c-6c48-490e-a50e-15a4d4b6c119",
+      "build_fingerprint": "c6dc3c7c794dc9a65edc33c496cb87db656164a1a51d1de1d0aaf771e6735185",
+      "build_output_identity": "9525f0bcf4f2ddb670dcfabe0bdf2aa74a1424738454a795a5e8723c4d23c3bc",
+      "case_count": 11,
+      "cleanup_verified": true,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "kind": "aux_packet_regular",
+      "lease_state": "released",
+      "official_envelope_sha256": "32d46e09ea18f02f1c611e74ab267488e55ac54616c0c5d1aacfabaf588ed4dc",
+      "official_evidence_envelope": "planning/interaction-layout-proposal-2026-11-02/validation/aux-packet-regular-finished-evidence.json",
+      "report_path": "aux_packet_regular/qualification.json",
+      "report_sha256": "d9035a97f6a2f3deb94fb7a464122e58741665861c3016cb84fda7a427fcc16c",
+      "result_state": "succeeded",
+      "scheduler_attempt_id": "4b7f4730-b87f-4a02-829a-d08363fd0427",
+      "scheduler_job_id": "4327cde1-7fbd-4583-bbac-7db969ddb97a",
+      "source_fingerprint": "d61df5d9cb63e6e584b1a3ba9672d61b02e697eaca9644bc4e40a025274dd619",
+      "unit_name": "device-scheduler-attempt-0d792023b18c98cfdc4f46cca9322fe7.service",
+      "worker_returncode": 0
+    },
+    {
+      "autobench_attempt_id": "de1778f5-b53b-4e12-8540-a98360ab5b5d",
+      "build_fingerprint": "c6dc3c7c794dc9a65edc33c496cb87db656164a1a51d1de1d0aaf771e6735185",
+      "build_output_identity": "9525f0bcf4f2ddb670dcfabe0bdf2aa74a1424738454a795a5e8723c4d23c3bc",
+      "case_count": 1,
+      "cleanup_verified": true,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "kind": "aux_packet_high_fanin_1m",
+      "lease_state": "released",
+      "official_envelope_sha256": "3678092fd52dad9d5e939cfe4c9ac85470c80878cf897a22ed79998ff1e1c0d1",
+      "official_evidence_envelope": "planning/interaction-layout-proposal-2026-11-02/validation/aux-packet-1m-finished-evidence.json",
+      "report_path": "aux_packet_high_fanin_1m/qualification.json",
+      "report_sha256": "82e1c3fba7ea05951a9166786ded04f1eea26d5863725a10d94288160ae65498",
+      "result_state": "succeeded",
+      "scheduler_attempt_id": "3a4ff8f9-4ff3-4e3e-9f57-704f03d4c1d1",
+      "scheduler_job_id": "b29f435f-5fd8-4e7a-af07-0c132e05a8e6",
+      "source_fingerprint": "d61df5d9cb63e6e584b1a3ba9672d61b02e697eaca9644bc4e40a025274dd619",
+      "unit_name": "device-scheduler-attempt-9bb6769abd3c91e17632611d204964ff.service",
+      "worker_returncode": 0
+    },
+    {
+      "autobench_attempt_id": "6e3810db-4d12-4a88-a810-7d2006b9efb4",
+      "build_fingerprint": "c6dc3c7c794dc9a65edc33c496cb87db656164a1a51d1de1d0aaf771e6735185",
+      "build_output_identity": "9525f0bcf4f2ddb670dcfabe0bdf2aa74a1424738454a795a5e8723c4d23c3bc",
+      "case_count": 11,
+      "cleanup_verified": true,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "kind": "aux_strongest_direct_regular",
+      "lease_state": "released",
+      "official_envelope_sha256": "30354fa86eeb6fe3f59d4a14ad4b45f1a31643c44020eecceb2780b689e3c503",
+      "official_evidence_envelope": "planning/interaction-layout-proposal-2026-11-02/validation/aux-strongest-regular-finished-evidence.json",
+      "report_path": "aux_strongest_direct_regular/qualification.json",
+      "report_sha256": "9633d6464b23478d7f428a48948a9ac8c8539b2313296e5d87aac13f28dc3930",
+      "result_state": "succeeded",
+      "scheduler_attempt_id": "4594fc7a-eb7a-48ae-b515-8c2d38b7813d",
+      "scheduler_job_id": "009b5d27-569d-4074-9851-9f546c207111",
+      "source_fingerprint": "d61df5d9cb63e6e584b1a3ba9672d61b02e697eaca9644bc4e40a025274dd619",
+      "unit_name": "device-scheduler-attempt-24dcc395982ea25af0484c0f2fa53237.service",
+      "worker_returncode": 0
+    },
+    {
+      "autobench_attempt_id": "e7af2110-513e-41de-a428-00b84c0d649f",
+      "build_fingerprint": "c6dc3c7c794dc9a65edc33c496cb87db656164a1a51d1de1d0aaf771e6735185",
+      "build_output_identity": "9525f0bcf4f2ddb670dcfabe0bdf2aa74a1424738454a795a5e8723c4d23c3bc",
+      "case_count": 1,
+      "cleanup_verified": true,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "kind": "aux_strongest_direct_high_fanin_1m",
+      "lease_state": "released",
+      "official_envelope_sha256": "d307068234dce3b49da0d2fb49975caf3cfa0cf9222ac42763437d8d2110c833",
+      "official_evidence_envelope": "planning/interaction-layout-proposal-2026-11-02/validation/aux-strongest-1m-finished-evidence.json",
+      "report_path": "aux_strongest_direct_high_fanin_1m/qualification.json",
+      "report_sha256": "a9433fec8896b9573bc897e4434c3a658bc1ec089c7a5edab3cd8a59bdb6d4a6",
+      "result_state": "succeeded",
+      "scheduler_attempt_id": "d7c90b2e-07e2-4f84-83e7-b4c3a7b0e95e",
+      "scheduler_job_id": "bdc8ef98-9e31-4fdb-b0b0-f0a964e350b9",
+      "source_fingerprint": "d61df5d9cb63e6e584b1a3ba9672d61b02e697eaca9644bc4e40a025274dd619",
+      "unit_name": "device-scheduler-attempt-2269b717d6d0d429f2394acac21971ef.service",
+      "worker_returncode": 0
+    },
+    {
+      "autobench_attempt_id": "df9922a7-b55a-4690-9366-557814d42190",
+      "build_fingerprint": "fdd93c8ba45f26659ff75dd9416f980654adf0273e09c8ba2a0b708a5d006941",
+      "build_output_identity": "9525f0bcf4f2ddb670dcfabe0bdf2aa74a1424738454a795a5e8723c4d23c3bc",
+      "case_count": 14,
+      "cleanup_verified": true,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "kind": "sanitizer_memcheck",
+      "lease_state": "released",
+      "official_envelope_sha256": "e729f66c5bc3853e07feaf4fb064de957440a9b87150edf08d43e57932ad158b",
+      "official_evidence_envelope": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer-memcheck-finished-evidence.json",
+      "report_path": "sanitizer_memcheck/partition.json",
+      "report_sha256": "724142ba5e2fde82e5e5c333faf0ccf1265085fe8717469b1f7c17b04c49a010",
+      "result_state": "succeeded",
+      "scheduler_attempt_id": "7903e725-00b0-45d6-81ed-76bccf4c7966",
+      "scheduler_job_id": "31568109-317c-4335-9f6d-d50a3be4ccf9",
+      "source_fingerprint": "b0cfb0dcc9e45a78f53970b2edb1d1739e23ecd75f3f31ec985303d17235ffc0",
+      "unit_name": "device-scheduler-attempt-8cfc4ee9cb5045748d3d5cb547ea8651.service",
+      "worker_returncode": 0
+    },
+    {
+      "autobench_attempt_id": "2fc1f76c-af07-4f52-840c-a86e9c2ca745",
+      "build_fingerprint": "fdd93c8ba45f26659ff75dd9416f980654adf0273e09c8ba2a0b708a5d006941",
+      "build_output_identity": "9525f0bcf4f2ddb670dcfabe0bdf2aa74a1424738454a795a5e8723c4d23c3bc",
+      "case_count": 14,
+      "cleanup_verified": true,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "kind": "sanitizer_racecheck",
+      "lease_state": "released",
+      "official_envelope_sha256": "e0f2727e4e652cec28feff7f72535599c5643276629449f06ed43721cb1eaf85",
+      "official_evidence_envelope": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer-racecheck-finished-evidence.json",
+      "report_path": "sanitizer_racecheck/partition.json",
+      "report_sha256": "e7489641b41259a9e813f19f96e641a5ba09ec4acee84627c45ee7bbd0a80cd5",
+      "result_state": "succeeded",
+      "scheduler_attempt_id": "4a1f3041-16fe-423a-afb4-c302038fa58b",
+      "scheduler_job_id": "6a60225d-2bdb-48da-9a29-baf7719f5414",
+      "source_fingerprint": "b0cfb0dcc9e45a78f53970b2edb1d1739e23ecd75f3f31ec985303d17235ffc0",
+      "unit_name": "device-scheduler-attempt-b9aae9837e59b045680886a9e252f3ef.service",
+      "worker_returncode": 0
+    },
+    {
+      "autobench_attempt_id": "6081879d-686d-48fa-9c16-669da41d0b71",
+      "build_fingerprint": "fdd93c8ba45f26659ff75dd9416f980654adf0273e09c8ba2a0b708a5d006941",
+      "build_output_identity": "9525f0bcf4f2ddb670dcfabe0bdf2aa74a1424738454a795a5e8723c4d23c3bc",
+      "case_count": 14,
+      "cleanup_verified": true,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "kind": "sanitizer_initcheck",
+      "lease_state": "released",
+      "official_envelope_sha256": "ac8add75fe19f79261b97ddb3f196580a307010838a9f9d3b5529f3bb66617cc",
+      "official_evidence_envelope": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer-initcheck-finished-evidence.json",
+      "report_path": "sanitizer_initcheck/partition.json",
+      "report_sha256": "c7cdae6871b147546527cdeee3c49897e312fa54241838f22df2be54e3e93178",
+      "result_state": "succeeded",
+      "scheduler_attempt_id": "0fd1172e-aa3e-419f-9e40-b1e10f8fd132",
+      "scheduler_job_id": "8584c81c-8eb0-40b0-a2bb-eb2a7322e1ab",
+      "source_fingerprint": "b0cfb0dcc9e45a78f53970b2edb1d1739e23ecd75f3f31ec985303d17235ffc0",
+      "unit_name": "device-scheduler-attempt-a227385fa0baa439be5f444e800632ce.service",
+      "worker_returncode": 0
+    },
+    {
+      "autobench_attempt_id": "566d281d-2fbf-4088-a52c-035c258238d2",
+      "build_fingerprint": "fdd93c8ba45f26659ff75dd9416f980654adf0273e09c8ba2a0b708a5d006941",
+      "build_output_identity": "9525f0bcf4f2ddb670dcfabe0bdf2aa74a1424738454a795a5e8723c4d23c3bc",
+      "case_count": 14,
+      "cleanup_verified": true,
+      "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "kind": "sanitizer_synccheck",
+      "lease_state": "released",
+      "official_envelope_sha256": "c83ec3544446942577e4575448413ed5a6d32e619164f4c6a923bd4eccf26ad9",
+      "official_evidence_envelope": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer-synccheck-finished-evidence.json",
+      "report_path": "sanitizer_synccheck/partition.json",
+      "report_sha256": "b27e4bf7d5dd0647b17dd2ab2fb9f2bf870ebfea0086bf8ce7ba4f02752e3264",
+      "result_state": "succeeded",
+      "scheduler_attempt_id": "a8c6361d-59aa-4a76-a91e-3e024ca823be",
+      "scheduler_job_id": "aa28c2c6-d482-432c-9110-b736b879bf6f",
+      "source_fingerprint": "b0cfb0dcc9e45a78f53970b2edb1d1739e23ecd75f3f31ec985303d17235ffc0",
+      "unit_name": "device-scheduler-attempt-99fb9178f955afe0812392f53856b6de.service",
+      "worker_returncode": 0
+    }
+  ],
+  "reviewed_at_utc": "2026-11-02T22:26:05Z",
+  "sanitizer_tool": {
+    "compute_sanitizer_binary_sha256": "979adf037f4e3434a976b7f0912b0a05ce3b062e31b2a73397a1bf1cd5f57547",
+    "compute_sanitizer_home": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer",
+    "compute_sanitizer_path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "compute_sanitizer_support_tree_sha256": "1b7010f3f1f4ffce726282f85c2d25c30495ad1d567c3fbecb0f18ed4f6bcf65",
+    "compute_sanitizer_version": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)",
+    "suite_sha256": "c5af5b41e14b2a182d8ed479902f8e60e79cb45bc46bd77f59f6b1a10afc0c08",
+    "wrapper_sha256": "e5bafd545ecaaae4a093f533da9e96276f6795e6f91691de25180dcf0ad04de7"
+  },
+  "scheduler_mutation_performed": false,
+  "schema": "cellerator.factorized_interactions.independent_qualification_bundle_review.v1",
+  "selection_guard_check": {
+    "guard_rule": "packet promotion requires actual packet/full_packet across all 14 blocks and the strongest direct control to be actual minimal_direct or direct_unique_output/canonical_direct",
+    "regression_path": "bench/factorized_interactions/bounded/tests/test_recorded_policy_guard.py",
+    "regression_sha256": "ea1c3f7603865bafa961d7bbfb0b32c3ba3b0351380b26659c430fccdc15d0e9",
+    "sha256": "71d209096f334c6de275752aa04be18c0c796151888c5fc404bae449358e7326",
+    "source_path": "bench/factorized_interactions/bounded/recorded_policy_guard.py",
+    "targeted_regressions": "pass: stable/stable does not promote packet; packet argument routed to non-packet backend falls back to direct",
+    "test_method_note": "directly invoked those two regression functions with a minimal pytest.approx shim; full pytest suite was not available in the ambient Python environments"
+  },
+  "shared_compiled_identity": {
+    "baseline_manifest_sha256": "4591a763182aac829e51e13c14f8d0bffbafda4f2e5416d1680f102437e8bb2d",
+    "baseline_runner_sha256": "f388b997e513f927072fad314a4e2cabce6d38a55b9017df143bf5ed3a4d8275",
+    "candidate_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+    "candidate_runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+    "library_sha256": "73f4f987db9dc4480d0efef371bc358c24b64ad6be3b472412936289fd0a574c",
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "validator_sha256": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31"
+  },
+  "timing_draft": {
+    "all_attempt_outputs_under_output": true,
+    "all_resources_exclusive_same_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "arms_per_block": [
+      "strongest_direct",
+      "packet",
+      "native_direct"
+    ],
+    "benchmark": "factorized-timing-partitions",
+    "data_assets": [
+      {
+        "bytes": 23162880,
+        "path": ".autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered.tar",
+        "sha256": "203fe5e743a1a2928afcdcb1b8085e6b2c86defebbbdc0a6e497d178a43e0078"
+      },
+      {
+        "bytes": 759724,
+        "path": ".autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered-manifest.json",
+        "sha256": "84071adc04a37f3c50f0f5c73b96af1ae78e2656b8dd29896f45d4aaf82f6b6a"
+      },
+      {
+        "bytes": 12185600,
+        "path": ".autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native.tar",
+        "sha256": "34ed1254850a9217ff6da1be127a14ae24f5ba4db2ad45093be5813085b9d871"
+      },
+      {
+        "bytes": 1900,
+        "path": ".autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native-manifest.json",
+        "sha256": "0cb93ca3395f72e26db2336d9f6e893ba4ad14506b2dcef1daaf07a813ad463c"
+      },
+      {
+        "bytes": 4713,
+        "path": ".autobench/data/factorized-interactions/prebuilt-native-1/materialize_prebuilt.py",
+        "sha256": "4cc2f083edfe712cd87af28ac61688e448368506cdd06904079c0e6d7e3f217a"
+      },
+      {
+        "bytes": 34168,
+        "path": ".autobench/data/factorized-interactions/timing-wrapper-2/bounded_validation.py",
+        "sha256": "6da91757d8d18501ad8df4c6722c549ae32c9adfb93e78417a016b6849caaf11"
+      },
+      {
+        "bytes": 39522,
+        "path": ".autobench/data/factorized-interactions/timing-wrapper-2/recorded_qualification.py",
+        "sha256": "505a83220828e80e22e84e02588918a9df794347fb3b1bee8c3f8190c8f96ea3"
+      },
+      {
+        "bytes": 15655,
+        "path": ".autobench/data/factorized-interactions/timing-wrapper-2/recorded_receipts.py",
+        "sha256": "4ea24aedf780caffb5a138d8bfe01213e2ba10e914c6475b4b54b151a60cd1a6"
+      },
+      {
+        "bytes": 48701,
+        "path": ".autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+        "sha256": "4193f5f1789e63cfecbb3e6edde0c30780634d1cb6e5b5c231f58f17373953eb"
+      },
+      {
+        "bytes": 25053,
+        "path": ".autobench/data/factorized-interactions/timing-wrapper-2/tests/test_run_timing_partition.py",
+        "sha256": "e33ae23064b4a9aec9845ac1ff499b1857e539fa762ac814049f1fc376e14759"
+      },
+      {
+        "bytes": 45796,
+        "path": ".autobench/data/factorized-interactions/timing-wrapper-2/tests/test_recorded_qualification.py",
+        "sha256": "cd02de221c3883489698b6618205f1d6722f2ddfcb7fb5cfaae61e8e238516af"
+      },
+      {
+        "bytes": 11934,
+        "path": ".autobench/data/factorized-interactions/timing-wrapper-2/tests/test_recorded_receipts.py",
+        "sha256": "70831192ed7211531c722fbae57ac7c928702960bceec04880a2f8c666bbb6d6"
+      }
+    ],
+    "expected_seconds": 480,
+    "kill_seconds": 600,
+    "packets": 26,
+    "paired_blocks_per_phase": 7,
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/timing-partitions-draft.toml",
+    "per_arm_iterations": 30,
+    "phases_per_workload": [
+      "exploration",
+      "confirmation"
+    ],
+    "prebuilt_materialization_cpu_check": {
+      "baseline_runner_sha256": "f388b997e513f927072fad314a4e2cabce6d38a55b9017df143bf5ed3a4d8275",
+      "candidate_runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+      "compiled": false,
+      "native_library_sha256": "73f4f987db9dc4480d0efef371bc358c24b64ad6be3b472412936289fd0a574c",
+      "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+      "status": "verified_prebuilt_copy"
+    },
+    "primary_metric": "warm_forward_vjp_batch_host_wall_mean",
+    "qualification_bundle_is_revalidated_by_each_partition": true,
+    "relative_build_paths_match_prebuilt_materializer": true,
+    "revision": 1,
+    "selection_note": "collection-only; no production route decision follows from this TOML alone",
+    "sha256": "029f0655ebc6df8be67c85881f932f78561b0cf02f5dc896c99d1ec6db94688f",
+    "unique_workloads": 13
+  }
+}

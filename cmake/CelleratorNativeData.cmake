@@ -13,7 +13,7 @@ function(cellerator_configure_native_data_host_target target export_name)
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 endfunction()
 
-function(cellerator_add_native_data_memory_cuda_owner export_set)
+function(cellerator_add_native_data_memory_cuda_owner)
     if(TARGET cellerator_memory_cuda)
         return()
     endif()
@@ -30,12 +30,29 @@ function(cellerator_add_native_data_memory_cuda_owner export_set)
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
     target_link_libraries(cellerator_memory_cuda PUBLIC CUDA::cudart)
+    # Keep the one canonical memory target in a small export set.  Both the
+    # full SDK and the factorized-interaction component import this file, so
+    # their target-export sets never define memory_cuda twice.
     install(TARGETS cellerator_memory_cuda
-        EXPORT "${export_set}"
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        EXPORT CelleratorFactorizedInteractionMemoryTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT FactorizedInteractionCUDA)
+    install(EXPORT CelleratorFactorizedInteractionMemoryTargets
+        NAMESPACE Cellerator::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator
+        COMPONENT FactorizedInteractionCUDA)
     install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/memory/cuda"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/memory"
         COMPONENT NativeDataCUDA)
+    install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/memory/cuda"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/memory"
+        COMPONENT FactorizedInteractionCUDA)
+    if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
+        file(APPEND "${CELLERATOR_HOST_CONFIG}"
+            "include(CMakeFindDependencyMacro)\n"
+            "find_dependency(CUDAToolkit)\n"
+            "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFactorizedInteractionMemoryTargets.cmake\")\n")
+    endif()
 endfunction()
 
 add_library(cellerator_dependency_geometry STATIC
@@ -115,6 +132,34 @@ target_link_libraries(cellerator_native_data_api INTERFACE
     Cellerator::gated_product
     Cellerator::tensor
     Cellerator::dependency_execution)
+
+# Structural preparation is a host operation and remains testable without a
+# CUDA toolchain. The checked ExplicitPattern bridge separately exercises its
+# geometry-owner boundary.
+option(CELLERATOR_BUILD_FACTORIZED_INTERACTION_TESTS
+    "Build host structural tests for the factorized interaction layout" OFF)
+if(CELLERATOR_BUILD_FACTORIZED_INTERACTION_TESTS)
+    enable_testing()
+    add_executable(cellerator_factorized_interaction_preparation_test
+        "${PROJECT_SOURCE_DIR}/tests/factorized_interactions_preparation/preparation_test.cc")
+    target_link_libraries(cellerator_factorized_interaction_preparation_test PRIVATE
+        Cellerator::layout)
+    target_compile_features(cellerator_factorized_interaction_preparation_test PRIVATE cxx_std_17)
+    add_test(NAME factorized_interaction_preparation
+        COMMAND cellerator_factorized_interaction_preparation_test)
+    set_tests_properties(factorized_interaction_preparation PROPERTIES
+        LABELS "factorized_interaction;host_only" TIMEOUT 60)
+
+    add_executable(cellerator_factorized_interaction_pattern_test
+        "${PROJECT_SOURCE_DIR}/tests/factorized_interactions_preparation/pattern_binding_test.cc")
+    target_link_libraries(cellerator_factorized_interaction_pattern_test PRIVATE
+        Cellerator::layout Cellerator::dependency_geometry)
+    target_compile_features(cellerator_factorized_interaction_pattern_test PRIVATE cxx_std_20)
+    add_test(NAME factorized_interaction_pattern_binding
+        COMMAND cellerator_factorized_interaction_pattern_test)
+    set_tests_properties(factorized_interaction_pattern_binding PROPERTIES
+        LABELS "factorized_interaction;host_only" TIMEOUT 60)
+endif()
 
 install(TARGETS
         cellerator_dependency_geometry

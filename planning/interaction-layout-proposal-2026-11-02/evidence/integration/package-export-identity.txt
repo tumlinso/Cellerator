@@ -1,0 +1,16 @@
+CelleratorFactorizedInteractionBaseTargets: Cellerator::support, Cellerator::layout
+CelleratorFactorizedInteractionMemoryTargets: Cellerator::memory_cuda
+CelleratorFactorizedInteractionTargets: Cellerator::factorized_interaction_cuda
+CelleratorNativeTargets: Cellerator::native_foundation, Cellerator::cellpack_geometry, Cellerator::jbc_v1, Cellerator::training_program, Cellerator::native_numeric, Cellerator::executable_program, Cellerator::model_ops, Cellerator::local_differential, Cellerator::indexed_mechanism, Cellerator::sparse_support, Cellerator::ops_sparse_support, Cellerator::sparse_support_cuda, Cellerator::cellpack, Cellerator::biological_abi, Cellerator::builtin_candidate_catalog, Cellerator::geometry_acquisition, Cellerator::operation_core, Cellerator::profiling_v1, Cellerator::projection_value_plane_v1, Cellerator::native_training_slice, Cellerator::feature_major_projection, Cellerator::transpose_projection, Cellerator::runtime, Cellerator::relation_semantics, Cellerator::ops_numeric, Cellerator::executable_core, Cellerator::planner, Cellerator::indexing, Cellerator::gating, Cellerator::architecture_provider, Cellerator::relation_catalog, Cellerator::cuda_mode, Cellerator::row_masked_n1_candidate, Cellerator::csr_fallback_candidate, Cellerator::feature_major_small_n_candidate, Cellerator::transpose_backward_candidate, Cellerator::semantic_geometry_v1, Cellerator::cellpack_execution_image_v2, Cellerator::cellpack_persistent_packing_payload, Cellerator::projection_activation, Cellerator::cusparse_csr_candidate, Cellerator::preparation_factory, Cellerator::compute_candidate_inventory, Cellerator::cellpack_alternating_refinement, Cellerator::semantic_projection_layout, Cellerator::provider_sm70, Cellerator::provider_common, Cellerator::provider_generic, Cellerator::relation_algebra, Cellerator::cellpack_feature_weighted_row_reduction_cuda, Cellerator::cellpack_apply_plan, Cellerator::compute_sampling, Cellerator::cellpack_feature_weighted_row_reduction, Cellerator::fusion_training, Cellerator::cellpack_record_statistical_validation, Cellerator::provider_build_policy, Cellerator::cellpack_warp_tiles, Cellerator::cellpack_statistical_validation, Cellerator::cellpack_local_cell_ordering
+CelleratorFrameworkCUDATargets: Cellerator::framework_cuda
+CelleratorNativeDataCUDATargets: Cellerator::state_codes_cuda, Cellerator::block_masked_cuda, Cellerator::dependency_execution_cuda, Cellerator::tensor_cuda, Cellerator::native_data_cuda
+Cellerator::support defined exactly once: ['CelleratorFactorizedInteractionBaseTargets']
+Cellerator::layout defined exactly once: ['CelleratorFactorizedInteractionBaseTargets']
+Cellerator::memory_cuda defined exactly once: ['CelleratorFactorizedInteractionMemoryTargets']
+Cellerator::factorized_interaction_cuda defined exactly once: ['CelleratorFactorizedInteractionTargets']
+
+Full package import order is PartOne -> memory -> factorized base -> Native ->
+NativeData -> FactorizedInteraction + NativeDataCUDA -> FrameworkCUDA -> NN.
+The exact order, source hashes, generated export hashes, and reviewed load
+sequences are captured in cmake-package-snapshot.json. Canonical memory target
+identity remains unchanged in repeated mixed package loads.

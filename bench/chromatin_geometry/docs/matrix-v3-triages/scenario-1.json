@@ -1,0 +1,93 @@
+{
+  "schema": "cgs.triage.v1",
+  "runs": [
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "ste",
+      "body": "linear",
+      "backend": "scalar",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-1"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "ste",
+      "body": "linear",
+      "backend": "bitmap",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-1"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "ste",
+      "body": "linear",
+      "backend": "direct",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-1"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "ste",
+      "body": "linear",
+      "backend": "cohort-direct",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-1"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "ste",
+      "body": "linear",
+      "backend": "cohort-direct-two-tile",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-1"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "ste",
+      "body": "linear",
+      "backend": "cohort-shared",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-1"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "ste",
+      "body": "linear",
+      "backend": "library",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-1"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "ste",
+      "body": "linear",
+      "backend": "library-batched",
+      "precision": "fp16",
+      "condition_update": "none",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-1"
+    }
+  ]
+}

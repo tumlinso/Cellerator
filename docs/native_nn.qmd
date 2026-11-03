@@ -21,6 +21,11 @@ optional; LibTorch supplies tensor operations, ordinary optimizers, and
 autograd. Native models remain ordinary C++ callables with their own result
 types. The Cell core itself uses C++17 and the standard library only.
 
+The separate experimental [factorized joint-interaction component](factorized_interactions.qmd)
+provides native CUDA preparation and an explicit conditional joint forward/VJP
+without a Torch dependency. Its numerical law, lifetimes and source-bound
+qualification are distinct from the conventional NN components on this page.
+
 ## Bind a continuing native instance
 
 `Cell<Model, Instance, ModelHandle = Model*>` stores the selected model handle

@@ -1,0 +1,248 @@
+{
+  "status": "ok",
+  "kind": "recovery",
+  "result": {
+    "format": "todo-orchestrator.api-document",
+    "kind": "recovery_inspection",
+    "payload": {
+      "attempt": {
+        "definition_revision_id": null,
+        "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+        "incarnation_id": null,
+        "kind": "attempt",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      "authority_revision": 390,
+      "blockers": [
+        {
+          "code": "outcome_candidate_pending_review",
+          "detail": "",
+          "subject": {
+            "definition_revision_id": null,
+            "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+            "incarnation_id": null,
+            "kind": "attempt",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+          }
+        }
+      ],
+      "children": [],
+      "evidence": [],
+      "host_observation": {
+        "attempt": {
+          "definition_revision_id": null,
+          "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+          "incarnation_id": null,
+          "kind": "attempt",
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+        },
+        "authoring_handoff": {
+          "receipt": {
+            "correlation_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+            "observed_at": "2026-11-02T18:38:30.408783+00:00",
+            "provenance_ref": "f6b7924b402a0191e34ae70954c597fc8a4063e5",
+            "provider": {
+              "contract_version": 9,
+              "provider_id": "todo.git.local",
+              "version": "git-cli-3"
+            },
+            "receipt_id": "pc-handoff-62a951b7c4cb0a84e6b201d406ade12f8b8809e0496f89b536d4d1fcff49d9bb",
+            "request_digest": "176fc33155697c27d0df17688eac1d94abc6ef438e4f7568745713ce918b9726"
+          },
+          "request": {
+            "attempt": {
+              "definition_revision_id": null,
+              "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+              "incarnation_id": null,
+              "kind": "attempt",
+              "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+            },
+            "authority_id": "c4f019fe-f445-51c2-b444-a7cf24d6be34",
+            "idempotency_key": "pcw-c64f4dca337131d7a22b35f72e5a785b65336978867e",
+            "lease_id": "lease-ccd0b24c97a8dde7ad495746804fb7fa93f405489eb8f73a4501c5b7a274ebde",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "workspace_id": "pcw-ws-4064f717afeaff5d7eaa80e622f82dec"
+          },
+          "source_commit": "f6b7924b402a0191e34ae70954c597fc8a4063e5",
+          "source_digest": "c853446fe455f0f32be56c7defd505767007f1177fec8ff6d8624aba63898d6c",
+          "source_tree": "d1d42a3c80628f1aca2295161724734e16caac9e"
+        },
+        "children": "none",
+        "lease_id": "lease-ccd0b24c97a8dde7ad495746804fb7fa93f405489eb8f73a4501c5b7a274ebde",
+        "observed_lease_expires_at": "2026-11-02T18:39:47.584375+00:00",
+        "observed_state": "reported",
+        "process": "unknown",
+        "receipt": {
+          "correlation_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+          "observed_at": "2026-11-02T18:41:13.999412+00:00",
+          "provenance_ref": "f6b7924b402a0191e34ae70954c597fc8a4063e5",
+          "provider": {
+            "contract_version": 9,
+            "provider_id": "todo.git.local",
+            "version": "git-cli-3"
+          },
+          "receipt_id": "gitreceipt-6a257d664d4f12af75021b158d5e90ab3ea2ddda508b691baa39a67fa546ced1",
+          "request_digest": "2ab426e9f9e935f8f269798c15743ba5218207b11d293815c56f5d072bd0727a"
+        },
+        "source": "clean",
+        "source_digest": "c853446fe455f0f32be56c7defd505767007f1177fec8ff6d8624aba63898d6c",
+        "workspace": {
+          "common_base": {
+            "digest": "c853446fe455f0f32be56c7defd505767007f1177fec8ff6d8624aba63898d6c",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "ref": "f6b7924b402a0191e34ae70954c597fc8a4063e5",
+            "repository_id": "cellerator"
+          },
+          "destination": {
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+            "ref": "refs/heads/todo-orchestrator/integration/9420c1503484acb26c34",
+            "repository_id": "cellerator"
+          },
+          "isolation": {
+            "head_ref": "refs/heads/todo-orchestrator/workspaces/w-499f483a1516659e1e05302ded41b8d49c925192f92961c672e595c3f9632423",
+            "index_file": "cfa4a515f6e64a9a13d8b938a09506ff2c323b0d7c116d36c9f570ba2b987a8c",
+            "repository_storage": "11fc81cf7552286e14d20b4d730eb31be0f44541db5e4987e060c5c1f4101480",
+            "workspace_root": "04e635fd64c9e82dbe6268145ae9d740a77e752445f4e18bf8165e11a79f69fa",
+            "worktree_admin": "c740b39ab1ea60c312a6541204a9abb0c258a9cd8b1b6d7a79563956770203b9"
+          },
+          "receipt": {
+            "correlation_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+            "observed_at": "2026-11-02T18:41:06.678758+00:00",
+            "provenance_ref": "f6b7924b402a0191e34ae70954c597fc8a4063e5",
+            "provider": {
+              "contract_version": 9,
+              "provider_id": "todo.git.local",
+              "version": "git-cli-3"
+            },
+            "receipt_id": "gitreceipt-bf28d73d6d7ce1a1b220b91ae1cc48b2739d62dbaf3dcc020d5dd1e1657c82f9",
+            "request_digest": "a2a4ab6246686b48c0b7f5fc8527664a96bc9c7d852d601a3a6266a7d5eb6be6"
+          },
+          "repository_id": "cellerator",
+          "workspace_id": "pcw-ws-4064f717afeaff5d7eaa80e622f82dec"
+        }
+      },
+      "intents": [],
+      "lease_expired": true,
+      "lease_expires_at": "2026-11-02T18:39:47.584375+00:00",
+      "lease_id": "lease-ccd0b24c97a8dde7ad495746804fb7fa93f405489eb8f73a4501c5b7a274ebde",
+      "observed_at": "2026-11-02T18:41:23.097775+00:00",
+      "operations": [],
+      "outcome_candidates": [
+        {
+          "candidate_id": "candidate-0feab47180b3c4fea76b250ae203406fae9dab7b18e6c071ea325f0f91ac4995",
+          "disposition": "completed",
+          "outcome": null,
+          "reported_at": "2026-11-02T18:39:21.812278+00:00",
+          "state": "pending",
+          "target": {
+            "definition_revision_id": "definition-f64c10a3a5817ea3f95b239ace1ffcff2c365938eb8235c40e777b4c72d5667e",
+            "entity_id": "CGS-00",
+            "incarnation_id": null,
+            "kind": "work_item",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+          }
+        }
+      ],
+      "preconditions": [
+        {
+          "code": "authority_revision_unchanged",
+          "detail": "",
+          "satisfied": true,
+          "subject": {
+            "definition_revision_id": null,
+            "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+            "incarnation_id": null,
+            "kind": "attempt",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+          }
+        },
+        {
+          "code": "stored_workspace_binding_valid",
+          "detail": "",
+          "satisfied": true,
+          "subject": {
+            "definition_revision_id": null,
+            "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+            "incarnation_id": null,
+            "kind": "attempt",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+          }
+        },
+        {
+          "code": "source_clean",
+          "detail": "",
+          "satisfied": true,
+          "subject": {
+            "definition_revision_id": null,
+            "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+            "incarnation_id": null,
+            "kind": "attempt",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+          }
+        },
+        {
+          "code": "process_stopped",
+          "detail": "",
+          "satisfied": false,
+          "subject": {
+            "definition_revision_id": null,
+            "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+            "incarnation_id": null,
+            "kind": "attempt",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+          }
+        },
+        {
+          "code": "external_producer_quiescent",
+          "detail": "",
+          "satisfied": false,
+          "subject": {
+            "definition_revision_id": null,
+            "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+            "incarnation_id": null,
+            "kind": "attempt",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+          }
+        },
+        {
+          "code": "no_active_children",
+          "detail": "",
+          "satisfied": true,
+          "subject": {
+            "definition_revision_id": null,
+            "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+            "incarnation_id": null,
+            "kind": "attempt",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+          }
+        },
+        {
+          "code": "host_state_matches_exact_lease",
+          "detail": "",
+          "satisfied": true,
+          "subject": {
+            "definition_revision_id": null,
+            "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+            "incarnation_id": null,
+            "kind": "attempt",
+            "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+          }
+        }
+      ],
+      "source_observation": null,
+      "source_receipt": null,
+      "state": "reported",
+      "status": "unknown_live",
+      "target": {
+        "definition_revision_id": "definition-f64c10a3a5817ea3f95b239ace1ffcff2c365938eb8235c40e777b4c72d5667e",
+        "entity_id": "CGS-00",
+        "incarnation_id": null,
+        "kind": "work_item",
+        "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba"
+      },
+      "workspace_id": "pcw-ws-4064f717afeaff5d7eaa80e622f82dec"
+    },
+    "version": 1
+  },
+  "workflow_handle": "[stored in ignored private study state]"
+}

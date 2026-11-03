@@ -1,0 +1,236 @@
+{
+  "attempt_id": "17518882-014f-42d1-9f2f-2b9ba95cee11",
+  "fingerprint": "32f6004dc30f25f7c2a6d1fe6771f8300965721f9d144694aea9e5a66e862670",
+  "scheduler_job": {
+    "attempt": {
+      "attempt_id": "09cc6db3-460f-4831-b3b7-5648e300be4b",
+      "cleanup_verified": true,
+      "created_at": "2026-11-02T19:32:07.072705Z",
+      "error": {},
+      "execution_context": {
+        "allocations": [
+          {
+            "mode": "shared",
+            "quantities": {
+              "cores": 2.0
+            },
+            "resource_id": "host:testlsserver:cpu"
+          },
+          {
+            "mode": "shared",
+            "quantities": {
+              "bytes": 4294967296.0
+            },
+            "resource_id": "host:testlsserver:memory"
+          }
+        ],
+        "claim_id": "cf97120d-6842-45b9-a6db-7ad020d34f2b",
+        "fencing_token": 1482,
+        "purpose": "job",
+        "resources": [
+          {
+            "attributes": {
+              "observed_logical_cpus": 80,
+              "scope": "whole host"
+            },
+            "capabilities": [
+              "systemd-cgroup-request-dependent",
+              "supervised-lease-job-only"
+            ],
+            "capacities": {
+              "cores": 80.0
+            },
+            "conflict_domains": [],
+            "host_id": "testlsserver",
+            "kind": "cpu",
+            "resource_id": "host:testlsserver:cpu",
+            "schema_version": 1,
+            "topology": {}
+          },
+          {
+            "attributes": {
+              "available_bytes": 55139823616
+            },
+            "capabilities": [
+              "systemd-cgroup-request-dependent",
+              "supervised-lease-job-only"
+            ],
+            "capacities": {
+              "bytes": 67362455552.0
+            },
+            "conflict_domains": [],
+            "host_id": "testlsserver",
+            "kind": "memory",
+            "resource_id": "host:testlsserver:memory",
+            "schema_version": 1,
+            "topology": {}
+          }
+        ],
+        "schema_version": 1
+      },
+      "execution_handle": {
+        "adapter_id": "systemd-user-unit",
+        "external_id": "device-scheduler-attempt-c97c41edf3334b58ce26fa20fc88389f.service",
+        "identity": "09cc6db3-460f-4831-b3b7-5648e300be4b",
+        "metadata": {
+          "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-c97c41edf3334b58ce26fa20fc88389f.service",
+          "description": "Device Scheduler attempt 09cc6db3-460f-4831-b3b7-5648e300be4b",
+          "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+          "handle_version": 1,
+          "invocation_id": "d9c08f0a181f488b8eab1a9c5d4a079d",
+          "profile_id": null,
+          "profile_version": null
+        },
+        "started_at": "2026-11-02T19:32:07.130948Z"
+      },
+      "finished_at": "2026-11-02T19:32:25.362116Z",
+      "id": "09cc6db3-460f-4831-b3b7-5648e300be4b",
+      "job_id": "cf60fa56-0f2f-4f20-be93-90f560562da0",
+      "operation_id": "start:09cc6db3-460f-4831-b3b7-5648e300be4b",
+      "result": {
+        "active_state": "active",
+        "adapter": "systemd-user-unit/v1",
+        "cleanup_verified": true,
+        "evidence": {
+          "adapter": "systemd-user-unit/v1",
+          "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-c97c41edf3334b58ce26fa20fc88389f.service",
+          "invocation_id": "d9c08f0a181f488b8eab1a9c5d4a079d",
+          "main_code": "1",
+          "unit_description": "Device Scheduler attempt 09cc6db3-460f-4831-b3b7-5648e300be4b"
+        },
+        "exit_code": 0,
+        "invocation_id": "d9c08f0a181f488b8eab1a9c5d4a079d",
+        "logs_error": null,
+        "logs_truncated": false,
+        "result": "success",
+        "state": "succeeded",
+        "stdout_bytes": 0,
+        "substate": "exited",
+        "unit_name": "device-scheduler-attempt-c97c41edf3334b58ce26fa20fc88389f.service"
+      },
+      "started_at": "2026-11-02T19:32:07.131032Z",
+      "state": "succeeded"
+    },
+    "attempt_count": 1,
+    "attempt_id": "09cc6db3-460f-4831-b3b7-5648e300be4b",
+    "blocked_reason": null,
+    "cleanup_verified": true,
+    "created_at": "2026-11-02T19:31:56.022062Z",
+    "decision_id": "2f41405a-00e0-4c20-9fd0-0273baef77fc",
+    "id": "cf60fa56-0f2f-4f20-be93-90f560562da0",
+    "job_id": "cf60fa56-0f2f-4f20-be93-90f560562da0",
+    "lease_binding": null,
+    "lease_fencing_token": 1482,
+    "lease_id": "cf97120d-6842-45b9-a6db-7ad020d34f2b",
+    "lease_state": "released",
+    "owner": "autobench",
+    "owner_id": "autobench",
+    "reservation_id": null,
+    "reservation_phase_id": null,
+    "result": {
+      "active_state": "active",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-c97c41edf3334b58ce26fa20fc88389f.service",
+        "invocation_id": "d9c08f0a181f488b8eab1a9c5d4a079d",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt 09cc6db3-460f-4831-b3b7-5648e300be4b"
+      },
+      "exit_code": 0,
+      "invocation_id": "d9c08f0a181f488b8eab1a9c5d4a079d",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "success",
+      "state": "succeeded",
+      "stdout_bytes": 0,
+      "substate": "exited",
+      "unit_name": "device-scheduler-attempt-c97c41edf3334b58ce26fa20fc88389f.service"
+    },
+    "spec": {
+      "argv": [
+        "/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python",
+        "-m",
+        "autobench.worker",
+        "/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/state/packets/17518882-014f-42d1-9f2f-2b9ba95cee11.json"
+      ],
+      "deadline": null,
+      "dependencies": [],
+      "environment": {},
+      "event_trigger": null,
+      "expected_duration_seconds": 45.0,
+      "flexible": true,
+      "idempotency_key": "autobench-v1:1794252713:17518882-014f-42d1-9f2f-2b9ba95cee11",
+      "interruption": {
+        "cancellation_supported": true,
+        "checkpoint_supported": false,
+        "cooperative_yield": false,
+        "restart_safe": false
+      },
+      "kill_timeout_seconds": 120.0,
+      "max_attempts": 1,
+      "not_before": null,
+      "owner_id": "autobench",
+      "preconditions": [],
+      "preemption_action": "abandon",
+      "priority": 10,
+      "priority_class": "background",
+      "profile_id": null,
+      "resources": [
+        {
+          "kind": "cpu",
+          "mode": "shared",
+          "quantities": {
+            "cores": 2.0
+          },
+          "same_host": true,
+          "schema_version": 1,
+          "selectors": {},
+          "topology_constraints": {}
+        },
+        {
+          "kind": "memory",
+          "mode": "shared",
+          "quantities": {
+            "bytes": 4294967296.0
+          },
+          "same_host": true,
+          "schema_version": 1,
+          "selectors": {},
+          "topology_constraints": {}
+        }
+      ],
+      "retention_policy": "autobench",
+      "schema_version": 1,
+      "secret_refs": [],
+      "tags": [
+        "benchmark:cellerator-factorized-interactions",
+        "kind:correctness",
+        "autobench"
+      ],
+      "termination_grace_seconds": 5.0,
+      "timeout_seconds": 130.0,
+      "working_directory": "/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement"
+    },
+    "state": "succeeded",
+    "updated_at": "2026-11-02T19:32:25.362116Z"
+  },
+  "scheduler_job_id": "cf60fa56-0f2f-4f20-be93-90f560562da0",
+  "state": "failed",
+  "worker": {
+    "diagnostics": {
+      "stderr_tail": "test_request_round_trip_preserves_axes_terms_and_role_order (test_case_io.FactorizedInteractionWireTests.test_request_round_trip_preserves_axes_terms_and_role_order) ... ok\ntest_request_round_trip_preserves_long_context_order (test_case_io.FactorizedInteractionWireTests.test_request_round_trip_preserves_long_context_order) ... ok\ntest_request_round_trip_preserves_product_residual_term_order (test_case_io.FactorizedInteractionWireTests.test_request_round_trip_preserves_product_residual_term_order) ... ok\ntest_result_parser_preserves_second_vjp_set (test_case_io.FactorizedInteractionWireTests.test_result_parser_preserves_second_vjp_set) ... ok\ntest_result_parser_rejects_trailing_bytes (test_case_io.FactorizedInteractionWireTests.test_result_parser_rejects_trailing_bytes) ... ok\ntest_result_round_trip_has_fp32_gradients_and_fp16_output (test_case_io.FactorizedInteractionWireTests.test_result_round_trip_has_fp32_gradients_and_fp16_output) ... ok\ntest_stable_ids_are_nonzero_and_logical_indices_stay_zero_based (test_prepared_torch_records.PreparedTorchRecordTests.test_stable_ids_are_nonzero_and_logical_indices_stay_zero_based) ... ok\ntest_all_vjps_match_centered_differences (test_reference.FactorizedInteractionReferenceTests.test_all_vjps_match_centered_differences) ... ok\ntest_channel_gate_adjoint_reduces_all_channels_before_sigmoid (test_reference.FactorizedInteractionReferenceTests.test_channel_gate_adjoint_reduces_all_channels_before_sigmoid) ... ok\ntest_empty_mechanisms_and_empty_context_terms (test_reference.FactorizedInteractionReferenceTests.test_empty_mechanisms_and_empty_context_terms) ... ok\ntest_frozen_fp32_and_fp16_acceptance_bounds (test_reference.FactorizedInteractionReferenceTests.test_frozen_fp32_and_fp16_acceptance_bounds) ... ok\ntest_invalid_numerical_and_structural_inputs_fail_clearly (test_reference.FactorizedInteractionReferenceTests.test_invalid_numerical_and_structural_inputs_fail_clearly) ... ok\ntest_stable_gate_reference_covers_saturated_range (test_reference.FactorizedInteractionReferenceTests.test_stable_gate_reference_covers_saturated_range) ... ok\ntest_storage_quantization_is_applied_before_reference_arithmetic (test_reference.FactorizedInteractionReferenceTests.test_storage_quantization_is_applied_before_reference_arithmetic) ... ok\ntest_tied_parameter_ids_accumulate_across_mechanisms (test_reference.FactorizedInteractionReferenceTests.test_tied_parameter_ids_accumulate_across_mechanisms) ... ok\ntest_zero_safe_product_derivative_and_repeated_roles (test_reference.FactorizedInteractionReferenceTests.test_zero_safe_product_derivative_and_repeated_roles) ... ok\ntest_full_million_case_under_worker_file_limit (test_sharded_transport.ShardedTransportTests.test_full_million_case_under_worker_file_limit) ... ok\ntest_reconstructs_identical_wire_across_headers_roles_and_terms (test_sharded_transport.ShardedTransportTests.test_reconstructs_identical_wire_across_headers_roles_and_terms) ... ok\ntest_rejects_corrupted_reordered_and_missing_shards (test_sharded_transport.ShardedTransportTests.test_rejects_corrupted_reordered_and_missing_shards) ... ok\ntest_native_runner_invocation_fails_closed_without_scheduler_job (test_validator_smoke.NativeValidatorProtocolSmokeTests.test_native_runner_invocation_fails_closed_without_scheduler_job) ... ok\ntest_wrapper_serializes_invokes_and_checks_oracle_wire_stub (test_validator_smoke.NativeValidatorProtocolSmokeTests.test_wrapper_serializes_invokes_and_checks_oracle_wire_stub) ... ERROR\ntest_100k_packet_fp32_parameter_high_fanin_reference_value (test_workloads.FixedWorkloadCorpusTests.test_100k_packet_fp32_parameter_high_fanin_reference_value) ... ok\ntest_100k_tied_fp16_high_fanin_reference_value (test_workloads.FixedWorkloadCorpusTests.test_100k_tied_fp16_high_fanin_reference_value) ... ok\ntest_each_case_has_exact_participant_cardinality_and_fanin (test_workloads.FixedWorkloadCorpusTests.test_each_case_has_exact_participant_cardinality_and_fanin) ... ok\ntest_fma_product_residual_fixture_preserves_exact_fp32_adversary (test_workloads.FixedWorkloadCorpusTests.test_fma_product_residual_fixture_preserves_exact_fp32_adversary) ... ok\ntest_fp32_alternative_preserves_same_structure (test_workloads.FixedWorkloadCorpusTests.test_fp32_alternative_preserves_same_structure) ... ok\ntest_generator_is_stable_and_values_respect_contract (test_workloads.FixedWorkloadCorpusTests.test_generator_is_stable_and_values_respect_contract) ... ok\ntest_literal_correctness_fixtures_cover_declared_adversaries (test_workloads.FixedWorkloadCorpusTests.test_literal_correctness_fixtures_cover_declared_adversaries) ... ok\ntest_long_context_cancellation_and_ordered_role_reduction_reference (test_workloads.FixedWorkloadCorpusTests.test_long_context_cancellation_and_ordered_role_reduction_reference) ... ok\ntest_packet_million_mechanism_fixture_is_exactly_sized (test_workloads.FixedWorkloadCorpusTests.test_packet_million_mechanism_fixture_is_exactly_sized) ... ok\ntest_unique_names_and_supported_arities (test_workloads.FixedWorkloadCorpusTests.test_unique_names_and_supported_arities) ... ok\ntest_vector_generator_matches_scalar_splitmix_definition (test_workloads.FixedWorkloadCorpusTests.test_vector_generator_matches_scalar_splitmix_definition) ... ok\n\n======================================================================\nERROR: test_wrapper_serializes_invokes_and_checks_oracle_wire_stub (test_validator_smoke.NativeValidatorProtocolSmokeTests.test_wrapper_serializes_invokes_and_checks_oracle_wire_stub)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/builds/4c5ab6f5233dc5d24b563c35349a132d8248d6531c4aba68b82309804b91c199/source/tests/factorized_interactions/test_validator_smoke.py\", line 32, in test_wrapper_serializes_invokes_and_checks_oracle_wire_stub\n    result = subprocess.run(command + [\"--artifact-dir\", directory],\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3', '/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/builds/4c5ab6f5233dc5d24b563c35349a132d8248d6531c4aba68b82309804b91c199/source/bench/factorized_interactions/validate_runner.py', '--workload', 'correctness_ordered_tied_zero', '--runner', '/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3 /home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/builds/4c5ab6f5233dc5d24b563c35349a132d8248d6531c4aba68b82309804b91c199/source/tests/factorized_interactions/oracle_wire_stub.py', '--route', 'direct', '--activation-dtype', 'fp16', '--parameter-dtype', 'fp32', '--output-dtype', 'fp16', '--gradient-mode', 'accumulate', '--repeat-vjp', '--allow-oracle-stub', '--artifact-dir', '/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/scratch/17518882-014f-42d1-9f2f-2b9ba95cee11/scratch/temp/tmpvd82h4gs']' returned non-zero exit status 1.\n\n----------------------------------------------------------------------\nRan 32 tests in 8.644s\n\nFAILED (errors=1)\n",
+      "stderr_truncated": false
+    },
+    "duration_seconds": 9.589678162999917,
+    "returncode": 1,
+    "scheduler_attempt_id": "09cc6db3-460f-4831-b3b7-5648e300be4b",
+    "scheduler_job_id": "cf60fa56-0f2f-4f20-be93-90f560562da0",
+    "status": "failed",
+    "stderr_bytes": 7433,
+    "stderr_truncated": false,
+    "stdout_bytes": 0,
+    "stdout_truncated": false
+  }
+}

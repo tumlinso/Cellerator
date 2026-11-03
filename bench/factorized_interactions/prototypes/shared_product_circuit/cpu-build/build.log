@@ -1,0 +1,42 @@
+{"argv": ["cmake", "-S", "/home/tumlinson/Cellerator/bench/factorized_interactions/prototypes/shared_product_circuit", "-B", "/tmp/cellerator-shared-product-circuit-build-v1/cmake", "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_CXX_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12", "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc", "-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/x86_64-linux-gnu-g++-12", "-DCUDAToolkit_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9", "-DCMAKE_CUDA_ARCHITECTURES=70", "-DCELLERATOR_SOURCE_ROOT=/home/tumlinson/Cellerator"]}
+-- The CXX compiler identification is GNU 12.4.0
+-- The CUDA compiler identification is NVIDIA 12.9.86
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/x86_64-linux-gnu-g++-12 - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - done
+-- Check for working CUDA compiler: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc - skipped
+-- Detecting CUDA compile features
+-- Detecting CUDA compile features - done
+-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version "12.9.86") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Configuring done (3.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/cellerator-shared-product-circuit-build-v1/cmake
+{"argv": ["cmake", "--build", "/tmp/cellerator-shared-product-circuit-build-v1/cmake", "--parallel", "2", "--target", "shared_product_circuit_runner"]}
+[ 12%] Building CUDA object CMakeFiles/shared_product_circuit_runner.dir/circuit_runner.cu.o
+[ 25%] Building CXX object CMakeFiles/shared_product_circuit_runner.dir/home/tumlinson/Cellerator/src/layout/factorized_interaction.cc.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+/home/tumlinson/Cellerator/bench/factorized_interactions/prototypes/shared_product_circuit/circuit_runner.cu(251): warning #177-D: function "<unnamed>::dtype" was declared but never referenced
+  memory_cuda::DType dtype(std::uint32_t code) {
+                     ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+[ 37%] Building CUDA object CMakeFiles/shared_product_circuit_runner.dir/home/tumlinson/Cellerator/src/memory/cuda/resources.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 50%] Building CUDA object CMakeFiles/shared_product_circuit_runner.dir/home/tumlinson/Cellerator/src/modeling/cuda/factorized_interaction.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 62%] Building CUDA object CMakeFiles/shared_product_circuit_runner.dir/home/tumlinson/Cellerator/src/modeling/cuda/factorized_interaction_direct.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 75%] Building CUDA object CMakeFiles/shared_product_circuit_runner.dir/home/tumlinson/Cellerator/src/modeling/cuda/factorized_interaction_stable.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 87%] Building CUDA object CMakeFiles/shared_product_circuit_runner.dir/home/tumlinson/Cellerator/src/modeling/cuda/prepared_factorized_interaction.cu.o
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[100%] Linking CXX executable shared_product_circuit_runner
+[100%] Built target shared_product_circuit_runner

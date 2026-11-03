@@ -1,0 +1,115 @@
+{
+  "schema": "cellerator.factorized_interactions.filtered_source_independent_review.v1",
+  "review": {
+    "verdict": "accepted for filtered source closure and CPU test/build identity; GPU qualification remains pending",
+    "reviewer_role": "independent verifier",
+    "reviewed_at_utc": "2026-11-02",
+    "scope": "Read-only source/archive/build identity review plus CPU-only Python test rerun; no Scheduler or Autobench mutation, no CUDA launch."
+  },
+  "source": {
+    "old_closure_sha256": "e8117e2ee9b6b4f8cdd16050c87b218cdde47c40746500d88f325864a32c7bca",
+    "old_source_manifest": "/tmp/factorized-bounded-performance-7fzb2yt4/source-manifest.json",
+    "old_source_manifest_sha256": "dd532ec2a28ee65887bcf64bfc84e01c1e6bfde54ed19cda909bd1552dc40897",
+    "filtered_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "filtered_source_manifest": "/tmp/factorized-filtered-performance-5tqbluyz/source-manifest.json",
+    "filtered_source_manifest_sha256": "ef66653f98bc8dbee3d70ba993d2bbd89b8e1bf9efd341172c7ae79e9339ce52",
+    "source_file_count": 3979,
+    "source_bytes": 20035237,
+    "source_has_symlinks": false,
+    "source_has_unmanifested_files": false,
+    "set_delta": {
+      "old_file_count": 6370,
+      "retained_file_count": 3979,
+      "excluded_file_count": 2391,
+      "excluded_bytes": 9803203,
+      "overlap_count": 0,
+      "missing_count": 0,
+      "extra_count": 0,
+      "retained_content_changes": 0,
+      "excluded_inventory_hash_mismatches": 0,
+      "excluded_inventory_sha256": "a4406ebb6a7258a7c841cd623df90959191e9b0f4cddc19d1478b77038ec220e",
+      "excluded_reason_counts": {
+        "nested campaign, build or interpreter state": 1500,
+        "historical sparse benchmark evidence": 487,
+        "historical sparse experiment evidence": 188,
+        "historical KDA workspace": 144,
+        "historical compiler experiment outputs": 72
+      }
+    },
+    "forbidden_path_checks": {
+      "campaign_lanes": 0,
+      "nested_autobench": 0,
+      "pycache": 0,
+      "cmakefiles": 0,
+      "pytest_cache": 0
+    },
+    "protected_v15_files": {
+      "count": 17,
+      "proof_sha256": "023404fab201fd1a15a999bdc034ae71c22bcc04def37c5e40c836f692d6ab02",
+      "verified_against_filtered_source": true,
+      "verified_against_v15_build_source": true
+    },
+    "retained_cache_named_fixtures": "The tracked cache_clang/cache_contract/cache_cxx/cache_gpp/cache_topology files under bench/compiler/experiments/adaptive_fields/verification/lifetime are checked-in .cc/.d/.manifest verification fixtures described by that directory's REPORT.md, not transient nested Autobench/cache directories."
+  },
+  "archive": {
+    "path": "/tmp/factorized-filtered-performance-5tqbluyz/archive/native-performance-filtered.tar",
+    "sha256": "203fe5e743a1a2928afcdcb1b8085e6b2c86defebbbdc0a6e497d178a43e0078",
+    "bytes": 23162880,
+    "manifest_path": "/tmp/factorized-filtered-performance-5tqbluyz/archive/native-performance-filtered-manifest.json",
+    "manifest_sha256": "84071adc04a37f3c50f0f5c73b96af1ae78e2656b8dd29896f45d4aaf82f6b6a",
+    "stager_sha256": "00a910a0fb9f5febfb83b126086138c692248eea1aa316889094e9d8b60be585",
+    "tar_members_match_manifest_exactly": true,
+    "every_member_size_and_sha256_matches": true,
+    "recomputed_source_closure_matches": true,
+    "campaign_state_in_archive": false
+  },
+  "trusted_inputs": {
+    "validate_runner_sha256": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31",
+    "dtype_driver_sha256": "f1193c2837eca35766f45154b66c6f630fb9373f54dfa7dc190dcf4795bf0bfe",
+    "dtype_test_sha256": "fcb0664ab3055cdf8076d3c903196c289bea41b2cbce0af54fb3f64b801df0fb",
+    "validator_and_dtype_hashes_match_accepted_identities": true
+  },
+  "cpu_tests": {
+    "interpreter": "/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3",
+    "python_version": "3.12.3",
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TMPDIR": "/tmp"
+    },
+    "working_directory": "/tmp/factorized-filtered-performance-5tqbluyz/source",
+    "commands": [
+      "python3 -m unittest discover -s tests/factorized_interactions -p 'test_*.py' -v",
+      "python3 -m unittest discover -s bench/factorized_interactions/experiments/tests -p 'test_*.py' -v"
+    ],
+    "factorized_tests": {
+      "passed": 47,
+      "failed": 0,
+      "elapsed_seconds": 13.851
+    },
+    "experiment_tests": {
+      "passed": 37,
+      "failed": 0,
+      "elapsed_seconds": 1.264
+    },
+    "gpu_work_performed": false
+  },
+  "native_build": {
+    "reported_build": "source/archive-bound native-only SM70 build completed by candidate integration; I independently checked its manifests and binary hashes.",
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "architecture": "sm_70",
+    "cuda_root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+    "baseline_manifest_sha256": "c564e22b5aa39a08b68e0fe328174c33a479834a72019f62dd5c88ec749a7a2f",
+    "candidate_manifest_sha256": "07b2640ac8fdd1a0851d53e979920694d7d01f6d13564fa5d8efc78dc99abbac",
+    "baseline_runner_sha256": "43e201aa3831350f069c214caddf9d54edd4d36f30c95c09f35de81fefd43dfa",
+    "candidate_runner_sha256": "7f7aa20c25fb380263d0ac4cf38f9b415e16708afdf6babbcfb0cf805fc97c7e",
+    "both_manifests_bind_same_closure_and_architecture": true,
+    "actual_runner_hashes_match_manifests": true,
+    "gpu_execution_performed": false
+  },
+  "remaining_qualification": {
+    "all_eight_dtype_triples_on_gpu": "pending",
+    "strict_sanitizer_suite_on_actual_source_bound_binaries": "pending",
+    "paired_performance_blocks_and_selection": "pending",
+    "outer_scheduler_receipts_and_cleanup": "pending"
+  }
+}

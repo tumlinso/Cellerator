@@ -1,0 +1,175 @@
+{
+  "attempt": {
+    "attempt_id": "198fe733-b4df-4bf1-98cb-0df6835b1952",
+    "cleanup_verified": false,
+    "created_at": "2026-11-02T19:51:19.852243Z",
+    "error": {},
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "shared",
+          "quantities": {
+            "cores": 2.0
+          },
+          "resource_id": "host:testlsserver:cpu"
+        },
+        {
+          "mode": "shared",
+          "quantities": {
+            "bytes": 8589934592.0
+          },
+          "resource_id": "host:testlsserver:memory"
+        }
+      ],
+      "claim_id": "214b076d-3374-4e72-9374-0d8d425108ac",
+      "fencing_token": 1536,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "observed_logical_cpus": 80,
+            "scope": "whole host"
+          },
+          "capabilities": [
+            "systemd-cgroup-request-dependent",
+            "supervised-lease-job-only"
+          ],
+          "capacities": {
+            "cores": 80.0
+          },
+          "conflict_domains": [],
+          "host_id": "testlsserver",
+          "kind": "cpu",
+          "resource_id": "host:testlsserver:cpu",
+          "schema_version": 1,
+          "topology": {}
+        },
+        {
+          "attributes": {
+            "available_bytes": 57022078976
+          },
+          "capabilities": [
+            "systemd-cgroup-request-dependent",
+            "supervised-lease-job-only"
+          ],
+          "capacities": {
+            "bytes": 67362455552.0
+          },
+          "conflict_domains": [],
+          "host_id": "testlsserver",
+          "kind": "memory",
+          "resource_id": "host:testlsserver:memory",
+          "schema_version": 1,
+          "topology": {}
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-477e3eef08a3232bfef984dd069ca827.service",
+      "identity": "198fe733-b4df-4bf1-98cb-0df6835b1952",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-477e3eef08a3232bfef984dd069ca827.service",
+        "description": "Device Scheduler attempt 198fe733-b4df-4bf1-98cb-0df6835b1952",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "c486e062fa4240d2a1f90ed99b9d47c1",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-11-02T19:51:19.902499Z"
+    },
+    "finished_at": null,
+    "id": "198fe733-b4df-4bf1-98cb-0df6835b1952",
+    "job_id": "febdbad2-4a07-419f-9178-8b4000e98819",
+    "operation_id": "start:198fe733-b4df-4bf1-98cb-0df6835b1952",
+    "result": {},
+    "started_at": "2026-11-02T19:51:19.902538Z",
+    "state": "running"
+  },
+  "attempt_count": 1,
+  "attempt_id": "198fe733-b4df-4bf1-98cb-0df6835b1952",
+  "blocked_reason": null,
+  "cleanup_verified": false,
+  "created_at": "2026-11-02T19:51:06.139305Z",
+  "decision_id": "504115de-c824-4b34-9c08-c9ae4a9764f8",
+  "id": "febdbad2-4a07-419f-9178-8b4000e98819",
+  "job_id": "febdbad2-4a07-419f-9178-8b4000e98819",
+  "lease_binding": null,
+  "lease_fencing_token": 1536,
+  "lease_id": "214b076d-3374-4e72-9374-0d8d425108ac",
+  "lease_state": "active",
+  "owner": "autobench",
+  "owner_id": "autobench",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": null,
+  "spec": {
+    "argv": [
+      "/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python",
+      "-m",
+      "autobench.worker",
+      "/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/state/packets/175e10b9-d047-421d-9360-d3f10fe2e6b6.json"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {},
+    "event_trigger": null,
+    "expected_duration_seconds": 540.0,
+    "flexible": true,
+    "idempotency_key": "autobench-v1:1794253863:175e10b9-d047-421d-9360-d3f10fe2e6b6",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "kill_timeout_seconds": 600.0,
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "autobench",
+    "preconditions": [],
+    "preemption_action": "abandon",
+    "priority": 10,
+    "priority_class": "background",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "cpu",
+        "mode": "shared",
+        "quantities": {
+          "cores": 2.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {},
+        "topology_constraints": {}
+      },
+      {
+        "kind": "memory",
+        "mode": "shared",
+        "quantities": {
+          "bytes": 8589934592.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {},
+        "topology_constraints": {}
+      }
+    ],
+    "retention_policy": "autobench",
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "benchmark:cellerator-factorized-interactions",
+      "kind:build",
+      "autobench"
+    ],
+    "termination_grace_seconds": 5.0,
+    "timeout_seconds": 610.0,
+    "working_directory": "/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement"
+  },
+  "state": "running",
+  "updated_at": "2026-11-02T19:56:39.204512Z"
+}

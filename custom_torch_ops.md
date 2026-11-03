@@ -54,3 +54,47 @@ authoritative.
 - Allocator boundary: Torch `native`/`cudaMallocAsync` backends; foreign from_blob/DLPack owners and native executor handles retained through completion events, outside CUDA callbacks. Arbitrary globally installed pluggable allocators fail clearly. Trusted prepared CSR route reuses validated immutable structure without content reads or snapshots.
 - Distributed implications: local operations only, no communication or model ownership policy.
 - Code: `src/nn/ops_cpu.cc`, `src/nn/ops_cuda.cc`; tests in `tests/nn/native/ops*.cc`.
+
+## `factorized_interaction_cuda`
+
+- Purpose: expose the native gated joint-interaction law to ordinary first-order
+  ATen autograd while retaining the native packet/direct CUDA implementation.
+- Owner: Cellerator's optional C++ ATen adapter over the native CUDA component.
+- Status: C++ ATen and optional Python prepared-plan adapters are implemented
+  and compile-checked. An admitted V100 run passed the prepared adapter's FP32
+  gradients, parameter updates, cross-stream reuse and mutation/lifetime checks;
+  this does not qualify every adapter dtype combination. Native mixed-storage
+  and sanitizer coverage is recorded separately in
+  `planning/interaction-layout-proposal-2026-11-02/VALIDATION.md`.
+  Performance qualification is paused with no accepted timing results.
+- Python boundary: `_nn_native.PreparedFactorizedInteraction` accepts records
+  with ordered inputs and context terms plus explicit extents. Its first CUDA
+  use uploads and caches one immutable structural owner per device; subsequent
+  calls reuse that owner. The Python function only selects output dtype/route
+  and passes tensors to native autograd.
+- C++ boundary: `factorized_interaction_cuda_prepared` accepts a shared native
+  `FactorizedInteractionDeviceLayout` and five CUDA tensors. The host-layout
+  `factorized_interaction_cuda` overload remains a cold convenience path that
+  validates and uploads structure for one call.
+- Backend: regular custom CUDA for the irregular interaction and its VJP;
+  this law is not a dense matrix multiplication or Tensor Core GEMM. The native
+  target remains independently usable without Torch.
+- Inputs/outputs: `x[input,channel,cell]`, `z[context,cell]`,
+  `alpha[parameter_row,channel]`, `bias[parameter]`, and `gamma[parameter]`;
+  output is `y[target,channel,cell]` with zero base and additive overlapping
+  contributions. Ordered/repeated roles, context terms, and tied parameters
+  retain their declared multiplicity.
+- Precision/layout: contiguous CUDA FP16 or FP32 activations, matching context
+  dtype, and independently selected matching parameter dtype; explicit FP16 or
+  FP32 output. Native arithmetic and VJP destinations are FP32. The adapter
+  returns each gradient in its original tensor dtype.
+- Autograd/lifetime: first-order VJP only; original tensors are saved for
+  version checks; per-forward gate tape and scratch remain live through queued
+  use; the guarded current stream is used and borrowed tensors are recorded or
+  retained through a completion event. Higher-order differentiation is not
+  supported.
+- Distributed implications: local execution only; no communication, routing,
+  or optimizer ownership is added.
+- Code: `include/Cellerator/nn/ops.hh`, `src/nn/ops_cuda.cc`, and
+  `bindings/nn/module.cc`, backed by
+  `include/Cellerator/modeling/cuda/factorized_interaction.hh`.

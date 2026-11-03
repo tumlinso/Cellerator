@@ -1,0 +1,99 @@
+{
+  "schema": "cellerator.factorized_interactions.aux_partition_independent_acceptance.v1",
+  "status": "accepted_bounded_strongest_direct_high_fanin_case",
+  "basis": "Independent read-only validation of the imported one-case strongest-direct high-fan-in report, its fixed-validator and precleanup evidence, previously CPU-reproduced exact input/result digests, source-bound build, and finished Scheduler receipt. No GPU workload was rerun.",
+  "report": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/evidence/factorized-aux-partitions/3/c08f2c3e4079ad787a10f993533ec199b9e93e8f5d3f9e9f5750397cc824cc89/qualification.json",
+    "sha256": "a9433fec8896b9573bc897e4434c3a658bc1ec089c7a5edab3cd8a59bdb6d4a6",
+    "envelope_path": "planning/interaction-layout-proposal-2026-11-02/validation/aux-strongest-1m-finished-evidence.json",
+    "envelope_sha256": "d307068234dce3b49da0d2fb49975caf3cfa0cf9222ac42763437d8d2110c833",
+    "case_evidence_sha256": "fae1045ef30f212b931dd2800fb7710042dd5adf342522ebf5ddd2e5f8daa465",
+    "case_count": 1,
+    "full_auxiliary_corpus_count": 12,
+    "full_auxiliary_corpus_qualified_by_this_report": false,
+    "current_pointer_cleanup_verified": true
+  },
+  "build": {
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "source_file_count": 3979,
+    "candidate_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+    "candidate_runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+    "native_library_sha256": "73f4f987db9dc4480d0efef371bc358c24b64ad6be3b472412936289fd0a574c",
+    "fixed_validator_sha256": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31",
+    "bounded_validation_sha256": "6da91757d8d18501ad8df4c6722c549ae32c9adfb93e78417a016b6849caaf11",
+    "qualification_driver_sha256": "eed5ed49683c4ac5b79b24225f1d6e37315707a0dbf71cee1464310015cf2210"
+  },
+  "case": {
+    "workload": "correctness_packet_high_fanin_1m",
+    "role": "strongest-direct",
+    "partition": "high-fanin-1m",
+    "candidate_mode": "minimal_direct",
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "device_model": "Tesla V100-SXM2-16GB",
+    "requested_route": "direct",
+    "selected_backend": "stable",
+    "actual_implementation": "stable",
+    "structural_layout": "full_packet",
+    "activation_storage": "fp16",
+    "parameter_storage": "fp16",
+    "output_storage": "fp16",
+    "gradient_mode": "overwrite",
+    "input_case_bytes": 72000112,
+    "input_case_sha256": "8ebe353d13304cc60dccde5445effa68b7ee59095d9572b5905b83d1a715b0a0",
+    "output_result_bytes": 134,
+    "output_result_sha256": "69f133b626ea76dd5cab62f129e5a04a5618ead9c55c7c97b40aedf85f78d352",
+    "previous_cpu_reproduction": {
+      "accepted_record": "planning/interaction-layout-proposal-2026-11-02/validation/aux-packet-1m-independent-acceptance.json",
+      "input_and_shard_hashes_reproduced": true,
+      "float64_oracle_output_and_all_vjps_result_hash_reproduced": true
+    },
+    "contract_metrics": {
+      "names": [
+        "y",
+        "dx",
+        "dz",
+        "dalpha",
+        "dbias",
+        "dgamma",
+        "dx_repeat",
+        "dz_repeat",
+        "dalpha_repeat",
+        "dbias_repeat",
+        "dgamma_repeat"
+      ],
+      "all_error_to_frozen_allowance_ratios": 0.0
+    },
+    "scratch_observation": {
+      "reported_bytes": 72022093,
+      "limit_bytes": 134217728,
+      "method": "50ms sampled whole packet tree plus post-write evidence allowance",
+      "transient_peak_may_be_missed": true
+    },
+    "success_wire_cleanup": "Successful transient wire files were removed after durable summary and digest evidence was written. Their hashes match the previous independently regenerated input and result identities."
+  },
+  "scheduler_receipt": {
+    "autobench_attempt_id": "e7af2110-513e-41de-a428-00b84c0d649f",
+    "autobench_fingerprint": "c08f2c3e4079ad787a10f993533ec199b9e93e8f5d3f9e9f5750397cc824cc89",
+    "scheduler_job_id": "bdc8ef98-9e31-4fdb-b0b0-f0a964e350b9",
+    "scheduler_attempt_id": "d7c90b2e-07e2-4f84-83e7-b4c3a7b0e95e",
+    "result": "succeeded",
+    "exit_code": 0,
+    "cleanup_verified": true,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "unit_name": "device-scheduler-attempt-2269b717d6d0d429f2394acac21971ef.service",
+    "observed_cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-2269b717d6d0d429f2394acac21971ef.service"
+  },
+  "checks": {
+    "source_build_candidate_binary_and_library_identity": "passed",
+    "record_derived_strongest_direct_dispatch": "passed",
+    "fixed_validator_and_all_primary_repeated_vjp_evidence": "passed",
+    "input_result_and_precleanup_evidence_binding": "passed",
+    "scheduler_receipt_and_current_pointer_binding": "passed"
+  },
+  "limits": [
+    "This is one high-fan-in case in the strongest-direct partition, not all 12 auxiliary workloads or the regular partition.",
+    "The requested minimal-direct candidate resolved to the shared stable backend and full-packet layout; this report is not evidence of a direct-fast implementation or performance advantage.",
+    "The scratch value is sampled, not a proven transient high-water mark or device-memory bound.",
+    "This report qualifies only the tested case and source/binary identity."
+  ]
+}

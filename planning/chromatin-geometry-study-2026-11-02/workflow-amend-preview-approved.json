@@ -1,0 +1,764 @@
+{
+  "status": "preview",
+  "action": "amend",
+  "authority_revision": 390,
+  "preview": {
+    "format": "todo-orchestrator.plan-preview",
+    "version": 1,
+    "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "authority_id": "c4f019fe-f445-51c2-b444-a7cf24d6be34",
+    "expected_authority_revision": 390,
+    "expected_plan_revision_id": "accepted-d42e1195be751597010af0bb8ca1ba3b818ffe87aca848e4e15a60111f68749a",
+    "proposed_revision_id": "plan-07aa6b2fdf98d07ed64f6d1f92146d8755492af1a07513f6206f699528bcdb97",
+    "package_digest": "94ba5fb665254627891809cbc32a17a00363b8930615d3e53ab8fd5000914dfc",
+    "change_digest": "a52d4d0ee65625c2708a0bb4b2f1d3438f8d8aeb0b6f0f3e1301a1deef890996",
+    "operations": [
+      {
+        "kind": "link",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-10",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-83e5eeb6c4a289b83124fba5fdc3ef5bd532f5a6e9e4ba5c24ddbb0e1579175a",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-cd2cc455737aa417b57cc8b7ab4845b571e21e50419e5de23a716c8ac0284ed7",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": null,
+        "related_after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-00",
+          "definition_revision_id": "definition-3e83d6741c6686ac8f125bf627c816a8e95cd78228020800f71f4511123d2453",
+          "incarnation_id": null
+        }
+      },
+      {
+        "kind": "unlink",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-10",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-83e5eeb6c4a289b83124fba5fdc3ef5bd532f5a6e9e4ba5c24ddbb0e1579175a",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-cd2cc455737aa417b57cc8b7ab4845b571e21e50419e5de23a716c8ac0284ed7",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-00",
+          "definition_revision_id": "definition-f64c10a3a5817ea3f95b239ace1ffcff2c365938eb8235c40e777b4c72d5667e",
+          "incarnation_id": null
+        },
+        "related_after": null
+      },
+      {
+        "kind": "link",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-20",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-20",
+          "definition_revision_id": "definition-56e4467f51b10a0c69403c1e08b409ae4f35a38e6f65273d5a60bbf62ce93101",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-20",
+          "definition_revision_id": "definition-7b3e0db368661fe804cc2b91aaaf8fde9f28c4d7a072bacb7f7a9c77e2abda20",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": null,
+        "related_after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-cd2cc455737aa417b57cc8b7ab4845b571e21e50419e5de23a716c8ac0284ed7",
+          "incarnation_id": null
+        }
+      },
+      {
+        "kind": "unlink",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-20",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-20",
+          "definition_revision_id": "definition-56e4467f51b10a0c69403c1e08b409ae4f35a38e6f65273d5a60bbf62ce93101",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-20",
+          "definition_revision_id": "definition-7b3e0db368661fe804cc2b91aaaf8fde9f28c4d7a072bacb7f7a9c77e2abda20",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-83e5eeb6c4a289b83124fba5fdc3ef5bd532f5a6e9e4ba5c24ddbb0e1579175a",
+          "incarnation_id": null
+        },
+        "related_after": null
+      },
+      {
+        "kind": "link",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-30",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-30",
+          "definition_revision_id": "definition-fe9d4fa2ca8b30991c13a79d0923843ae98b6d44e57203a83f538cd2403e0969",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-30",
+          "definition_revision_id": "definition-147de2195940bbf6b142c8cb154255eef0f3db3441fe8faf05f35b0f3898c788",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": null,
+        "related_after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-cd2cc455737aa417b57cc8b7ab4845b571e21e50419e5de23a716c8ac0284ed7",
+          "incarnation_id": null
+        }
+      },
+      {
+        "kind": "unlink",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-30",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-30",
+          "definition_revision_id": "definition-fe9d4fa2ca8b30991c13a79d0923843ae98b6d44e57203a83f538cd2403e0969",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-30",
+          "definition_revision_id": "definition-147de2195940bbf6b142c8cb154255eef0f3db3441fe8faf05f35b0f3898c788",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-83e5eeb6c4a289b83124fba5fdc3ef5bd532f5a6e9e4ba5c24ddbb0e1579175a",
+          "incarnation_id": null
+        },
+        "related_after": null
+      },
+      {
+        "kind": "link",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-40",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-40",
+          "definition_revision_id": "definition-39452a68bdda31823746466aa1a6f97f7bf98434c87c7cdb4a7a009438779c5e",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-40",
+          "definition_revision_id": "definition-e16afa51cd7384fca99bedddd4f4b2f592ab3d4121c2cdee886eeac857b1db34",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": null,
+        "related_after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-cd2cc455737aa417b57cc8b7ab4845b571e21e50419e5de23a716c8ac0284ed7",
+          "incarnation_id": null
+        }
+      },
+      {
+        "kind": "unlink",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-40",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-40",
+          "definition_revision_id": "definition-39452a68bdda31823746466aa1a6f97f7bf98434c87c7cdb4a7a009438779c5e",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-40",
+          "definition_revision_id": "definition-e16afa51cd7384fca99bedddd4f4b2f592ab3d4121c2cdee886eeac857b1db34",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-83e5eeb6c4a289b83124fba5fdc3ef5bd532f5a6e9e4ba5c24ddbb0e1579175a",
+          "incarnation_id": null
+        },
+        "related_after": null
+      },
+      {
+        "kind": "link",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-50",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-50",
+          "definition_revision_id": "definition-b4e5944049e97d8a7776ecb0a89c812d5028233800d42417bb1f73aab2c321e6",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-50",
+          "definition_revision_id": "definition-f93043af248ed3e1f316365158f3de8127e5ebd3e3cf7dd0979b27f290433b47",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": null,
+        "related_after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-cd2cc455737aa417b57cc8b7ab4845b571e21e50419e5de23a716c8ac0284ed7",
+          "incarnation_id": null
+        }
+      },
+      {
+        "kind": "unlink",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-50",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-50",
+          "definition_revision_id": "definition-b4e5944049e97d8a7776ecb0a89c812d5028233800d42417bb1f73aab2c321e6",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-50",
+          "definition_revision_id": "definition-f93043af248ed3e1f316365158f3de8127e5ebd3e3cf7dd0979b27f290433b47",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-83e5eeb6c4a289b83124fba5fdc3ef5bd532f5a6e9e4ba5c24ddbb0e1579175a",
+          "incarnation_id": null
+        },
+        "related_after": null
+      },
+      {
+        "kind": "link",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-70",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-70",
+          "definition_revision_id": "definition-0122d375a7e1aa2a822cfdd2fa5aa0d3b5ff85324f361226450b53c689bb3044",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-70",
+          "definition_revision_id": "definition-e6a8283136f481d75ec683d54809560ea66c1ea8b8d544e9f9255069ebeb81ec",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": null,
+        "related_after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-20",
+          "definition_revision_id": "definition-7b3e0db368661fe804cc2b91aaaf8fde9f28c4d7a072bacb7f7a9c77e2abda20",
+          "incarnation_id": null
+        }
+      },
+      {
+        "kind": "unlink",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-70",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-70",
+          "definition_revision_id": "definition-0122d375a7e1aa2a822cfdd2fa5aa0d3b5ff85324f361226450b53c689bb3044",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-70",
+          "definition_revision_id": "definition-e6a8283136f481d75ec683d54809560ea66c1ea8b8d544e9f9255069ebeb81ec",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-20",
+          "definition_revision_id": "definition-56e4467f51b10a0c69403c1e08b409ae4f35a38e6f65273d5a60bbf62ce93101",
+          "incarnation_id": null
+        },
+        "related_after": null
+      },
+      {
+        "kind": "link",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-80",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-f1cf9d5b09b11053b7259aaaa2d528fb538c5e7b1691f6147a595dcaece02bd1",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-1e5a0113075bca757f66a2b339622d62b6c26132acb711a30acfe07d72d28d37",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": null,
+        "related_after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-20",
+          "definition_revision_id": "definition-7b3e0db368661fe804cc2b91aaaf8fde9f28c4d7a072bacb7f7a9c77e2abda20",
+          "incarnation_id": null
+        }
+      },
+      {
+        "kind": "link",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-80",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-f1cf9d5b09b11053b7259aaaa2d528fb538c5e7b1691f6147a595dcaece02bd1",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-1e5a0113075bca757f66a2b339622d62b6c26132acb711a30acfe07d72d28d37",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": null,
+        "related_after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-40",
+          "definition_revision_id": "definition-e16afa51cd7384fca99bedddd4f4b2f592ab3d4121c2cdee886eeac857b1db34",
+          "incarnation_id": null
+        }
+      },
+      {
+        "kind": "link",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-80",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-f1cf9d5b09b11053b7259aaaa2d528fb538c5e7b1691f6147a595dcaece02bd1",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-1e5a0113075bca757f66a2b339622d62b6c26132acb711a30acfe07d72d28d37",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": null,
+        "related_after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-50",
+          "definition_revision_id": "definition-f93043af248ed3e1f316365158f3de8127e5ebd3e3cf7dd0979b27f290433b47",
+          "incarnation_id": null
+        }
+      },
+      {
+        "kind": "unlink",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-80",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-f1cf9d5b09b11053b7259aaaa2d528fb538c5e7b1691f6147a595dcaece02bd1",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-1e5a0113075bca757f66a2b339622d62b6c26132acb711a30acfe07d72d28d37",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-20",
+          "definition_revision_id": "definition-56e4467f51b10a0c69403c1e08b409ae4f35a38e6f65273d5a60bbf62ce93101",
+          "incarnation_id": null
+        },
+        "related_after": null
+      },
+      {
+        "kind": "unlink",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-80",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-f1cf9d5b09b11053b7259aaaa2d528fb538c5e7b1691f6147a595dcaece02bd1",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-1e5a0113075bca757f66a2b339622d62b6c26132acb711a30acfe07d72d28d37",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-40",
+          "definition_revision_id": "definition-39452a68bdda31823746466aa1a6f97f7bf98434c87c7cdb4a7a009438779c5e",
+          "incarnation_id": null
+        },
+        "related_after": null
+      },
+      {
+        "kind": "unlink",
+        "entity_kind": "dependency",
+        "entity_id": "CGS-80",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-f1cf9d5b09b11053b7259aaaa2d528fb538c5e7b1691f6147a595dcaece02bd1",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-1e5a0113075bca757f66a2b339622d62b6c26132acb711a30acfe07d72d28d37",
+          "incarnation_id": null
+        },
+        "relation": "completion",
+        "related_before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-50",
+          "definition_revision_id": "definition-b4e5944049e97d8a7776ecb0a89c812d5028233800d42417bb1f73aab2c321e6",
+          "incarnation_id": null
+        },
+        "related_after": null
+      },
+      {
+        "kind": "create",
+        "entity_kind": "requirement",
+        "entity_id": "check-CGS-00-source",
+        "before": null,
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "requirement",
+          "entity_id": "check-CGS-00-source",
+          "definition_revision_id": "definition-3e83d6741c6686ac8f125bf627c816a8e95cd78228020800f71f4511123d2453",
+          "incarnation_id": null
+        },
+        "relation": null,
+        "related_before": null,
+        "related_after": null
+      },
+      {
+        "kind": "link",
+        "entity_kind": "requirement_group",
+        "entity_id": "CGS-00",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-00",
+          "definition_revision_id": "definition-f64c10a3a5817ea3f95b239ace1ffcff2c365938eb8235c40e777b4c72d5667e",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-00",
+          "definition_revision_id": "definition-a13c4b59dae6b483cc9839eb573edbb735ec2660dc5d9ee14b9bfbba26009bce",
+          "incarnation_id": null
+        },
+        "relation": "check",
+        "related_before": null,
+        "related_after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "requirement",
+          "entity_id": "check-CGS-00-source",
+          "definition_revision_id": "plan-07aa6b2fdf98d07ed64f6d1f92146d8755492af1a07513f6206f699528bcdb97",
+          "incarnation_id": null
+        }
+      },
+      {
+        "kind": "revise",
+        "entity_kind": "work_item",
+        "entity_id": "CGS-00",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-00",
+          "definition_revision_id": "definition-f64c10a3a5817ea3f95b239ace1ffcff2c365938eb8235c40e777b4c72d5667e",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-00",
+          "definition_revision_id": "definition-3e83d6741c6686ac8f125bf627c816a8e95cd78228020800f71f4511123d2453",
+          "incarnation_id": null
+        },
+        "relation": null,
+        "related_before": null,
+        "related_after": null
+      },
+      {
+        "kind": "revise",
+        "entity_kind": "work_item",
+        "entity_id": "CGS-10",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-83e5eeb6c4a289b83124fba5fdc3ef5bd532f5a6e9e4ba5c24ddbb0e1579175a",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-10",
+          "definition_revision_id": "definition-cd2cc455737aa417b57cc8b7ab4845b571e21e50419e5de23a716c8ac0284ed7",
+          "incarnation_id": null
+        },
+        "relation": null,
+        "related_before": null,
+        "related_after": null
+      },
+      {
+        "kind": "revise",
+        "entity_kind": "work_item",
+        "entity_id": "CGS-20",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-20",
+          "definition_revision_id": "definition-56e4467f51b10a0c69403c1e08b409ae4f35a38e6f65273d5a60bbf62ce93101",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-20",
+          "definition_revision_id": "definition-7b3e0db368661fe804cc2b91aaaf8fde9f28c4d7a072bacb7f7a9c77e2abda20",
+          "incarnation_id": null
+        },
+        "relation": null,
+        "related_before": null,
+        "related_after": null
+      },
+      {
+        "kind": "revise",
+        "entity_kind": "work_item",
+        "entity_id": "CGS-30",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-30",
+          "definition_revision_id": "definition-fe9d4fa2ca8b30991c13a79d0923843ae98b6d44e57203a83f538cd2403e0969",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-30",
+          "definition_revision_id": "definition-147de2195940bbf6b142c8cb154255eef0f3db3441fe8faf05f35b0f3898c788",
+          "incarnation_id": null
+        },
+        "relation": "owned_definition_bundle",
+        "related_before": null,
+        "related_after": null
+      },
+      {
+        "kind": "revise",
+        "entity_kind": "work_item",
+        "entity_id": "CGS-40",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-40",
+          "definition_revision_id": "definition-39452a68bdda31823746466aa1a6f97f7bf98434c87c7cdb4a7a009438779c5e",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-40",
+          "definition_revision_id": "definition-e16afa51cd7384fca99bedddd4f4b2f592ab3d4121c2cdee886eeac857b1db34",
+          "incarnation_id": null
+        },
+        "relation": null,
+        "related_before": null,
+        "related_after": null
+      },
+      {
+        "kind": "revise",
+        "entity_kind": "work_item",
+        "entity_id": "CGS-50",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-50",
+          "definition_revision_id": "definition-b4e5944049e97d8a7776ecb0a89c812d5028233800d42417bb1f73aab2c321e6",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-50",
+          "definition_revision_id": "definition-f93043af248ed3e1f316365158f3de8127e5ebd3e3cf7dd0979b27f290433b47",
+          "incarnation_id": null
+        },
+        "relation": null,
+        "related_before": null,
+        "related_after": null
+      },
+      {
+        "kind": "revise",
+        "entity_kind": "work_item",
+        "entity_id": "CGS-70",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-70",
+          "definition_revision_id": "definition-0122d375a7e1aa2a822cfdd2fa5aa0d3b5ff85324f361226450b53c689bb3044",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-70",
+          "definition_revision_id": "definition-e6a8283136f481d75ec683d54809560ea66c1ea8b8d544e9f9255069ebeb81ec",
+          "incarnation_id": null
+        },
+        "relation": "owned_definition_bundle",
+        "related_before": null,
+        "related_after": null
+      },
+      {
+        "kind": "revise",
+        "entity_kind": "work_item",
+        "entity_id": "CGS-80",
+        "before": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-f1cf9d5b09b11053b7259aaaa2d528fb538c5e7b1691f6147a595dcaece02bd1",
+          "incarnation_id": null
+        },
+        "after": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-80",
+          "definition_revision_id": "definition-1e5a0113075bca757f66a2b339622d62b6c26132acb711a30acfe07d72d28d37",
+          "incarnation_id": null
+        },
+        "relation": null,
+        "related_before": null,
+        "related_after": null
+      }
+    ],
+    "conflicts": [
+      {
+        "code": "active_attempt_requires_transition",
+        "subject": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "work_item",
+          "entity_id": "CGS-00",
+          "definition_revision_id": "definition-f64c10a3a5817ea3f95b239ace1ffcff2c365938eb8235c40e777b4c72d5667e",
+          "incarnation_id": null
+        },
+        "message": "attempt in state reported binds the exact prior definition",
+        "related": {
+          "project_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+          "kind": "attempt",
+          "entity_id": "attempt-367fd7fc9c01990f5362582b1fb2388ab79b34c322066b9e0aaf8a4c142db160",
+          "definition_revision_id": null,
+          "incarnation_id": null
+        }
+      }
+    ],
+    "warnings": [],
+    "has_conflicts": true
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "cgs.resume-measurement-plan.v1",
+  "frozen_before_new_timing": true,
+  "contract_freeze_sha256": "4033eea4a8168f5e898212873252c8782943d12f5325e5a31ca45487f9751f06",
+  "matrix": "bench/chromatin_geometry/docs/measurement-matrix-v3.json",
+  "archive_sha256": "6aec4e10d969c602d418dcd45b50f8a6ba002b68d4e1bf11843e3df9fa1bf4b9",
+  "binary_sha256": "24040eb390dd5166806671b7999a68cb2d6f29f8a7ea42ad4f7e86bbd1bc584d",
+  "budget_remaining_gpu_seconds": 12347.28519153595,
+  "priority": [
+    "eight exact-binary full-chain correctness triages and four independent sanitizer modes",
+    "eight serialized same-UUID all-applicable-arm scenario packets at tile32 stage1",
+    "four non-STE changed-input scenarios include six-round paired rebuild versus incremental comparisons",
+    "representative shared versus cached-two-tile Nsys and NCU forward/backward profiles",
+    "coherent synthetic STE-linear same-ownership layout sweep at 64/1, 64/2 and 128/1 compared with 32/1; 32/2 optional if budget and runtime allow",
+    "128/2 is preflight capacity-rejected for frozen workloads"
+  ],
+  "controls": "scalar, bitmap and direct; library and library-batched when body is linear; retain cohort-direct, cohort-direct-two-tile, cohort-shared candidates",
+  "repeat_policy": "three independently shuffled orders with exact reverse partners, six same-device paired rounds; complete cost and strict >5% latency reduction with paired 95% interval",
+  "planning_gpu_seconds": {
+    "triage_and_sanitizers": 1560,
+    "scenario_packets": 4800,
+    "layout_packets": 1800,
+    "profiles": 1800,
+    "reserve": 2387.28519153595
+  },
+  "limitations": "Planning allocations are estimates, not evidence or ceilings. Per-job timeout and the shared 14400 GPU-second aggregate budget remain hard limits. Report every incomplete case and rejected or unqualified packet."
+}

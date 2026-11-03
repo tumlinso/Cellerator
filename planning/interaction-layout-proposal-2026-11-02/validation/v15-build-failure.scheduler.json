@@ -1,0 +1,217 @@
+{
+  "attempt": {
+    "attempt_id": "a53f04be-1bcc-4fb3-b100-d05a370ef173",
+    "cleanup_verified": true,
+    "created_at": "2026-11-02T19:45:10.168351Z",
+    "error": {},
+    "execution_context": {
+      "allocations": [
+        {
+          "mode": "shared",
+          "quantities": {
+            "cores": 2.0
+          },
+          "resource_id": "host:testlsserver:cpu"
+        },
+        {
+          "mode": "shared",
+          "quantities": {
+            "bytes": 8589934592.0
+          },
+          "resource_id": "host:testlsserver:memory"
+        }
+      ],
+      "claim_id": "2161e770-efc6-4b01-a78e-a0b88fd0d68b",
+      "fencing_token": 1510,
+      "purpose": "job",
+      "resources": [
+        {
+          "attributes": {
+            "observed_logical_cpus": 80,
+            "scope": "whole host"
+          },
+          "capabilities": [
+            "systemd-cgroup-request-dependent",
+            "supervised-lease-job-only"
+          ],
+          "capacities": {
+            "cores": 80.0
+          },
+          "conflict_domains": [],
+          "host_id": "testlsserver",
+          "kind": "cpu",
+          "resource_id": "host:testlsserver:cpu",
+          "schema_version": 1,
+          "topology": {}
+        },
+        {
+          "attributes": {
+            "available_bytes": 57799659520
+          },
+          "capabilities": [
+            "systemd-cgroup-request-dependent",
+            "supervised-lease-job-only"
+          ],
+          "capacities": {
+            "bytes": 67362455552.0
+          },
+          "conflict_domains": [],
+          "host_id": "testlsserver",
+          "kind": "memory",
+          "resource_id": "host:testlsserver:memory",
+          "schema_version": 1,
+          "topology": {}
+        }
+      ],
+      "schema_version": 1
+    },
+    "execution_handle": {
+      "adapter_id": "systemd-user-unit",
+      "external_id": "device-scheduler-attempt-fe0b830eb7fd642e4b152c3488b38d31.service",
+      "identity": "a53f04be-1bcc-4fb3-b100-d05a370ef173",
+      "metadata": {
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-fe0b830eb7fd642e4b152c3488b38d31.service",
+        "description": "Device Scheduler attempt a53f04be-1bcc-4fb3-b100-d05a370ef173",
+        "execution_root": "/home/tumlinson/.local/state/device-scheduler/executions",
+        "handle_version": 1,
+        "invocation_id": "b516b1e27c79409c931026c1a61e8fd7",
+        "profile_id": null,
+        "profile_version": null
+      },
+      "started_at": "2026-11-02T19:45:10.221800Z"
+    },
+    "finished_at": "2026-11-02T19:45:11.055610Z",
+    "id": "a53f04be-1bcc-4fb3-b100-d05a370ef173",
+    "job_id": "9172dae5-892f-47da-a9e7-ace95c12e419",
+    "operation_id": "start:a53f04be-1bcc-4fb3-b100-d05a370ef173",
+    "result": {
+      "active_state": "failed",
+      "adapter": "systemd-user-unit/v1",
+      "cleanup_verified": true,
+      "evidence": {
+        "adapter": "systemd-user-unit/v1",
+        "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-fe0b830eb7fd642e4b152c3488b38d31.service",
+        "invocation_id": "b516b1e27c79409c931026c1a61e8fd7",
+        "main_code": "1",
+        "unit_description": "Device Scheduler attempt a53f04be-1bcc-4fb3-b100-d05a370ef173"
+      },
+      "exit_code": 1,
+      "invocation_id": "b516b1e27c79409c931026c1a61e8fd7",
+      "logs": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 215, in <module>\n    main()\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 211, in main\n    raise SystemExit(execute(Path(sys.argv[1])))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 145, in execute\n    proc = subprocess.Popen(argv, cwd=cwd, env=child_env, stdout=stdout, stderr=stderr, preexec_fn=preexec, start_new_session=(os.name == \"posix\"))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath('/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/state/snapshots/07173fdb049eb5312c0e18eccb4da845fe57f0945c8ab610a2a8d6890b4a1f31')\n",
+      "logs_error": null,
+      "logs_truncated": false,
+      "result": "exit-code",
+      "state": "failed",
+      "stdout": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 215, in <module>\n    main()\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 211, in main\n    raise SystemExit(execute(Path(sys.argv[1])))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 145, in execute\n    proc = subprocess.Popen(argv, cwd=cwd, env=child_env, stdout=stdout, stderr=stderr, preexec_fn=preexec, start_new_session=(os.name == \"posix\"))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath('/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/state/snapshots/07173fdb049eb5312c0e18eccb4da845fe57f0945c8ab610a2a8d6890b4a1f31')\n",
+      "substate": "failed",
+      "unit_name": "device-scheduler-attempt-fe0b830eb7fd642e4b152c3488b38d31.service"
+    },
+    "started_at": "2026-11-02T19:45:10.221845Z",
+    "state": "failed"
+  },
+  "attempt_count": 1,
+  "attempt_id": "a53f04be-1bcc-4fb3-b100-d05a370ef173",
+  "blocked_reason": null,
+  "cleanup_verified": true,
+  "created_at": "2026-11-02T19:44:52.889020Z",
+  "decision_id": "a29a97d7-6c98-47c1-8739-f41569672e6f",
+  "id": "9172dae5-892f-47da-a9e7-ace95c12e419",
+  "job_id": "9172dae5-892f-47da-a9e7-ace95c12e419",
+  "lease_binding": null,
+  "lease_fencing_token": 1510,
+  "lease_id": "2161e770-efc6-4b01-a78e-a0b88fd0d68b",
+  "lease_state": "released",
+  "owner": "autobench",
+  "owner_id": "autobench",
+  "reservation_id": null,
+  "reservation_phase_id": null,
+  "result": {
+    "active_state": "failed",
+    "adapter": "systemd-user-unit/v1",
+    "cleanup_verified": true,
+    "evidence": {
+      "adapter": "systemd-user-unit/v1",
+      "control_group": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-fe0b830eb7fd642e4b152c3488b38d31.service",
+      "invocation_id": "b516b1e27c79409c931026c1a61e8fd7",
+      "main_code": "1",
+      "unit_description": "Device Scheduler attempt a53f04be-1bcc-4fb3-b100-d05a370ef173"
+    },
+    "exit_code": 1,
+    "invocation_id": "b516b1e27c79409c931026c1a61e8fd7",
+    "logs": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 215, in <module>\n    main()\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 211, in main\n    raise SystemExit(execute(Path(sys.argv[1])))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 145, in execute\n    proc = subprocess.Popen(argv, cwd=cwd, env=child_env, stdout=stdout, stderr=stderr, preexec_fn=preexec, start_new_session=(os.name == \"posix\"))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath('/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/state/snapshots/07173fdb049eb5312c0e18eccb4da845fe57f0945c8ab610a2a8d6890b4a1f31')\n",
+    "logs_error": null,
+    "logs_truncated": false,
+    "result": "exit-code",
+    "state": "failed",
+    "stdout": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 215, in <module>\n    main()\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 211, in main\n    raise SystemExit(execute(Path(sys.argv[1])))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/lib/python3.12/site-packages/autobench/worker.py\", line 145, in execute\n    proc = subprocess.Popen(argv, cwd=cwd, env=child_env, stdout=stdout, stderr=stderr, preexec_fn=preexec, start_new_session=(os.name == \"posix\"))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath('/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/state/snapshots/07173fdb049eb5312c0e18eccb4da845fe57f0945c8ab610a2a8d6890b4a1f31')\n",
+    "substate": "failed",
+    "unit_name": "device-scheduler-attempt-fe0b830eb7fd642e4b152c3488b38d31.service"
+  },
+  "spec": {
+    "argv": [
+      "/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python",
+      "-m",
+      "autobench.worker",
+      "/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/state/packets/2cf1f367-5b24-449e-939b-6d46340648d2.json"
+    ],
+    "deadline": null,
+    "dependencies": [],
+    "environment": {},
+    "event_trigger": null,
+    "expected_duration_seconds": 540.0,
+    "flexible": true,
+    "idempotency_key": "autobench-v1:1794253490:2cf1f367-5b24-449e-939b-6d46340648d2",
+    "interruption": {
+      "cancellation_supported": true,
+      "checkpoint_supported": false,
+      "cooperative_yield": false,
+      "restart_safe": false
+    },
+    "kill_timeout_seconds": 600.0,
+    "max_attempts": 1,
+    "not_before": null,
+    "owner_id": "autobench",
+    "preconditions": [],
+    "preemption_action": "abandon",
+    "priority": 10,
+    "priority_class": "background",
+    "profile_id": null,
+    "resources": [
+      {
+        "kind": "cpu",
+        "mode": "shared",
+        "quantities": {
+          "cores": 2.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {},
+        "topology_constraints": {}
+      },
+      {
+        "kind": "memory",
+        "mode": "shared",
+        "quantities": {
+          "bytes": 8589934592.0
+        },
+        "same_host": true,
+        "schema_version": 1,
+        "selectors": {},
+        "topology_constraints": {}
+      }
+    ],
+    "retention_policy": "autobench",
+    "schema_version": 1,
+    "secret_refs": [],
+    "tags": [
+      "benchmark:cellerator-factorized-interactions",
+      "kind:build",
+      "autobench"
+    ],
+    "termination_grace_seconds": 5.0,
+    "timeout_seconds": 610.0,
+    "working_directory": "/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement"
+  },
+  "state": "failed",
+  "updated_at": "2026-11-02T19:45:11.055610Z"
+}

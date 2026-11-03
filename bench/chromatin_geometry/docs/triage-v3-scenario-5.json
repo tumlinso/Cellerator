@@ -1,0 +1,83 @@
+{
+  "schema": "cgs.triage.v1",
+  "runs": [
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "scalar",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-5",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "bitmap",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-5",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "direct",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-5",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "cohort-direct",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-5",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "cohort-direct-two-tile",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-5",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    },
+    {
+      "case": "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+      "gate": "supplied",
+      "body": "product",
+      "backend": "cohort-shared",
+      "precision": "fp16",
+      "condition_update": "incremental",
+      "tile": 32,
+      "stages": 1,
+      "match_group": "matrix-v3-5",
+      "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+      "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3"
+    }
+  ]
+}

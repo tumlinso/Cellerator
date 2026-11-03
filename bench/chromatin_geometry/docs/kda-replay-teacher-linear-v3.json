@@ -1,0 +1,63 @@
+{
+  "binary_sha256": "b0292b309e12751655b8a476c4d34e23d1c877549e175d33c5dcdca12aa25ddf",
+  "candidates": [
+    "bitmap",
+    "direct",
+    "cohort-direct",
+    "cohort-direct-two-tile",
+    "cohort-shared",
+    "library",
+    "library-batched"
+  ],
+  "cases": [
+    {
+      "id": "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100",
+      "input": {
+        "campaign_workload_sha256": "07dad66ba570af2e5e92929727e64a70a173c663c78151a8079a1ef7b8a4afb4",
+        "replay_sha256": "45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3",
+        "seed": 1931189573,
+        "source_archive_sha256": "f131948000849270e22c392459264fa599566f4a1d51492a09e72d9e1d8f72c7",
+        "triage_job_id": "384b43b3-3229-47cb-b91b-7aeb3db25df4"
+      },
+      "parameters": {
+        "body": "linear",
+        "condition_update": "incremental",
+        "gate": "teacher",
+        "precision": "fp32",
+        "replay": "pbmc-atac-cgatac01/accessibility.cgatac",
+        "stages": 1,
+        "tile": 32
+      },
+      "weight": 1.0
+    }
+  ],
+  "contract_freeze_sha256": "4033eea4a8168f5e898212873252c8782943d12f5325e5a31ca45487f9751f06",
+  "incumbent": "scalar",
+  "interference_attestation": {
+    "device_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+    "receipt_identities": [],
+    "sha256": "2342504e91f0d041167f88bbcd17d556e4ec620f86454f6f289bf4f7560306d1"
+  },
+  "schema": "cgs.kda-config.v1",
+  "selection_status": "preliminary; strongest control and >5 percent latency gate remain independently checked",
+  "source_archive_sha256": "f131948000849270e22c392459264fa599566f4a1d51492a09e72d9e1d8f72c7",
+  "supplemental_updates": [
+    "rebuild",
+    "incremental"
+  ],
+  "task_id": "cgs-teacher-linear",
+  "triage": {
+    "binary_sha256": "b0292b309e12751655b8a476c4d34e23d1c877549e175d33c5dcdca12aa25ddf",
+    "job_id": "384b43b3-3229-47cb-b91b-7aeb3db25df4",
+    "packet_metrics_sha256": "7ca371de5104488cff1816a4c8b5d750889fd19bd525ecca0ee977dea715cfae",
+    "receipt_sha256": "d3395eb8b0bf187d6d129aeecb4b172a5011f84dd87d7cc9542c76c2dad1ab8b",
+    "source_archive_sha256": "f131948000849270e22c392459264fa599566f4a1d51492a09e72d9e1d8f72c7"
+  },
+  "trusted_replay_inputs": [
+    "pbmc-atac-cgatac01/accessibility.cgatac",
+    "pbmc-atac-cgatac01/cells.tsv",
+    "pbmc-atac-cgatac01/features.tsv",
+    "pbmc-atac-cgatac01/manifest.json",
+    "pbmc_unsorted_10k_filtered_feature_bc_matrix.h5"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "cellerator.factorized_interactions.sanitizer_wrapper_independent_review.v1",
+  "reviewed_at": "2026-11-02",
+  "status": "cpu_contract_pass; ready_for_registered_requalification",
+  "change_scope": "Verifier-only sanitizer wrapper expectation and CPU fixture/tests; frozen native source, fixed sanitizer suite, oracle, workload corpus and numerical limits are unchanged.",
+  "evidence_fixture": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer-minimal-dispatch-fixture.json",
+    "sha256": "e26d688ceccf25f8f98a29a8f2bf522d84a2653d2e643d5c7102125e5e45e0d3",
+    "source_dtype_report_sha256": "d23113d02e26bbe87f823c488d8e939d2ba306015dc7ca4917ff95ad044f1dd5",
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "candidate_runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+    "minimal_direct_metadata": {
+      "selected_backend": "direct",
+      "actual_implementation": "direct",
+      "structural_layout": "canonical_direct"
+    },
+    "unique_output_metadata": {
+      "selected_backend": "direct",
+      "actual_implementation": "direct_unique_output",
+      "structural_layout": "canonical_direct"
+    },
+    "fixture_is_sanitizer_result": false
+  },
+  "wrapper": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer_tool_partition.py",
+    "sha256": "e5bafd545ecaaae4a093f533da9e96276f6795e6f91691de25180dcf0ad04de7"
+  },
+  "tests": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/validation/test_sanitizer_tool_partition.py",
+    "sha256": "1159a37b48d48f8b0bc43c592f19fab9ef6d6e1403bd03ac7e35024cd62565d3",
+    "command": "PYTHONDONTWRITEBYTECODE=1 /home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3 -B -m unittest -v planning.interaction-layout-proposal-2026-11-02.validation.test_sanitizer_tool_partition",
+    "result": "8 tests passed",
+    "staged-test-portability": "The test locates the source evidence relative to an ancestor when available and skips only that external-evidence comparison when the report is absent from a portable copy; all candidate-dispatch fixture checks still run.",
+    "coverage": [
+      "The actual accepted dtype32 report and retained validator-summary hashes are rechecked for minimal-direct and unique-output rows.",
+      "The candidate rows and validation objects use the fixed sanitizer-suite schema.",
+      "Minimal-direct actual_implementation is populated from the actual dtype32 runner output while the requested candidate remains minimal_direct.",
+      "The minimal-direct sanitizer workload structure is grounded in the exact immutable CPU workload generator.",
+      "Wrong unique-output dispatch and wrong minimal-direct layout both remain rejected."
+    ]
+  },
+  "remaining": [
+    "No v3 registered GPU sanitizer execution has occurred.",
+    "The operator must stage this exact wrapper, fixture and test identity in a new managed revision before requalification.",
+    "All four sanitizer tools still require successful actual 14-case reports and independently verified Scheduler cleanup receipts."
+  ]
+}

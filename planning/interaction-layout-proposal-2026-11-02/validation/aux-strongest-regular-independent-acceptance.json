@@ -1,0 +1,81 @@
+{
+  "schema": "cellerator.factorized_interactions.aux_partition_independent_acceptance.v1",
+  "status": "accepted_bounded_strongest_direct_regular_partition",
+  "basis": "Independent read-only validation of the imported 11-case strongest-direct regular report, retained case evidence and result digests, record-derived backend selection, frozen source/build identity, and finished Scheduler receipt. No GPU workload was rerun.",
+  "report": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/evidence/factorized-aux-partitions/2/ad662a3d40323ddb116f5db280cd8b532ea1db7748a8f35c5de37dde42827b81/qualification.json",
+    "sha256": "9633d6464b23478d7f428a48948a9ac8c8539b2313296e5d87aac13f28dc3930",
+    "envelope_path": "planning/interaction-layout-proposal-2026-11-02/validation/aux-strongest-regular-finished-evidence.json",
+    "envelope_sha256": "30354fa86eeb6fe3f59d4a14ad4b45f1a31643c44020eecceb2780b689e3c503",
+    "case_count": 11,
+    "full_auxiliary_corpus_count": 12,
+    "full_auxiliary_corpus_qualified_by_this_report": false,
+    "current_pointer_cleanup_verified": true
+  },
+  "build": {
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "source_file_count": 3979,
+    "candidate_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+    "candidate_runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+    "native_library_sha256": "73f4f987db9dc4480d0efef371bc358c24b64ad6be3b472412936289fd0a574c",
+    "fixed_validator_sha256": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31",
+    "bounded_validation_sha256": "6da91757d8d18501ad8df4c6722c549ae32c9adfb93e78417a016b6849caaf11",
+    "qualification_driver_sha256": "eed5ed49683c4ac5b79b24225f1d6e37315707a0dbf71cee1464310015cf2210"
+  },
+  "coverage": {
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "device_model": "Tesla V100-SXM2-16GB",
+    "role": "strongest-direct",
+    "partition": "regular",
+    "candidate_mode": "minimal_direct",
+    "passed_cases": 11,
+    "numerical_and_repeated_vjp_metrics": 121,
+    "max_error_to_frozen_allowance_ratio": 0.004614736050892579,
+    "case_dispatch_and_digest_evidence": [
+      {"case_id":"case-000","workload":"correctness_ordered_tied_zero","mode":"minimal_direct","backend":"direct","implementation":"direct","layout":"canonical_direct","max_ratio":0.004093127551835366,"input_sha256":"e572d40cbb23ecceb9ee5ffc3d062d5c8ae9677c724b5995cf59da819ce9394e","output_sha256":"22a928651e1c1b17499773ea764230658d2eb0240dcdffbfe204782e0c038535"},
+      {"case_id":"case-001","workload":"correctness_saturated_gates","mode":"minimal_direct","backend":"direct","implementation":"direct","layout":"canonical_direct","max_ratio":1.0092936587501423e-11,"input_sha256":"ea7789bbe98f5bad906a46b0713f1097608010993b033650cf4a8f98f8a94e80","output_sha256":"1105d3b5763667230ef4a149a1e6f489280de3acafeb130545dba929e9692389"},
+      {"case_id":"case-002","workload":"correctness_ordered_role_context_variants","mode":"minimal_direct","backend":"direct","implementation":"direct","layout":"canonical_direct","max_ratio":0.0011274974550752432,"input_sha256":"2fea3502856e3cb06b0f56c17accafc091d11be9f440bdd2507ab0aa770ada08","output_sha256":"35d0bbb7ec2c7d2c3f3df7b120b38204e1d1a35cfe41a3e20189cbd7fd627676"},
+      {"case_id":"case-003","workload":"correctness_fma_product_residual_cancellation","mode":"minimal_direct","backend":"stable","implementation":"stable","layout":"full_packet","max_ratio":0.0008165393561466896,"input_sha256":"267cfac301a8d7333e9c45bd07b45cf48aa5f927bea3b07fcccb200048076f2c","output_sha256":"e33b423df40e897190f4cda0d5e91951402c883e6ee69eeceb3d2abf9893e49e"},
+      {"case_id":"case-004","workload":"correctness_context_cancellation_middle","mode":"minimal_direct","backend":"stable","implementation":"stable","layout":"full_packet","max_ratio":0.004614736050892579,"input_sha256":"ba0d03e7880ded33c10070ffddfff24af52f2f79fa16aad919ebee47deaf11ff","output_sha256":"9f05633fceee92b9c0146d7a8e1cd99e144dc7297883fa6fd52ab0e09131b54c"},
+      {"case_id":"case-005","workload":"correctness_context_cancellation_tail","mode":"minimal_direct","backend":"stable","implementation":"stable","layout":"full_packet","max_ratio":0.004614736050892579,"input_sha256":"cccd23a1e9b47a35b465f41e13f1b7a512fa92cecc55e4778bba1e1a3d7457fc","output_sha256":"9f05633fceee92b9c0146d7a8e1cd99e144dc7297883fa6fd52ab0e09131b54c"},
+      {"case_id":"case-006","workload":"correctness_high_fanin_100k","mode":"minimal_direct","backend":"stable","implementation":"stable","layout":"full_packet","max_ratio":0.0,"input_sha256":"11b44b2e03539c9a6f428a20a938db0882eaf7076f4169a515db7711a51e46ac","output_sha256":"79cf82a4a95ec28303fcdb68cd2f28849de17e60ec69f0d2b911219be3e98ace"},
+      {"case_id":"case-007","workload":"correctness_packet_high_fanin_fp32_100k","mode":"minimal_direct","backend":"stable","implementation":"stable","layout":"full_packet","max_ratio":0.0004439423227868807,"input_sha256":"52dda1c17a3567b80ff837bc57ff44c2d55069fffd6699ab606f96482c6e2b39","output_sha256":"d5b9e4936231be9431a13bb97cab3c919bad92ae6f015518a1ec7f7b9028bd2a"},
+      {"case_id":"case-008","workload":"correctness_empty_mechanisms","mode":"minimal_direct","backend":"direct","implementation":"direct","layout":"canonical_direct","max_ratio":0.0,"input_sha256":"2b1c9fafc8fa51fe65bf2218e9750d3189b12a63816ea198a44e282b6d7ef7f5","output_sha256":"f3a6174f4fd9eb9e7a2237cfdc3121e1e26ae1e8996b21850839c02bee68299b"},
+      {"case_id":"case-009","workload":"correctness_empty_cells","mode":"minimal_direct","backend":"direct","implementation":"direct","layout":"canonical_direct","max_ratio":0.0,"input_sha256":"8267149c388b503f84e0f0a8c782dbeda9a3e006e517326d157ed9e1d934fddb","output_sha256":"29a4cb60b82d3ac10753d2c26f129fdb44d833f58a68795980c49915c3d5b443"},
+      {"case_id":"case-010","workload":"correctness_empty_channels","mode":"minimal_direct","backend":"direct","implementation":"direct","layout":"canonical_direct","max_ratio":0.0,"input_sha256":"22b7d8ce9c0276fd9cada528d54e297a1c2de69c5f17951dcb29361b0cd68049","output_sha256":"30963e70ab5ceb396abc565d02079002f03743c846ebc6e1f669ab8351264930"}
+    ],
+    "actual_direct_backend_cases": 6,
+    "stable_fallback_cases": 5,
+    "scratch_observation": {
+      "reported_bytes": 7457198,
+      "limit_bytes": 134217728,
+      "method": "50ms sampled whole packet tree plus post-write evidence allowance",
+      "transient_peak_may_be_missed": true
+    }
+  },
+  "scheduler_receipt": {
+    "autobench_attempt_id": "6e3810db-4d12-4a88-a810-7d2006b9efb4",
+    "autobench_fingerprint": "ad662a3d40323ddb116f5db280cd8b532ea1db7748a8f35c5de37dde42827b81",
+    "scheduler_job_id": "009b5d27-569d-4074-9851-9f546c207111",
+    "scheduler_attempt_id": "4594fc7a-eb7a-48ae-b515-8c2d38b7813d",
+    "result": "succeeded",
+    "exit_code": 0,
+    "cleanup_verified": true,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "unit_name": "device-scheduler-attempt-24dcc395982ea25af0484c0f2fa53237.service",
+    "observed_cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-24dcc395982ea25af0484c0f2fa53237.service"
+  },
+  "checks": {
+    "source_build_runner_library_identity": "passed",
+    "record_derived_strongest_direct_dispatch": "passed",
+    "all_11_case_summaries_and_repeated_vjp_evidence": "passed",
+    "retained_input_output_digest_and_precleanup_records": "passed",
+    "scheduler_receipt_and_current_pointer_binding": "passed"
+  },
+  "limits": [
+    "This is the 11-case regular partition, not all 12 auxiliary workloads or the high-fanin-1m partition.",
+    "The strongest-direct mode selected stable fallback for five cases; only six cases executed the canonical direct backend. It is not evidence that all cases ran a distinct direct kernel.",
+    "Scratch measurement is sampled, not a proven transient high-water mark or device-memory bound.",
+    "This report qualifies correctness for these cases and identities, not performance or production selection."
+  ]
+}

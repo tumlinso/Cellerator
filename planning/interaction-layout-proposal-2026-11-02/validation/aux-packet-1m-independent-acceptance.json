@@ -1,0 +1,108 @@
+{
+  "schema": "cellerator.factorized_interactions.aux_partition_independent_acceptance.v1",
+  "status": "accepted_bounded_packet_role_high_fanin_case",
+  "basis": "Independent read-only validation of the imported one-case packet-role auxiliary report, exact regenerated CFINT001 input shards and CFOUT001 output against the frozen scalar reference, source-bound build, and finished Scheduler receipt. CPU reproduction did not launch or time CUDA.",
+  "report": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/evidence/factorized-aux-partitions/1/0d03ff79e286f588fc262abdcc0fa02d3e32141dab985d52452297f6e3fa8d6c/qualification.json",
+    "sha256": "82e1c3fba7ea05951a9166786ded04f1eea26d5863725a10d94288160ae65498",
+    "envelope_path": "planning/interaction-layout-proposal-2026-11-02/validation/aux-packet-1m-finished-evidence.json",
+    "envelope_sha256": "3678092fd52dad9d5e939cfe4c9ac85470c80878cf897a22ed79998ff1e1c0d1",
+    "case_evidence_sha256": "588b725fb9e965949b0f0ec953d63ef894ed319e4e787dad3a85507f339f403e",
+    "current_pointer_cleanup_verified": true
+  },
+  "build": {
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "source_file_count": 3979,
+    "candidate_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+    "candidate_runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+    "native_library_sha256": "73f4f987db9dc4480d0efef371bc358c24b64ad6be3b472412936289fd0a574c",
+    "fixed_validator_sha256": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31",
+    "bounded_validation_sha256": "6da91757d8d18501ad8df4c6722c549ae32c9adfb93e78417a016b6849caaf11",
+    "qualification_driver_sha256": "eed5ed49683c4ac5b79b24225f1d6e37315707a0dbf71cee1464310015cf2210"
+  },
+  "case": {
+    "workload": "correctness_packet_high_fanin_1m",
+    "report_role": "packet",
+    "report_partition": "high-fanin-1m",
+    "case_count": 1,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "device_model": "Tesla V100-SXM2-16GB",
+    "requested_route": "packet",
+    "selected_backend": "stable",
+    "actual_implementation": "stable",
+    "structural_layout": "full_packet",
+    "activation_storage": "fp16",
+    "parameter_storage": "fp16",
+    "output_storage": "fp16",
+    "gradient_mode": "overwrite",
+    "input_case_bytes": 72000112,
+    "input_case_sha256": "8ebe353d13304cc60dccde5445effa68b7ee59095d9572b5905b83d1a715b0a0",
+    "input_shards": [
+      {
+        "bytes": 33554432,
+        "sha256": "7bcaf0bcd58774cb4f738bfebe72127ded7086ac202bc56c8cca3b3572d30a02"
+      },
+      {
+        "bytes": 33554432,
+        "sha256": "482253f2830fed4b1742b048f44bd5e8ab44053f5cd3c05b901fcfc14835f2e9"
+      },
+      {
+        "bytes": 4891248,
+        "sha256": "c9dfd797903e9283d9efff80fd5c364f5f232ef9475de167a83ec80fe0746b75"
+      }
+    ],
+    "output_result_bytes": 134,
+    "output_result_sha256": "69f133b626ea76dd5cab62f129e5a04a5618ead9c55c7c97b40aedf85f78d352",
+    "oracle_reproduction": {
+      "interpreter": "/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3",
+      "captured_workload_and_serializer": "recreated CFINT001 and all three ordered shards from the captured source; total bytes, full-stream SHA256, and each part SHA256 matched the durable report inventory",
+      "independent_float64_reference": "recreated the 134-byte CFOUT001 including output, five VJPs, and repeated VJP; its exact SHA256 matched the reported result digest",
+      "output_y": 100.0,
+      "dx_each_participant": 100.01659393310547,
+      "dalpha": 500000.0,
+      "dbias": 50.008296966552734,
+      "exact_result_wire_match": true
+    },
+    "contract_metrics": {
+      "names": [
+        "y",
+        "dx",
+        "dz",
+        "dalpha",
+        "dbias",
+        "dgamma",
+        "dx_repeat",
+        "dz_repeat",
+        "dalpha_repeat",
+        "dbias_repeat",
+        "dgamma_repeat"
+      ],
+      "all_error_to_frozen_allowance_ratios": 0.0
+    },
+    "scratch_observation": {
+      "reported_bytes": 72022062,
+      "limit_bytes": 134217728,
+      "method": "50ms sampled whole packet tree plus post-write evidence allowance",
+      "transient_peak_may_be_missed": true
+    },
+    "success_wire_cleanup": "Successful run's transient input/result wires were removed only after durable summary and digest inventory were written; independent CPU regeneration matched those digests."
+  },
+  "scheduler_receipt": {
+    "autobench_attempt_id": "de1778f5-b53b-4e12-8540-a98360ab5b5d",
+    "autobench_fingerprint": "0d03ff79e286f588fc262abdcc0fa02d3e32141dab985d52452297f6e3fa8d6c",
+    "scheduler_job_id": "b29f435f-5fd8-4e7a-af07-0c132e05a8e6",
+    "scheduler_attempt_id": "3a4ff8f9-4ff3-4e3e-9f57-704f03d4c1d1",
+    "result": "succeeded",
+    "exit_code": 0,
+    "cleanup_verified": true,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "unit_name": "device-scheduler-attempt-9bb6769abd3c91e17632611d204964ff.service",
+    "observed_cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/device-scheduler-attempt-9bb6769abd3c91e17632611d204964ff.service"
+  },
+  "limits": [
+    "This is one high-fan-in case in the packet-role partition, not qualification of all 12 auxiliary workloads or the strongest-direct role.",
+    "The packet route dispatched to the shared stable backend; this is not evidence for the packet-fast backend or a layout speedup.",
+    "The reported scratch value is sampled output-tree scratch, not a proven transient high-water mark or device-memory bound.",
+    "The successful wire files are intentionally absent after cleanup. Their exact input and result hashes were independently reproduced from the accepted immutable source and scalar oracle on CPU."
+  ]
+}

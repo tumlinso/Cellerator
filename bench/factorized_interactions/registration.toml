@@ -1,0 +1,74 @@
+[benchmark]
+name = "cellerator-factorized-interactions"
+revision = 13
+
+[data]
+# This is a copied, immutable Cellerator source closure staged beneath the
+# isolated nested Autobench workspace. No symlink escapes to the live checkout.
+paths = [
+  ".autobench/data/factorized-interactions/cellerator-factorized-interactions-source-v15.tar",
+  ".autobench/data/factorized-interactions/cellerator-factorized-interactions-source-v15-manifest.json",
+  ".autobench/data/factorized-interactions/build-from-cellerator-factorized-interactions-source-v15.py",
+]
+
+[build]
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/build-from-cellerator-factorized-interactions-source-v15.py",
+  "--archive", "{snapshot}/.autobench/data/factorized-interactions/cellerator-factorized-interactions-source-v15.tar",
+  "--manifest", "{snapshot}/.autobench/data/factorized-interactions/cellerator-factorized-interactions-source-v15-manifest.json",
+  "--build", "{build}",
+]
+expected_seconds = 540
+kill_seconds = 600
+resources = { cpu_cores = 2, host_memory_bytes = 8589934592 }
+
+[[packet]]
+name = "host-oracle"
+kind = "correctness"
+argv = [
+  "python3", "{build}/source/bench/factorized_interactions/run_cpu_suite.py",
+  "--source", "{build}/source",
+  "--build", "{build}",
+  "--output", "{output}/host-suite.json",
+]
+expected_seconds = 45
+kill_seconds = 120
+resources = { cpu_cores = 2, host_memory_bytes = 4294967296 }
+
+[[packet]]
+name = "cuda-full-vjp-correctness"
+kind = "correctness"
+depends_on = ["host-oracle"]
+argv = [
+  "python3", "{build}/source/bench/factorized_interactions/run_correctness_suite.py",
+  "--runner", "{build}/cmake/factorized_interactions_validator/cellerator_factorized_interaction_runner",
+  "--build-manifest", "{build}/factorized_interactions_build_manifest.json",
+  "--expected-uuid", "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+  "--artifact-dir", "{output}/cases", "--output", "{output}/suite.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "cuda-sanitizer"
+kind = "correctness"
+depends_on = ["cuda-full-vjp-correctness"]
+argv = [
+  "python3", "{build}/source/bench/factorized_interactions/run_sanitizer_suite.py",
+  "--runner", "{build}/cmake/factorized_interactions_validator/cellerator_factorized_interaction_runner",
+  "--build-manifest", "{build}/factorized_interactions_build_manifest.json",
+  "--expected-uuid", "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+  "--artifact-dir", "{output}/cases", "--output", "{output}/suite.json",
+]
+expected_seconds = 540
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-21131915-1488-23af-38dd-1743ae1f5cc8" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }

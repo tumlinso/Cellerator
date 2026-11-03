@@ -1,0 +1,59 @@
+{
+  "schema": "cgs.pause-resources.v1",
+  "captured_at_utc": "2026-11-03T10:20:14.649617+00:00",
+  "status": "paused at user-requested strategy checkpoint; study incomplete",
+  "budget": {
+    "total_gpu_seconds": 14400,
+    "settled_gpu_seconds": 2332.120188474655,
+    "remaining_gpu_seconds": 12067.879811525345,
+    "open_or_unknown_gpu_reservations": []
+  },
+  "parent_autobench": {
+    "project": "/home/tumlinson/Cellerator",
+    "paused": true
+  },
+  "study_lane_root": "bench/chromatin_geometry/.campaign-lanes-20261103",
+  "study_lanes": [
+    {
+      "lane": 0,
+      "active": false,
+      "paused": true
+    },
+    {
+      "lane": 1,
+      "active": false,
+      "paused": true
+    },
+    {
+      "lane": 2,
+      "active": false,
+      "paused": true
+    },
+    {
+      "lane": 3,
+      "active": false,
+      "paused": true
+    }
+  ],
+  "current_source_archive_sha256": "6aec4e10d969c602d418dcd45b50f8a6ba002b68d4e1bf11843e3df9fa1bf4b9",
+  "current_binary_sha256": "24040eb390dd5166806671b7999a68cb2d6f29f8a7ea42ad4f7e86bbd1bc584d",
+  "current_build_receipt_sha256": "d26d34867ad7b5618761e06cd1425e6b641eb556858c4ad55acd681edccdc08c",
+  "verified_correctness_jobs": [
+    "47628568-0a46-4b94-b250-7ab6c32b1b6a",
+    "83943d87-9fed-4173-9acb-40b17a7834d4"
+  ],
+  "failed_adapter_jobs": [
+    "a814b8c1-e857-4e57-9b5d-78c95ad4544f",
+    "132a7282-39f9-4a85-bd71-d0c978fffd2d",
+    "e9d6ed66-1cd4-460b-ba42-cc112ddcc51d"
+  ],
+  "unstarted_cancelled_job": "425cfed0-5aa4-496d-a301-55f130be6eb1",
+  "unstarted_cancelled_job_receipt": "bench/chromatin_geometry/runs/receipts/425cfed0-5aa4-496d-a301-55f130be6eb1.json",
+  "cpu_build_job": {
+    "id": "fd1dbdee-7686-4c27-837b-52b5a69a6c32",
+    "state": "succeeded",
+    "cleanup_verified": true
+  },
+  "measurement_plan": "planning/chromatin-geometry-study-2026-11-02/measurement-plan-resume-2026-11-03.json",
+  "limits": "No performance timings or sanitizer checks on the new binary. New masked-direct arm remains separate pending source qualification; historical packet 45bab455 remains unqualified."
+}

@@ -1,0 +1,263 @@
+{
+  "schema": "cellerator.factorized_interactions.workloads.v1",
+  "law": "sigmoid(bias + sum(gamma * context)) * alpha * ordered_product(participants)",
+  "axes": {
+    "x": ["occurrence", "channel", "cell"],
+    "z": ["context", "cell"],
+    "alpha": ["alpha_row", "channel"],
+    "y": ["target", "channel", "cell"]
+  },
+  "generator": {
+    "algorithm": "splitmix64-indexed-v1",
+    "seed_hex": "0x6a09e667f3bcc909",
+    "x_range": [-0.95, 0.95],
+    "z_range": [-1.0, 1.0],
+    "alpha_range": [-1.0, 1.0],
+    "bias_range": [-0.5, 0.5],
+    "gamma_range": [-0.5, 0.5],
+    "dy_range": [-1.0, 1.0]
+  },
+  "required_complete_cost_phases": [
+    "host_preparation",
+    "conversion_and_parameter_refresh",
+    "forward",
+    "backward",
+    "output_and_gradient_reductions",
+    "persistent_and_scratch_memory"
+  ],
+  "cases": [
+    {
+      "id": "packet_a4_m32_u16",
+      "cells": 64,
+      "channels": 64,
+      "mechanisms": 32,
+      "arity": 4,
+      "unique_participants": 16,
+      "context_terms": 4,
+      "unique_contexts": 8,
+      "output_fanin": 1,
+      "tied_parameters": false,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "packet_a4_m32_u32",
+      "cells": 64,
+      "channels": 64,
+      "mechanisms": 32,
+      "arity": 4,
+      "unique_participants": 32,
+      "context_terms": 4,
+      "unique_contexts": 8,
+      "output_fanin": 1,
+      "tied_parameters": false,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "packet_a4_m32_u64",
+      "cells": 64,
+      "channels": 64,
+      "mechanisms": 32,
+      "arity": 4,
+      "unique_participants": 64,
+      "context_terms": 4,
+      "unique_contexts": 8,
+      "output_fanin": 1,
+      "tied_parameters": false,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "packet_a4_m32_u96",
+      "cells": 64,
+      "channels": 64,
+      "mechanisms": 32,
+      "arity": 4,
+      "unique_participants": 96,
+      "context_terms": 4,
+      "unique_contexts": 8,
+      "output_fanin": 1,
+      "tied_parameters": false,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "packet_a4_m32_u128",
+      "cells": 64,
+      "channels": 64,
+      "mechanisms": 32,
+      "arity": 4,
+      "unique_participants": 128,
+      "context_terms": 4,
+      "unique_contexts": 8,
+      "output_fanin": 1,
+      "tied_parameters": false,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "packet_a4_m32_u64_fanin8",
+      "cells": 64,
+      "channels": 64,
+      "mechanisms": 32,
+      "arity": 4,
+      "unique_participants": 64,
+      "context_terms": 4,
+      "unique_contexts": 8,
+      "output_fanin": 8,
+      "tied_parameters": false,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "a2_m64_u32_fanin4",
+      "cells": 128,
+      "channels": 32,
+      "mechanisms": 64,
+      "arity": 2,
+      "unique_participants": 32,
+      "context_terms": 2,
+      "unique_contexts": 8,
+      "output_fanin": 4,
+      "tied_parameters": false,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "a3_m48_u24_fanin4",
+      "cells": 128,
+      "channels": 64,
+      "mechanisms": 48,
+      "arity": 3,
+      "unique_participants": 24,
+      "context_terms": 8,
+      "unique_contexts": 16,
+      "output_fanin": 4,
+      "tied_parameters": false,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "a4_m32_u64_wide128",
+      "cells": 64,
+      "channels": 128,
+      "mechanisms": 32,
+      "arity": 4,
+      "unique_participants": 64,
+      "context_terms": 8,
+      "unique_contexts": 16,
+      "output_fanin": 4,
+      "tied_parameters": false,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "a4_m256_u32_fanin64_tied",
+      "cells": 128,
+      "channels": 64,
+      "mechanisms": 256,
+      "arity": 4,
+      "unique_participants": 32,
+      "context_terms": 8,
+      "unique_contexts": 16,
+      "output_fanin": 64,
+      "tied_parameters": true,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "a4_m32_u32_k1_sharedcontext",
+      "cells": 128,
+      "channels": 64,
+      "mechanisms": 32,
+      "arity": 4,
+      "unique_participants": 32,
+      "context_terms": 1,
+      "unique_contexts": 1,
+      "output_fanin": 4,
+      "tied_parameters": true,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "a4_m32_u32_k16_contextreuse",
+      "cells": 128,
+      "channels": 64,
+      "mechanisms": 32,
+      "arity": 4,
+      "unique_participants": 32,
+      "context_terms": 16,
+      "unique_contexts": 16,
+      "output_fanin": 4,
+      "tied_parameters": true,
+      "update_regime": "reuse_structure_refresh_values"
+    },
+    {
+      "id": "a4_m32_u32_cells512",
+      "cells": 512,
+      "channels": 64,
+      "mechanisms": 32,
+      "arity": 4,
+      "unique_participants": 32,
+      "context_terms": 4,
+      "unique_contexts": 8,
+      "output_fanin": 4,
+      "tied_parameters": true,
+      "update_regime": "reuse_structure_refresh_values"
+    }
+  ],
+  "correctness_cases": [
+    {
+      "id": "correctness_ordered_tied_zero",
+      "kind": "fixed_literal",
+      "checks": ["arity_2_3_4", "ordered_and_repeated_roles", "repeated_context_terms",
+        "tied_parameter_ids", "overlapping_outputs", "zero_and_negative_values",
+        "zero_safe_product_vjp"]
+    },
+    {
+      "id": "correctness_saturated_gates",
+      "kind": "fixed_literal",
+      "checks": ["positive_and_negative_saturated_sigmoid", "finite_vjp"]
+    },
+    {
+      "id": "correctness_ordered_role_context_variants",
+      "kind": "fixed_literal",
+      "checks": ["same_role_multiset_different_order", "same_context_multiset_different_order"]
+    },
+    {
+      "id": "correctness_fma_product_residual_cancellation",
+      "kind": "fixed_literal",
+      "checks": ["8192_ordered_terms", "fp32_product_residual", "rounded_products_cancel"]
+    },
+    {
+      "id": "correctness_context_cancellation_middle",
+      "kind": "fixed_literal",
+      "checks": ["8193_ordered_context_terms", "long_cancellation", "small_term_in_middle"]
+    },
+    {
+      "id": "correctness_context_cancellation_tail",
+      "kind": "fixed_literal",
+      "checks": ["8193_ordered_context_terms", "long_cancellation", "small_term_at_tail"]
+    },
+    {
+      "id": "correctness_high_fanin_100k",
+      "kind": "fixed_literal",
+      "checks": ["100000_mechanisms", "single_output_contention", "tied_fp16_alpha", "shared_input_vjp"]
+    },
+    {
+      "id": "correctness_packet_high_fanin_fp32_100k",
+      "kind": "fixed_literal",
+      "checks": ["100000_mechanisms", "single_output_contention", "tied_fp32_alpha", "all_five_vjps"]
+    },
+    {
+      "id": "correctness_packet_high_fanin_1m",
+      "kind": "fixed_literal",
+      "checks": ["1000000_mechanisms", "single_output_contention", "tied_fp16_alpha", "all_five_vjps"]
+    },
+    {
+      "id": "correctness_empty_mechanisms",
+      "kind": "fixed_literal",
+      "checks": ["empty_mechanism_set", "zero_input_and_context_extents"]
+    },
+    {
+      "id": "correctness_empty_cells",
+      "kind": "fixed_literal",
+      "checks": ["zero_cell_extent", "nonempty_parameter_gradient_outputs"]
+    },
+    {
+      "id": "correctness_empty_channels",
+      "kind": "fixed_literal",
+      "checks": ["zero_channel_extent", "zero_gate_adjoint"]
+    }
+  ]
+}

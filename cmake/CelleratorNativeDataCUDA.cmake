@@ -11,8 +11,7 @@ find_package(CUDAToolkit REQUIRED)
 
 set(_cellerator_native_data_cuda_export CelleratorNativeDataCUDATargets)
 if(NOT TARGET cellerator_memory_cuda)
-    cellerator_add_native_data_memory_cuda_owner(
-        "${_cellerator_native_data_cuda_export}")
+    cellerator_add_native_data_memory_cuda_owner()
 endif()
 
 add_library(cellerator_state_codes_cuda STATIC
@@ -71,6 +70,47 @@ target_link_libraries(cellerator_dependency_execution_cuda PUBLIC
 target_compile_options(cellerator_dependency_execution_cuda PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--fmad=false>)
 
+# A separately selectable native relation executor. This target owns the CUDA
+# realization while the general structural packer remains in Cellerator::layout.
+# It deliberately has no Torch dependency.
+add_library(cellerator_factorized_interaction_cuda STATIC
+    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/factorized_interaction.cu"
+    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/factorized_interaction_direct.cu"
+    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/factorized_interaction_stable.cu"
+    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/prepared_factorized_interaction.cu")
+add_library(Cellerator::factorized_interaction_cuda
+    ALIAS cellerator_factorized_interaction_cuda)
+set_target_properties(cellerator_factorized_interaction_cuda PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    EXPORT_NAME factorized_interaction_cuda
+    CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+    CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
+target_compile_features(cellerator_factorized_interaction_cuda PUBLIC cxx_std_17)
+target_include_directories(cellerator_factorized_interaction_cuda PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_link_libraries(cellerator_factorized_interaction_cuda PUBLIC
+    Cellerator::layout Cellerator::memory_cuda CUDA::cudart)
+
+# The relation executor is independently selectable.  Its own export contains
+# only the selected target; its canonical layout and memory dependencies are
+# imported from their shared narrow exports.
+install(TARGETS cellerator_factorized_interaction_cuda
+    EXPORT CelleratorFactorizedInteractionTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    COMPONENT FactorizedInteractionCUDA)
+install(EXPORT CelleratorFactorizedInteractionTargets NAMESPACE Cellerator::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator
+    COMPONENT FactorizedInteractionCUDA)
+install(FILES
+        "${PROJECT_SOURCE_DIR}/include/Cellerator/layout/factorized_interaction.hh"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/layout"
+        COMPONENT FactorizedInteractionCUDA)
+install(FILES
+        "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/cuda/factorized_interaction.hh"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/modeling/cuda"
+        COMPONENT FactorizedInteractionCUDA)
+
 add_library(cellerator_tensor_cuda INTERFACE)
 add_library(Cellerator::tensor_cuda ALIAS cellerator_tensor_cuda)
 set_target_properties(cellerator_tensor_cuda PROPERTIES EXPORT_NAME tensor_cuda)
@@ -120,6 +160,9 @@ foreach(_header_subtree IN ITEMS
         COMPONENT NativeDataCUDA)
 endforeach()
 foreach(_header IN ITEMS
+        layout/factorized_interaction.hh
+        layout/factorized_interaction_pattern.hh
+        modeling/cuda/factorized_interaction.hh
         ops/mechanism/packed_gated_product.cuh
         ops/quantized/api.cuh
         ops/quantized/dispatch.cuh
@@ -159,10 +202,47 @@ function(cellerator_append_native_data_cuda_package_config)
         file(APPEND "${CELLERATOR_HOST_CONFIG}"
             "include(CMakeFindDependencyMacro)\n"
             "find_dependency(CUDAToolkit)\n"
+            "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFactorizedInteractionTargets.cmake\")\n"
             "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorNativeDataCUDATargets.cmake\")\n"
-            "set(Cellerator_native_data_cuda_FOUND TRUE)\n")
+            "set(Cellerator_native_data_cuda_FOUND TRUE)\n"
+            "set(Cellerator_factorized_interaction_cuda_FOUND TRUE)\n")
     endif()
 endfunction()
+
+option(CELLERATOR_BUILD_FACTORIZED_INTERACTION_EXAMPLE
+    "Build the native C++ factorized interaction training example" OFF)
+if(CELLERATOR_BUILD_FACTORIZED_INTERACTION_EXAMPLE)
+    add_executable(cellerator_factorized_interaction_training
+        "${PROJECT_SOURCE_DIR}/examples/native_cuda/factorized_interaction_training.cu")
+    target_link_libraries(cellerator_factorized_interaction_training PRIVATE
+        Cellerator::factorized_interaction_cuda)
+    set_target_properties(cellerator_factorized_interaction_training PROPERTIES
+        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+        CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
+endif()
+
+option(CELLERATOR_BUILD_FACTORIZED_INTERACTION_VALIDATOR
+    "Build the independent native CUDA protocol runner" OFF)
+if(CELLERATOR_BUILD_FACTORIZED_INTERACTION_VALIDATOR)
+    add_subdirectory(
+        "${PROJECT_SOURCE_DIR}/bench/factorized_interactions"
+        "${CMAKE_CURRENT_BINARY_DIR}/factorized_interactions_validator")
+endif()
+
+if(CELLERATOR_BUILD_FACTORIZED_INTERACTION_TESTS)
+    add_executable(cellerator_factorized_interaction_cuda_contract_test
+        "${PROJECT_SOURCE_DIR}/tests/factorized_interactions/host_contract_test.cc")
+    target_link_libraries(cellerator_factorized_interaction_cuda_contract_test PRIVATE
+        Cellerator::factorized_interaction_cuda)
+    target_compile_features(cellerator_factorized_interaction_cuda_contract_test PRIVATE cxx_std_17)
+    target_link_options(cellerator_factorized_interaction_cuda_contract_test PRIVATE
+        "LINKER:--wrap=cudaGetDevice"
+        "LINKER:--wrap=cudaMemsetAsync")
+    add_test(NAME factorized_interaction_cuda_host_contract
+        COMMAND cellerator_factorized_interaction_cuda_contract_test)
+    set_tests_properties(factorized_interaction_cuda_host_contract PROPERTIES
+        LABELS "factorized_interaction;host_only;cuda_compile" TIMEOUT 60)
+endif()
 
 # These executables compile device contracts for validation but are not CTest
 # cases: running them requires a Scheduler-admitted GPU lease.

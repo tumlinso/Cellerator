@@ -2,6 +2,29 @@
 title: "Current implementation"
 ---
 
+## Consolidation checkpoint, 2026-11-03
+
+This checkpoint brings the native-data branch and the pending implementation,
+tests, documentation and study records together on `main`. Consolidation
+preserves partial work; it does not establish completion of the architecture
+or extend the qualification recorded below.
+
+- Native cellular-geometry data and execution foundations are described in the
+  [native data guide](native_data.qmd) and their
+  [implementation record](../planning/native-data-geometry-2026-11-01/IMPLEMENTATION.md).
+- The experimental factorized joint operation has a bounded correctness and
+  usability milestone. Its [qualification record](../planning/interaction-layout-proposal-2026-11-02/VALIDATION.md)
+  and [pause checkpoint](../planning/interaction-layout-proposal-2026-11-02/PAUSED.md)
+  distinguish delivered behavior from unfinished performance work.
+- The chromatin execution study remains partial. Its
+  [study guide](../bench/chromatin_geometry/README.md) and
+  [latest pause record](../planning/chromatin-geometry-study-2026-11-02/PAUSED.md)
+  retain the failed qualification packet and the limits on accepted results.
+
+Private Todo recovery databases and ignored build, dataset and measurement
+payloads remain local. Their preservation does not make them package source
+or authorize restarting a paused study.
+
 ## Package boundary
 
 Cellerator is an early biological machine-learning framework. Models can use
@@ -65,6 +88,43 @@ for actual CPU, installed consumer, module, and V100 checks and their limits.
 The GPU records pin captured executables and source identities; later host-only
 group-checkpoint, query lifetime, and install/config changes do not become GPU-qualified merely
 by appearing in the same checkout. No speedup or biological validity follows.
+
+## Factorized joint CUDA component, 2026-11-02
+
+The experimental [factorized-interaction component](factorized_interactions.qmd)
+provides a Torch-independent C++/CUDA sigmoid-gated joint-product law with two,
+three or four ordered participant slots, repeated roles, explicit numerical
+conditioning, independently shared parameter banks and overlapping outputs.
+Deterministic host preparation emits reusable packet dictionaries and
+forward/reverse mappings. Activation, parameter and output storage independently
+choose FP16 or FP32; native arithmetic and all five VJPs use FP32. Large
+reductions select a shared compensated backend, reported separately from the
+requested packet or direct route. A checked `ExplicitPattern` bridge preserves
+logical identity separately from numerical occurrence positions.
+
+The native install component and external C++ consumer compile and link without
+Torch. The C++ example performs explicit parameter updates; the optional prepared
+Torch adapter reuses structural uploads and provides first-order autograd with
+saved-tensor version checks and stream-lifetime handling.
+
+An admitted V100-SXM2 run passed 29 forward/VJP comparisons, including repeated
+and zero participants, tied fields, context gradients, output contention,
+cancellation, saturation, empty cases, repeated VJPs and 100k/1M fan-in. A
+subsequent native-only run passed all 32 combinations of eight storage-type
+triples and four execution/control modes, including repeated VJPs. The initial
+run also passed 200 native C++ updates and prepared Torch gradient, update,
+mutation and cross-stream checks. The
+[qualification record](../planning/interaction-layout-proposal-2026-11-02/VALIDATION.md)
+binds the exact source, binaries, UUID and receipt. Sanitizer and performance
+qualification remain separate: the four strict device tools subsequently pass
+56 cases with retained logs and finished receipts, and both twelve-case
+adversarial partitions pass on the native-only binaries. Performance selection
+is paused with no accepted timing results. The bounded native delivery milestone
+has an independent review; the current API still defaults to experimental packet
+execution with an explicit direct option. No measured winner has been selected.
+The [pause checkpoint](../planning/interaction-layout-proposal-2026-11-02/PAUSED.md)
+records remaining performance work. No packet speedup or biological validity
+follows from correctness checks alone.
 
 ## Native cellular-geometry data, 2026-11-02
 

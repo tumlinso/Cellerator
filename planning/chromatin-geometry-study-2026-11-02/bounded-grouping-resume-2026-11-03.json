@@ -1,0 +1,38 @@
+{
+  "schema": "cgs.bounded-grouping-resume.v1",
+  "recorded_at_utc": "2026-11-03T15:07:50.410548+00:00",
+  "authorization": "User explicitly requested fixing the two review issues, qualification and timing, keeping the 10 GPU-minute/three-job limits, then pausing.",
+  "prior_plan": "bounded-grouping-probe-v1.json",
+  "prior_cpu_checkpoint": "grouping-probe-cpu-checkpoint-2026-11-03.json",
+  "prior_cpu_timebox": "Satisfied by the recorded preparation pause; this explicit resumption authorizes the requested continuation. No new 20-minute cutoff was requested.",
+  "same_budget": {
+    "local_gpu_seconds_limit": 600,
+    "max_gpu_jobs": 3,
+    "previous_local_gpu_jobs": 0,
+    "previous_local_gpu_seconds": 0,
+    "original_study_seconds_limit": 14400,
+    "original_charged_seconds": 2332.120188474655
+  },
+  "measurement_fixes": {
+    "orders": [
+      "AB",
+      "BA",
+      "AB",
+      "BA",
+      "AB",
+      "BA"
+    ],
+    "A": "masked-direct-two-tile",
+    "B": "cohort-direct-two-tile",
+    "ratio_per_pair": "cohort resident median / masked resident median; each arm median uses three measured sequences",
+    "point": "ordinary median of six paired ratios",
+    "interval": "percentile bootstrap of paired-ratio median, 10000 draws of six paired rounds, seed20261102, linear percentile interpolation",
+    "decision": "point < 0.95 minus1e-12 and95percent ratio interval upper <1; separate-arm medians diagnostic only"
+  },
+  "scope": "Same supplied-product two-horizon probe; no new kernels, fixtures, sweeps, profiles or optimization.",
+  "stop": "Failed qualification, contaminated timing, exhausted cap, or completion; retain evidence, verify cleanup and pause.",
+  "source_sha256": {
+    "bench/chromatin_geometry/scripts/probe_packet.py": "918373724e005f73b33409acd8195e468e0d77ba423dbbd1a217c2f0bec591ee",
+    "bench/chromatin_geometry/tests/test_probe_packet.py": "fed0c85c783af4e2b95ba9d4f5f5774dd4534200996e519110f17e401c1a27d7"
+  }
+}

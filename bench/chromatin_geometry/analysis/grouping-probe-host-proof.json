@@ -1,0 +1,70 @@
+{
+  "schema": "cgs.grouping-probe-host-proof.v1",
+  "timestamp_utc": "2026-11-03T14:46:35.914721+00:00",
+  "status": "pass",
+  "scope": "host-only source/build/fixture proof; no GPU qualification or timing",
+  "original_contract": "planning/chromatin-geometry-study-2026-11-02/contract-freeze-v3.json",
+  "original_contract_sha256": "4033eea4a8168f5e898212873252c8782943d12f5325e5a31ca45487f9751f06",
+  "recomputed_verification": "bench/chromatin_geometry/analysis/grouping-probe-recomputed-original-freeze-verification.json",
+  "recomputed_verification_sha256": "6266ad110748e356643ca97cb37192897271c1870c50ba4ee3104213b067e1a1",
+  "original_workloads_compared": 10,
+  "all_original_workloads_equal": true,
+  "original_workload_ids": [
+    "dag7-legacy-producer-only-sparse-low-frozen-r1-change0",
+    "dag7-coherent-producer-only-dense-high-update-r16-change1",
+    "dag7-diverse-producer-only-sparse-high-update-r256-change10",
+    "dag7-legacy-complete-consumer-sparse-low-frozen-r1-change0",
+    "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+    "dag2304-legacy-producer-only-sparse-high-frozen-r256-change10",
+    "dag2304-diverse-producer-only-dense-low-update-r1-change100",
+    "dag2304-coherent-producer-only-dense-low-frozen-r16-change1",
+    "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+    "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100"
+  ],
+  "original_numerical_bounds_equal": true,
+  "probe_content_sha256": "c735b9f73b23be0e91554a1b17932b6150846d0b4bd750246068cda3683e8f03",
+  "probe_cases": [
+    {
+      "id": "probe-grouping-coherent-hard-frozen-r1-change0",
+      "workload_sha256": "3547f22a38de21cd8c5fe2b762ec3d4d352fd3a3d7172314fd7d305cdeb711c6",
+      "reuse_horizon": 1
+    },
+    {
+      "id": "probe-grouping-coherent-hard-frozen-r16-change0",
+      "workload_sha256": "2d5de22ae75633558f820c9366e0cdc40a0cc25bf48619093b1da63338733c4f",
+      "reuse_horizon": 16
+    }
+  ],
+  "active_cell_conditions": 12160,
+  "total_cell_conditions": 16384,
+  "tile_cohorts": 128,
+  "neighborhood_tiles": 64,
+  "source_sha256": {
+    "bench/chromatin_geometry/grouping_probe.hh": "aee59dac6aed3cac7afe83bbe6025259ac2d9584e5786d9f56fddbe152da350b",
+    "bench/chromatin_geometry/campaign_runner.cu": "4f92d8496d442f94280f46b6220ebd4941b65aa9b2dd27c537865aff6f75ac81",
+    "bench/chromatin_geometry/backends/consumer_tests.cu": "5cdfd817291ac00b68af71b2b5f566455e55300899a2216b19c005399de31d26",
+    "bench/chromatin_geometry/backends/consumer_fixture.hh": "9841d2f03f27dbe9854d0e8509fd3a1ae6aba37d7d7c0e6d9725b647335cd6bb",
+    "bench/chromatin_geometry/grouping_probe_qualification_main.cc": "c064bc7efdecff4b3f7cc327fbf0bdf03ee6e55322b344b489d74065955faab9",
+    "bench/chromatin_geometry/CMakeLists.txt": "fa6c02e080dfb755d5bfcda326766df116977303d067b2c053222d2aba5bf474",
+    "bench/chromatin_geometry/workloads.cc": "79aedb356e240549d1ced02c92dfc5d493c9529aa30cdcf3e2b3a9bf524e3c24",
+    "bench/chromatin_geometry/workloads.hh": "2613f372d3fae2b881ab3e1f739a394d02255d86d8c39b409f79978f7493d2dd",
+    "bench/chromatin_geometry/reference/reference.cc": "2be62bc7358a8f334d872d6c469f66f658a17b8955436e0d53222b21dcb0ec8e",
+    "bench/chromatin_geometry/reference/reference.hh": "57f7b6c5440d09612f77205a736cc6dafc261181dd0a7f68135583817f4e04d3"
+  },
+  "host_build": {
+    "cuda_compiler": "NVIDIA nvcc 12.9.86",
+    "host_compiler": "g++ 13.3.0",
+    "architecture": "sm_70",
+    "targets": [
+      "cgs_study",
+      "cgs_campaign_layout_test",
+      "cgs_grouping_probe_qualification"
+    ],
+    "status": "pass"
+  },
+  "host_test_command": "ctest --test-dir /tmp/cgs-grouping-probe-build -R ^cgs_campaign_layout_test$ -V",
+  "host_test_stdout": "Internal ctest changing into directory: /tmp/cgs-grouping-probe-build\nUpdateCTestConfiguration  from :/tmp/cgs-grouping-probe-build/DartConfiguration.tcl\nParse Config file:/tmp/cgs-grouping-probe-build/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/tmp/cgs-grouping-probe-build/DartConfiguration.tcl\nParse Config file:/tmp/cgs-grouping-probe-build/DartConfiguration.tcl\nTest project /tmp/cgs-grouping-probe-build\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 5\n    Start 5: cgs_campaign_layout_test\n\n5: Test command: /tmp/cgs-grouping-probe-build/cgs_campaign_layout_test\n5: Working Directory: /tmp/cgs-grouping-probe-build\n5: Test timeout computed to be: 1500\n5: grouping probe host proof: active=12160/16384 tile_cohorts=128 neighborhood_tiles=64 content_sha256=c735b9f73b23be0e91554a1b17932b6150846d0b4bd750246068cda3683e8f03\n5: grouping probe workload digests: r1=3547f22a38de21cd8c5fe2b762ec3d4d352fd3a3d7172314fd7d305cdeb711c6 r16=2d5de22ae75633558f820c9366e0cdc40a0cc25bf48619093b1da63338733c4f\n5: campaign layout checks passed\n1/1 Test #5: cgs_campaign_layout_test .........   Passed    1.46 sec\n\nThe following tests passed:\n\tcgs_campaign_layout_test\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   1.46 sec\n",
+  "regeneration_command": "g++ -std=c++17 -O1 -Ibench/chromatin_geometry planning/chromatin-geometry-study-2026-11-02/freeze-contract.cc bench/chromatin_geometry/workloads.cc -lcrypto; run exporter with --output new-path",
+  "original_comparison": "Parsed JSON workload records and numerical-bound records match v3 exactly. Recomputed export is verification evidence, not a new authority.",
+  "gpu_qualification": "not run; Scheduler packet owner only"
+}

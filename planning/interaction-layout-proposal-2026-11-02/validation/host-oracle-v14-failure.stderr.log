@@ -1,0 +1,48 @@
+test_request_round_trip_preserves_axes_terms_and_role_order (test_case_io.FactorizedInteractionWireTests.test_request_round_trip_preserves_axes_terms_and_role_order) ... ok
+test_request_round_trip_preserves_long_context_order (test_case_io.FactorizedInteractionWireTests.test_request_round_trip_preserves_long_context_order) ... ok
+test_request_round_trip_preserves_product_residual_term_order (test_case_io.FactorizedInteractionWireTests.test_request_round_trip_preserves_product_residual_term_order) ... ok
+test_result_parser_preserves_second_vjp_set (test_case_io.FactorizedInteractionWireTests.test_result_parser_preserves_second_vjp_set) ... ok
+test_result_parser_rejects_trailing_bytes (test_case_io.FactorizedInteractionWireTests.test_result_parser_rejects_trailing_bytes) ... ok
+test_result_round_trip_has_fp32_gradients_and_fp16_output (test_case_io.FactorizedInteractionWireTests.test_result_round_trip_has_fp32_gradients_and_fp16_output) ... ok
+test_stable_ids_are_nonzero_and_logical_indices_stay_zero_based (test_prepared_torch_records.PreparedTorchRecordTests.test_stable_ids_are_nonzero_and_logical_indices_stay_zero_based) ... ok
+test_all_vjps_match_centered_differences (test_reference.FactorizedInteractionReferenceTests.test_all_vjps_match_centered_differences) ... ok
+test_channel_gate_adjoint_reduces_all_channels_before_sigmoid (test_reference.FactorizedInteractionReferenceTests.test_channel_gate_adjoint_reduces_all_channels_before_sigmoid) ... ok
+test_empty_mechanisms_and_empty_context_terms (test_reference.FactorizedInteractionReferenceTests.test_empty_mechanisms_and_empty_context_terms) ... ok
+test_frozen_fp32_and_fp16_acceptance_bounds (test_reference.FactorizedInteractionReferenceTests.test_frozen_fp32_and_fp16_acceptance_bounds) ... ok
+test_invalid_numerical_and_structural_inputs_fail_clearly (test_reference.FactorizedInteractionReferenceTests.test_invalid_numerical_and_structural_inputs_fail_clearly) ... ok
+test_stable_gate_reference_covers_saturated_range (test_reference.FactorizedInteractionReferenceTests.test_stable_gate_reference_covers_saturated_range) ... ok
+test_storage_quantization_is_applied_before_reference_arithmetic (test_reference.FactorizedInteractionReferenceTests.test_storage_quantization_is_applied_before_reference_arithmetic) ... ok
+test_tied_parameter_ids_accumulate_across_mechanisms (test_reference.FactorizedInteractionReferenceTests.test_tied_parameter_ids_accumulate_across_mechanisms) ... ok
+test_zero_safe_product_derivative_and_repeated_roles (test_reference.FactorizedInteractionReferenceTests.test_zero_safe_product_derivative_and_repeated_roles) ... ok
+test_full_million_case_under_worker_file_limit (test_sharded_transport.ShardedTransportTests.test_full_million_case_under_worker_file_limit) ... ok
+test_reconstructs_identical_wire_across_headers_roles_and_terms (test_sharded_transport.ShardedTransportTests.test_reconstructs_identical_wire_across_headers_roles_and_terms) ... ok
+test_rejects_corrupted_reordered_and_missing_shards (test_sharded_transport.ShardedTransportTests.test_rejects_corrupted_reordered_and_missing_shards) ... ok
+test_native_runner_invocation_fails_closed_without_scheduler_job (test_validator_smoke.NativeValidatorProtocolSmokeTests.test_native_runner_invocation_fails_closed_without_scheduler_job) ... ok
+test_wrapper_serializes_invokes_and_checks_oracle_wire_stub (test_validator_smoke.NativeValidatorProtocolSmokeTests.test_wrapper_serializes_invokes_and_checks_oracle_wire_stub) ... ERROR
+test_100k_packet_fp32_parameter_high_fanin_reference_value (test_workloads.FixedWorkloadCorpusTests.test_100k_packet_fp32_parameter_high_fanin_reference_value) ... ok
+test_100k_tied_fp16_high_fanin_reference_value (test_workloads.FixedWorkloadCorpusTests.test_100k_tied_fp16_high_fanin_reference_value) ... ok
+test_each_case_has_exact_participant_cardinality_and_fanin (test_workloads.FixedWorkloadCorpusTests.test_each_case_has_exact_participant_cardinality_and_fanin) ... ok
+test_fma_product_residual_fixture_preserves_exact_fp32_adversary (test_workloads.FixedWorkloadCorpusTests.test_fma_product_residual_fixture_preserves_exact_fp32_adversary) ... ok
+test_fp32_alternative_preserves_same_structure (test_workloads.FixedWorkloadCorpusTests.test_fp32_alternative_preserves_same_structure) ... ok
+test_generator_is_stable_and_values_respect_contract (test_workloads.FixedWorkloadCorpusTests.test_generator_is_stable_and_values_respect_contract) ... ok
+test_literal_correctness_fixtures_cover_declared_adversaries (test_workloads.FixedWorkloadCorpusTests.test_literal_correctness_fixtures_cover_declared_adversaries) ... ok
+test_long_context_cancellation_and_ordered_role_reduction_reference (test_workloads.FixedWorkloadCorpusTests.test_long_context_cancellation_and_ordered_role_reduction_reference) ... ok
+test_packet_million_mechanism_fixture_is_exactly_sized (test_workloads.FixedWorkloadCorpusTests.test_packet_million_mechanism_fixture_is_exactly_sized) ... ok
+test_unique_names_and_supported_arities (test_workloads.FixedWorkloadCorpusTests.test_unique_names_and_supported_arities) ... ok
+test_vector_generator_matches_scalar_splitmix_definition (test_workloads.FixedWorkloadCorpusTests.test_vector_generator_matches_scalar_splitmix_definition) ... ok
+
+======================================================================
+ERROR: test_wrapper_serializes_invokes_and_checks_oracle_wire_stub (test_validator_smoke.NativeValidatorProtocolSmokeTests.test_wrapper_serializes_invokes_and_checks_oracle_wire_stub)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/builds/4c5ab6f5233dc5d24b563c35349a132d8248d6531c4aba68b82309804b91c199/source/tests/factorized_interactions/test_validator_smoke.py", line 32, in test_wrapper_serializes_invokes_and_checks_oracle_wire_stub
+    result = subprocess.run(command + ["--artifact-dir", directory],
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3', '/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/builds/4c5ab6f5233dc5d24b563c35349a132d8248d6531c4aba68b82309804b91c199/source/bench/factorized_interactions/validate_runner.py', '--workload', 'correctness_ordered_tied_zero', '--runner', '/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3 /home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/builds/4c5ab6f5233dc5d24b563c35349a132d8248d6531c4aba68b82309804b91c199/source/tests/factorized_interactions/oracle_wire_stub.py', '--route', 'direct', '--activation-dtype', 'fp16', '--parameter-dtype', 'fp32', '--output-dtype', 'fp16', '--gradient-mode', 'accumulate', '--repeat-vjp', '--allow-oracle-stub', '--artifact-dir', '/home/tumlinson/Cellerator/planning/interaction-layout-proposal-2026-11-02/measurement/.autobench/scratch/17518882-014f-42d1-9f2f-2b9ba95cee11/scratch/temp/tmpvd82h4gs']' returned non-zero exit status 1.
+
+----------------------------------------------------------------------
+Ran 32 tests in 8.644s
+
+FAILED (errors=1)

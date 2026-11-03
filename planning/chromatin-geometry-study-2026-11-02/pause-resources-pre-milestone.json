@@ -1,0 +1,98 @@
+{
+  "schema": "cgs.pause-resources.v1",
+  "captured_at_utc": "2026-11-02T22:29:00.891368+00:00",
+  "status": "paused; no new work submitted",
+  "budget": {
+    "total_gpu_seconds": 14400,
+    "settled_gpu_seconds": 1735.0702407360077,
+    "remaining_gpu_seconds": 12664.929759263992,
+    "open_or_unknown_gpu_reservations": []
+  },
+  "parent_autobench": {
+    "project": "/home/tumlinson/Cellerator",
+    "paused": true
+  },
+  "study_lanes": [
+    {
+      "lane": 0,
+      "active": false,
+      "paused": true,
+      "staged_unsubmitted_sanitizer": "memcheck",
+      "backend": "cohort-direct-two-tile",
+      "cpu_staging_job": "7f8e5c72-8126-46a0-bf64-47cb01c5f397",
+      "cpu_worker_status": "succeeded",
+      "scheduler_state": "succeeded",
+      "cleanup_verified": true,
+      "cpu_receipt": "bench/chromatin_geometry/runs/receipts/7f8e5c72-8126-46a0-bf64-47cb01c5f397.json",
+      "registration": "bench/chromatin_geometry/.campaign-lanes/0/registration.toml",
+      "adapter_sha256": "42ac54160093d6daf3a370f6230e804abc85b377cf2c89b908d2a143b68fcbb1"
+    },
+    {
+      "lane": 1,
+      "active": false,
+      "paused": true,
+      "staged_unsubmitted_sanitizer": "racecheck",
+      "backend": "cohort-direct-two-tile",
+      "cpu_staging_job": "d6a83294-ebac-4cbf-97fa-1f00fc503250",
+      "cpu_worker_status": "succeeded",
+      "scheduler_state": "succeeded",
+      "cleanup_verified": true,
+      "cpu_receipt": "bench/chromatin_geometry/runs/receipts/d6a83294-ebac-4cbf-97fa-1f00fc503250.json",
+      "registration": "bench/chromatin_geometry/.campaign-lanes/1/registration.toml",
+      "adapter_sha256": "42ac54160093d6daf3a370f6230e804abc85b377cf2c89b908d2a143b68fcbb1"
+    },
+    {
+      "lane": 2,
+      "active": false,
+      "paused": true,
+      "staged_unsubmitted_sanitizer": "initcheck",
+      "backend": "cohort-direct-two-tile",
+      "cpu_staging_job": "36979702-0e85-4394-8440-8599aa3f8edb",
+      "cpu_worker_status": "succeeded",
+      "scheduler_state": "succeeded",
+      "cleanup_verified": true,
+      "cpu_receipt": "bench/chromatin_geometry/runs/receipts/36979702-0e85-4394-8440-8599aa3f8edb.json",
+      "registration": "bench/chromatin_geometry/.campaign-lanes/2/registration.toml",
+      "adapter_sha256": "42ac54160093d6daf3a370f6230e804abc85b377cf2c89b908d2a143b68fcbb1"
+    },
+    {
+      "lane": 3,
+      "active": false,
+      "paused": true,
+      "staged_unsubmitted_sanitizer": "synccheck",
+      "backend": "cohort-direct-two-tile",
+      "cpu_staging_job": "b9cca3f9-3912-45a7-b1a5-6b0bcfe5b2c7",
+      "cpu_worker_status": "succeeded",
+      "scheduler_state": "succeeded",
+      "cleanup_verified": true,
+      "cpu_receipt": "bench/chromatin_geometry/runs/receipts/b9cca3f9-3912-45a7-b1a5-6b0bcfe5b2c7.json",
+      "registration": "bench/chromatin_geometry/.campaign-lanes/3/registration.toml",
+      "adapter_sha256": "42ac54160093d6daf3a370f6230e804abc85b377cf2c89b908d2a143b68fcbb1"
+    }
+  ],
+  "latest_qualified_v3": {
+    "archive_path": "bench/chromatin_geometry/.autobench/data/closures/811ab1f225dbef7d7e2e3665ed8a69e32b1fb1ea08aadb7960def2c71c2db3af.tar.gz",
+    "archive_sha256": "f131948000849270e22c392459264fa599566f4a1d51492a09e72d9e1d8f72c7",
+    "binary_path": "bench/chromatin_geometry/runs/builds/b0292b309e12751655b8a476c4d34e23d1c877549e175d33c5dcdca12aa25ddf/binary",
+    "binary_sha256": "b0292b309e12751655b8a476c4d34e23d1c877549e175d33c5dcdca12aa25ddf",
+    "build_receipt_path": "bench/chromatin_geometry/runs/builds/b0292b309e12751655b8a476c4d34e23d1c877549e175d33c5dcdca12aa25ddf/312aca1771a6c362e8f92726ac16923170f6c3ecab0a0ba7300c4f1bc8886bed.json",
+    "build_receipt_sha256": "312aca1771a6c362e8f92726ac16923170f6c3ecab0a0ba7300c4f1bc8886bed",
+    "contract_path": "planning/chromatin-geometry-study-2026-11-02/contract-freeze-v3.json",
+    "contract_sha256": "4033eea4a8168f5e898212873252c8782943d12f5325e5a31ca45487f9751f06",
+    "component_correctness_job": "c1d43a4c-dba9-4162-aa79-50ca6533130e",
+    "public_replay_correctness_job": "384b43b3-3229-47cb-b91b-7aeb3db25df4"
+  },
+  "accepted_v2_measurement": {
+    "job_id": "47b853d3-ddfa-47f4-b1d3-601629c9663f",
+    "summary": "bench/chromatin_geometry/analysis/qualification-summary.md",
+    "binary_sha256": "02a282c431888966d9cb5172c6794b441d0464f5ee76d06115fae66d4dcdc8a5",
+    "archive_sha256": "f9bfbd356e0fde90ca9defdada2c73e48b974c3e9c02fa44d5b7f9f486f22d6f"
+  },
+  "resume_frontier": [
+    "Explicit user resumption and resume the four study-only paused lanes.",
+    "Run staged v3 matched-cached-two-tile sanitizer packets; CPU staging already succeeded with verified cleanup.",
+    "Collect v3 matched cached/shared and rebuild/incremental balanced same-device packet, then remaining frozen scenarios and representative profiling.",
+    "Independently qualify all claims; retain failed and incomplete coverage."
+  ],
+  "limits": "Study incomplete; no runtime or performance result is implied by CPU staging. Parent workspace pause must remain intact."
+}

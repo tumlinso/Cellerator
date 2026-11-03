@@ -1,0 +1,44 @@
+{
+  "schema": "cellerator.factorized_interactions.aux_graph_independent_review.v1",
+  "reviewed_at": "2026-11-02",
+  "status": "accepted_with_bounded_evidence_limits",
+  "graph": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/aux-partitions.toml",
+    "sha256": "c63e1b3b2fcf56787585107bd1cf542715b74ce457a0af08d4bc8a3ef59f157c",
+    "benchmark": "factorized-aux-partitions",
+    "revision": 1,
+    "packets": 4,
+    "timeout_seconds_each": 600,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+  },
+  "inputs": {
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "prebuilt_bundle_sha256": "34ed1254850a9217ff6da1be127a14ae24f5ba4db2d45093be5813085b9d871",
+    "bounded_validation_sha256": "6da91757d8d18501ad8df4c6722c549ae32c9adfb93e78417a016b6849caaf11",
+    "qualification_driver_sha256": "eed5ed49683c4ac5b79b24225f1d6e37315707a0dbf71cee1464310015cf2210",
+    "test_bounded_validation_sha256": "80b480e9dcd143f49e8da53ea617949b065d40ed89416a62ab392b4769da2cc0",
+    "test_bounded_qualification_sha256": "c2f2b351c7f4fe0a8031b738fe4c883f4be24de7c11af8a1f762cbca0c158b50"
+  },
+  "checks": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3 -B -m unittest discover -s planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/data/factorized-interactions/aux-wrapper-1/tests -p 'test_*.py' -v",
+    "result": "17 tests passed in 2.667 seconds",
+    "independent_code_review": [
+      "Each auxiliary report covers either 11 regular fixed workloads or the million-mechanism workload; no individual report claims the full corpus.",
+      "The four registered packet/role combinations cover both partitions for packet and strongest-direct routes.",
+      "The helper binds the immutable source, build manifest, runner, native library, accepted validator, real scheduler context, requested candidate mode and actual dispatch metadata.",
+      "It validates fixed-oracle output and all five VJPs, repeated VJP, input/result wire digests and preserves failed-case wires.",
+      "The packet implementation's stable backend is explicitly reflected in the report when record-derived fan-in rules select it."
+    ]
+  },
+  "limitations": [
+    "No CUDA auxiliary packet has completed; the corrected memcheck packet was externally preempted, so it has no numerical or sanitizer result.",
+    "Peak scratch is a 50 ms sampled whole-output-tree measurement plus a post-write allowance. It can miss transient peaks and is not a hard enforcement limit.",
+    "The 80,915,604 byte wire/cache and 97,692,820 byte accounted total are CPU-only dtype-storage preflight evidence, not a substitute for measuring these auxiliary packets."
+  ],
+  "not_claimed": [
+    "GPU correctness for auxiliary workloads",
+    "sanitizer cleanliness",
+    "performance improvement",
+    "a strict deterministic upper bound on transient scratch usage"
+  ]
+}

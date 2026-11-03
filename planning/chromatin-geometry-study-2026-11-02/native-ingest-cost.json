@@ -1,0 +1,24 @@
+{
+  "schema": "cgs.native-ingest-cost.v1",
+  "scope": "one host-only native HDF5-to-CGATAC01 preparation; OS page cache not flushed; separate from per-case runtime",
+  "argv": [
+    "/tmp/cgs-readme-build/cgs_prepare_atac",
+    "/home/tumlinson/Cellerator/bench/chromatin_geometry/data/cache/pbmc_unsorted_10k_filtered_feature_bc_matrix.h5",
+    "/home/tumlinson/Cellerator/bench/chromatin_geometry/data/cache/pbmc-atac-preparation-profile",
+    "bbd84ebd43c7bf1f1cc0168fd38c3689b0279730"
+  ],
+  "source_sha256": "0668e2bf9ff521a8e5e7aa37717f3780bad84081f26f888df16a9398d5020e76",
+  "binary_sha256": "ddaf4428083037f3ae630c6e72d1cfbfce5d49b51c8a0ebea65ed53b71fa80f7",
+  "cpu_affinity": [
+    0
+  ],
+  "wall_seconds": 12.389417079997656,
+  "user_seconds": 11.193294999999999,
+  "system_seconds": 1.193924,
+  "peak_child_rss_kib": 1869988,
+  "returncode": 0,
+  "stdout": "native CellShard ATAC replay prepared: cells=12016 peaks=63751 bytes=95881576 source_sha256=0668e2bf9ff521a8e5e7aa37717f3780bad84081f26f888df16a9398d5020e76 replay_sha256=45de0da98a8dc6fa19f33eacc52223bc5c3190e956f769f7ff4b253e1d92bad3 wrapper_sha256=f30a56e09891ad21331869a3ed90c900b4572162d4c1e16207e6cbd8c153940b\n",
+  "stderr": "",
+  "gpu_used": false,
+  "byte_identical_outputs": true
+}

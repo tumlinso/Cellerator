@@ -1,0 +1,88 @@
+{
+  "assessment": "collector_fix_accepted; execution_requires_supported_v4_registration",
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 CELLERATOR_TEST_SOURCE_ROOT=<qualified build source> <Autobench py312> -m unittest discover -s <staged timing-wrapper-3/tests> -p test_*.py -v",
+      "result": "32/32 passed"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 <Autobench py312> -m unittest discover -s bench/factorized_interactions/bounded/tests -p test_bounded_validation.py -v",
+      "result": "12/12 passed"
+    }
+  ],
+  "collector": {
+    "analysis": "run_timing_partition constructs the cache path but does not create it; bounded_validation.run_validation owns the first-use directory and durable marker, rejects pre-existing unowned data, and validates reuse against the packet and exact source/build/helper identity.",
+    "live_and_staged_identical": true,
+    "live_sha256": "357d68c432dd23981f9c56c770e8e4c0cda7eea73be9413641ad651a4ccfc214",
+    "sidecar_comparison": {
+      "bounded_validation.py": {
+        "byte_identical": true,
+        "wrapper2_sha256": "6da91757d8d18501ad8df4c6722c549ae32c9adfb93e78417a016b6849caaf11",
+        "wrapper3_sha256": "6da91757d8d18501ad8df4c6722c549ae32c9adfb93e78417a016b6849caaf11"
+      },
+      "recorded_qualification.py": {
+        "byte_identical": true,
+        "wrapper2_sha256": "505a83220828e80e22e84e02588918a9df794347fb3b1bee8c3f8190c8f96ea3",
+        "wrapper3_sha256": "505a83220828e80e22e84e02588918a9df794347fb3b1bee8c3f8190c8f96ea3"
+      },
+      "recorded_receipts.py": {
+        "byte_identical": true,
+        "wrapper2_sha256": "4ea24aedf780caffb5a138d8bfe01213e2ba10e914c6475b4b54b151a60cd1a6",
+        "wrapper3_sha256": "4ea24aedf780caffb5a138d8bfe01213e2ba10e914c6475b4b54b151a60cd1a6"
+      },
+      "run_timing_partition.py": {
+        "byte_identical": false,
+        "change": "removed premature cache_dir.mkdir() only",
+        "wrapper2_sha256": "4193f5f1789e63cfecbb3e6edde0c30780634d1cb6e5b5c231f58f17373953eb",
+        "wrapper3_sha256": "357d68c432dd23981f9c56c770e8e4c0cda7eea73be9413641ad651a4ccfc214"
+      },
+      "tests/test_recorded_qualification.py": {
+        "byte_identical": true,
+        "wrapper2_sha256": "cd02de221c3883489698b6618205f1d6722f2ddfcb7fb5cfaae61e8e238516af",
+        "wrapper3_sha256": "cd02de221c3883489698b6618205f1d6722f2ddfcb7fb5cfaae61e8e238516af"
+      },
+      "tests/test_recorded_receipts.py": {
+        "byte_identical": true,
+        "wrapper2_sha256": "70831192ed7211531c722fbae57ac7c928702960bceec04880a2f8c666bbb6d6",
+        "wrapper3_sha256": "70831192ed7211531c722fbae57ac7c928702960bceec04880a2f8c666bbb6d6"
+      },
+      "tests/test_run_timing_partition.py": {
+        "byte_identical": false,
+        "change": "regression verifies first helper call creates packet-owned cache and later calls reuse it",
+        "wrapper2_sha256": "e33ae23064b4a9aec9845ac1ff499b1857e539fa762ac814049f1fc376e14759",
+        "wrapper3_sha256": "989de4b2d46081d94fea11169516cccd1da0dfb256ec9abf7aded4bbb3c11496"
+      }
+    },
+    "staged_sha256": "357d68c432dd23981f9c56c770e8e4c0cda7eea73be9413641ad651a4ccfc214",
+    "staged_test_sha256": "989de4b2d46081d94fea11169516cccd1da0dfb256ec9abf7aded4bbb3c11496",
+    "test_live_and_staged_identical": true,
+    "test_sha256": "989de4b2d46081d94fea11169516cccd1da0dfb256ec9abf7aded4bbb3c11496"
+  },
+  "prepared_definition": {
+    "benchmark": {
+      "name": "factorized-timing-partitions",
+      "revision": 4
+    },
+    "config_delta": "exactly revision change 1 -> 4 and wrapper-2 -> wrapper-3 path substitutions; all other parsed TOML fields equal the prior draft.",
+    "inputs_resolve": true,
+    "packets": 26,
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/timing-partitions-v4.toml",
+    "pinned_device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "sha256": "08804796e2ababd08e032fa9320de70c7df30338a587096c435afa28122efc44",
+    "wrapper_references": "all 26 packets reference timing-wrapper-3; data paths contain the complete wrapper-3 helper/test set and qualification bundle."
+  },
+  "registration_state_at_review": {
+    "current_registry_path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/registry/factorized-timing-partitions.toml",
+    "current_registry_sha256": "08804796e2ababd08e032fa9320de70c7df30338a587096c435afa28122efc44",
+    "operational_gate": "do not resume timing from the old wrapper-2 registry; operator must replace it through supported registration with v4 after cleanup.",
+    "still_references_wrapper2": true,
+    "v4_registered": false
+  },
+  "reviewed_at_utc": "2026-11-02T22:31:29Z",
+  "scheduler_mutation_performed": false,
+  "schema": "cellerator.factorized_interactions.timing_collector_independent_review.v1",
+  "scope_limits": [
+    "CPU only; no CUDA timing or Scheduler operation.",
+    "Earlier wrapper-2 failed attempts are not timing observations and were not counted."
+  ]
+}

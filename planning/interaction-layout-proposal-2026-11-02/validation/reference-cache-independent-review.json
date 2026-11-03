@@ -1,0 +1,99 @@
+{
+  "schema": "cellerator.factorized_interactions.reference_cache_independent_review.v1",
+  "reviewed_at_utc": "2026-11-02T20:38:10Z",
+  "reviewer": "interaction_oracle",
+  "runs": [
+    {
+      "name": "reference-cache-and-factorized-oracle-tests",
+      "command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/factorized_interactions",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "python": "3.12.3",
+      "exit_code": 0,
+      "tests_passed": 46,
+      "tests_failed": 0,
+      "elapsed_seconds": 12.731,
+      "stdout_stderr_summary": "Ran 46 tests in 12.731s; OK",
+      "scope": "CPU-only reference, transport, validator protocol, reference cache integrity and integration; no CUDA execution",
+      "files": [
+        {
+          "path": "bench/factorized_interactions/validate_runner.py",
+          "sha256": "cdc99856b6e82ca46951a859e7abb2b281cb8ab35a72b2b5ad2bd600e7d88030"
+        },
+        {
+          "path": "tests/factorized_interactions/reference_cache.py",
+          "sha256": "b38871907815e44bcb54dc2782ec8c5fc9a1e229abdadb3ecaabe94d5d4982ee"
+        },
+        {
+          "path": "tests/factorized_interactions/test_reference_cache.py",
+          "sha256": "fe68b0a678bee5a17c15554e637d4d685b2f79e180dceaa62dfef802a1ed570d"
+        },
+        {
+          "path": "tests/factorized_interactions/test_validator_cache_integration.py",
+          "sha256": "1f050a644a6839739e64751ff7a0190b4ce1058a690a806483a6fe3875eadf28"
+        },
+        {
+          "path": "tests/factorized_interactions/reference.py",
+          "sha256": "246b4e9da0ab3f0f5becfa964cce67baad5931f739489cfd1dec118f7dff604c"
+        },
+        {
+          "path": "tests/factorized_interactions/workloads.py",
+          "sha256": "af72ecb21f21e0a5c95d2465c259f41b4fd4b66783343ed5220d4699807e816d"
+        },
+        {
+          "path": "bench/factorized_interactions/workloads.json",
+          "sha256": "624693c67355c58f6faff2fa3860b4abc81d25ebe70eb054743f8df2a9c459a9"
+        }
+      ],
+      "independent_findings": [
+        "The expected Evaluation is loaded before launching the candidate runner.",
+        "The complete dedicated flat cache archive inventory is checked after runner success or failure.",
+        "The cross-case mutation regression changes another valid cache entry and verifies rejection plus cache invalidation.",
+        "Damaged and stale cache entries fail closed; cached and uncached CPU stub outputs agree, including overwrite, accumulate and repeated VJP checks."
+      ]
+    },
+    {
+      "name": "all-storage-dtype-qualification-driver-tests",
+      "command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "/home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "bench/factorized_interactions/experiments/tests",
+        "-p",
+        "test_dtype_qualification.py",
+        "-v"
+      ],
+      "python": "3.12.3",
+      "exit_code": 0,
+      "tests_passed": 7,
+      "tests_failed": 0,
+      "elapsed_seconds": 0.051,
+      "stdout_stderr_summary": "Ran 7 tests in 0.051s; OK",
+      "scope": "CPU-only protocol and metadata checks for 8 dtype combinations across packet, native-direct, minimal-direct and unique-output modes; no CUDA execution",
+      "files": [
+        {
+          "path": "bench/factorized_interactions/experiments/run_dtype_qualification.py",
+          "sha256": "43f2f0b42ff311e8bd45f2844d5cffddb0d400598706076fe080e7ddc2eb99ac"
+        },
+        {
+          "path": "bench/factorized_interactions/experiments/tests/test_dtype_qualification.py",
+          "sha256": "fcb0664ab3055cdf8076d3c903196c289bea41b2cbce0af54fb3f64b801df0fb"
+        }
+      ]
+    }
+  ]
+}

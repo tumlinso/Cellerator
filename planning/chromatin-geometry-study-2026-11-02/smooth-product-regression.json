@@ -1,0 +1,30 @@
+{
+  "schema": "cgs.host-regression.v1",
+  "scope": "existing smooth-gated product regression; not a matched binary/STE baseline",
+  "compiler": "g++-12 (Ubuntu 12.4.0-2ubuntu1~24.04.1) 12.4.0",
+  "compile_argv": [
+    "/usr/bin/g++-12",
+    "-std=c++20",
+    "-O2",
+    "-Iinclude",
+    "tests/native_data/gated_product_host_test.cc",
+    "src/ops/mechanism/gated_product_host.cc",
+    "-o",
+    "/tmp/cgs-smooth-product-regression"
+  ],
+  "source_sha256": {
+    "tests/native_data/gated_product_host_test.cc": "937d4942f05ba6f0f8ed31a6c719a33c8f2782847a4ff73c9f411aac7af9222b",
+    "src/ops/mechanism/gated_product_host.cc": "7a3262c892b9f725c596c956842d451a1c8ebaa057decbdcf3252b444c61ec40",
+    "include/Cellerator/ops/mechanism/gated_product_host.hh": "5844653f8c7f3c1582cfea4977f4f8d8431ca2b497981689a51b5071e6333a73",
+    "include/Cellerator/ops/mechanism/gated_product.hh": "272cc81445fe2498a0520b1c680e56ccf0d6ab5aee1a79d8ac319ee756503784"
+  },
+  "binary_sha256": "8663cb16d5ea2b641538522f288987711e0a8f3f5865ede3fc917179c59733a9",
+  "execution": {
+    "argv": [
+      "/tmp/cgs-smooth-product-regression"
+    ],
+    "exit_code": 0,
+    "stdout": "gated product host tests passed\n"
+  },
+  "gpu_used": false
+}

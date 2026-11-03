@@ -1,0 +1,11 @@
+{
+  "schema": "cellerator.shared_product_circuit.provenance.v1",
+  "wire_parser_derived_from": "bench/factorized_interactions/native_runner.cu",
+  "wire_parser_source_sha256": "3574b0c63c7df8e9c130e4c023b2c7f231b9e5305da5e3de74e3957c6c684b60",
+  "unchanged_numerical_helper": "src/modeling/cuda/factorized_interaction_numerics.cuh",
+  "unchanged_numerical_helper_sha256": "a719bf6356c4ac52f946668ca85a407671ea743166c4b0372aa85f4b612e4dc4",
+  "native_core_modified": false,
+  "literal_control": "common=a*b available in both arms; control scales each complete contribution before summation; circuit scales the sum",
+  "gradient_ownership": "identical per-cell/channel data ownership, no input atomics; identical compensated explicit owner reductions",
+  "scopes": "fixed experiment only; no public build registration or packaging"
+}

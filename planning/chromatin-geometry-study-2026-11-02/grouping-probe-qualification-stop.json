@@ -1,0 +1,44 @@
+{
+  "schema": "cgs.grouping-probe-stop.v1",
+  "status": "paused after failed qualification; no retry and no timing",
+  "captured_at_utc": "2026-11-03T15:25:25.893692+00:00",
+  "contract": "planning/chromatin-geometry-study-2026-11-02/contract-freeze-grouping-probe-v4.json",
+  "contract_sha256": "3829eda8cee4e4d011281b792fe9ab8e676fde76d755cb077015a70f266fb576",
+  "archive_sha256": "0b71bb7a1d86a203c03af252dcde15cee883eb8e3579e09581539bed4972c5bb",
+  "binary_sha256": "75b7fc90a0b5a39de5dc600d3edb95f3ebf6fc84841c49a97dcf3e1ff3491156",
+  "qualification_binary_sha256": "43d01118edc8e81910da97bb09c89786b28e003d48699d4c7b6d4728cc82a73c",
+  "job_id": "e2aa5223-5c67-412b-ab1f-ac8c8e596238",
+  "packet": "bench/chromatin_geometry/runs/packets/e2aa5223-5c67-412b-ab1f-ac8c8e596238",
+  "receipt": "bench/chromatin_geometry/runs/receipts/e2aa5223-5c67-412b-ab1f-ac8c8e596238.json",
+  "scheduler_cleanup_verified": true,
+  "scheduler_and_worker_state": "succeeded",
+  "packet_and_local_qualification_state": "failed",
+  "reason": "masked R1 full-chain descriptor label mismatched expected label; no conclusion drawn about semantic equivalence",
+  "bounded_findings": "standalone focused qualifier passed and four sanitizer logs reported zero errors before full-chain rejection; remaining cases did not run",
+  "local_gpu_jobs": 1,
+  "local_charged_gpu_seconds": 25.589826107025146,
+  "local_budget_seconds": 600,
+  "global_charged_gpu_seconds": 2357.7100145816803,
+  "global_budget_seconds": 14400,
+  "unresolved_gpu_reservations": [],
+  "probe_lanes": [
+    {
+      "lane": 0,
+      "active": false,
+      "paused": true
+    },
+    {
+      "lane": 1,
+      "active": false,
+      "paused": true
+    },
+    {
+      "lane": 2,
+      "active": false,
+      "paused": true
+    }
+  ],
+  "parent_paused": true,
+  "r1_r16_timings": "not run",
+  "resume": "explicit user direction required; no automatic retry"
+}

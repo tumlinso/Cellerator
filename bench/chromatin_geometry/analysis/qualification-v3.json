@@ -1,0 +1,1404 @@
+{
+  "calculator_sha256": "324167b6b476ffbd636ea5c863c80327da966753a6e2d9249b0e3f59dc586344",
+  "capacity_unsupported": [
+    {
+      "arm": "cohort-shared",
+      "basis": "For the frozen workloads, 128-cell cohort-shared with two buffers exceeds the implementation's 48000-byte shared-memory cap; retain the source-bound preflight evidence and do not submit those arms.",
+      "basis_type": "frozen matrix declaration; no submitted measurement",
+      "stages": 2,
+      "tile": 128
+    }
+  ],
+  "comparisons": [],
+  "contract_sha256": "4033eea4a8168f5e898212873252c8782943d12f5325e5a31ca45487f9751f06",
+  "coverage": "Only listed comparisons are evaluated; all other frozen matrix cases and unsupported arms remain incomplete unless independently evidenced.",
+  "cross_strategy_pairing": "only separately retained same-packet paired update ablations qualify; independent scenario packets are not pooled",
+  "exporter_sha256": "83f6c6bdccff65490535c4b77f8a842e4e6fb90321da1603650d2370ecd5e0b1",
+  "failures": [
+    {
+      "classification": "unqualified ledger evidence",
+      "reason": "settled study reservation lacks a ledger receipt path: f16ecce8-8c95-42d4-8a6e-6c56bdf84b9c"
+    },
+    {
+      "classification": "no submission",
+      "job_id": null,
+      "reason": "reservation settled without a GPU job",
+      "reservation_id": "506da2e8-e2d7-4356-9ed8-df586e8da401"
+    },
+    {
+      "classification": "no submission",
+      "job_id": null,
+      "reason": "reservation settled without a GPU job",
+      "reservation_id": "541ece76-65ab-4487-8448-4cb6fdbf6ba1"
+    },
+    {
+      "classification": "no submission",
+      "job_id": null,
+      "reason": "reservation settled without a GPU job",
+      "reservation_id": "29d74794-1fe2-4c33-9610-590dcb5a7132"
+    },
+    {
+      "classification": "no submission",
+      "job_id": null,
+      "reason": "reservation settled without a GPU job",
+      "reservation_id": "d19a4251-36a8-47a2-ab1a-a5bc6e629da5"
+    },
+    {
+      "arm_records": [
+        {
+          "backend": "direct",
+          "path": "round-00-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-00",
+          "sha256": "7fb5735aba9df8cbd2f51d1b8395aec71db03937fdb8927718854fe6853501a2",
+          "status": "pass"
+        },
+        {
+          "backend": "library",
+          "path": "round-00-library.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-00",
+          "sha256": "5b338b2e5046ba6ff54d7fb1d103592640e2e4dc1fa90f394b9e139ec5e03f32",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-00-cohort-direct-two-tile.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-00",
+          "sha256": "b4b73cc249be4ad91b5b7aa439cea4cd0f831dd1847b54c0fce472470ace18f3",
+          "status": "pass"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-00-scalar.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-00",
+          "sha256": "b4c0ec7ebf15547c95657c28bdae408373fd4b937a3b5f18fea44e49f15dec21",
+          "status": "pass"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-00-library-batched.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-00",
+          "sha256": "029835e5ae7ddc002dc909d350ac5069191e3a5c410fca18070a9968e7aae144",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-00-cohort-shared.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-00",
+          "sha256": "face58aacf521047d60d7f83b4bf93c837e02404b95338660c279b09d24b6720",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-00-cohort-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-00",
+          "sha256": "5d01fe3203f9e716d4d307b4daaea82515049f162efd48634ca5f669e4b4e69d",
+          "status": "pass"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-00-bitmap.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-00",
+          "sha256": "b0842e2e8b50d08ae98632d8c4b3a49cee6052754a5533566042316c313716c8",
+          "status": "pass"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-01-bitmap.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-01",
+          "sha256": "f31c5892c56cba237da33a586f988ed28b7944c97cf5a38e2a1840cbb7b17ba5",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-01-cohort-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-01",
+          "sha256": "89553bf57a556975b03fd66361c80316347e69f6025db0bbf1448d9cb28234f1",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-01-cohort-shared.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-01",
+          "sha256": "0745cad99975da36c3874687911a4d1551691866efe26c26f8647b46d15a5149",
+          "status": "pass"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-01-library-batched.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-01",
+          "sha256": "7f9001bc6306a274655f3e6ed02b94a7f4b2276c16db103bb888a6524cd23cb7",
+          "status": "pass"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-01-scalar.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-01",
+          "sha256": "8b22365385868907332915d5914d70515cb5cf08ac9f10159a991d40acb193b6",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-01-cohort-direct-two-tile.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-01",
+          "sha256": "eb5160a2b7759a6d7af1b6cab57ad10ce15f28a591eaeb5df12bf326098e3d9e",
+          "status": "pass"
+        },
+        {
+          "backend": "library",
+          "path": "round-01-library.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-01",
+          "sha256": "449102b37ac6b3814578f7319598ff3e360b12f4c6a966ccf568c9f5c79c5ea9",
+          "status": "pass"
+        },
+        {
+          "backend": "direct",
+          "path": "round-01-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-01",
+          "sha256": "7c57d743677766f02dde045fc15c3e8e566e28efd9fcdcef6ccb964e53c1f579",
+          "status": "pass"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-02-bitmap.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-02",
+          "sha256": "cba823e2fae1b093bc11ec02ed55c05366fd1d1d8c71a46a81aa44b0f76fe040",
+          "status": "pass"
+        },
+        {
+          "backend": "direct",
+          "path": "round-02-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-02",
+          "sha256": "a450279ef52fa810acf48f9a4e814f8365ac290e237d8af75766f6d92aca2ff9",
+          "status": "pass"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-02-scalar.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-02",
+          "sha256": "a9e7c26ac3b00fc70222f8cd0c818c9465cfe92f03f48864481b3098d9a9fe59",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-02-cohort-shared.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-02",
+          "sha256": "bd597073f07def41c4af6fe317af4f1cf7029aa4582d2fe9ddb0aeedfed3616e",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-02-cohort-direct-two-tile.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-02",
+          "sha256": "82d1b4e64d400d697c04067df873920ab1e8c4da476485c69424a563b15224e1",
+          "status": "pass"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-02-library-batched.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-02",
+          "sha256": "3bc91bdb0a1125a61191419f530afe77bb6c5e6ea67b0f26554b6cdfdc9fbb31",
+          "status": "pass"
+        },
+        {
+          "backend": "library",
+          "path": "round-02-library.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-02",
+          "sha256": "f98b2c2c9d27631fcc05c662ac464baaf08fa3bd4ce38eb79e1ee29b04f4781f",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-02-cohort-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-02",
+          "sha256": "a8180c61263c9074c12101ccb2246533f20121370264323898cd2750f3b1bccb",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-03-cohort-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-03",
+          "sha256": "9df30b2764d25ddb774daf68ec6e2bd8c0b5a0c936214915ecd144defc312f3d",
+          "status": "pass"
+        },
+        {
+          "backend": "library",
+          "path": "round-03-library.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-03",
+          "sha256": "e48e765a59614039f67c2a9d5984642f017be8c4fbd1f6fb51c2a37b72e964a9",
+          "status": "pass"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-03-library-batched.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-03",
+          "sha256": "bb4e827a802731cb920cdc0eced8f85454337dd14486b263e307209ccc4714c5",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-03-cohort-direct-two-tile.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-03",
+          "sha256": "f7fc73dc45a1519c30ff8bb2ef685e57e4870ff1a94e68f94331a10c204863e8",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-03-cohort-shared.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-03",
+          "sha256": "1895f8031d3f92471d3b6c4eaed7595c3f5d0af9acac5fe536ea140dff585ab0",
+          "status": "pass"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-03-scalar.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-03",
+          "sha256": "430ea464685dccd66de48f9851f210c88bcde5eb5a8a13de2317db937e3c5be4",
+          "status": "pass"
+        },
+        {
+          "backend": "direct",
+          "path": "round-03-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-03",
+          "sha256": "4d02fddc58519e86043cc7eb0cc5b911f30d7e5689b7aa490775509d6d3039eb",
+          "status": "pass"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-03-bitmap.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-03",
+          "sha256": "5f7908fb5131362ff279dccf25d9cab199eb12c1101c71c36d1e27b02c656c3d",
+          "status": "pass"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-04-bitmap.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-04",
+          "sha256": "3b8e13d4e8db8d7c4efc72cff404c6c23650d4fd49c9679d439c2bce985ba076",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-04-cohort-shared.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-04",
+          "sha256": "9f96fba428c901f1f85678a794a7b791ce72150cd65826e8de1d946e0c27fbea",
+          "status": "pass"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-04-scalar.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-04",
+          "sha256": "8e01d94021ab094893bcacb07ea74cc536f6e9dd87adaa6ca30d43104868aa25",
+          "status": "pass"
+        },
+        {
+          "backend": "direct",
+          "path": "round-04-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-04",
+          "sha256": "40a628daeaf77d93c2c9a79126f1c088bb1b8a22721d6ba5fb6a3a3513940ab1",
+          "status": "pass"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-04-library-batched.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-04",
+          "sha256": "81e0d9784eb8d693ad6dc3c18e2b61e884ee4df0a8972f44f3944e02dabdaabb",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-04-cohort-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-04",
+          "sha256": "63ffc3a277219765cccb2c5cd4fbe696c7aa222b03a0b6f50dc6fdbb0e71ca81",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-04-cohort-direct-two-tile.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-04",
+          "sha256": "fbb2c1b9d0bfae985e38859ce65a8d95d6d16d0e357f988ab87a7b38af4c5f86",
+          "status": "pass"
+        },
+        {
+          "backend": "library",
+          "path": "round-04-library.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-04",
+          "sha256": "82e69e3cc83fbbf7c814caa9fcdfa6c65d2dda791b9d26139094bf8bac863eb9",
+          "status": "pass"
+        },
+        {
+          "backend": "library",
+          "path": "round-05-library.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-05",
+          "sha256": "0c4355d001e5c7b07f9e867d3c6a943a2e7ceb65b5b4a50b8927a003458190be",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-05-cohort-direct-two-tile.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-05",
+          "sha256": "ca1b5958bce418fb4b22ff79151afc173273919e510285fe29ade8b3c3d90469",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-05-cohort-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-05",
+          "sha256": "10c95c563f76a6179de8c1a74769936be8d62c12f57fbe17608e699149257c6f",
+          "status": "pass"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-05-library-batched.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-05",
+          "sha256": "43db1e58c6ee50b7bee31872e4fccbad60c896327f7f17939333ce62f4a64b26",
+          "status": "pass"
+        },
+        {
+          "backend": "direct",
+          "path": "round-05-direct.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-05",
+          "sha256": "ddf3b771c5608b3c3ce2974168b407e2c56c890bcccf8bc1ae4ff605dc3a2e27",
+          "status": "pass"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-05-scalar.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-05",
+          "sha256": "255cf90a78c93a10822f7365ca548cabef581b1ed3e69b93a97779f51d6aac27",
+          "status": "pass"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-05-cohort-shared.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-05",
+          "sha256": "a300e38a0778fa200875cd934710c197af68b3c81a21445ee7823987518acf7f",
+          "status": "pass"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-05-bitmap.json",
+          "qualification": "unqualified",
+          "reason": null,
+          "round": "round-05",
+          "sha256": "d893eaf6233bce494e5765fbf1db326c85700077bdc84609faadb23519a9ffa4",
+          "status": "pass"
+        }
+      ],
+      "binary_sha256": "b0292b309e12751655b8a476c4d34e23d1c877549e175d33c5dcdca12aa25ddf",
+      "classification": "unqualified or incomplete evidence",
+      "config_sha256": "f12e025da3f02d4c2bf64f0664b29a33fcef1ec9d23f1a2ab6d07fe41d049f83",
+      "device_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "job_id": "45bab455-239f-4e32-8ebd-fd33ae03e979",
+      "reason": "GPU worker did not succeed: failed",
+      "reservation_id": "0dfa16a7-f1b8-4871-95a5-881b5e5edfb9",
+      "scheduler_receipt_sha256": "47f1364ccc388b92b4c340ed8ee79a2a1c519583b1ef802fc446008c191c5f63",
+      "source_archive_sha256": "f131948000849270e22c392459264fa599566f4a1d51492a09e72d9e1d8f72c7",
+      "supplemental_summary_sha256": "39f7791dd05490d95ad7ec05caa51643b85c1d0fae0fa600911937a79e86b78b",
+      "telemetry": {
+        "clean": false,
+        "issues": {
+          "foreign GPU compute process observed": 1
+        },
+        "sha256": "a374d611d664449d064695c5ef234db89b32fecd8c3351ff0ea891d15f7aa2bc"
+      },
+      "update_ablation_summary_sha256": "134d3fea1f98734b324d30c8a5e99008deb8c3f16adff0b17978861e9ee18a40",
+      "update_arm_records": [
+        {
+          "backend": "library",
+          "path": "round-00-library@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "9455ddec9dbd04917c8fd13f4af371b41808bf2a0536afb1c094bed07c424247",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-00-cohort-shared@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "f2ea3af0e22656e42442752ac4dd9399b728b8612f4f42c3ad8738874640d321",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-00-cohort-direct-two-tile@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "1c8ebcb3b233c9e7fa2e16016ccd02bfbce0faa8dd63efa4ee663f43a5886c97",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "direct",
+          "path": "round-00-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "378ec4463eb96b5e90c40a413cc168d6be252ec67abae8ab9e39be59cce3a42e",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "direct",
+          "path": "round-00-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "78360de668e9bea19b29c7ae69bd35766d85956579ecd12ec9a5f0907ad11d0a",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-00-cohort-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "8dcd045f4325eedcb85881549a1c6a5062837656b292ae87855174c198bbd431",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-00-cohort-direct-two-tile@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "90b918628a9baa1e3f3475cf6a3c8ff90039ebad4c428e1ba7ff5ef0cbaa9221",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-00-bitmap@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "24dc6d6444519a15c568bf38bb3036a0725d9d07dc1ca31b75e2f40ce9e27a2b",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-00-scalar@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "f553fcfdcc90ba9c5f1c487b0ef37dbd57266b2f9766a2fe5a174b315d449003",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-00-library-batched@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "f80097477cd36ef5225030d022cdd676ae7038dfddc9b2e2c51693bc333c67e2",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-00-scalar@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "1c98fa8aacbfb0643cf1d4a9aa8339b10d355768cf2c20c635df8f74c5ea00fd",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-00-library-batched@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "e373f0675b6fe90f138fdd7734e360f2828cd94dcdf3e25cfafc1a2c0f76c71c",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library",
+          "path": "round-00-library@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "d68de3ec13ec64bc3a39ba3f5f4e8efb3352bee3c575dc8bfb60bded51e7a45c",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-00-cohort-shared@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "65feb2a59e224bbb28b80be42e9aa00e9bccbe96f681c2b70993103e32718eac",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-00-cohort-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "f4316bfe45e9257afbe779fb5a30dd8c8d976fc097d30242e484a26c9c7bab82",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-00-bitmap@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-00",
+          "sha256": "11e5e2516e0510fc7024c0966f6976d73cdd8d3f6cb8d3df5ff844bb7d3cab24",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-01-bitmap@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "d22446e36916419ffda5d7c9506952f169e7b695589f6113de06314e788a42a2",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-01-cohort-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "ef38a730d4b0fc016975cb1059fcf2de69ab682d9c9b0675c14cf723dcc8d859",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-01-cohort-shared@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "42837214a96c7beb386ed943b9fd5bddf8c23fade24b158f4c41bc6eefbd964d",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "library",
+          "path": "round-01-library@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "0ad60f78cbf611da4cf19ad0fbf919fafade3aa8a0c5df23b998c50f257cc559",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-01-library-batched@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "0c72d493f4bcf719830167168f1ff5f0ca5935a9d75ad8d51439ce25744e469d",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-01-scalar@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "d3417d9bb71997d9d412ed9ab84abd9038e2d4b361fef954459d3637e6a551a2",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-01-library-batched@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "cba80fe2c7c5272a67e9170b32f078e997a7adce52cbdb1a56db87804239106f",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-01-scalar@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "a81bab5d512c795db2e7b4a44d0e5b0e9463d87a48f4c3a5d352a9166ac1b0ea",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-01-bitmap@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "5c72202903fdc9d88351ee79d04ed96244c3c5809a25c419bb0e2dba9703785f",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-01-cohort-direct-two-tile@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "e6d7e7a106e58edcf9326881fb6ea9c500e6c896e3aea576a7de7b07a7d79314",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-01-cohort-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "9de82179f454cd5f23bb8577cba429538a7a017037743f07e349e08bbc115272",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "direct",
+          "path": "round-01-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "98dff4c3ac9cfb13c3caefb9422dad511b12bcf6154d5abbe96b5690f505e1af",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "direct",
+          "path": "round-01-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "7501289c52451e6bbd9b252a7384a9bc6c7cdc71953bc58ef8b3f3db941f0093",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-01-cohort-direct-two-tile@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "8165c080342786c6c53a256c9fa038afee68066eaef33a4a260687d5d87a5754",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-01-cohort-shared@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "4d1cba6b873e0bc384e8358622eda55ba69d054c0631e88838655f57030f3291",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library",
+          "path": "round-01-library@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-01",
+          "sha256": "6cbe5a5ef14b3b679130f110dbe8cd2373565b9a4fcd3d6cb2761b2edca3bb4d",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-02-scalar@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "8293b30ed87a09bd612b907d06ce4dc88ae6c04fde92f6dea2e044c7ec42ff38",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-02-cohort-shared@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "472ea455be75dc61101c73a3af823655b4e89912d0c5fa222e27015e9e2fba70",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-02-bitmap@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "a39916cbe339578578e26297b40e022788b86088f39d88c15d7d7421b1361792",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "direct",
+          "path": "round-02-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "cd0b81889f04f49492fb3a70cf6593477d374dbcbdae39c7555c872cc74efc9a",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-02-cohort-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "40c813c9f72594d95619aee40d18e2058f4160df17a3941dc0295b7102b9fad4",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-02-library-batched@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "087c135158c675260bdcd65dbfb8ea5056110f75941d157821f7f743804ee2b3",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-02-cohort-shared@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "cc3f00423d9561d78afc7128ffe5ee4a10f200ac502dc855cff966510e84de13",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-02-scalar@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "bfecedde6fbb7061c6875ae80c54b2cc56fa7d4bf000731e666fc6b4793dced0",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-02-cohort-direct-two-tile@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "e37b7447f9ad55022b500da3adb363d374c928aa8f24235a4a9bb2aa5b12ffc2",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-02-bitmap@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "1d8b0240b4d8ee738dfd5109ef4909d4f7b6984349ec5c8a7cd8d2f9c78200e1",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "direct",
+          "path": "round-02-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "d79ed94ae7e790672e0e43245f80352f09432b68005751794445719543802025",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-02-library-batched@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "cf472f5115702a8fb758c8ce58a1ffca91282c542cfa6ca96b0c8108dd60837d",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-02-cohort-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "100e0c7b39a430971a0e25cb669505e633cf33315e6e6864ec61c8c96dd7ced2",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library",
+          "path": "round-02-library@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "23c5fed8e17706d038de3530be0b5837f3266f328cce2630fd42ef9cd768cbc6",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-02-cohort-direct-two-tile@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "a3869bcc6274f185448c8fcee3a7e2c6cd2c4b0e2941dd6d306669d696de62a0",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library",
+          "path": "round-02-library@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-02",
+          "sha256": "bcb9b6a85bca959131bcd2f0a795d816c5a91546997e184c0dac75b66ffaf2c5",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library",
+          "path": "round-03-library@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "9d2ce20b687cb90939ec9e8ba8ad22df7cab1b1843bed7ee5567ab035894b2c5",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-03-cohort-direct-two-tile@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "074968d15210fe5c6ef7964eed618aae38cd95f077f9f64bca603a722c63d9a1",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library",
+          "path": "round-03-library@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "bb89ab43f6758a37a9c88f3140f8d049d8de102463d07e70ab2042a18f27b845",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-03-cohort-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "3165533d1cf985e3d999a311bc9af374930edc3ecbeb02e3791f07ae1a30a852",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-03-library-batched@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "fc9784428971ff33dddd5f25aa80801b516b1fe09bd99e4519b04b859a7ec526",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "direct",
+          "path": "round-03-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "9f0b1009ff2d9dc95c149e63da01b8f3783229711da290c1780c2221cf0a2a68",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-03-bitmap@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "dd2cd250d8b78b8ec5306d3d2b886325ba26c558a4a7dd2ddddee8cfcfaf8038",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-03-cohort-direct-two-tile@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "30ffd4b8d6f4971310b097b675cc470b8681085b6df4b75e1311006fa809178e",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-03-scalar@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "8798fe6b56b83410d354837177e1ef8b274ee3ead7280ca6996986ae435a8c11",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-03-cohort-shared@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "66194f036a84f11849fb6612a229e1836643f43d6462c2de3e933207cc91c825",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-03-library-batched@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "3cd8b558ba0a43346566a9c3c7c7b956b32fc6d02a50ca4261ae5e03ef364998",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-03-cohort-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "69e930665e340a41e8a2160827dd5a852bc4ef2bff0e9b61416d74b81fa310d3",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "direct",
+          "path": "round-03-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "062064c36cde3972f4f9c310a89d8e076781315f48d5cc6ad66108705a5b5a4b",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-03-bitmap@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "6952185020cdae7047331f3ec9960a513feba817e7009a7ac1ba52b8ee8eeb6e",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-03-cohort-shared@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "6ffac55c67ecd7e7a352ac939daf6e06033b1697adc48bfd2547f52d991d9a2b",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-03-scalar@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-03",
+          "sha256": "615938ff8e534052fb43cdd08b757f3568b78585e9af001e90ee2d2ee941bad0",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-04-library-batched@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "53cc72fa85f8c79bd70bffc5c85f9ce230bd8d43ec5c7e95e9441da2dbefb8b4",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-04-bitmap@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "0c6b594f708ca52d134c9cef8ea848741fc9a33cfde7949a9f80bb3da62a777f",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-04-cohort-shared@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "f96e06c5c59fcf7f23f5404cbafb56e5fcb43eb53239855551abc1011b512bb7",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-04-library-batched@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "e6fc0351826d2440ed3173630aa287d9eb3f8c40b66417d8d93bac0ae92ca4e7",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library",
+          "path": "round-04-library@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "71e818ab553908d50d6f9b7a0238b789b556730a122c79d20096503b89515445",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "direct",
+          "path": "round-04-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "dd98682e72a8fe105d52a199db58bad4710d3adbd5802f3bc73f85721242aab3",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "library",
+          "path": "round-04-library@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "e67383d9ee341b81ba9960944c869fa9808b75a4e9a7f190a75d6892476eb6f0",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-04-bitmap@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "d16c56a5be51783255875dc9b3eef8a84bfb972c189a07b7aa48a337180a27c0",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-04-cohort-shared@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "4e840bd85a436d7fe65b7b9a8b99d69089c1c92bfe566c07ea07e5f1e7347130",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-04-cohort-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "47f95b3734f17db641955b54765f024fb3ff94a5513ce5b52418b2ce68fe8d77",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-04-scalar@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "9543937915d700fd11d593aa66ab3d649b33696012c8939cf0abcb9f4d2dce3a",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-04-cohort-direct-two-tile@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "b0a43e5433e5e6e2af3dde4c08bcea7b1815422762f756f73d21cd7337056cc1",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-04-cohort-direct-two-tile@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "22108be470617a9be8e6f7ddf965e80b3aadd7e712dbbfa2917e76457fe1705c",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "direct",
+          "path": "round-04-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "af9ca9a8540c788e45ce6437c9170a08a280a18f71826383a4b91c37beec0b71",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-04-cohort-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "e4701fb6c96f999fc577934d72b786aeb91d0f701bd9e11685fda4c0cffd5e1e",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-04-scalar@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-04",
+          "sha256": "f0562835b31a6dfad180bba1548ca88e7bca2b17bc40a44b2069255ebbfd4007",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-05-scalar@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "17267f6e8f172f579d028cff9fbaaef93a8b626ede78f2fc73e2a404a2a8d48b",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-05-cohort-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "5d89b0f827fa2feeaf0e6f4d31fdeda79712f5743ed51779bf09d6a06c4fe83a",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "direct",
+          "path": "round-05-direct@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "a7eefa27c24d7594c120b26d891255310dd3d4c8e914c283191f455eb97c5c44",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-05-cohort-direct-two-tile@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "e74ed2f4bb9ee424eb3e9b55f969b891ad1541caf14ea269b438dafe5864521a",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct-two-tile",
+          "path": "round-05-cohort-direct-two-tile@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "9cf3c6a8feba1654762b878a2bbed93286053c23ecbc17b6cab2d6421d1b5d73",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "scalar",
+          "path": "round-05-scalar@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "ce39ba995332bfc132d13b2b531374dfb6b7b01e43959407d2c99cc763d2ca0a",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-direct",
+          "path": "round-05-cohort-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "358b60de909f1799378c5776aeb034b2437348b931c84782041b1329bcd209a1",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-05-cohort-shared@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "2df7434c16a02a24bed9011e747ff09ee47cd0c7bc1ed7a12db13758ff2a49e5",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-05-bitmap@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "32f1db5c33090b87123364ed7a352aa9e49882e30f7c0b4628f4d4d1b591c020",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "library",
+          "path": "round-05-library@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "5b63b9f0e6bd46f95d46bb8bc2785a9ecd92eac3e30c7657d9d0746c4399f672",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "direct",
+          "path": "round-05-direct@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "e04f2aaff1cfd6ee058645639345cc51aba5b3f9eec54e146f1b0bf9ed897ced",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "library",
+          "path": "round-05-library@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "2d9b7d33655fefc663cd2aea9a43f5a8c7dfbc58797f9aa2a57da966de92e775",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-05-library-batched@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "4b9c40a9eb836ea2aec7adda332314c073a2b096649180c91487cb8be0836383",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "cohort-shared",
+          "path": "round-05-cohort-shared@incremental.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "d29d1ca11695c991f589458b0ab001b655a36f751f30fd50f945f204c63fecc6",
+          "status": "pass",
+          "update_mode": "incremental"
+        },
+        {
+          "backend": "bitmap",
+          "path": "round-05-bitmap@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "b84656938bc57e051e40266f57ad0a995047b1faa9b2eb3311ddcd914627b5d0",
+          "status": "pass",
+          "update_mode": "rebuild"
+        },
+        {
+          "backend": "library-batched",
+          "path": "round-05-library-batched@rebuild.json",
+          "qualification": "unqualified",
+          "round": "round-05",
+          "sha256": "cdf599e223863045d3a6855891b0f8eed7ddca5b2ea46e97ade4e57776cb88e0",
+          "status": "pass",
+          "update_mode": "rebuild"
+        }
+      ],
+      "worker_result_sha256": "c34ed3cbe4c35397651f4e7a617ffd0e2a92bd37cc5ed76efcaef74837771fc0",
+      "worker_returncode": 1,
+      "worker_status": "failed",
+      "worker_storage": null
+    }
+  ],
+  "ledger_sha256": "2392e4788090bd46b3f0f4c2c4f21a40db919790b7f7da92059bfe0d45535f6e",
+  "matrix_sha256": "0d814998d7a7927f82ad49e10cb95d5d7d09af3e98ff391e0b0ccd6491cebd26",
+  "measurement_boundary": "cold_execution_preparation_ms + recurrent_complete_horizon_ms + output_recovery_ms; fixture, oracle, reset and warmup excluded",
+  "method": "Serialized study jobs with sampled all-device pre/during/post telemetry and verified native-child lifetimes for positive target readings without a current process, bounded by one second. Sampling cannot exclude activity between observations; no host-wide exclusivity is claimed. KDA internal selection is not promotion evidence. Sanitizer and remaining study-wide coverage are reported separately; threshold results do not establish unfinished coverage.",
+  "other_contract_packets": [
+    {
+      "classification": "outside selected frozen contract",
+      "contract_sha256": "237da579f5068fc26469f52c79b7ae33beb1ab0af057129a27c186193c5c8147",
+      "job_id": "3f4dee5a-1c99-4e60-a35c-f1b137cced29",
+      "worker_status": "storage_over_cap"
+    },
+    {
+      "classification": "outside selected frozen contract",
+      "contract_sha256": "237da579f5068fc26469f52c79b7ae33beb1ab0af057129a27c186193c5c8147",
+      "job_id": "85dc73fb-3cbd-4408-939b-5a9720256b5e",
+      "worker_status": "failed"
+    },
+    {
+      "classification": "outside selected frozen contract",
+      "contract_sha256": "237da579f5068fc26469f52c79b7ae33beb1ab0af057129a27c186193c5c8147",
+      "job_id": "47b853d3-ddfa-47f4-b1d3-601629c9663f",
+      "worker_status": "succeeded"
+    }
+  ],
+  "packets": [],
+  "reviewed_driver_sha256": "f760a9f14bbf33069510bfda647ac3288adf705797a6606451ea9e1042d7544c",
+  "reviewed_wrapper_sha256": "ac6a8d225c049abc9bc4703fe09f4e287b283a607d2fa71ce3431da02c58c6e7",
+  "sanitizer_coverage": {},
+  "schema": "cgs.qualification.v1",
+  "staging_ablations": [],
+  "update_ablations": [],
+  "update_mode_comparisons": [],
+  "update_mode_staging_ablations": []
+}

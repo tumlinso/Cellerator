@@ -1,5 +1,6 @@
 #include <Cellerator/nn/ops.hh>
 #include <Cellerator/modeling/cuda/attention.hh>
+#include <Cellerator/modeling/cuda/factorized_interaction.hh>
 #include <Cellerator/modeling/cuda/grouped_linear.hh>
 #include <Cellerator/memory/cuda/resources.hh>
 #include <ATen/cuda/CUDAContext.h>
@@ -10,6 +11,9 @@
 #include <cmath>
 #include <condition_variable>
 #include <deque>
+#include <cstdint>
+#include <limits>
+#include <utility>
 #include <thread>
 #include <memory>
 #include <mutex>
@@ -283,6 +287,188 @@ public:
         return {gq,gk,gv,at::Tensor(),at::Tensor(),at::Tensor(),at::Tensor()};
     }
 };
+
+resources::DType factorized_dtype(at::ScalarType type) {
+    TORCH_CHECK(type == at::kHalf || type == at::kFloat,
+                "factorized interaction supports FP16 or FP32 storage");
+    return type == at::kHalf ? resources::DType::float16 : resources::DType::float32;
+}
+
+at::Tensor float_workspace(std::size_t bytes, const at::TensorOptions& options) {
+    const auto floats = bytes / sizeof(float) + (bytes % sizeof(float) != 0);
+    TORCH_CHECK(floats <= static_cast<std::size_t>(
+                    std::numeric_limits<std::int64_t>::max()),
+                "factorized interaction workspace exceeds tensor extent");
+    return at::empty({static_cast<std::int64_t>(floats)}, options.dtype(at::kFloat));
+}
+
+void validate_factorized_inputs(
+    const layout::FactorizedInteractionView& plan,
+    const at::Tensor& x, const at::Tensor& z, const at::Tensor& alpha,
+    const at::Tensor& bias, const at::Tensor& gamma,
+    at::ScalarType output_dtype) {
+    (void)factorized_dtype(output_dtype);
+    for (const auto* item : {&x, &z, &alpha, &bias, &gamma}) {
+        payload(*item, "factorized interaction operand");
+        TORCH_CHECK(item->is_contiguous(),
+                    "factorized interaction operands must be contiguous");
+        TORCH_CHECK(item->device() == x.device(),
+                    "factorized interaction operands must share one CUDA device");
+    }
+    TORCH_CHECK(x.dim() == 3 && z.dim() == 2 && alpha.dim() == 2 &&
+                bias.dim() == 1 && gamma.dim() == 1,
+                "factorized interaction requires x[O,D,C], z[Q,C], alpha[A,D], bias[B], gamma[G]");
+    TORCH_CHECK(x.scalar_type() == z.scalar_type(),
+                "factorized activations and context must use one dtype");
+    TORCH_CHECK(alpha.scalar_type() == bias.scalar_type() &&
+                alpha.scalar_type() == gamma.scalar_type(),
+                "factorized parameter tensors must use one dtype");
+    TORCH_CHECK(plan.extents.outputs <= static_cast<std::uint64_t>(
+                    std::numeric_limits<std::int64_t>::max()),
+                "factorized output extent exceeds Torch dimension range");
+    TORCH_CHECK(static_cast<std::uint64_t>(x.size(0)) == plan.extents.inputs &&
+                static_cast<std::uint64_t>(z.size(0)) == plan.extents.contexts &&
+                static_cast<std::uint64_t>(alpha.size(0)) == plan.extents.alpha_rows &&
+                static_cast<std::uint64_t>(bias.size(0)) == plan.extents.biases &&
+                static_cast<std::uint64_t>(gamma.size(0)) == plan.extents.gammas &&
+                z.size(1) == x.size(2) && alpha.size(1) == x.size(1),
+                "factorized tensor shapes differ from the prepared layout");
+}
+
+struct FactorizedAutogradState : torch::CustomClassHolder {
+    FactorizedAutogradState(
+                            std::shared_ptr<native::FactorizedInteractionDeviceLayout> selected_layout,
+                            native::FactorizedInteractionProblem shape,
+                            native::FactorizedInteractionPrecision selected_precision,
+                            native::FactorizedInteractionRoute selected_route,
+                            const resources::Stream& stream)
+        : device(stream.device()), forward_stream(stream.get()), problem(shape),
+          precision(selected_precision), route(selected_route),
+          device_layout(std::move(selected_layout)), forward_complete(device, false) {
+        TORCH_CHECK(device_layout != nullptr,
+                    "factorized interaction requires a prepared device layout");
+        TORCH_CHECK(device_layout->device() == device,
+                    "factorized device layout and tensors must use one CUDA device");
+    }
+
+    int device;
+    cudaStream_t forward_stream;
+    native::FactorizedInteractionProblem problem;
+    native::FactorizedInteractionPrecision precision;
+    native::FactorizedInteractionRoute route;
+    std::shared_ptr<native::FactorizedInteractionDeviceLayout> device_layout;
+    native::FactorizedInteractionWorkspace workspace;
+    resources::Event forward_complete;
+};
+
+class FactorizedInteractionFunction : public torch::autograd::Function<FactorizedInteractionFunction> {
+public:
+    static at::Tensor forward(AutogradContext* ctx,
+                              std::shared_ptr<native::FactorizedInteractionDeviceLayout> device_layout,
+                              at::Tensor x, at::Tensor z, at::Tensor alpha,
+                              at::Tensor bias, at::Tensor gamma,
+                              std::int64_t output_type, std::int64_t route_code) {
+        TORCH_CHECK(device_layout != nullptr,
+                    "factorized interaction requires a prepared device layout");
+        const auto output_dtype = static_cast<at::ScalarType>(output_type);
+        TORCH_CHECK(route_code == 0 || route_code == 1,
+                    "factorized interaction route must be packet or direct");
+        const auto& plan = device_layout->view();
+        validate_factorized_inputs(plan, x, z, alpha, bias, gamma, output_dtype);
+        c10::cuda::CUDAGuard guard(x.device());
+        const auto torch_stream = c10::cuda::getCurrentCUDAStream(x.get_device());
+        ExternalBorrowHold hold({x, z, alpha, bias, gamma}, torch_stream);
+        record({x, z, alpha, bias, gamma}, torch_stream);
+        const auto native_stream = resources::Stream::borrow(
+            torch_stream.stream(), x.get_device());
+        const native::FactorizedInteractionProblem problem{
+            static_cast<std::uint64_t>(x.size(2)),
+            static_cast<std::uint64_t>(x.size(1))};
+        const native::FactorizedInteractionPrecision precision{
+            factorized_dtype(x.scalar_type()), factorized_dtype(alpha.scalar_type()),
+            factorized_dtype(output_dtype)};
+        auto state = c10::make_intrusive<FactorizedAutogradState>(
+            std::move(device_layout), problem, precision,
+            route_code == 0 ? native::FactorizedInteractionRoute::packet
+                            : native::FactorizedInteractionRoute::direct,
+            native_stream);
+        hold.resource(state);
+        state->device_layout->wait_on(native_stream);
+        resources::check(native::factorized_interaction_workspace(
+            state->device_layout->view(), problem, state->route, &state->workspace),
+            "factorized interaction workspace query");
+
+        auto output = at::empty(
+            {static_cast<std::int64_t>(plan.extents.outputs), x.size(1), x.size(2)},
+            x.options().dtype(output_dtype));
+        auto tape = float_workspace(state->workspace.tape_bytes, x.options());
+        auto scratch = float_workspace(state->workspace.forward_bytes, x.options());
+        record({output, tape, scratch}, torch_stream);
+        const native::FactorizedInteractionValues values{
+            view(x), view(z), view(alpha), view(bias), view(gamma)};
+        resources::check(native::factorized_interaction_forward(
+            state->device_layout->view(), problem, precision, values,
+            writable(output), writable(tape), writable(scratch),
+            torch_stream.stream(), state->route), "factorized interaction forward");
+        state->forward_complete.record(native_stream);
+        ctx->save_for_backward({x, z, alpha, bias, gamma, tape});
+        ctx->saved_data["state"] = c10::IValue::make_capsule(std::move(state));
+        return output;
+    }
+
+    static variable_list backward(AutogradContext* ctx, variable_list gradients) {
+        TORCH_CHECK(!at::GradMode::is_enabled(),
+                    "factorized interaction supports first-order autograd only");
+        TORCH_CHECK(gradients.size() == 1 && gradients[0].defined(),
+                    "factorized interaction requires an output cotangent");
+        const auto saved = ctx->get_saved_variables();
+        const auto& x = saved[0]; const auto& z = saved[1];
+        const auto& alpha = saved[2]; const auto& bias = saved[3];
+        const auto& gamma = saved[4]; const auto& tape = saved[5];
+        c10::cuda::CUDAGuard guard(x.device());
+        const auto torch_stream = c10::cuda::getCurrentCUDAStream(x.get_device());
+        variable_list owners = saved;
+        owners.push_back(gradients[0]);
+        ExternalBorrowHold hold(owners, torch_stream);
+        record(owners, torch_stream);
+        auto dy = gradients[0].to(at::kFloat).contiguous();
+        auto state = c10::static_intrusive_pointer_cast<FactorizedAutogradState>(
+            ctx->saved_data["state"].toCapsule());
+        hold.resource(state);
+        auto native_stream = resources::Stream::borrow(
+            torch_stream.stream(), x.get_device());
+        if (torch_stream.stream() != state->forward_stream)
+            native_stream.wait(state->forward_complete);
+        state->device_layout->wait_on(native_stream);
+
+        auto dx32 = at::empty(x.sizes(), x.options().dtype(at::kFloat));
+        auto dz32 = at::empty(z.sizes(), z.options().dtype(at::kFloat));
+        auto dalpha32 = at::empty(alpha.sizes(), alpha.options().dtype(at::kFloat));
+        auto dbias32 = at::empty(bias.sizes(), bias.options().dtype(at::kFloat));
+        auto dgamma32 = at::empty(gamma.sizes(), gamma.options().dtype(at::kFloat));
+        auto scratch = float_workspace(state->workspace.backward_bytes, x.options());
+        record({gradients[0], dy, dx32, dz32, dalpha32, dbias32, dgamma32, scratch},
+               torch_stream);
+        const native::FactorizedInteractionValues values{
+            view(x), view(z), view(alpha), view(bias), view(gamma)};
+        const native::FactorizedInteractionGradients destinations{
+            writable(dx32), writable(dz32), writable(dalpha32),
+            writable(dbias32), writable(dgamma32)};
+        resources::check(native::factorized_interaction_backward(
+            state->device_layout->view(), state->problem, state->precision, values,
+            view(dy), view(tape), destinations, writable(scratch),
+            native::FactorizedInteractionGradientMode::overwrite,
+            torch_stream.stream(), state->route), "factorized interaction backward");
+        auto dx = dx32.to(x.scalar_type());
+        auto dz = dz32.to(z.scalar_type());
+        auto dalpha = dalpha32.to(alpha.scalar_type());
+        auto dbias = dbias32.to(bias.scalar_type());
+        auto dgamma = dgamma32.to(gamma.scalar_type());
+        record({dx, dz, dalpha, dbias, dgamma}, torch_stream);
+        return {at::Tensor(), dx, dz, dalpha, dbias, dgamma,
+                at::Tensor(), at::Tensor()};
+    }
+};
 } // namespace
 
 at::Tensor grouped_linear_cuda(const at::Tensor& input, const at::Tensor& weights,
@@ -322,5 +508,36 @@ at::Tensor csr_scaled_dot_product_attention_cuda_prepared(
     const at::Tensor& q,const at::Tensor& k,const at::Tensor& v,
     const at::Tensor& offsets,const at::Tensor& keys,double scale,double dropout_p) {
     return attention_checked(q,k,v,offsets,keys,scale,dropout_p,true);
+}
+at::Tensor factorized_interaction_cuda(
+    const layout::FactorizedInteractionLayout& plan,
+    const at::Tensor& x, const at::Tensor& z, const at::Tensor& alpha,
+    const at::Tensor& bias, const at::Tensor& gamma,
+    at::ScalarType output_dtype, bool direct) {
+    layout::validate_factorized_interactions(plan);
+    validate_factorized_inputs(plan.view(), x, z, alpha, bias, gamma, output_dtype);
+    c10::cuda::CUDAGuard guard(x.device());
+    const auto torch_stream = c10::cuda::getCurrentCUDAStream(x.get_device());
+    auto native_stream = resources::Stream::borrow(
+        torch_stream.stream(), x.get_device());
+    auto device_layout = std::make_shared<native::FactorizedInteractionDeviceLayout>(
+        plan, x.get_device(), native_stream);
+    return factorized_interaction_cuda_prepared(
+        device_layout, x, z, alpha, bias, gamma, output_dtype, direct);
+}
+
+at::Tensor factorized_interaction_cuda_prepared(
+    const std::shared_ptr<native::FactorizedInteractionDeviceLayout>& plan,
+    const at::Tensor& x, const at::Tensor& z, const at::Tensor& alpha,
+    const at::Tensor& bias, const at::Tensor& gamma,
+    at::ScalarType output_dtype, bool direct) {
+    TORCH_CHECK(plan != nullptr,
+                "factorized interaction requires a prepared device layout");
+    validate_factorized_inputs(plan->view(), x, z, alpha, bias, gamma, output_dtype);
+    TORCH_CHECK(plan->device() == x.get_device(),
+                "prepared factorized interaction and tensors must use one CUDA device");
+    return FactorizedInteractionFunction::apply(
+        plan, x, z, alpha, bias, gamma,
+        static_cast<std::int64_t>(output_dtype), direct ? 1 : 0);
 }
 } // namespace cellerator::nn::ops

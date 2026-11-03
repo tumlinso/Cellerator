@@ -1,0 +1,51 @@
+{
+  "build_identity_preflight": {
+    "baseline_manifest_sha256": "4591a763182aac829e51e13c14f8d0bffbafda4f2e5416d1680f102437e8bb2d",
+    "baseline_runner_sha256": "f388b997e513f927072fad314a4e2cabce6d38a55b9017df143bf5ed3a4d8275",
+    "candidate_manifest_sha256": "8bb87fe60ae92f053a816dadc76177dd9b967b6bd773e2e577456e81e8906f52",
+    "candidate_runner_sha256": "cc1b11414e9e30daaf9ab169f12d558a81340b62a3ef15d0bf9e66b94567b0af",
+    "component_archive_sha256": "73f4f987db9dc4480d0efef371bc358c24b64ad6be3b472412936289fd0a574c",
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "source_file_count": 3979
+  },
+  "gpu_execution_performed": false,
+  "known_limit": "CPU tests validate a fake fixed-suite result plus exact artifact binding; actual per-tool output remains pending scheduler execution and external receipt.",
+  "scheduler_mutation_performed": false,
+  "schema": "cellerator.factorized_interactions.sanitizer_tool_wrapper_cpu_review.v1",
+  "status": "accepted_for_registration_after_corrected_wrapper",
+  "suite_contract": {
+    "cases_per_tool": 14,
+    "external_receipt_required": true,
+    "fields_checked": [
+      "y",
+      "dx",
+      "dz",
+      "dalpha",
+      "dbias",
+      "dgamma"
+    ],
+    "output_tree_immutability_checked": true,
+    "repeat_vjp_checked": false,
+    "timed": false,
+    "tool_partitions": [
+      "memcheck",
+      "racecheck",
+      "initcheck",
+      "synccheck"
+    ]
+  },
+  "test_command": "PYTHONDONTWRITEBYTECODE=1 python3 -B planning/interaction-layout-proposal-2026-11-02/validation/test_sanitizer_tool_partition.py -v",
+  "test_path": "planning/interaction-layout-proposal-2026-11-02/validation/test_sanitizer_tool_partition.py",
+  "test_result": "6/6 passed; AST parse passed",
+  "test_sha256": "db3d97ea3eff1a90a352c98e0c777fda6ab041c5036b72bd12bee46fe973d7f1",
+  "tool_cpu_preflight": {
+    "binary": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "binary_sha256": "979adf037f4e3434a976b7f0912b0a05ce3b062e31b2a73397a1bf1cd5f57547",
+    "home": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer",
+    "support_file_count": 136,
+    "support_tree_sha256": "1b7010f3f1f4ffce726282f85c2d25c30495ad1d567c3fbecb0f18ed4f6bcf65",
+    "version": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+  },
+  "wrapper_path": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer_tool_partition.py",
+  "wrapper_sha256": "3938d652a3bdb3112bf6f5c6af9d653dfca98f409380d8a7f19a5c565e7fbb5e"
+}

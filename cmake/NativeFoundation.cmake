@@ -169,12 +169,38 @@ while(_nf_pending)
         set_target_properties("${_nf_target}" PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${_nf_public_includes}")
     endif()
 endwhile()
+
+# These two C++17 host targets are the narrow structural dependency closure of
+# the optional factorized-interaction CUDA component.  Export them once in a
+# small shared set so both that component and the full native-foundation set
+# can load them without defining a partial second copy of the targets.
+set(_nf_buildtree_exports "${_nf_exports}")
+if(CMAKE_CUDA_COMPILER_LOADED
+   AND TARGET cellerator_factorized_interaction_cuda
+   AND TARGET cellerator_support
+   AND TARGET cellerator_layout)
+    list(REMOVE_ITEM _nf_exports cellerator_support cellerator_layout)
+    install(TARGETS cellerator_support cellerator_layout
+        EXPORT CelleratorFactorizedInteractionBaseTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT FactorizedInteractionCUDA)
+    install(EXPORT CelleratorFactorizedInteractionBaseTargets NAMESPACE Cellerator::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator
+        COMPONENT FactorizedInteractionCUDA)
+    file(APPEND "${CELLERATOR_HOST_CONFIG}"
+        "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFactorizedInteractionBaseTargets.cmake\")\n")
+endif()
+
 install(TARGETS ${_nf_exports} EXPORT CelleratorNativeTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(EXPORT CelleratorNativeTargets NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
-export(EXPORT CelleratorNativeTargets NAMESPACE Cellerator::
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/CelleratorNativeTargets.cmake")
+# The build-tree convenience export remains a single complete closure even
+# though the installed CUDA component has shared narrow export sets.
+if(_nf_buildtree_exports)
+    export(TARGETS ${_nf_buildtree_exports} NAMESPACE Cellerator::
+        FILE "${CMAKE_CURRENT_BINARY_DIR}/CelleratorNativeTargets.cmake")
+endif()
 # Extend the host package rather than replace its existing compiler contract.
 file(APPEND "${CELLERATOR_HOST_CONFIG}"
     "include(CMakeFindDependencyMacro)\nfind_dependency(CUDAToolkit)\n"

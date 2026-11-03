@@ -1,0 +1,38 @@
+{
+  "captured_at": "2026-11-02T18:46:09.927010+00:00",
+  "study_status": {
+    "paused": false,
+    "registrations": []
+  },
+  "study_doctor": {
+    "initialized": true,
+    "registry_count": 0,
+    "scheduler_configured": true,
+    "scheduler_connected": true,
+    "scheduler_access": {
+      "ready": true,
+      "principal_id": "autobench",
+      "required_actions": [
+        "jobs.submit",
+        "jobs.get",
+        "jobs.list",
+        "jobs.control",
+        "resources.forecast",
+        "history.compact:autobench"
+      ],
+      "missing_actions": [],
+      "error": null
+    }
+  },
+  "parent_status": {
+    "paused": true,
+    "registrations": [
+      "cellerator-native-data-gated-product-scale",
+      "cellerator-native-data-gated-product-timing",
+      "cellerator-native-data-gated-product",
+      "cellerator-sparse-support-indexing"
+    ]
+  },
+  "aggregate_gpu_seconds": 14400,
+  "max_job_seconds": 900
+}

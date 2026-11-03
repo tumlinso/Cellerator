@@ -1,0 +1,144 @@
+{
+  "schema": "cgs.measurement-matrix.v3",
+  "frozen_before_timing": true,
+  "purpose": "Bound the initial complete-cost study; retain all failed, rejected and inconclusive alternatives.",
+  "workloads": [
+    "dag7-legacy-complete-consumer-sparse-low-frozen-r1-change0",
+    "dag7-64root-complete-consumer-coherent-dense-high-update-r16-change1",
+    "dag2304-legacy-complete-consumer-sparse-high-frozen-r256-change10",
+    "dag2304-64root-complete-consumer-diverse-dense-low-update-r1-change100"
+  ],
+  "inputs": [
+    "synthetic",
+    "10x-pbmc-cgatac01"
+  ],
+  "gate_routes": [
+    "supplied",
+    "ste",
+    "teacher"
+  ],
+  "bodies": [
+    "product",
+    "linear"
+  ],
+  "precision": [
+    "fp16 product; fp16 or fp32 linear"
+  ],
+  "execution_arms": [
+    "scalar",
+    "bitmap",
+    "direct",
+    "cohort-direct",
+    "cohort-shared",
+    "library",
+    "library-batched",
+    "cohort-direct-two-tile"
+  ],
+  "tile_sizes": [
+    32,
+    64,
+    128
+  ],
+  "staging_buffers": [
+    1,
+    2
+  ],
+  "capacity_rejection": "For the frozen workloads, 128-cell cohort-shared with two buffers exceeds the implementation's 48000-byte shared-memory cap; retain the source-bound preflight evidence and do not submit those arms.",
+  "scenarios": [
+    {
+      "workload": 0,
+      "input": "synthetic",
+      "gate": "supplied",
+      "body": "product",
+      "precision": "fp16",
+      "updates": [
+        "none"
+      ]
+    },
+    {
+      "workload": 1,
+      "input": "synthetic",
+      "gate": "ste",
+      "body": "linear",
+      "precision": "fp16",
+      "updates": [
+        "none"
+      ]
+    },
+    {
+      "workload": 2,
+      "input": "synthetic",
+      "gate": "teacher",
+      "body": "product",
+      "precision": "fp16",
+      "updates": [
+        "rebuild",
+        "incremental"
+      ]
+    },
+    {
+      "workload": 3,
+      "input": "synthetic",
+      "gate": "supplied",
+      "body": "linear",
+      "precision": "fp16",
+      "updates": [
+        "rebuild",
+        "incremental"
+      ]
+    },
+    {
+      "workload": 0,
+      "input": "10x-pbmc-cgatac01",
+      "gate": "teacher",
+      "body": "linear",
+      "precision": "fp16",
+      "updates": [
+        "none"
+      ]
+    },
+    {
+      "workload": 1,
+      "input": "10x-pbmc-cgatac01",
+      "gate": "supplied",
+      "body": "product",
+      "precision": "fp16",
+      "updates": [
+        "rebuild",
+        "incremental"
+      ]
+    },
+    {
+      "workload": 2,
+      "input": "10x-pbmc-cgatac01",
+      "gate": "ste",
+      "body": "product",
+      "precision": "fp16",
+      "updates": [
+        "none"
+      ]
+    },
+    {
+      "workload": 3,
+      "input": "10x-pbmc-cgatac01",
+      "gate": "teacher",
+      "body": "linear",
+      "precision": "fp32",
+      "updates": [
+        "rebuild",
+        "incremental"
+      ]
+    }
+  ],
+  "selection_rule": "For each listed scenario compare scalar, bitmap and direct controls, cohort-direct and cohort-shared, and both library controls for linear. Examine tiles 32/64/128 with one and two buffers where supported, matching numerical contracts and exact device/source/binary/workload identities. This matrix is a target, not a claim that the fixed budget can cover every cell; report unfinished cells rather than choosing post-hoc.",
+  "preconditions": [
+    "source and workload contract frozen",
+    "full-chain correctness",
+    "independent validator",
+    "successful receipt-bound interference assessment",
+    "exact matched workload digest"
+  ],
+  "operational_cost": "cold_execution_preparation_ms + recurrent_complete_horizon_ms + output_recovery_ms, each once",
+  "acceptance": "Paired rotating-order independent trials on the same device, select the fastest applicable matched scalar, bitmap, direct, library, or library-batched control without excluding unfavorable controls; require strict latency reduction greater than 5% and a paired 95% confidence interval supporting improvement. Unsupported or unfinished coverage remains explicit.",
+  "matched_staging_ablation": "Compare cohort-direct-two-tile with cohort-shared on the same UUID, inputs, gate, precision, condition updates, tile and staging, as the matched work-ownership cached-versus-shared comparison; retain the original cohort-direct result separately."
+}

@@ -1,0 +1,63 @@
+{
+  "scope": "CMake installation/export integration and external consumer",
+  "source_files_sha256": {
+    "CMakeLists.txt": "1698bf0685a6b85fc2917d0139d1c96c6ea0d422362be4978e4fd736d5ea3330",
+    "cmake/CelleratorNativeData.cmake": "b9696482d6f6f51db068ae7e5a0205ccab41ad54d9676cf4344e65ffb6e10e62",
+    "cmake/CelleratorNativeDataCUDA.cmake": "6e64fe239da0b02a116bb86eacc219edce2c0bdc3d88799e2bf1731549b8ac17",
+    "cmake/CelleratorFrameworkCUDA.cmake": "535922d93329bf0570ff9eb7a25eea9a2622fe6320b6749966bd95b8ebfcc340",
+    "cmake/CelleratorNN.cmake": "5016328aa94ddac69e57c3e54ef56fe22d4a59409ff2dddbb2e4e8ec8a764a56",
+    "cmake/NativeFoundation.cmake": "f1591e325abe7d3611170e46f2fdc3dc2666e9bcb3fe7cc7e079559757c2b5ba",
+    "src/layout/CMakeLists.txt": "f90205307615072244b1b6fa23ac18465a3a670f74e37b1075b5f2bfb7c4c710",
+    "src/support/CMakeLists.txt": "cd41bf91fd65fa068b43cac3e7cfa6a4e7e8612fdf065ae4acc8d7fb9cc1957e",
+    "tests/factorized_interactions/installed_consumer/CMakeLists.txt": "99ffbfcbbe31e7ff3c90ef3d0887c90b8dcf6ad2a1098373eaf228acfa445b17",
+    "tests/factorized_interactions/installed_consumer/main.cc": "73090c6338badbb37e3a0240c1d47a4f9d5fb420e65e245e17fe5211c7e00dee"
+  },
+  "full_package_build_tree": {
+    "path": "/tmp/cellerator-factorized-interaction-python-build",
+    "config_sha256": "22defd1b1e99391dbd3136c1b837e52604092525a5a46f91c060a2498fa5c7b7",
+    "full_config_sha256": "b37e35cca44883a8b324bf89fcdcd0c815cd87159cfc9af14cb02b23d09452a2",
+    "cuda_architecture": "70",
+    "toolchain": "CMake 3.28.3; NVCC/CUDAToolkit 12.9.86; GCC 12.4; Torch enabled"
+  },
+  "generated_export_files_sha256": {
+    "CelleratorPartOneTargets.cmake": "8660255b5630a7f6fa86bb412903e3881e6ed933c04647d1d86cc1ede910c72a",
+    "CelleratorFactorizedInteractionMemoryTargets.cmake": "9b842ca222beabcd6c2684afddff00183230424974ef967ecc2caf8867a87778",
+    "CelleratorFactorizedInteractionBaseTargets.cmake": "7f67e0ecfd4f3baae5c76a0bd97988e3dd7418c8c010ad753149d2721155b132",
+    "CelleratorNativeTargets.cmake": "1855aa9ea9077c64695166f7a777eb28dc501615a7d48b49d4640e822fd8b502",
+    "CelleratorNativeDataTargets.cmake": "fc2ab117fc05f67bc8f0143e28f2e26d90f7749f7960f3ddf959d90247ef3a57",
+    "CelleratorFactorizedInteractionTargets.cmake": "480ae706566297e566018597aee7ee832647fbdf36139664df17323ac15543ea",
+    "CelleratorNativeDataCUDATargets.cmake": "1d865bd7e15fbb31da73f72b1ec4476a5e11fb565bf03563554fcda6a2d9bafc",
+    "CelleratorConditionalTargets.cmake": "b47f5bbc279c7e1ebf200feba0ae1ec87548546f7af1397721ff0495a4cf082e",
+    "CelleratorFrameworkCUDATargets.cmake": "e6a5000213aa7c58cc2e70182d5a744fbd5ffe24f02301b5d20205f87fd454f6",
+    "CelleratorFrameworkParameterTransferTargets.cmake": "61bef58609758c1af464218ec0bfc83bd1d6733b7536c6d8c4da4331fc106e0f",
+    "CelleratorNNTargets.cmake": "1b4cd580a95f329e1a07f25e0c534fd2c42ff9014f7a334c52df103cd8624cdb"
+  },
+  "installed_narrow_component": {
+    "prefix": "/tmp/cellerator-factorized-interaction-component-prefix-v3",
+    "config_sha256": "22defd1b1e99391dbd3136c1b837e52604092525a5a46f91c060a2498fa5c7b7",
+    "component_exports": {
+      "CelleratorFactorizedInteractionBaseTargets": "Cellerator::support, Cellerator::layout",
+      "CelleratorFactorizedInteractionMemoryTargets": "Cellerator::memory_cuda",
+      "CelleratorFactorizedInteractionTargets": "Cellerator::factorized_interaction_cuda"
+    },
+    "consumer_build": "/tmp/cellerator-factorized-interaction-installed-consumer-v5",
+    "consumer_configure_and_link": "passed",
+    "consumer_executed": false
+  },
+  "package_load_review": {
+    "result": "passed",
+    "sequences": ["bare full-first", "NN-first", "narrow-first", "repeated mixed loads"],
+    "canonical_memory_target_identity_preserved": true,
+    "narrow_optional_nn": "accepted and marked unavailable",
+    "narrow_required_nn": "rejected",
+    "evidence": [
+      "package-review-full-first.log",
+      "package-review-nn-first.log",
+      "package-review-narrow-first.log",
+      "package-review-optional-narrow-real.log",
+      "package-review-missing-required-real.log",
+      "package-review-identities.json"
+    ],
+    "limit": "Full-prefix load-order fixtures use placeholder archives and stub Torch; they prove CMake export parsing, not linking."
+  }
+}

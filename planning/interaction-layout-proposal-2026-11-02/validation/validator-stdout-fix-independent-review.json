@@ -1,0 +1,41 @@
+{
+  "schema": "cellerator.factorized_interactions.validator_stdout_fix_review.v1",
+  "review": {
+    "reviewer": "interaction_oracle",
+    "date": "2026-11-02",
+    "result": "accepted for the bounded protocol defect",
+    "scope": "Keep machine-readable validation JSON separate from runner or sanitizer stdout while preserving child diagnostics and nonzero exit handling."
+  },
+  "files": {
+    "bench/factorized_interactions/validate_runner.py": "466b495ac56fb0df9c248649f7307d871de681200a4a90de43457c0c6447de31",
+    "tests/factorized_interactions/test_validator_smoke.py": "86b7a8636cc34d4473032a560639f68046dee712f58ba52a076331655512f09c"
+  },
+  "reviewed_behavior": {
+    "runner_stdout_destination": "validator stderr",
+    "validator_summary_destination": "validator stdout as JSON",
+    "runner_nonzero_status": "still raises through subprocess.run(check=True)",
+    "reference_math_or_tolerances_changed": false,
+    "reference_cache_behavior_changed": false
+  },
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3 -m unittest discover -s tests/factorized_interactions -p 'test_validator_smoke.py' -v",
+      "result": "4/4 passed",
+      "duration_seconds": 1.44,
+      "coverage": "Fake stdout banner on a successful child remains on stderr while validator JSON parses; child exit 99 remains a failure and preserves the banner on stderr; existing scheduler-context and interpreter-symlink smoke checks pass."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3 -m unittest discover -s tests/factorized_interactions -p 'test_*.py' -v",
+      "result": "47/47 passed",
+      "duration_seconds": 13.433,
+      "coverage": "Full verifier-owned factorized interaction Python suite, including oracle, fixed corpus, cache integrity, wire transport, validator, and prepared Torch constructor tests. CPU only."
+    }
+  ],
+  "limitations": {
+    "actual_compute_sanitizer_banner_observed": false,
+    "gpu_runtime_validation_of_this_source_change": false,
+    "prior_char_zero_json_error_proves_empty_stdout": false,
+    "interpretation": "The retained JSONDecodeError establishes that captured bytes were not valid JSON at the first position; without the raw child stdout bytes it does not establish that stdout was empty. The fake-banner regression reproduces the protocol failure mode, and the managed direct diagnostic remains necessary to observe the installed Compute Sanitizer output."
+  },
+  "related_evidence": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer-v16-failure-diagnostic.json"
+}

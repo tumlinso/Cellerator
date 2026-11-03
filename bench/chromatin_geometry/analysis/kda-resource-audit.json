@@ -1,0 +1,23 @@
+{
+  "schema": "cgs.resource-audit.v1",
+  "lane": 1,
+  "scope": "pre-retry study-only registration; values apply to this packet, not parent enrollment",
+  "first_failed_packet": "3f4dee5a-1c99-4e60-a35c-f1b137cced29",
+  "observed_failed_scratch_bytes": 246418452,
+  "observed_largest_retained_file_bytes": 120830868,
+  "observed_prior_engine_workspace_bytes_approx": 247463936,
+  "observed_lane_managed_bytes_approx": 3113851289,
+  "retry_scratch_limit_bytes": 536870912,
+  "retry_per_file_limit_bytes": 268435456,
+  "retry_lane_retained_cap_bytes": 4294967296,
+  "host_retained_cap_bytes": 4294967296,
+  "packet_timeout_seconds": 600,
+  "engine_budget_seconds": 500,
+  "expected_seconds": 450,
+  "packet_cpu_cores": 2,
+  "packet_host_memory_bytes": 2147483648,
+  "packet_gpu_admission_memory_bytes": 2147483648,
+  "representative_triad_net_device_allocation_bytes": 20971520,
+  "process_limit": "No explicit TasksMax or RLIMIT_NPROC in this registration; inherited systemd/user limits apply. The worker explicitly sets only RLIMIT_FSIZE and RLIMIT_CORE=0.",
+  "limits": "Supported one-shot environment overrides; no host/global settings changed. Footprints are observations, not upper bounds."
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "cellerator.factorized_interactions.unintended_old_suite_attempt.v1",
+  "event": {
+    "time_utc": "2026-11-02T21:06:16Z",
+    "cause": "A normal Autobench reconcile was used to import the completed revision-8 one-case diagnostic. By the time it selected pending work, the old main sanitizer packet cooldown had expired, so it submitted the main packet instead.",
+    "intended_action": "Import the completed diagnostic and stop old-workspace scheduling.",
+    "follow_up": "No further reconcile/register actions on the old measurement workspace. Root instructed to pause the obsolete workflow through supported Autobench control."
+  },
+  "attempt": {
+    "benchmark": "cellerator-factorized-interactions",
+    "packet": "cuda-sanitizer",
+    "packet_index": 3,
+    "autobench_attempt_id": "a41e4d6f-5bce-4dc3-8249-358757416519",
+    "autobench_state_at_last_read": "submitted",
+    "scheduler_job_id": "647bde82-52ba-46b4-967e-c15f9e0d17df",
+    "scheduler_attempt_id": "033b8df1-7cca-4782-b728-7f8dcde0273d",
+    "scheduler_state": "succeeded",
+    "scheduler_exit_code": 0,
+    "scheduler_cleanup_verified": true,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "execution_precondition": "verified GPU quiescence with two idle samples",
+    "source_fingerprint": "07173fdb049eb5312c0e18eccb4da845fe57f0945c8ab610a2a8d6890b4a1f31",
+    "build_fingerprint": "5a2ae37ebdb637ade195994448f8b15bc048e29a45f610f5573a8cc5504f9543"
+  },
+  "interpretation": {
+    "worker_result_imported": false,
+    "sanitizer_suite_pass_claimed": false,
+    "scheduler_exit_zero_is_not_autobench_packet_acceptance": true,
+    "cancellation_or_additional_retry_performed": false
+  }
+}

@@ -1,0 +1,605 @@
+[benchmark]
+name = "factorized-timing-partitions"
+revision = 1
+
+[data]
+paths = [
+  ".autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered.tar",
+  ".autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered-manifest.json",
+  ".autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native.tar",
+  ".autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native-manifest.json",
+  ".autobench/data/factorized-interactions/prebuilt-native-1/materialize_prebuilt.py",
+  ".autobench/data/factorized-interactions/timing-wrapper-2/bounded_validation.py",
+  ".autobench/data/factorized-interactions/timing-wrapper-2/recorded_qualification.py",
+  ".autobench/data/factorized-interactions/timing-wrapper-2/recorded_receipts.py",
+  ".autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  ".autobench/data/factorized-interactions/timing-wrapper-2/tests/test_run_timing_partition.py",
+  ".autobench/data/factorized-interactions/timing-wrapper-2/tests/test_recorded_qualification.py",
+  ".autobench/data/factorized-interactions/timing-wrapper-2/tests/test_recorded_receipts.py",
+  ".autobench/data/factorized-interactions/qualification-evidence-1/**",
+]
+
+[build]
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/prebuilt-native-1/materialize_prebuilt.py",
+  "--source-archive", "{snapshot}/.autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered.tar",
+  "--source-manifest", "{snapshot}/.autobench/data/factorized-interactions/native-qualified-source-1/native-performance-filtered-manifest.json",
+  "--bundle", "{snapshot}/.autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native.tar",
+  "--bundle-manifest", "{snapshot}/.autobench/data/factorized-interactions/prebuilt-native-1/prebuilt-native-manifest.json",
+  "--build", "{build}",
+]
+expected_seconds = 90
+kill_seconds = 180
+resources = { cpu_cores = 2, host_memory_bytes = 4294967296 }
+
+[[packet]]
+name = "timing-packet_a4_m32_u16-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u16", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u16-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u16", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u32-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u32", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u32-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u32", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u64-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u64", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u64-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u64", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u96-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u96", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u96-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u96", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u128-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u128", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u128-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u128", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u64_fanin8-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u64_fanin8", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-packet_a4_m32_u64_fanin8-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "packet_a4_m32_u64_fanin8", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a2_m64_u32_fanin4-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a2_m64_u32_fanin4", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a2_m64_u32_fanin4-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a2_m64_u32_fanin4", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a3_m48_u24_fanin4-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a3_m48_u24_fanin4", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a3_m48_u24_fanin4-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a3_m48_u24_fanin4", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a4_m32_u64_wide128-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a4_m32_u64_wide128", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a4_m32_u64_wide128-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a4_m32_u64_wide128", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a4_m256_u32_fanin64_tied-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a4_m256_u32_fanin64_tied", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a4_m256_u32_fanin64_tied-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a4_m256_u32_fanin64_tied", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a4_m32_u32_k1_sharedcontext-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a4_m32_u32_k1_sharedcontext", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a4_m32_u32_k1_sharedcontext-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a4_m32_u32_k1_sharedcontext", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a4_m32_u32_k16_contextreuse-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a4_m32_u32_k16_contextreuse", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a4_m32_u32_k16_contextreuse-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a4_m32_u32_k16_contextreuse", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a4_m32_u32_cells512-exploration"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a4_m32_u32_cells512", "--phase", "exploration",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }
+
+[[packet]]
+name = "timing-a4_m32_u32_cells512-confirmation"
+kind = "timing"
+environment = { PYTHONDONTWRITEBYTECODE = "1", OPENBLAS_NUM_THREADS = "1" }
+argv = [
+  "python3", "{snapshot}/.autobench/data/factorized-interactions/timing-wrapper-2/run_timing_partition.py",
+  "--source", "{build}/source",
+  "--runner", "{build}/native_candidate/native_build/cmake/cellerator_factorized_interaction_candidate_runner",
+  "--build-manifest", "{build}/native_candidate/native_build/factorized_interactions_build_manifest.json",
+  "--workload", "a4_m32_u32_cells512", "--phase", "confirmation",
+  "--expected-uuid", "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+  "--qualification-bundle", "{snapshot}/.autobench/data/factorized-interactions/qualification-evidence-1/qualification_bundle.json",
+  "--artifact-dir", "{output}/artifacts", "--output", "{output}/timing.json",
+]
+expected_seconds = 480
+kill_seconds = 600
+resources = { scheduler = [
+  { kind = "gpu", quantities = { memory_bytes = 6442450944 }, mode = "exclusive", selectors = { resource_id = "gpu:testlsserver:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a" } },
+  { kind = "cpu", quantities = { cores = 2 }, mode = "shared" },
+  { kind = "memory", quantities = { bytes = 8589934592 }, mode = "shared" },
+], tags = ["gpu.exclusive"] }

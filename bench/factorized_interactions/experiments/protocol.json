@@ -1,0 +1,47 @@
+{
+  "schema": "cellerator.factorized_interactions.kda_protocol.v1",
+  "target": {
+    "kind": "cuda",
+    "architecture": "sm_70"
+  },
+  "execution": {
+    "kda_mode": "direct",
+    "entrypoint": "experiments/in_job_kda.py",
+    "outer_context_schema": "cellerator.factorized_interactions.outer_execution_context.v1",
+    "submit_nested_scheduler_job": false,
+    "selection_requires_external_receipt_and_cleanup": true
+  },
+  "comparison": {
+    "candidate_count": 2,
+    "paired_blocks": 7,
+    "confirmation_blocks": 7,
+    "order_policy": "alternate incumbent/challenger then challenger/incumbent per case across exploration and confirmation",
+    "confidence": 0.95,
+    "bootstrap_samples": 10000
+  },
+  "root_selection": {
+    "candidate_win_point_speedup_min": 1.1,
+    "candidate_win_ci_low_min_exclusive": 1.0,
+    "maximum_supported_case_time_regression": 0.05,
+    "kda_max_regression_benefit_units": 0.04761904761904767,
+    "experiment_only": true
+  },
+  "timing": {
+    "metric": "warm_forward_vjp_batch_host_wall_mean",
+    "unit": "ms_per_forward_vjp",
+    "direction": "minimize",
+    "warmup": 3,
+    "repetitions": 1,
+    "rounds": 7,
+    "confirmation_rounds": 7,
+    "seed": 20261102,
+    "runner_iterations": 30,
+    "scope": "one fresh paired runner process per candidate and case per block; three caller-level forward/VJP warmups; primary is host-wall time for 30 uninstrumented forward/VJP calls plus one final stream synchronization, divided by 30; includes launch, tape, output/gradient reductions and synchronization amortized over calls; excludes preparation, upload/conversion and optimizer work; event-timed forward/backward/VJP vectors are secondary diagnostics only"
+  },
+  "fixed_precision": {
+    "activation_dtype": "fp16",
+    "parameter_dtype": "fp16",
+    "output_dtype": "fp16",
+    "gradient_mode": "overwrite"
+  }
+}

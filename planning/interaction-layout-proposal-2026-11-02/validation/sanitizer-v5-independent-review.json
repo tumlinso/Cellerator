@@ -1,0 +1,35 @@
+{
+  "schema": "cellerator.factorized_interactions.sanitizer_graph_independent_review.v1",
+  "reviewed_at": "2026-11-02",
+  "status": "accepted_for_controlled_submission; no GPU result yet",
+  "graph": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/sanitizer-partitions-v5.toml",
+    "sha256": "e6fb836ada3873209458495af116744fd995859ca1d52812883fc21cb15e5923",
+    "revision": 5,
+    "packets": ["memcheck", "racecheck", "initcheck", "synccheck"],
+    "per_packet_cases": 14,
+    "per_packet_timeout_seconds": 600,
+    "expected_seconds": 480,
+    "device_uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "compute_sanitizer_home": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer"
+  },
+  "staged_inputs": {
+    "source_closure_sha256": "1f8e34ce89594fc3d8fb3d63c46600091c24f3016d6a9ddfd9dc3630eb08543c",
+    "prebuilt_bundle_sha256": "34ed1254850a9217ff6da1be127a14ae24f5ba4db2d45093be5813085b9d871",
+    "wrapper_sha256": "e5bafd545ecaaae4a093f533da9e96276f6795e6f91691de25180dcf0ad04de7",
+    "dispatch_fixture_sha256": "e26d688ceccf25f8f98a29a8f2bf522d84a2653d2e643d5c7102125e5e45e0d3",
+    "test_sha256": "1159a37b48d48f8b0bc43c592f19fab9ef6d6e1403bd03ac7e35024cd62565d3"
+  },
+  "checks": {
+    "staged_python312_command": "PYTHONDONTWRITEBYTECODE=1 /home/tumlinson/.local/state/autobench/releases/0.1.0-4f4ee30-py312/venv/bin/python3 -B -m unittest discover -s planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/data/factorized-interactions/sanitizer-wrapper-4 -p 'test_*.py' -v",
+    "staged_result": "8 tests passed in 0.739 seconds",
+    "graph_delta_from_v4": "Only revision increments and all wrapper data/argv paths switch from sanitizer-wrapper-3 to sanitizer-wrapper-4.",
+    "runtime_identity_and_tool_selection": "pass",
+    "registered_packet_outputs_outside_shared_build": true
+  },
+  "qualification_limits": [
+    "The prior wrapper-v2 rejection has no imported inner suite report; no sanitizer finding can be inferred from it.",
+    "No sanitizer tool has yet produced an imported 14-of-14 report under wrapper v3.",
+    "Each partition must still be bound to its own successful Autobench result/current pointer and completed Scheduler receipt with cleanup_verified true."
+  ]
+}

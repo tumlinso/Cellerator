@@ -1,0 +1,35 @@
+{
+  "schema": "cellerator.shared_product_circuit.cpu_build_handoff.v1",
+  "recorded_at": "2026-11-03T14:44:59.390711+00:00",
+  "compiled": true,
+  "cuda_executed": false,
+  "cpu_heavy_jobs_stopped": true,
+  "private_files_sha256": {
+    "CMakeLists.txt": "3a6406c3ebaa05be76353feb837ad06a4b4d8dfeed6112e6ec9d656dbf4ddf83",
+    "build_runner.py": "e296d467dd16bd4c963c32dd608286e722bf678f713ff4dde628d4b31159cbde",
+    "circuit_runner.cu": "441393b6fb3b0a67c892ceb1e9bfe76f9582fc88c367b76813f7ebb6bd4addf6",
+    "circuit_kernels.cuh": "fc75e9905d4fc0db50e64b93ba82adb67e90937b9df34a3e95a9df2a8686048c",
+    "PROVENANCE.json": "276fdc54fbefbc0cada6c1f984dd3e3fded35dd0bf1fc9cc72cb3c916954c41a"
+  },
+  "runtime_manifest": "/tmp/cellerator-shared-product-circuit-frozen-v1/build_manifest.json",
+  "runtime_manifest_sha256": "b759ac045f320f1b97b101cdfba9ad65dd3681ea7ea30c32ddd650b673adc82c",
+  "runner": "/tmp/cellerator-shared-product-circuit-frozen-v1/cmake/shared_product_circuit_runner",
+  "runner_binary_sha256": "f948d55a649f6e7c8f78f95a1f4ab324a1b31a88d161e56657362f8022e7f52a",
+  "build_source_closure_sha256": "01153b93dc18ecb6914f7af9dbfdd676cb739d7d6955a8358f3f9c36031f3522",
+  "actual_source_dependencies": 19,
+  "checks": [
+    "standalone NVCC12.9/GCC12 Release SM70 compile/link:passed",
+    "Python build helper py_compile:passed",
+    "git diff --check (prototype):passed"
+  ],
+  "warnings": [
+    "NVCC deprecation warning for pre-SM75 offline compilation",
+    "unused host-only dtype helper retained from wire runner fork"
+  ],
+  "limits": [
+    "No CUDA execution or runtime numerical/sanitizer/performance claim",
+    "The matched unfactored control computes a*b once and retains it inside complete contributions",
+    "Circuit and control use same two-plane compensated partial scratch and reducers",
+    "Parameter refresh coverage is same executable across separate input cases, not in-process mutation"
+  ]
+}

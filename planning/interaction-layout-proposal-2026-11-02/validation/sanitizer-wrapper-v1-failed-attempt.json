@@ -1,0 +1,28 @@
+{
+  "autobench_attempt_id": "b5d70a49-4417-41fb-ac7e-ee616f67f462",
+  "corrected_wrapper": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/validation/sanitizer_tool_partition.py",
+    "sha256": "3938d652a3bdb3112bf6f5c6af9d653dfca98f409380d8a7f19a5c565e7fbb5e",
+    "tests_sha256": "db3d97ea3eff1a90a352c98e0c777fda6ab041c5036b72bd12bee46fe973d7f1"
+  },
+  "failure": "suite report rejected: a fixed case did not check output and all repeated VJPs",
+  "interpretation": {
+    "confirmed": "The frozen suite does not pass --repeat-vjp, while wrapper v1 required repeat-VJP evidence.",
+    "not_established": "The failed packet's inner 14 memcheck results are unavailable and are not claimed as passed.",
+    "repair": "Wrapper v2 checks the fixed suite's six existing evidence fields (y and five VJPs), reports repeat_vjp_checked=false, and preserves all other checks."
+  },
+  "provenance": "Operator-reported output from the supported Autobench results --details path; imported failed packet output was unavailable, so inner suite rows are not independently observed.",
+  "registered_graph": {
+    "path": "planning/interaction-layout-proposal-2026-11-02/measurement-performance/.autobench/registry/factorized-sanitizer-partitions.toml",
+    "revision": 1,
+    "sha256": "76fc2f7dfc1267aef41960c6c8ccdbcf97332ff96304cdc5d0d5e01693a56f47"
+  },
+  "reported_cleanup_verified": true,
+  "reported_duration_seconds": 53.82,
+  "reported_return_code": 2,
+  "scheduler_job_id": "45637720-9e06-487b-b41f-4760e73e39b9",
+  "schema": "cellerator.factorized_interactions.sanitizer_wrapper_attempt_review.v1",
+  "status": "failed_harness_attempt",
+  "wrapper_v1_sha256": "78880b8b56dd5790ee59c44f61b26da79d8da94d68a8cda36dad56767c0322a3",
+  "wrapper_v1_test_sha256": "c8e99e03d5276ce7443299fb4025707332c7b1c93dc8ce0d7b310f5ce7d82ffe"
+}
