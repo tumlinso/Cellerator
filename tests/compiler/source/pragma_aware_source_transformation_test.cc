@@ -23,8 +23,8 @@ int main() {
         std::ofstream support("/tmp/cellerator_pragma_aware_source_transformation.hh");
         support << "template<unsigned long long> constexpr int cellerator_shadow_field(){return 2;}\n";
         support.close();
-        const char* host = "clang++-18 -std=c++17 -fsyntax-only -I/tmp -include /tmp/cellerator_pragma_aware_source_transformation.hh /tmp/cellerator_pragma_aware_source_transformation.cc";
-        const char* cuda = "clang++-18 -std=c++17 -DCELLERATOR_CUDA_ENABLED=1 -fsyntax-only -I/tmp -include /tmp/cellerator_pragma_aware_source_transformation.hh /tmp/cellerator_pragma_aware_source_transformation.cc";
+        const char* host = "clang++-18 -std=c++20 -fsyntax-only -I/tmp -include /tmp/cellerator_pragma_aware_source_transformation.hh /tmp/cellerator_pragma_aware_source_transformation.cc";
+        const char* cuda = "clang++-18 -std=c++20 -DCELLERATOR_CUDA_ENABLED=1 -fsyntax-only -I/tmp -include /tmp/cellerator_pragma_aware_source_transformation.hh /tmp/cellerator_pragma_aware_source_transformation.cc";
         if (std::system(host) != 0 || std::system(cuda) != 0) throw std::runtime_error("Clang rejected mixed shadow translation unit");
         std::cout << "validated pragma-aware mixed source transformation in host and CUDA-enabled modes\n";
         return 0;

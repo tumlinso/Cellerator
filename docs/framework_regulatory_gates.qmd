@@ -129,10 +129,12 @@ launch. An independent scalar boolean oracle
 matched the packed representation over 70 occurrences, including required and
 forbidden bits crossing input word boundaries, accessibility beyond rule 63,
 empty conjunctions, duplicate occurrences and independently mutated inherited
-state. Host construction also checks malformed rules.
+state. Host construction also checks malformed rules. The reported validation
+predates the current C++20 minimum; the command below uses the current compiler
+floor and does not revise that source-bound result.
 
 ```sh
-nvcc -std=c++17 -arch=sm_70 -Iinclude \
+nvcc -std=c++20 -arch=sm_70 -Iinclude \
   tests/framework/cuda/regulatory_gates_smoke.cu \
   src/modeling/cuda/regulatory_gates.cu \
   -o /tmp/cellerator-regulatory-gates-smoke

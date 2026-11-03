@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.28)
+project(CelleratorModuleConsumer LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS core_module)
+find_package(anndata CONFIG REQUIRED)
+
+foreach(name IN ITEMS first second)
+    add_executable(cellerator_${name}_importer ../module_contract.cc)
+    target_link_libraries(cellerator_${name}_importer PRIVATE Cellerator::core_module anndata::anndata)
+endforeach()
+
+enable_testing()
+add_test(NAME first_importer COMMAND cellerator_first_importer)
+add_test(NAME second_importer COMMAND cellerator_second_importer)

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(cellerator_semantic_spine_native LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CUDA_STANDARD 20)
 set(CMAKE_CUDA_ARCHITECTURES 70)
 get_filename_component(SPINE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../.." ABSOLUTE)
 # Build the actual current dependency graph. The old handwritten archive list

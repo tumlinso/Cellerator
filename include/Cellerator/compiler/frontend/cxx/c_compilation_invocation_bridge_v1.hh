@@ -11,9 +11,8 @@ namespace Cellerator::compiler::frontend::cxx {
 inline constexpr std::uint32_t cxx_compilation_invocation_schema_version_v1 = 1;
 
 enum class cxx_language_mode_v1 : std::uint8_t {
-    cxx17 = 1,
-    cxx20,
-    cxx23,
+    cxx20 = 2,
+    cxx23 = 3,
 };
 
 enum class cxx_compilation_invocation_status_v1 : std::uint8_t {

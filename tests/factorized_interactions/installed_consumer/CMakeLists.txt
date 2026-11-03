@@ -38,6 +38,6 @@ if(NOT _memory_archive OR NOT EXISTS "${_memory_archive}")
 endif()
 
 add_executable(factorized_interaction_installed_consumer main.cc)
-target_compile_features(factorized_interaction_installed_consumer PRIVATE cxx_std_17)
+target_compile_features(factorized_interaction_installed_consumer PRIVATE cxx_std_20)
 target_link_libraries(factorized_interaction_installed_consumer PRIVATE
     Cellerator::factorized_interaction_cuda)

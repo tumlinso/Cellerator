@@ -25,6 +25,16 @@ The new [biological modeling framework](docs/biological_framework.qmd)
 describes the shared state/dynamics/context vocabulary and current package
 entry points.
 
+Native and Python wheel builds require the installed C++
+[`anndata.cppm`](https://github.com/tumlinso/anndata.cppm/tree/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1)
+baseline, configured for HDF5 with Zarr disabled. Its H5AD reader supports the
+declared modern encoding subset, including sparse CSR and CSC, and has no
+legacy-format fallback. C++ and CUDA builds require C++20 or newer; the normal
+CMake/Ninja package build exports named modules. See the
+[developer reference](docs/developer_reference.qmd) for the native dependency
+and build commands, and the [implementation record](docs/current_implementation.qmd)
+for qualification status.
+
 For an executable example of a persistent cell, changing inputs, observations,
 and an emitted event stream, see
 [`trajectory_experiment.py`](examples/framework/trajectory_experiment.py).

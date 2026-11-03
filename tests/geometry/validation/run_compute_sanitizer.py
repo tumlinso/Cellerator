@@ -153,7 +153,7 @@ def build_command(target: Target, repo_root: pathlib.Path,
     if direct_source is not None:
         return [
             "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
-            "-std=c++17",
+            "-std=c++20",
             "-arch=sm_70",
             "-Wno-deprecated-gpu-targets",
             "-Xcompiler=-Wall,-Wextra,-Werror",

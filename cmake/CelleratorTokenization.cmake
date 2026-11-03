@@ -23,7 +23,7 @@ endif()
 
 add_library(cellerator_aten_runtime INTERFACE)
 add_library(Cellerator::aten_runtime ALIAS cellerator_aten_runtime)
-target_compile_features(cellerator_aten_runtime INTERFACE cxx_std_17)
+target_compile_features(cellerator_aten_runtime INTERFACE cxx_std_20)
 target_link_libraries(cellerator_aten_runtime INTERFACE
     ${CELLERATOR_TORCH_LINK_TARGETS})
 if(CELLERATOR_TORCH_LIB_DIR)
@@ -42,7 +42,7 @@ target_include_directories(cellerator_aten_ops PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(cellerator_aten_ops PUBLIC Cellerator::aten_runtime)
-target_compile_features(cellerator_aten_ops PUBLIC cxx_std_17)
+target_compile_features(cellerator_aten_ops PUBLIC cxx_std_20)
 set_target_properties(cellerator_aten_ops PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 add_library(cellerator_tokenization STATIC
@@ -57,7 +57,7 @@ target_include_directories(cellerator_tokenization PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(cellerator_tokenization PUBLIC
     Cellerator::aten_ops Cellerator::aten_runtime)
-target_compile_features(cellerator_tokenization PUBLIC cxx_std_17)
+target_compile_features(cellerator_tokenization PUBLIC cxx_std_20)
 set_target_properties(cellerator_tokenization PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF" AND
@@ -69,7 +69,7 @@ if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF" AND
         CELLERATOR_TOKENIZATION_HAS_CUDA=1)
     target_link_libraries(cellerator_tokenization PUBLIC CUDA::cudart)
     set_target_properties(cellerator_tokenization PROPERTIES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
     if(CELLERATOR_ENABLE_CUDA_LINEINFO)
         target_compile_options(cellerator_tokenization PRIVATE
             $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo>)
@@ -166,7 +166,7 @@ if(CELLERATOR_ENABLE_PYTHON)
         bindings/tokenization/gene_tokenization.cc)
     set_target_properties(cellerator_python_tokenization PROPERTIES
         OUTPUT_NAME _tokenization
-        CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
+        CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
         BUILD_RPATH "${cellerator_tokenization_python_lib_dir}"
         INSTALL_RPATH "$ORIGIN/../torch/lib")
     target_include_directories(cellerator_python_tokenization PRIVATE

@@ -25,6 +25,63 @@ Private Todo recovery databases and ignored build, dataset and measurement
 payloads remain local. Their preservation does not make them package source
 or authorize restarting a paused study.
 
+## Native build and H5AD cutover, 2026-11-03
+
+The native package has a mandatory module-capable build baseline: CMake 3.28
+or newer, Ninja 1.11 or newer, Clang 18 or newer with a matching
+`clang-scan-deps`, and C++ and CUDA C++20 or newer. The compiler implementation
+retains its C++23 target. C++20 named modules are part of the normal build and
+installed package: `Cellerator::core_module` is always exported and provides
+`import cellerator.core;`; when NN is enabled, `Cellerator::nn_modules` is
+exported through the `nn_modules` package component and provides
+`import cellerator.nn;`.
+
+The native H5AD dependency is the installed
+[`anndata.cppm`](https://github.com/tumlinso/anndata.cppm/tree/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1)
+baseline, built with HDF5 enabled and Zarr disabled. Cellerator requires its
+`anndata::anndata` CMake target; this is its sole native H5AD path. The old
+reader is retired, with no fallback parser. H5AD support follows that
+revision's declared modern encoding subset, including sparse CSR and CSC.
+Legacy unversioned formats and compound/record arrays are unsupported.
+CellShard owns ingest and durable storage; the CellShard cutover is scoped to
+modern sparse CSR/CSC ingest through this boundary.
+
+The pinned dependency was configured, built, and installed from a clean source
+archive. The root default host build passed all 24 CTest tests with assertions
+enabled. Installed-consumer checks pass for relocated normal and substrate
+package installs; each has two separately linked executables importing
+`cellerator.core` and `anndata.h5ad`, and a C++23 consumer also executes. The
+fixtures are at
+[`tests/modules/installed_consumer`](../tests/modules/installed_consumer/CMakeLists.txt)
+and [`module_contract.cc`](../tests/modules/module_contract.cc).
+
+Separate CellShard native-source host fixtures read synthetic H5AD files
+written by Python AnnData. They pass all 11 numeric dtype cases and the
+selected-partition native CSR/CSC case; see
+[`anndata_ingest_test.cc`](../components/CellShard/tests/anndata_ingest_test.cc)
+and [`create_anndata_fixtures.py`](../components/CellShard/tests/create_anndata_fixtures.py).
+The relocated CellShard package also passes a fresh quantized-on build, its
+native API consumer fixture suite, and two independent `anndata` importers
+under Clang 18/C++23 at CellShard source revision
+`52355f9bd51ca737118929dbd6ae271143b9d52e`.
+
+The NN CPU suite passes 15/15, and the installed NN module CPU consumer passes
+1/1 with strict C++ mode. The unchanged
+[`tests/nn/modules/run_qualification.sh`](../tests/nn/modules/run_qualification.sh)
+qualification passes with Clang 18 and its matching scanner. Its installed
+C++20 module and CUDA-header bridge compile and link with NVCC 12.9/GCC 12
+(`-std=c++20`, SM70), including taking the `grouped_linear_cuda` symbol address
+without calling it; CTest passes 1/1. This records installed compile/link
+integration only; no GPU execution is claimed. The CPython 3.13 Linux wheel
+was rebuilt as SHA-256
+`e1d92abcb8d7b9cefeeb562d1b7b37a75cb47b5d85123c5bc4982c732e3a06a3`, installed
+in an isolated virtual environment, and passed the native modeling script,
+six AnnData adapter checks, and one Product2/Torch training test. These are
+bounded host and synthetic-fixture results; they do not qualify performance or
+biological validity. The earlier C++17 and optional-module
+checks below remain historical evidence for their dated source state, not the
+current build baseline.
+
 ## Package boundary
 
 Cellerator is an early biological machine-learning framework. Models can use
@@ -44,7 +101,7 @@ Implemented facilities have different backend and maturity boundaries. The 2026-
 ## Available package surfaces
 
 - The existing Python `modeling` package provides its general `Cell` information/program handle and explicit `DynamicalCell`/`DynamicalModel` transitions, step contexts/results, observations, and experiments. Legacy dynamic construction remains deprecated compatibility behavior. This Python API is unchanged by the native Cell replacement; the package imports without Torch or a native extension.
-- Native C++ `<Cellerator/cell.hh>` defines `Cell<Model, Instance>` and inferred factories with borrowed or explicit shared model ownership. Forwarding invokes the associated callable and preserves its result type; copying follows the instance representation. Typed read/edit access is optional, and `<Cellerator/cells/access.hh>` supplies the separate runtime `CellViews` boundary. `EventPrefix` and dense-expression row selections borrow bulk storage. The core is C++17 and backend-independent; the expression adapter uses C++20. Time, ancestry, caches, and trajectories are not mandatory. Optional `DynamicalCell` preserves its explicit transition behavior.
+- Native C++ `<Cellerator/cell.hh>` defines `Cell<Model, Instance>` and inferred factories with borrowed or explicit shared model ownership. Forwarding invokes the associated callable and preserves its result type; copying follows the instance representation. Typed read/edit access is optional, and `<Cellerator/cells/access.hh>` supplies the separate runtime `CellViews` boundary. `EventPrefix` and dense-expression row selections borrow bulk storage. The core is backend-independent and uses the package's C++20 minimum build baseline. Time, ancestry, caches, and trajectories are not mandatory. Optional `DynamicalCell` preserves its explicit transition behavior.
 - `nn` and `torch.nn` expose bound `FeatureEncoder`, dense/packed/CSR `RelationAttention`, reusable `PreparedRelation`, shared `InteractionPrograms`, `FeatureReadout`, labelled `ModelWithViews` queries, supervision helpers, biological manifests, and functional/module grouped linear composition. The Torch-free root provides model-local `FeatureBinding` and borrowed-value prediction/query records. Ordinary Torch parameters and optimizers remain ordinary; existing canonical native owners retain their guarded update contracts. The source examples cover masked expression, causal event history, and paired auxiliary readouts.
 - `state`, `events`, and `dynamics` provide sparse/ragged/layout-aware state, generation-safe store references, event histories and trajectories, lineage, discrete/continuous/stochastic reference dynamics, and explicit composition. Quantization profiles can be shared across cells and feature orderings; exact-value overrides remain per-payload and caller-controlled.
 - `interactions` provides directed, bipartite, and joint hyperedge computations with explicit activity gates, aggregation, and native sparse worklist adapters. Native model, relation, layout, and field classes preserve semantic identities independently of storage slots. Incremental native execution invalidates declared dependencies and caches unaffected results.
@@ -59,7 +116,7 @@ Implemented facilities have different backend and maturity boundaries. The 2026-
 - Prepared entity-to-mechanism routing is opt-in. The established Python route remains the default.
 - ATen tokenization is optional and caller-directed. Gene-aware C++ tokenizer classes share an annotation-built vocabulary and retain typed ranked/event inputs; a common virtual execution signature remains deferred. Tokenization does not assign biological interpretation to tokens or events.
 - `ExecutionField` is an experimental CPU composition of prepared Product2 operations. It has explicit structure rebinding, but no JIT, live recompilation, or general compiler contract.
-- AnnData is a required Python dependency. Its new adapter maps explicit `X`, layer, or raw inputs to identity-aligned state and writes aligned observations while preserving sparse inputs. Classical single-cell analysis remains upstream in Scanpy and RAPIDS-singlecell.
+- Python AnnData remains a required Python dependency. Its adapter maps explicit `X`, layer, or raw inputs to identity-aligned state and writes aligned observations while preserving sparse inputs. Native H5AD I/O is supplied by the pinned HDF5-only `anndata.cppm` package described above. Classical single-cell analysis remains upstream in Scanpy and RAPIDS-singlecell.
 
 Start with the [NN foundation guide](nn_foundation.qmd), [biological framework guide](biological_framework.qmd), [distributed execution contract](distributed_execution.qmd), and [native CUDA guide](framework_cuda.qmd). The [Python binding guide](development/python-bindings.md), [sparse-support reference](sparse_support_foundation.qmd), [tokenization reference](tokenization.qmd), and [experimental fields note](development/experimental-fields.md) retain their narrower contracts. The [source routing guide](development/routing.md) identifies owners; the [developer reference](developer_reference.qmd) describes established build and validation routes.
 

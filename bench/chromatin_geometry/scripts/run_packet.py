@@ -320,7 +320,7 @@ def build(args):
         command = ['copy-verified-qualified-binary', args.frozen_binary]
     elif args.suite == 'ste':
         binary = build_dir / 'cgs-ste-gpu-tests'
-        command = [NVCC, '-std=c++17', '-arch=sm_70', '-lineinfo', '-I' + str(study),
+        command = [NVCC, '-std=c++20', '-arch=sm_70', '-lineinfo', '-I' + str(study),
                    '-I' + str(root / 'include'), str(study / 'learning/ste.cu'), str(study / 'learning/ste_chain.cu'),
                    str(study / 'learning/ste_tests.cu'), str(study / 'learning/ste_gpu_test_main.cc'),
                    '-o', str(binary)]

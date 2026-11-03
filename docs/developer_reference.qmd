@@ -47,6 +47,81 @@ the path-level inventory: they list current role, owner, target, disposition,
 maturity, consumers, and evidence. This page summarizes build routes and
 points to that map; it is not a duplicate source catalog.
 
+## Mandatory native toolchain and H5AD dependency
+
+Every root CMake build requires CMake 3.28 or newer, Ninja 1.11 or newer,
+Clang 18 or newer, and the matching `clang-scan-deps` executable. Set
+`CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS` to that scanner when autodetection is not
+appropriate. C++ and CUDA targets require at least C++20; selected compiler
+implementation targets use C++23. Named modules are built and exported by the
+normal package build. The core module is always exported as
+`Cellerator::core_module`; request it with
+`find_package(Cellerator CONFIG REQUIRED COMPONENTS core_module)` and import it
+as `cellerator.core;`. When NN is enabled, use the `nn_modules` package
+component and target `Cellerator::nn_modules` for `import cellerator.nn;`.
+Module consumers must set `CMAKE_CXX_EXTENSIONS OFF` before creating importer
+targets, so Clang builds them in strict C++20 or C++23 mode rather than
+`gnu++20`. CUDA translation units keep using public headers and do not import
+named modules.
+
+Native builds require a separately installed HDF5-only `anndata.cppm` package
+at commit
+[`2ddf57559412c90297e5b525bd6a5b6d9a0c36d1`](https://github.com/tumlinso/anndata.cppm/tree/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1).
+The package must be built with HDF5 on and Zarr off. This is Cellerator's sole
+native H5AD path: the old reader is retired, with no legacy parser or fallback.
+See its [declared encoding boundary](https://github.com/tumlinso/anndata.cppm/blob/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1/docs/h5ad.md)
+and [native dependency installation guide](https://github.com/tumlinso/anndata.cppm/blob/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1/docs/storage-dependencies.md).
+The native H5AD route accepts the supported modern subset, including sparse
+CSR/CSC. Root CMake requires `anndata::anndata` to be discoverable; it does not
+download or silently replace that dependency.
+
+Build and install that dependency at the pinned revision, then configure the
+Cellerator package against its prefix:
+
+```sh
+git clone https://github.com/tumlinso/anndata.cppm.git /tmp/anndata.cppm
+git -C /tmp/anndata.cppm checkout --detach 2ddf57559412c90297e5b525bd6a5b6d9a0c36d1
+cmake -S /tmp/anndata.cppm -B /tmp/anndata-build -G Ninja \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
+  -DANNDATA_ENABLE_HDF5=ON \
+  -DANNDATA_ENABLE_ZARR=OFF \
+  -DCMAKE_INSTALL_PREFIX=/tmp/anndata-install
+cmake --build /tmp/anndata-build
+cmake --install /tmp/anndata-build
+
+cmake -S . -B build-cpu -G Ninja \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
+  -DCMAKE_PREFIX_PATH=/tmp/anndata-install \
+  -DCELLERATOR_ENABLE_CUDA=OFF
+cmake --build build-cpu
+```
+
+An installed C++ consumer links the module targets directly:
+
+```cmake
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS core_module)
+find_package(anndata CONFIG REQUIRED)
+target_link_libraries(my_model PRIVATE Cellerator::core_module anndata::anndata)
+```
+
+The corresponding C++ translation unit imports both interfaces:
+
+```cpp
+import cellerator.core;
+import anndata.h5ad;
+```
+
+For the optional native NN module, configure Cellerator with NN enabled and use
+`find_package(Cellerator CONFIG REQUIRED COMPONENTS nn_modules)` with
+`Cellerator::nn_modules`. Keep `CMAKE_CXX_EXTENSIONS OFF` for its importer as
+well. The installed module sources are compiled by the consumer's
+module-capable build; module support is not an optional side build.
+
 ## Current high-level routes
 
 ```text
@@ -77,14 +152,17 @@ compiler suite when `CELLERATOR_BUILD_TESTS=OFF`.
 The [`event_forward.cc`](../examples/native_cell/event_forward.cc),
 [`multimodal.cc`](../examples/native_cell/multimodal.cc), and
 [`foundation.cc`](../examples/native_cell/foundation.cc) examples use the
-Torch-free typed Cell and adapter headers. The core is C++17; dense-expression
-selection uses C++20 `std::span`. The optional `CellViews` runtime bridge links
+Torch-free typed Cell and adapter headers. The package baseline is C++20;
+dense-expression selection uses C++20 `std::span`. The optional `CellViews` runtime bridge links
 `Cellerator::libCellerator` for its out-of-line destructor; the typed binding
 needs neither that symbol nor RTTI. Configure a host-only tree with Python, Torch, CUDA, NN,
 tokenization, and sparse support disabled, then build and run the examples:
 
 ```sh
-cmake -S . -B build/cell-host \
+cmake -S . -B build/cell-host -G Ninja \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
+  -DCMAKE_PREFIX_PATH=/path/to/anndata-install \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_PYTHON=OFF \
   -DCELLERATOR_ENABLE_TORCH=OFF \
@@ -132,11 +210,14 @@ before moving or archiving a path.
 
 ## Configure and build
 
-A general native build can use the default configuration selected by CMake.
-For a Python host-only extension with Product2:
+Use the mandatory Clang/Ninja and installed HDF5-only `anndata.cppm` baseline
+from the section above. For a Python host-only extension with Product2:
 
 ```sh
-cmake -S . -B build-cpu \
+cmake -S . -B build-cpu -G Ninja \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
+  -DCMAKE_PREFIX_PATH=/path/to/anndata-install \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_PYTHON=ON \
   -DCELLERATOR_ENABLE_TORCH=OFF

@@ -15,14 +15,14 @@ add_library(ce_ml2_test_runtime STATIC
   "${CE_ROOT}/src/runtime/value_readiness.cu")
 add_library(Cellerator::runtime ALIAS ce_ml2_test_runtime)
 target_include_directories(ce_ml2_test_runtime PUBLIC "${CE_ROOT}/include")
-target_compile_features(ce_ml2_test_runtime PUBLIC cxx_std_17)
+target_compile_features(ce_ml2_test_runtime PUBLIC cxx_std_20)
 target_link_libraries(ce_ml2_test_runtime PUBLIC CUDA::cudart PRIVATE CUDA::cublas CUDA::cusparse)
-set_target_properties(ce_ml2_test_runtime PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(ce_ml2_test_runtime PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 
 add_library(ce_ml2_test_program STATIC "${CE_ROOT}/src/execution/program/program_v2.cc")
 add_library(Cellerator::executable_program ALIAS ce_ml2_test_program)
 target_include_directories(ce_ml2_test_program PUBLIC "${CE_ROOT}/include")
-target_compile_features(ce_ml2_test_program PUBLIC cxx_std_17)
+target_compile_features(ce_ml2_test_program PUBLIC cxx_std_20)
 
 add_subdirectory("${CE_ROOT}/src/ops/mechanism/indexed" "${CMAKE_CURRENT_BINARY_DIR}/indexed_mechanism")
 add_executable(ce_ml2_native_training training.cu)

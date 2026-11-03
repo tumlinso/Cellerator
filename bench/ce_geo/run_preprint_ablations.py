@@ -50,7 +50,7 @@ def main() -> int:
     output = arguments.output.resolve()
     BINARY.parent.mkdir(parents=True, exist_ok=True)
     compiled = run([
-        "nvcc", "-std=c++17", "-arch=sm_70", "-O3", "-lineinfo",
+        "nvcc", "-std=c++20", "-arch=sm_70", "-O3", "-lineinfo",
         "-Xcompiler=-Wall,-Wextra,-Werror", "-I.", "-Iinclude",
         "bench/biology/ce_geo/ablations.cu", "-lcudart", "-o", str(BINARY),
     ])

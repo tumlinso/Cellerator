@@ -3,6 +3,7 @@
 #include <Cellerator/execution/dependency/incidence.hh>
 #include <Cellerator/execution/dependency/workset.hh>
 #include <Cellerator/containers/value_shape.hh>
+#include <Cellerator/containers/posting_index.hh>
 #include <Cellerator/ops/incidence.hh>
 #include <Cellerator/layout/entity_layout.hh>
 #include <Cellerator/modeling/value_field.hh>
@@ -31,8 +32,8 @@ std::vector<g::CompactParticipant> participants(const std::vector<EncodedPartici
     return result;
 }
 
-std::vector<g::PostingTerm> terms(const std::vector<EncodedParticipant>& encoded) {
-    std::vector<g::PostingTerm> result;
+std::vector<cellerator::containers::PostingTerm> terms(const std::vector<EncodedParticipant>& encoded) {
+    std::vector<cellerator::containers::PostingTerm> result;
     result.reserve(encoded.size());
     for (const auto& item : encoded) result.push_back({item.first, 0, item.second});
     return result;

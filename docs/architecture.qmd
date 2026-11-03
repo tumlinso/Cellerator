@@ -437,8 +437,10 @@ runtime view registry or duplicated string labels in computation.
 Primitive borrowed views, explicit allocation owners, typed identities, and
 compile-time composition are part of the native experience. The first training
 backend uses ATen tensors honestly; Cellerator-specific data representations
-remain separate. Host C++20 modules are optional; header and CUDA translation
-units share canonical declarations and keep their established build route.
+remain separate. C++ and CUDA targets require at least C++20; selected compiler
+implementation targets retain C++23. C++20 named modules are built and exported
+through the normal package. CUDA translation units use the public headers and
+do not compile named modules.
 The [dated implementation record](current_implementation.qmd) and qualification
 artifacts bound these capabilities. They do not establish complete parity for
 every backend or the framework's full biological ML ambition.
@@ -466,8 +468,10 @@ Typed support checks are compile-time; unsupported typed acquisitions are
 ill-formed. `CellViews` retains an optional runtime capability boundary and
 `std::bad_cast` behavior through explicit borrowed bridges. Application-defined
 identities remain distinct from storage rows, token offsets, and physical
-placement. The native core is C++17 and independent of Torch and CUDA; the
-expression adapter and host examples use C++20.
+placement. The native core remains independent of Torch and CUDA, with a C++20
+minimum build baseline. Header APIs remain available; the normal package also
+builds and exports `cellerator.core`. CUDA translation units compile as CUDA
+C++20 and continue to use the ordinary public headers.
 
 `EventPrefix`, `DenseExpressionRow`, and `MutableDenseExpressionRow` select
 caller-owned bulk storage without prescribing the complete instance. Their
@@ -619,7 +623,7 @@ boundaries per operation.
 | Formal inferability of mechanisms or features | GlassHelix | Investigate question-specific identifiability and assumptions; Cellerator supplies reusable modeling and learning machinery. |
 | Sequence-grounded representations | Baseplane | Cellerator consumes sequence-specific results without taking ownership of sequence semantics. |
 | Persistence, sharding, transport, delivery | CellShard and owning systems | Integrate across explicit data boundaries. |
-| Classical single-cell analysis | AnnData ecosystem, Scanpy, RAPIDS-singlecell | Remains upstream; `cellerator.adapters.anndata` offers explicit identity-aligned exchange without preprocessing or layer guessing. |
+| Classical single-cell analysis | AnnData ecosystem, Scanpy, RAPIDS-singlecell | Remains upstream; Python `cellerator.adapters.anndata` and native H5AD I/O provide explicit data exchange without preprocessing or layer guessing. Native file I/O uses the pinned HDF5-only `anndata.cppm` package. |
 
 ## Model reuse and sharing support {#building-training-and-sharing-cell-models}
 
@@ -771,9 +775,12 @@ The compiler, adaptive fields, tokenization, and candidate layout work remain
 separately labeled by their actual maturity. An experimental implementation
 can still be useful and routed; its location does not promote it to a stable
 API. Classical single-cell analysis in the repository is a testbed or consumer,
-not a replacement for Scanpy or RAPIDS-singlecell. AnnData is required by the
-Python package, while numerical entry points currently accept explicit arrays
-or tensors.
+not a replacement for Scanpy or RAPIDS-singlecell. The Python package depends
+on upstream Python AnnData for its identity-aligned adapter. Native file I/O
+uses the separately installed C++ `anndata.cppm` package at the pinned
+HDF5-only baseline; its declared modern H5AD subset includes sparse CSR/CSC and
+has no legacy-format fallback. Numerical operation entry points retain their
+explicit array/tensor contracts.
 
 ## Numerical policy
 

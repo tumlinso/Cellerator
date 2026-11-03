@@ -11,9 +11,13 @@ uses first-order Torch autograd for input and coefficient gradients. This is a
 bounded example, not a claim that all operations work on CPU or that the
 package already provides a full model-building API.
 
-Install the host package from the repository root:
+Install the native HDF5-only `anndata.cppm` dependency first, as described in
+the [developer reference](developer_reference.qmd#mandatory-native-toolchain-and-h5ad-dependency).
+Then build the host package from the repository root:
 
 ```sh
+CMAKE_GENERATOR=Ninja \
+CMAKE_ARGS='-DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 -DCMAKE_PREFIX_PATH=/path/to/anndata-install' \
 python -m pip install .
 ```
 
@@ -52,7 +56,10 @@ The [host-only biological relations example](https://github.com/tumlinso/Cellera
 ## Build the host native extension directly
 
 ```sh
-cmake -S . -B build-cpu \
+cmake -S . -B build-cpu -G Ninja \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
+  -DCMAKE_PREFIX_PATH=/path/to/anndata-install \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_PYTHON=ON \
   -DCELLERATOR_ENABLE_TORCH=OFF

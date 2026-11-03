@@ -24,7 +24,7 @@ set_target_properties(cellerator_cellpack_interop PROPERTIES
 target_include_directories(cellerator_cellpack_interop INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_compile_features(cellerator_cellpack_interop INTERFACE cxx_std_17)
+target_compile_features(cellerator_cellpack_interop INTERFACE cxx_std_20)
 target_link_libraries(cellerator_cellpack_interop INTERFACE
     Cellerator::cellpack Cellerator::cellpack_geometry
     Cellerator::block_masked CUDA::cudart)

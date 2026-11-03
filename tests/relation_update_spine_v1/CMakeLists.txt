@@ -1,7 +1,7 @@
 # Internal executable inventory. Every advertised device target links real code.
 function(ru1_test target source)
     add_executable(${target} ${source})
-    target_compile_features(${target} PRIVATE cxx_std_17)
+    target_compile_features(${target} PRIVATE cxx_std_20)
     target_compile_options(${target} PRIVATE -UNDEBUG)
     target_include_directories(${target} PRIVATE "${PROJECT_SOURCE_DIR}/include")
     set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")

@@ -11,9 +11,9 @@ if(NOT CMAKE_CUDA_ARCHITECTURES)
 endif()
 
 add_executable(cellerator_factorized_interaction_runner native_runner.cu)
-target_compile_features(cellerator_factorized_interaction_runner PRIVATE cxx_std_17)
+target_compile_features(cellerator_factorized_interaction_runner PRIVATE cxx_std_20)
 set_target_properties(cellerator_factorized_interaction_runner PROPERTIES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED ON)
 target_link_libraries(cellerator_factorized_interaction_runner
     PRIVATE Cellerator::factorized_interaction_cuda)

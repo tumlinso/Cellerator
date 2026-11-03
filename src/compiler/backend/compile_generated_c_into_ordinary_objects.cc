@@ -45,7 +45,7 @@ compile_object_status_v1 compile_generated_cpp_object_v1(
     receipt->object_path = request.object_path;
     receipt->depfile_path = request.depfile_path;
     receipt->support_libraries = request.support_libraries;
-    receipt->arguments = {request.compiler, "-std=c++17", "-c",
+    receipt->arguments = {request.compiler, "-std=c++20", "-c",
         request.source_path, "-o", request.object_path, "-MMD", "-MF",
         request.depfile_path};
     if (!request.source_root.empty())

@@ -5,9 +5,9 @@ target_include_directories(cellerator_model_ops PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_link_libraries(cellerator_model_ops PUBLIC CUDA::cudart)
-target_compile_features(cellerator_model_ops PUBLIC cxx_std_17)
+target_compile_features(cellerator_model_ops PUBLIC cxx_std_20)
 set_target_properties(cellerator_model_ops PROPERTIES
     POSITION_INDEPENDENT_CODE ON
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )

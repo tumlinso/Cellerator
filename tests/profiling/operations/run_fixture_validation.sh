@@ -6,7 +6,7 @@ build_dir=$(mktemp -d)
 trap 'rm -rf "${build_dir}"' EXIT
 
 compiler=${CXX:-c++}
-common=(-std=c++17 -Wall -Wextra -Werror -pedantic)
+common=(-std=c++20 -Wall -Wextra -Werror -pedantic)
 source_file="${repo_root}/tests/profiling/operations/profiler_fixture_validation.cc"
 fixture_file="${repo_root}/bench/ce_exop/profiler_fixture_matrix.tsv"
 candidate_file="${repo_root}/bench/ce_exop/profiler_candidate_matrix.tsv"

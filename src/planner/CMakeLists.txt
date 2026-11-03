@@ -15,7 +15,7 @@ target_link_libraries(cellerator_planner PUBLIC
     Cellerator::cellpack_geometry
     CellPack::alternating_refinement
 )
-target_compile_features(cellerator_planner PUBLIC cxx_std_17)
+target_compile_features(cellerator_planner PUBLIC cxx_std_20)
 
 add_library(cellerator_planner_input_fixtures STATIC
     tests/fixtures/planner/live_planner_inputs.cc
@@ -27,7 +27,7 @@ target_include_directories(cellerator_planner_input_fixtures PUBLIC
 target_link_libraries(cellerator_planner_input_fixtures PUBLIC
     Cellerator::planner
 )
-target_compile_features(cellerator_planner_input_fixtures PUBLIC cxx_std_17)
+target_compile_features(cellerator_planner_input_fixtures PUBLIC cxx_std_20)
 
 add_library(cellerator_quantitative_relation_fixtures STATIC
     tests/fixtures/model_execution/quantitative_relation_fixture.cc
@@ -39,7 +39,7 @@ target_include_directories(cellerator_quantitative_relation_fixtures PUBLIC
 target_link_libraries(cellerator_quantitative_relation_fixtures PUBLIC
     Cellerator::identity_registry
 )
-target_compile_features(cellerator_quantitative_relation_fixtures PUBLIC cxx_std_17)
+target_compile_features(cellerator_quantitative_relation_fixtures PUBLIC cxx_std_20)
 
 add_library(cellerator_candidate_measurement STATIC
     src/planner/candidate_measurement.cu
@@ -56,8 +56,8 @@ target_link_libraries(cellerator_candidate_measurement PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_candidate_measurement PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )

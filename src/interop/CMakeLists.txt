@@ -17,8 +17,8 @@ target_link_libraries(cellerator_sequence_integration PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_sequence_integration PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )

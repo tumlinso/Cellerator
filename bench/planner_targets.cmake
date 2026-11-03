@@ -17,14 +17,14 @@ target_link_libraries(celleratorCeArch92RealRegimeBench PRIVATE
     cellerator_math_v1_evidence
 )
 set_target_properties(celleratorCeArch76CandidateBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 set_target_properties(celleratorCeArch92RealRegimeBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )

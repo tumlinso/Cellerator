@@ -18,11 +18,12 @@ Build and install the main Cellerator package first. Then run:
 tests/nn/modules/run_qualification.sh <cellerator-install-prefix> /tmp/cellerator-nn-module
 ```
 
-The script builds and installs the optional module add-on, then configures an
-external consumer against only the two install prefixes. It requires CMake
-3.28+, Ninja, Clang 18, and the matching `clang-scan-deps`; set
+The module is included in the main package as `Cellerator::nn_modules`. The
+script configures an external consumer against that package. It requires CMake
+3.28+, Ninja 1.11+, Clang 18+, and the matching `clang-scan-deps`; set
 `CELLERATOR_MODULE_NINJA` and `CELLERATOR_MODULE_SCANNER` if those tools are not
-on `PATH`. Set `CELLERATOR_TORCH_DIR` when Torch is installed outside CMake's
+on `PATH`. Consumers must set `CMAKE_CXX_EXTENSIONS=OFF` so their C++ dialect
+matches the compiled module interfaces. Set `CELLERATOR_TORCH_DIR` when Torch is installed outside CMake's
 default package search path. To compile the no-launch NVCC bridge, configure a
 CUDA-enabled main Cellerator package and set
 `CELLERATOR_NN_MODULES_TEST_CUDA=ON`. The default CUDA compiler and host

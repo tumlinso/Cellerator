@@ -19,7 +19,8 @@ separately placed portions. Python's existing Cell API is unchanged.
 The optional NN component uses C++20 and ATen/LibTorch tensors. Python is
 optional; LibTorch supplies tensor operations, ordinary optimizers, and
 autograd. Native models remain ordinary C++ callables with their own result
-types. The Cell core itself uses C++17 and the standard library only.
+types. The generic Cell remains Torch-independent, while Cellerator's supported
+native build baseline is C++20 for both C++ and CUDA targets.
 
 The separate experimental [factorized joint-interaction component](factorized_interactions.qmd)
 provides native CUDA preparation and an explicit conditional joint forward/VJP
@@ -435,20 +436,24 @@ contain bounded V100 correctness/memcheck results for captured executables.
 Later host-only changes are recorded separately; this page makes no performance
 or biological claim.
 
-## Headers, CMake, and optional host modules
+## Headers, CMake, and named modules
 
 The canonical header entry point is
 [`<Cellerator/nn.hh>`](../include/Cellerator/nn.hh), with focused declarations
 under [`include/Cellerator/nn`](https://github.com/tumlinso/Cellerator/tree/main/include/Cellerator/nn).
 Biological identity resolution remains under `biology`; logical identities and
 occurrences live under `structure`, physical bindings under `layout`, and
-prepared source mappings under `execution`. The optional
-C++20 `Cellerator::nn` target is independent of Python bindings but depends on
-LibTorch and the native Product2 target. A standalone CPU configure can enable
-the component and reference executable:
+prepared source mappings under `execution`. The optional C++20
+`Cellerator::nn` target is independent of Python bindings but depends on
+LibTorch and the native Product2 target. A host configure can enable the
+component and reference executable:
 
 ```sh
-cmake -S . -B /tmp/cellerator-native-nn \
+cmake -S . -B /tmp/cellerator-native-nn -G Ninja \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
+  -DCMAKE_PREFIX_PATH=/path/to/anndata-install \
+  -DTorch_DIR=/path/to/libtorch/share/cmake/Torch \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_NN=ON \
   -DCELLERATOR_ENABLE_NN_CUDA=OFF \
@@ -456,23 +461,28 @@ cmake -S . -B /tmp/cellerator-native-nn \
   -DCELLERATOR_ENABLE_TORCH=OFF \
   -DCELLERATOR_BUILD_PRODUCT2=ON \
   -DCELLERATOR_BUILD_NN_TRAIN=ON
-cmake --build /tmp/cellerator-native-nn --target cellerator_nn native_nn_train
+cmake --build /tmp/cellerator-native-nn \
+  --target cellerator_nn cellerator_nn_modules native_nn_train
 /tmp/cellerator-native-nn/native_nn_train
 ```
 
-Configure with `Torch_DIR` or `CMAKE_PREFIX_PATH` for the local LibTorch
-installation as needed. The
-[standalone build and installed-consumer route](../planning/native-nn-foundation-2026-10-31/build/README.md)
+The `anndata-install` prefix must contain the pinned HDF5-only native package;
+the required CMake, Ninja, Clang and scanner versions are documented in the
+[developer reference](developer_reference.qmd#mandatory-native-toolchain-and-h5ad-dependency).
+The [standalone build and installed-consumer route](../planning/native-nn-foundation-2026-10-31/build/README.md)
 records the environment-specific CMake invocation. Enabling the CUDA adapters
 is separate and also requires Cellerator framework CUDA, a loaded CUDA
 toolchain, and CUDA-enabled Torch.
 
-An optional `CelleratorNNModules` package re-exports selected public declarations
-through the C++20 module [`cellerator.nn`](../modules/native/cellerator.nn.ccm);
-its separate [CMake project](../modules/native/CMakeLists.txt) is CXX-only.
-The module is a host C++ import surface, not an NVCC module entry point. Use
-the ordinary public headers in CUDA translation units. The optional module
-packaging does not change the underlying C++ types or ABI.
+The normal Cellerator package always exports `Cellerator::core_module`, whose
+`cellerator.core` module provides the generic Cell and core public declarations.
+When NN is enabled, the same package exports `Cellerator::nn_modules` through
+`find_package(Cellerator CONFIG REQUIRED COMPONENTS nn_modules)`; import it as
+`cellerator.nn`. Set `CMAKE_CXX_EXTENSIONS OFF` before creating importer targets
+so they use strict C++20 or C++23 mode, matching the module interfaces. Both are
+host module interfaces, not NVCC module entry points. CUDA translation units
+use the ordinary public headers. The module interfaces do not change the
+underlying C++ types or ABI.
 
 For Python-facing behavior and its distinct implementation boundary, see the
 [Python NN foundation guide](nn_foundation.qmd). The shared goals and remaining

@@ -1,6 +1,7 @@
 #pragma once
 #include <Cellerator/compute/operation/native_foundation_contract.hh>
 #include <Cellerator/compute/operation/relation_semantics.hh>
+#include <Cellerator/structure/identity.hh>
 #include <array>
 #include <cfenv>
 #include <initializer_list>
@@ -12,8 +13,8 @@ namespace nf=compute::operation::nf1;
 enum class status { success, invalid_axes, invalid_binding, stale_generation,
     unsupported_policy, alias, provider_failure };
 struct generations {
-    ex::structure_id structure{};
-    ex::structure_epoch epoch{};
+    structure::structure_id structure{};
+    structure::structure_epoch epoch{};
     std::array<ex::value_generation,4> operands{};
 };
 struct capabilities {
@@ -22,12 +23,12 @@ struct capabilities {
     bool cuda=false, capture=false, derivative_allocation=true, forward_allocation=false;
 };
 inline bool same_generations(const generations& a,const generations& b) noexcept {
-    if(!ex::same_identity(a.structure,b.structure) || a.epoch.value!=b.epoch.value) return false;
+    if(!structure::same_identity(a.structure,b.structure) || a.epoch.value!=b.epoch.value) return false;
     for(std::size_t i=0;i<4;++i) if(a.operands[i].value!=b.operands[i].value) return false;
     return true;
 }
 inline status validate_generation(const generations* current) noexcept {
-    if(!current || !ex::valid_identity(current->structure) || !current->epoch.value) return status::invalid_binding;
+    if(!current || !structure::valid_identity(current->structure) || !current->epoch.value) return status::invalid_binding;
     for(auto generation:current->operands) if(!generation.value) return status::invalid_binding;
     return status::success;
 }

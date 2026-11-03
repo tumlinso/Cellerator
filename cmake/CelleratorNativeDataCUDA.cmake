@@ -21,9 +21,9 @@ add_library(Cellerator::state_codes_cuda ALIAS cellerator_state_codes_cuda)
 set_target_properties(cellerator_state_codes_cuda PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     EXPORT_NAME state_codes_cuda
-    CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
     CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
-target_compile_features(cellerator_state_codes_cuda PUBLIC cxx_std_17)
+target_compile_features(cellerator_state_codes_cuda PUBLIC cxx_std_20)
 target_include_directories(cellerator_state_codes_cuda PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -37,9 +37,9 @@ add_library(Cellerator::block_masked_cuda ALIAS cellerator_block_masked_cuda)
 set_target_properties(cellerator_block_masked_cuda PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     EXPORT_NAME block_masked_cuda
-    CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
     CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
-target_compile_features(cellerator_block_masked_cuda PUBLIC cxx_std_17)
+target_compile_features(cellerator_block_masked_cuda PUBLIC cxx_std_20)
 target_include_directories(cellerator_block_masked_cuda PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -83,9 +83,9 @@ add_library(Cellerator::factorized_interaction_cuda
 set_target_properties(cellerator_factorized_interaction_cuda PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     EXPORT_NAME factorized_interaction_cuda
-    CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
     CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
-target_compile_features(cellerator_factorized_interaction_cuda PUBLIC cxx_std_17)
+target_compile_features(cellerator_factorized_interaction_cuda PUBLIC cxx_std_20)
 target_include_directories(cellerator_factorized_interaction_cuda PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -117,7 +117,7 @@ set_target_properties(cellerator_tensor_cuda PROPERTIES EXPORT_NAME tensor_cuda)
 target_include_directories(cellerator_tensor_cuda INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_compile_features(cellerator_tensor_cuda INTERFACE cxx_std_17)
+target_compile_features(cellerator_tensor_cuda INTERFACE cxx_std_20)
 target_link_libraries(cellerator_tensor_cuda INTERFACE
     Cellerator::memory_cuda
     Cellerator::state_codes_cuda
@@ -217,7 +217,7 @@ if(CELLERATOR_BUILD_FACTORIZED_INTERACTION_EXAMPLE)
     target_link_libraries(cellerator_factorized_interaction_training PRIVATE
         Cellerator::factorized_interaction_cuda)
     set_target_properties(cellerator_factorized_interaction_training PROPERTIES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
         CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
 endif()
 
@@ -234,7 +234,7 @@ if(CELLERATOR_BUILD_FACTORIZED_INTERACTION_TESTS)
         "${PROJECT_SOURCE_DIR}/tests/factorized_interactions/host_contract_test.cc")
     target_link_libraries(cellerator_factorized_interaction_cuda_contract_test PRIVATE
         Cellerator::factorized_interaction_cuda)
-    target_compile_features(cellerator_factorized_interaction_cuda_contract_test PRIVATE cxx_std_17)
+    target_compile_features(cellerator_factorized_interaction_cuda_contract_test PRIVATE cxx_std_20)
     target_link_options(cellerator_factorized_interaction_cuda_contract_test PRIVATE
         "LINKER:--wrap=cudaGetDevice"
         "LINKER:--wrap=cudaMemsetAsync")
@@ -253,7 +253,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     target_link_libraries(cellerator_native_data_transfer_compile_test PRIVATE
         Cellerator::dependency_execution_cuda)
     set_target_properties(cellerator_native_data_transfer_compile_test PROPERTIES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
         CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
     list(APPEND _cellerator_native_data_cuda_test_targets
         cellerator_native_data_transfer_compile_test)
@@ -263,7 +263,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     target_link_libraries(cellerator_native_data_block_masked_compile_test PRIVATE
         Cellerator::block_masked_cuda)
     set_target_properties(cellerator_native_data_block_masked_compile_test PROPERTIES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
         CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
     list(APPEND _cellerator_native_data_cuda_test_targets
         cellerator_native_data_block_masked_compile_test)
@@ -276,7 +276,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     target_link_libraries(cellerator_native_owner_cuda_test PRIVATE
         Cellerator::memory_cuda Cellerator::state_codes_cuda)
     set_target_properties(cellerator_native_owner_cuda_test PROPERTIES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
         CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
     list(APPEND _cellerator_native_data_cuda_test_targets
         cellerator_native_owner_cuda_test)
@@ -287,7 +287,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
         "${PROJECT_SOURCE_DIR}/include")
     target_link_libraries(tensor_quantized_format_test PRIVATE CUDA::cudart)
     set_target_properties(tensor_quantized_format_test PROPERTIES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
         CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
     add_test(NAME native_data_quantized_format
         COMMAND tensor_quantized_format_test)
@@ -305,7 +305,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
         "${PROJECT_SOURCE_DIR}/include")
     target_link_libraries(tensor_format_payload_contract_test PRIVATE CUDA::cudart)
     set_target_properties(tensor_format_payload_contract_test PROPERTIES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
         CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
     add_test(NAME native_data_format_payload_contract
         COMMAND tensor_format_payload_contract_test)

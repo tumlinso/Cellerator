@@ -69,7 +69,7 @@ class ShardedTransportTests(unittest.TestCase):
         cls._build_dir = tempfile.TemporaryDirectory(prefix="factorized-wire-probe-")
         cls.probe = Path(cls._build_dir.name) / "wire_input_probe"
         subprocess.run([
-            "c++", "-std=c++17", "-Wall", "-Wextra", "-Werror", "-pedantic",
+            "c++", "-std=c++20", "-Wall", "-Wextra", "-Werror", "-pedantic",
             "-I", str(ROOT / "bench" / "factorized_interactions"),
             str(ROOT / "tests" / "factorized_interactions" / "wire_input_probe.cc"),
             "-o", str(cls.probe),

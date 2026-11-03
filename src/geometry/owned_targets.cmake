@@ -12,7 +12,7 @@ target_link_libraries(cellpack_statistical_validation
     PRIVATE Cellerator::compute_sampling
 )
 set_target_properties(cellpack_statistical_validation PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellpack_statistical_validation)
@@ -24,7 +24,7 @@ target_link_libraries(cellPackStatisticalValidationTest PRIVATE
     CellPack::statistical_validation
 )
 set_target_properties(cellPackStatisticalValidationTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackStatisticalValidationTest)
@@ -43,7 +43,7 @@ target_link_libraries(cellpack_record_statistical_validation PUBLIC
     CellPack::statistical_validation
 )
 set_target_properties(cellpack_record_statistical_validation PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellpack_record_statistical_validation)
@@ -56,7 +56,7 @@ target_link_libraries(cellPackRecordStatisticalValidationTest PRIVATE
     CellPack::apply_plan
 )
 set_target_properties(cellPackRecordStatisticalValidationTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackRecordStatisticalValidationTest)
@@ -77,7 +77,7 @@ target_link_libraries(cellpack_tile_statistical_validation PUBLIC
     CellPack::warp_tiles
 )
 set_target_properties(cellpack_tile_statistical_validation PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellpack_tile_statistical_validation)
@@ -90,7 +90,7 @@ target_link_libraries(cellPackTileStatisticalValidationTest PRIVATE
     CellPack::apply_plan
 )
 set_target_properties(cellPackTileStatisticalValidationTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackTileStatisticalValidationTest)
@@ -108,7 +108,7 @@ target_link_libraries(cellpack_alternating_refinement PUBLIC
     CellPack::record_statistical_validation
 )
 set_target_properties(cellpack_alternating_refinement PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellpack_alternating_refinement)
@@ -120,7 +120,7 @@ target_link_libraries(cellPackAlternatingRefinementTest PRIVATE
     CellPack::alternating_refinement
 )
 set_target_properties(cellPackAlternatingRefinementTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackAlternatingRefinementTest)
@@ -139,7 +139,7 @@ target_link_libraries(cellpack_runtime_statistical_validation PUBLIC
     CellPack::tile_statistical_validation
 )
 set_target_properties(cellpack_runtime_statistical_validation PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellpack_runtime_statistical_validation)
@@ -151,7 +151,7 @@ target_link_libraries(cellPackRuntimeStatisticalValidationTest PRIVATE
     CellPack::runtime_statistical_validation
 )
 set_target_properties(cellPackRuntimeStatisticalValidationTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackRuntimeStatisticalValidationTest)
@@ -168,9 +168,9 @@ target_include_directories(cellpack_local_cell_ordering PUBLIC
 )
 target_link_libraries(cellpack_local_cell_ordering PUBLIC CellPack::cellpack CUDA::cudart)
 set_target_properties(cellpack_local_cell_ordering PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellpack_local_cell_ordering)
@@ -180,9 +180,9 @@ add_executable(cellPackLocalCellOrderingTest
 )
 target_link_libraries(cellPackLocalCellOrderingTest PRIVATE CellPack::local_cell_ordering)
 set_target_properties(cellPackLocalCellOrderingTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackLocalCellOrderingTest)
@@ -193,9 +193,9 @@ add_executable(cellPackLocalCellOrderingBench
 target_include_directories(cellPackLocalCellOrderingBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/bench)
 target_link_libraries(cellPackLocalCellOrderingBench PRIVATE CellPack::local_cell_ordering)
 set_target_properties(cellPackLocalCellOrderingBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackLocalCellOrderingBench)
@@ -210,9 +210,9 @@ target_include_directories(cellpack_apply_plan PUBLIC
 )
 target_link_libraries(cellpack_apply_plan PUBLIC CellPack::cellpack CUDA::cudart)
 set_target_properties(cellpack_apply_plan PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellpack_apply_plan)
@@ -233,7 +233,7 @@ target_link_libraries(cellpack_feature_weighted_row_reduction PUBLIC
     CellPack::apply_plan
 )
 set_target_properties(cellpack_feature_weighted_row_reduction PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellpack_feature_weighted_row_reduction)
@@ -253,7 +253,7 @@ target_link_libraries(cellpack_persistent_packing_payload PUBLIC
     CellPack::feature_weighted_row_reduction
 )
 set_target_properties(cellpack_persistent_packing_payload PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellpack_persistent_packing_payload)
@@ -269,9 +269,9 @@ if(TARGET CellShard::inspect)
         CUDA::cudart
     )
     set_target_properties(cellPackPersistentPackingPayloadTest PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17
+        CUDA_STANDARD 20
         CUDA_STANDARD_REQUIRED YES
     )
     cellerator_enable_perf(cellPackPersistentPackingPayloadTest)
@@ -295,7 +295,7 @@ target_link_libraries(cellerator_cellpack_geometry PUBLIC
     CellPack::cellpack
     Cellerator::biological_abi
 )
-target_compile_features(cellerator_cellpack_geometry PUBLIC cxx_std_17)
+target_compile_features(cellerator_cellpack_geometry PUBLIC cxx_std_20)
 
 add_executable(cellPackingBindingTest
     tests/layout/cell_packing_binding_test.cc
@@ -304,7 +304,7 @@ target_link_libraries(cellPackingBindingTest PRIVATE
     Cellerator::cellpack_geometry
 )
 set_target_properties(cellPackingBindingTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 if(CELLERATOR_BUILD_TESTS)
@@ -322,7 +322,7 @@ target_link_libraries(cellpack_execution_image_v2 PUBLIC
     CellPack::persistent_packing_payload
     Cellerator::biological_abi
 )
-target_compile_features(cellpack_execution_image_v2 PUBLIC cxx_std_17)
+target_compile_features(cellpack_execution_image_v2 PUBLIC cxx_std_20)
 
 add_library(cellerator_opaque_execution_artifact STATIC
     src/execution/opaque_artifact.cc
@@ -336,7 +336,7 @@ target_include_directories(cellerator_opaque_execution_artifact PUBLIC
 target_link_libraries(cellerator_opaque_execution_artifact PUBLIC
     CellPack::execution_image_v2
 )
-target_compile_features(cellerator_opaque_execution_artifact PUBLIC cxx_std_17)
+target_compile_features(cellerator_opaque_execution_artifact PUBLIC cxx_std_20)
 
 add_executable(cellPackExecutionImageV2Test
     tests/geometry/persistence/execution_image_v2_test.cc
@@ -345,7 +345,7 @@ target_link_libraries(cellPackExecutionImageV2Test PRIVATE
     CellPack::execution_image_v2
 )
 set_target_properties(cellPackExecutionImageV2Test PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 
@@ -362,9 +362,9 @@ if(TARGET CellShard::inspect)
         CUDA::cudart
     )
     set_target_properties(cellPackExecutionImageV2DeviceTest PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17
+        CUDA_STANDARD 20
         CUDA_STANDARD_REQUIRED YES
     )
 
@@ -377,9 +377,9 @@ if(TARGET CellShard::inspect)
         CUDA::cudart
     )
     set_target_properties(celleratorOpaqueExecutionArtifactTest PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17
+        CUDA_STANDARD 20
         CUDA_STANDARD_REQUIRED YES
     )
 endif()

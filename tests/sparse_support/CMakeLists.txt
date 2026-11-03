@@ -24,7 +24,7 @@ add_executable(cellerator_sparse_support_indexing_test
     indexing_support_gating_test.cc)
 target_link_libraries(cellerator_sparse_support_indexing_test PRIVATE
     Cellerator::sparse_support)
-target_compile_features(cellerator_sparse_support_indexing_test PRIVATE cxx_std_17)
+target_compile_features(cellerator_sparse_support_indexing_test PRIVATE cxx_std_20)
 target_compile_options(cellerator_sparse_support_indexing_test PRIVATE -UNDEBUG)
 add_test(NAME cellerator_sparse_support_indexing
     COMMAND cellerator_sparse_support_indexing_test)
@@ -32,7 +32,7 @@ add_test(NAME cellerator_sparse_support_indexing
 add_executable(cellerator_sparse_support_image_builder physical_image_builder_test.cc)
 target_link_libraries(cellerator_sparse_support_image_builder PRIVATE
     Cellerator::sparse_support)
-target_compile_features(cellerator_sparse_support_image_builder PRIVATE cxx_std_17)
+target_compile_features(cellerator_sparse_support_image_builder PRIVATE cxx_std_20)
 target_compile_options(cellerator_sparse_support_image_builder PRIVATE -UNDEBUG)
 add_test(NAME cellerator_sparse_support_image_builder
     COMMAND cellerator_sparse_support_image_builder)
@@ -41,7 +41,7 @@ add_executable(cellerator_sparse_support_derivative_sampling
     derivative_sampling_test.cc)
 target_link_libraries(cellerator_sparse_support_derivative_sampling PRIVATE
     Cellerator::sparse_support)
-target_compile_features(cellerator_sparse_support_derivative_sampling PRIVATE cxx_std_17)
+target_compile_features(cellerator_sparse_support_derivative_sampling PRIVATE cxx_std_20)
 target_compile_options(cellerator_sparse_support_derivative_sampling PRIVATE -UNDEBUG)
 add_test(NAME cellerator_sparse_support_derivative_sampling
     COMMAND cellerator_sparse_support_derivative_sampling)
@@ -51,7 +51,7 @@ if(TARGET Cellerator::sparse_support_cuda)
     target_link_libraries(cellerator_sparse_support_cuda_worksets PRIVATE
         Cellerator::sparse_support_cuda CUDA::cudart)
     set_target_properties(cellerator_sparse_support_cuda_worksets PROPERTIES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
     target_compile_options(cellerator_sparse_support_cuda_worksets PRIVATE -UNDEBUG)
     add_test(NAME cellerator_sparse_support_cuda_worksets
         COMMAND cellerator_sparse_support_cuda_worksets)

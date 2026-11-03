@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
             const auto object = root / (std::string(compiler) + (driver == build_driver ? "-build.o" : "-install.o"));
             const auto executable = root / (std::string(compiler) + (driver == build_driver ? "-build" : "-install"));
             const std::string prefix = q(driver) + " --driver " + compiler;
-            if (std::system((prefix + " -std=c++17 -c " + q(source) + " -o " + q(object)).c_str()) != 0 || !fs::exists(object) || fs::file_size(object) == 0) return EXIT_FAILURE;
+            if (std::system((prefix + " -std=c++20 -c " + q(source) + " -o " + q(object)).c_str()) != 0 || !fs::exists(object) || fs::file_size(object) == 0) return EXIT_FAILURE;
             if (std::system((prefix + " " + q(object) + " -o " + q(executable)).c_str()) != 0 || !fs::exists(executable)) return EXIT_FAILURE;
             if (std::system(("test \"$(" + q(executable) + ")\" = ordinary-cxx").c_str()) != 0) return EXIT_FAILURE;
         }

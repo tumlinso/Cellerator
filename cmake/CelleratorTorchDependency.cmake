@@ -128,7 +128,13 @@ if(CMAKE_CUDA_COMPILER_LOADED
     endif()
 endif()
 
+# Caffe2 may replace NVCC's explicitly selected host compiler with the CXX
+# compiler. Keep the selected CUDA toolchain while discovering Torch.
+set(cellerator_torch_saved_cuda_host_compiler "${CMAKE_CUDA_HOST_COMPILER}")
 find_package(Torch REQUIRED)
+if(cellerator_torch_saved_cuda_host_compiler)
+    set(CMAKE_CUDA_HOST_COMPILER "${cellerator_torch_saved_cuda_host_compiler}")
+endif()
 if(cellerator_torch_saved_cuda_architectures)
     set(CMAKE_CUDA_ARCHITECTURES "${cellerator_torch_saved_cuda_architectures}" CACHE STRING
         "CUDA architectures selected for Cellerator" FORCE)

@@ -56,7 +56,7 @@ early_host_transform_receipt_v1 compile_early_host_transform_v1(
             return receipt;
         }
         std::ostringstream command;
-        command << quote(request.host_compiler) << " -std=c++17 -shared -fPIC ";
+        command << quote(request.host_compiler) << " -std=c++20 -shared -fPIC ";
         if (!request.include_directory.empty()) {
             command << "-I" << quote(request.include_directory) << ' ';
         }

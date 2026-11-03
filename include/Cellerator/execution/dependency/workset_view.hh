@@ -9,7 +9,7 @@
 namespace cellerator::execution::dependency {
 
 // Raw per-batch CSR candidates. Each row is strictly ordered by stable edge ID
-// and unique. These POD views are C++17/CUDA compatible and do not own storage.
+// and unique. These POD views are C++20/CUDA compatible and do not own storage.
 struct CandidateBatchView {
     const std::uint64_t* offsets = nullptr;
     const containers::IndexedWorkItem* items = nullptr;

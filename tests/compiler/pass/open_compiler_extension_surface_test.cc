@@ -27,7 +27,7 @@ int main() {
            "#include <Cellerator/compiler/pass/self_transform_v1.hh>\n"
            "#include <Cellerator/compiler/pass/open_compiler_extension_surface_v1.hh>\n"
            "extern \"C\" unsigned plugin_abi() { return cellerator::compiler::pass::v1::open_compiler_extension_abi_version_v1; }\n"; }
-    const std::string command = "g++ -std=c++17 -shared -fPIC -I" + install.string()
+    const std::string command = "g++ -std=c++20 -shared -fPIC -I" + install.string()
         + " " + source.string() + " -o " + library.string();
     assert(std::system(command.c_str()) == 0);
     assert(std::filesystem::is_regular_file(library));

@@ -25,7 +25,7 @@ uploading. Expert keys, parameter revisions, origins and original occurrence
 indices remain available independently of physical buffers. These buffers
 describe selected work; they do not discover candidates or choose placements.
 
-The C++17 templates implement real host execution:
+The C++20 templates implement real host execution:
 
 1. `gather_inputs<T>` reads each unique origin once through a caller provider,
    then copies the common row to every dispatch occurrence. Only one row of
@@ -88,7 +88,7 @@ retirement during active dispatch, while `parameter_store_test.cc` covers its
 store owner's lifecycle and concurrent publication contracts.
 
 ```sh
-g++ -std=c++17 -Wall -Wextra -Werror -Iinclude \
+clang++-18 -std=c++20 -Wall -Wextra -Werror -Iinclude \
   tests/framework/native/conditional_dispatch_example.cc \
   src/execution/conditional/dispatch.cc -o /tmp/cellerator_conditional_example
 /tmp/cellerator_conditional_example

@@ -24,7 +24,7 @@ target_include_directories(cellerator_semantic_projection_layout PUBLIC
 target_link_libraries(cellerator_semantic_projection_layout PUBLIC
     Cellerator::layout Cellerator::semantic_geometry_v1
     CellPack::execution_image_v2)
-target_compile_features(cellerator_semantic_projection_layout PUBLIC cxx_std_17)
+target_compile_features(cellerator_semantic_projection_layout PUBLIC cxx_std_20)
 
 # CE-GEO source-linked provider and exact physical-projection inventory.
 # Semantic compilation remains in Cellerator::semantic_geometry_v1; this
@@ -59,9 +59,9 @@ target_link_libraries(cellerator_architecture_provider PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_architecture_provider PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -107,13 +107,13 @@ target_include_directories(cellerator_compute_candidate_inventory PUBLIC
     $<INSTALL_INTERFACE:include>)
 target_link_libraries(cellerator_compute_candidate_inventory PUBLIC
     Cellerator::architecture_provider)
-target_compile_features(cellerator_compute_candidate_inventory PUBLIC cxx_std_17)
+target_compile_features(cellerator_compute_candidate_inventory PUBLIC cxx_std_20)
 
 add_executable(cellerator_compute_candidate_inventory_test
     src/compute/operation/compute_candidate_inventory_test.cc)
 target_link_libraries(cellerator_compute_candidate_inventory_test PRIVATE
     Cellerator::compute_candidate_inventory)
-target_compile_features(cellerator_compute_candidate_inventory_test PRIVATE cxx_std_17)
+target_compile_features(cellerator_compute_candidate_inventory_test PRIVATE cxx_std_20)
 target_compile_options(cellerator_compute_candidate_inventory_test PRIVATE -UNDEBUG)
 
 set(CELLERATOR_OPERATION_FOCUSED_TESTS
@@ -134,7 +134,7 @@ foreach(test_name IN LISTS CELLERATOR_OPERATION_FOCUSED_TESTS)
     add_executable(cellerator_operation_${test_name} ${test_source})
     target_link_libraries(cellerator_operation_${test_name} PRIVATE
         Cellerator::compute_candidate_inventory)
-    target_compile_features(cellerator_operation_${test_name} PRIVATE cxx_std_17)
+    target_compile_features(cellerator_operation_${test_name} PRIVATE cxx_std_20)
     target_compile_options(cellerator_operation_${test_name} PRIVATE -UNDEBUG)
 endforeach()
 
@@ -143,9 +143,9 @@ add_executable(cellerator_operation_relation_apply_v1_test
 target_link_libraries(cellerator_operation_relation_apply_v1_test PRIVATE
     Cellerator::compute_candidate_inventory)
 set_target_properties(cellerator_operation_relation_apply_v1_test PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES)
 target_compile_options(cellerator_operation_relation_apply_v1_test PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:-UNDEBUG>
@@ -183,9 +183,9 @@ target_link_libraries(cellerator_relation_algebra PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_relation_algebra PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -216,9 +216,9 @@ target_link_libraries(cellerator_fusion_training PUBLIC
     Cellerator::relation_algebra
     CUDA::cudart)
 set_target_properties(cellerator_fusion_training PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     CUDA_ARCHITECTURES 70)
 
@@ -230,7 +230,7 @@ add_executable(cellerator_operation_fusion_training_integration_test
 target_link_libraries(cellerator_operation_fusion_training_integration_test PRIVATE
     Cellerator::compute_candidate_inventory)
 target_compile_features(cellerator_operation_fusion_training_integration_test
-    PRIVATE cxx_std_17)
+    PRIVATE cxx_std_20)
 target_compile_options(cellerator_operation_fusion_training_integration_test
     PRIVATE -UNDEBUG)
 
@@ -244,7 +244,7 @@ foreach(test_name IN LISTS CELLERATOR_OPERATION_TRAINING_TESTS)
     target_link_libraries(cellerator_operation_training_${test_name}_test PRIVATE
         Cellerator::fusion_training)
     target_compile_features(cellerator_operation_training_${test_name}_test
-        PRIVATE cxx_std_17)
+        PRIVATE cxx_std_20)
     target_compile_options(cellerator_operation_training_${test_name}_test
         PRIVATE -UNDEBUG)
 endforeach()
@@ -258,7 +258,7 @@ foreach(test_name IN LISTS CELLERATOR_OPERATION_TRAINING_PROGRAM_TESTS)
     target_link_libraries(cellerator_operation_training_${test_name}_test PRIVATE
         Cellerator::fusion_training)
     target_compile_features(cellerator_operation_training_${test_name}_test
-        PRIVATE cxx_std_17)
+        PRIVATE cxx_std_20)
     target_compile_options(cellerator_operation_training_${test_name}_test
         PRIVATE -UNDEBUG)
 endforeach()
@@ -272,7 +272,7 @@ add_library(cellerator_operation_fusion_sm70_compile OBJECT
 target_include_directories(cellerator_operation_fusion_sm70_compile PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set_target_properties(cellerator_operation_fusion_sm70_compile PROPERTIES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     CUDA_ARCHITECTURES 70)
 
@@ -291,7 +291,7 @@ foreach(test_source IN LISTS CELLERATOR_OPERATION_RELATION_HOST_TEST_SOURCES)
     set(test_target cellerator_operation_relation_${test_parent_hash}_${test_stem})
     add_executable(${test_target} ${test_source})
     target_link_libraries(${test_target} PRIVATE Cellerator::relation_algebra)
-    target_compile_features(${test_target} PRIVATE cxx_std_17)
+    target_compile_features(${test_target} PRIVATE cxx_std_20)
     target_compile_options(${test_target} PRIVATE -UNDEBUG)
     list(APPEND CELLERATOR_OPERATION_RELATION_HOST_TEST_TARGETS ${test_target})
 endforeach()
@@ -301,7 +301,7 @@ add_library(cellerator_operation_relation_sm70_compile OBJECT
 target_include_directories(cellerator_operation_relation_sm70_compile PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set_target_properties(cellerator_operation_relation_sm70_compile PROPERTIES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES)
 
 # Final CE-GEO source catalog fan-in. This cold target only validates and
@@ -316,7 +316,7 @@ target_include_directories(cellerator_relation_catalog PUBLIC
 target_link_libraries(cellerator_relation_catalog PUBLIC
     Cellerator::architecture_provider
     Cellerator::relation_algebra)
-target_compile_features(cellerator_relation_catalog PUBLIC cxx_std_17)
+target_compile_features(cellerator_relation_catalog PUBLIC cxx_std_20)
 add_library(Cellerator::row_masked_n1_candidate ALIAS
     cellerator_row_masked_n1_candidate)
 target_include_directories(cellerator_row_masked_n1_candidate PUBLIC
@@ -330,9 +330,9 @@ target_link_libraries(cellerator_row_masked_n1_candidate PUBLIC
     CellPack::persistent_packing_payload
 )
 set_target_properties(cellerator_row_masked_n1_candidate PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 # CE-ARCH-72: operation-core activation of the existing conventional CSR N=1
@@ -356,9 +356,9 @@ target_link_libraries(cellerator_csr_fallback_candidate PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_csr_fallback_candidate PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -379,7 +379,7 @@ target_link_libraries(cellerator_feature_major_projection PUBLIC
     CellPack::persistent_packing_payload
     Cellerator::biological_abi
 )
-target_compile_features(cellerator_feature_major_projection PUBLIC cxx_std_17)
+target_compile_features(cellerator_feature_major_projection PUBLIC cxx_std_20)
 
 add_library(cellerator_transpose_projection STATIC
     src/layout/projection/transpose.cc
@@ -395,7 +395,7 @@ target_link_libraries(cellerator_transpose_projection PUBLIC
     Cellerator::feature_major_projection
     Cellerator::biological_abi
 )
-target_compile_features(cellerator_transpose_projection PUBLIC cxx_std_17)
+target_compile_features(cellerator_transpose_projection PUBLIC cxx_std_20)
 
 add_library(cellerator_feature_major_small_n_candidate STATIC
     src/compute/candidate/feature_major_small_n_candidate.cu
@@ -413,9 +413,9 @@ target_link_libraries(cellerator_feature_major_small_n_candidate PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_feature_major_small_n_candidate PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -442,9 +442,9 @@ target_link_libraries(cellerator_native_training_slice PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_native_training_slice PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 add_library(Cellerator::transpose_backward_candidate ALIAS
@@ -460,9 +460,9 @@ target_link_libraries(cellerator_transpose_backward_candidate PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_transpose_backward_candidate PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -484,7 +484,7 @@ target_link_libraries(cellerator_projection_activation PUBLIC
     Cellerator::transpose_projection
     Cellerator::csr_fallback_candidate
 )
-target_compile_features(cellerator_projection_activation PUBLIC cxx_std_17)
+target_compile_features(cellerator_projection_activation PUBLIC cxx_std_20)
 
 add_library(cellerator_builtin_candidate_catalog STATIC
     src/compute/operation/builtin_catalog.cc
@@ -506,7 +506,7 @@ target_link_libraries(cellerator_builtin_candidate_catalog PUBLIC
     Cellerator::feature_major_small_n_candidate
     Cellerator::transpose_backward_candidate
 )
-target_compile_features(cellerator_builtin_candidate_catalog PUBLIC cxx_std_17)
+target_compile_features(cellerator_builtin_candidate_catalog PUBLIC cxx_std_20)
 
 add_library(cellerator_cusparse_csr_candidate STATIC
     src/compute/candidate/cusparse_csr_candidate.cu
@@ -526,9 +526,9 @@ target_link_libraries(cellerator_cusparse_csr_candidate PUBLIC
     CUDA::cusparse
 )
 set_target_properties(cellerator_cusparse_csr_candidate PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -546,7 +546,7 @@ target_link_libraries(cellerator_preparation_factory PUBLIC
     Cellerator::builtin_candidate_catalog
     Cellerator::runtime
 )
-target_compile_features(cellerator_preparation_factory PUBLIC cxx_std_17)
+target_compile_features(cellerator_preparation_factory PUBLIC cxx_std_20)
 
 add_library(cellerator_executable_core INTERFACE)
 add_library(Cellerator::executable_core ALIAS cellerator_executable_core)
@@ -578,7 +578,7 @@ target_link_libraries(cellerator_executable_program PUBLIC
     Cellerator::executable_core
     Cellerator::planner
 )
-target_compile_features(cellerator_executable_program PUBLIC cxx_std_17)
+target_compile_features(cellerator_executable_program PUBLIC cxx_std_20)
 
 add_library(cellerator_training_program STATIC
     src/execution/training_program.cu
@@ -597,8 +597,8 @@ target_link_libraries(cellerator_training_program PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_training_program PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )

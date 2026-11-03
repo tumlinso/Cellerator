@@ -1,7 +1,7 @@
 # All suites execute the original independent test programs with assertions on.
 function(spine_test target)
     add_executable(${target} ${ARGN})
-    target_compile_features(${target} PRIVATE cxx_std_17)
+    target_compile_features(${target} PRIVATE cxx_std_20)
     target_compile_options(${target} PRIVATE -UNDEBUG)
     target_include_directories(${target} PRIVATE "${PROJECT_SOURCE_DIR}/include")
     set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
@@ -60,7 +60,7 @@ add_library(cellerator_spine_algebra STATIC
     src/compiler/ir/semantic/bundle_chain_moments_hierarchy_and_exchange_op.cc
     src/compiler/ir/semantic/contraction_segment_normalization.cc)
 target_include_directories(cellerator_spine_algebra PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_compile_features(cellerator_spine_algebra PUBLIC cxx_std_17)
+target_compile_features(cellerator_spine_algebra PUBLIC cxx_std_20)
 foreach(name support_product classification)
     spine_test(ceSpineAlgebra_${name} tests/semantic_spine/algebra/${name}_test.cc)
     target_link_libraries(ceSpineAlgebra_${name} PRIVATE cellerator_spine_algebra)

@@ -17,6 +17,8 @@ int main() {
         {21, 22, 23, 70, *kernel});
     assert(plan);
     assert(plan->conventional_fallback_retained);
+    assert(plan->compile_arguments.size() == 3);
+    assert(plan->compile_arguments[0] == "-std=c++20");
 
     const auto directory = std::filesystem::current_path() / "nvcc_object_compile_plan_artifacts";
     std::filesystem::create_directories(directory);
@@ -39,8 +41,11 @@ int main() {
               "cudaFree(d_out);cudaFree(d_in);return 0;}\n";
     output.close();
 
-    const std::string compile = "/usr/bin/nvcc -std=c++17 -arch=sm_70 -c " +
-        source.string() + " -o " + object.string();
+    std::string compile = "/usr/bin/nvcc";
+    for (const auto& argument : plan->compile_arguments) {
+        compile += " " + argument;
+    }
+    compile += " " + source.string() + " -o " + object.string();
     const std::string link = "/usr/bin/nvcc -arch=sm_70 " + object.string() +
         " -o " + executable.string();
     assert(std::system(compile.c_str()) == 0);

@@ -47,9 +47,9 @@ target_link_libraries(celleratorCandidateMeasurementTest PRIVATE
     Cellerator::csr_fallback_candidate
 )
 set_target_properties(celleratorCandidateMeasurementTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorProjectionActivationTest PRIVATE
@@ -86,9 +86,9 @@ set_target_properties(
     celleratorPreparationFactoryTest
     celleratorQuantitativeRelationTest
     PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17
+        CUDA_STANDARD 20
         CUDA_STANDARD_REQUIRED YES
 )
 set_target_properties(
@@ -96,7 +96,7 @@ set_target_properties(
     celleratorPlannerInputFixtureTest
     celleratorExecutableCoreIntegrationTest
     PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorPlannerV1Test PRIVATE Cellerator::planner)
@@ -110,19 +110,19 @@ target_link_libraries(celleratorHierarchyPartitionBoundaryTest PRIVATE
     Cellerator::planner
 )
 set_target_properties(celleratorPlannerV1Test PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 set_target_properties(celleratorConnectedOperationPlannerTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 set_target_properties(celleratorObjectiveV2CalibrationTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 set_target_properties(celleratorHierarchyPartitionBoundaryTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 
@@ -154,9 +154,9 @@ target_link_libraries(celleratorValueGenerationReuseTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(celleratorValueGenerationReuseTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorCsrFallbackCandidateTest PRIVATE
@@ -165,9 +165,9 @@ target_link_libraries(celleratorCsrFallbackCandidateTest PRIVATE
     Cellerator::planner
 )
 set_target_properties(celleratorCsrFallbackCandidateTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorFeatureMajorSmallNCandidateTest PRIVATE
@@ -179,9 +179,9 @@ target_link_libraries(celleratorFeatureMajorSmallNCandidateTest PRIVATE
     cellerator_math_v1_evidence
 )
 set_target_properties(celleratorFeatureMajorSmallNCandidateTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorTransposeBackwardCandidateTest PRIVATE
@@ -191,9 +191,9 @@ target_link_libraries(celleratorTransposeBackwardCandidateTest PRIVATE
     cellerator_math_v1_evidence
 )
 set_target_properties(celleratorTransposeBackwardCandidateTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorNativeTrainingSliceTest PRIVATE
@@ -203,9 +203,9 @@ target_link_libraries(celleratorNativeTrainingSliceTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(celleratorNativeTrainingSliceTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorRowMaskedN1CandidateTest PRIVATE
@@ -213,8 +213,8 @@ target_link_libraries(celleratorRowMaskedN1CandidateTest PRIVATE
     Cellerator::planner
 )
 set_target_properties(celleratorRowMaskedN1CandidateTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )

@@ -15,7 +15,7 @@ std::optional<nvcc_object_compile_plan> make_nvcc_object_compile_plan(
     nvcc_object_compile_plan result;
     result.cuda_source = request.relation_kernel.declaration;
     result.compile_arguments = {
-        "-std=c++17",
+        "-std=c++20",
         "-arch=sm_" + std::to_string(request.compute_capability),
         "--compile",
     };

@@ -13,10 +13,10 @@ adapter.
 - Perturbation delta propagation: immutable response structure with a
   generation-checked mutable delta value plane.
 
-Compile and run the example directly with a strict C++17 compiler:
+Compile and run the example directly with the required C++20 compiler baseline:
 
 ```bash
-g++ -std=c++17 -Wall -Wextra -Werror -pedantic -Iinclude \
+clang++-18 -std=c++20 -Wall -Wextra -Werror -pedantic -Iinclude \
     examples/biology/biological_relations.cc \
     -o build/biological_relations_example
 build/biological_relations_example

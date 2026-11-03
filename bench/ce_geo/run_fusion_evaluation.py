@@ -269,7 +269,7 @@ def main() -> int:
         binary = Path(directory) / "fusion_evaluation"
         source.write_text(SOURCE, encoding="utf-8")
         compiled = run([
-            "nvcc", "-std=c++17", "-arch=sm_70", "-O3", "-lineinfo",
+            "nvcc", "-std=c++20", "-arch=sm_70", "-O3", "-lineinfo",
             "-Xcompiler=-Wall,-Wextra,-Werror", "-I.", "-Iinclude",
             str(source), "-lcudart", "-o", str(binary),
         ])

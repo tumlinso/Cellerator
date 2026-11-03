@@ -27,6 +27,8 @@ torch = ["torch>=2.7,<2.8"]
 tokenization = ["torch>=2.7,<2.8"]
 
 [tool.scikit-build]
+cmake.version = ">=3.28"
+ninja.version = ">=1.11"
 cmake.source-dir = "."
 wheel.packages = ["python/cellerator"]
 build.targets = ["cellerator_python_extensions"]

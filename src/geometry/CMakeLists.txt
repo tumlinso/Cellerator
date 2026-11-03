@@ -64,7 +64,7 @@ target_link_libraries(cellerator_semantic_geometry_v1 PUBLIC
     Cellerator::biological_abi
     Cellerator::compute_sampling
 )
-target_compile_features(cellerator_semantic_geometry_v1 PUBLIC cxx_std_17)
+target_compile_features(cellerator_semantic_geometry_v1 PUBLIC cxx_std_20)
 
 # Mutable value generations remain a separate execution-owned target from the
 # immutable semantic geometry/compiler target above.
@@ -85,7 +85,7 @@ target_include_directories(cellerator_projection_value_plane_v1 PUBLIC
 target_link_libraries(cellerator_projection_value_plane_v1 PUBLIC
     Cellerator::biological_abi
 )
-target_compile_features(cellerator_projection_value_plane_v1 PUBLIC cxx_std_17)
+target_compile_features(cellerator_projection_value_plane_v1 PUBLIC cxx_std_20)
 
 add_library(cellerator_geometry_optimizer_device_v1 STATIC
     optimizer/device/exact_census.cu
@@ -101,11 +101,11 @@ target_link_libraries(cellerator_geometry_optimizer_device_v1 PUBLIC
     Cellerator::semantic_geometry_v1
     CUDA::cudart
 )
-target_compile_features(cellerator_geometry_optimizer_device_v1 PUBLIC cxx_std_17)
+target_compile_features(cellerator_geometry_optimizer_device_v1 PUBLIC cxx_std_20)
 set_target_properties(cellerator_geometry_optimizer_device_v1 PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 if(COMMAND cellerator_enable_perf)
@@ -124,7 +124,7 @@ target_link_libraries(celleratorGeometryValueIntegrationTest PRIVATE
     Cellerator::projection_value_plane_v1
 )
 set_target_properties(celleratorGeometryValueIntegrationTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -132,7 +132,7 @@ target_link_libraries(celleratorGeometryOptimizerPortfolioTest PRIVATE
     Cellerator::semantic_geometry_v1
 )
 set_target_properties(celleratorGeometryOptimizerPortfolioTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -144,7 +144,7 @@ target_link_libraries(celleratorGeometryOverlapContractTest PRIVATE
     Cellerator::semantic_geometry_v1
 )
 set_target_properties(celleratorGeometryOverlapContractTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -156,7 +156,7 @@ target_link_libraries(celleratorGeometryOverlapValidationTest PRIVATE
     Cellerator::semantic_geometry_v1
 )
 set_target_properties(celleratorGeometryOverlapValidationTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -166,9 +166,9 @@ target_include_directories(cellpack PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(cellpack PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
-target_compile_features(cellpack PUBLIC cxx_std_17)
+target_compile_features(cellpack PUBLIC cxx_std_20)
 set_target_properties(cellpack PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 if(COMMAND cellerator_enable_perf)
@@ -184,11 +184,11 @@ target_include_directories(cellpack_gating_cuda PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(cellpack_gating_cuda PUBLIC CellPack::cellpack CUDA::cudart)
-target_compile_features(cellpack_gating_cuda PUBLIC cxx_std_17)
+target_compile_features(cellpack_gating_cuda PUBLIC cxx_std_20)
 set_target_properties(cellpack_gating_cuda PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 if(COMMAND cellerator_enable_perf)
@@ -205,11 +205,11 @@ target_include_directories(cellpack_merge_cost_cuda PUBLIC
 )
 target_include_directories(cellpack_merge_cost_cuda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellpack_merge_cost_cuda PUBLIC CellPack::cellpack CUDA::cudart)
-target_compile_features(cellpack_merge_cost_cuda PUBLIC cxx_std_17)
+target_compile_features(cellpack_merge_cost_cuda PUBLIC cxx_std_20)
 set_target_properties(cellpack_merge_cost_cuda PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 if(COMMAND cellerator_enable_perf)
@@ -225,11 +225,11 @@ target_include_directories(cellpack_cell_block_records_cuda PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(cellpack_cell_block_records_cuda PUBLIC CellPack::cellpack CUDA::cudart)
-target_compile_features(cellpack_cell_block_records_cuda PUBLIC cxx_std_17)
+target_compile_features(cellpack_cell_block_records_cuda PUBLIC cxx_std_20)
 set_target_properties(cellpack_cell_block_records_cuda PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 if(COMMAND cellerator_enable_perf)
@@ -250,9 +250,9 @@ target_link_libraries(cellpack_warp_tiles PUBLIC
     CellPack::cellpack
     cellpack_local_cell_ordering
 )
-target_compile_features(cellpack_warp_tiles PUBLIC cxx_std_17)
+target_compile_features(cellpack_warp_tiles PUBLIC cxx_std_20)
 set_target_properties(cellpack_warp_tiles PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 if(COMMAND cellerator_enable_perf)
@@ -273,11 +273,11 @@ target_link_libraries(cellpack_warp_tiles_cuda PUBLIC
     CellPack::warp_tiles
     CUDA::cudart
 )
-target_compile_features(cellpack_warp_tiles_cuda PUBLIC cxx_std_17)
+target_compile_features(cellpack_warp_tiles_cuda PUBLIC cxx_std_20)
 set_target_properties(cellpack_warp_tiles_cuda PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 if(COMMAND cellerator_enable_perf)
@@ -299,11 +299,11 @@ target_link_libraries(cellpack_feature_weighted_row_reduction_cuda PUBLIC
     cellpack_feature_weighted_row_reduction
     CUDA::cudart
 )
-target_compile_features(cellpack_feature_weighted_row_reduction_cuda PUBLIC cxx_std_17)
+target_compile_features(cellpack_feature_weighted_row_reduction_cuda PUBLIC cxx_std_20)
 set_target_properties(cellpack_feature_weighted_row_reduction_cuda PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 if(COMMAND cellerator_enable_perf)
@@ -315,7 +315,7 @@ add_executable(cellPackFormatTest
 )
 target_link_libraries(cellPackFormatTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackFormatTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -328,7 +328,7 @@ add_executable(cellPackPlannerTest
 )
 target_link_libraries(cellPackPlannerTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackPlannerTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -341,7 +341,7 @@ add_executable(cellPackMatrixViewTest
 )
 target_link_libraries(cellPackMatrixViewTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackMatrixViewTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -354,7 +354,7 @@ add_executable(cellPackReconstructionTest
 )
 target_link_libraries(cellPackReconstructionTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackReconstructionTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -367,7 +367,7 @@ add_executable(cellPackCellBlockRecordsTest
 )
 target_link_libraries(cellPackCellBlockRecordsTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackCellBlockRecordsTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -381,7 +381,7 @@ add_executable(cellPackWarpTilesTest
 )
 target_link_libraries(cellPackWarpTilesTest PRIVATE CellPack::warp_tiles)
 set_target_properties(cellPackWarpTilesTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -395,9 +395,9 @@ add_executable(cellPackWarpTilesCudaTest
 )
 target_link_libraries(cellPackWarpTilesCudaTest PRIVATE CellPack::warp_tiles_cuda)
 set_target_properties(cellPackWarpTilesCudaTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -413,9 +413,9 @@ target_link_libraries(cellPackFeatureWeightedRowReductionCudaTest PRIVATE
     CellPack::feature_weighted_row_reduction_cuda
 )
 set_target_properties(cellPackFeatureWeightedRowReductionCudaTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -428,7 +428,7 @@ add_executable(cellPackLayoutMetricsTest
 )
 target_link_libraries(cellPackLayoutMetricsTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackLayoutMetricsTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -441,7 +441,7 @@ add_executable(cellPackEvaluatorTest
 )
 target_link_libraries(cellPackEvaluatorTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackEvaluatorTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -454,7 +454,7 @@ add_executable(cellPackLayoutSelectorTest
 )
 target_link_libraries(cellPackLayoutSelectorTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackLayoutSelectorTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -467,7 +467,7 @@ add_executable(cellPackGatingTest
 )
 target_link_libraries(cellPackGatingTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackGatingTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -480,9 +480,9 @@ add_executable(cellPackGatingCudaTest
 )
 target_link_libraries(cellPackGatingCudaTest PRIVATE CellPack::gating_cuda)
 set_target_properties(cellPackGatingCudaTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -496,7 +496,7 @@ add_executable(cellPackOptimizerTest
 target_include_directories(cellPackOptimizerTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellPackOptimizerTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackOptimizerTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -509,9 +509,9 @@ add_executable(cellPackMergeCostTest
 )
 target_link_libraries(cellPackMergeCostTest PRIVATE CellPack::merge_cost_cuda)
 set_target_properties(cellPackMergeCostTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -524,9 +524,9 @@ add_executable(cellPackCellBlockRecordsCudaTest
 )
 target_link_libraries(cellPackCellBlockRecordsCudaTest PRIVATE CellPack::cell_block_records_cuda)
 set_target_properties(cellPackCellBlockRecordsCudaTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -540,7 +540,7 @@ add_executable(cellPackLayoutBench
 target_include_directories(cellPackLayoutBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
 target_link_libraries(cellPackLayoutBench PRIVATE CellPack::cellpack)
 set_target_properties(cellPackLayoutBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -554,7 +554,7 @@ add_executable(cellPackEvaluatorBench
 target_include_directories(cellPackEvaluatorBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
 target_link_libraries(cellPackEvaluatorBench PRIVATE CellPack::cellpack)
 set_target_properties(cellPackEvaluatorBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -568,9 +568,9 @@ add_executable(cellPackGatingBench
 target_include_directories(cellPackGatingBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
 target_link_libraries(cellPackGatingBench PRIVATE CellPack::gating_cuda)
 set_target_properties(cellPackGatingBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -584,7 +584,7 @@ add_executable(cellPackOptimizerBench
 target_include_directories(cellPackOptimizerBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
 target_link_libraries(cellPackOptimizerBench PRIVATE CellPack::cellpack)
 set_target_properties(cellPackOptimizerBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -598,9 +598,9 @@ add_executable(cellPackMergeCostBench
 target_include_directories(cellPackMergeCostBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
 target_link_libraries(cellPackMergeCostBench PRIVATE CellPack::merge_cost_cuda)
 set_target_properties(cellPackMergeCostBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -614,9 +614,9 @@ add_executable(cellPackCellBlockRecordsBench
 target_include_directories(cellPackCellBlockRecordsBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
 target_link_libraries(cellPackCellBlockRecordsBench PRIVATE CellPack::cell_block_records_cuda)
 set_target_properties(cellPackCellBlockRecordsBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -631,9 +631,9 @@ add_executable(cellPackWarpTilesBench
 target_include_directories(cellPackWarpTilesBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
 target_link_libraries(cellPackWarpTilesBench PRIVATE CellPack::warp_tiles_cuda)
 set_target_properties(cellPackWarpTilesBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -657,9 +657,9 @@ target_link_libraries(cellPackFeatureWeightedRowReductionBench PRIVATE
     CUDA::cusparse
 )
 set_target_properties(cellPackFeatureWeightedRowReductionBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -685,9 +685,9 @@ target_link_libraries(cellPackHardwareCostAutotuneBench PRIVATE
     CUDA::cusparse
 )
 set_target_properties(cellPackHardwareCostAutotuneBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )

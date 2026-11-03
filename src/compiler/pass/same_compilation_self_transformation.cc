@@ -86,7 +86,7 @@ same_compilation_transform_receipt_v1 deliver_same_compilation_transform_v1(
         std::ofstream output(source);
         output << request.ordinary_source;
         output.close();
-        const std::string command = quote(request.host_compiler) + " -std=c++17 -c "
+        const std::string command = quote(request.host_compiler) + " -std=c++20 -c "
             + quote(source.string()) + " -o " + quote(object.string());
         if (!output || std::system(command.c_str()) != 0) {
             receipt.status = same_compilation_transform_status_v1::object_emission_failed;

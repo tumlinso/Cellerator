@@ -215,10 +215,12 @@ set-union oracle across duplicate and empty rows, output-capacity boundaries,
 and malformed source/posting cases. Focused V100 results and sanitizer outcomes
 are in the [validation report](../planning/v100-framework-2026-10-29/REPORT.md).
 Performance remains unmeasured. GPU execution must use the repository's
-existing admitted execution route.
+existing admitted execution route. The validation result above predates the
+current C++20 minimum; the command below expresses the current compiler floor
+and does not revise the source-bound historical result.
 
 ```sh
-nvcc -std=c++17 -arch=sm_70 -Iinclude \
+nvcc -std=c++20 -arch=sm_70 -Iinclude \
   tests/framework/cuda/frontier_smoke.cu src/modeling/cuda/frontier.cu \
   -o /tmp/cellerator-frontier-smoke
 ```

@@ -7,10 +7,10 @@ using namespace Cellerator::compiler::tooling;
 int main() {
     const std::vector<compile_command_input_v1> ninja_commands = {
         {"/tmp/cmake-ninja", "src/model.cc",
-         "clang++ -std=c++17 -fcellerator --cellerator-profile=pbmc "
+         "clang++ -std=c++20 -fcellerator --cellerator-profile=pbmc "
          "--cellerator-backend cuda -resource-dir /clang/18 @model.rsp -c src/model.cc", {}},
         {"/tmp/cmake-ninja", "src/plain.cc", "",
-         {"clang++", "-std=c++17", "-c", "src/plain.cc"}},
+         {"clang++", "-std=c++20", "-c", "src/plain.cc"}},
     };
     const auto responses = [](std::string_view path, std::string_view directory)
         -> std::optional<std::string> {

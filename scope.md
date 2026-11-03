@@ -155,8 +155,10 @@ style includes ordinary result structs, templates, primitive borrowed views,
 explicit extents and lifetimes, and separate owners for parameters and buffers.
 Named module registration, member enumeration, and a universal learned-model
 base are not required. Names still carry biological meaning at data and saved
-declaration boundaries. Optional host C++20 modules organize imports while CUDA
-and conventional header builds remain independent.
+declaration boundaries. C++ and CUDA builds require C++20 or newer; selected
+compiler implementation targets retain C++23. The C++20 named modules are
+built and exported through the normal package. CUDA translation units use the
+public headers and do not import named modules.
 
 Reuse established numerical and differentiation infrastructure, including
 LibTorch where appropriate, while designing an intuitive Cellerator modeling
@@ -233,8 +235,13 @@ of an existing integration or authorization to implement or register one.
   Reusable learning and numerical machinery can still belong in Cellerator.
 - **AnnData and upstream single-cell libraries:** established data models and
   classical preprocessing, QC, normalization, and analysis workflows. The
-  AnnData adapter requires explicit input selection and does not preprocess or
-  choose scientific semantics automatically. Scanpy and RAPIDS-singlecell stay
+  Python AnnData adapter requires explicit input selection and does not
+  preprocess or choose scientific semantics automatically. Cellerator also
+  provides native H5AD I/O through the pinned HDF5-only `anndata.cppm` package;
+  it supports that library's declared modern encoding subset, including sparse
+  CSR/CSC, without a legacy-format fallback. This file-format boundary does
+  not transfer preprocessing, QC, scientific interpretation, or durable
+  storage/sharding ownership to Cellerator. Scanpy and RAPIDS-singlecell stay
   upstream for established analysis workflows.
 - **Storage and delivery systems:** durable dataset storage, sharding, transport,
   and hosting services remain with their owning projects, such as CellShard or

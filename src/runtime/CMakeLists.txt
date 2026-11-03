@@ -6,7 +6,7 @@ target_include_directories(cellerator_runtime_multi_gpu INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_compile_features(cellerator_runtime_multi_gpu INTERFACE cxx_std_17)
+target_compile_features(cellerator_runtime_multi_gpu INTERFACE cxx_std_20)
 target_link_libraries(cellerator_runtime_multi_gpu INTERFACE CUDA::cudart)
 if(NCCL_LIBRARY)
     target_compile_definitions(cellerator_runtime_multi_gpu INTERFACE CELLERATOR_DIST_HAS_NCCL=1)
@@ -33,13 +33,13 @@ target_include_directories(cellerator_runtime PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
     $<INSTALL_INTERFACE:include>
 )
-target_compile_features(cellerator_runtime PUBLIC cxx_std_17)
+target_compile_features(cellerator_runtime PUBLIC cxx_std_20)
 target_link_libraries(cellerator_runtime PUBLIC CUDA::cudart)
 target_link_libraries(cellerator_runtime PRIVATE CUDA::cublas CUDA::cusparse)
 set_target_properties(cellerator_runtime PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 add_library(cellerator_runtime_fleet STATIC
@@ -50,7 +50,7 @@ add_library(Cellerator::runtime_fleet ALIAS cellerator_runtime_fleet)
 target_include_directories(cellerator_runtime_fleet PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellerator_runtime_fleet PUBLIC Cellerator::runtime Cellerator::runtime_multi_gpu CUDA::cublas)
 target_link_libraries(cellerator_runtime_fleet PRIVATE CUDA::cudart CUDA::cusparse)
-set_target_properties(cellerator_runtime_fleet PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(cellerator_runtime_fleet PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 # Compatibility target names for pre-remap consumers. Canonical targets must
 # link Cellerator::runtime or Cellerator::runtime_fleet directly.
 add_library(cellerator_legacy_execution_context ALIAS cellerator_runtime_fleet)

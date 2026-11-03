@@ -24,9 +24,9 @@ add_executable(cellerator_factorized_interaction_candidate_runner
     "${_candidate_runner}"
     "${_minimal_direct_source}"
     "${_unique_output_source}")
-target_compile_features(cellerator_factorized_interaction_candidate_runner PRIVATE cxx_std_17)
+target_compile_features(cellerator_factorized_interaction_candidate_runner PRIVATE cxx_std_20)
 set_target_properties(cellerator_factorized_interaction_candidate_runner PROPERTIES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
     CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
 target_include_directories(cellerator_factorized_interaction_candidate_runner PRIVATE
@@ -39,9 +39,9 @@ target_link_libraries(cellerator_factorized_interaction_candidate_runner PRIVATE
 
 add_executable(cellerator_factorized_interaction_baseline_runner
     "${CELLERATOR_SOURCE_ROOT}/bench/factorized_interactions/native_runner.cu")
-target_compile_features(cellerator_factorized_interaction_baseline_runner PRIVATE cxx_std_17)
+target_compile_features(cellerator_factorized_interaction_baseline_runner PRIVATE cxx_std_20)
 set_target_properties(cellerator_factorized_interaction_baseline_runner PROPERTIES
-    CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
     CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
 target_link_libraries(cellerator_factorized_interaction_baseline_runner PRIVATE
     Cellerator::factorized_interaction_cuda CUDA::cudart)

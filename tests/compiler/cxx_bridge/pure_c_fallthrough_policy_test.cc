@@ -35,7 +35,7 @@ int main() {
         cxx::pure_cxx_fallthrough_request_v1 request;
         request.source = "// #pragma cellerator is inert in a comment\n";
         request.original_driver_arguments = {
-            compiler, "-std=c++17", "-MMD", "-MF", depfile,
+            compiler, "-std=c++20", "-MMD", "-MF", depfile,
             "-c", source_path.string(), "-o", object.string()};
         cxx::pure_cxx_fallthrough_plan_v1 plan;
         if (cxx::plan_pure_cxx_fallthrough_v1(request, &plan) !=

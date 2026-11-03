@@ -22,9 +22,9 @@ int main() {
     const auto gcc_object = temporary.string() + ".gcc.o";
     const auto clang_object = temporary.string() + ".clang.o";
     { std::ofstream file(temporary); file << source; }
-    const std::string gcc = "g++ -std=c++17 -Werror -c " + temporary.string() +
+    const std::string gcc = "g++ -std=c++20 -Werror -c " + temporary.string() +
         " -o " + gcc_object;
-    const std::string clang = "clang++-18 -std=c++17 -Werror -c " + temporary.string() +
+    const std::string clang = "clang++-18 -std=c++20 -Werror -c " + temporary.string() +
         " -o " + clang_object;
     assert(std::system(gcc.c_str()) == 0);
     assert(std::system(clang.c_str()) == 0);

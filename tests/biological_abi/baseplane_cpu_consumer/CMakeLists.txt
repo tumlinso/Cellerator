@@ -12,4 +12,4 @@ target_include_directories(celleratorBiologicalAbiBaseplaneCpuConsumer PRIVATE
     ${BASEPLANE_INCLUDE_DIR}
 )
 target_compile_features(celleratorBiologicalAbiBaseplaneCpuConsumer PRIVATE
-    cxx_std_17)
+    cxx_std_20)

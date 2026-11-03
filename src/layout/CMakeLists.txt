@@ -8,7 +8,7 @@ add_library(Cellerator::layout ALIAS cellerator_layout)
 target_include_directories(cellerator_layout PUBLIC
     $<BUILD_INTERFACE:${_ce_layout_root}/include>
     $<INSTALL_INTERFACE:include>)
-target_compile_features(cellerator_layout PUBLIC cxx_std_17)
+target_compile_features(cellerator_layout PUBLIC cxx_std_20)
 if(TARGET Cellerator::support)
     target_link_libraries(cellerator_layout PUBLIC Cellerator::support)
 endif()

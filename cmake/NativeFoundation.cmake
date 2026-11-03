@@ -21,7 +21,7 @@ if(CELLERATOR_ENABLE_SPARSE_SUPPORT)
         target_link_libraries(cellerator_sparse_support_cuda PUBLIC
             Cellerator::gating Cellerator::indexing CUDA::cudart)
         set_target_properties(cellerator_sparse_support_cuda PROPERTIES
-            POSITION_INDEPENDENT_CODE ON CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+            POSITION_INDEPENDENT_CODE ON CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
         if(EXISTS "${PROJECT_SOURCE_DIR}/src/indexing/cuda_postings.cu")
             target_sources(cellerator_sparse_support_cuda PRIVATE
                 "${PROJECT_SOURCE_DIR}/src/indexing/cuda_postings.cu")
@@ -170,7 +170,7 @@ while(_nf_pending)
     endif()
 endwhile()
 
-# These two C++17 host targets are the narrow structural dependency closure of
+# These two C++20 host targets are the narrow structural dependency closure of
 # the optional factorized-interaction CUDA component.  Export them once in a
 # small shared set so both that component and the full native-foundation set
 # can load them without defining a partial second copy of the targets.

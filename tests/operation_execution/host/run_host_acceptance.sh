@@ -8,7 +8,7 @@ trap 'rm -rf -- "${scratch}"' EXIT
 
 cd "${repo_root}"
 
-common=(-std=c++17 -Wall -Wextra -Werror -Iinclude)
+common=(-std=c++20 -Wall -Wextra -Werror -Iinclude)
 strict=(-O2)
 sanitized=(-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer)
 

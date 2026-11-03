@@ -7,6 +7,6 @@ endfunction()
 
 function(cellerator_set_legacy_accelerator_standard target)
     set_target_properties(${target} PROPERTIES
-        CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+        CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 endfunction()

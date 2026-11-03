@@ -19,7 +19,7 @@ int main() {
            "c.stages->push_back({2,\"external-stage\",{1}});"
            "c.bindings->push_back({2,10});"
            "c.native_fragments->push_back({2,\"external\",{1,2,3}}); return true;}\n"; }
-    const std::string compile = "g++ -std=c++17 -shared -fPIC -I"
+    const std::string compile = "g++ -std=c++20 -shared -fPIC -I"
         CELLERATOR_TEST_INCLUDE_ROOT " " + source.string() + " -o " + library.string();
     assert(std::system(compile.c_str()) == 0);
     void* handle = dlopen(library.c_str(), RTLD_NOW | RTLD_LOCAL);

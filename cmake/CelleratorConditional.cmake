@@ -11,7 +11,7 @@ add_library(cellerator_conditional STATIC
 add_library(Cellerator::conditional ALIAS cellerator_conditional)
 set_target_properties(cellerator_conditional PROPERTIES
     POSITION_INDEPENDENT_CODE ON EXPORT_NAME conditional)
-target_compile_features(cellerator_conditional PUBLIC cxx_std_17)
+target_compile_features(cellerator_conditional PUBLIC cxx_std_20)
 target_include_directories(cellerator_conditional PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)

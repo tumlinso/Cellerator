@@ -19,7 +19,7 @@ target_link_libraries(cellerator_math_v1_evidence PUBLIC
     CellPack::persistent_packing_payload
     CUDA::cudart
 )
-target_compile_features(cellerator_math_v1_evidence PUBLIC cxx_std_17)
+target_compile_features(cellerator_math_v1_evidence PUBLIC cxx_std_20)
 
 add_library(cellerator_packed_dense_operand STATIC
     compat/cp_math_v1/src/packed_dense_operand.cu
@@ -36,9 +36,9 @@ target_link_libraries(cellerator_packed_dense_operand PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_packed_dense_operand PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -81,9 +81,9 @@ target_link_libraries(cpMathExecutionCsrTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(cpMathExecutionCsrTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -94,7 +94,7 @@ target_link_libraries(cellPackFeatureWeightedRowReductionTest PRIVATE
     CellPack::feature_weighted_row_reduction
 )
 set_target_properties(cellPackFeatureWeightedRowReductionTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackFeatureWeightedRowReductionTest)
@@ -111,7 +111,7 @@ target_include_directories(cellpack_hardware_cost_model PUBLIC
 )
 target_link_libraries(cellpack_hardware_cost_model PUBLIC CellPack::cellpack)
 set_target_properties(cellpack_hardware_cost_model PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellpack_hardware_cost_model)
@@ -123,7 +123,7 @@ target_link_libraries(cellPackHardwareCostModelTest PRIVATE
     CellPack::hardware_cost_model
 )
 set_target_properties(cellPackHardwareCostModelTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackHardwareCostModelTest)
@@ -133,9 +133,9 @@ add_executable(cellPackApplyPlanTest
 )
 target_link_libraries(cellPackApplyPlanTest PRIVATE CellPack::apply_plan)
 set_target_properties(cellPackApplyPlanTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackApplyPlanTest)
@@ -149,7 +149,7 @@ target_link_libraries(cellPackInferredPackingPipelineTest PRIVATE
     CellPack::apply_plan
 )
 set_target_properties(cellPackInferredPackingPipelineTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackInferredPackingPipelineTest)
@@ -160,9 +160,9 @@ add_executable(cellPackApplyPlanBench
 target_include_directories(cellPackApplyPlanBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/bench)
 target_link_libraries(cellPackApplyPlanBench PRIVATE CellPack::apply_plan)
 set_target_properties(cellPackApplyPlanBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellPackApplyPlanBench)
@@ -180,9 +180,9 @@ target_link_libraries(cpMathPackedDenseOperandBench PRIVATE
     Cellerator::packed_dense_operand
 )
 set_target_properties(cpMathPackedDenseOperandBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cpMathPackedDenseOperandBench)

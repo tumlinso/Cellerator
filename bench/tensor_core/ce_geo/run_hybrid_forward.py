@@ -30,7 +30,7 @@ def main() -> int:
     output = arguments.output.resolve()
     BINARY.parent.mkdir(parents=True, exist_ok=True)
     run([
-        "nvcc", "-std=c++17", "-arch=sm_70", "-O3", "-lineinfo",
+        "nvcc", "-std=c++20", "-arch=sm_70", "-O3", "-lineinfo",
         "-Xcompiler=-Wall,-Wextra,-Werror", "-I.", "-Iinclude",
         "bench/tensor_core/ce_geo/hybrid_forward.cu",
         "src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cu",

@@ -28,7 +28,7 @@ int main() {
            "c.relation_applies->at(0).deterministic=false;"
            "c.diagnostics->push_back(\"external replacement\");"
            "(*c.analysis_cache)[\"replacement\"]=1; return true;}\n"; }
-    const std::string compile = "g++ -std=c++17 -shared -fPIC -I"
+    const std::string compile = "g++ -std=c++20 -shared -fPIC -I"
         CELLERATOR_TEST_INCLUDE_ROOT " " + source.string() + " -o "
         + library.string();
     assert(std::system(compile.c_str()) == 0);

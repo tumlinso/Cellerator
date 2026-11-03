@@ -185,14 +185,20 @@ target_link_libraries(my_model PRIVATE Cellerator::native_data)
 
 `Cellerator::tensor` is the smaller host format surface. Optional
 `Cellerator::native_data_cuda` composes CUDA owners and execution; these
-dependencies are not required by host semantic headers. CUDA execution headers
-using `std::span` require CUDA C++20; the kernel-facing format views remain
-C++17-compatible. Named module tooling is optional.
+dependencies are not required by host semantic headers. All package targets
+require at least C++20, including CUDA translation units. Kernel-facing format
+views remain ordinary header interfaces, but they do not define a separately
+supported C++17 build lane. The package's C++20 `Cellerator::core_module`
+target is built and exported normally; CUDA translation units continue to use
+public headers rather than importing named modules.
 
 Build the focused host checks without the unrelated compiler test suite:
 
 ```sh
-cmake -S . -B /tmp/cellerator-native-data-host \
+cmake -S . -B /tmp/cellerator-native-data-host -G Ninja \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
+  -DCMAKE_PREFIX_PATH=/path/to/anndata-install \
   -DCELLERATOR_ENABLE_CUDA=OFF -DCELLERATOR_BUILD_TESTS=OFF \
   -DCELLERATOR_BUILD_NATIVE_DATA_TESTS=ON
 cmake --build /tmp/cellerator-native-data-host --target cellerator_native_data

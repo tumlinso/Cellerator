@@ -1,6 +1,7 @@
 #pragma once
 #include <Cellerator/math/effects/providers.hh>
 #include <Cellerator/compute/operation/relation_semantics.hh>
+#include <Cellerator/structure/identity.hh>
 namespace cellerator::math::effects {
 namespace ex=execution;
 namespace rel=compute::relation;
@@ -8,12 +9,12 @@ namespace rel=compute::relation;
 // Epoch versions the declared coordinate/control universe, not mutable values.
 struct domain {
     rel::axis_descriptor state{},observable{};
-    ex::structure_epoch epoch{};
+    structure::structure_epoch epoch{};
 };
 inline bool same_axis(const rel::axis_descriptor& a,const rel::axis_descriptor& b) noexcept {
-    return a.extent==b.extent && ex::same_identity(a.identity.domain,b.identity.domain)
-        && ex::same_identity(a.identity.order,b.identity.order) && ex::same_identity(a.identity.geometry,b.identity.geometry)
-        && ex::same_identity(a.identity.partition,b.identity.partition);
+    return a.extent==b.extent && structure::same_identity(a.identity.domain,b.identity.domain)
+        && structure::same_identity(a.identity.order,b.identity.order) && structure::same_identity(a.identity.geometry,b.identity.geometry)
+        && structure::same_identity(a.identity.partition,b.identity.partition);
 }
 inline bool same_domain(const domain& a,const domain& b) noexcept {
     return same_axis(a.state,b.state) && same_axis(a.observable,b.observable) && a.epoch.value==b.epoch.value;
@@ -94,11 +95,11 @@ template<std::size_t N,std::size_t Q> accumulated_affine<N,Q> compose(
 template<std::size_t S,std::size_t N> struct hybrid_affine {
     static_assert(S>0 && N>0);
     rel::axis_descriptor state{},control{};
-    ex::structure_epoch epoch{};
+    structure::structure_epoch epoch{};
     std::array<std::size_t,S> transition{};
     std::array<std::array<std::array<double,N>,N>,S> A{};
     std::array<std::array<double,N>,S> b{};
-    static hybrid_affine identity(rel::axis_descriptor state_axis,rel::axis_descriptor control_axis,ex::structure_epoch version) {
+    static hybrid_affine identity(rel::axis_descriptor state_axis,rel::axis_descriptor control_axis,structure::structure_epoch version) {
         hybrid_affine out; out.state=state_axis; out.control=control_axis; out.epoch=version;
         for(std::size_t s=0;s<S;++s) { out.transition[s]=s; for(std::size_t i=0;i<N;++i) out.A[s][i][i]=1; }
         out.validate(); return out;

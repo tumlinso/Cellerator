@@ -8,13 +8,13 @@ target_include_directories(cellerator_operation_core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_compile_features(cellerator_operation_core PUBLIC cxx_std_17)
+target_compile_features(cellerator_operation_core PUBLIC cxx_std_20)
 target_link_libraries(cellerator_operation_core PUBLIC
     Cellerator::biological_abi
     Cellerator::runtime
 )
 set_target_properties(cellerator_operation_core PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 
@@ -26,4 +26,4 @@ add_library(Cellerator::compute_matrix_convert ALIAS cellerator_compute_matrix_c
 target_include_directories(cellerator_compute_matrix_convert PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellerator_compute_matrix_convert PUBLIC Cellerator::runtime)
 target_link_libraries(cellerator_compute_matrix_convert PRIVATE CUDA::cudart CUDA::cusparse)
-set_target_properties(cellerator_compute_matrix_convert PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(cellerator_compute_matrix_convert PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)

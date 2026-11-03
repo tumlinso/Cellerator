@@ -6,7 +6,7 @@ function(cellerator_configure_legacy_cuda_target target)
     endif()
     find_package(CUDAToolkit REQUIRED)
     set_target_properties(${target} PROPERTIES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
         CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
     target_link_libraries(${target} PRIVATE CUDA::cudart)
 endfunction()

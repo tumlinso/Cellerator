@@ -91,6 +91,21 @@ int main() {
     invalid.target_triple.clear();
     valid = cxx::create_cxx_compilation_invocation_v1(invalid, &invocation) ==
             cxx::cxx_compilation_invocation_status_v1::missing_target && valid;
+    invalid = request;
+    invalid.language = static_cast<cxx::cxx_language_mode_v1>(1);
+    valid = cxx::create_cxx_compilation_invocation_v1(invalid, &invocation) ==
+            cxx::cxx_compilation_invocation_status_v1::invalid_argument && valid;
+
+    auto newer = request;
+    newer.language = cxx::cxx_language_mode_v1::cxx23;
+    cxx::cxx_compilation_invocation_v1 newer_invocation;
+    valid = cxx::create_cxx_compilation_invocation_v1(newer, &newer_invocation) ==
+            cxx::cxx_compilation_invocation_status_v1::success && valid;
+    serialized.clear();
+    for (const auto& argument : newer_invocation.clang_arguments()) {
+        serialized += argument + '\n';
+    }
+    valid = contains(serialized, "-std=c++23", "newer language mode") && valid;
 
     return valid ? 0 : 1;
 }

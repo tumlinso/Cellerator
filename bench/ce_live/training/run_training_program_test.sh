@@ -14,7 +14,7 @@ common=(
     -I"$configured_build/generated"
     -I"$repo_root/include"
     -O2
-    -std=c++17
+    -std=c++20
     -gencode arch=compute_70,code=sm_70
 )
 

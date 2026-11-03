@@ -1,40 +1,36 @@
-# C++20 modules are source-level semantic borders, not a dependency of the
-# native CUDA graph. The installed Clang compiler can precompile and import the
-# probe, but native CMake scanning is deferred until a supported generator and
-# clang-scan-deps are available. This direct compiler probe remains optional and
-# leaves the repository's established GNU/NVCC compiler pairing unchanged.
+include(GNUInstallDirs)
 
-find_program(CELLERATOR_MODULE_CLANGXX NAMES clang++-18)
-if(CELLERATOR_MODULE_CLANGXX)
-    set(cellerator_module_probe_build "${CMAKE_CURRENT_BINARY_DIR}/probe-build")
-    set(cellerator_module_probe_pcm
-        "${cellerator_module_probe_build}/cellerator.module_probe.pcm")
+add_library(cellerator_core_module STATIC)
+add_library(Cellerator::core_module ALIAS cellerator_core_module)
+set_target_properties(cellerator_core_module PROPERTIES EXPORT_NAME core_module_binary)
+target_compile_features(cellerator_core_module PUBLIC cxx_std_20)
+target_include_directories(cellerator_core_module PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_sources(cellerator_core_module PUBLIC FILE_SET CXX_MODULES
+    FILES native/cellerator.core.ccm)
 
-    add_custom_target(celleratorModuleCompilerProbe
-        COMMAND "${CMAKE_COMMAND}" -E make_directory
-            "${cellerator_module_probe_build}"
-        COMMAND "${CELLERATOR_MODULE_CLANGXX}" -std=c++20 --precompile
-            "${CMAKE_CURRENT_SOURCE_DIR}/probe/module_probe.ccm"
-            -o "${cellerator_module_probe_pcm}"
-        COMMAND "${CELLERATOR_MODULE_CLANGXX}" -std=c++20 -c
-            "${cellerator_module_probe_pcm}"
-            -o "${cellerator_module_probe_build}/module_probe.o"
-        COMMAND "${CELLERATOR_MODULE_CLANGXX}" -std=c++20
-            "-fprebuilt-module-path=${cellerator_module_probe_build}" -c
-            "${CMAKE_CURRENT_SOURCE_DIR}/probe/module_probe_test.cc"
-            -o "${cellerator_module_probe_build}/module_probe_test.o"
-        COMMAND "${CELLERATOR_MODULE_CLANGXX}"
-            "${cellerator_module_probe_build}/module_probe_test.o"
-            "${cellerator_module_probe_build}/module_probe.o"
-            -o "${cellerator_module_probe_build}/module_probe_test"
-        COMMAND "${cellerator_module_probe_build}/module_probe_test"
-        COMMENT "Precompiling and importing the optional host-only module probe"
-        USES_TERMINAL
-        VERBATIM)
-else()
-    add_custom_target(celleratorModuleCompilerProbe
-        COMMAND "${CMAKE_COMMAND}" -E echo
-            "Clang 18 is required for the optional host-only module probe"
-        COMMAND "${CMAKE_COMMAND}" -E false
-        VERBATIM)
+# Compile imports in the normal build with CMake's dependency scanner.
+add_executable(cellerator_module_contract "${PROJECT_SOURCE_DIR}/tests/modules/module_contract.cc")
+target_link_libraries(cellerator_module_contract PRIVATE Cellerator::core_module anndata::anndata)
+
+install(TARGETS cellerator_core_module EXPORT CelleratorCoreModulesTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_DATADIR}/Cellerator/modules)
+install(EXPORT CelleratorCoreModulesTargets NAMESPACE Cellerator::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator
+    CXX_MODULES_DIRECTORY core-modules)
+install(FILES "${PROJECT_SOURCE_DIR}/cmake/CelleratorModuleInterfaces.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
+
+if(DEFINED CELLERATOR_HOST_CONFIG)
+    file(APPEND "${CELLERATOR_HOST_CONFIG}"
+        "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorCoreModulesTargets.cmake\")\n"
+        "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorModuleInterfaces.cmake\")\n"
+        "cellerator_import_module(core_module Cellerator::core_module_binary)\n"
+        "set(Cellerator_core_module_FOUND TRUE)\n")
+endif()
+if(CELLERATOR_BUILD_TESTS)
+    enable_testing()
+    add_test(NAME cellerator_module_contract COMMAND cellerator_module_contract)
 endif()

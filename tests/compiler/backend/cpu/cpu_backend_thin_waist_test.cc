@@ -31,7 +31,7 @@ int main() {
            "int provider_version(); int main(){return provider_version()==1 && "
            "cellerator::compiler::backend::cpu::v1::cpu_backend_contract_version_v1==1?0:1;}\n"; }
     const auto executable = directory / "fixture";
-    const std::string compile = "g++ -std=c++17 -I" + (directory / "include").string()
+    const std::string compile = "g++ -std=c++20 -I" + (directory / "include").string()
         + " " + provider.string() + " " + consumer.string() + " -o "
         + executable.string();
     assert(std::system(compile.c_str()) == 0);

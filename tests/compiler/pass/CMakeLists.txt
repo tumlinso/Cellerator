@@ -7,7 +7,7 @@ add_executable(cellerator_pass_pipeline_stage_taxonomy_test
   pass_pipeline_stage_taxonomy_test.cc
   ${CELLERATOR_ROOT}/src/compiler/pass/pass_pipeline_stage_taxonomy.cc)
 target_include_directories(cellerator_pass_pipeline_stage_taxonomy_test PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(cellerator_pass_pipeline_stage_taxonomy_test PRIVATE cxx_std_17)
+target_compile_features(cellerator_pass_pipeline_stage_taxonomy_test PRIVATE cxx_std_20)
 target_compile_options(cellerator_pass_pipeline_stage_taxonomy_test PRIVATE -Wall -Wextra -Werror)
 add_test(NAME cellerator_pass_pipeline_stage_taxonomy_test COMMAND cellerator_pass_pipeline_stage_taxonomy_test)
 
@@ -16,7 +16,7 @@ add_executable(cellerator_pass_manager_and_analysis_invalidation_test
   ${CELLERATOR_ROOT}/src/compiler/pass/pass_manager_and_analysis_invalidation.cc
   ${CELLERATOR_ROOT}/src/compiler/pass/pass_pipeline_stage_taxonomy.cc)
 target_include_directories(cellerator_pass_manager_and_analysis_invalidation_test PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(cellerator_pass_manager_and_analysis_invalidation_test PRIVATE cxx_std_17)
+target_compile_features(cellerator_pass_manager_and_analysis_invalidation_test PRIVATE cxx_std_20)
 target_compile_options(cellerator_pass_manager_and_analysis_invalidation_test PRIVATE -Wall -Wextra -Werror)
 add_test(NAME cellerator_pass_manager_and_analysis_invalidation_test COMMAND cellerator_pass_manager_and_analysis_invalidation_test)
 
@@ -25,7 +25,7 @@ add_executable(cellerator_pipeline_configuration_syntax_and_apis_test
   ${CELLERATOR_ROOT}/src/compiler/pass/pipeline_configuration_syntax_and_apis.cc
   ${CELLERATOR_ROOT}/src/compiler/pass/pass_pipeline_stage_taxonomy.cc)
 target_include_directories(cellerator_pipeline_configuration_syntax_and_apis_test PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(cellerator_pipeline_configuration_syntax_and_apis_test PRIVATE cxx_std_17)
+target_compile_features(cellerator_pipeline_configuration_syntax_and_apis_test PRIVATE cxx_std_20)
 target_compile_options(cellerator_pipeline_configuration_syntax_and_apis_test PRIVATE -Wall -Wextra -Werror)
 add_test(NAME cellerator_pipeline_configuration_syntax_and_apis_test COMMAND cellerator_pipeline_configuration_syntax_and_apis_test)
 
@@ -33,7 +33,7 @@ add_executable(cellerator_custom_semantic_pass_api_test
   custom_semantic_pass_api_test.cc
   ${CELLERATOR_ROOT}/src/compiler/pass/custom_semantic_pass_api.cc)
 target_include_directories(cellerator_custom_semantic_pass_api_test PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(cellerator_custom_semantic_pass_api_test PRIVATE cxx_std_17)
+target_compile_features(cellerator_custom_semantic_pass_api_test PRIVATE cxx_std_20)
 target_compile_options(cellerator_custom_semantic_pass_api_test PRIVATE -Wall -Wextra -Werror)
 target_compile_definitions(cellerator_custom_semantic_pass_api_test PRIVATE
   CELLERATOR_TEST_INCLUDE_ROOT="${CELLERATOR_ROOT}/include")
@@ -44,7 +44,7 @@ add_executable(cellerator_custom_planning_pass_api_test
   custom_planning_pass_api_test.cc
   ${CELLERATOR_ROOT}/src/compiler/pass/custom_planning_pass_api.cc)
 target_include_directories(cellerator_custom_planning_pass_api_test PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(cellerator_custom_planning_pass_api_test PRIVATE cxx_std_17)
+target_compile_features(cellerator_custom_planning_pass_api_test PRIVATE cxx_std_20)
 target_compile_options(cellerator_custom_planning_pass_api_test PRIVATE -Wall -Wextra -Werror)
 target_compile_definitions(cellerator_custom_planning_pass_api_test PRIVATE
   CELLERATOR_TEST_INCLUDE_ROOT="${CELLERATOR_ROOT}/include")
@@ -55,7 +55,7 @@ add_executable(cellerator_custom_realization_pass_api_test
   custom_realization_pass_api_test.cc
   ${CELLERATOR_ROOT}/src/compiler/pass/custom_realization_pass_api.cc)
 target_include_directories(cellerator_custom_realization_pass_api_test PRIVATE ${CELLERATOR_ROOT}/include)
-target_compile_features(cellerator_custom_realization_pass_api_test PRIVATE cxx_std_17)
+target_compile_features(cellerator_custom_realization_pass_api_test PRIVATE cxx_std_20)
 target_compile_options(cellerator_custom_realization_pass_api_test PRIVATE -Wall -Wextra -Werror)
 target_compile_definitions(cellerator_custom_realization_pass_api_test PRIVATE
   CELLERATOR_TEST_INCLUDE_ROOT="${CELLERATOR_ROOT}/include")

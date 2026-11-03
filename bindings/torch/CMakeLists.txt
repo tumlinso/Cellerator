@@ -83,7 +83,7 @@ target_link_libraries(cellerator_torch_runtime INTERFACE
     CUDA::cublas
     CUDA::cusolver
     CUDA::cusparse)
-target_compile_features(cellerator_torch_runtime INTERFACE cxx_std_17)
+target_compile_features(cellerator_torch_runtime INTERFACE cxx_std_20)
 if(TORCH_INCLUDE_DIRS)
     target_include_directories(cellerator_torch_runtime SYSTEM INTERFACE
         ${TORCH_INCLUDE_DIRS})
@@ -104,7 +104,7 @@ target_include_directories(cellerator_torch_native_views PUBLIC
 target_link_libraries(cellerator_torch_native_views PUBLIC
     Cellerator::torch_runtime
     Cellerator::runtime)
-target_compile_features(cellerator_torch_native_views PUBLIC cxx_std_17)
+target_compile_features(cellerator_torch_native_views PUBLIC cxx_std_20)
 
 add_library(cellerator_torch_program_ops STATIC
     src/program_ops.cu)
@@ -117,8 +117,8 @@ target_link_libraries(cellerator_torch_program_ops PUBLIC
     Cellerator::torch_runtime
     Cellerator::executable_program)
 set_target_properties(cellerator_torch_program_ops PROPERTIES
-    CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+    CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
     POSITION_INDEPENDENT_CODE ON)
 
 add_library(cellerator_torch_autograd_ops STATIC
@@ -132,8 +132,8 @@ target_link_libraries(cellerator_torch_autograd_ops PUBLIC
     Cellerator::torch_runtime
     Cellerator::training_program)
 set_target_properties(cellerator_torch_autograd_ops PROPERTIES
-    CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+    CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
     POSITION_INDEPENDENT_CODE ON)
 
 add_library(cellerator_torch_mechanism STATIC
@@ -162,8 +162,8 @@ if(TARGET Cellerator::model_ops)
         Cellerator::torch_runtime
         Cellerator::model_ops)
     set_target_properties(cellerator_torch_model_ops PROPERTIES
-        CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+        CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
         POSITION_INDEPENDENT_CODE ON)
     cellerator_enable_perf(cellerator_torch_model_ops)
 endif()
@@ -231,8 +231,8 @@ if(CELLERATOR_BUILD_TESTS)
         add_executable(${target} ${source})
         target_link_libraries(${target} PRIVATE Cellerator::torch)
         set_target_properties(${target} PROPERTIES
-            CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
-            CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+            CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
+            CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
     endfunction()
 
     cellerator_add_torch_adapter_test(cellerator_torch_native_views_test
@@ -250,8 +250,8 @@ if(CELLERATOR_BUILD_TESTS)
         Cellerator::torch
         Cellerator::identity_registry)
     set_target_properties(celleratorTorchQuantitativeSmokeTest PROPERTIES
-        CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+        CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
     if(TARGET Cellerator::torch_model_ops AND
        EXISTS "${PROJECT_SOURCE_DIR}/tests/bindings/model_ops/model_custom_ops_test.cc")
         add_executable(celleratorTorchModelCustomOpsTest
@@ -259,8 +259,8 @@ if(CELLERATOR_BUILD_TESTS)
         target_link_libraries(celleratorTorchModelCustomOpsTest PRIVATE
             Cellerator::torch_model_ops)
         set_target_properties(celleratorTorchModelCustomOpsTest PROPERTIES
-            CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
-            CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+            CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
+            CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
     endif()
     add_custom_target(cellerator_torch_adapter_compile_tests
         DEPENDS cellerator_torch_native_views_test

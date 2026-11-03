@@ -16,10 +16,10 @@ realization_validation_request_v1 valid_request() {
          {1u, {6u, 2u}, {7u, 2u}, {}, {}, {}, 1u}}};
     static target_capability_v1 capability{{8u, 1u}, architecture_class_v1::host,
         {}, {"scalar"}, collective_scope_v1::none, memory_host_v1, numeric_f64_v1,
-        false, "c++17", "native", "reference"};
+        false, "c++20", "native", "reference"};
     static target_requirement_v1 requirement{architecture_class_v1::host, {},
         {"scalar"}, collective_scope_v1::none, memory_host_v1, numeric_f64_v1,
-        false, "c++17", "native", "reference"};
+        false, "c++20", "native", "reference"};
     static std::vector<memory_requirement_v1> memory{{{9u, 1u},
         allocation_class_v1::transient, allocation_owner_v1::caller,
         address_space_class_v1::host, plane_lifetime_v1::invocation, 64u, 64u, 16u}};

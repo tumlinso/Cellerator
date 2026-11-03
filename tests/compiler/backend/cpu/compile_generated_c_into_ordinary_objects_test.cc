@@ -1,5 +1,6 @@
 #include <Cellerator/compiler/backend/compile_generated_c_into_ordinary_objects_v1.hh>
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <filesystem>
@@ -27,6 +28,8 @@ int main() {
                    object.string(), depfile.string(), directory.string(),
                    {"-fPIC"}, {}, {"Cellerator"}}, &receipt)
             == cb::compile_object_status_v1::success);
+        assert(std::find(receipt.arguments.begin(), receipt.arguments.end(),
+                         "-std=c++20") != receipt.arguments.end());
         assert(receipt.format == cb::ordinary_object_format_v1::elf);
         assert(std::filesystem::file_size(object) > 0);
         assert(std::filesystem::file_size(depfile) > 0);

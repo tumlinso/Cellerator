@@ -18,7 +18,7 @@ common=(
     -I"$repo_root/include"
     -I"$repo_root"
     -I"/home/tumlinson/CellShard/include"
-    -O2 -std=c++17
+    -O2 -std=c++20
     -gencode arch=compute_70,code=sm_70
 )
 

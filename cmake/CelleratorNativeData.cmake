@@ -23,9 +23,9 @@ function(cellerator_add_native_data_memory_cuda_owner)
     set_target_properties(cellerator_memory_cuda PROPERTIES
         POSITION_INDEPENDENT_CODE ON
         EXPORT_NAME memory_cuda
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
         CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
-    target_compile_features(cellerator_memory_cuda PUBLIC cxx_std_17)
+    target_compile_features(cellerator_memory_cuda PUBLIC cxx_std_20)
     target_include_directories(cellerator_memory_cuda PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -86,7 +86,7 @@ target_link_libraries(cellerator_gated_product PUBLIC
 add_library(cellerator_block_masked STATIC
     "${PROJECT_SOURCE_DIR}/src/tensor/block_masked/structure.cc")
 add_library(Cellerator::block_masked ALIAS cellerator_block_masked)
-target_compile_features(cellerator_block_masked PUBLIC cxx_std_17)
+target_compile_features(cellerator_block_masked PUBLIC cxx_std_20)
 cellerator_configure_native_data_host_target(cellerator_block_masked block_masked)
 
 add_library(cellerator_state_codes INTERFACE)
@@ -95,7 +95,7 @@ set_target_properties(cellerator_state_codes PROPERTIES EXPORT_NAME state_codes)
 target_include_directories(cellerator_state_codes INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_compile_features(cellerator_state_codes INTERFACE cxx_std_17)
+target_compile_features(cellerator_state_codes INTERFACE cxx_std_20)
 
 add_library(cellerator_tensor INTERFACE)
 add_library(Cellerator::tensor ALIAS cellerator_tensor)
@@ -103,7 +103,7 @@ set_target_properties(cellerator_tensor PROPERTIES EXPORT_NAME tensor)
 target_include_directories(cellerator_tensor INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_compile_features(cellerator_tensor INTERFACE cxx_std_17)
+target_compile_features(cellerator_tensor INTERFACE cxx_std_20)
 target_link_libraries(cellerator_tensor INTERFACE
     Cellerator::block_masked Cellerator::state_codes)
 
@@ -144,7 +144,7 @@ if(CELLERATOR_BUILD_FACTORIZED_INTERACTION_TESTS)
         "${PROJECT_SOURCE_DIR}/tests/factorized_interactions_preparation/preparation_test.cc")
     target_link_libraries(cellerator_factorized_interaction_preparation_test PRIVATE
         Cellerator::layout)
-    target_compile_features(cellerator_factorized_interaction_preparation_test PRIVATE cxx_std_17)
+    target_compile_features(cellerator_factorized_interaction_preparation_test PRIVATE cxx_std_20)
     add_test(NAME factorized_interaction_preparation
         COMMAND cellerator_factorized_interaction_preparation_test)
     set_tests_properties(factorized_interaction_preparation PROPERTIES

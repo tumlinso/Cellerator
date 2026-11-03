@@ -32,8 +32,8 @@ add_library(cellerator_framework_cuda STATIC
 add_library(Cellerator::framework_cuda ALIAS cellerator_framework_cuda)
 set_target_properties(cellerator_framework_cuda PROPERTIES
     POSITION_INDEPENDENT_CODE ON EXPORT_NAME framework_cuda
-    CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON)
-target_compile_features(cellerator_framework_cuda PUBLIC cxx_std_17)
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED ON)
+target_compile_features(cellerator_framework_cuda PUBLIC cxx_std_20)
 target_include_directories(cellerator_framework_cuda PUBLIC
     $<BUILD_INTERFACE:${_cellerator_framework_root}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -60,7 +60,7 @@ if(CELLERATOR_BUILD_FRAMEWORK_CUDA_SMOKE)
         add_executable(cellerator_framework_cuda_${_case}_smoke
             "${_cellerator_framework_root}/tests/framework/cuda/${_case}_smoke.cu")
         target_link_libraries(cellerator_framework_cuda_${_case}_smoke PRIVATE Cellerator::framework_cuda)
-        set_target_properties(cellerator_framework_cuda_${_case}_smoke PROPERTIES CUDA_STANDARD 17)
+        set_target_properties(cellerator_framework_cuda_${_case}_smoke PROPERTIES CUDA_STANDARD 20)
         # Smoke assertions must execute in Release builds as well.
         target_compile_options(cellerator_framework_cuda_${_case}_smoke PRIVATE -UNDEBUG)
     endforeach()
@@ -93,8 +93,8 @@ if(CELLERATOR_ENABLE_FRAMEWORK_PARAMETER_TRANSFER)
     add_library(Cellerator::framework_parameter_transfer ALIAS cellerator_framework_parameter_transfer)
     set_target_properties(cellerator_framework_parameter_transfer PROPERTIES
         POSITION_INDEPENDENT_CODE ON EXPORT_NAME framework_parameter_transfer
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON)
-    target_compile_features(cellerator_framework_parameter_transfer PUBLIC cxx_std_17)
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED ON)
+    target_compile_features(cellerator_framework_parameter_transfer PUBLIC cxx_std_20)
     target_link_libraries(cellerator_framework_parameter_transfer PUBLIC
         Cellerator::framework_cuda Cellerator::conditional)
     if(CELLERATOR_BUILD_FRAMEWORK_CUDA_SMOKE)
@@ -102,7 +102,7 @@ if(CELLERATOR_ENABLE_FRAMEWORK_PARAMETER_TRANSFER)
             "${_cellerator_framework_root}/tests/framework/cuda/parameter_transfer_smoke.cu")
         target_link_libraries(cellerator_framework_cuda_parameter_transfer_smoke PRIVATE
             Cellerator::framework_parameter_transfer)
-        set_target_properties(cellerator_framework_cuda_parameter_transfer_smoke PROPERTIES CUDA_STANDARD 17)
+        set_target_properties(cellerator_framework_cuda_parameter_transfer_smoke PROPERTIES CUDA_STANDARD 20)
         target_compile_options(cellerator_framework_cuda_parameter_transfer_smoke PRIVATE -UNDEBUG)
     endif()
     install(FILES "${_cellerator_framework_root}/include/Cellerator/modeling/cuda/parameter_transfer.hh"

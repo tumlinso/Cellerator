@@ -15,8 +15,6 @@ namespace {
 
 const char* language_standard(cxx_language_mode_v1 language) noexcept {
     switch (language) {
-        case cxx_language_mode_v1::cxx17:
-            return "-std=c++17";
         case cxx_language_mode_v1::cxx20:
             return "-std=c++20";
         case cxx_language_mode_v1::cxx23:

@@ -123,9 +123,9 @@ def contamination() -> dict[str, Any]:
 
 def direct_validation_commands(build: pathlib.Path) -> list[list[str]]:
     cxx = "/usr/bin/g++"
-    common_host = [cxx, "-std=c++17", "-Wall", "-Wextra", "-Werror",
+    common_host = [cxx, "-std=c++20", "-Wall", "-Wextra", "-Werror",
                    "-Iinclude"]
-    common_cuda = [str(NVCC), "-std=c++17", "-arch=sm_70",
+    common_cuda = [str(NVCC), "-std=c++20", "-arch=sm_70",
                    "-Wno-deprecated-gpu-targets",
                    "-Xcompiler=-Wall,-Wextra,-Werror", "-ccbin", cxx,
                    "-Iinclude", "-Ibuild/generated"]

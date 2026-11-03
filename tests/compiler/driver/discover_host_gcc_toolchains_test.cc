@@ -11,7 +11,7 @@ int main() {
     const auto temporary = std::filesystem::temp_directory_path() / "cellerator_discover_host_gcc_toolchains.cc";
     const auto object = std::filesystem::temp_directory_path() / "cellerator_discover_host_gcc_toolchains.o";
     { std::ofstream source(temporary); source << "int cellerator_gcc_probe() { return 4; }\n"; }
-    const auto command = out.cxx + " -std=c++17 -c " + temporary.string() + " -o " + object.string();
+    const auto command = out.cxx + " -std=c++20 -c " + temporary.string() + " -o " + object.string();
     const int status = std::system(command.c_str());
     const bool valid = status == 0 && std::filesystem::file_size(object) > 0;
     std::filesystem::remove(temporary); std::filesystem::remove(object);

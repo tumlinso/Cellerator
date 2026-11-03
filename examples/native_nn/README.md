@@ -35,7 +35,11 @@ histories.
 Build and run the native demo with the optional Torch NN component:
 
 ```sh
-cmake -S . -B /tmp/cellerator-native-nn \
+cmake -S . -B /tmp/cellerator-native-nn -G Ninja \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
+  -DCMAKE_PREFIX_PATH=/path/to/anndata-install \
+  -DTorch_DIR=/path/to/libtorch/share/cmake/Torch \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_NN=ON \
   -DCELLERATOR_BUILD_NN_TRAIN=ON

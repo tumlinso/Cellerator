@@ -10,9 +10,9 @@ nvcc="${cuda_root}/bin/nvcc"
 cuobjdump="${cuda_root}/bin/cuobjdump"
 source_file="${repo_root}/tests/profiling/operations/profiler_compile_smoke.cu"
 
-"${nvcc}" -std=c++17 -arch=sm_70 -lineinfo -dc "${source_file}" \
+"${nvcc}" -std=c++20 -arch=sm_70 -lineinfo -dc "${source_file}" \
     -o "${build_dir}/markers_off.o"
-"${nvcc}" -std=c++17 -arch=sm_70 -lineinfo -dc \
+"${nvcc}" -std=c++20 -arch=sm_70 -lineinfo -dc \
     -DCELLERATOR_ENABLE_PROFILING_MARKERS=1 "${source_file}" \
     -o "${build_dir}/markers_on.o"
 

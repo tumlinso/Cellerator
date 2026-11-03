@@ -9,7 +9,7 @@ add_library(Cellerator::libCellerator ALIAS libCellerator)
 target_include_directories(libCellerator PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_compile_features(libCellerator PUBLIC cxx_std_17)
+target_compile_features(libCellerator PUBLIC cxx_std_20)
 set_target_properties(libCellerator PROPERTIES OUTPUT_NAME Cellerator)
 
 add_executable(cellerator tools/cellerator/driver_passthrough.cc)
@@ -53,12 +53,12 @@ if(CELLERATOR_BUILD_TESTS)
     endforeach()
 
     # The typed-only example intentionally needs neither RTTI nor the optional
-    # CellViews destructor from libCellerator; it also stays within C++17.
+    # CellViews destructor from libCellerator.
     set(foundation_target "cellerator_cell_foundation_example")
     add_executable(${foundation_target} "${PROJECT_SOURCE_DIR}/examples/native_cell/foundation.cc")
-    target_compile_features(${foundation_target} PRIVATE cxx_std_17)
+    target_compile_features(${foundation_target} PRIVATE cxx_std_20)
     set_target_properties(${foundation_target} PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO)
     if(MSVC)

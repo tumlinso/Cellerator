@@ -5,7 +5,7 @@ add_executable(quantizedMatrixBench
 )
 target_include_directories(quantizedMatrixBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(quantizedMatrixBench PRIVATE CUDA::cudart)
-set_target_properties(quantizedMatrixBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(quantizedMatrixBench PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(quantizedMatrixBench)
 
 if(TARGET CellShard::runtime)
@@ -14,7 +14,7 @@ if(TARGET CellShard::runtime)
     )
     target_include_directories(quantizedTransferSpmmBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(quantizedTransferSpmmBench PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse)
-    set_target_properties(quantizedTransferSpmmBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+    set_target_properties(quantizedTransferSpmmBench PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
     cellerator_enable_perf(quantizedTransferSpmmBench)
 endif()
 
@@ -23,7 +23,7 @@ add_executable(sparseOpsBench
 )
 target_include_directories(sparseOpsBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(sparseOpsBench PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CUDA::cudart CUDA::cusparse)
-set_target_properties(sparseOpsBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(sparseOpsBench PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(sparseOpsBench)
 
 add_executable(geneCandidateDiscoveryBench
@@ -38,9 +38,9 @@ target_link_libraries(geneCandidateDiscoveryBench PRIVATE
     CUDA::cudart
 )
 set_target_properties(geneCandidateDiscoveryBench PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(geneCandidateDiscoveryBench)

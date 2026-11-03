@@ -2,7 +2,7 @@ get_filename_component(_nf1_numeric_root "${CMAKE_CURRENT_LIST_DIR}/../../../.."
 if(NOT TARGET cellerator_relation_semantics)
   add_library(cellerator_relation_semantics STATIC "${_nf1_numeric_root}/src/compute/operation/relation_semantics.cc")
   target_include_directories(cellerator_relation_semantics PUBLIC "${_nf1_numeric_root}/include")
-  target_compile_features(cellerator_relation_semantics PUBLIC cxx_std_17)
+  target_compile_features(cellerator_relation_semantics PUBLIC cxx_std_20)
   add_library(Cellerator::relation_semantics ALIAS cellerator_relation_semantics)
 endif()
 add_library(cellerator_native_numeric STATIC
@@ -10,7 +10,7 @@ add_library(cellerator_native_numeric STATIC
 if(CMAKE_CUDA_COMPILER)
   target_sources(cellerator_native_numeric PRIVATE "${CMAKE_CURRENT_LIST_DIR}/device_linear.cu")
   target_link_libraries(cellerator_native_numeric PUBLIC CUDA::cudart)
-  set_target_properties(cellerator_native_numeric PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+  set_target_properties(cellerator_native_numeric PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 endif()
 add_library(Cellerator::native_numeric ALIAS cellerator_native_numeric)
 target_include_directories(cellerator_native_numeric PUBLIC "${_nf1_numeric_root}/include")

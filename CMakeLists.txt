@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.28)
 
 # Choose the CUDA toolchain before enabling the CUDA language.
 #
@@ -43,10 +43,13 @@ endif()
 
 project(Cellerator LANGUAGES CXX)
 
+include(cmake/CelleratorBuildContract.cmake)
+
 # Selectable installed host/SM70 substrate components use actual source owners.
 # Branch before legacy compiler/native/Torch exports to avoid namespace collisions.
 option(CELLERATOR_BUILD_SUBSTRATE_SDK "Build the selected substrate SDK" OFF)
 if(CELLERATOR_BUILD_SUBSTRATE_SDK)
+    add_subdirectory(modules)
     include(cmake/substrate/Substrate.cmake)
     return()
 endif()
@@ -60,9 +63,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated ${CMAKE_CURRENT_SOURCE
 set(CELLERATOR_ENABLE_CUDA "AUTO" CACHE STRING
     "Build compiler NVIDIA support: AUTO, ON, or OFF")
 set_property(CACHE CELLERATOR_ENABLE_CUDA PROPERTY STRINGS AUTO ON OFF)
-
-# Host-only module proof infrastructure is independent of native CUDA targets.
-add_subdirectory(modules)
 
 if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     find_package(CUDAToolkit REQUIRED)
@@ -102,6 +102,7 @@ endif()
 # before the legacy runtime targets below are declared.
 include(src/compiler/CMakeLists.txt)
 include(cmake/compiler/CelleratorHostSdk.cmake)
+add_subdirectory(modules)
 option(CELLERATOR_BUILD_SEMANTIC_SPINE_V1 "Build the bounded Semantic Spine v1 conformance suite" OFF)
 option(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1 "Build the internal relation update spine and conformance suite" OFF)
 if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
@@ -122,6 +123,7 @@ include(cmake/Product2.cmake)
 # owner targets have been declared below.
 if(CELLERATOR_ENABLE_PYTHON)
     include(cmake/CelleratorPython.cmake)
+    add_dependencies(cellerator_python_extensions cellerator_module_contract)
 endif()
 # ATen numerical operations and tokenization have a separate optional
 # dependency boundary from the CUDA mechanism Torch adapters below.
@@ -150,6 +152,9 @@ include(cmake/CelleratorFrameworkCUDA.cmake)
 # FrameworkCUDA also includes it when that optional SDK is enabled.
 include(cmake/CelleratorNativeDataCUDA.cmake)
 include(cmake/CelleratorNN.cmake)
+if(TARGET Cellerator::nn)
+    add_subdirectory(modules/native)
+endif()
 
 macro(cellerator_append_component_validation)
     if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
@@ -176,6 +181,9 @@ if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
         message(FATAL_ERROR
             "CELLERATOR_ENABLE_TORCH requires the CUDA indexed-mechanism owner; "
             "configure with CELLERATOR_ENABLE_CUDA=AUTO or ON.")
+    endif()
+    if(TARGET Cellerator::nn)
+        cellerator_append_nn_package_config()
     endif()
     cellerator_append_component_validation()
     return()
@@ -381,6 +389,27 @@ function(cellerator_add_baseplane_source baseplane_source_dir)
             "Emit CUDA line mapping for Nsight profiling inside Baseplane.")
     endif()
     add_subdirectory("${baseplane_source_dir}" "${CMAKE_CURRENT_BINARY_DIR}/Baseplane" EXCLUDE_FROM_ALL)
+    # The embedded project may still declare older dialects. Raise only the
+    # targets declared by Baseplane itself, leaving nested dependencies alone.
+    get_filename_component(_baseplane_root "${baseplane_source_dir}" ABSOLUTE
+        BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+    get_property(_baseplane_targets DIRECTORY "${_baseplane_root}" PROPERTY BUILDSYSTEM_TARGETS)
+    foreach(_baseplane_target IN LISTS _baseplane_targets)
+        get_target_property(_baseplane_type "${_baseplane_target}" TYPE)
+        if(_baseplane_type STREQUAL "INTERFACE_LIBRARY" OR _baseplane_type STREQUAL "UTILITY")
+            continue()
+        endif()
+        foreach(_baseplane_language IN ITEMS CXX CUDA)
+            get_target_property(_baseplane_standard "${_baseplane_target}" "${_baseplane_language}_STANDARD")
+            if(NOT _baseplane_standard OR _baseplane_standard STREQUAL "98" OR _baseplane_standard LESS 20)
+                set_property(TARGET "${_baseplane_target}" PROPERTY "${_baseplane_language}_STANDARD" 20)
+            endif()
+            set_property(TARGET "${_baseplane_target}" PROPERTY "${_baseplane_language}_STANDARD_REQUIRED" YES)
+        endforeach()
+        if(_baseplane_type MATCHES "^(STATIC|SHARED|MODULE|OBJECT)_LIBRARY$")
+            target_compile_features("${_baseplane_target}" PUBLIC cxx_std_20)
+        endif()
+    endforeach()
 endfunction()
 
 if(BASEPLANE_SOURCE_DIR)
@@ -473,7 +502,7 @@ target_compile_definitions(cellerator_cuda_mode INTERFACE
     CELLERATOR_CUDA_MODE_NATIVE=${CELLERATOR_CUDA_MODE_NATIVE}
     CELLERATOR_CUDA_MODE_NATIVE_EXTREME=${CELLERATOR_CUDA_MODE_NATIVE_EXTREME}
 )
-target_compile_features(cellerator_cuda_mode INTERFACE cxx_std_17)
+target_compile_features(cellerator_cuda_mode INTERFACE cxx_std_20)
 
 # These generated public configuration headers are consumed through the
 # exported CUDA-mode target and therefore must accompany the installed SDK.
@@ -569,7 +598,7 @@ target_include_directories(cellerator_profiling_v1 PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_compile_features(cellerator_profiling_v1 PUBLIC cxx_std_17)
+target_compile_features(cellerator_profiling_v1 PUBLIC cxx_std_20)
 
 # Source-linked JBC fragments remain independently registered by their owning
 # subsystems. This aggregate target is the integration and package-consumer
@@ -599,7 +628,7 @@ target_link_libraries(cellerator_jbc_v1 PUBLIC
     Cellerator::profiling_v1
     Cellerator::projection_value_plane_v1
 )
-target_compile_features(cellerator_jbc_v1 PUBLIC cxx_std_17)
+target_compile_features(cellerator_jbc_v1 PUBLIC cxx_std_20)
 if(TARGET cellerator_dependency_execution_cuda)
     target_link_libraries(cellerator_dependency_execution_cuda PUBLIC
         Cellerator::jbc_v1 Cellerator::gated_product)
@@ -610,26 +639,26 @@ if(CELLERATOR_BUILD_TESTS)
         src/compute/operation/operation_core_v2/operation_core_v2_test.cc)
     target_link_libraries(cellerator_operation_core_v2_test PRIVATE
         Cellerator::operation_core)
-    target_compile_features(cellerator_operation_core_v2_test PRIVATE cxx_std_17)
+    target_compile_features(cellerator_operation_core_v2_test PRIVATE cxx_std_20)
 
     add_executable(cellerator_geometry_acquisition_v2_test
         src/execution/geometry_acquisition_v2/geometry_acquisition_v2_test.cc)
     target_link_libraries(cellerator_geometry_acquisition_v2_test PRIVATE
         Cellerator::geometry_acquisition)
-    target_compile_features(cellerator_geometry_acquisition_v2_test PRIVATE cxx_std_17)
+    target_compile_features(cellerator_geometry_acquisition_v2_test PRIVATE cxx_std_20)
 
     add_executable(cellerator_geometry_v2_test
         src/geometry/compiler/v2/geometry_v2_test.cc)
     target_link_libraries(cellerator_geometry_v2_test PRIVATE
         Cellerator::architecture_provider
         Cellerator::semantic_geometry_v1)
-    target_compile_features(cellerator_geometry_v2_test PRIVATE cxx_std_17)
+    target_compile_features(cellerator_geometry_v2_test PRIVATE cxx_std_20)
 
     add_executable(cellerator_planner_portfolio_v1_test
         src/planner/portfolio/tests/planner_portfolio_v1_test.cc)
     target_link_libraries(cellerator_planner_portfolio_v1_test PRIVATE
         Cellerator::planner)
-    target_compile_features(cellerator_planner_portfolio_v1_test PRIVATE cxx_std_17)
+    target_compile_features(cellerator_planner_portfolio_v1_test PRIVATE cxx_std_20)
 
     # JBC standalone ABI gate. This target intentionally consumes only
     # Cellerator public headers and the Cellerator-owned profiling library;
@@ -638,7 +667,7 @@ if(CELLERATOR_BUILD_TESTS)
         tests/jbc/verification/standalone_abi_gate_v1_test.cc)
     target_link_libraries(cellerator_jbc_standalone_abi_gate PRIVATE
         Cellerator::profiling_v1)
-    target_compile_features(cellerator_jbc_standalone_abi_gate PRIVATE cxx_std_17)
+    target_compile_features(cellerator_jbc_standalone_abi_gate PRIVATE cxx_std_20)
 
     # The privileged bridge is a combined-build-only gate. It consumes the
     # CellShard transport envelope and the Cellerator-owned opaque execution
@@ -650,7 +679,7 @@ if(CELLERATOR_BUILD_TESTS)
             CellShard::inspect
             Cellerator::opaque_execution_artifact)
         target_compile_features(cellerator_jbc_cellshard_bridge_gate PRIVATE
-            cxx_std_17)
+            cxx_std_20)
     endif()
 
     file(GLOB_RECURSE CELLERATOR_JBC_V1_TEST_SOURCES CONFIGURE_DEPENDS
@@ -681,7 +710,7 @@ if(CELLERATOR_BUILD_TESTS)
             "${cellerator_jbc_test_source}")
         target_link_libraries(${cellerator_jbc_test_target} PRIVATE
             Cellerator::jbc_v1)
-        target_compile_features(${cellerator_jbc_test_target} PRIVATE cxx_std_17)
+        target_compile_features(${cellerator_jbc_test_target} PRIVATE cxx_std_20)
         add_dependencies(cellerator_jbc_v1_tests ${cellerator_jbc_test_target})
     endforeach()
 
@@ -690,7 +719,7 @@ if(CELLERATOR_BUILD_TESTS)
     target_link_libraries(cellerator_jbc_multi_extent_assembly_bench PRIVATE
         Cellerator::jbc_v1)
     target_compile_features(cellerator_jbc_multi_extent_assembly_bench PRIVATE
-        cxx_std_17)
+        cxx_std_20)
 endif()
 
 include(bench/CMakeLists.txt)
@@ -777,7 +806,7 @@ endif()
 if(COMMAND cellerator_append_framework_cuda_package_config)
     cellerator_append_framework_cuda_package_config()
 endif()
-if(COMMAND cellerator_append_nn_package_config)
+if(TARGET Cellerator::nn)
     cellerator_append_nn_package_config()
 endif()
 
@@ -795,7 +824,7 @@ if(CELLERATOR_BUILD_TESTS AND NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
         "${PROJECT_SOURCE_DIR}/src/runtime")
     target_link_libraries(celleratorCudaStreamDeviceTest PRIVATE
         CUDA::cudart CUDA::cuda_driver)
-    target_compile_features(celleratorCudaStreamDeviceTest PRIVATE cxx_std_17)
+    target_compile_features(celleratorCudaStreamDeviceTest PRIVATE cxx_std_20)
     add_test(NAME cellerator_cuda_stream_device
         COMMAND celleratorCudaStreamDeviceTest)
     set_tests_properties(cellerator_cuda_stream_device PROPERTIES SKIP_RETURN_CODE 77)

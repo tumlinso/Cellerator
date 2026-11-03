@@ -23,7 +23,7 @@ int main() {
         std::ofstream output(path);
         output << "template<unsigned long long> int cellerator_shadow_field(){return 2;}\n" << shadow.bytes;
         output.close();
-        if (std::system("clang++-18 -std=c++17 -fsyntax-only /tmp/cellerator_construct_shadow_c_placeholders.cc") != 0)
+        if (std::system("clang++-18 -std=c++20 -fsyntax-only /tmp/cellerator_construct_shadow_c_placeholders.cc") != 0)
             throw std::runtime_error("upstream Clang rejected shadow C++");
         std::cout << "validated stable typed shadow-C++ placeholders with Clang\n";
         return 0;

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(cellerator_i02_tests LANGUAGES CXX)
 enable_testing()
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 get_filename_component(CELLERATOR_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 add_executable(cellerator_cellerator_syntax_completion_test cellerator_syntax_completion_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/cellerator_syntax_completion.cc)
 target_include_directories(cellerator_cellerator_syntax_completion_test PRIVATE ${CELLERATOR_ROOT})

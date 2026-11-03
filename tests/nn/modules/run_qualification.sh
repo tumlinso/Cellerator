@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -lt 2 || $# -gt 3 ]]; then
-    echo "usage: $0 <cellerator-install-prefix> <work-dir> [module-install-prefix]" >&2
+if [[ $# -ne 2 ]]; then
+    echo "usage: $0 <cellerator-install-prefix> <work-dir>" >&2
     exit 2
 fi
 
 cellerator_prefix=$1
 work_dir=$2
-module_prefix=${3:-"$work_dir/install"}
 script_dir=$(cd "$(dirname "$0")" && pwd)
-repo_root=$(cd "$script_dir/../../.." && pwd)
 
 module_ninja=${CELLERATOR_MODULE_NINJA:-ninja}
 module_cxx=${CELLERATOR_MODULE_CXX:-clang++-18}
-module_scanner=${CELLERATOR_MODULE_SCANNER:-clang-scan-deps}
+module_scanner=${CELLERATOR_MODULE_SCANNER:-clang-scan-deps-18}
 test_cuda=${CELLERATOR_NN_MODULES_TEST_CUDA:-OFF}
 torch_lib_dir=${CELLERATOR_TORCH_LIB_DIR:-}
 cuda_compiler=${CELLERATOR_CUDA_COMPILER:-/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc}
@@ -46,16 +44,9 @@ if [[ -n "$cuda_toolkit_root" ]]; then
     )
 fi
 
-cmake -S "$repo_root/modules/native" -B "$work_dir/module-package" \
-    "${common_args[@]}" \
-    "-DCMAKE_PREFIX_PATH=$cellerator_prefix" \
-    "-DCMAKE_INSTALL_PREFIX=$module_prefix"
-cmake --build "$work_dir/module-package" --verbose
-cmake --install "$work_dir/module-package"
-
 consumer_args=(
     "${common_args[@]}"
-    "-DCMAKE_PREFIX_PATH=$module_prefix;$cellerator_prefix"
+    "-DCMAKE_PREFIX_PATH=$cellerator_prefix${CMAKE_PREFIX_PATH:+;$CMAKE_PREFIX_PATH}"
     "-DCELLERATOR_NN_MODULES_TEST_CUDA=$test_cuda"
 )
 if [[ "$test_cuda" == "ON" ]]; then

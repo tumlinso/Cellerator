@@ -8,9 +8,9 @@ function(cellerator_add_sm70_vertical_test target source)
     # primitive; keep assertions active under a Release integration build.
     target_compile_options(${target} PRIVATE -UNDEBUG)
     set_target_properties(${target} PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17
+        CUDA_STANDARD 20
         CUDA_STANDARD_REQUIRED YES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )

@@ -47,7 +47,7 @@ compile_tests() {
         for source in "${sources[@]}"; do
             absolute_sources+=("${repo_root}/${source}")
         done
-        nvcc -std=c++17 -arch=sm_70 -lineinfo \
+        nvcc -std=c++20 -arch=sm_70 -lineinfo \
             -Xcompiler=-Wall,-Wextra,-Werror \
             -I"${repo_root}/include" -I"${repo_root}" \
             "${repo_root}/${test_source}" \

@@ -22,4 +22,4 @@ target_link_libraries(cellerator_geometry_acquisition PUBLIC
     Cellerator::semantic_geometry_v1
     CellPack::execution_image_v2
 )
-target_compile_features(cellerator_geometry_acquisition PUBLIC cxx_std_17)
+target_compile_features(cellerator_geometry_acquisition PUBLIC cxx_std_20)

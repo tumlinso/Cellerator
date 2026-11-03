@@ -60,7 +60,7 @@ def main():
         raise SystemExit("CUDA 12.9 headers unavailable; consult docs/history/repository-notes/ENVIRONMENT_NOTES.md")
     build = args.build_dir.resolve() if args.build_dir else Path(tempfile.mkdtemp(prefix="ce-ss1-frontend-"))
     build.mkdir(parents=True, exist_ok=True)
-    flags = ["-std=c++17", "-Wall", "-Wextra", "-Werror", "-UNDEBUG", "-I" + str(ROOT / "include"), "-I" + str(cuda_root / "include")]
+    flags = ["-std=c++20", "-Wall", "-Wextra", "-Werror", "-UNDEBUG", "-I" + str(ROOT / "include"), "-I" + str(cuda_root / "include")]
     sources = sorted({source for test, dependencies in TESTS.values()
                       for source in [test] + dependencies})
     objects = {source: build / (source.replace("/", "_") + ".o") for source in sources}

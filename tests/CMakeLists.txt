@@ -20,9 +20,9 @@ function(cellerator_add_geometry_foundation_test target source)
     add_executable(${target} ${source})
     target_link_libraries(${target} PRIVATE ${ARGN})
     set_target_properties(${target} PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17
+        CUDA_STANDARD 20
         CUDA_STANDARD_REQUIRED YES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
@@ -88,7 +88,7 @@ target_link_libraries(celleratorOperationCoreTest PRIVATE
     Cellerator::operation_core
 )
 set_target_properties(celleratorOperationCoreTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 
@@ -105,9 +105,9 @@ target_link_libraries(celleratorExecutionSessionTest PRIVATE
     CUDA::cusparse
 )
 set_target_properties(celleratorExecutionSessionTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -122,9 +122,9 @@ target_link_libraries(celleratorValueReadinessTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(celleratorValueReadinessTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -137,7 +137,7 @@ add_executable(celleratorMemoryContractTest
 target_link_libraries(celleratorMemoryContractTest PRIVATE
     Cellerator::runtime
 )
-target_compile_features(celleratorMemoryContractTest PRIVATE cxx_std_17)
+target_compile_features(celleratorMemoryContractTest PRIVATE cxx_std_20)
 
 add_executable(celleratorSessionMemoryTest
     tests/memory/session_memory_test.cu
@@ -147,9 +147,9 @@ target_link_libraries(celleratorSessionMemoryTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(celleratorSessionMemoryTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -163,9 +163,9 @@ target_link_libraries(celleratorExecutableProgramTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(celleratorExecutableProgramTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -177,9 +177,9 @@ target_link_libraries(celleratorTrainingProgramTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(celleratorTrainingProgramTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -191,9 +191,9 @@ target_link_libraries(celleratorTrainingProgramConcurrencyTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(celleratorTrainingProgramConcurrencyTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -208,9 +208,9 @@ if(TARGET CellShard::inspect)
         CUDA::cudart
     )
     set_target_properties(celleratorExecutableProgramReplayTest PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17
+        CUDA_STANDARD 20
         CUDA_STANDARD_REQUIRED YES
     )
 endif()
@@ -220,7 +220,7 @@ add_executable(quantizedMatrixTest
 )
 target_include_directories(quantizedMatrixTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(quantizedMatrixTest PRIVATE CUDA::cudart)
-set_target_properties(quantizedMatrixTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(quantizedMatrixTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(quantizedMatrixTest)
 
 if(TARGET CellShard::headers)
@@ -229,7 +229,7 @@ if(TARGET CellShard::headers)
     )
     target_include_directories(cellshardAccessAdapterCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(cellshardAccessAdapterCompileTest PRIVATE Cellerator::runtime CellShard::headers)
-    set_target_properties(cellshardAccessAdapterCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+    set_target_properties(cellshardAccessAdapterCompileTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES)
     cellerator_enable_perf(cellshardAccessAdapterCompileTest)
 endif()
 
@@ -238,7 +238,7 @@ add_executable(trajectoryCompileTest
 )
 target_include_directories(trajectoryCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(trajectoryCompileTest PRIVATE CUDA::cudart)
-set_target_properties(trajectoryCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(trajectoryCompileTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(trajectoryCompileTest)
 
 add_executable(trajectoryRuntimeTest
@@ -246,7 +246,7 @@ add_executable(trajectoryRuntimeTest
 )
 target_include_directories(trajectoryRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(trajectoryRuntimeTest PRIVATE CUDA::cudart)
-set_target_properties(trajectoryRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(trajectoryRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(trajectoryRuntimeTest)
 
 add_executable(exactSearchRuntimeTest
@@ -254,7 +254,7 @@ add_executable(exactSearchRuntimeTest
 )
 target_include_directories(exactSearchRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(exactSearchRuntimeTest PRIVATE cellerator_compute_exact_search CUDA::cudart)
-set_target_properties(exactSearchRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(exactSearchRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(exactSearchRuntimeTest)
 
 if(TARGET CellShard::runtime)
@@ -263,18 +263,18 @@ if(TARGET CellShard::runtime)
     )
     target_include_directories(sparseOpsRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(sparseOpsRuntimeTest PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse)
-    set_target_properties(sparseOpsRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+    set_target_properties(sparseOpsRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
     cellerator_enable_perf(sparseOpsRuntimeTest)
 endif()
 
 add_executable(celleratorSparseRowTransformsTest tests/sparse_row_transforms_test.cu)
 target_link_libraries(celleratorSparseRowTransformsTest PRIVATE Cellerator::sparse_ops CUDA::cudart)
-set_target_properties(celleratorSparseRowTransformsTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(celleratorSparseRowTransformsTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(celleratorSparseRowTransformsTest)
 
 add_executable(celleratorSparseColumnMomentsTest tests/sparse_column_moments_test.cu)
 target_link_libraries(celleratorSparseColumnMomentsTest PRIVATE Cellerator::sparse_ops CUDA::cudart)
-set_target_properties(celleratorSparseColumnMomentsTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(celleratorSparseColumnMomentsTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(celleratorSparseColumnMomentsTest)
 
 add_executable(coreSparseLayoutRuntimeTest
@@ -282,7 +282,7 @@ add_executable(coreSparseLayoutRuntimeTest
 )
 target_include_directories(coreSparseLayoutRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(coreSparseLayoutRuntimeTest PRIVATE cellerator_compute_matrix_convert Baseplane::seq CUDA::cudart CUDA::cusparse)
-set_target_properties(coreSparseLayoutRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(coreSparseLayoutRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(coreSparseLayoutRuntimeTest)
 
 add_executable(samplingRuntimeTest
@@ -290,7 +290,7 @@ add_executable(samplingRuntimeTest
 )
 target_include_directories(samplingRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(samplingRuntimeTest PRIVATE cellerator_compute_sampling CUDA::cudart)
-set_target_properties(samplingRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+set_target_properties(samplingRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(samplingRuntimeTest)
 
 add_executable(samplingMaterializationRuntimeTest
@@ -298,7 +298,7 @@ add_executable(samplingMaterializationRuntimeTest
 )
 target_include_directories(samplingMaterializationRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(samplingMaterializationRuntimeTest PRIVATE cellerator_compute_sampling CUDA::cudart)
-set_target_properties(samplingMaterializationRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+set_target_properties(samplingMaterializationRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(samplingMaterializationRuntimeTest)
 
 if(TARGET CellShard::export)
@@ -315,7 +315,7 @@ if(TARGET CellShard::export)
         CellShard::export
         cellerator_compute_sampling
         CUDA::cudart)
-    target_compile_features(cellShardCelleratorSamplingAdapterTest PRIVATE cxx_std_17)
+    target_compile_features(cellShardCelleratorSamplingAdapterTest PRIVATE cxx_std_20)
 
     add_executable(cellShardStorageBoundaryIntegrationTest
         ${cellerator_cellshard_test_source_dir}/tests/cellshard_export_runtime_test.cu)
@@ -331,8 +331,8 @@ if(TARGET CellShard::export)
         cellerator_compute_sampling
         CUDA::cudart)
     set_target_properties(cellShardStorageBoundaryIntegrationTest PROPERTIES
-        CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+        CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 endif()
 
 add_executable(geneSupportBitsetRuntimeTest
@@ -341,9 +341,9 @@ add_executable(geneSupportBitsetRuntimeTest
 target_include_directories(geneSupportBitsetRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(geneSupportBitsetRuntimeTest PRIVATE cellerator_compute_gene_support CUDA::cudart)
 set_target_properties(geneSupportBitsetRuntimeTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(geneSupportBitsetRuntimeTest)
@@ -357,9 +357,9 @@ target_link_libraries(geneCandidateDiscoveryRuntimeTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(geneCandidateDiscoveryRuntimeTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(geneCandidateDiscoveryRuntimeTest)
@@ -369,7 +369,7 @@ add_executable(abiRuntimeTest
 )
 target_include_directories(abiRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(abiRuntimeTest PRIVATE cellerator_abi CUDA::cudart)
-set_target_properties(abiRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(abiRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(abiRuntimeTest)
 
 add_executable(celleratorBiologicalAbiHostTest
@@ -380,7 +380,7 @@ target_link_libraries(celleratorBiologicalAbiHostTest PRIVATE
     Baseplane::seq
 )
 set_target_properties(celleratorBiologicalAbiHostTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 
@@ -392,9 +392,9 @@ target_link_libraries(celleratorBiologicalAbiCudaCompileTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(celleratorBiologicalAbiCudaCompileTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 
@@ -408,9 +408,9 @@ target_link_libraries(celleratorBaseplaneSequenceIntegrationTest PRIVATE
     Cellerator::sequence_integration
 )
 set_target_properties(celleratorBaseplaneSequenceIntegrationTest PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(celleratorBaseplaneSequenceIntegrationTest)
@@ -421,7 +421,7 @@ add_executable(stateReduceRuntimeTest
 )
 target_include_directories(stateReduceRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(stateReduceRuntimeTest PRIVATE cellerator_state_reduce_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse CUDA::cublas)
-set_target_properties(stateReduceRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(stateReduceRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(stateReduceRuntimeTest)
 
 add_executable(developmentalTimeCompileTest
@@ -429,7 +429,7 @@ add_executable(developmentalTimeCompileTest
 )
 target_include_directories(developmentalTimeCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(developmentalTimeCompileTest PRIVATE CellShard::runtime CUDA::cudart)
-set_target_properties(developmentalTimeCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+set_target_properties(developmentalTimeCompileTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(developmentalTimeCompileTest)
 
 add_executable(developmentalTimeRuntimeTest
@@ -437,7 +437,7 @@ add_executable(developmentalTimeRuntimeTest
 )
 target_include_directories(developmentalTimeRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(developmentalTimeRuntimeTest PRIVATE cellerator_developmental_time_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse)
-set_target_properties(developmentalTimeRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(developmentalTimeRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(developmentalTimeRuntimeTest)
 
 add_executable(developmentalTimeTrajectoryRuntimeTest
@@ -445,6 +445,6 @@ add_executable(developmentalTimeTrajectoryRuntimeTest
 )
 target_include_directories(developmentalTimeTrajectoryRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(developmentalTimeTrajectoryRuntimeTest PRIVATE cellerator_developmental_time_trajectory_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse)
-set_target_properties(developmentalTimeTrajectoryRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(developmentalTimeTrajectoryRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(developmentalTimeTrajectoryRuntimeTest)
 endif()

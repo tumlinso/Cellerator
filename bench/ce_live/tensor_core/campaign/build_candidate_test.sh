@@ -6,7 +6,7 @@ build_root=${CELLERATOR_BUILD_DIR:-"$repo_root/build"}
 output_dir=${CELLERATOR_CE_LIVE_OUTPUT_DIR:-"$repo_root/build-ce-live-32"}
 
 mkdir -p "$output_dir"
-nvcc -std=c++17 -arch=sm_70 \
+nvcc -std=c++20 -arch=sm_70 \
     -I"$repo_root/include" \
     -I"$build_root/generated" \
     "$repo_root/tests/tensor_core/v100_dense_fragment_candidate_test.cu" \

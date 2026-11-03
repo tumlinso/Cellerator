@@ -56,11 +56,11 @@ function(cellerator_add_cuda_provider)
             "CUDA provider target already exists: ${provider_TARGET}")
     endif()
     add_library(${provider_TARGET} STATIC ${provider_SOURCES})
-    target_compile_features(${provider_TARGET} PUBLIC cxx_std_17)
+    target_compile_features(${provider_TARGET} PUBLIC cxx_std_20)
     set_target_properties(${provider_TARGET} PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17
+        CUDA_STANDARD 20
         CUDA_STANDARD_REQUIRED YES
     )
     if(provider_INCLUDE_DIRECTORIES)

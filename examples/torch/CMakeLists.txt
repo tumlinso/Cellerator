@@ -22,10 +22,10 @@ target_link_libraries(cellerator_torch_quantize PUBLIC
 target_link_libraries(cellerator_torch_quantize PRIVATE
     cellerator_compute_sparse_ops
     CUDA::cudart)
-target_compile_features(cellerator_torch_quantize PUBLIC cxx_std_17)
+target_compile_features(cellerator_torch_quantize PUBLIC cxx_std_20)
 set_target_properties(cellerator_torch_quantize PROPERTIES
-    CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+    CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_torch_quantize)
 
 if(CELLERATOR_BUILD_TESTS)
@@ -33,7 +33,7 @@ if(CELLERATOR_BUILD_TESTS)
         ${PROJECT_SOURCE_DIR}/tests/bindings/torch/dense_reduce_compile_test.cc)
     target_link_libraries(cellerator_torch_dense_reduce_compile_test PRIVATE
         cellerator_torch_examples)
-    target_compile_features(cellerator_torch_dense_reduce_compile_test PRIVATE cxx_std_17)
+    target_compile_features(cellerator_torch_dense_reduce_compile_test PRIVATE cxx_std_20)
 
     add_executable(cellerator_torch_cellshard_views_compile_test
         ${PROJECT_SOURCE_DIR}/tests/examples/torch/bindings_compile_test.cc)
@@ -42,7 +42,7 @@ if(CELLERATOR_BUILD_TESTS)
         CellShard::runtime)
     target_include_directories(cellerator_torch_cellshard_views_compile_test PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include)
-    target_compile_features(cellerator_torch_cellshard_views_compile_test PRIVATE cxx_std_17)
+    target_compile_features(cellerator_torch_cellshard_views_compile_test PRIVATE cxx_std_20)
 
     add_executable(cellerator_torch_quantize_primitive_test
         ${PROJECT_SOURCE_DIR}/tests/bindings/torch/quantize_primitive_test.cc)
@@ -50,5 +50,5 @@ if(CELLERATOR_BUILD_TESTS)
         cellerator_torch_quantize
         Cellerator::torch_model_ops
         CUDA::cudart)
-    target_compile_features(cellerator_torch_quantize_primitive_test PRIVATE cxx_std_17)
+    target_compile_features(cellerator_torch_quantize_primitive_test PRIVATE cxx_std_20)
 endif()

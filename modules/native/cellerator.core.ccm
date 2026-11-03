@@ -1,0 +1,11 @@
+module;
+#include <Cellerator/cell.hh>
+
+export module cellerator.core;
+
+export namespace cellerator {
+using ::cellerator::Cell;
+using ::cellerator::CellIdentityView;
+using ::cellerator::ViewTag;
+using ::cellerator::make_cell;
+}

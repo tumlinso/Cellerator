@@ -110,7 +110,7 @@ def main() -> int:
         generated = args.baseline_library.with_suffix(".cu")
         generated.write_text(unit)
         command = [
-            str(args.nvcc), "-std=c++17", "-shared", "-O3", "-DNDEBUG",
+            str(args.nvcc), "-std=c++20", "-shared", "-O3", "-DNDEBUG",
             "-Xcompiler=-fPIC", "-Xptxas=-O3", "--expt-relaxed-constexpr",
             "--expt-extended-lambda", "-gencode=arch=compute_70,code=compute_70",
             "-gencode=arch=compute_70,code=sm_70", f"-I{include}",

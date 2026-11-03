@@ -8,7 +8,7 @@ add_executable(cellerator_sparse_support_indexing_bench
 target_link_libraries(cellerator_sparse_support_indexing_bench PRIVATE
     Cellerator::sparse_support)
 target_compile_features(cellerator_sparse_support_indexing_bench PRIVATE
-    cxx_std_17)
+    cxx_std_20)
 
 if(TARGET Cellerator::sparse_support_cuda)
     add_executable(cellerator_sparse_support_cuda_indexing_bench
@@ -18,5 +18,5 @@ if(TARGET Cellerator::sparse_support_cuda)
     target_compile_options(cellerator_sparse_support_cuda_indexing_bench PRIVATE
         $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo>)
     set_target_properties(cellerator_sparse_support_cuda_indexing_bench PROPERTIES
-        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 endif()

@@ -1,24 +1,17 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(CelleratorNNModuleConsumer LANGUAGES CXX)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(CELLERATOR_NN_MODULES_TEST_CUDA
     "Compile the ordinary-header ABI bridge with NVCC; this does not launch CUDA" OFF)
 
 if(CELLERATOR_NN_MODULES_TEST_CUDA)
-    # Torch's Caffe2 config selects CMAKE_CXX_COMPILER as NVCC's host
-    # compiler when Clang is used for CXX. Preserve the explicitly selected
-    # host compiler across package discovery, then enable CUDA with that ABI.
-    set(_cellerator_cuda_host_compiler "${CMAKE_CUDA_HOST_COMPILER}")
     find_package(Cellerator CONFIG REQUIRED COMPONENTS nn nn_cuda)
-    if(_cellerator_cuda_host_compiler)
-        set(CMAKE_CUDA_HOST_COMPILER "${_cellerator_cuda_host_compiler}")
-    endif()
     enable_language(CUDA)
 else()
     find_package(Cellerator CONFIG REQUIRED COMPONENTS nn)
 endif()
-find_package(CelleratorNNModules CONFIG REQUIRED)
 if(CELLERATOR_NN_MODULES_TEST_CUDA AND NOT TARGET Cellerator::nn_cuda)
     message(FATAL_ERROR
         "The Cellerator package must enable CELLERATOR_ENABLE_NN_CUDA")
@@ -40,7 +33,7 @@ endif()
 target_compile_features(cellerator_nn_module_consumer PRIVATE cxx_std_20)
 target_link_libraries(cellerator_nn_module_consumer
     PRIVATE
-        CelleratorNNModules::nn)
+        Cellerator::nn_modules)
 
 enable_testing()
 add_test(NAME cellerator_nn_module_consumer

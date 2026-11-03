@@ -9,7 +9,7 @@ int main() {
     plan.target.triple = {"x86_64-unknown-linux-gnu", 24};
     plan.generated_files = {{"module.cc", "int answer(){return 42;}\n"}};
     plan.embedded_data = {{"ceir_blob", {std::byte{1}, std::byte{2}}}};
-    plan.compile_jobs = {{"module.cc", "module.o", {"-std=c++17", "-O2"}}};
+    plan.compile_jobs = {{"module.cc", "module.o", {"-std=c++20", "-O2"}}};
     plan.link_jobs = {{"module.so", {"module.o"}, {"libCellerator"}}};
     plan.source_maps = {{"module.cc", 1, 17, 4}};
     plan.keep_temporary_artifacts = true;

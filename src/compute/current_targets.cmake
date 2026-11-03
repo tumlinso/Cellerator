@@ -3,7 +3,7 @@ add_library(cellerator_compute_exact_search STATIC
 )
 target_include_directories(cellerator_compute_exact_search PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellerator_compute_exact_search PRIVATE CUDA::cudart)
-set_target_properties(cellerator_compute_exact_search PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(cellerator_compute_exact_search PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_exact_search)
 
 add_library(cellerator_compute_forward_neighbors STATIC
@@ -23,7 +23,7 @@ target_link_libraries(cellerator_compute_forward_neighbors
         CUDA::cudart
         CUDA::cusparse
 )
-set_target_properties(cellerator_compute_forward_neighbors PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(cellerator_compute_forward_neighbors PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_forward_neighbors)
 
 add_library(cellerator_neighbor_math INTERFACE)
@@ -38,7 +38,7 @@ target_include_directories(cellerator_compute_sampling PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-set_target_properties(cellerator_compute_sampling PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+set_target_properties(cellerator_compute_sampling PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_sampling)
 
 add_library(cellerator_compute_gene_support STATIC
@@ -51,9 +51,9 @@ target_include_directories(cellerator_compute_gene_support PUBLIC
 )
 target_link_libraries(cellerator_compute_gene_support PUBLIC cellerator_compute_sampling CUDA::cudart)
 set_target_properties(cellerator_compute_gene_support PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellerator_compute_gene_support)
@@ -73,9 +73,9 @@ target_link_libraries(cellerator_compute_gene_candidates PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_compute_gene_candidates PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
+    CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(cellerator_compute_gene_candidates)
@@ -96,7 +96,7 @@ target_include_directories(cellerator_compute_sparse_ops
 )
 target_link_libraries(cellerator_compute_sparse_ops PUBLIC Cellerator::runtime_fleet)
 target_link_libraries(cellerator_compute_sparse_ops PRIVATE CUDA::cudart CUDA::cusparse)
-set_target_properties(cellerator_compute_sparse_ops PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(cellerator_compute_sparse_ops PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_sparse_ops)
 
 add_library(cellerator_compute_sparse_project STATIC
@@ -105,7 +105,7 @@ add_library(cellerator_compute_sparse_project STATIC
 target_include_directories(cellerator_compute_sparse_project PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellerator_compute_sparse_project PUBLIC cellerator_compute_sparse_ops Cellerator::runtime_fleet)
 target_link_libraries(cellerator_compute_sparse_project PRIVATE CUDA::cudart CUDA::cusparse)
-set_target_properties(cellerator_compute_sparse_project PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set_target_properties(cellerator_compute_sparse_project PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_sparse_project)
 
 add_library(cellerator_sparse_math INTERFACE)
