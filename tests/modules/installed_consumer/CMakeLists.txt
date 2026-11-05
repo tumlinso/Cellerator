@@ -4,11 +4,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(Cellerator CONFIG REQUIRED COMPONENTS core_module)
-find_package(anndata CONFIG REQUIRED)
+find_package(anndatapp CONFIG REQUIRED)
 
 foreach(name IN ITEMS first second)
     add_executable(cellerator_${name}_importer ../module_contract.cc)
-    target_link_libraries(cellerator_${name}_importer PRIVATE Cellerator::core_module anndata::anndata)
+    target_link_libraries(cellerator_${name}_importer PRIVATE Cellerator::core_module anndatapp::anndatapp)
 endforeach()
 
 enable_testing()

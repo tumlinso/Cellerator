@@ -36,13 +36,16 @@ installed package: `Cellerator::core_module` is always exported and provides
 exported through the `nn_modules` package component and provides
 `import cellerator.nn;`.
 
-The native H5AD dependency is the installed
-[`anndata.cppm`](https://github.com/tumlinso/anndata.cppm/tree/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1)
-baseline, built with HDF5 enabled and Zarr disabled. Cellerator requires its
-`anndata::anndata` CMake target; this is its sole native H5AD path. The old
-reader is retired, with no fallback parser. H5AD support follows that
-revision's declared modern encoding subset, including sparse CSR and CSC.
-Legacy unversioned formats and compound/record arrays are unsupported.
+The current native H5AD dependency is installed
+[AnnData++](https://github.com/tumlinso/anndatapp), built with HDF5 enabled and
+Zarr disabled. Cellerator requires its `anndatapp::anndatapp` CMake target;
+this is its sole native H5AD path. The old reader is retired, with no fallback
+parser. The measurements below used the pre-rename
+[`anndata.cppm` baseline](https://github.com/tumlinso/anndatapp/tree/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1),
+whose supported modern encoding subset included sparse CSR and CSC. Legacy
+unversioned formats and compound/record arrays were unsupported at that
+baseline. These historical results do not independently qualify the renamed
+package.
 CellShard owns ingest and durable storage; the CellShard cutover is scoped to
 modern sparse CSR/CSC ingest through this boundary.
 
@@ -116,7 +119,7 @@ Implemented facilities have different backend and maturity boundaries. The 2026-
 - Prepared entity-to-mechanism routing is opt-in. The established Python route remains the default.
 - ATen tokenization is optional and caller-directed. Gene-aware C++ tokenizer classes share an annotation-built vocabulary and retain typed ranked/event inputs; a common virtual execution signature remains deferred. Tokenization does not assign biological interpretation to tokens or events.
 - `ExecutionField` is an experimental CPU composition of prepared Product2 operations. It has explicit structure rebinding, but no JIT, live recompilation, or general compiler contract.
-- Python AnnData remains a required Python dependency. Its adapter maps explicit `X`, layer, or raw inputs to identity-aligned state and writes aligned observations while preserving sparse inputs. Native H5AD I/O is supplied by the pinned HDF5-only `anndata.cppm` package described above. Classical single-cell analysis remains upstream in Scanpy and RAPIDS-singlecell.
+- Python AnnData remains a required Python dependency. Its adapter maps explicit `X`, layer, or raw inputs to identity-aligned state and writes aligned observations while preserving sparse inputs. Native H5AD I/O is supplied by the HDF5-only AnnData++ package described above. Classical single-cell analysis remains upstream in Scanpy and RAPIDS-singlecell.
 
 Start with the [NN foundation guide](nn_foundation.qmd), [biological framework guide](biological_framework.qmd), [distributed execution contract](distributed_execution.qmd), and [native CUDA guide](framework_cuda.qmd). The [Python binding guide](development/python-bindings.md), [sparse-support reference](sparse_support_foundation.qmd), [tokenization reference](tokenization.qmd), and [experimental fields note](development/experimental-fields.md) retain their narrower contracts. The [source routing guide](development/routing.md) identifies owners; the [developer reference](developer_reference.qmd) describes established build and validation routes.
 

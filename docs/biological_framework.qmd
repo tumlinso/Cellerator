@@ -365,7 +365,7 @@ Established single-cell analysis remains upstream in AnnData, Scanpy, and
 RAPIDS-singlecell. Cellerator's Python AnnData adapter provides explicit input
 selection for observations where installed; it does not silently preprocess or
 select a scientific layer. Native C++ H5AD I/O uses the pinned HDF5-only
-`anndata.cppm` dependency and its declared modern encoding subset.
+AnnData++ dependency and its declared modern encoding subset.
 Sequence-specific meaning remains with Baseplane, and data persistence/delivery
 remains with its owning system. See the [developer reference](developer_reference.qmd)
 for the native reader boundary and build requirements.

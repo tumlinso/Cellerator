@@ -43,7 +43,7 @@ The Python AnnData adapter makes matrix selection explicit and preserves
 cell/feature identities and sparse values. It does not select a layer,
 normalize, infer events, or create biological meaning without the caller's
 instruction. Native C++ H5AD I/O is provided through the installed
-HDF5-only `anndata.cppm` dependency; see the [developer reference](developer_reference.qmd)
+HDF5-only AnnData++ dependency; see the [developer reference](developer_reference.qmd)
 for its build requirements and format boundary.
 Established preprocessing remains upstream in AnnData, Scanpy, or
 RAPIDS-singlecell.

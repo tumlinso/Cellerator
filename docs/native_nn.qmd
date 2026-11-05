@@ -452,7 +452,7 @@ component and reference executable:
 cmake -S . -B /tmp/cellerator-native-nn -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/path/to/anndata-install \
+  -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \
   -DTorch_DIR=/path/to/libtorch/share/cmake/Torch \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_NN=ON \
@@ -466,7 +466,7 @@ cmake --build /tmp/cellerator-native-nn \
 /tmp/cellerator-native-nn/native_nn_train
 ```
 
-The `anndata-install` prefix must contain the pinned HDF5-only native package;
+The `anndatapp-install` prefix must contain the HDF5-only native package;
 the required CMake, Ninja, Clang and scanner versions are documented in the
 [developer reference](developer_reference.qmd#mandatory-native-toolchain-and-h5ad-dependency).
 The [standalone build and installed-consumer route](../planning/native-nn-foundation-2026-10-31/build/README.md)

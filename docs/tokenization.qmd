@@ -15,7 +15,7 @@ Select a matching Torch installation for the C++ library and Python interpreter:
 cmake -S . -B build/tokenization-cpu -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH="/path/to/anndata-install;/path/to/libtorch" \
+  -DCMAKE_PREFIX_PATH="/path/to/anndatapp-install;/path/to/libtorch" \
   -DTorch_DIR=/path/to/libtorch/share/cmake/Torch \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_TOKENIZATION=ON \
@@ -35,7 +35,7 @@ Build/install the Python package against the interpreter's existing Torch:
 
 ```sh
 CMAKE_GENERATOR=Ninja \
-CMAKE_ARGS='-DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 -DCMAKE_PREFIX_PATH=/path/to/anndata-install -DTorch_DIR=/path/to/libtorch/share/cmake/Torch' \
+CMAKE_ARGS='-DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install -DTorch_DIR=/path/to/libtorch/share/cmake/Torch' \
 /path/to/python -m pip install --no-build-isolation . \
   --config-settings=cmake.define.CELLERATOR_ENABLE_TOKENIZATION=ON
 ```

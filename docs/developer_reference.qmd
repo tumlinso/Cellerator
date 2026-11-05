@@ -64,36 +64,36 @@ targets, so Clang builds them in strict C++20 or C++23 mode rather than
 `gnu++20`. CUDA translation units keep using public headers and do not import
 named modules.
 
-Native builds require a separately installed HDF5-only `anndata.cppm` package
-at commit
-[`2ddf57559412c90297e5b525bd6a5b6d9a0c36d1`](https://github.com/tumlinso/anndata.cppm/tree/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1).
+Native builds require the separately installed HDF5-only
+[AnnData++](https://github.com/tumlinso/anndatapp) package at commit
+[`d2260c2abb37e9028fa42c95d1712ffcaa282b0e`](https://github.com/tumlinso/anndatapp/tree/d2260c2abb37e9028fa42c95d1712ffcaa282b0e).
 The package must be built with HDF5 on and Zarr off. This is Cellerator's sole
 native H5AD path: the old reader is retired, with no legacy parser or fallback.
-See its [declared encoding boundary](https://github.com/tumlinso/anndata.cppm/blob/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1/docs/h5ad.md)
-and [native dependency installation guide](https://github.com/tumlinso/anndata.cppm/blob/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1/docs/storage-dependencies.md).
+See its [declared encoding boundary](https://github.com/tumlinso/anndatapp/blob/d2260c2abb37e9028fa42c95d1712ffcaa282b0e/docs/h5ad.md)
+and [native dependency installation guide](https://github.com/tumlinso/anndatapp/blob/d2260c2abb37e9028fa42c95d1712ffcaa282b0e/docs/storage-dependencies.md).
 The native H5AD route accepts the supported modern subset, including sparse
-CSR/CSC. Root CMake requires `anndata::anndata` to be discoverable; it does not
+CSR/CSC. Root CMake requires `anndatapp::anndatapp` to be discoverable; it does not
 download or silently replace that dependency.
 
 Build and install that dependency at the pinned revision, then configure the
 Cellerator package against its prefix:
 
 ```sh
-git clone https://github.com/tumlinso/anndata.cppm.git /tmp/anndata.cppm
-git -C /tmp/anndata.cppm checkout --detach 2ddf57559412c90297e5b525bd6a5b6d9a0c36d1
-cmake -S /tmp/anndata.cppm -B /tmp/anndata-build -G Ninja \
+git clone https://github.com/tumlinso/anndatapp.git /tmp/anndatapp
+git -C /tmp/anndatapp checkout --detach d2260c2abb37e9028fa42c95d1712ffcaa282b0e
+cmake -S /tmp/anndatapp -B /tmp/anndatapp-build -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DANNDATA_ENABLE_HDF5=ON \
-  -DANNDATA_ENABLE_ZARR=OFF \
-  -DCMAKE_INSTALL_PREFIX=/tmp/anndata-install
-cmake --build /tmp/anndata-build
-cmake --install /tmp/anndata-build
+  -DANNDATAPP_ENABLE_HDF5=ON \
+  -DANNDATAPP_ENABLE_ZARR=OFF \
+  -DCMAKE_INSTALL_PREFIX=/tmp/anndatapp-install
+cmake --build /tmp/anndatapp-build
+cmake --install /tmp/anndatapp-build
 
 cmake -S . -B build-cpu -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/tmp/anndata-install \
+  -DCMAKE_PREFIX_PATH=/tmp/anndatapp-install \
   -DCELLERATOR_ENABLE_CUDA=OFF
 cmake --build build-cpu
 ```
@@ -105,15 +105,15 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(Cellerator CONFIG REQUIRED COMPONENTS core_module)
-find_package(anndata CONFIG REQUIRED)
-target_link_libraries(my_model PRIVATE Cellerator::core_module anndata::anndata)
+find_package(anndatapp CONFIG REQUIRED)
+target_link_libraries(my_model PRIVATE Cellerator::core_module anndatapp::anndatapp)
 ```
 
 The corresponding C++ translation unit imports both interfaces:
 
 ```cpp
 import cellerator.core;
-import anndata.h5ad;
+import anndatapp.h5ad;
 ```
 
 For the optional native NN module, configure Cellerator with NN enabled and use
@@ -162,7 +162,7 @@ tokenization, and sparse support disabled, then build and run the examples:
 cmake -S . -B build/cell-host -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/path/to/anndata-install \
+  -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_PYTHON=OFF \
   -DCELLERATOR_ENABLE_TORCH=OFF \
@@ -210,14 +210,14 @@ before moving or archiving a path.
 
 ## Configure and build
 
-Use the mandatory Clang/Ninja and installed HDF5-only `anndata.cppm` baseline
+Use the mandatory Clang/Ninja and installed HDF5-only AnnData++ baseline
 from the section above. For a Python host-only extension with Product2:
 
 ```sh
 cmake -S . -B build-cpu -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/path/to/anndata-install \
+  -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_PYTHON=ON \
   -DCELLERATOR_ENABLE_TORCH=OFF

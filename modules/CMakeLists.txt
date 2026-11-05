@@ -12,7 +12,7 @@ target_sources(cellerator_core_module PUBLIC FILE_SET CXX_MODULES
 
 # Compile imports in the normal build with CMake's dependency scanner.
 add_executable(cellerator_module_contract "${PROJECT_SOURCE_DIR}/tests/modules/module_contract.cc")
-target_link_libraries(cellerator_module_contract PRIVATE Cellerator::core_module anndata::anndata)
+target_link_libraries(cellerator_module_contract PRIVATE Cellerator::core_module anndatapp::anndatapp)
 
 install(TARGETS cellerator_core_module EXPORT CelleratorCoreModulesTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

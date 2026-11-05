@@ -198,7 +198,7 @@ Build the focused host checks without the unrelated compiler test suite:
 cmake -S . -B /tmp/cellerator-native-data-host -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/path/to/anndata-install \
+  -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \
   -DCELLERATOR_ENABLE_CUDA=OFF -DCELLERATOR_BUILD_TESTS=OFF \
   -DCELLERATOR_BUILD_NATIVE_DATA_TESTS=ON
 cmake --build /tmp/cellerator-native-data-host --target cellerator_native_data

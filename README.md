@@ -26,8 +26,8 @@ describes the shared state/dynamics/context vocabulary and current package
 entry points.
 
 Native and Python wheel builds require the installed C++
-[`anndata.cppm`](https://github.com/tumlinso/anndata.cppm/tree/2ddf57559412c90297e5b525bd6a5b6d9a0c36d1)
-baseline, configured for HDF5 with Zarr disabled. Its H5AD reader supports the
+[AnnData++](https://github.com/tumlinso/anndatapp) package, configured for HDF5
+with Zarr disabled. Its H5AD reader supports the
 declared modern encoding subset, including sparse CSR and CSC, and has no
 legacy-format fallback. C++ and CUDA builds require C++20 or newer; the normal
 CMake/Ninja package build exports named modules. See the

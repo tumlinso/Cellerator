@@ -237,7 +237,7 @@ of an existing integration or authorization to implement or register one.
   classical preprocessing, QC, normalization, and analysis workflows. The
   Python AnnData adapter requires explicit input selection and does not
   preprocess or choose scientific semantics automatically. Cellerator also
-  provides native H5AD I/O through the pinned HDF5-only `anndata.cppm` package;
+  provides native H5AD I/O through the HDF5-only AnnData++ package;
   it supports that library's declared modern encoding subset, including sparse
   CSR/CSC, without a legacy-format fallback. This file-format boundary does
   not transfer preprocessing, QC, scientific interpretation, or durable
