@@ -35,6 +35,12 @@ CMake/Ninja package build exports named modules. See the
 and build commands, and the [implementation record](docs/current_implementation.qmd)
 for qualification status.
 
+The language compiler and its source, build/install integration, public API,
+tools, resources, tests, examples, and documentation are maintained in
+[Texo](https://github.com/tumlinso/Texo). Cellerator remains focused on
+biological modeling and learning, numerical operations and derivatives,
+cellular geometry planning, layout, and execution preparation/runtime.
+
 For an executable example of a persistent cell, changing inputs, observations,
 and an emitted event stream, see
 [`trajectory_experiment.py`](examples/framework/trajectory_experiment.py).
@@ -68,8 +74,8 @@ boundaries and evidence.
   maturity.
 - [Layout and execution](docs/layout_execution.qmd): identity, support,
   routing, layout, preparation, and runtime boundaries.
-- [Experiments and history](docs/experiments_and_history.qmd): compiler,
-  execution-field, tokenization, and source-bound records.
+- [Experiments and history](docs/experiments_and_history.qmd): execution-field,
+  tokenization, and source-bound records.
 - [Python bindings](docs/development/python-bindings.md): import surfaces and
   optional native build requirements.
 - [Developer reference](docs/developer_reference.qmd): source/build entry

@@ -1,11 +1,11 @@
 #include <Cellerator/execution/geometry_acquisition_v2/schema.hh>
-#include <Cellerator/profiling/joint_compiler/manifest_v1.hh>
+#include <Cellerator/profiling/preparation/manifest_v1.hh>
 
 #include <cassert>
 #include <type_traits>
 
 namespace acquisition = cellerator::execution::acquisition_v2;
-namespace profile = cellerator::profiling::joint_compiler;
+namespace profile = cellerator::profiling::preparation;
 
 static_assert(acquisition::schema_version == 2u);
 static_assert(std::is_standard_layout_v<acquisition::acquisition_request>);

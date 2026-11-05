@@ -437,10 +437,11 @@ runtime view registry or duplicated string labels in computation.
 Primitive borrowed views, explicit allocation owners, typed identities, and
 compile-time composition are part of the native experience. The first training
 backend uses ATen tensors honestly; Cellerator-specific data representations
-remain separate. C++ and CUDA targets require at least C++20; selected compiler
-implementation targets retain C++23. C++20 named modules are built and exported
-through the normal package. CUDA translation units use the public headers and
-do not compile named modules.
+remain separate. Cellerator C++ and CUDA targets require at least C++20; its
+C++20 named modules are built and exported through the normal package. The
+language compiler is maintained separately in
+[Texo](https://github.com/tumlinso/Texo). CUDA translation units use Cellerator's
+public headers and do not compile named modules.
 The [dated implementation record](current_implementation.qmd) and qualification
 artifacts bound these capabilities. They do not establish complete parity for
 every backend or the framework's full biological ML ambition.
@@ -712,10 +713,11 @@ headers do not all mirror those directory names: identity is under
 `include/Cellerator/structure`, while support, indexing, gating, and current
 projection contracts remain under `include/Cellerator/compute`; operation
 families are under `include/Cellerator/ops`. Python has `ops.py`, `nn.py`,
-`torch/`, and `experimental/`. Existing compiler, runtime, tokenization, model,
-and compatibility paths remain where their consumers and build contracts
-place them. The routing document is the exhaustive path-level source of truth;
-this architecture page avoids duplicating its changing inventory.
+`torch/`, and `experimental/`. Cellerator retains numerical geometry planning,
+runtime, tokenization, modeling, and compatibility paths; its language compiler
+is maintained in [Texo](https://github.com/tumlinso/Texo). The routing document
+is the exhaustive path-level source of truth; this architecture page avoids
+duplicating its changing inventory.
 
 ### Operation families
 
@@ -766,17 +768,19 @@ when those costs are part of the workload.
 Execution fields are an experimental composition layer, not a prerequisite for
 using operations. The current field composes a narrow prepared Product2 Torch
 module on CPU and exposes explicit structure rebinding. It has no JIT or live
-recompilation. Broader compiler and IR work remains available for research but
-does not define the stable package surface.
+recompilation. Texo owns the language compiler and its IR; Cellerator retains
+numerical geometry planning and operation preparation as separate concerns.
 
 ### Experimental and upstream boundaries
 
-The compiler, adaptive fields, tokenization, and candidate layout work remain
-separately labeled by their actual maturity. An experimental implementation
-can still be useful and routed; its location does not promote it to a stable
-API. Classical single-cell analysis in the repository is a testbed or consumer,
-not a replacement for Scanpy or RAPIDS-singlecell. The Python package depends
-on upstream Python AnnData for its identity-aligned adapter. Native file I/O
+Texo owns the language compiler; consult its repository for compiler source and
+current evidence. Cellerator's adaptive fields, tokenization, and candidate
+layout work remain separately labeled by their actual maturity. An
+experimental implementation can still be useful and routed; its location does
+not promote it to a stable API. Classical single-cell analysis in the repository
+is a testbed or consumer, not a replacement for Scanpy or RAPIDS-singlecell.
+The Python package depends on upstream Python AnnData for its identity-aligned
+adapter. Native file I/O
 uses the separately installed C++ AnnData++ package with HDF5 enabled and Zarr
 disabled; its declared modern H5AD subset includes sparse CSR/CSC and
 has no legacy-format fallback. Numerical operation entry points retain their

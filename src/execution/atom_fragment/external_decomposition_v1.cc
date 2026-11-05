@@ -3,7 +3,7 @@
 namespace cellerator::execution::atom_fragment {
 namespace {
 
-using identity = joint_compiler::persistent_identity_v1;
+using identity = preparation::persistent_identity_v1;
 
 bool less(identity lhs, identity rhs) noexcept {
     return lhs.producer_namespace < rhs.producer_namespace
@@ -16,7 +16,7 @@ bool same(identity lhs, identity rhs) noexcept {
         && lhs.local_identity == rhs.local_identity;
 }
 
-bool has_coverage(const joint_compiler::logical_coverage_view_v1 *values,
+bool has_coverage(const preparation::logical_coverage_view_v1 *values,
     std::uint64_t count, identity target) noexcept {
     std::uint64_t first = 0u;
     while (first < count) {
@@ -65,7 +65,7 @@ bool same_numeric(const compute::operation::v2::numerical_policy &lhs,
 
 external_decomposition_validation_v1 validate_external_decomposition_v1(
     const compute::operation::v2::operation_problem &operation,
-    const joint_compiler::logical_coverage_view_v1 *coverages,
+    const preparation::logical_coverage_view_v1 *coverages,
     std::uint64_t coverage_count, const structure::order_id *orders,
     std::uint64_t order_count,
     const compute::decomposition::decomposition_portfolio_v1 &portfolio)

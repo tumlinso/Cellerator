@@ -3,9 +3,9 @@
 namespace cellerator::execution::atom_fragment {
 namespace {
 
-bool valid(joint_compiler::persistent_identity_v1 value) noexcept {
+bool valid(preparation::persistent_identity_v1 value) noexcept {
     return static_cast<bool>(
-        joint_compiler::validate_persistent_identity_v1(value));
+        preparation::validate_persistent_identity_v1(value));
 }
 
 } // namespace

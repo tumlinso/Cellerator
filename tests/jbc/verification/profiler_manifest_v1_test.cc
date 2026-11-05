@@ -1,8 +1,8 @@
-#include <Cellerator/profiling/joint_compiler/manifest_v1.hh>
+#include <Cellerator/profiling/preparation/manifest_v1.hh>
 
 #include <cassert>
 
-namespace profile = cellerator::profiling::joint_compiler;
+namespace profile = cellerator::profiling::preparation;
 
 bool collect(void *raw, const profile::atom_profile_record_v1 &record) noexcept {
     auto &count = *static_cast<std::uint64_t *>(raw);

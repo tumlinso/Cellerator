@@ -1,6 +1,6 @@
-#include <Cellerator/compiler/substrate/guarded_scaled_tanh.hh>
+#include <Cellerator/compute/architecture/providers/nvidia/sm70/guarded_scaled_tanh.hh>
 #include <cassert>
-using namespace cellerator::compiler::substrate;
+using namespace cellerator::compute::architecture::providers::nvidia::sm70;
 int main() {
     static_assert(sm70_supports(instruction::scalar_f32));
     static_assert(sm70_supports(instruction::popcount));

@@ -1,2 +1,0 @@
-set(CELLERATOR_MINIMAL_PROFILE_SOURCE "minimal_test_artifact_v1.csv")
-set(CELLERATOR_MINIMAL_PROFILE_SERIALIZATION "utf8_csv_lf")

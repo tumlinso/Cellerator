@@ -3,11 +3,11 @@
 namespace cellerator::execution::atom_fragment {
 namespace {
 
-using identity = joint_compiler::persistent_identity_v1;
+using identity = preparation::persistent_identity_v1;
 
 bool valid(identity value) noexcept {
     return static_cast<bool>(
-        joint_compiler::validate_persistent_identity_v1(value));
+        preparation::validate_persistent_identity_v1(value));
 }
 
 bool same(identity lhs, identity rhs) noexcept {
@@ -19,9 +19,9 @@ bool same(identity lhs, identity rhs) noexcept {
 
 atom_bound_candidate_status_v1 discover_atom_bound_candidates_v1(
     const compute::operation::catalog_v3::candidate_catalog_view_v3 &catalog,
-    const joint_compiler::atom_requirement_v1 *requirements,
+    const preparation::atom_requirement_v1 *requirements,
     std::uint64_t requirement_count,
-    const joint_compiler::atom_binding_request_v1 *bindings,
+    const preparation::atom_binding_request_v1 *bindings,
     std::uint64_t binding_count,
     atom_bound_candidate_v1 *output,
     std::uint64_t output_capacity,
@@ -38,7 +38,7 @@ atom_bound_candidate_status_v1 discover_atom_bound_candidates_v1(
         return {code::mismatched_requirement_count, 0u,
             catalog.candidate_count};
     for (std::uint64_t index = 0u; index < requirement_count; ++index) {
-        if (!joint_compiler::validate_atom_requirement_v1(
+        if (!preparation::validate_atom_requirement_v1(
                 requirements[index]))
             return {code::invalid_requirement, index,
                 catalog.candidate_count};

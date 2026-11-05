@@ -16,17 +16,6 @@ add_library(cellerator_relation_gradient_cover STATIC
 target_include_directories(cellerator_relation_gradient_cover PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_compile_features(cellerator_relation_gradient_cover PUBLIC cxx_std_20)
 
-if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
-    add_library(cellerator_relation_update_compiler STATIC
-        src/compiler/ir/semantic/gradient_and_publication_operations.cc
-        src/compiler/sema/relation_update_spine_bridge.cc
-        src/compiler/ir/realization/relation_update_spine.cc
-        src/compiler/frontend/source/raw_token_stream.cc
-        src/compiler/frontend/parser/parse_relation_application.cc)
-    target_link_libraries(cellerator_relation_update_compiler PUBLIC Cellerator::relation_calculus)
-    target_compile_features(cellerator_relation_update_compiler PUBLIC cxx_std_20)
-endif()
-
 if(CELLERATOR_BUILD_TESTS)
     add_executable(ceSpineCoreTest tests/semantic_spine/core/descriptor_test.cc)
     target_link_libraries(ceSpineCoreTest PRIVATE Cellerator::relation_semantics)
@@ -68,21 +57,6 @@ if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     target_compile_features(cellerator_prepared_relation_cuda PUBLIC cxx_std_20)
     set_target_properties(cellerator_prepared_relation_cuda PROPERTIES
         CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
-
-    add_library(cellerator_spine_frontend STATIC
-        src/compiler/ir/semantic/relation_apply_and_transpose_operations.cc
-        src/compiler/ir/semantic/relation_ir_types.cc
-        src/compiler/ir/semantic/state_and_value_plane_ir_types.cc
-        src/compiler/ir/semantic/domain_and_axis_ir_types.cc
-        src/compiler/sema/relation_spine_bridge.cc
-        src/compiler/sema/numerical_tuple_semantics.cc
-        src/compiler/frontend/parser/parse_compiler_semantic_declarations.cc
-        src/compiler/frontend/parser/parse_biological_type_constructors_and_qualifiers.cc
-        src/compiler/frontend/parser/parse_relation_application.cc
-        src/compiler/frontend/parser/parse_non_relation_operation_families.cc)
-    target_link_libraries(cellerator_spine_frontend PUBLIC
-        Cellerator::relation_semantics CUDA::cudart)
-    target_compile_features(cellerator_spine_frontend PUBLIC cxx_std_20)
 
     if(CELLERATOR_BUILD_TESTS)
         include(tests/semantic_spine/CMakeLists.txt)

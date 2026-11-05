@@ -3,7 +3,7 @@
 #include <cassert>
 
 namespace fragment = cellerator::execution::atom_fragment;
-namespace joint = cellerator::execution::joint_compiler;
+namespace joint = cellerator::execution::preparation;
 namespace operation = cellerator::compute::operation::v2;
 namespace decomposition = cellerator::compute::decomposition;
 namespace execution = cellerator::execution;

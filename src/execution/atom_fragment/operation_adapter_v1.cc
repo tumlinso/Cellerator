@@ -24,7 +24,7 @@ operation_fragment_adaptation_result_v1 adapt_operation_problem_to_fragment_v1(
             *restriction.source))
         return {operation_fragment_adaptation_code_v1::invalid_operation, 0u};
     if (restriction.exact_coverage == nullptr
-        || !joint_compiler::validate_logical_coverage_v1(
+        || !preparation::validate_logical_coverage_v1(
             *restriction.exact_coverage))
         return {operation_fragment_adaptation_code_v1::invalid_coverage, 0u};
     if (!same_axis(restriction.source->values_axis,

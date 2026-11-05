@@ -1,8 +1,8 @@
-#include <Cellerator/execution/joint_compiler/atom_fragment_request_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment_request_v1.hh>
 
 #include <cassert>
 
-namespace joint_compiler = cellerator::execution::joint_compiler;
+namespace preparation = cellerator::execution::preparation;
 namespace execution = cellerator::execution;
 namespace operation = cellerator::compute::operation::v2;
 namespace decomposition = cellerator::compute::decomposition;
@@ -53,8 +53,8 @@ int main() {
     problem.output.produced_axis = problem.result_axis;
     problem.output.canonical_axis = problem.result_axis;
 
-    const joint_compiler::canonical_interval_v1 interval{0u, 2u};
-    joint_compiler::logical_coverage_view_v1 coverage{};
+    const preparation::canonical_interval_v1 interval{0u, 2u};
+    preparation::logical_coverage_view_v1 coverage{};
     coverage.coverage_identity = {10u, 1u};
     coverage.structure = relation.structure;
     coverage.epoch = relation.epoch;
@@ -97,9 +97,9 @@ int main() {
 
     const ::cellerator::structure::order_id external_orders[] = {
         {1u, 1u}, {2u, 1u}};
-    const joint_compiler::atom_binding_request_v1 binding{
+    const preparation::atom_binding_request_v1 binding{
         {30u, 1u}, {30u, 2u}, {30u, 3u}};
-    joint_compiler::atom_fragment_request_v1 request{};
+    preparation::atom_fragment_request_v1 request{};
     request.request_identity = {40u, 1u};
     request.operation = &problem;
     request.exact_coverages = &coverage;
@@ -115,24 +115,24 @@ int main() {
     request.target_profile = {50u, 2u};
     request.desired_output_affordance = {50u, 3u};
     request.lowering_resumption_stage = {50u, 4u};
-    assert(joint_compiler::validate_atom_fragment_request_v1(request));
+    assert(preparation::validate_atom_fragment_request_v1(request));
 
     auto malformed = request;
     malformed.exact_coverages = nullptr;
-    assert(joint_compiler::validate_atom_fragment_request_v1(malformed).code
-        == joint_compiler::atom_fragment_request_validation_code_v1::
+    assert(preparation::validate_atom_fragment_request_v1(malformed).code
+        == preparation::atom_fragment_request_validation_code_v1::
             missing_coverages);
     malformed = request;
     malformed.target_profile = {};
-    assert(joint_compiler::validate_atom_fragment_request_v1(malformed).code
-        == joint_compiler::atom_fragment_request_validation_code_v1::
+    assert(preparation::validate_atom_fragment_request_v1(malformed).code
+        == preparation::atom_fragment_request_validation_code_v1::
             invalid_target_profile);
     const std::uint64_t saved_extent = component.index_space.local_extent;
     component.index_space.local_extent = 3u;
-    assert(joint_compiler::validate_atom_fragment_request_v1(request).code
-        == joint_compiler::atom_fragment_request_validation_code_v1::
+    assert(preparation::validate_atom_fragment_request_v1(request).code
+        == preparation::atom_fragment_request_validation_code_v1::
             invalid_index_component);
     component.index_space.local_extent = saved_extent;
-    assert(joint_compiler::validate_atom_fragment_request_v1(request));
+    assert(preparation::validate_atom_fragment_request_v1(request));
     return 0;
 }

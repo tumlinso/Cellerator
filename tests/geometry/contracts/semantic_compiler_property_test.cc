@@ -1,5 +1,5 @@
 #include <Cellerator/geometry/admissibility.hh>
-#include <Cellerator/geometry/compiler/compile_geometry.hh>
+#include <Cellerator/geometry/planning/plan_geometry.hh>
 #include <Cellerator/geometry/persistence/semantic_geometry_image_v1.hh>
 #include <Cellerator/geometry/strategy/cpbp_v1_compatibility.hh>
 
@@ -10,7 +10,7 @@
 #include <iostream>
 
 namespace geo = cellerator::geometry;
-namespace comp = cellerator::geometry::compiler;
+namespace planning = cellerator::geometry::planning;
 namespace persist = cellerator::geometry::persistence;
 namespace strategy = cellerator::geometry::strategy;
 namespace exec = cellerator::execution;
@@ -43,12 +43,12 @@ exec::persistent_axis_identity persistent_axis(std::uint64_t seed) noexcept {
     return result;
 }
 
-comp::geometry_problem_v1 make_problem(
+planning::geometry_problem_v1 make_problem(
     const std::uint32_t *members,
     std::uint32_t count,
     std::uint64_t edge_count,
     const geo::admissibility_view_v1 *admissibility = nullptr) noexcept {
-    comp::geometry_problem_v1 problem{};
+    planning::geometry_problem_v1 problem{};
     problem.primary_relation.source_axis = compact_axis(10u);
     problem.primary_relation.destination_axis = compact_axis(20u);
     problem.primary_relation.structure = {31u, 1u};
@@ -78,25 +78,25 @@ struct solution_storage {
     std::uint8_t marks[maximum_items]{};
 };
 
-comp::geometry_solution_buffers_v1 solution_buffers(
+planning::geometry_solution_buffers_v1 solution_buffers(
     solution_storage &storage) noexcept {
     return {storage.forward, storage.inverse, maximum_items,
         &storage.component, 1u, storage.edges, maximum_items};
 }
 
-comp::geometry_solution_v1 compile_identity(
-    const comp::geometry_problem_v1 &problem,
+planning::geometry_solution_v1 compile_identity(
+    const planning::geometry_problem_v1 &problem,
     solution_storage &storage) {
-    const comp::geometry_strategy_descriptor_v1 &identity =
-        comp::identity_geometry_strategy();
-    const comp::geometry_strategy_registry_v1 registry{&identity, 1u};
-    comp::geometry_search_policy_v1 policy{};
+    const planning::geometry_strategy_descriptor_v1 &identity =
+        planning::identity_geometry_strategy();
+    const planning::geometry_strategy_registry_v1 registry{&identity, 1u};
+    planning::geometry_search_policy_v1 policy{};
     policy.strategy_id = identity.strategy_id;
-    comp::geometry_solution_v1 solution{};
-    require(comp::compile_geometry(registry, problem, policy, {},
+    planning::geometry_solution_v1 solution{};
+    require(planning::plan_geometry(registry, problem, policy, {},
                 solution_buffers(storage),
                 {storage.marks, maximum_items}, &solution)
-            == comp::geometry_strategy_status::ok,
+            == planning::geometry_strategy_status::ok,
         "permissive identity compilation failed");
     return solution;
 }
@@ -107,9 +107,9 @@ void check_permissive_window_properties() {
         for (std::uint32_t index = 0u; index < count; ++index)
             members[index] = count - index - 1u;
         solution_storage storage{};
-        const comp::geometry_problem_v1 problem =
+        const planning::geometry_problem_v1 problem =
             make_problem(members, count, count);
-        const comp::geometry_solution_v1 solution =
+        const planning::geometry_solution_v1 solution =
             compile_identity(problem, storage);
         require(static_cast<bool>(geo::validate_work_layout(
                     problem.work_window, solution.work_layout)),
@@ -134,27 +134,28 @@ void check_permissive_window_properties() {
     constrained.record_count = 1u;
     constrained.records = &constraint;
     solution_storage storage{};
-    const comp::geometry_problem_v1 problem =
+    const planning::geometry_problem_v1 problem =
         make_problem(members, 3u, 3u, &constrained);
-    const auto &identity = comp::identity_geometry_strategy();
-    const comp::geometry_strategy_registry_v1 registry{&identity, 1u};
-    comp::geometry_search_policy_v1 policy{};
+    const auto &identity = planning::identity_geometry_strategy();
+    const planning::geometry_strategy_registry_v1 registry{&identity, 1u};
+    planning::geometry_search_policy_v1 policy{};
     policy.strategy_id = identity.strategy_id;
-    comp::geometry_solution_v1 solution{};
-    require(comp::compile_geometry(registry, problem, policy, {},
+    planning::geometry_solution_v1 solution{};
+    require(planning::plan_geometry(registry, problem, policy, {},
                 solution_buffers(storage), {storage.marks, maximum_items},
                 &solution)
-            == comp::geometry_strategy_status::requirements_failed,
+            == planning::geometry_strategy_status::requirements_failed,
         "identity strategy accepted a nonpermissive window");
 }
 
-bool same_geometry(exec::geometry_id lhs, exec::geometry_id rhs) noexcept {
+bool same_geometry(cellerator::structure::geometry_id lhs,
+    cellerator::structure::geometry_id rhs) noexcept {
     return lhs.low == rhs.low && lhs.high == rhs.high;
 }
 
 persist::semantic_geometry_image_view_v1 build_image(
-    const comp::geometry_problem_v1 &problem,
-    const comp::geometry_solution_v1 &solution,
+    const planning::geometry_problem_v1 &problem,
+    const planning::geometry_solution_v1 &solution,
     std::uint8_t *image,
     std::size_t image_capacity,
     std::uint8_t *marks,
@@ -179,9 +180,9 @@ persist::semantic_geometry_image_view_v1 build_image(
 void check_round_trip_corruption_relocation_and_identity() {
     const std::uint32_t members[] = {5u, 1u, 3u};
     solution_storage first_storage{};
-    const comp::geometry_problem_v1 problem =
+    const planning::geometry_problem_v1 problem =
         make_problem(members, 3u, 4u);
-    const comp::geometry_solution_v1 solution =
+    const planning::geometry_solution_v1 solution =
         compile_identity(problem, first_storage);
     alignas(64) std::uint8_t first_image[4096]{};
     alignas(64) std::uint8_t relocated[4096]{};
@@ -216,7 +217,7 @@ void check_round_trip_corruption_relocation_and_identity() {
 
     std::uint32_t reordered_forward[3]{1u, 2u, 0u};
     std::uint32_t reordered_inverse[3]{2u, 0u, 1u};
-    comp::geometry_solution_v1 reordered = solution;
+    planning::geometry_solution_v1 reordered = solution;
     reordered.work_layout.execution_to_window = reordered_forward;
     reordered.work_layout.window_to_execution = reordered_inverse;
     alignas(64) std::uint8_t reordered_image[4096]{};

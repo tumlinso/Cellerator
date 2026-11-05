@@ -34,31 +34,31 @@ inline constexpr std::uint32_t known_decomposition_flags_v1 =
     | complete_unsplit_fallback_v1;
 
 struct decomposition_alternative_v1 {
-    execution::joint_compiler::persistent_identity_v1 alternative_identity{};
-    execution::joint_compiler::persistent_identity_v1 candidate_family{};
+    execution::preparation::persistent_identity_v1 alternative_identity{};
+    execution::preparation::persistent_identity_v1 candidate_family{};
     split_axis_v1 split_axis = split_axis_v1::none;
     std::uint8_t reserved0[3]{};
     std::uint32_t flags = 0u;
-    const execution::joint_compiler::persistent_identity_v1
+    const execution::preparation::persistent_identity_v1
         *required_input_coverages = nullptr;
     std::uint64_t required_input_coverage_count = 0u;
-    execution::joint_compiler::persistent_identity_v1 output_coverage{};
-    const execution::joint_compiler::persistent_identity_v1
+    execution::preparation::persistent_identity_v1 output_coverage{};
+    const execution::preparation::persistent_identity_v1
         *replication_coverages = nullptr;
     std::uint64_t replication_coverage_count = 0u;
-    const execution::joint_compiler::persistent_identity_v1
+    const execution::preparation::persistent_identity_v1
         *halo_coverages = nullptr;
     std::uint64_t halo_coverage_count = 0u;
     ::cellerator::structure::order_id input_order{};
     ::cellerator::structure::order_id output_order{};
-    execution::joint_compiler::persistent_identity_v1 partial_algebra{};
+    execution::preparation::persistent_identity_v1 partial_algebra{};
     operation::v2::numerical_policy numerical{};
 };
 
 struct decomposition_portfolio_v1 {
     std::uint32_t schema_version = decomposition_schema_version_v1;
     std::uint32_t record_bytes = sizeof(decomposition_portfolio_v1);
-    execution::joint_compiler::persistent_identity_v1 portfolio_identity{};
+    execution::preparation::persistent_identity_v1 portfolio_identity{};
     const decomposition_alternative_v1 *alternatives = nullptr;
     std::uint64_t alternative_count = 0u;
 };

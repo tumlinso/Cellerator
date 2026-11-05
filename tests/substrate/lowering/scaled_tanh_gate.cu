@@ -1,11 +1,11 @@
-#include <Cellerator/compiler/substrate/guarded_scaled_tanh.hh>
+#include <Cellerator/compute/architecture/providers/nvidia/sm70/guarded_scaled_tanh.hh>
 #include <cuda_runtime.h>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <limits>
 #include <vector>
-using namespace cellerator::compiler::substrate;
+using namespace cellerator::compute::architecture::providers::nvidia::sm70;
 static void check(cudaError_t e) {
     if (e != cudaSuccess) { std::fprintf(stderr,"CUDA: %s\n",cudaGetErrorString(e)); std::exit(1); }
 }

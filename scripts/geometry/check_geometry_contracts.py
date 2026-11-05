@@ -20,7 +20,7 @@ ALLOWED_PRODUCTION_ROOTS = (
     "include/Cellerator/geometry/",
     "src/compute/architecture/",
     "src/layout/",
-    "src/geometry/compiler/",
+    "src/geometry/planning/",
     "src/geometry/persistence/",
 )
 ALLOWED_EXACT_PATHS = {"include/Cellerator/runtime/device_descriptor.hh"}
@@ -32,7 +32,7 @@ VALID_LAYERS = {
     "csg1",
     "physical_provider",
     "physical_projection",
-    "compiler",
+    "planning",
     "persistence",
 }
 STL_OWNERS = (

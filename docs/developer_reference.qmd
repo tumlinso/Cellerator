@@ -6,8 +6,8 @@ title: "Developer reference"
 
 Read `AGENTS.md`, [scope](scope.qmd), [architecture](architecture.qmd), and
 the relevant operation or subsystem record. Use the active Project Control
-task for live status and ownership. Closed Todo files and historical compiler
-plans record earlier intent; they do not define current package capability.
+task for live status and ownership. Closed Todo files and archived plans record
+earlier intent; they do not define current package capability.
 
 ## Architectural orientation for contributors
 
@@ -42,19 +42,21 @@ below for the bounded change actually authorized.
 
 The [implementation style guide](development/implementation_style.md) describes maintained contributor conventions. The [operation registry](development/operation_registry.md) is a historical inventory; confirm any entry against current source and the routing map.
 
-The [Celleratord query-contract index](https://github.com/tumlinso/Cellerator/blob/main/docs/celleratord/README.md) describes query semantics and separates them from current implementation evidence. The [source routing guide](development/routing.md) and its generated map are
-the path-level inventory: they list current role, owner, target, disposition,
-maturity, consumers, and evidence. This page summarizes build routes and
-points to that map; it is not a duplicate source catalog.
+The language compiler and its build/API documentation are maintained in
+[Texo](https://github.com/tumlinso/Texo). The [source routing guide](development/routing.md)
+and its generated map are the path-level inventory: they list current role,
+owner, target, disposition, maturity, consumers, and evidence. This page
+summarizes build routes and points to that map; it is not a duplicate source
+catalog.
 
 ## Mandatory native toolchain and H5AD dependency
 
 Every root CMake build requires CMake 3.28 or newer, Ninja 1.11 or newer,
 Clang 18 or newer, and the matching `clang-scan-deps` executable. Set
 `CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS` to that scanner when autodetection is not
-appropriate. C++ and CUDA targets require at least C++20; selected compiler
-implementation targets use C++23. Named modules are built and exported by the
-normal package build. The core module is always exported as
+appropriate. Cellerator C++ and CUDA targets require at least C++20. Its named
+modules are built and exported by the normal package build. The core module is
+always exported as
 `Cellerator::core_module`; request it with
 `find_package(Cellerator CONFIG REQUIRED COMPONENTS core_module)` and import it
 as `cellerator.core;`. When NN is enabled, use the `nn_modules` package
@@ -146,8 +148,8 @@ specialist tensor owners/views, layout maps and prepared multi-device bindings
 below cells and models. Host consumers link `Cellerator::native_data`; the
 smaller `Cellerator::tensor` surface and optional `Cellerator::native_data_cuda`
 keep numerical format and CUDA dependencies explicit. The focused
-`CELLERATOR_BUILD_NATIVE_DATA_TESTS=ON` route builds without the unrelated
-compiler suite when `CELLERATOR_BUILD_TESTS=OFF`.
+`CELLERATOR_BUILD_NATIVE_DATA_TESTS=ON` route builds focused native-data tests
+without enabling the full root test suite (`CELLERATOR_BUILD_TESTS=OFF`).
 
 The [`event_forward.cc`](../examples/native_cell/event_forward.cc),
 [`multimodal.cc`](../examples/native_cell/multimodal.cc), and
@@ -201,9 +203,11 @@ paths are mixed-generation: structure uses `include/Cellerator/structure`,
 support/indexing/gating use `include/Cellerator/compute/{support,indexing,gating}`,
 physical projections use `include/Cellerator/compute/projection`, and newer
 operation families use `include/Cellerator/ops`. Existing `compute`, `math`,
-`execution`, `runtime`, `compiler`, and compatibility paths still own real
-code and consumers. Do not infer that all files have been consolidated from
-the presence of a newer directory.
+`execution`, `runtime`, and compatibility paths still own real code and
+consumers; Cellerator's language compiler is maintained in Texo. Numerical
+geometry planning and execution preparation remain Cellerator responsibilities.
+Do not infer that all files have been consolidated from the presence of a newer
+directory.
 `include/CellPack` remains a current route; do not assume a `components/CellPack`
 directory exists. Use the exhaustive [routing map](development/routing.md)
 before moving or archiving a path.

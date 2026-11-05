@@ -15,11 +15,11 @@ void set_numeric(decomposition::decomposition_alternative_v1 *alternative) {
 }
 
 int main() {
-    const execution::joint_compiler::persistent_identity_v1 inputs[] = {
+    const execution::preparation::persistent_identity_v1 inputs[] = {
         {1u, 1u}, {1u, 2u}};
-    const execution::joint_compiler::persistent_identity_v1 replicas[] = {
+    const execution::preparation::persistent_identity_v1 replicas[] = {
         {2u, 1u}};
-    const execution::joint_compiler::persistent_identity_v1 halos[] = {
+    const execution::preparation::persistent_identity_v1 halos[] = {
         {3u, 1u}};
 
     decomposition::decomposition_alternative_v1 alternatives[2]{};

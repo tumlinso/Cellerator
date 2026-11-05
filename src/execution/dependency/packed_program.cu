@@ -11,7 +11,7 @@
 namespace cellerator::execution::dependency {
 namespace bm = tensor::block_masked;
 namespace op = ops::mechanism;
-namespace jc = joint_compiler;
+namespace jc = preparation;
 namespace af = atom_fragment;
 namespace cat = compute::operation::catalog_v3;
 namespace pg = program;

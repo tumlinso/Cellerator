@@ -4,7 +4,7 @@
 
 namespace execution = cellerator::execution;
 namespace fragment = execution::atom_fragment;
-namespace joint = execution::joint_compiler;
+namespace joint = execution::preparation;
 namespace program = execution::program;
 
 program::program_status launch(const void *,

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Cellerator/execution/joint_compiler/logical_coverage_v1.hh>
+#include <Cellerator/execution/preparation/logical_coverage_v1.hh>
 
 namespace cellerator::execution::atom_fragment {
 
 struct operation_fragment_restriction_v1 {
     const compute::operation::v2::operation_problem *source = nullptr;
-    const joint_compiler::logical_coverage_view_v1 *exact_coverage = nullptr;
+    const preparation::logical_coverage_view_v1 *exact_coverage = nullptr;
     persistent_axis_identity expected_values_axis{};
     persistent_axis_identity expected_result_axis{};
     value_generation expected_value_generation{};

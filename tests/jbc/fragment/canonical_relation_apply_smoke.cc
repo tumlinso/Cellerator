@@ -1,5 +1,5 @@
 #include <Cellerator/execution/atom_fragment/canonical_fallback_v1.hh>
-#include <Cellerator/execution/atom_fragment/compiler_registry_v1.hh>
+#include <Cellerator/execution/atom_fragment/provider_registry_v1.hh>
 #include <Cellerator/execution/atom_fragment/external_plane_binding_v1.hh>
 #include <Cellerator/execution/atom_fragment/output_affordance_v1.hh>
 
@@ -8,7 +8,7 @@
 namespace compute = cellerator::compute::operation::v2;
 namespace execution = cellerator::execution;
 namespace fragment = execution::atom_fragment;
-namespace joint = execution::joint_compiler;
+namespace joint = execution::preparation;
 namespace program = execution::program;
 
 template<typename Tag>
@@ -91,11 +91,11 @@ int main() {
     program::prepared_program_v2 compiled_source{};
     compiled_source.stages = &stage;
     compiled_source.stage_count = 1u;
-    fragment::fragment_compiler_entry_v1 compiler{{100u, 1u}, 7u,
+    fragment::provider_entry_v1 provider{{100u, 1u}, 7u,
         {101u, 1u}, &compiled_source, compile_fragment};
-    const fragment::fragment_compiler_registry_v1 registry{&compiler, 1u};
-    const auto *resolved = fragment::find_fragment_compiler_v1(
-        registry, compiler.source_identity, 7u);
+    const fragment::provider_registry_v1 registry{&provider, 1u};
+    const auto *resolved = fragment::find_provider_v1(
+        registry, provider.source_identity, 7u);
     assert(resolved != nullptr);
     program::prepared_program_v2 compiled{};
     joint::atom_fragment_request_v1 compile_request{};

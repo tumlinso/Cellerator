@@ -5,15 +5,15 @@
 namespace cellerator::execution::atom_fragment {
 namespace {
 
-using identity = joint_compiler::persistent_identity_v1;
+using identity = preparation::persistent_identity_v1;
 
 bool same(identity lhs, identity rhs) noexcept {
     return lhs.producer_namespace == rhs.producer_namespace
         && lhs.local_identity == rhs.local_identity;
 }
 
-const joint_compiler::atom_plane_affordance_v1 *find_plane(
-    const joint_compiler::atom_affordance_v1 &affordance,
+const preparation::atom_plane_affordance_v1 *find_plane(
+    const preparation::atom_affordance_v1 &affordance,
     identity plane) noexcept {
     for (std::uint64_t index = 0u; index < affordance.plane_count; ++index) {
         if (same(affordance.planes[index].plane_identity, plane))
@@ -22,9 +22,9 @@ const joint_compiler::atom_plane_affordance_v1 *find_plane(
     return nullptr;
 }
 
-bool generation_satisfies(const joint_compiler::atom_requirement_v1 &requirement,
+bool generation_satisfies(const preparation::atom_requirement_v1 &requirement,
     value_generation generation) noexcept {
-    using policy = joint_compiler::generation_requirement_v1;
+    using policy = preparation::generation_requirement_v1;
     if (requirement.generation_policy == policy::any_current)
         return generation.value != 0u;
     if (requirement.generation_policy == policy::exact)
@@ -36,9 +36,9 @@ bool generation_satisfies(const joint_compiler::atom_requirement_v1 &requirement
 
 external_plane_binding_status_v1 bind_external_atom_planes_v1(
     const prepared_atom_fragment_v1 &prepared,
-    const joint_compiler::atom_requirement_v1 &requirement,
-    const joint_compiler::atom_affordance_v1 &affordance,
-    const joint_compiler::external_binding_v1 *bindings,
+    const preparation::atom_requirement_v1 &requirement,
+    const preparation::atom_affordance_v1 &affordance,
+    const preparation::external_binding_v1 *bindings,
     std::uint64_t binding_count,
     bound_atom_extent_v1 *output,
     std::uint64_t output_capacity,
@@ -49,9 +49,9 @@ external_plane_binding_status_v1 bind_external_atom_planes_v1(
     *written = 0u;
     if (prepared.program == nullptr || prepared.candidate.candidate_id == 0u)
         return {code::invalid_prepared_fragment, 0u, 0u};
-    if (!joint_compiler::validate_atom_requirement_v1(requirement))
+    if (!preparation::validate_atom_requirement_v1(requirement))
         return {code::invalid_requirement, 0u, 0u};
-    if (!joint_compiler::validate_atom_affordance_v1(affordance))
+    if (!preparation::validate_atom_affordance_v1(affordance))
         return {code::invalid_affordance, 0u, 0u};
     if (!same(prepared.candidate.requirement_identity,
             requirement.requirement_identity)
@@ -79,7 +79,7 @@ external_plane_binding_status_v1 bind_external_atom_planes_v1(
         if (match == std::numeric_limits<std::uint64_t>::max())
             return {code::missing_plane, index, required_capacity};
         const auto &binding = bindings[match];
-        if (!joint_compiler::validate_external_binding_v1(binding)
+        if (!preparation::validate_external_binding_v1(binding)
             || !same(binding.atom_identity, prepared.candidate.atom_identity))
             return {code::invalid_binding, match, required_capacity};
         const auto &first = binding.extents[0];

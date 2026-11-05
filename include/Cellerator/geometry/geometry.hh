@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-namespace cellerator::geometry::compiler {
+namespace cellerator::geometry::planning {
 
 // Cold integration receipt only. It proves that the frozen optimizer
 // availability contract and the non-promoted device disposition are linked
@@ -36,4 +36,4 @@ struct geometry_value_boundary_readiness_v1 {
 geometry_value_boundary_readiness_v1
 validate_integrated_geometry_value_boundaries_v1() noexcept;
 
-}  // namespace cellerator::geometry::compiler
+}  // namespace cellerator::geometry::planning

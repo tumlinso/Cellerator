@@ -6,7 +6,7 @@
 namespace catalog = cellerator::compute::operation::catalog_v3;
 namespace execution = cellerator::execution;
 namespace fragment = execution::atom_fragment;
-namespace joint = execution::joint_compiler;
+namespace joint = execution::preparation;
 
 int main() {
     catalog::candidate_stage_v3 stage{};

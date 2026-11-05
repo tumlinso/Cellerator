@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/execution/geometry_acquisition_v2/projections.hh>
-#include <Cellerator/execution/joint_compiler/atom_fragment_request_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment_request_v1.hh>
 #include <Cellerator/execution/program/program_v2.h>
 #include <Cellerator/planner/portfolio/candidate_workspace_v1.hh>
 
@@ -72,7 +72,7 @@ struct atom_fragment_requirements_status_v1 {
 };
 
 atom_fragment_requirements_status_v1 query_atom_fragment_requirements_v1(
-    const joint_compiler::atom_fragment_request_v1 &request,
+    const preparation::atom_fragment_request_v1 &request,
     const atom_fragment_query_limits_v1 &limits,
     atom_fragment_requirements_v1 *requirements) noexcept;
 

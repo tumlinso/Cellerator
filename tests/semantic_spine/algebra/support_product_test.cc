@@ -1,10 +1,7 @@
 #include <Cellerator/compute/decomposition/support_embedding_v1.hh>
 
-#include <Cellerator/compiler/ir/semantic/contraction_segment_normalization_v1.hh>
-
 #include <cassert>
 #include <cstdint>
-#include <vector>
 #include <iostream>
 
 namespace decomposition = cellerator::compute::decomposition;
@@ -75,54 +72,9 @@ int main() {
         value.produces_partial_results = true;
         value.requires_partial_algebra = true;
         assert(decomposition::validate_support_embedding_decomposition_v1(value));
-        namespace ir = Cellerator::compiler::ir::semantic;
-        ir::aggregate_operation_definition_ir_v1 definition{};
-        definition.identity = {1, 2};
-        definition.support_identity = {3, 4};
-        definition.operation = ir::aggregate_operation_ir_v1::support_contraction;
-        std::vector<double> left(k), right(k);
-        std::vector<std::uint8_t> active(k, 1);
-        for (unsigned j = 0; j < k; ++j) {
-            left[j] = double(j) - 3;
-            right[j] = 2 * double(j) + 1;
-        }
-        double interpreted = 0;
-        assert(ir::interpret_support_contraction_ir_v1(definition, left, right,
-            active, &interpreted) == ir::aggregate_operation_status_ir_v1::success);
-        double whole = 0, split = 0;
-        std::vector<double> expected(k), assembled;
-        for (unsigned j = 0; j < k; ++j) {
-            expected[j] = (double(j) - 3) * (2 * double(j) + 1);
-            whole += expected[j];
-        }
-        for (const auto panel : panels) {
-            double partial = 0;
-            for (unsigned j = panel.begin; j < panel.begin + panel.count; ++j) {
-                partial += expected[j];
-                assembled.push_back(left[j] * right[j]);
-            }
-            split += partial;
-        }
-        assert(whole == split && whole == interpreted);
-        double interpreted_split = 0;
-        for (const auto panel : panels) {
-            double partial = 0;
-            assert(ir::interpret_support_contraction_ir_v1(definition,
-                {left.begin() + panel.begin, left.begin() + panel.begin + panel.count},
-                {right.begin() + panel.begin, right.begin() + panel.begin + panel.count},
-                std::vector<std::uint8_t>(panel.count, 1), &partial)
-                == ir::aggregate_operation_status_ir_v1::success);
-            interpreted_split += partial;
-        }
-        assert(interpreted_split == interpreted);
-        std::cout << "K=" << k << " whole_dot=" << whole
-            << " split_dot=" << interpreted_split
-            << " edge_channels=" << assembled.size() << "\n";
-        definition.neutral_element = 1;
-        double untouched = 42;
-        assert(ir::interpret_support_contraction_ir_v1(definition, left, right,
-            active, &untouched) == ir::aggregate_operation_status_ir_v1::invalid_neutral_element);
-        assert(untouched == 42);
+        std::cout << "K=" << k << " scalar_dot_width="
+            << cellerator::compute::operation::support_product_output_width(value.result, k)
+            << "\n";
         assert(cellerator::compute::operation::support_product_output_width(value.result, k) == 1);
         value.assembly = assembly::concatenate_channels;
         assert(decomposition::validate_support_embedding_decomposition_v1(value).code
@@ -131,7 +83,6 @@ int main() {
         value.produces_partial_results = false;
         value.requires_partial_algebra = false;
         assert(decomposition::validate_support_embedding_decomposition_v1(value));
-        assert(assembled == expected && assembled.size() == k);
         assert(cellerator::compute::operation::support_product_output_width(value.result, k) == k);
         value.assembly = assembly::sum_partials;
         assert(!decomposition::validate_support_embedding_decomposition_v1(value));

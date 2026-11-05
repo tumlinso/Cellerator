@@ -6,28 +6,28 @@
 namespace cellerator::execution::atom_fragment {
 
 struct output_affordance_recipe_v1 {
-    joint_compiler::persistent_identity_v1 output_atom_identity{};
-    joint_compiler::persistent_identity_v1 output_affordance_identity{};
-    joint_compiler::persistent_identity_v1 output_plane_identity{};
-    joint_compiler::persistent_identity_v1 exact_output_coverage{};
+    preparation::persistent_identity_v1 output_atom_identity{};
+    preparation::persistent_identity_v1 output_affordance_identity{};
+    preparation::persistent_identity_v1 output_plane_identity{};
+    preparation::persistent_identity_v1 exact_output_coverage{};
     value_generation output_generation{};
     bool produces_partial = false;
-    joint_compiler::persistent_identity_v1 partial_affordance_identity{};
-    joint_compiler::persistent_identity_v1 partial_plane_identity{};
-    joint_compiler::persistent_identity_v1 partial_algebra{};
+    preparation::persistent_identity_v1 partial_affordance_identity{};
+    preparation::persistent_identity_v1 partial_plane_identity{};
+    preparation::persistent_identity_v1 partial_algebra{};
 };
 
 struct fragment_output_affordance_v1 {
-    joint_compiler::persistent_identity_v1 atom_identity{};
-    joint_compiler::persistent_identity_v1 affordance_identity{};
-    joint_compiler::persistent_identity_v1 plane_identity{};
-    joint_compiler::persistent_identity_v1 exact_coverage{};
+    preparation::persistent_identity_v1 atom_identity{};
+    preparation::persistent_identity_v1 affordance_identity{};
+    preparation::persistent_identity_v1 plane_identity{};
+    preparation::persistent_identity_v1 exact_coverage{};
     structure::order_id order{};
     numeric_type storage = numeric_type::invalid;
     numeric_type logical = numeric_type::invalid;
     value_generation generation{};
     bool partial = false;
-    joint_compiler::persistent_identity_v1 partial_algebra{};
+    preparation::persistent_identity_v1 partial_algebra{};
 };
 
 struct fragment_output_description_v1 {

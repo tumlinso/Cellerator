@@ -1,15 +1,15 @@
-#include <Cellerator/execution/joint_compiler/atom_fragment_result_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment_result_v1.hh>
 
 #include <cassert>
 
-namespace joint_compiler = cellerator::execution::joint_compiler;
+namespace preparation = cellerator::execution::preparation;
 
 int main() {
-    const joint_compiler::persistent_identity_v1 atoms[] = {
+    const preparation::persistent_identity_v1 atoms[] = {
         {1u, 1u}, {1u, 2u}};
-    const joint_compiler::persistent_identity_v1 projections[] = {
+    const preparation::persistent_identity_v1 projections[] = {
         {2u, 1u}, {2u, 2u}};
-    joint_compiler::atom_fragment_candidate_v1 candidates[2]{};
+    preparation::atom_fragment_candidate_v1 candidates[2]{};
     for (std::uint64_t index = 0u; index < 2u; ++index) {
         auto &candidate = candidates[index];
         candidate.candidate_identity = {3u, index + 1u};
@@ -26,48 +26,48 @@ int main() {
         candidate.resources.extent_count = 1u;
         candidate.complete_cost.execution_ns = 100u + index;
         candidate.complete_cost.expected_reuse = 4u;
-        candidate.flags = joint_compiler::deterministic_candidate_v1;
+        candidate.flags = preparation::deterministic_candidate_v1;
         candidate.validation_receipt = {9u, index + 1u};
     }
 
-    joint_compiler::atom_fragment_result_v1 result{};
+    preparation::atom_fragment_result_v1 result{};
     result.result_identity = {10u, 1u};
     result.request_identity = {10u, 2u};
     result.candidates = candidates;
     result.candidate_count = 2u;
     result.candidate_capacity = 2u;
-    assert(joint_compiler::validate_atom_fragment_result_v1(result));
+    assert(preparation::validate_atom_fragment_result_v1(result));
 
     auto malformed = result;
     malformed.candidate_capacity =
-        joint_compiler::maximum_atom_fragment_candidates_v1 + 1u;
-    assert(joint_compiler::validate_atom_fragment_result_v1(malformed).code
-        == joint_compiler::atom_fragment_result_validation_code_v1::
+        preparation::maximum_atom_fragment_candidates_v1 + 1u;
+    assert(preparation::validate_atom_fragment_result_v1(malformed).code
+        == preparation::atom_fragment_result_validation_code_v1::
             invalid_candidate_bounds);
     malformed = result;
     malformed.frontier_truncated = true;
     malformed.candidate_capacity = 3u;
-    assert(joint_compiler::validate_atom_fragment_result_v1(malformed).code
-        == joint_compiler::atom_fragment_result_validation_code_v1::
+    assert(preparation::validate_atom_fragment_result_v1(malformed).code
+        == preparation::atom_fragment_result_validation_code_v1::
             inconsistent_truncation);
 
-    candidates[0].flags |= joint_compiler::candidate_produces_partial_v1;
-    assert(joint_compiler::validate_atom_fragment_result_v1(result).code
-        == joint_compiler::atom_fragment_result_validation_code_v1::
+    candidates[0].flags |= preparation::candidate_produces_partial_v1;
+    assert(preparation::validate_atom_fragment_result_v1(result).code
+        == preparation::atom_fragment_result_validation_code_v1::
             invalid_partial_affordance);
     candidates[0].partial_affordance = {11u, 1u};
-    assert(joint_compiler::validate_atom_fragment_result_v1(result));
-    candidates[0].flags &= ~joint_compiler::candidate_produces_partial_v1;
-    assert(joint_compiler::validate_atom_fragment_result_v1(result).code
-        == joint_compiler::atom_fragment_result_validation_code_v1::
+    assert(preparation::validate_atom_fragment_result_v1(result));
+    candidates[0].flags &= ~preparation::candidate_produces_partial_v1;
+    assert(preparation::validate_atom_fragment_result_v1(result).code
+        == preparation::atom_fragment_result_validation_code_v1::
             unexpected_partial_affordance);
     candidates[0].partial_affordance = {};
 
-    const joint_compiler::persistent_identity_v1 duplicate_atoms[] = {
+    const preparation::persistent_identity_v1 duplicate_atoms[] = {
         {1u, 1u}, {1u, 1u}};
     candidates[0].required_atom_inputs = duplicate_atoms;
-    assert(joint_compiler::validate_atom_fragment_result_v1(result).code
-        == joint_compiler::atom_fragment_result_validation_code_v1::
+    assert(preparation::validate_atom_fragment_result_v1(result).code
+        == preparation::atom_fragment_result_validation_code_v1::
             duplicate_or_unordered_atom_input);
     candidates[0].required_atom_inputs = atoms;
 
@@ -76,11 +76,11 @@ int main() {
     result.candidate_count = 0u;
     result.candidate_capacity = 0u;
     result.no_candidate_reason =
-        joint_compiler::no_candidate_reason_v1::unmet_atom_requirement;
-    assert(joint_compiler::validate_atom_fragment_result_v1(result));
-    result.no_candidate_reason = joint_compiler::no_candidate_reason_v1::none;
-    assert(joint_compiler::validate_atom_fragment_result_v1(result).code
-        == joint_compiler::atom_fragment_result_validation_code_v1::
+        preparation::no_candidate_reason_v1::unmet_atom_requirement;
+    assert(preparation::validate_atom_fragment_result_v1(result));
+    result.no_candidate_reason = preparation::no_candidate_reason_v1::none;
+    assert(preparation::validate_atom_fragment_result_v1(result).code
+        == preparation::atom_fragment_result_validation_code_v1::
             inconsistent_empty_frontier);
     return 0;
 }

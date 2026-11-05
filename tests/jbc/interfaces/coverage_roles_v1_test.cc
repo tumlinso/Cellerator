@@ -1,12 +1,12 @@
-#include <Cellerator/execution/joint_compiler/coverage_roles_v1.hh>
+#include <Cellerator/execution/preparation/coverage_roles_v1.hh>
 
 #include <cassert>
 #include <cstdint>
 
-namespace joint_compiler = cellerator::execution::joint_compiler;
+namespace preparation = cellerator::execution::preparation;
 
 int main() {
-    using namespace joint_compiler;
+    using namespace preparation;
 
     coverage_role_record_v1 role{};
     role.coverage_identity = {1u, 2u};

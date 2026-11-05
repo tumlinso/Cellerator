@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compute/architecture/target_cover/strategy_registry.hh>
-#include <Cellerator/geometry/compiler/v2/solution.hh>
+#include <Cellerator/geometry/planning/v2/solution.hh>
 
 #include <cstdint>
 #include <type_traits>
@@ -31,7 +31,7 @@ struct strategy_problem {
     const semantic_component *semantic_components = nullptr;
     std::uint64_t semantic_component_count = 0;
     std::uint64_t logical_edge_count = 0;
-    geometry::compiler::v2::workload_profile workload{};
+    geometry::planning::v2::workload_profile workload{};
 };
 
 struct target_region {
@@ -59,7 +59,7 @@ struct cover_candidate {
     std::uint64_t region_count = 0;
     const ownership_range *ownership = nullptr;
     std::uint64_t ownership_range_count = 0;
-    geometry::compiler::v2::exact_cost exact_objective{};
+    geometry::planning::v2::exact_cost exact_objective{};
 };
 
 struct strategy_solution {

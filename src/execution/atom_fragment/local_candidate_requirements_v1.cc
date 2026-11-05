@@ -6,7 +6,7 @@ local_candidate_requirement_status_v1 extract_local_candidate_requirements_v1(
     const compute::operation::catalog_v3::candidate_catalog_view_v3 &catalog,
     const local_candidate_atom_contract_v1 *contracts,
     std::uint64_t contract_count,
-    joint_compiler::atom_requirement_v1 *requirements,
+    preparation::atom_requirement_v1 *requirements,
     std::uint64_t requirement_capacity,
     std::uint64_t *written) noexcept {
     using code = local_candidate_requirement_status_code_v1;
@@ -24,7 +24,7 @@ local_candidate_requirement_status_v1 extract_local_candidate_requirements_v1(
                 >= contracts[index].candidate_id))
             return {code::duplicate_or_unordered_contract, index,
                 catalog.candidate_count};
-        if (!joint_compiler::validate_atom_requirement_v1(
+        if (!preparation::validate_atom_requirement_v1(
                 contracts[index].requirement))
             return {code::invalid_requirement, index, catalog.candidate_count};
     }

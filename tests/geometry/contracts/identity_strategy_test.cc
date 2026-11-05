@@ -1,13 +1,13 @@
 #include <Cellerator/geometry/admissibility.hh>
-#include <Cellerator/geometry/compiler/strategy_registry.hh>
+#include <Cellerator/geometry/planning/strategy_registry.hh>
 
 #include <cassert>
 
-namespace cellerator::geometry::compiler {
+namespace cellerator::geometry::planning {
 
 const geometry_strategy_descriptor_v1 &identity_geometry_strategy() noexcept;
 
-geometry_strategy_status compile_geometry(
+geometry_strategy_status plan_geometry(
     geometry_strategy_registry_v1,
     const geometry_problem_v1 &,
     const geometry_search_policy_v1 &,
@@ -16,11 +16,11 @@ geometry_strategy_status compile_geometry(
     relation_cover_validation_workspace,
     geometry_solution_v1 *) noexcept;
 
-} // namespace cellerator::geometry::compiler
+} // namespace cellerator::geometry::planning
 
 namespace {
 
-namespace comp = cellerator::geometry::compiler;
+namespace planning = cellerator::geometry::planning;
 namespace geo = cellerator::geometry;
 namespace ex = cellerator::execution;
 
@@ -33,10 +33,10 @@ constexpr ex::axis_identity make_axis(std::uint32_t seed) noexcept {
     };
 }
 
-comp::geometry_problem_v1 make_problem(
+planning::geometry_problem_v1 make_problem(
     const std::uint32_t *members,
     const geo::admissibility_view_v1 *admissibility) noexcept {
-    comp::geometry_problem_v1 problem{};
+    planning::geometry_problem_v1 problem{};
     problem.primary_relation.source_axis = make_axis(10u);
     problem.primary_relation.destination_axis = make_axis(20u);
     problem.primary_relation.structure = {31u, 1u};
@@ -65,8 +65,8 @@ struct output_storage {
     std::uint8_t marks[5]{};
 };
 
-comp::geometry_solution_buffers_v1 buffers(output_storage *storage) noexcept {
-    comp::geometry_solution_buffers_v1 result{};
+planning::geometry_solution_buffers_v1 buffers(output_storage *storage) noexcept {
+    planning::geometry_solution_buffers_v1 result{};
     result.execution_to_window = storage->forward;
     result.window_to_execution = storage->inverse;
     result.work_item_capacity = 3u;
@@ -80,19 +80,19 @@ comp::geometry_solution_buffers_v1 buffers(output_storage *storage) noexcept {
 void test_identity_strategy_builds_full_relation_cover() {
     const std::uint32_t members[] = {3u, 0u, 2u};
     const geo::admissibility_view_v1 admissibility{};
-    const comp::geometry_problem_v1 problem =
+    const planning::geometry_problem_v1 problem =
         make_problem(members, &admissibility);
-    const comp::geometry_strategy_descriptor_v1 &strategy =
-        comp::identity_geometry_strategy();
-    const comp::geometry_strategy_registry_v1 registry{&strategy, 1u};
-    comp::geometry_search_policy_v1 policy{};
+    const planning::geometry_strategy_descriptor_v1 &strategy =
+        planning::identity_geometry_strategy();
+    const planning::geometry_strategy_registry_v1 registry{&strategy, 1u};
+    planning::geometry_search_policy_v1 policy{};
     policy.strategy_id = strategy.strategy_id;
     output_storage storage{};
-    comp::geometry_solution_v1 solution{};
+    planning::geometry_solution_v1 solution{};
 
-    assert(comp::compile_geometry(registry, problem, policy, {},
+    assert(planning::plan_geometry(registry, problem, policy, {},
         buffers(&storage), {storage.marks, 5u}, &solution)
-        == comp::geometry_strategy_status::ok);
+        == planning::geometry_strategy_status::ok);
     assert(solution.work_layout.work_count == 3u);
     for (std::uint32_t index = 0u; index < 3u; ++index) {
         assert(storage.forward[index] == index);
@@ -105,24 +105,24 @@ void test_identity_strategy_builds_full_relation_cover() {
         assert(storage.edges[edge] == edge);
 }
 
-comp::geometry_strategy_status query_malformed(
-    const comp::geometry_problem_v1 &,
-    const comp::geometry_search_policy_v1 &,
-    comp::geometry_strategy_requirements_v1 *requirements) noexcept {
+planning::geometry_strategy_status query_malformed(
+    const planning::geometry_problem_v1 &,
+    const planning::geometry_search_policy_v1 &,
+    planning::geometry_strategy_requirements_v1 *requirements) noexcept {
     if (requirements == nullptr)
-        return comp::geometry_strategy_status::invalid_argument;
+        return planning::geometry_strategy_status::invalid_argument;
     requirements->work_item_capacity = 3u;
     requirements->component_capacity = 1u;
     requirements->logical_edge_capacity = 5u;
-    return comp::geometry_strategy_status::ok;
+    return planning::geometry_strategy_status::ok;
 }
 
-comp::geometry_strategy_status execute_malformed(
-    const comp::geometry_problem_v1 &problem,
-    const comp::geometry_search_policy_v1 &,
-    comp::geometry_strategy_workspace_v1,
-    comp::geometry_solution_buffers_v1 output,
-    comp::geometry_solution_v1 *solution) noexcept {
+planning::geometry_strategy_status execute_malformed(
+    const planning::geometry_problem_v1 &problem,
+    const planning::geometry_search_policy_v1 &,
+    planning::geometry_strategy_workspace_v1,
+    planning::geometry_solution_buffers_v1 output,
+    planning::geometry_solution_v1 *solution) noexcept {
     output.execution_to_window[0] = 0u;
     output.execution_to_window[1] = 0u;
     output.execution_to_window[2] = 2u;
@@ -134,7 +134,7 @@ comp::geometry_strategy_status execute_malformed(
     for (std::uint64_t edge = 0u; edge < 5u; ++edge)
         output.logical_edge_ids[edge] = edge;
 
-    comp::geometry_solution_v1 result{};
+    planning::geometry_solution_v1 result{};
     result.work_layout.work_window = problem.work_window.identity;
     result.work_layout.axis = problem.work_window.axis;
     result.work_layout.work_count = 3u;
@@ -150,27 +150,27 @@ comp::geometry_strategy_status execute_malformed(
     result.relation_cover.components = output.components;
     result.relation_cover.logical_edge_ids = output.logical_edge_ids;
     *solution = result;
-    return comp::geometry_strategy_status::ok;
+    return planning::geometry_strategy_status::ok;
 }
 
 void test_strategy_cannot_certify_malformed_output() {
     const std::uint32_t members[] = {3u, 0u, 2u};
-    const comp::geometry_problem_v1 problem = make_problem(members, nullptr);
-    const comp::geometry_strategy_descriptor_v1 strategy = {
-        comp::geometry_strategy_schema_version,
-        comp::geometry_search_tier_instant,
+    const planning::geometry_problem_v1 problem = make_problem(members, nullptr);
+    const planning::geometry_strategy_descriptor_v1 strategy = {
+        planning::geometry_strategy_schema_version,
+        planning::geometry_search_tier_instant,
         99u,
         query_malformed,
         execute_malformed
     };
-    const comp::geometry_strategy_registry_v1 registry{&strategy, 1u};
-    comp::geometry_search_policy_v1 policy{};
+    const planning::geometry_strategy_registry_v1 registry{&strategy, 1u};
+    planning::geometry_search_policy_v1 policy{};
     policy.strategy_id = 99u;
     output_storage storage{};
-    comp::geometry_solution_v1 solution{};
-    assert(comp::compile_geometry(registry, problem, policy, {},
+    planning::geometry_solution_v1 solution{};
+    assert(planning::plan_geometry(registry, problem, policy, {},
         buffers(&storage), {storage.marks, 5u}, &solution)
-        == comp::geometry_strategy_status::strategy_failed);
+        == planning::geometry_strategy_status::strategy_failed);
 }
 
 void test_identity_rejects_nonpermissive_constraints() {
@@ -183,18 +183,18 @@ void test_identity_rejects_nonpermissive_constraints() {
     geo::admissibility_view_v1 admissibility{};
     admissibility.record_count = 1u;
     admissibility.records = &record;
-    const comp::geometry_problem_v1 problem =
+    const planning::geometry_problem_v1 problem =
         make_problem(members, &admissibility);
-    const comp::geometry_strategy_descriptor_v1 &strategy =
-        comp::identity_geometry_strategy();
-    const comp::geometry_strategy_registry_v1 registry{&strategy, 1u};
-    comp::geometry_search_policy_v1 policy{};
+    const planning::geometry_strategy_descriptor_v1 &strategy =
+        planning::identity_geometry_strategy();
+    const planning::geometry_strategy_registry_v1 registry{&strategy, 1u};
+    planning::geometry_search_policy_v1 policy{};
     policy.strategy_id = strategy.strategy_id;
     output_storage storage{};
-    comp::geometry_solution_v1 solution{};
-    assert(comp::compile_geometry(registry, problem, policy, {},
+    planning::geometry_solution_v1 solution{};
+    assert(planning::plan_geometry(registry, problem, policy, {},
         buffers(&storage), {storage.marks, 5u}, &solution)
-        == comp::geometry_strategy_status::requirements_failed);
+        == planning::geometry_strategy_status::requirements_failed);
 }
 
 } // namespace

@@ -79,8 +79,8 @@ int main() {
                 ? ::cellerator::structure::order_id{3u, 1u} : ::cellerator::structure::order_id{};
         candidate.deterministic_tree_identity =
             (flags & decomposition::deterministic_tree_required_v1) != 0u
-                ? execution::joint_compiler::persistent_identity_v1{2u, 1u}
-                : execution::joint_compiler::persistent_identity_v1{};
+                ? execution::preparation::persistent_identity_v1{2u, 1u}
+                : execution::preparation::persistent_identity_v1{};
         const auto result =
             decomposition::validate_partial_result_algebra_v1(candidate);
         if (result)

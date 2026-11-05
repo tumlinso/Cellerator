@@ -2,7 +2,7 @@
 
 #include <Cellerator/execution/atom_fragment/prepared_atom_fragment_v1.hh>
 #include <Cellerator/execution/dependency/distributed.hh>
-#include <Cellerator/execution/joint_compiler/atom_requirement_v1.hh>
+#include <Cellerator/execution/preparation/atom_requirement_v1.hh>
 #include <Cellerator/ops/mechanism/gated_product_binding.hh>
 #include <Cellerator/ops/mechanism/packed_gated_product.cuh>
 #include <Cellerator/tensor/block_masked/owner.hh>
@@ -16,7 +16,7 @@ namespace cellerator::execution::dependency {
 // Identities are assigned by the caller's persistent identity authority.
 // In particular, they are neither device ordinals nor runtime addresses.
 struct PackedAtomIdentities {
-    joint_compiler::persistent_identity_v1 atom, requirement, coverage, affordance, binding;
+    preparation::persistent_identity_v1 atom, requirement, coverage, affordance, binding;
 };
 
 struct PackedProgramPreparation {
@@ -69,7 +69,7 @@ public:
     program::program_status admit_backward(const PackedProgramLaunch&) const noexcept;
     program::program_status forward(const PackedProgramLaunch&) const noexcept;
     program::program_status backward(const PackedProgramLaunch&) const noexcept;
-    const joint_compiler::atom_requirement_v1& requirement() const noexcept;
+    const preparation::atom_requirement_v1& requirement() const noexcept;
     const atom_fragment::prepared_atom_fragment_v1& forward_fragment() const noexcept;
     const atom_fragment::prepared_atom_fragment_v1& backward_fragment() const noexcept;
     std::span<const std::uint64_t> coverage_coordinates() const noexcept;

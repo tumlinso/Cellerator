@@ -69,18 +69,18 @@ target_link_libraries(ce_nf1_v07 PRIVATE Cellerator::native_value_instance)
 set_target_properties(ce_nf1_v07 PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 set(_nf1_v07_regressions)
 if(TARGET ceRU1GpuNumerics)
-  set(_nf1_ru1_targets ceRU1HostTests ceRU1ReferenceTests ceRU1CoverTests ceRU1CompilerTests
-    ceRU1_source_bridge ceRU1_dual_origin ceRU1GpuNumerics ceRU1GpuBindings ceRU1GpuLifecycle
+  set(_nf1_ru1_targets ceRU1HostTests ceRU1ReferenceTests ceRU1CoverTests
+    ceRU1GpuNumerics ceRU1GpuBindings ceRU1GpuLifecycle
     ceRU1ReadinessTests ceRU1WmmaLegality ceRU1N1Regression ceRU1_forward_n16 ceRU1_transpose_n16
     ceRU1_sparse_gradient ceRU1_value_update ceRU1_update_publication ceRU1_native_failure
     ceRU1_gradient_pack ceRU1_hybrid_gradient ceRU1_readiness_component ceRU1_read_lease)
   foreach(_target IN LISTS _nf1_ru1_targets)
-    target_link_libraries(${_target} PRIVATE Cellerator::jbc_v1 cellerator_compute_sparse_project)
+    target_link_libraries(${_target} PRIVATE Cellerator::execution_preparation cellerator_compute_sparse_project)
   endforeach()
-  add_dependencies(ce_nf1_v07 ${_nf1_ru1_targets} ceRelationUpdateDemo)
-  foreach(_name calculus reference cover compiler source_bridge dual_origin evidence_contract gpu_numerics
+  add_dependencies(ce_nf1_v07 ${_nf1_ru1_targets})
+  foreach(_name calculus reference cover evidence_contract gpu_numerics
       gpu_bindings gpu_lifecycle readiness wmma_legality n1_regression forward_n16 transpose_n16
-      sparse_gradient value_update update_publication native_failure gradient_pack hybrid_gradient readiness_component read_lease demo_hybrid demo_sparse)
+      sparse_gradient value_update update_publication native_failure gradient_pack hybrid_gradient readiness_component read_lease)
     list(APPEND _nf1_v07_regressions --regression-test ru1_${_name})
   endforeach()
 endif()

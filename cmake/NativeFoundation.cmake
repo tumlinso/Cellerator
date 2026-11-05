@@ -73,7 +73,7 @@ if(TARGET cellerator_prepared_relation_cuda)
     # The historical V07 facade also requires atom-plane owners.  Preserve the
     # real CUDA pair whenever available; publish that facade only when its
     # existing owners are present rather than introducing a duplicate owner.
-    if(TARGET Cellerator::jbc_v1 AND TARGET cellerator_compute_sparse_project)
+    if(TARGET Cellerator::execution_preparation AND TARGET cellerator_compute_sparse_project)
         add_subdirectory(src/execution/native_value_instance)
         target_link_libraries(cellerator_native_foundation INTERFACE
             Cellerator::native_value_instance)
@@ -115,10 +115,10 @@ if(TARGET cellerator_cellpack_geometry)
     # a dependency of the broad native-foundation umbrella.
     list(APPEND _nf_pending cellerator_cellpack_geometry)
 endif()
-if(TARGET cellerator_jbc_v1)
+if(TARGET cellerator_execution_preparation)
     # The optional prepared-program CUDA adapter consumes this host API. Keep
     # its real link closure installed for external native consumers.
-    list(APPEND _nf_pending cellerator_jbc_v1)
+    list(APPEND _nf_pending cellerator_execution_preparation)
 endif()
 if(TARGET cellerator_training_program)
     # Keep the native training-program API available to optional bindings
@@ -201,13 +201,13 @@ if(_nf_buildtree_exports)
     export(TARGETS ${_nf_buildtree_exports} NAMESPACE Cellerator::
         FILE "${CMAKE_CURRENT_BINARY_DIR}/CelleratorNativeTargets.cmake")
 endif()
-# Extend the host package rather than replace its existing compiler contract.
+# Extend the host package rather than replace its native host package.
 file(APPEND "${CELLERATOR_HOST_CONFIG}"
     "include(CMakeFindDependencyMacro)\nfind_dependency(CUDAToolkit)\n"
     "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorNativeTargets.cmake\")\n"
     "set(Cellerator_native_foundation_FOUND TRUE)\nset(Cellerator_HAS_CUDA_BACKEND TRUE)\n")
-export(EXPORT CelleratorPartOneTargets NAMESPACE Cellerator::
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/CelleratorPartOneTargets.cmake")
+export(EXPORT CelleratorCoreTargets NAMESPACE Cellerator::
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/CelleratorCoreTargets.cmake")
 
 # Bind downstream replay provenance to the installed producer build, rather
 # than to a caller-provided runtime string. Reconfigure after source commits.

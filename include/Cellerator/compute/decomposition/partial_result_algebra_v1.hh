@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/execution/joint_compiler/persistent_identity_v1.hh>
+#include <Cellerator/execution/preparation/persistent_identity_v1.hh>
 
 #include <cstdint>
 #include <type_traits>
@@ -24,17 +24,17 @@ inline constexpr std::uint32_t known_partial_result_algebra_flags_v1 =
 struct partial_result_algebra_v1 {
     std::uint32_t schema_version = partial_result_algebra_schema_version_v1;
     std::uint32_t record_bytes = sizeof(partial_result_algebra_v1);
-    execution::joint_compiler::persistent_identity_v1 algebra_identity{};
-    execution::joint_compiler::persistent_identity_v1 state_layout_identity{};
-    execution::joint_compiler::persistent_identity_v1 neutral_element_identity{};
-    execution::joint_compiler::persistent_identity_v1 merge_operation_identity{};
-    execution::joint_compiler::persistent_identity_v1 finalize_operation_identity{};
+    execution::preparation::persistent_identity_v1 algebra_identity{};
+    execution::preparation::persistent_identity_v1 state_layout_identity{};
+    execution::preparation::persistent_identity_v1 neutral_element_identity{};
+    execution::preparation::persistent_identity_v1 merge_operation_identity{};
+    execution::preparation::persistent_identity_v1 finalize_operation_identity{};
     std::uint64_t state_bytes = 0u;
     std::uint64_t state_alignment = 1u;
     std::uint32_t flags = 0u;
     std::uint32_t reserved = 0u;
     ::cellerator::structure::order_id required_merge_order{};
-    execution::joint_compiler::persistent_identity_v1
+    execution::preparation::persistent_identity_v1
         deterministic_tree_identity{};
     operation::v2::numerical_policy numerical{};
 };

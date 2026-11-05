@@ -1,13 +1,13 @@
 #pragma once
 
 #include <Cellerator/compute/operation/candidate_catalog_v3/catalog.h>
-#include <Cellerator/execution/joint_compiler/atom_requirement_v1.hh>
+#include <Cellerator/execution/preparation/atom_requirement_v1.hh>
 
 namespace cellerator::execution::atom_fragment {
 
 struct local_candidate_atom_contract_v1 {
     std::uint64_t candidate_id = 0u;
-    joint_compiler::atom_requirement_v1 requirement{};
+    preparation::atom_requirement_v1 requirement{};
 };
 
 enum class local_candidate_requirement_status_code_v1 : std::uint8_t {
@@ -37,7 +37,7 @@ local_candidate_requirement_status_v1 extract_local_candidate_requirements_v1(
     const compute::operation::catalog_v3::candidate_catalog_view_v3 &catalog,
     const local_candidate_atom_contract_v1 *contracts,
     std::uint64_t contract_count,
-    joint_compiler::atom_requirement_v1 *requirements,
+    preparation::atom_requirement_v1 *requirements,
     std::uint64_t requirement_capacity,
     std::uint64_t *written) noexcept;
 

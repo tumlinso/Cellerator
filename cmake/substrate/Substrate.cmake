@@ -126,7 +126,11 @@ foreach(component IN LISTS _ce_selected)
       src/ops/numeric/local_arithmetic.cc)
   elseif(component STREQUAL native_numeric)
     _ce_owner(${component} CAPABILITIES "host_relation,host_f32_f64_local" SOURCES
-      src/compute/operation/native_numeric/host_relation.cc)
+      src/compute/operation/native_numeric/host_relation.cc
+      src/compute/cpu/generic_cpu_relation_apply.cc
+      src/compute/cpu/cpu_transpose_and_contraction.cc
+      src/compute/cpu/cpu_projection_packing_and_order_transforms.cc
+      src/compute/cpu/cpu_segment_gate_update_bundle_and_chain_paths.cc)
   elseif(component STREQUAL executable_program)
     _ce_owner(${component} CAPABILITIES "fixed_stage_graph" SOURCES src/execution/program/program_v2.cc)
   elseif(component STREQUAL indexed_incidence)
@@ -176,7 +180,19 @@ foreach(component IN LISTS _ce_selected)
 endforeach()
 # Public native headers are installed intact. Header presence is not a claim that
 # every declared GPU/adapter symbol is linked by a selected host component.
-install(DIRECTORY "${CE_SUBSTRATE_ROOT}/include/Cellerator" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+foreach(dir IN ITEMS bindings biology cells compute containers dist distributed
+    examples execution geometry interop layout math memory modeling models nn ops packing
+    planner profiling runtime state structure tensor trajectory)
+  install(DIRECTORY "${CE_SUBSTRATE_ROOT}/include/Cellerator/${dir}"
+      DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
+endforeach()
+install(FILES "${CE_SUBSTRATE_ROOT}/include/Cellerator/Cellerator.hh"
+    "${CE_SUBSTRATE_ROOT}/include/Cellerator/abi.h"
+    "${CE_SUBSTRATE_ROOT}/include/Cellerator/cell.hh"
+    "${CE_SUBSTRATE_ROOT}/include/Cellerator/nn.hh"
+    "${CE_SUBSTRATE_ROOT}/include/Cellerator/parameters.hh"
+    "${CE_SUBSTRATE_ROOT}/include/Cellerator/types.cuh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
 if(moonshot_effects IN_LIST _ce_selected)
   install(FILES "${CE_SUBSTRATE_ROOT}/experiments/baseplane_moonshot/include/ce_moon/reference.hpp"
     "${CE_SUBSTRATE_ROOT}/experiments/baseplane_moonshot/families/effects/include/ce_moon/effects.hpp"

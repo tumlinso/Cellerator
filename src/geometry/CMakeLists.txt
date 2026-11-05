@@ -16,15 +16,15 @@ add_library(cellpack STATIC
 # validation stay host-only and architecture-neutral; physical providers link
 # this target without becoming geometry authorities.
 add_library(cellerator_semantic_geometry_v1 STATIC
-    compiler/admissibility.cc
-    compiler/compile_geometry.cc
-    compiler/cpbp_v1_compatibility.cc
-    compiler/identity_strategy.cc
-    compiler/geometry_value_integration.cc
-    compiler/optimizer_portfolio.cc
-    compiler/relation_cover.cc
-    compiler/strategy_registry.cc
-    compiler/work_layout.cc
+    planning/admissibility.cc
+    planning/plan_geometry.cc
+    planning/cpbp_v1_compatibility.cc
+    planning/identity_strategy.cc
+    planning/geometry_value_integration.cc
+    planning/optimizer_portfolio.cc
+    planning/relation_cover.cc
+    planning/strategy_registry.cc
+    planning/work_layout.cc
     persistence/semantic_geometry_image_v1.cc
     persistence/semantic_geometry_support_sections.cc
     strategy/exact_relation_rescan.cc
@@ -67,7 +67,7 @@ target_link_libraries(cellerator_semantic_geometry_v1 PUBLIC
 target_compile_features(cellerator_semantic_geometry_v1 PUBLIC cxx_std_20)
 
 # Mutable value generations remain a separate execution-owned target from the
-# immutable semantic geometry/compiler target above.
+# immutable semantic geometry planning target above.
 add_library(cellerator_projection_value_plane_v1 STATIC
     ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/canonical_transfer_v1.cc
     ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/composite_plane_v1.cc
@@ -113,11 +113,11 @@ if(COMMAND cellerator_enable_perf)
 endif()
 
 add_executable(celleratorGeometryOptimizerPortfolioTest
-    compiler/optimizer_portfolio_test.cc
+    planning/optimizer_portfolio_test.cc
 )
 
 add_executable(celleratorGeometryValueIntegrationTest
-    compiler/geometry_value_integration_test.cc
+    planning/geometry_value_integration_test.cc
 )
 target_link_libraries(celleratorGeometryValueIntegrationTest PRIVATE
     Cellerator::semantic_geometry_v1

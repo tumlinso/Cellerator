@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/execution/joint_compiler/atom_fragment_request_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment_request_v1.hh>
 
 namespace cellerator::execution::atom_fragment {
 

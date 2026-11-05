@@ -61,11 +61,28 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(CELLERATOR_ENABLE_CUDA "AUTO" CACHE STRING
-    "Build compiler NVIDIA support: AUTO, ON, or OFF")
+    "Build CUDA numerical support: AUTO, ON, or OFF")
 set_property(CACHE CELLERATOR_ENABLE_CUDA PROPERTY STRINGS AUTO ON OFF)
 
+string(TOUPPER "${CELLERATOR_ENABLE_CUDA}" CELLERATOR_ENABLE_CUDA)
+if(NOT CELLERATOR_ENABLE_CUDA MATCHES "^(AUTO|ON|OFF)$")
+    message(FATAL_ERROR "CELLERATOR_ENABLE_CUDA must be AUTO, ON, or OFF")
+endif()
 if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
-    find_package(CUDAToolkit REQUIRED)
+    include(CheckLanguage)
+    check_language(CUDA)
+    if(CMAKE_CUDA_COMPILER)
+        enable_language(CUDA)
+        find_package(CUDAToolkit REQUIRED)
+        set(CELLERATOR_HAS_CUDA TRUE)
+    elseif(CELLERATOR_ENABLE_CUDA STREQUAL "ON")
+        message(FATAL_ERROR "CELLERATOR_ENABLE_CUDA=ON requires a usable CUDA compiler")
+    else()
+        set(CELLERATOR_ENABLE_CUDA OFF)
+        set(CELLERATOR_HAS_CUDA FALSE)
+    endif()
+else()
+    set(CELLERATOR_HAS_CUDA FALSE)
 endif()
 find_package(PkgConfig QUIET)
 
@@ -98,10 +115,7 @@ if(CELLERATOR_BUILD_TORCH_EXAMPLES AND NOT CELLERATOR_ENABLE_TORCH)
     message(FATAL_ERROR "CELLERATOR_BUILD_TORCH_EXAMPLES requires CELLERATOR_ENABLE_TORCH")
 endif()
 
-# The compiler is host-first. Its target graph decides whether CUDA is enabled
-# before the legacy runtime targets below are declared.
-include(src/compiler/CMakeLists.txt)
-include(cmake/compiler/CelleratorHostSdk.cmake)
+include(cmake/CelleratorHost.cmake)
 add_subdirectory(modules)
 option(CELLERATOR_BUILD_SEMANTIC_SPINE_V1 "Build the bounded Semantic Spine v1 conformance suite" OFF)
 option(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1 "Build the internal relation update spine and conformance suite" OFF)
@@ -567,11 +581,11 @@ include(src/planner/CMakeLists.txt)
 # explicit: the portfolio is planner input rather than canonical selection,
 # and profiling remains a cold, optional observation path.
 target_sources(cellerator_semantic_geometry_v1 PRIVATE
-    src/geometry/compiler/v2/exact_evaluator.cc
-    src/geometry/compiler/v2/solution.cc
-    src/geometry/compiler/v2/strategy_registry.cc
-    src/geometry/compiler/v2/work_window.cc
-    src/geometry/compiler/v2/workload_profile.cc
+    src/geometry/planning/v2/exact_evaluator.cc
+    src/geometry/planning/v2/solution.cc
+    src/geometry/planning/v2/strategy_registry.cc
+    src/geometry/planning/v2/work_window.cc
+    src/geometry/planning/v2/workload_profile.cc
     src/geometry/persistence/chunk/chunk_manifest_v1.cc
     src/geometry/validation/scalable_validation_v2.cc
 )
@@ -604,23 +618,25 @@ target_compile_features(cellerator_profiling_v1 PUBLIC cxx_std_20)
 # subsystems. This aggregate target is the integration and package-consumer
 # surface: it adds no planner authority and keeps every implementation visible
 # to ordinary linkers, sanitizers, and standalone consumers.
-file(GLOB_RECURSE CELLERATOR_JBC_V1_SOURCES CONFIGURE_DEPENDS
+file(GLOB_RECURSE CELLERATOR_EXECUTION_PREPARATION_SOURCES CONFIGURE_DEPENDS
     src/compute/candidate/jbc_multi_extent/*.cc
     src/compute/decomposition/*.cc
     src/execution/decomposition/*.cc
     src/execution/atom_fragment/*.cc
     src/execution/atom_plane/*.cc
-    src/execution/joint_compiler/*.cc
+    src/execution/preparation/*.cc
+    src/profiling/preparation/*.cc
     src/execution/object_binding/*.cc
     src/planner/external_cost/*.cc
 )
-add_library(cellerator_jbc_v1 STATIC ${CELLERATOR_JBC_V1_SOURCES})
-add_library(Cellerator::jbc_v1 ALIAS cellerator_jbc_v1)
-target_include_directories(cellerator_jbc_v1 PUBLIC
+add_library(cellerator_execution_preparation STATIC ${CELLERATOR_EXECUTION_PREPARATION_SOURCES})
+add_library(Cellerator::execution_preparation ALIAS cellerator_execution_preparation)
+set_target_properties(cellerator_execution_preparation PROPERTIES EXPORT_NAME execution_preparation)
+target_include_directories(cellerator_execution_preparation PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(cellerator_jbc_v1 PUBLIC
+target_link_libraries(cellerator_execution_preparation PUBLIC
     Cellerator::builtin_candidate_catalog
     Cellerator::executable_program
     Cellerator::geometry_acquisition
@@ -628,10 +644,10 @@ target_link_libraries(cellerator_jbc_v1 PUBLIC
     Cellerator::profiling_v1
     Cellerator::projection_value_plane_v1
 )
-target_compile_features(cellerator_jbc_v1 PUBLIC cxx_std_20)
+target_compile_features(cellerator_execution_preparation PUBLIC cxx_std_20)
 if(TARGET cellerator_dependency_execution_cuda)
     target_link_libraries(cellerator_dependency_execution_cuda PUBLIC
-        Cellerator::jbc_v1 Cellerator::gated_product)
+        Cellerator::execution_preparation Cellerator::gated_product)
 endif()
 
 if(CELLERATOR_BUILD_TESTS)
@@ -648,7 +664,7 @@ if(CELLERATOR_BUILD_TESTS)
     target_compile_features(cellerator_geometry_acquisition_v2_test PRIVATE cxx_std_20)
 
     add_executable(cellerator_geometry_v2_test
-        src/geometry/compiler/v2/geometry_v2_test.cc)
+        src/geometry/planning/v2/geometry_v2_test.cc)
     target_link_libraries(cellerator_geometry_v2_test PRIVATE
         Cellerator::architecture_provider
         Cellerator::semantic_geometry_v1)
@@ -682,7 +698,7 @@ if(CELLERATOR_BUILD_TESTS)
             cxx_std_20)
     endif()
 
-    file(GLOB_RECURSE CELLERATOR_JBC_V1_TEST_SOURCES CONFIGURE_DEPENDS
+    file(GLOB_RECURSE CELLERATOR_EXECUTION_PREPARATION_TEST_SOURCES CONFIGURE_DEPENDS
         tests/jbc/atom_plane/*.cc
         tests/jbc/cross_operation/*.cc
         tests/jbc/decomposition/*.cc
@@ -695,8 +711,8 @@ if(CELLERATOR_BUILD_TESTS)
         tests/jbc/verification/numerical_verifier_v1_test.cc
         tests/jbc/verification/profiler_manifest_v1_test.cc
     )
-    add_custom_target(cellerator_jbc_v1_tests)
-    foreach(cellerator_jbc_test_source IN LISTS CELLERATOR_JBC_V1_TEST_SOURCES)
+    add_custom_target(cellerator_execution_preparation_tests)
+    foreach(cellerator_jbc_test_source IN LISTS CELLERATOR_EXECUTION_PREPARATION_TEST_SOURCES)
         file(RELATIVE_PATH cellerator_jbc_test_relative
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/jbc"
             "${cellerator_jbc_test_source}")
@@ -709,15 +725,15 @@ if(CELLERATOR_BUILD_TESTS)
         add_executable(${cellerator_jbc_test_target}
             "${cellerator_jbc_test_source}")
         target_link_libraries(${cellerator_jbc_test_target} PRIVATE
-            Cellerator::jbc_v1)
+            Cellerator::execution_preparation)
         target_compile_features(${cellerator_jbc_test_target} PRIVATE cxx_std_20)
-        add_dependencies(cellerator_jbc_v1_tests ${cellerator_jbc_test_target})
+        add_dependencies(cellerator_execution_preparation_tests ${cellerator_jbc_test_target})
     endforeach()
 
     add_executable(cellerator_jbc_multi_extent_assembly_bench
         bench/jbc/multi_extent/assembly_vs_direct_v1.cc)
     target_link_libraries(cellerator_jbc_multi_extent_assembly_bench PRIVATE
-        Cellerator::jbc_v1)
+        Cellerator::execution_preparation)
     target_compile_features(cellerator_jbc_multi_extent_assembly_bench PRIVATE
         cxx_std_20)
 endif()
@@ -727,35 +743,6 @@ if(CELLERATOR_BUILD_TESTS)
     include(tests/CMakeLists.txt)
 
     enable_testing()
-    include(cmake/compiler/CelleratorPartOneAcceptance.cmake)
-    foreach(cellerator_compiler_smoke IN ITEMS
-            ceir profile source diagnostics daemon_protocol)
-        set(cellerator_compiler_smoke_target
-            "cellerator_compiler_smoke_${cellerator_compiler_smoke}")
-        add_test(
-            NAME ${cellerator_compiler_smoke_target}
-            COMMAND ${cellerator_compiler_smoke_target})
-        set_tests_properties(${cellerator_compiler_smoke_target}
-            PROPERTIES LABELS "compiler_smoke")
-    endforeach()
-    if(TARGET cellerator_compiler_smoke_accelerator)
-        add_test(
-            NAME cellerator_compiler_smoke_accelerator
-            COMMAND cellerator_compiler_smoke_accelerator)
-        set_tests_properties(cellerator_compiler_smoke_accelerator
-            PROPERTIES LABELS "compiler_smoke")
-    endif()
-
-    # The storage-boundary scanner predates the compiler driver and treats
-    # lexical std::filesystem path normalization as file ownership.  The
-    # driver injects response-file contents through response_file_loader_v1;
-    # keep the legacy scanner explicitly invocable without making that false
-    # positive break the default compiler build.
-    if(TARGET celleratorNoProductionFileIoCheck)
-        set_property(TARGET celleratorNoProductionFileIoCheck
-            PROPERTY EXCLUDE_FROM_ALL TRUE)
-    endif()
-
     # CE-EXOP final acceptance entry points. These targets keep correctness,
     # profiler-fixture validation, and CUDA compile validation explicit. The
     # CUDA target compiles sm_70 binaries only; device execution remains under

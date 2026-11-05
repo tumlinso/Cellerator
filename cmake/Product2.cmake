@@ -51,7 +51,7 @@ if(CELLERATOR_BUILD_PRODUCT2)
   endif()
   # Carry the public operation's established identity/program dependency headers
   # in the independently installable component, without changing native libraries.
-  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Product2)
+  cellerator_install_native_headers(COMPONENT Product2)
   install(EXPORT CelleratorProduct2Targets NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/CelleratorProduct2 COMPONENT Product2)
   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/CelleratorProduct2Config.cmake

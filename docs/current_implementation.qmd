@@ -2,6 +2,17 @@
 title: "Current implementation"
 ---
 
+## Language compiler ownership, 2026-11-05
+
+The language compiler's source, build/install integration, public API, tools,
+resources, tests, examples, and documentation are maintained in
+[Texo](https://github.com/tumlinso/Texo). Cellerator retains biological
+modeling and neural-network APIs, numerical operations and derivatives,
+cellular geometry planning, layout, and execution preparation/runtime. This
+ownership boundary does not claim a complete compiler implementation. The
+dated build and qualification records below retain their original evidence
+scope.
+
 ## Consolidation checkpoint, 2026-11-03
 
 This checkpoint brings the native-data branch and the pending implementation,
@@ -27,13 +38,15 @@ or authorize restarting a paused study.
 
 ## Native build and H5AD cutover, 2026-11-03
 
-The native package has a mandatory module-capable build baseline: CMake 3.28
-or newer, Ninja 1.11 or newer, Clang 18 or newer with a matching
-`clang-scan-deps`, and C++ and CUDA C++20 or newer. The compiler implementation
-retains its C++23 target. C++20 named modules are part of the normal build and
-installed package: `Cellerator::core_module` is always exported and provides
-`import cellerator.core;`; when NN is enabled, `Cellerator::nn_modules` is
-exported through the `nn_modules` package component and provides
+At the 2026-11-03 package checkpoint, the native package had a mandatory
+module-capable build baseline: CMake 3.28 or newer, Ninja 1.11 or newer,
+Clang 18 or newer with a matching `clang-scan-deps`, and C++ and CUDA C++20 or
+newer. At that checkpoint, the compiler implementation retained its C++23
+target. C++20 named modules were part of the normal build and installed package:
+`Cellerator::core_module` is always exported and provides the
+`import cellerator.core;` interface; when NN is enabled,
+`Cellerator::nn_modules` is exported through the `nn_modules` package component
+and provides
 `import cellerator.nn;`.
 
 The current native H5AD dependency is installed
@@ -118,7 +131,7 @@ Implemented facilities have different backend and maturity boundaries. The 2026-
 - Optional CUDA indexed-mechanism and sparse-support components have their own builds, contracts, and evidence.
 - Prepared entity-to-mechanism routing is opt-in. The established Python route remains the default.
 - ATen tokenization is optional and caller-directed. Gene-aware C++ tokenizer classes share an annotation-built vocabulary and retain typed ranked/event inputs; a common virtual execution signature remains deferred. Tokenization does not assign biological interpretation to tokens or events.
-- `ExecutionField` is an experimental CPU composition of prepared Product2 operations. It has explicit structure rebinding, but no JIT, live recompilation, or general compiler contract.
+- `ExecutionField` is an experimental CPU composition of prepared Product2 operations. It has explicit structure rebinding, but no JIT or live recompilation; Cellerator's language compiler is maintained in Texo.
 - Python AnnData remains a required Python dependency. Its adapter maps explicit `X`, layer, or raw inputs to identity-aligned state and writes aligned observations while preserving sparse inputs. Native H5AD I/O is supplied by the HDF5-only AnnData++ package described above. Classical single-cell analysis remains upstream in Scanpy and RAPIDS-singlecell.
 
 Start with the [NN foundation guide](nn_foundation.qmd), [biological framework guide](biological_framework.qmd), [distributed execution contract](distributed_execution.qmd), and [native CUDA guide](framework_cuda.qmd). The [Python binding guide](development/python-bindings.md), [sparse-support reference](sparse_support_foundation.qmd), [tokenization reference](tokenization.qmd), and [experimental fields note](development/experimental-fields.md) retain their narrower contracts. The [source routing guide](development/routing.md) identifies owners; the [developer reference](developer_reference.qmd) describes established build and validation routes.
@@ -332,4 +345,4 @@ Other source-bound sparse, tokenization, layout, and performance records retain 
 
 ## Gaps
 
-Cellerator is not near complete. Distributed GPU transport integration, performance qualification of the new kernels, broad end-to-end training, richer dynamical solvers, and biological validation remain open. Residency movement and physical execution still need concrete runtime callbacks; planner costs are supplied estimates. Compiler/IR integration is not expanded by this implementation push. Keep correctness, scientific validity, usability, and performance claims separate and bounded by their evidence.
+Cellerator is not near complete. Distributed GPU transport integration, performance qualification of the new kernels, broad end-to-end training, richer dynamical solvers, and biological validation remain open. Residency movement and physical execution still need concrete runtime callbacks; planner costs are supplied estimates. Texo owns language compiler/IR integration; Cellerator owns numerical geometry planning and execution preparation. Keep correctness, scientific validity, usability, and performance claims separate and bounded by their evidence.

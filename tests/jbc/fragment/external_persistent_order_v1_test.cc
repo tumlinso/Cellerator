@@ -54,7 +54,7 @@ int main() {
     problem.output.produced_axis = problem.result_axis;
     problem.output.canonical_axis = problem.result_axis;
 
-    execution::joint_compiler::persistent_identity_v1 coverage{10u, 1u};
+    execution::preparation::persistent_identity_v1 coverage{10u, 1u};
     decomposition::decomposition_alternative_v1 alternative{};
     alternative.alternative_identity = {20u, 1u};
     alternative.candidate_family = {21u, 1u};

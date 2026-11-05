@@ -31,14 +31,14 @@ bool add_product(std::uint64_t count, std::uint64_t item_bytes,
 } // namespace
 
 atom_fragment_requirements_status_v1 query_atom_fragment_requirements_v1(
-    const joint_compiler::atom_fragment_request_v1 &request,
+    const preparation::atom_fragment_request_v1 &request,
     const atom_fragment_query_limits_v1 &limits,
     atom_fragment_requirements_v1 *requirements) noexcept {
     if (requirements == nullptr)
         return {atom_fragment_requirements_status_code_v1::null_output, 0u};
     *requirements = {};
     const auto request_result =
-        joint_compiler::validate_atom_fragment_request_v1(request);
+        preparation::validate_atom_fragment_request_v1(request);
     if (!request_result)
         return {atom_fragment_requirements_status_code_v1::invalid_request,
             static_cast<std::uint64_t>(request_result.code)};

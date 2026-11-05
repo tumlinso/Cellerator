@@ -1,8 +1,8 @@
-#include <Cellerator/compiler/substrate/guarded_scaled_tanh.hh>
+#include <Cellerator/compute/architecture/providers/nvidia/sm70/guarded_scaled_tanh.hh>
 #include <cuda_runtime.h>
 #include <limits>
 
-namespace cellerator::compiler::substrate {
+namespace cellerator::compute::architecture::providers::nvidia::sm70 {
 namespace {
 __global__ void multiply(device_scaled_tanh_binding b) {
     auto i = std::size_t(blockIdx.x)*blockDim.x + threadIdx.x;
@@ -56,4 +56,4 @@ cudaError_t launch_guarded_scaled_tanh(const scaled_tanh_plan& plan, specializat
     if (selected) *selected = route;
     return launch_scaled_tanh(route,b,stream);
 }
-} // namespace cellerator::compiler::substrate
+} // namespace cellerator::compute::architecture::providers::nvidia::sm70

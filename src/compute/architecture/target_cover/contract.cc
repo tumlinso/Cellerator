@@ -5,11 +5,11 @@
 
 namespace cellerator::compute::architecture::target_cover {
 namespace {
-using code = geometry::compiler::v2::workload_status_code;
+using code = geometry::planning::v2::workload_status_code;
 bool same(stable_identity left, stable_identity right) noexcept {
     return left.low == right.low && left.high == right.high;
 }
-bool valid_cost(const geometry::compiler::v2::exact_cost &cost) noexcept {
+bool valid_cost(const geometry::planning::v2::exact_cost &cost) noexcept {
     return std::isfinite(cost.predicted_latency_ns) && cost.predicted_latency_ns >= 0
         && std::isfinite(cost.preparation_ns) && cost.preparation_ns >= 0
         && std::isfinite(cost.layout_and_canonicalization_ns)
@@ -34,14 +34,14 @@ bool contains_component(const strategy_problem &problem, std::uint64_t identity)
 status validate_problem(const strategy_problem &problem) noexcept {
     if (problem.schema_version != target_cover_schema_version
         || problem.record_bytes != sizeof(problem)
-        || !geometry::compiler::v2::valid_identity(problem.semantic_geometry_identity)
-        || !geometry::compiler::v2::valid_identity(problem.provider_identity)
+        || !geometry::planning::v2::valid_identity(problem.semantic_geometry_identity)
+        || !geometry::planning::v2::valid_identity(problem.provider_identity)
         || problem.semantic_components == nullptr
         || problem.semantic_component_count == 0 || problem.logical_edge_count == 0) {
         return {code::invalid_argument, 0};
     }
     const status workload_status =
-        geometry::compiler::v2::validate_workload_profile(problem.workload);
+        geometry::planning::v2::validate_workload_profile(problem.workload);
     if (!workload_status) return workload_status;
     std::uint64_t expected_begin = 0;
     for (std::uint64_t index = 0; index < problem.semantic_component_count; ++index) {
@@ -77,7 +77,7 @@ status validate_solution(
          candidate_index < solution.candidate_count; ++candidate_index) {
         const cover_candidate &candidate = solution.candidates[candidate_index];
         has_pure_sparse |= candidate.kind == cover_kind::pure_sparse;
-        if (!geometry::compiler::v2::valid_identity(candidate.identity)
+        if (!geometry::planning::v2::valid_identity(candidate.identity)
             || candidate.kind < cover_kind::pure_sparse
             || candidate.kind > cover_kind::aggressive_hybrid
             || candidate.regions == nullptr || candidate.region_count == 0
@@ -114,7 +114,7 @@ status validate_solution(
                 || (region.role != region_role::pure_sparse
                     && region.role != region_role::matrix_engine)
                 || (region.role == region_role::matrix_engine
-                    && !geometry::compiler::v2::valid_identity(region.capability_identity))) {
+                    && !geometry::planning::v2::valid_identity(region.capability_identity))) {
                 return {code::invalid_argument, index};
             }
         }

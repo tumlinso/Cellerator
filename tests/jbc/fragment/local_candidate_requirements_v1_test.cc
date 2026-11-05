@@ -6,7 +6,7 @@
 namespace catalog = cellerator::compute::operation::catalog_v3;
 namespace execution = cellerator::execution;
 namespace fragment = execution::atom_fragment;
-namespace joint = execution::joint_compiler;
+namespace joint = execution::preparation;
 
 joint::atom_requirement_v1 requirement(std::uint64_t identity,
     const joint::persistent_identity_v1 *species,

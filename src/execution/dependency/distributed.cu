@@ -254,7 +254,7 @@ struct DistributedProductState {
                 "distributed realization requires an explicit structure identity and epoch");
             const auto& ids = options.atoms[d];
             for (const auto id : {ids.atom, ids.requirement, ids.coverage, ids.affordance, ids.binding})
-                require(bool(joint_compiler::validate_persistent_identity_v1(id)), "invalid distributed atom identity");
+                require(bool(preparation::validate_persistent_identity_v1(id)), "invalid distributed atom identity");
         }
         require(options.maximum_live_forwards && options.group_slots.size() == topology.group_count && std::isfinite(options.beta),
                 "invalid distributed preparation/capacity");

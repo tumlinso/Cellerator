@@ -33,17 +33,19 @@ learning mechanisms that can reflect the question and its available constraints.
 Keep entity and relation identity, structural order, activity/eligibility,
 values and parameters, logical/physical layout, and runtime bindings distinct.
 Changes have different invalidation and reuse consequences. Do not infer a
-complete adaptive runtime from a narrower gate, a sparse representation, a test,
-or the existence of compiler code.
+complete adaptive runtime from a narrower gate, a sparse representation, or a
+test.
 
 Cellerator is early. Sparse support, indexing, routing and gating are promising
 facilities with operation-specific maturity. The small implemented `nn` surface
 does not limit the intended range of learned architectures or objectives;
 its growth should follow reusable modeling needs and actual implementations.
-This guide does not imply a standard biological layer catalogue. Execution
-fields, compiler/IR integration,
-JIT and live recompilation remain experimental and are not prerequisites for
-ordinary model use. New backend-neutral modeling interfaces, state/event
+This guide does not imply a standard biological layer catalogue. Cellerator's
+ExecutionField composition remains experimental; its current CPU field has no
+JIT or live recompilation and is not a prerequisite for ordinary model use.
+Texo owns the language compiler. In Cellerator, numerical geometry work is
+planning (`plan_geometry`), while operation and joint-work preparation belong
+to execution. New backend-neutral modeling interfaces, state/event
 representations, interaction mechanisms, dynamics, and adapters have been
 added in rapid development; their implementation maturity and validated
 backends differ. Classical single-cell analysis remains useful upstream. The
@@ -78,7 +80,7 @@ validity, or task completion.
 | Geometry, physical layouts, values and gradients | `include/Cellerator/geometry/dependency`, `structure`, `tensor`, `layout`, `ops`, `execution` and `interop/formats`; the CellPack planner and payload ABI remain under `include/CellPack` and `src/geometry` | Keep semantic pattern structure, persistent identity, data encoding, physical realization, numerical operations, live bindings and file-format compatibility in their respective Cellerator owners; retain CellPack's planning and public format contracts in CellPack | `Cellerator::dependency_geometry`, `::dependency_execution`, `::tensor`, `::native_data`, `CellPack::cellpack`, `CellPack::execution_image_v2` and `Cellerator::cellpack_interop` represent distinct owners. `layout::CellPackingGeometryView` carries physical summaries and `execution::CellPackingBinding` carries live association. Do not route semantic dependencies through physical packing. Measure preparation and conversion when making operation-cost claims. |
 | Prepared execution and runtime | `include/Cellerator/execution` and `src/execution`, including `execution/dependency`; allocation/resource owners under `include/Cellerator/memory` and `src/memory`; multi-device coordination and readiness records under `runtime` and `src/runtime`; planning under `planner` | Execution owns prepared bindings, current work and readiness checks; `memory` owns allocations and CUDA resource lifetimes; `runtime` retains fleet coordination and runtime readiness records; `planner` owns plans | The native-data dependency owner is `Cellerator::dependency_execution`, exported through `Cellerator::native_data`; optional CUDA composition uses `Cellerator::native_data_cuda`. Route other execution families by their actual headers, target registration and callers. ExecutionField live recompilation remains experimental; preparation or gating alone does not prove adaptive recompilation. |
 | Torch and Python adapters | `bindings/torch`, `bindings/python`, `python/cellerator`, `tests/bindings`, `tests/package` | Private Torch adapter plus implemented `cellerator` operations/modules | Compose Torch rather than duplicate its tensor, autograd, or optimizer systems. Current optional build/API limits are in the Python binding guide. The paused CelleraTorch proposal is archived in `docs/history/celleratorch.qmd`; it is not `python/cellerator/torch`. |
-| Compiler and execution-field subsystems | `src/compiler/{api,ast,backend,composition,diagnostics,discovery,driver,frontend,ir,lto,pass,planning,profile,reflection,sema,tooling}` and matching public compiler headers | Preserve each named subsystem and native boundary. The compiler is an optional native subsystem; language sources and standard-library material remain their own research artifacts | The source map assigns the compiler paths to exact subsystem owners and names their CMake boundaries. The installed host SDK is deliberately narrow: `cmake/compiler/CelleratorHostSdk.cmake` builds `libCellerator` from the downstream compiler invocation and `celleratord` architecture validator, then links the `cellerator` and `celleratord` executables and installs public headers/resources. Those targets do not compile every file under `src/compiler`. Presence or target registration does not prove a full compiler pipeline. ExecutionField, JIT, source-to-device compilation, and live recompilation remain experimental unless a source-bound end-to-end qualification says otherwise. |
+| Language compiler | [Texo](https://github.com/tumlinso/Texo) | Texo owns language-compiler source, build/install integration, public APIs, tools, resources, tests, examples, and documentation | Cellerator does not bundle or install the language compiler. Consult Texo for compiler implementation and evidence; the ownership move does not assert a complete compiler pipeline. |
 | Model fixtures and single-cell workflows | `examples`, `include/Cellerator/examples`, `docs/pipeline` | Examples, testbeds, or consumer-owned applications | Keep useful fixtures and operations. Keep scientific assumptions with Karyoplast, Cytoplast, GlassHelix, or the relevant consumer. |
 | Performance, correctness, and research evidence | `bench/**`, qualification records, dated implementation docs | Source-bound evidence index and operation owner | Preserve original reports and rejected alternatives. Scope correctness, biological validation, and performance separately. Some code under an experiment path is linked into installed targets; audit targets and consumers before moving or archiving it. |
 | CellPack, compatibility, and sibling interfaces | `include/CellPack`, `compat`, `components`, `modules`, `interop`, and actual sibling callsites | CellPack public contracts stay owned by the CellPack subsystem implemented through `src/geometry` targets; compatibility and sibling APIs retain their concrete native owner | `src/geometry/CMakeLists.txt` and `owned_targets.cmake` provide the implementation and target evidence. Preserve unique code, identifiers, ABI/schema versions, checkpoint behavior, and real sibling users. Do not infer an owner from a planned directory name. |

@@ -25,14 +25,14 @@ class StaticContractAuditTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = pathlib.Path(self.temporary.name)
-        self.production = "src/geometry/compiler/owned.cc"
+        self.production = "src/geometry/planning/owned.cc"
         self.csg1 = "src/geometry/persistence/semantic_geometry_image_v1.cc"
         self.provider = (
             "src/compute/architecture/providers/nvidia/sm70/owned.cu"
         )
         self.cpk1 = "include/Cellerator/geometry/persistence/cpk1.hh"
         self.cpe2 = "include/Cellerator/geometry/persistence/cpe2.hh"
-        self.write(self.production, "int compile_geometry() { return 1; }\n")
+        self.write(self.production, "int plan_geometry() { return 1; }\n")
         self.write(self.csg1, "int validate_semantic_image() { return 1; }\n")
         self.write(self.provider, "int physical_kernel() { return 1; }\n")
         self.write(self.cpk1, "#pragma once\nstruct cpk1 {};\n")
@@ -55,7 +55,7 @@ class StaticContractAuditTest(unittest.TestCase):
             "campaign": "CE-GEO",
             "scope": "owned-production-only",
             "production": [
-                {"path": self.production, "layer": "compiler"},
+                {"path": self.production, "layer": "planning"},
                 {"path": self.csg1, "layer": "csg1"},
                 {"path": self.provider, "layer": "physical_provider"},
             ],
@@ -82,7 +82,7 @@ class StaticContractAuditTest(unittest.TestCase):
         self.write(self.production, """
             // std::vector and atomicAdd are diagnostic words, not code.
             const char *message = "--use_fast_math nvcuda::wmma";
-            int compile_geometry() { return message[0] != 0; }
+            int plan_geometry() { return message[0] != 0; }
         """)
         self.assertEqual([], self.audit())
 
@@ -137,8 +137,8 @@ class StaticContractAuditTest(unittest.TestCase):
         self.assertViolation("nonempty array", manifest)
         manifest = self.manifest()
         manifest["production"] = [
-            {"path": self.production, "layer": "compiler"},
-            {"path": self.production, "layer": "compiler"},
+            {"path": self.production, "layer": "planning"},
+            {"path": self.production, "layer": "planning"},
         ]
         self.assertViolation("duplicate production path", manifest)
         manifest = self.manifest()

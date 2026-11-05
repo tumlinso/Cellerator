@@ -9,17 +9,17 @@ bool ordered(stable_identity left, stable_identity right) noexcept {
 
 status validate_strategy_registry(const strategy_registry &registry) noexcept {
     if (registry.strategies == nullptr || registry.strategy_count == 0) {
-        return {geometry::compiler::v2::workload_status_code::invalid_argument, 0};
+        return {geometry::planning::v2::workload_status_code::invalid_argument, 0};
     }
     for (std::uint64_t index = 0; index < registry.strategy_count; ++index) {
         const strategy &entry = registry.strategies[index];
-        if (!geometry::compiler::v2::valid_identity(entry.identity)
-            || !geometry::compiler::v2::valid_identity(entry.provider_identity)
+        if (!geometry::planning::v2::valid_identity(entry.identity)
+            || !geometry::planning::v2::valid_identity(entry.provider_identity)
             || entry.name == nullptr || entry.query_workspace == nullptr
             || entry.solve == nullptr || !entry.deterministic
             || (index != 0 && !ordered(registry.strategies[index - 1].identity,
                 entry.identity))) {
-            return {geometry::compiler::v2::workload_status_code::invalid_argument, index};
+            return {geometry::planning::v2::workload_status_code::invalid_argument, index};
         }
     }
     return {};

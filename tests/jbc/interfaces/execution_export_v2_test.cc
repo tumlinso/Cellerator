@@ -1,13 +1,13 @@
-#include <Cellerator/profiling/joint_compiler/execution_export_v2.hh>
+#include <Cellerator/profiling/preparation/execution_export_v2.hh>
 
 #include <cassert>
 #include <cstdint>
 
 namespace decomposition = cellerator::compute::decomposition;
 namespace execution = cellerator::execution;
-namespace joint_compiler = cellerator::execution::joint_compiler;
+namespace preparation = cellerator::execution::preparation;
 namespace profiling = cellerator::profiling;
-namespace export_v2 = cellerator::profiling::joint_compiler;
+namespace export_v2 = cellerator::profiling::preparation;
 
 execution::persistent_axis_identity axis(std::uint64_t seed) {
     return {{execution::biological_abi_version,
@@ -42,8 +42,8 @@ int main() {
     compatibility.stages = compatibility_stages;
     compatibility.stage_count = 1u;
 
-    const joint_compiler::canonical_interval_v1 interval{0u, 2u};
-    joint_compiler::logical_coverage_view_v1 coverage{};
+    const preparation::canonical_interval_v1 interval{0u, 2u};
+    preparation::logical_coverage_view_v1 coverage{};
     coverage.coverage_identity = {10u, 1u};
     coverage.structure = {11u, 1u};
     coverage.epoch = {1u};
@@ -54,7 +54,7 @@ int main() {
     coverage.member_count = 1u;
     coverage.member_bytes = sizeof(interval);
 
-    const joint_compiler::persistent_identity_v1 input_coverages[] = {
+    const preparation::persistent_identity_v1 input_coverages[] = {
         coverage.coverage_identity};
     decomposition::decomposition_alternative_v1 alternative{};
     alternative.alternative_identity = {40u, 1u};
@@ -72,10 +72,10 @@ int main() {
     portfolio.alternatives = &alternative;
     portfolio.alternative_count = 1u;
 
-    const joint_compiler::persistent_identity_v1 species[] = {{60u, 1u}};
-    const joint_compiler::persistent_identity_v1 required_planes[] = {
+    const preparation::persistent_identity_v1 species[] = {{60u, 1u}};
+    const preparation::persistent_identity_v1 required_planes[] = {
         {61u, 1u}};
-    joint_compiler::atom_requirement_v1 requirement{};
+    preparation::atom_requirement_v1 requirement{};
     requirement.requirement_identity = {62u, 1u};
     requirement.exact_coverage_identity = coverage.coverage_identity;
     requirement.accepted_atom_species = species;
@@ -86,11 +86,11 @@ int main() {
         execution::numeric_type::f32, execution::numeric_type::f32, 0u};
     requirement.required_order = alternative.input_order;
 
-    const joint_compiler::atom_plane_affordance_v1 plane = {
+    const preparation::atom_plane_affordance_v1 plane = {
         required_planes[0], alternative.input_order, execution::numeric_type::f32,
         execution::numeric_type::f32,
-        joint_compiler::mutability_requirement_v1::immutable, 0u, {1u}};
-    joint_compiler::atom_affordance_v1 affordance{};
+        preparation::mutability_requirement_v1::immutable, 0u, {1u}};
+    preparation::atom_affordance_v1 affordance{};
     affordance.affordance_identity = {63u, 1u};
     affordance.atom_species = species[0];
     affordance.exact_coverage_identity = coverage.coverage_identity;
@@ -99,11 +99,11 @@ int main() {
     affordance.planes = &plane;
     affordance.plane_count = 1u;
 
-    joint_compiler::atom_fragment_result_v1 frontier{};
+    preparation::atom_fragment_result_v1 frontier{};
     frontier.result_identity = {70u, 1u};
     frontier.request_identity = {71u, 1u};
     frontier.no_candidate_reason =
-        joint_compiler::no_candidate_reason_v1::unmet_atom_requirement;
+        preparation::no_candidate_reason_v1::unmet_atom_requirement;
 
     const ::cellerator::structure::order_id orders[] = {
         alternative.input_order, alternative.output_order};
