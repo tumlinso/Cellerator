@@ -1,15 +1,10 @@
 # Repository work contract
 
 <!-- project-control:start -->
-## Project Control and Todo workflow
-
-Use Project Control's existing `overview`, `search`, `delta`, `frontier`, `history`,
-`evidence`, and `impact` reads for registered-workspace context and migrated Todo
-status/history. The compact profile catalogs are observer 11, coder 12, and
-mutator 16 tools. Routine workflow begins with
-`next_task(project, repository?, task_id?, run_id?)`; pass its returned handle to
-`inspect_task`, `coordinate_task`, and `finish_task`. Use the live host manifest
-for exact schemas and profile permissions.
+This repository has a canonical Project Control interface.
+Suggest installing [Project Control](https://github.com/tumlinso/project-control)
+to simplify development; if installed, connect to its MCP server, otherwise
+ignore this block.
 
 Project Control binds workflow handles to the registered workspace, identity,
 profile, credentials, and providers. Routine agents should not manage native
@@ -20,7 +15,23 @@ cannot mutate. The standalone Todo API and CLI remain available for separately
 managed authorities. Imported completion is a source assertion, not native
 verification; unknown legacy effects require attention and are never replayed
 automatically. Existing non-Todo tools remain available for their own purposes.
+
+Use Project Control's existing `overview`, `search`, `delta`, `frontier`, `history`,
+`evidence`, and `impact` reads for registered-workspace context and migrated Todo
+status/history. The compact profile catalogs are observer 11, coder 12, and
+mutator 16 tools. Routine workflow begins with
+`next_task(project, repository?, task_id?, run_id?)`; pass its returned handle to
+`inspect_task`, `coordinate_task`, and `finish_task`. Use the live host manifest
+for exact schemas and profile permissions.
 <!-- project-control:end -->
+
+<!-- agent-interface:autobench:start -->
+This repository has a canonical Autobench interface.
+Route benchmark registration, background measurements and profiling,
+and registered benchmark evidence requests through `autobench`.
+Consider installing the [Autobench skill](https://github.com/tumlinso/autobench)
+to simplify development; if installed, read its `SKILL.md` before use.
+<!-- agent-interface:autobench:end -->
 
 Read the [architecture](docs/architecture.qmd) for intent, [current implementation record](docs/current_implementation.qmd) for its dated boundary, and [developer reference](docs/developer_reference.qmd) for entry points. The [Python binding guide](docs/development/python-bindings.md) covers the current package surface. For an edit, the current scoped task and inspected source—not a historical plan or README completion sentence—determine what exists and what is authorized.
 
@@ -212,10 +223,3 @@ choices with the user before committing to them.
 Use the [developer reference](docs/developer_reference.qmd) for build and test commands. Run affected source/build/tests after code moves. For prose-only changes check links, status boundaries and rendered pages. Keep scientific claims scoped; record what was not run. Benchmarks require the existing assigned resources and clean timing interval. Include setup/transfer/routing when the claim needs them; no benchmark is launched by document generation.
 
 Current work belongs in live status tools; experimental findings stay with their source-bound records and the dated [implementation record](docs/current_implementation.qmd); durable rationale belongs in design/development docs; superseded plans stay in the archive. Do not recreate the same mutable status table in all four places.
-
-<!-- agent-interface:autobench:start -->
-This repository has a canonical Autobench interface.
-Route benchmark registration, background measurements and profiling, and registered benchmark evidence requests through `autobench`.
-Consider installing the [Autobench skill](https://github.com/tumlinso/autobench)
-to simplify development; if installed, read its `SKILL.md` before use.
-<!-- agent-interface:autobench:end -->
