@@ -1,0 +1,17 @@
+add_library(cellerator_velocity STATIC)
+add_library(Cellerator::velocity ALIAS cellerator_velocity)
+set_target_properties(cellerator_velocity PROPERTIES EXPORT_NAME velocity_binary POSITION_INDEPENDENT_CODE ON CXX_EXTENSIONS OFF)
+target_compile_features(cellerator_velocity PUBLIC cxx_std_20)
+target_compile_options(cellerator_velocity PRIVATE -ffp-contract=off)
+target_sources(cellerator_velocity PUBLIC FILE_SET CXX_MODULES
+  BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}" FILES "${CMAKE_CURRENT_LIST_DIR}/cellerator.velocity.cppm"
+  PRIVATE "${CMAKE_CURRENT_LIST_DIR}/velocity.cpp")
+target_link_libraries(cellerator_velocity PUBLIC velocitypp::velocitypp Cellerator::binary16)
+option(CELLERATOR_VELOCITY_BUILD_TESTS "Build focused velocity adapter smoke test" OFF)
+if(CELLERATOR_VELOCITY_BUILD_TESTS)
+  enable_testing()
+  add_executable(cellerator_velocity_smoke tests/smoke.cpp)
+  set_target_properties(cellerator_velocity_smoke PROPERTIES CXX_EXTENSIONS OFF)
+  target_link_libraries(cellerator_velocity_smoke PRIVATE Cellerator::velocity)
+  add_test(NAME cellerator_velocity_smoke COMMAND cellerator_velocity_smoke)
+endif()

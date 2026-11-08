@@ -1,0 +1,153 @@
+{
+  "schema": "anndata.fp16.validation.v1",
+  "recorded_at_utc": "2026-11-04T13:09:41.489339+00:00",
+  "source": {
+    "repository": "/home/tumlinson/anndata.cppm",
+    "base_commit": "dc946845e1457299351b0ffc4ba36ef91d49db7b",
+    "working_tree_dirty": true,
+    "qualification": "Hashes bind the FP16 source and tests as recorded; concurrent unrelated CUDA and documentation work remains in the same uncommitted workspace.",
+    "sha256": {
+      "src/anndata.arrays.cppm": "57b38b9226b707108911520da1c6cdea3923d71c1567672ff3e010580850817f",
+      "src/anndata.data.cppm": "bd9c497f0b7e04f0112e113262dea66948913b967d1c67349e26634ff6161887",
+      "src/anndata.records.cppm": "51c1309d347a3092d084f42f730d218ee03e3373b92830ca4b964de3d6a9b25f",
+      "src/arrays.cpp": "14ad65c51c849873a2a334edb8594f132ebfdd7165fa61d8ed020ad42b314307",
+      "src/data.cpp": "935a1b3e392c9f116b7b2c568b6a1795e7eb98e16eb252da5c1f8a97b02b5188",
+      "src/records.cpp": "8e281f266e8dfa2ea1ab75dc1c1a61318c00fc1e261000a9eb029743256fad3f",
+      "src/backed_array.cpp": "7c4d80f675d316ed445a88b5f2761c62742b682236c418ed1584b5ecc7ad3633",
+      "src/backed_codec.cpp": "3fb9d774968d5169f54b99beb514f525acfe2bc76d79242386182d7506a87c8f",
+      "src/backed_colors.cpp": "f30532596efbfcac5094a554eb71ec78694f6e888afa19689621b9543be6eb36",
+      "src/backed_copy.cpp": "2de18492c1c32cb34ebacaff20f440c33adc1040b8053e2f6b23eb17f2c7a411",
+      "src/backed_hdf5.cpp": "487dc5c31b815255acd7a55ef274f743fd11263f2b4074a3f0cb463194f16bbc",
+      "src/backed_index.cpp": "02885b86c37791b205a487d31c18a968c22fd4dbeaaa7266ec58221d173e97f1",
+      "src/backed_records.cpp": "6d6ad742815550a5197d16a74644af10f2d4895c4b45d0df95cd3a23e5a4f3f9",
+      "src/backed_writer.cpp": "a9946ff29894622f5c07e4bc3f7b6576ea768add7a7e10fbb476b688d68d47f5",
+      "src/backed_zarr.cpp": "8745f23c52626608e94285db5eee0bde125f63eba0186bcc8d5baedd2d11ee1a",
+      "src/h5ad.cpp": "930182c4067578cc39f69fd526e008df8760f468ee665b767e1cab853754948b",
+      "src/streaming.cpp": "ea67a7b4849cc93b70d8b3e41ea9721000c9f67d85652386b78bf394aa59256a",
+      "src/zarr_codecs.cpp": "f146d83d1349fb541f9c16cb497b140e327c669564dbe6f84e3b06fd61ed9a5d",
+      "src/zarr_engine.cpp": "9c85c2e6ee52f53614a7c6adde776beb2579c47a11b6eea0f7b9ffc2bb64570a",
+      "src/zarr_engine.hpp": "d9adcce630be8410f1f0cb6bd3510a84225a7008fdd1d2060ec02499f41d8e00",
+      "tests/test_arrays.cpp": "fa040e4b1178940bb04f1e05542c97e1b873bb6a74b88f9b49a471ff7ea8088e",
+      "tests/test_data.cpp": "f798887b6ec5ceb07fa02a82219eba5fba74e103c550fcc8db865e87290f8c1a",
+      "tests/test_records.cpp": "b4fe49feb1c1f36cae542be1134ce840344d99079cd9f2cd028c639eabc47fce",
+      "tests/test_backed_categories.cpp": "841eede413489a814cdcf6e80ad085350fedde594b9bedb8158e4723bcb995f2",
+      "tests/test_h5ad.cpp": "4fe53e1182a6a2fbe43965d218eb9a3c2925ef63b2392b74893d9790b7c48826",
+      "tests/test_backed_h5ad.cpp": "53a13f4a76a9b5ff16225ccd3c01767341edf745588ed04e30b8947cbc3410de",
+      "tests/test_zarr_sharding.cpp": "23789fa80923ed007f7ecb2fc36f93783e9ffd08a1560625394c4f33b863b79e",
+      "tests/python_float16.py": "7e9f5cfc50699c4f63ff48c4b253ce1dbdfb1bb4dfe333dc44d0f6c58d408043",
+      "tests/python_h5ad.py": "62e306fccc0f6964a32333d47fb839b5ca412c131c266ea95c9258707115cb88",
+      "tests/python_storage.py": "adb530cce602e07aea893dde9a80b6af05bc355cfe71198fde0991164bba2093",
+      "tests/h5ad_interop_driver.cpp": "04115271b872d4b01965c2aa03a161e5a7eeeeaa590511b2b3fd97edf2865a91",
+      "tests/storage_interop_driver.cpp": "a008eff8024d0de5dc6e7a42be29e19ce6a22245077291bb9633cc9de39f516f",
+      "tests/python_records.py": "6343e808e95bc4f962f30d446975aa1421741be8937f38149b3a32048baedd95",
+      "tests/records_interop_driver.cpp": "5ff53407e159c68037acd6e1bc920b3cbcdeb0b9ef05e0906dcad761003eb055",
+      "tests/requirements-interop.txt": "1e3f58211bddcfdf07ec5fa460e484dd91552e3846685999a4d83cb454791726",
+      "tests/requirements-records.txt": "2bc3bc6afb53af8b03533465fc1b53d40caa8cc3912f50e704f06ac52056b000"
+    }
+  },
+  "environment": {
+    "host": "x86_64",
+    "cxx": "Ubuntu Clang 18.1.3",
+    "cmake": "3.28.3",
+    "hdf5_c": "1.10.10",
+    "python": "3.12.3",
+    "anndata": "0.13.4",
+    "scanpy": "1.11.5",
+    "h5py": "3.16.0",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "scipy": "1.17.1",
+    "zarr": "3.4.2",
+    "numcodecs": "0.17.1",
+    "pinned_interop_python": "/home/tumlinson/anndata.cppm/.venv/bin/python3",
+    "isolated_record_python": "/tmp/anndata-fp16-record-py312/bin/python",
+    "full_debug_build": {
+      "directory": "/tmp/anndata-fp16-full-build",
+      "configure": "cmake -S /home/tumlinson/anndata.cppm -B /tmp/anndata-fp16-full-build -G Ninja -DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_BUILD_TYPE=Debug -DANNDATA_BUILD_TESTS=ON -DANNDATA_BUILD_EXAMPLES=ON -DANNDATA_ENABLE_INTEROP_TESTS=ON -DANNDATA_ENABLE_RECORD_INTEROP_TESTS=ON -DPython3_EXECUTABLE=/home/tumlinson/anndata.cppm/.venv/bin/python3 -DCMAKE_INSTALL_PREFIX=/tmp/anndata-fp16-full-prefix",
+      "library_build": "cmake --build /tmp/anndata-fp16-full-build --target anndata -j 2",
+      "h5ad_test_build": "cmake --build /tmp/anndata-fp16-full-build --target test_backed_h5ad h5ad_interop_driver -j 2"
+    }
+  },
+  "checks": [
+    {
+      "name": "core_only_debug",
+      "passed": 11,
+      "failed": 0,
+      "configure": "cmake -S /home/tumlinson/anndata.cppm -B /tmp/anndata-fp16-core-build -G Ninja -DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_BUILD_TYPE=Debug -DANNDATA_ENABLE_HDF5=OFF -DANNDATA_ENABLE_ZARR=OFF -DANNDATA_BUILD_TESTS=ON -DANNDATA_BUILD_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX=/tmp/anndata-fp16-prefix",
+      "build": "cmake --build /tmp/anndata-fp16-core-build -j 2",
+      "command": "ctest --test-dir /tmp/anndata-fp16-core-build --output-on-failure -j 2",
+      "log": "/tmp/anndata-fp16-core-build/Testing/Temporary/LastTest.log"
+    },
+    {
+      "name": "full_storage_asan_ubsan_lsan",
+      "passed": 18,
+      "failed": 0,
+      "configure": "cmake -S /home/tumlinson/anndata.cppm -B /tmp/anndata-fp16-sanitize-full -G Ninja -DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_BUILD_TYPE=Debug -DANNDATA_ENABLE_SANITIZERS=ON -DANNDATA_BUILD_TESTS=ON -DANNDATA_BUILD_EXAMPLES=OFF -DANNDATA_ENABLE_INTEROP_TESTS=OFF",
+      "build": "cmake --build /tmp/anndata-fp16-sanitize-full -j 2",
+      "command": "ctest --test-dir /tmp/anndata-fp16-sanitize-full --output-on-failure -j 2",
+      "execution": "CTest ran outside the sandbox to permit LeakSanitizer process inspection.",
+      "log": "/tmp/anndata-fp16-sanitize-full/Testing/Temporary/LastTest.log"
+    },
+    {
+      "name": "h5ad_and_backed_h5ad",
+      "passed": 2,
+      "failed": 0,
+      "command": "ctest --test-dir /tmp/anndata-fp16-full-build --output-on-failure -j 2 -R '^(backed_h5ad|python_h5ad)$'",
+      "log": "/tmp/anndata-fp16-h5ad-ctest.log",
+      "log_capture": "command output redirected to log, then printed"
+    },
+    {
+      "name": "pinned_python_streaming_completeness_storage",
+      "passed": 5,
+      "failed": 0,
+      "environment": "ANNDATA_INTEROP_ZARR_WAKEUP=1",
+      "command": "ANNDATA_INTEROP_ZARR_WAKEUP=1 ctest --test-dir /tmp/anndata-fp16-full-build --output-on-failure -j 2 -R '^python_(streaming|completeness|storage)'",
+      "log": "/tmp/anndata-fp16-python-storage-ctest.log",
+      "log_capture": "command output redirected to log, then printed"
+    },
+    {
+      "name": "pinned_scanpy_record_interop",
+      "exit_code": 0,
+      "setup": "/home/tumlinson/anndata.cppm/.venv/bin/python3 -m venv --without-pip /tmp/anndata-fp16-record-py312; UV_CACHE_DIR=/tmp/anndata-fp16-uv-cache timeout 180s /home/tumlinson/Software/miniconda3/bin/uv pip install --python /tmp/anndata-fp16-record-py312/bin/python -r /home/tumlinson/anndata.cppm/tests/requirements-records.txt",
+      "command": "MPLCONFIGDIR=/tmp/anndata-fp16-record-matplotlib NUMBA_CACHE_DIR=/tmp/anndata-fp16-record-numba PYTHONPYCACHEPREFIX=/tmp/anndata-fp16-record-pycache ANNDATA_RECORD_FIXTURE_DIR=/tmp/anndata-fp16-record-fixtures /tmp/anndata-fp16-record-py312/bin/python /home/tumlinson/anndata.cppm/tests/python_records.py /tmp/anndata-fp16-full-build/records_interop_driver",
+      "log": "/tmp/anndata-fp16-record-pinned.log",
+      "fixtures": "/tmp/anndata-fp16-record-fixtures"
+    },
+    {
+      "name": "independent_numpy_conversion_oracle",
+      "cases": 390465,
+      "mismatches": 0,
+      "command": "/home/tumlinson/anndata.cppm/.venv/bin/python3 /home/tumlinson/anndata.cppm/tests/python_float16.py /tmp/anndata-fp16-core-build/test_arrays",
+      "log": "/tmp/anndata-fp16-numpy-oracle.log",
+      "coverage": "100000 random FP32 and 100000 random FP64 bit patterns, all adjacent positive finite half midpoints and neighboring FP64 values with both signs, and edge cases; numeric NaNs canonicalized."
+    },
+    {
+      "name": "all_binary16_patterns_and_hdf5_endian_raw_bits",
+      "cases": 65536,
+      "mismatches": 0,
+      "command": "cc /tmp/anndata_fp16_allbits.c $(pkg-config --cflags --libs hdf5) -o /tmp/anndata_fp16_allbits && /tmp/anndata_fp16_allbits",
+      "log": "/tmp/anndata-fp16-hdf-bits.log",
+      "coverage": "Local HDF5 1.10.10 raw memory LE to file BE to memory LE, including NaN payload bits. The core array test independently exhausts all half patterns through numeric conversion with canonical NaNs."
+    }
+  ],
+  "limitations": [
+    "AnnData 0.13.4 exposes the tested H5AD binary16 numeric scalar as Python float, although h5py verifies the physical binary16 scalar.",
+    "AnnData 0.13.4 with SciPy 1.17.1 cannot materialize the tested Zarr binary16 CSR via ad.read_zarr; pinned Zarr inspects physical sparse components and C++ tests eager/backed reads.",
+    "Nullable floating-point columns and Zarr record-array codecs remain unsupported, consistently with existing floating types.",
+    "Raw artifacts are in /tmp and may be removed by host cleanup. No CUDA execution or performance claim is made by this receipt."
+  ],
+  "artifact_sha256": {
+    "/tmp/anndata-fp16-core-build/Testing/Temporary/LastTest.log": "00eb5d4290d5bf65eaa0d11324eee300d9c7cf10f85dc8dc7026ef2597ff13c2",
+    "/tmp/anndata-fp16-sanitize-full/Testing/Temporary/LastTest.log": "5a7e8b85646dd8d0f701aade1b1df9837bb205fabf919eb99a0e4eedc0f45dab",
+    "/tmp/anndata-fp16-h5ad-ctest.log": "f496547268e020393725c98c3e2f4b84ccc574e043051c7a7fa18dc8edfb44b5",
+    "/tmp/anndata-fp16-python-storage-ctest.log": "0dfc0af0980484abeab7cc6829e3af65a0753cbdcf724144f5a38eb6bbf8f931",
+    "/tmp/anndata-fp16-numpy-oracle.log": "0f72982e0a04e51091037bb35be84d8c4bcc879534f07f2e4907a5e422605e7f",
+    "/tmp/anndata-fp16-record-pinned.log": "e1c22f57a82c199115d73d57801d1e1aa69be7168ca92bd27ec6e598afd928e2",
+    "/tmp/anndata_fp16_allbits.c": "ddf9ca3e9b59ce2bc007070082cd778730180a8aa4e40c5cc3209df985a0b628",
+    "/tmp/anndata-fp16-hdf-bits.log": "1fd9c8bc8ce28d7e033cb3e6055f86ce7e2d5e218cf96236503b764272c83b73",
+    "/tmp/anndata-fp16-full-build/libanndata.a": "933863a9867a8a51d72563e90b7aa3b6d4dc7a36561808bf3f2ffe063214c936",
+    "/tmp/anndata-fp16-full-build/records_interop_driver": "8b8e49904bd482c7e7d7718348bc3e7e40e7cbf26aaa3ef20b2a452b4b0e2e20",
+    "/tmp/anndata-fp16-core-build/test_arrays": "a5017ccad7a49e9964fa93d91b5cefdc279167d39ca111360757c55ae39589c8",
+    "/tmp/anndata-fp16-sanitize-full/libanndata.a": "1087892b51acce24954f4eb9f2aaba32d100bfc2f91c73b586ba63e720b8642c"
+  }
+}

@@ -49,7 +49,7 @@ owner, target, disposition, maturity, consumers, and evidence. This page
 summarizes build routes and points to that map; it is not a duplicate source
 catalog.
 
-## Mandatory native toolchain and H5AD dependency
+## Mandatory native toolchain and installed dependencies
 
 Every root CMake build requires CMake 3.28 or newer, Ninja 1.11 or newer,
 Clang 18 or newer, and the matching `clang-scan-deps` executable. Set
@@ -67,22 +67,33 @@ targets, so Clang builds them in strict C++20 or C++23 mode rather than
 named modules.
 
 Native builds require the separately installed HDF5-only
-[AnnData++](https://github.com/tumlinso/anndatapp) package at commit
-[`d2260c2abb37e9028fa42c95d1712ffcaa282b0e`](https://github.com/tumlinso/anndatapp/tree/d2260c2abb37e9028fa42c95d1712ffcaa282b0e).
+[AnnData++](https://github.com/tumlinso/anndatapp) package version 1.0 or newer;
+the example below uses `v1.0.0`.
 The package must be built with HDF5 on and Zarr off. This is Cellerator's sole
 native H5AD path: the old reader is retired, with no legacy parser or fallback.
-See its [declared encoding boundary](https://github.com/tumlinso/anndatapp/blob/d2260c2abb37e9028fa42c95d1712ffcaa282b0e/docs/h5ad.md)
-and [native dependency installation guide](https://github.com/tumlinso/anndatapp/blob/d2260c2abb37e9028fa42c95d1712ffcaa282b0e/docs/storage-dependencies.md).
+See its [declared encoding boundary](https://github.com/tumlinso/anndatapp/blob/v1.0.0/docs/h5ad.md)
+and [native dependency installation guide](https://github.com/tumlinso/anndatapp/blob/v1.0.0/docs/storage-dependencies.md).
 The native H5AD route accepts the supported modern subset, including sparse
 CSR/CSC. Root CMake requires `anndatapp::anndatapp` to be discoverable; it does not
 download or silently replace that dependency.
+
+Normal builds also require installed Velocity++ 0.1.1 or newer by default.
+Expose its prefix alongside AnnData++ through `CMAKE_PREFIX_PATH`; Cellerator
+uses `find_package(velocitypp CONFIG REQUIRED)` without a bundled fallback.
+`CELLERATOR_ENABLE_VELOCITY=OFF` skips this dependency and the FP16 extension.
+The installed `velocity` component exports `Cellerator::velocity` and
+`import cellerator.velocity;`, re-exporting Velocity++ with Cellerator-owned
+binary16 operations under `cellerator::velocity`. Its caller-storage API and
+FP16 boundary are described in [the adapter guide](../src/ops/velocity/README.md).
+The old allocating `velocity` module is retired from the active build; the
+former local checkout is preserved for recovery and is not compiled.
 
 Build and install that dependency at the pinned revision, then configure the
 Cellerator package against its prefix:
 
 ```sh
 git clone https://github.com/tumlinso/anndatapp.git /tmp/anndatapp
-git -C /tmp/anndatapp checkout --detach d2260c2abb37e9028fa42c95d1712ffcaa282b0e
+git -C /tmp/anndatapp checkout --detach v1.0.0
 cmake -S /tmp/anndatapp -B /tmp/anndatapp-build -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
@@ -92,10 +103,13 @@ cmake -S /tmp/anndatapp -B /tmp/anndatapp-build -G Ninja \
 cmake --build /tmp/anndatapp-build
 cmake --install /tmp/anndatapp-build
 
+# Build/install Velocity++ >=0.1.1 separately against this AnnData++ prefix.
+# Set VELOCITYPP_PREFIX to that installation, or disable velocity explicitly.
+
 cmake -S . -B build-cpu -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/tmp/anndatapp-install \
+  -DCMAKE_PREFIX_PATH="/tmp/anndatapp-install;${VELOCITYPP_PREFIX}" \
   -DCELLERATOR_ENABLE_CUDA=OFF
 cmake --build build-cpu
 ```

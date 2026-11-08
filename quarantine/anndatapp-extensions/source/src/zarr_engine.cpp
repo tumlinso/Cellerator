@@ -1,0 +1,864 @@
+#include "zarr_engine.hpp"
+#include <algorithm>
+#include <bit>
+#include <cmath>
+#include <cstring>
+#include <fstream>
+#include <functional>
+#include <limits>
+#include <numeric>
+#include <set>
+
+import anndatapp.core;
+
+namespace anndatapp_zarr {
+namespace {
+Json load_json(const std::filesystem::path& file) {
+    try {
+        std::ifstream stream(file);
+        if (!stream) throw Error(Failure::io, file.string(), "cannot open Zarr metadata");
+        return Json::parse(stream);
+    } catch (const Json::exception& e) { throw Error(Failure::encoding, file.string(), std::string("invalid Zarr JSON: ") + e.what()); }
+}
+void save_json(const std::filesystem::path& file, const Json& value) {
+    std::filesystem::create_directories(file.parent_path());
+    auto temporary = file; temporary += ".anndatapp-tmp";
+    std::ofstream stream(temporary, std::ios::trunc);
+    if (!stream || !(stream << value.dump(2)))
+        throw Error(Failure::io, file.string(), "cannot write Zarr metadata");
+    stream.close();
+    if (stream.fail()) throw Error(Failure::io, file.string(), "cannot close Zarr metadata");
+    std::filesystem::rename(temporary, file);
+}
+Bytes load_bytes(const std::filesystem::path& file, std::size_t budget) {
+    const auto size = std::filesystem::file_size(file);
+    if (size > budget) throw Error(Failure::argument, file.string(), "encoded chunk exceeds scratch_bytes; use smaller chunks or increase the explicit budget");
+    Bytes result(static_cast<std::size_t>(size));
+    std::ifstream stream(file, std::ios::binary);
+    if (!stream || (size && !stream.read(reinterpret_cast<char*>(result.data()), static_cast<std::streamsize>(size))))
+        throw Error(Failure::io, file.string(), "cannot read Zarr chunk");
+    return result;
+}
+void save_bytes(const std::filesystem::path& file, std::span<const std::byte> bytes) {
+    std::filesystem::create_directories(file.parent_path());
+    auto temporary=file; temporary += ".anndatapp-tmp";
+    std::ofstream stream(temporary, std::ios::binary | std::ios::trunc);
+    if (!stream || (bytes.size() && !stream.write(reinterpret_cast<const char*>(bytes.data()), static_cast<std::streamsize>(bytes.size()))))
+        throw Error(Failure::io, file.string(), "cannot write Zarr chunk");
+    stream.close();
+    if (stream.fail()) throw Error(Failure::io, file.string(), "cannot close Zarr chunk");
+    std::filesystem::rename(temporary,file);
+}
+std::string relative_node(std::string path) {
+    while (!path.empty() && path.front()=='/') path.erase(path.begin());
+    while (!path.empty() && path.back()=='/') path.pop_back();
+    if (path.find('\0')!=std::string::npos) throw Error(Failure::argument,path,"NUL in Zarr path");
+    for (const auto& part:std::filesystem::path(path))
+        if (part==".." || part==".") throw Error(Failure::argument,path,"invalid Zarr path component");
+    return path;
+}
+Shape read_shape(const Json& j, const std::string& path, bool positive=false) {
+    if (!j.is_array()) throw Error(Failure::encoding,path,"Zarr shape must be an integer array");
+    Shape result;
+    for (const auto& n:j) {
+        if (!n.is_number_integer() || (n.is_number_integer() && n.get<std::int64_t>()<0))
+            throw Error(Failure::encoding,path,"negative or non-integer Zarr extent");
+        const auto value=n.get<std::uint64_t>();
+        if (value>std::numeric_limits<std::size_t>::max() || (positive && value==0))
+            throw Error(Failure::encoding,path,"invalid Zarr chunk extent");
+        result.push_back(static_cast<std::size_t>(value));
+    }
+    checked_product(result);
+    return result;
+}
+Type parse_type(std::string dtype, int format, char& endian, const std::string& path) {
+    if (format==2) {
+        if (dtype=="|O" || dtype=="O" || dtype=="|O8" || dtype=="object") return Type::string;
+        if (dtype.empty()) throw Error(Failure::dtype,path,"invalid Zarr v2 dtype");
+        if (dtype.front()=='<' || dtype.front()=='>' || dtype.front()=='|' || dtype.front()=='=') { endian=dtype.front(); dtype.erase(dtype.begin()); }
+        if (dtype=="b1" || dtype=="bool" || dtype=="?") return Type::boolean;
+        if (dtype=="i1") return Type::int8;
+        if (dtype=="u1") return Type::uint8;
+        if (dtype=="i2") return Type::int16;
+        if (dtype=="u2") return Type::uint16;
+        if (dtype=="i4") return Type::int32;
+        if (dtype=="u4") return Type::uint32;
+        if (dtype=="i8") return Type::int64;
+        if (dtype=="u8") return Type::uint64;
+        if (dtype=="f2") return Type::float16;
+        if (dtype=="f4") return Type::float32;
+        if (dtype=="f8") return Type::float64;
+    } else {
+        if (dtype=="bool") return Type::boolean;
+        if (dtype=="int8") return Type::int8;
+        if (dtype=="uint8") return Type::uint8;
+        if (dtype=="int16") return Type::int16;
+        if (dtype=="uint16") return Type::uint16;
+        if (dtype=="int32") return Type::int32;
+        if (dtype=="uint32") return Type::uint32;
+        if (dtype=="int64") return Type::int64;
+        if (dtype=="uint64") return Type::uint64;
+        if (dtype=="float16") return Type::float16;
+        if (dtype=="float32") return Type::float32;
+        if (dtype=="float64") return Type::float64;
+        if (dtype=="string" || dtype=="str" || dtype=="utf8" || dtype=="vlen-utf8") return Type::string;
+    }
+    throw Error(Failure::dtype,path,"unsupported Zarr dtype: "+dtype);
+}
+std::string dtype_name(Type type,int format,char endian) {
+    if(format==3) {
+        switch(type) {
+            case Type::boolean: return "bool";
+            case Type::int8: return "int8";
+            case Type::uint8: return "uint8";
+            case Type::int16: return "int16";
+            case Type::uint16: return "uint16";
+            case Type::int32: return "int32";
+            case Type::uint32: return "uint32";
+            case Type::int64: return "int64";
+            case Type::uint64: return "uint64";
+            case Type::float16: return "float16";
+            case Type::float32: return "float32";
+            case Type::float64: return "float64";
+            case Type::string: return "string";
+        }
+    }
+    const char* name=nullptr;
+    switch(type) {
+        case Type::boolean: name="b1"; break;
+        case Type::int8: name="i1"; break;
+        case Type::uint8: name="u1"; break;
+        case Type::int16: name="i2"; break;
+        case Type::uint16: name="u2"; break;
+        case Type::int32: name="i4"; break;
+        case Type::uint32: name="u4"; break;
+        case Type::int64: name="i8"; break;
+        case Type::uint64: name="u8"; break;
+        case Type::float16: name="f2"; break;
+        case Type::float32: name="f4"; break;
+        case Type::float64: name="f8"; break;
+        case Type::string: name="O"; break;
+    }
+    if(!name) throw Error(Failure::dtype,"dtype","unknown Zarr scalar type");
+    return std::string(1,type_size(type)==1 || type==Type::string?'|':endian)+name;
+}
+char serializer_endian(const Json& codecs) {
+    for(const auto& codec:codecs) {
+        const auto name=codec.value("name",std::string());
+        if(name=="bytes") {
+            const auto value=codec.value("configuration",Json::object()).value("endian",std::string("little"));
+            if(value!="little" && value!="big") throw Error(Failure::encoding,"bytes","invalid bytes codec endianness");
+            return value=="big"?'>':'<';
+        }
+        if(name=="sharding_indexed") return serializer_endian(codec.at("configuration").at("codecs"));
+    }
+    return '=';
+}
+ArrayMetadata parse_array(const Json& j,const std::string& path) {
+    try {
+        ArrayMetadata m; m.original=j; m.format=j.at("zarr_format").get<int>();
+        m.shape=read_shape(j.at("shape"),path);
+        if(m.format==2) {
+            if(!j.at("dtype").is_string()) throw Error(Failure::dtype,path,"structured Zarr dtypes are unsupported");
+            m.type=parse_type(j.at("dtype").get<std::string>(),2,m.endian,path);
+            m.chunks=read_shape(j.at("chunks"),path,true);
+            const auto order=j.value("order",std::string("C"));
+            if(order!="C" && order!="F") throw Error(Failure::encoding,path,"invalid Zarr order");
+            m.order=order.front();
+            m.separator=j.value("dimension_separator",std::string(".")); m.default_chunk_keys=false;
+            if(j.contains("filters") && !j["filters"].is_null()) for(const auto& codec:j["filters"]) m.codecs.push_back(codec);
+            if(j.contains("compressor") && !j["compressor"].is_null()) m.codecs.push_back(j["compressor"]);
+        } else if(m.format==3) {
+            if(j.value("node_type",std::string())!="array") throw Error(Failure::encoding,path,"expected Zarr array");
+            auto dtype=j.at("data_type");
+            if(dtype.is_object()) {
+                if(dtype.contains("configuration") && !dtype["configuration"].empty()) throw Error(Failure::dtype,path,"parameterized Zarr data type unsupported");
+                dtype=dtype.at("name");
+            }
+            m.type=parse_type(dtype.get<std::string>(),3,m.endian,path);
+            auto grid=j.at("chunk_grid");
+            if(grid.at("name")!="regular") throw Error(Failure::encoding,path,"unsupported Zarr chunk grid");
+            m.chunks=read_shape(grid.at("configuration").at("chunk_shape"),path,true);
+            m.codecs=j.at("codecs");
+            auto keys=j.at("chunk_key_encoding"); auto name=keys.at("name").get<std::string>();
+            if(name!="default" && name!="v2") throw Error(Failure::encoding,path,"unsupported Zarr chunk key encoding: "+name);
+            m.default_chunk_keys=name=="default";
+            m.separator=keys.value("configuration",Json::object()).value("separator",m.default_chunk_keys?std::string("/"):std::string("."));
+            if(j.contains("storage_transformers") && !j["storage_transformers"].empty()) throw Error(Failure::encoding,path,"unsupported required Zarr storage transformer");
+            m.endian=serializer_endian(m.codecs);
+        } else throw Error(Failure::version,path,"unsupported Zarr format version");
+        m.item_size=type_size(m.type);
+        m.fill=j.value("fill_value",Json());
+        if(m.chunks.size()!=m.shape.size()) throw Error(Failure::encoding,path,"Zarr chunk and array ranks differ");
+        if(m.separator!="/" && m.separator!=".") throw Error(Failure::encoding,path,"unsupported Zarr chunk separator");
+        return m;
+    } catch(const Json::exception& e) { throw Error(Failure::encoding,path,std::string("malformed Zarr array metadata: ")+e.what()); }
+}
+std::string chunk_key(const ArrayMetadata& m,const Shape& coord) {
+    std::string result=m.default_chunk_keys?"c":"";
+    if(coord.empty()) return m.default_chunk_keys?"c":"0";
+    for(std::size_t i=0;i<coord.size();++i) {
+        if(i || m.default_chunk_keys) result+=m.separator;
+        result+=std::to_string(coord[i]);
+    }
+    return result;
+}
+bool sharding(const ArrayMetadata& m) { return m.format==3 && !m.codecs.empty() && m.codecs[0].value("name",std::string())=="sharding_indexed"; }
+bool raw_native(const ArrayMetadata& m) {
+    if(m.type==Type::string || m.order!='C' || !m.codecs.is_array()) return false;
+    if(m.item_size>1 && m.endian!='=' && m.endian!='|' &&
+       m.endian!=(std::endian::native==std::endian::little?'<':'>')) return false;
+    if(m.format==2) return m.codecs.empty();
+    if(m.format!=3 || m.codecs.size()!=1 || !m.codecs[0].is_object() || m.codecs[0].value("name",std::string())!="bytes") return false;
+    const auto& codec=m.codecs[0];
+    if(codec.contains("configuration") && !codec["configuration"].is_object()) return false;
+    const auto config=codec.value("configuration",Json::object());
+    if(m.item_size>1 && !config.contains("endian")) return false;
+    return !config.contains("endian") || (config["endian"].is_string() &&
+        (config["endian"]=="little" || config["endian"]=="big"));
+}
+ShardSpec shard_spec(const ArrayMetadata& m,std::size_t budget) {
+    if(m.codecs.size()!=1) throw Error(Failure::codec,"","codecs after sharding_indexed are unsupported for partial access");
+    const auto& config=m.codecs[0].at("configuration");
+    ShardSpec spec{m.chunks,read_shape(config.at("chunk_shape"),"sharding",true),config.at("codecs"),config.at("index_codecs"),config.value("index_location",std::string("end")),budget};
+    if(spec.chunk_shape.size()!=spec.shard_shape.size()) throw Error(Failure::encoding,"sharding","shard rank mismatch");
+    for(std::size_t i=0;i<spec.chunk_shape.size();++i) if(spec.shard_shape[i]%spec.chunk_shape[i]) throw Error(Failure::encoding,"sharding","shard shape must be divisible by inner chunk shape");
+    return spec;
+}
+Shape inner_shape(const ArrayMetadata& m,std::size_t budget) { return sharding(m)?shard_spec(m,budget).chunk_shape:m.chunks; }
+template<class T> void fill_values(Bytes& bytes,const Json& value) {
+    T scalar{};
+    if(!value.is_null()) {
+        if(value.is_string()) {
+            const auto text=value.get<std::string>();
+            if constexpr(std::is_floating_point_v<T>) {
+                if(text=="NaN") scalar=std::numeric_limits<T>::quiet_NaN();
+                else if(text=="Infinity") scalar=std::numeric_limits<T>::infinity();
+                else if(text=="-Infinity") scalar=-std::numeric_limits<T>::infinity();
+                else throw Error(Failure::encoding,"fill_value","invalid numeric fill value");
+            } else throw Error(Failure::encoding,"fill_value","string fill value for integer array");
+        } else scalar=value.get<T>();
+    }
+    for(std::size_t i=0;i<bytes.size();i+=sizeof(T)) std::memcpy(bytes.data()+i,&scalar,sizeof(T));
+}
+std::uint16_t parse_hex_float16(const std::string& text) {
+    if(text.size()!=6 || text[0]!='0' || text[1]!='x')
+        throw Error(Failure::encoding,"fill_value","invalid float16 hexadecimal fill value");
+    std::uint16_t bits=0;
+    for(std::size_t i=2;i<text.size();++i) {
+        const auto c=text[i];
+        const auto digit=c>='0'&&c<='9'?unsigned(c-'0'):
+            c>='a'&&c<='f'?unsigned(c-'a'+10):c>='A'&&c<='F'?unsigned(c-'A'+10):16u;
+        if(digit>15) throw Error(Failure::encoding,"fill_value","invalid float16 hexadecimal fill value");
+        bits=std::uint16_t((bits<<4)|digit);
+    }
+    return bits;
+}
+void fill_float16(Bytes& bytes,const Json& value,int format) {
+    std::uint16_t bits=0;
+    if(!value.is_null()) {
+        if(value.is_string()) {
+            const auto text=value.get<std::string>();
+            if(text=="NaN") bits=0x7e00;
+            else if(text=="Infinity") bits=0x7c00;
+            else if(text=="-Infinity") bits=0xfc00;
+            else if(format==3 && text.starts_with("0x")) bits=parse_hex_float16(text);
+            else throw Error(Failure::encoding,"fill_value","invalid float16 fill value");
+        } else if(value.is_number()) bits=anndatapp::Float16::from_double(value.get<double>()).bits;
+        else throw Error(Failure::encoding,"fill_value","invalid float16 fill value");
+    }
+    for(std::size_t i=0;i<bytes.size();i+=sizeof(bits)) std::memcpy(bytes.data()+i,&bits,sizeof(bits));
+}
+void fill_numeric(Bytes& bytes,const ArrayMetadata& m) {
+    switch(m.type) {
+        case Type::boolean: std::fill(bytes.begin(),bytes.end(),std::byte(!m.fill.is_null() && (m.fill.is_boolean()?m.fill.get<bool>():m.fill.get<double>()!=0.0))); break;
+        case Type::int8: fill_values<std::int8_t>(bytes,m.fill); break;
+        case Type::uint8: fill_values<std::uint8_t>(bytes,m.fill); break;
+        case Type::int16: fill_values<std::int16_t>(bytes,m.fill); break;
+        case Type::uint16: fill_values<std::uint16_t>(bytes,m.fill); break;
+        case Type::int32: fill_values<std::int32_t>(bytes,m.fill); break;
+        case Type::uint32: fill_values<std::uint32_t>(bytes,m.fill); break;
+        case Type::int64: fill_values<std::int64_t>(bytes,m.fill); break;
+        case Type::uint64: fill_values<std::uint64_t>(bytes,m.fill); break;
+        case Type::float16: fill_float16(bytes,m.fill,m.format); break;
+        case Type::float32: fill_values<float>(bytes,m.fill); break;
+        case Type::float64: fill_values<double>(bytes,m.fill); break;
+        case Type::string: break;
+    }
+}
+Chunk filled(const ArrayMetadata& m,const Shape& shape,std::size_t budget=64*1024*1024) {
+    Chunk result; auto count=checked_product(shape);
+    if(m.type==Type::string) {
+        const auto value=m.fill.is_string()?m.fill.get<std::string>():"";
+        if(value.size()>budget/4 || count>(budget/4)/(sizeof(std::string)+value.size())) throw Error(Failure::argument,"fill_value","string fill chunk exceeds scratch memory budget");
+        result.strings.resize(count,value); return result;
+    }
+    if(count>std::numeric_limits<std::size_t>::max()/m.item_size) throw Error(Failure::encoding,"chunk","chunk byte size overflow");
+    result.numeric.resize(count*m.item_size); fill_numeric(result.numeric,m);
+    return result;
+}
+std::size_t flat(const Shape& coord,const Shape& shape) {
+    std::size_t value=0; for(std::size_t i=0;i<shape.size();++i) value=value*shape[i]+coord[i]; return value;
+}
+void coordinates(const Shape& first,const Shape& stop,const std::function<void(const Shape&)>& visit) {
+    for(std::size_t i=0;i<first.size();++i) if(first[i]>=stop[i]) return;
+    Shape current=first;
+    if(current.empty()) { visit(current); return; }
+    for(;;) {
+        visit(current);
+        std::size_t axis=current.size();
+        while(axis) { --axis; if(++current[axis]<stop[axis]) break; current[axis]=first[axis]; }
+        if(axis==0 && current[0]==first[0]) break;
+    }
+}
+} // namespace
+
+Store::Store(std::filesystem::path root,bool writable,std::size_t scratch_bytes):root_(std::move(root)),writable_(writable),scratch_bytes_(scratch_bytes) {
+    if(scratch_bytes_<1024) throw Error(Failure::argument,root_.string(),"scratch_bytes must be at least 1024");
+    consolidation_v2_=std::filesystem::exists(root_/".zmetadata");
+    if(std::filesystem::exists(root_/"zarr.json")) consolidation_v3_=load_json(root_/"zarr.json").contains("consolidated_metadata");
+}
+std::filesystem::path Store::node_path(const std::string& path) const { return root_/relative_node(path); }
+Node Store::inspect(const std::string& path) const {
+    try {
+    const auto relative=relative_node(path); const auto directory=node_path(path);
+    Json metadata;
+    if(std::filesystem::exists(directory/"zarr.json")) metadata=load_json(directory/"zarr.json");
+    else if(std::filesystem::exists(directory/".zarray")) metadata=load_json(directory/".zarray");
+    else if(std::filesystem::exists(directory/".zgroup")) metadata=load_json(directory/".zgroup");
+    else if(std::filesystem::exists(root_/".zmetadata")) {
+        const auto consolidated=load_json(root_/".zmetadata"); const auto prefix=relative.empty()?"":relative+"/";
+        const auto& all=consolidated.at("metadata");
+        if(all.contains(prefix+".zarray")) metadata=all.at(prefix+".zarray");
+        else if(all.contains(prefix+".zgroup")) metadata=all.at(prefix+".zgroup");
+    } else if(std::filesystem::exists(root_/"zarr.json")) {
+        const auto root=load_json(root_/"zarr.json");
+        if(root.contains("consolidated_metadata") && root["consolidated_metadata"].contains("metadata") && root["consolidated_metadata"]["metadata"].contains(relative)) metadata=root["consolidated_metadata"]["metadata"][relative];
+    }
+    if(metadata.is_null()) return {};
+    Node result; result.exists=true;
+    auto format=metadata.value("zarr_format",0);
+    if(format!=2 && format!=3) throw Error(Failure::version,path,"unsupported Zarr format version");
+    result.group=format==2?!metadata.contains("shape"):metadata.value("node_type",std::string())=="group";
+    result.attributes=metadata.value("attributes",Json::object());
+    if(format==2) {
+        if(std::filesystem::exists(directory/".zattrs")) result.attributes=load_json(directory/".zattrs");
+        else if(std::filesystem::exists(root_/".zmetadata")) {
+            auto all=load_json(root_/".zmetadata").at("metadata"); auto key=(relative.empty()?"":relative+"/")+".zattrs";
+            if(all.contains(key)) result.attributes=all.at(key);
+        }
+    }
+    if(!result.group) result.array=parse_array(metadata,path);
+    return result;
+    } catch(const Json::exception& e) { throw Error(Failure::encoding,path,std::string("malformed Zarr node metadata: ")+e.what()); }
+}
+std::vector<std::string> Store::children(const std::string& path) const {
+    std::set<std::string> names; const auto directory=node_path(path);
+    if(std::filesystem::exists(directory)) for(const auto& entry:std::filesystem::directory_iterator(directory))
+        if(entry.is_directory() && inspect(relative_node(path)+"/"+entry.path().filename().string()).exists) names.insert(entry.path().filename().string());
+    const auto prefix=relative_node(path).empty()?"":relative_node(path)+"/";
+    const auto add=[&](const std::string& key) { if(key.starts_with(prefix)) { const auto rest=key.substr(prefix.size()); const auto slash=rest.find('/'); if(slash!=std::string::npos && slash) names.insert(rest.substr(0,slash)); } };
+    if(std::filesystem::exists(root_/".zmetadata")) {
+        const auto consolidated=load_json(root_/".zmetadata");
+        for(const auto& [key,value]:consolidated.at("metadata").items()) { (void)value; add(key); }
+    }
+    if(std::filesystem::exists(root_/"zarr.json")) { auto root=load_json(root_/"zarr.json"); if(root.contains("consolidated_metadata") && root["consolidated_metadata"].contains("metadata")) for(const auto& [key,value]:root["consolidated_metadata"]["metadata"].items()) { (void)value; add(key+"/"); } }
+    return {names.begin(),names.end()};
+}
+void Store::mutation() {
+    if(!writable_) throw Error(Failure::argument,root_.string(),"Zarr store is read-only");
+    metadata_dirty_=true;
+    if(std::filesystem::exists(root_/".zmetadata")) { consolidation_v2_=true; std::filesystem::remove(root_/".zmetadata"); }
+    if(std::filesystem::exists(root_/"zarr.json")) { auto root=load_json(root_/"zarr.json"); if(root.contains("consolidated_metadata")) { consolidation_v3_=true; root.erase("consolidated_metadata"); save_json(root_/"zarr.json",root); } }
+}
+Chunk Store::chunk(const std::string& path,const ArrayMetadata& m,const Shape& coord) const {
+    const auto shape=inner_shape(m,scratch_bytes_); const auto count=checked_product(shape);
+    const auto working_width=m.type==Type::string?sizeof(std::string):m.item_size;
+    if(count>scratch_bytes_/(4*working_width)) throw Error(Failure::argument,path,"decoded chunk exceeds bounded scratch_bytes; increase budget or rechunk the source");
+    Bytes payload; std::filesystem::path file;
+    const auto decode=[&](const Json& codecs) {
+        if(payload.empty()) return filled(m,shape,scratch_bytes_);
+        try { return decode_payload({m,codecs,scratch_bytes_},shape,payload); }
+        catch(const Error& e) { throw Error(e.failure,path+"/"+file.filename().string(),e.what()); }
+    };
+    if(sharding(m)) {
+        auto spec=shard_spec(m,scratch_bytes_/2); Shape shard(coord.size()),local(coord.size());
+        for(std::size_t i=0;i<coord.size();++i) { auto factor=m.chunks[i]/shape[i]; shard[i]=coord[i]/factor; local[i]=coord[i]%factor; }
+        file=node_path(path)/chunk_key(m,shard); if(!std::filesystem::exists(file)) return filled(m,shape,scratch_bytes_);
+        payload=read_shard_chunk(file,spec,local);
+        return decode(spec.codecs);
+    } else { file=node_path(path)/chunk_key(m,coord); if(!std::filesystem::exists(file)) return filled(m,shape,scratch_bytes_); payload=load_bytes(file,scratch_bytes_/2); if(payload.empty()) throw Error(Failure::encoding,file.string(),"empty encoded Zarr chunk"); }
+    return decode(m.codecs);
+}
+void Store::chunk(const std::string& path,const ArrayMetadata& m,const Shape& coord,const Chunk& value) {
+    auto shape=inner_shape(m,scratch_bytes_);
+    if(sharding(m)) {
+        auto spec=shard_spec(m,scratch_bytes_/2); Shape shard(coord.size()),local(coord.size());
+        for(std::size_t i=0;i<coord.size();++i) { auto factor=m.chunks[i]/shape[i]; shard[i]=coord[i]/factor; local[i]=coord[i]%factor; }
+        const auto payload=encode_payload({m,spec.codecs,scratch_bytes_},shape,value); write_shard_chunk(node_path(path)/chunk_key(m,shard),spec,local,payload);
+    } else { const auto payload=encode_payload({m,m.codecs,scratch_bytes_},shape,value); save_bytes(node_path(path)/chunk_key(m,coord),payload); }
+}
+void Store::transfer(const std::string& path,const Shape& start,const Shape& count,void* numeric,std::vector<std::string>* strings,bool writing) const {
+    const auto node=inspect(path); if(!node.exists || node.group) throw Error(Failure::argument,path,"expected a Zarr array");
+    transfer(path,node.array,start,count,numeric,strings,writing);
+}
+void Store::transfer(const std::string& path,const ArrayMetadata& m,const Shape& start,const Shape& count,void* numeric,std::vector<std::string>* strings,bool writing,const NumericCodec* codec) const {
+    const auto rank=m.shape.size();
+    if(start.size()!=rank || count.size()!=rank) throw Error(Failure::argument,path,"Zarr rectangle rank mismatch");
+    for(std::size_t i=0;i<rank;++i) if(start[i]>m.shape[i] || count[i]>m.shape[i]-start[i]) throw Error(Failure::argument,path,"Zarr rectangle exceeds array bounds");
+    if((strings!=nullptr)!=(m.type==Type::string)) throw Error(Failure::dtype,path,"numeric/string Zarr transfer mismatch");
+    const auto output_count=checked_product(count);
+    if(!output_count) return;
+    if(strings && strings->size()!=output_count) throw Error(Failure::argument,path,"string transfer size mismatch");
+    if(!strings && !numeric) throw Error(Failure::argument,path,"null Zarr transfer buffer");
+    if(writing && !strings && sharding(m)) {
+        NumericWrite input; input.data=numeric; input.axes.resize(rank); input.strides.resize(rank);
+        std::size_t stride=m.item_size;
+        for(std::size_t i=rank;i--;) {input.axes[i]={count[i],std::ptrdiff_t(start[i]),1,nullptr};input.strides[i]=std::ptrdiff_t(stride);stride*=count[i];}
+        input.scratch_bytes=(scratch_bytes_/8)*7;
+        const_cast<Store*>(this)->write_selection(path,m,input); return;
+    }
+    Bytes().swap(packed_scratch_); Bytes().swap(shard_scratch_.index); Bytes().swap(shard_scratch_.encoded);
+    std::vector<WritePoint>().swap(selection_scratch_);
+    const auto shape=inner_shape(m,scratch_bytes_); Shape first(rank),stop(rank);
+    const bool raw=codec && !strings && raw_native(m);
+    const bool compressed=codec && !raw && !strings && codec->kind!=NumericCodec::Kind::none;
+    // Keep only the workspaces used by this pipeline. A fallback codec uses
+    // its original bounded allocations without retained capacity alongside it.
+    if(!raw && !compressed) { Bytes().swap(numeric_scratch_); Bytes().swap(encoded_scratch_); Bytes().swap(codec_scratch_); }
+    if(raw) { Bytes().swap(encoded_scratch_); Bytes().swap(codec_scratch_); }
+    auto reserve=[&](Bytes& b,std::size_t bytes) {
+        if(bytes>scratch_bytes_/4) throw Error(Failure::argument,path,"chunk allocation exceeds bounded scratch_bytes");
+        if(bytes>b.capacity()) {
+            Bytes().swap(b);
+            Bytes fresh(bytes);
+            if(fresh.capacity()>scratch_bytes_/4) throw Error(Failure::argument,path,"chunk allocation exceeds bounded scratch_bytes");
+            b.swap(fresh); ++numeric_scratch_allocations_;
+        } else b.resize(bytes);
+    };
+    if(raw || compressed) {
+        const auto elements=checked_product(shape);
+        if(!m.item_size || elements>scratch_bytes_/(4*m.item_size))
+            throw Error(Failure::argument,path,"decoded chunk exceeds bounded scratch_bytes; increase budget or rechunk the source");
+        const auto bytes=elements*m.item_size;
+        if(bytes>std::size_t(std::numeric_limits<std::streamsize>::max()))
+            throw Error(Failure::argument,path,"chunk exceeds stream size");
+        reserve(numeric_scratch_,bytes);
+        if(compressed && reusable_needs_block(*codec,false)) reserve(codec_scratch_,std::min<std::size_t>(scratch_bytes_/4,65536));
+    }
+    for(std::size_t i=0;i<rank;++i) { first[i]=start[i]/shape[i]; stop[i]=(start[i]+count[i]-1)/shape[i]+1; }
+    coordinates(first,stop,[&](const Shape& coord) {
+        Chunk value;
+        if(raw || compressed) {
+            const auto file=node_path(path)/chunk_key(m,coord);
+            if(!std::filesystem::exists(file)) fill_numeric(numeric_scratch_,m);
+            else {
+                const auto length=std::filesystem::file_size(file);
+                if(raw && length!=numeric_scratch_.size())
+                    throw Error(Failure::encoding,file.string(),"decoded chunk has wrong byte size");
+                if(compressed && (!length || length>scratch_bytes_/4))
+                    throw Error(Failure::argument,file.string(),"encoded chunk exceeds bounded scratch_bytes or is empty");
+                if(length>std::uintmax_t(std::numeric_limits<std::streamsize>::max()))
+                    throw Error(Failure::argument,file.string(),"chunk exceeds stream size");
+                if(compressed) reserve(encoded_scratch_,std::size_t(length));
+                auto& bytes=raw?numeric_scratch_:encoded_scratch_;
+                std::ifstream stream(file,std::ios::binary);
+                if(!stream || (!bytes.empty() && !stream.read(reinterpret_cast<char*>(bytes.data()),static_cast<std::streamsize>(bytes.size()))))
+                    throw Error(Failure::io,file.string(),"cannot read Zarr chunk");
+                if(compressed) decode_numeric_reusable(*codec,numeric_scratch_.size(),scratch_bytes_/4,encoded_scratch_,numeric_scratch_,codec_scratch_);
+            }
+        } else value=chunk(path,m,coord);
+        Shape begin(rank),end(rank);
+        for(std::size_t i=0;i<rank;++i) { begin[i]=std::max(start[i],coord[i]*shape[i]); end[i]=std::min(start[i]+count[i],coord[i]*shape[i]+shape[i]); }
+        // Copy contiguous rows, avoiding a per-element numeric conversion loop.
+        Shape row_end=end;
+        if(rank) row_end.back()=begin.back()+1;
+        coordinates(begin,row_end,[&](const Shape& absolute) {
+            Shape local(rank),out(rank); for(std::size_t i=0;i<rank;++i) { local[i]=absolute[i]-coord[i]*shape[i]; out[i]=absolute[i]-start[i]; }
+            auto source_index=flat(local,shape),target_index=flat(out,count);
+            const auto run=rank?end.back()-begin.back():1;
+            if(strings) {
+                for(std::size_t j=0;j<run;++j) if(writing) value.strings[source_index+j]=(*strings)[target_index+j]; else (*strings)[target_index+j]=value.strings[source_index+j];
+            } else {
+                auto* output=static_cast<std::byte*>(numeric)+target_index*m.item_size; auto* input=((raw||compressed)?numeric_scratch_.data():value.numeric.data())+source_index*m.item_size;
+                if(writing) std::memcpy(input,output,run*m.item_size); else std::memcpy(output,input,run*m.item_size);
+            }
+        });
+        if(writing) {
+            if(raw) save_bytes(node_path(path)/chunk_key(m,coord),numeric_scratch_);
+            else if(compressed) {
+                reserve(encoded_scratch_,reusable_encoded_bound(*codec,numeric_scratch_.size(),scratch_bytes_/4));
+                encode_numeric_reusable(*codec,scratch_bytes_/4,numeric_scratch_,encoded_scratch_,codec_scratch_);
+                save_bytes(node_path(path)/chunk_key(m,coord),encoded_scratch_);
+            }
+            else const_cast<Store*>(this)->chunk(path,m,coord,value);
+        }
+    });
+}
+void Store::read_numeric(const std::string& path,const Shape& start,const Shape& count,void* out) const { transfer(path,start,count,out,nullptr,false); }
+ArrayMetadata Store::prepare_numeric(const std::string& path) {
+    auto node=inspect(path);
+    if(!node.exists || node.group || node.array.type==Type::string)
+        throw Error(Failure::dtype,path,"prepared numerical transfer requires a numeric array");
+    return std::move(node.array);
+}
+NumericCodec Store::numeric_codec(const ArrayMetadata& m) const {
+    return sharding(m) ? NumericCodec{} : prepare_numeric_codec({m,m.codecs,scratch_bytes_},m.chunks);
+}
+void Store::read_numeric(const std::string& path,const ArrayMetadata& m,const NumericCodec& codec,const Shape& start,const Shape& count,void* out) const { transfer(path,m,start,count,out,nullptr,false,&codec); }
+void Store::write_numeric(const std::string& path,const ArrayMetadata& m,const NumericCodec& codec,const Shape& start,const Shape& count,const void* input) {
+    if(!writable_) throw Error(Failure::argument,path,"Zarr store is read-only");
+    // Payload replacement changes no metadata, so consolidated metadata
+    // remains valid and independent chunk writers need not modify it.
+    transfer(path,m,start,count,const_cast<void*>(input),nullptr,true,&codec);
+}
+namespace {
+struct WritePlan {
+    WriteAxis axis;
+    WritePoint* points = nullptr;
+    std::size_t size = 0;
+    std::size_t logical(std::size_t i) const {
+        return points ? points[i].logical : !axis.step ? axis.count-1 : axis.step<0 ? axis.count-1-i : i;
+    }
+    std::size_t physical(std::size_t i) const {
+        if(points) return points[i].physical;
+        const auto j=logical(i),a=std::size_t(axis.start);
+        const auto d=axis.step<0?std::size_t(-(axis.step+1))+1:std::size_t(axis.step);
+        return axis.step<0?a-j*d:a+j*d;
+    }
+    std::size_t lower(std::size_t value) const {
+        std::size_t a=0,b=size;
+        while(a<b) {const auto k=a+(b-a)/2;if(physical(k)<value)a=k+1;else b=k;}
+        return a;
+    }
+};
+std::size_t write_mul(std::size_t a,std::size_t b,const std::string& path) {
+    if(b && a>std::numeric_limits<std::size_t>::max()/b) throw Error(Failure::argument,path,"write workspace size overflows");
+    return a*b;
+}
+std::size_t write_add(std::size_t a,std::size_t b,const std::string& path) {
+    if(b>std::numeric_limits<std::size_t>::max()-a) throw Error(Failure::argument,path,"write workspace size overflows");
+    return a+b;
+}
+void pack_numeric(const NumericWrite& input,const std::vector<Shape>& axes,std::size_t width,void* out) {
+    Shape shape; for(const auto& a:axes) shape.push_back(a.size());
+    const auto n=checked_product(shape),rank=shape.size();
+    auto* destination=static_cast<std::byte*>(out); auto* source=static_cast<const std::byte*>(input.data);
+    if(!rank) {std::memcpy(destination,source,width);return;}
+    const auto last=rank-1,columns=shape[last],rows=n/columns;
+    for(std::size_t row=0;row<rows;++row) {
+        auto k=row;std::ptrdiff_t offset=0;
+        for(std::size_t i=last;i--;) {const auto j=k%shape[i];k/=shape[i];offset+=std::ptrdiff_t(axes[i][j])*input.strides[i];}
+        for(std::size_t j=0;j<columns;) {
+            auto* q=source+offset+std::ptrdiff_t(axes[last][j])*input.strides[last];std::size_t run=1;
+            if(input.strides[last]==std::ptrdiff_t(width))
+                while(j+run<columns && axes[last][j+run]==axes[last][j]+run) ++run;
+            else if(input.strides[last]==-std::ptrdiff_t(width))
+                while(j+run<columns && axes[last][j]>=run && axes[last][j+run]==axes[last][j]-run) ++run;
+            std::memcpy(destination+(row*columns+j)*width,q,run*width);j+=run;
+        }
+    }
+}
+void scatter_numeric(const std::vector<Shape>& axes,const Shape& chunk,std::size_t width,const void* input,void* out) {
+    Shape shape; for(const auto& a:axes) shape.push_back(a.size());
+    const auto n=checked_product(shape),rank=shape.size();
+    auto* source=static_cast<const std::byte*>(input);auto* destination=static_cast<std::byte*>(out);
+    if(!rank) {std::memcpy(destination,source,width);return;}
+    const auto last=rank-1,columns=shape[last],rows=n/columns;
+    for(std::size_t row=0;row<rows;++row) {
+        auto k=row;std::size_t offset=0,stride=chunk[last];
+        for(std::size_t i=last;i--;) {const auto j=k%shape[i];k/=shape[i];offset+=axes[i][j]*stride;stride*=chunk[i];}
+        for(std::size_t j=0;j<columns;) {
+            std::size_t run=1;while(j+run<columns && axes[last][j+run]==axes[last][j]+run)++run;
+            std::memcpy(destination+(offset+axes[last][j])*width,source+(row*columns+j)*width,run*width);j+=run;
+        }
+    }
+}
+}
+bool Store::write_selection(const std::string& path,const ArrayMetadata& m,const NumericWrite& input) {
+    if(!sharding(m)) return false;
+    if(!writable_) throw Error(Failure::argument,path,"Zarr store is read-only");
+    const auto rank=m.shape.size();
+    if(m.type==Type::string || input.axes.size()!=rank || (!input.pack && input.strides.size()!=rank))
+        throw Error(Failure::argument,path,"invalid selected numerical write descriptor");
+    Shape requested;for(const auto& a:input.axes)requested.push_back(a.count);
+    if(!checked_product(requested)) return true;
+    if(!input.pack && !input.data) throw Error(Failure::argument,path,"null selected write input");
+    const auto budget=std::min(scratch_bytes_,input.scratch_bytes?input.scratch_bytes:scratch_bytes_);
+    auto spec=shard_spec(m,budget);const auto& inner=spec.chunk_shape;
+    const auto index_bytes=shard_index_workspace(spec,path);
+    std::size_t positions=0,axis_points=0;
+    for(std::size_t i=0;i<rank;++i) {
+        const auto& a=input.axes[i];
+        if(a.positions) positions=write_add(positions,a.count,path);
+        else {
+            if(a.start<0 || std::size_t(a.start)>=m.shape[i]) throw Error(Failure::argument,path,"write axis start is out of bounds");
+            const auto step=a.step<0?std::size_t(-(a.step+1))+1:std::size_t(a.step),distance=write_mul(a.count-1,step,path);
+            if(a.step<0 ? distance>std::size_t(a.start) : distance>=m.shape[i]-std::size_t(a.start))
+                throw Error(Failure::argument,path,"write axis extent is out of bounds");
+        }
+        axis_points=write_add(axis_points,std::min(inner[i],a.count),path);
+    }
+    const auto map_bytes=write_mul(positions,sizeof(WritePoint),path);
+    auto control=write_add(std::size_t{4096},write_mul(rank,sizeof(WritePlan)+256,path),path);
+    control=write_add(control,write_mul(axis_points,2*sizeof(std::size_t),path),path);
+    control=write_add(control,write_mul(path.size(),4,path),path);
+    control=write_add(control,input.packing_metadata_bytes,path);
+    const auto reserved=write_add(write_add(map_bytes,control,path),index_bytes,path);
+    if(reserved>=budget) throw Error(Failure::argument,path,"selected write planning exceeds scratch memory budget");
+    ArrayMetadata payload=m;payload.chunks=inner;payload.codecs=spec.codecs;
+    validate_index_pipeline({payload,spec.codecs,budget},inner);
+    const auto codec=prepare_numeric_codec({payload,spec.codecs,budget},inner);
+    const bool raw=raw_native(payload),common=raw || codec.kind!=NumericCodec::Kind::none;
+    const auto slot=(budget-reserved)/(common?4:8),chunk_bytes=write_mul(checked_product(inner),m.item_size,path);
+    if(slot<4 || chunk_bytes>slot || (common && !raw && reusable_encoded_bound(codec,chunk_bytes,std::numeric_limits<std::size_t>::max())>slot))
+        throw Error(Failure::argument,path,"selected write chunk staging exceeds scratch memory budget");
+    // These buffers are shared between calls, never cached data. Release an
+    // overlarge previous reservation before replacing it, including map growth.
+    auto reserve=[&](Bytes& b,std::size_t n) {
+        if(n>slot) throw Error(Failure::argument,path,"selected write exceeds admitted staging capacity");
+        if(b.capacity()>slot || b.capacity()<n) {Bytes().swap(b);Bytes fresh(n);b.swap(fresh);++numeric_scratch_allocations_;}
+        else b.resize(n);
+    };
+    if(selection_scratch_.capacity()!=positions) {
+        std::vector<WritePoint>().swap(selection_scratch_);selection_scratch_.resize(positions);numeric_scratch_allocations_+=positions!=0;
+    } else selection_scratch_.resize(positions);
+    if(shard_scratch_.capacity()>index_bytes) {Bytes().swap(shard_scratch_.index);Bytes().swap(shard_scratch_.encoded);}
+    reserve(numeric_scratch_,chunk_bytes);reserve(packed_scratch_,chunk_bytes);
+    if(encoded_scratch_.capacity()>slot) Bytes().swap(encoded_scratch_);
+    if(codec_scratch_.capacity()>slot) Bytes().swap(codec_scratch_);
+    std::vector<WritePlan> plans(rank);std::size_t first=0;
+    for(std::size_t i=0;i<rank;++i) {
+        auto& p=plans[i];p.axis=input.axes[i];p.size=p.axis.step || p.axis.positions?p.axis.count:1;
+        if(!p.axis.positions) continue;
+        p.points=selection_scratch_.data()+first;first+=p.axis.count;
+        for(std::size_t j=0;j<p.axis.count;++j) {
+            if(p.axis.positions[j]>=m.shape[i]) throw Error(Failure::argument,path,"gathered write index is out of bounds");
+            p.points[j]={p.axis.positions[j],j};
+        }
+        std::sort(p.points,p.points+p.axis.count,[](auto a,auto b){return a.physical<b.physical || (a.physical==b.physical && a.logical<b.logical);});
+        p.size=0;
+        for(std::size_t j=0;j<p.axis.count;++j) {
+            if(p.size && p.points[p.size-1].physical==p.points[j].physical)p.points[p.size-1]=p.points[j];
+            else p.points[p.size++]=p.points[j];
+        }
+    }
+    auto group_end=[&](std::size_t i,std::size_t begin,std::size_t last,std::size_t unit) {
+        const auto base=(plans[i].physical(begin)/unit)*unit;
+        return std::min(last,plans[i].lower(base+std::min(unit,m.shape[i]-base)));
+    };
+    auto next_group=[&](Shape& lo,Shape& hi,const Shape& begin,const Shape& end,const Shape& units) {
+        for(std::size_t i=rank;i--;) {
+            lo[i]=hi[i];
+            if(lo[i]<end[i]) {hi[i]=group_end(i,lo[i],end[i],units[i]);return true;}
+            lo[i]=begin[i];hi[i]=group_end(i,lo[i],end[i],units[i]);
+        }
+        return false;
+    };
+    Shape zero(rank,0),last(rank),shard_lo(rank,0),shard_hi(rank),shard_coord(rank),chunk_lo(rank),chunk_hi(rank),local(rank);
+    std::vector<Shape> source_axes(rank),target_axes(rank);
+    for(std::size_t i=0;i<rank;++i) {
+        last[i]=plans[i].size;shard_hi[i]=group_end(i,0,last[i],m.chunks[i]);
+        source_axes[i].reserve(std::min(inner[i],plans[i].size));target_axes[i].reserve(std::min(inner[i],plans[i].size));
+    }
+    // Restrict the physical writer to its disjoint fixed-index reservation.
+    spec.scratch_bytes=index_bytes;
+    do {
+        for(std::size_t i=0;i<rank;++i) {shard_coord[i]=plans[i].physical(shard_lo[i])/m.chunks[i];chunk_lo[i]=shard_lo[i];chunk_hi[i]=group_end(i,chunk_lo[i],shard_hi[i],inner[i]);}
+        {
+            ShardWriter writer(node_path(path)/chunk_key(m,shard_coord),spec,shard_scratch_);
+            do {
+                bool full=true;
+                for(std::size_t i=0;i<rank;++i) {
+                    const auto base=(plans[i].physical(chunk_lo[i])/inner[i])*inner[i];
+                    local[i]=(base%m.chunks[i])/inner[i];source_axes[i].clear();target_axes[i].clear();
+                    for(auto j=chunk_lo[i];j<chunk_hi[i];++j) {source_axes[i].push_back(plans[i].logical(j));target_axes[i].push_back(plans[i].physical(j)-base);}
+                    full=full && source_axes[i].size()==std::min(inner[i],m.shape[i]-base);
+                }
+                if(full) fill_numeric(numeric_scratch_,m);
+                else if(raw) {
+                    if(!writer.read(local,numeric_scratch_,slot)) {reserve(numeric_scratch_,chunk_bytes);fill_numeric(numeric_scratch_,m);}
+                    else if(numeric_scratch_.size()!=chunk_bytes) throw Error(Failure::encoding,path,"decoded inner chunk has wrong byte size");
+                } else if(writer.read(local,encoded_scratch_,slot)) {
+                    if(common) {
+                        if(reusable_needs_block(codec,false))reserve(codec_scratch_,std::min<std::size_t>(slot,65536));
+                        decode_numeric_reusable(codec,chunk_bytes,slot,encoded_scratch_,numeric_scratch_,codec_scratch_);
+                    } else {
+                        Bytes().swap(numeric_scratch_);
+                        auto decoded=decode_payload({payload,spec.codecs,slot*4},inner,encoded_scratch_);
+                        numeric_scratch_=std::move(decoded.numeric);
+                    }
+                } else fill_numeric(numeric_scratch_,m);
+                if(input.pack) input.pack(input.context,source_axes,packed_scratch_.data());
+                else pack_numeric(input,source_axes,m.item_size,packed_scratch_.data());
+                scatter_numeric(target_axes,inner,m.item_size,packed_scratch_.data(),numeric_scratch_.data());
+                if(raw) writer.replace(local,numeric_scratch_);
+                else if(common) {
+                    reserve(encoded_scratch_,reusable_encoded_bound(codec,chunk_bytes,slot));
+                    if(reusable_needs_block(codec,true))reserve(codec_scratch_,std::min<std::size_t>(slot,65536));
+                    encode_numeric_reusable(codec,slot,numeric_scratch_,encoded_scratch_,codec_scratch_);writer.replace(local,encoded_scratch_);
+                } else {
+                    Bytes().swap(encoded_scratch_);Chunk value;value.numeric.swap(numeric_scratch_);
+                    encoded_scratch_=encode_payload({payload,spec.codecs,slot*4},inner,value);numeric_scratch_.swap(value.numeric);
+                    writer.replace(local,encoded_scratch_);
+                }
+            } while(next_group(chunk_lo,chunk_hi,shard_lo,shard_hi,inner));
+            reserve(codec_scratch_,std::min<std::size_t>(slot,1024*1024));writer.commit(codec_scratch_);
+        }
+    } while(next_group(shard_lo,shard_hi,zero,last,m.chunks));
+    return true;
+}
+std::vector<std::string> Store::read_strings(const std::string& path,const Shape& start,const Shape& count) const { std::vector<std::string> result(checked_product(count)); transfer(path,start,count,nullptr,&result,false); return result; }
+std::vector<std::string> Store::read_strings_bounded(const std::string& path,const Shape& start,
+                                                   const Shape& count,std::size_t byte_budget) const {
+    const auto node=inspect(path);
+    if(!node.exists || node.group || node.array.type!=Type::string)
+        throw Error(Failure::dtype,path,"bounded string reads require a Zarr string array");
+    const auto& m=node.array;
+    if(start.size()!=m.shape.size() || count.size()!=m.shape.size())
+        throw Error(Failure::argument,path,"bounded string read rank mismatch");
+    for(std::size_t axis=0;axis<m.shape.size();++axis) {
+        if(start[axis]>m.shape[axis] || count[axis]>m.shape[axis]-start[axis])
+            throw Error(Failure::argument,path,"bounded string read exceeds array bounds");
+        if(axis+1<m.shape.size() && count[axis]!=1)
+            throw Error(Failure::argument,path,"bounded string reads require one consecutive last-axis run");
+    }
+    if(!checked_product(count)) return {};
+    const auto shape=inner_shape(m,scratch_bytes_);
+    Shape coordinate(start.size()),local(start.size());
+    for(std::size_t axis=0;axis<start.size();++axis) {
+        coordinate[axis]=start[axis]/shape[axis];
+        local[axis]=start[axis]%shape[axis];
+    }
+    auto decoded=chunk(path,m,coordinate);
+    const auto offset=flat(local,shape);
+    const auto available=count.empty()?std::size_t{1}:std::min(count.back(),shape.back()-local.back());
+    std::size_t admitted=0,bytes=sizeof(std::vector<std::string>);
+    for(;admitted<available;++admitted) {
+        const auto text_bytes=decoded.strings[offset+admitted].capacity()+1;
+        if(bytes>byte_budget || sizeof(std::string)>byte_budget-bytes || text_bytes>byte_budget-bytes-sizeof(std::string)) break;
+        bytes+=sizeof(std::string)+text_bytes;
+    }
+    if(!admitted) throw Error(Failure::argument,path,"a single string exceeds the bounded read byte budget");
+    // Return a maximal admitted prefix of this decoded chunk. Advancing to the
+    // next chunk avoids decompressing it again for each requested string. The
+    // final vector is allocated only after byte admission, including objects.
+    std::vector<std::string> result;
+    result.reserve(admitted);
+    for(std::size_t i=0;i<admitted;++i) result.push_back(std::move(decoded.strings[offset+i]));
+    return result;
+}
+void Store::write_numeric(const std::string& path,const Shape& start,const Shape& count,const void* input) {
+    if(!writable_) throw Error(Failure::argument,path,"Zarr store is read-only");
+    transfer(path,start,count,const_cast<void*>(input),nullptr,true);
+}
+void Store::write_strings(const std::string& path,const Shape& start,const Shape& count,const std::vector<std::string>& input) {
+    if(!writable_) throw Error(Failure::argument,path,"Zarr store is read-only");
+    transfer(path,start,count,nullptr,const_cast<std::vector<std::string>*>(&input),true);
+}
+void Store::create_group(const std::string& path,const Json& attributes,int format) {
+    mutation(); auto directory=node_path(path);
+    if(inspect(path).exists) throw Error(Failure::argument,path,"Zarr element already exists");
+    if(format==2) { save_json(directory/".zgroup",{{"zarr_format",2}}); save_json(directory/".zattrs",attributes); if(relative_node(path).empty()) consolidation_v2_=true; }
+    else if(format==3) { save_json(directory/"zarr.json",{{"zarr_format",3},{"node_type","group"},{"attributes",attributes}}); if(relative_node(path).empty()) consolidation_v3_=true; }
+    else throw Error(Failure::argument,path,"Zarr output format must be 2 or 3");
+}
+void Store::create_array(const std::string& path,Type type,const Shape& shape,const Json& attributes,char endian,const CreateOptions& options) {
+    mutation(); if(inspect(path).exists) throw Error(Failure::argument,path,"Zarr element already exists");
+    if(options.format!=2 && options.format!=3) throw Error(Failure::argument,path,"Zarr output format must be 2 or 3");
+    if(endian=='=') endian=std::endian::native==std::endian::little?'<':'>';
+    Shape chunks=shape; for(auto& n:chunks) n=std::max<std::size_t>(n,1);
+    const auto width=type==Type::string?16:type_size(type);
+    const auto target=std::min(options.target_chunk_bytes,std::max<std::size_t>(1024,scratch_bytes_/8));
+    while(checked_product(chunks)>std::max<std::size_t>(1,target/width)) { auto largest=std::max_element(chunks.begin(),chunks.end()); if(largest==chunks.end() || *largest<=1) break; *largest=(*largest+1)/2; }
+    Json fill=type==Type::string?Json(""):type==Type::boolean?Json(false):Json(0); Json codecs=Json::array();
+    const auto compression=options.compression;
+    auto directory=node_path(path);
+    if(options.format==2) {
+        Json compressor=nullptr;
+        if(compression=="zstd") compressor={{"id","zstd"},{"level",options.compression_level},{"checksum",false}};
+        else if(compression=="gzip" || compression=="zlib") compressor={{"id",compression},{"level",options.compression_level}};
+        else if(compression=="blosc") compressor={{"id","blosc"},{"cname","lz4"},{"clevel",options.compression_level},{"shuffle",1},{"blocksize",0}};
+        else if(compression!="none") throw Error(Failure::codec,path,"unsupported output compressor");
+        Json filters=type==Type::string?Json::array({Json{{"id","vlen-utf8"}}}):Json(nullptr);
+        save_json(directory/".zarray",{{"zarr_format",2},{"shape",shape},{"chunks",chunks},{"dtype",dtype_name(type,2,endian)},{"compressor",compressor},{"filters",filters},{"fill_value",fill},{"order","C"},{"dimension_separator","."}});
+        save_json(directory/".zattrs",attributes);
+    } else {
+        if(type==Type::string) codecs.push_back({{"name","vlen-utf8"},{"configuration",Json::object()}});
+        else codecs.push_back({{"name","bytes"},{"configuration",{{"endian",endian=='>'?"big":"little"}}}});
+        if(compression=="zstd") codecs.push_back({{"name","zstd"},{"configuration",{{"level",options.compression_level},{"checksum",false}}}});
+        else if(compression=="gzip" || compression=="zlib") codecs.push_back({{"name","gzip"},{"configuration",{{"level",options.compression_level}}}});
+        else if(compression=="blosc") codecs.push_back({{"name","blosc"},{"configuration",{{"cname","lz4"},{"clevel",options.compression_level},{"shuffle","shuffle"},{"typesize",width},{"blocksize",0}}}});
+        else if(compression!="none") throw Error(Failure::codec,path,"unsupported output compressor");
+        save_json(directory/"zarr.json",{{"zarr_format",3},{"node_type","array"},{"shape",shape},{"data_type",dtype_name(type,3,endian)},{"chunk_grid",{{"name","regular"},{"configuration",{{"chunk_shape",chunks}}}}},{"chunk_key_encoding",{{"name","default"},{"configuration",{{"separator","/"}}}}},{"fill_value",fill},{"codecs",codecs},{"attributes",attributes}});
+    }
+}
+void Store::attributes(const std::string& path,const Json& attributes) {
+    mutation(); const auto node=inspect(path); if(!node.exists) throw Error(Failure::argument,path,"Zarr element does not exist");
+    auto merged=node.attributes; for(const auto& [key,value]:attributes.items()) merged[key]=value;
+    const auto directory=node_path(path);
+    if(std::filesystem::exists(directory/"zarr.json")) { auto j=load_json(directory/"zarr.json"); j["attributes"]=std::move(merged); save_json(directory/"zarr.json",j); }
+    else save_json(directory/".zattrs",merged);
+}
+void Store::resize(const std::string& path,const Shape& shape) {
+    mutation(); const auto node=inspect(path); if(!node.exists || node.group || shape.size()!=node.array.shape.size()) throw Error(Failure::argument,path,"invalid Zarr resize");
+    // Delete chunks outside the new grid. Boundary chunks retain padding; a
+    // later growth must never expose old out-of-shape values.
+    auto previous=node.array.shape; auto m=node.array;
+    // Shrinking is uncommon structural work; clear removed cells in intersected
+    // chunks before publishing the new shape, without materializing the array.
+    auto inner=inner_shape(m,scratch_bytes_); Shape first(shape.size(),0),stop(shape.size());
+    for(std::size_t i=0;i<shape.size();++i) stop[i]=(previous[i]+inner[i]-1)/inner[i];
+    coordinates(first,stop,[&](const Shape& coord) {
+        bool touches=false;
+        for(std::size_t i=0;i<shape.size();++i) touches=touches || coord[i]*inner[i]+inner[i]>shape[i];
+        if(!touches) return;
+        auto value=chunk(path,m,coord); auto empty=filled(m,inner,scratch_bytes_);
+        Shape zero(shape.size(),0);
+        coordinates(zero,inner,[&](const Shape& local) {
+            bool removed=false;
+            for(std::size_t i=0;i<shape.size();++i) removed=removed || coord[i]*inner[i]+local[i]>=shape[i];
+            if(!removed) return;
+            auto index=flat(local,inner);
+            if(m.type==Type::string) value.strings[index]=empty.strings[index];
+            else std::memcpy(value.numeric.data()+index*m.item_size,empty.numeric.data()+index*m.item_size,m.item_size);
+        });
+        chunk(path,m,coord,value);
+    });
+    auto j=m.original; j["shape"]=shape; save_json(node_path(path)/(m.format==2?".zarray":"zarr.json"),j);
+}
+void Store::erase(const std::string& path) { mutation(); if(relative_node(path).empty()) throw Error(Failure::argument,path,"cannot erase the Zarr store root"); std::filesystem::remove_all(node_path(path)); }
+void Store::rename(const std::string& source,const std::string& target) {
+    mutation();
+    if(relative_node(source).empty() || relative_node(target).empty()) throw Error(Failure::argument,source,"cannot rename the Zarr store root");
+    if(!inspect(source).exists || inspect(target).exists) throw Error(Failure::argument,target,"Zarr rename requires an existing source and absent destination");
+    std::filesystem::create_directories(node_path(target).parent_path());
+    std::filesystem::rename(node_path(source),node_path(target));
+}
+void Store::flush() {
+    if(!writable_ || !metadata_dirty_) return;
+    if(consolidation_v2_) {
+        Json all=Json::object();
+        for(const auto& entry:std::filesystem::recursive_directory_iterator(root_)) if(entry.is_regular_file()) { auto name=entry.path().filename().string(); if(name==".zarray" || name==".zgroup" || name==".zattrs") all[std::filesystem::relative(entry.path(),root_).generic_string()]=load_json(entry.path()); }
+        save_json(root_/".zmetadata",{{"zarr_consolidated_format",1},{"metadata",all}});
+    }
+    if(consolidation_v3_) {
+        auto root=load_json(root_/"zarr.json"); Json all=Json::object();
+        for(const auto& entry:std::filesystem::recursive_directory_iterator(root_)) if(entry.is_regular_file() && entry.path().filename()=="zarr.json" && entry.path()!=root_/"zarr.json") { auto metadata=load_json(entry.path()); metadata.erase("consolidated_metadata"); all[std::filesystem::relative(entry.path().parent_path(),root_).generic_string()]=metadata; }
+        root["consolidated_metadata"]={{"kind","inline"},{"must_understand",false},{"metadata",all}}; save_json(root_/"zarr.json",root);
+    }
+    metadata_dirty_=false;
+}
+std::filesystem::path Store::mapping_file(const std::string& path) const {
+    const auto node=inspect(path); if(!node.exists || node.group || node.array.type==Type::string) return {};
+    const auto& m=node.array;
+    if(m.order!='C' || sharding(m)) return {};
+    for(std::size_t i=0;i<m.shape.size();++i) if(m.chunks[i]!=m.shape[i]) return {};
+    if(m.format==2 && !m.codecs.empty()) return {};
+    if(m.format==3 && (m.codecs.size()!=1 || m.codecs[0].value("name",std::string())!="bytes")) return {};
+    if(m.item_size>1 && ((m.endian=='>' && std::endian::native!=std::endian::big) || (m.endian=='<' && std::endian::native!=std::endian::little))) return {};
+    auto file=node_path(path)/chunk_key(m,Shape(m.shape.size(),0));
+    if(!std::filesystem::exists(file) || std::filesystem::file_size(file)!=checked_product(m.shape)*m.item_size) return {};
+    return file;
+}
+} // namespace anndatapp_zarr

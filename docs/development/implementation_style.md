@@ -1,6 +1,6 @@
 # Cellerator Implementation Style
 
-This file defines local implementation style. Architecture and ownership are governed by `AGENTS.md`, `scope.md`, and `docs/architecture.qmd`.
+The protected root `coding_style.md`, published as [C++ coding style](../coding_style.qmd), is the canonical C++ style authority. Read it before C++ design, implementation, or style review. This guide supplements it with file organization and subsystem conventions. Architecture and ownership are governed by `AGENTS.md`, `scope.md`, and `docs/architecture.qmd`.
 
 ## Organize by behavior
 
@@ -20,6 +20,8 @@ Split implementation around independently testable behavior:
 Do not place all stages of a workflow in one translation unit merely because one public function invokes them.
 
 Files above roughly 600 lines deserve review. Files above roughly 1000 lines should normally be split unless a generated source, external ABI, or tightly coupled kernel family makes separation more costly.
+
+These are file-organization review guidelines, not function-length quotas. Keep coherent algorithms together and split at meaningful behavioral or contract boundaries, following the protected coding style.
 
 ## Keep cost ownership visible
 

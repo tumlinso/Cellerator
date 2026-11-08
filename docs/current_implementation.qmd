@@ -2,6 +2,23 @@
 title: "Current implementation"
 ---
 
+## Installed velocity dependency, 2026-11-07
+
+Normal builds enable installed Velocity++ 0.1.1 by default; explicit
+`CELLERATOR_ENABLE_VELOCITY=OFF` skips it. `Cellerator::velocity` provides
+`import cellerator.velocity;`, re-exporting upstream algorithms with a
+[caller-storage FP16 adapter](../src/ops/velocity/README.md). Velocity++ owns
+fitting and selection; Cellerator owns binary16 views, moment traversal and
+half output. The old dirty `src/velocity` checkout remains local and ignored,
+outside the active build.
+
+Qualification is intentionally limited during reconstruction: the focused
+upstream fitting-stage equivalence test, the Cellerator deterministic/
+stochastic FP16 smoke test, and an installed consumer using the production
+host/core/velocity exporters pass. Full Cellerator suites, sanitizers, GPU and
+performance campaigns were not run. These checks do not refresh historical
+scientific or accelerator qualification.
+
 ## Language compiler ownership, 2026-11-05
 
 The language compiler's source, build/install integration, public API, tools,

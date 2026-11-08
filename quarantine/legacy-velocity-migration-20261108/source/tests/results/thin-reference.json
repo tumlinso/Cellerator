@@ -1,0 +1,735 @@
+{
+  "schema": "velocity.thin-reference.validation.v1",
+  "recorded_at_utc": "2026-11-05T16:46:03.682716+00:00",
+  "canonical_source_root": "/home/tumlinson/Cellerator/src/velocity",
+  "qualified_source_root": "/tmp/velocity-thin-20261105/work",
+  "base_commit": "ff7014fd579a26038c5dc86ccb072f0d41d232cc",
+  "delivery": "reviewed working-tree changes; no commit or push",
+  "source_sha256": {
+    "CMakeLists.txt": "1a8d03d014d4d0733f4a5bfe415586b1ea705af6b849c7d0e535413a02948069",
+    "cmake/test-installed-consumer.cmake": "7fcaa15cdee22447640db83dfaf8601f819d9abb4519cb46e14ca65e424463c6",
+    "cmake/velocityModuleProvider.cmake": "9ae893de9298170056691e18acb08c59bd4b087bc0608c5f2e398fc8a556d4f1",
+    "examples/parallel_blocks.cpp": "a56854e9bc39fde54343d24e125bdcb4ac7d3efd2e316a6c131e1e8b8f2fad5b",
+    "examples/selective_precision.cpp": "0bbdce64303f68553620797892a8a0908fee87b0d7797043c14257351f3727ce",
+    "examples/steady_state.cpp": "c083f7ffb0d54248c3e9f817b71869a562665ff5ee2cc50bf742e4f1ef9169c0",
+    "examples/stochastic.cpp": "bb2948d8988f29a27d8b426efa09a09e8541c8bc01395822980d10a52fc4af67",
+    "src/detail/fit.cpp": "afb93c99bfd7ca6cf49ddaeb2533b002514df3e54044fa01779e0f56d0783e39",
+    "src/detail/fit.hh": "b2327ab8fe876ff1787a86f734a04ed92358f0e8bf093d200972bef085433878",
+    "src/detail/neighborhood.cpp": "0b1bdd1f539dba27da409a13c4c47a28717702f558d3473a9103c2c64f589669",
+    "src/detail/prepared.cpp": "c43c7d0a4df4df42ef7e78c3b48b0bbd000e5cd50b77bd676aeac45f8b323d62",
+    "src/detail/prepared.hh": "fc0f5072891b3fa6f415f8ee71b580eef543a825943080ea22fe44d24fd4e1b2",
+    "src/detail/scientific.hh": "1eae7e4cb0e7b28624ee1be5094569a95ef5913a35f3f53aefe07fddc27a2045",
+    "src/detail/scientific_adapters.hh": "d2abbfb508e5cdc99767e05bcf633f8a17be14c490ec4291af11c70e82c40060",
+    "src/detail/sensitivity.hh": "f4bff44e8096feb2c7ed3cd96485c04218b44caf4d7dfac86fbc9b4371426af3",
+    "src/detail/stochastic_fit.cpp": "42dbf485d2490e4a367c6ee8da9ac1e135a1242fb54347afe2d713e5479976ad",
+    "src/detail/stochastic_fit.hh": "752e535c372e955d0284786eadd25c27f8d86ce9c53702ed9360344c5fa8610c",
+    "src/numeric.cpp": "3d9fc2813b517ed42136353674b2f3375ffbdbbd47c7281f150a0694c0f3b135",
+    "src/precision.cpp": "50d0c2238102afc464e02bf1355fe5dc6d5c62bb5a090ae47ca1c7853afbedb3",
+    "src/velocity.cpp": "e37be01aee3de32b724d148fb3a6ede9528c2debd97039ddfe7231525a95c183",
+    "src/velocity.cppm": "f4c11cea618ec0f9bd99e772de43f80ddb53463f0485ad97d424e383a2ec672e",
+    "src/velocity.numeric.cppm": "e92b43325b88570c6c5ee5b3667fcea06a4b58d09e44a86ca664f0817cad362b",
+    "src/velocity.precision.cppm": "a5f3d865c621a44fd60badf5d89f64088e66b6a4b48d1bfd1cfaa117450bef83",
+    "tests/consumer/main.cpp": "91cfaa5683ce2bb635ab7f52a35a8d5731d36fe4768685e4e5c0c132097798da",
+    "tests/interop_driver.cpp": "868bec6ba2aabc57d7e3ef7c8ec8e93ef815dd2cd4bb60bec91c8fcaf5fb69ff",
+    "tests/precision_interop_driver.cpp": "4634345c3c15e966e7ef49469f8326fe6f0e7fc0bc0bca52bc94a7d6cb0f6254",
+    "tests/sensitivity_driver.cpp": "47bb76aacb8ef4966cfd190ccb09327495a516d390575259225747ee9a03092f",
+    "tests/stochastic_interop_driver.cpp": "f38e49e01152e397e19d4e26d5e7abe77d190c805f393d2d76b41e0fd08dc47f",
+    "tests/test_blocks.cpp": "7f8e6e40993e5389efb099eaf67cfd0767a106983dbdab88cec82f5e868d60b1",
+    "tests/test_customization.cpp": "37f08c32c0993244bf92e42fc967cf1bb7eb5b13bd0e1c5681668f997cd14e16",
+    "tests/test_numeric_views.cpp": "f916abb6b928f11650ec5675dec337013b2ce321db3e3b3275670033958b803f",
+    "tests/test_precision.cpp": "ed648cea1489b5dcc8a8ed6fabeebe483d1fab88e2f140099983246c02bebcf9",
+    "tests/test_precision_profiles.cpp": "7211fe97f58e274e900a54582cef53316db759e91ac4534774b5cd9fe4974683",
+    "tests/test_reference.cpp": "3d5b9bb299645b9a547690409973d6cca1d38ac2ea86938bb3c9ac79d95a8edd",
+    "tests/test_stochastic.cpp": "048c019729a6bf85c251dfc03617853d09be4828bf54108e74c4de5e10d5caa4",
+    "tests/test_stochastic_customization.cpp": "2614fd0c803d574a1633f31ab80d753a31743f41bcd50d6d7a49674aa1542069",
+    "tools/qualify_stochastic.py": "72cb3c144f66127ded361c06c62668f3de6ec349d383efdf1d9a42357a3e6028"
+  },
+  "checkpoints": [
+    {
+      "name": "numeric access and ownership",
+      "result": "passed",
+      "evidence": "numeric_views native and sanitizer regression; separate focused numeric review",
+      "contracts": [
+        "zero counted C++ allocations for raw FP16/FP32/FP64 dense and sparse acquisition",
+        "trivially copyable borrowed descriptors",
+        "signed affine subviews, independent widths, unaligned structural bytes, retained lifetimes"
+      ]
+    },
+    {
+      "name": "workspace and execution consolidation",
+      "result": "passed",
+      "contracts": [
+        "single portable reference; no compiled/ISA dispatch",
+        "direct outputs acquire once without sink staging",
+        "matching-compute moments borrow workspace",
+        "serial numerical budget includes worker, requested conversion and global-selection scratch"
+      ]
+    },
+    {
+      "name": "parallel blocks and selective precision",
+      "result": "passed",
+      "evidence": "test_blocks and parallel example; threaded TSan test",
+      "contracts": [
+        "shuffled disjoint prepared ranges, duplicate gene selections and masks",
+        "explicit global selection/refit barriers",
+        "no C++ allocation in valid prepared block operations",
+        "frozen promotion availability; separate worker scratch and source contexts"
+      ]
+    }
+  ],
+  "validation": {
+    "release": {
+      "passed": 13,
+      "failed": 0,
+      "log": "../artifacts/thin-reference/release-tests.log",
+      "command": "ctest --test-dir /tmp/velocity-thin-20261105/release --output-on-failure --timeout 30"
+    },
+    "asan_ubsan": {
+      "passed": 13,
+      "failed": 0,
+      "leak_check": false,
+      "environment": {
+        "ASAN_OPTIONS": "detect_leaks=0",
+        "UBSAN_OPTIONS": "halt_on_error=1"
+      },
+      "log": "../artifacts/thin-reference/sanitizers-tests.log"
+    },
+    "thread_sanitizer": {
+      "passed": true,
+      "scope": "focused test_blocks threaded access; existing AnnData++ binary not instrumented",
+      "allocation_interception": false,
+      "reason": "TSan supplies strong new/delete interceptors; allocation assertions qualified by native and ASan suites",
+      "log": "../artifacts/thin-reference/tsan-tests.log"
+    },
+    "installed_consumers": {
+      "passed": 2,
+      "included_in_native_suites": true,
+      "baseline_harness_failure_fixed": "forward separately installed CelleratorBinary16 package location to consumer configure"
+    },
+    "deterministic_source": {
+      "cases": 4,
+      "degenerate_case_pass": true,
+      "pass_all": true,
+      "raw": "../artifacts/thin-reference/deterministic-reference.json"
+    },
+    "stochastic_source": {
+      "cases": 32,
+      "estimator_pass_all": true,
+      "production_class_pass_all": true,
+      "independent_fp64_initial_pass_all": true,
+      "strict_diagnostics_pass_all": false,
+      "strict_process_exit_code": 1,
+      "raw": "../artifacts/thin-reference/stochastic-reference.json",
+      "accepted_exception": "Four previously accepted source initialization-offset diagnostic misses; unchanged gates, checks and error maxima versus historical Milestone2 in every case.",
+      "exceptions": [
+        {
+          "fixture": "dentategyrus",
+          "variant": "all",
+          "fit_offset": true,
+          "fit_offset2": false,
+          "percentile": null,
+          "max_abs": {
+            "ms": 8.944955002476718e-06,
+            "mu": 9.665958904392369e-07,
+            "mss": 0.00035374806429899763,
+            "mus": 7.1464351094618905e-06,
+            "gamma": 3.602679655045904e-05,
+            "offset": 8.578861931951565e-06,
+            "offset2": 0.0,
+            "residual_scale": 1.3248080736605328e-07,
+            "residual2_scale": 1.2284151553743072e-06,
+            "velocity": 6.623566150665283e-06,
+            "residual2": 2.828240394592285e-05,
+            "r2": 8.463724023854979e-07,
+            "initial_gamma": 3.736911177476543e-05,
+            "initial_offset": 2.0042657421948107e-05,
+            "objective": 1.7147621047541861e-06
+          }
+        },
+        {
+          "fixture": "dentategyrus",
+          "variant": "all",
+          "fit_offset": true,
+          "fit_offset2": true,
+          "percentile": null,
+          "max_abs": {
+            "ms": 8.944955002476718e-06,
+            "mu": 9.665958904392369e-07,
+            "mss": 0.00035374806429899763,
+            "mus": 7.1464351094618905e-06,
+            "gamma": 3.602679655045904e-05,
+            "offset": 8.578861931951565e-06,
+            "offset2": 9.456301803822953e-07,
+            "residual_scale": 1.3248080736605328e-07,
+            "residual2_scale": 1.1150619254607363e-06,
+            "velocity": 6.623566150665283e-06,
+            "residual2": 2.5019049644470215e-05,
+            "r2": 8.463724023854979e-07,
+            "initial_gamma": 3.736911177476543e-05,
+            "initial_offset": 2.0042657421948107e-05,
+            "objective": 7.618543964582614e-07
+          }
+        },
+        {
+          "fixture": "dentategyrus",
+          "variant": "fit_subset_hvg",
+          "fit_offset": true,
+          "fit_offset2": false,
+          "percentile": null,
+          "max_abs": {
+            "ms": 8.944955002476718e-06,
+            "mu": 9.665958904392369e-07,
+            "mss": 0.00035374806429899763,
+            "mus": 7.1464351094618905e-06,
+            "gamma": 4.655576089263036e-05,
+            "offset": 6.576549050230085e-06,
+            "offset2": 0.0,
+            "residual_scale": 9.268112932669936e-08,
+            "residual2_scale": 7.827181129904659e-07,
+            "velocity": 5.826354026794434e-06,
+            "residual2": 2.6792287826538086e-05,
+            "r2": 2.4253042474331465e-06,
+            "initial_gamma": 4.655576089263036e-05,
+            "initial_offset": 1.5788550204565155e-05,
+            "objective": 1.9009327902885786e-06
+          }
+        },
+        {
+          "fixture": "dentategyrus",
+          "variant": "fit_subset_hvg",
+          "fit_offset": true,
+          "fit_offset2": true,
+          "percentile": null,
+          "max_abs": {
+            "ms": 8.944955002476718e-06,
+            "mu": 9.665958904392369e-07,
+            "mss": 0.00035374806429899763,
+            "mus": 7.1464351094618905e-06,
+            "gamma": 4.655576089263036e-05,
+            "offset": 6.576549050230085e-06,
+            "offset2": 9.618478724604529e-07,
+            "residual_scale": 9.268112932669936e-08,
+            "residual2_scale": 6.470810038905483e-07,
+            "velocity": 5.826354026794434e-06,
+            "residual2": 2.625398337841034e-05,
+            "r2": 2.4253042474331465e-06,
+            "initial_gamma": 4.655576089263036e-05,
+            "initial_offset": 1.5788550204565155e-05,
+            "objective": 1.4199170124129523e-06
+          }
+        }
+      ]
+    },
+    "gpu": false,
+    "new_velocity_algorithms": false
+  },
+  "measurements": {
+    "environment": {
+      "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+      "uname": {
+        "system": "Linux",
+        "node": "testlsserver",
+        "release": "6.8.0-147-generic",
+        "version": "#147-Ubuntu SMP PREEMPT_DYNAMIC Thu Sep 24 11:33:16 UTC 2026",
+        "machine": "x86_64",
+        "processor": "x86_64"
+      },
+      "cpu_model": "Intel(R) Xeon(R) CPU E5-2698 v4 @ 2.20GHz",
+      "cpu_count": 80,
+      "pinned_cpu": 2,
+      "thread_environment": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "benchmark_timeout_seconds": 30,
+      "gpu_used": false,
+      "build_processes_observed_before_measurement": []
+    },
+    "samples_per_case": 3,
+    "input_contract": "identical frozen stored inputs and options; original quantization not conflated with backend error",
+    "streaming": {
+      "small_synthetic": {
+        "deterministic": {
+          "cold_total_s": {
+            "baseline_median": 0.002765349,
+            "candidate_median": 0.002409256,
+            "candidate_over_baseline": 0.8712303582658102
+          },
+          "execute_sink_s": {
+            "baseline_median": 0.001865428,
+            "candidate_median": 0.00184258,
+            "candidate_over_baseline": 0.9877518724925325
+          },
+          "workspace_scratch_bytes": {
+            "baseline_median": 329984,
+            "candidate_median": 329984,
+            "candidate_over_baseline": 1.0
+          },
+          "prep_global_new_calls": {
+            "baseline_median": 226,
+            "candidate_median": 29,
+            "candidate_over_baseline": 0.12831858407079647
+          },
+          "execution_global_new_calls": {
+            "baseline_median": 34,
+            "candidate_median": 27,
+            "candidate_over_baseline": 0.7941176470588235
+          },
+          "incremental_peak_including_preparation_bytes": {
+            "baseline_median": 1015808,
+            "candidate_median": 1060864,
+            "candidate_over_baseline": 1.0443548387096775
+          },
+          "combined_global_new_calls": {
+            "baseline_median": 260,
+            "candidate_median": 56,
+            "candidate_over_baseline": 0.2153846153846154
+          },
+          "combined_global_new_requested_bytes": {
+            "baseline_median": 561528,
+            "candidate_median": 543344,
+            "candidate_over_baseline": 0.9676169309455628
+          }
+        },
+        "stochastic": {
+          "cold_total_s": {
+            "baseline_median": 0.009062857,
+            "candidate_median": 0.009045051,
+            "candidate_over_baseline": 0.9980352773965208
+          },
+          "execute_sink_s": {
+            "baseline_median": 0.008052233,
+            "candidate_median": 0.008360712,
+            "candidate_over_baseline": 1.0383097458804282
+          },
+          "workspace_scratch_bytes": {
+            "baseline_median": 661760,
+            "candidate_median": 661760,
+            "candidate_over_baseline": 1.0
+          },
+          "prep_global_new_calls": {
+            "baseline_median": 426,
+            "candidate_median": 37,
+            "candidate_over_baseline": 0.08685446009389672
+          },
+          "execution_global_new_calls": {
+            "baseline_median": 77,
+            "candidate_median": 62,
+            "candidate_over_baseline": 0.8051948051948052
+          },
+          "incremental_peak_including_preparation_bytes": {
+            "baseline_median": 1384448,
+            "candidate_median": 1347584,
+            "candidate_over_baseline": 0.9733727810650887
+          },
+          "combined_global_new_calls": {
+            "baseline_median": 503,
+            "candidate_median": 99,
+            "candidate_over_baseline": 0.19681908548707752
+          },
+          "combined_global_new_requested_bytes": {
+            "baseline_median": 928626,
+            "candidate_median": 891842,
+            "candidate_over_baseline": 0.9603887894588349
+          }
+        }
+      },
+      "canonical_synthetic": {
+        "deterministic": {
+          "cold_total_s": {
+            "baseline_median": 0.561820438,
+            "candidate_median": 0.51205772,
+            "candidate_over_baseline": 0.9114259385487148
+          },
+          "execute_sink_s": {
+            "baseline_median": 0.542331104,
+            "candidate_median": 0.497271786,
+            "candidate_over_baseline": 0.9169154826863849
+          },
+          "workspace_scratch_bytes": {
+            "baseline_median": 5279744,
+            "candidate_median": 5279744,
+            "candidate_over_baseline": 1.0
+          },
+          "prep_global_new_calls": {
+            "baseline_median": 226,
+            "candidate_median": 29,
+            "candidate_over_baseline": 0.12831858407079647
+          },
+          "execution_global_new_calls": {
+            "baseline_median": 154,
+            "candidate_median": 27,
+            "candidate_over_baseline": 0.17532467532467533
+          },
+          "incremental_peak_including_preparation_bytes": {
+            "baseline_median": 12947456,
+            "candidate_median": 12947456,
+            "candidate_over_baseline": 1.0
+          },
+          "combined_global_new_calls": {
+            "baseline_median": 380,
+            "candidate_median": 56,
+            "candidate_over_baseline": 0.14736842105263157
+          },
+          "combined_global_new_requested_bytes": {
+            "baseline_median": 12647864,
+            "candidate_median": 12628240,
+            "candidate_over_baseline": 0.9984484336643721
+          }
+        },
+        "stochastic": {
+          "cold_total_s": {
+            "baseline_median": 1.946389243,
+            "candidate_median": 1.773230453,
+            "candidate_over_baseline": 0.9110358883133224
+          },
+          "execute_sink_s": {
+            "baseline_median": 1.923179506,
+            "candidate_median": 1.756207547,
+            "candidate_over_baseline": 0.9131792126116801
+          },
+          "workspace_scratch_bytes": {
+            "baseline_median": 10588160,
+            "candidate_median": 10588160,
+            "candidate_over_baseline": 1.0
+          },
+          "prep_global_new_calls": {
+            "baseline_median": 426,
+            "candidate_median": 37,
+            "candidate_over_baseline": 0.08685446009389672
+          },
+          "execution_global_new_calls": {
+            "baseline_median": 317,
+            "candidate_median": 62,
+            "candidate_over_baseline": 0.19558359621451105
+          },
+          "incremental_peak_including_preparation_bytes": {
+            "baseline_median": 18391040,
+            "candidate_median": 18362368,
+            "candidate_over_baseline": 0.9984409799554566
+          },
+          "combined_global_new_calls": {
+            "baseline_median": 743,
+            "candidate_median": 99,
+            "candidate_over_baseline": 0.13324360699865412
+          },
+          "combined_global_new_requested_bytes": {
+            "baseline_median": 18087122,
+            "candidate_median": 18047458,
+            "candidate_over_baseline": 0.9978070585248444
+          }
+        }
+      }
+    },
+    "retained_direct": {
+      "flags": [
+        "--expression",
+        "csr",
+        "--graph",
+        "csr",
+        "--output",
+        "retain",
+        "--block",
+        "64"
+      ],
+      "retained_output_gate_pass": true,
+      "comparative_metrics": {
+        "wall_seconds": {
+          "baseline_median": 0.56567854500463,
+          "candidate_median": 0.5656492350026383,
+          "candidate_over_baseline": 0.99994818611692
+        },
+        "cold_total_s": {
+          "baseline_median": 0.534848922,
+          "candidate_median": 0.540785297,
+          "candidate_over_baseline": 1.0110991623163448
+        },
+        "load_s": {
+          "baseline_median": 0.002490105,
+          "candidate_median": 0.002533371,
+          "candidate_over_baseline": 1.0173751709265273
+        },
+        "prepare_s": {
+          "baseline_median": 0.01386389,
+          "candidate_median": 0.01368797,
+          "candidate_over_baseline": 0.9873109206723366
+        },
+        "execute_sink_s": {
+          "baseline_median": 0.518732936,
+          "candidate_median": 0.52326086,
+          "candidate_over_baseline": 1.0087288153224188
+        },
+        "workspace_scratch_bytes": {
+          "baseline_median": 5279744,
+          "candidate_median": 4231168,
+          "candidate_over_baseline": 0.8013964313421257
+        },
+        "prep_global_new_calls": {
+          "baseline_median": 231,
+          "candidate_median": 34,
+          "candidate_over_baseline": 0.1471861471861472
+        },
+        "prep_global_new_requested_bytes": {
+          "baseline_median": 46146384,
+          "candidate_median": 45079720,
+          "candidate_over_baseline": 0.9768852094673334
+        },
+        "execution_global_new_calls": {
+          "baseline_median": 38,
+          "candidate_median": 26,
+          "candidate_over_baseline": 0.6842105263157895
+        },
+        "execution_global_new_requested_bytes": {
+          "baseline_median": 54760,
+          "candidate_median": 54616,
+          "candidate_over_baseline": 0.9973703433162893
+        },
+        "incremental_peak_including_preparation_bytes": {
+          "baseline_median": 46514176,
+          "candidate_median": 45510656,
+          "candidate_over_baseline": 0.9784255019373018
+        },
+        "process_peak_bytes": {
+          "baseline_median": 59482112,
+          "candidate_median": 58421248,
+          "candidate_over_baseline": 0.982164991048065
+        },
+        "prepared_bytes": {
+          "baseline_median": 7127384,
+          "candidate_median": 7127384,
+          "candidate_over_baseline": 1.0
+        },
+        "input_storage_bytes": {
+          "baseline_median": 2511112,
+          "candidate_median": 2511112,
+          "candidate_over_baseline": 1.0
+        },
+        "fit_result_bytes": {
+          "baseline_median": 53248,
+          "candidate_median": 53248,
+          "candidate_over_baseline": 1.0
+        },
+        "retained_output_bytes": {
+          "baseline_median": 33607680,
+          "candidate_median": 33607680,
+          "candidate_over_baseline": 1.0
+        },
+        "combined_global_new_calls": {
+          "baseline_median": 269,
+          "candidate_median": 60,
+          "candidate_over_baseline": 0.22304832713754646
+        },
+        "combined_global_new_requested_bytes": {
+          "baseline_median": 46201144,
+          "candidate_median": 45134336,
+          "candidate_over_baseline": 0.9769094895139393
+        }
+      },
+      "allocation_phase_accounting": {
+        "baseline": {
+          "preparation_global_new_calls": {
+            "samples": [
+              231,
+              231,
+              231
+            ],
+            "median": 231,
+            "min": 231,
+            "max": 231
+          },
+          "preparation_global_new_requested_bytes": {
+            "samples": [
+              46146384,
+              46146384,
+              46146384
+            ],
+            "median": 46146384,
+            "min": 46146384,
+            "max": 46146384
+          },
+          "execution_global_new_calls": {
+            "samples": [
+              38,
+              38,
+              38
+            ],
+            "median": 38,
+            "min": 38,
+            "max": 38
+          },
+          "execution_global_new_requested_bytes": {
+            "samples": [
+              54760,
+              54760,
+              54760
+            ],
+            "median": 54760,
+            "min": 54760,
+            "max": 54760
+          },
+          "combined_global_new_calls": {
+            "samples": [
+              269,
+              269,
+              269
+            ],
+            "median": 269,
+            "min": 269,
+            "max": 269
+          },
+          "combined_global_new_requested_bytes": {
+            "samples": [
+              46201144,
+              46201144,
+              46201144
+            ],
+            "median": 46201144,
+            "min": 46201144,
+            "max": 46201144
+          }
+        },
+        "candidate": {
+          "preparation_global_new_calls": {
+            "samples": [
+              34,
+              34,
+              34
+            ],
+            "median": 34,
+            "min": 34,
+            "max": 34
+          },
+          "preparation_global_new_requested_bytes": {
+            "samples": [
+              45079720,
+              45079720,
+              45079720
+            ],
+            "median": 45079720,
+            "min": 45079720,
+            "max": 45079720
+          },
+          "execution_global_new_calls": {
+            "samples": [
+              26,
+              26,
+              26
+            ],
+            "median": 26,
+            "min": 26,
+            "max": 26
+          },
+          "execution_global_new_requested_bytes": {
+            "samples": [
+              54616,
+              54616,
+              54616
+            ],
+            "median": 54616,
+            "min": 54616,
+            "max": 54616
+          },
+          "combined_global_new_calls": {
+            "samples": [
+              60,
+              60,
+              60
+            ],
+            "median": 60,
+            "min": 60,
+            "max": 60
+          },
+          "combined_global_new_requested_bytes": {
+            "samples": [
+              45134336,
+              45134336,
+              45134336
+            ],
+            "median": 45134336,
+            "min": 45134336,
+            "max": 45134336
+          }
+        },
+        "candidate_minus_baseline": {
+          "preparation_calls": -197,
+          "preparation_requested_bytes": -1066664,
+          "execution_calls": -12,
+          "execution_requested_bytes": -144,
+          "combined_calls": -209,
+          "combined_requested_bytes": -1066808
+        },
+        "unused_sink_buffer_observation": {
+          "baseline_workspace_scratch_bytes": 5279744,
+          "candidate_workspace_scratch_bytes": 4231168,
+          "delta_bytes": -1048576,
+          "expected_N_times_block_times_width": 1048576,
+          "baseline_retained_output_bytes": 33607680,
+          "candidate_retained_output_bytes": 33607680
+        },
+        "source_interpretation": "Baseline workspace construction allocates output conversion slots even when direct output goes to a caller array. Candidate direct-output workspace configures zero sink slots. This observation is bounded to the canonical retained-output case."
+      }
+    },
+    "allocation_phase_note": "Requested sink output slots moved from workspace construction to stage setup; compare preparation+execution totals, not an isolated bucket.",
+    "runtime_claim": "No robust general speedup; canonical cold medians nearly unchanged.",
+    "raw": "../artifacts/thin-reference/candidate-evidence.json"
+  },
+  "build_cost": {
+    "baseline_warm_consumer_median_s": 0.22,
+    "warm_consumer_median_s": 0.2655464230047073,
+    "maximum_median_s": 0.275,
+    "gate_pass": true,
+    "private_edit_preserved_bmis": true,
+    "public_bmi_count": 13,
+    "private_edit_preserved_consumer_objects": true,
+    "consumer_objects": 4,
+    "raw_consumer": "../artifacts/thin-reference/installed_consumer.json",
+    "raw_private_probe": "../artifacts/thin-reference/private_build_probe.json"
+  },
+  "source_review": "../../docs/reference-review.md",
+  "preservation": {
+    "quarantine_unchanged": true,
+    "binary16_helper_unchanged": true,
+    "data_package_not_modified": true,
+    "parent_index_unchanged": true,
+    "historical_receipts_unchanged": true,
+    "execution_handle_waiver_preserved": true
+  },
+  "artifacts": {
+    "baseline-evidence.json": {
+      "path": "../artifacts/thin-reference/baseline-evidence.json",
+      "sha256": "00e5a5bc56a6761635500db2b63189ecfba829e29f5cb8c95738bfaf571feec3"
+    },
+    "candidate-evidence.json": {
+      "path": "../artifacts/thin-reference/candidate-evidence.json",
+      "sha256": "a8111e3bc74387ec91dcc2492d0b1576673b8f60a5bf27e249b055abda4facb8"
+    },
+    "deterministic-reference.json": {
+      "path": "../artifacts/thin-reference/deterministic-reference.json",
+      "sha256": "839e07b3c2bf2cac00911bcbd3ba9c9cf36f56a58e4c84b5d30bbab2b779e381"
+    },
+    "stochastic-reference.json": {
+      "path": "../artifacts/thin-reference/stochastic-reference.json",
+      "sha256": "c97b7523312a94ecbb3d13b7c97fd0cbc35485acbc4738a066b697ba6737eab9"
+    },
+    "release-tests.log": {
+      "path": "../artifacts/thin-reference/release-tests.log",
+      "sha256": "11e1cc2fb3896dc8748190db4705bcc4566d0a6ed9baf6bb51d3e68ceb79b0fc"
+    },
+    "sanitizers-tests.log": {
+      "path": "../artifacts/thin-reference/sanitizers-tests.log",
+      "sha256": "c5b8c61bcad11b4b33fb6281e07c3c86b5d8aa4d56fb23f30a75a29bb296e4c5"
+    },
+    "tsan-tests.log": {
+      "path": "../artifacts/thin-reference/tsan-tests.log",
+      "sha256": "2d0ed03289a5c65e1c7ec26a7069825c61e5dcb034b15dd673bfc4d528e3ef17"
+    }
+  },
+  "limits": [
+    "Synthetic paired measurements on the recorded host and toolchain only.",
+    "Global new counters omit allocations outside those hooks; process high-water deltas are not allocator peaks.",
+    "Aggregate checksums supplement elementwise scientific and unit checks.",
+    "ThreadSanitizer does not instrument the separately installed AnnData++ binary.",
+    "No LeakSanitizer, GPU, other-compiler, or other-platform qualification."
+  ]
+}

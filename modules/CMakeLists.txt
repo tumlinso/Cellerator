@@ -8,7 +8,7 @@ target_include_directories(cellerator_core_module PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_sources(cellerator_core_module PUBLIC FILE_SET CXX_MODULES
-    FILES native/cellerator.core.ccm)
+    FILES cellerator.core.ccm)
 
 # Compile imports in the normal build with CMake's dependency scanner.
 add_executable(cellerator_module_contract "${PROJECT_SOURCE_DIR}/tests/modules/module_contract.cc")

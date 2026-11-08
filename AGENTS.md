@@ -38,6 +38,18 @@ implementation conflicts with it, report the conflict to the user; do not
 silently revise the definition to match. Keep its rendered include faithful
 to the canonical root text.
 
+## Protected C++ coding style
+
+Read [coding_style.md](coding_style.md) before C++ design, implementation, or
+style review in Cellerator, including CUDA C++. It is protected contributor
+authority. **Do not change, rewrite, weaken, replace, move, or remove
+`coding_style.md`, or weaken its protection in `AGENTS.md`, unless the user
+explicitly authorizes that specific change.** A general implementation, cleanup,
+documentation, or refactoring request does not grant that authorization. Report
+conflicts with other guidance, tooling, or implementation to the user; do not
+silently revise these rules to match. Keep the rendered include faithful to
+the canonical root text.
+
 ## Biological machine learning is the organizing principle
 
 Read [scope](scope.md) and [architecture](docs/architecture.qmd) before proposing

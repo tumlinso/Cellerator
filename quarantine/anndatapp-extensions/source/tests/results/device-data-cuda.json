@@ -1,0 +1,210 @@
+{
+  "format": "anndata.device-data-cuda-validation",
+  "version": 1,
+  "observed_at": "2026-11-04T13:07:57.461652+00:00",
+  "repository_head_at_record": "dc946845e1457299351b0ffc4ba36ef91d49db7b",
+  "working_tree": "modified; source hashes below identify tested files",
+  "source_manifest_sha256": "d803575050b4dc1f4461f9ace47c7478f7cd17e125b72f463f4512dcec021e92",
+  "source_sha256": {
+    "CMakeLists.txt": "f1dcc1e897abf93f82a7e2704ffc8156db2927b1ffad950493030f96baf678f5",
+    "cmake/anndataConfig.cmake.in": "d68111bddc5806b61404a24b9374f23125b015be5b1c8e0b68726d4f59fe673e",
+    "cmake/anndataCuda.cmake": "dfc3e011505c8d239edf3327c7648a33ed3c84f30515bb03e842fc28b73daebc",
+    "cmake/anndataCudaConfig.cmake": "3a4d79c8d8d150623ac1a7698e09cb19ca2d36abd699b7dc5e7e41cfaa48fca8",
+    "cmake/anndataModuleProvider.cmake": "b31cbde3379f1d99f06b1b024f10c230e10c6f24916fd5a97e8f287c2c9dc97d",
+    "include/anndata/device_abi.h": "b2342ce5d6c216b3f00ce3499b1bcc185ca9ca3d34f8571069e277d94b820719",
+    "src/anndata.arrays.cppm": "57b38b9226b707108911520da1c6cdea3923d71c1567672ff3e010580850817f",
+    "src/anndata.backed.cppm": "3f2f37cfaa4c1244c8a1b3ef53f9dff95913ded2ba594b99e4122b4d2d57f0d3",
+    "src/anndata.backed.storage.cppm": "f9c2f8733e2758c956570a5ab00128ba14a35826fc2d51ea57912a0d6dc695d6",
+    "src/anndata.core.cppm": "84d83471d19cb26bc4b32c38ac2e2f4f1b08e16113ec367a92114edab23bd000",
+    "src/anndata.cppm": "991a9e1f5fd8e51c4affc061e7a49751ccaeb3d0feda0a2e173db84b843a6490",
+    "src/anndata.cuda.cppm": "de48d6e7877e365753abf4f225ae3f5da400d534b437b0b4e0c9afa4419a9711",
+    "src/anndata.data.cppm": "bd9c497f0b7e04f0112e113262dea66948913b967d1c67349e26634ff6161887",
+    "src/anndata.records.cppm": "51c1309d347a3092d084f42f730d218ee03e3373b92830ca4b964de3d6a9b25f",
+    "src/anndata.streaming.cppm": "d2f81863fa54139930e486d32f348508d05725c97433d1da3350d6c2fbedfe2f",
+    "src/anndata.strings.cppm": "1dfefcb0741a8cf1cfa994963aafa5e39c253d67ca0e5091622a81895dd82db8",
+    "src/arrays.cpp": "14ad65c51c849873a2a334edb8594f132ebfdd7165fa61d8ed020ad42b314307",
+    "src/backed.cpp": "04fddb3d2b0ff61e238ce5f06dde7c761c645c4d99d4287eb25589b6cdef92dd",
+    "src/backed_array.cpp": "7c4d80f675d316ed445a88b5f2761c62742b682236c418ed1584b5ecc7ad3633",
+    "src/backed_category.cpp": "dac5f71d7f9a041d1f567e946184c290b0b16b6558bb3866407476dd66a37d15",
+    "src/backed_codec.cpp": "3fb9d774968d5169f54b99beb514f525acfe2bc76d79242386182d7506a87c8f",
+    "src/backed_colors.cpp": "f30532596efbfcac5094a554eb71ec78694f6e888afa19689621b9543be6eb36",
+    "src/backed_copy.cpp": "2de18492c1c32cb34ebacaff20f440c33adc1040b8053e2f6b23eb17f2c7a411",
+    "src/backed_geometry.cpp": "b6d17961d7e25c124c64e408b56dcb110687c631aafd45208efb34bec0511d3f",
+    "src/backed_index.cpp": "02885b86c37791b205a487d31c18a968c22fd4dbeaaa7266ec58221d173e97f1",
+    "src/backed_records.cpp": "6d6ad742815550a5197d16a74644af10f2d4895c4b45d0df95cd3a23e5a4f3f9",
+    "src/backed_structure.cpp": "29d84942b772cbf1dc16f87ef3259458a2cc4b6c4ad31bcb7d30469cad5a61bb",
+    "src/backed_writer.cpp": "a9946ff29894622f5c07e4bc3f7b6576ea768add7a7e10fbb476b688d68d47f5",
+    "src/cuda.cpp": "90a0e56d319b9f2f2f035008baa097883afcdb19a9621bdd15e7e4aad9ab6a19",
+    "src/cuda/bridge.h": "ca4740ae8d9ee0c95596876cd7050a90658b90daf412896d417f73613ddb7399",
+    "src/cuda/kernels.cu": "e51151e39edab0e20f9dfbd8418b23ef0113e1d8bb75b876f683683421560e4a",
+    "src/data.cpp": "935a1b3e392c9f116b7b2c568b6a1795e7eb98e16eb252da5c1f8a97b02b5188",
+    "src/records.cpp": "8e281f266e8dfa2ea1ab75dc1c1a61318c00fc1e261000a9eb029743256fad3f",
+    "src/streaming.cpp": "ea67a7b4849cc93b70d8b3e41ea9721000c9f67d85652386b78bf394aa59256a",
+    "src/strings.cpp": "2e113cd18f11c3ca56f2c0f1bddce8c49f44f86d275b3003f0f92e1da6527aeb",
+    "tests/test_cuda.cpp": "73681392704cb0b13396c3210802e85ecb580da55d4da4adc32ceb20ddfc5d9f"
+  },
+  "build": {
+    "source_dir": "/home/tumlinson/anndata.cppm",
+    "build_dir": "/tmp/anndata_cuda_work/full",
+    "configuration": "Release",
+    "generator": "Ninja 1.11.1",
+    "cxx": "clang 18.1.3 with clang-scan-deps-18",
+    "cuda": "NVCC 12.9.86",
+    "cuda_architecture": "sm_70",
+    "cxx_standard": "C++20, extensions off",
+    "cuda_flags": [
+      "--fmad=false",
+      "--ftz=false"
+    ],
+    "cuda_component": "ON",
+    "hdf5": "OFF",
+    "zarr": "OFF",
+    "target": "test_cuda",
+    "binary": "/tmp/anndata_cuda_work/full/test_cuda",
+    "binary_sha256": "5f704b76ced3173933f7ecc64e19c82d5c34208f77e10ca5876cb5dab8e7a85b",
+    "cuda_object_sha256": "d7d22f652f9bd441263513a767ed9a94d2b52fa3691be6c4f6af5c0082ba07ea",
+    "current_ninja_dry_run": "no work to do",
+    "warning": "NVCC reports future removal of offline compilation before sm_75"
+  },
+  "checks": [
+    {
+      "name": "host-metadata-and-packing",
+      "status": "passed",
+      "method": "CPU-only Clang ASan+UBSan test linked against temporary no-op CUDA bridge stubs; no GPU operations",
+      "checks": [
+        "dtype mappings",
+        "signed-stride bounds",
+        "access and writable self-alias rejection",
+        "CSR/CSC metadata",
+        "bit-preserving host column packing"
+      ]
+    },
+    {
+      "name": "dense-geometry-exhaustive-small",
+      "status": "passed",
+      "cases": 68850,
+      "method": "CPU-only independent enumeration oracle, shapes 0..4, strides -4..4, origins 0..16, read/write",
+      "source": "/tmp/anndata_cuda_work/srctest/geometry_fuzz.cpp",
+      "source_sha256": "180dc0c2f1df0efe04b3a7f19745f79b81c77463da805214ab72437c71689a7d",
+      "sanitizers": [
+        "address",
+        "undefined"
+      ],
+      "cuda_bridge": "temporary no-op stubs"
+    },
+    {
+      "name": "installed-mixed-consumer",
+      "status": "build passed; not executed",
+      "method": "lazy CPU-only find_package followed by CUDA component; Clang module import and NVCC ordinary-header TU linked together",
+      "consumer_source_sha256": {
+        "main.cpp": "959df90aa87763fe2b227d0ba5c73112d58dfbe11b9548374186fa8a7d9daea7",
+        "abi.cu": "1a165d8f5a011d517b954a4e2f5004b5c42ad24d0da7fe4889fba476722a5e67",
+        "CMakeLists.txt": "90398de8af455ff22b6e4512e4495c567a197fa0fa1c8fa4261cb663e6406e30"
+      },
+      "limitation": "consumer configured on a CUDA-capable host; no-toolkit host not tested here"
+    },
+    {
+      "name": "private-host-implementation-rebuild",
+      "status": "passed",
+      "method": "removed only private object in temporary source build, then rebuilt",
+      "unchanged_bmis": 6,
+      "unchanged_consumer_objects": 2,
+      "limitation": "Clang host CUDA module with bridge stubs; not a warm import timing or NVCC rebuild test"
+    },
+    {
+      "name": "scheduler-gpu-contract",
+      "status": "passed",
+      "command": [
+        "/tmp/anndata_cuda_work/full/test_cuda",
+        "--gpu"
+      ],
+      "job_id": "22f3d231-dedf-4065-ab40-c9e50b2f9eb4",
+      "attempt_id": "6d9d4c65-31a5-46a6-b3c2-441e7fe08940",
+      "device_uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "device": "Tesla V100-SXM2-16GB",
+      "allocation": "exclusive",
+      "gpu_memory_admission_bytes": 2147483648,
+      "quiescence": "verified, 3 consecutive idle samples",
+      "exit_code": 0,
+      "stdout": "anndata CUDA host and GPU tests passed",
+      "stdout_sha256": "4e699970471ff0fc0420dc37150d3417eb0a4981e44bad67c93601b6e5a37e61",
+      "cleanup_verified": true,
+      "lease_state": "released",
+      "coverage": [
+        "host metadata and packing",
+        "explicit-stream transfers and fill",
+        "foreign retain/adopt and allocator callbacks",
+        "FP32-FP16 and direct FP64-FP16 casts",
+        "checked integer cast above 2^53",
+        "CSR and CSC content validation with duplicates/mixed widths",
+        "checked/trusted device column gather including empty rows"
+      ]
+    }
+  ],
+  "compute_sanitizer": {
+    "status": "passed",
+    "job_id": "7e2951f8-8a18-417f-951a-d038986323d2",
+    "tools": [
+      {
+        "tool": "memcheck",
+        "command": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "91",
+          "/tmp/anndata_cuda_work/full/test_cuda",
+          "--gpu"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.4053517739994277
+      },
+      {
+        "tool": "racecheck",
+        "command": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "racecheck",
+          "--error-exitcode",
+          "91",
+          "/tmp/anndata_cuda_work/full/test_cuda",
+          "--gpu"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.8348582790022192
+      },
+      {
+        "tool": "synccheck",
+        "command": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "synccheck",
+          "--error-exitcode",
+          "91",
+          "/tmp/anndata_cuda_work/full/test_cuda",
+          "--gpu"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.39193143699958455
+      }
+    ],
+    "binary_sha256": "5f704b76ced3173933f7ecc64e19c82d5c34208f77e10ca5876cb5dab8e7a85b",
+    "sanitizer_sha256": "979adf037f4e3434a976b7f0912b0a05ce3b062e31b2a73397a1bf1cd5f57547",
+    "raw": "/home/tumlinson/velocity.cppm/tests/artifacts/device-precision/anndata-sanitizers-12.9/summary.json",
+    "raw_sha256": "731867ccf395d28468b44e9dee7cb891abfa049d119c243c562ff33c8074971b",
+    "cleanup_verified": true,
+    "lease_state": "released"
+  },
+  "performance_claim": "none",
+  "workflow_acceptance": "Local and Scheduler observations; not a native Todo outcome acceptance.",
+  "coordinated_installed_consumer": {
+    "status": "build and execution passed",
+    "job_id": "e68df9ab-e0f5-4c4a-877d-c1d74cb52f0f",
+    "source": "/home/tumlinson/velocity.cppm/tests/cuda_consumer",
+    "receipt": "/home/tumlinson/velocity.cppm/tests/artifacts/device-precision/installed-cuda-consumers-b9ffa71b23e3/summary.json",
+    "coverage": "Two installed mixed Clang/NVCC executables import anndata.cuda and velocity.cuda, verify ordinary-header type identity, and execute device fits.",
+    "cleanup_verified": true,
+    "lease_state": "released"
+  },
+  "coordinated_update_utc": "2026-11-04T14:38:31.441560+00:00"
+}

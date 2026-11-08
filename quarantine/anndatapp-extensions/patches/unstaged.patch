@@ -1,0 +1,2221 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 83944d3..ef6c1a8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -26,6 +26,7 @@ option(ANNDATAPP_ENABLE_RECORD_INTEROP_TESTS "Compare records using the isolated
+ option(ANNDATAPP_ENABLE_SANITIZERS "Enable AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+ option(ANNDATAPP_ENABLE_HDF5 "Enable native H5AD reading and writing" ON)
+ option(ANNDATAPP_ENABLE_ZARR "Enable native Zarr v2/v3 reading and writing" ON)
++option(ANNDATAPP_ENABLE_CUDA "Build the optional device buffers and transfer module" OFF)
+ if(ANNDATAPP_ENABLE_RECORD_INTEROP_TESTS AND (NOT ANNDATAPP_ENABLE_INTEROP_TESTS OR NOT ANNDATAPP_ENABLE_HDF5))
+   message(FATAL_ERROR "Record interoperability tests require ANNDATAPP_ENABLE_INTEROP_TESTS and ANNDATAPP_ENABLE_HDF5.")
+ endif()
+@@ -90,6 +91,8 @@ if(ANNDATAPP_ENABLE_SANITIZERS)
+   target_link_options(anndatapp PUBLIC -fsanitize=address,undefined)
+ endif()
+ 
++include(cmake/anndatappCuda.cmake)
++
+ install(TARGETS anndatapp EXPORT anndatappTargets
+   FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_DATADIR}/anndatapp/modules
+   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+@@ -104,6 +107,8 @@ write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/anndatappConfigVer
+ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/anndatappConfig.cmake"
+   "${CMAKE_CURRENT_BINARY_DIR}/anndatappConfigVersion.cmake"
+   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindBlosc.cmake"
++  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/anndatappModuleProvider.cmake"
++  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/anndatappCudaConfig.cmake"
+   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/anndatapp)
+ install(FILES LICENSE DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/anndatapp)
+ 
+@@ -186,6 +191,10 @@ endif()
+ if(ANNDATAPP_ENABLE_INTEROP_TESTS)
+   enable_testing()
+   find_package(Python3 REQUIRED COMPONENTS Interpreter)
++  if(ANNDATAPP_BUILD_TESTS)
++    add_test(NAME python_float16 COMMAND ${Python3_EXECUTABLE}
++      "${CMAKE_CURRENT_SOURCE_DIR}/tests/python_float16.py" $<TARGET_FILE:test_arrays>)
++  endif()
+   add_executable(interop_driver tests/interop_driver.cpp)
+   target_link_libraries(interop_driver PRIVATE anndatapp::anndatapp)
+   add_test(NAME python_semantics COMMAND ${Python3_EXECUTABLE}
+diff --git a/README.md b/README.md
+index 1618eaa..1e59570 100644
+--- a/README.md
++++ b/README.md
+@@ -59,6 +59,9 @@ Consumers can use `add_subdirectory()` or install the package and link `anndatap
+ - [Extension contracts and qualification requirements](docs/extension-contract.md)
+ - [Development, installation, and validation](docs/development.md)
+ - [Naming cutover validation](docs/rename-validation.md)
++
++- [FP16 numerical storage](docs/fp16.md)
++- [CUDA device data and transfers](docs/device-data.md)
+ - [Memory access and ownership](docs/memory.md)
+ - [Native records and compound H5AD elements](docs/records.md)
+ - [Compact selection and direct metadata validation](docs/selection-validation.md)
+diff --git a/cmake/anndatappConfig.cmake.in b/cmake/anndatappConfig.cmake.in
+index 7ec0d98..4bc1f92 100644
+--- a/cmake/anndatappConfig.cmake.in
++++ b/cmake/anndatappConfig.cmake.in
+@@ -1,91 +1,23 @@
+ @PACKAGE_INIT@
+ set(ANNDATAPP_HAS_HDF5 @ANNDATAPP_ENABLE_HDF5@)
+ set(ANNDATAPP_HAS_ZARR @ANNDATAPP_ENABLE_ZARR@)
+-if(TARGET anndatapp::anndatapp)
+-  check_required_components(anndatapp)
+-  return()
+-endif()
+-if(@ANNDATAPP_ENABLE_HDF5@)
+-  include(CMakeFindDependencyMacro)
+-  find_dependency(PkgConfig)
+-  pkg_check_modules(ANNDATAPP_HDF5 REQUIRED IMPORTED_TARGET GLOBAL hdf5>=1.10)
+-endif()
+-if(@ANNDATAPP_ENABLE_ZARR@)
++set(ANNDATAPP_HAS_CUDA @ANNDATAPP_ENABLE_CUDA@)
++include("${CMAKE_CURRENT_LIST_DIR}/anndatappModuleProvider.cmake")
++if(NOT TARGET anndatapp::anndatapp)
+   include(CMakeFindDependencyMacro)
+-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+-  find_dependency(PkgConfig)
+-  pkg_check_modules(ANNDATAPP_ZLIB REQUIRED IMPORTED_TARGET GLOBAL zlib)
+-  pkg_check_modules(ANNDATAPP_ZSTD REQUIRED IMPORTED_TARGET GLOBAL libzstd)
+-  find_dependency(Blosc)
+-endif()
+-include("${CMAKE_CURRENT_LIST_DIR}/anndatappTargets.cmake")
+-
+-# CMake 3.28's Ninja generator emits duplicate synthetic module targets when
+-# two consumers link the same installed target with CXX_MODULES directly.
+-# Build the installed interfaces once in a normal target, which CMake can
+-# share across consumers, and expose a regular imported package target.
+-# The proxy copies only the binary/link properties; linking the original
+-# exported target here would reintroduce its imported module file set.
+-get_target_property(_anndatapp_binary_type anndatapp::anndatapp_binary TYPE)
+-if(_anndatapp_binary_type STREQUAL "STATIC_LIBRARY")
+-  add_library(anndatapp_binary_proxy STATIC IMPORTED GLOBAL)
+-elseif(_anndatapp_binary_type STREQUAL "SHARED_LIBRARY")
+-  add_library(anndatapp_binary_proxy SHARED IMPORTED GLOBAL)
+-else()
+-  message(FATAL_ERROR "Unsupported installed anndatapp binary type: ${_anndatapp_binary_type}")
+-endif()
+-
+-get_target_property(_anndatapp_configurations anndatapp::anndatapp_binary IMPORTED_CONFIGURATIONS)
+-if(_anndatapp_configurations)
+-  set_property(TARGET anndatapp_binary_proxy PROPERTY IMPORTED_CONFIGURATIONS "${_anndatapp_configurations}")
+-endif()
+-foreach(_anndatapp_property IN ITEMS IMPORTED_LOCATION IMPORTED_IMPLIB IMPORTED_SONAME
+-    IMPORTED_NO_SONAME INTERFACE_LINK_LIBRARIES INTERFACE_LINK_OPTIONS)
+-  get_property(_anndatapp_is_set TARGET anndatapp::anndatapp_binary PROPERTY "${_anndatapp_property}" SET)
+-  if(_anndatapp_is_set)
+-    get_target_property(_anndatapp_value anndatapp::anndatapp_binary "${_anndatapp_property}")
+-    set_property(TARGET anndatapp_binary_proxy PROPERTY "${_anndatapp_property}" "${_anndatapp_value}")
++  if(ANNDATAPP_HAS_HDF5)
++    find_dependency(PkgConfig)
++    pkg_check_modules(ANNDATAPP_HDF5 REQUIRED IMPORTED_TARGET GLOBAL hdf5>=1.10)
+   endif()
+-endforeach()
+-foreach(_anndatapp_configuration IN LISTS _anndatapp_configurations)
+-  foreach(_anndatapp_property IN ITEMS IMPORTED_LOCATION IMPORTED_IMPLIB IMPORTED_SONAME
+-      IMPORTED_NO_SONAME IMPORTED_LINK_DEPENDENT_LIBRARIES IMPORTED_LINK_INTERFACE_LANGUAGES)
+-    set(_anndatapp_configured_property "${_anndatapp_property}_${_anndatapp_configuration}")
+-    get_property(_anndatapp_is_set TARGET anndatapp::anndatapp_binary PROPERTY "${_anndatapp_configured_property}" SET)
+-    if(_anndatapp_is_set)
+-      get_target_property(_anndatapp_value anndatapp::anndatapp_binary "${_anndatapp_configured_property}")
+-      set_property(TARGET anndatapp_binary_proxy PROPERTY "${_anndatapp_configured_property}" "${_anndatapp_value}")
+-    endif()
+-  endforeach()
+-endforeach()
+-
+-get_target_property(_anndatapp_module_files anndatapp::anndatapp_binary CXX_MODULE_SET)
+-get_target_property(_anndatapp_module_dirs anndatapp::anndatapp_binary CXX_MODULE_DIRS)
+-add_library(anndatapp_module_interfaces STATIC EXCLUDE_FROM_ALL)
+-set_target_properties(anndatapp_module_interfaces PROPERTIES
+-  CXX_EXTENSIONS OFF POSITION_INDEPENDENT_CODE ON)
+-target_sources(anndatapp_module_interfaces PUBLIC FILE_SET CXX_MODULES
+-  BASE_DIRS ${_anndatapp_module_dirs} FILES ${_anndatapp_module_files})
+-target_link_libraries(anndatapp_module_interfaces PUBLIC anndatapp_binary_proxy)
+-
+-# Reuse the exported usage requirements rather than reconstructing flags.
+-foreach(_anndatapp_property IN ITEMS COMPILE_DEFINITIONS COMPILE_FEATURES COMPILE_OPTIONS)
+-  get_property(_anndatapp_is_set TARGET anndatapp::anndatapp_binary
+-    PROPERTY "IMPORTED_CXX_MODULES_${_anndatapp_property}" SET)
+-  if(_anndatapp_is_set)
+-    get_target_property(_anndatapp_value anndatapp::anndatapp_binary "IMPORTED_CXX_MODULES_${_anndatapp_property}")
+-    set_property(TARGET anndatapp_module_interfaces APPEND PROPERTY "${_anndatapp_property}" "${_anndatapp_value}")
++  if(ANNDATAPP_HAS_ZARR)
++    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
++    find_dependency(PkgConfig)
++    pkg_check_modules(ANNDATAPP_ZLIB REQUIRED IMPORTED_TARGET GLOBAL zlib)
++    pkg_check_modules(ANNDATAPP_ZSTD REQUIRED IMPORTED_TARGET GLOBAL libzstd)
++    find_dependency(Blosc)
+   endif()
+-  get_property(_anndatapp_is_set TARGET anndatapp::anndatapp_binary
+-    PROPERTY "INTERFACE_${_anndatapp_property}" SET)
+-  if(_anndatapp_is_set)
+-    get_target_property(_anndatapp_value anndatapp::anndatapp_binary "INTERFACE_${_anndatapp_property}")
+-    set_property(TARGET anndatapp_module_interfaces APPEND PROPERTY "INTERFACE_${_anndatapp_property}" "${_anndatapp_value}")
+-  endif()
+-endforeach()
+-
+-# An imported interface target keeps downstream install(EXPORT) dependencies
+-# expressed as anndatapp::anndatapp while using the shared local interface build.
+-add_library(anndatapp::anndatapp INTERFACE IMPORTED GLOBAL)
+-set_property(TARGET anndatapp::anndatapp PROPERTY INTERFACE_LINK_LIBRARIES anndatapp_module_interfaces)
++  include("${CMAKE_CURRENT_LIST_DIR}/anndatappTargets.cmake")
++  _anndatapp_module_provider(anndatapp::anndatapp anndatapp::anndatapp_binary anndatapp_module_interfaces)
++endif()
++include("${CMAKE_CURRENT_LIST_DIR}/anndatappCudaConfig.cmake")
+ check_required_components(anndatapp)
+diff --git a/docs/development.md b/docs/development.md
+index c49079e..8cf7a5c 100644
+--- a/docs/development.md
++++ b/docs/development.md
+@@ -20,6 +20,11 @@ cmake --workflow --preset shared-release
+ 
+ `cmake --workflow --preset native-check` configures, builds, and runs the entire native/import/installed-consumer suite in one command with Python tests disabled. It is the standalone integrated verification contract used by the Todo foundation milestone.
+ 
++The optional `ANNDATAPP_ENABLE_CUDA=ON` component provides device allocation,
++borrowed views, and explicit transfers without changing the CPU-only package.
++See [device-data.md](device-data.md) for its toolchain, lifetime, and stream
++contracts, and [fp16.md](fp16.md) for binary16 storage and file support.
++
+ Compiler dependency scanning uses CMake's CXX_MODULES file sets. CMake normally detects the versioned scanner; `CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS` is an override for unusual installations. Install the scanner corresponding to the selected compiler, rather than an unrelated LLVM development library.
+ 
+ ## Consumers and installation
+diff --git a/docs/validation.md b/docs/validation.md
+index 296dc0d..be75e17 100644
+--- a/docs/validation.md
++++ b/docs/validation.md
+@@ -17,6 +17,28 @@ BMIs and two measured consumer objects retained their hashes and timestamps.
+ The production change is confined to `backed_array.cpp` in an isolated worktree;
+ concurrent uncommitted fp16 work was preserved and is outside these results.
+ 
++## Binary16 and coordinated device data
++
++The [FP16 receipt](../tests/results/fp16.json) records exhaustive binary16
++roundtrips, rounding boundaries, direct FP64 conversion, independent H5AD/Zarr
++physical-encoding checks, backed transfers, and the pinned Scanpy records gate.
++Core tests pass 11/11 and full-storage ASan/UBSan/LeakSanitizer tests pass 18/18.
++LeakSanitizer ran outside the sandbox for this milestone. Existing unsupported
++format boundaries remain explicit in the [binary16 contract](fp16.md).
++
++The [device-data receipt](../tests/results/device-data-cuda.json) records the
++shared POD contracts and optional CUDA component. Real V100 tests cover signed
++strides, CSR/CSC duplicates and mixed index widths, external owners/allocators,
++explicit streams, transfers, fill, casts, and bounded column packing. CUDA
++memcheck, racecheck, and synccheck pass. Coordinated installed consumers compile
++with Clang/NVCC and execute through Scheduler. No-toolkit CPU discovery remains
++separate; this does not qualify execution on other GPU architectures.
++
++The coordinated package and source-bound dependency on velocity are recorded in
++[planning/device-precision.json](../planning/device-precision.json). GPU jobs
++have released leases and verified cleanup. Local qualification remains separate
++from native Todo outcome acceptance.
++
+ ## Storage completeness
+ 
+ The [completeness receipt](../tests/results/completeness-validation.json) records
+diff --git a/src/anndatapp.arrays.cppm b/src/anndatapp.arrays.cppm
+index 21ad47b..282d797 100644
+--- a/src/anndatapp.arrays.cppm
++++ b/src/anndatapp.arrays.cppm
+@@ -13,16 +13,27 @@ export module anndatapp.core:arrays;
+ 
+ export namespace anndatapp {
+ 
+-enum class DType { boolean, int8, uint8, int16, uint16, int32, uint32, int64, uint64, float32, float64 };
++enum class DType { boolean, int8, uint8, int16, uint16, int32, uint32, int64, uint64, float32, float64, float16 };
+ enum class Layout { dense, csr, csc };
+ enum class Validation { full, none };
+ enum class ByteOrder { native, little, big };
+ enum class ErrorCode { invalid_argument, out_of_bounds, dtype_mismatch, unsupported_layout, shape_mismatch, invalid_sparse_structure, non_contiguous, io_error, unsupported_encoding, unsupported_version, unsupported_dtype, unavailable_filter };
++// Binary16 storage is distinct from integers and CUDA's half type. Numeric
++// conversions round to nearest, ties to even; numeric NaNs become quiet NaN.
++struct Float16 {
++    std::uint16_t bits;
++    static constexpr Float16 from_bits(std::uint16_t value) noexcept { return {value}; }
++    static Float16 from_float(float value) noexcept;
++    static Float16 from_double(double value) noexcept;
++    float to_float() const noexcept;
++    double to_double() const noexcept;
++};
++
+ enum class NativeType : std::uint8_t {
+     boolean, character, signed_character, unsigned_character, wide_character,
+     character8, character16, character32, short_integer, unsigned_short_integer,
+     integer, unsigned_integer, long_integer, unsigned_long_integer,
+-    long_long_integer, unsigned_long_long_integer, single, double_precision
++    long_long_integer, unsigned_long_long_integer, single, double_precision, half
+ };
+ 
+ class Error : public std::runtime_error {
+@@ -129,6 +140,7 @@ template<class T> constexpr NativeType native_type_of() {
+     else if constexpr (std::is_same_v<U, unsigned long>) return NativeType::unsigned_long_integer;
+     else if constexpr (std::is_same_v<U, long long>) return NativeType::long_long_integer;
+     else if constexpr (std::is_same_v<U, unsigned long long>) return NativeType::unsigned_long_long_integer;
++    else if constexpr (std::is_same_v<U, Float16>) return NativeType::half;
+     else if constexpr (std::is_same_v<U, float>) return NativeType::single;
+     else if constexpr (std::is_same_v<U, double>) return NativeType::double_precision;
+     else static_assert(unsupported_dtype<U>, "unsupported anndatapp numerical type");
+@@ -146,6 +158,7 @@ template<class T> constexpr DType dtype_of() {
+     else if constexpr (std::is_integral_v<U> && std::is_unsigned_v<U> && sizeof(U) == 4) return DType::uint32;
+     else if constexpr (std::is_integral_v<U> && std::is_signed_v<U> && sizeof(U) == 8) return DType::int64;
+     else if constexpr (std::is_integral_v<U> && std::is_unsigned_v<U> && sizeof(U) == 8) return DType::uint64;
++    else if constexpr (std::is_same_v<U, Float16>) return DType::float16;
+     else if constexpr (std::is_same_v<U, float>) return DType::float32;
+     else if constexpr (std::is_same_v<U, double>) return DType::float64;
+     else static_assert(detail::unsupported_dtype<U>, "unsupported anndatapp numerical type");
+diff --git a/src/anndatapp.data.cppm b/src/anndatapp.data.cppm
+index e92cafa..87350de 100644
+--- a/src/anndatapp.data.cppm
++++ b/src/anndatapp.data.cppm
+@@ -260,7 +260,7 @@ public:
+     explicit Element(std::int64_t);
+     explicit Element(std::uint64_t);
+     explicit Element(double);
+-    template<class T> requires (std::is_arithmetic_v<T> && !std::is_same_v<T, bool>
++    template<class T> requires ((std::is_arithmetic_v<T> || std::is_same_v<T, Float16>) && !std::is_same_v<T, bool>
+                                && !std::is_same_v<T, std::int64_t>
+                                && !std::is_same_v<T, std::uint64_t>
+                                && !std::is_same_v<T, double>)
+@@ -301,6 +301,7 @@ public:
+         if (dtype() != dtype_of<T>())
+             throw Error(ErrorCode::dtype_mismatch, "element", "scalar dtype differs from requested type");
+         if constexpr (std::is_same_v<T, bool>) return boolean();
++        else if constexpr (std::is_same_v<T, Float16>) return Float16::from_double(floating());
+         else if constexpr (std::is_floating_point_v<T>) return static_cast<T>(floating());
+         else if constexpr (std::is_signed_v<T>) return static_cast<T>(signed_integer());
+         else return static_cast<T>(unsigned_integer());
+diff --git a/src/anndatapp.records.cppm b/src/anndatapp.records.cppm
+index 3a7c25e..ae1b24a 100644
+--- a/src/anndatapp.records.cppm
++++ b/src/anndatapp.records.cppm
+@@ -46,7 +46,7 @@ template<class T> constexpr DType record_dtype() {
+         std::is_same_v<U, std::uint16_t> || std::is_same_v<U, std::int32_t> ||
+         std::is_same_v<U, std::uint32_t> || std::is_same_v<U, std::int64_t> ||
+         std::is_same_v<U, std::uint64_t> || std::is_same_v<U, float> ||
+-        std::is_same_v<U, double>, "record members require a canonical fixed-width numerical type");
++        std::is_same_v<U, double> || std::is_same_v<U, Float16>, "record members require a canonical fixed-width numerical type");
+     return dtype_of<U>();
+ }
+ }
+diff --git a/src/arrays.cpp b/src/arrays.cpp
+index dabe6a1..3eda6f6 100644
+--- a/src/arrays.cpp
++++ b/src/arrays.cpp
+@@ -1,5 +1,6 @@
+ module;
+ #include <algorithm>
++#include <bit>
+ #include <cstddef>
+ #include <cstdint>
+ #include <cstring>
+@@ -102,11 +103,48 @@ Axis detail::compose_axis(const Axis& parent, const Axis& child, std::size_t sou
+     return gather_axis(std::move(positions));
+ }
+ 
++Float16 Float16::from_double(double value) noexcept {
++    const auto u = std::bit_cast<std::uint64_t>(value);
++    const auto sign = std::uint16_t((u >> 48) & 0x8000);
++    const auto exponent = unsigned((u >> 52) & 0x7ff);
++    const auto fraction = u & ((std::uint64_t{1} << 52) - 1);
++    if (exponent == 0x7ff) return {std::uint16_t(fraction ? 0x7e00 : sign | 0x7c00)};
++    if (!exponent) return {sign};
++    const int e = int(exponent) - 1023;
++    if (e > 15) return {std::uint16_t(sign | 0x7c00)};
++    if (e < -25) return {sign};
++    const auto mantissa = (std::uint64_t{1} << 52) | fraction;
++    const int shift = e >= -14 ? 42 : 28 - e;
++    auto rounded = mantissa >> shift;
++    const auto remainder = mantissa & ((std::uint64_t{1} << shift) - 1);
++    const auto halfway = std::uint64_t{1} << (shift - 1);
++    rounded += remainder > halfway || (remainder == halfway && (rounded & 1));
++    if (e < -14) return {std::uint16_t(sign | rounded)};
++    const auto encoded = (std::uint64_t(e + 15) << 10) + (rounded - 1024);
++    return {std::uint16_t(sign | encoded)};
++}
++Float16 Float16::from_float(float value) noexcept { return from_double(double(value)); }
++float Float16::to_float() const noexcept {
++    const auto sign = std::uint32_t(bits & 0x8000) << 16;
++    auto exponent = unsigned((bits >> 10) & 0x1f);
++    auto fraction = std::uint32_t(bits & 0x3ff);
++    if (exponent == 0x1f)
++        return std::bit_cast<float>(fraction ? 0x7fc00000u : sign | 0x7f800000u);
++    if (!exponent) {
++        if (!fraction) return std::bit_cast<float>(sign);
++        int e = -14;
++        while (!(fraction & 0x400)) { fraction <<= 1; --e; }
++        return std::bit_cast<float>(sign | (std::uint32_t(e + 127) << 23) | ((fraction & 0x3ff) << 13));
++    }
++    return std::bit_cast<float>(sign | (std::uint32_t(int(exponent) + 112) << 23) | (fraction << 13));
++}
++double Float16::to_double() const noexcept { return double(to_float()); }
++
+ std::size_t dtype_size(DType type) noexcept {
+     switch (type) {
+     case DType::boolean: return sizeof(bool);
+     case DType::int8: case DType::uint8: return 1;
+-    case DType::int16: case DType::uint16: return 2;
++    case DType::int16: case DType::uint16: case DType::float16: return 2;
+     case DType::int32: case DType::uint32: case DType::float32: return 4;
+     case DType::int64: case DType::uint64: case DType::float64: return 8;
+     }
+diff --git a/src/backed_array.cpp b/src/backed_array.cpp
+index 52e6f5e..200405f 100644
+--- a/src/backed_array.cpp
++++ b/src/backed_array.cpp
+@@ -55,6 +55,7 @@ Array allocate(DType t, std::vector<std::size_t> shape) {
+     case DType::uint32: return Array::empty<std::uint32_t>(std::move(shape));
+     case DType::int64: return Array::empty<std::int64_t>(std::move(shape));
+     case DType::uint64: return Array::empty<std::uint64_t>(std::move(shape));
++    case DType::float16: return Array::empty<Float16>(std::move(shape));
+     case DType::float32: return Array::empty<float>(std::move(shape));
+     case DType::float64: return Array::empty<double>(std::move(shape));
+     }
+@@ -1069,6 +1070,7 @@ auto view_packer(DType type) -> void (*)(void*,const std::vector<std::vector<std
+     case DType::int16:return pack_view<std::int16_t>;case DType::uint16:return pack_view<std::uint16_t>;
+     case DType::int32:return pack_view<std::int32_t>;case DType::uint32:return pack_view<std::uint32_t>;
+     case DType::int64:return pack_view<std::int64_t>;case DType::uint64:return pack_view<std::uint64_t>;
++    case DType::float16:return pack_view<Float16>;
+     case DType::float32:return pack_view<float>;case DType::float64:return pack_view<double>;
+     }
+     throw Error(ErrorCode::unsupported_dtype,"selected write","unsupported numerical dtype");
+diff --git a/src/backed_codec.cpp b/src/backed_codec.cpp
+index b08718f..a5e13fe 100644
+--- a/src/backed_codec.cpp
++++ b/src/backed_codec.cpp
+@@ -33,6 +33,7 @@ template<class F> decltype(auto) visit_dtype(DType dtype, F&& function) {
+         case DType::uint32: return function.template operator()<std::uint32_t>();
+         case DType::int64: return function.template operator()<std::int64_t>();
+         case DType::uint64: return function.template operator()<std::uint64_t>();
++        case DType::float16: return function.template operator()<Float16>();
+         case DType::float32: return function.template operator()<float>();
+         case DType::float64: return function.template operator()<double>();
+     }
+@@ -518,7 +519,7 @@ Column read_column(const std::shared_ptr<detail::BackedNode>& value) {
+             codec_fail(ErrorCode::unsupported_dtype, values_node->path,
+                        "nullable-boolean values must be boolean");
+         if (code == "nullable-integer" && (values.dtype() == DType::boolean ||
+-            values.dtype() == DType::float32 || values.dtype() == DType::float64))
++            values.dtype() == DType::float16 || values.dtype() == DType::float32 || values.dtype() == DType::float64))
+             codec_fail(ErrorCode::unsupported_dtype, values_node->path,
+                        "nullable-integer values must be integer");
+         return Column::nullable_numeric(std::move(values), std::move(validity));
+@@ -950,7 +951,7 @@ ElementKind BackedElement::kind() const {
+     if (code == "numeric-scalar") {
+         const auto info = backed_detail::inspect_node(node_);
+         if (info.dtype == DType::boolean) return ElementKind::boolean;
+-        if (info.dtype == DType::float32 || info.dtype == DType::float64)
++        if (info.dtype == DType::float16 || info.dtype == DType::float32 || info.dtype == DType::float64)
+             return ElementKind::floating;
+         if (info.dtype == DType::int8 || info.dtype == DType::int16 ||
+             info.dtype == DType::int32 || info.dtype == DType::int64)
+diff --git a/src/backed_colors.cpp b/src/backed_colors.cpp
+index e51ca54..e22caee 100644
+--- a/src/backed_colors.cpp
++++ b/src/backed_colors.cpp
+@@ -150,6 +150,7 @@ Array numeric_scalar_array(const Node& n, std::size_t length) {
+     case DType::uint32: return scalar_array<std::uint32_t>(n, length);
+     case DType::int64: return scalar_array<std::int64_t>(n, length);
+     case DType::uint64: return scalar_array<std::uint64_t>(n, length);
++    case DType::float16: return scalar_array<Float16>(n, length);
+     case DType::float32: return scalar_array<float>(n, length);
+     case DType::float64: return scalar_array<double>(n, length);
+     }
+diff --git a/src/backed_copy.cpp b/src/backed_copy.cpp
+index dc1f284..dc2570e 100644
+--- a/src/backed_copy.cpp
++++ b/src/backed_copy.cpp
+@@ -93,7 +93,7 @@ std::int64_t category_code(const std::byte* p,DType t,std::string_view path){
+ void validate_codes(const Node& codes,std::size_t dictionary,std::size_t budget){
+     const auto info=codes->session->backend->inspect(codes->path);
+     if(info.group||info.strings||info.shape.size()!=1||codes->axes.size()!=1)fail(ErrorCode::shape_mismatch,codes->path,"category codes must be one-dimensional numeric arrays");
+-    if(info.dtype==DType::boolean||info.dtype==DType::float32||info.dtype==DType::float64)fail(ErrorCode::unsupported_dtype,codes->path,"category codes require integer dtype");
++    if(info.dtype==DType::boolean||info.dtype==DType::float16||info.dtype==DType::float32||info.dtype==DType::float64)fail(ErrorCode::unsupported_dtype,codes->path,"category codes require integer dtype");
+     if(codes->session->options.validation==Validation::none)return;
+     const auto width=dtype_size(info.dtype);const auto cap=std::max<std::size_t>(1,budget/width);
+     std::vector<std::byte> data;
+@@ -238,7 +238,7 @@ void validate_category_dictionary(const Node& dictionary,std::size_t scratch_byt
+             }
+         }else{
+             if(values_code!="array"||v.group||v.strings)fail(ErrorCode::unsupported_encoding,values->path,"nullable numeric dictionary requires numeric values");
+-            if(code=="nullable-boolean" ? v.dtype!=DType::boolean : v.dtype==DType::boolean||v.dtype==DType::float32||v.dtype==DType::float64)
++            if(code=="nullable-boolean" ? v.dtype!=DType::boolean : v.dtype==DType::boolean||v.dtype==DType::float16||v.dtype==DType::float32||v.dtype==DType::float64)
+                 fail(ErrorCode::unsupported_dtype,values->path,"nullable dictionary values have an incompatible dtype");
+         }
+         if(session.options.validation==Validation::full){
+@@ -315,7 +315,7 @@ void copy_node_impl(Backend& destination,std::string_view path,const Node& sourc
+                 auto value=string_attr(info,"na-value",source->path);
+                 if(value!="NA"&&value!="NaN")fail(ErrorCode::unsupported_encoding,source->path,"unsupported nullable string sentinel");
+             }
+-        } else if(values_code!="array"||values_info.strings||(code=="nullable-boolean"?values_info.dtype!=DType::boolean:values_info.dtype==DType::boolean||values_info.dtype==DType::float32||values_info.dtype==DType::float64))
++        } else if(values_code!="array"||values_info.strings||(code=="nullable-boolean"?values_info.dtype!=DType::boolean:values_info.dtype==DType::boolean||values_info.dtype==DType::float16||values_info.dtype==DType::float32||values_info.dtype==DType::float64))
+             fail(ErrorCode::unsupported_dtype,values->path,"nullable values have an incompatible dtype");
+         destination.create_group(path,info.attrs);
+         copy_node(destination,child(path,"values"),values,budget,string_scratch_bytes);
+diff --git a/src/backed_hdf5.cpp b/src/backed_hdf5.cpp
+index 3a96e81..ee6cf1a 100644
+--- a/src/backed_hdf5.cpp
++++ b/src/backed_hdf5.cpp
+@@ -111,6 +111,20 @@ H5Handle boolean_type(const H5Context& c, std::string_view path) {
+     return type;
+ }
+ 
++H5Handle float16_type(const H5Context& c, H5T_order_t order, std::string_view path) {
++    H5Handle type(c.id(H5Tcopy(H5T_IEEE_F32LE), path, "create float16 datatype"), H5Tclose);
++    c.check(H5Tset_fields(type, 15, 10, 5, 0, 10), path, "set float16 fields");
++    c.check(H5Tset_ebias(type, 15), path, "set float16 exponent bias");
++    c.check(H5Tset_precision(type, 16), path, "set float16 precision");
++    c.check(H5Tset_size(type, 2), path, "set float16 width");
++    c.check(H5Tset_order(type, order), path, "set float16 byte order");
++    return type;
++}
++
++H5T_order_t native_order() {
++    return std::endian::native == std::endian::little ? H5T_ORDER_LE : H5T_ORDER_BE;
++}
++
+ DType dtype_of_h5(const H5Context& c, hid_t type, std::string_view path) {
+     const auto kind = H5Tget_class(type);
+     const auto width = H5Tget_size(type);
+@@ -131,6 +145,11 @@ DType dtype_of_h5(const H5Context& c, hid_t type, std::string_view path) {
+         if (width == 8) return s ? DType::int64 : DType::uint64;
+     }
+     if (kind == H5T_FLOAT) {
++        if (width == 2) {
++            auto little = float16_type(c, H5T_ORDER_LE, path);
++            auto big = float16_type(c, H5T_ORDER_BE, path);
++            if (H5Tequal(type, little) > 0 || H5Tequal(type, big) > 0) return DType::float16;
++        }
+         if (H5Tequal(type, H5T_IEEE_F32LE) > 0 || H5Tequal(type, H5T_IEEE_F32BE) > 0) return DType::float32;
+         if (H5Tequal(type, H5T_IEEE_F64LE) > 0 || H5Tequal(type, H5T_IEEE_F64BE) > 0) return DType::float64;
+     }
+@@ -150,11 +169,17 @@ hid_t native_type(DType type) {
+         case DType::uint64: return H5T_NATIVE_UINT64;
+         case DType::float32: return H5T_NATIVE_FLOAT;
+         case DType::float64: return H5T_NATIVE_DOUBLE;
++        case DType::float16: return -1;
+     }
+     return -1;
+ }
+ 
+-hid_t file_type(DType type, ByteOrder order) {
++H5Handle native_numeric_type(const H5Context& c, DType type, std::string_view path) {
++    if (type == DType::float16) return float16_type(c, native_order(), path);
++    return {native_type(type), nullptr};
++}
++
++hid_t predefined_file_type(DType type, ByteOrder order) {
+     const bool little = order == ByteOrder::little || (order == ByteOrder::native && std::endian::native == std::endian::little);
+     switch (type) {
+         case DType::boolean: return -1;
+@@ -168,10 +193,19 @@ hid_t file_type(DType type, ByteOrder order) {
+         case DType::uint64: return little ? H5T_STD_U64LE : H5T_STD_U64BE;
+         case DType::float32: return little ? H5T_IEEE_F32LE : H5T_IEEE_F32BE;
+         case DType::float64: return little ? H5T_IEEE_F64LE : H5T_IEEE_F64BE;
++        case DType::float16: return -1;
+     }
+     return -1;
+ }
+ 
++H5Handle file_type(const H5Context& c, DType type, ByteOrder order, std::string_view path) {
++    if (type == DType::float16) {
++        const bool little = order == ByteOrder::little || (order == ByteOrder::native && std::endian::native == std::endian::little);
++        return float16_type(c, little ? H5T_ORDER_LE : H5T_ORDER_BE, path);
++    }
++    return {predefined_file_type(type, order), nullptr};
++}
++
+ ByteOrder byte_order(hid_t type) {
+     const auto order = H5Tget_order(type);
+     return order == H5T_ORDER_LE ? ByteOrder::little : order == H5T_ORDER_BE ? ByteOrder::big : ByteOrder::native;
+@@ -499,11 +533,12 @@ H5Handle numeric_record_type(const H5Context& c, std::string_view field, hid_t m
+     if (H5Tget_class(member) == H5T_STRING) c.fail(ErrorCode::unsupported_dtype, field_path, "numeric record access requires a numeric field");
+     dtype = dtype_of_h5(c, member, field_path);
+     H5Handle boolean;
+-    hid_t scalar = native_type(dtype);
++    H5Handle native;
++    hid_t scalar;
+     if (dtype == DType::boolean) {
+         boolean = H5Handle(c.id(H5Tcopy(member), field_path, "copy boolean record datatype"), H5Tclose);
+         scalar = boolean;
+-    }
++    } else { native = native_numeric_type(c, dtype, field_path); scalar = native; }
+     return compound_field_type(c, field, scalar, path);
+ }
+ 
+@@ -706,7 +741,8 @@ public:
+         const auto n = select(start, count);
+         if (!n) return;
+         if (!out) c_.fail(ErrorCode::invalid_argument, path_, "null numerical destination");
+-        const auto memory = dtype_ == DType::boolean ? static_cast<hid_t>(type_) : native_type(dtype_);
++        auto native = native_numeric_type(c_, dtype_, path_);
++        const auto memory = dtype_ == DType::boolean ? static_cast<hid_t>(type_) : static_cast<hid_t>(native);
+         c_.check(H5Dread(dataset_, memory, memory_space_, file_space_, H5P_DEFAULT, out), path_, "read numerical rectangle");
+         ++stats_.read_calls; stats_.read_bytes += n * dtype_size(dtype_);
+     }
+@@ -716,7 +752,8 @@ public:
+         if (!n) return;
+         if (!in) c_.fail(ErrorCode::invalid_argument, path_, "null numerical source");
+         if (!write_checked_) { check_filters(c_, dataset_, path_, true); write_checked_ = true; }
+-        const auto memory = dtype_ == DType::boolean ? static_cast<hid_t>(type_) : native_type(dtype_);
++        auto native = native_numeric_type(c_, dtype_, path_);
++        const auto memory = dtype_ == DType::boolean ? static_cast<hid_t>(type_) : static_cast<hid_t>(native);
+         c_.check(H5Dwrite(dataset_, memory, memory_space_, file_space_, H5P_DEFAULT, in), path_, "write numerical rectangle");
+         ++stats_.write_calls; stats_.write_bytes += n * dtype_size(dtype_);
+     }
+@@ -881,7 +918,8 @@ public:
+         if (!r.elements) return;
+         if (!destination) c_.fail(ErrorCode::invalid_argument, path, "null numerical destination");
+         check_filters(c_, dataset, path);
+-        const hid_t memory_type = dtype == DType::boolean ? static_cast<hid_t>(type) : native_type(dtype);
++        auto native = native_numeric_type(c_, dtype, path);
++        const hid_t memory_type = dtype == DType::boolean ? static_cast<hid_t>(type) : static_cast<hid_t>(native);
+         c_.check(H5Dread(dataset, memory_type, r.memory_space, r.file_space, H5P_DEFAULT, destination), path, "read numerical rectangle");
+         // Preserve enum bytes here. The shared transfer layer canonicalizes
+         // full-validation boolean selections exactly once before typed access,
+@@ -898,7 +936,8 @@ public:
+         if (!r.elements) return;
+         if (!source) c_.fail(ErrorCode::invalid_argument, path, "null numerical source");
+         check_filters(c_, dataset, path, true);
+-        const hid_t memory_type = dtype == DType::boolean ? static_cast<hid_t>(type) : native_type(dtype);
++        auto native = native_numeric_type(c_, dtype, path);
++        const hid_t memory_type = dtype == DType::boolean ? static_cast<hid_t>(type) : static_cast<hid_t>(native);
+         c_.check(H5Dwrite(dataset, memory_type, r.memory_space, r.file_space, H5P_DEFAULT, source), path, "write numerical rectangle");
+     }
+ 
+@@ -1099,7 +1138,8 @@ public:
+         auto properties = dataset_properties(shape, dtype_size(dtype), path);
+         auto links = link_properties(path);
+         H5Handle boolean;
+-        const hid_t type = dtype == DType::boolean ? static_cast<hid_t>(boolean = boolean_type(c_, path)) : file_type(dtype, order_override_.value_or(order));
++        auto numeric = file_type(c_, dtype, order_override_.value_or(order), path);
++        const hid_t type = dtype == DType::boolean ? static_cast<hid_t>(boolean = boolean_type(c_, path)) : static_cast<hid_t>(numeric);
+         H5Handle dataset(c_.id(H5Dcreate2(parent, name.c_str(), type, space, links, properties, H5P_DEFAULT), path, "create numeric dataset"), H5Dclose);
+         write_attributes(c_, dataset, attrs, path);
+     }
+@@ -1136,7 +1176,7 @@ public:
+             if (field.strings) member = string_type(c_, field_path);
+             else if (field.dtype == DType::boolean) member = boolean_type(c_, field_path);
+             else {
+-                const auto file = file_type(field.dtype, order_override_.value_or(field.byte_order));
++                const auto file = file_type(c_, field.dtype, order_override_.value_or(field.byte_order), field_path);
+                 if (file < 0) c_.fail(ErrorCode::unsupported_dtype, field_path, "unsupported numeric record datatype");
+                 member = H5Handle(c_.id(H5Tcopy(file), field_path, "copy numeric record datatype"), H5Tclose);
+             }
+@@ -1240,7 +1280,8 @@ public:
+         H5Handle type(c_.id(H5Dget_type(dataset), path, "inspect mapped datatype"), H5Tclose);
+         if (H5Tget_class(type) == H5T_STRING || H5Tis_variable_str(type) > 0) return std::nullopt;
+         const auto dtype = dtype_of_h5(c_, type, path);
+-        if (dtype != DType::boolean && H5Tequal(type, native_type(dtype)) <= 0) return std::nullopt;
++        auto native = native_numeric_type(c_, dtype, path);
++        if (dtype != DType::boolean && H5Tequal(type, native) <= 0) return std::nullopt;
+         H5Handle space(c_.id(H5Dget_space(dataset), path, "inspect mapped dataspace"), H5Sclose);
+         if (H5Sget_simple_extent_type(space) == H5S_NULL) return std::nullopt;
+         auto shape = shape_of(c_, space, path);
+diff --git a/src/backed_index.cpp b/src/backed_index.cpp
+index 6d07d5f..1028f5d 100644
+--- a/src/backed_index.cpp
++++ b/src/backed_index.cpp
+@@ -376,6 +376,11 @@ std::string numeric_key(const std::byte* bytes, DType dtype, std::string_view pa
+     std::memcpy(key.data(), bytes, width);
+     if (dtype == DType::boolean) {
+         key[0] = std::to_integer<unsigned char>(bytes[0]) ? '\1' : '\0';
++    } else if (dtype == DType::float16) {
++        Float16 value;
++        std::memcpy(&value, bytes, sizeof(value));
++        if (std::isnan(value.to_float())) fail(ErrorCode::invalid_argument, path, "category dictionaries cannot contain NaN");
++        if (value.to_float() == 0) std::fill(key.begin(), key.end(), '\0');
+     } else if (dtype == DType::float32) {
+         float value;
+         std::memcpy(&value, bytes, sizeof(value));
+diff --git a/src/backed_records.cpp b/src/backed_records.cpp
+index 13c5112..15a5727 100644
+--- a/src/backed_records.cpp
++++ b/src/backed_records.cpp
+@@ -77,6 +77,7 @@ Array make_array(DType t, const Shape& shape, std::string_view path) {
+     case DType::uint32: return Array::empty<std::uint32_t>(shape);
+     case DType::int64: return Array::empty<std::int64_t>(shape);
+     case DType::uint64: return Array::empty<std::uint64_t>(shape);
++    case DType::float16: return Array::empty<Float16>(shape);
+     case DType::float32: return Array::empty<float>(shape);
+     case DType::float64: return Array::empty<double>(shape);
+     }
+diff --git a/src/backed_writer.cpp b/src/backed_writer.cpp
+index f93e13c..5d0c9f4 100644
+--- a/src/backed_writer.cpp
++++ b/src/backed_writer.cpp
+@@ -126,14 +126,15 @@ void validate_unique_values(ArrayView values, std::string_view path) {
+         auto view = selected->view().bytes();
+         bytes.emplace(view);
+     }
+-    std::unordered_set<T> seen;
++    std::unordered_set<std::conditional_t<std::is_same_v<T, Float16>, float, T>> seen;
+     seen.reserve(values.extent(0));
+     for (std::size_t i = 0; i < values.extent(0); ++i) {
+         T value{};
+         std::memcpy(&value, bytes->data() + static_cast<std::ptrdiff_t>(i) * bytes->stride_bytes(0), sizeof(T));
+-        if constexpr (std::is_floating_point_v<T>)
+-            if (std::isnan(value)) fail(ErrorCode::invalid_argument, path, "category dictionaries cannot contain NaN");
+-        if (!seen.insert(value).second)
++        auto key = [&] { if constexpr (std::is_same_v<T, Float16>) return value.to_float(); else return value; }();
++        if constexpr (std::is_floating_point_v<decltype(key)>)
++            if (std::isnan(key)) fail(ErrorCode::invalid_argument, path, "category dictionaries cannot contain NaN");
++        if (!seen.insert(key).second)
+             fail(ErrorCode::invalid_argument, path, "category dictionaries must contain unique values");
+     }
+ }
+@@ -149,6 +150,7 @@ void validate_unique_numeric(ArrayView values, std::string_view path) {
+         case DType::uint32: validate_unique_values<std::uint32_t>(values, path); return;
+         case DType::int64: validate_unique_values<std::int64_t>(values, path); return;
+         case DType::uint64: validate_unique_values<std::uint64_t>(values, path); return;
++        case DType::float16: validate_unique_values<Float16>(values, path); return;
+         case DType::float32: validate_unique_values<float>(values, path); return;
+         case DType::float64: validate_unique_values<double>(values, path); return;
+     }
+@@ -200,7 +202,7 @@ void validate_column(ColumnView column, std::string_view path, Validation valida
+     if (column.kind() == ColumnKind::numeric) {
+         auto values = column.values();
+         validate_array(values, child_path(path, "values"), validation);
+-        if (column.nullable() && (values.dtype() == DType::float32 || values.dtype() == DType::float64))
++        if (column.nullable() && (values.dtype() == DType::float16 || values.dtype() == DType::float32 || values.dtype() == DType::float64))
+             fail(ErrorCode::unsupported_dtype, path, "nullable floating-point columns have no supported AnnData codec");
+         return;
+     }
+@@ -618,6 +620,7 @@ void write_element_impl(Backend& backend, std::string_view path, ElementView val
+                 case DType::uint32: { const auto x = value.scalar<std::uint32_t>(); backend.write_numeric(path, {}, {}, &x); return; }
+                 case DType::int64: { const auto x = value.scalar<std::int64_t>(); backend.write_numeric(path, {}, {}, &x); return; }
+                 case DType::uint64: { const auto x = value.scalar<std::uint64_t>(); backend.write_numeric(path, {}, {}, &x); return; }
++                case DType::float16: { const auto x = value.scalar<Float16>(); backend.write_numeric(path, {}, {}, &x); return; }
+                 case DType::float32: { const auto x = value.scalar<float>(); backend.write_numeric(path, {}, {}, &x); return; }
+                 case DType::float64: { const auto x = value.scalar<double>(); backend.write_numeric(path, {}, {}, &x); return; }
+             }
+diff --git a/src/backed_zarr.cpp b/src/backed_zarr.cpp
+index c4b6e3f..7229ff7 100644
+--- a/src/backed_zarr.cpp
++++ b/src/backed_zarr.cpp
+@@ -71,6 +71,41 @@ backed_detail::Attributes from_json(const ze::Json& attrs) {
+     return result;
+ }
+ char byte_order(ByteOrder order) { return order==ByteOrder::little?'<':order==ByteOrder::big?'>':'='; }
++DType public_dtype(ze::Type type,std::string_view path) {
++    switch(type) {
++        case ze::Type::boolean: return DType::boolean;
++        case ze::Type::int8: return DType::int8;
++        case ze::Type::uint8: return DType::uint8;
++        case ze::Type::int16: return DType::int16;
++        case ze::Type::uint16: return DType::uint16;
++        case ze::Type::int32: return DType::int32;
++        case ze::Type::uint32: return DType::uint32;
++        case ze::Type::int64: return DType::int64;
++        case ze::Type::uint64: return DType::uint64;
++        case ze::Type::float32: return DType::float32;
++        case ze::Type::float64: return DType::float64;
++        case ze::Type::float16: return DType::float16;
++        case ze::Type::string: break;
++    }
++    throw Error(ErrorCode::unsupported_dtype,std::string(path),"string Zarr array has no numeric dtype");
++}
++ze::Type storage_type(DType type,std::string_view path) {
++    switch(type) {
++        case DType::boolean: return ze::Type::boolean;
++        case DType::int8: return ze::Type::int8;
++        case DType::uint8: return ze::Type::uint8;
++        case DType::int16: return ze::Type::int16;
++        case DType::uint16: return ze::Type::uint16;
++        case DType::int32: return ze::Type::int32;
++        case DType::uint32: return ze::Type::uint32;
++        case DType::int64: return ze::Type::int64;
++        case DType::uint64: return ze::Type::uint64;
++        case DType::float32: return ze::Type::float32;
++        case DType::float64: return ze::Type::float64;
++        case DType::float16: return ze::Type::float16;
++    }
++    throw Error(ErrorCode::unsupported_dtype,std::string(path),"unsupported numeric dtype for Zarr");
++}
+ struct Mapping {
+     void* data=MAP_FAILED;
+     std::size_t size=0;
+@@ -163,7 +198,7 @@ public:
+         for(const auto& [name,value]:node.attributes.items()) { (void)value; if(!semantic_attribute(name)) info.has_opaque_attrs=true; }
+         if(!node.group) {
+             info.strings=node.array.type==ze::Type::string;
+-            if(!info.strings) info.dtype=static_cast<DType>(node.array.type);
++            if(!info.strings) info.dtype=public_dtype(node.array.type,path);
+             info.shape=node.array.shape;
+             info.physical.shape=node.array.shape;
+             info.physical.organization=StorageOrganization::chunked;
+@@ -205,7 +240,7 @@ public:
+         auto actual=dtype;
+         auto encoding=attrs.find("encoding-type");
+         if(encoding!=attrs.end() && std::get_if<std::string>(&encoding->second) && std::get<std::string>(encoding->second)=="null") actual=DType::boolean;
+-        store().create_array(std::string(path),static_cast<ze::Type>(actual),shape,to_json(attrs),byte_order(order),create_);
++        store().create_array(std::string(path),storage_type(actual,path),shape,to_json(attrs),byte_order(order),create_);
+     }); }
+     void create_strings(std::string_view path,const std::vector<std::size_t>& shape,const backed_detail::Attributes& attrs) override { zarr_call([&] { store().create_array(std::string(path),ze::Type::string,shape,to_json(attrs),'|',create_); }); }
+     void attributes(std::string_view path,const backed_detail::Attributes& attrs) override { zarr_call([&] { store().attributes(std::string(path),to_json(attrs)); }); }
+@@ -223,7 +258,7 @@ public:
+     std::optional<MappedArray> map_numeric(std::string_view path) override { return zarr_call([&]() -> std::optional<MappedArray> {
+         const auto node=store().inspect(std::string(path));
+         // Canonical bool representation requires conversion and validation.
+-        if(!node.exists || node.group || node.array.type==ze::Type::boolean) return std::nullopt;
++        if(!node.exists || node.group || node.array.type==ze::Type::boolean || node.array.type==ze::Type::string) return std::nullopt;
+         auto file=store().mapping_file(std::string(path)); if(file.empty()) return std::nullopt;
+         auto bytes=ze::checked_product(node.array.shape)*node.array.item_size; if(!bytes) return std::nullopt;
+         const int fd=::open(file.c_str(),O_RDONLY|O_CLOEXEC);
+@@ -233,7 +268,7 @@ public:
+         auto owner=std::make_shared<Mapping>(); owner->size=bytes;
+         owner->data=::mmap(nullptr,bytes,PROT_READ,MAP_PRIVATE,fd,0); const auto saved=errno; ::close(fd);
+         if(owner->data==MAP_FAILED) throw Error(ErrorCode::io_error,file.string(),std::strerror(saved));
+-        return MappedArray(owner,static_cast<const std::byte*>(owner->data),bytes,static_cast<DType>(node.array.type),node.array.shape);
++        return MappedArray(owner,static_cast<const std::byte*>(owner->data),bytes,public_dtype(node.array.type,path),node.array.shape);
+     }); }
+ };
+ void prepare_destination(std::string_view path,bool exclusive) {
+diff --git a/src/data.cpp b/src/data.cpp
+index 7068369..2627d81 100644
+--- a/src/data.cpp
++++ b/src/data.cpp
+@@ -177,6 +177,7 @@ decltype(auto) visit_numeric(DType dtype, F&& f) {
+         case DType::uint32: return f.template operator()<std::uint32_t>();
+         case DType::int64: return f.template operator()<std::int64_t>();
+         case DType::uint64: return f.template operator()<std::uint64_t>();
++        case DType::float16: return f.template operator()<Float16>();
+         case DType::float32: return f.template operator()<float>();
+         case DType::float64: return f.template operator()<double>();
+     }
+@@ -283,13 +284,14 @@ void check_category_dictionary(const ColumnView& cats) {
+         auto a = cats.values();
+         visit_numeric(a.dtype(), [&]<class T>() {
+             auto v = a.bytes();
+-            std::unordered_set<T> seen;
++            std::unordered_set<std::conditional_t<std::is_same_v<T, Float16>, float, T>> seen;
+             for (std::size_t i = 0; i < cats.size(); ++i) {
+                 T value;
+                 std::memcpy(&value, v.data() + static_cast<std::ptrdiff_t>(i) * v.stride_bytes(0), sizeof value);
+-                if constexpr (std::is_floating_point_v<T>)
+-                    if (std::isnan(value)) fail(ErrorCode::invalid_argument, "categorical/categories", "categories cannot contain NaN");
+-                if (!seen.insert(value).second)
++                auto key = [&] { if constexpr (std::is_same_v<T, Float16>) return value.to_float(); else return value; }();
++                if constexpr (std::is_floating_point_v<decltype(key)>)
++                    if (std::isnan(key)) fail(ErrorCode::invalid_argument, "categorical/categories", "categories cannot contain NaN");
++                if (!seen.insert(key).second)
+                     fail(ErrorCode::invalid_argument, "categorical/categories", "categories must be unique");
+             }
+         });
+@@ -845,6 +847,8 @@ Element Element::scalar_from_bytes(DType dtype, const void* bytes) {
+         e.impl_->scalar_dtype = dtype;
+         if constexpr (std::is_same_v<T, bool>) {
+             e.impl_->kind = ElementKind::boolean; e.impl_->boolean = value;
++        } else if constexpr (std::is_same_v<T, Float16>) {
++            e.impl_->kind = ElementKind::floating; e.impl_->floating = value.to_double();
+         } else if constexpr (std::is_floating_point_v<T>) {
+             e.impl_->kind = ElementKind::floating; e.impl_->floating = value;
+         } else if constexpr (std::is_signed_v<T>) {
+diff --git a/src/h5ad.cpp b/src/h5ad.cpp
+index 21e4b8c..bfa3229 100644
+--- a/src/h5ad.cpp
++++ b/src/h5ad.cpp
+@@ -129,6 +129,20 @@ Handle boolean_type(const Context& c, bool native, std::string_view path) {
+     return type;
+ }
+ 
++Handle float16_type(const Context& c, H5T_order_t order, std::string_view path) {
++    Handle type(c.id(H5Tcopy(H5T_IEEE_F32LE), path, "create float16 datatype"), H5Tclose);
++    c.check(H5Tset_fields(type, 15, 10, 5, 0, 10), path, "set float16 fields");
++    c.check(H5Tset_ebias(type, 15), path, "set float16 exponent bias");
++    c.check(H5Tset_precision(type, 16), path, "set float16 precision");
++    c.check(H5Tset_size(type, 2), path, "set float16 width");
++    c.check(H5Tset_order(type, order), path, "set float16 byte order");
++    return type;
++}
++
++H5T_order_t native_order() {
++    return std::endian::native == std::endian::little ? H5T_ORDER_LE : H5T_ORDER_BE;
++}
++
+ bool exists(const Context& c, hid_t parent, std::string_view name, std::string_view path) {
+     const auto value = H5Lexists(parent, std::string(name).c_str(), H5P_DEFAULT);
+     if (value < 0) c.fail(ErrorCode::io_error, path, "cannot inspect element existence");
+@@ -319,6 +333,11 @@ DType dtype(const Context& c, hid_t type, std::string_view path) {
+         if (width == 8) return sign ? DType::int64 : DType::uint64;
+     }
+     if (kind == H5T_FLOAT) {
++        if (width == 2) {
++            auto little = float16_type(c, H5T_ORDER_LE, path);
++            auto big = float16_type(c, H5T_ORDER_BE, path);
++            if (H5Tequal(type, little) > 0 || H5Tequal(type, big) > 0) return DType::float16;
++        }
+         if (H5Tequal(type, H5T_IEEE_F32LE) > 0 || H5Tequal(type, H5T_IEEE_F32BE) > 0) return DType::float32;
+         if (H5Tequal(type, H5T_IEEE_F64LE) > 0 || H5Tequal(type, H5T_IEEE_F64BE) > 0) return DType::float64;
+     }
+@@ -338,10 +357,16 @@ hid_t native_type(DType type) {
+         case DType::uint64: return H5T_NATIVE_UINT64;
+         case DType::float32: return H5T_NATIVE_FLOAT;
+         case DType::float64: return H5T_NATIVE_DOUBLE;
++        case DType::float16: return -1;
+     }
+     return -1;
+ }
+ 
++Handle native_numeric_type(const Context& c, DType type, std::string_view path) {
++    if (type == DType::float16) return float16_type(c, native_order(), path);
++    return {native_type(type), nullptr};
++}
++
+ template<class F> decltype(auto) visit_dtype(DType type, F&& f) {
+     switch (type) {
+         case DType::boolean: return f.template operator()<bool>();
+@@ -355,6 +380,7 @@ template<class F> decltype(auto) visit_dtype(DType type, F&& f) {
+         case DType::uint64: return f.template operator()<std::uint64_t>();
+         case DType::float32: return f.template operator()<float>();
+         case DType::float64: return f.template operator()<double>();
++        case DType::float16: return f.template operator()<Float16>();
+     }
+     throw Error(ErrorCode::unsupported_dtype, "", "unknown numeric dtype");
+ }
+@@ -390,7 +416,8 @@ Array read_numeric(Context& c, hid_t object, std::string_view path) {
+         // An identical enum transfer preserves its raw byte. Mapping malformed
+         // enum values through another enum can instead produce 0xff, which is
+         // not a C++ bool representation. Inspect bytes before any bool load.
+-        const hid_t memory_type = type_id == DType::boolean ? static_cast<hid_t>(type) : native_type(type_id);
++        auto native = native_numeric_type(c, type_id, path);
++        const hid_t memory_type = type_id == DType::boolean ? static_cast<hid_t>(type) : static_cast<hid_t>(native);
+         herr_t status;
+         auto* data = array.edit().bytes().data();
+         H5E_BEGIN_TRY { status = H5Dread(object, memory_type, H5S_ALL, H5S_ALL, H5P_DEFAULT, data); } H5E_END_TRY;
+@@ -564,7 +591,8 @@ RecordArray read_record(Context& c, hid_t object, std::string_view path) {
+         auto a = visit_dtype(dt, [&]<class T> { return Array::empty<T>(shape); });
+         a.set_serialization_byte_order(byte_order(member));
+         if (n) {
+-            auto memory = record_projection(c, name, dt == DType::boolean ? hid_t(member) : native_type(dt), field_path);
++            auto native = native_numeric_type(c, dt, field_path);
++            auto memory = record_projection(c, name, dt == DType::boolean ? hid_t(member) : hid_t(native), field_path);
+             auto* p = a.edit().bytes().data();
+             c.check(H5Dread(object, memory, H5S_ALL, H5S_ALL, H5P_DEFAULT, p), field_path, "read record numeric member");
+             if (dt == DType::boolean && c.validation == Validation::full)
+@@ -583,7 +611,7 @@ std::vector<std::size_t> sparse_shape(const Context& c, hid_t object, std::strin
+         c.fail(ErrorCode::shape_mismatch, path, "sparse shape must contain two dimensions");
+     Handle type(c.id(H5Aget_type(attr), path, "inspect sparse shape datatype"), H5Tclose);
+     const auto kind = dtype(c, type, path);
+-    if (kind == DType::boolean || kind == DType::float32 || kind == DType::float64)
++    if (kind == DType::boolean || kind == DType::float16 || kind == DType::float32 || kind == DType::float64)
+         c.fail(ErrorCode::unsupported_dtype, path, "sparse shape must be an integer array");
+     std::uint64_t dims[2]{};
+     if (H5Tget_sign(type) == H5T_SGN_2) {
+@@ -672,7 +700,7 @@ Column read_column(Context& c, hid_t object, std::string_view path, std::string_
+         auto values = read_numeric(c, values_object, child(path, "values"));
+         if (code == "nullable-boolean" && values.dtype() != DType::boolean)
+             c.fail(ErrorCode::unsupported_dtype, path, "nullable-boolean values must be boolean");
+-        if (code == "nullable-integer" && (values.dtype() == DType::boolean || values.dtype() == DType::float32 || values.dtype() == DType::float64))
++        if (code == "nullable-integer" && (values.dtype() == DType::boolean || values.dtype() == DType::float16 || values.dtype() == DType::float32 || values.dtype() == DType::float64))
+             c.fail(ErrorCode::unsupported_dtype, path, "nullable-integer values must be integer");
+         return Column::nullable_numeric(std::move(values), std::move(validity));
+     }
+@@ -887,7 +915,7 @@ ByteOrder output_order(const Context& c, ByteOrder original) {
+     return original;
+ }
+ 
+-hid_t file_numeric_type(DType type, ByteOrder order) {
++hid_t predefined_file_numeric_type(DType type, ByteOrder order) {
+     const bool little = order == ByteOrder::little || (order == ByteOrder::native && std::endian::native == std::endian::little);
+     switch (type) {
+         case DType::boolean: return -1;
+@@ -901,10 +929,19 @@ hid_t file_numeric_type(DType type, ByteOrder order) {
+         case DType::uint64: return little ? H5T_STD_U64LE : H5T_STD_U64BE;
+         case DType::float32: return little ? H5T_IEEE_F32LE : H5T_IEEE_F32BE;
+         case DType::float64: return little ? H5T_IEEE_F64LE : H5T_IEEE_F64BE;
++        case DType::float16: return -1;
+     }
+     return -1;
+ }
+ 
++Handle file_numeric_type(const Context& c, DType type, ByteOrder order, std::string_view path) {
++    if (type == DType::float16) {
++        const bool little = order == ByteOrder::little || (order == ByteOrder::native && std::endian::native == std::endian::little);
++        return float16_type(c, little ? H5T_ORDER_LE : H5T_ORDER_BE, path);
++    }
++    return {predefined_file_numeric_type(type, order), nullptr};
++}
++
+ Handle dataset_properties(const Context& c, const std::vector<std::size_t>& shape, std::size_t width, std::string_view path) {
+     Handle properties(c.id(H5Pcreate(H5P_DATASET_CREATE), path, "create dataset properties"), H5Pclose);
+     if (c.write.compression == Compression::none || shape.empty() || count_of(c, shape, path) == 0) return properties;
+@@ -1015,8 +1052,10 @@ void write_numeric_buffer(Context& c, hid_t parent, std::string_view key, DType
+                            std::string_view path, bool element_encoding = true) {
+     auto file_bool = type == DType::boolean ? boolean_type(c, false, path) : Handle{};
+     auto memory_bool = type == DType::boolean ? boolean_type(c, true, path) : Handle{};
+-    const hid_t file_type = type == DType::boolean ? static_cast<hid_t>(file_bool) : file_numeric_type(type, output_order(c, order));
+-    const hid_t memory_type = type == DType::boolean ? static_cast<hid_t>(memory_bool) : native_type(type);
++    auto file_numeric = file_numeric_type(c, type, output_order(c, order), path);
++    auto memory_numeric = native_numeric_type(c, type, path);
++    const hid_t file_type = type == DType::boolean ? static_cast<hid_t>(file_bool) : static_cast<hid_t>(file_numeric);
++    const hid_t memory_type = type == DType::boolean ? static_cast<hid_t>(memory_bool) : static_cast<hid_t>(memory_numeric);
+     auto dataset = create_dataset(c, parent, key, file_type, shape, dtype_size(type), path);
+     if (element_encoding) write_encoding(c, dataset, "array", "0.2.0", path);
+     if (count_of(c, shape, path)) c.check(H5Dwrite(dataset, memory_type, H5S_ALL, H5S_ALL, H5P_DEFAULT, data), path, "write numerical buffer");
+@@ -1028,8 +1067,10 @@ void write_array(Context& c, hid_t parent, std::string_view key, ArrayView array
+         const auto type = array.dtype();
+         auto file_bool = type == DType::boolean ? boolean_type(c, false, path) : Handle{};
+         auto memory_bool = type == DType::boolean ? boolean_type(c, true, path) : Handle{};
+-        const hid_t file_type = type == DType::boolean ? static_cast<hid_t>(file_bool) : file_numeric_type(type, output_order(c, array.serialization_byte_order()));
+-        const hid_t memory_type = type == DType::boolean ? static_cast<hid_t>(memory_bool) : native_type(type);
++        auto file_numeric = file_numeric_type(c, type, output_order(c, array.serialization_byte_order()), path);
++        auto memory_numeric = native_numeric_type(c, type, path);
++        const hid_t file_type = type == DType::boolean ? static_cast<hid_t>(file_bool) : static_cast<hid_t>(file_numeric);
++        const hid_t memory_type = type == DType::boolean ? static_cast<hid_t>(memory_bool) : static_cast<hid_t>(memory_numeric);
+         auto dataset = create_dataset(c, parent, key, file_type, array_shape(array), dtype_size(type), path);
+         write_encoding(c, dataset, "array", "0.2.0", path);
+         write_dense_data(c, dataset, array, memory_type, path);
+@@ -1125,8 +1166,10 @@ void write_record(Context& c, hid_t parent, std::string_view key, RecordArrayVie
+         if (f.field.kind == RecordFieldKind::numeric) {
+             auto file_bool = f.field.dtype == DType::boolean ? boolean_type(c, false, member_path) : Handle{};
+             auto memory_bool = f.field.dtype == DType::boolean ? boolean_type(c, true, member_path) : Handle{};
+-            const hid_t ft = f.field.dtype == DType::boolean ? hid_t(file_bool) : file_numeric_type(f.field.dtype, output_order(c, f.field.byte_order));
+-            const hid_t mt = f.field.dtype == DType::boolean ? hid_t(memory_bool) : native_type(f.field.dtype);
++            auto file_numeric = file_numeric_type(c, f.field.dtype, output_order(c, f.field.byte_order), member_path);
++            auto memory_numeric = native_numeric_type(c, f.field.dtype, member_path);
++            const hid_t ft = f.field.dtype == DType::boolean ? hid_t(file_bool) : hid_t(file_numeric);
++            const hid_t mt = f.field.dtype == DType::boolean ? hid_t(memory_bool) : hid_t(memory_numeric);
+             c.check(H5Tinsert(file_type, f.field.name.c_str(), f.offset, ft), member_path, "define file record member");
+             c.check(H5Tinsert(memory_type, f.field.name.c_str(), f.offset, mt), member_path, "define native record member");
+         } else {
+@@ -1212,13 +1255,24 @@ void validate_dictionary(Context& c, ColumnView categories, std::string_view pat
+             selected.emplace(array.copy(Validation::none)); bytes.emplace(selected->view().bytes());
+         }
+         visit_dtype(array.dtype(), [&]<class T> {
+-            std::unordered_set<T> seen;
+-            for (std::size_t i = 0; i < categories.size(); ++i) {
+-                T value;
+-                std::memcpy(&value, bytes->data() + static_cast<std::ptrdiff_t>(i) * bytes->stride_bytes(0), sizeof(T));
+-                if constexpr (std::is_floating_point_v<T>)
+-                    if (std::isnan(value)) c.fail(ErrorCode::invalid_argument, path, "category dictionaries cannot contain NaN");
+-                if (!seen.insert(value).second) c.fail(ErrorCode::invalid_argument, path, "category dictionaries must contain unique values");
++            if constexpr (std::is_same_v<T, Float16>) {
++                std::unordered_set<std::uint16_t> seen;
++                for (std::size_t i = 0; i < categories.size(); ++i) {
++                    Float16 value;
++                    std::memcpy(&value, bytes->data() + static_cast<std::ptrdiff_t>(i) * bytes->stride_bytes(0), sizeof(T));
++                    if (std::isnan(value.to_float())) c.fail(ErrorCode::invalid_argument, path, "category dictionaries cannot contain NaN");
++                    const auto key = (value.bits & 0x7fff) == 0 ? std::uint16_t{0} : value.bits;
++                    if (!seen.insert(key).second) c.fail(ErrorCode::invalid_argument, path, "category dictionaries must contain unique values");
++                }
++            } else {
++                std::unordered_set<T> seen;
++                for (std::size_t i = 0; i < categories.size(); ++i) {
++                    T value;
++                    std::memcpy(&value, bytes->data() + static_cast<std::ptrdiff_t>(i) * bytes->stride_bytes(0), sizeof(T));
++                    if constexpr (std::is_floating_point_v<T>)
++                        if (std::isnan(value)) c.fail(ErrorCode::invalid_argument, path, "category dictionaries cannot contain NaN");
++                    if (!seen.insert(value).second) c.fail(ErrorCode::invalid_argument, path, "category dictionaries must contain unique values");
++                }
+             }
+         });
+     }
+@@ -1249,7 +1303,7 @@ void write_column(Context& c, hid_t parent, std::string_view key, ColumnView col
+     if (column.nullable()) {
+         const bool strings = column.kind() == ColumnKind::string;
+         auto type = strings ? DType::boolean : column.values().dtype();
+-        if (!strings && (type == DType::float32 || type == DType::float64))
++        if (!strings && (type == DType::float16 || type == DType::float32 || type == DType::float64))
+             c.fail(ErrorCode::unsupported_dtype, path, "nullable floating-point columns have no supported AnnData codec; nulls cannot be replaced by NaN without losing their distinction");
+         auto group = create_group(c, parent, key, path);
+         write_encoding(c, group, strings ? "nullable-string-array" : type == DType::boolean ? "nullable-boolean" : "nullable-integer", "0.1.0", path);
+@@ -1322,8 +1376,10 @@ void write_element(Context& c, hid_t parent, std::string_view key, ElementView e
+             const auto type = element.dtype();
+             auto file_bool = type == DType::boolean ? boolean_type(c, false, path) : Handle{};
+             auto memory_bool = type == DType::boolean ? boolean_type(c, true, path) : Handle{};
+-            const hid_t file_type = type == DType::boolean ? static_cast<hid_t>(file_bool) : file_numeric_type(type, output_order(c, element.serialization_byte_order()));
+-            const hid_t memory_type = type == DType::boolean ? static_cast<hid_t>(memory_bool) : native_type(type);
++            auto file_numeric = file_numeric_type(c, type, output_order(c, element.serialization_byte_order()), path);
++            auto memory_numeric = native_numeric_type(c, type, path);
++            const hid_t file_type = type == DType::boolean ? static_cast<hid_t>(file_bool) : static_cast<hid_t>(file_numeric);
++            const hid_t memory_type = type == DType::boolean ? static_cast<hid_t>(memory_bool) : static_cast<hid_t>(memory_numeric);
+             auto dataset = create_dataset(c, parent, key, file_type, {}, dtype_size(type), path);
+             write_encoding(c, dataset, "numeric-scalar", "0.2.0", path);
+             visit_dtype(type, [&]<class T> {
+diff --git a/src/records.cpp b/src/records.cpp
+index 5f7e871..48f8d60 100644
+--- a/src/records.cpp
++++ b/src/records.cpp
+@@ -83,6 +83,7 @@ template<class F> decltype(auto) visit_numeric(DType t, F&& f) {
+     case DType::uint32: return f.template operator()<std::uint32_t>();
+     case DType::int64: return f.template operator()<std::int64_t>();
+     case DType::uint64: return f.template operator()<std::uint64_t>();
++    case DType::float16: return f.template operator()<Float16>();
+     case DType::float32: return f.template operator()<float>();
+     case DType::float64: return f.template operator()<double>();
+     }
+diff --git a/src/streaming.cpp b/src/streaming.cpp
+index 7984d84..cb685b3 100644
+--- a/src/streaming.cpp
++++ b/src/streaming.cpp
+@@ -25,7 +25,7 @@ std::size_t product(const std::vector<std::size_t>& v) {
+ std::size_t width(DType t) {
+     switch(t) {
+     case DType::boolean: case DType::int8: case DType::uint8: return 1;
+-    case DType::int16: case DType::uint16: return 2;
++    case DType::int16: case DType::uint16: case DType::float16: return 2;
+     case DType::int32: case DType::uint32: case DType::float32: return 4;
+     default: return 8;
+     }
+diff --git a/src/zarr_codecs.cpp b/src/zarr_codecs.cpp
+index 9f95b21..653f3fd 100644
+--- a/src/zarr_codecs.cpp
++++ b/src/zarr_codecs.cpp
+@@ -329,7 +329,7 @@ std::size_t checked_product(const Shape& shape) {
+ std::size_t type_size(Type type) {
+     switch (type) {
+     case Type::boolean: case Type::int8: case Type::uint8: return 1;
+-    case Type::int16: case Type::uint16: return 2;
++    case Type::int16: case Type::uint16: case Type::float16: return 2;
+     case Type::int32: case Type::uint32: case Type::float32: return 4;
+     case Type::int64: case Type::uint64: case Type::float64: return 8;
+     case Type::string: return 0;
+diff --git a/src/zarr_engine.cpp b/src/zarr_engine.cpp
+index 66bcf75..5117825 100644
+--- a/src/zarr_engine.cpp
++++ b/src/zarr_engine.cpp
+@@ -9,6 +9,8 @@
+ #include <numeric>
+ #include <set>
+ 
++import anndatapp.core;
++
+ namespace anndatapp_zarr {
+ namespace {
+ Json load_json(const std::filesystem::path& file) {
+@@ -75,20 +77,70 @@ Type parse_type(std::string dtype, int format, char& endian, const std::string&
+         if (dtype.empty()) throw Error(Failure::dtype,path,"invalid Zarr v2 dtype");
+         if (dtype.front()=='<' || dtype.front()=='>' || dtype.front()=='|' || dtype.front()=='=') { endian=dtype.front(); dtype.erase(dtype.begin()); }
+         if (dtype=="b1" || dtype=="bool" || dtype=="?") return Type::boolean;
+-        const std::vector<std::string> names={"i1","u1","i2","u2","i4","u4","i8","u8","f4","f8"};
+-        for(std::size_t i=0;i<names.size();++i) if(dtype==names[i]) return static_cast<Type>(i+1);
++        if (dtype=="i1") return Type::int8;
++        if (dtype=="u1") return Type::uint8;
++        if (dtype=="i2") return Type::int16;
++        if (dtype=="u2") return Type::uint16;
++        if (dtype=="i4") return Type::int32;
++        if (dtype=="u4") return Type::uint32;
++        if (dtype=="i8") return Type::int64;
++        if (dtype=="u8") return Type::uint64;
++        if (dtype=="f2") return Type::float16;
++        if (dtype=="f4") return Type::float32;
++        if (dtype=="f8") return Type::float64;
+     } else {
+-        const std::vector<std::string> names={"bool","int8","uint8","int16","uint16","int32","uint32","int64","uint64","float32","float64","string"};
+-        for(std::size_t i=0;i<names.size();++i) if(dtype==names[i]) return static_cast<Type>(i);
+-        if(dtype=="str" || dtype=="utf8" || dtype=="vlen-utf8") return Type::string;
++        if (dtype=="bool") return Type::boolean;
++        if (dtype=="int8") return Type::int8;
++        if (dtype=="uint8") return Type::uint8;
++        if (dtype=="int16") return Type::int16;
++        if (dtype=="uint16") return Type::uint16;
++        if (dtype=="int32") return Type::int32;
++        if (dtype=="uint32") return Type::uint32;
++        if (dtype=="int64") return Type::int64;
++        if (dtype=="uint64") return Type::uint64;
++        if (dtype=="float16") return Type::float16;
++        if (dtype=="float32") return Type::float32;
++        if (dtype=="float64") return Type::float64;
++        if (dtype=="string" || dtype=="str" || dtype=="utf8" || dtype=="vlen-utf8") return Type::string;
+     }
+     throw Error(Failure::dtype,path,"unsupported Zarr dtype: "+dtype);
+ }
+ std::string dtype_name(Type type,int format,char endian) {
+-    const std::vector<std::string> v2={"b1","i1","u1","i2","u2","i4","u4","i8","u8","f4","f8","O"};
+-    const std::vector<std::string> v3={"bool","int8","uint8","int16","uint16","int32","uint32","int64","uint64","float32","float64","string"};
+-    if(format==3) return v3.at(static_cast<std::size_t>(type));
+-    return std::string(1,type_size(type)==1 || type==Type::string?'|':endian)+v2.at(static_cast<std::size_t>(type));
++    if(format==3) {
++        switch(type) {
++            case Type::boolean: return "bool";
++            case Type::int8: return "int8";
++            case Type::uint8: return "uint8";
++            case Type::int16: return "int16";
++            case Type::uint16: return "uint16";
++            case Type::int32: return "int32";
++            case Type::uint32: return "uint32";
++            case Type::int64: return "int64";
++            case Type::uint64: return "uint64";
++            case Type::float16: return "float16";
++            case Type::float32: return "float32";
++            case Type::float64: return "float64";
++            case Type::string: return "string";
++        }
++    }
++    const char* name=nullptr;
++    switch(type) {
++        case Type::boolean: name="b1"; break;
++        case Type::int8: name="i1"; break;
++        case Type::uint8: name="u1"; break;
++        case Type::int16: name="i2"; break;
++        case Type::uint16: name="u2"; break;
++        case Type::int32: name="i4"; break;
++        case Type::uint32: name="u4"; break;
++        case Type::int64: name="i8"; break;
++        case Type::uint64: name="u8"; break;
++        case Type::float16: name="f2"; break;
++        case Type::float32: name="f4"; break;
++        case Type::float64: name="f8"; break;
++        case Type::string: name="O"; break;
++    }
++    if(!name) throw Error(Failure::dtype,"dtype","unknown Zarr scalar type");
++    return std::string(1,type_size(type)==1 || type==Type::string?'|':endian)+name;
+ }
+ char serializer_endian(const Json& codecs) {
+     for(const auto& codec:codecs) {
+@@ -189,6 +241,34 @@ template<class T> void fill_values(Bytes& bytes,const Json& value) {
+     }
+     for(std::size_t i=0;i<bytes.size();i+=sizeof(T)) std::memcpy(bytes.data()+i,&scalar,sizeof(T));
+ }
++std::uint16_t parse_hex_float16(const std::string& text) {
++    if(text.size()!=6 || text[0]!='0' || text[1]!='x')
++        throw Error(Failure::encoding,"fill_value","invalid float16 hexadecimal fill value");
++    std::uint16_t bits=0;
++    for(std::size_t i=2;i<text.size();++i) {
++        const auto c=text[i];
++        const auto digit=c>='0'&&c<='9'?unsigned(c-'0'):
++            c>='a'&&c<='f'?unsigned(c-'a'+10):c>='A'&&c<='F'?unsigned(c-'A'+10):16u;
++        if(digit>15) throw Error(Failure::encoding,"fill_value","invalid float16 hexadecimal fill value");
++        bits=std::uint16_t((bits<<4)|digit);
++    }
++    return bits;
++}
++void fill_float16(Bytes& bytes,const Json& value,int format) {
++    std::uint16_t bits=0;
++    if(!value.is_null()) {
++        if(value.is_string()) {
++            const auto text=value.get<std::string>();
++            if(text=="NaN") bits=0x7e00;
++            else if(text=="Infinity") bits=0x7c00;
++            else if(text=="-Infinity") bits=0xfc00;
++            else if(format==3 && text.starts_with("0x")) bits=parse_hex_float16(text);
++            else throw Error(Failure::encoding,"fill_value","invalid float16 fill value");
++        } else if(value.is_number()) bits=anndatapp::Float16::from_double(value.get<double>()).bits;
++        else throw Error(Failure::encoding,"fill_value","invalid float16 fill value");
++    }
++    for(std::size_t i=0;i<bytes.size();i+=sizeof(bits)) std::memcpy(bytes.data()+i,&bits,sizeof(bits));
++}
+ void fill_numeric(Bytes& bytes,const ArrayMetadata& m) {
+     switch(m.type) {
+         case Type::boolean: std::fill(bytes.begin(),bytes.end(),std::byte(!m.fill.is_null() && (m.fill.is_boolean()?m.fill.get<bool>():m.fill.get<double>()!=0.0))); break;
+@@ -200,6 +280,7 @@ void fill_numeric(Bytes& bytes,const ArrayMetadata& m) {
+         case Type::uint32: fill_values<std::uint32_t>(bytes,m.fill); break;
+         case Type::int64: fill_values<std::int64_t>(bytes,m.fill); break;
+         case Type::uint64: fill_values<std::uint64_t>(bytes,m.fill); break;
++        case Type::float16: fill_float16(bytes,m.fill,m.format); break;
+         case Type::float32: fill_values<float>(bytes,m.fill); break;
+         case Type::float64: fill_values<double>(bytes,m.fill); break;
+         case Type::string: break;
+diff --git a/src/zarr_engine.hpp b/src/zarr_engine.hpp
+index 50138dc..df012c0 100644
+--- a/src/zarr_engine.hpp
++++ b/src/zarr_engine.hpp
+@@ -16,7 +16,10 @@ namespace anndatapp_zarr {
+ using Json = nlohmann::json;
+ using Shape = std::vector<std::size_t>;
+ using Bytes = std::vector<std::byte>;
+-enum class Type { boolean, int8, uint8, int16, uint16, int32, uint32, int64, uint64, float32, float64, string };
++// Preserve the established private scalar IDs. Type is translated explicitly
++// at the adapter boundary; float16 is appended after the existing string ID.
++enum class Type { boolean=0, int8=1, uint8=2, int16=3, uint16=4, int32=5, uint32=6,
++                  int64=7, uint64=8, float32=9, float64=10, string=11, float16=12 };
+ enum class Failure { io, encoding, version, dtype, codec, argument };
+ struct Error : std::runtime_error {
+     Failure failure;
+diff --git a/tests/h5ad_interop_driver.cpp b/tests/h5ad_interop_driver.cpp
+index bea2a0d..b73a8bf 100644
+--- a/tests/h5ad_interop_driver.cpp
++++ b/tests/h5ad_interop_driver.cpp
+@@ -87,6 +87,77 @@ Table label_table(std::initializer_list<std::string_view> labels) {
+     return table;
+ }
+ 
++Array half_sparse_fixture() {
++    auto result = Array::csr<Float16, std::int32_t, std::int32_t>(2, 3, 3);
++    auto values = result.edit().csr<Float16, std::int32_t, std::int32_t>();
++    values.values()[0] = Float16::from_float(0.5f);
++    values.values()[1] = Float16::from_float(1.25f);
++    values.values()[2] = Float16::from_float(2.5f);
++    const std::int32_t indices[]{0, 2, 1};
++    const std::int32_t offsets[]{0, 2, 3};
++    for (std::size_t i = 0; i < 3; ++i) values.unsafe_indices()[i] = indices[i];
++    for (std::size_t i = 0; i < 3; ++i) values.unsafe_offsets()[i] = offsets[i];
++    result.set_serialization_byte_order(ByteOrder::big);
++    result.validate();
++    return result;
++}
++
++void check_half_sparse(ArrayView sparse) {
++    require(sparse.layout() == Layout::csr && sparse.dtype() == DType::float16 &&
++            sparse.extent(0) == 2 && sparse.extent(1) == 3 && sparse.sparse_bytes().nnz() == 3,
++            "float16 sparse layout, dtype, or shape differs");
++    const auto values = sparse.csr<Float16, std::int32_t, std::int32_t>();
++    const float expected_values[]{0.5f, 1.25f, 2.5f};
++    const std::int32_t expected_indices[]{0, 2, 1};
++    const std::int32_t expected_offsets[]{0, 2, 3};
++    for (std::size_t i = 0; i < 3; ++i) {
++        require(values.values()[i].to_float() == expected_values[i], "float16 sparse data differs");
++        require(values.indices()[i] == expected_indices[i], "float16 sparse indices differ");
++    }
++    for (std::size_t i = 0; i < 3; ++i)
++        require(values.offsets()[i] == expected_offsets[i], "float16 sparse offsets differ");
++}
++
++void write_half_sparse(const std::filesystem::path& path) {
++    auto data = AnnData::empty(2, 3);
++    data.set_layer("half_sparse", half_sparse_fixture());
++    write_h5ad(path.string(), data);
++    check_half_sparse(read_h5ad(path.string()).layer("half_sparse"));
++}
++
++void verify_half_sparse(const std::filesystem::path& path) {
++    auto eager = read_h5ad(path.string());
++    check_half_sparse(eager.layer("half_sparse"));
++    auto backed = open_h5ad(path.string());
++    auto values = backed.layer("half_sparse").read();
++    check_half_sparse(values.view());
++    backed.close();
++}
++
++void verify_half_backed(const std::filesystem::path& path) {
++    auto backed = open_h5ad(path.string());
++    auto half = backed.uns().at("dtypes").at("f16").array().read();
++    const auto half_values = half.view().dense<Float16>();
++    require(half.dtype() == DType::float16 &&
++            half.serialization_byte_order() == ByteOrder::big &&
++            half_values.data()[0].bits == Float16::from_float(0.5f).bits &&
++            half_values.data()[1].bits == Float16::from_float(1.25f).bits,
++            "backed external float16 array differs");
++    const auto half_scalar = backed.uns().at("half_scalar").read().view();
++    require(half_scalar.dtype() == DType::float16 &&
++            half_scalar.serialization_byte_order() == ByteOrder::big &&
++            half_scalar.scalar<Float16>().bits == Float16::from_float(1.5f).bits,
++            "backed external float16 scalar differs");
++    const auto field = backed.uns().at("half_record").read_field("half").view().array();
++    const auto field_values = field.dense<Float16>();
++    require(field.dtype() == DType::float16 &&
++            field.serialization_byte_order() == ByteOrder::big &&
++            field_values.data()[0].bits == Float16::from_float(0.5f).bits &&
++            field_values.data()[1].bits == Float16::from_float(1.5f).bits,
++            "backed external float16 compound field differs");
++    backed.close();
++}
++
+ AnnData fixture(bool big_endian_x = false) {
+     auto result = AnnData::empty(3, 2);
+     auto x = matrix_array<float>(3, 2, {0, 1, 2, 3, 4, 5});
+@@ -160,6 +231,9 @@ AnnData fixture(bool big_endian_x = false) {
+     dtypes.set("u64", Element(vector_array<std::uint64_t>({std::uint64_t{1} << 40, (std::uint64_t{1} << 63) + 1})));
+     dtypes.set("f32", Element(vector_array<float>({0.5f, 1.25f})));
+     dtypes.set("f64", Element(vector_array<double>({3.141592653589793, -1.5})));
++    auto half = vector_array<Float16>({Float16::from_float(0.5f), Float16::from_float(1.25f)});
++    half.set_serialization_byte_order(ByteOrder::big);
++    dtypes.set("f16", Element(std::move(half)));
+ 
+     auto nested = Element::mapping();
+     nested.set("description", Element("nested α"));
+@@ -173,6 +247,15 @@ AnnData fixture(bool big_endian_x = false) {
+     uns.set("zero_string_array", Element(StringArray::from_strings({}, {"zero λ"})));
+     uns.set("matrix_text", Element(StringArray::from_strings(
+         {2, 2}, {"μ", "", "g2", "gene β"})));
++    auto half_scalar = Element::scalar<Float16>(Float16::from_float(1.5f));
++    half_scalar.set_serialization_byte_order(ByteOrder::big);
++    uns.set("half_scalar", std::move(half_scalar));
++    auto half_record = RecordArray::with_shape({2});
++    auto half_field = vector_array<Float16>({Float16::from_float(0.5f), Float16::from_float(1.5f)});
++    half_field.set_serialization_byte_order(ByteOrder::big);
++    half_record.set("half", std::move(half_field));
++    half_record.set("score", vector_array<float>({1.25f, 2.5f}));
++    uns.set("half_record", Element(std::move(half_record)));
+     uns.set("dtypes", std::move(dtypes));
+     result.set_uns(std::move(uns));
+ 
+@@ -264,6 +347,17 @@ void verify_fixture(const AnnData& data, bool foreign_endian) {
+             "null scalar differs");
+     require(data.uns().at("nested").at("threshold").scalar<float>() == 0.5f,
+             "numeric scalar differs");
++    const auto half_scalar = data.uns().at("half_scalar");
++    require(half_scalar.dtype() == DType::float16 &&
++            half_scalar.serialization_byte_order() == ByteOrder::big &&
++            half_scalar.scalar<Float16>().bits == Float16::from_float(1.5f).bits,
++            "float16 scalar dtype, bytes, or byte order differs");
++    const auto half_record = data.uns().at("half_record").record_array();
++    const auto half_field = half_record.member<Float16>("half");
++    require(half_record.field("half").byte_order == ByteOrder::big &&
++            half_field[0].bits == Float16::from_float(0.5f).bits &&
++            half_field[1].bits == Float16::from_float(1.5f).bits,
++            "float16 compound field differs");
+     require(data.uns().at("zero_numeric_array").kind() == ElementKind::signed_integer &&
+             data.uns().at("zero_numeric_array").scalar<std::int16_t>() == 23,
+             "Python zero-dimensional numeric array scalarization differs");
+@@ -285,6 +379,12 @@ void verify_fixture(const AnnData& data, bool foreign_endian) {
+     expect_dense<std::int64_t>(dtypes.at("i64").array(), {-(std::int64_t{1} << 40), std::int64_t{1} << 40});
+     expect_dense<float>(dtypes.at("f32").array(), {0.5f, 1.25f});
+     expect_dense<double>(dtypes.at("f64").array(), {3.141592653589793, -1.5});
++    auto half = dtypes.at("f16").array();
++    const auto half_values = half.dense<Float16>();
++    require(half.dtype() == DType::float16 && half.serialization_byte_order() == ByteOrder::big &&
++            half_values.data()[0].bits == Float16::from_float(0.5f).bits &&
++            half_values.data()[1].bits == Float16::from_float(1.25f).bits,
++            "float16 array dtype, values, or byte order differs");
+ }
+ 
+ void write_fixture(const std::filesystem::path& path, bool gzip) {
+@@ -303,6 +403,10 @@ void write_fixture(const std::filesystem::path& path, bool gzip) {
+             zero_strings.string_array().rank() == 0 &&
+             zero_strings.string_array().string(0) == "zero λ",
+             "rank-zero StringArray must retain string-array kind and value");
++    const auto half = reopened.uns().at("dtypes").at("f16").array().dense<Float16>();
++    require(half.data()[0].bits == Float16::from_float(0.5f).bits &&
++            half.data()[1].bits == Float16::from_float(1.25f).bits,
++            "C++-written float16 array did not read back");
+ }
+ 
+ void verify_byte_order(const std::filesystem::path& input,
+@@ -424,6 +528,15 @@ int main(int argc, char** argv) {
+         } else if (command == "compact-indices") {
+             if (argc != 4) throw std::runtime_error("compact-indices requires input and output paths");
+             verify_compact_indices(argv[2], argv[3]);
++        } else if (command == "write-half-sparse") {
++            if (argc != 3) throw std::runtime_error("write-half-sparse requires an output path");
++            write_half_sparse(argv[2]);
++        } else if (command == "verify-half-sparse") {
++            if (argc != 3) throw std::runtime_error("verify-half-sparse requires an input path");
++            verify_half_sparse(argv[2]);
++        } else if (command == "verify-half-backed") {
++            if (argc != 3) throw std::runtime_error("verify-half-backed requires an input path");
++            verify_half_backed(argv[2]);
+         } else if (command == "write-no-x-raw") {
+             if (argc != 3) throw std::runtime_error("write-no-x-raw requires an output path");
+             auto data = AnnData::empty(1, 1);
+diff --git a/tests/python_h5ad.py b/tests/python_h5ad.py
+index 618d305..2fac8a6 100644
+--- a/tests/python_h5ad.py
++++ b/tests/python_h5ad.py
+@@ -149,6 +149,17 @@ def assert_python_file(path: Path, *, cpp_rank0_arrays: bool = False) -> None:
+     for key, value in make_fixture().uns["dtypes"].items():
+         np.testing.assert_array_equal(a.uns["dtypes"][key], value)
+         assert a.uns["dtypes"][key].dtype == value.dtype
++    if "f16" in a.uns["dtypes"]:
++        half = np.asarray(a.uns["dtypes"]["f16"])
++        assert half.dtype.kind == "f" and half.dtype.itemsize == 2
++        np.testing.assert_array_equal(half, np.array([0.5, 1.25], dtype=np.float16))
++    if "half_scalar" in a.uns:
++        assert a.uns["half_scalar"] == np.float16(1.5)
++    if "half_record" in a.uns:
++        half_record = a.uns["half_record"]
++        field_dtype = half_record.dtype.fields["half"][0]
++        assert field_dtype.kind == "f" and field_dtype.itemsize == 2
++        np.testing.assert_array_equal(half_record["half"], np.array([0.5, 1.5], dtype=np.float16))
+     assert a.raw is not None
+     np.testing.assert_array_equal(a.raw.X, a.X)
+     assert a.raw.varm["label_table"]["label"].tolist() == ["raw α", "raw β"]
+@@ -209,6 +220,13 @@ def check_hdf5_encodings(
+             assert f["layers/counts/indices"].dtype == np.dtype("int32")
+             assert f["layers/counts/indptr"].dtype == np.dtype("int32")
+         assert f["uns/nested/threshold"].dtype == np.dtype("float32")
++        f16_dtype = f["uns/dtypes/f16"].dtype
++        scalar_dtype = f["uns/half_scalar"].dtype
++        half_field_dtype = f["uns/half_record"].dtype.fields["half"][0]
++        native_override = Path(f.filename).name == "foreign-endian-native.h5ad"
++        for dtype in (f16_dtype, scalar_dtype, half_field_dtype):
++            assert dtype.kind == "f" and dtype.itemsize == 2
++            assert dtype.isnative if native_override else dtype.byteorder == ">"
+         if cpp_rank0_arrays:
+             assert f["uns/zero_numeric_array"].attrs["encoding-type"] == "array"
+             assert f["uns/zero_numeric_array"].attrs["encoding-version"] == "0.2.0"
+@@ -241,6 +259,23 @@ def set_big_endian(path: Path, dataset_path: str, dtype: str) -> None:
+             new.attrs[key] = value
+ 
+ 
++def set_compound_member_big_endian(path: Path, dataset_path: str, member: str) -> None:
++    with h5py.File(path, "r+") as f:
++        parent_path, name = dataset_path.rsplit("/", 1)
++        parent = f[parent_path]
++        old = parent[name]
++        values = old[()]
++        attrs = dict(old.attrs)
++        fields = []
++        for field_name in old.dtype.names:
++            field_dtype = old.dtype.fields[field_name][0]
++            fields.append((field_name, ">f2" if field_name == member else field_dtype))
++        del parent[name]
++        new = parent.create_dataset(name, data=np.asarray(values, dtype=np.dtype(fields)))
++        for key, value in attrs.items():
++            new.attrs[key] = value
++
++
+ def set_foreign_endian_fixture(source: Path, target: Path) -> None:
+     shutil.copyfile(source, target)
+     set_big_endian(target, "X", ">f4")
+@@ -395,6 +430,21 @@ def run_compat_012(driver: str, root: Path) -> None:
+ def write_python_fixture(path: Path) -> None:
+     with ad.settings.override(allow_write_nullable_strings=True):
+         make_fixture().write_h5ad(path)
++    with h5py.File(path, "r+") as f:
++        dtypes = f["uns/dtypes"]
++        half = dtypes.create_dataset("f16", data=np.array([0.5, 1.25], dtype=np.float16))
++        half.attrs["encoding-type"] = "array"
++        half.attrs["encoding-version"] = "0.2.0"
++        scalar = f["uns"].create_dataset("half_scalar", data=np.float16(1.5))
++        scalar.attrs["encoding-type"] = "numeric-scalar"
++        scalar.attrs["encoding-version"] = "0.2.0"
++        record = f["uns"].create_dataset(
++            "half_record",
++            data=np.array([(0.5, 1.25), (1.5, 2.5)], dtype=[("half", "f2"), ("score", "f4")]),
++        )
++        record.attrs["encoding-type"] = "rec-array"
++        record.attrs["encoding-version"] = "0.2.0"
++    with ad.settings.override(allow_write_nullable_strings=True):
+         # AnnData.write_h5ad converts low-cardinality string dataframe columns
+         # into categoricals by default. Replace these two entries with the
+         # explicit nullable-string encodings so the reader tests both sentinels.
+@@ -415,6 +465,36 @@ def write_python_fixture(path: Path) -> None:
+                 new.attrs[key] = value
+ 
+ 
++def write_half_sparse_fixture(path: Path) -> None:
++    a = ad.AnnData(
++        X=None,
++        obs=pd.DataFrame(index=pd.Index(["c0", "c1"], name="cell_id")),
++        var=pd.DataFrame(index=pd.Index(["g0", "g1", "g2"], name="gene_id")),
++    )
++    a.write_h5ad(path)
++    with h5py.File(path, "r+") as f:
++        if "layers" not in f:
++            layers = f.create_group("layers")
++            layers.attrs["encoding-type"] = "dict"
++            layers.attrs["encoding-version"] = "0.1.0"
++        group = f["layers"].create_group("half_sparse")
++        group.attrs["encoding-type"] = "csr_matrix"
++        group.attrs["encoding-version"] = "0.1.0"
++        group.attrs["shape"] = np.array([2, 3], dtype=np.uint64)
++        group.create_dataset("data", data=np.array([0.5, 1.25, 2.5], dtype=">f2"))
++        group.create_dataset("indices", data=np.array([0, 2, 1], dtype=np.int32))
++        group.create_dataset("indptr", data=np.array([0, 2, 3], dtype=np.int32))
++
++
++def assert_half_sparse_physical(path: Path) -> None:
++    with h5py.File(path, "r") as f:
++        data = f["layers/half_sparse/data"]
++        assert data.dtype.kind == "f" and data.dtype.itemsize == 2 and data.dtype.byteorder == ">"
++        np.testing.assert_array_equal(data[:], np.array([0.5, 1.25, 2.5], dtype=np.float16))
++        np.testing.assert_array_equal(f["layers/half_sparse/indices"][:], [0, 2, 1])
++        np.testing.assert_array_equal(f["layers/half_sparse/indptr"][:], [0, 2, 3])
++
++
+ def must_fail(
+     driver: str, *args: str, expected_code: str | None = None,
+     path_fragment: str | None = None,
+@@ -472,14 +552,19 @@ def main() -> None:
+             ("python.h5ad", "cpp-reread.h5ad", "cpp.h5ad", "cpp-gzip.h5ad"))
+         write_python_fixture(source)
+         set_big_endian(source, "X", ">f4")
++        set_big_endian(source, "uns/dtypes/f16", ">f2")
++        set_big_endian(source, "uns/half_scalar", ">f2")
++        set_compound_member_big_endian(source, "uns/half_record", "half")
+ 
+         # C++ validates directly loaded values and serializes the same owner.
+         subprocess.run([driver, "verify", str(source), str(reread)], check=True)
++        subprocess.run([driver, "verify-half-backed", str(source)], check=True)
+         assert_python_file(reread)
+         check_hdf5_encodings(reread, require_big_endian=True)
+ 
+         # C++ independently creates a complete object; Python reopens the file.
+         subprocess.run([driver, "write", str(cpp_output)], check=True)
++        subprocess.run([driver, "verify-half-backed", str(cpp_output)], check=True)
+         assert_python_file(cpp_output, cpp_rank0_arrays=True)
+         check_hdf5_encodings(cpp_output, require_big_endian=False, cpp_rank0_arrays=True)
+ 
+@@ -492,6 +577,15 @@ def main() -> None:
+             assert f["X"].dtype.byteorder == ">"
+             assert f["layers/counts/data"].dtype == np.dtype("int64")
+ 
++        python_half_sparse = root / "python-half-sparse.h5ad"
++        write_half_sparse_fixture(python_half_sparse)
++        subprocess.run([driver, "verify-half-sparse", str(python_half_sparse)], check=True)
++        cpp_half_sparse = root / "cpp-half-sparse.h5ad"
++        subprocess.run([driver, "write-half-sparse", str(cpp_half_sparse)], check=True)
++        subprocess.run([driver, "verify-half-sparse", str(cpp_half_sparse)], check=True)
++        assert_half_sparse_physical(python_half_sparse)
++        assert_half_sparse_physical(cpp_half_sparse)
++
+         # Exclusive creation must not replace an existing file.
+         before = cpp_output.read_bytes()
+         must_fail(driver, "exclusive", str(cpp_output), expected_code="io_error")
+diff --git a/tests/python_storage.py b/tests/python_storage.py
+index 206c9db..81ac0af 100644
+--- a/tests/python_storage.py
++++ b/tests/python_storage.py
+@@ -55,6 +55,10 @@ from python_h5ad import make_fixture, patch_raw_enum_byte, write_python_fixture
+ 
+ EXPECTED_X = np.arange(6, dtype=np.float32).reshape(3, 2)
+ MUTATED_X = np.array([[5.0], [11.0]], dtype=np.float32)
++HALF_X_BITS = np.array([0x3c00, 0x8000, 0xc000, 0x7c00, 0xfc00, 0x3e00], dtype=np.uint16).reshape(2, 3)
++HALF_SPARSE_BITS = np.array([0x3c00, 0x8000, 0xc000, 0x4200], dtype=np.uint16)
++HALF_INDICES = np.array([0, 2, 1, 2], dtype=np.int32)
++HALF_INDPTR = np.array([0, 2, 4], dtype=np.int32)
+ 
+ 
+ def run(driver: str, *args: str) -> subprocess.CompletedProcess[str]:
+@@ -136,6 +140,72 @@ def assert_rich_object(a: ad.AnnData, *, x: np.ndarray) -> None:
+     assert a.raw.varm["label_table"]["label"].tolist() == ["raw α", "raw β"]
+ 
+ 
++def make_half_fixture() -> ad.AnnData:
++    x = HALF_X_BITS.view(np.float16).copy()
++    data = ad.AnnData(x)
++    data.layers["half_sparse"] = sp.csr_matrix(
++        (HALF_SPARSE_BITS.view(np.float16).copy(), HALF_INDICES.copy(), HALF_INDPTR.copy()),
++        shape=(2, 3),
++    )
++    return data
++
++
++def write_python_half_zarr(path: Path, zarr_format: int) -> None:
++    with ad.settings.override(zarr_write_format=zarr_format), warnings.catch_warnings():
++        warnings.filterwarnings("ignore", category=DeprecationWarning, module="anndata")
++        make_half_fixture().write_zarr(LocalStore(str(path)), consolidate_metadata=True)
++
++
++def assert_half_zarr(path: Path, zarr_format: int) -> None:
++    group = zarr.open_group(LocalStore(str(path)), mode="r", use_consolidated=True)
++    assert group["X"].dtype == np.dtype("float16"), (zarr_format, group["X"].dtype)
++    actual_x = np.asarray(group["X"][:])
++    np.testing.assert_array_equal(actual_x.view(np.uint16), HALF_X_BITS)
++    sparse = group["layers/half_sparse"]
++    assert sparse.attrs["encoding-type"] == "csr_matrix"
++    for key, expected in (("data", HALF_SPARSE_BITS), ("indices", HALF_INDICES), ("indptr", HALF_INDPTR)):
++        values = np.asarray(sparse[key][:])
++        if key == "data":
++            assert values.dtype == np.dtype("float16")
++            np.testing.assert_array_equal(values.view(np.uint16), expected)
++        else:
++            np.testing.assert_array_equal(values, expected)
++
++    if zarr_format == 2:
++        assert json.loads((path / "X" / ".zarray").read_text())["dtype"] in ("<f2", "=f2")
++    else:
++        metadata = json.loads((path / "X" / "zarr.json").read_text())
++        assert metadata["data_type"] == "float16"
++        def byte_serializer(codecs):
++            for codec in codecs:
++                if codec["name"] == "bytes":
++                    return codec
++                if codec["name"] == "sharding_indexed":
++                    nested = byte_serializer(codec["configuration"]["codecs"])
++                    if nested is not None:
++                        return nested
++            return None
++
++        serializer = byte_serializer(metadata["codecs"])
++        assert serializer is not None and serializer["configuration"]["endian"] in ("little", "big")
++
++    # SciPy (used by AnnData's sparse reader) rejects float16 CSR matrices in
++    # the pinned environment. The C++ read-half command below checks eager and
++    # backed interpretation of these physical components instead.
++
++
++def assert_float16_zarr_interop(driver: str, root: Path) -> None:
++    for zarr_format in (2, 3):
++        cpp_path = root / f"cpp-half-v{zarr_format}.zarr"
++        run(driver, "write-half", f"zarr{zarr_format}", str(cpp_path))
++        assert_half_zarr(cpp_path, zarr_format)
++
++        python_path = root / f"python-half-v{zarr_format}.zarr"
++        write_python_half_zarr(python_path, zarr_format)
++        assert_half_zarr(python_path, zarr_format)
++        run(driver, "read-half", "zarr", str(python_path))
++
++
+ def add_unknown_h5ad(path: Path) -> None:
+     with h5py.File(path, "r+") as f:
+         f.attrs["vendor-marker"] = "keep-root-attribute"
+@@ -668,6 +738,7 @@ def main() -> None:
+             assert_mutated_zarr(path, zformat)
+ 
+         assert_cpp_output(driver, root)
++        assert_float16_zarr_interop(driver, root)
+         check_rectangular_boundary_transfers(driver, root)
+ 
+         # Unknown opaque AnnData slot encodings may be retained in their source
+diff --git a/tests/storage_interop_driver.cpp b/tests/storage_interop_driver.cpp
+index d05ff84..9acca15 100644
+--- a/tests/storage_interop_driver.cpp
++++ b/tests/storage_interop_driver.cpp
+@@ -306,6 +306,66 @@ void mutate(std::string_view backend, const std::filesystem::path& path) {
+     throw std::runtime_error("X handle remained usable after structural replacement");
+ }
+ 
++AnnData half_fixture() {
++    auto data=AnnData::empty(2,3);
++    data.set_x(dense<Float16>({2,3},{Float16::from_bits(0x3c00),Float16::from_bits(0x8000),
++        Float16::from_bits(0xc000),Float16::from_bits(0x7c00),Float16::from_bits(0xfc00),Float16::from_bits(0x3e00)}));
++    data.set_layer("half_sparse",csr<Float16>(2,3,
++        {Float16::from_bits(0x3c00),Float16::from_bits(0x8000),Float16::from_bits(0xc000),Float16::from_bits(0x4200)},
++        {0,2,1,2},{0,2,4}));
++    return data;
++}
++constexpr std::uint16_t half_x_bits[]{0x3c00,0x8000,0xc000,0x7c00,0xfc00,0x3e00};
++constexpr std::uint16_t half_sparse_bits[]{0x3c00,0x8000,0xc000,0x4200};
++void check_half_x(const ArrayView& x) {
++    require(x.dtype()==DType::float16 && x.rank()==2 && x.extent(0)==2 && x.extent(1)==3,
++            "float16 X dtype or shape differs");
++    const auto values=x.dense<Float16>();
++    for(std::size_t i=0;i<6;++i) require(values.data()[i].bits==half_x_bits[i],"float16 X value bits differ");
++}
++void check_half_sparse(const ArrayView& array) {
++    require(array.layout()==Layout::csr && array.dtype()==DType::float16 &&
++            array.index_dtype()==DType::int32 && array.offset_dtype()==DType::int32,
++            "float16 CSR dtype differs");
++    const auto sparse=array.sparse_bytes();
++    require(sparse.rows()==2 && sparse.columns()==3 && sparse.nnz()==4 && sparse.value_size()==2,
++            "float16 CSR geometry differs");
++    for(std::size_t i=0;i<4;++i) {
++        std::uint16_t bits=0;
++        std::memcpy(&bits,sparse.values()+i*sizeof(bits),sizeof(bits));
++        require(bits==half_sparse_bits[i],"float16 CSR component value bits differ");
++    }
++    const std::int32_t expected_indices[]{0,2,1,2},expected_offsets[]{0,2,4};
++    for(std::size_t i=0;i<4;++i) {
++        std::int32_t value=0;std::memcpy(&value,sparse.indices()+i*sizeof(value),sizeof(value));
++        require(value==expected_indices[i],"float16 CSR indices differ");
++    }
++    for(std::size_t i=0;i<3;++i) {
++        std::int32_t value=0;std::memcpy(&value,sparse.offsets()+i*sizeof(value),sizeof(value));
++        require(value==expected_offsets[i],"float16 CSR offsets differ");
++    }
++}
++void write_half_file(std::string_view target,const std::filesystem::path& path) {
++    if(target!="zarr2" && target!="zarr3") throw std::runtime_error("float16 output target must be zarr2 or zarr3");
++    ZarrWriteOptions options;
++    options.format=target=="zarr2"?ZarrFormat::v2:ZarrFormat::v3;
++    options.compression=ZarrCompression::none;
++    auto data=half_fixture();
++    write_zarr(path.string(),data,options);
++}
++void read_half_file(std::string_view backend,const std::filesystem::path& path) {
++    if(backend!="zarr") throw std::runtime_error("float16 input backend must be zarr");
++    auto data=open(backend,path);
++    require(data.n_obs()==2 && data.n_vars()==3,"float16 AnnData shape differs");
++    std::array<Float16,6> backed_values{};
++    data.x().read_into(DenseBuffer::from(backed_values.data(),{2,3}));
++    for(std::size_t i=0;i<6;++i) require(backed_values[i].bits==half_x_bits[i],"backed float16 X value bits differ");
++    auto eager=data.read();
++    check_half_x(eager.x());
++    check_half_sparse(eager.layer("half_sparse"));
++    check_half_sparse(data.layer("half_sparse").read().view());
++}
++
+ void write_file(std::string_view backend, const std::filesystem::path& path) {
+     auto data = fixture();
+     if (backend == "h5ad") {
+@@ -386,6 +446,12 @@ int main(int argc, char** argv) {
+         } else if (command == "write") {
+             if (argc != 4) throw std::runtime_error("write requires target format and path");
+             write_file(argv[2], argv[3]);
++        } else if (command == "write-half") {
++            if (argc != 4) throw std::runtime_error("write-half requires target format and path");
++            write_half_file(argv[2], argv[3]);
++        } else if (command == "read-half") {
++            if (argc != 4) throw std::runtime_error("read-half requires backend and path");
++            read_half_file(argv[2], argv[3]);
+         } else if (command == "export") {
+             if (argc != 6) throw std::runtime_error("export requires source backend/path and target format/path");
+             export_file(argv[2], argv[3], argv[4], argv[5]);
+diff --git a/tests/test_arrays.cpp b/tests/test_arrays.cpp
+index 1d00a40..6970727 100644
+--- a/tests/test_arrays.cpp
++++ b/tests/test_arrays.cpp
+@@ -1,4 +1,6 @@
+ #include <array>
++#include <bit>
++#include <cmath>
+ #include <cstdint>
+ #include <cstdlib>
+ #include <cstring>
+@@ -7,6 +9,7 @@
+ #include <limits>
+ #include <memory>
+ #include <type_traits>
++#include <string_view>
+ #include <vector>
+ 
+ import anndatapp.core;
+@@ -939,9 +942,70 @@ void sparse_copy_major_preflight() {
+         "CSC copy rejects an unaddressable staging offset span");
+ }
+ 
++void binary16_storage_and_conversion() {
++    using anndatapp::Float16;
++    static_assert(sizeof(Float16) == 2 && std::is_trivially_copyable_v<Float16>);
++    static_assert(anndatapp::dtype_of<Float16>() == anndatapp::DType::float16);
++    bool all = true;
++    for (unsigned i = 0; i != 65536; ++i) {
++        auto x = Float16::from_bits(std::uint16_t(i));
++        auto y = Float16::from_double(x.to_double());
++        const bool nan = (i & 0x7c00) == 0x7c00 && (i & 0x3ff);
++        if (y.bits != (nan ? 0x7e00 : i)) { all = false; break; }
++    }
++    expect(all, "all binary16 patterns decode and round trip with canonical numeric NaNs");
++    const double tie = 1.0 + std::ldexp(1.0, -11);
++    expect(Float16::from_double(tie).bits == 0x3c00 &&
++           Float16::from_double(tie + std::ldexp(1.0, -40)).bits == 0x3c01 &&
++           Float16::from_double(tie - std::ldexp(1.0, -40)).bits == 0x3c00,
++           "direct double conversion handles halfway and double-rounding case");
++    expect(Float16::from_double(std::ldexp(1.0, -25)).bits == 0 &&
++           Float16::from_double(std::nextafter(std::ldexp(1.0, -25), 1.0)).bits == 1 &&
++           Float16::from_double(65520.0).bits == 0x7c00 &&
++           Float16::from_double(-0.0).bits == 0x8000,
++           "binary16 ties at underflow and overflow preserve required signs");
++    auto a = anndatapp::Array::empty<Float16>({2, 2});
++    auto data = a.edit().dense<Float16>();
++    data.data()[0] = Float16::from_bits(0x7d01); data.data()[1] = Float16::from_float(2);
++    data.data()[2] = Float16::from_float(3); data.data()[3] = Float16::from_float(4);
++    auto copied = a.view().select({anndatapp::Axis::gather({1, 0}), anndatapp::Axis::all()}).copy();
++    expect(copied.dtype() == anndatapp::DType::float16 && copied.view().dense<Float16>().data()[2].bits == 0x7d01,
++           "selected dense copy retains dtype and raw NaN bits");
++    expect_error(anndatapp::ErrorCode::dtype_mismatch, [&] { (void)a.view().dense<std::uint16_t>(); },
++                 "binary16 typed access does not alias uint16");
++    auto owner = std::make_shared<std::vector<Float16>>(2, Float16::from_float(3));
++    auto* ptr = owner->data();
++    auto shared = anndatapp::Array::share_dense(static_cast<const Float16*>(ptr), {2}, {1}, owner);
++    auto retained = shared.view().dense<Float16>();
++    owner.reset();
++    expect(retained.data()[1].bits == 0x4200, "binary16 shared view retains its external owner");
++    expect_error(anndatapp::ErrorCode::invalid_argument, [&] { (void)shared.edit(); },
++                 "binary16 borrowed const data remains read-only");
++    auto zero = anndatapp::Array::zeros<Float16>({2});
++    expect(zero.view().dense<Float16>().data()[0].bits == 0, "binary16 zero allocation uses positive zero bits");
++    auto s = anndatapp::Array::csr<Float16, std::int32_t, std::int64_t>(2, 2, 1);
++    auto v = s.edit().csr<Float16, std::int32_t, std::int64_t>();
++    v.values()[0] = Float16::from_bits(0x7d01); v.unsafe_indices()[0] = 1;
++    v.unsafe_offsets()[0] = 0; v.unsafe_offsets()[1] = 1; v.unsafe_offsets()[2] = 1;
++    s.validate();
++    auto cp = s.copy();
++    expect(cp.view().csr<Float16, std::int32_t, std::int64_t>().values()[0].bits == 0x7d01,
++           "sparse copies preserve binary16 representation");
++}
++
+ } // namespace
+ 
+-int main() {
++int main(int argc, char** argv) {
++    if (argc == 2 && std::string_view(argv[1]) == "--float16-oracle") {
++        char type; std::uint64_t bits;
++        while (std::cin >> type >> std::hex >> bits) {
++            auto h = type == 'd' ? anndatapp::Float16::from_double(std::bit_cast<double>(bits))
++                : anndatapp::Float16::from_float(std::bit_cast<float>(std::uint32_t(bits)));
++            std::cout << std::hex << h.bits << '\n';
++        }
++        return 0;
++    }
++    binary16_storage_and_conversion();
+     dense_storage_and_mutation();
+     native_type_identity_and_bytes();
+     checked_ranges_and_shared_owners();
+diff --git a/tests/test_backed_categories.cpp b/tests/test_backed_categories.cpp
+index 83d9cda..87513cb 100644
+--- a/tests/test_backed_categories.cpp
++++ b/tests/test_backed_categories.cpp
+@@ -93,7 +93,8 @@ void require_equal_dense(ArrayView actual, ArrayView expected,
+     for (std::size_t axis = 0; axis < actual.rank(); ++axis)
+         size *= actual.extent(axis);
+     for (std::size_t i = 0; i < size; ++i)
+-        require(left.data()[i] == right.data()[i], message);
++        if constexpr (std::is_same_v<T, Float16>) require(left.data()[i].bits == right.data()[i].bits, message);
++        else require(left.data()[i] == right.data()[i], message);
+ }
+ 
+ void require_equal_strings(StringArrayView actual, StringArrayView expected,
+@@ -138,6 +139,7 @@ void require_equal_category_dictionary(ColumnView actual, ColumnView expected,
+     case DType::uint32: require_equal_dense<std::uint32_t>(actual_values, expected_values, message); break;
+     case DType::int64: require_equal_dense<std::int64_t>(actual_values, expected_values, message); break;
+     case DType::uint64: require_equal_dense<std::uint64_t>(actual_values, expected_values, message); break;
++    case DType::float16: require_equal_dense<Float16>(actual_values, expected_values, message); break;
+     case DType::float32: require_equal_dense<float>(actual_values, expected_values, message); break;
+     case DType::float64: require_equal_dense<double>(actual_values, expected_values, message); break;
+     }
+diff --git a/tests/test_backed_h5ad.cpp b/tests/test_backed_h5ad.cpp
+index 8cb7c34..48759a5 100644
+--- a/tests/test_backed_h5ad.cpp
++++ b/tests/test_backed_h5ad.cpp
+@@ -62,6 +62,14 @@ AnnData fixture() {
+     for (std::size_t i = 0; i < 5; ++i) values.unsafe_offsets()[i] = sparse_offsets[i];
+     sparse.validate();
+     data.set_layer("sparse", std::move(sparse));
++    auto half = dense<Float16>({4, 3}, {
++        Float16::from_float(0.5f), Float16::from_float(1.5f), Float16::from_float(2.5f),
++        Float16::from_float(3.5f), Float16::from_float(4.5f), Float16::from_float(5.5f),
++        Float16::from_float(6.5f), Float16::from_float(7.5f), Float16::from_float(8.5f),
++        Float16::from_float(9.5f), Float16::from_float(10.5f), Float16::from_float(11.5f)
++    });
++    half.set_serialization_byte_order(ByteOrder::big);
++    data.set_layer("half", std::move(half));
+ 
+     auto obs = Table::with_index({"c0", "c1", "c2", "c3"}, "cell_id");
+     obs.set("label", Column::strings({"α", "β", "γ", "δ"}));
+@@ -82,7 +90,7 @@ void check_metadata(const BackedAnnData& backed) {
+     require(backed.is_open() && !backed.writable(), "default backed session must be open and read-only");
+     require(backed.n_obs() == 4 && backed.n_vars() == 3 && backed.has_x(),
+             "backed axis metadata differs");
+-    require(backed.view().layer_names() == std::vector<std::string>{"sparse"},
++    require(backed.view().layer_names() == std::vector<std::string>{"half", "sparse"},
+             "backed layer names differ");
+ 
+     auto obs = backed.obs();
+@@ -136,6 +144,14 @@ void check_dense_reads(const BackedAnnData& backed) {
+             "strided dense output values differ");
+     require(strided[1] == -1 && strided[3] == -1 && strided[5] == -1,
+             "strided dense output overwrote padding");
++
++    auto half = backed.layer("half");
++    require(half.dtype() == DType::float16 && half.shape() == std::vector<std::size_t>{4, 3},
++            "backed float16 metadata differs");
++    auto half_values = half.read().view().dense<Float16>();
++    for (std::size_t i = 0; i < 12; ++i)
++        require(half_values.data()[i].to_float() == static_cast<float>(i) + 0.5f,
++                "backed big-endian float16 read differs");
+ }
+ 
+ void check_sparse_read_into(const BackedAnnData& backed) {
+@@ -224,10 +240,18 @@ void check_mapping_rejections(const std::filesystem::path& gzip_path,
+ 
+ void check_readwrite(const std::filesystem::path& path) {
+     auto replacement = dense<float>({2, 3}, {30, 31, 32, 10, 11, 12});
++    auto half_replacement = dense<Float16>({4, 3}, {
++        Float16::from_float(20.5f), Float16::from_float(21.5f), Float16::from_float(22.5f),
++        Float16::from_float(23.5f), Float16::from_float(24.5f), Float16::from_float(25.5f),
++        Float16::from_float(26.5f), Float16::from_float(27.5f), Float16::from_float(28.5f),
++        Float16::from_float(29.5f), Float16::from_float(30.5f), Float16::from_float(31.5f)
++    });
+     {
+         auto read_only = open_h5ad(path.string());
+         require_error([&] { read_only.x().write(replacement.view()); }, ErrorCode::invalid_argument,
+                       "read-only backed X write must fail");
++        require_error([&] { read_only.layer("half").write(half_replacement.view()); }, ErrorCode::invalid_argument,
++                      "read-only backed float16 write must fail");
+         read_only.close();
+     }
+ 
+@@ -236,6 +260,7 @@ void check_readwrite(const std::filesystem::path& path) {
+     auto writable = open_h5ad(path.string(), options);
+     require(writable.writable(), "read-write option was not retained");
+     writable.x().select({indices{3, 1}, all}).write(replacement.view());
++    writable.layer("half").write(half_replacement.view());
+     writable.set("/uns/added", Element("new value"));
+     writable.flush();
+     writable.close();
+@@ -246,6 +271,10 @@ void check_readwrite(const std::filesystem::path& path) {
+     const float expected[]{1, 2, 3, 10, 11, 12, 7, 8, 9, 30, 31, 32};
+     for (std::size_t i = 0; i < 12; ++i)
+         require(values.data()[i] == expected[i], "selected read-write X update differs");
++    auto half = reopened.layer("half").read().view().dense<Float16>();
++    for (std::size_t i = 0; i < 12; ++i)
++        require(half.data()[i].to_float() == static_cast<float>(i) + 20.5f,
++                "read-write big-endian float16 update differs");
+     auto keep = reopened.uns().at("keep").read();
+     auto added = reopened.uns().at("added").read();
+     require(keep.view().string() == "untouched" && added.view().string() == "new value",
+diff --git a/tests/test_data.cpp b/tests/test_data.cpp
+index c70c077..37db5e8 100644
+--- a/tests/test_data.cpp
++++ b/tests/test_data.cpp
+@@ -982,9 +982,30 @@ void nested_dataset_gathers() {
+            "nested raw follows observations and retains its independent variable axis");
+ }
+ 
++void binary16_metadata() {
++    using anndatapp::Float16;
++    auto x = Float16::from_double(1.5);
++    auto scalar = anndatapp::Element::scalar(x);
++    expect(scalar.view().kind() == anndatapp::ElementKind::floating &&
++           scalar.view().dtype() == anndatapp::DType::float16 &&
++           scalar.view().scalar<Float16>().bits == x.bits,
++           "binary16 scalar retains dtype and numeric value");
++    auto codes = array_of<std::int8_t>({0}, {1});
++    auto cats = anndatapp::Column::from_values<Float16>({Float16::from_bits(0), Float16::from_bits(0x8000)});
++    expect_error(anndatapp::ErrorCode::invalid_argument, "categorical/categories", [&] {
++        (void)anndatapp::Column::categorical(std::move(codes), std::move(cats));
++    }, "binary16 categories treat both signed zero values as equal");
++    auto nan_codes = array_of<std::int8_t>({0}, {1});
++    auto nan_cats = anndatapp::Column::from_values<Float16>({Float16::from_bits(0x7e01)});
++    expect_error(anndatapp::ErrorCode::invalid_argument, "categorical/categories", [&] {
++        (void)anndatapp::Column::categorical(std::move(nan_codes), std::move(nan_cats));
++    }, "binary16 category NaN is rejected");
++}
++
+ } // namespace
+ 
+ int main() {
++    binary16_metadata();
+     owners_columns_and_tables();
+     packed_string_columns();
+     nullable_category_dictionaries_require_validity();
+diff --git a/tests/test_h5ad.cpp b/tests/test_h5ad.cpp
+index 395f308..1cb9d19 100644
+--- a/tests/test_h5ad.cpp
++++ b/tests/test_h5ad.cpp
+@@ -157,6 +157,58 @@ void check_reserved_index_name(const std::filesystem::path& path) {
+     }
+     require(rejected, "explicit dataframe index name _index must fail without lossy round-trip");
+ }
++
++void check_float16(const std::filesystem::path& path) {
++    using namespace anndatapp;
++    auto data = AnnData::empty(2, 2);
++    auto x = dense<Float16>({2, 2}, {
++        Float16::from_bits(0x0001), Float16::from_bits(0x3c00),
++        Float16::from_bits(0x7bff), Float16::from_bits(0xfc00)
++    });
++    x.set_serialization_byte_order(ByteOrder::big);
++    data.set_x(std::move(x));
++
++    auto scalar = Element::scalar<Float16>(Float16::from_bits(0x3555));
++    scalar.set_serialization_byte_order(ByteOrder::big);
++    data.set_uns("half_scalar", std::move(scalar));
++
++    auto record = RecordArray::with_shape({2});
++    auto half_field = dense<Float16>({2}, {
++        Float16::from_bits(0x03ff), Float16::from_bits(0xc000)
++    });
++    half_field.set_serialization_byte_order(ByteOrder::big);
++    record.set("half", std::move(half_field));
++    record.set("index", dense<std::int16_t>({2}, {3, 7}));
++    data.set_uns("half_record", Element(std::move(record)));
++
++    WriteOptions options;
++    options.byte_order = FileByteOrder::big;
++    write_h5ad(path.string(), data, options);
++    auto reopened = read_h5ad(path.string());
++    const auto values = reopened.x().dense<Float16>();
++    const std::uint16_t expected[]{0x0001, 0x3c00, 0x7bff, 0xfc00};
++    require(reopened.x().dtype() == DType::float16 && reopened.x().serialization_byte_order() == ByteOrder::big,
++            "float16 array dtype or byte order differs");
++    for (std::size_t i = 0; i < 4; ++i) require(values.data()[i].bits == expected[i], "float16 array bits differ");
++
++    const auto half_scalar = reopened.uns().at("half_scalar");
++    require(half_scalar.dtype() == DType::float16 && half_scalar.serialization_byte_order() == ByteOrder::big &&
++            half_scalar.scalar<Float16>().bits == 0x3555, "float16 scalar dtype, bits, or byte order differs");
++    const auto half_record = reopened.uns().at("half_record").record_array();
++    const auto fields = half_record.member<Float16>("half");
++    require(half_record.field("half").byte_order == ByteOrder::big &&
++            fields[0].bits == 0x03ff && fields[1].bits == 0xc000,
++            "float16 compound field differs");
++
++    auto nullable = AnnData::empty(1, 1);
++    auto obs = Table::with_index({"c0"}, "cell_id");
++    obs.set("half", Column::nullable_numeric(dense<Float16>({1}, {Float16::from_bits(0x3c00)}), {1}));
++    nullable.set_obs(std::move(obs));
++    bool rejected = false;
++    try { write_h5ad((path.parent_path() / "nullable-half.h5ad").string(), nullable); }
++    catch (const Error& error) { rejected = error.code() == ErrorCode::unsupported_dtype; }
++    require(rejected, "nullable float16 columns must remain unsupported");
++}
+ }
+ 
+ int main(int argc, char** argv) {
+@@ -231,6 +283,7 @@ int main(int argc, char** argv) {
+ 
+         check_trusted_validation(root / "trusted-invalid-sparse.h5ad");
+         check_reserved_index_name(root / "reserved-index.h5ad");
++        check_float16(root / "float16.h5ad");
+         std::cout << "native H5AD round-trip passed\n";
+     } catch (const std::exception& error) {
+         std::cerr << error.what() << '\n';
+diff --git a/tests/test_records.cpp b/tests/test_records.cpp
+index b41c406..ed13b02 100644
+--- a/tests/test_records.cpp
++++ b/tests/test_records.cpp
+@@ -497,9 +497,27 @@ void uns_slices_keep_records() {
+            "record acquired from sliced uns retains storage after dataset destruction");
+ }
+ 
++void binary16_members() {
++    auto a = Array::empty<Float16>({2});
++    a.edit().dense<Float16>().data()[0] = Float16::from_bits(0x7d01);
++    a.edit().dense<Float16>().data()[1] = Float16::from_float(1.5f);
++    auto fieldwise = RecordArray::with_shape({2});
++    fieldwise.set("half", std::move(a));
++    RecordLayout layout{2, alignof(Float16), {{"half", RecordFieldKind::numeric,
++        DType::float16, 0, 2, ByteOrder::native}}};
++    auto interleaved = fieldwise.copy_interleaved(layout);
++    expect(interleaved.view().member<Float16>("half")[0].bits == 0x7d01 &&
++           interleaved.view().member<Float16>("half")[1].bits == 0x3e00,
++           "binary16 record members retain native type and raw payload");
++    auto fields = interleaved.copy_fields();
++    expect(fields.view().array("half").dense<Float16>().data()[0].bits == 0x7d01,
++           "binary16 record conversion to fieldwise storage preserves bits");
++}
++
+ } // namespace
+ 
+ int main() {
++    binary16_members();
+     fieldwise_shape_order_and_copies();
+     interleaved_layout_and_strides();
+     interleaved_lifetimes_and_permissions();
+diff --git a/tests/test_zarr_sharding.cpp b/tests/test_zarr_sharding.cpp
+index 83d31e0..7873448 100644
+--- a/tests/test_zarr_sharding.cpp
++++ b/tests/test_zarr_sharding.cpp
+@@ -3,11 +3,13 @@
+ #include <cerrno>
+ #include <cstddef>
+ #include <cstdint>
++#include <cmath>
+ #include <cstdlib>
+ #include <filesystem>
+ #include <fstream>
+ #include <iostream>
+ #include <stdexcept>
++#include <array>
+ #include <string>
+ #include <sys/stat.h>
+ #include <vector>
+@@ -32,6 +34,8 @@ extern "C" ssize_t pwrite(int fd, const void* data, size_t n, off_t offset) {
+ }
+ #endif
+ 
++import anndatapp;
++
+ using namespace anndatapp_zarr;
+ void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
+ Bytes bytes(std::initializer_list<unsigned> values) {
+@@ -54,6 +58,126 @@ void no_temps(const std::filesystem::path& root) {
+     for (auto& p : std::filesystem::directory_iterator(root))
+         check(p.path().filename().string().find(".tmp-") == std::string::npos, "temporary file survived");
+ }
++void json_file(const std::filesystem::path& path,const Json& value) {
++    std::ofstream file(path);
++    if(!file || !(file<<value.dump())) throw std::runtime_error("cannot write Zarr metadata fixture");
++}
++void raw_file(const std::filesystem::path& path,const Bytes& value) {
++    std::filesystem::create_directories(path.parent_path());
++    std::ofstream file(path,std::ios::binary);
++    if(!file || (value.size() && !file.write(reinterpret_cast<const char*>(value.data()),std::streamsize(value.size()))))
++        throw std::runtime_error("cannot write Zarr payload fixture");
++}
++void v2_half_array(const std::filesystem::path& root,const std::string& dtype,const Json& fill,
++                   Shape shape={1},Shape chunks={1}) {
++    std::filesystem::create_directories(root/"a");
++    json_file(root/".zgroup",{{"zarr_format",2}});
++    json_file(root/"a"/".zarray",{{"zarr_format",2},{"shape",shape},{"chunks",chunks},{"dtype",dtype},
++        {"compressor",nullptr},{"filters",nullptr},{"fill_value",fill},{"order","C"},{"dimension_separator","."}});
++    json_file(root/"a"/".zattrs",Json::object());
++}
++void v3_half_array(const std::filesystem::path& root,const Json& fill,const std::string& endian,
++                   Shape shape={1},Shape chunks={1}) {
++    std::filesystem::create_directories(root/"a");
++    json_file(root/"zarr.json",{{"zarr_format",3},{"node_type","group"},{"attributes",Json::object()}});
++    json_file(root/"a"/"zarr.json",{{"zarr_format",3},{"node_type","array"},{"shape",shape},{"data_type","float16"},
++        {"chunk_grid",{{"name","regular"},{"configuration",{{"chunk_shape",chunks}}}}},
++        {"chunk_key_encoding",{{"name","default"},{"configuration",{{"separator","/"}}}}},
++        {"fill_value",fill},{"codecs",Json::array({Json{{"name","bytes"},{"configuration",{{"endian",endian}}}}})},
++        {"attributes",Json::object()}});
++}
++std::uint16_t read_half(const std::filesystem::path& root) {
++    Store store(root,false);
++    std::uint16_t result=0;
++    store.read_numeric("a",{0},{1},&result);
++    return result;
++}
++void half_storage_tests(const std::filesystem::path& root) {
++    check(type_size(Type::float16)==2,"float16 storage width");
++
++    // v2 parses both byte orders and swaps a two-byte payload into native-endian bits.
++    auto v2_big=root/"fp16-v2-big";
++    v2_half_array(v2_big,">f2",0,{4},{4});
++    raw_file(v2_big/"a"/"0",bytes({0x3c,0x00,0x80,0x00,0x7e,0x55,0xfc,0x00}));
++    {
++        Store store(v2_big,false);
++        check(store.inspect("a").array.type==Type::float16,"v2 >f2 dtype");
++        std::uint16_t actual[4]{};
++        store.read_numeric("a",{0},{4},actual);
++        check(actual[0]==0x3c00 && actual[1]==0x8000 && actual[2]==0x7e55 && actual[3]==0xfc00,
++              "v2 big-endian float16 payload");
++    }
++    auto v2_little=root/"fp16-v2-little";
++    v2_half_array(v2_little,"<f2",0,{4},{4});
++    raw_file(v2_little/"a"/"0",bytes({0x00,0x3c,0x00,0x80,0x55,0x7e,0x00,0xfc}));
++    {
++        Store store(v2_little,false);
++        check(store.inspect("a").array.type==Type::float16,"v2 <f2 dtype");
++        std::uint16_t actual[4]{};
++        store.read_numeric("a",{0},{4},actual);
++        check(actual[0]==0x3c00 && actual[1]==0x8000 && actual[2]==0x7e55 && actual[3]==0xfc00,
++              "v2 little-endian float16 payload");
++    }
++
++    // This double lies just above the half-way point, but rounds to that point
++    // if first narrowed to float. The storage fill must round the original double.
++    const double just_above_tie=1.0+std::ldexp(1.0,-11)+std::ldexp(1.0,-25);
++    auto tie=root/"fp16-v2-tie";
++    v2_half_array(tie,"<f2",1.0+std::ldexp(1.0,-11));
++    check(read_half(tie)==0x3c00,"binary16 halfway tie rounds to even");
++    auto above_tie=root/"fp16-v2-above-tie";
++    v2_half_array(above_tie,"<f2",just_above_tie);
++    check(read_half(above_tie)==0x3c01,"binary16 fill rounds directly from double");
++    for(const auto& [fill,expected] : std::array<std::pair<const char*,std::uint16_t>,3>{{
++            {"NaN",0x7e00},{"Infinity",0x7c00},{"-Infinity",0xfc00}}}) {
++        auto path=root/(std::string("fp16-v2-")+fill);
++        v2_half_array(path,"<f2",fill);
++        check(read_half(path)==expected,"v2 float16 special fill value");
++    }
++    auto invalid_v2_hex=root/"fp16-v2-invalid-hex";
++    v2_half_array(invalid_v2_hex,"<f2","0x7e55");
++    error([&]{ (void)read_half(invalid_v2_hex); },Failure::encoding);
++
++    // v3 accepts canonical special values and exact 16-bit pattern strings.
++    for(const auto& [fill,expected] : std::array<std::pair<const char*,std::uint16_t>,5>{{
++            {"NaN",0x7e00},{"Infinity",0x7c00},{"-Infinity",0xfc00},
++            {"0x7E55",0x7e55},{"0x8000",0x8000}}}) {
++        auto path=root/(std::string("fp16-v3-")+fill);
++        v3_half_array(path,fill,"little");
++        check(read_half(path)==expected,"v3 float16 special or exact-bit fill value");
++    }
++    auto v3_big=root/"fp16-v3-big";
++    v3_half_array(v3_big,"0x7E55","big",{4},{4});
++    raw_file(v3_big/"a"/"c"/"0",bytes({0x3c,0x00,0x80,0x00,0x7e,0x55,0xfc,0x00}));
++    {
++        Store store(v3_big,false);
++        check(store.inspect("a").array.type==Type::float16,"v3 float16 dtype");
++        std::uint16_t actual[4]{};
++        store.read_numeric("a",{0},{4},actual);
++        check(actual[0]==0x3c00 && actual[1]==0x8000 && actual[2]==0x7e55 && actual[3]==0xfc00,
++              "v3 big-endian float16 payload");
++    }
++
++    // Exercise both adapter mappings: DType::float16 <-> Zarr Type::float16.
++    for(const auto& [label,format] : std::array<std::pair<const char*,anndatapp::ZarrFormat>,2>{{
++            {"api-v2",anndatapp::ZarrFormat::v2},{"api-v3",anndatapp::ZarrFormat::v3}}}) {
++        auto path=root/label;
++        auto data=anndatapp::AnnData::empty(1,2);
++        data.set_x(anndatapp::Array::zeros<anndatapp::Float16>({1,2}));
++        auto* values=data.edit_x().dense<anndatapp::Float16>().data();
++        values[0]=anndatapp::Float16::from_bits(0x3c00);
++        values[1]=anndatapp::Float16::from_bits(0xfe55);
++        anndatapp::ZarrWriteOptions options;
++        options.format=format;
++        options.compression=anndatapp::ZarrCompression::none;
++        anndatapp::write_zarr(path.string(),data,options);
++        auto disk=anndatapp::open_zarr(path.string());
++        auto loaded=disk.x().read();
++        const auto* actual=loaded.view().dense<anndatapp::Float16>().data();
++        check(actual[0].bits==0x3c00 && actual[1].bits==0xfe55,"public v2/v3 float16 round trip");
++    }
++}
++
+ void run(const std::filesystem::path& path, const std::string& index_location, bool transpose, int crc_count, const char* endian) {
+     ShardSpec spec;
+     spec.shard_shape = {2,3}; spec.chunk_shape = {1,1}; spec.index_location = index_location;
+@@ -174,6 +298,7 @@ int main(int argc,char** argv) {
+         for (const auto& location : {"start","end"}) for (bool transpose : {false,true})
+             for (int crc : {0,1,3}) for (const auto& endian : {"little","big"})
+                 run(root/(std::string(location)+(transpose?"-transpose":"-plain")+"-crc"+std::to_string(crc)+endian),location,transpose,crc,endian);
+-        std::cout << "shard writer tests passed\n";
++        half_storage_tests(root);
++        std::cout << "shard writer and float16 tests passed\n";
+     } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
+ }

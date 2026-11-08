@@ -2,6 +2,8 @@
 /docs/_book/
 /docs/.quarto/
 /docs/**/.ipynb_checkpoints/
+# Recreate with tools/maintenance/source_map/generate.py.
+/docs/development/source_map/
 /docs/sparse_support_foundation/evaluation.html
 /docs/sparse_support_foundation/evaluation_files/
 ._*
@@ -196,3 +198,30 @@ cuda_profile*.log
 /bench/sparse_support/**/trusted-inputs/reordered_small_image
 /bench/sparse_support/**/trusted-inputs/serial_baseline_binary
 /bench/sparse_support/**/trusted-inputs/v13_probe_extension
+
+# Preserved local velocity checkout and cutover recovery; never built.
+/src/velocity/
+/quarantine/velocity-cutover-recovery/
+
+# C++ module caches and compiler instrumentation.
+*.pcm
+*.ifc
+*.gcm
+*.pch
+*.gch
+*.gcda
+*.gcno
+*.profraw
+*.profdata
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+
+# Generated experiment builds and captured executables; keep sources and receipts.
+**/runs/kda-experiments/builds/**/cmake/
+/bench/sparse_support/**/trusted-inputs/frozen_v2_torch_extension
+/bench/sparse_support/**/trusted-inputs/frozen_v9_torch_extension
+/bench/sparse_support/**/cellerator_sparse_support_cuda_worksets
+/bench/sparse_support/**/cellerator_sparse_support_cuda_worksets.snapshot
+/planning/doc-refresh/evidence/host-smoke
+/planning/doc-refresh/evidence/html/

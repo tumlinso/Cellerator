@@ -186,6 +186,11 @@ foreach(dir IN ITEMS bindings biology cells compute containers dist distributed
   install(DIRECTORY "${CE_SUBSTRATE_ROOT}/include/Cellerator/${dir}"
       DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
 endforeach()
+install(FILES
+    "${CE_SUBSTRATE_ROOT}/src/common/real.cuh"
+    "${CE_SUBSTRATE_ROOT}/src/common/types.cuh"
+    "${CE_SUBSTRATE_ROOT}/src/common/cuda_compat.cuh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common")
 install(FILES "${CE_SUBSTRATE_ROOT}/include/Cellerator/Cellerator.hh"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/abi.h"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/cell.hh"

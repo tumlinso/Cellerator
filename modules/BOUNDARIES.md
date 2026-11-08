@@ -56,6 +56,6 @@ Neither future module exports:
 - speculative GlassHelix scientific concepts.
 
 The broader module boundaries above remain deferred. The separately qualified
-optional [`cellerator.nn`](native/README.md) host interface does not supersede
+optional [`cellerator.nn`](README.md) host interface does not supersede
 them. `.hh`, `.cc`, `.cu`, and `.cuh` remain independent implementation and
 interoperability contracts. CUDA targets do not import named modules.
