@@ -2,7 +2,7 @@
 
 #include "Cellerator/geometry/packing_plan.hh"
 
-#include <cuda_runtime_api.h>
+#include <Cellerator/common/cuda_compat.cuh>
 
 #include <cstddef>
 

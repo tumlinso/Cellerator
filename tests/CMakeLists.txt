@@ -1,3 +1,4 @@
+include(tests/geometry/packing_targets.cmake)
 include(tests/planner_targets.cmake)
 include(tests/tensor_core/sm70/CMakeLists.txt)
 include(tests/relation_algebra/CMakeLists.txt)

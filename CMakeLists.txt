@@ -116,6 +116,7 @@ if(CELLERATOR_BUILD_TORCH_EXAMPLES AND NOT CELLERATOR_ENABLE_TORCH)
 endif()
 
 include(cmake/CelleratorHost.cmake)
+add_subdirectory(src/math/reference)
 add_subdirectory(modules)
 include(cmake/CelleratorVelocity.cmake)
 option(CELLERATOR_BUILD_SEMANTIC_SPINE_V1 "Build the bounded Semantic Spine v1 conformance suite" OFF)
@@ -147,6 +148,10 @@ include(cmake/CelleratorSparseSupport.cmake)
 # Data and geometry owners precede the modeling umbrella so model contracts
 # compose these native targets without compiling duplicate relation sources.
 include(cmake/CelleratorNativeData.cmake)
+if(CELLERATOR_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests/math_reference)
+endif()
 if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     # The host-only sparse-support export is already imported, so the native
     # data package can load here before the modeling umbrella that depends on
@@ -775,9 +780,6 @@ if(CELLERATOR_BUILD_TESTS)
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         USES_TERMINAL)
 endif()
-
-add_subdirectory(compat)
-include(compat/cp_math_v1/CMakeLists.txt)
 
 include(cmake/NativeFoundation.cmake)
 

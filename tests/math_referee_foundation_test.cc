@@ -1,9 +1,9 @@
-#include <Cellerator/compat/cp_math_v1/referee.hh>
+#include <Cellerator/math/reference/referee.hh>
 #include <Cellerator/types.cuh>
 
 #include <bench/math/benchmark_support.hh>
 
-#include <cuda_runtime_api.h>
+#include <Cellerator/common/cuda_compat.cuh>
 
 #include <cmath>
 #include <cstdio>
@@ -187,6 +187,7 @@ void test_timing_memory_and_report() {
         "benchmark report schema is incomplete");
 }
 
+#if CELLERATOR_ENABLE_CUDA
 void test_cuda_event_timer() {
     cmb::cuda_event_timer timer;
     require(static_cast<bool>(timer.init()), "CUDA event timer init failed");
@@ -198,6 +199,7 @@ void test_cuda_event_timer() {
     require(elapsed_ms >= 0.0 && std::isfinite(elapsed_ms),
         "CUDA event elapsed time is invalid");
 }
+#endif
 
 } // namespace
 
@@ -205,7 +207,9 @@ int main() {
     test_logical_reference_and_transpose();
     test_numerics_and_determinism();
     test_timing_memory_and_report();
+#if CELLERATOR_ENABLE_CUDA
     test_cuda_event_timer();
+#endif
     std::cout << "cpMathRefereeFoundationTest passed\n";
     return 0;
 }

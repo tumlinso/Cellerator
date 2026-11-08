@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.28)
+project(CelleratorReferenceConsumer LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+if(CELLERATOR_REFERENCE_EXPORTS)
+    # Validate the two installed owners independently of unrelated SDK components.
+    include("${CELLERATOR_REFERENCE_EXPORTS}/CelleratorReferenceTargets.cmake")
+    include("${CELLERATOR_REFERENCE_EXPORTS}/CelleratorProjectionTargets.cmake")
+else()
+    find_package(Cellerator CONFIG REQUIRED COMPONENTS spmm_reference physical_projection)
+endif()
+add_executable(reference_consumer main.cc)
+target_link_libraries(reference_consumer PRIVATE
+    Cellerator::spmm_reference Cellerator::physical_projection)
+enable_testing()
+add_test(NAME installed_reference_consumer COMMAND reference_consumer)

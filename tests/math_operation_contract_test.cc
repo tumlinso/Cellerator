@@ -1,4 +1,4 @@
-#include <Cellerator/compat/cp_math_v1/execution_plan.hh>
+#include <Cellerator/math/reference/operation.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -241,8 +241,6 @@ void test_trivial_semantics() {
 } // namespace
 
 int main() {
-    static_assert(std::is_trivially_copyable<cm::execution_plan>::value,
-        "execution plan serialization contract changed");
     test_signature_and_order_identity();
     test_packed_plan_identity_mismatch();
     test_binding_and_policy_validation();

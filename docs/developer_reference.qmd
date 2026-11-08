@@ -228,6 +228,32 @@ CellPack headers live under `include/Cellerator/geometry`; the former
 targets retain their existing contracts. Use the exhaustive
 [routing map](development/routing.md) before moving or archiving a path.
 
+The independent SpMM numerical reference is installed as
+`Cellerator::spmm_reference`, with headers under `Cellerator/math/reference`.
+Borrowed CSR/native-tile adaptation and BELL lowering belong to
+`Cellerator::physical_projection`; CUDA operand packing remains the optional
+`Cellerator::packed_dense_operand` target. Their headers are under
+`Cellerator/layout/projection`, with the existing native-tile adapter header at
+`Cellerator/compute/projection/native_tile_view.hh`. Existing `compute/math` forwarding headers
+resolve to these installed canonical headers; the historical execution-plan
+header has been retired. See the [compatibility archive](history/compat/README.md)
+for exact original sources and provenance.
+
+After installing the host package, verify these headers and libraries with:
+
+```sh
+cmake -S tests/package/reference_consumer -B /tmp/cellerator-reference-consumer \
+  -G Ninja -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_PREFIX_PATH=/path/to/cellerator-install
+cmake --build /tmp/cellerator-reference-consumer
+ctest --test-dir /tmp/cellerator-reference-consumer --output-on-failure
+```
+
+For a focused staging install, `CELLERATOR_REFERENCE_EXPORTS` may point directly
+to the installed directory containing `CelleratorReferenceTargets.cmake` and
+`CelleratorProjectionTargets.cmake`. This validates the two installed owners
+without requiring unrelated SDK libraries to be built.
+
 ## Configure and build
 
 Use the mandatory Clang/Ninja and installed HDF5-only AnnData++ baseline

@@ -2,9 +2,9 @@
 
 #include "../benchmark_mutex.hh"
 
-#include <Cellerator/compat/cp_math_v1/referee.hh>
+#include <Cellerator/math/reference/referee.hh>
 
-#include <cuda_runtime_api.h>
+#include <Cellerator/common/cuda_compat.cuh>
 
 #include <algorithm>
 #include <cmath>
@@ -137,6 +137,7 @@ inline referee_status account_benchmark_memory(
     return {};
 }
 
+#if CELLERATOR_ENABLE_CUDA
 class cuda_event_timer {
 public:
     cuda_event_timer() noexcept = default;
@@ -200,6 +201,7 @@ private:
     cudaEvent_t start_ = nullptr;
     cudaEvent_t stop_ = nullptr;
 };
+#endif
 
 // Stable JSON-lines output for automation. Callers keep correctness and timing
 // phases separate and acquire benchmark_mutex_guard before measured GPU work.
@@ -255,8 +257,10 @@ inline referee_status write_benchmark_report_json(
         : referee_status{};
 }
 
+#if CELLERATOR_ENABLE_CUDA
 static_assert(!std::is_copy_constructible<cuda_event_timer>::value,
     "CUDA events must remain unique-owner resources");
+#endif
 static_assert(std::is_trivially_copyable<benchmark_report>::value,
     "benchmark report must remain report-serializable");
 

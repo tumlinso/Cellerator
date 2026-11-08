@@ -540,7 +540,7 @@ modern operation/projection/candidate/training code owns compute, the execution
 session remains the sole runtime authority, distributed hierarchy belongs to
 the planner, and Baseplane/CellShard adapters are explicit interop seams.
 CP-Math v1 and the one CellShard-private legacy format benchmark are visibly
-quarantined under `compat/`; model and trajectory orchestration is example
+preserved under `docs/history/compat/`; model and trajectory orchestration is example
 code. Host-only module infrastructure is proven by direct Clang import, while
 native CMake module scanning and architectural `.ccm` surfaces remain deferred
 until supported build tooling is installed. Final validation evidence is in

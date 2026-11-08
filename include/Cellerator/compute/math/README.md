@@ -1,6 +1,7 @@
-# CP-Math v1 compatibility
+# Numerical reference forwarding headers
 
-This directory contains forwarding headers only. The first-generation CP-Math
-request, planning, referee, BELL, and packed-dense evidence is owned by
-`compat/cp_math_v1`. Current operation, projection, candidate, and training
-code lives in the corresponding canonical `compute/` directories.
+These legacy paths forward to installed canonical headers under
+`Cellerator/math/reference` and `Cellerator/layout/projection`. New code should
+include the canonical headers directly. The former execution-plan header is
+retired; its versioned metadata and original tests are preserved in
+`docs/history/compat`.

@@ -1,3 +1,3 @@
 #pragma once
 
-#include <Cellerator/compat/cp_math_v1/operation.hh>
+#include <Cellerator/math/reference/operation.hh>

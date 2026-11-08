@@ -1,5 +1,5 @@
 #include <Cellerator/compute/candidate/transpose_backward_candidate.hh>
-#include <Cellerator/compat/cp_math_v1/referee.hh>
+#include <Cellerator/math/reference/referee.hh>
 
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
 

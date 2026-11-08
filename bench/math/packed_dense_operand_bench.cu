@@ -3,7 +3,7 @@
  * copy reference is correctness-only; timed results report the fused kernel.
  */
 
-#include <Cellerator/compat/cp_math_v1/packed_dense_operand.hh>
+#include <Cellerator/layout/projection/packed_dense_operand.hh>
 
 #include <bench/benchmark_mutex.hh>
 #include <bench/math/benchmark_support.hh>

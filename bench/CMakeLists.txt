@@ -1,3 +1,4 @@
+include(bench/geometry/packing_targets.cmake)
 include(bench/planner_targets.cmake)
 
 add_executable(quantizedMatrixBench

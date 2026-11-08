@@ -45,7 +45,9 @@ The public contracts belong under `include/Cellerator/compute/` or another canon
 - `matrix/convert/`: matrix conversion and bucket machinery.
 - `neighbors/`: reusable scoring and search math.
 
-Historical CP-Math v1 implementation lives under `compat/cp_math_v1/`.
+Numerical reference helpers live under `src/math/reference/`, and physical
+projection construction and operand packing under `src/layout/projection/`.
+The original CP-Math v1 implementation is archived under `docs/history/compat/`.
 Forwarding headers under `include/Cellerator/compute/math/` do not confer
 current ownership. Runtime resources belong under `src/runtime/`, planning
 under `src/planner/`, and conventional preprocessing workflows in downstream

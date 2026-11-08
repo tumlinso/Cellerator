@@ -176,7 +176,7 @@ target_link_libraries(celleratorFeatureMajorSmallNCandidateTest PRIVATE
     Cellerator::csr_fallback_candidate
     Cellerator::planner
     CellPack::execution_image_v2
-    cellerator_math_v1_evidence
+    Cellerator::spmm_reference
 )
 set_target_properties(celleratorFeatureMajorSmallNCandidateTest PROPERTIES
     CXX_STANDARD 20
@@ -188,7 +188,7 @@ target_link_libraries(celleratorTransposeBackwardCandidateTest PRIVATE
     Cellerator::transpose_backward_candidate
     Cellerator::feature_major_small_n_candidate
     CellPack::execution_image_v2
-    cellerator_math_v1_evidence
+    Cellerator::spmm_reference
 )
 set_target_properties(celleratorTransposeBackwardCandidateTest PROPERTIES
     CXX_STANDARD 20
@@ -218,3 +218,11 @@ set_target_properties(celleratorRowMaskedN1CandidateTest PROPERTIES
     CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
+
+add_executable(cpMathExecutionCsrTest EXCLUDE_FROM_ALL
+    tests/math_execution_csr_test.cu)
+target_link_libraries(cpMathExecutionCsrTest PRIVATE
+    Cellerator::packed_dense_operand Cellerator::spmm_reference CUDA::cudart)
+set_target_properties(cpMathExecutionCsrTest PROPERTIES
+    CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
