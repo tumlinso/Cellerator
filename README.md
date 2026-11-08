@@ -1,6 +1,6 @@
 # Cellerator
 
-**A computational framework for biological machine learning and cellular dynamics.**
+**A computational framework for learning cellular dynamics.**
 
 Cellerator makes biological state, dynamics, observations, events, and
 interactions computationally expressible. It aims to represent biological
