@@ -222,9 +222,11 @@ consumers; Cellerator's language compiler is maintained in Texo. Numerical
 geometry planning and execution preparation remain Cellerator responsibilities.
 Do not infer that all files have been consolidated from the presence of a newer
 directory.
-`include/CellPack` remains a current route; do not assume a `components/CellPack`
-directory exists. Use the exhaustive [routing map](development/routing.md)
-before moving or archiving a path.
+CellPack headers live under `include/Cellerator/geometry`; the former
+`include/CellPack` forwarding directory has been removed. Include
+`Cellerator/geometry/...` directly. The `cellpack` namespace and `CellPack::`
+targets retain their existing contracts. Use the exhaustive
+[routing map](development/routing.md) before moving or archiving a path.
 
 ## Configure and build
 

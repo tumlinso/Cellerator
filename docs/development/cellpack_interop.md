@@ -1,5 +1,11 @@
 # CellPack payload interoperability
 
+CellPack declarations live under `Cellerator/geometry/`. The former
+`CellPack/...` forwarding headers have been removed: replace that include prefix
+with `Cellerator/geometry/`, preserving the relative filename (including
+`persistence/execution_image_v2.hh`). This include-path migration preserves the
+`cellpack` namespace, `CellPack::` targets and versioned payload contracts.
+
 Existing CellPack plans, row records, warp tiles and CPK1/CPE2 images retain
 their versioned encodings. Their packing objective, recovery maps and direct
 weighted-row-reduction consumers keep their existing meanings.

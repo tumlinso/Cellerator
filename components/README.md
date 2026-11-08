@@ -13,7 +13,8 @@ A component is not automatically conceptually outside Cellerator.
 
 CellPack is not a component. The CellPack/CP-BP biological geometry compiler is
 owned by `include/Cellerator/geometry/` and `src/geometry/`. Historical
-`CellPack::` targets and `include/CellPack/` paths are compatibility surfaces.
+`CellPack::` targets remain compatibility surfaces. The former `include/CellPack/`
+forwarding headers have been removed; include `Cellerator/geometry/...` directly.
 
 Torch integration is an optional adapter owned by Cellerator. Python modules
 live under `python/cellerator/torch/`, and C++ bindings live under
