@@ -38,8 +38,8 @@ The Python `cellerator.modeling` entry point provides a general `Cell` informati
 handle, with optional program binding and prediction, and explicit
 `DynamicalModel`, `DynamicalCell`, `StepContext`, `StepResult`, `Experiment`, and
 `simulate` capabilities. Dynamical models carry reusable behavior and shared
-parameters; dynamical cell instances carry separate state and time. `Model`
-remains a legacy alias of `DynamicalModel`. `Experiment` advances a dynamical
+parameters; dynamical cell instances carry separate state and time.
+`Experiment` advances a dynamical
 cell in place through requested observation
 times, samples model observations, and records state snapshots and emitted
 events. Its input schedule can change at absolute times or be computed from

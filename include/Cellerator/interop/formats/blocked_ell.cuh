@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 
-#include <Cellerator/types.cuh>
+#include <Cellerator/common/types.cuh>
 
 namespace cellerator::interop::formats {
 

@@ -1,7 +1,5 @@
 add_library(cellerator_runtime_multi_gpu INTERFACE)
 add_library(Cellerator::runtime_multi_gpu ALIAS cellerator_runtime_multi_gpu)
-add_library(cellerator_dist ALIAS cellerator_runtime_multi_gpu)
-add_library(Cellerator::dist ALIAS cellerator_runtime_multi_gpu)
 target_include_directories(cellerator_runtime_multi_gpu INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
@@ -51,8 +49,3 @@ target_include_directories(cellerator_runtime_fleet PRIVATE ${CMAKE_CURRENT_SOUR
 target_link_libraries(cellerator_runtime_fleet PUBLIC Cellerator::runtime Cellerator::runtime_multi_gpu CUDA::cublas)
 target_link_libraries(cellerator_runtime_fleet PRIVATE CUDA::cudart CUDA::cusparse)
 set_target_properties(cellerator_runtime_fleet PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
-# Compatibility target names for pre-remap consumers. Canonical targets must
-# link Cellerator::runtime or Cellerator::runtime_fleet directly.
-add_library(cellerator_legacy_execution_context ALIAS cellerator_runtime_fleet)
-add_library(Cellerator::legacy_execution_context ALIAS cellerator_runtime_fleet)
-add_library(cellerator_compute_runtime ALIAS cellerator_runtime_fleet)

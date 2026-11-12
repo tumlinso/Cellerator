@@ -27,9 +27,7 @@ enum class cell_identity_kind : std::uint32_t {
     // Canonical dataset/global matrix row identity, not a later physical pack
     // or execution-layout position.
     global_row_index = 1u,
-    stable_item_id = 2u,
-    // Compatibility spelling for the frozen v1 numeric provenance value.
-    stable_cellshard_cell_id = stable_item_id
+    stable_item_id = 2u
 };
 
 inline constexpr std::uint32_t sample_selection_magic = 0x31535043u; // CPS1

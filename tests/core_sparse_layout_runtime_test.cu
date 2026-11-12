@@ -5,7 +5,6 @@
 #include <Cellerator/interop/formats/sliced_ell.cuh>
 #include <Cellerator/compute/matrix/convert/bucket.cuh>
 #include <Cellerator/compute/matrix/convert/compressed.cuh>
-#include <Cellerator/compute/matrix/convert/transpose.cuh>
 #include <Baseplane/seq/dna2.cuh>
 
 #include <cub/cub.cuh>

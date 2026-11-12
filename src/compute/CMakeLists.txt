@@ -564,7 +564,6 @@ target_link_libraries(cellerator_executable_core INTERFACE
 # contract instead of compiling or reimplementing it privately.
 add_library(cellerator_executable_program STATIC
     src/execution/program.cc
-    src/execution/program/program_v1_adapter.cc
     src/execution/program/program_v2.cc
 )
 add_library(Cellerator::executable_program ALIAS

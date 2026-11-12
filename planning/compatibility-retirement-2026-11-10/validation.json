@@ -1,0 +1,171 @@
+{
+  "schema": "cellerator-compatibility-retirement-validation-v1",
+  "date": "2026-11-10",
+  "baseline_commit": "134188cecfceee7c17fbed726a3164f1d0896864",
+  "source_binding": {
+    "tracked_diff_sha256": "c6b0dd88b1a95d308303ba01f7da7026be7684cdecf9f51b38b8ef72d36486d0",
+    "note": "Tracked worktree diff before this receipt and final documentation/routing regeneration; numerical sources were not changed.",
+    "cellshard_commit": "0b4811afada638b3b4eef2c57714ae396a91d23d",
+    "cellshard_diff_sha256": "5a5bfd422b0a5d1b2ff20abfdba061701fb6540bb7829b91af16413f2a4fd1e6"
+  },
+  "environment": {
+    "host": "Darwin arm64",
+    "compiler": "Homebrew Clang 20.1.3, matching clang-scan-deps, Ninja, C++20",
+    "build_directory": "/tmp/cellerator-shim-retirement.HceXsd",
+    "host_flags": "-DCELLERATOR_ENABLE_CUDA=0; temporary -imacros header supplies NAN and INFINITY builtins missing from this SDK; no production source workaround",
+    "optional_components": "Native NN, Python extension, Torch C++ adapters, Velocity++, and CUDA disabled for these package checks"
+  },
+  "passed": [
+    {
+      "check": "Native Cell/model contract/examples and numerical-reference suites",
+      "cases": 13,
+      "command": "ctest --test-dir /tmp/cellerator-shim-retirement.HceXsd/host -R 'cellerator_(model_contract|cell_|typed_core)|cpMath' --output-on-failure"
+    },
+    {
+      "check": "Final model contract rebuild after removing compatibility-only coverage",
+      "cases": 1
+    },
+    {
+      "check": "Python modeling, including ordinary model-object data, rejected old signatures, and live explicit external-state references",
+      "cases": 16,
+      "command": "PYTHONPATH=python python3 -B -m unittest discover -s tests/framework -p test_modeling.py"
+    },
+    {
+      "check": "Native effects and numerical-operator source consumers",
+      "cases": 2
+    },
+    {
+      "check": "Fresh regular installed Cell and reference consumers",
+      "cases": 3
+    },
+    {
+      "check": "Fresh substrate installed effects/operators/direct program-v2 consumer",
+      "cases": 3,
+      "details": "Program-v2 launches two ordered stages and rejects missing bindings before a callback runs."
+    },
+    {
+      "check": "Both provider-manifest templates generate/compile with the canonical name",
+      "cases": 2,
+      "details": "Independent zero-provider generated manifests have count zero."
+    },
+    {
+      "check": "Regular and substrate package header audits",
+      "details": "All 42 forwarding paths, provider-alias header, and program-v1 adapter header absent; their canonical owner paths present. Common implementation bytes match HEAD:src/common exactly."
+    },
+    {
+      "check": "Source-map lifecycle fixtures",
+      "command": "python3 tools/maintenance/source_map/lifecycle_test.py",
+      "details": "Temporary PATH supplies python as Python 3.12 for fixture subprocesses."
+    },
+    {
+      "check": "Documentation render",
+      "pages": 41,
+      "details": "Scratch copy rendered with the pre-existing invalid external Texo chapter entry omitted; repository book configuration was not changed."
+    },
+    {
+      "check": "Changed-guide relative file links",
+      "unresolved": 0
+    },
+    {
+      "check": "Active source reference audit",
+      "retired_include_or_symbol_references": 0,
+      "details": "Excludes immutable evidence, historical source, and explicit retirement metadata."
+    },
+    {
+      "check": "Git whitespace checks",
+      "repositories": [
+        "Cellerator",
+        "CellShard"
+      ]
+    }
+  ],
+  "limitations": [
+    {
+      "check": "Broad Python framework suite",
+      "cases": 330,
+      "failures": 1,
+      "errors": 1,
+      "skipped": 16,
+      "details": "Exact float equality in test_quantization_profiles and missing installed cellerator._native/distribution metadata in test_nn_native_composition. Both reproduce separately on the original source."
+    },
+    {
+      "check": "Full host build",
+      "details": "Existing AccessibilityState uses std::shared_ptr::unique(), unavailable in this C++20 libc++ implementation. All required package libraries and the focused targets were built separately."
+    },
+    {
+      "check": "CellShard build and migrated include compilation",
+      "details": "CMake migration and include/availability checks were updated in the submodule. Full host compilation still reaches affine_blocked_ell.hh requiring unavailable cuda_runtime.h, even with quantized support off; AnnData fixture generation also encounters a pre-existing Python anndata.settings mismatch. No CellShard compile/runtime pass is claimed."
+    },
+    {
+      "check": "CUDA executable-program/replay checks",
+      "details": "Not run: no local CUDA toolkit/GPU or reachable authorized CUDA validation host. Host direct program-v2 execution passed."
+    },
+    {
+      "check": "Unmodified book configuration",
+      "details": "Direct render fails because Quarto treats the existing external Texo chapter URL as a local chapter. Full scratch-copy render passed with that entry omitted."
+    },
+    {
+      "check": "Source-map validation",
+      "details": "Artifacts regenerated through the generator. The repository-wide audit retains 193 unclassified paths and 1255 untracked migration destinations. All 193 also fail the original HEAD classifier, and all 1255 are absent from HEAD; unrelated quarantine/compiler migration records were not rewritten."
+    }
+  ],
+  "evidence": [
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/host-focused-ctest.log",
+      "sha256": "43a6ae43a093c40db641bef1c8933ffe62d20a1202267f0f09749333101939c0"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/host-model-contract-ctest.log",
+      "sha256": "38b25930f4057ae73bd6df5e93a520ace6486408f8e4cf11e36b3ba58eb4c4d4"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/effects-final-ctest.log",
+      "sha256": "d76f07e000d5442eda55be6081cc07481c731b67d8506d5416facd3d1b1ba35a"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/operators.log",
+      "sha256": "1e47251476bc8382d754fde9169d3433958ad6594e124dfbc205d326e8d2f6e3"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/cell-consumer-ctest.log",
+      "sha256": "fd9ad43309639d269847b1d0013431561e1659d7bf388fc81c6331b47bc8031a"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/reference-consumer-ctest.log",
+      "sha256": "e8605d0cb6308b6f9609757247ea4e9a6161c62ba8f90ca81cf2c760b3bf0e2a"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/substrate-installed-ctest.log",
+      "sha256": "d5343d236825a03e7f45cc3e724c09acfa486b03ca8a37fa12d1f8a05483305e"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/python-modeling.log",
+      "sha256": "bf1d8186df2d63ab6beb6c5dbd7841764bfe6ec831b9b94b3acbe5cbc71d83a5"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/python-framework.log",
+      "sha256": "9eb4c0d24a28932c6fdda847c1b57b44be2ebfac889c88ad7b31f117f080cb93"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/baseline-quantization.log",
+      "sha256": "c4dbf92071c37cc7c500b93bba5215fbb89e7dee6f825941b60c8d973c7de2ee"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/baseline-native-composition.log",
+      "sha256": "ddedf68805c133964fbf4f2a39da480c4fc231f18da1b1794191a4d40c15e94b"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/source-map-lifecycle.log",
+      "sha256": "cfbb1bd37cf45096ffa3e4abe055469e497a8b0ee49ee6dd28a451a811629209"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/quarto-preview-render.log",
+      "sha256": "e938bf4a74f9537dfa42245ce67458494a53cb9b57efc758d12bc30af822cf52"
+    },
+    {
+      "path": "planning/compatibility-retirement-2026-11-10/evidence/quarto-render.log",
+      "sha256": "890683c2ec28896f9934f7be56b050d1ce46e11b041ebe7a21eb1de2a31edab2"
+    }
+  ],
+  "scope": "Source/interface cleanup and focused host/package validation only; no numerical, scientific, CUDA-runtime, or performance qualification beyond the stated cases."
+}

@@ -1,6 +1,6 @@
 #pragma once
 #include <Cellerator/compute/operation/native_numeric/device_linear.hh>
-#include <Cellerator/compute/operation/native_numeric/local_arithmetic.hh>
+#include <Cellerator/ops/numeric/local_arithmetic.hh>
 #include <Cellerator/compute/operation/native_foundation_contract.hh>
 
 namespace cellerator::compute::differential {

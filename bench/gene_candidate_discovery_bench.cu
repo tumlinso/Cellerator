@@ -5,7 +5,7 @@
  * Command: ./build-sampling/geneCandidateDiscoveryBench.
  */
 
-#include <Cellerator/compute/gene_candidate_discovery.hh>
+#include <Cellerator/geometry/gene_candidate_discovery.hh>
 
 #include "benchmark_mutex.hh"
 

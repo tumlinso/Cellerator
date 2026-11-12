@@ -1,0 +1,26 @@
+{
+    "files.associations": {
+        "*.ccm": "cpp",
+        "*.cppm": "cpp",
+        "*.ixx": "cpp"
+    },
+    "clangd.fallbackFlags": [
+        "-std=c++20",
+        "-I${workspaceFolder}/include"
+    ],
+    "clangd.path": "/opt/homebrew/opt/llvm/bin/clangd",
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build"
+    ],
+    "cmake.generator": "Ninja",
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.configureSettings": {
+        "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
+        "CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS": "/opt/homebrew/opt/llvm/bin/clang-scan-deps",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CELLERATOR_ENABLE_CUDA": "OFF",
+        "CELLERATOR_ENABLE_VELOCITY": false,
+        "anndatapp_DIR": "/Users/gavintumlinson/Desktop/anndatapp/build/arm/fixed-src/build/hdf5-only/installed-test-v3/prefix/lib/cmake/anndatapp"
+    }
+}

@@ -234,9 +234,8 @@ Borrowed CSR/native-tile adaptation and BELL lowering belong to
 `Cellerator::physical_projection`; CUDA operand packing remains the optional
 `Cellerator::packed_dense_operand` target. Their headers are under
 `Cellerator/layout/projection`, with the existing native-tile adapter header at
-`Cellerator/compute/projection/native_tile_view.hh`. Existing `compute/math` forwarding headers
-resolve to these installed canonical headers; the historical execution-plan
-header has been retired. See the [compatibility archive](history/compat/README.md)
+`Cellerator/compute/projection/native_tile_view.hh`. Include these canonical headers directly. The historical execution-plan
+header and old `compute/math` forwarding paths have been retired. See the [compatibility archive](history/compat/README.md)
 for exact original sources and provenance.
 
 After installing the host package, verify these headers and libraries with:

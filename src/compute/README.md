@@ -48,8 +48,7 @@ The public contracts belong under `include/Cellerator/compute/` or another canon
 Numerical reference helpers live under `src/math/reference/`, and physical
 projection construction and operand packing under `src/layout/projection/`.
 The original CP-Math v1 implementation is archived under `docs/history/compat/`.
-Forwarding headers under `include/Cellerator/compute/math/` do not confer
-current ownership. Runtime resources belong under `src/runtime/`, planning
+Consumers include the canonical owner headers directly. Runtime resources belong under `src/runtime/`, planning
 under `src/planner/`, and conventional preprocessing workflows in downstream
 BioPrep.
 

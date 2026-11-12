@@ -1,5 +1,5 @@
 #include <Cellerator/math/frontier/operators.hh>
-#include <Cellerator/compute/operation/native_numeric/local_arithmetic.hh>
+#include <Cellerator/ops/numeric/local_arithmetic.hh>
 #include <algorithm>
 #include <cfenv>
 #include <cmath>

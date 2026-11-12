@@ -1,5 +1,5 @@
 #pragma once
-#include <Cellerator/math/effects/providers.hh>
+#include <Cellerator/ops/numeric/weighted_relations.hh>
 #include <Cellerator/compute/operation/relation_semantics.hh>
 #include <Cellerator/structure/identity.hh>
 namespace cellerator::math::effects {

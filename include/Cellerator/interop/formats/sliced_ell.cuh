@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <Cellerator/types.cuh>
+#include <Cellerator/common/types.cuh>
 
 namespace cellerator::interop::formats {
 

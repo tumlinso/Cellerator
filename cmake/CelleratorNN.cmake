@@ -232,9 +232,7 @@ install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/nn.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
     COMPONENT NN)
 install(FILES
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/cell.hh"
     "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/dynamical.hh"
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/model.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/modeling"
     COMPONENT NN)
 install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/layout/entity_layout.hh"

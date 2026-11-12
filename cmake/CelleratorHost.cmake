@@ -4,14 +4,9 @@ include(CMakePackageConfigHelpers)
 # Native package surface. Keep language SDK headers and resources out of both
 # the regular and selectable substrate installations.
 function(cellerator_install_native_headers)
-    install(FILES
-        "${PROJECT_SOURCE_DIR}/src/common/real.cuh"
-        "${PROJECT_SOURCE_DIR}/src/common/types.cuh"
-        "${PROJECT_SOURCE_DIR}/src/common/cuda_compat.cuh"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common" ${ARGN})
-    foreach(dir IN ITEMS bindings biology cells compute containers dist distributed
-            examples execution geometry interop layout math memory modeling models nn
-            ops packing planner profiling runtime state structure tensor trajectory)
+    foreach(dir IN ITEMS bindings biology cells common compute containers
+            examples execution geometry interop layout math memory modeling nn
+            ops packing planner profiling runtime state structure tensor)
         install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/${dir}"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN})
     endforeach()
@@ -21,7 +16,6 @@ function(cellerator_install_native_headers)
         "${PROJECT_SOURCE_DIR}/include/Cellerator/cell.hh"
         "${PROJECT_SOURCE_DIR}/include/Cellerator/nn.hh"
         "${PROJECT_SOURCE_DIR}/include/Cellerator/parameters.hh"
-        "${PROJECT_SOURCE_DIR}/include/Cellerator/types.cuh"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN})
 endfunction()
 

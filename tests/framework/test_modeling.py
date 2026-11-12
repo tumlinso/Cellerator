@@ -1,13 +1,11 @@
 """Focused checks for backend-neutral model and cell contracts."""
 from dataclasses import FrozenInstanceError
-import warnings
 import unittest
 
 from cellerator.modeling import (
     Cell,
     DynamicalCell,
     DynamicalModel,
-    Model,
     StepContext,
     StepResult,
     sequential_updates,
@@ -22,7 +20,6 @@ class ModelingTests(unittest.TestCase):
         self.assertIs(cell.data, source)
         self.assertFalse(hasattr(cell, "time"))
         self.assertFalse(hasattr(cell, "advance"))
-        self.assertIs(Model, DynamicalModel)
 
     def test_binding_shares_program_identity_and_live_data(self):
         class Readouts:
@@ -54,22 +51,18 @@ class ModelingTests(unittest.TestCase):
         self.assertEqual(bound.data, 3)
         self.assertEqual(bound.predict(), 9)
 
-    def test_legacy_constructor_returns_dynamic_cell_with_warning(self):
+    def test_generic_cell_does_not_dispatch_to_dynamics(self):
         model = DynamicalModel(lambda state, _: state + 1)
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            cell = Cell(model, 4, id="legacy", time=2.5)
-        self.assertIs(type(cell), DynamicalCell)
-        self.assertEqual((cell.state, cell.time, cell.id), (4, 2.5, "legacy"))
-        self.assertTrue(any(item.category is DeprecationWarning for item in caught))
-        with warnings.catch_warnings(record=True) as caught_keywords:
-            warnings.simplefilter("always")
-            keyword_cell = Cell(model=model, state=7, id="legacy-keyword")
-        self.assertIs(type(keyword_cell), DynamicalCell)
-        self.assertEqual((keyword_cell.state, keyword_cell.id), (7, "legacy-keyword"))
-        self.assertTrue(any(item.category is DeprecationWarning for item in caught_keywords))
+        cell = Cell(model, id="model-as-data")
+        self.assertIs(type(cell), Cell)
+        self.assertIs(cell.data, model)
+        with self.assertRaises(TypeError):
+            Cell(model, 4)
+        with self.assertRaises(TypeError):
+            Cell(model=model, state=7)
+        self.assertFalse(hasattr(Cell, "from_reference"))
 
-    def test_legacy_reference_factory_returns_dynamic_cell_with_warning(self):
+    def test_dynamical_reference_factory_reads_live_external_state(self):
         class ExternalState:
             identity = "external-cell"
 
@@ -83,13 +76,10 @@ class ModelingTests(unittest.TestCase):
                 self.value = value
 
         reference = ExternalState()
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            cell = Cell.from_reference(
-                DynamicalModel(lambda state, _: {"x": state["x"] + 1}), reference
-            )
+        cell = DynamicalCell.from_reference(
+            DynamicalModel(lambda state, _: {"x": state["x"] + 1}), reference
+        )
         self.assertIs(type(cell), DynamicalCell)
-        self.assertTrue(any(item.category is DeprecationWarning for item in caught))
         self.assertEqual(cell.data, {"x": 1})
         reference.value = {"x": 8}
         self.assertEqual(cell.data, {"x": 8})

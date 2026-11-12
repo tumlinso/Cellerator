@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/model.hh>
+#include <Cellerator/modeling/dynamical.hh>
 #include <Cellerator/cell.hh>
 
 #include <cassert>
@@ -159,24 +159,4 @@ int main() {
     auto overflow = m::make_dynamical_cell(model, 1, 100, std::numeric_limits<double>::max());
     rejects<std::invalid_argument>([&] { overflow.advance(std::numeric_limits<double>::max()); });
     assert(overflow.state() == 1 && overflow.value_generation() == 0);
-
-    // Old transition factory names remain a narrow compatibility route.
-#if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-    auto legacy_transition = [](const int& state, const m::StepContext<>&) {
-        return state + 1;
-    };
-    auto legacy_model = m::make_model<int>(legacy_transition);
-    using LegacyModel = m::Model<int, m::StepContext<>, decltype(legacy_transition)>;
-    static_assert(std::is_same_v<LegacyModel, typename decltype(legacy_model)::element_type>);
-    auto legacy_cell = m::make_dynamical_cell(legacy_model, 1, 101);
-    legacy_cell.advance();
-    assert(legacy_cell.state() == 2);
-    static_assert(!HasForward<decltype(legacy_cell)>::value,
-                  "legacy transition names do not add a generic forward");
-#if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
 }

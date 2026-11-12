@@ -254,21 +254,4 @@ auto make_dynamical_cell(std::shared_ptr<ModelType> model,
         std::move(model), std::move(state), std::move(identity), time);
 }
 
-// The previous model names remain available as narrow transition-only
-// compatibility shims. Generic cells implement typed Cell access contracts.
-template<class State, class Context, class Dynamics,
-         class Observation = IdentityObservation>
-using Model [[deprecated("use DynamicalModel for explicit state transitions")]] =
-    DynamicalModel<State, Context, Dynamics, Observation>;
-
-template<class State, class Context = StepContext<>, class Dynamics,
-         class Observation = IdentityObservation>
-[[deprecated("use make_dynamical_model for explicit state transitions")]]
-auto make_model(Dynamics dynamics,
-                std::shared_ptr<const typename Context::parameters_type> parameters = {},
-                Observation observation = {}) {
-    return make_dynamical_model<State, Context>(
-        std::move(dynamics), std::move(parameters), std::move(observation));
-}
-
 } // namespace cellerator::modeling

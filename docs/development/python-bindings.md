@@ -30,7 +30,7 @@ are in the [developer reference](../developer_reference.qmd#mandatory-native-too
 an arbitrary object or an external state reference; observations and update
 rules are supplied separately for dynamical models. Generic `Cell` handles bind
 arbitrary information to shared callable programs without a clock or mandatory
-state vector. The legacy `Model` name aliases `DynamicalModel`.
+state vector. Explicit transitions use `DynamicalModel` and `DynamicalCell`.
 `FeatureBinding`, `PreparedAlignment`, `IdentityCodec`, `PredictionQuery`, and
 `Prediction` are also available from the root without importing Torch. They
 declare model-local biological coordinates and borrowed values; they do not

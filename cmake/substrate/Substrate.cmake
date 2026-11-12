@@ -7,7 +7,7 @@ option(CELLERATOR_SUBSTRATE_ENABLE_SM70 "Build the existing device-linear CUDA 1
 set(CELLERATOR_SUBSTRATE_COMPONENTS "host_operation_contracts;relation_semantics;native_numeric;executable_program;indexed_incidence;cellpack;moonshot_effects;moonshot_mechanisms;moonshot_learning" CACHE STRING "Explicit host component roots; dependencies are selected automatically")
 if(CELLERATOR_SUBSTRATE_REQUIRE_INTEGRATED)
   foreach(path include/Cellerator/state/structured_state.hh include/Cellerator/packing/strategy.hh
-      include/Cellerator/math/matrix/patch.hh include/Cellerator/math/process/ports.hh
+      include/Cellerator/ops/matrix/patch.hh include/Cellerator/ops/process/ports.hh
       include/Cellerator/math/effects/affine.hh include/Cellerator/execution/prepared_host_sweep.hh)
     if(NOT EXISTS "${CE_SUBSTRATE_ROOT}/${path}")
       message(FATAL_ERROR "IS1 integration prerequisite missing: ${path}; merge accepted leaves first")
@@ -180,23 +180,17 @@ foreach(component IN LISTS _ce_selected)
 endforeach()
 # Public native headers are installed intact. Header presence is not a claim that
 # every declared GPU/adapter symbol is linked by a selected host component.
-foreach(dir IN ITEMS bindings biology cells compute containers dist distributed
-    examples execution geometry interop layout math memory modeling models nn ops packing
-    planner profiling runtime state structure tensor trajectory)
+foreach(dir IN ITEMS bindings biology cells common compute containers
+    examples execution geometry interop layout math memory modeling nn ops packing
+    planner profiling runtime state structure tensor)
   install(DIRECTORY "${CE_SUBSTRATE_ROOT}/include/Cellerator/${dir}"
       DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
 endforeach()
-install(FILES
-    "${CE_SUBSTRATE_ROOT}/src/common/real.cuh"
-    "${CE_SUBSTRATE_ROOT}/src/common/types.cuh"
-    "${CE_SUBSTRATE_ROOT}/src/common/cuda_compat.cuh"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common")
 install(FILES "${CE_SUBSTRATE_ROOT}/include/Cellerator/Cellerator.hh"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/abi.h"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/cell.hh"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/nn.hh"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/parameters.hh"
-    "${CE_SUBSTRATE_ROOT}/include/Cellerator/types.cuh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
 if(moonshot_effects IN_LIST _ce_selected)
   install(FILES "${CE_SUBSTRATE_ROOT}/experiments/baseplane_moonshot/include/ce_moon/reference.hpp"

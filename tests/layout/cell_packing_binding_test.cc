@@ -1,7 +1,7 @@
 #include <Cellerator/execution/cell_packing_binding.hh>
 #include <Cellerator/layout/cell_packing_geometry.hh>
 
-#include <Cellerator/types.cuh>
+#include <Cellerator/common/types.cuh>
 
 #include <cstdint>
 #include <cstdlib>

@@ -1,6 +1,14 @@
+#include <Cellerator/ops/automata/dfa32.hh>
+#include <Cellerator/ops/affine/monomial.hh>
+#include <Cellerator/ops/sequence/lifting.hh>
+#include <Cellerator/ops/reduction/residual_tree.hh>
+#include <Cellerator/ops/relation/fixed16.hh>
+#include <Cellerator/ops/affine/block.hh>
+#include <Cellerator/ops/response/quadratic_jet.hh>
+#include <Cellerator/ops/matrix/host_reference.hh>
+#include <Cellerator/ops/process/condensed_ports.hh>
 #include <Cellerator/math/effects/affine.hh>
 #include <iostream>
-#include <type_traits>
 namespace fx=cellerator::math::effects;
 namespace ex=cellerator::execution;
 int checks=0;
@@ -14,40 +22,38 @@ fx::rel::axis_descriptor axis(std::uint64_t id,std::uint64_t n) {
         {id,1},{id,2},{id,3},{id,4}},n};
 }
 void existing_owners() {
-    static_assert(std::is_same_v<fx::Dfa32,ce_moon::Dfa32>);
-    static_assert(std::is_same_v<fx::ResidualTree,ce_moon::ResidualTree>);
-    auto left=fx::Dfa32::identity(),right=left;
+    auto left=ce_moon::Dfa32::identity(),right=left;
     for(unsigned s=0;s<32;++s) { left.to[s]=(s+3)%32; right.to[s]=(2*s)%32; }
-    auto combined=fx::compose(left,right);
+    auto combined=ce_moon::compose(left,right);
     for(unsigned s=0;s<32;++s) require(combined.to[s]==right.to[left.to[s]],"DFA sequential order");
-    fx::CountedDfa32 counted_left{left,{}},counted_right{right,{}};
+    ce_moon::CountedDfa32 counted_left{left,{}},counted_right{right,{}};
     for(unsigned s=0;s<32;++s) { counted_left.count[s]=s; counted_right.count[s]=2*s; }
-    auto counted=fx::compose(counted_left,counted_right);
+    auto counted=ce_moon::compose(counted_left,counted_right);
     for(unsigned s=0;s<32;++s) require(counted.count[s]==s+2*left.to[s],"count follows routed intermediate state");
     counted_left.count[0]=UINT64_MAX; counted_right.count[left.to[0]]=1;
-    rejects<std::overflow_error>([&] { fx::compose(counted_left,counted_right); },"counted unsigned overflow");
-    auto m=fx::MonomialAffine<2>::identity(),n=m; m.p={1,0}; m.d={2,-1}; m.b={1,3}; n.d={.5,2}; n.b={-2,1};
-    std::array<double,2> x{4,5}; const auto direct=fx::apply(n,fx::apply(m,x)),composed=fx::apply(fx::compose(m,n),x);
+    rejects<std::overflow_error>([&] { ce_moon::compose(counted_left,counted_right); },"counted unsigned overflow");
+    auto m=ce_moon::MonomialAffine<2>::identity(),n=m; m.p={1,0}; m.d={2,-1}; m.b={1,3}; n.d={.5,2}; n.b={-2,1};
+    std::array<double,2> x{4,5}; const auto direct=ce_moon::apply(n,ce_moon::apply(m,x)),composed=ce_moon::apply(ce_moon::compose(m,n),x);
     for(unsigned i=0;i<2;++i) close(composed[i],direct[i],"original monomial owner");
-    auto block=fx::BlockAffine<1,2>::identity(),other=block;
+    auto block=ce_moon::effects::BlockAffine<1,2>::identity(),other=block;
     block.matrix[0][0][1]=2; block.bias[0][1]=1; other.matrix[0][1][0]=-1;
-    const auto block_direct=fx::apply(other,fx::apply(block,x)),block_composed=fx::apply(fx::compose(block,other),x);
+    const auto block_direct=ce_moon::effects::apply(other,ce_moon::effects::apply(block,x)),block_composed=ce_moon::effects::apply(ce_moon::effects::compose(block,other),x);
     for(unsigned i=0;i<2;++i) close(block_composed[i],block_direct[i],"original block affine owner");
-    auto lift=fx::lift(3,7); const auto recovered=fx::unlift(lift);
+    auto lift=ce_moon::lift(3,7); const auto recovered=ce_moon::unlift(lift);
     close(recovered.first,3,"lifting even reconstruction"); close(recovered.second,7,"lifting odd reconstruction");
-    fx::ResidualTree residual({3,1,8,-2});
+    ce_moon::ResidualTree residual({3,1,8,-2});
     for(unsigned i=0;i<4;++i) close(residual.reconstruct(i),std::array<double,4>{3,1,8,-2}[i],"residual reconstruction");
     require(residual.above(4)==std::vector<std::size_t>{2},"residual certified scalar-max query");
-    fx::Relation16 a{},b{}; a[1][2]=1; b[2][3]=1;
-    require(fx::compose_relation(a,b)[1][3]==1,"finite relation composition order");
-    a[1][2]=2; rejects<std::invalid_argument>([&] { fx::compose_relation(a,b); },"finite relation binary vocabulary");
-    fx::Jet j{0,1,2,.5,1},k{1,3,-1,.25,2}; const auto jet=fx::compose(j,k);
+    ce_moon::Relation16 a{},b{}; a[1][2]=1; b[2][3]=1;
+    require(ce_moon::compose_relation(a,b)[1][3]==1,"finite relation composition order");
+    a[1][2]=2; rejects<std::invalid_argument>([&] { ce_moon::compose_relation(a,b); },"finite relation binary vocabulary");
+    ce_moon::effects::Jet j{0,1,2,.5,1},k{1,3,-1,.25,2}; const auto jet=ce_moon::effects::compose(j,k);
     close(jet.linear,-2,"jet chain derivative at recorded point"); close(jet.quadratic,.5,"jet second coefficient composition");
-    const auto query=fx::query(jet,0); require(query.in_radius && !query.certified_error_bound,"jet query is not a Taylor certificate");
-    k.center=2; rejects<std::invalid_argument>([&] { fx::compose(j,k); },"jet expansion point mismatch");
-    fx::Matrix app(1,1,{4}),api(1,1,{-1}),aip(1,1,{-1}),aii(1,1,{3});
-    const auto ports=fx::condense_ports(app,api,aip,aii,{1},{2}); const auto boundary=fx::solve_ports(ports);
-    close(boundary[0],5./11,"original port condensation owner"); close(fx::reconstruct_interior(ports,boundary)[0],9./11,"interior recovery");
+    const auto query=ce_moon::effects::query(jet,0); require(query.in_radius && !query.certified_error_bound,"jet query is not a Taylor certificate");
+    k.center=2; rejects<std::invalid_argument>([&] { ce_moon::effects::compose(j,k); },"jet expansion point mismatch");
+    ce_moon::mechanisms::Matrix app(1,1,{4}),api(1,1,{-1}),aip(1,1,{-1}),aii(1,1,{3});
+    const auto ports=ce_moon::mechanisms::condense_ports(app,api,aip,aii,{1},{2}); const auto boundary=ce_moon::mechanisms::solve_ports(ports);
+    close(boundary[0],5./11,"original port condensation owner"); close(ce_moon::mechanisms::reconstruct_interior(ports,boundary)[0],9./11,"interior recovery");
 }
 void accumulated() {
     using Effect=fx::accumulated_affine<2,1>;

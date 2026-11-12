@@ -1,7 +1,7 @@
 #include <Cellerator/examples/models/state_reduce/stateReduce.hh>
 #include <Cellerator/memory/cuda/shared_buffer.hh>
 
-#include <Cellerator/interop/cellshard_access.cuh>
+#include <Cellerator/interop/cellshard/access.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cuda_fp16.h>

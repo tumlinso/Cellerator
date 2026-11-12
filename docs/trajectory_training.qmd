@@ -17,8 +17,8 @@ ordering. It does not supply a scientific model or a general training service.
 ## A shared model and independent trajectories
 
 Use `TorchModel` or `TorchDynamics` directly, or their `as_model()` result. A
-backend-neutral `Model` used here must expose its owning Torch module through
-`Model.parameters`, so shared trainable parameters have one owner and ordinary
+backend-neutral `DynamicalModel` used here must expose its owning Torch module through
+`DynamicalModel.parameters`, so shared trainable parameters have one owner and ordinary
 in-place parameter updates can be detected during a graph window.
 
 ```python

@@ -1,0 +1,13 @@
+ERROR: Book chapter 'https://github.com/tumlinso/Texo' not found
+
+Stack trace:
+    at throwInputNotFound (file:///Applications/quarto/bin/quarto.js:100735:19)
+    at findInputs (file:///Applications/quarto/bin/quarto.js:100763:21)
+    at eventLoopTick (ext:core/01_core.js:175:7)
+    at async findInputs (file:///Applications/quarto/bin/quarto.js:100745:17)
+    at async findChapters (file:///Applications/quarto/bin/quarto.js:100778:13)
+    at async bookRenderItems (file:///Applications/quarto/bin/quarto.js:100781:5)
+    at async Object.bookProjectConfig [as config] (file:///Applications/quarto/bin/quarto.js:100686:25)
+    at async projectContext (file:///Applications/quarto/bin/quarto.js:82364:38)
+    at async render (file:///Applications/quarto/bin/quarto.js:91794:19)
+    at async Command.actionHandler (file:///Applications/quarto/bin/quarto.js:91975:32)

@@ -12,7 +12,6 @@ import math
 import threading
 from types import MappingProxyType
 from typing import Any, Protocol, runtime_checkable
-import warnings
 from uuid import uuid4
 
 
@@ -106,7 +105,6 @@ class DynamicalModel:
 
     This is an optional dynamics abstraction. General learned programs can be
     ordinary callables or modules and do not need to subclass a Cellerator base.
-    ``Model`` remains a legacy alias for this class.
     """
 
     __slots__ = ("dynamics", "observation", "parameters")
@@ -180,30 +178,9 @@ class Cell:
     carries no required clock, transition rule, or materialized state vector.
     Bind an ordinary callable or module with :meth:`bind` when a per-cell
     prediction handle is useful; batched calls to the program remain valid.
-
-    The former transition-shaped ``Cell(model, state, ...)`` constructor is
-    retained temporarily as a deprecated compatibility route to
-    :class:`DynamicalCell`.
     """
 
     __slots__ = ("_data", "_source", "_program", "id")
-
-    def __new__(cls, *args: Any, **kwargs: Any):
-        # Preserve the old constructor only when both pieces of its signature
-        # are explicit. A DynamicalModel alone is still valid caller-owned data.
-        if cls is Cell:
-            positional_model = bool(args) and isinstance(args[0], DynamicalModel)
-            keyword_model = isinstance(kwargs.get("model"), DynamicalModel)
-            has_state = (len(args) >= 2 or "state" in kwargs)
-            if has_state and (positional_model or keyword_model):
-                warnings.warn(
-                    "Cell(model, state, ...) is deprecated; use "
-                    "DynamicalCell(model, state, ...) instead.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
-                return object.__new__(DynamicalCell)
-        return object.__new__(cls)
 
     def __init__(self, data: Any = None, *, id: Any = None) -> None:
         self._data = data
@@ -271,22 +248,6 @@ class Cell:
         if isinstance(query, PredictionQuery) and query.sample_ids is None:
             query = replace(query, sample_ids=(self.id,))
         return evaluate(self.data, query)
-
-    @classmethod
-    def from_reference(cls, model: "DynamicalModel", state_reference: Any, *,
-                       id: Any = None, time: float = 0.0) -> "DynamicalCell":
-        """Deprecated compatibility factory for externally owned dynamic state."""
-        if cls is not Cell:
-            raise TypeError("Cell.from_reference is a legacy dynamics factory")
-        warnings.warn(
-            "Cell.from_reference is deprecated; use "
-            "DynamicalCell.from_reference instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return DynamicalCell.from_reference(
-            model, state_reference, id=id, time=time
-        )
 
 
 class DynamicalCell(Cell):
@@ -430,11 +391,6 @@ class DynamicalCell(Cell):
         )
         cell._state_ref = state_reference
         return cell
-
-
-# Retain the original name for transition-model users while making its scope
-# explicit in new APIs. Ordinary learned programs need no Cellerator base class.
-Model = DynamicalModel
 
 
 def functional_model(

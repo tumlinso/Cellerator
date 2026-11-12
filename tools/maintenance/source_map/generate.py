@@ -19,8 +19,69 @@ OUT.mkdir(parents=True, exist_ok=True)
 def split_ignored():
     return split0(git(REPO, "ls-files", "--others", "--ignored", "--exclude-standard", "-z"))
 
+# Canonical destinations after the 2026-11-10 compatibility retirement.
+COMPATIBILITY_RETIREMENTS = {
+    'include/Cellerator/compute/gene_candidate_discovery.hh': 'include/Cellerator/geometry/gene_candidate_discovery.hh',
+    'include/Cellerator/compute/gene_support_bitset.hh': 'include/Cellerator/geometry/gene_support_bitset.hh',
+    'include/Cellerator/compute/math/native_tile_view.hh': 'include/Cellerator/compute/projection/native_tile_view.hh',
+    'include/Cellerator/compute/math/native_training_slice.hh': 'include/Cellerator/compute/training/native_training_slice.hh',
+    'include/Cellerator/compute/math/operation.hh': 'include/Cellerator/math/reference/operation.hh',
+    'include/Cellerator/compute/math/operation_core/builtin_catalog.hh': 'include/Cellerator/compute/operation/builtin_catalog.hh',
+    'include/Cellerator/compute/math/operation_core/csr_fallback_candidate.hh': 'include/Cellerator/compute/candidate/csr_fallback_candidate.hh',
+    'include/Cellerator/compute/math/operation_core/cusparse_csr_candidate.hh': 'include/Cellerator/compute/candidate/cusparse_csr_candidate.hh',
+    'include/Cellerator/compute/math/operation_core/feature_major_small_n_candidate.hh': 'include/Cellerator/compute/candidate/feature_major_small_n_candidate.hh',
+    'include/Cellerator/compute/math/operation_core/operation_core.hh': 'include/Cellerator/compute/operation/operation_core.hh',
+    'include/Cellerator/compute/math/operation_core/preparation_factory.hh': 'include/Cellerator/compute/operation/preparation_factory.hh',
+    'include/Cellerator/compute/math/operation_core/row_masked_n1_candidate.hh': 'include/Cellerator/compute/candidate/row_masked_n1_candidate.hh',
+    'include/Cellerator/compute/math/operation_core/transpose_backward_candidate.hh': 'include/Cellerator/compute/candidate/transpose_backward_candidate.hh',
+    'include/Cellerator/compute/math/packed_dense_operand.hh': 'include/Cellerator/layout/projection/packed_dense_operand.hh',
+    'include/Cellerator/compute/math/physical_bell.hh': 'include/Cellerator/layout/projection/bell.hh',
+    'include/Cellerator/compute/math/referee.hh': 'include/Cellerator/math/reference/referee.hh',
+    'include/Cellerator/compute/math/tensor_core/v100_dense_fragment_candidate.hh': 'include/Cellerator/compute/candidate/tensor_core/v100_dense_fragment_candidate.hh',
+    'include/Cellerator/compute/math/tensor_core/v100_dense_fragment_plan.hh': 'include/Cellerator/compute/candidate/tensor_core/v100_dense_fragment_plan.hh',
+    'include/Cellerator/compute/matrix/convert/transpose.cuh': 'include/Cellerator/compute/matrix/convert/compressed.cuh',
+    'include/Cellerator/compute/operation/native_numeric/local_arithmetic.hh': 'include/Cellerator/ops/numeric/local_arithmetic.hh',
+    'include/Cellerator/compute/operation/sparse_support/training.hh': 'include/Cellerator/ops/sparse_support/training.hh',
+    'include/Cellerator/compute/runtime.hh': 'include/Cellerator/runtime/multi_gpu/fleet.cuh',
+    'include/Cellerator/compute/sequence/baseplane_integration.cuh': 'include/Cellerator/interop/baseplane/baseplane_integration.cuh',
+    'include/Cellerator/compute/sparse/ops.hh': 'include/Cellerator/compute/operators/sparse/ops.hh',
+    'include/Cellerator/compute/sparse/project.hh': 'include/Cellerator/compute/candidate/sparse/project.hh',
+    'include/Cellerator/dist/distributed.cuh': 'include/Cellerator/runtime/multi_gpu/context.cuh',
+    'include/Cellerator/dist/nccl_communicator.cuh': 'include/Cellerator/runtime/multi_gpu/nccl_communicator.cuh',
+    'include/Cellerator/dist/nccl_select.cuh': 'include/Cellerator/runtime/multi_gpu/nccl_select.cuh',
+    'include/Cellerator/distributed/hierarchy.hh': 'include/Cellerator/planner/distributed/hierarchy.hh',
+    'include/Cellerator/geometry/optimizer/oracle/optimizer_portfolio_contract.h': 'include/Cellerator/geometry/optimizer/portfolio_v1.hh',
+    'include/Cellerator/interop/cellshard.cuh': 'include/Cellerator/interop/cellshard/matrix.cuh',
+    'include/Cellerator/interop/cellshard_access.cuh': 'include/Cellerator/interop/cellshard/access.cuh',
+    'include/Cellerator/math/matrix/patch.hh': 'include/Cellerator/ops/matrix/patch.hh',
+    'include/Cellerator/math/process/ports.hh': 'include/Cellerator/ops/process/ports.hh',
+    'include/Cellerator/modeling/cell.hh': 'include/Cellerator/cell.hh',
+    'include/Cellerator/modeling/model.hh': 'include/Cellerator/modeling/dynamical.hh',
+    'include/Cellerator/models/developmental_time.hh': 'include/Cellerator/examples/models/developmental_time/developmentalTime.hh',
+    'include/Cellerator/models/developmental_time_trajectory.hh': 'include/Cellerator/examples/models/developmental_time_trajectory/developmentalTimeTrajectory.hh',
+    'include/Cellerator/models/state_reduce.hh': 'include/Cellerator/examples/models/state_reduce/stateReduce.hh',
+    'include/Cellerator/trajectory/trajectory_tree.cuh': 'include/Cellerator/examples/trajectory/trajectory_tree.cuh',
+    'include/Cellerator/types.cuh': 'include/Cellerator/common/types.cuh',
+    'include/Cellerator/runtime/legacy_execution_context.hh': 'include/Cellerator/runtime/multi_gpu/fleet.cuh',
+    'src/common/real.cuh': 'include/Cellerator/common/real.cuh',
+    'src/common/types.cuh': 'include/Cellerator/common/types.cuh',
+    'src/common/cuda_compat.cuh': 'include/Cellerator/common/cuda_compat.cuh',
+    'include/Cellerator/math/effects/providers.hh': 'include/Cellerator/ops',
+    'include/Cellerator/execution/program/program_v1_adapter.h': 'include/Cellerator/execution/program/program_v2.h',
+    'src/execution/program/program_v1_adapter.cc': 'src/execution/program/program_v2.cc',
+}
+
 # Order matters: narrow exceptions precede broad tree rules.
 def classify(p):
+    if p in COMPATIBILITY_RETIREMENTS:
+        destination = COMPATIBILITY_RETIREMENTS[p]
+        return ('retired source compatibility surface', destination,
+                f'use the canonical owner at {destination}; no forwarding facade remains',
+                'record_compatibility_retirement',
+                'source migration only; qualification belongs to the current owner',
+                'direct canonical includes and explicit DynamicalModel consumers',
+                'affected source, installed consumers, and modeling checks; consult dated receipts',
+                'preserve historical source/evidence and persisted contracts; no numeric or schema change')
     name = Path(p).name.lower()
     suf = Path(p).suffix.lower()
     if p.startswith('docs/history/compat/'):
@@ -215,7 +276,7 @@ def classify(p):
         maturity = 'research implementation present; no full source-to-device or live-recompile qualification implied'
         return (title, owner, f'retain at {owner}; {job}', 'retain_in_named_compiler_subsystem', maturity, consumers, tests, 'preserve task IDs only in planning/history; route code by subsystem purpose and preserve native interfaces')
     if p.startswith(('src/common/','include/Cellerator/common/')):
-        return ('shared native helpers', 'src/common and include/Cellerator/common are the current helper owner', 'keep shared checks/types in common only while concrete source targets include or link them; CUDA-specific helpers stay internal', 'retain_shared_build_helpers', 'build_support_not_model_api', 'src/compute, src/layout, src/indexing, and CUDA targets include shared headers; enumerate exact includes for moves', 'native CMake targets; component checks in tests/math_core, tests/sparse_support, and CUDA-specific consumers where applicable', 'preserve original path and blob identity until all includes/build references move')
+        return ('shared native helpers', 'include/Cellerator/common owns public definitions; src/common retains build configuration helpers', 'keep shared checks/types in common only while concrete source targets include or link them; CUDA-specific helpers stay internal', 'retain_shared_build_helpers', 'build_support_not_model_api', 'src/compute, src/layout, src/indexing, and CUDA targets include shared headers; enumerate exact includes for moves', 'native CMake targets; component checks in tests/math_core, tests/sparse_support, and CUDA-specific consumers where applicable', 'preserve original path and blob identity until all includes/build references move')
     if p == 'include/Cellerator/structure/coordinates.hh':
         return ('persistent occurrence coordinates and logical order tokens', 'include/Cellerator/structure/coordinates.hh', 'retain ordered semantic occurrence identity and coordinates independently of physical positions, buffer offsets, runtime handles, or biological feature alignment', 'retain_persistent_occurrence_coordinates', 'typed header contract is present; callers and exact ABI/test coverage are separate', 'layout::OccurrenceMap projects these coordinates into physical positions; biology::FeatureBinding may resolve identity separately', 'native-data identity and occurrence consumer checks by exact registered contract; no device claim', 'preserve repeated occurrences, canonical order tokens, and valid zero-based IDs')
     if p == 'include/Cellerator/containers/posting_index.hh' or p == 'src/containers/posting_index.cc':

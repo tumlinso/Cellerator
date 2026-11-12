@@ -41,10 +41,10 @@ require creating and iterating over a Python cell for every row.
 Explicit transitions use `DynamicalCell` and `DynamicalModel`. Their state,
 time, observations, and advancement retain the earlier dynamics contracts.
 `DynamicalCell` is a specialized `Cell`, and its generic data access follows
-current state, including external state references. The legacy `Model` name
-aliases `DynamicalModel`; it is not a universal learned-model base class.
-Legacy `Cell(model, state, ...)` and `Cell.from_reference(...)` remain deprecated
-construction routes to a real `DynamicalCell`.
+current state, including external state references through
+`DynamicalCell.from_reference(...)`. Ordinary learned programs need no universal
+model base class. Use `Cell(data)` for generic information handles and
+`DynamicalCell(model, state, ...)` for explicit transitions.
 
 ## Biological features and interactions
 

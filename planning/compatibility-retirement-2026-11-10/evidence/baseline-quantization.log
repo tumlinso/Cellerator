@@ -1,0 +1,13 @@
+F.....
+======================================================================
+FAIL: test_contextual_exact_values_are_overrides_and_survive_updates (test_quantization_profiles.QuantizationProfileTests.test_contextual_exact_values_are_overrides_and_survive_updates)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/cellerator-shim-retirement.HceXsd/baseline/tests/framework/test_quantization_profiles.py", line 103, in test_contextual_exact_values_are_overrides_and_survive_updates
+    self.assertEqual(updated.dequantize()[0, 0], 0.35)
+AssertionError: 0.35 != 0.35
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.039s
+
+FAILED (failures=1)

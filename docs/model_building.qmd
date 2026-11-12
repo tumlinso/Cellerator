@@ -6,7 +6,7 @@ title: "Model building"
 
 Start from the system of interest: what state the model carries, how it changes,
 which context influences an update, and what observations it produces.
-`cellerator.modeling.Model` accepts caller-defined dynamics and observation
+`cellerator.modeling.DynamicalModel` accepts caller-defined dynamics and observation
 functions; `Cell` associates a persistent identity with model-native state and
 an independent time. `StepContext` carries time, step size, inputs, parameters,
 random source, and metadata. `StepResult` carries updated state and optional

@@ -78,7 +78,7 @@ assert abs(result.state.cells["cell"][0] - 3.8) < 1e-12
 ```
 
 The [multicellular example](../examples/framework/extracellular_coupling.py)
-uses `Model` and `StepContext` to coordinate one producer, two receivers and a
+uses `DynamicalModel` and `StepContext` to coordinate one producer, two receivers and a
 finite bath across two species. Active rates read the old bath concentration,
 so receivers do not observe another cell's newly secreted material until the
 next step. The run checks conserved species totals.

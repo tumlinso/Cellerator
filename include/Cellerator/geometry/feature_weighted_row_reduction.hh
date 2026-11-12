@@ -2,7 +2,7 @@
 
 #include "Cellerator/geometry/warp_tiles.hh"
 
-#include <Cellerator/types.cuh>
+#include <Cellerator/common/types.cuh>
 
 #include <cstddef>
 #include <type_traits>

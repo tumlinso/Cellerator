@@ -1,4 +1,4 @@
-#include <Cellerator/compute/gene_support_bitset.hh>
+#include <Cellerator/geometry/gene_support_bitset.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>

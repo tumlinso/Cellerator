@@ -1,8 +1,8 @@
 # Composable native host effects
 
-`Cellerator::effects` supplies the source-tree C++20 entry points
-`<Cellerator/math/effects/providers.hh>` and `affine.hh`. The provider header
-aliases the original CE types/functions rather than copying implementations:
+`Cellerator::effects` supplies the C++20 entry point
+`<Cellerator/math/effects/affine.hh>`. Existing numerical providers are included
+directly from their operation-family headers under `<Cellerator/ops/...>`:
 DFA/counted DFA, monomial/block-affine maps, weighted algebras, lifting/residual
 trees, finite relations, response jets/checkpoints and port condensation/recovery.
 Existing `ce_moon` header consumers retain the same types and mathematical owner.

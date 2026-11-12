@@ -1,12 +1,12 @@
 # Local population execution
 
 `cellerator.execution` is a backend-neutral, sequential reference executor. A
-`Population` owns membership, communication and active context. Each `Cell` owns
-its time and state reference; multiple cells can share one `Model` and its
+`Population` owns membership, communication and active context. Each `DynamicalCell` owns
+its time and state reference; multiple cells can share one `DynamicalModel` and its
 parameters. State is never converted into a dense array or tensor.
 
 ```python
-from cellerator.modeling import Cell, Model
+from cellerator.modeling import DynamicalCell, DynamicalModel
 from cellerator.execution import Population
 
 def update(state, context):
@@ -14,8 +14,8 @@ def update(state, context):
     incoming = [record.value for record in context.inputs.incoming]
     return state + incoming
 
-model = Model(update)
-population = Population([Cell(model, [], id="a"), Cell(model, [], id="b")],
+model = DynamicalModel(update)
+population = Population([DynamicalCell(model, [], id="a"), DynamicalCell(model, [], id="b")],
                         context_capacity=16)
 population.send("a", "pulse", time=0.5)
 population.advance(dt=1)   # Both synchronized cells stop at the 0.5 boundary.
@@ -71,7 +71,7 @@ share the earliest such boundary. Inputs due at that boundary are admitted on
 the following advance. Cells with different starting times remain independent
 cohorts: callers must select coherent communication work, and routing into a
 committed past fails explicitly. A model-selected result time is bounded before
-Cell adoption; choosing an earlier result time can leave a synchronized cohort.
+DynamicalCell adoption; choosing an earlier result time can leave a synchronized cohort.
 
 Suspension preserves state, model time, active context and pending inputs.
 Sending does not wake a suspended cell. Resume does not fast-forward its model

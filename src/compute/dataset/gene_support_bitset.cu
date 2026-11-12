@@ -10,7 +10,7 @@
  * allocation smoke command is the same executable with --full-size-gpu.
  */
 
-#include <Cellerator/compute/gene_support_bitset.hh>
+#include <Cellerator/geometry/gene_support_bitset.hh>
 
 #include <cuda_runtime.h>
 

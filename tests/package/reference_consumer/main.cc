@@ -4,11 +4,6 @@
 #include <Cellerator/layout/projection/packed_dense_operand.hh>
 #include <Cellerator/compute/projection/native_tile_view.hh>
 
-// Installed legacy includes must resolve without a source-checkout include path.
-#include <Cellerator/compute/math/operation.hh>
-#include <Cellerator/compute/math/referee.hh>
-#include <Cellerator/compute/math/physical_bell.hh>
-#include <Cellerator/compute/math/packed_dense_operand.hh>
 
 int main() {
     namespace math = cellerator::compute::math;

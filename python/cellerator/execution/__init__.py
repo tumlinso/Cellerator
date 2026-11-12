@@ -1,6 +1,6 @@
 """Population execution, topology planning and versioned parameter residency.
 
-Use Model/Cell for numerical behavior, Population for identity and communication,
+Use DynamicalModel/DynamicalCell for transitions, Population for identity and communication,
 and an explicit work selection/plan for resource scheduling. Execution effects
 are caller-directed mechanisms and carry no biological interpretation.
 """

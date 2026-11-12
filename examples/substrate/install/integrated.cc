@@ -1,7 +1,7 @@
 #include <Cellerator/state/structured_state.hh>
 #include <Cellerator/packing/strategy.hh>
-#include <Cellerator/math/matrix/patch.hh>
-#include <Cellerator/math/process/ports.hh>
+#include <Cellerator/ops/matrix/patch.hh>
+#include <Cellerator/ops/process/ports.hh>
 #include <Cellerator/math/effects/affine.hh>
 #include <Cellerator/execution/prepared_host_sweep.hh>
 #include <array>

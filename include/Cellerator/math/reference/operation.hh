@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/types.cuh>
+#include <Cellerator/common/types.cuh>
 #include <Cellerator/layout/projection/identity.hh>
 #include <Cellerator/layout/projection/dense_layout.hh>
 

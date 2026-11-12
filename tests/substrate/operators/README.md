@@ -1,7 +1,7 @@
 # Native matrix and process operations
 
 `Cellerator::matrix_patch` exposes `tanh(L X) R` through
-`<Cellerator/math/matrix/patch.hh>`. It compiles the completed native patch
+`<Cellerator/ops/matrix/patch.hh>`. It compiles the completed native patch
 provider unchanged and adds public span/axis/policy/generation/alias admission.
 Square contiguous row-major FP32 state and factors are supported. Four named
 input/output axes preserve both mathematical sides of the patch; actor-private
@@ -9,7 +9,7 @@ columns acquire no shared biological meaning. Strides, rectangular shapes,
 FP16/FP64, CUDA and capture are explicitly unsupported in this host adapter.
 
 `Cellerator::private_ports` exposes `D_i sum_edges(dst=i) w_edge E_src h_src`
-through `<Cellerator/math/process/ports.hh>`. It compiles the completed native
+through `<Cellerator/ops/process/ports.hh>`. It compiles the completed native
 transport provider unchanged. Actors retain explicit private axes and ragged
 widths; the port axis and ordered directed edge axis are separate. Each edge
 retains its own coefficient and gradient, including repeated pairs and zeros.

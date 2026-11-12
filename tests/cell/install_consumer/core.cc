@@ -3,7 +3,6 @@
 #endif
 #include <Cellerator/cell.hh>
 #include <Cellerator/cells/access.hh>
-#include <Cellerator/modeling/cell.hh>
 
 #include <cassert>
 #include <string>

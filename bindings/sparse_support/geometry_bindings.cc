@@ -1,6 +1,6 @@
 #include "geometry_bindings.hh"
 
-#include <Cellerator/compute/operation/sparse_support/training.hh>
+#include <Cellerator/ops/sparse_support/training.hh>
 #include <Cellerator/layout/projection/mma_hybrid.hh>
 
 #include <pybind11/stl.h>

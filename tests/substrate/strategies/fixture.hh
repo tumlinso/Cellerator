@@ -1,6 +1,6 @@
 #pragma once
 #include <Cellerator/packing/strategies/placement.hh>
-#include <Cellerator/compute/operation/native_numeric/local_arithmetic.hh>
+#include <Cellerator/ops/numeric/local_arithmetic.hh>
 #include <array>
 #include <cmath>
 #include <stdexcept>

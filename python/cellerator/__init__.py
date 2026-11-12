@@ -13,7 +13,7 @@ from ._declarations import (
     SharedSupportSpec, constructor_data,
 )
 from .modeling import (
-    Cell, DynamicalCell, DynamicalModel, Experiment, ExperimentResult, Model,
+    Cell, DynamicalCell, DynamicalModel, Experiment, ExperimentResult,
     StepContext, StepResult, simulate,
 )
 from .biology import (
@@ -148,7 +148,7 @@ def _known_mechanism_handles():
 
 __all__ = [
     "Cell", "DynamicalCell", "DynamicalModel", "Experiment", "ExperimentResult",
-    "Model", "StepContext", "StepResult", "simulate",
+    "StepContext", "StepResult", "simulate",
     "FeatureBinding", "IdentityCodec", "PreparedAlignment", "Prediction", "PredictionQuery",
     "Axis", "Identity", "Incidence", "Mechanism", "MechanismSpec",
     "OutputContribution", "SharedSupportSpec", "prepare_mechanism",
