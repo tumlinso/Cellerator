@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace cs = cellerator::compute::sampling;
-namespace cm = cellerator::interop::formats;
+namespace cm = cellerator::tensor::base;
 namespace ct = cellerator::types;
 
 int require(bool ok, const char *label) {
@@ -24,7 +24,7 @@ bool close_f64(double left, double right) {
     return std::fabs(left - right) < 1.0e-12;
 }
 
-bool fill_source(cm::CompressedPayload *matrix) {
+bool fill_source(cm::compressed *matrix) {
     cm::init(matrix, 8u, 5u, 14u, cm::compressed_by_row);
     if (!cm::allocate(matrix)) return false;
     const ct::ptr_t ptr[] = {0u, 2u, 3u, 6u, 8u, 9u, 11u, 12u, 14u};
@@ -226,7 +226,7 @@ int test_exact_global_rows_limits_and_small_population() {
 }
 
 int test_density_stratified_csr_sampling() {
-    cm::CompressedPayload source;
+    cm::compressed source;
     cs::density_sample_spec spec;
     cs::cell_identity_view identities;
     cs::sample_plan first, second, generic, replay;

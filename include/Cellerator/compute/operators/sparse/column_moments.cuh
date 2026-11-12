@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/interop/formats/device_views.cuh>
+#include <Cellerator/tensor/base/device_views.cuh>
 
 #include <cstdint>
 
@@ -19,19 +19,19 @@ struct column_moments_view {
 int zero_column_moments(column_moments_view *moments, cudaStream_t stream = nullptr);
 
 int accumulate_column_moments(
-    const ::cellerator::interop::formats::device::BlockedEllView *matrix,
+    const ::cellerator::tensor::base::device::BlockedEllView *matrix,
     const std::uint8_t *row_mask,
     column_moments_view *moments,
     cudaStream_t stream = nullptr);
 
 int accumulate_column_moments(
-    const ::cellerator::interop::formats::device::SlicedEllView *matrix,
+    const ::cellerator::tensor::base::device::SlicedEllView *matrix,
     const std::uint8_t *row_mask,
     column_moments_view *moments,
     cudaStream_t stream = nullptr);
 
 int accumulate_column_moments(
-    const ::cellerator::interop::formats::device::CompressedView *matrix,
+    const ::cellerator::tensor::base::device::CompressedView *matrix,
     const std::uint8_t *row_mask,
     column_moments_view *moments,
     cudaStream_t stream = nullptr);

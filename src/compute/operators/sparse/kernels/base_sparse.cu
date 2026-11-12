@@ -1,5 +1,5 @@
 #include <Cellerator/compute/operators/sparse/ops.hh>
-#include <Cellerator/interop/formats/blocked_ell.cuh>
+#include <Cellerator/tensor/base/blocked_ell.cuh>
 #include "../primitives/common.cuh"
 
 #include <cub/cub.cuh>
@@ -8,9 +8,7 @@ namespace cellerator::compute::sparse::ops::base {
 
 namespace {
 
-namespace cs {
-namespace sparse = ::cellerator::interop::formats;
-}
+namespace base = ::cellerator::tensor::base;
 
 constexpr int kRowThreads = 256;
 constexpr int kValueThreads = 256;

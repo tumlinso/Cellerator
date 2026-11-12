@@ -512,7 +512,7 @@ bool build_density_sample_plan(std::uint64_t total_rows,
     return true;
 }
 
-bool build_csr_density_sample_plan(const ::cellerator::interop::formats::CompressedPayload *source,
+bool build_csr_density_sample_plan(const ::cellerator::tensor::base::compressed *source,
                                    const density_sample_spec &spec,
                                    const cell_identity_view &identities,
                                    sample_plan *out,
@@ -522,7 +522,7 @@ bool build_csr_density_sample_plan(const ::cellerator::interop::formats::Compres
         set_error(error, "CSR density sampling requires source and output");
         return false;
     }
-    if (source->axis != ::cellerator::interop::formats::compressed_by_row) {
+    if (source->axis != ::cellerator::tensor::base::compressed_by_row) {
         set_error(error, "density sampling requires row-compressed CSR input");
         return false;
     }

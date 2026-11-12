@@ -185,12 +185,13 @@ foreach(_header IN ITEMS
         execution/dependency/distributed.cuh
         execution/dependency/packed_program.cuh
         execution/dependency/transfer.cuh
-        interop/formats/dense.cuh
-        interop/formats/compressed.cuh
-        interop/formats/coo.cuh
-        interop/formats/blocked_ell.cuh
-        interop/formats/sliced_ell.cuh
-        interop/formats/device_views.cuh)
+        tensor/base/dense.cuh
+        tensor/base/compressed.cuh
+        tensor/base/triplet.cuh
+        tensor/base/blocked_ell.cuh
+        tensor/base/sliced_ell.cuh
+        tensor/base/diagonal.cuh
+        tensor/base/device_views.cuh)
     get_filename_component(_header_parent "${_header}" DIRECTORY)
     install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/${_header}"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/${_header_parent}"

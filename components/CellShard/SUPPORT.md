@@ -1,0 +1,117 @@
+# CellShard Support Matrix
+
+CellShard `0.1.x` is intentionally narrow.
+
+## Stable Surface
+
+- CS-FOUND C++ contracts for strong identity, domains/partitions/orders,
+  opaque images and extents, in-memory catalogs/snapshots, exact local sources,
+  and move-only host residency; caller-allocated device residency is available
+  when CUDA is enabled.
+- Deterministic `CPEXEC02` entries inside unchanged `CSPACK01`, alongside the
+  supported legacy `CPEXEC01` path.
+
+- Installed CMake package components:
+  - `CellShard::headers`
+  - `CellShard::inspect`
+  - `CellShard::anndata_ingest` (always installed; host-only sparse H5AD access)
+  - `CellShard::runtime` when CUDA is enabled
+  - `CellShard::ingest` when CUDA ingest is enabled
+  - `CellShard::export`
+  - `CellShard::h5ad_python` when Python is enabled
+- Header-only C++ access adapters:
+  - `cellshard::access::adapter_view<Binding>`
+  - `cellshard::access::archive_adapter<Binding>`
+  - `cellshard::access::pack_adapter<Binding>`
+  - `cellshard::access::archive_to_pack<ArchiveBinding, PackBinding, Policy>`
+  - dense and compressed sparse fallback bindings
+- `CellShard::export` path-backed dataset access, including summary, selected-row
+  CSR, observation metadata, and named text-column loading
+- Python package/module:
+  - `open`
+  - `Dataset`
+  - `open_dataset`
+  - `DatasetFile`
+  - `open_dataset_owner`
+  - `DatasetOwner`
+  - `bootstrap_dataset_client`
+  - `DatasetClient`
+  - `NativeMatrixView`
+  - `NativeRowSelection`
+  - `BlockedEllPartition`
+  - `SlicedEllPartition`
+  - `load_dataset_summary`
+  - `load_dataset_as_csr`
+  - `load_dataset_rows_as_csr`
+  - `load_dataset_global_metadata_snapshot`
+  - `serialize_global_metadata_snapshot`
+  - `deserialize_global_metadata_snapshot`
+  - `make_client_snapshot_ref`
+  - `validate_client_snapshot_ref`
+  - `stage_append_only_runtime_service`
+  - `publish_runtime_service_cutover`
+  - `describe_pack_delivery`
+  - `DatasetFile.materialize_partition`
+  - `write_h5ad`
+
+## Supported Environment
+
+- OS / arch: Linux `x86_64`
+- CMake: `3.28+`
+- C++ compiler: Clang 18+ with matching `clang-scan-deps`
+- Generator: Ninja 1.11+
+- C++: C++20 or newer, with extensions disabled
+- CUDA: CUDA C++20 or newer when enabled
+- Python: `3.10` through `3.13`
+- HDF5: C library and native `anndatapp` CMake package with HDF5 backend enabled
+- CUDA: optional, but the main runtime/staging path assumes the repo's current CUDA toolchain posture
+- CellShard runtime and distributed headers use neutral device IDs and optional
+  stream handles. They do not require Cellerator runtime/distributed types or
+  own Cellerator collective policy. Cellerator sparse-format compatibility
+  headers remain a separately scoped transitional surface.
+
+## Support Notes
+
+- CPU-only builds are supported for inspect/materialize portability and packaging smoke checks, not for the normal high-throughput runtime path.
+- CUDA-enabled release validation should use the same host/toolchain class as the main CellShard development environment.
+- `CellShard::anndata_ingest` is a compiled host API and builds without CUDA. Its sparse reader exposes CSR/CSC chunks and metadata from backed H5AD sources through the required native `anndatapp` module dependency.
+- The reader accepts versioned CSR/CSC H5AD encodings and rejects unversioned files, legacy h5sparse, unsupported compound encodings, dense matrices, and unsupported encodings without legacy fallback or automatic conversion.
+- `working_bytes` independently caps reader payload buffers and `anndata` scratch. Returned metadata/output storage and HDF5 internal buffering are outside those bounds; an indivisible oversized sparse segment fails with a request to raise the explicit budget.
+- H5AD feature IDs come from the `var` index. Only exact `feature_name` and `feature_type` columns are selected. A missing name column falls back to the index; a missing type column stays empty. Packed feature-table values are formatted as text and nullable entries become empty strings, while source API optional-string reads distinguish null from empty.
+- Building CMake tests does not require Python. Fixture-backed H5AD test runs are registered only when the selected interpreter imports `anndata`, `h5py`, and `scipy`; otherwise CMake reports the skipped run and still builds the host test executable.
+- Binary wheels are Linux-only.
+- The standalone `cellshardH5adExport` app is part of CMake builds, but wheel builds package the Python extension only.
+- Python `.csh5` access is native-first: `Dataset.matrix()`, `Dataset.rows(...)`,
+  slicing, and `head(...)` return lazy native views by default. CSR, SciPy, and
+  Torch are explicit conversion formats or explicit `to_*` calls.
+- Torch is optional interop, not the default representation and not a CellShard
+  build dependency.
+- `CellShard/interop/cellerator/sampling.hh` and
+  `CellShard/interop/cellerator/execution_payload.hh` are optional header-only
+  adapters for consumers that also provide Cellerator; normal CellShard
+  package components do not link Cellerator through them.
+- CellShard-owned payload layouts are intentionally limited to packed dense and
+  compressed sparse fallback/interchange bindings. Optimized layouts such as
+  Blocked-ELL, Sliced-ELL, and quantized Blocked-ELL are caller-owned and should
+  be exposed to CellShard through the C++ adapter contract.
+- `.csh5` is the canonical archive/container format. High-throughput repeated fetch is expected to run through generated shard `.cspack` cache files built from that container.
+- `store_execution_cspack`, `load_execution_cspack_partition`, and
+  `upload_execution_payload_async` support versioned, checksummed opaque
+  execution images with explicit dataset/generation/partition/feature-axis
+  compatibility. CellShard does not interpret caller-owned inner layouts.
+- The normal runtime path is therefore `bind .csh5` -> `materialize cspack` -> `fetch from .cspack` -> `stage to GPU`, not repeated direct HDF5 payload reads as the final execution substrate.
+- Optional CellShard ingest may use bounded local `.cspool` part files, generally sliced-ELL but also blocked-ELL when appropriate, to avoid rereading expensive source matrices before `.csh5` assembly. That spool is an implementation detail, not a supported archival surface.
+- Optional manifest-driven ingest supports `mtx`, `tenx_mtx`, `tenx_h5`, sparse `h5ad` through the native `anndatapp` module backend, and dense count-like `loom` sources. Loom graph ingestion and `binary` manifest rows are not supported.
+- When `CELLSHARD_BUILD_INGEST=ON`, `cellshard ingest mtx-series` is the supported high-throughput path for feature-by-cell Matrix Market series that should be emitted as cells-by-features optimized bucketed Sliced-ELL `.csh5`.
+- MTX-series ingest can prewarm cached row counts, preserve selected observation and feature metadata columns, and auto-use available CPU workers plus visible CUDA devices while keeping HDF5 writes serialized.
+- Persisted parts and shards remain row-aligned. One cell is not split across parts or shards.
+
+## Not Promised In `0.1.x`
+
+- Topology-aware placement, disk-array streaming, generalized cache policy,
+  distributed scheduling/collectives, or automatic precision weakening
+
+- Windows or macOS support
+- Broad ABI portability across arbitrary compilers or CUDA toolchains
+- Non-Linux wheels
+- Torch or libtorch integration

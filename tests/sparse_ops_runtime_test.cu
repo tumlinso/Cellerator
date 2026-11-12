@@ -4,7 +4,7 @@
 #include <Cellerator/ops/quantized/api.cuh>
 #include <Cellerator/interop/cellshard/access.cuh>
 #include <Cellerator/memory/cuda/shared_buffer.hh>
-#include <CellShard/formats/blocked_ell.cuh>
+#include <Cellerator/tensor/base/blocked_ell.cuh>
 
 #include <cmath>
 #include <cstdint>
@@ -16,7 +16,7 @@ namespace runtime = ::cellerator::runtime;
 namespace memory_cuda = ::cellerator::memory::cuda;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
 namespace sparse_project = ::cellerator::compute::sparse::project;
-namespace cs = ::cellshard;
+namespace base = ::cellerator::tensor::base;
 namespace msq = ::cellerator::tensor::quantized;
 namespace mso = ::cellerator::ops::quantized;
 
@@ -316,10 +316,10 @@ int main() {
     require(close_value(spmm_out_host[4], 5.0f), "spmm out 4 mismatch");
     require(close_value(spmm_out_host[5], 10.0f), "spmm out 5 mismatch");
 
-    cs::sparse::blocked_ell blocked_host;
-    cs::sparse::init(&blocked_host, 3u, 3u, 5u, 1u, 2u);
-    require(cs::sparse::allocate(&blocked_host) != 0, "blocked ell runtime setup failed");
-    const std::uint32_t block_col_idx_host[] = { 0u, 2u, 1u, 2u, 0u, cs::sparse::blocked_ell_invalid_col };
+    base::blocked_ell blocked_host;
+    base::init(&blocked_host, 3u, 3u, 5u, 1u, 2u);
+    require(base::allocate(&blocked_host) != 0, "blocked ell runtime setup failed");
+    const std::uint32_t block_col_idx_host[] = { 0u, 2u, 1u, 2u, 0u, base::blocked_ell_invalid_col };
     const __half blocked_values_host[] = {
         __float2half(1.0f),
         __float2half(2.0f),
@@ -330,9 +330,9 @@ int main() {
     };
     std::memcpy(blocked_host.blockColIdx, block_col_idx_host, sizeof(block_col_idx_host));
     std::memcpy(blocked_host.val, blocked_values_host, sizeof(blocked_values_host));
-    auto blocked_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host), ctx.device);
+    auto blocked_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(base::row_block_count(&blocked_host)) * base::ell_width_blocks(&blocked_host), ctx.device);
     auto blocked_values = memory_cuda::SharedDeviceBuffer<__half>::allocate(static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols, ctx.device);
-    upload_and_wait(blocked_idx, blocked_host.blockColIdx, static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host), transfer_stream);
+    upload_and_wait(blocked_idx, blocked_host.blockColIdx, static_cast<std::size_t>(base::row_block_count(&blocked_host)) * base::ell_width_blocks(&blocked_host), transfer_stream);
     upload_and_wait(blocked_values, blocked_host.val, static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols, transfer_stream);
 
     auto blocked_spmm_ref = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
@@ -582,7 +582,7 @@ int main() {
     }
 
     runtime::clear(&blocked_cache);
-    cs::sparse::clear(&blocked_host);
+    base::clear(&blocked_host);
 
     auto spmm_grad_values = memory_cuda::SharedDeviceBuffer<float>::allocate(5, ctx.device);
     sparse_ops::base::csr_spmm_bwd_values_f16_f32(

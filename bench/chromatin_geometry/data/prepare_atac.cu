@@ -1,4 +1,5 @@
 #include <CellShard/ingest/internal/tenx_h5/tenx_h5_reader.cuh>
+#include <Cellerator/tensor/base/compressed.cuh>
 
 #include <cuda_fp16.h>
 #include <openssl/evp.h>
@@ -335,13 +336,13 @@ void prepare(const std::filesystem::path& source,
     std::unique_ptr<unsigned long, decltype(&std::free)> row_nnz_owner(row_nnz, std::free);
     std::vector<unsigned long> row_offsets{0ul, static_cast<unsigned long>(info.rows)};
     std::vector<unsigned long> part_nnz{static_cast<unsigned long>(info.nnz)};
-    cellshard::sharded<cellshard::sparse::compressed> matrix{};
+    cellshard::sharded<cellerator::tensor::base::compressed> matrix{};
     cellshard::init(&matrix);
     if (!tenx::load_part_window_compressed(source.c_str(), &header,
             row_offsets.data(), part_nnz.data(), 1ul, 0ul, 1ul, &matrix, &error))
         throw std::runtime_error("CellShard sparse cell-row ingest failed: " + error);
-    std::unique_ptr<cellshard::sharded<cellshard::sparse::compressed>,
-                    void(*)(cellshard::sharded<cellshard::sparse::compressed>*)>
+    std::unique_ptr<cellshard::sharded<cellerator::tensor::base::compressed>,
+                    void(*)(cellshard::sharded<cellerator::tensor::base::compressed>*)>
         matrix_owner(&matrix, [](auto* value) { cellshard::clear(value); });
     auto* cells = matrix.parts[0];
     const std::uint64_t words_per_peak = (info.rows + 31u) / 32u;

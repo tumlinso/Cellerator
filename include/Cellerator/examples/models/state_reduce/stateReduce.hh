@@ -2,7 +2,7 @@
 
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <Cellerator/memory/cuda/shared_buffer.hh>
-#include <CellShard/runtime/device/sharded_device.cuh>
+#include <Cellerator/tensor/base/device_views.cuh>
 
 #include <cuda_fp16.h>
 
@@ -11,7 +11,7 @@
 namespace cellerator::models::state_reduce {
 
 namespace runtime = ::cellerator::runtime;
-namespace csv = ::cellshard::device;
+namespace csv = ::cellerator::tensor::base::device;
 
 enum class StateReduceBackend {
     wmma_fused,
@@ -63,30 +63,30 @@ struct StateReduceGraphView {
 struct StateReduceBatchView {
     StateReduceLayout layout = StateReduceLayout::blocked_ell;
     std::uint32_t rows = 0u;
-    csv::blocked_ell_view blocked_ell{};
-    csv::sliced_ell_view sliced_ell{};
+    csv::BlockedEllView blocked_ell{};
+    csv::SlicedEllView sliced_ell{};
     StateReduceGraphView graph{};
 };
 
 inline StateReduceBatchView make_state_reduce_blocked_ell_batch(
-    const csv::blocked_ell_view &view,
+    const csv::BlockedEllView &view,
     StateReduceGraphView graph = StateReduceGraphView()) {
     return StateReduceBatchView{
         StateReduceLayout::blocked_ell,
         view.rows,
         view,
-        csv::sliced_ell_view{},
+        csv::SlicedEllView{},
         graph
     };
 }
 
 inline StateReduceBatchView make_state_reduce_sliced_ell_batch(
-    const csv::sliced_ell_view &view,
+    const csv::SlicedEllView &view,
     StateReduceGraphView graph = StateReduceGraphView()) {
     return StateReduceBatchView{
         StateReduceLayout::sliced_ell,
         view.rows,
-        csv::blocked_ell_view{},
+        csv::BlockedEllView{},
         view,
         graph
     };

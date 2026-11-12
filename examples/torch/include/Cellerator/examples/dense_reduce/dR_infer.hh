@@ -2,6 +2,7 @@
 
 #include "dR_model.hh"
 #include <Cellerator/examples/cellshard_tensor_views.hh>
+#include <Cellerator/tensor/base/compressed.cuh>
 
 #include <CellShard/runtime/host/sharded_host.cuh>
 
@@ -137,8 +138,8 @@ void for_each_dense_reduce_encoded_batch(
             loaded_here = true;
         }
 
-        const ::cellshard::sparse::compressed *part = matrix->parts[part_id];
-        if (part == nullptr || part->axis != ::cellshard::sparse::compressed_by_row) {
+        const ::cellerator::tensor::base::compressed *part = matrix->parts[part_id];
+        if (part == nullptr || part->axis != ::cellerator::tensor::base::compressed_by_row) {
             throw std::runtime_error("dense reduce inference requires loaded row-compressed CSR partitions");
         }
 

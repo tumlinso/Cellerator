@@ -5,15 +5,16 @@
 #include <torch/torch.h>
 
 int main() {
+    namespace base = ::cellerator::tensor::base;
     using cellerator::examples::cellshard::ExportOptions;
     using cellerator::examples::cellshard::export_as_tensor;
 
-    auto *part_a = new cellshard::sparse::compressed;
-    auto *part_b = new cellshard::sparse::compressed;
-    cellshard::sharded<cellshard::sparse::compressed> view;
+    auto *part_a = new base::compressed;
+    auto *part_b = new base::compressed;
+    cellshard::sharded<base::compressed> view;
 
-    cellshard::sparse::init(part_a, 2, 4, 3, cellshard::sparse::compressed_by_row);
-    if (!cellshard::sparse::allocate(part_a)) return 1;
+    base::init(part_a, 2, 4, 3, base::compressed_by_row);
+    if (!base::allocate(part_a)) return 1;
     part_a->majorPtr[0] = 0;
     part_a->majorPtr[1] = 2;
     part_a->majorPtr[2] = 3;
@@ -24,8 +25,8 @@ int main() {
     part_a->val[1] = __float2half(2.0f);
     part_a->val[2] = __float2half(3.0f);
 
-    cellshard::sparse::init(part_b, 1, 4, 2, cellshard::sparse::compressed_by_row);
-    if (!cellshard::sparse::allocate(part_b)) {
+    base::init(part_b, 1, 4, 2, base::compressed_by_row);
+    if (!base::allocate(part_b)) {
         cellshard::destroy(part_a);
         return 1;
     }

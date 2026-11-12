@@ -24,7 +24,7 @@ __global__ void blocked_ell_feature_affine_quantize_correction_kernel_(
 
     for (std::uint32_t slot = 0u; slot < ell_width; ++slot) {
         const std::uint32_t block_col = block_col_idx[row_block_base + slot];
-        if (block_col == cs::sparse::blocked_ell_invalid_col) continue;
+        if (block_col == base::blocked_ell_invalid_col) continue;
         const std::uint32_t col_base = block_col * block_size;
         const std::size_t values_base = row_values_base + static_cast<std::size_t>(slot) * block_size;
         for (std::uint32_t col_in_block = 0u; col_in_block < block_size; ++col_in_block) {

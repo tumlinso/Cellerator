@@ -97,7 +97,7 @@ option(CELLERATOR_ENABLE_NN
 option(CELLERATOR_ENABLE_NN_CUDA
     "Build optional CUDA neural-network derivative adapters" OFF)
 option(CELLERATOR_BUILD_TORCH_EXAMPLES "Build optional CellShard-dependent Torch examples" OFF)
-option(CELLERATOR_ENABLE_CELLSHARD "Build the embedded CellShard component" OFF)
+option(CELLERATOR_ENABLE_CELLSHARD "Build the retained CellShard component" OFF)
 option(CELLERATOR_BUILD_TESTS "Build Cellerator test executables" ON)
 option(CELLERATOR_BUILD_NATIVE_DATA_TESTS
     "Build focused native data and cellular geometry tests" OFF)

@@ -27,7 +27,7 @@ bool run_blocked(const float *row_sums, const std::uint8_t *row_mask) {
                        __float2half(0.0f), __float2half(2.0f), __float2half(0.0f), __float2half(4.0f)};
     auto *d_columns = device_copy(columns, 2u);
     auto *d_values = device_copy(values, 8u);
-    cellerator::interop::formats::device::BlockedEllView view{2u, 4u, 4u, 2u, 4u, d_columns, d_values};
+    cellerator::tensor::base::device::BlockedEllView view{2u, 4u, 4u, 2u, 4u, d_columns, d_values};
     cellerator::compute::sparse::masked_row_scale_log1p_params params{row_sums, row_mask, 4.0f};
     const bool launched = cellerator::compute::sparse::masked_row_scale_log1p_inplace(&view, &params);
     cudaMemcpy(values, d_values, sizeof(values), cudaMemcpyDeviceToHost);
@@ -45,7 +45,7 @@ bool run_sliced(const float *row_sums, const std::uint8_t *row_mask) {
     auto *d_offsets = device_copy(offsets, 1u); auto *d_widths = device_copy(widths, 1u);
     auto *d_slots = device_copy(slots, 1u); auto *d_columns = device_copy(columns, 4u);
     auto *d_values = device_copy(values, 4u);
-    cellerator::interop::formats::device::SlicedEllView view{2u, 4u, 4u, 1u, 2u, d_offsets, d_widths, d_slots, d_columns, d_values};
+    cellerator::tensor::base::device::SlicedEllView view{2u, 4u, 4u, 1u, 2u, d_offsets, d_widths, d_slots, d_columns, d_values};
     cellerator::compute::sparse::masked_row_scale_log1p_params params{row_sums, row_mask, 4.0f};
     const bool launched = cellerator::compute::sparse::masked_row_scale_log1p_inplace(&view, &params);
     cudaMemcpy(values, d_values, sizeof(values), cudaMemcpyDeviceToHost);
@@ -60,8 +60,8 @@ bool run_compressed(const float *row_sums, const std::uint8_t *row_mask) {
     __half values[] = {__float2half(1.0f), __float2half(3.0f), __float2half(2.0f), __float2half(4.0f)};
     auto *d_pointers = device_copy(pointers, 3u); auto *d_columns = device_copy(columns, 4u);
     auto *d_values = device_copy(values, 4u);
-    cellerator::interop::formats::device::CompressedView view{2u, 4u, 4u,
-        cellerator::interop::formats::device::compressed_by_row, d_pointers, d_columns, d_values};
+    cellerator::tensor::base::device::CompressedView view{2u, 4u, 4u,
+        cellerator::tensor::base::device::compressed_by_row, d_pointers, d_columns, d_values};
     cellerator::compute::sparse::masked_row_scale_log1p_params params{row_sums, row_mask, 4.0f};
     const bool launched = cellerator::compute::sparse::masked_row_scale_log1p_inplace(&view, &params);
     cudaMemcpy(values, d_values, sizeof(values), cudaMemcpyDeviceToHost);

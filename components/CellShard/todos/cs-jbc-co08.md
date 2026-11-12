@@ -1,0 +1,29 @@
+
+
+<!-- todo-orchestrator:v2-managed:start -->
+# CS-JBC-CO08: Compute resampling and stratum stability
+
+Task revision: `1041`; current project revision is in `todo-status.md`.
+
+## Objective
+Compute resampling and stratum stability. Deliver this as one isolated, reviewable step in the Co-support and affinity atom discovery workstream.
+
+## State
+- Lifecycle: `done`
+- Execution: `closed`
+- Parallel policy: `serial`
+- Result: `implemented`
+
+## Next Action
+_None._
+
+## Ownership
+- `exclusive`: `include/CellShard/compiler/discovery/co_support`
+- `exclusive`: `src/compiler/discovery/co_support`
+- `exclusive`: `tests/jbc/discovery/co_support`
+- `read`: `include/Cellerator/geometry/support_atlas.hh`
+- `read`: `src/geometry/strategy/support_affinity.cc`
+
+## Dependencies
+- `task`: `CS-JBC-CO07`
+<!-- todo-orchestrator:v2-managed:end -->

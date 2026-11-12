@@ -1,7 +1,7 @@
 #include <Cellerator/examples/models/state_reduce/stateReduce.hh>
 #include <Cellerator/compute/candidate/sparse/project.hh>
-#include <Cellerator/interop/formats/blocked_ell.cuh>
-#include <Cellerator/interop/formats/sliced_ell.cuh>
+#include <Cellerator/tensor/base/blocked_ell.cuh>
+#include <Cellerator/tensor/base/sliced_ell.cuh>
 
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
@@ -16,8 +16,7 @@ namespace cellerator::models::state_reduce {
 
 namespace {
 
-namespace cs = ::cellshard;
-namespace css = ::cellerator::interop::formats;
+namespace css = ::cellerator::tensor::base;
 namespace sparse_project = ::cellerator::compute::sparse::project;
 namespace memory = ::cellerator::memory;
 
@@ -83,7 +82,7 @@ __global__ void float_to_half_kernel_(const float *src, __half *dst, std::uint32
 }
 
 __global__ void sliced_ell_spmm_fwd_kernel_(
-    csv::sliced_ell_view src,
+    csv::SlicedEllView src,
     const float *rhs,
     std::uint32_t rhs_cols,
     float *out) {
@@ -138,7 +137,7 @@ __global__ void reconstruction_zero_baseline_kernel_(
 }
 
 __global__ void reconstruction_positive_blocked_ell_kernel_(
-    csv::blocked_ell_view src,
+    csv::BlockedEllView src,
     const float *reconstruction,
     float positive_scale,
     float baseline_scale,
@@ -173,7 +172,7 @@ __global__ void reconstruction_positive_blocked_ell_kernel_(
 }
 
 __global__ void reconstruction_positive_sliced_ell_kernel_(
-    csv::sliced_ell_view src,
+    csv::SlicedEllView src,
     const float *reconstruction,
     float positive_scale,
     float baseline_scale,
@@ -242,7 +241,7 @@ __global__ void graph_loss_kernel_(
 }
 
 __global__ void blocked_ell_encoder_grad_kernel_(
-    csv::blocked_ell_view src,
+    csv::BlockedEllView src,
     const float *grad_latent,
     std::uint32_t latent_dim,
     float *grad_weight) {
@@ -271,7 +270,7 @@ __global__ void blocked_ell_encoder_grad_kernel_(
 }
 
 __global__ void sliced_ell_encoder_grad_kernel_(
-    csv::sliced_ell_view src,
+    csv::SlicedEllView src,
     const float *grad_latent,
     std::uint32_t latent_dim,
     float *grad_weight) {
@@ -535,7 +534,7 @@ inline void encode_batch_(
     const std::uint32_t rows = batch.rows;
     const std::uint32_t latent_dim = model->config.latent_dim;
     if (batch.layout == StateReduceLayout::blocked_ell) {
-        const csv::blocked_ell_view &view = batch.blocked_ell;
+        const csv::BlockedEllView &view = batch.blocked_ell;
         if (model->config.backend == StateReduceBackend::cusparse_heavy) {
             sparse_project::blocked_ell_spmm_fwd_f16_f32_lib(
                 model->ctx,

@@ -1,15 +1,17 @@
 #include <Cellerator/interop/cellshard/access.cuh>
+#include <Cellerator/tensor/base/blocked_ell.cuh>
+#include <Cellerator/tensor/base/sliced_ell.cuh>
 #include <CellShard/runtime/layout/sharded.cuh>
 
 #include <cassert>
 
 int main() {
-    namespace ccm = cellerator::interop::formats;
+    namespace ccm = cellerator::tensor::base;
     namespace ccf = cellerator::interop::formats;
     namespace cci = cellerator::interop;
     namespace csa = cellshard::access;
 
-    ccm::BlockedEllPayload blocked{};
+    ccm::blocked_ell blocked{};
     ccm::init(&blocked, 4u, 8u, 12u, 2u, 4u);
     auto blocked_binding = cci::make_cellshard_matrix_binding(blocked, 3u);
     auto blocked_view = csa::make_adapter_view(blocked_binding);
@@ -26,12 +28,12 @@ int main() {
     assert(blocked_archive.execution_format == cellshard::dataset_execution_format_blocked_ell);
     assert(cellshard::partition_aux(&blocked) == ccm::pack_blocked_ell_aux(2u, 2u));
 
-    cellshard::sharded<ccm::BlockedEllPayload> blocked_sharded{};
+    cellshard::sharded<ccm::blocked_ell> blocked_sharded{};
     cellshard::init(&blocked_sharded);
     blocked_sharded.cols = blocked.cols;
     blocked_sharded.num_partitions = 1u;
     blocked_sharded.partition_capacity = 1u;
-    ccm::BlockedEllPayload *blocked_parts[] = {&blocked};
+    ccm::blocked_ell *blocked_parts[] = {&blocked};
     unsigned long blocked_offsets[] = {0u, blocked.rows};
     unsigned long blocked_rows[] = {blocked.rows};
     unsigned long blocked_nnz[] = {blocked.nnz};
@@ -43,7 +45,7 @@ int main() {
     blocked_sharded.partition_aux = blocked_aux;
     assert(cellshard::partition_bytes(&blocked_sharded, 0u) == ccm::bytes(&blocked));
 
-    ccm::SlicedEllPayload sliced{};
+    ccm::sliced_ell sliced{};
     ccm::init(&sliced, 5u, 9u, 11u);
     auto sliced_binding = cci::make_cellshard_matrix_binding(sliced, 4u);
     auto sliced_view = csa::make_adapter_view(sliced_binding);

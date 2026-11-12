@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/interop/formats/device_views.cuh>
+#include <Cellerator/tensor/base/device_views.cuh>
 
 #include <cstdint>
 
@@ -15,17 +15,17 @@ struct masked_row_scale_log1p_params {
 };
 
 int masked_row_scale_log1p_inplace(
-    ::cellerator::interop::formats::device::BlockedEllView *matrix,
+    ::cellerator::tensor::base::device::BlockedEllView *matrix,
     const masked_row_scale_log1p_params *params,
     cudaStream_t stream = nullptr);
 
 int masked_row_scale_log1p_inplace(
-    ::cellerator::interop::formats::device::SlicedEllView *matrix,
+    ::cellerator::tensor::base::device::SlicedEllView *matrix,
     const masked_row_scale_log1p_params *params,
     cudaStream_t stream = nullptr);
 
 int masked_row_scale_log1p_inplace(
-    ::cellerator::interop::formats::device::CompressedView *matrix,
+    ::cellerator::tensor::base::device::CompressedView *matrix,
     const masked_row_scale_log1p_params *params,
     cudaStream_t stream = nullptr);
 

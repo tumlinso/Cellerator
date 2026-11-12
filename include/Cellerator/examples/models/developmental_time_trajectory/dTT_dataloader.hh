@@ -19,7 +19,7 @@ struct DevelopmentalTimeTrajectoryBatchView {
 };
 
 inline DevelopmentalTimeTrajectoryBatchView make_developmental_time_trajectory_blocked_ell_batch(
-    const dt::csv::blocked_ell_view &view,
+    const dt::csv::BlockedEllView &view,
     const float *target_time,
     DevelopmentalTimeGraphView graph,
     const std::uint32_t *cell_index = nullptr) {
@@ -30,7 +30,7 @@ inline DevelopmentalTimeTrajectoryBatchView make_developmental_time_trajectory_b
 }
 
 inline DevelopmentalTimeTrajectoryBatchView make_developmental_time_trajectory_sliced_ell_batch(
-    const dt::csv::sliced_ell_view &view,
+    const dt::csv::SlicedEllView &view,
     const float *target_time,
     DevelopmentalTimeGraphView graph,
     const std::uint32_t *cell_index = nullptr) {

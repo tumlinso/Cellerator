@@ -23,6 +23,10 @@ parameters, and numerical operations. They do not form a separate component.
 
 ## Privileged compiler components
 
+`components/CellShard/` is retained as ordinary Cellerator-tracked source while
+its use as a separate component is phased out. It is no longer a Git submodule.
+The optional combined build remains disabled by default.
+
 `components/CellShard/` is the registered privileged compiler component.
 CellShard may own planning and runtime *above* Cellerator: global atom and
 artifact composition, durable storage, placement, sharding, transport,
@@ -42,7 +46,7 @@ CellShard's global planner into its native core.
 libCellerator is independently buildable and has no required CellShard
 dependency. The root build keeps `CELLERATOR_ENABLE_CELLSHARD=OFF` by default;
 enabling the registered source tree is an explicit combined-build choice.
-Neither the presence of the submodule nor a combined target may make CellShard
+Neither the presence of the retained source nor a combined target may make CellShard
 headers, callbacks, schedulers, storage, or runtime mandatory for standalone
 Cellerator consumers.
 

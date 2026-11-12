@@ -1,6 +1,8 @@
 #pragma once
 
 #include <CellShard/CellShard.hh>
+#include <Cellerator/tensor/base/compressed.cuh>
+#include <Cellerator/tensor/base/dense.cuh>
 #include "../../core/host_buffer.hh"
 
 #include <cstddef>
@@ -65,16 +67,16 @@ void init(proprietary_dense_params *params);
 void init(knn_result_host *result);
 void clear(knn_result_host *result);
 
-int sparse_exact_self_knn(const ::cellshard::sharded< ::cellshard::sparse::compressed > *view,
+int sparse_exact_self_knn(const ::cellshard::sharded< ::cellerator::tensor::base::compressed > *view,
                           const ::cellshard::shard_storage *storage,
                           const sparse_exact_params *params,
                           knn_result_host *result);
 
-int dense_ann_self_knn(const ::cellshard::sharded< ::cellshard::dense > *view,
+int dense_ann_self_knn(const ::cellshard::sharded< ::cellerator::tensor::base::dense > *view,
                        const dense_ann_params *params,
                        knn_result_host *result);
 
-int proprietary_dense_self_knn(const ::cellshard::sharded< ::cellshard::dense > *view,
+int proprietary_dense_self_knn(const ::cellshard::sharded< ::cellerator::tensor::base::dense > *view,
                                const proprietary_dense_params *params,
                                knn_result_host *result);
 

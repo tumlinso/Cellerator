@@ -11,7 +11,7 @@ __device__ inline __half scaled_log1p(__half input, float sum, float target) {
     return value != 0.0f ? __float2half(log1pf(value * scale)) : __float2half(0.0f);
 }
 
-__global__ void blocked_ell_kernel(::cellerator::interop::formats::device::BlockedEllView matrix,
+__global__ void blocked_ell_kernel(::cellerator::tensor::base::device::BlockedEllView matrix,
                                    masked_row_scale_log1p_params params) {
     const unsigned long tid = static_cast<unsigned long>(blockIdx.x * blockDim.x + threadIdx.x);
     const unsigned long stride = static_cast<unsigned long>(gridDim.x * blockDim.x);
@@ -24,7 +24,7 @@ __global__ void blocked_ell_kernel(::cellerator::interop::formats::device::Block
     }
 }
 
-__global__ void sliced_ell_kernel(::cellerator::interop::formats::device::SlicedEllView matrix,
+__global__ void sliced_ell_kernel(::cellerator::tensor::base::device::SlicedEllView matrix,
                                   masked_row_scale_log1p_params params) {
     const unsigned int lane = threadIdx.x & 31u;
     const unsigned int warp = blockIdx.x * (blockDim.x >> 5u) + (threadIdx.x >> 5u);
@@ -46,7 +46,7 @@ __global__ void sliced_ell_kernel(::cellerator::interop::formats::device::Sliced
     }
 }
 
-__global__ void compressed_kernel(::cellerator::interop::formats::device::CompressedView matrix,
+__global__ void compressed_kernel(::cellerator::tensor::base::device::CompressedView matrix,
                                   masked_row_scale_log1p_params params) {
     const unsigned int lane = threadIdx.x & 31u;
     const unsigned int warp = blockIdx.x * (blockDim.x >> 5u) + (threadIdx.x >> 5u);
@@ -68,7 +68,7 @@ unsigned int row_blocks(unsigned int rows) {
 
 } // namespace
 
-int masked_row_scale_log1p_inplace(::cellerator::interop::formats::device::BlockedEllView *matrix,
+int masked_row_scale_log1p_inplace(::cellerator::tensor::base::device::BlockedEllView *matrix,
                                    const masked_row_scale_log1p_params *params,
                                    cudaStream_t stream) {
     if (matrix == nullptr || params == nullptr || params->row_sums == nullptr || params->target_sum < 0.0f) return 0;
@@ -80,7 +80,7 @@ int masked_row_scale_log1p_inplace(::cellerator::interop::formats::device::Block
     return cudaGetLastError() == cudaSuccess;
 }
 
-int masked_row_scale_log1p_inplace(::cellerator::interop::formats::device::SlicedEllView *matrix,
+int masked_row_scale_log1p_inplace(::cellerator::tensor::base::device::SlicedEllView *matrix,
                                    const masked_row_scale_log1p_params *params,
                                    cudaStream_t stream) {
     if (matrix == nullptr || params == nullptr || params->row_sums == nullptr || params->target_sum < 0.0f) return 0;
@@ -88,11 +88,11 @@ int masked_row_scale_log1p_inplace(::cellerator::interop::formats::device::Slice
     return cudaGetLastError() == cudaSuccess;
 }
 
-int masked_row_scale_log1p_inplace(::cellerator::interop::formats::device::CompressedView *matrix,
+int masked_row_scale_log1p_inplace(::cellerator::tensor::base::device::CompressedView *matrix,
                                    const masked_row_scale_log1p_params *params,
                                    cudaStream_t stream) {
     if (matrix == nullptr || params == nullptr || params->row_sums == nullptr || params->target_sum < 0.0f
-        || matrix->axis != ::cellerator::interop::formats::device::compressed_by_row) return 0;
+        || matrix->axis != ::cellerator::tensor::base::device::compressed_by_row) return 0;
     compressed_kernel<<<row_blocks(matrix->rows), 256, 0, stream>>>(*matrix, *params);
     return cudaGetLastError() == cudaSuccess;
 }

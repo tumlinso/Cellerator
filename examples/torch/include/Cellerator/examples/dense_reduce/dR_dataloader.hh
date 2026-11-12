@@ -1,6 +1,6 @@
 #pragma once
 
-#include <CellShard/formats/compressed.cuh>
+#include <Cellerator/tensor/base/compressed.cuh>
 #include <CellShard/runtime/storage/shard_storage.cuh>
 #include <CellShard/runtime/layout/sharded.cuh>
 #include <CellShard/runtime/host/sharded_host.cuh>
@@ -34,8 +34,8 @@ struct DenseReduceBatch {
 
 class BalancedDenseReduceSampler {
 public:
-    using matrix_type = ::cellshard::sharded<::cellshard::sparse::compressed>;
-    using part_type = ::cellshard::sparse::compressed;
+    using matrix_type = ::cellshard::sharded<::cellerator::tensor::base::compressed>;
+    using part_type = ::cellerator::tensor::base::compressed;
     using storage_type = ::cellshard::shard_storage;
 
     struct Options {
@@ -180,7 +180,7 @@ private:
         checked_i64_(matrix_->rows, "rows");
         checked_i64_(matrix_->cols, "cols");
         for (unsigned long part_id = 0; part_id < matrix_->num_partitions; ++part_id) {
-            if (matrix_->partition_aux[part_id] != ::cellshard::sparse::compressed_by_row) {
+            if (matrix_->partition_aux[part_id] != ::cellerator::tensor::base::compressed_by_row) {
                 throw std::invalid_argument("BalancedDenseReduceSampler requires CSR parts compressed by row");
             }
         }
@@ -277,7 +277,7 @@ private:
 
         part_type *part = matrix_->parts[part_id];
         if (part == 0) throw std::runtime_error("CellShard partition is still null after fetch");
-        if (part->axis != ::cellshard::sparse::compressed_by_row) {
+        if (part->axis != ::cellerator::tensor::base::compressed_by_row) {
             throw std::runtime_error("BalancedDenseReduceSampler only supports row-compressed CSR partitions");
         }
         if (matrix_->cols != 0 && part->cols != matrix_->cols) {

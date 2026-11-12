@@ -14,6 +14,7 @@ host-issued cudaMemcpyAsync-per-row reference (470.5x); outputs agreed bitwise.
 #include <limits>
 
 namespace cellerator::compute::math {
+using ::cellerator::layout::projection::physical_view_status_code;
 namespace {
 
 constexpr u64 fnv_offset = 1469598103934665603ull;

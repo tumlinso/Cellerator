@@ -1,8 +1,10 @@
-#include <Cellerator/interop/formats/blocked_ell.cuh>
-#include <Cellerator/interop/formats/compressed.cuh>
-#include <Cellerator/interop/formats/coo.cuh>
-#include <Cellerator/interop/formats/dense.cuh>
-#include <Cellerator/interop/formats/sliced_ell.cuh>
+#include <Cellerator/tensor/base/blocked_ell.cuh>
+#include <Cellerator/tensor/base/compressed.cuh>
+#include <Cellerator/tensor/base/triplet.cuh>
+#include <Cellerator/tensor/base/dense.cuh>
+#include <Cellerator/tensor/base/diagonal.cuh>
+#include <Cellerator/tensor/base/device_views.cuh>
+#include <Cellerator/tensor/base/sliced_ell.cuh>
 
 #include <cuda_fp16.h>
 
@@ -13,7 +15,7 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace formats = ::cellerator::interop::formats;
+namespace formats = ::cellerator::tensor::base;
 namespace types = ::cellerator::types;
 
 namespace {
@@ -33,7 +35,7 @@ std::size_t align_up(std::size_t value, std::size_t alignment) {
 }
 
 void check_dense() {
-    formats::DensePayload matrix{};
+    formats::dense matrix{};
     formats::init(&matrix, 2u, 3u);
     require(formats::payload_elements(&matrix) == 6u, "dense element count changed");
     require(formats::payload_bytes(&matrix) == 6u * sizeof(types::storage_value_t), "dense payload byte count changed");
@@ -53,7 +55,7 @@ void check_dense() {
 }
 
 void check_compressed() {
-    formats::CompressedPayload matrix{};
+    formats::compressed matrix{};
     formats::init(&matrix, 3u, 4u, 3u, formats::compressed_by_row);
     require(formats::allocate(&matrix) != 0, "compressed allocation failed");
     require(matrix.storage == matrix.majorPtr, "compressed major pointer base changed");
@@ -78,10 +80,37 @@ void check_compressed() {
     require(close_half(*formats::at(&matrix, 0u, 3u), 3.0f), "compressed row lookup changed");
     require(formats::at(&matrix, 1u, 0u) == nullptr, "compressed absent lookup changed");
     formats::clear(&matrix);
+
+    formats::init(&matrix, 3u, 4u, 2u, formats::compressed_by_col);
+    require(formats::allocate(&matrix) != 0, "CSC allocation failed");
+    const types::ptr_t col_ptr[] = {0u, 0u, 1u, 1u, 2u};
+    const types::idx_t rows[] = {2u, 0u};
+    std::memcpy(matrix.majorPtr, col_ptr, sizeof(col_ptr));
+    std::memcpy(matrix.minorIdx, rows, sizeof(rows));
+    matrix.val[0] = __float2half(8.0f); matrix.val[1] = __float2half(9.0f);
+    require(formats::major_dim(&matrix) == 4u && formats::minor_dim(&matrix) == 3u, "CSC axes changed");
+    require(close_half(*formats::at(&matrix, 2u, 1u), 8.0f), "CSC lookup changed");
+    require(close_half(*formats::at(&matrix, 0u, 3u), 9.0f), "CSC second lookup changed");
+    formats::clear(&matrix);
 }
 
+void check_dia() {
+    formats::dia matrix{};
+    formats::init(&matrix, 2u, 2u, 2u);
+    matrix.num_diagonals = 1u;
+    require(formats::allocate(&matrix) != 0, "DIA allocation failed");
+    matrix.offsets[0] = 0; matrix.val[0] = __float2half(2.0f); matrix.val[1] = __float2half(3.0f);
+    require(close_half(*formats::at(&matrix, 1u, 1u), 3.0f), "DIA lookup changed");
+    require(formats::at(&matrix, 0u, 1u) == nullptr, "DIA absent lookup changed");
+    formats::clear(&matrix);
+}
+
+static_assert(offsetof(formats::device::CompressedView, major_ptr) < offsetof(formats::device::CompressedView, minor_idx));
+static_assert(offsetof(formats::device::TripletView, rowIdx) < offsetof(formats::device::TripletView, colIdx));
+static_assert(alignof(formats::device::DiaView) == 16);
+
 void check_coo() {
-    formats::CooPayload matrix{};
+    formats::triplet matrix{};
     formats::init(&matrix, 2u, 3u, 2u);
     require(formats::allocate(&matrix) != 0, "COO allocation failed");
     require(matrix.storage == matrix.rowIdx, "COO row-index base changed");
@@ -100,7 +129,7 @@ void check_coo() {
 }
 
 void check_blocked_ell() {
-    formats::BlockedEllPayload matrix{};
+    formats::blocked_ell matrix{};
     formats::init(&matrix, 3u, 4u, 3u, 2u, 4u);
     require(formats::allocate(&matrix) != 0, "Blocked-ELL allocation failed");
     require(matrix.storage == matrix.blockColIdx, "Blocked-ELL column-index base changed");
@@ -120,7 +149,7 @@ void check_blocked_ell() {
 }
 
 void check_sliced_ell() {
-    formats::SlicedEllPayload matrix{};
+    formats::sliced_ell matrix{};
     formats::init(&matrix, 3u, 5u, 4u);
     const types::u32 row_offsets[] = {0u, 1u, 3u};
     const types::u32 widths[] = {2u, 1u};
@@ -157,6 +186,7 @@ int main() {
     check_dense();
     check_compressed();
     check_coo();
+    check_dia();
     check_blocked_ell();
     check_sliced_ell();
     return 0;

@@ -14,7 +14,7 @@
 
 namespace dtt = ::cellerator::models::developmental_time_trajectory;
 namespace runtime = ::cellerator::runtime;
-namespace css = ::cellerator::interop::formats;
+namespace css = ::cellerator::tensor::base;
 namespace csv = ::cellshard::device;
 
 namespace {
@@ -23,7 +23,7 @@ void require(bool condition, const char *message) {
     if (!condition) throw std::runtime_error(message);
 }
 
-bool populate_blocked_ell(css::BlockedEllPayload *matrix, const std::vector<float> &dense, unsigned int rows, unsigned int cols) {
+bool populate_blocked_ell(css::blocked_ell *matrix, const std::vector<float> &dense, unsigned int rows, unsigned int cols) {
     css::init(matrix, rows, cols, rows * cols, 1u, cols);
     if (!css::allocate(matrix)) return false;
     for (unsigned int row = 0; row < rows; ++row) {
@@ -35,7 +35,7 @@ bool populate_blocked_ell(css::BlockedEllPayload *matrix, const std::vector<floa
     return true;
 }
 
-bool populate_sliced_ell(css::SlicedEllPayload *matrix, const std::vector<float> &dense, unsigned int rows, unsigned int cols) {
+bool populate_sliced_ell(css::sliced_ell *matrix, const std::vector<float> &dense, unsigned int rows, unsigned int cols) {
     std::vector<unsigned int> slice_offsets(rows + 1u, 0u), slice_widths(rows, cols);
     for (unsigned int row = 0; row <= rows; ++row) slice_offsets[row] = row;
     css::init(matrix, rows, cols, rows * cols);
@@ -50,8 +50,8 @@ bool populate_sliced_ell(css::SlicedEllPayload *matrix, const std::vector<float>
     return true;
 }
 
-csv::blocked_ell_view make_blocked_view(const css::BlockedEllPayload &host, const csv::partition_record<css::BlockedEllPayload> &record) {
-    csv::blocked_ell_view out{};
+::cellerator::tensor::base::device::BlockedEllView make_blocked_view(const css::blocked_ell &host, const csv::partition_record<css::blocked_ell> &record) {
+    ::cellerator::tensor::base::device::BlockedEllView out{};
     out.rows = host.rows;
     out.cols = host.cols;
     out.nnz = host.nnz;
@@ -62,8 +62,8 @@ csv::blocked_ell_view make_blocked_view(const css::BlockedEllPayload &host, cons
     return out;
 }
 
-csv::sliced_ell_view make_sliced_view(const css::SlicedEllPayload &host, const csv::partition_record<css::SlicedEllPayload> &record) {
-    csv::sliced_ell_view out{};
+::cellerator::tensor::base::device::SlicedEllView make_sliced_view(const css::sliced_ell &host, const csv::partition_record<css::sliced_ell> &record) {
+    ::cellerator::tensor::base::device::SlicedEllView out{};
     const std::size_t offsets_bytes = static_cast<std::size_t>(host.slice_count + 1u) * sizeof(unsigned int);
     const std::size_t widths_offset = csv::align_up_bytes(offsets_bytes, alignof(unsigned int));
     const std::size_t widths_bytes = static_cast<std::size_t>(host.slice_count) * sizeof(unsigned int);
@@ -136,13 +136,13 @@ int main() {
         }
     }
 
-    css::BlockedEllPayload blocked{};
-    css::SlicedEllPayload sliced{};
+    css::blocked_ell blocked{};
+    css::sliced_ell sliced{};
     require(populate_blocked_ell(&blocked, dense, rows, cols), "populate_blocked_ell failed");
     require(populate_sliced_ell(&sliced, dense, rows, cols), "populate_sliced_ell failed");
 
-    csv::partition_record<css::BlockedEllPayload> blocked_record{};
-    csv::partition_record<css::SlicedEllPayload> sliced_record{};
+    csv::partition_record<css::blocked_ell> blocked_record{};
+    csv::partition_record<css::sliced_ell> sliced_record{};
     require(csv::upload(&blocked, &blocked_record) == cudaSuccess, "blocked upload failed");
     require(csv::upload(&sliced, &sliced_record) == cudaSuccess, "sliced upload failed");
 

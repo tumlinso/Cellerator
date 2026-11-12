@@ -38,8 +38,8 @@ namespace compute {
 namespace neighbors {
 namespace {
 
-using ShardedCsr = ::cellshard::sharded< ::cellshard::sparse::compressed >;
-using ShardedDense = ::cellshard::sharded< ::cellshard::dense >;
+using ShardedCsr = ::cellshard::sharded< ::cellerator::tensor::base::compressed >;
+using ShardedDense = ::cellshard::sharded< ::cellerator::tensor::base::dense >;
 
 enum {
     proprietary_metric_l2 = 0,
@@ -267,10 +267,10 @@ static inline int pack_sparse_shard_to_device(ShardedCsr *view,
 
     if (rows >= 0) host_row_ptr[0] = 0;
     for (part = part_begin; part < part_end; ++part) {
-        const ::cellshard::sparse::compressed *src = view->parts[part];
+        const ::cellerator::tensor::base::compressed *src = view->parts[part];
         unsigned int local_row = 0;
         unsigned int local_nnz = 0;
-        if (src == 0 || src->axis != ::cellshard::sparse::compressed_by_row) goto fail;
+        if (src == 0 || src->axis != ::cellerator::tensor::base::compressed_by_row) goto fail;
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
 #endif
@@ -334,7 +334,7 @@ static inline int pack_dense_matrix_to_host_padded(const ShardedDense *view,
 
     packed->assign(total, __float2half(0.0f));
     for (part = 0; part < view->num_parts; ++part) {
-        const ::cellshard::dense *src = view->parts[part];
+        const ::cellerator::tensor::base::dense *src = view->parts[part];
         unsigned int local_row = 0;
         if (src == 0) return 0;
         if ((int) src->cols > padded_cols) return 0;
@@ -367,7 +367,7 @@ static inline int pack_dense_shard_to_host(const ShardedDense *view,
 
     packed->assign(count, __float2half(0.0f));
     for (part = part_begin; part < part_end; ++part) {
-        const ::cellshard::dense *src = view->parts[part];
+        const ::cellerator::tensor::base::dense *src = view->parts[part];
         const std::size_t part_count = (std::size_t) src->rows * (std::size_t) src->cols;
         if (src == 0 || src->cols != view->cols) return 0;
         std::memcpy(packed->data() + write_pos, src->val, part_count * sizeof(__half));
