@@ -36,7 +36,7 @@ inline int build_filtered_blocked_ell_part_from_sliced(const ::cellerator::tenso
                                                        ::cellerator::tensor::base::blocked_ell *dst,
                                                        std::uint32_t *rows_out,
                                                        std::uint32_t *nnz_out) {
-    ::cellerator::tensor::base::triplet coo;
+    ::cellshard::triplet coo;
     std::uint32_t live_rows = 0u;
     std::uint32_t live_nnz = 0u;
 
@@ -119,8 +119,8 @@ inline int build_filtered_blocked_ell_part_from_blocked(const ::cellerator::tens
                                                         ::cellerator::tensor::base::blocked_ell *dst,
                                                         std::uint32_t *rows_out,
                                                         std::uint32_t *nnz_out) {
-    ::cellerator::tensor::base::triplet canonical;
-    ::cellerator::tensor::base::triplet filtered;
+    ::cellshard::triplet canonical;
+    ::cellshard::triplet filtered;
     std::uint32_t live_rows = 0u;
     std::uint32_t live_nnz = 0u;
 
@@ -877,7 +877,7 @@ inline std::uint64_t estimate_cspack_bytes(const dataset_h5_state *state, unsign
         if (state->partition_execution_bytes != 0 && state->partition_execution_bytes[i] != 0u) {
             bytes += state->partition_execution_bytes[i];
         } else if (state->matrix_family == dataset_matrix_family_dense) {
-            bytes += (std::uint64_t) packed_bytes((const ::cellerator::tensor::base::dense *) 0,
+            bytes += (std::uint64_t) packed_bytes((const ::cellshard::dense *) 0,
                                                   (types::dim_t) state->partition_rows[i],
                                                   (types::dim_t) state->cols,
                                                   (types::nnz_t) state->partition_nnz[i],

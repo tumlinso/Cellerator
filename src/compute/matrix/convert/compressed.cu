@@ -9,6 +9,28 @@ namespace cellerator::compute::matrix::convert {
 
 namespace {
 
+using native_coo_view = tensor::base::CooView<types::idx_t, const real::storage_t>;
+using tensor::base::CompressedAxis;
+
+struct coo_axes {
+    types::dim_t major, minor;
+    const types::idx_t *major_indices, *minor_indices;
+};
+
+bool split_coo(const native_coo_view &source, CompressedAxis axis, bool library, coo_axes *axes) {
+    if (axis != CompressedAxis::row && axis != CompressedAxis::column) return false;
+    const bool by_row = axis == CompressedAxis::row;
+    const uint64_t major = by_row ? source.rows : source.cols;
+    const uint64_t minor = by_row ? source.cols : source.rows;
+    // Keep the final stride increment within the unsigned CUDA counter.
+    const uint64_t limit = library ? INT32_MAX : UINT32_MAX - 4096u * 256u;
+    if (major > limit || minor > (library ? uint64_t(INT32_MAX) : UINT32_MAX) || source.nnz > limit
+        || (source.nnz && (!major || !minor || !source.row_idx || !source.col_idx))) return false;
+    *axes = {types::dim_t(major), types::dim_t(minor),
+             by_row ? source.row_idx : source.col_idx, by_row ? source.col_idx : source.row_idx};
+    return true;
+}
+
 struct thread_cusparse_cache {
     int device = -1;
     cusparseHandle_t handle = 0;
@@ -571,6 +593,48 @@ int transpose_coo_entries_raw(
     setup_1d(nnz, &blocks);
     transpose_coo_entries_kernel<<<blocks, 256, 0, stream>>>(nnz, d_src_rowIdx, d_src_colIdx, d_src_val, d_dst_rowIdx, d_dst_colIdx, d_dst_val);
     return cudaGetLastError() == cudaSuccess;
+}
+
+int compressed_from_coo_library_workspace_bytes(const native_coo_view &source, CompressedAxis axis,
+                                                cudaStream_t stream, size_t *bytes_out) {
+    if (!bytes_out) return 0;
+    *bytes_out = 0;
+    coo_axes axes;
+    return split_coo(source, axis, true, &axes) && compressed_from_coo_library_workspace_bytes(
+        axes.major, axes.minor, types::nnz_t(source.nnz), axes.major_indices, axes.minor_indices, stream, bytes_out);
+}
+
+int build_compressed_from_coo_library(const native_coo_view &source, CompressedAxis axis,
+                                     types::ptr_t *d_cAxPtr, types::idx_t *d_sort_cAxIdx,
+                                     types::idx_t *d_out_uAx, real::storage_t *d_out_val,
+                                     types::idx_t *d_permutation, void *d_sort_tmp,
+                                     size_t sort_bytes, cudaStream_t stream) {
+    coo_axes axes;
+    if (!split_coo(source, axis, true, &axes) || !d_cAxPtr || (source.nnz && !source.values)) return 0;
+    return build_compressed_from_coo_library_raw(axes.major, axes.minor, types::nnz_t(source.nnz),
+        axes.major_indices, axes.minor_indices, source.values, d_cAxPtr, d_sort_cAxIdx, d_out_uAx,
+        d_out_val, d_permutation, d_sort_tmp, sort_bytes, stream);
+}
+
+int build_compressed_from_coo_custom(const native_coo_view &source, CompressedAxis axis,
+                                    types::ptr_t *d_cAxPtr, types::ptr_t *d_heads,
+                                    types::idx_t *d_out_uAx, real::storage_t *d_out_val,
+                                    void *d_scan_tmp, size_t scan_bytes, cudaStream_t stream) {
+    coo_axes axes;
+    if (!split_coo(source, axis, false, &axes) || !d_cAxPtr
+        || (source.nnz && (!source.values || !d_heads || !d_out_uAx || !d_out_val || !d_scan_tmp))) return 0;
+    return build_compressed_from_coo_custom_raw(axes.major, types::nnz_t(source.nnz), axes.major_indices,
+        axes.minor_indices, source.values, d_cAxPtr, d_heads, d_out_uAx, d_out_val, d_scan_tmp, scan_bytes, stream);
+}
+
+int build_compressed_from_sorted_coo_custom(const native_coo_view &source, CompressedAxis axis,
+                                           types::ptr_t *d_cAxPtr, types::idx_t *d_out_uAx,
+                                           real::storage_t *d_out_val, cudaStream_t stream) {
+    coo_axes axes;
+    if (!split_coo(source, axis, false, &axes) || !d_cAxPtr
+        || (source.nnz && (!source.values || !d_out_uAx || !d_out_val))) return 0;
+    return build_compressed_from_sorted_coo_custom_raw(axes.major, types::nnz_t(source.nnz),
+        axes.major_indices, axes.minor_indices, source.values, d_cAxPtr, d_out_uAx, d_out_val, stream);
 }
 
 } // namespace cellerator::compute::matrix::convert

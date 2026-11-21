@@ -1,8 +1,8 @@
+#include "../src/ops/matrix/csr_multiply.cuh"
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <Cellerator/compute/operators/sparse/ops.hh>
 #include <Cellerator/compute/candidate/sparse/project.hh>
 #include <Cellerator/ops/quantized/api.cuh>
-#include <Cellerator/interop/cellshard/access.cuh>
 #include <Cellerator/memory/cuda/shared_buffer.hh>
 #include <Cellerator/tensor/base/blocked_ell.cuh>
 
@@ -15,6 +15,7 @@
 namespace runtime = ::cellerator::runtime;
 namespace memory_cuda = ::cellerator::memory::cuda;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
+namespace matrix_ops = ::cellerator::ops::matrix;
 namespace sparse_project = ::cellerator::compute::sparse::project;
 namespace base = ::cellerator::tensor::base;
 namespace msq = ::cellerator::tensor::quantized;
@@ -143,6 +144,91 @@ void download_and_wait(const memory_cuda::SharedDeviceBuffer<T> &src, T *dst,
     stream.synchronize();
 }
 
+void check_csr_multiply_edges(const runtime::execution_context& ctx,
+                              const memory_cuda::Stream& stream) {
+    const uint32_t row[] = {0, 3, 3}, col[] = {0, 0, 2};
+    const __half w[] = {__float2half(1), __float2half(2), __float2half(4)};
+    const float x[] = {5, 50, 99, 6, 60, 99, 7, 70, 99};
+    const float initial[] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+    auto drow = allocate_on_device<uint32_t>(ctx.device, 3);
+    auto dcol = allocate_on_device<uint32_t>(ctx.device, 3);
+    auto dw = allocate_on_device<__half>(ctx.device, 3);
+    auto dx = allocate_on_device<float>(ctx.device, 9);
+    auto dy = allocate_on_device<float>(ctx.device, 9);
+    drow.upload_async(row, 3, stream);
+    dcol.upload_async(col, 3, stream);
+    dw.upload_async(w, 3, stream);
+    dx.upload_async(x, 9, stream);
+    dy.upload_async(initial, 9, stream);
+
+    matrix_ops::Csr<const __half> a{{2, 3, 3, base::CompressedAxis::row, drow.data(), dcol.data()}, dw.data()};
+    float actual[9] = {};
+    runtime::cuda_require(matrix_ops::csr_spmv(a, dx.data(), dy.data(), ctx.stream), "csr_spmv");
+    download_and_wait(dy, actual, 2, stream);
+    require(actual[0] == 411 && actual[1] == 0, "SpMV duplicate and empty row");
+
+    runtime::cuda_require(matrix_ops::csr_spmm(a, dx.data(), 3, 2, dy.data(), 4, ctx.stream), "csr_spmm");
+    download_and_wait(dy, actual, 8, stream);
+    const float expected[] = {43, 430, -1, -1, 0, 0, -1, -1};
+    for (int i = 0; i != 8; ++i) require(actual[i] == expected[i], "SpMM duplicate, empty row, and padded stride");
+
+    dy.upload_async(initial, 9, stream);
+    runtime::cuda_require(matrix_ops::csr_spmm_transpose(a, dx.data(), 3, 2, dy.data(), 3, ctx.stream),
+                          "csr_spmm_transpose with padded output");
+    download_and_wait(dy, actual, 9, stream);
+    const float expected_transpose[] = {15, 150, 0, 0, 0, 0, 20, 200, 0};
+    for (int i = 0; i != 9; ++i) require(actual[i] == expected_transpose[i], "transpose clears output padding");
+
+    dy.upload_async(initial, 9, stream);
+    matrix_ops::Csr<const __half> empty{{0, 3, 0, base::CompressedAxis::row, nullptr, nullptr}, nullptr};
+    runtime::cuda_require(matrix_ops::csr_spmv_transpose(empty, nullptr, dy.data(), ctx.stream), "csr_spmv_transpose");
+    download_and_wait(dy, actual, 9, stream);
+    for (float value : actual) require(value == -1, "zero-row SpMV transpose changed output");
+    runtime::cuda_require(matrix_ops::csr_spmm_transpose(empty, nullptr, 3, 2, dy.data(), 3, ctx.stream),
+                          "csr_spmm_transpose");
+    download_and_wait(dy, actual, 9, stream);
+    for (float value : actual) require(value == -1, "zero-row SpMM transpose changed output");
+
+    // Reuse one device slot so preflight is tested on a valid first operand
+    // and a rectangular CSC second operand even with a one-device lease.
+    runtime::fleet_context fleet{};
+    int device = ctx.device;
+    cudaStream_t launch_stream = ctx.stream;
+    fleet.local.device_count = 1;
+    fleet.local.device_ids = &device;
+    fleet.local.streams = &launch_stream;
+    const unsigned slots[] = {0, 0};
+    const matrix_ops::Csr<const __half> views[] = {
+        a, {{3, 2, 3, base::CompressedAxis::column, drow.data(), dcol.data()}, dw.data()}
+    };
+    const float* inputs[] = {dx.data(), dx.data()};
+    float* outputs[] = {dy.data(), dy.data()};
+    const int64_t ld[] = {3, 3}, widths[] = {2, 2};
+    auto rejects_before_enqueue = [&](auto launch) {
+        bool rejected = false;
+        try {
+            launch();
+        } catch (const std::runtime_error& error) {
+            rejected = std::strstr(error.what(), "requires CSR views") != nullptr;
+        }
+        require(rejected, "fleet CSR launch accepted CSC");
+        download_and_wait(dy, actual, 9, stream);
+        for (float value : actual) require(value == -1, "fleet launch wrote output before axis rejection");
+    };
+    rejects_before_enqueue([&] {
+        sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 2, views, inputs, outputs);
+    });
+    rejects_before_enqueue([&] {
+        sparse_ops::dist::launch_csr_spmv_bwd_vector_f16_f32(&fleet, slots, 2, views, inputs, outputs);
+    });
+    rejects_before_enqueue([&] {
+        sparse_project::dist::launch_csr_spmm_fwd_f16_f32(&fleet, slots, 2, views, inputs, ld, widths, outputs, ld);
+    });
+    rejects_before_enqueue([&] {
+        sparse_ops::dist::launch_csr_spmm_bwd_rhs_f16_f32(&fleet, slots, 2, views, inputs, ld, widths, outputs, ld);
+    });
+}
+
 } // namespace
 
 int main() {
@@ -153,6 +239,7 @@ int main() {
     runtime::execution_context ctx;
     runtime::init(&ctx);
     auto transfer_stream = memory_cuda::Stream::borrow(ctx.stream, ctx.device);
+    check_csr_multiply_edges(ctx, transfer_stream);
 
     runtime::scratch_arena scratch;
     runtime::init(&scratch);
@@ -257,7 +344,9 @@ int main() {
     for (float value : fill_grad_host) require(close_value(value, 15.0f), "sparse value fill mismatch");
 
     auto spmv_out = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
-    sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, major_ptr.data(), minor_idx.data(), values.data(), 3, vector.data(), spmv_out.data());
+    matrix_ops::Csr<const __half> csr{{3, 3, 5, base::CompressedAxis::row, major_ptr.data(), minor_idx.data()},
+        values.data()};
+    runtime::cuda_require(matrix_ops::csr_spmv(csr, vector.data(), spmv_out.data(), ctx.stream), "csr_spmv");
     float spmv_out_host[3] = {};
     download_and_wait(spmv_out, spmv_out_host, 3, transfer_stream);
     require(close_value(spmv_out_host[0], 201.0f), "spmv out 0 mismatch");
@@ -279,15 +368,8 @@ int main() {
     require(close_value(spmv_grad_values_host[1], 20100.0f), "spmv grad value 1 mismatch");
 
     auto spmv_grad_vector = memory_cuda::SharedDeviceBuffer<float>::allocate(3, ctx.device);
-    sparse_ops::base::csr_spmv_bwd_vector_f16_f32(
-        ctx,
-        major_ptr.data(),
-        minor_idx.data(),
-        values.data(),
-        spmv_out.data(),
-        3,
-        3,
-        spmv_grad_vector.data());
+    runtime::cuda_require(matrix_ops::csr_spmv_transpose(
+        csr, spmv_out.data(), spmv_grad_vector.data(), ctx.stream), "csr_spmv_transpose");
     float spmv_grad_vector_host[3] = {};
     download_and_wait(spmv_grad_vector, spmv_grad_vector_host, 3, transfer_stream);
     require(close_value(spmv_grad_vector_host[0], 226.0f), "spmv grad vector 0 mismatch");
@@ -295,18 +377,8 @@ int main() {
     require(close_value(spmv_grad_vector_host[2], 2122.0f), "spmv grad vector 2 mismatch");
 
     auto spmm_out = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
-    sparse_project::csr_spmm_fwd_f16_f32(
-        ctx,
-        major_ptr.data(),
-        minor_idx.data(),
-        values.data(),
-        3,
-        3,
-        rhs.data(),
-        2,
-        2,
-        spmm_out.data(),
-        2);
+    runtime::cuda_require(matrix_ops::csr_spmm(
+        csr, rhs.data(), 2, 2, spmm_out.data(), 2, ctx.stream), "csr_spmm");
     float spmm_out_host[6] = {};
     download_and_wait(spmm_out, spmm_out_host, 6, transfer_stream);
     require(close_value(spmm_out_host[0], 201.0f), "spmm out 0 mismatch");
@@ -604,18 +676,8 @@ int main() {
     require(close_value(spmm_grad_values_host[4], 17.0f), "spmm grad value 4 mismatch");
 
     auto spmm_grad_rhs = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
-    sparse_ops::base::csr_spmm_bwd_rhs_f16_f32(
-        ctx,
-        major_ptr.data(),
-        minor_idx.data(),
-        values.data(),
-        grad_out_spmm.data(),
-        3,
-        3,
-        2,
-        2,
-        spmm_grad_rhs.data(),
-        2);
+    runtime::cuda_require(matrix_ops::csr_spmm_transpose(
+        csr, grad_out_spmm.data(), 2, 2, spmm_grad_rhs.data(), 2, ctx.stream), "csr_spmm_transpose");
     float spmm_grad_rhs_host[6] = {};
     download_and_wait(spmm_grad_rhs, spmm_grad_rhs_host, 6, transfer_stream);
     require(close_value(spmm_grad_rhs_host[0], 26.0f), "spmm grad rhs 0 mismatch");
@@ -672,21 +734,18 @@ int main() {
         upload_on_device(pair_device1, &pair_values1, pair_values1_host, 1);
         upload_on_device(pair_device1, &pair_vector1, vector_host, 3);
 
-        const std::uint32_t *pair_major_ptrs[] = { pair_major0.data(), pair_major1.data() };
-        const std::uint32_t *pair_minor_ptrs[] = { pair_minor0.data(), pair_minor1.data() };
-        const __half *pair_value_ptrs[] = { pair_values0.data(), pair_values1.data() };
+        matrix_ops::Csr<const __half> csr[] = {
+            {{2, 3, 4, base::CompressedAxis::row, pair_major0.data(), pair_minor0.data()}, pair_values0.data()},
+            {{1, 3, 1, base::CompressedAxis::row, pair_major1.data(), pair_minor1.data()}, pair_values1.data()},
+        };
         const float *pair_vector_ptrs[] = { pair_vector0.data(), pair_vector1.data() };
-        const std::uint32_t pair_rows[] = { 2u, 1u };
         float *pair_out_ptrs[] = { pair_out0.data(), pair_out1.data() };
 
         sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(
             &fleet,
             pair_slots,
             2,
-            pair_major_ptrs,
-            pair_minor_ptrs,
-            pair_value_ptrs,
-            pair_rows,
+            csr,
             pair_vector_ptrs,
             pair_out_ptrs);
         runtime::synchronize_slots(fleet, pair_slots, 2);
@@ -800,23 +859,11 @@ int main() {
             upload_on_device(fleet_device3, &feature_values3, feature_values_slot3_host, 1);
             upload_on_device(fleet_device3, &feature_vector3, feature_vector_slot3_host, 1);
 
-            const std::uint32_t *feature_major_ptrs[] = {
-                feature_major0.data(),
-                feature_major1.data(),
-                feature_major2.data(),
-                feature_major3.data()
-            };
-            const std::uint32_t *feature_minor_ptrs[] = {
-                feature_minor0.data(),
-                feature_minor1.data(),
-                feature_minor2.data(),
-                feature_minor3.data()
-            };
-            const __half *feature_value_ptrs[] = {
-                feature_values0.data(),
-                feature_values1.data(),
-                feature_values2.data(),
-                feature_values3.data()
+            matrix_ops::Csr<const __half> csr[] = {
+                {{2, 1, 1, base::CompressedAxis::row, feature_major0.data(), feature_minor0.data()}, feature_values0.data()},
+                {{2, 1, 1, base::CompressedAxis::row, feature_major1.data(), feature_minor1.data()}, feature_values1.data()},
+                {{2, 1, 1, base::CompressedAxis::row, feature_major2.data(), feature_minor2.data()}, feature_values2.data()},
+                {{2, 1, 1, base::CompressedAxis::row, feature_major3.data(), feature_minor3.data()}, feature_values3.data()},
             };
             const float *feature_vector_ptrs[] = {
                 feature_vector0.data(),
@@ -824,7 +871,6 @@ int main() {
                 feature_vector2.data(),
                 feature_vector3.data()
             };
-            const std::uint32_t feature_rows[] = { 2u, 2u, 2u, 2u };
             float *feature_out_ptrs[] = {
                 feature_out0.data(),
                 feature_out1.data(),
@@ -836,10 +882,7 @@ int main() {
                 &fleet,
                 fleet_slots,
                 4,
-                feature_major_ptrs,
-                feature_minor_ptrs,
-                feature_value_ptrs,
-                feature_rows,
+                csr,
                 feature_vector_ptrs,
                 feature_out_ptrs);
             sparse_ops::dist::reduce_sum_to_leader_f32(

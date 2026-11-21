@@ -145,7 +145,12 @@ Useful public/runtime waypoints:
 - `archive_to_pack<ArchiveBinding, PackBinding, Policy>`:
   caller-overridable conversion from archive payload to pack payload
 - `blocked_ell`: a Cellerator-owned sparse execution layout that CellShard can persist and stage through adapters
-- `compressed`: an explicit row-compressed fallback/interchange path, not the preferred `.csh5` file format
+- `cellshard::dense` in `CellShard/formats/dense.cuh` owns or attaches to host
+  dense payloads for fallback storage and staging. Pack files use packed rows.
+- `cellshard::compressed` in `CellShard/formats/compressed.cuh`: owned host
+  CSR/CSC payloads for fallback ingest, packing, and staging
+- `cellshard::triplet` in `CellShard/formats/triplet.cuh`: owned host COO
+  entries for ingest and packing, with duplicate coordinates retained
 - `sharded<T>`: metadata plus optional loaded payload pointers for a partitioned matrix collection
 - `shard_storage`: the bound storage backend used for lazy fetch/materialization
 - `.csh5`: the current canonical durable CellShard dataset and append source,

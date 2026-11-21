@@ -1,5 +1,6 @@
+#include <CellShard/ingest/internal/common/hdf5.hh>
 #include <CellShard/ingest/internal/tenx_h5/tenx_h5_reader.cuh>
-#include <Cellerator/tensor/base/compressed.cuh>
+#include <CellShard/formats/compressed.cuh>
 
 #include <cuda_fp16.h>
 #include <openssl/evp.h>
@@ -207,7 +208,7 @@ void validate_raw_counts(const std::filesystem::path& path,
         throw std::runtime_error("10x source does not contain /matrix/data");
     }
     hsize_t length = 0;
-    const bool length_ok = cellshard::ingest::h5ad::dataset_length(dataset, &length);
+    const bool length_ok = cellshard::ingest::hdf5::dataset_length(dataset, &length);
     H5Dclose(dataset);
     if (!length_ok || length != expected_nnz) {
         H5Gclose(matrix);
@@ -219,7 +220,7 @@ void validate_raw_counts(const std::filesystem::path& path,
     bool valid = true;
     for (std::uint64_t begin = 0; begin < expected_nnz; begin += chunk_elements) {
         const auto count = std::min<std::uint64_t>(chunk_elements, expected_nnz - begin);
-        if (!cellshard::ingest::h5ad::read_dataset_double_range(
+        if (!cellshard::ingest::hdf5::read_dataset_double_range(
                 matrix, "data", begin, count, &values) || values.size() != count) {
             H5Gclose(matrix);
             H5Fclose(file);
@@ -336,13 +337,13 @@ void prepare(const std::filesystem::path& source,
     std::unique_ptr<unsigned long, decltype(&std::free)> row_nnz_owner(row_nnz, std::free);
     std::vector<unsigned long> row_offsets{0ul, static_cast<unsigned long>(info.rows)};
     std::vector<unsigned long> part_nnz{static_cast<unsigned long>(info.nnz)};
-    cellshard::sharded<cellerator::tensor::base::compressed> matrix{};
+    cellshard::sharded<::cellshard::compressed> matrix{};
     cellshard::init(&matrix);
     if (!tenx::load_part_window_compressed(source.c_str(), &header,
             row_offsets.data(), part_nnz.data(), 1ul, 0ul, 1ul, &matrix, &error))
         throw std::runtime_error("CellShard sparse cell-row ingest failed: " + error);
-    std::unique_ptr<cellshard::sharded<cellerator::tensor::base::compressed>,
-                    void(*)(cellshard::sharded<cellerator::tensor::base::compressed>*)>
+    std::unique_ptr<cellshard::sharded<::cellshard::compressed>,
+                    void(*)(cellshard::sharded<::cellshard::compressed>*)>
         matrix_owner(&matrix, [](auto* value) { cellshard::clear(value); });
     auto* cells = matrix.parts[0];
     const std::uint64_t words_per_peak = (info.rows + 31u) / 32u;

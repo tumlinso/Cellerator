@@ -5,8 +5,8 @@
 #include "../common/hdf5.hh"
 #include "../mtx/mtx_reader.cuh"
 
-#include <Cellerator/tensor/base/compressed.cuh>
-#include <Cellerator/tensor/base/triplet.cuh>
+#include <CellShard/formats/compressed.cuh>
+#include <CellShard/formats/triplet.cuh>
 #include <CellShard/runtime/host/sharded_host.cuh>
 #include <CellShard/runtime/layout/sharded.cuh>
 
@@ -23,9 +23,9 @@ namespace cellshard {
 namespace ingest {
 namespace tenx_h5 {
 
-using clear;
+using ::cellshard::clear;
 using ::cellshard::find_offset_span;
-using init;
+using ::cellshard::init;
 using ::cellshard::reserve_partitions;
 using ::cellshard::set_shards_to_partitions;
 using ::cellshard::sharded;
@@ -340,7 +340,7 @@ inline bool allocate_compressed_window(const matrix_info &info,
                                        unsigned long num_parts,
                                        unsigned long part_begin,
                                        unsigned long part_end,
-                                       sharded<::cellerator::tensor::base::compressed> *out) {
+                                       sharded<::cellshard::compressed> *out) {
     if (out == nullptr || part_begin >= part_end || part_end > num_parts) return false;
     if (info.rows > (unsigned long) std::numeric_limits<::cellshard::types::dim_t>::max()
         || info.cols > (unsigned long) std::numeric_limits<::cellshard::types::dim_t>::max()) return false;
@@ -354,12 +354,12 @@ inline bool allocate_compressed_window(const matrix_info &info,
         const unsigned long rows = row_offsets[global_part + 1ul] - row_offsets[global_part];
         if (rows > (unsigned long) std::numeric_limits<::cellshard::types::dim_t>::max()
             || part_nnz[global_part] > (unsigned long) std::numeric_limits<::cellshard::types::nnz_t>::max()) return false;
-        ::cellerator::tensor::base::compressed *part = new ::cellerator::tensor::base::compressed;
+        ::cellshard::compressed *part = new ::cellshard::compressed;
         init(part,
                      (::cellshard::types::dim_t) rows,
                      (::cellshard::types::dim_t) info.cols,
                      (::cellshard::types::nnz_t) part_nnz[global_part],
-                     ::cellerator::tensor::base::compressed_by_row);
+                     ::cellshard::compressed_by_row);
         if (!allocate(part)) {
             delete part;
             clear(out);
@@ -381,7 +381,7 @@ inline bool load_part_window_compressed(const char *path,
                                         unsigned long num_parts,
                                         unsigned long part_begin,
                                         unsigned long part_end,
-                                        sharded<::cellerator::tensor::base::compressed> *out,
+                                        sharded<::cellshard::compressed> *out,
                                         std::string *error) {
     hid_t file = (hid_t) -1;
     hid_t matrix = (hid_t) -1;
@@ -427,7 +427,7 @@ inline bool load_part_window_compressed(const char *path,
         }
         for (unsigned long global_part = part_begin; global_part < part_end; ++global_part) {
             const unsigned long local_part = global_part - part_begin;
-            ::cellerator::tensor::base::compressed *part = out->parts[local_part];
+            ::cellshard::compressed *part = out->parts[local_part];
             const unsigned long local_row_begin = row_offsets[global_part] - row_begin;
             const unsigned long local_row_end = row_offsets[global_part + 1ul] - row_begin;
             std::uint64_t running = 0u;
@@ -466,16 +466,16 @@ inline bool load_part_window_coo(const char *path,
                                  unsigned long num_parts,
                                  unsigned long part_begin,
                                  unsigned long part_end,
-                                 sharded<::cellerator::tensor::base::triplet> *out,
+                                 sharded<::cellshard::triplet> *out,
                                  std::string *error) {
-    sharded<::cellerator::tensor::base::compressed> compressed;
+    sharded<::cellshard::compressed> compressed;
     bool ok = false;
     init(&compressed);
     if (!mtx::allocate_part_window_coo(h, row_offsets, part_nnz, num_parts, part_begin, part_end, out)) return false;
     if (!load_part_window_compressed(path, h, row_offsets, part_nnz, num_parts, part_begin, part_end, &compressed, error)) goto done;
     for (unsigned long p = 0; p < compressed.num_partitions; ++p) {
-        ::cellerator::tensor::base::compressed *src = compressed.parts[p];
-        ::cellerator::tensor::base::triplet *dst = out->parts[p];
+        ::cellshard::compressed *src = compressed.parts[p];
+        ::cellshard::triplet *dst = out->parts[p];
         for (::cellshard::types::dim_t row = 0; row < src->rows; ++row) {
             for (::cellshard::types::ptr_t cursor = src->majorPtr[row]; cursor < src->majorPtr[row + 1u]; ++cursor) {
                 dst->rowIdx[cursor] = row;

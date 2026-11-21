@@ -1,7 +1,5 @@
 #include <Cellerator/compute/sampling.hh>
 
-#include <cuda_fp16.h>
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -13,7 +11,6 @@
 
 namespace cs = cellerator::compute::sampling;
 namespace cm = cellerator::tensor::base;
-namespace ct = cellerator::types;
 
 int require(bool ok, const char *label) {
     if (!ok) std::fprintf(stderr, "%s\n", label);
@@ -22,19 +19,6 @@ int require(bool ok, const char *label) {
 
 bool close_f64(double left, double right) {
     return std::fabs(left - right) < 1.0e-12;
-}
-
-bool fill_source(cm::compressed *matrix) {
-    cm::init(matrix, 8u, 5u, 14u, cm::compressed_by_row);
-    if (!cm::allocate(matrix)) return false;
-    const ct::ptr_t ptr[] = {0u, 2u, 3u, 6u, 8u, 9u, 11u, 12u, 14u};
-    const ct::idx_t idx[] = {0u, 4u, 2u, 0u, 1u, 3u, 1u, 4u, 2u, 0u, 3u, 4u, 1u, 2u};
-    for (std::size_t i = 0u; i < 9u; ++i) matrix->majorPtr[i] = ptr[i];
-    for (std::size_t i = 0u; i < 14u; ++i) {
-        matrix->minorIdx[i] = idx[i];
-        matrix->val[i] = __float2half((float) i + 1.0f);
-    }
-    return true;
 }
 
 int test_golden_hashes() {
@@ -226,21 +210,21 @@ int test_exact_global_rows_limits_and_small_population() {
 }
 
 int test_density_stratified_csr_sampling() {
-    cm::compressed source;
+    std::uint32_t row_ptr[] = {0, 2, 3, 6, 8, 9, 11, 12, 14};
+    const cm::CompressedStructureView<std::uint32_t> source{
+        8u, 5u, 14u, cm::CompressedAxis::row, row_ptr, nullptr};
     cs::density_sample_spec spec;
     cs::cell_identity_view identities;
     cs::sample_plan first, second, generic, replay;
     const std::uint64_t row_nnz[] = {2u, 1u, 3u, 2u, 1u, 2u, 1u, 2u};
     std::string error;
-    cm::init(&source);
-    if (!require(fill_source(&source), "density source allocation failed")) return 50;
     spec.seed = 71u;
     spec.split_name = "density";
     spec.requested_strata = 3u;
     spec.requested_row_count = 5u;
 
-    if (!require(cs::build_csr_density_sample_plan(&source, spec, identities, &first, &error), error.c_str())) return 51;
-    if (!require(cs::build_csr_density_sample_plan(&source, spec, identities, &second, &error), error.c_str())) return 52;
+    if (!require(cs::build_csr_density_sample_plan(source, spec, identities, &first, &error), error.c_str())) return 51;
+    if (!require(cs::build_csr_density_sample_plan(source, spec, identities, &second, &error), error.c_str())) return 52;
     if (!require(first.global_row_indices == second.global_row_indices
                  && first.identity_hashes == second.identity_hashes
                  && first.row_strata == second.row_strata
@@ -311,7 +295,9 @@ int test_density_stratified_csr_sampling() {
     if (!require(!cs::build_density_sample_plan(8u, row_nnz_view, undersampled_spec, identities, &rejected, &error),
                  "density sampling allowed a non-empty stratum to be dropped")) return 65;
 
-    cm::clear(&source);
+    row_ptr[1] = -1;
+    if (!require(!cs::build_csr_density_sample_plan(source, spec, identities, &first, &error),
+                 "negative CSR row offset was accepted")) return 50;
     return 0;
 }
 

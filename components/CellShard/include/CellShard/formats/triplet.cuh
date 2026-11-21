@@ -1,13 +1,14 @@
 #pragma once
 
-#include <Cellerator/common/types.cuh>
+#include <CellShard/core/types.cuh>
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-namespace cellerator::tensor::base {
+namespace cellshard {
 
+// Host COO entries for CellShard ingest and packing, in their supplied order.
 struct alignas(16) triplet {
     types::dim_t rows;
     types::dim_t cols;
@@ -33,11 +34,11 @@ __host__ __device__ __forceinline__ void init(
     m->val = 0;
 }
 
-__host__ __device__ __forceinline__ std::size_t bytes(const triplet * __restrict__ m) {
+__host__ __device__ __forceinline__ size_t bytes(const triplet * __restrict__ m) {
     return sizeof(*m)
-        + (std::size_t) m->nnz * sizeof(types::idx_t)
-        + (std::size_t) m->nnz * sizeof(types::idx_t)
-        + (std::size_t) m->nnz * sizeof(real::storage_t);
+        + (size_t) m->nnz * sizeof(types::idx_t)
+        + (size_t) m->nnz * sizeof(types::idx_t)
+        + (size_t) m->nnz * sizeof(real::storage_t);
 }
 
 __host__ __device__ __forceinline__ const real::storage_t *at(const triplet * __restrict__ m, types::idx_t r, types::idx_t c) {
@@ -52,34 +53,34 @@ __host__ __device__ __forceinline__ real::storage_t *at(triplet * __restrict__ m
 }
 
 __host__ __forceinline__ void clear(triplet * __restrict__ m) {
-    if (m->storage != 0) std::free(m->storage);
+    if (m->storage != 0) free(m->storage);
     else {
-        std::free(m->rowIdx);
-        std::free(m->colIdx);
-        std::free(m->val);
+        free(m->rowIdx);
+        free(m->colIdx);
+        free(m->val);
     }
     init(m);
 }
 
 __host__ __forceinline__ int allocate(triplet * __restrict__ m) {
-    const std::size_t row_bytes = (std::size_t) m->nnz * sizeof(types::idx_t);
-    const std::size_t col_offset = ((row_bytes + alignof(types::idx_t) - 1u) / alignof(types::idx_t)) * alignof(types::idx_t);
-    const std::size_t val_offset = ((col_offset + (std::size_t) m->nnz * sizeof(types::idx_t) + alignof(real::storage_t) - 1u) / alignof(real::storage_t)) * alignof(real::storage_t);
-    const std::size_t total_bytes = val_offset + (std::size_t) m->nnz * sizeof(real::storage_t);
+    const size_t row_bytes = (size_t) m->nnz * sizeof(types::idx_t);
+    const size_t col_offset = ((row_bytes + alignof(types::idx_t) - 1u) / alignof(types::idx_t)) * alignof(types::idx_t);
+    const size_t val_offset = ((col_offset + (size_t) m->nnz * sizeof(types::idx_t) + alignof(real::storage_t) - 1u) / alignof(real::storage_t)) * alignof(real::storage_t);
+    const size_t total_bytes = val_offset + (size_t) m->nnz * sizeof(real::storage_t);
     void *storage = 0;
 
-    if (m->storage != 0) std::free(m->storage);
+    if (m->storage != 0) free(m->storage);
     else {
-        std::free(m->rowIdx);
-        std::free(m->colIdx);
-        std::free(m->val);
+        free(m->rowIdx);
+        free(m->colIdx);
+        free(m->val);
     }
     m->storage = 0;
     m->rowIdx = 0;
     m->colIdx = 0;
     m->val = 0;
     if (m->nnz == 0u) return 1;
-    storage = std::malloc(total_bytes);
+    storage = malloc(total_bytes);
     if (storage == 0) return 0;
     m->storage = storage;
     m->rowIdx = (types::idx_t *) storage;
@@ -90,7 +91,7 @@ __host__ __forceinline__ int allocate(triplet * __restrict__ m) {
 
 __host__ __forceinline__ int concatenate_rows(triplet * __restrict__ dst, const triplet * __restrict__ top, const triplet * __restrict__ bottom) {
     if (top->cols != 0u && bottom->cols != 0u && top->cols != bottom->cols) {
-        std::fprintf(stderr, "Error: cannot concatenate coo matrices with different column counts\n");
+        fprintf(stderr, "Error: cannot concatenate coo matrices with different column counts\n");
         return 0;
     }
 
@@ -105,14 +106,14 @@ __host__ __forceinline__ int concatenate_rows(triplet * __restrict__ dst, const 
     if (!allocate(dst)) return 0;
 
     if (top->nnz != 0u) {
-        std::memcpy(dst->rowIdx, top->rowIdx, (std::size_t) top->nnz * sizeof(types::idx_t));
-        std::memcpy(dst->colIdx, top->colIdx, (std::size_t) top->nnz * sizeof(types::idx_t));
-        std::memcpy(dst->val, top->val, (std::size_t) top->nnz * sizeof(real::storage_t));
+        __builtin_memcpy(dst->rowIdx, top->rowIdx, (size_t) top->nnz * sizeof(types::idx_t));
+        __builtin_memcpy(dst->colIdx, top->colIdx, (size_t) top->nnz * sizeof(types::idx_t));
+        __builtin_memcpy(dst->val, top->val, (size_t) top->nnz * sizeof(real::storage_t));
     }
     for (types::nnz_t i = 0; i < bottom->nnz; ++i) dst->rowIdx[top->nnz + i] = bottom->rowIdx[i] + oldRows;
     if (bottom->nnz != 0u) {
-        std::memcpy(dst->colIdx + top->nnz, bottom->colIdx, (std::size_t) bottom->nnz * sizeof(types::idx_t));
-        std::memcpy(dst->val + top->nnz, bottom->val, (std::size_t) bottom->nnz * sizeof(real::storage_t));
+        __builtin_memcpy(dst->colIdx + top->nnz, bottom->colIdx, (size_t) bottom->nnz * sizeof(types::idx_t));
+        __builtin_memcpy(dst->val + top->nnz, bottom->val, (size_t) bottom->nnz * sizeof(real::storage_t));
     }
     return 1;
 }
@@ -126,4 +127,4 @@ __host__ __forceinline__ int append_rows(triplet * __restrict__ dst, const tripl
     return 1;
 }
 
-} // namespace cellerator::tensor::base
+} // namespace cellshard

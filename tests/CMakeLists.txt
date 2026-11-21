@@ -44,7 +44,7 @@ cellerator_add_geometry_foundation_test(geometry_catalog_contract_test
     Cellerator::operation_core)
 cellerator_add_geometry_foundation_test(geometry_projection_reference_v2_test
     tests/geometry/catalog/projection_reference_v2_test.cc
-    Cellerator::operation_core)
+    Cellerator::projection_activation)
 cellerator_add_geometry_foundation_test(geometry_builtin_fragment_test
     tests/geometry/catalog/builtin_fragment_test.cu
     Cellerator::builtin_candidate_catalog CUDA::cudart)
@@ -258,15 +258,12 @@ target_link_libraries(exactSearchRuntimeTest PRIVATE cellerator_compute_exact_se
 set_target_properties(exactSearchRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(exactSearchRuntimeTest)
 
-if(TARGET CellShard::runtime)
-    add_executable(sparseOpsRuntimeTest
-        tests/sparse_ops_runtime_test.cu
-    )
-    target_include_directories(sparseOpsRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(sparseOpsRuntimeTest PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CellShard::runtime CUDA::cudart CUDA::cusparse)
-    set_target_properties(sparseOpsRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
-    cellerator_enable_perf(sparseOpsRuntimeTest)
-endif()
+add_executable(sparseOpsRuntimeTest tests/sparse_ops_runtime_test.cu)
+target_include_directories(sparseOpsRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(sparseOpsRuntimeTest PRIVATE cellerator_compute_sparse_project
+    Cellerator::sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CUDA::cudart CUDA::cusparse)
+set_target_properties(sparseOpsRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(sparseOpsRuntimeTest)
 
 add_executable(celleratorSparseRowTransformsTest tests/sparse_row_transforms_test.cu)
 target_link_libraries(celleratorSparseRowTransformsTest PRIVATE Cellerator::sparse_ops CUDA::cudart)
@@ -364,14 +361,6 @@ set_target_properties(geneCandidateDiscoveryRuntimeTest PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(geneCandidateDiscoveryRuntimeTest)
-
-add_executable(abiRuntimeTest
-    tests/abi_runtime_test.cu
-)
-target_include_directories(abiRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(abiRuntimeTest PRIVATE cellerator_abi CUDA::cudart)
-set_target_properties(abiRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(abiRuntimeTest)
 
 add_executable(celleratorBiologicalAbiHostTest
     tests/biological_abi/biological_abi_host_test.cc

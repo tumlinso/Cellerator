@@ -557,6 +557,7 @@ endfunction()
 cellerator_enable_perf(cellerator_runtime)
 cellerator_enable_perf(cellerator_compute_matrix_convert)
 cellerator_enable_perf(cellerator_runtime_fleet)
+cellerator_enable_perf(cellerator_csr_multiply)
 
 include(src/CMakeLists.txt)
 # General numerical operations used by both native C++ and optional framework

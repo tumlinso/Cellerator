@@ -354,6 +354,7 @@ target_link_libraries(cellerator_csr_fallback_candidate PUBLIC
     CellPack::apply_plan
     CellPack::persistent_packing_payload
     CUDA::cudart
+    PRIVATE Cellerator::csr_multiply
 )
 set_target_properties(cellerator_csr_fallback_candidate PROPERTIES
     CXX_STANDARD 20
@@ -470,6 +471,7 @@ set_target_properties(cellerator_transpose_backward_candidate PROPERTIES
 # rendezvous owns their shared native target and test wiring.
 add_library(cellerator_projection_activation STATIC
     src/execution/projection_activation.cc
+    src/execution/projection_activation_v2.cc
 )
 add_library(Cellerator::projection_activation ALIAS
     cellerator_projection_activation)
@@ -544,6 +546,7 @@ target_include_directories(cellerator_preparation_factory PUBLIC
 )
 target_link_libraries(cellerator_preparation_factory PUBLIC
     Cellerator::builtin_candidate_catalog
+    Cellerator::projection_activation
     Cellerator::runtime
 )
 target_compile_features(cellerator_preparation_factory PUBLIC cxx_std_20)

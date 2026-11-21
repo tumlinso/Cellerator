@@ -34,7 +34,7 @@ struct alignas(16) sharded_blocked_ell_repack_stats {
 };
 
 struct alignas(16) sharded_blocked_ell_repack_result {
-    ::cellerator::tensor::base::device::CompressedView filtered;
+    ::cellshard::device::CompressedView filtered;
     bucket::compressed_major_bucket_result bucketed;
     ::cellerator::tensor::base::device::BlockedEllView rebuilt;
     bucket::major_nnz_bucket_plan_view bucket_plan;
@@ -511,7 +511,7 @@ __host__ __forceinline__ int build_repacked_shard_blocked_ell(
     local.filtered.rows = cfg->output_rows;
     local.filtered.cols = cfg->output_cols;
     local.filtered.nnz = live_nnz;
-    local.filtered.axis = ::cellerator::tensor::base::compressed_by_row;
+    local.filtered.axis = ::cellshard::compressed_by_row;
     local.filtered.major_ptr = ws->d_filtered_major_ptr;
     local.filtered.minor_idx = ws->d_filtered_minor_idx;
     local.filtered.val = ws->d_filtered_val;

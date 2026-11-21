@@ -1,7 +1,5 @@
 #include <Cellerator/compute/sampling_materialization.hh>
 
-#include <cuda_fp16.h>
-
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
@@ -20,18 +18,14 @@ int require(bool ok, const char *label) {
     return ok ? 1 : 0;
 }
 
-bool fill_source(cm::compressed *matrix) {
-    cm::init(matrix, 6u, 5u, 7u, cm::compressed_by_row);
-    if (!cm::allocate(matrix)) return false;
-    const ct::ptr_t row_ptr[] = {0u, 2u, 2u, 3u, 5u, 5u, 7u};
-    const ct::idx_t column_indices[] = {0u, 4u, 2u, 1u, 3u, 0u, 2u};
-    for (std::size_t i = 0u; i < 7u; ++i) matrix->majorPtr[i] = row_ptr[i];
-    for (std::size_t i = 0u; i < 7u; ++i) {
-        matrix->minorIdx[i] = column_indices[i];
-        matrix->val[i] = __float2half((float) i + 1.0f);
+struct CsrFixture {
+    std::uint32_t row_ptr[7] = {0, 2, 2, 3, 5, 5, 7};
+    std::uint32_t columns[7] = {0, 4, 2, 1, 3, 0, 2};
+
+    cm::CompressedStructureView<std::uint32_t> view() const {
+        return {6u, 5u, 7u, cm::CompressedAxis::row, row_ptr, columns};
     }
-    return true;
-}
+};
 
 bool build_exact_plan(std::uint64_t total_rows,
                       std::uint64_t requested_rows,
@@ -47,17 +41,17 @@ bool build_exact_plan(std::uint64_t total_rows,
     return cs::build_sample_plan(total_rows, spec, identities, out, error);
 }
 
-bool matches_complete_source_rows(const cm::compressed &source,
+bool matches_complete_source_rows(const cm::CompressedStructureView<std::uint32_t> &source,
                                   const cs::sampled_csr_structure_view &sampled) {
     if (sampled.row_ptr == nullptr || sampled.provenance == nullptr) return false;
     if (sampled.sampled_row_count != sampled.provenance->selected_rows) return false;
     for (std::size_t position = 0u; position < sampled.sampled_row_count; ++position) {
         const std::uint64_t row = sampled.sampled_position_to_global_row[position];
-        const ct::ptr_t source_begin = source.majorPtr[row], source_end = source.majorPtr[row + 1u];
+        const ct::ptr_t source_begin = source.major_ptr[row], source_end = source.major_ptr[row + 1u];
         const ct::ptr_t sample_begin = sampled.row_ptr[position], sample_end = sampled.row_ptr[position + 1u];
         if (source_end - source_begin != sample_end - sample_begin) return false;
         for (ct::ptr_t slot = 0u; slot < source_end - source_begin; ++slot) {
-            if (source.minorIdx[source_begin + slot] != sampled.column_indices[sample_begin + slot]) return false;
+            if (ct::idx_t(source.minor_idx[source_begin + slot]) != sampled.column_indices[sample_begin + slot]) return false;
         }
     }
     return sampled.row_ptr[sampled.sampled_row_count] == sampled.nnz;
@@ -74,12 +68,11 @@ int test_in_memory_complete_rows_and_ordering() {
                       ct::idx_t>::value,
                   "sampled CSR columns must use Cellerator's canonical index type");
 
-    cm::compressed source;
+    const CsrFixture fixture;
+    const auto source = fixture.view();
     cs::sample_plan plan, unsorted;
     cs::owned_sampled_csr_structure bundle;
     std::string error;
-    cm::init(&source);
-    if (!require(fill_source(&source), "failed to allocate in-memory CSR fixture")) return 1;
     if (!require(build_exact_plan(source.rows, 64u, "in-memory-all", &plan, &error), error.c_str())) return 2;
     if (!require(plan.global_row_indices.size() == source.rows,
                  "undersized dataset was not sampled completely")) return 3;
@@ -87,7 +80,7 @@ int test_in_memory_complete_rows_and_ordering() {
     unsorted = plan;
     std::reverse(unsorted.global_row_indices.begin(), unsorted.global_row_indices.end());
     std::reverse(unsorted.identity_hashes.begin(), unsorted.identity_hashes.end());
-    if (!require(cs::materialize_sampled_csr_structure(&source, unsorted, &bundle, &error), error.c_str())) return 4;
+    if (!require(cs::materialize_sampled_csr_structure(source, unsorted, &bundle, &error), error.c_str())) return 4;
     const cs::sampled_csr_structure_view view = bundle.view();
     if (!require(view.sampled_row_count == 6u && view.gene_count == 5u && view.nnz == 7u,
                  "sampled in-memory CSR dimensions mismatch")) return 5;
@@ -109,20 +102,18 @@ int test_in_memory_complete_rows_and_ordering() {
                  && view.provenance->selected_rows == 6u
                  && view.provenance->split_name == "in-memory-all",
                  "sample provenance was not preserved immutably")) return 10;
-    cm::clear(&source);
     return 0;
 }
 
 int test_zero_rows_and_input_validation() {
-    cm::compressed source;
+    CsrFixture fixture;
+    const auto source = fixture.view();
     cs::sample_plan all_rows, zero_rows, invalid;
     cs::owned_sampled_csr_structure bundle;
     std::string error;
-    cm::init(&source);
-    if (!require(fill_source(&source), "failed to allocate validation CSR fixture")) return 20;
     if (!require(build_exact_plan(source.rows, 64u, "validation-all", &all_rows, &error), error.c_str())) return 21;
     if (!require(build_exact_plan(source.rows, 0u, "zero-rows", &zero_rows, &error), error.c_str())) return 22;
-    if (!require(cs::materialize_sampled_csr_structure(&source, zero_rows, &bundle, &error), error.c_str())) return 23;
+    if (!require(cs::materialize_sampled_csr_structure(source, zero_rows, &bundle, &error), error.c_str())) return 23;
     cs::sampled_csr_structure_view view = bundle.view();
     if (!require(view.sampled_row_count == 0u && view.gene_count == source.cols && view.nnz == 0u
                  && view.row_ptr != nullptr && view.row_ptr[0] == 0u
@@ -133,50 +124,50 @@ int test_zero_rows_and_input_validation() {
     invalid.global_row_indices[0] = source.rows;
     invalid.identity_hashes[0] = cs::hash_global_row_index(source.rows, invalid.provenance.seed);
     error.clear();
-    if (!require(!cs::materialize_sampled_csr_structure(&source, invalid, &bundle, &error),
+    if (!require(!cs::materialize_sampled_csr_structure(source, invalid, &bundle, &error),
                  "out-of-range sampled row was accepted")) return 25;
 
     invalid = all_rows;
     invalid.global_row_indices[1] = invalid.global_row_indices[0];
     invalid.identity_hashes[1] = invalid.identity_hashes[0];
     error.clear();
-    if (!require(!cs::materialize_sampled_csr_structure(&source, invalid, &bundle, &error),
+    if (!require(!cs::materialize_sampled_csr_structure(source, invalid, &bundle, &error),
                  "duplicate sampled row was accepted")) return 26;
 
     invalid = all_rows;
     invalid.provenance.selected_rows = UINT64_MAX;
     error.clear();
-    if (!require(!cs::materialize_sampled_csr_structure(&source, invalid, &bundle, &error),
+    if (!require(!cs::materialize_sampled_csr_structure(source, invalid, &bundle, &error),
                  "overflowed provenance selected_rows was accepted")) return 27;
 
-    const ct::ptr_t saved_second = source.majorPtr[2u];
-    source.majorPtr[2u] = source.nnz + 1u;
+    const std::uint32_t saved_second = fixture.row_ptr[2u];
+    fixture.row_ptr[2u] = static_cast<std::uint32_t>(source.nnz + 1u);
     error.clear();
-    if (!require(!cs::materialize_sampled_csr_structure(&source, all_rows, &bundle, &error),
+    if (!require(!cs::materialize_sampled_csr_structure(source, all_rows, &bundle, &error),
                  "row pointer beyond nnz was accepted")) return 28;
-    source.majorPtr[2u] = saved_second;
+    fixture.row_ptr[2u] = saved_second;
 
-    const ct::ptr_t saved_third = source.majorPtr[3u];
-    source.majorPtr[3u] = 1u;
+    const std::uint32_t saved_third = fixture.row_ptr[3u];
+    fixture.row_ptr[3u] = 1;
     error.clear();
-    if (!require(!cs::materialize_sampled_csr_structure(&source, all_rows, &bundle, &error),
+    if (!require(!cs::materialize_sampled_csr_structure(source, all_rows, &bundle, &error),
                  "non-monotonic row pointers were accepted")) return 29;
-    source.majorPtr[3u] = saved_third;
+    fixture.row_ptr[3u] = saved_third;
 
-    const ct::ptr_t saved_terminal = source.majorPtr[source.rows];
-    source.majorPtr[source.rows] = source.nnz - 1u;
+    const std::uint32_t saved_terminal = fixture.row_ptr[source.rows];
+    fixture.row_ptr[source.rows] = static_cast<std::uint32_t>(source.nnz - 1u);
     error.clear();
-    if (!require(!cs::materialize_sampled_csr_structure(&source, all_rows, &bundle, &error),
+    if (!require(!cs::materialize_sampled_csr_structure(source, all_rows, &bundle, &error),
                  "incorrect terminal row pointer was accepted")) return 30;
-    source.majorPtr[source.rows] = saved_terminal;
+    fixture.row_ptr[source.rows] = saved_terminal;
 
-    const ct::idx_t saved_column = source.minorIdx[0u];
-    source.minorIdx[0u] = source.cols;
+    fixture.columns[0u] = static_cast<std::uint32_t>(source.cols);
     error.clear();
-    if (!require(!cs::materialize_sampled_csr_structure(&source, all_rows, &bundle, &error),
+    if (!require(!cs::materialize_sampled_csr_structure(source, all_rows, &bundle, &error),
                  "out-of-range column index was accepted")) return 31;
-    source.minorIdx[0u] = saved_column;
-    cm::clear(&source);
+    fixture.columns[0u] = -1;
+    if (!require(!cs::materialize_sampled_csr_structure(source, all_rows, &bundle, &error),
+                 "negative CSR column index was accepted")) return 32;
     return 0;
 }
 

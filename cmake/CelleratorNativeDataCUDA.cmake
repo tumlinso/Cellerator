@@ -185,9 +185,9 @@ foreach(_header IN ITEMS
         execution/dependency/distributed.cuh
         execution/dependency/packed_program.cuh
         execution/dependency/transfer.cuh
-        tensor/base/dense.cuh
-        tensor/base/compressed.cuh
-        tensor/base/triplet.cuh
+        tensor/base/compressed.hh
+        tensor/base/coo.hh
+        tensor/base/blocked_ell_layout.hh
         tensor/base/blocked_ell.cuh
         tensor/base/sliced_ell.cuh
         tensor/base/diagonal.cuh

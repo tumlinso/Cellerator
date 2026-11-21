@@ -1,11 +1,8 @@
 # Cellerator biological ABI v1
 
-`biological_abi.hh` is the minimal Cellerator-owned CPU/CUDA contract shared by
-future execution code and Baseplane sequence consumers. It is deliberately
-separate from `include/Cellerator/abi.h`: the latter remains the version-1
-public sparse-layout C API, while this directory is the versioned internal
-biological execution ABI. Neither surface silently changes the meaning of the
-other.
+`biological_abi.hh` defines the versioned Cellerator CPU/CUDA contract for
+biological execution and Baseplane sequence consumers. The legacy sparse-layout
+C runtime API has been retired in coordination with Texo.
 
 ## Identity and size policy
 

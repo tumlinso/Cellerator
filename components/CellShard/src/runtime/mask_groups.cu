@@ -1,7 +1,7 @@
 #include <CellShard/runtime/mask_groups.cuh>
 
 #include <Cellerator/tensor/base/blocked_ell.cuh>
-#include <Cellerator/tensor/base/compressed.cuh>
+#include <CellShard/formats/compressed.cuh>
 
 #include <cstdio>
 #include <cstdlib>
@@ -297,7 +297,7 @@ __global__ void compute_group_reduce_sliced_ell_kernel(
 }
 
 __global__ void compute_group_reduce_compressed_kernel(
-    ::cellerator::tensor::base::device::CompressedView src,
+    ::cellshard::device::CompressedView src,
     const std::uint32_t *__restrict__ feature_group_masks,
     row_feature_mask_view masks,
     unsigned int group_count,
@@ -499,7 +499,7 @@ int ensure_private_state(masked_sparse_reoptimize_workspace *workspace) {
 int reserve_reopt_compressed(masked_sparse_reoptimize_workspace *workspace,
                              unsigned int rows,
                              unsigned int nnz,
-                             ::cellerator::tensor::base::device::CompressedView *out) {
+                             ::cellshard::device::CompressedView *out) {
     if (workspace == nullptr || out == nullptr) return 0;
     if (!ensure_private_state(workspace)) return 0;
     masked_reoptimize_private *state = private_state(workspace);
@@ -865,14 +865,14 @@ int compute_sparse_group_reduce(const ::cellerator::tensor::base::device::Sliced
     return 1;
 }
 
-int compute_sparse_group_reduce_compressed_fallback(const ::cellerator::tensor::base::device::CompressedView *src,
+int compute_sparse_group_reduce_compressed_fallback(const ::cellshard::device::CompressedView *src,
                                                    sparse_group_reduce_workspace *workspace,
                                                    const group_mask_config_view *groups,
                                                    const row_feature_mask_view *masks,
                                                    const sparse_group_filter_params *filter,
                                                    sparse_group_reduce_result *out) {
     if (src == nullptr || workspace == nullptr || filter == nullptr) return 0;
-    if (src->axis != ::cellerator::tensor::base::compressed_by_row) return 0;
+    if (src->axis != ::cellshard::compressed_by_row) return 0;
     const unsigned int group_count = groups != nullptr ? groups->group_count : 0u;
     if (group_count > CELLSHARD_MAX_MASK_GROUPS) return 0;
     if (!reserve(workspace, src->rows, src->cols, src->nnz, group_count)) return 0;
@@ -954,11 +954,11 @@ int manual_reoptimize_masked_sparse(const ::cellerator::tensor::base::device::Bl
     const unsigned int output_rows = config->output_rows != 0u ? config->output_rows : src->rows;
     const unsigned int output_cols = config->output_cols != 0u ? config->output_cols : src->cols;
     const unsigned int max_nnz = src->rows * src->ell_cols;
-    ::cellerator::tensor::base::device::CompressedView compressed{};
+    ::cellshard::device::CompressedView compressed{};
     compressed.rows = output_rows;
     compressed.cols = output_cols;
     compressed.nnz = max_nnz;
-    compressed.axis = ::cellerator::tensor::base::compressed_by_row;
+    compressed.axis = ::cellshard::compressed_by_row;
     if (!reserve_reopt_compressed(workspace, output_rows, max_nnz, &compressed)) return 0;
     if (!cuda_ok(cudaMemsetAsync(compressed.major_ptr,
                                  0,

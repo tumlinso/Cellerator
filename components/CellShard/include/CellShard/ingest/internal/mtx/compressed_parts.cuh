@@ -10,7 +10,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "../../../../../src/convert/compressed_from_coo_raw.cuh"
+#include <Cellerator/compute/matrix/convert/compressed.cuh>
+#include <cub/cub.cuh>
 #include <CellShard/io/pack/packfile.cuh>
 #include <CellShard/runtime/storage/disk.cuh>
 #include "mtx_reader.cuh"
@@ -19,6 +20,8 @@ namespace cellshard {
 namespace ingest {
 namespace mtx {
 
+namespace matrix_convert = ::cellerator::compute::matrix::convert;
+namespace tensor_base = ::cellerator::tensor::base;
 
 // Chunk sizes for byte-range MTX scanning during transposed compressed ingest.
 enum {
@@ -168,12 +171,9 @@ static inline int reserve(compressed_workspace *ws, unsigned int cdim, unsigned 
     if (cdim <= ws->cdim_cap &&
         udim <= ws->udim_cap &&
         nnz <= ws->nnz_cap &&
-        !::cellshard::convert::compressed_from_coo_sorted_workspace_bytes(
-            cdim,
-            udim,
-            nnz,
-            ws->d_sort_cax,
-            ws->d_minor_idx,
+        !matrix_convert::compressed_from_coo_library_workspace_bytes(
+            {cdim, udim, nnz, ws->d_sort_cax, ws->d_minor_idx, nullptr},
+            tensor_base::CompressedAxis::row,
             ws->stream,
             &sort_bytes)) return 0;
 
@@ -244,12 +244,9 @@ static inline int reserve(compressed_workspace *ws, unsigned int cdim, unsigned 
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     ws->d_permutation = (unsigned int *) (d_base + d_bytes);
 
-    if (!::cellshard::convert::compressed_from_coo_sorted_workspace_bytes(
-            cdim,
-            udim,
-            nnz,
-            ws->d_sort_cax,
-            ws->d_minor_idx,
+    if (!matrix_convert::compressed_from_coo_library_workspace_bytes(
+            {cdim, udim, nnz, ws->d_sort_cax, ws->d_minor_idx, nullptr},
+            tensor_base::CompressedAxis::row,
             ws->stream,
             &sort_bytes)) goto fail;
 
@@ -396,43 +393,24 @@ static inline int build_pinned_triplet_to_compressed(compressed_workspace *ws,
                                                      unsigned int cols,
                                                      unsigned int nnz,
                                                      unsigned int axis) {
-    const unsigned int cdim = axis == ::cellerator::tensor::base::compressed_by_col ? cols : rows;
-    const unsigned int udim = axis == ::cellerator::tensor::base::compressed_by_col ? rows : cols;
-    const unsigned int *d_cax = axis == ::cellerator::tensor::base::compressed_by_col ? ws->d_col_idx : ws->d_row_idx;
-    const unsigned int *d_uax = axis == ::cellerator::tensor::base::compressed_by_col ? ws->d_row_idx : ws->d_col_idx;
-
+    const unsigned int cdim = axis == ::cellshard::compressed_by_col ? cols : rows;
+    const unsigned int udim = axis == ::cellshard::compressed_by_col ? rows : cols;
     if (!reserve(ws, cdim, udim, nnz)) return 0;
     if (nnz != 0) {
         if (cudaMemcpyAsync(ws->d_row_idx, ws->h_row_idx, (std::size_t) nnz * sizeof(unsigned int), cudaMemcpyHostToDevice, ws->stream) != cudaSuccess) return 0;
         if (cudaMemcpyAsync(ws->d_col_idx, ws->h_col_idx, (std::size_t) nnz * sizeof(unsigned int), cudaMemcpyHostToDevice, ws->stream) != cudaSuccess) return 0;
         if (cudaMemcpyAsync(ws->d_in_val, ws->h_in_val, (std::size_t) nnz * sizeof(__half), cudaMemcpyHostToDevice, ws->stream) != cudaSuccess) return 0;
     }
-    if (!::cellshard::convert::build_compressed_from_coo_sorted_raw(cdim,
-                                                                    udim,
-                                                                    nnz,
-                                                                    d_cax,
-                                                                    d_uax,
-                                                                    ws->d_in_val,
-                                                                    ws->d_major_ptr,
-                                                                    ws->d_sort_cax,
-                                                                    ws->d_minor_idx,
-                                                                    ws->d_out_val,
-                                                                    ws->d_permutation,
-                                                                    ws->d_tmp,
-                                                                    ws->d_sort_bytes,
-                                                                    ws->stream)) {
-        if (!::cellshard::convert::build_compressed_from_coo_raw(cdim,
-                                                                 nnz,
-                                                                 d_cax,
-                                                                 d_uax,
-                                                                 ws->d_in_val,
-                                                                 ws->d_major_ptr,
-                                                                 ws->d_heads,
-                                                                 ws->d_minor_idx,
-                                                                 ws->d_out_val,
-                                                                 ws->d_tmp,
-                                                                 ws->d_scan_bytes,
-                                                                 ws->stream)) return 0;
+    const auto compressed_axis = axis == ::cellshard::compressed_by_col
+        ? tensor_base::CompressedAxis::column : tensor_base::CompressedAxis::row;
+    const tensor_base::CooView<unsigned int, const __half> source{
+        rows, cols, nnz, ws->d_row_idx, ws->d_col_idx, ws->d_in_val};
+    if (!matrix_convert::build_compressed_from_coo_library(
+            source, compressed_axis, ws->d_major_ptr, ws->d_sort_cax, ws->d_minor_idx,
+            ws->d_out_val, ws->d_permutation, ws->d_tmp, ws->d_sort_bytes, ws->stream)) {
+        if (!matrix_convert::build_compressed_from_coo_custom(
+                source, compressed_axis, ws->d_major_ptr, ws->d_heads, ws->d_minor_idx,
+                ws->d_out_val, ws->d_tmp, ws->d_scan_bytes, ws->stream)) return 0;
     }
     if (cudaMemcpyAsync(ws->h_major_ptr, ws->d_major_ptr, (std::size_t) (cdim + 1) * sizeof(unsigned int), cudaMemcpyDeviceToHost, ws->stream) != cudaSuccess) return 0;
     if (nnz != 0) {
@@ -471,7 +449,7 @@ static inline int store_row_compressed_part_window(const char *part_prefix,
                                                rows,
                                                cols_out,
                                                nnz,
-                                               ::cellerator::tensor::base::compressed_by_row,
+                                               ::cellshard::compressed_by_row,
                                                rows,
                                                part_row_ptr,
                                                col_idx + nnz_begin,
@@ -528,7 +506,7 @@ static inline int convert_transposed_byte_range_to_row_compressed_parts(const ch
                                             rows_total,
                                             cols_out,
                                             nnz_total,
-                                            ::cellerator::tensor::base::compressed_by_row)) return 0;
+                                            ::cellshard::compressed_by_row)) return 0;
     return store_row_compressed_part_window(part_prefix,
                                             global_part_begin,
                                             cols_out,

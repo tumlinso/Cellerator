@@ -1,11 +1,9 @@
 #pragma once
 
-#include "abi.h"
 #include "compute/operators/sparse/row_transforms.cuh"
 #include "compute/operators/sparse/column_moments.cuh"
-#include "tensor/base/dense.cuh"
-#include "tensor/base/compressed.cuh"
-#include "tensor/base/triplet.cuh"
+#include "tensor/base/compressed.hh"
+#include "tensor/base/coo.hh"
 #include "tensor/base/blocked_ell.cuh"
 #include "tensor/base/sliced_ell.cuh"
 #include "tensor/base/diagonal.cuh"

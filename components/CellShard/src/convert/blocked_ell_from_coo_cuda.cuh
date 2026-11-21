@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/tensor/base/blocked_ell.cuh>
-#include <Cellerator/tensor/base/triplet.cuh>
+#include <CellShard/formats/triplet.cuh>
 
 #include <cub/cub.cuh>
 #include <cuda_runtime.h>
@@ -464,7 +464,7 @@ __host__ __forceinline__ dim3 blocked_ell_from_coo_grid(types::nnz_t n) {
 }
 
 __host__ __forceinline__ int upload_coo(blocked_ell_from_coo_cuda_workspace *ws,
-                                        const ::cellerator::tensor::base::triplet *src,
+                                        const ::cellshard::triplet *src,
                                         const types::u32 *feature_to_global) {
     const dim3 block(256u, 1u, 1u);
     const dim3 grid = blocked_ell_from_coo_grid(src != 0 ? src->nnz : 0u);
@@ -602,7 +602,7 @@ __host__ __forceinline__ int evaluate_block_size(blocked_ell_from_coo_cuda_works
 }
 
 __host__ __forceinline__ int choose_blocked_ell_block_size_from_coo_cuda(
-    const ::cellerator::tensor::base::triplet *src,
+    const ::cellshard::triplet *src,
     types::dim_t cols,
     const types::u32 *feature_to_global,
     const unsigned int *candidates,
@@ -664,7 +664,7 @@ __host__ __forceinline__ int choose_blocked_ell_block_size_from_coo_cuda(
 }
 
 __host__ __forceinline__ int blocked_ell_from_coo_cuda(
-    const ::cellerator::tensor::base::triplet *src,
+    const ::cellshard::triplet *src,
     types::dim_t cols,
     const types::u32 *feature_to_global,
     unsigned int block_size,
@@ -913,7 +913,7 @@ __host__ __forceinline__ int blocked_ell_from_coo_cuda(
 }
 
 __host__ __forceinline__ int blocked_ell_from_coo_cuda_auto(
-    const ::cellerator::tensor::base::triplet *src,
+    const ::cellshard::triplet *src,
     types::dim_t cols,
     const types::u32 *feature_to_global,
     const unsigned int *candidates,

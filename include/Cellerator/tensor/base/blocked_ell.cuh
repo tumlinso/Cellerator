@@ -3,14 +3,13 @@
 #include <cstdlib>
 
 #include <Cellerator/common/types.cuh>
+#include <Cellerator/tensor/base/blocked_ell_layout.hh>
 
 namespace cellerator::tensor::base {
 
-enum {
-    blocked_ell_host_registered = 1u << 0,
-    blocked_ell_invalid_col = 0xffffffffu
-};
+enum { blocked_ell_host_registered = 1u << 0 };
 
+// Host payload. clear() releases its arrays and unregisters pinned storage.
 struct alignas(16) blocked_ell {
     types::dim_t rows;
     types::dim_t cols;

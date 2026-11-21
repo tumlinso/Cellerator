@@ -8,7 +8,7 @@ static inline int build_bucketed_optimized_shard(const std::vector<::cellerator:
     owned_buffer<std::uint32_t> canonical_to_exec_cols;
     std::uint32_t local_rows = 0u;
     std::uint32_t local_nnz = 0u;
-    ::cellerator::tensor::base::triplet canonical_coo;
+    ::cellshard::triplet canonical_coo;
     ::cellerator::tensor::base::blocked_ell permuted;
 
     if (out == nullptr) return 0;

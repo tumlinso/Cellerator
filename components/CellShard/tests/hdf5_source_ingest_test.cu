@@ -168,7 +168,7 @@ static void test_tenx_reader() {
 
     unsigned long row_offsets[3] = {0ul, 1ul, 2ul};
     unsigned long part_nnz[2] = {2ul, 1ul};
-    cellshard::sharded<::cellerator::tensor::base::compressed> compressed;
+    cellshard::sharded<::cellshard::compressed> compressed;
     init(&compressed);
     assert(tenx_h5::load_part_window_compressed(path.c_str(), &header, row_offsets, part_nnz, 2ul, 0ul, 2ul, &compressed, &error));
     assert(compressed.num_partitions == 2ul);
@@ -216,7 +216,7 @@ static void test_loom_reader() {
 
     unsigned long row_offsets[2] = {0ul, 2ul};
     unsigned long part_nnz[1] = {4ul};
-    cellshard::sharded<::cellerator::tensor::base::triplet> coo;
+    cellshard::sharded<::cellshard::triplet> coo;
     init(&coo);
     assert(loom::load_part_window_coo(path.c_str(), "matrix", false, &header, row_offsets, part_nnz, 1ul, 0ul, 1ul, &coo, &error));
     assert(coo.num_partitions == 1ul);
@@ -255,7 +255,7 @@ static void make_anndata_manifest(dataset::manifest *m,
                            "", "", "", "x", allow_processed, 0ul, 0ul, 0ul));
 }
 
-static unsigned long count_coo_coordinate(const ::cellerator::tensor::base::triplet *part,
+static unsigned long count_coo_coordinate(const ::cellshard::triplet *part,
                                           unsigned long row,
                                           unsigned long col) {
     unsigned long count = 0ul;
@@ -293,7 +293,7 @@ static void test_anndata_csr_dataset_wrappers(const std::filesystem::path &root)
     const unsigned long part_nnz[3] = {
         row_nnz[0] + row_nnz[1], row_nnz[2] + row_nnz[3], row_nnz[4] + row_nnz[5]
     };
-    cellshard::sharded<::cellerator::tensor::base::triplet> coo;
+    cellshard::sharded<::cellshard::triplet> coo;
     init(&coo);
     assert(dataset::load_source_part_window_coo(&manifest, 0u, &header, row_offsets, part_nnz,
                                                 3ul, 1ul, 2ul, &coo, 1024u));
@@ -303,13 +303,13 @@ static void test_anndata_csr_dataset_wrappers(const std::filesystem::path &root)
     assert(count_coo_coordinate(coo.parts[0], 0ul, 0ul) == 1ul);
     clear(&coo);
 
-    cellshard::sharded<::cellerator::tensor::base::compressed> compressed;
+    cellshard::sharded<::cellshard::compressed> compressed;
     init(&compressed);
     assert(dataset::load_source_part_window_compressed(&manifest, 0u, &header, row_offsets, part_nnz,
                                                        3ul, 1ul, 2ul, &compressed, 1024u));
     assert(compressed.num_partitions == 1ul && compressed.partition_rows[0] == 2ul);
-    const ::cellerator::tensor::base::compressed *part = compressed.parts[0];
-    assert(part->axis == ::cellerator::tensor::base::compressed_by_row);
+    const ::cellshard::compressed *part = compressed.parts[0];
+    assert(part->axis == ::cellshard::compressed_by_row);
     assert(part->majorPtr[0] == 0u && part->majorPtr[1] == 3u && part->majorPtr[2] == 4u);
     unsigned long duplicate_columns = 0ul;
     bool saw_four = false, saw_five = false;
@@ -358,7 +358,7 @@ static void test_anndata_csc_dataset_wrappers(const std::filesystem::path &root)
     for (unsigned long r = row_offsets[1]; r < row_offsets[2]; ++r) part_nnz[1] += row_nnz[r];
     assert(part_nnz[0] == 82ul && part_nnz[1] == 78ul);
 
-    cellshard::sharded<::cellerator::tensor::base::triplet> coo;
+    cellshard::sharded<::cellshard::triplet> coo;
     init(&coo);
     assert(dataset::load_source_part_window_coo(&manifest, 0u, &header, row_offsets, part_nnz,
                                                 2ul, 0ul, 1ul, &coo, 1024u));
@@ -369,13 +369,13 @@ static void test_anndata_csc_dataset_wrappers(const std::filesystem::path &root)
     assert(std::fabs(__half2float(*at(coo.parts[0], 0u, 0u))) < 0.01f);
     clear(&coo);
 
-    cellshard::sharded<::cellerator::tensor::base::compressed> compressed;
+    cellshard::sharded<::cellshard::compressed> compressed;
     init(&compressed);
     assert(dataset::load_source_part_window_compressed(&manifest, 0u, &header, row_offsets, part_nnz,
                                                        2ul, 0ul, 1ul, &compressed, 1024u));
     assert(compressed.num_partitions == 1ul && compressed.partition_rows[0] == 32ul);
-    const ::cellerator::tensor::base::compressed *part = compressed.parts[0];
-    assert(part->axis == ::cellerator::tensor::base::compressed_by_col);
+    const ::cellshard::compressed *part = compressed.parts[0];
+    assert(part->axis == ::cellshard::compressed_by_col);
     assert(part->majorPtr[0] == 0u && part->majorPtr[1] == 33u);
     assert(part->majorPtr[2] == 57u && part->majorPtr[3] == 73u && part->majorPtr[4] == 82u);
     assert(at(part, 0u, 0u) != nullptr);

@@ -498,11 +498,11 @@ int create_dataset_dense_h5(const char *filename,
                                             filename,
                                             layout,
                                             datasets,
-                                            matrix_traits<::cellerator::tensor::base::dense>::matrix_format_name(),
+                                            matrix_traits<::cellshard::dense>::matrix_format_name(),
                                             payload_layout_shard_packed)) {
         goto done;
     }
-    payload = payload_root >= 0 ? create_group(payload_root, matrix_traits<::cellerator::tensor::base::dense>::matrix_format_name()) : (hid_t) -1;
+    payload = payload_root >= 0 ? create_group(payload_root, matrix_traits<::cellshard::dense>::matrix_format_name()) : (hid_t) -1;
     if (payload < 0) goto done;
 
     if (!write_common_matrix_tables(matrix, layout, partition_aux.data(), partition_axes.data())

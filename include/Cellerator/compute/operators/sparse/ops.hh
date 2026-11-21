@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
+#include <Cellerator/tensor/base/compressed.hh>
 #include <Cellerator/tensor/quantized/blocked_ell.hh>
 
 #include <cuda_runtime.h>
@@ -222,6 +223,14 @@ void launch_csr_spmv_fwd_f16_f32(
     const float *const *vector,
     float *const *out);
 
+void launch_csr_spmv_fwd_f16_f32(
+    runtime::fleet_context *fleet,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
+    const float *const *vector,
+    float *const *out);
+
 void launch_csr_spmv_bwd_values_f16_f32(
     runtime::fleet_context *fleet,
     const unsigned int *slots,
@@ -243,6 +252,14 @@ void launch_csr_spmv_bwd_vector_f16_f32(
     const float *const *grad_out,
     const std::uint32_t *rows,
     const std::uint32_t *cols,
+    float *const *grad_vector);
+
+void launch_csr_spmv_bwd_vector_f16_f32(
+    runtime::fleet_context *fleet,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
+    const float *const *grad_out,
     float *const *grad_vector);
 
 void launch_csr_spmm_bwd_values_f16_f32(
@@ -268,6 +285,17 @@ void launch_csr_spmm_bwd_rhs_f16_f32(
     const float *const *grad_out,
     const std::uint32_t *rows,
     const std::uint32_t *cols,
+    const std::int64_t *grad_out_ld,
+    const std::int64_t *out_cols,
+    float *const *grad_rhs,
+    const std::int64_t *grad_rhs_ld);
+
+void launch_csr_spmm_bwd_rhs_f16_f32(
+    runtime::fleet_context *fleet,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
+    const float *const *grad_out,
     const std::int64_t *grad_out_ld,
     const std::int64_t *out_cols,
     float *const *grad_rhs,

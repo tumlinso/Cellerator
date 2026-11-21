@@ -1,10 +1,11 @@
 #pragma once
 
-#include <cstdlib>
+#include <stddef.h>
+#include <stdlib.h>
 
-#include <Cellerator/common/types.cuh>
+#include <CellShard/core/types.cuh>
 
-namespace cellerator::tensor::base {
+namespace cellshard {
 
 enum {
     dense_row_major = 0u,
@@ -12,6 +13,7 @@ enum {
     dense_host_registered = 1u << 0
 };
 
+// Host payload for CellShard dense fallback storage and staging.
 struct alignas(16) dense {
     types::dim_t rows;
     types::dim_t cols;
@@ -53,25 +55,25 @@ __host__ __device__ __forceinline__ void attach(
     m->val = val;
 }
 
-__host__ __device__ __forceinline__ std::size_t payload_elements(const dense * __restrict__ m) {
+__host__ __device__ __forceinline__ size_t payload_elements(const dense * __restrict__ m) {
     if (m == 0) return 0u;
     return m->order == dense_col_major
-        ? (std::size_t) m->cols * (std::size_t) m->stride
-        : (std::size_t) m->rows * (std::size_t) m->stride;
+        ? (size_t) m->cols * (size_t) m->stride
+        : (size_t) m->rows * (size_t) m->stride;
 }
 
-__host__ __device__ __forceinline__ std::size_t payload_bytes(const dense * __restrict__ m) {
+__host__ __device__ __forceinline__ size_t payload_bytes(const dense * __restrict__ m) {
     return payload_elements(m) * sizeof(real::storage_t);
 }
 
-__host__ __device__ __forceinline__ std::size_t bytes(const dense * __restrict__ m) {
+__host__ __device__ __forceinline__ size_t bytes(const dense * __restrict__ m) {
     return sizeof(*m) + payload_bytes(m);
 }
 
-__host__ __device__ __forceinline__ std::size_t offset(const dense * __restrict__ m, types::dim_t r, types::idx_t c) {
+__host__ __device__ __forceinline__ size_t offset(const dense * __restrict__ m, types::dim_t r, types::idx_t c) {
     return m->order == dense_col_major
-        ? (std::size_t) c * (std::size_t) m->stride + r
-        : (std::size_t) r * (std::size_t) m->stride + c;
+        ? (size_t) c * (size_t) m->stride + r
+        : (size_t) r * (size_t) m->stride + c;
 }
 
 __host__ __device__ __forceinline__ const real::storage_t *at(const dense * __restrict__ m, types::dim_t r, types::idx_t c) {
@@ -85,21 +87,21 @@ __host__ __device__ __forceinline__ real::storage_t *at(dense * __restrict__ m, 
 
 __host__ __forceinline__ void clear(dense * __restrict__ m) {
     if ((m->flags & dense_host_registered) != 0u && m->val != 0) cudaHostUnregister(m->val);
-    if (m->storage != 0) std::free(m->storage);
+    if (m->storage != 0) free(m->storage);
     init(m);
 }
 
 __host__ __forceinline__ int allocate(dense * __restrict__ m) {
-    const std::size_t total_bytes = payload_bytes(m);
+    const size_t total_bytes = payload_bytes(m);
     void *storage = 0;
 
     if ((m->flags & dense_host_registered) != 0u && m->val != 0) cudaHostUnregister(m->val);
-    if (m->storage != 0) std::free(m->storage);
+    if (m->storage != 0) free(m->storage);
     m->flags = 0u;
     m->storage = 0;
     m->val = 0;
     if (total_bytes == 0u) return 1;
-    storage = std::malloc(total_bytes);
+    storage = malloc(total_bytes);
     if (storage == 0) return 0;
     m->storage = storage;
     m->val = (real::storage_t *) storage;
@@ -107,7 +109,7 @@ __host__ __forceinline__ int allocate(dense * __restrict__ m) {
 }
 
 __host__ __forceinline__ int pin(dense * __restrict__ m) {
-    const std::size_t total_bytes = payload_bytes(m);
+    const size_t total_bytes = payload_bytes(m);
     cudaError_t err = cudaSuccess;
 
     if (m == 0 || m->val == 0 || total_bytes == 0u) return 1;
@@ -140,4 +142,4 @@ __host__ __device__ __forceinline__ int dense_is_packed_row_major(const dense *m
     return m != 0 && m->order == dense_row_major && m->stride == m->cols;
 }
 
-} // namespace cellerator::tensor::base
+} // namespace cellshard

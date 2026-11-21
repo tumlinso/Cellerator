@@ -1,7 +1,6 @@
 #include <Cellerator/tensor/base/blocked_ell.cuh>
-#include <Cellerator/tensor/base/compressed.cuh>
-#include <Cellerator/tensor/base/triplet.cuh>
-#include <Cellerator/tensor/base/dense.cuh>
+#include <Cellerator/tensor/base/compressed.hh>
+#include <Cellerator/tensor/base/coo.hh>
 #include <Cellerator/tensor/base/diagonal.cuh>
 #include <Cellerator/tensor/base/device_views.cuh>
 #include <Cellerator/tensor/base/sliced_ell.cuh>
@@ -34,64 +33,19 @@ std::size_t align_up(std::size_t value, std::size_t alignment) {
     return ((value + alignment - 1u) / alignment) * alignment;
 }
 
-void check_dense() {
-    formats::dense matrix{};
-    formats::init(&matrix, 2u, 3u);
-    require(formats::payload_elements(&matrix) == 6u, "dense element count changed");
-    require(formats::payload_bytes(&matrix) == 6u * sizeof(types::storage_value_t), "dense payload byte count changed");
-    require(formats::bytes(&matrix) == sizeof(matrix) + 6u * sizeof(types::storage_value_t), "dense descriptor byte count changed");
-    require(formats::allocate(&matrix) != 0, "dense allocation failed");
-    require(matrix.storage == matrix.val, "dense value pointer no longer begins at owned storage");
-    *formats::at(&matrix, 1u, 2u) = __float2half(7.0f);
-    require(close_half(*formats::at(&matrix, 1u, 2u), 7.0f), "dense row-major mapping changed");
-    require(formats::at(&matrix, 2u, 0u) == nullptr, "dense bounds check changed");
-    formats::clear(&matrix);
-
-    __half columns[8]{};
-    formats::attach(&matrix, 3u, 2u, columns, formats::dense_col_major, 4u);
-    columns[1u * 4u + 2u] = __float2half(9.0f);
-    require(formats::offset(&matrix, 2u, 1u) == 6u, "dense column-major offset changed");
-    require(close_half(*formats::at(&matrix, 2u, 1u), 9.0f), "dense column-major mapping changed");
-}
-
 void check_compressed() {
-    formats::compressed matrix{};
-    formats::init(&matrix, 3u, 4u, 3u, formats::compressed_by_row);
-    require(formats::allocate(&matrix) != 0, "compressed allocation failed");
-    require(matrix.storage == matrix.majorPtr, "compressed major pointer base changed");
-    const std::size_t ptr_bytes = 4u * sizeof(types::ptr_t);
-    const std::size_t minor_offset = align_up(ptr_bytes, alignof(types::idx_t));
-    const std::size_t value_offset = align_up(minor_offset + 3u * sizeof(types::idx_t), alignof(types::storage_value_t));
-    require(reinterpret_cast<unsigned char *>(matrix.minorIdx) == static_cast<unsigned char *>(matrix.storage) + minor_offset,
-            "compressed minor-index offset changed");
-    require(reinterpret_cast<unsigned char *>(matrix.val) == static_cast<unsigned char *>(matrix.storage) + value_offset,
-            "compressed value offset changed");
-    const types::ptr_t row_ptr[] = {0u, 2u, 2u, 3u};
-    const types::idx_t columns[] = {0u, 3u, 2u};
-    std::memcpy(matrix.majorPtr, row_ptr, sizeof(row_ptr));
-    std::memcpy(matrix.minorIdx, columns, sizeof(columns));
-    matrix.val[0] = __float2half(1.0f);
-    matrix.val[1] = __float2half(3.0f);
-    matrix.val[2] = __float2half(6.0f);
-    require(formats::bytes(&matrix) == sizeof(matrix) + 4u * sizeof(types::ptr_t)
-                + 3u * sizeof(types::idx_t) + 3u * sizeof(types::storage_value_t),
-            "compressed descriptor/payload byte count changed");
-    require(formats::major_dim(&matrix) == 3u && formats::minor_dim(&matrix) == 4u, "compressed axes changed");
-    require(close_half(*formats::at(&matrix, 0u, 3u), 3.0f), "compressed row lookup changed");
-    require(formats::at(&matrix, 1u, 0u) == nullptr, "compressed absent lookup changed");
-    formats::clear(&matrix);
-
-    formats::init(&matrix, 3u, 4u, 2u, formats::compressed_by_col);
-    require(formats::allocate(&matrix) != 0, "CSC allocation failed");
-    const types::ptr_t col_ptr[] = {0u, 0u, 1u, 1u, 2u};
-    const types::idx_t rows[] = {2u, 0u};
-    std::memcpy(matrix.majorPtr, col_ptr, sizeof(col_ptr));
-    std::memcpy(matrix.minorIdx, rows, sizeof(rows));
-    matrix.val[0] = __float2half(8.0f); matrix.val[1] = __float2half(9.0f);
-    require(formats::major_dim(&matrix) == 4u && formats::minor_dim(&matrix) == 3u, "CSC axes changed");
-    require(close_half(*formats::at(&matrix, 2u, 1u), 8.0f), "CSC lookup changed");
-    require(close_half(*formats::at(&matrix, 0u, 3u), 9.0f), "CSC second lookup changed");
-    formats::clear(&matrix);
+    const int32_t offsets[] = {0, 2, 2, 3};
+    const int32_t columns[] = {0, 3, 2};
+    __half values[] = {__float2half(1.0f), __float2half(3.0f), __float2half(6.0f)};
+    const formats::CompressedView<int32_t, __half> csr{
+        {3, 4, 3, formats::CompressedAxis::row, offsets, columns}, values};
+    const formats::CompressedView<int32_t, const __half> csc{
+        {4, 3, 3, formats::CompressedAxis::column, offsets, columns}, values};
+    require(csr.structure.major_ptr == csc.structure.major_ptr &&
+            csr.structure.minor_idx == csc.structure.minor_idx &&
+            csr.values == csc.values, "compressed views should borrow their arrays");
+    csr.values[1] = __float2half(9.0f);
+    require(close_half(csc.values[1], 9.0f), "compressed views should see shared value updates");
 }
 
 void check_dia() {
@@ -105,27 +59,18 @@ void check_dia() {
     formats::clear(&matrix);
 }
 
-static_assert(offsetof(formats::device::CompressedView, major_ptr) < offsetof(formats::device::CompressedView, minor_idx));
-static_assert(offsetof(formats::device::TripletView, rowIdx) < offsetof(formats::device::TripletView, colIdx));
 static_assert(alignof(formats::device::DiaView) == 16);
 
 void check_coo() {
-    formats::triplet matrix{};
-    formats::init(&matrix, 2u, 3u, 2u);
-    require(formats::allocate(&matrix) != 0, "COO allocation failed");
-    require(matrix.storage == matrix.rowIdx, "COO row-index base changed");
-    require(formats::bytes(&matrix) == sizeof(matrix) + 4u * sizeof(types::idx_t)
-                + 2u * sizeof(types::storage_value_t),
-            "COO descriptor/payload byte count changed");
-    matrix.rowIdx[0] = 1u;
-    matrix.colIdx[0] = 2u;
-    matrix.val[0] = __float2half(5.0f);
-    matrix.rowIdx[1] = 0u;
-    matrix.colIdx[1] = 1u;
-    matrix.val[1] = __float2half(4.0f);
-    require(close_half(*formats::at(&matrix, 1u, 2u), 5.0f), "COO coordinate lookup changed");
-    require(formats::at(&matrix, 1u, 1u) == nullptr, "COO absent lookup changed");
-    formats::clear(&matrix);
+    const uint32_t rows[] = {1, 0, 1};
+    const uint32_t cols[] = {2, 1, 2};
+    __half values[] = {__float2half(5.0f), __float2half(4.0f), __float2half(7.0f)};
+    const formats::CooView<uint32_t, const __half> view{2, 3, 3, rows, cols, values};
+    require(view.row_idx == rows && view.col_idx == cols && view.values == values,
+            "COO view should borrow its arrays");
+    require(view.row_idx[0] == view.row_idx[2] && view.col_idx[0] == view.col_idx[2] &&
+            close_half(view.values[0], 5.0f) && close_half(view.values[2], 7.0f),
+            "COO view should retain repeated coordinates as separate entries");
 }
 
 void check_blocked_ell() {
@@ -183,7 +128,6 @@ void check_sliced_ell() {
 } // namespace
 
 int main() {
-    check_dense();
     check_compressed();
     check_coo();
     check_dia();

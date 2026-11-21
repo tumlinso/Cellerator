@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cellerator/tensor/base/compressed.hh>
 #include <Cellerator/tensor/base/device_views.cuh>
 
 #include <cstdint>
@@ -24,8 +25,9 @@ int masked_row_scale_log1p_inplace(
     const masked_row_scale_log1p_params *params,
     cudaStream_t stream = nullptr);
 
+// CSR over device arrays retained through completion on stream.
 int masked_row_scale_log1p_inplace(
-    ::cellerator::tensor::base::device::CompressedView *matrix,
+    const tensor::base::CompressedView<uint32_t, __half> *matrix,
     const masked_row_scale_log1p_params *params,
     cudaStream_t stream = nullptr);
 

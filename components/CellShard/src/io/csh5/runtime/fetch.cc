@@ -89,13 +89,13 @@ int fetch_dataset_sliced_ell_h5_shard(sharded<::cellerator::tensor::base::sliced
     return 1;
 }
 
-int fetch_dataset_dense_h5_partition(sharded<::cellerator::tensor::base::dense> *m,
+int fetch_dataset_dense_h5_partition(sharded<::cellshard::dense> *m,
                                      const shard_storage *s,
                                      unsigned long partition_id) {
     return fetch_cached_partition_common(m, s, partition_id, load_dense_part_from_cspack);
 }
 
-int fetch_dataset_dense_h5_shard(sharded<::cellerator::tensor::base::dense> *m,
+int fetch_dataset_dense_h5_shard(sharded<::cellshard::dense> *m,
                                  const shard_storage *s,
                                  unsigned long shard_id) {
     return fetch_cached_shard_common(m, s, shard_id, load_dense_part_from_cspack);
@@ -294,13 +294,13 @@ int prefetch_dataset_sliced_ell_h5_shard_cache(const sharded<::cellerator::tenso
     return ensure_cspack_ready(s, state, shard_id);
 }
 
-int prefetch_dataset_dense_h5_partition_cache(const sharded<::cellerator::tensor::base::dense> *m,
+int prefetch_dataset_dense_h5_partition_cache(const sharded<::cellshard::dense> *m,
                                               shard_storage *s,
                                               unsigned long partition_id) {
     return prefetch_partition_cache_common(m, s, partition_id);
 }
 
-int prefetch_dataset_dense_h5_shard_cache(const sharded<::cellerator::tensor::base::dense> *m,
+int prefetch_dataset_dense_h5_shard_cache(const sharded<::cellshard::dense> *m,
                                           shard_storage *s,
                                           unsigned long shard_id) {
     return prefetch_shard_cache_common(m, s, shard_id);

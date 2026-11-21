@@ -119,54 +119,6 @@ std::uint64_t compatibility_view_bytes(
     return 0u;
 }
 
-bool same_contract_v2(
-    const operation_core::candidate_projection_contract_v2 &lhs,
-    const operation_core::candidate_projection_contract_v2 &rhs) noexcept {
-    return operation_core::same_stable_id(lhs.view_type, rhs.view_type)
-        && lhs.abi_major == rhs.abi_major && lhs.abi_minor == rhs.abi_minor
-        && lhs.schema_version == rhs.schema_version
-        && lhs.variant == rhs.variant;
-}
-
-bool projection_matches_candidate_v2(
-    const activated_projection_reference_v2 &projection,
-    const operation_core::candidate_descriptor_v2 &candidate) noexcept {
-    if (validate_activated_projection_reference_v2(projection)
-        != projection_reference_status_v2::success)
-        return false;
-    if (projection.schema_version
-            != activated_projection_reference_schema_version_v2
-        || projection.record_bytes != sizeof(activated_projection_reference_v2)
-        || !valid_identity(projection.key.persistent)
-        || !valid_handle(projection.key.runtime)
-        || !valid_location(projection.location)
-        || projection.location.residency == residency_kind::host
-        || projection.view == nullptr || projection.view_bytes == 0u
-        || !operation_core::same_stable_id(
-            projection.provider_identity, candidate.provider_identity)
-        || projection.key.kind != candidate.candidate.projection
-        || projection.key.schema_version
-            != candidate.projection_contract.schema_version
-        || projection.key.variant != candidate.projection_contract.variant
-        || !same_contract_v2(
-            projection.contract, candidate.projection_contract))
-        return false;
-    for (std::uint32_t value : projection.reserved)
-        if (value != 0u) return false;
-    const bool names_capability =
-        operation_core::valid_catalog_identity_v2(
-            candidate.capability_identity);
-    const bool requires_capability =
-        (candidate.flags
-            & operation_core::candidate_descriptor_requires_capability) != 0u;
-    return (!names_capability && !requires_capability)
-        || (operation_core::valid_catalog_identity_v2(
-                projection.capability_identity)
-            && operation_core::same_stable_id(
-                projection.capability_identity,
-                candidate.capability_identity));
-}
-
 bool valid_catalog_v2(
     operation_core::candidate_preparation_catalog_v2 catalog) noexcept {
     if (catalog.entries == nullptr || catalog.entry_count == 0u
@@ -281,7 +233,8 @@ executable_program_status compile_executable_program_v2(
         for (std::uint32_t projection_index = 0u;
              projection_index < request.projection_count; ++projection_index) {
             const auto &projection = request.projections[projection_index];
-            if (!projection_matches_candidate_v2(projection, descriptor))
+            if (match_activated_projection_reference_v2(projection, descriptor)
+                != projection_reference_status_v2::success)
                 continue;
             const auto *cost = find_cost(
                 request.costs, request.cost_count, operation.identity,

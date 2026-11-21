@@ -12,7 +12,6 @@ function(cellerator_install_native_headers)
     endforeach()
     install(FILES
         "${PROJECT_SOURCE_DIR}/include/Cellerator/Cellerator.hh"
-        "${PROJECT_SOURCE_DIR}/include/Cellerator/abi.h"
         "${PROJECT_SOURCE_DIR}/include/Cellerator/cell.hh"
         "${PROJECT_SOURCE_DIR}/include/Cellerator/nn.hh"
         "${PROJECT_SOURCE_DIR}/include/Cellerator/parameters.hh"

@@ -51,6 +51,20 @@ bool run(const View &view, const std::uint8_t *mask) {
     return ok;
 }
 
+bool run_compressed(const std::uint8_t *mask, const __half *values) {
+    namespace base = cellerator::tensor::base;
+    const uint32_t pointers[] = {0, 2, 4}, columns[] = {0, 2, 1, 3};
+    auto *d_pointers = device_copy(pointers, 3u);
+    auto *d_columns = device_copy(columns, 4u);
+    auto *d_values = device_copy(values, 4u);
+    const base::CompressedView<uint32_t, const __half> view{
+        {2u, 4u, 4u, base::CompressedAxis::row, d_pointers, d_columns}, d_values};
+    const bool ok = d_pointers != nullptr && d_columns != nullptr && d_values != nullptr
+        && run(view, mask);
+    cudaFree(d_values); cudaFree(d_columns); cudaFree(d_pointers);
+    return ok;
+}
+
 } // namespace
 
 int main() {
@@ -69,13 +83,8 @@ int main() {
     auto *d_slots = device_copy(slots, 1u); auto *d_columns = device_copy(columns, 4u); auto *d_values = device_copy(values, 4u);
     cellerator::tensor::base::device::SlicedEllView sliced{2u, 4u, 4u, 1u, 2u, d_offsets, d_widths, d_slots, d_columns, d_values};
 
-    unsigned int pointers[] = {0u, 2u, 4u};
-    auto *d_pointers = device_copy(pointers, 3u); auto *d_csr_columns = device_copy(columns, 4u); auto *d_csr_values = device_copy(values, 4u);
-    cellerator::tensor::base::device::CompressedView compressed{2u, 4u, 4u,
-        cellerator::tensor::base::device::compressed_by_row, d_pointers, d_csr_columns, d_csr_values};
-
-    const bool ok = d_mask != nullptr && run(blocked, d_mask) && run(sliced, d_mask) && run(compressed, d_mask);
-    cudaFree(d_csr_values); cudaFree(d_csr_columns); cudaFree(d_pointers);
+    const bool ok = d_mask != nullptr && run(blocked, d_mask) && run(sliced, d_mask)
+        && run_compressed(d_mask, values);
     cudaFree(d_values); cudaFree(d_columns); cudaFree(d_slots); cudaFree(d_widths); cudaFree(d_offsets);
     cudaFree(d_blocked_values); cudaFree(d_blocked_columns); cudaFree(d_mask);
     if (!ok) std::fprintf(stderr, "generic sparse column-moments validation failed\n");

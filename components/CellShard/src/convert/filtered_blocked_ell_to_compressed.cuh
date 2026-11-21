@@ -139,7 +139,7 @@ struct alignas(16) filtered_blocked_ell_stats {
 };
 
 struct alignas(16) filtered_blocked_ell_result {
-    ::cellerator::tensor::base::device::CompressedView filtered;
+    ::cellshard::device::CompressedView filtered;
     bucket::compressed_major_bucket_result bucketed;
     filtered_blocked_ell_stats stats;
     int has_bucketed;
@@ -286,7 +286,7 @@ __host__ __forceinline__ int filter_blocked_ell_to_compressed(
         local.filtered.rows = output_rows;
         local.filtered.cols = output_cols;
         local.filtered.nnz = 0u;
-        local.filtered.axis = ::cellerator::tensor::base::compressed_by_row;
+        local.filtered.axis = ::cellshard::compressed_by_row;
         local.filtered.major_ptr = ws->d_filtered_major_ptr;
         local.filtered.minor_idx = ws->d_filtered_minor_idx;
         local.filtered.val = ws->d_filtered_val;
@@ -363,7 +363,7 @@ __host__ __forceinline__ int filter_blocked_ell_to_compressed(
     local.filtered.rows = output_rows;
     local.filtered.cols = output_cols;
     local.filtered.nnz = live_nnz;
-    local.filtered.axis = ::cellerator::tensor::base::compressed_by_row;
+    local.filtered.axis = ::cellshard::compressed_by_row;
     local.filtered.major_ptr = ws->d_filtered_major_ptr;
     local.filtered.minor_idx = ws->d_filtered_minor_idx;
     local.filtered.val = ws->d_filtered_val;

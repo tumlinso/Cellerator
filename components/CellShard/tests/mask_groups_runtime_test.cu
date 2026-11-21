@@ -136,7 +136,7 @@ int main() {
     if (!check_cuda(cudaMemcpy(compressed_ptr, compressed_ptr_host, sizeof(compressed_ptr_host), cudaMemcpyHostToDevice), "copy compressed ptr")) return 21;
     if (!check_cuda(cudaMemcpy(compressed_idx, compressed_idx_host, sizeof(compressed_idx_host), cudaMemcpyHostToDevice), "copy compressed idx")) return 22;
     if (!check_cuda(cudaMemcpy(compressed_values, compressed_values_host, sizeof(compressed_values_host), cudaMemcpyHostToDevice), "copy compressed values")) return 23;
-    ::cellerator::tensor::base::device::CompressedView compressed{rows, cols, 10u, ::cellerator::tensor::base::compressed_by_row, compressed_ptr, compressed_idx, compressed_values};
+    ::cellshard::device::CompressedView compressed{rows, cols, 10u, ::cellshard::compressed_by_row, compressed_ptr, compressed_idx, compressed_values};
     if (!csr::compute_sparse_group_reduce_compressed_fallback(&compressed, &ws, &groups, &masks, &filter, &result)) return 24;
     if (!copy_reduce(&ws, result, totals, detected, keep, group_counts, group_pct)) return 25;
     if (!close_enough(totals[2], 7.0f) || !close_enough(group_counts[8], 2.0f)) return 26;

@@ -7,7 +7,6 @@
 
 namespace cs = ::cellerator::compute::sampling;
 namespace cm = ::cellerator::tensor::base;
-namespace ct = ::cellerator::types;
 
 int main() {
     const std::uint64_t row_nnz[] = {0u, 1u, 2u, 8u, 8u, 20u};
@@ -37,15 +36,10 @@ int main() {
             {selection_storage.data(), selection_storage.size(), {}}, &replay, &error)
         || replay.header->common.identity != selection.header->common.identity) return 4;
 
-    ct::ptr_t row_ptr[] = {0u, 0u, 1u, 3u, 4u, 6u, 7u};
-    ct::idx_t columns[] = {0u, 0u, 1u, 2u, 0u, 2u, 1u};
-    cm::compressed source{};
-    source.rows = 6u;
-    source.cols = 3u;
-    source.nnz = 7u;
-    source.axis = cm::compressed_by_row;
-    source.majorPtr = row_ptr;
-    source.minorIdx = columns;
+    const std::uint32_t row_ptr[] = {0, 0, 1, 3, 4, 6, 7};
+    const std::uint32_t columns[] = {0, 0, 1, 2, 0, 2, 1};
+    const cm::CompressedStructureView<std::uint32_t> source{
+        6u, 3u, 7u, cm::CompressedAxis::row, row_ptr, columns};
     std::uint64_t selected_nnz = 0u;
     for (std::uint64_t i = 0u; i < selection.header->selected_rows; ++i) {
         const std::uint64_t row = selection.selected_global_rows[i];
@@ -55,7 +49,7 @@ int main() {
         cs::sampled_csr_image_bytes(selection.header->selected_rows, selected_nnz));
     cs::sampled_csr_image_view sampled;
     if (!cs::materialize_sampled_csr_image(
-            &source, selection, {csr_storage.data(), csr_storage.size(), {}}, &sampled, &error)) {
+            source, selection, {csr_storage.data(), csr_storage.size(), {}}, &sampled, &error)) {
         std::cerr << error << '\n';
         return 5;
     }

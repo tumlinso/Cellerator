@@ -2,6 +2,14 @@
 title: "Current implementation"
 ---
 
+## Native sparse consolidation
+
+The legacy sparse-layout C runtime API has been retired in coordination with
+Texo. The C++ biological execution ABI and core module remain available.
+Native sparse code takes borrowed COO and compressed views. CSR multiplication
+shares one implementation and build owner under `src/ops/matrix`. CellShard owns
+the allocation and device views for its dense and sparse storage.
+
 ## Compatibility retirement, 2026-11-10
 
 Public consumers now include canonical owner headers directly. The common

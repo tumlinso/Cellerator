@@ -221,47 +221,31 @@ bool allocate_structure(std::uint64_t sampled_rows,
     return true;
 }
 
-bool validate_source_row_ptr(const cm::compressed *source, std::string *error) {
-    if (source == nullptr) {
-        set_error(error, "source CSR matrix is null");
-        return false;
-    }
-    if (source->axis != cm::compressed_by_row) {
-        set_error(error, "sampled structural materialization requires row-compressed CSR");
-        return false;
-    }
-    if (source->majorPtr == nullptr || (source->nnz != 0u && source->minorIdx == nullptr)) {
-        set_error(error, "source CSR structural arrays are null");
-        return false;
-    }
-    if (source->majorPtr[0] != 0u) {
-        set_error(error, "source CSR row pointers must begin at zero");
-        return false;
-    }
+const char *source_csr_error(const cm::CompressedStructureView<uint32_t> &source) {
+    if (source.axis != cm::CompressedAxis::row)
+        return "sampled structural materialization requires row-compressed CSR";
+    if (source.rows > UINT32_MAX || source.cols > UINT32_MAX || source.nnz > UINT32_MAX
+        || source.major_ptr == nullptr || (source.nnz != 0u && source.minor_idx == nullptr))
+        return "source CSR structural arrays or extents are invalid";
+    if (source.major_ptr[0] != 0u) return "source CSR row pointers must begin at zero";
     ct::ptr_t previous = 0u;
-    for (std::uint64_t row = 0u; row < source->rows; ++row) {
-        const ct::ptr_t next = source->majorPtr[(std::size_t) row + 1u];
-        if (next < previous || next > source->nnz) {
-            set_error(error, "source CSR row pointers are non-monotonic or exceed nnz");
-            return false;
-        }
+    for (uint64_t row = 0; row < source.rows; ++row) {
+        const ct::ptr_t next = source.major_ptr[row + 1];
+        if (next < previous || next > source.nnz)
+            return "source CSR row pointers are non-monotonic or exceed nnz";
         previous = next;
     }
-    if (previous != source->nnz) {
-        set_error(error, "source CSR terminal row pointer does not equal nnz");
-        return false;
-    }
-    return true;
+    return previous == source.nnz ? nullptr : "source CSR terminal row pointer does not equal nnz";
 }
 
-bool gather_in_memory_structure(const cm::compressed *source,
+bool gather_in_memory_structure(const cm::CompressedStructureView<uint32_t> &source,
                                 const std::vector<std::uint64_t> &rows,
                                 staged_csr_structure *out,
                                 std::string *error) {
     std::uint64_t nnz = 0u;
     for (std::uint64_t row : rows) {
-        const std::uint64_t begin = source->majorPtr[(std::size_t) row];
-        const std::uint64_t end = source->majorPtr[(std::size_t) row + 1u];
+        const std::uint64_t begin = source.major_ptr[(std::size_t) row];
+        const std::uint64_t end = source.major_ptr[(std::size_t) row + 1u];
         const std::uint64_t row_nnz = end - begin;
         if (row_nnz > (std::uint64_t) std::numeric_limits<ct::ptr_t>::max() - nnz) {
             set_error(error, "sampled CSR nnz accumulation overflowed Cellerator row pointers");
@@ -269,18 +253,18 @@ bool gather_in_memory_structure(const cm::compressed *source,
         }
         nnz += row_nnz;
     }
-    if (!allocate_structure((std::uint64_t) rows.size(), source->cols, nnz, out, error)) return false;
+    if (!allocate_structure((std::uint64_t) rows.size(), source.cols, nnz, out, error)) return false;
 
     std::uint64_t cursor = 0u;
     out->row_ptr[0] = 0u;
     for (std::size_t position = 0u; position < rows.size(); ++position) {
         const std::uint64_t row = rows[position];
-        const ct::ptr_t begin = source->majorPtr[(std::size_t) row];
-        const ct::ptr_t end = source->majorPtr[(std::size_t) row + 1u];
+        const ct::ptr_t begin = source.major_ptr[(std::size_t) row];
+        const ct::ptr_t end = source.major_ptr[(std::size_t) row + 1u];
         out->sampled_position_to_global_row[position] = row;
         for (ct::ptr_t slot = begin; slot < end; ++slot) {
-            const ct::idx_t column = source->minorIdx[slot];
-            if ((std::uint64_t) column >= source->cols) {
+            const ct::idx_t column = source.minor_idx[slot];
+            if ((std::uint64_t) column >= source.cols) {
                 set_error(error, "source CSR column index is outside the gene dimension");
                 return false;
             }
@@ -356,32 +340,34 @@ std::size_t sampled_csr_image_bytes(std::uint64_t sampled_rows,
                         &mapping_offset) ? bytes : 0u;
 }
 
-bool materialize_sampled_csr_image(const cm::compressed *source,
+bool materialize_sampled_csr_image(const cm::CompressedStructureView<uint32_t> &source,
                                    const sample_selection_view &selection,
                                    ::cellerator::memory::image_buffer image,
                                    sampled_csr_image_view *out,
                                    std::string *error) {
-    if (selection.header == nullptr || selection.selected_global_rows == nullptr
-        || !validate_source_row_ptr(source, error)) {
-        if (selection.header == nullptr || selection.selected_global_rows == nullptr)
-            set_error(error, "sample selection view is incomplete");
+    if (selection.header == nullptr || selection.selected_global_rows == nullptr) {
+        set_error(error, "sample selection view is incomplete");
+        return false;
+    }
+    if (const char *message = source_csr_error(source)) {
+        set_error(error, message);
         return false;
     }
     std::uint64_t nnz = 0u;
     for (std::uint64_t position = 0u; position < selection.header->selected_rows; ++position) {
         const std::uint64_t row = selection.selected_global_rows[position];
-        if (row >= source->rows || (position != 0u && row <= selection.selected_global_rows[position - 1u])) {
+        if (row >= source.rows || (position != 0u && row <= selection.selected_global_rows[position - 1u])) {
             set_error(error, "sample selection rows are not canonical for source CSR");
             return false;
         }
-        const std::uint64_t row_nnz = source->majorPtr[row + 1u] - source->majorPtr[row];
+        const std::uint64_t row_nnz = source.major_ptr[row + 1u] - source.major_ptr[row];
         if (row_nnz > std::numeric_limits<std::uint64_t>::max() - nnz) {
             set_error(error, "sampled CSR nnz overflows");
             return false;
         }
         nnz += row_nnz;
     }
-    if (!prepare_image(selection.header->selected_rows, source->cols, nnz,
+    if (!prepare_image(selection.header->selected_rows, source.cols, nnz,
                        selection.header->common.identity, image, out, error)) return false;
     auto *row_ptr = const_cast<ct::ptr_t *>(out->row_ptr);
     auto *columns = const_cast<ct::idx_t *>(out->column_indices);
@@ -391,12 +377,12 @@ bool materialize_sampled_csr_image(const cm::compressed *source,
     for (std::uint64_t position = 0u; position < selection.header->selected_rows; ++position) {
         const std::uint64_t row = selection.selected_global_rows[position];
         mapping[position] = row;
-        for (ct::ptr_t slot = source->majorPtr[row]; slot < source->majorPtr[row + 1u]; ++slot) {
-            if (source->minorIdx[slot] >= source->cols) {
+        for (ct::ptr_t slot = source.major_ptr[row]; slot < source.major_ptr[row + 1u]; ++slot) {
+            if (source.minor_idx[slot] >= source.cols) {
                 set_error(error, "sampled CSR source column is out of range");
                 return false;
             }
-            columns[cursor++] = source->minorIdx[slot];
+            columns[cursor++] = source.minor_idx[slot];
         }
         row_ptr[position + 1u] = static_cast<ct::ptr_t>(cursor);
     }
@@ -526,7 +512,7 @@ const sample_provenance &owned_sampled_csr_structure::sampling_provenance() cons
     return provenance_;
 }
 
-bool materialize_sampled_csr_structure(const cm::compressed *source,
+bool materialize_sampled_csr_structure(const cm::CompressedStructureView<uint32_t> &source,
                                        const sample_plan &plan,
                                        owned_sampled_csr_structure *out,
                                        std::string *error) {
@@ -536,8 +522,11 @@ bool materialize_sampled_csr_structure(const cm::compressed *source,
         set_error(error, "owned sampled CSR output is null");
         return false;
     }
-    if (!validate_source_row_ptr(source, error)
-        || !validate_and_order_selection(source->rows, plan, &ordered_rows, error)
+    if (const char *message = source_csr_error(source)) {
+        set_error(error, message);
+        return false;
+    }
+    if (!validate_and_order_selection(source.rows, plan, &ordered_rows, error)
         || !gather_in_memory_structure(source, ordered_rows, &staged, error)) {
         return false;
     }

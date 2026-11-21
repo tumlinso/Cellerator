@@ -17,51 +17,6 @@ std::uint64_t mix(std::uint64_t value) noexcept {
     return value ^ (value >> 31u);
 }
 
-bool same_projection_contract_v2(
-    const candidate_projection_contract_v2 &lhs,
-    const candidate_projection_contract_v2 &rhs) noexcept {
-    return same_stable_id(lhs.view_type, rhs.view_type)
-        && lhs.abi_major == rhs.abi_major && lhs.abi_minor == rhs.abi_minor
-        && lhs.schema_version == rhs.schema_version
-        && lhs.variant == rhs.variant;
-}
-
-bool projection_matches_candidate_v2(
-    const execution::activated_projection_reference_v2 &projection,
-    const candidate_descriptor_v2 &candidate) noexcept {
-    if (execution::validate_activated_projection_reference_v2(projection)
-        != execution::projection_reference_status_v2::success)
-        return false;
-    if (projection.schema_version
-            != execution::activated_projection_reference_schema_version_v2
-        || projection.record_bytes
-            != sizeof(execution::activated_projection_reference_v2)
-        || !::cellerator::structure::valid_identity(projection.key.persistent)
-        || !execution::valid_handle(projection.key.runtime)
-        || !execution::valid_location(projection.location)
-        || projection.location.residency == execution::residency_kind::host
-        || projection.view == nullptr || projection.view_bytes == 0u
-        || !same_stable_id(
-            projection.provider_identity, candidate.provider_identity)
-        || projection.key.kind != candidate.candidate.projection
-        || projection.key.schema_version
-            != candidate.projection_contract.schema_version
-        || projection.key.variant != candidate.projection_contract.variant
-        || !same_projection_contract_v2(
-            projection.contract, candidate.projection_contract))
-        return false;
-    for (std::uint32_t value : projection.reserved)
-        if (value != 0u) return false;
-    const bool names_capability =
-        valid_catalog_identity_v2(candidate.capability_identity);
-    const bool requires_capability =
-        (candidate.flags & candidate_descriptor_requires_capability) != 0u;
-    return (!names_capability && !requires_capability)
-        || (valid_catalog_identity_v2(projection.capability_identity)
-            && same_stable_id(projection.capability_identity,
-                candidate.capability_identity));
-}
-
 runtime::session_cache_key plan_cache_key(
     const preparation_factory_request &request) noexcept {
     const auto &entry = *request.catalog_entry;
@@ -377,7 +332,8 @@ operation_status prepare_catalog_candidate_v2(
                     % candidate.state_alignment != 0u)))
         return fail(operation_status_code::preparation_failed,
             "caller-owned erased candidate state is invalid");
-    if (!projection_matches_candidate_v2(projection, candidate))
+    if (execution::match_activated_projection_reference_v2(projection, candidate)
+        != execution::projection_reference_status_v2::success)
         return fail(operation_status_code::unsupported_projection,
             "activated projection does not match selected catalog entry");
 

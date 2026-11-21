@@ -408,11 +408,11 @@ inline void close_cached_shard_file(dataset_h5_state *state, unsigned long shard
     }
 }
 
-inline int load_dense_part_from_cspack(sharded<::cellerator::tensor::base::dense> *m,
+inline int load_dense_part_from_cspack(sharded<::cellshard::dense> *m,
                                        dataset_h5_state *state,
                                        unsigned long partition_id) {
     const unsigned long shard_id = state != 0 && state->partition_shard_ids != 0 ? (unsigned long) state->partition_shard_ids[partition_id] : 0ul;
-    ::cellerator::tensor::base::dense *part = 0;
+    ::cellshard::dense *part = 0;
     char path[4096];
     std::FILE *fp = 0;
     unsigned char magic[8];
@@ -437,10 +437,10 @@ inline int load_dense_part_from_cspack(sharded<::cellerator::tensor::base::dense
     if (partition_count != 0u && partition_offsets == 0) goto done;
     if (!read_sharded_block(fp, partition_offsets, sizeof(std::uint64_t), (std::size_t) partition_count)) goto done;
     if (fseeko(fp, (off_t) partition_offsets[local_partition_id], SEEK_SET) != 0) goto done;
-    part = new ::cellerator::tensor::base::dense;
+    part = new ::cellshard::dense;
     init(part);
     if (!::cellshard::load(fp, part)) goto done;
-    if (!::cellerator::tensor::base::dense_is_packed_row_major(part)) goto done;
+    if (!::cellshard::dense_is_packed_row_major(part)) goto done;
     if (part->rows != m->partition_rows[partition_id]) goto done;
     if (part->cols != m->cols) goto done;
     if (::cellshard::partition_nnz(part) != m->partition_nnz[partition_id]) goto done;
@@ -935,7 +935,7 @@ inline int materialize_dense_cspack_impl(shard_storage *s, dataset_h5_state *sta
         if (!write_sharded_block(fp, &zero, sizeof(zero), 1u)) goto done;
     }
     for (local = 0u; local < partition_count; ++local) {
-        ::cellerator::tensor::base::dense part;
+        ::cellshard::dense part;
         init(&part);
         partition_offsets[local] = (std::uint64_t) ftello(fp);
         if (!load_dense_partition_payload(state, (unsigned long) (begin + local), &part)

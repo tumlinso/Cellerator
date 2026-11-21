@@ -7,15 +7,15 @@
 #include "../../core/offset_span.cuh"
 #include "../../core/real.cuh"
 #include "../../access/fallback_adapters.cuh"
-#include <Cellerator/tensor/base/compressed.cuh>
+#include <CellShard/formats/compressed.cuh>
 #include <Cellerator/tensor/base/blocked_ell.cuh>
 #if CELLSHARD_ENABLE_CELLERATOR_QUANTIZED
 #include "../../formats/quantized_blocked_ell.cuh"
 #endif
 #include <Cellerator/tensor/base/sliced_ell.cuh>
-#include <Cellerator/tensor/base/dense.cuh>
+#include <CellShard/formats/dense.cuh>
 #include <Cellerator/tensor/base/diagonal.cuh>
-#include <Cellerator/tensor/base/triplet.cuh>
+#include <CellShard/formats/triplet.cuh>
 #if defined(__has_include)
 #if __has_include(<Cellerator/interop/cellshard/access.cuh>)
 #include <Cellerator/interop/cellshard/access.cuh>

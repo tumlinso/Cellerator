@@ -403,7 +403,7 @@ __host__ __forceinline__ int fetch_partition(sharded<MatrixT> *m, const shard_st
     return 0;
 }
 
-__host__ __forceinline__ int fetch_partition(sharded<::cellerator::tensor::base::compressed> *m, const shard_storage *s, unsigned long partId) {
+__host__ __forceinline__ int fetch_partition(sharded<::cellshard::compressed> *m, const shard_storage *s, unsigned long partId) {
     (void) m;
     (void) s;
     (void) partId;
@@ -434,7 +434,7 @@ __host__ __forceinline__ int fetch_partition(sharded<::cellerator::tensor::base:
     return fetch_dataset_sliced_ell_h5_partition(m, s, partId);
 }
 
-__host__ __forceinline__ int fetch_partition(sharded<::cellerator::tensor::base::dense> *m, const shard_storage *s, unsigned long partId) {
+__host__ __forceinline__ int fetch_partition(sharded<::cellshard::dense> *m, const shard_storage *s, unsigned long partId) {
     shard_storage *storage = const_cast<shard_storage *>(s);
 
     if (partId >= m->num_partitions || storage == 0 || storage->backend != shard_storage_backend_dataset_h5) return 0;
@@ -448,7 +448,7 @@ __host__ __forceinline__ int fetch_all_partitions(sharded<MatrixT> *m, const sha
     return 0;
 }
 
-__host__ __forceinline__ int fetch_all_partitions(sharded<::cellerator::tensor::base::compressed> *m, const shard_storage *s) {
+__host__ __forceinline__ int fetch_all_partitions(sharded<::cellshard::compressed> *m, const shard_storage *s) {
     (void) m;
     (void) s;
     std::fprintf(stderr, "Error: legacy compressed .csh5 partition fetch is no longer supported\n");
@@ -493,7 +493,7 @@ __host__ __forceinline__ int fetch_all_partitions(sharded<::cellerator::tensor::
     return 1;
 }
 
-__host__ __forceinline__ int fetch_all_partitions(sharded<::cellerator::tensor::base::dense> *m, const shard_storage *s) {
+__host__ __forceinline__ int fetch_all_partitions(sharded<::cellshard::dense> *m, const shard_storage *s) {
     unsigned long i = 0;
     shard_storage *storage = const_cast<shard_storage *>(s);
 
@@ -513,7 +513,7 @@ __host__ __forceinline__ int fetch_shard(sharded<MatrixT> *m, const shard_storag
     return 0;
 }
 
-__host__ __forceinline__ int fetch_shard(sharded<::cellerator::tensor::base::compressed> *m, const shard_storage *s, unsigned long shardId) {
+__host__ __forceinline__ int fetch_shard(sharded<::cellshard::compressed> *m, const shard_storage *s, unsigned long shardId) {
     (void) m;
     (void) s;
     (void) shardId;
@@ -544,7 +544,7 @@ __host__ __forceinline__ int fetch_shard(sharded<::cellerator::tensor::base::sli
     return fetch_dataset_sliced_ell_h5_shard(m, s, shardId);
 }
 
-__host__ __forceinline__ int fetch_shard(sharded<::cellerator::tensor::base::dense> *m, const shard_storage *s, unsigned long shardId) {
+__host__ __forceinline__ int fetch_shard(sharded<::cellshard::dense> *m, const shard_storage *s, unsigned long shardId) {
     shard_storage *storage = const_cast<shard_storage *>(s);
 
     if (shardId >= m->num_shards || storage == 0 || storage->backend != shard_storage_backend_dataset_h5) return 0;

@@ -1,6 +1,3 @@
-#include <Cellerator/tensor/base/dense.cuh>
-#include <Cellerator/tensor/base/compressed.cuh>
-#include <Cellerator/tensor/base/triplet.cuh>
 #include <Cellerator/tensor/base/blocked_ell.cuh>
 #include <Cellerator/tensor/base/sliced_ell.cuh>
 #include <Cellerator/compute/matrix/convert/bucket.cuh>
@@ -56,38 +53,6 @@ bool close_half(__half value, float expected) {
     return std::fabs(__half2float(value) - expected) <= 1.0e-3f;
 }
 
-void check_dense_layouts() {
-    __half row_values[8] = {
-        __float2half(1.0f), __float2half(2.0f), __float2half(3.0f), __float2half(-1.0f),
-        __float2half(4.0f), __float2half(5.0f), __float2half(6.0f), __float2half(-1.0f)
-    };
-    matrix::dense row_major{};
-    matrix::attach(&row_major, 2u, 3u, row_values, matrix::dense_row_major, 4u);
-    require(close_half(*matrix::at(&row_major, 1u, 2u), 6.0f), "dense row-major access mismatch");
-    require(matrix::at(&row_major, 2u, 0u) == nullptr, "dense row-major bounds check failed");
-    matrix::clear(&row_major);
-
-    __half col_values[8] = {
-        __float2half(1.0f), __float2half(2.0f), __float2half(3.0f), __float2half(-1.0f),
-        __float2half(4.0f), __float2half(5.0f), __float2half(6.0f), __float2half(-1.0f)
-    };
-    matrix::dense col_major{};
-    matrix::attach(&col_major, 3u, 2u, col_values, matrix::dense_col_major, 4u);
-    require(close_half(*matrix::at(&col_major, 2u, 1u), 6.0f), "dense column-major access mismatch");
-    require(matrix::payload_elements(&col_major) == 8u, "dense column-major payload size mismatch");
-    matrix::clear(&col_major);
-
-    matrix::dense owned{};
-    matrix::init(&owned, 2u, 3u);
-    require(matrix::payload_elements(&owned) == 6u, "dense packed payload size mismatch");
-    require(matrix::bytes(&owned) == sizeof(matrix::dense) + 6u * sizeof(::cellerator::real::storage_t),
-            "dense byte count mismatch");
-    require(matrix::allocate(&owned) != 0, "dense allocate failed");
-    *matrix::at(&owned, 1u, 2u) = __float2half(7.0f);
-    require(close_half(*matrix::at(&owned, 1u, 2u), 7.0f), "dense owned access mismatch");
-    matrix::clear(&owned);
-}
-
 void check_sequence_bases() {
     sequence::dna2_word64 word{0u};
     require(sequence::make_base('A') == static_cast<std::uint8_t>(sequence::dna2_base::A), "A base mismatch");
@@ -104,14 +69,53 @@ void check_sequence_bases() {
     require(sequence::get_base(word, 3) == static_cast<std::uint8_t>(sequence::dna2_base::T), "packed T mismatch");
 }
 
+void check_sorted_coo_view() {
+    constexpr uint32_t rows = 4, cols = 5, nnz = 5;
+    const uint32_t major[nnz] = {0, 0, 2, 2, 3}, minor[nnz] = {1, 1, 0, 4, 2};
+    const __half values[nnz] = {__float2half(1), __float2half(2), __float2half(3),
+                                __float2half(4), __float2half(5)};
+    auto* d_major = device_alloc<uint32_t>(nnz);
+    auto* d_minor = device_alloc<uint32_t>(nnz);
+    auto* d_values = device_alloc<__half>(nnz);
+    auto* d_offsets = device_alloc<uint32_t>(rows + 1);
+    upload(d_major, major, nnz);
+    upload(d_minor, minor, nnz);
+    upload(d_values, values, nnz);
+
+    constexpr matrix::CompressedAxis axes[] = {matrix::CompressedAxis::row, matrix::CompressedAxis::column};
+    for (const auto axis : axes) {
+        const bool row = axis == matrix::CompressedAxis::row;
+        const auto source = row
+            ? matrix::CooView<uint32_t, const __half>{rows, cols, nnz, d_major, d_minor, d_values}
+            : matrix::CooView<uint32_t, const __half>{cols, rows, nnz, d_minor, d_major, d_values};
+        require(convert::build_compressed_from_sorted_coo_custom(
+                    source, axis, d_offsets, d_minor, d_values, nullptr) != 0,
+                "sorted COO compression failed");
+        uint32_t offsets[rows + 1]{}, actual_minor[nnz]{};
+        __half actual_values[nnz]{};
+        download(offsets, d_offsets, rows + 1);
+        download(actual_minor, d_minor, nnz);
+        download(actual_values, d_values, nnz);
+        require(offsets[0] == 0 && offsets[1] == 2 && offsets[2] == 2 && offsets[3] == 4 && offsets[4] == 5,
+                "sorted COO offsets failed to preserve duplicate occurrences and empty majors");
+        for (uint32_t i = 0; i < nnz; ++i)
+            require(actual_minor[i] == minor[i] && close_half(actual_values[i], __half2float(values[i])),
+                    "sorted COO changed index or value order");
+    }
+    cudaFree(d_offsets);
+    cudaFree(d_values);
+    cudaFree(d_minor);
+    cudaFree(d_major);
+}
+
 } // namespace
 
 int main() {
     int device_count = 0;
     cuda_require(cudaGetDeviceCount(&device_count), "cudaGetDeviceCount failed");
     require(device_count > 0, "core sparse runtime test requires a CUDA device");
-    check_dense_layouts();
     check_sequence_bases();
+    check_sorted_coo_view();
 
     const std::uint32_t rows = 3u;
     const std::uint32_t cols = 4u;
@@ -136,12 +140,10 @@ int main() {
     upload(d_col, h_col, nnz);
     upload(d_val, h_val, nnz);
 
-    require(convert::build_compressed_from_sorted_coo_custom_raw(
-                rows,
-                nnz,
-                d_row,
-                d_col,
-                d_val,
+    const matrix::CooView<uint32_t, const __half> coo{rows, cols, nnz, d_row, d_col, d_val};
+    require(convert::build_compressed_from_sorted_coo_custom(
+                coo,
+                matrix::CompressedAxis::row,
                 d_ptr,
                 d_minor,
                 d_out_val,

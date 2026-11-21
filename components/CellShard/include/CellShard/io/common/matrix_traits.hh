@@ -4,15 +4,15 @@
 #define CELLSHARD_ENABLE_CELLERATOR_QUANTIZED 1
 #endif
 
-#include <Cellerator/tensor/base/compressed.cuh>
+#include <CellShard/formats/compressed.cuh>
 #include <Cellerator/tensor/base/blocked_ell.cuh>
 #if CELLSHARD_ENABLE_CELLERATOR_QUANTIZED
 #include "../../formats/quantized_blocked_ell.cuh"
 #endif
 #include <Cellerator/tensor/base/sliced_ell.cuh>
-#include <Cellerator/tensor/base/dense.cuh>
+#include <CellShard/formats/dense.cuh>
 #include <Cellerator/tensor/base/diagonal.cuh>
-#include <Cellerator/tensor/base/triplet.cuh>
+#include <CellShard/formats/triplet.cuh>
 #include "codec.hh"
 #include "layout.hh"
 #include "raw_format.hh"
@@ -23,7 +23,7 @@ template<typename MatrixT>
 struct matrix_traits;
 
 template<>
-struct matrix_traits<::cellerator::tensor::base::dense> {
+struct matrix_traits<::cellshard::dense> {
     static constexpr disk_format raw_disk_format = disk_format_dense;
     static constexpr std::uint32_t matrix_family = dataset_matrix_family_dense;
     static constexpr std::uint32_t execution_format = dataset_execution_format_dense;
@@ -33,7 +33,7 @@ struct matrix_traits<::cellerator::tensor::base::dense> {
 };
 
 template<>
-struct matrix_traits<::cellerator::tensor::base::compressed> {
+struct matrix_traits<::cellshard::compressed> {
     static constexpr disk_format raw_disk_format = disk_format_compressed;
     static constexpr std::uint32_t matrix_family = dataset_matrix_family_none;
     static constexpr std::uint32_t execution_format = dataset_execution_format_compressed;
@@ -78,7 +78,7 @@ struct matrix_traits<::cellerator::tensor::base::sliced_ell> {
 };
 
 template<>
-struct matrix_traits<::cellerator::tensor::base::triplet> {
+struct matrix_traits<::cellshard::triplet> {
     static constexpr disk_format raw_disk_format = disk_format_coo;
     static constexpr std::uint32_t matrix_family = dataset_matrix_family_none;
     static constexpr std::uint32_t execution_format = dataset_execution_format_unknown;

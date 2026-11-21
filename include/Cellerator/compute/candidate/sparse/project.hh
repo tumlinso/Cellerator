@@ -170,6 +170,17 @@ void launch_csr_spmm_fwd_f16_f32(
     float *const *out,
     const std::int64_t *out_ld);
 
+void launch_csr_spmm_fwd_f16_f32(
+    runtime::fleet_context *fleet,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
+    const float *const *rhs,
+    const std::int64_t *rhs_ld,
+    const std::int64_t *out_cols,
+    float *const *out,
+    const std::int64_t *out_ld);
+
 void launch_blocked_ell_spmm_fwd_f16_f32_lib(
     runtime::fleet_context *fleet,
     runtime::cusparse_cache *cache_per_slot,

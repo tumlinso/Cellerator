@@ -55,18 +55,18 @@ bool run_sliced(const float *row_sums, const std::uint8_t *row_mask) {
 }
 
 bool run_compressed(const float *row_sums, const std::uint8_t *row_mask) {
-    unsigned int pointers[] = {0u, 2u, 4u};
-    unsigned int columns[] = {0u, 2u, 1u, 3u};
+    namespace base = cellerator::tensor::base;
+    const uint32_t pointers[] = {0, 2, 4}, columns[] = {0, 2, 1, 3};
     __half values[] = {__float2half(1.0f), __float2half(3.0f), __float2half(2.0f), __float2half(4.0f)};
     auto *d_pointers = device_copy(pointers, 3u); auto *d_columns = device_copy(columns, 4u);
     auto *d_values = device_copy(values, 4u);
-    cellerator::tensor::base::device::CompressedView view{2u, 4u, 4u,
-        cellerator::tensor::base::device::compressed_by_row, d_pointers, d_columns, d_values};
+    const base::CompressedView<uint32_t, __half> view{
+        {2u, 4u, 4u, base::CompressedAxis::row, d_pointers, d_columns}, d_values};
     cellerator::compute::sparse::masked_row_scale_log1p_params params{row_sums, row_mask, 4.0f};
-    const bool launched = cellerator::compute::sparse::masked_row_scale_log1p_inplace(&view, &params);
-    cudaMemcpy(values, d_values, sizeof(values), cudaMemcpyDeviceToHost);
+    const bool transformed = cellerator::compute::sparse::masked_row_scale_log1p_inplace(&view, &params)
+        && cudaMemcpy(values, d_values, sizeof(values), cudaMemcpyDeviceToHost) == cudaSuccess;
     cudaFree(d_values); cudaFree(d_columns); cudaFree(d_pointers);
-    return launched && close(values[0], std::log1p(1.0f)) && close(values[1], std::log1p(3.0f))
+    return transformed && close(values[0], std::log1p(1.0f)) && close(values[1], std::log1p(3.0f))
         && close(values[2], 2.0f) && close(values[3], 4.0f);
 }
 
@@ -78,7 +78,8 @@ int main() {
     auto *d_sums = device_copy(sums, 2u);
     auto *d_mask = device_copy(mask, 2u);
     const bool ok = d_sums != nullptr && d_mask != nullptr
-        && run_blocked(d_sums, d_mask) && run_sliced(d_sums, d_mask) && run_compressed(d_sums, d_mask);
+        && run_blocked(d_sums, d_mask) && run_sliced(d_sums, d_mask)
+        && run_compressed(d_sums, d_mask);
     cudaFree(d_mask); cudaFree(d_sums);
     if (!ok) std::fprintf(stderr, "generic masked row-scale/log1p validation failed\n");
     return ok ? 0 : 1;

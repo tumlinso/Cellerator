@@ -8,13 +8,13 @@
 #include <cstdio>
 #include <cstring>
 
-#include <Cellerator/tensor/base/compressed.cuh>
+#include <CellShard/formats/compressed.cuh>
 #include <Cellerator/tensor/base/blocked_ell.cuh>
 #if CELLSHARD_ENABLE_CELLERATOR_QUANTIZED
 #include "../../formats/quantized_blocked_ell.cuh"
 #endif
 #include <Cellerator/tensor/base/sliced_ell.cuh>
-#include <Cellerator/tensor/base/dense.cuh>
+#include <CellShard/formats/dense.cuh>
 #include "../layout/sharded.cuh"
 #include "shard_storage.cuh"
 #include "../../io/csh5/api.cuh"
@@ -49,7 +49,7 @@ inline int load_header(const char *filename, sharded<MatrixT> *m, shard_storage 
     return 0;
 }
 
-inline int load_header(const char *filename, sharded<::cellerator::tensor::base::compressed> *m, shard_storage *s) {
+inline int load_header(const char *filename, sharded<::cellshard::compressed> *m, shard_storage *s) {
     std::fprintf(stderr,
                  "Error: legacy compressed .csh5 dataset loading is no longer supported: %s\n",
                  filename != 0 ? filename : "(null)");
@@ -58,7 +58,7 @@ inline int load_header(const char *filename, sharded<::cellerator::tensor::base:
     return 0;
 }
 
-inline int load_header(const char *filename, sharded<::cellerator::tensor::base::compressed> *m) {
+inline int load_header(const char *filename, sharded<::cellshard::compressed> *m) {
     return load_header(filename, m, 0);
 }
 
@@ -115,7 +115,7 @@ inline int load_header(const char *filename, sharded<::cellerator::tensor::base:
     return load_header(filename, m, 0);
 }
 
-inline int load_header(const char *filename, sharded<::cellerator::tensor::base::dense> *m, shard_storage *s) {
+inline int load_header(const char *filename, sharded<::cellshard::dense> *m, shard_storage *s) {
     const char *ext = std::strrchr(filename != 0 ? filename : "", '.');
     if (ext != 0) {
         if (std::strcmp(ext, ".csh5") == 0 || std::strcmp(ext, ".h5") == 0 || std::strcmp(ext, ".hdf5") == 0) {
@@ -128,7 +128,7 @@ inline int load_header(const char *filename, sharded<::cellerator::tensor::base:
     return 0;
 }
 
-inline int load_header(const char *filename, sharded<::cellerator::tensor::base::dense> *m) {
+inline int load_header(const char *filename, sharded<::cellshard::dense> *m) {
     return load_header(filename, m, 0);
 }
 

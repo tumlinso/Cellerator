@@ -187,7 +187,6 @@ foreach(dir IN ITEMS bindings biology cells common compute containers
       DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
 endforeach()
 install(FILES "${CE_SUBSTRATE_ROOT}/include/Cellerator/Cellerator.hh"
-    "${CE_SUBSTRATE_ROOT}/include/Cellerator/abi.h"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/cell.hh"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/nn.hh"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/parameters.hh"

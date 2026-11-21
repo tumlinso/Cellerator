@@ -1,10 +1,11 @@
 #pragma once
 
-#include <Cellerator/common/types.cuh>
+#include <CellShard/core/types.cuh>
 
-#include <cstdlib>
+#include <stddef.h>
+#include <stdlib.h>
 
-namespace cellerator::tensor::base {
+namespace cellshard {
 
 enum {
     compressed_by_row = 0,
@@ -12,6 +13,7 @@ enum {
     compressed_host_registered = 1u << 0
 };
 
+// Host payload for the CellShard compressed ingest and pack formats.
 struct alignas(16) compressed {
     types::dim_t rows;
     types::dim_t cols;
@@ -50,11 +52,11 @@ __host__ __device__ __forceinline__ void init(
     m->val = 0;
 }
 
-__host__ __device__ __forceinline__ std::size_t bytes(const compressed * __restrict__ m) {
+__host__ __device__ __forceinline__ size_t bytes(const compressed * __restrict__ m) {
     return sizeof(*m)
-        + (std::size_t) (major_dim(m) + 1u) * sizeof(types::ptr_t)
-        + (std::size_t) m->nnz * sizeof(types::idx_t)
-        + (std::size_t) m->nnz * sizeof(real::storage_t);
+        + (size_t) (major_dim(m) + 1u) * sizeof(types::ptr_t)
+        + (size_t) m->nnz * sizeof(types::idx_t)
+        + (size_t) m->nnz * sizeof(real::storage_t);
 }
 
 __host__ __device__ __forceinline__ const real::storage_t *at(const compressed * __restrict__ m, types::dim_t r, types::idx_t c) {
@@ -74,29 +76,29 @@ __host__ __device__ __forceinline__ real::storage_t *at(compressed * __restrict_
 
 __host__ __forceinline__ void clear(compressed * __restrict__ m) {
     if ((m->flags & compressed_host_registered) != 0u && m->storage != 0) cudaHostUnregister(m->storage);
-    if (m->storage != 0) std::free(m->storage);
+    if (m->storage != 0) free(m->storage);
     else {
-        std::free(m->majorPtr);
-        std::free(m->minorIdx);
-        std::free(m->val);
+        free(m->majorPtr);
+        free(m->minorIdx);
+        free(m->val);
     }
     init(m);
 }
 
 __host__ __forceinline__ int allocate(compressed * __restrict__ m) {
-    const std::size_t ptr_count = (std::size_t) major_dim(m) + 1u;
-    const std::size_t major_bytes = ptr_count * sizeof(types::ptr_t);
-    const std::size_t minor_offset = ((major_bytes + alignof(types::idx_t) - 1u) / alignof(types::idx_t)) * alignof(types::idx_t);
-    const std::size_t val_offset = ((minor_offset + (std::size_t) m->nnz * sizeof(types::idx_t) + alignof(real::storage_t) - 1u) / alignof(real::storage_t)) * alignof(real::storage_t);
-    const std::size_t total_bytes = val_offset + (std::size_t) m->nnz * sizeof(real::storage_t);
+    const size_t ptr_count = (size_t) major_dim(m) + 1u;
+    const size_t major_bytes = ptr_count * sizeof(types::ptr_t);
+    const size_t minor_offset = ((major_bytes + alignof(types::idx_t) - 1u) / alignof(types::idx_t)) * alignof(types::idx_t);
+    const size_t val_offset = ((minor_offset + (size_t) m->nnz * sizeof(types::idx_t) + alignof(real::storage_t) - 1u) / alignof(real::storage_t)) * alignof(real::storage_t);
+    const size_t total_bytes = val_offset + (size_t) m->nnz * sizeof(real::storage_t);
     void *storage = 0;
 
     if ((m->flags & compressed_host_registered) != 0u && m->storage != 0) cudaHostUnregister(m->storage);
-    if (m->storage != 0) std::free(m->storage);
+    if (m->storage != 0) free(m->storage);
     else {
-        std::free(m->majorPtr);
-        std::free(m->minorIdx);
-        std::free(m->val);
+        free(m->majorPtr);
+        free(m->minorIdx);
+        free(m->val);
     }
     m->flags = 0u;
     m->storage = 0;
@@ -105,7 +107,7 @@ __host__ __forceinline__ int allocate(compressed * __restrict__ m) {
     m->val = 0;
 
     if (total_bytes == 0u) return 1;
-    storage = std::malloc(total_bytes);
+    storage = malloc(total_bytes);
     if (storage == 0) return 0;
     m->storage = storage;
     m->majorPtr = ptr_count != 0u ? (types::ptr_t *) storage : 0;
@@ -115,11 +117,11 @@ __host__ __forceinline__ int allocate(compressed * __restrict__ m) {
 }
 
 __host__ __forceinline__ int pin(compressed * __restrict__ m) {
-    const std::size_t ptr_count = (std::size_t) major_dim(m) + 1u;
-    const std::size_t major_bytes = ptr_count * sizeof(types::ptr_t);
-    const std::size_t minor_offset = ((major_bytes + alignof(types::idx_t) - 1u) / alignof(types::idx_t)) * alignof(types::idx_t);
-    const std::size_t val_offset = ((minor_offset + (std::size_t) m->nnz * sizeof(types::idx_t) + alignof(real::storage_t) - 1u) / alignof(real::storage_t)) * alignof(real::storage_t);
-    const std::size_t total_bytes = val_offset + (std::size_t) m->nnz * sizeof(real::storage_t);
+    const size_t ptr_count = (size_t) major_dim(m) + 1u;
+    const size_t major_bytes = ptr_count * sizeof(types::ptr_t);
+    const size_t minor_offset = ((major_bytes + alignof(types::idx_t) - 1u) / alignof(types::idx_t)) * alignof(types::idx_t);
+    const size_t val_offset = ((minor_offset + (size_t) m->nnz * sizeof(types::idx_t) + alignof(real::storage_t) - 1u) / alignof(real::storage_t)) * alignof(real::storage_t);
+    const size_t total_bytes = val_offset + (size_t) m->nnz * sizeof(real::storage_t);
     cudaError_t err = cudaSuccess;
 
     if (m->storage == 0 || total_bytes == 0u) return 1;
@@ -148,4 +150,4 @@ __host__ __device__ __forceinline__ int host_registered(const compressed * __res
     return (m->flags & compressed_host_registered) != 0u;
 }
 
-} // namespace cellerator::tensor::base
+} // namespace cellshard

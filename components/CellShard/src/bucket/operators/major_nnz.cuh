@@ -38,7 +38,7 @@ struct alignas(16) compressed_major_bucket_workspace {
 };
 
 struct alignas(16) compressed_major_bucket_result {
-    ::cellerator::tensor::base::device::CompressedView rebuilt;
+    ::cellshard::device::CompressedView rebuilt;
     major_nnz_bucket_plan_view plan;
 };
 
@@ -143,7 +143,7 @@ __host__ __forceinline__ int reserve(compressed_major_bucket_workspace *ws,
     return 1;
 }
 
-__host__ __forceinline__ int build_plan(const ::cellerator::tensor::base::device::CompressedView *src,
+__host__ __forceinline__ int build_plan(const ::cellshard::device::CompressedView *src,
                                         types::idx_t requested_bucket_count,
                                         compressed_major_bucket_workspace *ws,
                                         major_nnz_bucket_plan_view *out) {
@@ -151,7 +151,7 @@ __host__ __forceinline__ int build_plan(const ::cellerator::tensor::base::device
     types::idx_t bucket_count = 0;
 
     if (src == 0 || ws == 0 || out == 0) return 0;
-    major_dim = src->axis == ::cellerator::tensor::base::compressed_by_col ? src->cols : src->rows;
+    major_dim = src->axis == ::cellshard::compressed_by_col ? src->cols : src->rows;
     bucket_count = clamp_bucket_count(major_dim, requested_bucket_count);
     if (!reserve(ws, major_dim, src->nnz, bucket_count)) return 0;
     if (!build_major_nnz_bucket_plan_raw(src->major_ptr,
@@ -174,7 +174,7 @@ __host__ __forceinline__ int build_plan(const ::cellerator::tensor::base::device
     return 1;
 }
 
-__host__ __forceinline__ int rebuild(const ::cellerator::tensor::base::device::CompressedView *src,
+__host__ __forceinline__ int rebuild(const ::cellshard::device::CompressedView *src,
                                      const major_nnz_bucket_plan_view *plan,
                                      compressed_major_bucket_workspace *ws,
                                      compressed_major_bucket_result *out) {
@@ -203,7 +203,7 @@ __host__ __forceinline__ int rebuild(const ::cellerator::tensor::base::device::C
     return 1;
 }
 
-__host__ __forceinline__ int build_bucketed_major_view(const ::cellerator::tensor::base::device::CompressedView *src,
+__host__ __forceinline__ int build_bucketed_major_view(const ::cellshard::device::CompressedView *src,
                                                        types::idx_t requested_bucket_count,
                                                        compressed_major_bucket_workspace *ws,
                                                        compressed_major_bucket_result *out) {

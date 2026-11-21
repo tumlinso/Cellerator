@@ -2,7 +2,7 @@
 
 int append_dense_partition_h5(const char *filename,
                               unsigned long partition_id,
-                              const ::cellerator::tensor::base::dense *part) {
+                              const ::cellshard::dense *part) {
     hid_t file = (hid_t) -1;
     hid_t payload = (hid_t) -1;
     char dataset_name[64];
@@ -11,7 +11,7 @@ int append_dense_partition_h5(const char *filename,
     std::FILE *fp = 0;
     int ok = 0;
 
-    if (filename == 0 || part == 0 || !::cellerator::tensor::base::dense_is_packed_row_major(part)) return 0;
+    if (filename == 0 || part == 0 || !::cellshard::dense_is_packed_row_major(part)) return 0;
     fp = open_memstream(&buffer, &bytes);
     if (fp == 0) return 0;
     if (!::cellshard::store(fp, part) || std::fclose(fp) != 0) {

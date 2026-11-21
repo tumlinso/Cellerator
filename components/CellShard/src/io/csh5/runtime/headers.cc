@@ -187,16 +187,16 @@ int load_dataset_sliced_ell_h5_header(const char *filename,
 }
 
 int load_dataset_dense_h5_header(const char *filename,
-                                 sharded<::cellerator::tensor::base::dense> *m,
+                                 sharded<::cellshard::dense> *m,
                                  shard_storage *s) {
     return load_dataset_h5_header_common(
         filename,
         m,
         s,
-        matrix_traits<::cellerator::tensor::base::dense>::matrix_format_name(),
+        matrix_traits<::cellshard::dense>::matrix_format_name(),
         payload_layout_shard_packed,
         [](hid_t, dataset_h5_state *state, const char *) -> int {
-            state->matrix_family = matrix_traits<::cellerator::tensor::base::dense>::matrix_family;
+            state->matrix_family = matrix_traits<::cellshard::dense>::matrix_family;
             return 1;
         });
 }

@@ -3,6 +3,7 @@
 #include "device.hh"
 #include "device_bindings.cuh"
 #include "distributed.hh"
+#include <CellShard/formats/compressed_device_view.cuh>
 
 #include <cstddef>
 #include <cstdint>
@@ -115,7 +116,7 @@ struct alignas(16) masked_sparse_reoptimize_metadata {
 };
 
 struct alignas(16) masked_sparse_reoptimize_result {
-    ::cellerator::tensor::base::device::CompressedView compressed;
+    ::cellshard::device::CompressedView compressed;
     ::cellerator::tensor::base::device::BlockedEllView blocked_ell;
     masked_sparse_reoptimize_metadata metadata;
 };
@@ -184,7 +185,7 @@ int compute_sparse_group_reduce(const ::cellerator::tensor::base::device::Sliced
                                 const sparse_group_filter_params *filter,
                                 sparse_group_reduce_result *out);
 
-int compute_sparse_group_reduce_compressed_fallback(const ::cellerator::tensor::base::device::CompressedView *src,
+int compute_sparse_group_reduce_compressed_fallback(const ::cellshard::device::CompressedView *src,
                                                    sparse_group_reduce_workspace *workspace,
                                                    const group_mask_config_view *groups,
                                                    const row_feature_mask_view *masks,

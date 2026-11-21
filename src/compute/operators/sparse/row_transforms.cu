@@ -46,16 +46,18 @@ __global__ void sliced_ell_kernel(::cellerator::tensor::base::device::SlicedEllV
     }
 }
 
-__global__ void compressed_kernel(::cellerator::tensor::base::device::CompressedView matrix,
+__global__ void compressed_kernel(tensor::base::CompressedView<uint32_t, __half> matrix,
                                   masked_row_scale_log1p_params params) {
+    const auto &s = matrix.structure;
+    const uint32_t rows = uint32_t(s.rows);
     const unsigned int lane = threadIdx.x & 31u;
     const unsigned int warp = blockIdx.x * (blockDim.x >> 5u) + (threadIdx.x >> 5u);
     const unsigned int warp_stride = gridDim.x * (blockDim.x >> 5u);
-    for (unsigned int row = warp; row < matrix.rows; row += warp_stride) {
+    for (unsigned int row = warp; row < rows; row += warp_stride) {
         if (params.row_mask != nullptr && params.row_mask[row] == 0u) continue;
-        const unsigned int end = matrix.major_ptr[row + 1u];
-        for (unsigned int index = matrix.major_ptr[row] + lane; index < end; index += 32u) {
-            matrix.val[index] = scaled_log1p(matrix.val[index], params.row_sums[row], params.target_sum);
+        const unsigned int end = s.major_ptr[row + 1u];
+        for (unsigned int index = s.major_ptr[row] + lane; index < end; index += 32u) {
+            matrix.values[index] = scaled_log1p(matrix.values[index], params.row_sums[row], params.target_sum);
         }
     }
 }
@@ -88,12 +90,16 @@ int masked_row_scale_log1p_inplace(::cellerator::tensor::base::device::SlicedEll
     return cudaGetLastError() == cudaSuccess;
 }
 
-int masked_row_scale_log1p_inplace(::cellerator::tensor::base::device::CompressedView *matrix,
+int masked_row_scale_log1p_inplace(const tensor::base::CompressedView<uint32_t, __half> *matrix,
                                    const masked_row_scale_log1p_params *params,
                                    cudaStream_t stream) {
-    if (matrix == nullptr || params == nullptr || params->row_sums == nullptr || params->target_sum < 0.0f
-        || matrix->axis != ::cellerator::tensor::base::device::compressed_by_row) return 0;
-    compressed_kernel<<<row_blocks(matrix->rows), 256, 0, stream>>>(*matrix, *params);
+    if (matrix == nullptr || params == nullptr || params->row_sums == nullptr || params->target_sum < 0.0f) return 0;
+    const auto &s = matrix->structure;
+    // Leave room for the last warp-stride increments.
+    if (s.axis != tensor::base::CompressedAxis::row || s.cols > UINT32_MAX
+        || s.rows > UINT32_MAX - (4096u * 8u - 1u) || s.nnz > UINT32_MAX - 31u
+        || (s.rows && !s.major_ptr) || (s.nnz && !matrix->values)) return 0;
+    compressed_kernel<<<row_blocks(uint32_t(s.rows)), 256, 0, stream>>>(*matrix, *params);
     return cudaGetLastError() == cudaSuccess;
 }
 

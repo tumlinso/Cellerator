@@ -1,6 +1,9 @@
 #include <Cellerator/compute/operators/sparse/ops.hh>
+#include "../../../../ops/matrix/csr_multiply.cuh"
 
 namespace cellerator::compute::sparse::ops::dist {
+
+namespace matrix = ::cellerator::ops::matrix;
 
 namespace {
 
@@ -117,6 +120,23 @@ void launch_csr_spmv_fwd_f16_f32(
     }
 }
 
+void launch_csr_spmv_fwd_f16_f32(
+    runtime::fleet_context *fleet,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
+    const float *const *vector,
+    float *const *out) {
+    runtime::cuda_require(fleet ? cudaSuccess : cudaErrorInvalidValue, "launch_csr_spmv_fwd_f16_f32 requires a fleet");
+    require_slots_(*fleet, slots, slot_count);
+    runtime::cuda_require(matrix::validate_csr_batch(matrices, slot_count), "launch_csr_spmv_fwd_f16_f32 requires CSR views");
+    for (unsigned int i = 0; i < slot_count; ++i) {
+        const runtime::execution_context ctx = slot_context_(*fleet, slots[i]);
+        runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(launch_csr_spmv_fwd_f16_f32)");
+        runtime::cuda_require(matrix::csr_spmv(matrices[i], vector[i], out[i], ctx.stream), "launch_csr_spmv_fwd_f16_f32");
+    }
+}
+
 void launch_csr_spmv_bwd_values_f16_f32(
     runtime::fleet_context *fleet,
     const unsigned int *slots,
@@ -151,6 +171,23 @@ void launch_csr_spmv_bwd_vector_f16_f32(
     for (unsigned int i = 0; i < slot_count; ++i) {
         const runtime::execution_context ctx = slot_context_(*fleet, slots[i]);
         base::csr_spmv_bwd_vector_f16_f32(ctx, major_ptr[i], minor_idx[i], values[i], grad_out[i], rows[i], cols[i], grad_vector[i]);
+    }
+}
+
+void launch_csr_spmv_bwd_vector_f16_f32(
+    runtime::fleet_context *fleet,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
+    const float *const *grad_out,
+    float *const *grad_vector) {
+    runtime::cuda_require(fleet ? cudaSuccess : cudaErrorInvalidValue, "launch_csr_spmv_bwd_vector_f16_f32 requires a fleet");
+    require_slots_(*fleet, slots, slot_count);
+    runtime::cuda_require(matrix::validate_csr_batch(matrices, slot_count), "launch_csr_spmv_bwd_vector_f16_f32 requires CSR views");
+    for (unsigned int i = 0; i < slot_count; ++i) {
+        const runtime::execution_context ctx = slot_context_(*fleet, slots[i]);
+        runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(launch_csr_spmv_bwd_vector_f16_f32)");
+        runtime::cuda_require(matrix::csr_spmv_transpose(matrices[i], grad_out[i], grad_vector[i], ctx.stream), "launch_csr_spmv_bwd_vector_f16_f32");
     }
 }
 
@@ -193,6 +230,27 @@ void launch_csr_spmm_bwd_rhs_f16_f32(
     for (unsigned int i = 0; i < slot_count; ++i) {
         const runtime::execution_context ctx = slot_context_(*fleet, slots[i]);
         base::csr_spmm_bwd_rhs_f16_f32(ctx, major_ptr[i], minor_idx[i], values[i], grad_out[i], rows[i], cols[i], grad_out_ld[i], out_cols[i], grad_rhs[i], grad_rhs_ld[i]);
+    }
+}
+
+void launch_csr_spmm_bwd_rhs_f16_f32(
+    runtime::fleet_context *fleet,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
+    const float *const *grad_out,
+    const std::int64_t *grad_out_ld,
+    const std::int64_t *out_cols,
+    float *const *grad_rhs,
+    const std::int64_t *grad_rhs_ld) {
+    runtime::cuda_require(fleet ? cudaSuccess : cudaErrorInvalidValue, "launch_csr_spmm_bwd_rhs_f16_f32 requires a fleet");
+    require_slots_(*fleet, slots, slot_count);
+    runtime::cuda_require(matrix::validate_csr_batch(matrices, slot_count), "launch_csr_spmm_bwd_rhs_f16_f32 requires CSR views");
+    for (unsigned int i = 0; i < slot_count; ++i) {
+        const runtime::execution_context ctx = slot_context_(*fleet, slots[i]);
+        runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(launch_csr_spmm_bwd_rhs_f16_f32)");
+        runtime::cuda_require(matrix::csr_spmm_transpose(
+            matrices[i], grad_out[i], grad_out_ld[i], out_cols[i], grad_rhs[i], grad_rhs_ld[i], ctx.stream), "launch_csr_spmm_bwd_rhs_f16_f32");
     }
 }
 

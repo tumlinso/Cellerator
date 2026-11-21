@@ -10,4 +10,14 @@ target_compile_features(cellerator_op_matrix_patch PUBLIC cxx_std_20)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_op_matrix_patch PRIVATE -fno-fast-math -ffp-contract=off)
 endif()
+
+if(CELLERATOR_HAS_CUDA)
+    add_library(cellerator_csr_multiply STATIC csr_spmm.cu csr_spmv.cu)
+    add_library(Cellerator::csr_multiply ALIAS cellerator_csr_multiply)
+    target_include_directories(cellerator_csr_multiply PRIVATE "${_ce_ops_root}/include")
+    target_link_libraries(cellerator_csr_multiply PRIVATE CUDA::cudart)
+    set_target_properties(cellerator_csr_multiply PROPERTIES
+        EXPORT_NAME csr_multiply
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
+endif()
 unset(_ce_ops_root)

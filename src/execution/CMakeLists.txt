@@ -8,7 +8,6 @@ add_library(cellerator_geometry_acquisition STATIC
     src/execution/geometry_acquisition_v2/external_payload.cc
     src/execution/geometry_acquisition_v2/projections.cc
     src/execution/geometry_acquisition_v2/schema.cc
-    src/execution/projection_activation_v2.cc
 )
 add_library(Cellerator::geometry_acquisition ALIAS
     cellerator_geometry_acquisition)
@@ -18,6 +17,7 @@ target_include_directories(cellerator_geometry_acquisition PUBLIC
 )
 target_link_libraries(cellerator_geometry_acquisition PUBLIC
     Cellerator::operation_core
+    Cellerator::projection_activation
     Cellerator::planner
     Cellerator::semantic_geometry_v1
     CellPack::execution_image_v2

@@ -16,7 +16,7 @@ int blocked_ell_cuda_current_device(int *device_out) {
     return cudaGetDevice(device_out) == cudaSuccess;
 }
 
-int blocked_ell_bipartite_build_column_order_cuda(const ::cellerator::tensor::base::triplet *sampled,
+int blocked_ell_bipartite_build_column_order_cuda(const ::cellshard::triplet *sampled,
                                                   const std::uint32_t *sample_row_rank,
                                                   int device,
                                                   std::uint32_t *exec_to_canonical_cols,
@@ -42,7 +42,7 @@ int blocked_ell_bipartite_build_column_order_cuda(const ::cellerator::tensor::ba
     return 1;
 }
 
-int blocked_ell_bipartite_build_row_order_cuda(const ::cellerator::tensor::base::triplet *src,
+int blocked_ell_bipartite_build_row_order_cuda(const ::cellshard::triplet *src,
                                                const std::uint32_t *canonical_to_exec_cols,
                                                int device,
                                                std::uint32_t *exec_to_canonical_rows,
@@ -68,7 +68,7 @@ int blocked_ell_bipartite_build_row_order_cuda(const ::cellerator::tensor::base:
     return 1;
 }
 
-int blocked_ell_from_coo_cuda_auto_bridge(const ::cellerator::tensor::base::triplet *src,
+int blocked_ell_from_coo_cuda_auto_bridge(const ::cellshard::triplet *src,
                                           types::dim_t cols,
                                           const types::u32 *feature_to_global,
                                           const unsigned int *candidates,
