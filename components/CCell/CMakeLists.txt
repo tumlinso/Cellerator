@@ -90,7 +90,7 @@ if(CCELL_BUILD_TESTS)
   if(CELLERATOR_ENABLE_CCELL_ANNDATA AND (ANNDATAPP_ENABLE_HDF5 OR ANNDATAPP_ENABLE_ZARR))
     set(CCELL_TEST_ANNDATA_MODELING ON)
     add_executable(ccell_anndata_modeling_test tests/anndata_modeling.cpp)
-    target_link_libraries(ccell_anndata_modeling_test PRIVATE ccell::anndata_interop ccell::preprocess)
+    target_link_libraries(ccell_anndata_modeling_test PRIVATE ccell::anndata_interop ccell::preprocess ccell::velocity)
     add_test(NAME ccell-anndata-modeling COMMAND ccell_anndata_modeling_test)
   endif()
 

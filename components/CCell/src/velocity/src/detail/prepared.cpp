@@ -1,7 +1,7 @@
 module;
 #include <stddef.h>
 #include <stdint.h>
-#include "CCell/detail/native_views.hh"
+#include "source_value.hh"
 
 module velocitypp;
 
@@ -9,6 +9,8 @@ namespace velocitypp {
 namespace {
 using ccell::detail::DType;
 using ccell::detail::Layout;
+using detail::source_value;
+using detail::with_source_type;
 
 // The descriptor references existing caller-owned storage.
 struct Source {
@@ -61,7 +63,6 @@ size_t index_at(const Source& a,size_t p) {
 size_t offset_at(const Source& a,size_t p) {
     size_t x=0; (void)integer(a.offsets+p*a.offset_size,a.offset_type,x); return x;
 }
-bool floating(DType t) { return t==DType::float32 || t==DType::float64; }
 bool sparse_integer(DType t) {
     return t==DType::int8 || t==DType::uint8 || t==DType::int16 || t==DType::uint16 ||
            t==DType::int32 || t==DType::uint32 || t==DType::int64 || t==DType::uint64;
@@ -69,7 +70,7 @@ bool sparse_integer(DType t) {
 Status descriptor(const AcquiredMatrix& input,size_t& rows,size_t& columns) {
     const auto& x=matrix_storage(input);
     if(x.code!=Code::ok)return {x.code};
-    if(!floating(x.dtype))return {Code::dtype};
+    if(!detail::floating_width(x.dtype))return {Code::dtype};
     if(x.layout==Layout::dense) {
         rows=x.dense.extent(0);columns=x.dense.extent(1);
     } else if(x.layout==Layout::csr || x.layout==Layout::csc) {
@@ -100,12 +101,13 @@ Status valid_source(const Source& a) {
                __builtin_add_overflow(r>0?r:0,c>0?c:0,&high) ||
                __builtin_add_overflow(high,ptrdiff_t(a.value_size-1),&last))return {Code::overflow};
         }
-        for(size_t i=0;i<a.rows;++i)for(size_t j=0;j<a.columns;++j) {
-            auto p=a.values+ptrdiff_t(i)*a.row_stride+ptrdiff_t(j)*a.column_stride;
-            bool finite=a.dtype==DType::float32?__builtin_isfinite(load<float>(p)):__builtin_isfinite(load<double>(p));
-            if(!finite)return {Code::nonfinite,i*a.columns+j};
-        }
-        return {};
+        return with_source_type(a.dtype,[&]<class T>() -> Status {
+            for(size_t i=0;i<a.rows;++i)for(size_t j=0;j<a.columns;++j) {
+                const auto* p=a.values+ptrdiff_t(i)*a.row_stride+ptrdiff_t(j)*a.column_stride;
+                if(!__builtin_isfinite(source_value<T>(p)))return {Code::nonfinite,i*a.columns+j};
+            }
+            return {};
+        });
     }
     if(!sparse_integer(a.index_type) || !sparse_integer(a.offset_type))return {Code::dtype};
     if(!a.offsets || (a.nnz && (!a.values || !a.indices)))return {Code::argument};
@@ -117,14 +119,14 @@ Status valid_source(const Source& a) {
         prior=off;
     }
     if(prior!=a.nnz)return {Code::bounds,major};
-    for(size_t p=0;p<a.nnz;++p) {
-        size_t k=0;
-        if(!integer(a.indices+p*a.index_size,a.index_type,k) || k>=minor)return {Code::bounds,p};
-        auto v=a.values+p*a.value_size;
-        bool finite=a.dtype==DType::float32?__builtin_isfinite(load<float>(v)):__builtin_isfinite(load<double>(v));
-        if(!finite)return {Code::nonfinite,p};
-    }
-    return {};
+    return with_source_type(a.dtype,[&]<class T>() -> Status {
+        for(size_t p=0;p<a.nnz;++p) {
+            size_t k=0;
+            if(!integer(a.indices+p*a.index_size,a.index_type,k) || k>=minor)return {Code::bounds,p};
+            if(!__builtin_isfinite(source_value<T>(a.values+p*sizeof(T))))return {Code::nonfinite,p};
+        }
+        return {};
+    });
 }
 bool add(size_t& total,size_t x) {
     if(x>SIZE_MAX-total)return false;total+=x;return true;
@@ -246,7 +248,7 @@ Status prepare_unchecked(const Input& in,const PreparationBuffers& b,PreparedInp
 
 namespace {
 // The value loads preserve unaligned storage and source arithmetic precision.
-template<class C,class T> C number(const unsigned char* p) { return C(load<T>(p)); }
+template<class C,class T> C number(const unsigned char* p) { return C(source_value<T>(p)); }
 template<class C,class W> void add_column(const Source& w,const GraphIndex& graph,size_t k,C value,C* out,size_t stride) {
     if(w.layout==Layout::dense) {
         const auto* col=w.values+ptrdiff_t(k)*w.column_stride;
@@ -269,10 +271,6 @@ void apply_gene(const Source& w,const GraphIndex& graph,const Source& x,const Co
         }
     }
 }
-template<class C,class W> void apply_gene(const Source& w,const GraphIndex& graph,const Source& x,const ColumnIndex& index,size_t gene,C* out,size_t stride) {
-    if(x.dtype==DType::float32)apply_gene<C,W,float>(w,graph,x,index,gene,out,stride);
-    else apply_gene<C,W,double>(w,graph,x,index,gene,out,stride);
-}
 template<class C,class T> void source_column(const Source& x,const ColumnIndex& index,size_t gene,C* out) {
     if(x.layout==Layout::dense) {
         const auto* col=x.values+ptrdiff_t(gene)*x.column_stride;
@@ -285,8 +283,7 @@ template<class C,class T> void source_column(const Source& x,const ColumnIndex& 
     }
 }
 template<class C> void source_column(const Source& x,const ColumnIndex& index,size_t gene,C* out) {
-    if(x.dtype==DType::float32)source_column<C,float>(x,index,gene,out);
-    else source_column<C,double>(x,index,gene,out);
+    with_source_type(x.dtype,[&]<class T> {source_column<C,T>(x,index,gene,out);});
 }
 template<class C,class W>
 void second_column(const Source& w,const GraphIndex& graph,const C* s,const C* u,size_t n,
@@ -347,8 +344,9 @@ void original_columns(const PreparedInput& p,const precision::OriginalColumn& co
     C* ms,C* mu,C* mss,C* mus,C* muu,size_t stride,bool second) {
     if(!p.rows)return;
     Source w=source(p.input.weights);
-    if(w.dtype==DType::float32)original_columns_s<C,float>(w,p.graph,column,ms,mu,mss,mus,muu,stride,second);
-    else original_columns_s<C,double>(w,p.graph,column,ms,mu,mss,mus,muu,stride,second);
+    with_source_type(w.dtype,[&]<class W> {
+        original_columns_s<C,W>(w,p.graph,column,ms,mu,mss,mus,muu,stride,second);
+    });
 }
 template<class C,class W,class X>
 void dense_many(const Source& w,const GraphIndex& graph,const Source& x,const Input& input,
@@ -371,24 +369,21 @@ void dense_many(const Source& w,const GraphIndex& graph,const Source& x,const In
 template<class C,class W>
 void apply_many(const Source& w,const GraphIndex& graph,const Source& x,const ColumnIndex& index,
     const Input& input,size_t first,size_t count,C* out) {
-    if(x.layout==Layout::dense) {
-        if(x.dtype==DType::float32)dense_many<C,W,float>(w,graph,x,input,first,count,out);
-        else dense_many<C,W,double>(w,graph,x,input,first,count,out);
-    } else for(size_t j=0;j<count;++j) {
-        size_t gene=input.genes?input.genes[first+j]:first+j;
-        apply_gene<C,W>(w,graph,x,index,gene,out+j,count);
-    }
+    with_source_type(x.dtype,[&]<class T> {
+        if(x.layout==Layout::dense) dense_many<C,W,T>(w,graph,x,input,first,count,out);
+        else for(size_t j=0;j<count;++j) {
+            size_t gene=input.genes?input.genes[first+j]:first+j;
+            apply_gene<C,W,T>(w,graph,x,index,gene,out+j,count);
+        }
+    });
 }
 template<class C> void calculate(const PreparedInput& weights,const PreparedInput& input,size_t first,size_t count,C* ms,C* mu) {
     Source w=source(weights.input.weights),s=source(input.input.spliced),u=source(input.input.unspliced);
     for(size_t i=0;i<input.rows*count;++i){ms[i]=0;mu[i]=0;}
-    if(w.dtype==DType::float32) {
-        apply_many<C,float>(w,weights.graph,s,input.spliced,input.input,first,count,ms);
-        apply_many<C,float>(w,weights.graph,u,input.unspliced,input.input,first,count,mu);
-    } else {
-        apply_many<C,double>(w,weights.graph,s,input.spliced,input.input,first,count,ms);
-        apply_many<C,double>(w,weights.graph,u,input.unspliced,input.input,first,count,mu);
-    }
+    with_source_type(w.dtype,[&]<class W> {
+        apply_many<C,W>(w,weights.graph,s,input.spliced,input.input,first,count,ms);
+        apply_many<C,W>(w,weights.graph,u,input.unspliced,input.input,first,count,mu);
+    });
 }
 }
 
@@ -415,15 +410,15 @@ template<class C> void second_moments(const PreparedInput& p,size_t first,size_t
     }
     bool need_s=ms||mss||mus,need_u=mu||mus||muu;
     if(!need_s && !need_u)return;
-    for(size_t j=0;j<count;++j) {
-        size_t gene=p.input.genes?p.input.genes[first+j]:first+j;
-        if(need_s)source_column(s,p.spliced,gene,source_s);
-        if(need_u)source_column(u,p.unspliced,gene,source_u);
-        if(w.dtype==DType::float32)second_column<C,float>(w,p.graph,need_s?source_s:nullptr,need_u?source_u:nullptr,p.rows,
-            ms?ms+j:nullptr,mu?mu+j:nullptr,mss?mss+j:nullptr,mus?mus+j:nullptr,muu?muu+j:nullptr,count);
-        else second_column<C,double>(w,p.graph,need_s?source_s:nullptr,need_u?source_u:nullptr,p.rows,
-            ms?ms+j:nullptr,mu?mu+j:nullptr,mss?mss+j:nullptr,mus?mus+j:nullptr,muu?muu+j:nullptr,count);
-    }
+    with_source_type(w.dtype,[&]<class W> {
+        for(size_t j=0;j<count;++j) {
+            size_t gene=p.input.genes?p.input.genes[first+j]:first+j;
+            if(need_s)source_column(s,p.spliced,gene,source_s);
+            if(need_u)source_column(u,p.unspliced,gene,source_u);
+            second_column<C,W>(w,p.graph,need_s?source_s:nullptr,need_u?source_u:nullptr,p.rows,
+                ms?ms+j:nullptr,mu?mu+j:nullptr,mss?mss+j:nullptr,mus?mus+j:nullptr,muu?muu+j:nullptr,count);
+        }
+    });
 }
 #define VELOCITY_PREPARED(T) \
 template void moments<T>(const PreparedInput&,size_t,size_t,T*,T*); \

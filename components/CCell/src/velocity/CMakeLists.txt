@@ -18,12 +18,14 @@ install(TARGETS ccell_velocity EXPORT ccellMethodTargets
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
 if(CCELL_BUILD_TESTS)
+  find_package(Threads REQUIRED)
   foreach(suite IN ITEMS reference customization stochastic stochastic_customization
-      cpu_kernels precision precision_cpu precision_promotion numeric_views)
+      cpu_kernels precision precision_cpu precision_promotion numeric_views fp16 blocks)
     add_executable(ccell_velocity_${suite} tests/test_${suite}.cpp)
     target_link_libraries(ccell_velocity_${suite} PRIVATE ccell::velocity)
     add_test(NAME ccell-velocity-${suite} COMMAND ccell_velocity_${suite})
   endforeach()
+  target_link_libraries(ccell_velocity_blocks PRIVATE Threads::Threads)
   if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT CCELL_ENABLE_SANITIZERS)
     add_executable(ccell_velocity_allocations tests/test_allocations.cpp)
     target_link_libraries(ccell_velocity_allocations PRIVATE ccell::velocity)

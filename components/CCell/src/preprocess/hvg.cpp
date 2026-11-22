@@ -307,7 +307,7 @@ template<class F> HvgStatus dispatch(DType type, F f) {
     case D::uint64: return f.template operator()<uint64_t>();
     case D::float32: return f.template operator()<float>();
     case D::float64: return f.template operator()<double>();
-    case D::invalid: break;
+    case D::float16: case D::invalid: break;
     }
     return fail(HvgCode::invalid_argument);
 }

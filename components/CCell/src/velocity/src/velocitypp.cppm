@@ -85,6 +85,10 @@ private:
     friend AcquiredMatrix borrow_matrix(cellerator::memory::const_matrix_view<T, Stride>) noexcept;
     template<class I, class T, class O>
     friend AcquiredMatrix borrow_matrix(cellerator::tensor::base::CompressedView<I, T, O>) noexcept;
+    template<class T, class Stride>
+    friend AcquiredMatrix borrow_binary16(cellerator::memory::const_matrix_view<T, Stride>) noexcept;
+    template<class I, class T, class O>
+    friend AcquiredMatrix borrow_binary16(cellerator::tensor::base::CompressedView<I, T, O>) noexcept;
 };
 
 template<class T, class Stride>
@@ -121,6 +125,29 @@ AcquiredMatrix borrow_matrix(cellerator::tensor::base::CompressedView<I, T, O> v
     return matrix;
 }
 
+// The entire value representation is a native-endian IEEE binary16 word.
+// A uint16_t view can hold these words. Borrowing leaves the value bytes intact.
+template<class T, class Stride>
+AcquiredMatrix borrow_binary16(cellerator::memory::const_matrix_view<T, Stride> view) noexcept {
+    static_assert(sizeof(T) == sizeof(uint16_t) && __is_trivially_copyable(T));
+    AcquiredMatrix matrix = borrow_matrix(view);
+    matrix.storage.dtype = ccell::detail::DType::float16;
+    return matrix;
+}
+
+template<class T, class Stride>
+AcquiredMatrix borrow_binary16(cellerator::memory::matrix_view<T, Stride> view) noexcept {
+    return borrow_binary16(cellerator::memory::as_const(view));
+}
+
+template<class I, class T, class O>
+AcquiredMatrix borrow_binary16(cellerator::tensor::base::CompressedView<I, T, O> view) noexcept {
+    static_assert(sizeof(T) == sizeof(uint16_t) && __is_trivially_copyable(T));
+    AcquiredMatrix matrix = borrow_matrix(view);
+    matrix.storage.dtype = ccell::detail::DType::float16;
+    return matrix;
+}
+
 // Masks/selection are borrowed; null genes means all source genes.
 // A nonnull empty selection is valid.
 struct Input {
@@ -131,6 +158,17 @@ struct Input {
     const uint8_t* gene_mask = nullptr;
     ptrdiff_t fit_mask_stride = 1, gene_mask_stride = 1;
 };
+}
+
+namespace velocitypp::detail {
+inline bool has_binary16(const Input& input) noexcept {
+    constexpr auto half = ccell::detail::DType::float16;
+    return matrix_storage(input.spliced).dtype == half || matrix_storage(input.unspliced).dtype == half ||
+           matrix_storage(input.weights).dtype == half;
+}
+}
+
+export namespace velocitypp {
 struct Entry { size_t index = 0, position = 0; };
 struct ColumnIndex { size_t* offsets = nullptr; Entry* entries = nullptr; };
 struct GraphIndex { size_t* rows = nullptr; size_t* columns = nullptr; Entry* row_edges = nullptr; Entry* column_edges = nullptr; size_t edges = 0; };
@@ -196,6 +234,9 @@ using FitBlock32 = BasicFitBlock<float>;
 template<class T> struct BasicBlockSink { void* context = nullptr; void (*write)(void*, const BasicMomentBlock<T>&, const BasicFitBlock<T>&) = nullptr; };
 using BlockSink = BasicBlockSink<double>;
 using BlockSink32 = BasicBlockSink<float>;
+// Positions in prepared gene order, including repeated source genes.
+struct GeneRange { size_t first = 0, count = 0; };
+
 template<class T> struct BasicReferenceStages {
     const PreparedInput* input = nullptr;
     Workspace<T>* workspace = nullptr;
@@ -207,12 +248,18 @@ template<class T> struct BasicReferenceStages {
     BasicMomentBlock<T> moments(size_t first, size_t count);
     BasicFitBlock<T> fit(BasicMomentBlock<T>);
     void emit(BasicMomentBlock<T>, BasicFitBlock<T>);
+    Status process_block(GeneRange);
     BasicFitResult<T> finish();
 };
 using ReferenceStages = BasicReferenceStages<double>;
 using ReferenceStages32 = BasicReferenceStages<float>;
 template<class T> Status bind_stages(const PreparedInput&, Workspace<T>&, FitOptions,
     BasicFitResult<T>, BasicReferenceStages<T>&, BasicBlockSink<T> = {});
+// Bind distinct worker scratch and share the coordinator's result arrays.
+// Cover every position once with disjoint ranges and join before finish on the
+// coordinator. Each sink consumes its borrowed blocks during the call.
+template<class T> Status bind_worker(const BasicReferenceStages<T>&, Workspace<T>&,
+    BasicReferenceStages<T>&, BasicBlockSink<T> = {});
 
 struct RuntimeOperations;
 // Whole-region replacement precedes reference scheduling. Concrete intermediates
@@ -303,17 +350,23 @@ template<class T> struct BasicStochasticReferenceStages {
     BasicMomentBlock<T> initial_moments(size_t,size_t);
     BasicFitBlock<T> initial_fit(BasicMomentBlock<T>);
     void accept_initialization(BasicMomentBlock<T>,BasicFitBlock<T>);
+    Status initialize_block(GeneRange);
     void resolve_selection();
     BasicStochasticMomentBlock<T> moments(size_t,size_t);
     BasicStochasticScaleBlock<T> scales(BasicStochasticMomentBlock<T>);
     BasicStochasticFitBlock<T> fit(BasicStochasticMomentBlock<T>,BasicStochasticScaleBlock<T>);
     void emit(BasicStochasticMomentBlock<T>,BasicStochasticFitBlock<T>);
+    Status process_block(GeneRange);
     BasicStochasticFitResult<T> finish();
 };
 using StochasticReferenceStages=BasicStochasticReferenceStages<double>;
 using StochasticReferenceStages32=BasicStochasticReferenceStages<float>;
 template<class T> Status bind_stages(const PreparedInput&,Workspace<T>&,StochasticOptions,
     BasicStochasticFitResult<T>,BasicStochasticReferenceStages<T>&,BasicStochasticBlockSink<T> = {});
+// After the initialization workers join, resolve selection on the coordinator
+// once and rebind each worker before the refinement blocks.
+template<class T> Status bind_worker(const BasicStochasticReferenceStages<T>&, Workspace<T>&,
+    BasicStochasticReferenceStages<T>&, BasicStochasticBlockSink<T> = {});
 // Trusted schedule precondition: block > 0 unless Operations::run bypasses it.
 template<class Operations> requires (!__is_same(Operations,RuntimeOperations) && !__is_same(Operations,const RuntimeOperations))
 auto stochastic_with(Operations& o,size_t genes,size_t block=64) {
@@ -345,6 +398,7 @@ StochasticScales stochastic_scales(const double*,const double*,const double*,con
 StochasticScales32 stochastic_scales(const float*,const float*,const float*,const float*,size_t,ptrdiff_t,const GeneFit32&,const StochasticOptions&,float*,const uint8_t* = nullptr);
 StochasticGeneFit stochastic_fit_gene(const double*,const double*,const double*,const double*,size_t,ptrdiff_t,const GeneFit&,StochasticScales,const StochasticOptions&,double*,const uint8_t* = nullptr);
 StochasticGeneFit32 stochastic_fit_gene(const float*,const float*,const float*,const float*,size_t,ptrdiff_t,const GeneFit32&,StochasticScales32,const StochasticOptions&,float*,const uint8_t* = nullptr);
+// Use float computation buffers for any binary16 operand.
 template<class T> void moments(const PreparedInput&,size_t,size_t,T*,T*);
 template<class T> void second_moments(const PreparedInput&,size_t,size_t,T*,T*,T*,T*,T*,T*,T*);
 template<class T> void moments_from(const PreparedInput&,const PreparedInput&,size_t,size_t,T*,T*);

@@ -92,8 +92,11 @@ before borrowing.
 The [native example](examples/modeling.cpp) normalizes caller-owned counts and
 passes the result to a model. The [AnnData++ test](tests/anndata_modeling.cpp)
 uses the same model path with acquired H5AD and Zarr data and checks feature
-order and borrowed pointer identity. It also checks bit-preserving borrowing
-of a dense FP16 layer through both backends.
+order and borrowed pointer identity. It also runs Velocity directly on a
+borrowed FP16 layer through both backends. Use
+`ccell::velocity::borrow_binary16` and `Workspace<float>` for FP16 input. See
+the [Velocity API](src/velocity/docs/api.md#caller-scheduled-blocks) for running
+disjoint gene blocks with caller-owned workers and scratch.
 
 ## Source and provenance
 

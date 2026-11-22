@@ -5,7 +5,9 @@ explicit selective use of original expression columns. Reference routines use
 caller-owned buffers and allocate nothing. The caller binds native views,
 provisions outputs and scratch, and retains all storage through execution.
 Compute precision is explicit through the selected FP32 or FP64 workspace and
-function overload; it does not change source array storage precision.
+function overload. With binary16 input, use the FP32 workspace and overloads.
+Values are widened as they are read. Result storage is independent of input
+storage and remains FP32 or FP64 as specified by the output API.
 
 Reference deterministic and stochastic calculations do not screen or promote
 sources automatically. Sensitivity is an advisory result; the caller chooses

@@ -6,6 +6,10 @@ import anndata;
 
 namespace anndata = ::anndatapp;
 
+static_assert(__is_standard_layout(anndata::Float16) &&
+    sizeof(anndata::Float16) == sizeof(uint16_t) &&
+    __builtin_offsetof(anndata::Float16, bits) == 0);
+
 export namespace ccell::io {
 
 enum class BorrowCode : uint8_t { ok, rank, layout, dtype, non_contiguous, extent, invalid };

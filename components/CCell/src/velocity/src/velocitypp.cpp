@@ -27,9 +27,24 @@ template<class T> bool result_valid(const PreparedInput& p,const BasicStochastic
     return result_valid(p,r.initialization) && r.capacity>=p.genes &&
         (!p.genes || (r.gamma && r.offset && r.offset2 && r.first_scale && r.second_scale && r.objective && r.status));
 }
+template<class T> bool workspace_valid(const PreparedInput& p,const Workspace<T>& w,bool stochastic) {
+    return w.block && w.rows==p.rows && (!stochastic || w.stochastic) &&
+        (!p.rows || (w.ms && w.mu && w.mask && w.score &&
+        (!stochastic || (w.mss && w.mus && w.source_s && w.source_u))));
+}
+template<class Stage> Status check_block(const Stage& s,GeneRange range) {
+    if(!s.input || !s.workspace)return {Code::argument};
+    if(s.finished)return {Code::unfinished};
+    if(range.first>s.input->genes || range.count>s.input->genes-range.first)return {Code::bounds,range.first};
+    if(range.count>s.workspace->block)return {Code::capacity,range.first,range.count};
+    return {};
+}
+template<class T> void initialize_mask(const PreparedInput& p,Workspace<T>& w) {
+    for(size_t i=0;i<p.rows;++i) w.mask[i]=p.input.fit_mask?uint8_t(p.input.fit_mask[ptrdiff_t(i)*p.input.fit_mask_stride]!=0):1;
+}
 template<class T> void initialize(const PreparedInput& p,Workspace<T>& w,BasicFitResult<T>& r) {
     r.low_signal=false;
-    for(size_t i=0;i<p.rows;++i) w.mask[i]=p.input.fit_mask?uint8_t(p.input.fit_mask[ptrdiff_t(i)*p.input.fit_mask_stride]!=0):1;
+    initialize_mask(p,w);
     for(size_t j=0;j<p.genes;++j) {r.gamma[j]=r.offset[j]=r.r2[j]=0;r.genes[j]=false;r.status[j]=uint8_t(FitStatus::insufficient_data);}
 }
 template<class T> size_t select(const PreparedInput& p,const FitOptions& o,BasicFitResult<T>& r,T* score) {
@@ -70,7 +85,9 @@ Status validate(const StochasticOptions& o) {return validate(o.initialization);}
 }
 
 template<class T> Status workspace_size(const PreparedInput& p,RunOptions o,bool stochastic,WorkspaceSize& out) {
-    out={};if(!o.block_genes)return {Code::argument};
+    out={};
+    if constexpr (__is_same(T,double)) if(detail::has_binary16(p.input))return {Code::dtype};
+    if(!o.block_genes)return {Code::argument};
     size_t fixed=stochastic?p.rows:maximum(p.rows,p.genes),extra=0,per_gene=0,bytes=0;
     if(stochastic && (!mul(p.rows,2,extra) || !add(fixed,extra,fixed)))return {Code::overflow};
     if(!mul(p.rows,stochastic?4+size_t(o.unspliced_second):2,per_gene) || !mul(per_gene,sizeof(T),bytes))return {Code::overflow};
@@ -94,11 +111,21 @@ template<class T> Status bind_workspace(const PreparedInput& p,RunOptions o,bool
     w.mask=mask;w.rows=p.rows;w.block=n.block;w.scratch_bytes=n.bytes;w.stochastic=stochastic;return {};
 }
 template<class T> Status bind_stages(const PreparedInput& p,Workspace<T>& w,FitOptions o,BasicFitResult<T> r,BasicReferenceStages<T>& s,BasicBlockSink<T> sink) {
+    if constexpr (__is_same(T,double)) if(detail::has_binary16(p.input))return {Code::dtype};
     auto e=reference::validate(o);if(!e)return e;
-    if(!w.block || w.rows!=p.rows || (p.rows && (!w.ms || !w.mu || !w.mask || !w.score)))return {Code::argument};
+    if(!workspace_valid(p,w,false))return {Code::argument};
     if(!result_valid(p,r))return {Code::capacity,0,p.genes};
     if(sink.context && !sink.write)return {Code::argument};
     initialize(p,w,r);s={&p,&w,o,r,sink,0,false};return {};
+}
+template<class T> Status bind_worker(const BasicReferenceStages<T>& run,Workspace<T>& w,
+    BasicReferenceStages<T>& worker,BasicBlockSink<T> sink) {
+    if(!run.input || !run.workspace || &run==&worker || run.workspace==&w ||
+       !workspace_valid(*run.input,w,false) || (sink.context && !sink.write))return {Code::argument};
+    if(run.finished)return {Code::unfinished};
+    initialize_mask(*run.input,w);
+    worker={run.input,&w,run.options,run.result,sink,0,false};
+    return {};
 }
 template<class T> BasicMomentBlock<T> BasicReferenceStages<T>::moments(size_t first,size_t count) {
     reference::moments(*input,first,count,workspace->ms,workspace->mu);
@@ -119,17 +146,33 @@ template<class T> void BasicReferenceStages<T>::emit(BasicMomentBlock<T> m,Basic
     if(sink.write)sink.write(sink.context,m,f);
     next+=m.count;
 }
+template<class T> Status BasicReferenceStages<T>::process_block(GeneRange range) {
+    auto status=check_block(*this,range);if(!status || !range.count)return status;
+    auto m=moments(range.first,range.count);auto f=fit(m);emit(m,f);
+    return {};
+}
 template<class T> BasicFitResult<T> BasicReferenceStages<T>::finish() {
     select(*input,options,result,workspace->score);finished=true;return result;
 }
 template<class T> Status bind_stages(const PreparedInput& p,Workspace<T>& w,StochasticOptions o,BasicStochasticFitResult<T> r,BasicStochasticReferenceStages<T>& s,BasicStochasticBlockSink<T> sink) {
+    if constexpr (__is_same(T,double)) if(detail::has_binary16(p.input))return {Code::dtype};
     auto e=reference::validate(o);if(!e)return e;
-    if(!w.stochastic || !w.block || w.rows!=p.rows || (p.rows && (!w.ms || !w.mu || !w.mss || !w.mus || !w.source_s || !w.source_u || !w.score || !w.mask)))return {Code::argument};
+    if(!workspace_valid(p,w,true))return {Code::argument};
     if(!result_valid(p,r))return {Code::capacity,0,p.genes};
     if(sink.context && !sink.write)return {Code::argument};
     initialize(p,w,r.initialization);r.refit_all=false;
     for(size_t k=0;k<p.genes;++k) {r.gamma[k]=r.offset[k]=r.offset2[k]=r.first_scale[k]=r.second_scale[k]=r.objective[k]=0;r.status[k]=uint8_t(StochasticStatus::not_selected);}
     s={&p,&w,o,r,sink,0,false,false};return {};
+}
+template<class T> Status bind_worker(const BasicStochasticReferenceStages<T>& run,Workspace<T>& w,
+    BasicStochasticReferenceStages<T>& worker,BasicStochasticBlockSink<T> sink) {
+    if(!run.input || !run.workspace || &run==&worker || run.workspace==&w ||
+       !workspace_valid(*run.input,w,true) || bool(run.workspace->muu)!=bool(w.muu) ||
+       (sink.context && !sink.write))return {Code::argument};
+    if(run.finished)return {Code::unfinished};
+    initialize_mask(*run.input,w);
+    worker={run.input,&w,run.options,run.result,sink,0,run.resolved,false};
+    return {};
 }
 template<class T> BasicMomentBlock<T> BasicStochasticReferenceStages<T>::initial_moments(size_t f,size_t n) {
     reference::moments(*input,f,n,workspace->ms,workspace->mu);
@@ -148,6 +191,13 @@ template<class T> void BasicStochasticReferenceStages<T>::accept_initialization(
     for(size_t j=0;j<m.count;++j) {size_t k=m.first+j;r.gamma[k]=f.gamma[j];r.offset[k]=f.offset[j];r.r2[k]=f.r2[j];r.status[k]=f.status[j];
         r.genes[k]=f.selected[j] && f.status[j]==uint8_t(FitStatus::ok) && enabled(*input,k);}
     next+=m.count;
+}
+template<class T> Status BasicStochasticReferenceStages<T>::initialize_block(GeneRange range) {
+    auto status=check_block(*this,range);if(!status)return status;
+    if(resolved)return {Code::unfinished};
+    if(!range.count)return {};
+    auto m=initial_moments(range.first,range.count);auto f=initial_fit(m);accept_initialization(m,f);
+    return {};
 }
 template<class T> void BasicStochasticReferenceStages<T>::resolve_selection() {
     size_t selected=select(*input,options.initialization,result.initialization,result.objective);
@@ -181,6 +231,13 @@ template<class T> void BasicStochasticReferenceStages<T>::emit(BasicStochasticMo
         result.first_scale[k]=f.first_scale[j];result.second_scale[k]=f.second_scale[j];result.status[k]=f.status[j];result.objective[k]=f.objective[j];}
     if(sink.write)sink.write(sink.context,m,f);
     next+=m.count;
+}
+template<class T> Status BasicStochasticReferenceStages<T>::process_block(GeneRange range) {
+    auto status=check_block(*this,range);if(!status)return status;
+    if(!resolved)return {Code::unfinished};
+    if(!range.count)return {};
+    auto m=moments(range.first,range.count);auto s=scales(m);auto f=fit(m,s);emit(m,f);
+    return {};
 }
 template<class T> BasicStochasticFitResult<T> BasicStochasticReferenceStages<T>::finish() {finished=true;return result;}
 
@@ -258,6 +315,8 @@ template Status workspace_size<T>(const PreparedInput&,RunOptions,bool,Workspace
 template Status bind_workspace<T>(const PreparedInput&,RunOptions,bool,T*,size_t,uint8_t*,size_t,Workspace<T>&); \
 template Status bind_stages<T>(const PreparedInput&,Workspace<T>&,FitOptions,BasicFitResult<T>,BasicReferenceStages<T>&,BasicBlockSink<T>); \
 template Status bind_stages<T>(const PreparedInput&,Workspace<T>&,StochasticOptions,BasicStochasticFitResult<T>,BasicStochasticReferenceStages<T>&,BasicStochasticBlockSink<T>); \
+template Status bind_worker<T>(const BasicReferenceStages<T>&,Workspace<T>&,BasicReferenceStages<T>&,BasicBlockSink<T>); \
+template Status bind_worker<T>(const BasicStochasticReferenceStages<T>&,Workspace<T>&,BasicStochasticReferenceStages<T>&,BasicStochasticBlockSink<T>); \
 template struct BasicReferenceStages<T>;template struct BasicStochasticReferenceStages<T>; \
 template Status reference::steady_state<T>(const PreparedInput&,Workspace<T>&,BasicFitResult<T>&,FitOptions,BasicBlockSink<T>); \
 template Status reference::stochastic<T>(const PreparedInput&,Workspace<T>&,BasicStochasticFitResult<T>&,StochasticOptions,BasicStochasticBlockSink<T>); \

@@ -259,6 +259,52 @@ int main() try {
         phase("sparse_stochastic",[&]{status=vp::reference::stochastic_into(prepared,workspace,stochastic_result,velocity,n*g,residual,n*g,g,so_options);});
         require(bool(status),"sparse stochastic");
     }
+    uint16_t half_s[n*g]{0x3c00,0x4000,0x4000,0x4200,0x4200,0x4500,0x4400,0x4800};
+    uint16_t half_u[n*g]{0x4000,0x4400,0x4400,0x4600,0x4600,0x4900,0x4800,0x4c00};
+    using HalfView = cellerator::memory::const_matrix_view<uint16_t, ptrdiff_t>;
+    vp::Input half_input{};
+    phase("fp16_borrow",[&]{
+        half_input = {vp::borrow_binary16(HalfView{half_s,n,g,g,{},1}),
+                      vp::borrow_binary16(HalfView{half_u,n,g,g,{},1}),input.weights};
+    });
+    phase("fp16_prepare",[&]{status=vp::prepare(half_input,pb,prepared);});
+    require(bool(status),"prepare binary16 input");
+    float half_scratch[128]{},half_gamma[g]{},half_offset[g]{},half_r2[g]{};
+    bool half_selected[g]{};
+    uint8_t half_status[g]{},half_mask[n]{};
+    vp::Workspace<float> half_workspace{};
+    vp::BasicFitResult<float> half_result{half_gamma,half_offset,half_r2,half_selected,half_status,g};
+    run.block_genes=1;
+    phase("fp16_bind_workspace",[&]{
+        status=vp::bind_workspace(prepared,run,false,half_scratch,128,half_mask,n,half_workspace);
+    });
+    require(bool(status),"bind binary16 workspace");
+    float worker_scratch[128]{};
+    uint8_t worker_mask[n]{};
+    vp::Workspace<float> worker_workspace{};
+    phase("fp16_bind_worker_workspace",[&]{
+        status=vp::bind_workspace(prepared,run,false,worker_scratch,128,worker_mask,n,worker_workspace);
+    });
+    require(bool(status),"bind binary16 worker workspace");
+    for(int iteration=0;iteration<2;++iteration) {
+        half_s[0] = iteration ? 0x3e00 : 0x3c00;
+        phase("fp16_steady",[&]{
+            status=vp::reference::steady_state_into(prepared,half_workspace,half_result,velocity32,n*g,g,fit);
+        });
+        require(bool(status),"binary16 steady-state run");
+        const float expected_gamma[]{half_gamma[0],half_gamma[1]};
+        vp::BasicReferenceStages<float> coordinator{},worker{};
+        phase("fp16_worker_blocks",[&]{
+            require(bool(vp::bind_stages(prepared,half_workspace,fit,half_result,coordinator)),
+                    "bind binary16 coordinator");
+            require(bool(vp::bind_worker(coordinator,worker_workspace,worker)),"bind binary16 worker");
+            require(bool(worker.process_block({1,1})),"run second binary16 block");
+            require(bool(worker.process_block({0,1})),"run first binary16 block");
+            half_result=coordinator.finish();
+        });
+        require(half_gamma[0]==expected_gamma[0] && half_gamma[1]==expected_gamma[1],
+                "binary16 worker blocks match serial slopes");
+    }
     // Empty observations still size, bind and run without allocating.
     vp::Input empty_input{
         borrow_dense(static_cast<double*>(nullptr),{0,g},{g,1}),
