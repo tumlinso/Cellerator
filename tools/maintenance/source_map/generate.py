@@ -114,6 +114,10 @@ COMPATIBILITY_RETIREMENTS = {
 
 # Order matters: narrow exceptions precede broad tree rules.
 def classify(p):
+    if p == 'tests/framework/native/CMakeLists.txt':
+        return ('native host operation checks', p, 'register checks against their direct operation owners',
+                'retain_native_host_operation_checks', 'host CTest and optional Python binding registration',
+                'native operation and execution owners', 'focused host CTest suite', 'preserve existing check coverage')
     if p in modeling_migrations:
         destination = modeling_migrations[p]
         return ('retired native modeling source path', destination,
