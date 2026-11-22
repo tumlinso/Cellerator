@@ -55,8 +55,12 @@ The [host-only biological relations example](https://github.com/tumlinso/Cellera
 
 ## Build the host native extension directly
 
+For the standard native build with single-cell preprocessing, RNA velocity, and
+AnnData++ file access, follow the [CCell build guide](../components/CCell/README.md).
+
 ```sh
 cmake -S . -B build-cpu -G Ninja \
+  -DCELLERATOR_BUILD_CCELL=OFF \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
   -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \

@@ -73,6 +73,10 @@ COMPATIBILITY_RETIREMENTS = {
 
 # Order matters: narrow exceptions precede broad tree rules.
 def classify(p):
+    if p == 'extern/anndatapp':
+        return ('pinned AnnData++ source dependency', 'AnnData++ upstream repository', 'bundle the indexed gitlink revision for the optional CCell data adapter', 'retain_pinned_anndatapp', 'standard native build includes H5AD and Zarr when their backends are enabled', 'anndatapp::anndatapp and ccell::anndata_interop', 'pinned source archive and installed H5AD/Zarr consumer checks', 'keep upstream module and package names and update the pin explicitly')
+    if p.startswith('components/CCell/') or p == 'cmake/CelleratorCCell.cmake':
+        return ('native single-cell methods and component integration', 'components/CCell', 'route method behavior, references, and adapter code to the CCell component', 'retain_ccell_native_methods', 'host methods and optional AnnData++ borrowing adapter; imported evidence retains its original source identity', 'ccell::preprocess, ccell::velocity, ccell::ccell, and ccell::anndata_interop', 'native, installed-package, allocation, numerical-parity, and file-backed modeling checks by target', 'preserve borrowed layout and logical order, caller storage, and the separation of method and acquisition dependencies')
     if p in COMPATIBILITY_RETIREMENTS:
         destination = COMPATIBILITY_RETIREMENTS[p]
         return ('retired source compatibility surface', destination,

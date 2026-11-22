@@ -13,13 +13,8 @@ preserves sparse data, and aligns cells and output observations by identity.
 Numerical entry points retain their explicit array/tensor contracts. Scanpy and
 RAPIDS-singlecell remain upstream for classical analysis and preprocessing.
 
-Source and wheel builds also require the separately installed native C++
-[AnnData++](https://github.com/tumlinso/anndatapp) package, configured with
-HDF5 enabled and Zarr disabled.
-This is independent of the Python `anndata` dependency above. The native
-dependency has no legacy H5AD reader or fallback parser. CMake, Ninja, Clang,
-scanner and C++20/CUDA C++20 requirements plus the dependency install command
-are in the [developer reference](../developer_reference.qmd#mandatory-native-toolchain-and-h5ad-dependency).
+The separate native CCell distribution bundles AnnData++ for H5AD and Zarr.
+See the [CCell build and API guide](../../components/CCell/README.md).
 
 ## Modeling without a native extension
 
