@@ -106,20 +106,21 @@ nsight/
 cuda_profile_*
 cuda_profile*.log
 
-# Generated local state
+# Local editor, agent, and credential files
 .DS_Store
+/.vscode/
+/.agents/
+/.aws/
+/.codex
 
-# Generated agent artifacts
-.ctxpp/
-.todo-orchestrator/runtime/
-.todo-orchestrator/runtime/**
-.todo-orchestrator/state.sqlite
-.todo-orchestrator/state.sqlite-shm
-.todo-orchestrator/state.sqlite-wal
-
-# Private maintenance recovery database and its SQLite sidecars stay local.
-# The adjacent manifest and verification records remain versioned.
-/.todo-orchestrator/maintenance/ce-is1-bypass-20261102/authority-before.sqlite3*
+# Local workflow state
+/.autobench/
+/.ctxpp/
+/.ctxpp.toml
+/.project-context.json
+/.project-control/
+/.todo-orchestrator/
+/.todo-orchestrator-cutover-stage-*/
 
 # Local fixture payloads. The scaffold under data/test is tracked, but large
 # biological inputs and generated conversion outputs remain local.
