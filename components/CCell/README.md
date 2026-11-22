@@ -92,7 +92,8 @@ before borrowing.
 The [native example](examples/modeling.cpp) normalizes caller-owned counts and
 passes the result to a model. The [AnnData++ test](tests/anndata_modeling.cpp)
 uses the same model path with acquired H5AD and Zarr data and checks feature
-order and borrowed pointer identity.
+order and borrowed pointer identity. It also checks bit-preserving borrowing
+of a dense FP16 layer through both backends.
 
 ## Source and provenance
 
@@ -100,8 +101,8 @@ order and borrowed pointer identity.
 - `src/velocity/` owns the [Velocity methods](src/velocity/README.md) as tracked
   CCell source.
 - `src/ccell.interop.anndata.cppm` owns the optional checked borrowing adapter.
-- `extern/anndatapp/` at the Cellerator root pins AnnData++ v1.1.0 at
-  `c65af7de3c8e273bb0d3c2f5243774728fed452e`.
+- `extern/anndatapp/` at the Cellerator root pins AnnData++ v1.1.1 at
+  `fb9ab10bb4c91182dad0ba1d7e9ce3ee7f6d10ce`.
 
 The initial tracked imports came from CCell
 `62438b8b1b76b798009745a6d7c8a66370d3b859` and Velocity++
