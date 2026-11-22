@@ -20,6 +20,7 @@
 #include <vector>
 
 namespace memory_cuda = ::cellerator::memory::cuda;
+using ::cellerator::memory::const_array_view;
 namespace state_codes = ::cellerator::tensor::state_codes;
 
 namespace {
@@ -89,12 +90,15 @@ std::shared_ptr<const state_codes::Profile> make_profile(
     std::uint32_t bits, int device, const memory_cuda::Stream& stream) {
   // Each profile feature has a distinct codebook. State columns deliberately
   // use a non-identity map so accidentally indexing by column cannot pass.
-  std::vector<std::uint32_t> offsets{0U, 2U, 4U, 6U, 8U};
-  std::vector<float> levels{0.0f, 1.0f, 2.0f, 3.0f,
-                            4.0f, 5.0f, 6.0f, 7.0f};
-  std::vector<std::uint32_t> feature_map{2U, 0U, 3U, 1U};
+  const std::array<std::uint32_t, 5> offsets{0U, 2U, 4U, 6U, 8U};
+  const std::array<float, 8> levels{0.0f, 1.0f, 2.0f, 3.0f,
+                                  4.0f, 5.0f, 6.0f, 7.0f};
+  const std::array<std::uint32_t, 4> feature_map{2U, 0U, 3U, 1U};
   auto profile = std::make_shared<state_codes::Profile>(
-      std::move(offsets), std::move(levels), std::move(feature_map), bits, stream);
+      const_array_view<std::uint32_t>{offsets.data(), offsets.size()},
+      const_array_view<float>{levels.data(), levels.size()},
+      const_array_view<std::uint32_t>{feature_map.data(), feature_map.size()},
+      bits, stream);
   require(profile->device() == device, "profile was not placed on requested device");
   require(profile->feature_count() == kFeatures,
           "profile feature map has the wrong state width");

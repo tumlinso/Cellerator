@@ -33,8 +33,8 @@ authoritative.
 - Distributed implications: this is local numerical execution, not a transport
   or parameter-residency service. Routing and reverse redistribution are separate.
 - Code: `python/cellerator/torch/grouped_linear.py`, existing native
-  `include/Cellerator/modeling/cuda/grouped_linear.hh` and
-  `src/modeling/cuda/grouped_linear.cu`.
+  `include/Cellerator/ops/matrix/grouped_linear_cuda.hh` and
+  `src/ops/matrix/grouped_linear.cu`.
 - Validation: seven CPU/reference tests; admitted V100 numerical and memcheck
   runs each passed all 13 tests with zero skips. Memcheck reported zero errors,
   and both jobs verified cleanup. See
@@ -97,4 +97,4 @@ authoritative.
   or optimizer ownership is added.
 - Code: `include/Cellerator/nn/ops.hh`, `src/nn/ops_cuda.cc`, and
   `python/bindings/nn/module.cc`, backed by
-  `include/Cellerator/modeling/cuda/factorized_interaction.hh`.
+  `include/Cellerator/ops/mechanism/factorized_interaction_cuda.hh`.

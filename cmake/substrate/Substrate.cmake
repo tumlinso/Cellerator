@@ -179,7 +179,7 @@ endforeach()
 # Public native headers are installed intact. Header presence is not a claim that
 # every declared GPU/adapter symbol is linked by a selected host component.
 foreach(dir IN ITEMS bindings biology cells common compute containers
-    examples execution geometry interop layout math memory modeling nn ops packing
+    examples execution geometry interop layout math memory nn ops packing
     planner profiling runtime state structure tensor)
   install(DIRECTORY "${CE_SUBSTRATE_ROOT}/include/Cellerator/${dir}"
       DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
@@ -190,6 +190,10 @@ install(FILES "${CE_SUBSTRATE_ROOT}/include/Cellerator/Cellerator.hh"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/nn.hh"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/parameters.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
+if(EXISTS "${CE_SUBSTRATE_ROOT}/include/Cellerator/modeling/dynamical.hh")
+  install(FILES "${CE_SUBSTRATE_ROOT}/include/Cellerator/modeling/dynamical.hh"
+      DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/modeling")
+endif()
 set(CE_SUBSTRATE_DEPENDENCY_TABLE "")
 foreach(component IN LISTS _ce_known)
   string(APPEND CE_SUBSTRATE_DEPENDENCY_TABLE "set(_ce_deps_${component} \"${_ce_deps_${component}}\")\n")

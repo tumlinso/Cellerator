@@ -109,6 +109,11 @@ instead. The checked [host example](../tests/native_data/reference/native_data_r
 and [two-device example](../tests/execution_dependency/distributed_cuda_test.cu)
 exercise the complete preparation and gradient paths.
 
+`execution::PreparedIncidence` supplies selected physical addresses to
+`ops::incidence`, which preserves participant role order, repeated occurrences
+and explicit output effects. `joint_reduce` reads directly from entity storage.
+`joint_reduce_scatter` uses an edge-sized intermediate.
+
 ## Concrete storage and physical realization
 
 `tensor::block_masked::Structure` owns immutable host row/feature maps,
@@ -193,6 +198,13 @@ Host consumers use C++20 and an installed component:
 find_package(Cellerator REQUIRED COMPONENTS native_data)
 target_link_libraries(my_model PRIVATE Cellerator::native_data)
 ```
+
+The same component exposes `Cellerator::reaction`, `Cellerator::exchange`,
+`Cellerator::accessibility`, `Cellerator::inheritance` and
+`Cellerator::event_memory` for consumers that use those operations directly.
+`execution::ValueField<T>` is an optional owner for values addressed by entity
+identity. Successful replacements and nonempty writes advance its value
+generation. Models can also use caller-owned arrays directly.
 
 `Cellerator::tensor` is the smaller host format surface. With
 `CELLERATOR_ENABLE_MODULES=ON`, the same target supplies

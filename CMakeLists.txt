@@ -189,8 +189,7 @@ endif()
 # dependency boundary from the CUDA mechanism Torch adapters below.
 include(cmake/CelleratorTokenization.cmake)
 include(cmake/CelleratorSparseSupport.cmake)
-# Data and geometry owners precede the modeling umbrella so model contracts
-# compose these native targets without compiling duplicate relation sources.
+# Native data and geometry owners supply the direct host operation targets.
 include(cmake/CelleratorNativeData.cmake)
 if(CELLERATOR_BUILD_TESTS)
     enable_testing()
@@ -199,12 +198,11 @@ endif()
 add_subdirectory(tests/sequence ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 add_subdirectory(bench/sequence ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
-    # The host-only sparse-support export is already imported, so the native
-    # data package can load here before the modeling umbrella that depends on
-    # it.
     cellerator_append_native_data_package_config()
 endif()
-include(cmake/CelleratorModeling.cmake)
+if(CELLERATOR_BUILD_TESTS)
+    add_subdirectory(tests/framework/native)
+endif()
 if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     enable_testing()
 endif()
@@ -251,6 +249,12 @@ if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
         message(FATAL_ERROR
             "CELLERATOR_ENABLE_TORCH requires the CUDA indexed-mechanism owner; "
             "configure with CELLERATOR_ENABLE_CUDA=AUTO or ON.")
+    endif()
+    if(COMMAND cellerator_append_native_data_cuda_package_config)
+        cellerator_append_native_data_cuda_package_config()
+    endif()
+    if(COMMAND cellerator_append_framework_cuda_package_config)
+        cellerator_append_framework_cuda_package_config()
     endif()
     if(TARGET Cellerator::nn)
         cellerator_append_nn_package_config()

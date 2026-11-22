@@ -1,24 +1,11 @@
 #include <Cellerator/tensor/state_codes/owner.hh>
 
-#include <algorithm>
-#include <cmath>
 #include <limits>
 #include <stdexcept>
 #include <utility>
 
 namespace cellerator::tensor::state_codes {
 namespace {
-
-template <class T>
-memory::cuda::DeviceBuffer upload(const std::vector<T>& values,
-                                  const memory::cuda::Stream& stream) {
-  memory::cuda::DeviceBuffer result(
-      memory::cuda::checked_bytes(values.size(), sizeof(T)), stream.device());
-  result.upload_async(values.data(), result.bytes(), stream);
-  // The source vectors may be destroyed as soon as this owner is constructed.
-  stream.synchronize();
-  return result;
-}
 
 std::size_t element_count(std::uint32_t rows, std::uint32_t features) {
   return memory::cuda::checked_bytes(static_cast<std::size_t>(rows),
@@ -43,50 +30,67 @@ void aligned(memory::cuda::DeviceView view, std::size_t alignment) {
 
 }  // namespace
 
-Profile::Profile(std::vector<std::uint32_t> offsets,
-                 std::vector<float> levels,
-                 std::vector<std::uint32_t> feature_map,
+Profile::Profile(memory::const_array_view<std::uint32_t> offsets,
+                 memory::const_array_view<float> levels,
+                 memory::const_array_view<std::uint32_t> feature_map,
                  std::uint32_t code_bits,
                  const memory::cuda::Stream& stream)
     : device_(stream.device()), code_bits_(code_bits) {
   if (code_bits != 1U && code_bits != 2U && code_bits != 4U && code_bits != 8U) {
     throw std::invalid_argument("code bits must be 1, 2, 4 or 8");
   }
-  if (offsets.size() < 2U || feature_map.empty() || offsets.front() != 0U ||
-      offsets.back() != levels.size() ||
-      offsets.size() - 1U > std::numeric_limits<std::uint32_t>::max() ||
-      feature_map.size() > std::numeric_limits<std::uint32_t>::max() ||
-      levels.size() > std::numeric_limits<std::uint32_t>::max()) {
+  if (!offsets.data || !levels.data || !feature_map.data ||
+      offsets.where.kind == memory::domain::device ||
+      levels.where.kind == memory::domain::device ||
+      feature_map.where.kind == memory::domain::device ||
+      offsets.count < 2U || feature_map.count == 0U ||
+      offsets.count - 1U > UINT32_MAX || feature_map.count > UINT32_MAX ||
+      levels.count > UINT32_MAX || offsets.data[0] != 0U ||
+      offsets.data[offsets.count - 1U] != levels.count) {
     throw std::invalid_argument("invalid codebook dimensions");
   }
 
-  profile_features_ = static_cast<std::uint32_t>(offsets.size() - 1U);
-  state_features_ = static_cast<std::uint32_t>(feature_map.size());
-  level_count_ = static_cast<std::uint32_t>(levels.size());
+  profile_features_ = static_cast<std::uint32_t>(offsets.count - 1U);
+  state_features_ = static_cast<std::uint32_t>(feature_map.count);
+  level_count_ = static_cast<std::uint32_t>(levels.count);
   for (std::size_t profile = 0; profile < profile_features_; ++profile) {
-    if (offsets[profile + 1U] <= offsets[profile] ||
-        offsets[profile + 1U] > levels.size() ||
-        offsets[profile + 1U] - offsets[profile] > (1U << code_bits)) {
+    const auto begin = offsets.data[profile];
+    const auto end = offsets.data[profile + 1U];
+    if (end <= begin || end > levels.count || end - begin > (1U << code_bits)) {
       throw std::invalid_argument("codebook has invalid number of levels");
     }
-    for (std::size_t level = offsets[profile]; level < offsets[profile + 1U];
-         ++level) {
-      if (!std::isfinite(levels[level]) ||
-          (level > offsets[profile] && levels[level] <= levels[level - 1U])) {
+    for (std::size_t level = begin; level < end; ++level) {
+      if (!__builtin_isfinite(levels.data[level]) ||
+          (level > begin && levels.data[level] <= levels.data[level - 1U])) {
         throw std::invalid_argument(
             "codebook levels must be finite and strictly increasing");
       }
     }
   }
-  for (const auto profile : feature_map) {
-    if (profile >= profile_features_) {
+  for (std::size_t feature = 0; feature < feature_map.count; ++feature) {
+    if (feature_map.data[feature] >= profile_features_) {
       throw std::invalid_argument("invalid feature map");
     }
   }
 
-  offsets_ = upload(offsets, stream);
-  levels_ = upload(levels, stream);
-  feature_map_ = upload(feature_map, stream);
+  const auto offset_bytes = memory::cuda::checked_bytes(offsets.count, sizeof(*offsets.data));
+  const auto level_bytes = memory::cuda::checked_bytes(levels.count, sizeof(*levels.data));
+  const auto map_bytes = memory::cuda::checked_bytes(feature_map.count, sizeof(*feature_map.data));
+  offsets_ = memory::cuda::DeviceBuffer(offset_bytes, device_);
+  levels_ = memory::cuda::DeviceBuffer(level_bytes, device_);
+  feature_map_ = memory::cuda::DeviceBuffer(map_bytes, device_);
+
+  try {
+    offsets_.upload_async(offsets.data, offset_bytes, stream);
+    levels_.upload_async(levels.data, level_bytes, stream);
+    feature_map_.upload_async(feature_map.data, map_bytes, stream);
+    stream.synchronize();
+  } catch (...) {
+    // Complete queued transfers before the borrowed host arrays can retire.
+    // Preserve the original error if draining also reports a CUDA failure.
+    try { stream.synchronize(); } catch (...) {}
+    throw;
+  }
 }
 
 ProfileView Profile::view() const & noexcept {

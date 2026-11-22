@@ -5,7 +5,7 @@
 #endif
 #include <Cellerator/modeling/dynamical.hh>
 #include <Cellerator/layout/entity_layout.hh>
-#include <Cellerator/modeling/value_field.hh>
+#include <Cellerator/execution/dependency/value_field.hh>
 #include <Cellerator/geometry/dependency/explicit_pattern.hh>
 #include <Cellerator/geometry/dependency/pattern_owner.hh>
 #include <Cellerator/execution/dependency/incidence.hh>
@@ -22,7 +22,7 @@ namespace e = cellerator::execution;
 namespace oi = cellerator::ops::incidence;
 
 struct State {
-    m::ValueField<float> field;
+    e::ValueField<float> field;
     std::string phase;
 };
 struct Parameters {
@@ -72,9 +72,9 @@ int main() {
         return total;
     };
     auto model = m::make_dynamical_model<State, Context>(transition, parameters, observation);
-    auto first = m::make_dynamical_cell(model, State{m::ValueField<float>(layout, 1, {3,1,2}), "initial"},
+    auto first = m::make_dynamical_cell(model, State{e::ValueField<float>(layout, 1, {3,1,2}), "initial"},
                               std::string("cell-a"));
-    auto second = m::make_dynamical_cell(model, State{m::ValueField<float>(layout, 1, {0,0,1}), "initial"},
+    auto second = m::make_dynamical_cell(model, State{e::ValueField<float>(layout, 1, {0,0,1}), "initial"},
                                std::string("cell-b"));
     assert(first.model() == second.model()); // Behavior/parameters are shared.
 

@@ -1,5 +1,6 @@
-#include <Cellerator/modeling/cuda/plans.hh>
-#include <Cellerator/modeling/cuda/grouped_linear.hh>
+#include <Cellerator/execution/conditional/dispatch_cuda.hh>
+#include <Cellerator/memory/view.hh>
+#include <Cellerator/ops/matrix/grouped_linear_cuda.hh>
 #include <Cellerator/tensor/state_codes/owner.hh>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
@@ -7,7 +8,9 @@
 #include <cstring>
 
 namespace py = pybind11;
-using namespace cellerator::modeling::cuda;
+using cellerator::execution::conditional::cuda::DispatchPlan;
+using cellerator::ops::matrix::cuda::GradientMode;
+using cellerator::ops::matrix::cuda::GroupedLinear;
 using namespace cellerator::memory::cuda;
 using namespace cellerator::tensor::state_codes;
 
@@ -105,7 +108,17 @@ PYBIND11_MODULE(_modeling_cuda, m) {
         .def("gather_backward", [](const DispatchPlan& p, DeviceView input, DeviceView output, std::int64_t f, DType t, const Stream& s) { p.gather_backward(input, output, f, t, s); })
         .def("combine_backward", [](const DispatchPlan& p, DeviceView grad, DeviceView expert, DeviceView grad_expert, DeviceView grad_weight, std::int64_t f, DType t, const Stream& s) { p.combine_backward(grad, expert, grad_expert, grad_weight, f, t, s); });
     py::class_<Profile, std::shared_ptr<Profile>>(m, "QuantizationProfile")
-        .def(py::init<std::vector<std::uint32_t>, std::vector<float>, std::vector<std::uint32_t>, std::uint32_t, const Stream&>(),
+        .def(py::init([](const std::vector<std::uint32_t>& offsets,
+                         const std::vector<float>& levels,
+                         const std::vector<std::uint32_t>& feature_map,
+                         std::uint32_t bits, const Stream& stream) {
+            using cellerator::memory::const_array_view;
+            return std::make_shared<Profile>(
+                const_array_view<std::uint32_t>{offsets.data(), offsets.size()},
+                const_array_view<float>{levels.data(), levels.size()},
+                const_array_view<std::uint32_t>{feature_map.data(), feature_map.size()},
+                bits, stream);
+        }),
              py::arg("offsets"), py::arg("levels"), py::arg("feature_map"), py::arg("bits"), py::arg("stream"))
         .def_property_readonly("device", &Profile::device)
         .def_property_readonly("feature_count", &Profile::feature_count)

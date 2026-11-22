@@ -5,7 +5,7 @@ include(CMakePackageConfigHelpers)
 # the regular and selectable substrate installations.
 function(cellerator_install_native_headers)
     foreach(dir IN ITEMS bindings biology cells common compute containers
-            examples execution geometry interop layout math memory modeling nn
+            examples execution geometry interop layout math memory nn
             ops packing planner profiling runtime state structure tensor)
         install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/${dir}"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN})
@@ -17,6 +17,10 @@ function(cellerator_install_native_headers)
         "${PROJECT_SOURCE_DIR}/include/Cellerator/nn.hh"
         "${PROJECT_SOURCE_DIR}/include/Cellerator/parameters.hh"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN})
+    if(EXISTS "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/dynamical.hh")
+        install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/dynamical.hh"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/modeling" ${ARGN})
+    endif()
 endfunction()
 
 add_library(cellerator_headers INTERFACE)

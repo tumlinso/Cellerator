@@ -74,10 +74,10 @@ target_compile_options(cellerator_dependency_execution_cuda PRIVATE
 # realization while the general structural packer remains in Cellerator::layout.
 # It deliberately has no Torch dependency.
 add_library(cellerator_factorized_interaction_cuda STATIC
-    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/factorized_interaction.cu"
-    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/factorized_interaction_direct.cu"
-    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/factorized_interaction_stable.cu"
-    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/prepared_factorized_interaction.cu")
+    "${PROJECT_SOURCE_DIR}/src/ops/mechanism/factorized_interaction.cu"
+    "${PROJECT_SOURCE_DIR}/src/ops/mechanism/factorized_interaction_direct.cu"
+    "${PROJECT_SOURCE_DIR}/src/ops/mechanism/factorized_interaction_stable.cu"
+    "${PROJECT_SOURCE_DIR}/src/ops/mechanism/prepared_factorized_interaction.cu")
 add_library(Cellerator::factorized_interaction_cuda
     ALIAS cellerator_factorized_interaction_cuda)
 set_target_properties(cellerator_factorized_interaction_cuda PROPERTIES
@@ -107,8 +107,8 @@ install(FILES
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/layout"
         COMPONENT FactorizedInteractionCUDA)
 install(FILES
-        "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/cuda/factorized_interaction.hh"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/modeling/cuda"
+        "${PROJECT_SOURCE_DIR}/include/Cellerator/ops/mechanism/factorized_interaction_cuda.hh"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/ops/mechanism"
         COMPONENT FactorizedInteractionCUDA)
 
 add_library(cellerator_tensor_cuda INTERFACE)
@@ -162,7 +162,7 @@ endforeach()
 foreach(_header IN ITEMS
         layout/factorized_interaction.hh
         layout/factorized_interaction_pattern.hh
-        modeling/cuda/factorized_interaction.hh
+        ops/mechanism/factorized_interaction_cuda.hh
         ops/mechanism/packed_gated_product.cuh
         ops/quantized/api.cuh
         ops/quantized/dispatch.cuh
@@ -191,6 +191,8 @@ foreach(_header IN ITEMS
         tensor/base/blocked_ell.cuh
         tensor/base/sliced_ell.cuh
         tensor/base/diagonal.cuh
+        memory/domain.hh
+        memory/view.hh
         tensor/base/device_views.cuh)
     get_filename_component(_header_parent "${_header}" DIRECTORY)
     install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/${_header}"

@@ -47,14 +47,13 @@ if(NOT cellerator_nn_sources)
     message(FATAL_ERROR "CELLERATOR_ENABLE_NN=ON found no native NN sources")
 endif()
 
-# The CUDA adapter target depends on ATen/Torch, the generic framework runtime,
-# and the independently exported factorized-interaction component. It has no
-# link edge back to Cellerator::nn, avoiding a static-library cycle.
+# The CUDA adapter links the native operations it invokes and ATen/Torch.
+# Cellerator::nn links the adapter in one direction to avoid a static-library cycle.
 set(cellerator_nn_export_targets)
 if(CELLERATOR_ENABLE_NN_CUDA)
-    if(NOT TARGET Cellerator::framework_cuda)
+    if(NOT TARGET Cellerator::attention_cuda OR NOT TARGET Cellerator::grouped_linear_cuda)
         message(FATAL_ERROR
-            "CELLERATOR_ENABLE_NN_CUDA requires CELLERATOR_ENABLE_FRAMEWORK_CUDA=ON")
+            "CELLERATOR_ENABLE_NN_CUDA requires the native CUDA attention and grouped linear components (CELLERATOR_ENABLE_FRAMEWORK_CUDA=ON)")
     endif()
     if(NOT TARGET Cellerator::factorized_interaction_cuda)
         message(FATAL_ERROR
@@ -83,7 +82,9 @@ if(CELLERATOR_ENABLE_NN_CUDA)
         ${CELLERATOR_TORCH_LINK_TARGETS}
         torch_cuda
         c10_cuda
-        Cellerator::framework_cuda
+        Cellerator::memory_cuda
+        Cellerator::attention_cuda
+        Cellerator::grouped_linear_cuda
         Cellerator::factorized_interaction_cuda)
     if(CELLERATOR_TORCH_CXX_OPTIONS)
         target_compile_options(cellerator_nn_cuda PUBLIC
@@ -257,7 +258,7 @@ function(cellerator_append_nn_package_config)
     if(CELLERATOR_ENABLE_NN_CUDA)
         string(CONCAT cellerator_nn_cuda_config
             "  find_dependency(CUDAToolkit REQUIRED)\n"
-            "  if(NOT TARGET Cellerator::framework_cuda)\n"
+            "  if(NOT TARGET Cellerator::attention_cuda)\n"
             "    include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFrameworkCUDATargets.cmake\")\n"
             "  endif()\n")
     endif()

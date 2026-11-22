@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/modeling/cuda/factorized_interaction.hh>
+#include <Cellerator/ops/mechanism/factorized_interaction_cuda.hh>
 
 #include <cstdint>
 
@@ -18,32 +18,32 @@ enum class DirectUniqueOutputBackend : std::uint8_t {
 
 cudaError_t factorized_interaction_unique_output_backend(
     const layout::FactorizedInteractionView& plan,
-    modeling::cuda::FactorizedInteractionProblem problem,
+    ops::mechanism::cuda::FactorizedInteractionProblem problem,
     DirectUniqueOutputBackend* result) noexcept;
 
 cudaError_t factorized_interaction_unique_output_workspace(
     const layout::FactorizedInteractionView& plan,
-    modeling::cuda::FactorizedInteractionProblem problem,
-    modeling::cuda::FactorizedInteractionWorkspace* result) noexcept;
+    ops::mechanism::cuda::FactorizedInteractionProblem problem,
+    ops::mechanism::cuda::FactorizedInteractionWorkspace* result) noexcept;
 
 cudaError_t factorized_interaction_unique_output_forward(
     const layout::FactorizedInteractionView& plan,
-    modeling::cuda::FactorizedInteractionProblem problem,
-    modeling::cuda::FactorizedInteractionPrecision precision,
-    modeling::cuda::FactorizedInteractionValues values,
+    ops::mechanism::cuda::FactorizedInteractionProblem problem,
+    ops::mechanism::cuda::FactorizedInteractionPrecision precision,
+    ops::mechanism::cuda::FactorizedInteractionValues values,
     memory::cuda::DeviceView output, memory::cuda::DeviceView tape,
     memory::cuda::DeviceView scratch, cudaStream_t stream) noexcept;
 
 cudaError_t factorized_interaction_unique_output_backward(
     const layout::FactorizedInteractionView& plan,
-    modeling::cuda::FactorizedInteractionProblem problem,
-    modeling::cuda::FactorizedInteractionPrecision precision,
-    modeling::cuda::FactorizedInteractionValues values,
+    ops::mechanism::cuda::FactorizedInteractionProblem problem,
+    ops::mechanism::cuda::FactorizedInteractionPrecision precision,
+    ops::mechanism::cuda::FactorizedInteractionValues values,
     memory::cuda::ConstDeviceView output_gradient,
     memory::cuda::ConstDeviceView tape,
-    modeling::cuda::FactorizedInteractionGradients gradients,
+    ops::mechanism::cuda::FactorizedInteractionGradients gradients,
     memory::cuda::DeviceView scratch,
-    modeling::cuda::FactorizedInteractionGradientMode mode,
+    ops::mechanism::cuda::FactorizedInteractionGradientMode mode,
     cudaStream_t stream) noexcept;
 
 } // namespace cellerator::bench::factorized_interactions::candidates

@@ -62,4 +62,8 @@ install(DIRECTORY
     "${PROJECT_SOURCE_DIR}/include/Cellerator/geometry/dependency"
     "${PROJECT_SOURCE_DIR}/include/Cellerator/execution/dependency"
     "${PROJECT_SOURCE_DIR}/include/Cellerator/ops/condition"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
+    PATTERN "accessibility.hh" EXCLUDE
+    PATTERN "frontier_cuda.hh" EXCLUDE
+    PATTERN "regulatory_gates_cuda.hh" EXCLUDE
+    PATTERN "value_field.hh" EXCLUDE)

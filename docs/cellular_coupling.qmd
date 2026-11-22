@@ -3,7 +3,8 @@ title: "Conservative cell and environment coupling"
 ---
 
 `cellerator.spatial.coupling` and the native C++ header
-`Cellerator/modeling/coupling.hh` provide a concrete host exchange operator.
+`Cellerator/ops/process/exchange.hh` provide a concrete host exchange operator.
+Native consumers link `Cellerator::exchange`.
 It couples arbitrary cell identities to finite environment compartments through
 sparse weighted incidence. It assumes no tissue, cell-type or species ontology.
 Its numerical state is explicitly **amount**, with concentration calculated

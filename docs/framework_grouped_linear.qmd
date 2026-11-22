@@ -3,12 +3,14 @@ title: "Grouped Linear CUDA Executor"
 format: html
 ---
 
-`cellerator::modeling::cuda::GroupedLinear` applies one linear transform per
+`cellerator::ops::matrix::cuda::GroupedLinear` applies one linear transform per
 expert to an expert-major ragged batch. Each expert owns a row-major weight
 matrix `W[e]` with shape `[output_features, input_features]`. A monotonic host
 offset array assigns rows to experts; repeated offsets represent empty experts.
 The activation and result buffers are contiguous row-major arrays whose first
-dimension is the total number of routed rows.
+dimension is the total number of routed rows. Native consumers include
+`Cellerator/ops/matrix/grouped_linear_cuda.hh` and link
+`Cellerator::grouped_linear_cuda`.
 
 The executor calls cuBLAS once for each nonempty segment. It does not evaluate
 inactive experts, gather rows, allocate scratch storage, or synchronize. This

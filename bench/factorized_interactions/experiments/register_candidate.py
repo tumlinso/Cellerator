@@ -15,20 +15,11 @@ from common import (
     AdapterError,
     candidate_tree_identity,
     load_variant_map,
+    require_factorized_project,
 )
 
 
 DEFAULT_KDA_ROOT = Path("/home/tumlinson/kda")
-REQUIRED_PROJECT_FILES = {
-    "CMakeLists.txt",
-    "bench/factorized_interactions/CMakeLists.txt",
-    "bench/factorized_interactions/build_runner.py",
-    "bench/factorized_interactions/native_runner.cu",
-    "include/Cellerator/modeling/cuda/factorized_interaction.hh",
-    "src/modeling/cuda/factorized_interaction.cu",
-    "tests/factorized_interactions/reference.py",
-    "tests/factorized_interactions/workloads.py",
-}
 
 
 def _checked_registration(*, task: Path, workspace: Path, candidate_id: str,
@@ -59,9 +50,7 @@ def _checked_registration(*, task: Path, workspace: Path, candidate_id: str,
         raise AdapterError(f"cannot import KDA source-manifest validator from {kda_root}") from exc
     parsed = read_candidate_manifest(manifest_path, source_dir)
     files = set(parsed["files"])
-    missing = REQUIRED_PROJECT_FILES - files
-    if missing:
-        raise AdapterError(f"candidate manifest is not a complete native project: {sorted(missing)}")
+    require_factorized_project(files)
     tree_hash, tree_entries = candidate_tree_identity(source_dir)
     tree_by_path = {row["path"]: row["sha256"] for row in tree_entries}
     if set(tree_by_path) != files:

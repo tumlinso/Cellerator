@@ -1,4 +1,4 @@
-#include <Cellerator/modeling/cuda/packed_embedding.hh>
+#include <Cellerator/ops/sequence/packed_embedding_cuda.hh>
 #include <Cellerator/tensor/state_codes/operations.hh>
 
 #include <cuda_fp16.h>
@@ -14,7 +14,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace cuda = cellerator::modeling::cuda;
+namespace cuda = cellerator::ops::sequence::cuda;
 namespace state_codes = cellerator::tensor::state_codes;
 namespace memory_cuda = cellerator::memory::cuda;
 

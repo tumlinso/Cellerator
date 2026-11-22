@@ -15,7 +15,7 @@
 
 #ifdef CELLERATOR_NN_HAS_CUDA
 #include <Cellerator/memory/cuda/resources.hh>
-#include <Cellerator/modeling/cuda/factorized_interaction.hh>
+#include <Cellerator/ops/mechanism/factorized_interaction_cuda.hh>
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDAGuard.h>
 #include <mutex>
@@ -25,7 +25,7 @@ namespace py = pybind11;
 namespace nn = cellerator::nn;
 namespace layout = cellerator::layout;
 #ifdef CELLERATOR_NN_HAS_CUDA
-namespace modeling = cellerator::modeling;
+namespace interaction_cuda = cellerator::ops::mechanism::cuda;
 namespace memory = cellerator::memory;
 #endif
 
@@ -122,7 +122,7 @@ public:
     explicit PreparedFactorizedInteraction(layout::FactorizedInteractionLayout plan)
         : plan_(std::move(plan)) {}
 
-    std::shared_ptr<modeling::cuda::FactorizedInteractionDeviceLayout> on_device(
+    std::shared_ptr<interaction_cuda::FactorizedInteractionDeviceLayout> on_device(
         const at::Tensor& tensor) const {
         TORCH_CHECK(tensor.is_cuda(),
                     "prepared factorized interaction requires CUDA tensors");
@@ -133,7 +133,7 @@ public:
         if (found != device_layouts_.end()) return found->second;
         const auto torch_stream = c10::cuda::getCurrentCUDAStream(device);
         auto stream = memory::cuda::Stream::borrow(torch_stream.stream(), device);
-        auto owner = std::make_shared<modeling::cuda::FactorizedInteractionDeviceLayout>(
+        auto owner = std::make_shared<interaction_cuda::FactorizedInteractionDeviceLayout>(
             plan_, device, stream);
         device_layouts_.emplace(device, owner);
         return owner;
@@ -143,7 +143,7 @@ private:
     layout::FactorizedInteractionLayout plan_;
     mutable std::mutex mutex_;
     mutable std::unordered_map<
-        int, std::shared_ptr<modeling::cuda::FactorizedInteractionDeviceLayout>>
+        int, std::shared_ptr<interaction_cuda::FactorizedInteractionDeviceLayout>>
         device_layouts_;
 };
 

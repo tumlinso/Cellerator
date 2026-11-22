@@ -89,9 +89,9 @@ def main() -> int:
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
 
     configure = [
-        "cmake", "-S", str(source), "-B", str(cmake_build),
+        "cmake", "-S", str(source), "-B", str(cmake_build), "-G", "Ninja",
         "-DCMAKE_BUILD_TYPE=Release",
-        "-DCMAKE_CXX_COMPILER=/usr/bin/c++",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/clang++-18",
         f"-DCMAKE_CUDA_COMPILER={NVCC}",
         "-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-12",
         f"-DCUDAToolkit_ROOT={CUDA_ROOT}",
@@ -105,7 +105,6 @@ def main() -> int:
         "-DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF",
         "-DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF",
         "-DCELLERATOR_ENABLE_FRAMEWORK_CUDA=OFF",
-        "-DCELLERATOR_ENABLE_MODELING=ON",
         "-DCELLERATOR_ENABLE_SPARSE_SUPPORT=ON",
         "-DCELLERATOR_ENABLE_FRAMEWORK_CUDA=ON",
         "-DCELLERATOR_ENABLE_TORCH=OFF",

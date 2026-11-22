@@ -123,6 +123,20 @@ cellerator_configure_native_data_host_target(
 target_link_libraries(cellerator_dependency_execution PUBLIC
     Cellerator::dependency_geometry Cellerator::layout Cellerator::gating)
 
+set(_cellerator_host_operation_targets)
+foreach(_operation IN ITEMS reaction exchange accessibility inheritance event_memory)
+    add_library(cellerator_${_operation} INTERFACE)
+    add_library(Cellerator::${_operation} ALIAS cellerator_${_operation})
+    set_target_properties(cellerator_${_operation} PROPERTIES EXPORT_NAME ${_operation})
+    target_include_directories(cellerator_${_operation} INTERFACE
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+    target_compile_features(cellerator_${_operation} INTERFACE cxx_std_20)
+    list(APPEND _cellerator_host_operation_targets cellerator_${_operation})
+endforeach()
+target_link_libraries(cellerator_exchange INTERFACE Cellerator::layout)
+target_link_libraries(cellerator_event_memory INTERFACE Cellerator::layout)
+
 add_library(cellerator_native_data_api INTERFACE)
 add_library(Cellerator::native_data ALIAS cellerator_native_data_api)
 set_target_properties(cellerator_native_data_api PROPERTIES EXPORT_NAME native_data)
@@ -135,6 +149,20 @@ target_link_libraries(cellerator_native_data_api INTERFACE
     Cellerator::gated_product
     Cellerator::tensor
     Cellerator::dependency_execution)
+
+if(CELLERATOR_ENABLE_PYTHON)
+    pybind11_add_module(cellerator_modeling_python MODULE
+        "${PROJECT_SOURCE_DIR}/python/bindings/modeling/module.cc")
+    target_link_libraries(cellerator_modeling_python PRIVATE
+        Cellerator::dependency_execution Python::Module)
+    set_target_properties(cellerator_modeling_python PROPERTIES OUTPUT_NAME _modeling_native)
+    install(TARGETS cellerator_modeling_python
+        LIBRARY DESTINATION cellerator COMPONENT Python
+        RUNTIME DESTINATION cellerator COMPONENT Python)
+    if(TARGET cellerator_python_extensions)
+        add_dependencies(cellerator_python_extensions cellerator_modeling_python)
+    endif()
+endif()
 
 # Structural preparation is a host operation and remains testable without a
 # CUDA toolchain. The checked ExplicitPattern bridge separately exercises its
@@ -171,7 +199,7 @@ install(TARGETS
         cellerator_dependency_execution
     EXPORT CelleratorNativeDataTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(TARGETS cellerator_state_codes cellerator_tensor
+install(TARGETS cellerator_state_codes cellerator_tensor ${_cellerator_host_operation_targets}
     EXPORT CelleratorNativeDataTargets)
 install(TARGETS cellerator_native_data_api EXPORT CelleratorNativeDataTargets)
 install(EXPORT CelleratorNativeDataTargets NAMESPACE Cellerator::
@@ -218,10 +246,16 @@ foreach(_header IN ITEMS
         execution/dependency/incremental.hh
         execution/dependency/read_index.hh
         execution/dependency/workset.hh
+        execution/dependency/value_field.hh
         containers/value_shape.hh
         containers/posting_index.hh
         memory/domain.hh
+        ops/reaction/network.hh
+        ops/process/exchange.hh
+        ops/process/inheritance.hh
+        ops/condition/accessibility.hh
         ops/condition/program.hh
+        ops/sequence/event_memory.hh
         interop/formats/affine_blocked_ell.hh
         interop/formats/affine_blocked_ell_view.hh
         tensor/quantized/csr.hh

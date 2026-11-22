@@ -6,7 +6,7 @@
 #include <Cellerator/containers/posting_index.hh>
 #include <Cellerator/ops/incidence.hh>
 #include <Cellerator/layout/entity_layout.hh>
-#include <Cellerator/modeling/value_field.hh>
+#include <Cellerator/execution/dependency/value_field.hh>
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -16,7 +16,6 @@
 #include <tuple>
 
 namespace py = pybind11;
-namespace m = cellerator::modeling;
 namespace l = cellerator::layout;
 namespace g = cellerator::geometry::dependency;
 namespace e = cellerator::execution;
@@ -119,7 +118,7 @@ py::array dispatch(const e::PreparedIncidence& plan, const py::array& input, Ope
 
 template<class T>
 void bind_field(py::module_& module, const char* name) {
-    using Field = m::ValueField<T>;
+    using Field = e::ValueField<T>;
     py::class_<Field>(module, name)
         .def(py::init([](l::EntityLayout layout, const py::array& input) {
             auto [values, features] = read_values<T>(input, layout.size());

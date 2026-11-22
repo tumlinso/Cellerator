@@ -7,14 +7,13 @@
 #include <Cellerator/execution/dependency/workset.hh>
 #include <Cellerator/ops/incidence.hh>
 #include <Cellerator/layout/entity_layout.hh>
-#include <Cellerator/modeling/value_field.hh>
+#include <Cellerator/execution/dependency/value_field.hh>
 
 #include <cassert>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
 
-namespace m = cellerator::modeling;
 namespace g = cellerator::geometry::dependency;
 namespace e = cellerator::execution;
 namespace oi = cellerator::ops::incidence;
@@ -70,7 +69,7 @@ int main() {
     rejects<std::invalid_argument>([&] { oi::gather(plan, values, 1); });
     rejects<std::out_of_range>([&] { e::PreparedIncidence invalid(old_worklist, cellerator::layout::EntityLayout({100})); });
 
-    m::ValueField<float> field(layout, 2, values);
+    e::ValueField<float> field(layout, 2, values);
     field.update({200}, {8, 80});
     assert(field.generation().value == 1 && field.values()[4] == 8);
     rejects<std::out_of_range>([&] { field.update({100, 999}, {7,70, 9,90}); });

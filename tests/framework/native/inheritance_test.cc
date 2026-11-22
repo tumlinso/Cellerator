@@ -2,7 +2,7 @@
 #undef NDEBUG
 #endif
 
-#include <Cellerator/modeling/inheritance.hh>
+#include <Cellerator/ops/process/inheritance.hh>
 
 #include <cassert>
 #include <cstdint>
@@ -11,14 +11,14 @@
 #include <utility>
 #include <vector>
 
-using cellerator::modeling::inheritance::BinomialPolicy;
-using cellerator::modeling::inheritance::FractionPolicy;
-using cellerator::modeling::inheritance::MemberInheritance;
-using cellerator::modeling::inheritance::MemberReset;
-using cellerator::modeling::inheritance::binomial_partition;
-using cellerator::modeling::inheritance::fieldwise_inherit;
-using cellerator::modeling::inheritance::fraction_partition;
-using cellerator::modeling::inheritance::member_custom;
+using cellerator::ops::process::BinomialPolicy;
+using cellerator::ops::process::FractionPolicy;
+using cellerator::ops::process::MemberInheritance;
+using cellerator::ops::process::MemberReset;
+using cellerator::ops::process::binomial_partition;
+using cellerator::ops::process::fieldwise_inherit;
+using cellerator::ops::process::fraction_partition;
+using cellerator::ops::process::member_custom;
 
 struct State {
     std::uint64_t count = 0;

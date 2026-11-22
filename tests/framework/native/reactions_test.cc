@@ -1,12 +1,12 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/reactions.hh>
+#include <Cellerator/ops/reaction/network.hh>
 #include <cassert>
 #include <limits>
 #include <random>
 #include <string>
-using namespace cellerator::modeling;
+using namespace cellerator::ops::reaction;
 int main() {
     ReactionNetwork<> network({"B", "A", "unrelated"}, {
         mass_action_reaction<>("forward", {{"A", 1}}, {{"B", 1}}, 2.0),

@@ -152,7 +152,7 @@ ordinals for upload. Map changed keys with `source_ordinal`; never cast
 biological entity IDs directly to dense slots. Retain the immutable pattern and
 the projection buffer through device use.
 
-`cellerator::modeling::cuda::build_changed_frontier` visits those
+`cellerator::execution::dependency::cuda::build_changed_frontier` visits those
 changed-source posting rows and
 forms a compact, deduplicated interaction worklist. A warp processes a changed
 source row; device-wide atomic claims handle duplicates across rows. It uses
@@ -160,11 +160,10 @@ no numerical arithmetic, dense all-pairs scan, allocation, device switch,
 implicit synchronization or host status copy. Its output order is unspecified;
 sort separately when a consumer requires stable edge order.
 
-The declaration is in `<Cellerator/modeling/cuda/frontier.hh>` and its current
-CUDA owner is `Cellerator::framework_cuda`. The host pattern and read index
-remain available through `Cellerator::native_data` or `Cellerator::modeling`;
-the frontier accepts explicit device buffers and does not synchronize or
-publish host-cache state for the caller.
+The declaration is in `<Cellerator/execution/dependency/frontier_cuda.hh>` and
+its CUDA owner is `Cellerator::dependency_frontier_cuda`. The host pattern and
+read index are available through `Cellerator::native_data`. The caller supplies
+device buffers and controls synchronization and host-cache publication.
 
 The borrowed device buffers, explicit CUDA stream, scratch capacity and output
 capacity are part of the call. Scratch/status storage cannot be used
@@ -192,9 +191,8 @@ caller owns transfers and GPU callback dispatch.
 
 The complete example above and the focused native check compiled with C++20,
 `-Wall -Wextra -Werror`, against the current host owners. The installed
-consumer interface remains `Cellerator::native_data` or its composing
-`Cellerator::modeling` target; this source-tree command validates the test
-contract directly:
+consumer interface is `Cellerator::native_data`. Compile the test directly to
+check the same contract from the source tree.
 
 ```sh
 g++ -std=c++20 -Wall -Wextra -Werror -Iinclude \
@@ -221,7 +219,7 @@ and does not revise the source-bound historical result.
 
 ```sh
 nvcc -std=c++20 -arch=sm_70 -Iinclude \
-  tests/framework/cuda/frontier_smoke.cu src/modeling/cuda/frontier.cu \
+  tests/framework/cuda/frontier_smoke.cu src/execution/dependency/frontier.cu \
   -o /tmp/cellerator-frontier-smoke
 ```
 

@@ -1,4 +1,4 @@
-#include <Cellerator/modeling/cuda/factorized_interaction.hh>
+#include <Cellerator/ops/mechanism/factorized_interaction_cuda.hh>
 
 #include <vector>
 
@@ -12,10 +12,10 @@ int main() {
     const auto prepared = layout::prepare_factorized_interactions(
         mechanisms, layout::FactorizedInteractionExtents{});
 
-    modeling::cuda::FactorizedInteractionWorkspace workspace{};
-    return modeling::cuda::factorized_interaction_workspace(
+    ops::mechanism::cuda::FactorizedInteractionWorkspace workspace{};
+    return ops::mechanism::cuda::factorized_interaction_workspace(
                prepared.view(), {0, 0},
-               modeling::cuda::FactorizedInteractionRoute::packet,
+               ops::mechanism::cuda::FactorizedInteractionRoute::packet,
                &workspace) == cudaSuccess
         ? 0
         : 1;
