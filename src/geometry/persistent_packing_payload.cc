@@ -293,31 +293,32 @@ void populate_view(const persistent_image_header &header, const void *base,
     result.tiles.ordering_identity = header.ordering_identity;
     result.tiles.global_row_begin = header.global_row_begin;
     result.tiles.full_row_count = header.full_row_count;
-    result.tiles.row_count = header.row_count;
-    result.tiles.feature_count = header.feature_count;
-    result.tiles.feature_block_count = header.feature_block_count;
-    result.tiles.tile_row_width = header.tile_row_width;
-    result.tiles.tile_count = header.tile_count;
-    result.tiles.nnz_count = header.nnz_count;
-    result.tiles.tile_block_count = header.tile_block_count;
-    result.tiles.row_block_entry_count = header.row_block_entry_count;
+    result.tiles.layout.rows = header.row_count;
+    result.tiles.layout.features = header.feature_count;
+    result.tiles.layout.feature_blocks = header.feature_block_count;
+    result.tiles.layout.tile_row_width = header.tile_row_width;
+    result.tiles.layout.tiles = header.tile_count;
+    result.tiles.layout.stored_values = header.nnz_count;
+    result.tiles.layout.tile_blocks = header.tile_block_count;
+    result.tiles.layout.row_block_entries = header.row_block_entry_count;
     result.tiles.value_size_bytes = header.value_size_bytes;
     result.tiles.feature_axis_fingerprint = header.feature_axis_fingerprint;
     result.tiles.feature_axis_fingerprint_version =
         header.feature_axis_fingerprint_version;
     result.tiles.row_domain_identity = header.row_domain_identity;
-    result.tiles.tile_block_offsets = pointer_at<u32>(base,
+    result.tiles.layout.tile_block_offsets = pointer_at<u32>(base,
         header.offsets[tile_block_offsets_section]);
-    result.tiles.tile_block_ids = pointer_at<u32>(base,
+    result.tiles.layout.block_ids = pointer_at<u32>(base,
         header.offsets[tile_block_ids_section]);
-    result.tiles.tile_block_cell_masks = pointer_at<u32>(base,
+    result.tiles.layout.participating_row_masks = pointer_at<u32>(base,
         header.offsets[tile_block_cell_masks_section]);
-    result.tiles.block_row_entry_offsets = pointer_at<u32>(base,
+    result.tiles.layout.block_row_entry_offsets = pointer_at<u32>(base,
         header.offsets[block_row_entry_offsets_section]);
-    result.tiles.row_block_gene_masks = pointer_at<u32>(base,
+    result.tiles.layout.feature_masks = pointer_at<u32>(base,
         header.offsets[row_block_gene_masks_section]);
-    result.tiles.row_block_value_offsets = pointer_at<u32>(base,
+    result.tiles.layout.row_block_value_offsets = pointer_at<u32>(base,
         header.offsets[row_block_value_offsets_section]);
+    result.tiles.layout.feature_block_offsets = result.plan.feature_block_offsets;
     result.tiles.values = pointer_at<unsigned char>(base,
         header.offsets[values_section]);
     *out = result;
@@ -378,31 +379,32 @@ u32 valid_lane_mask(u32 lanes) noexcept {
 
 validation_result validate_tile_arrays(const persistent_packing_payload_view &view) {
     const warp_tile_view &tiles = view.tiles;
-    if (tiles.tile_row_width == 0u || tiles.tile_row_width > 32u
-        || tiles.tile_count != tiles.row_count / tiles.tile_row_width
-            + (tiles.row_count % tiles.tile_row_width != 0u ? 1u : 0u)
-        || tiles.tile_block_offsets[0] != 0u
-        || tiles.tile_block_offsets[tiles.tile_count] != tiles.tile_block_count
-        || tiles.block_row_entry_offsets[0] != 0u
-        || tiles.block_row_entry_offsets[tiles.tile_block_count]
-            != tiles.row_block_entry_count
-        || tiles.row_block_value_offsets[0] != 0u
-        || tiles.row_block_value_offsets[tiles.row_block_entry_count]
-            != tiles.nnz_count) {
+    if (tiles.layout.tile_row_width == 0u || tiles.layout.tile_row_width > 32u
+        || tiles.layout.tiles != tiles.layout.rows / tiles.layout.tile_row_width
+            + (tiles.layout.rows % tiles.layout.tile_row_width != 0u ? 1u : 0u)
+        || tiles.layout.tile_block_offsets[0] != 0u
+        || tiles.layout.tile_block_offsets[tiles.layout.tiles] != tiles.layout.tile_blocks
+        || tiles.layout.block_row_entry_offsets[0] != 0u
+        || tiles.layout.block_row_entry_offsets[tiles.layout.tile_blocks]
+            != tiles.layout.row_block_entries
+        || tiles.layout.row_block_value_offsets[0] != 0u
+        || tiles.layout.row_block_value_offsets[tiles.layout.row_block_entries]
+            != tiles.layout.stored_values) {
         return invalid("persistent tile terminal geometry is invalid");
     }
-    for (u32 tile = 0u; tile < tiles.tile_count; ++tile) {
-        const u32 begin = tiles.tile_block_offsets[tile];
-        const u32 end = tiles.tile_block_offsets[tile + 1u];
-        const u32 rows_remaining = tiles.row_count - tile * tiles.tile_row_width;
-        const u32 lanes = std::min(tiles.tile_row_width, rows_remaining);
+    for (u32 tile = 0u; tile < tiles.layout.tiles; ++tile) {
+        const u32 begin = tiles.layout.tile_block_offsets[tile];
+        const u32 end = tiles.layout.tile_block_offsets[tile + 1u];
+        const u32 rows_remaining = tiles.layout.rows - tile * tiles.layout.tile_row_width;
+        const u32 lanes = rows_remaining < tiles.layout.tile_row_width
+            ? rows_remaining : tiles.layout.tile_row_width;
         u32 previous_block = 0u;
         for (u32 descriptor = begin; descriptor < end; ++descriptor) {
-            const u32 block = tiles.tile_block_ids[descriptor];
-            const u32 cell_mask = tiles.tile_block_cell_masks[descriptor];
-            const u32 entry_begin = tiles.block_row_entry_offsets[descriptor];
-            const u32 entry_end = tiles.block_row_entry_offsets[descriptor + 1u];
-            if (block >= tiles.feature_block_count
+            const u32 block = tiles.layout.block_ids[descriptor];
+            const u32 cell_mask = tiles.layout.participating_row_masks[descriptor];
+            const u32 entry_begin = tiles.layout.block_row_entry_offsets[descriptor];
+            const u32 entry_end = tiles.layout.block_row_entry_offsets[descriptor + 1u];
+            if (block >= tiles.layout.feature_blocks
                 || (descriptor != begin && block <= previous_block)
                 || cell_mask == 0u || (cell_mask & ~valid_lane_mask(lanes)) != 0u
                 || entry_end < entry_begin
@@ -412,9 +414,9 @@ validation_result validate_tile_arrays(const persistent_packing_payload_view &vi
             const u32 block_width = view.plan.feature_block_offsets[block + 1u]
                 - view.plan.feature_block_offsets[block];
             for (u32 entry = entry_begin; entry < entry_end; ++entry) {
-                const u32 gene_mask = tiles.row_block_gene_masks[entry];
-                const u32 value_begin = tiles.row_block_value_offsets[entry];
-                const u32 value_end = tiles.row_block_value_offsets[entry + 1u];
+                const u32 gene_mask = tiles.layout.feature_masks[entry];
+                const u32 value_begin = tiles.layout.row_block_value_offsets[entry];
+                const u32 value_end = tiles.layout.row_block_value_offsets[entry + 1u];
                 if (gene_mask == 0u
                     || (gene_mask & ~valid_lane_mask(block_width)) != 0u
                     || value_end < value_begin
@@ -470,9 +472,9 @@ validation_result query_persistent_packing_payload_requirements_host(
     status = validate_warp_tile_view_host(plan, records, order, tiles);
     if (!status) return status;
     image_layout layout;
-    if (!make_layout(tiles.row_count, tiles.feature_count, tiles.feature_block_count,
-        plan.row_group_count(), tiles.tile_count, tiles.tile_block_count,
-        tiles.row_block_entry_count, tiles.nnz_count, tiles.value_size_bytes, &layout)) {
+    if (!make_layout(tiles.layout.rows, tiles.layout.features, tiles.layout.feature_blocks,
+        plan.row_group_count(), tiles.layout.tiles, tiles.layout.tile_blocks,
+        tiles.layout.row_block_entries, tiles.layout.stored_values, tiles.value_size_bytes, &layout)) {
         return validation_error(validation_code::integer_overflow, invalid_id,
             "persistent payload byte requirements overflow");
     }
@@ -500,9 +502,9 @@ validation_result build_persistent_packing_payload_host(
             "persistent payload image buffer is too small");
     }
     image_layout layout;
-    if (!make_layout(tiles.row_count, tiles.feature_count, tiles.feature_block_count,
-        plan.row_group_count(), tiles.tile_count, tiles.tile_block_count,
-        tiles.row_block_entry_count, tiles.nnz_count, tiles.value_size_bytes, &layout)) {
+    if (!make_layout(tiles.layout.rows, tiles.layout.features, tiles.layout.feature_blocks,
+        plan.row_group_count(), tiles.layout.tiles, tiles.layout.tile_blocks,
+        tiles.layout.row_block_entries, tiles.layout.stored_values, tiles.value_size_bytes, &layout)) {
         return invalid("persistent payload layout failed after preflight");
     }
     std::memset(buffers.image, 0, required.image_bytes);
@@ -522,9 +524,9 @@ validation_result build_persistent_packing_payload_host(
     header.objective_kind = static_cast<u32>(plan.objective_kind());
     header.row_domain_kind = static_cast<u32>(plan.identity().row_domain_kind);
     header.full_row_count = tiles.full_row_count;
-    header.row_count = tiles.row_count;
-    header.feature_count = tiles.feature_count;
-    header.feature_block_count = tiles.feature_block_count;
+    header.row_count = tiles.layout.rows;
+    header.feature_count = tiles.layout.features;
+    header.feature_block_count = tiles.layout.feature_blocks;
     header.row_group_count = plan.row_group_count();
     header.maximum_feature_block_width = plan.maximum_feature_block_width();
     header.row_group_width = plan.row_group_width();
@@ -542,11 +544,11 @@ validation_result build_persistent_packing_payload_host(
     header.ordering_identity = order.ordering_identity;
     header.tile_identity = tiles.tile_identity;
     header.global_row_begin = tiles.global_row_begin;
-    header.tile_row_width = tiles.tile_row_width;
-    header.tile_count = tiles.tile_count;
-    header.nnz_count = tiles.nnz_count;
-    header.tile_block_count = tiles.tile_block_count;
-    header.row_block_entry_count = tiles.row_block_entry_count;
+    header.tile_row_width = tiles.layout.tile_row_width;
+    header.tile_count = tiles.layout.tiles;
+    header.nnz_count = tiles.layout.stored_values;
+    header.tile_block_count = tiles.layout.tile_blocks;
+    header.row_block_entry_count = tiles.layout.row_block_entries;
     header.value_size_bytes = tiles.value_size_bytes;
     std::copy(layout.offsets, layout.offsets + section_count, header.offsets);
     std::memcpy(buffers.image, &header, sizeof(header));
@@ -556,39 +558,40 @@ validation_result build_persistent_packing_payload_host(
         if (bytes != 0u) std::memcpy(base + layout.offsets[section], source, bytes);
     };
     copy(feature_permutation_section, plan.feature_permutation(),
-        static_cast<std::size_t>(tiles.feature_count) * sizeof(u32));
+        static_cast<std::size_t>(tiles.layout.features) * sizeof(u32));
     copy(inverse_feature_permutation_section, plan.inverse_feature_permutation(),
-        static_cast<std::size_t>(tiles.feature_count) * sizeof(u32));
+        static_cast<std::size_t>(tiles.layout.features) * sizeof(u32));
     copy(feature_block_offsets_section, plan.feature_block_offsets(),
-        (static_cast<std::size_t>(tiles.feature_block_count) + 1u) * sizeof(u32));
+        (static_cast<std::size_t>(tiles.layout.feature_blocks) + 1u) * sizeof(u32));
     copy(feature_to_block_section, plan.feature_to_block(),
-        static_cast<std::size_t>(tiles.feature_count) * sizeof(u32));
+        static_cast<std::size_t>(tiles.layout.features) * sizeof(u32));
     copy(feature_to_local_section, plan.feature_to_local(),
-        static_cast<std::size_t>(tiles.feature_count) * sizeof(u32));
+        static_cast<std::size_t>(tiles.layout.features) * sizeof(u32));
     copy(row_group_offsets_section, plan.row_group_offsets(),
         (static_cast<std::size_t>(plan.row_group_count()) + 1u) * sizeof(u32));
     copy(row_permutation_section, order.row_permutation,
-        static_cast<std::size_t>(tiles.row_count) * sizeof(u32));
+        static_cast<std::size_t>(tiles.layout.rows) * sizeof(u32));
     copy(inverse_row_permutation_section, order.inverse_row_permutation,
-        static_cast<std::size_t>(tiles.row_count) * sizeof(u32));
-    copy(tile_block_offsets_section, tiles.tile_block_offsets,
-        (static_cast<std::size_t>(tiles.tile_count) + 1u) * sizeof(u32));
-    copy(tile_block_ids_section, tiles.tile_block_ids,
-        static_cast<std::size_t>(tiles.tile_block_count) * sizeof(u32));
-    copy(tile_block_cell_masks_section, tiles.tile_block_cell_masks,
-        static_cast<std::size_t>(tiles.tile_block_count) * sizeof(u32));
-    copy(block_row_entry_offsets_section, tiles.block_row_entry_offsets,
-        (static_cast<std::size_t>(tiles.tile_block_count) + 1u) * sizeof(u32));
-    copy(row_block_gene_masks_section, tiles.row_block_gene_masks,
-        static_cast<std::size_t>(tiles.row_block_entry_count) * sizeof(u32));
-    copy(row_block_value_offsets_section, tiles.row_block_value_offsets,
-        (static_cast<std::size_t>(tiles.row_block_entry_count) + 1u) * sizeof(u32));
+        static_cast<std::size_t>(tiles.layout.rows) * sizeof(u32));
+    copy(tile_block_offsets_section, tiles.layout.tile_block_offsets,
+        (static_cast<std::size_t>(tiles.layout.tiles) + 1u) * sizeof(u32));
+    copy(tile_block_ids_section, tiles.layout.block_ids,
+        static_cast<std::size_t>(tiles.layout.tile_blocks) * sizeof(u32));
+    copy(tile_block_cell_masks_section, tiles.layout.participating_row_masks,
+        static_cast<std::size_t>(tiles.layout.tile_blocks) * sizeof(u32));
+    copy(block_row_entry_offsets_section, tiles.layout.block_row_entry_offsets,
+        (static_cast<std::size_t>(tiles.layout.tile_blocks) + 1u) * sizeof(u32));
+    copy(row_block_gene_masks_section, tiles.layout.feature_masks,
+        static_cast<std::size_t>(tiles.layout.row_block_entries) * sizeof(u32));
+    copy(row_block_value_offsets_section, tiles.layout.row_block_value_offsets,
+        (static_cast<std::size_t>(tiles.layout.row_block_entries) + 1u) * sizeof(u32));
     copy(values_section, tiles.values,
-        static_cast<std::size_t>(tiles.nnz_count) * tiles.value_size_bytes);
+        static_cast<std::size_t>(tiles.layout.stored_values) * tiles.value_size_bytes);
     header.payload_identity = image_identity(buffers.image, required.image_bytes);
     std::memcpy(buffers.image, &header, sizeof(header));
     const persistent_packing_payload_compatibility expected{
-        tiles.global_row_begin, tiles.row_count, tiles.feature_count,
+        tiles.global_row_begin, static_cast<u32>(tiles.layout.rows),
+        static_cast<u32>(tiles.layout.features),
         tiles.feature_axis_fingerprint, tiles.feature_axis_fingerprint_version,
         tiles.row_domain_identity, header.payload_identity};
     return validate_persistent_packing_payload_host(
@@ -669,13 +672,13 @@ validation_result validate_persistent_packing_payload_host(
     if (!status) return status;
     status = validate_tile_arrays(result);
     if (!status) return status;
-    if (result.plan.feature_count != result.tiles.feature_count
-        || result.plan.feature_block_count != result.tiles.feature_block_count
+    if (result.plan.feature_count != result.tiles.layout.features
+        || result.plan.feature_block_count != result.tiles.layout.feature_blocks
         || result.plan.feature_block_geometry_identity
             != result.tiles.feature_block_geometry_identity
         || result.order.ordering_identity != result.tiles.ordering_identity
-        || result.order.group_width != result.tiles.tile_row_width
-        || result.order.row_count != result.tiles.row_count
+        || result.order.group_width != result.tiles.layout.tile_row_width
+        || result.order.row_count != result.tiles.layout.rows
         || result.order.global_row_begin != result.tiles.global_row_begin
         || result.order.row_domain_identity != result.tiles.row_domain_identity) {
         return invalid("persistent plan/order/tile domains disagree");
@@ -718,17 +721,18 @@ validation_result rebind_persistent_packing_payload(
     result.order.row_permutation = static_cast<const u32 *>(rebase(result.order.row_permutation));
     result.order.inverse_row_permutation = static_cast<const u32 *>(
         rebase(result.order.inverse_row_permutation));
-    result.tiles.tile_block_offsets = static_cast<const u32 *>(
-        rebase(result.tiles.tile_block_offsets));
-    result.tiles.tile_block_ids = static_cast<const u32 *>(rebase(result.tiles.tile_block_ids));
-    result.tiles.tile_block_cell_masks = static_cast<const u32 *>(
-        rebase(result.tiles.tile_block_cell_masks));
-    result.tiles.block_row_entry_offsets = static_cast<const u32 *>(
-        rebase(result.tiles.block_row_entry_offsets));
-    result.tiles.row_block_gene_masks = static_cast<const u32 *>(
-        rebase(result.tiles.row_block_gene_masks));
-    result.tiles.row_block_value_offsets = static_cast<const u32 *>(
-        rebase(result.tiles.row_block_value_offsets));
+    result.tiles.layout.tile_block_offsets = static_cast<const u32 *>(
+        rebase(result.tiles.layout.tile_block_offsets));
+    result.tiles.layout.block_ids = static_cast<const u32 *>(rebase(result.tiles.layout.block_ids));
+    result.tiles.layout.participating_row_masks = static_cast<const u32 *>(
+        rebase(result.tiles.layout.participating_row_masks));
+    result.tiles.layout.block_row_entry_offsets = static_cast<const u32 *>(
+        rebase(result.tiles.layout.block_row_entry_offsets));
+    result.tiles.layout.feature_masks = static_cast<const u32 *>(
+        rebase(result.tiles.layout.feature_masks));
+    result.tiles.layout.row_block_value_offsets = static_cast<const u32 *>(
+        rebase(result.tiles.layout.row_block_value_offsets));
+    result.tiles.layout.feature_block_offsets = result.plan.feature_block_offsets;
     result.tiles.values = rebase(result.tiles.values);
     *out = result;
     return validation_ok();

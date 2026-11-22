@@ -1,14 +1,9 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <Cellerator/execution/biological_abi.hh>
 
 #include <type_traits>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_EXECUTION_LIFETIME_HD __host__ __device__
-#else
-#define CELLERATOR_EXECUTION_LIFETIME_HD
-#endif
 
 namespace cellerator::execution {
 
@@ -95,17 +90,17 @@ enum class lifetime_validation_code : u8 {
     missing_values = 7u
 };
 
-CELLERATOR_EXECUTION_LIFETIME_HD constexpr bool valid_projection_catalog(
+CELLERATOR_HOST_DEVICE constexpr bool valid_projection_catalog(
     const projection_catalog_handle &catalog) noexcept {
     return catalog.slot != invalid_identity_slot && catalog.generation != 0u;
 }
 
-CELLERATOR_EXECUTION_LIFETIME_HD constexpr bool same_structure_handle(
+CELLERATOR_HOST_DEVICE constexpr bool same_structure_handle(
     const structure_handle &lhs, const structure_handle &rhs) noexcept {
     return same_handle(lhs, rhs);
 }
 
-CELLERATOR_EXECUTION_LIFETIME_HD constexpr bool same_relation_structure(
+CELLERATOR_HOST_DEVICE constexpr bool same_relation_structure(
     const relation_structure &lhs, const relation_structure &rhs) noexcept {
     return same_structure_handle(lhs.identity, rhs.identity)
         && lhs.epoch.value == rhs.epoch.value
@@ -113,7 +108,7 @@ CELLERATOR_EXECUTION_LIFETIME_HD constexpr bool same_relation_structure(
         && same_axis_identity(lhs.destination_axis, rhs.destination_axis);
 }
 
-CELLERATOR_EXECUTION_LIFETIME_HD constexpr lifetime_validation_code
+CELLERATOR_HOST_DEVICE constexpr lifetime_validation_code
 validate_relation_structure(const relation_structure &structure) noexcept {
     if (!valid_handle(structure.identity)
         || !valid_axis_identity(structure.source_axis)
@@ -124,7 +119,7 @@ validate_relation_structure(const relation_structure &structure) noexcept {
     return lifetime_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_LIFETIME_HD constexpr lifetime_validation_code
+CELLERATOR_HOST_DEVICE constexpr lifetime_validation_code
 validate_value_plane(
     const relation_structure &structure,
     const value_plane &plane) noexcept {
@@ -156,7 +151,7 @@ validate_value_plane(
     return lifetime_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_LIFETIME_HD constexpr lifetime_validation_code
+CELLERATOR_HOST_DEVICE constexpr lifetime_validation_code
 validate_value_binding(
     const relation_structure &structure,
     const value_binding &binding) noexcept {
@@ -181,5 +176,3 @@ static_assert(std::is_trivially_copyable<value_binding>::value,
     "value binding must remain device-copyable");
 
 } // namespace cellerator::execution
-
-#undef CELLERATOR_EXECUTION_LIFETIME_HD

@@ -36,6 +36,38 @@ refactoring or changes to biological semantics, numerical contracts, ownership,
 or execution authority. Those remain governed by the repository's architecture
 and operation-specific contracts.
 
+## Scope and dependencies
+
+These rules cover all authored native production code: public interfaces,
+templates, examples, host preparation and planners, resource owners, runtime
+machinery, CPU calculations, and CUDA kernels. Host code, cold paths, and
+placement in a Cellerator class are not exemptions. Cellerator owns reusable
+numerical, storage, layout, execution, derivative, and modeling abstractions;
+those abstractions must preserve the same direct computational style.
+
+No STL machinery: no containers, algorithms, smart pointers, type-erased
+callables, or equivalent machinery concealed behind another name. This includes
+vector, map, set, tuple, variant, string, optional, span, ranges, function, or
+generic growing-container replacement. Use visible fields, pointers, counts,
+capacities, indices, and explicit initialization. Reuse existing Cellerator owners and views where
+their contracts fit; do not duplicate them in a consumer or replace prohibited
+STL with another general-purpose framework.
+
+Use the smallest necessary scalar headers: stddef.h, stdint.h, and float.h.
+Prefer compiler math and memory builtins. Audit authored transitive includes
+as well as direct ones. Necessary platform, CUDA/intrinsic, and vendor API
+declarations belong at their concrete implementation or adapter boundary;
+foreign API-mandated types may appear only where that API requires them.
+These exceptions do not license STL-backed internal planning or storage.
+Development-only tests, tooling, and measurement infrastructure may use ordinary
+library facilities. Third-party implementations follow their own rules. Keep
+those dependencies out of the authored core except at the stated boundaries.
+
+Existing noncompliant source is migration debt, not precedent or an exception.
+New and reworked code must comply. Fix the affected computation and necessary
+callers within the authorized task; unrelated repository-wide cleanup is not
+a prerequisite for using an existing interface or completing scoped work.
+
 ## Expressions and mathematical notation
 
 - Use `?:` for value selection, including initialization, arguments, and
@@ -85,9 +117,9 @@ its result type and value category. It is no promise of branchless execution.
 - For known arithmetic types, use short conversions such as `double(n)` and
   `float(x)`. Use named casts where pointer interpretation, qualifiers, or class
   relationships deserve attention.
-- Use narrowly scoped declarations such as `using std::sqrt;`, short namespace
-  aliases, and useful type aliases to simplify repeated notation. Their meaning
-  and numerical or ownership consequences should remain easy to find.
+- Use short namespace aliases and useful type aliases to simplify repeated
+  notation. Their meaning and numerical or ownership consequences must remain
+  easy to find. Scalar declarations do not authorize broad runtime headers.
 
 ## Control flow and function boundaries
 
@@ -104,10 +136,10 @@ its result type and value category. It is no promise of branchless execution.
   Extract functions for useful operations, reusable computations, or distinct
   contracts. Split at meaningful behavioral boundaries rather than to satisfy
   a line count.
-- Allow a forward `goto` to cleanup in low-level C interoperability code when
-  it makes resource release clearer. Keep this exception narrow and preserve
-  initialization, lifetime, and destruction rules. Use RAII owners where they
-  express resource handling clearly.
+- Ordinary labels and `goto` may expose phases, retries, cleanup, or exits
+  from nested loops. Computed goto is a documented compiler extension confined
+  to compiled implementation functions. Keep targets local and obey object
+  initialization, lifetime, and destruction rules.
 
 For example:
 
@@ -126,19 +158,21 @@ for (int i = 0; i < n; ++i) y[i] += a*x[i];
   strides, layout, and lifetimes understandable from the interface and code.
   Allocation, copying, conversion, transfer, synchronization, and runtime
   dispatch must be apparent through clear owners and deliberate calls.
-- Separate storage management from numerical work where useful. Pass arrays,
-  views, and explicit scratch storage into algorithms so their working set and
-  allocation behavior remain understandable. Choose workspace size and lifetime
-  deliberately.
+- Separate explicit resource provisioning from numerical work. Sizing,
+  validation, numerical preparation, binding, and evaluation use supplied
+  storage. Cheap stack descriptors and borrowed views are permitted; they do
+  not acquire owners, materialize data, or allocate bookkeeping.
 - Establish contracts at boundaries and let internal routines rely on those
   documented preconditions. Recheck facts when mutation or a new boundary can
   invalidate them. Preserve useful compiler-visible information about valid
   types, ranges, alignment, and aliasing; assert only guarantees the contract
   actually provides.
 - Use small templates, callable structs, local lambdas, and `if constexpr` to
-  express genuine common structure and useful specialization. Introduce runtime
-  polymorphism, registration, traits machinery, and policy layers for
-  demonstrated requirements.
+  express genuine common structure and useful specialization. Introduce
+  runtime polymorphism, registration, or policy machinery only for a concrete
+  in-scope computational contract that simpler direct code cannot express.
+  Prefer typed function pointers with explicit caller state at deliberate
+  operation boundaries; keep type erasure and dispatch out of element loops.
 - Allow deliberate duplication when traversal, numerical treatment, or
   ownership genuinely differs. Share algorithms whose structure is common;
   keep distinct algorithms recognizable and account for generated code size.
@@ -150,6 +184,41 @@ for (int i = 0; i < n; ++i) y[i] += a*x[i];
   obligation. Appeals to standard practice, extensibility, or readability must
   identify the specific benefit provided here.
 
+## Provisioning, allocation, and reuse
+
+Only explicit resource provisioning acquires, grows, or releases backing
+storage. A reserve request that fits existing capacity, alignment, and
+placement must allocate, copy, and transfer nothing. Numerical operations
+report insufficient capacity and required storage instead of silently growing
+buffers. Requirements must include metadata, prepared topology, diagnostics,
+ownership bookkeeping, and scratch as well as numerical outputs. Data-dependent
+sizes may use a counting pass, a sufficient bound, or capacity reporting;
+choose the least costly strategy suitable for the operation.
+
+Keep data/results, reusable prepared state, and transient scratch lifetimes
+explicit. Each allocation has one releasing owner; views borrow storage.
+Bulk owners and lightweight cell/feature views must avoid per-cell or per-entry
+allocation. Required initialization, copying, packing, transfer, and waits are
+deliberate operations. Retain storage through its final asynchronous consumer;
+resetting a workspace or publishing a generation does not prove completion.
+
+Repeated evaluation within provisioned capacities performs zero heap/device
+allocations or backing-storage growth, including hidden metadata and control
+blocks. Compatible smaller inputs reuse capacity. Changed numerical values in
+an unchanged representation within capacity do not justify reallocating. Reuse
+prepared topology while its documented dependencies remain valid; rebuild only
+affected state when data-derived support, membership, or eligibility changes.
+A pool does not exempt temporary churn, needless copies, or excessive retention.
+Account for allocation count/bytes, peak live and retained bytes, and material
+copy/transfer costs across the complete operation lifecycle.
+
+Use the simplest existing owner and workspace facilities that satisfy the
+operation. A new allocator, pool, cache, memory planner, or ownership framework
+requires a demonstrated in-scope need; it is not a routine prerequisite for
+adding a calculation. Caller-owned bounded workspace may be subdivided without
+acquiring backing storage. Reuse follows the caller's concurrency and completion
+contract, not an implicit global synchronization or background scheduler.
+
 ## Hot paths and compilation cost
 
 **Prefer compile-time optimization and useful specialization over recurring
@@ -158,11 +227,13 @@ runtime overhead in hot paths; accept longer builds to obtain better execution.*
 Spend compilation effort to remove recurring runtime work. Use available static
 information and useful specialization through templates, static dispatch,
 `if constexpr`, and compile-time knowledge of types, layouts, extents, and
-alignment.
-Keep implementations visible to the compiler where that enables optimization.
-Compilation expense alone does not justify introducing runtime overhead into
-hot paths. Compile-time machinery earns its place through
-useful structure, specialization, or elimination of repeated code.
+alignment. Separately compile ordinary host calculations and common
+instantiations; keep public interfaces small and implementation-only edits from
+recompiling unrelated consumers. Keep templates and device helpers visible
+where actual specialization, CUDA compilation, or explicit consumer
+customization requires it. Compilation expense alone does not justify recurring
+hot-path runtime overhead. Template machinery must remove identifiable work or
+repetition; account for code growth and consumer rebuild cost.
 
 Assess the resulting execution and complete workload costs. Code growth,
 instruction-cache pressure, register pressure, spills, memory traffic, and
@@ -196,3 +267,17 @@ Reviewers must actively seek direct expressions of the computation and identify
 unnecessary expansion. A claim of clarity must identify the operation or
 relationship being exposed. Correct behavior and the absence of a measured
 performance regression do not establish style compliance.
+
+Use focused allocation-sensitive checks when changing ownership, preparation,
+or workspace behavior: provision once, repeat with changed values and compatible
+smaller inputs, and verify zero further allocations/growth and no unnecessary
+copies. Include first-use provisioning costs separately; inspect metadata and
+retention as well as backing allocator calls. Vendor calls and pool use do not
+establish this guarantee by themselves. Do not create a benchmark campaign or
+new allocator instrumentation framework for prose or formatting changes.
+
+The scoped source check in the implementation style guide is a lexical guard,
+not proof of allocation behavior, numerical clarity, or full policy compliance.
+Review the whole affected calculation and its helpers. Do not weaken checks,
+hide forbidden machinery behind aliases/macros, or expand legacy allowances to
+make new code pass.

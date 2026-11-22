@@ -4,12 +4,13 @@ title: "Sparse relation attention"
 
 # Sparse relation attention
 
-`cellerator::modeling::cuda::sparse_attention_fp16` and
+`cellerator::ops::attention::cuda::sparse_attention_fp16` and
 `sparse_attention_fp32` implement scaled dot-product attention over an explicit
 CSR relation. For query row `i`, only keys in
 `key_ids[offsets[i]:offsets[i+1]]` participate. An empty row yields a zero
 output. The scale is supplied by the caller; channel semantics and the meaning
-of a relation remain model-owned.
+of a relation remain model-owned. Native consumers include
+`Cellerator/ops/attention/sparse_cuda.hh` and link `Cellerator::attention_cuda`.
 
 The API takes query `[Q,D]`, key `[N,D]`, value `[N,V]`, and output `[Q,V]`
 row-major buffers. It performs stable segmented softmax and accumulates in

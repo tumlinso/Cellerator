@@ -6,7 +6,7 @@ title: "Revision-pinned CUDA parameter transfer"
 `ParameterStore` and CUDA runtime. It transfers the exact caller-selected
 `ExpertKey` using an immutable `ParameterLease`; a newer published revision or a
 cache miss cannot substitute another payload. The public header is
-`Cellerator/modeling/cuda/parameter_transfer.hh`.
+`Cellerator/execution/conditional/parameter_transfer_cuda.hh`.
 
 `ParameterTransfer::upload(store, key, stream)` acquires that exact revision,
 copies its execution-parameter bytes into an owned `PinnedBuffer`, enqueues a

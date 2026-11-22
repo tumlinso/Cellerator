@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <cstdint>
 
 namespace cellerator::compute::gene_candidates::detail {
@@ -13,14 +14,14 @@ inline constexpr std::uint64_t lsh_band_domain = 0x4c53485f42414e44ull;
 inline constexpr std::uint64_t bucket_cap_domain = 0x4255434b45545f31ull;
 
 // Prefer these helpers over copying the fixed hash expressions into kernels.
-__host__ __device__ inline std::uint64_t splitmix64_v1(std::uint64_t value) noexcept {
+CELLERATOR_HOST_DEVICE inline std::uint64_t splitmix64_v1(std::uint64_t value) noexcept {
     std::uint64_t z = value + splitmix_gamma;
     z = (z ^ (z >> 30u)) * splitmix_multiplier_1;
     z = (z ^ (z >> 27u)) * splitmix_multiplier_2;
     return z ^ (z >> 31u);
 }
 
-__host__ __device__ inline std::uint64_t minhash_value_v1(
+CELLERATOR_HOST_DEVICE inline std::uint64_t minhash_value_v1(
     std::uint64_t global_row_index,
     std::uint64_t seed,
     std::uint32_t sketch_index) noexcept {
@@ -29,7 +30,7 @@ __host__ __device__ inline std::uint64_t minhash_value_v1(
     return splitmix64_v1(global_row_index ^ salt);
 }
 
-__host__ __device__ inline std::uint64_t lsh_band_key_v1(
+CELLERATOR_HOST_DEVICE inline std::uint64_t lsh_band_key_v1(
     const std::uint64_t *sketch_values,
     std::uint32_t rows_per_band,
     std::uint64_t seed,
@@ -42,7 +43,7 @@ __host__ __device__ inline std::uint64_t lsh_band_key_v1(
     return state;
 }
 
-__host__ __device__ inline std::uint64_t oversized_bucket_window_start_v1(
+CELLERATOR_HOST_DEVICE inline std::uint64_t oversized_bucket_window_start_v1(
     std::uint64_t lsh_key,
     std::uint64_t seed,
     std::uint32_t band,

@@ -9,19 +9,13 @@ from pathlib import Path
 import sys
 from typing import Any
 
-from common import AdapterError, candidate_tree_identity, digest_file, write_json
-
-
-REQUIRED_PROJECT_FILES = {
-    "CMakeLists.txt",
-    "bench/factorized_interactions/CMakeLists.txt",
-    "bench/factorized_interactions/build_runner.py",
-    "bench/factorized_interactions/native_runner.cu",
-    "include/Cellerator/modeling/cuda/factorized_interaction.hh",
-    "src/modeling/cuda/factorized_interaction.cu",
-    "tests/factorized_interactions/reference.py",
-    "tests/factorized_interactions/workloads.py",
-}
+from common import (
+    AdapterError,
+    candidate_tree_identity,
+    digest_file,
+    require_factorized_project,
+    write_json,
+)
 
 
 def make_manifest(source_root: Path, closure_manifest_path: Path,
@@ -41,9 +35,7 @@ def make_manifest(source_root: Path, closure_manifest_path: Path,
         declared.append(row["path"])
     if len(declared) != len(set(declared)):
         raise AdapterError("source closure manifest contains duplicate paths")
-    missing_required = REQUIRED_PROJECT_FILES - set(declared)
-    if missing_required:
-        raise AdapterError(f"source closure is not a complete factorized-interaction project: {sorted(missing_required)}")
+    require_factorized_project(set(declared))
     actual_hash, actual_entries = candidate_tree_identity(source_root)
     actual_by_path = {entry["path"]: entry["sha256"] for entry in actual_entries}
     declared_by_path = {row["path"]: row["sha256"] for row in files}

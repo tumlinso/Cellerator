@@ -1,11 +1,13 @@
 #pragma once
 
 #include <Cellerator/tensor/base/blocked_ell_layout.hh>
+#include <Cellerator/tensor/base/sliced_ell_layout.hh>
 #include <cuda_fp16.h>
 
 namespace cellerator::tensor::base::device {
 
-// Borrowed device payload. Keep both arrays live through launch completion.
+// Borrowed payloads. Supply device-accessible arrays for CUDA operations
+// and keep them live through launch completion.
 struct alignas(16) BlockedEllView {
     unsigned int rows;
     unsigned int cols;
@@ -24,6 +26,7 @@ struct alignas(16) SlicedEllView {
     unsigned int slice_rows;
     unsigned int *slice_row_offsets;
     unsigned int *slice_widths;
+    // Rows within each slice are padded to its width and packed contiguously.
     unsigned int *slice_slot_offsets;
     unsigned int *col_idx;
     __half *val;

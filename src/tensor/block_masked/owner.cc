@@ -1,61 +1,33 @@
 #include <Cellerator/tensor/block_masked/owner.hh>
 
-#include <cstring>
 #include <limits>
 #include <mutex>
-#include <vector>
 
 namespace cellerator::tensor::block_masked {
-namespace {
-std::size_t append_bytes(std::size_t& bytes, std::uint64_t count) {
-    const auto size = memory::cuda::checked_bytes(count, sizeof(std::uint32_t));
-    if (size > std::numeric_limits<std::size_t>::max() - bytes)
-        throw std::overflow_error("block-masked metadata size overflow");
-    const auto offset = bytes; bytes += size; return offset;
-}
-}
 
 DeviceStructure::DeviceStructure(std::shared_ptr<const Structure> structure,
                                  const memory::cuda::Stream& stream)
-    : host_(structure ? std::make_shared<const Structure>(*structure) : nullptr),
+    : host_(static_cast<decltype(structure)&&>(structure)),
       metadata_(0, stream.device()) {
     if (!host_) throw std::invalid_argument("null block-masked host structure");
     view_ = host_->view();
-    const auto n = view_;
-    std::size_t bytes = 0;
-    const auto tiles = append_bytes(bytes, n.tiles + 1);
-    const auto blocks = append_bytes(bytes, n.tile_blocks);
-    const auto rows = append_bytes(bytes, n.tile_blocks);
-    const auto entries = append_bytes(bytes, n.tile_blocks + 1);
-    const auto features = append_bytes(bytes, n.row_block_entries);
-    const auto values = append_bytes(bytes, n.row_block_entries + 1);
-    const auto feature_blocks = append_bytes(bytes, n.feature_blocks + 1);
-    std::vector<unsigned char> staging(bytes);
-    auto copy = [&](std::size_t offset, const std::uint32_t* source, std::uint64_t count) {
-        if (count && !source) throw std::invalid_argument("missing block-masked metadata");
-        if (count) std::memcpy(staging.data() + offset, source, count * sizeof(*source));
-    };
-    copy(tiles, n.tile_block_offsets, n.tiles + 1);
-    copy(blocks, n.block_ids, n.tile_blocks);
-    copy(rows, n.participating_row_masks, n.tile_blocks);
-    copy(entries, n.block_row_entry_offsets, n.tile_blocks + 1);
-    copy(features, n.feature_masks, n.row_block_entries);
-    copy(values, n.row_block_value_offsets, n.row_block_entries + 1);
-    copy(feature_blocks, n.feature_block_offsets, n.feature_blocks + 1);
+    const auto bytes = host_->metadata_bytes();
+    const auto* source = static_cast<const unsigned char*>(host_->metadata_data());
     metadata_ = memory::cuda::DeviceBuffer(bytes, stream.device());
-    metadata_.upload_async(staging.data(), bytes, stream);
-    stream.synchronize(); // Explicit preparation boundary; staging can now retire.
-    auto pointer = [&](std::size_t offset) {
-        return reinterpret_cast<const std::uint32_t*>(
-            static_cast<const unsigned char*>(metadata_.data()) + offset);
+    metadata_.upload_async(source, bytes, stream);
+    stream.synchronize();
+    const auto* destination = static_cast<const unsigned char*>(metadata_.data());
+    const auto rebase = [&](const uint32_t* host_pointer) {
+        const auto offset = reinterpret_cast<const unsigned char*>(host_pointer) - source;
+        return reinterpret_cast<const uint32_t*>(destination + offset);
     };
-    view_.tile_block_offsets = pointer(tiles);
-    view_.block_ids = pointer(blocks);
-    view_.participating_row_masks = pointer(rows);
-    view_.block_row_entry_offsets = pointer(entries);
-    view_.feature_masks = pointer(features);
-    view_.row_block_value_offsets = pointer(values);
-    view_.feature_block_offsets = pointer(feature_blocks);
+    view_.tile_block_offsets = rebase(view_.tile_block_offsets);
+    view_.block_ids = rebase(view_.block_ids);
+    view_.participating_row_masks = rebase(view_.participating_row_masks);
+    view_.block_row_entry_offsets = rebase(view_.block_row_entry_offsets);
+    view_.feature_masks = rebase(view_.feature_masks);
+    view_.row_block_value_offsets = rebase(view_.row_block_value_offsets);
+    view_.feature_block_offsets = rebase(view_.feature_block_offsets);
 }
 
 namespace detail {

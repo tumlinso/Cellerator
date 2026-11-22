@@ -1,16 +1,11 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
 
 #include <Cellerator/structure/identity.hh>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_EXECUTION_IDENTITY_HD __host__ __device__
-#else
-#define CELLERATOR_EXECUTION_IDENTITY_HD
-#endif
 
 namespace cellerator::execution {
 
@@ -108,7 +103,7 @@ struct device_performance_class {
     u64 build_identity;
 };
 
-CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool valid_location(
+CELLERATOR_HOST_DEVICE constexpr bool valid_location(
     const device_location &location) noexcept {
     if (location.residency == residency_kind::host)
         return location.device_ordinal == -1;
@@ -119,25 +114,25 @@ CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool valid_location(
 }
 
 template<typename Tag>
-CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool valid_handle(
+CELLERATOR_HOST_DEVICE constexpr bool valid_handle(
     const identity_handle<Tag> &handle) noexcept {
     return handle.slot != invalid_identity_slot && handle.generation != 0u;
 }
 
 template<typename Tag>
-CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool same_handle(
+CELLERATOR_HOST_DEVICE constexpr bool same_handle(
     const identity_handle<Tag> &lhs,
     const identity_handle<Tag> &rhs) noexcept {
     return lhs.slot == rhs.slot && lhs.generation == rhs.generation;
 }
 
-CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool valid_axis_identity(
+CELLERATOR_HOST_DEVICE constexpr bool valid_axis_identity(
     const axis_identity &axis) noexcept {
     return valid_handle(axis.domain) && valid_handle(axis.order)
         && valid_handle(axis.geometry) && valid_handle(axis.partition);
 }
 
-CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool same_axis_identity(
+CELLERATOR_HOST_DEVICE constexpr bool same_axis_identity(
     const axis_identity &lhs,
     const axis_identity &rhs) noexcept {
     return same_handle(lhs.domain, rhs.domain)
@@ -146,7 +141,7 @@ CELLERATOR_EXECUTION_IDENTITY_HD constexpr bool same_axis_identity(
         && same_handle(lhs.partition, rhs.partition);
 }
 
-CELLERATOR_EXECUTION_IDENTITY_HD constexpr biological_validation_code
+CELLERATOR_HOST_DEVICE constexpr biological_validation_code
 validate_persistent_axis_identity(
     const persistent_axis_identity &axis) noexcept {
     if (axis.header.schema_version != biological_abi_version)
@@ -170,5 +165,3 @@ static_assert(std::is_trivially_copyable<persistent_axis_identity>::value,
     "persistent axis identity must remain field-serializable");
 
 } // namespace cellerator::execution
-
-#undef CELLERATOR_EXECUTION_IDENTITY_HD

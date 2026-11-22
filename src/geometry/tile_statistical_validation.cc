@@ -130,9 +130,9 @@ validation_result validate_context_and_inputs(
     if (!status) return status;
     if (source.global_row_begin != records.global_row_begin
         || source.full_row_count != records.full_row_count
-        || source.support.row_count != records.row_count
-        || source.support.feature_count != records.feature_count
-        || source.support.nnz_count != records.nnz_count
+        || source.support.row_count != records.layout.rows
+        || source.support.feature_count != records.layout.features
+        || source.support.nnz_count != records.layout.stored_values
         || source.value_size_bytes != records.value_size_bytes) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "canonical tile-validation source disagrees with the tile domain");
@@ -171,25 +171,25 @@ validation_result validate_row_exactly(
     u64 *nnz,
     u64 *active_blocks) {
     const u32 execution = order.inverse_row_permutation[row];
-    const u32 tile = execution / tiles.tile_row_width;
-    const u32 lane = execution % tiles.tile_row_width;
+    const u32 tile = execution / tiles.layout.tile_row_width;
+    const u32 lane = execution % tiles.layout.tile_row_width;
     const u32 lane_bit = 1u << lane;
     const auto *source_bytes = static_cast<const unsigned char *>(source.values);
     const auto *tile_bytes = static_cast<const unsigned char *>(tiles.values);
     u32 observed_nnz = 0u;
     u32 observed_blocks = 0u;
-    for (u32 descriptor = tiles.tile_block_offsets[tile];
-         descriptor < tiles.tile_block_offsets[tile + 1u]; ++descriptor) {
-        const u32 cell_mask = tiles.tile_block_cell_masks[descriptor];
+    for (u32 descriptor = tiles.layout.tile_block_offsets[tile];
+         descriptor < tiles.layout.tile_block_offsets[tile + 1u]; ++descriptor) {
+        const u32 cell_mask = tiles.layout.participating_row_masks[descriptor];
         if ((cell_mask & lane_bit) == 0u) continue;
         ++observed_blocks;
-        const u32 block = tiles.tile_block_ids[descriptor];
+        const u32 block = tiles.layout.block_ids[descriptor];
         const u32 block_begin = plan.feature_block_offsets()[block];
         const u32 block_width = plan.feature_block_offsets()[block + 1u] - block_begin;
-        const u32 entry = tiles.block_row_entry_offsets[descriptor]
+        const u32 entry = tiles.layout.block_row_entry_offsets[descriptor]
             + popcount_u32(cell_mask & lower_lane_mask(lane));
-        const u32 gene_mask = tiles.row_block_gene_masks[entry];
-        u32 tile_value = tiles.row_block_value_offsets[entry];
+        const u32 gene_mask = tiles.layout.feature_masks[entry];
+        u32 tile_value = tiles.layout.row_block_value_offsets[entry];
         for (u32 local = 0u; local < block_width; ++local) {
             if ((gene_mask & (1u << local)) == 0u) continue;
             const u32 canonical_feature = plan.feature_permutation()[block_begin + local];
@@ -210,7 +210,7 @@ validation_result validate_row_exactly(
             ++tile_value;
             ++observed_nnz;
         }
-        if (tile_value != tiles.row_block_value_offsets[entry + 1u]) {
+        if (tile_value != tiles.layout.row_block_value_offsets[entry + 1u]) {
             return validation_error(validation_code::invalid_offsets, entry,
                 "warp-tile mask rank changed during validation");
         }
@@ -400,7 +400,7 @@ validation_result validate_realization(
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "bootstrap and frozen training split use different unit kinds");
     }
-    if (records.global_row_begin != 0u || records.row_count != records.full_row_count) {
+    if (records.global_row_begin != 0u || records.layout.rows != records.full_row_count) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "bootstrap tile realization requires the complete frozen row domain");
     }
@@ -487,7 +487,7 @@ validation_result evaluate_bootstrap_replicate(
         return validation_error(validation_code::integer_overflow, invalid_id,
             "bootstrap tile realization exceeds the v1 u32 row domain");
     }
-    const u32 width = input.tiles->tile_row_width;
+    const u32 width = input.tiles->layout.tile_row_width;
     const u64 tile_count = row_count / width + (row_count % width != 0u ? 1u : 0u);
     for (u64 materialized_tile = 0u; materialized_tile < tile_count;
          ++materialized_tile) {
@@ -513,14 +513,14 @@ validation_result evaluate_bootstrap_replicate(
             for (u32 lane = 0u; lane < lane_count && !present; ++lane) {
                 const u32 row = input.realization.global_row_indices[begin + lane];
                 const u32 execution = input.order->inverse_row_permutation[row];
-                const u32 source_tile = execution / input.tiles->tile_row_width;
-                const u32 source_lane = execution % input.tiles->tile_row_width;
+                const u32 source_tile = execution / input.tiles->layout.tile_row_width;
+                const u32 source_lane = execution % input.tiles->layout.tile_row_width;
                 const u32 lane_bit = 1u << source_lane;
-                for (u32 descriptor = input.tiles->tile_block_offsets[source_tile];
-                     descriptor < input.tiles->tile_block_offsets[source_tile + 1u];
+                for (u32 descriptor = input.tiles->layout.tile_block_offsets[source_tile];
+                     descriptor < input.tiles->layout.tile_block_offsets[source_tile + 1u];
                      ++descriptor) {
-                    if (input.tiles->tile_block_ids[descriptor] == block
-                        && (input.tiles->tile_block_cell_masks[descriptor]
+                    if (input.tiles->layout.block_ids[descriptor] == block
+                        && (input.tiles->layout.participating_row_masks[descriptor]
                             & lane_bit) != 0u) {
                         present = true;
                         break;
@@ -610,7 +610,7 @@ validation_result evaluate_held_out_warp_tiles(
     hash_u64(&row_identity, context.split_provenance.assignment_identity);
     hash_u64(&row_identity, records.global_row_begin);
 
-    for (u32 row = 0u; row < records.row_count; ++row) {
+    for (u32 row = 0u; row < records.layout.rows; ++row) {
         const u64 global_row = records.global_row_begin + row;
         if (context.row_partitions[global_row] != validation_partition::held_out) continue;
         u64 row_nnz = 0u, row_blocks = 0u;
@@ -627,10 +627,11 @@ validation_result evaluate_held_out_warp_tiles(
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "tile partition contains no held-out rows");
     }
-    for (u32 tile = 0u; tile < tiles.tile_count; ++tile) {
-        const u32 execution_begin = tile * tiles.tile_row_width;
-        const u32 lane_count = std::min(tiles.tile_row_width,
-            tiles.row_count - execution_begin);
+    for (u32 tile = 0u; tile < tiles.layout.tiles; ++tile) {
+        const u32 execution_begin = tile * tiles.layout.tile_row_width;
+        const u32 remaining = static_cast<u32>(tiles.layout.rows) - execution_begin;
+        const u32 lane_count = remaining < tiles.layout.tile_row_width
+            ? remaining : tiles.layout.tile_row_width;
         u32 selected_mask = 0u;
         for (u32 lane = 0u; lane < lane_count; ++lane) {
             const u32 row = order.row_permutation[execution_begin + lane];
@@ -643,10 +644,10 @@ validation_result evaluate_held_out_warp_tiles(
         if (selected_rows == 0u) continue;
         ++tile_count;
         u64 selected_active = 0u, selected_union = 0u;
-        for (u32 descriptor = tiles.tile_block_offsets[tile];
-             descriptor < tiles.tile_block_offsets[tile + 1u]; ++descriptor) {
+        for (u32 descriptor = tiles.layout.tile_block_offsets[tile];
+             descriptor < tiles.layout.tile_block_offsets[tile + 1u]; ++descriptor) {
             const u32 selected_cells = popcount_u32(
-                tiles.tile_block_cell_masks[descriptor] & selected_mask);
+                tiles.layout.participating_row_masks[descriptor] & selected_mask);
             if (selected_cells == 0u) continue;
             ++selected_union;
             selected_active += selected_cells;

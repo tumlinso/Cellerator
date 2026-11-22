@@ -4,10 +4,10 @@ title: "Sparse stochastic reaction networks"
 
 Cellerator has a host reference reaction-network implementation in
 `cellerator.dynamics.reactions` and a header-only C++ counterpart in
-`Cellerator/modeling/reactions.hh`. They express discrete species counts,
-identity-preserving storage, sparse stoichiometric changes, and explicit
-propensity dependencies. They compose with the
-[biological modeling framework](biological_framework.qmd), without requiring
+`Cellerator/ops/reaction/network.hh`, provided by `Cellerator::reaction`. They
+express discrete species counts, identity-preserving storage, sparse
+stoichiometric changes, and explicit propensity dependencies. They compose with
+the [biological modeling framework](biological_framework.qmd), without requiring
 Torch or converting a cell into a dense feature tensor.
 
 ## A model with separate observation
@@ -153,8 +153,9 @@ validation is claimed.
 
 ## Native CUDA application of supplied events
 
-`Cellerator/modeling/cuda/reactions.hh` provides `apply_reaction_events` for
-many private cell count states sharing one sparse `ReactionBank`. This device
+`Cellerator/ops/reaction/apply_cuda.hh`, provided by `Cellerator::reaction_cuda`,
+declares `apply_reaction_events` for private cell count states that share one
+sparse `ReactionBank`. This device
 operation applies caller-supplied events. It does **not** evaluate propensities,
 sample events, integrate physical time, or implement GPU SSA.
 

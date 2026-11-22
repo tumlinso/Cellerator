@@ -19,10 +19,10 @@ int require(bool ok, const char *label) {
 }
 
 struct CsrFixture {
-    std::uint32_t row_ptr[7] = {0, 2, 2, 3, 5, 5, 7};
-    std::uint32_t columns[7] = {0, 4, 2, 1, 3, 0, 2};
+    std::int32_t row_ptr[7] = {0, 2, 2, 3, 5, 5, 7};
+    std::int32_t columns[7] = {0, 4, 2, 1, 3, 0, 2};
 
-    cm::CompressedStructureView<std::uint32_t> view() const {
+    cm::CompressedStructureView<std::int32_t> view() const {
         return {6u, 5u, 7u, cm::CompressedAxis::row, row_ptr, columns};
     }
 };
@@ -41,7 +41,7 @@ bool build_exact_plan(std::uint64_t total_rows,
     return cs::build_sample_plan(total_rows, spec, identities, out, error);
 }
 
-bool matches_complete_source_rows(const cm::CompressedStructureView<std::uint32_t> &source,
+bool matches_complete_source_rows(const cm::CompressedStructureView<std::int32_t> &source,
                                   const cs::sampled_csr_structure_view &sampled) {
     if (sampled.row_ptr == nullptr || sampled.provenance == nullptr) return false;
     if (sampled.sampled_row_count != sampled.provenance->selected_rows) return false;
@@ -140,28 +140,28 @@ int test_zero_rows_and_input_validation() {
     if (!require(!cs::materialize_sampled_csr_structure(source, invalid, &bundle, &error),
                  "overflowed provenance selected_rows was accepted")) return 27;
 
-    const std::uint32_t saved_second = fixture.row_ptr[2u];
-    fixture.row_ptr[2u] = static_cast<std::uint32_t>(source.nnz + 1u);
+    const std::int32_t saved_second = fixture.row_ptr[2u];
+    fixture.row_ptr[2u] = static_cast<std::int32_t>(source.nnz + 1u);
     error.clear();
     if (!require(!cs::materialize_sampled_csr_structure(source, all_rows, &bundle, &error),
                  "row pointer beyond nnz was accepted")) return 28;
     fixture.row_ptr[2u] = saved_second;
 
-    const std::uint32_t saved_third = fixture.row_ptr[3u];
+    const std::int32_t saved_third = fixture.row_ptr[3u];
     fixture.row_ptr[3u] = 1;
     error.clear();
     if (!require(!cs::materialize_sampled_csr_structure(source, all_rows, &bundle, &error),
                  "non-monotonic row pointers were accepted")) return 29;
     fixture.row_ptr[3u] = saved_third;
 
-    const std::uint32_t saved_terminal = fixture.row_ptr[source.rows];
-    fixture.row_ptr[source.rows] = static_cast<std::uint32_t>(source.nnz - 1u);
+    const std::int32_t saved_terminal = fixture.row_ptr[source.rows];
+    fixture.row_ptr[source.rows] = static_cast<std::int32_t>(source.nnz - 1u);
     error.clear();
     if (!require(!cs::materialize_sampled_csr_structure(source, all_rows, &bundle, &error),
                  "incorrect terminal row pointer was accepted")) return 30;
     fixture.row_ptr[source.rows] = saved_terminal;
 
-    fixture.columns[0u] = static_cast<std::uint32_t>(source.cols);
+    fixture.columns[0u] = static_cast<std::int32_t>(source.cols);
     error.clear();
     if (!require(!cs::materialize_sampled_csr_structure(source, all_rows, &bundle, &error),
                  "out-of-range column index was accepted")) return 31;

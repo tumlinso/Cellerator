@@ -18,9 +18,6 @@ inline cudaError_t validate_csr_batch(const Csr<const __half>* matrices, unsigne
 
 // Row-compressed device arrays and disjoint operands on the caller's current
 // device. The caller orders access and retains the arrays through completion.
-// Native traversal uses row offsets, so raw callers can omit the nnz extent.
-// Transpose products return without writing for zero rows. A nonempty SpMM
-// transpose clears all ldy slots of each output row before accumulation.
 cudaError_t csr_spmv(Csr<const __half> a, const float* x, float* y, cudaStream_t stream) noexcept;
 cudaError_t csr_spmv_transpose(Csr<const __half> a, const float* x, float* y, cudaStream_t stream) noexcept;
 cudaError_t csr_spmm(Csr<const __half> a, const float* x, int64_t ldx, int64_t n,

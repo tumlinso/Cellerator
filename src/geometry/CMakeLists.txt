@@ -112,11 +112,11 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellerator_geometry_optimizer_device_v1)
 endif()
 
-add_executable(celleratorGeometryOptimizerPortfolioTest
+add_executable(celleratorGeometryOptimizerPortfolioTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     planning/optimizer_portfolio_test.cc
 )
 
-add_executable(celleratorGeometryValueIntegrationTest
+add_executable(celleratorGeometryValueIntegrationTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     planning/geometry_value_integration_test.cc
 )
 target_link_libraries(celleratorGeometryValueIntegrationTest PRIVATE
@@ -137,7 +137,7 @@ set_target_properties(celleratorGeometryOptimizerPortfolioTest PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 
-add_executable(celleratorGeometryOverlapContractTest
+add_executable(celleratorGeometryOverlapContractTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     optimizer/overlap/overlap_contract_test.cc
 )
 target_link_libraries(celleratorGeometryOverlapContractTest PRIVATE
@@ -149,7 +149,7 @@ set_target_properties(celleratorGeometryOverlapContractTest PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 
-add_executable(celleratorGeometryOverlapValidationTest
+add_executable(celleratorGeometryOverlapValidationTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     optimizer/overlap/overlap_validation_test.cc
 )
 target_link_libraries(celleratorGeometryOverlapValidationTest PRIVATE
@@ -310,7 +310,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellpack_feature_weighted_row_reduction_cuda)
 endif()
 
-add_executable(cellPackFormatTest
+add_executable(cellPackFormatTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/format_test.cc
 )
 target_link_libraries(cellPackFormatTest PRIVATE CellPack::cellpack)
@@ -323,7 +323,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackFormatTest)
 endif()
 
-add_executable(cellPackPlannerTest
+add_executable(cellPackPlannerTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/planner_test.cc
 )
 target_link_libraries(cellPackPlannerTest PRIVATE CellPack::cellpack)
@@ -336,7 +336,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackPlannerTest)
 endif()
 
-add_executable(cellPackMatrixViewTest
+add_executable(cellPackMatrixViewTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/matrix_view_test.cc
 )
 target_link_libraries(cellPackMatrixViewTest PRIVATE CellPack::cellpack)
@@ -349,7 +349,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackMatrixViewTest)
 endif()
 
-add_executable(cellPackReconstructionTest
+add_executable(cellPackReconstructionTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/reconstruction_test.cc
 )
 target_link_libraries(cellPackReconstructionTest PRIVATE CellPack::cellpack)
@@ -362,7 +362,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackReconstructionTest)
 endif()
 
-add_executable(cellPackCellBlockRecordsTest
+add_executable(cellPackCellBlockRecordsTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/cell_block_records_test.cc
 )
 target_link_libraries(cellPackCellBlockRecordsTest PRIVATE CellPack::cellpack)
@@ -376,7 +376,7 @@ if(COMMAND cellerator_enable_perf)
 endif()
 
 # CP-BP-08 Phase C host warp-tile ABI/reference validation.
-add_executable(cellPackWarpTilesTest
+add_executable(cellPackWarpTilesTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/warp_tiles_test.cc
 )
 target_link_libraries(cellPackWarpTilesTest PRIVATE CellPack::warp_tiles)
@@ -390,7 +390,7 @@ if(COMMAND cellerator_enable_perf)
 endif()
 
 # CP-BP-08 Phase D exact CPU/CUDA construction validation.
-add_executable(cellPackWarpTilesCudaTest
+add_executable(cellPackWarpTilesCudaTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/warp_tiles_cuda_test.cu
 )
 target_link_libraries(cellPackWarpTilesCudaTest PRIVATE CellPack::warp_tiles_cuda)
@@ -406,7 +406,7 @@ if(COMMAND cellerator_enable_perf)
 endif()
 
 # CP-BP-09 Phase E direct-runtime contract and numerical validation.
-add_executable(cellPackFeatureWeightedRowReductionCudaTest
+add_executable(cellPackFeatureWeightedRowReductionCudaTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/feature_weighted_row_reduction_cuda_test.cu
 )
 target_link_libraries(cellPackFeatureWeightedRowReductionCudaTest PRIVATE
@@ -423,7 +423,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackFeatureWeightedRowReductionCudaTest)
 endif()
 
-add_executable(cellPackLayoutMetricsTest
+add_executable(cellPackLayoutMetricsTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/layout_metrics_test.cc
 )
 target_link_libraries(cellPackLayoutMetricsTest PRIVATE CellPack::cellpack)
@@ -436,7 +436,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackLayoutMetricsTest)
 endif()
 
-add_executable(cellPackEvaluatorTest
+add_executable(cellPackEvaluatorTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/evaluator_test.cc
 )
 target_link_libraries(cellPackEvaluatorTest PRIVATE CellPack::cellpack)
@@ -449,7 +449,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackEvaluatorTest)
 endif()
 
-add_executable(cellPackLayoutSelectorTest
+add_executable(cellPackLayoutSelectorTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/layout_selector_test.cc
 )
 target_link_libraries(cellPackLayoutSelectorTest PRIVATE CellPack::cellpack)
@@ -462,7 +462,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackLayoutSelectorTest)
 endif()
 
-add_executable(cellPackGatingTest
+add_executable(cellPackGatingTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/gating_test.cc
 )
 target_link_libraries(cellPackGatingTest PRIVATE CellPack::cellpack)
@@ -475,7 +475,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackGatingTest)
 endif()
 
-add_executable(cellPackGatingCudaTest
+add_executable(cellPackGatingCudaTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/gating_cuda_test.cu
 )
 target_link_libraries(cellPackGatingCudaTest PRIVATE CellPack::gating_cuda)
@@ -490,7 +490,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackGatingCudaTest)
 endif()
 
-add_executable(cellPackOptimizerTest
+add_executable(cellPackOptimizerTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/optimizer_test.cc
 )
 target_include_directories(cellPackOptimizerTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -504,7 +504,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackOptimizerTest)
 endif()
 
-add_executable(cellPackMergeCostTest
+add_executable(cellPackMergeCostTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/merge_cost_test.cu
 )
 target_link_libraries(cellPackMergeCostTest PRIVATE CellPack::merge_cost_cuda)
@@ -519,7 +519,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackMergeCostTest)
 endif()
 
-add_executable(cellPackCellBlockRecordsCudaTest
+add_executable(cellPackCellBlockRecordsCudaTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/cell_block_records_cuda_test.cu
 )
 target_link_libraries(cellPackCellBlockRecordsCudaTest PRIVATE CellPack::cell_block_records_cuda)
@@ -534,7 +534,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackCellBlockRecordsCudaTest)
 endif()
 
-add_executable(cellPackLayoutBench
+add_executable(cellPackLayoutBench ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/bench/geometry/cellpack_layout_bench.cc
 )
 target_include_directories(cellPackLayoutBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
@@ -548,7 +548,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackLayoutBench)
 endif()
 
-add_executable(cellPackEvaluatorBench
+add_executable(cellPackEvaluatorBench ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/bench/geometry/cellpack_evaluator_bench.cc
 )
 target_include_directories(cellPackEvaluatorBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
@@ -562,7 +562,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackEvaluatorBench)
 endif()
 
-add_executable(cellPackGatingBench
+add_executable(cellPackGatingBench ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/bench/geometry/cellpack_gating_bench.cu
 )
 target_include_directories(cellPackGatingBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
@@ -578,7 +578,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackGatingBench)
 endif()
 
-add_executable(cellPackOptimizerBench
+add_executable(cellPackOptimizerBench ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/bench/geometry/cellpack_optimizer_bench.cc
 )
 target_include_directories(cellPackOptimizerBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
@@ -592,7 +592,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackOptimizerBench)
 endif()
 
-add_executable(cellPackMergeCostBench
+add_executable(cellPackMergeCostBench ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/bench/geometry/cellpack_merge_cost_bench.cu
 )
 target_include_directories(cellPackMergeCostBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
@@ -608,7 +608,7 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackMergeCostBench)
 endif()
 
-add_executable(cellPackCellBlockRecordsBench
+add_executable(cellPackCellBlockRecordsBench ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/bench/geometry/cell_block_records_bench.cu
 )
 target_include_directories(cellPackCellBlockRecordsBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
@@ -625,7 +625,7 @@ if(COMMAND cellerator_enable_perf)
 endif()
 
 # CP-BP-08 Phase D serialized V100 construction benchmark.
-add_executable(cellPackWarpTilesBench
+add_executable(cellPackWarpTilesBench ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/bench/geometry/warp_tiles_bench.cu
 )
 target_include_directories(cellPackWarpTilesBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
@@ -642,7 +642,7 @@ if(COMMAND cellerator_enable_perf)
 endif()
 
 # CP-BP-09 Phase E serialized V100 direct-runtime benchmark.
-add_executable(cellPackFeatureWeightedRowReductionBench
+add_executable(cellPackFeatureWeightedRowReductionBench ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/bench/geometry/feature_weighted_row_reduction_bench.cu
 )
 target_include_directories(cellPackFeatureWeightedRowReductionBench PRIVATE
@@ -669,7 +669,7 @@ endif()
 
 # CP-BP-12 serialized measured-cost campaign. This is a host-side calibration
 # consumer of the stable CP-BP-09 runtime, not a new or tuned kernel path.
-add_executable(cellPackHardwareCostAutotuneBench
+add_executable(cellPackHardwareCostAutotuneBench ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/bench/geometry/hardware_cost_autotune_bench.cu
 )
 target_include_directories(cellPackHardwareCostAutotuneBench PRIVATE

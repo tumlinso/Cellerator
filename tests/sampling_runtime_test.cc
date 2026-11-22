@@ -210,8 +210,8 @@ int test_exact_global_rows_limits_and_small_population() {
 }
 
 int test_density_stratified_csr_sampling() {
-    std::uint32_t row_ptr[] = {0, 2, 3, 6, 8, 9, 11, 12, 14};
-    const cm::CompressedStructureView<std::uint32_t> source{
+    std::int32_t row_ptr[] = {0, 2, 3, 6, 8, 9, 11, 12, 14};
+    const cm::CompressedStructureView<std::int32_t> source{
         8u, 5u, 14u, cm::CompressedAxis::row, row_ptr, nullptr};
     cs::density_sample_spec spec;
     cs::cell_identity_view identities;

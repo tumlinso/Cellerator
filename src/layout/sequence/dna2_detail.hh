@@ -1,12 +1,7 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <Cellerator/layout/sequence/dna2.hh>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_DNA2_PACK_HD __host__ __device__ __forceinline__
-#else
-#define CELLERATOR_DNA2_PACK_HD inline
-#endif
 
 namespace cellerator::layout::sequence::detail {
 
@@ -18,7 +13,7 @@ inline Status validate_output(tensor::sequence::PackedView input, tensor::sequen
     return Status::ok;
 }
 
-CELLERATOR_DNA2_PACK_HD void pack_word(tensor::sequence::PackedView input,
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE void pack_word(tensor::sequence::PackedView input,
                                       tensor::sequence::MutableBitPlanesView output, uint32_t i) noexcept {
     namespace s = tensor::sequence;
     uint32_t lo, hi;
@@ -30,5 +25,3 @@ CELLERATOR_DNA2_PACK_HD void pack_word(tensor::sequence::PackedView input,
 }
 
 }  // namespace cellerator::layout::sequence::detail
-
-#undef CELLERATOR_DNA2_PACK_HD

@@ -1,13 +1,12 @@
 #pragma once
 
 #include "Cellerator/tensor/block_masked/layout.hh"
+#include "Cellerator/memory/view.hh"
 
-#include <algorithm>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdexcept>
 #include <type_traits>
-#include <unordered_map>
-#include <vector>
 
 namespace cellerator::tensor::block_masked {
 
@@ -163,65 +162,79 @@ void validate(LayoutView<Offset> layout) {
     }
 }
 
-// Immutable host owner for index arrays and coordinate association. Values
-// remain in a separate bulk allocation represented by View<T>.
+struct RowSupportView {
+    const uint64_t *row_offsets = nullptr; // rows + 1, starting at zero
+    uint64_t rows = 0;
+    const uint32_t *physical_features = nullptr;
+    uint64_t entries = 0;
+};
+
+struct StructureInput {
+    uint64_t features = 0;
+    RowSupportView support{};
+    uint32_t block_width = 32;
+    uint32_t tile_row_width = 32;
+    memory::const_array_view<uint64_t> canonical_features{};
+    memory::const_array_view<uint64_t> canonical_rows{};
+};
+
+// Input arrays are host-resident. Scratch must be uint64_t-aligned and
+// disjoint from them. Sizing does not allocate or inspect feature indices.
+size_t structure_scratch_bytes(const StructureInput& input);
+
+// Explicitly provisions one immutable host image. The input arrays and scratch
+// are borrowed only during construction. Values have a separate owner.
 class Structure {
 public:
-    Structure() = default;
+    Structure(const StructureInput& input, void* scratch, size_t scratch_bytes);
+    ~Structure();
+    Structure(const Structure&) = delete;
+    Structure(Structure&&) = delete;
+    Structure& operator=(const Structure&) = delete;
+    Structure& operator=(Structure&&) = delete;
 
-    static Structure from_rows(
-        std::uint64_t features,
-        const std::vector<std::vector<std::uint32_t>> &physical_features_by_row,
-        std::uint32_t block_width = 32,
-        std::uint32_t tile_row_width = 32,
-        std::vector<std::uint64_t> canonical_features = {},
-        std::vector<std::uint64_t> canonical_rows = {});
-
-    LayoutView<> view() const & noexcept;
+    LayoutView<> view() const & noexcept { return layout_; }
     LayoutView<> view() && = delete;
     LayoutView<> view() const && = delete;
 
-    std::uint64_t rows() const noexcept { return rows_; }
-    std::uint64_t features() const noexcept { return features_; }
-    std::uint64_t tiles() const noexcept { return tiles_; }
-    std::uint64_t stored_values() const noexcept { return stored_values_; }
-    std::uint64_t feature_blocks() const noexcept { return feature_blocks_; }
-    std::uint64_t tile_blocks() const noexcept { return tile_blocks_; }
-    std::uint64_t row_block_entries() const noexcept { return row_block_entries_; }
+    uint64_t rows() const noexcept { return layout_.rows; }
+    uint64_t features() const noexcept { return layout_.features; }
+    uint64_t tiles() const noexcept { return layout_.tiles; }
+    uint64_t stored_values() const noexcept { return layout_.stored_values; }
+    uint64_t feature_blocks() const noexcept { return layout_.feature_blocks; }
+    uint64_t tile_blocks() const noexcept { return layout_.tile_blocks; }
+    uint64_t row_block_entries() const noexcept { return layout_.row_block_entries; }
 
-    const std::vector<std::uint64_t> &canonical_features() const & noexcept {
+    memory::const_array_view<uint64_t> canonical_features() const & noexcept {
         return canonical_features_;
     }
-    const std::vector<std::uint64_t> &canonical_rows() const & noexcept {
+    memory::const_array_view<uint64_t> canonical_rows() const & noexcept {
         return canonical_rows_;
     }
-    const std::vector<std::uint64_t> &canonical_features() const && = delete;
-    const std::vector<std::uint64_t> &canonical_rows() const && = delete;
+    memory::const_array_view<uint64_t> canonical_rows_in_order() const & noexcept {
+        return canonical_rows_in_order_;
+    }
+    memory::const_array_view<uint64_t> canonical_features() const && = delete;
+    memory::const_array_view<uint64_t> canonical_rows() const && = delete;
+    memory::const_array_view<uint64_t> canonical_rows_in_order() const && = delete;
 
-    std::uint32_t physical_feature(std::uint64_t canonical_coordinate) const;
-    std::uint64_t value_offset(std::uint64_t row, std::uint64_t physical_feature) const;
+    const void* metadata_data() const & noexcept { return image_; }
+    const void* metadata_data() const && = delete;
+    size_t metadata_bytes() const noexcept { return metadata_bytes_; }
+    size_t image_bytes() const noexcept { return image_bytes_; }
+    uint32_t physical_feature(uint64_t canonical_coordinate) const;
+    uint64_t value_offset(uint64_t row, uint64_t physical_feature) const;
 
 private:
-    std::uint64_t rows_ = 0;
-    std::uint64_t features_ = 0;
-    std::uint64_t tiles_ = 0;
-    std::uint64_t stored_values_ = 0;
-    std::uint64_t feature_blocks_ = 0;
-    std::uint64_t tile_blocks_ = 0;
-    std::uint64_t row_block_entries_ = 0;
-    std::uint32_t tile_row_width_ = 32;
-
-    std::vector<std::uint32_t> tile_block_offsets_{0};
-    std::vector<std::uint32_t> block_ids_;
-    std::vector<std::uint32_t> participating_row_masks_;
-    std::vector<std::uint32_t> block_row_entry_offsets_{0};
-    std::vector<std::uint32_t> feature_masks_;
-    std::vector<std::uint32_t> row_block_value_offsets_{0};
-    std::vector<std::uint32_t> feature_block_offsets_{0};
-    std::vector<std::uint64_t> canonical_features_;
-    std::vector<std::uint64_t> canonical_rows_;
-    bool identity_feature_map_ = true;
-    std::unordered_map<std::uint64_t, std::uint32_t> canonical_to_physical_feature_;
+    void* image_ = nullptr;
+    size_t image_bytes_ = 0;
+    size_t metadata_bytes_ = 0;
+    LayoutView<> layout_{};
+    memory::const_array_view<uint64_t> canonical_features_{};
+    memory::const_array_view<uint64_t> canonical_rows_{};
+    memory::const_array_view<uint64_t> canonical_rows_in_order_{};
+    const uint32_t* feature_slots_ = nullptr;
+    size_t feature_slot_count_ = 0;
 };
 
 } // namespace cellerator::tensor::block_masked

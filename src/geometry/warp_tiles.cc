@@ -68,10 +68,10 @@ u64 compute_tile_identity(
     identity = splitmix64(identity ^ order.ordering_identity);
     identity = splitmix64(identity ^ records.row_domain_identity);
     identity = splitmix64(identity ^ records.global_row_begin);
-    identity = splitmix64(identity ^ (static_cast<u64>(records.row_count) << 32u)
+    identity = splitmix64(identity ^ (static_cast<u64>(records.layout.rows) << 32u)
         ^ records.full_row_count);
-    identity = splitmix64(identity ^ (static_cast<u64>(records.feature_count) << 32u)
-        ^ records.feature_block_count);
+    identity = splitmix64(identity ^ (static_cast<u64>(records.layout.features) << 32u)
+        ^ records.layout.feature_blocks);
     identity = splitmix64(identity ^ (static_cast<u64>(order.group_width) << 32u)
         ^ records.value_size_bytes);
     return identity == 0u ? 1u : identity;
@@ -85,7 +85,8 @@ u32 next_tile_block(
     u32 block = invalid_id;
     for (u32 lane = 0u; lane < lane_count; ++lane) {
         if (cursors[lane] != ends[lane]) {
-            block = std::min(block, records.record_block_ids[cursors[lane]]);
+            const u32 candidate = records.layout.block_ids[cursors[lane]];
+            if (candidate < block) block = candidate;
         }
     }
     return block;
@@ -100,8 +101,8 @@ void initialize_tile_cursors(
     u32 *ends) noexcept {
     for (u32 lane = 0u; lane < lane_count; ++lane) {
         const u32 row = order.row_permutation[tile_begin + lane];
-        cursors[lane] = records.row_record_offsets[row];
-        ends[lane] = records.row_record_offsets[row + 1u];
+        cursors[lane] = records.layout.row_block_offsets[row];
+        ends[lane] = records.layout.row_block_offsets[row + 1u];
     }
 }
 
@@ -133,7 +134,7 @@ validation_result validate_output_buffers(
         return validation_error(validation_code::null_pointer, invalid_id,
             "warp-tile row-block gene-mask output is null");
     }
-    if (records.nnz_count != 0u && buffers.values == nullptr) {
+    if (records.layout.stored_values != 0u && buffers.values == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "warp-tile value output is null");
     }
@@ -147,10 +148,10 @@ validation_result validate_output_buffers(
         buffers.row_block_value_offsets
     };
     const u32 *inputs[] = {
-        records.row_record_offsets,
-        records.record_block_ids,
-        records.record_gene_masks,
-        records.record_value_offsets
+        records.layout.row_block_offsets,
+        records.layout.block_ids,
+        records.layout.feature_masks,
+        records.layout.row_block_value_offsets
     };
     for (std::size_t lhs = 0u; lhs < sizeof(outputs) / sizeof(outputs[0]); ++lhs) {
         if (outputs[lhs] == nullptr) continue;
@@ -167,7 +168,7 @@ validation_result validate_output_buffers(
             }
         }
     }
-    if (records.nnz_count != 0u && buffers.values == records.values) {
+    if (records.layout.stored_values != 0u && buffers.values == records.values) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "warp-tile value construction is out-of-place");
     }
@@ -175,6 +176,7 @@ validation_result validate_output_buffers(
 }
 
 void set_view(
+    const frozen_packing_plan &plan,
     const cell_block_record_view &records,
     const local_cell_order_view &order,
     const warp_tile_requirements &required,
@@ -191,24 +193,25 @@ void set_view(
     result.ordering_identity = order.ordering_identity;
     result.global_row_begin = records.global_row_begin;
     result.full_row_count = records.full_row_count;
-    result.row_count = records.row_count;
-    result.feature_count = records.feature_count;
-    result.feature_block_count = records.feature_block_count;
-    result.tile_row_width = order.group_width;
-    result.tile_count = tile_count_for_rows(records.row_count, order.group_width);
-    result.nnz_count = records.nnz_count;
-    result.tile_block_count = required.tile_block_count;
-    result.row_block_entry_count = required.row_block_entry_count;
+    result.layout.rows = records.layout.rows;
+    result.layout.features = records.layout.features;
+    result.layout.feature_blocks = records.layout.feature_blocks;
+    result.layout.tile_row_width = order.group_width;
+    result.layout.tiles = tile_count_for_rows(records.layout.rows, order.group_width);
+    result.layout.stored_values = records.layout.stored_values;
+    result.layout.tile_blocks = required.tile_block_count;
+    result.layout.row_block_entries = required.row_block_entry_count;
     result.value_size_bytes = records.value_size_bytes;
     result.feature_axis_fingerprint = records.feature_axis_fingerprint;
     result.feature_axis_fingerprint_version = records.feature_axis_fingerprint_version;
     result.row_domain_identity = records.row_domain_identity;
-    result.tile_block_offsets = buffers.tile_block_offsets;
-    result.tile_block_ids = buffers.tile_block_ids;
-    result.tile_block_cell_masks = buffers.tile_block_cell_masks;
-    result.block_row_entry_offsets = buffers.block_row_entry_offsets;
-    result.row_block_gene_masks = buffers.row_block_gene_masks;
-    result.row_block_value_offsets = buffers.row_block_value_offsets;
+    result.layout.tile_block_offsets = buffers.tile_block_offsets;
+    result.layout.block_ids = buffers.tile_block_ids;
+    result.layout.participating_row_masks = buffers.tile_block_cell_masks;
+    result.layout.block_row_entry_offsets = buffers.block_row_entry_offsets;
+    result.layout.feature_masks = buffers.row_block_gene_masks;
+    result.layout.row_block_value_offsets = buffers.row_block_value_offsets;
+    result.layout.feature_block_offsets = plan.feature_block_offsets();
     result.values = buffers.values;
     *out = result;
 }
@@ -234,10 +237,11 @@ validation_result query_warp_tile_requirements_host(
     if (!status) return status;
 
     u32 tile_block_count = 0u, observed_entries = 0u;
-    const u32 tile_count = tile_count_for_rows(records.row_count, order.group_width);
+    const u32 tile_count = tile_count_for_rows(records.layout.rows, order.group_width);
     for (u32 tile = 0u; tile < tile_count; ++tile) {
         const u32 tile_begin = tile * order.group_width;
-        const u32 lane_count = std::min(order.group_width, records.row_count - tile_begin);
+        const u32 remaining = static_cast<u32>(records.layout.rows) - tile_begin;
+        const u32 lane_count = remaining < order.group_width ? remaining : order.group_width;
         u32 cursors[warp_tile_cell_mask_bits] = {}, ends[warp_tile_cell_mask_bits] = {};
         initialize_tile_cursors(records, order, tile_begin, lane_count, cursors, ends);
         for (u32 block = next_tile_block(cursors, ends, records, lane_count);
@@ -250,19 +254,19 @@ validation_result query_warp_tile_requirements_host(
             ++tile_block_count;
             for (u32 lane = 0u; lane < lane_count; ++lane) {
                 if (cursors[lane] != ends[lane]
-                    && records.record_block_ids[cursors[lane]] == block) {
+                    && records.layout.block_ids[cursors[lane]] == block) {
                     ++cursors[lane];
                     ++observed_entries;
                 }
             }
         }
     }
-    if (observed_entries != records.record_count) {
+    if (observed_entries != records.layout.row_blocks) {
         return validation_error(validation_code::invalid_offsets, observed_entries,
             "warp-tile union traversal did not consume every cell-block record");
     }
     std::size_t value_bytes = 0u;
-    if (multiply_overflows(records.nnz_count, records.value_size_bytes, &value_bytes)) {
+    if (multiply_overflows(records.layout.stored_values, records.value_size_bytes, &value_bytes)) {
         return validation_error(validation_code::integer_overflow, invalid_id,
             "warp-tile value byte count overflows size_t");
     }
@@ -270,8 +274,8 @@ validation_result query_warp_tile_requirements_host(
     result.tile_block_offset_count = static_cast<std::size_t>(tile_count) + 1u;
     result.tile_block_count = tile_block_count;
     result.block_row_entry_offset_count = static_cast<std::size_t>(tile_block_count) + 1u;
-    result.row_block_entry_count = records.record_count;
-    result.row_block_value_offset_count = static_cast<std::size_t>(records.record_count) + 1u;
+    result.row_block_entry_count = records.layout.row_blocks;
+    result.row_block_value_offset_count = static_cast<std::size_t>(records.layout.row_blocks) + 1u;
     result.value_bytes = value_bytes;
     *out = result;
     return validation_ok();
@@ -295,12 +299,13 @@ validation_result build_warp_tiles_host(
 
     const auto *source_values = static_cast<const unsigned char *>(records.values);
     auto *output_values = static_cast<unsigned char *>(buffers.values);
-    const u32 tile_count = tile_count_for_rows(records.row_count, order.group_width);
+    const u32 tile_count = tile_count_for_rows(records.layout.rows, order.group_width);
     u32 tile_block = 0u, row_entry = 0u, output_value = 0u;
     for (u32 tile = 0u; tile < tile_count; ++tile) {
         buffers.tile_block_offsets[tile] = tile_block;
         const u32 tile_begin = tile * order.group_width;
-        const u32 lane_count = std::min(order.group_width, records.row_count - tile_begin);
+        const u32 remaining = static_cast<u32>(records.layout.rows) - tile_begin;
+        const u32 lane_count = remaining < order.group_width ? remaining : order.group_width;
         u32 cursors[warp_tile_cell_mask_bits] = {}, ends[warp_tile_cell_mask_bits] = {};
         initialize_tile_cursors(records, order, tile_begin, lane_count, cursors, ends);
         for (u32 block = next_tile_block(cursors, ends, records, lane_count);
@@ -311,13 +316,13 @@ validation_result build_warp_tiles_host(
             u32 cell_mask = 0u;
             for (u32 lane = 0u; lane < lane_count; ++lane) {
                 if (cursors[lane] == ends[lane]
-                    || records.record_block_ids[cursors[lane]] != block) continue;
+                    || records.layout.block_ids[cursors[lane]] != block) continue;
                 const u32 record = cursors[lane]++;
                 cell_mask |= 1u << lane;
-                buffers.row_block_gene_masks[row_entry] = records.record_gene_masks[record];
+                buffers.row_block_gene_masks[row_entry] = records.layout.feature_masks[record];
                 buffers.row_block_value_offsets[row_entry] = output_value;
-                const u32 source_begin = records.record_value_offsets[record];
-                const u32 value_count = records.record_value_offsets[record + 1u] - source_begin;
+                const u32 source_begin = records.layout.row_block_value_offsets[record];
+                const u32 value_count = records.layout.row_block_value_offsets[record + 1u] - source_begin;
                 std::size_t copy_bytes = 0u;
                 if (multiply_overflows(value_count, records.value_size_bytes, &copy_bytes)) {
                     return validation_error(validation_code::integer_overflow, record,
@@ -342,11 +347,11 @@ validation_result build_warp_tiles_host(
     buffers.row_block_value_offsets[row_entry] = output_value;
     if (tile_block != required.tile_block_count
         || row_entry != required.row_block_entry_count
-        || output_value != records.nnz_count) {
+        || output_value != records.layout.stored_values) {
         return validation_error(validation_code::invalid_offsets, invalid_id,
             "warp-tile construction did not emit its queried requirements");
     }
-    set_view(records, order, required, buffers, out);
+    set_view(plan, records, order, required, buffers, out);
     return validate_warp_tile_view_host(plan, records, order, *out);
 }
 
@@ -357,7 +362,11 @@ validation_result validate_warp_tile_view_host(
     const warp_tile_view &tiles) {
     validation_result status = validate_inputs(plan, records, order);
     if (!status) return status;
-    const u32 expected_tile_count = tile_count_for_rows(records.row_count, order.group_width);
+    if (!packed_extents_fit(tiles)) {
+        return validation_error(validation_code::integer_overflow, invalid_id,
+            "warp-tile extents exceed the packed schema");
+    }
+    const u32 expected_tile_count = tile_count_for_rows(records.layout.rows, order.group_width);
     if (tiles.tile_schema_version != warp_tile_schema_version
         || tiles.record_schema_version != records.record_schema_version
         || tiles.semantic_plan_schema_version != records.semantic_plan_schema_version
@@ -371,13 +380,13 @@ validation_result validate_warp_tile_view_host(
         || tiles.ordering_identity != order.ordering_identity
         || tiles.global_row_begin != records.global_row_begin
         || tiles.full_row_count != records.full_row_count
-        || tiles.row_count != records.row_count
-        || tiles.feature_count != records.feature_count
-        || tiles.feature_block_count != records.feature_block_count
-        || tiles.tile_row_width != order.group_width
-        || tiles.tile_count != expected_tile_count
-        || tiles.nnz_count != records.nnz_count
-        || tiles.row_block_entry_count != records.record_count
+        || tiles.layout.rows != records.layout.rows
+        || tiles.layout.features != records.layout.features
+        || tiles.layout.feature_blocks != records.layout.feature_blocks
+        || tiles.layout.tile_row_width != order.group_width
+        || tiles.layout.tiles != expected_tile_count
+        || tiles.layout.stored_values != records.layout.stored_values
+        || tiles.layout.row_block_entries != records.layout.row_blocks
         || tiles.value_size_bytes != records.value_size_bytes
         || tiles.feature_axis_fingerprint != records.feature_axis_fingerprint
         || tiles.feature_axis_fingerprint_version != records.feature_axis_fingerprint_version
@@ -385,28 +394,28 @@ validation_result validate_warp_tile_view_host(
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "warp-tile identity is incompatible with its plan, records, or order");
     }
-    if (tiles.tile_block_offsets == nullptr
-        || tiles.block_row_entry_offsets == nullptr
-        || tiles.row_block_value_offsets == nullptr) {
+    if (tiles.layout.tile_block_offsets == nullptr
+        || tiles.layout.block_row_entry_offsets == nullptr
+        || tiles.layout.row_block_value_offsets == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "warp-tile terminal offsets are null");
     }
-    if (tiles.tile_block_count != 0u
-        && (tiles.tile_block_ids == nullptr || tiles.tile_block_cell_masks == nullptr)) {
+    if (tiles.layout.tile_blocks != 0u
+        && (tiles.layout.block_ids == nullptr || tiles.layout.participating_row_masks == nullptr)) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "warp-tile block descriptors are null");
     }
-    if (tiles.row_block_entry_count != 0u && tiles.row_block_gene_masks == nullptr) {
+    if (tiles.layout.row_block_entries != 0u && tiles.layout.feature_masks == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "warp-tile row-block gene masks are null");
     }
-    if (tiles.nnz_count != 0u && tiles.values == nullptr) {
+    if (tiles.layout.stored_values != 0u && tiles.values == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "warp-tile values are null");
     }
-    if (tiles.tile_block_offsets[0] != 0u
-        || tiles.block_row_entry_offsets[0] != 0u
-        || tiles.row_block_value_offsets[0] != 0u) {
+    if (tiles.layout.tile_block_offsets[0] != 0u
+        || tiles.layout.block_row_entry_offsets[0] != 0u
+        || tiles.layout.row_block_value_offsets[0] != 0u) {
         return validation_error(validation_code::invalid_offsets, 0u,
             "warp-tile offsets must start at zero");
     }
@@ -414,31 +423,33 @@ validation_result validate_warp_tile_view_host(
     const auto *source_values = static_cast<const unsigned char *>(records.values);
     const auto *tile_values = static_cast<const unsigned char *>(tiles.values);
     u32 observed_entries = 0u;
-    for (u32 tile = 0u; tile < tiles.tile_count; ++tile) {
-        const u32 descriptor_begin = tiles.tile_block_offsets[tile];
-        const u32 descriptor_end = tiles.tile_block_offsets[tile + 1u];
-        if (descriptor_end < descriptor_begin || descriptor_end > tiles.tile_block_count) {
+    for (u32 tile = 0u; tile < tiles.layout.tiles; ++tile) {
+        const u32 descriptor_begin = tiles.layout.tile_block_offsets[tile];
+        const u32 descriptor_end = tiles.layout.tile_block_offsets[tile + 1u];
+        if (descriptor_end < descriptor_begin || descriptor_end > tiles.layout.tile_blocks) {
             return validation_error(validation_code::invalid_offsets, tile,
                 "warp-tile block offsets are not monotonic");
         }
-        const u32 tile_begin = tile * tiles.tile_row_width;
-        const u32 lane_count = std::min(tiles.tile_row_width, tiles.row_count - tile_begin);
+        const u32 tile_begin = tile * tiles.layout.tile_row_width;
+        const u32 remaining = static_cast<u32>(tiles.layout.rows) - tile_begin;
+        const u32 lane_count = remaining < tiles.layout.tile_row_width
+            ? remaining : tiles.layout.tile_row_width;
         const u32 lane_mask = valid_lane_mask(lane_count);
         u32 cursors[warp_tile_cell_mask_bits] = {}, ends[warp_tile_cell_mask_bits] = {};
         initialize_tile_cursors(records, order, tile_begin, lane_count, cursors, ends);
         for (u32 descriptor = descriptor_begin; descriptor < descriptor_end; ++descriptor) {
             const u32 expected_block = next_tile_block(cursors, ends, records, lane_count);
-            if (expected_block == invalid_id || tiles.tile_block_ids[descriptor] != expected_block) {
+            if (expected_block == invalid_id || tiles.layout.block_ids[descriptor] != expected_block) {
                 return validation_error(validation_code::invalid_offsets, descriptor,
                     "warp-tile dictionary is not the exact sorted row-block union");
             }
-            const u32 entry_begin = tiles.block_row_entry_offsets[descriptor];
-            const u32 entry_end = tiles.block_row_entry_offsets[descriptor + 1u];
-            if (entry_end < entry_begin || entry_end > tiles.row_block_entry_count) {
+            const u32 entry_begin = tiles.layout.block_row_entry_offsets[descriptor];
+            const u32 entry_end = tiles.layout.block_row_entry_offsets[descriptor + 1u];
+            if (entry_end < entry_begin || entry_end > tiles.layout.row_block_entries) {
                 return validation_error(validation_code::invalid_offsets, descriptor,
                     "warp-tile block-to-row-entry offsets are not monotonic");
             }
-            const u32 cell_mask = tiles.tile_block_cell_masks[descriptor];
+            const u32 cell_mask = tiles.layout.participating_row_masks[descriptor];
             if (cell_mask == 0u || (cell_mask & ~lane_mask) != 0u) {
                 return validation_error(validation_code::invalid_matrix_view, descriptor,
                     "warp-tile cell mask is empty or outside the tile tail");
@@ -446,22 +457,22 @@ validation_result validate_warp_tile_view_host(
             u32 expected_cell_mask = 0u, entry = entry_begin;
             for (u32 lane = 0u; lane < lane_count; ++lane) {
                 if (cursors[lane] == ends[lane]
-                    || records.record_block_ids[cursors[lane]] != expected_block) continue;
+                    || records.layout.block_ids[cursors[lane]] != expected_block) continue;
                 const u32 record = cursors[lane]++;
                 expected_cell_mask |= 1u << lane;
                 if (entry >= entry_end
-                    || tiles.row_block_gene_masks[entry] != records.record_gene_masks[record]) {
+                    || tiles.layout.feature_masks[entry] != records.layout.feature_masks[record]) {
                     return validation_error(validation_code::invalid_plan_geometry, entry,
                         "warp-tile row-block gene mask disagrees with its source record");
                 }
-                const u32 tile_value_begin = tiles.row_block_value_offsets[entry];
-                const u32 tile_value_end = tiles.row_block_value_offsets[entry + 1u];
-                const u32 source_value_begin = records.record_value_offsets[record];
-                const u32 source_value_count = records.record_value_offsets[record + 1u]
+                const u32 tile_value_begin = tiles.layout.row_block_value_offsets[entry];
+                const u32 tile_value_end = tiles.layout.row_block_value_offsets[entry + 1u];
+                const u32 source_value_begin = records.layout.row_block_value_offsets[record];
+                const u32 source_value_count = records.layout.row_block_value_offsets[record + 1u]
                     - source_value_begin;
-                if (tile_value_end < tile_value_begin || tile_value_end > tiles.nnz_count
+                if (tile_value_end < tile_value_begin || tile_value_end > tiles.layout.stored_values
                     || tile_value_end - tile_value_begin != source_value_count
-                    || source_value_count != popcount_u32(tiles.row_block_gene_masks[entry])) {
+                    || source_value_count != popcount_u32(tiles.layout.feature_masks[entry])) {
                     return validation_error(validation_code::invalid_offsets, entry,
                         "warp-tile value offsets disagree with row-block mask rank");
                 }
@@ -496,16 +507,16 @@ validation_result validate_warp_tile_view_host(
             }
         }
     }
-    if (tiles.tile_block_offsets[tiles.tile_count] != tiles.tile_block_count
-        || tiles.block_row_entry_offsets[tiles.tile_block_count]
-            != tiles.row_block_entry_count
-        || tiles.row_block_value_offsets[tiles.row_block_entry_count] != tiles.nnz_count
-        || observed_entries != tiles.row_block_entry_count) {
+    if (tiles.layout.tile_block_offsets[tiles.layout.tiles] != tiles.layout.tile_blocks
+        || tiles.layout.block_row_entry_offsets[tiles.layout.tile_blocks]
+            != tiles.layout.row_block_entries
+        || tiles.layout.row_block_value_offsets[tiles.layout.row_block_entries] != tiles.layout.stored_values
+        || observed_entries != tiles.layout.row_block_entries) {
         return validation_error(validation_code::invalid_offsets, invalid_id,
             "warp-tile terminal offsets disagree with declared counts");
     }
     std::size_t ignored = 0u;
-    if (multiply_overflows(tiles.nnz_count, tiles.value_size_bytes, &ignored)) {
+    if (multiply_overflows(tiles.layout.stored_values, tiles.value_size_bytes, &ignored)) {
         return validation_error(validation_code::integer_overflow, invalid_id,
             "warp-tile value byte count overflows size_t");
     }
@@ -527,20 +538,20 @@ validation_result decode_warp_tiles_host(
     validation_result status = validate_warp_tile_view_host(plan, records, order, tiles);
     if (!status) return status;
     std::size_t value_bytes = 0u;
-    if (multiply_overflows(tiles.nnz_count, tiles.value_size_bytes, &value_bytes)) {
+    if (multiply_overflows(tiles.layout.stored_values, tiles.value_size_bytes, &value_bytes)) {
         return validation_error(validation_code::integer_overflow, invalid_id,
             "decoded warp-tile value byte count overflows size_t");
     }
-    if (workspace.row_capacity < tiles.row_count
-        || buffers.row_offset_capacity < static_cast<std::size_t>(tiles.row_count) + 1u
-        || buffers.entry_capacity < tiles.nnz_count
+    if (workspace.row_capacity < tiles.layout.rows
+        || buffers.row_offset_capacity < static_cast<std::size_t>(tiles.layout.rows) + 1u
+        || buffers.entry_capacity < tiles.layout.stored_values
         || buffers.value_capacity_bytes < value_bytes) {
         return validation_error(validation_code::insufficient_capacity, invalid_id,
             "decoded warp-tile output or workspace capacity is insufficient");
     }
     if (buffers.row_offsets == nullptr
-        || (tiles.row_count != 0u && workspace.row_cursors == nullptr)
-        || (tiles.nnz_count != 0u
+        || (tiles.layout.rows != 0u && workspace.row_cursors == nullptr)
+        || (tiles.layout.stored_values != 0u
             && (buffers.canonical_feature_ids == nullptr || buffers.values == nullptr))) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "decoded warp-tile output or workspace array is null");
@@ -550,51 +561,51 @@ validation_result decode_warp_tiles_host(
             && workspace.row_cursors == buffers.canonical_feature_ids)
         || (buffers.canonical_feature_ids != nullptr
             && buffers.row_offsets == buffers.canonical_feature_ids)
-        || (tiles.nnz_count != 0u && buffers.values == tiles.values)) {
+        || (tiles.layout.stored_values != 0u && buffers.values == tiles.values)) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "warp-tile decoding requires distinct out-of-place arrays");
     }
 
-    std::fill(buffers.row_offsets, buffers.row_offsets + tiles.row_count + 1u, 0u);
-    for (u32 tile = 0u; tile < tiles.tile_count; ++tile) {
-        const u32 tile_begin = tile * tiles.tile_row_width;
-        for (u32 descriptor = tiles.tile_block_offsets[tile];
-             descriptor < tiles.tile_block_offsets[tile + 1u]; ++descriptor) {
-            u32 entry = tiles.block_row_entry_offsets[descriptor];
-            const u32 cell_mask = tiles.tile_block_cell_masks[descriptor];
-            for (u32 lane = 0u; lane < tiles.tile_row_width; ++lane) {
+    for (size_t row = 0; row <= tiles.layout.rows; ++row) buffers.row_offsets[row] = 0u;
+    for (u32 tile = 0u; tile < tiles.layout.tiles; ++tile) {
+        const u32 tile_begin = tile * tiles.layout.tile_row_width;
+        for (u32 descriptor = tiles.layout.tile_block_offsets[tile];
+             descriptor < tiles.layout.tile_block_offsets[tile + 1u]; ++descriptor) {
+            u32 entry = tiles.layout.block_row_entry_offsets[descriptor];
+            const u32 cell_mask = tiles.layout.participating_row_masks[descriptor];
+            for (u32 lane = 0u; lane < tiles.layout.tile_row_width; ++lane) {
                 if ((cell_mask & (1u << lane)) == 0u) continue;
                 const u32 row = order.row_permutation[tile_begin + lane];
-                buffers.row_offsets[row + 1u] += popcount_u32(tiles.row_block_gene_masks[entry]);
+                buffers.row_offsets[row + 1u] += popcount_u32(tiles.layout.feature_masks[entry]);
                 ++entry;
             }
         }
     }
-    for (u32 row = 0u; row < tiles.row_count; ++row) {
+    for (u32 row = 0u; row < tiles.layout.rows; ++row) {
         buffers.row_offsets[row + 1u] += buffers.row_offsets[row];
         workspace.row_cursors[row] = buffers.row_offsets[row];
     }
-    if (buffers.row_offsets[tiles.row_count] != tiles.nnz_count) {
-        return validation_error(validation_code::invalid_offsets, tiles.row_count,
+    if (buffers.row_offsets[tiles.layout.rows] != tiles.layout.stored_values) {
+        return validation_error(validation_code::invalid_offsets, tiles.layout.rows,
             "decoded warp-tile row counts do not sum to nnz");
     }
 
     const auto *source_values = static_cast<const unsigned char *>(tiles.values);
     auto *output_values = static_cast<unsigned char *>(buffers.values);
-    for (u32 tile = 0u; tile < tiles.tile_count; ++tile) {
-        const u32 tile_begin = tile * tiles.tile_row_width;
-        for (u32 descriptor = tiles.tile_block_offsets[tile];
-             descriptor < tiles.tile_block_offsets[tile + 1u]; ++descriptor) {
-            const u32 block = tiles.tile_block_ids[descriptor];
+    for (u32 tile = 0u; tile < tiles.layout.tiles; ++tile) {
+        const u32 tile_begin = tile * tiles.layout.tile_row_width;
+        for (u32 descriptor = tiles.layout.tile_block_offsets[tile];
+             descriptor < tiles.layout.tile_block_offsets[tile + 1u]; ++descriptor) {
+            const u32 block = tiles.layout.block_ids[descriptor];
             const u32 block_begin = plan.feature_block_offsets()[block];
             const u32 block_width = plan.feature_block_offsets()[block + 1u] - block_begin;
-            u32 entry = tiles.block_row_entry_offsets[descriptor];
-            const u32 cell_mask = tiles.tile_block_cell_masks[descriptor];
-            for (u32 lane = 0u; lane < tiles.tile_row_width; ++lane) {
+            u32 entry = tiles.layout.block_row_entry_offsets[descriptor];
+            const u32 cell_mask = tiles.layout.participating_row_masks[descriptor];
+            for (u32 lane = 0u; lane < tiles.layout.tile_row_width; ++lane) {
                 if ((cell_mask & (1u << lane)) == 0u) continue;
                 const u32 row = order.row_permutation[tile_begin + lane];
-                const u32 gene_mask = tiles.row_block_gene_masks[entry];
-                u32 source_value = tiles.row_block_value_offsets[entry];
+                const u32 gene_mask = tiles.layout.feature_masks[entry];
+                u32 source_value = tiles.layout.row_block_value_offsets[entry];
                 for (u32 local = 0u; local < block_width; ++local) {
                     if ((gene_mask & (1u << local)) == 0u) continue;
                     const u32 output_entry = workspace.row_cursors[row]++;
@@ -611,7 +622,7 @@ validation_result decode_warp_tiles_host(
             }
         }
     }
-    for (u32 row = 0u; row < tiles.row_count; ++row) {
+    for (u32 row = 0u; row < tiles.layout.rows; ++row) {
         if (workspace.row_cursors[row] != buffers.row_offsets[row + 1u]) {
             return validation_error(validation_code::invalid_offsets, row,
                 "decoded warp-tile row cursor disagrees with its output range");
@@ -621,9 +632,9 @@ validation_result decode_warp_tiles_host(
     decoded_warp_tile_partition_view result;
     result.global_row_begin = tiles.global_row_begin;
     result.full_row_count = tiles.full_row_count;
-    result.row_count = tiles.row_count;
-    result.feature_count = tiles.feature_count;
-    result.nnz_count = tiles.nnz_count;
+    result.row_count = tiles.layout.rows;
+    result.feature_count = tiles.layout.features;
+    result.nnz_count = tiles.layout.stored_values;
     result.value_size_bytes = tiles.value_size_bytes;
     result.feature_axis_fingerprint = tiles.feature_axis_fingerprint;
     result.feature_axis_fingerprint_version = tiles.feature_axis_fingerprint_version;
@@ -648,25 +659,25 @@ validation_result evaluate_warp_tile_metrics_host(
     const validation_result status = validate_warp_tile_view_host(plan, records, order, tiles);
     if (!status) return status;
     warp_tile_metrics result;
-    result.tile_count = tiles.tile_count;
-    result.tile_block_count = tiles.tile_block_count;
-    result.row_block_entry_count = tiles.row_block_entry_count;
-    for (u32 tile = 0u; tile < tiles.tile_count; ++tile) {
+    result.tile_count = tiles.layout.tiles;
+    result.tile_block_count = tiles.layout.tile_blocks;
+    result.row_block_entry_count = tiles.layout.row_block_entries;
+    for (u32 tile = 0u; tile < tiles.layout.tiles; ++tile) {
         result.maximum_tile_block_union = std::max(result.maximum_tile_block_union,
-            tiles.tile_block_offsets[tile + 1u] - tiles.tile_block_offsets[tile]);
+            tiles.layout.tile_block_offsets[tile + 1u] - tiles.layout.tile_block_offsets[tile]);
     }
     result.metadata_bytes =
-        (static_cast<u64>(tiles.tile_count) + 1u) * sizeof(u32)
-        + static_cast<u64>(tiles.tile_block_count) * 2u * sizeof(u32)
-        + (static_cast<u64>(tiles.tile_block_count) + 1u) * sizeof(u32)
-        + static_cast<u64>(tiles.row_block_entry_count) * sizeof(u32)
-        + (static_cast<u64>(tiles.row_block_entry_count) + 1u) * sizeof(u32);
-    result.value_bytes = static_cast<u64>(tiles.nnz_count) * tiles.value_size_bytes;
+        (static_cast<u64>(tiles.layout.tiles) + 1u) * sizeof(u32)
+        + static_cast<u64>(tiles.layout.tile_blocks) * 2u * sizeof(u32)
+        + (static_cast<u64>(tiles.layout.tile_blocks) + 1u) * sizeof(u32)
+        + static_cast<u64>(tiles.layout.row_block_entries) * sizeof(u32)
+        + (static_cast<u64>(tiles.layout.row_block_entries) + 1u) * sizeof(u32);
+    result.value_bytes = static_cast<u64>(tiles.layout.stored_values) * tiles.value_size_bytes;
     result.total_bytes = result.metadata_bytes + result.value_bytes;
     result.source_record_metadata_bytes =
-        (static_cast<u64>(records.row_count) + 1u) * sizeof(u32)
-        + static_cast<u64>(records.record_count) * 2u * sizeof(u32)
-        + (static_cast<u64>(records.record_count) + 1u) * sizeof(u32);
+        (static_cast<u64>(records.layout.rows) + 1u) * sizeof(u32)
+        + static_cast<u64>(records.layout.row_blocks) * 2u * sizeof(u32)
+        + (static_cast<u64>(records.layout.row_blocks) + 1u) * sizeof(u32);
     *out = result;
     return validation_ok();
 }

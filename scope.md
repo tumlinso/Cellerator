@@ -156,9 +156,9 @@ explicit extents and lifetimes, and separate owners for parameters and buffers.
 Named module registration, member enumeration, and a universal learned-model
 base are not required. Names still carry biological meaning at data and saved
 declaration boundaries. C++ and CUDA builds require C++20 or newer; selected
-compiler implementation targets retain C++23. The C++20 named modules are
-built and exported through the normal package. CUDA translation units use the
-public headers and do not import named modules.
+compiler implementation targets retain C++23. The optional native NN
+component exports a C++20 named module. CUDA translation units use the public
+headers.
 
 Reuse established numerical and differentiation infrastructure, including
 LibTorch where appropriate, while designing an intuitive Cellerator modeling
@@ -240,10 +240,10 @@ library.
   Reusable learning and numerical machinery can still belong in Cellerator.
 - **Broader single-cell analysis:** Scanpy and RAPIDS-singlecell remain upstream
   tools for established analysis.
-- **Storage and delivery systems:** durable dataset storage, sharding, transport,
-  and hosting services remain with their owning projects, such as CellShard or
-  model hubs. Cellerator owns the model save/load and sharing interfaces that
-  connect to those services; it need not build another hosting platform.
+- **Storage and delivery systems:** dataset storage, sharding, transport, and
+  hosting remain with their owning systems. The retained CellShard component is
+  quasi-deprecated and detached from supported Cellerator builds and installs.
+  Cellerator owns reusable model and numerical interfaces, not dataset custody.
 - **Sequence-grounded representation:** Cellerator owns exact sequence views,
   provenance, and the operations that connect sequence evidence to structured
   numerical execution. Model-specific hypotheses and their scientific

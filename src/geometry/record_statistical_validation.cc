@@ -122,9 +122,9 @@ validation_result validate_source(
     if (!status) return status;
     if (source.global_row_begin != records.global_row_begin
         || source.full_row_count != records.full_row_count
-        || source.support.row_count != records.row_count
-        || source.support.feature_count != records.feature_count
-        || source.support.nnz_count != records.nnz_count
+        || source.support.row_count != records.layout.rows
+        || source.support.feature_count != records.layout.features
+        || source.support.nnz_count != records.layout.stored_values
         || source.value_size_bytes != records.value_size_bytes) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "canonical validation source and cell-block records disagree");
@@ -166,14 +166,14 @@ validation_result validate_selected_row_exactly(
     decoded_entry *decoded,
     u32 decoded_capacity) {
     u32 decoded_count = 0u;
-    const u32 record_begin = records.row_record_offsets[row];
-    const u32 record_end = records.row_record_offsets[row + 1u];
+    const u32 record_begin = records.layout.row_block_offsets[row];
+    const u32 record_end = records.layout.row_block_offsets[row + 1u];
     for (u32 record = record_begin; record < record_end; ++record) {
-        const u32 block = records.record_block_ids[record];
+        const u32 block = records.layout.block_ids[record];
         const u32 execution_begin = plan.feature_block_offsets()[block];
         const u32 width = plan.feature_block_offsets()[block + 1u] - execution_begin;
-        const u32 mask = records.record_gene_masks[record];
-        u32 value_index = records.record_value_offsets[record];
+        const u32 mask = records.layout.feature_masks[record];
+        u32 value_index = records.layout.row_block_value_offsets[record];
         for (u32 local = 0u; local < width; ++local) {
             if ((mask & (1u << local)) != 0u) {
                 if (decoded_count >= decoded_capacity) {
@@ -184,7 +184,7 @@ validation_result validate_selected_row_exactly(
                     plan.feature_permutation()[execution_begin + local], value_index++};
             }
         }
-        if (value_index != records.record_value_offsets[record + 1u]) {
+        if (value_index != records.layout.row_block_value_offsets[record + 1u]) {
             return validation_error(validation_code::invalid_offsets, record,
                 "record-validation mask rank changed during decode");
         }
@@ -283,7 +283,7 @@ validation_result evaluate_held_out_cell_block_records(
         hash_u64(&row_identity, context.split_provenance.assignment_identity);
         hash_u64(&row_identity, records.global_row_begin);
         u32 maximum_row_nnz = 0u;
-        for (u32 row = 0u; row < records.row_count; ++row) {
+        for (u32 row = 0u; row < records.layout.rows; ++row) {
             const u64 global_row = records.global_row_begin + row;
             if (context.row_partitions[global_row] == validation_partition::held_out) {
                 maximum_row_nnz = std::max(maximum_row_nnz,
@@ -295,7 +295,7 @@ validation_result evaluate_held_out_cell_block_records(
             return validation_error(validation_code::integer_overflow, invalid_id,
                 "record-validation overflow decode allocation failed");
         }
-        for (u32 row = 0u; row < records.row_count; ++row) {
+        for (u32 row = 0u; row < records.layout.rows; ++row) {
             const u64 global_row = records.global_row_begin + row;
             if (context.row_partitions[global_row] != validation_partition::held_out) {
                 continue;
@@ -305,8 +305,8 @@ validation_result evaluate_held_out_cell_block_records(
             if (!status) return status;
             const u32 row_nnz = source.support.row_offsets[row + 1u]
                 - source.support.row_offsets[row];
-            const u32 row_records = records.row_record_offsets[row + 1u]
-                - records.row_record_offsets[row];
+            const u32 row_records = records.layout.row_block_offsets[row + 1u]
+                - records.layout.row_block_offsets[row];
             ++held_out_rows;
             held_out_nnz += row_nnz;
             held_out_records += row_records;

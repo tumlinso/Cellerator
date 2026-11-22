@@ -126,18 +126,18 @@ fixture make_fixture(const options &settings) {
     result.records.geometry_identity_version = cellpack::feature_block_geometry_identity_version;
     result.records.feature_block_geometry_identity = 0x123456789abcdef0ull;
     result.records.full_row_count = settings.rows;
-    result.records.row_count = settings.rows;
-    result.records.feature_count = settings.feature_blocks * 16u;
-    result.records.feature_block_count = settings.feature_blocks;
-    result.records.nnz_count = static_cast<u32>(result.block_ids.size());
-    result.records.record_count = static_cast<u32>(result.block_ids.size());
+    result.records.layout.rows = settings.rows;
+    result.records.layout.features = settings.feature_blocks * 16u;
+    result.records.layout.feature_blocks = settings.feature_blocks;
+    result.records.layout.stored_values = static_cast<u32>(result.block_ids.size());
+    result.records.layout.row_blocks = static_cast<u32>(result.block_ids.size());
     result.records.value_size_bytes = sizeof(float);
     result.records.feature_axis_fingerprint = 0x1234u;
     result.records.feature_axis_fingerprint_version = 1u;
     result.records.row_domain_identity = 0x5678u;
-    result.records.row_record_offsets = result.row_offsets.data();
-    result.records.record_block_ids = result.block_ids.data();
-    result.records.record_value_offsets = result.value_offsets.data();
+    result.records.layout.row_block_offsets = result.row_offsets.data();
+    result.records.layout.block_ids = result.block_ids.data();
+    result.records.layout.row_block_value_offsets = result.value_offsets.data();
     return result;
 }
 
@@ -151,13 +151,13 @@ host_output run_host(
     const cellpack::cell_block_record_view &records,
     const cellpack::local_cell_order_config &config) {
     host_output result;
-    result.primary.resize(records.row_count);
-    result.secondary.resize(records.row_count);
-    result.active.resize(records.row_count);
-    result.nnz.resize(records.row_count);
-    result.permutation.resize(records.row_count);
-    result.inverse.resize(records.row_count);
-    cellpack::local_cell_order_buffers buffers{records.row_count,
+    result.primary.resize(records.layout.rows);
+    result.secondary.resize(records.layout.rows);
+    result.active.resize(records.layout.rows);
+    result.nnz.resize(records.layout.rows);
+    result.permutation.resize(records.layout.rows);
+    result.inverse.resize(records.layout.rows);
+    cellpack::local_cell_order_buffers buffers{records.layout.rows,
         result.primary.data(), result.secondary.data(), result.active.data(),
         result.nnz.data(), result.permutation.data(), result.inverse.data()};
     require(static_cast<bool>(cellpack::build_local_cell_order_host(
@@ -168,7 +168,7 @@ host_output run_host(
 cellpack::local_cell_order_metrics measure(
     const cellpack::cell_block_record_view &records,
     const host_output &output) {
-    std::vector<u32> epochs(records.feature_block_count);
+    std::vector<u32> epochs(records.layout.feature_blocks);
     cellpack::local_cell_order_metric_workspace workspace{epochs.size(), epochs.data()};
     cellpack::local_cell_order_metrics result;
     require(static_cast<bool>(cellpack::evaluate_local_cell_order_metrics_host(
@@ -208,9 +208,9 @@ int main(int argc, char **argv) {
         upload(d_block_ids, data.block_ids);
         upload(d_value_offsets, data.value_offsets);
         auto device_records = data.records;
-        device_records.row_record_offsets = d_row_offsets.data;
-        device_records.record_block_ids = d_block_ids.data;
-        device_records.record_value_offsets = d_value_offsets.data;
+        device_records.layout.row_block_offsets = d_row_offsets.data;
+        device_records.layout.block_ids = d_block_ids.data;
+        device_records.layout.row_block_value_offsets = d_value_offsets.data;
 
         cellpack::local_cell_order_cuda_requirements required;
         require(static_cast<bool>(cellpack::query_local_cell_order_cuda_requirements(

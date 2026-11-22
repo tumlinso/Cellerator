@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-namespace cellerator::modeling::cuda {
+namespace cellerator::ops::mechanism::cuda {
 class FactorizedInteractionDeviceLayout;
 }
 
@@ -57,7 +57,7 @@ at::Tensor factorized_interaction_cuda(
 // must match the tensor device; the adapter orders its upload against the
 // current Torch stream and allocates private tape/scratch for each call.
 at::Tensor factorized_interaction_cuda_prepared(
-    const std::shared_ptr<modeling::cuda::FactorizedInteractionDeviceLayout>& plan,
+    const std::shared_ptr<::cellerator::ops::mechanism::cuda::FactorizedInteractionDeviceLayout>& plan,
     const at::Tensor& x, const at::Tensor& z, const at::Tensor& alpha,
     const at::Tensor& bias, const at::Tensor& gamma,
     at::ScalarType output_dtype = at::kHalf,

@@ -33,7 +33,7 @@ endif()
 option(CELLERATOR_BINARY16_BUILD_TESTS "Build binary16 conversion tests" ${PROJECT_IS_TOP_LEVEL})
 if(CELLERATOR_BINARY16_BUILD_TESTS)
   enable_testing()
-  add_executable(test_binary16 tests/test_binary16.cpp)
+  add_executable(test_binary16 ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL} tests/test_binary16.cpp)
   target_link_libraries(test_binary16 PRIVATE Cellerator::binary16)
   add_test(NAME binary16 COMMAND test_binary16)
 

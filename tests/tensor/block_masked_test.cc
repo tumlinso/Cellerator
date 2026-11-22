@@ -1,4 +1,4 @@
-#include "Cellerator/tensor/block_masked/structure.hh"
+#include "block_masked_fixture.hh"
 #include "Cellerator/tensor/block_masked/view.hh"
 
 #include <algorithm>
@@ -14,6 +14,7 @@
 
 namespace {
 
+using cellerator::test::make_block_masked_structure;
 using cellerator::tensor::block_masked::LayoutView;
 using cellerator::tensor::block_masked::LoadStatus;
 using cellerator::tensor::block_masked::Structure;
@@ -43,7 +44,7 @@ void require_throws(Function &&function, const char *message) {
 void test_lookup_and_fixed_support() {
     const std::vector<std::vector<std::uint32_t>> support{
         {12, 5, 4, 0}, {5}, {}, {6, 2, 1}, {12, 11}};
-    Structure structure = Structure::from_rows(
+    Structure structure = make_block_masked_structure(
         13,
         support,
         5,
@@ -60,7 +61,7 @@ void test_lookup_and_fixed_support() {
     require(structure.row_block_entries() == 7, "row block entry count");
     require(structure.stored_values() == 10, "allocated support count");
     require(structure.physical_feature(112) == 12, "canonical feature binding");
-    require(structure.canonical_rows()[3] == 910, "canonical row binding");
+    require(structure.canonical_rows().data[3] == 910, "canonical row binding");
     require_throws([&] { (void)structure.physical_feature(999); }, "unknown canonical feature throws");
 
     std::vector<float> values(structure.stored_values());
@@ -126,12 +127,12 @@ void test_lookup_and_fixed_support() {
 }
 
 void test_empty_extents_and_zero_support() {
-    const Structure empty = Structure::from_rows(0, {});
+    const Structure empty = make_block_masked_structure(0, {});
     validate(empty.view());
     require(empty.rows() == 0 && empty.features() == 0 && empty.stored_values() == 0,
         "empty structure is valid");
 
-    const Structure empty_rows = Structure::from_rows(9, {});
+    const Structure empty_rows = make_block_masked_structure(9, {});
     validate(empty_rows.view());
     require(empty_rows.rows() == 0 && empty_rows.features() == 9,
         "zero rows retain the declared feature extent");
@@ -140,13 +141,13 @@ void test_empty_extents_and_zero_support() {
     require_throws([&] { (void)empty_rows.physical_feature(9); },
         "identity lookup rejects coordinates beyond the feature extent");
 
-    const Structure zero_features = Structure::from_rows(0, {{}, {}});
+    const Structure zero_features = make_block_masked_structure(0, {{}, {}});
     validate(zero_features.view());
     require(zero_features.rows() == 2 && zero_features.features() == 0 &&
         zero_features.tiles() == 1 && zero_features.tile_blocks() == 0,
         "zero features retain valid row tiles");
 
-    const Structure empty_support = Structure::from_rows(7, {{}, {}, {}}, 4, 2);
+    const Structure empty_support = make_block_masked_structure(7, {{}, {}, {}}, 4, 2);
     validate(empty_support.view());
     require(empty_support.rows() == 3 && empty_support.tiles() == 2 &&
         empty_support.tile_blocks() == 0 && empty_support.row_block_entries() == 0 &&
@@ -167,30 +168,69 @@ void test_empty_extents_and_zero_support() {
 
 void test_rejects_invalid_support_and_maps() {
     require_throws(
-        [] { (void)Structure::from_rows(3, {{1, 1}}); },
+        [] { (void)make_block_masked_structure(3, {{1, 1}}); },
         "duplicate row feature is rejected");
     require_throws(
-        [] { (void)Structure::from_rows(3, {{3}}); },
+        [] { (void)make_block_masked_structure(3, {{3}}); },
         "out-of-range row feature is rejected");
     require_throws(
-        [] { (void)Structure::from_rows(3, {{}}, 0); },
+        [] { (void)make_block_masked_structure(3, {{}}, 0); },
         "zero block width is rejected");
     require_throws(
-        [] { (void)Structure::from_rows(3, {{}}, 32, 33); },
+        [] { (void)make_block_masked_structure(3, {{}}, 32, 33); },
         "tile widths beyond the 32-bit grammar are rejected");
     require_throws(
-        [] { (void)Structure::from_rows(std::numeric_limits<std::uint64_t>::max(), {}); },
+        [] { (void)make_block_masked_structure(std::numeric_limits<std::uint64_t>::max(), {}); },
         "feature extent outside default offset range is rejected");
     require_throws(
-        [] { (void)Structure::from_rows(2, {{}}, 32, 32, {9, 9}); },
+        [] { (void)make_block_masked_structure(2, {{}}, 32, 32, {9, 9}); },
         "duplicate canonical feature coordinates are rejected");
     require_throws(
-        [] { (void)Structure::from_rows(2, {{}, {}}, 32, 32, {}, {4, 4}); },
+        [] { (void)make_block_masked_structure(2, {{}, {}}, 32, 32, {}, {4, 4}); },
         "duplicate canonical row coordinates are rejected");
 }
 
+void test_flat_input_and_scratch() {
+    namespace bm = cellerator::tensor::block_masked;
+    std::uint64_t offsets[] = {0, 3, 3, 5};
+    std::uint32_t features[] = {5, 1, 4, 3, 0};
+    std::uint64_t row_ids[] = {51, 23, 75};
+    const bm::StructureInput input{
+        8, {offsets, 3, features, 5}, 4, 2, {}, {row_ids, 3}};
+    const auto bytes = bm::structure_scratch_bytes(input);
+    require(bytes != 0, "nonempty unsorted support needs scratch");
+    std::vector<std::uint64_t> scratch(bytes / sizeof(std::uint64_t)
+        + (bytes % sizeof(std::uint64_t) != 0));
+    require_throws([&] { (void)Structure(input, scratch.data(), bytes - 1); },
+                   "short scratch is rejected");
+    offsets[2] = 2;
+    require_throws([&] { (void)Structure(input, scratch.data(), bytes); },
+                   "decreasing row offsets are rejected");
+    offsets[2] = 3;
+    offsets[3] = 4;
+    require_throws([&] { (void)Structure(input, scratch.data(), bytes); },
+                   "terminal row offset must match the support extent");
+    offsets[3] = 5;
+
+    const Structure structure(input, scratch.data(), bytes);
+    features[0] = 0;
+    row_ids[0] = 99;
+    const auto view = structure.view();
+    require(view.tiles == 2 && view.tile_blocks == 3 && view.row_block_entries == 3,
+            "tile/block order of flat support");
+    require(view.tile_block_offsets[0] == 0 && view.tile_block_offsets[1] == 2
+                && view.tile_block_offsets[2] == 3
+                && view.block_ids[0] == 0 && view.block_ids[1] == 1 && view.block_ids[2] == 0,
+            "packed descriptor order changed");
+    require(view.feature_masks[0] == 2 && view.feature_masks[1] == 3
+                && view.feature_masks[2] == 9,
+            "packed feature mask bytes changed");
+    require(structure.canonical_rows().data[0] == 51 && structure.value_offset(0, 5) == 2,
+            "published metadata must be independent of the mutable inputs");
+}
+
 void test_layout_validation_catches_corruption() {
-    const Structure structure = Structure::from_rows(8, {{0, 4}, {4}, {7}}, 4, 3);
+    const Structure structure = make_block_masked_structure(8, {{0, 4}, {4}, {7}}, 4, 3);
     const auto good = structure.view();
     validate(good);
 
@@ -235,14 +275,14 @@ void test_large_permuted_canonical_map() {
     }
 
     const auto prepare_begin = std::chrono::steady_clock::now();
-    const Structure structure = Structure::from_rows(
+    const Structure structure = make_block_masked_structure(
         feature_count, {}, 32, 32, std::move(canonical));
     const auto prepare_end = std::chrono::steady_clock::now();
 
     std::uint64_t checksum = 0;
     const auto lookup_begin = std::chrono::steady_clock::now();
     for (std::uint64_t physical = 0; physical < feature_count; ++physical) {
-        checksum += structure.physical_feature(structure.canonical_features()[physical]);
+        checksum += structure.physical_feature(structure.canonical_features().data[physical]);
     }
     const auto lookup_end = std::chrono::steady_clock::now();
     const std::uint64_t expected_checksum =
@@ -272,6 +312,7 @@ int main() {
     test_lookup_and_fixed_support();
     test_empty_extents_and_zero_support();
     test_rejects_invalid_support_and_maps();
+    test_flat_input_and_scratch();
     test_layout_validation_catches_corruption();
     test_large_permuted_canonical_map();
     std::cout << "block_masked_test: PASS\n";

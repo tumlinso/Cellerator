@@ -1,4 +1,4 @@
-#include <Cellerator/modeling/cuda/plans.hh>
+#include <Cellerator/execution/conditional/dispatch_cuda.hh>
 #include <Cellerator/memory/cuda/resources.hh>
 
 #include <cassert>
@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace {
-using namespace cellerator::modeling::cuda;
+using namespace cellerator::execution::conditional::cuda;
 using namespace cellerator::memory::cuda;
 
 float as_float(float value) { return value; }
@@ -212,7 +212,7 @@ void check_empty_dispatches(const Stream& stream) {
 }  // namespace
 
 int main() {
-  using namespace cellerator::modeling::cuda;
+  using namespace cellerator::execution::conditional::cuda;
   using namespace cellerator::memory::cuda;
   int device_count = 0;
   check(cudaGetDeviceCount(&device_count), "cudaGetDeviceCount");

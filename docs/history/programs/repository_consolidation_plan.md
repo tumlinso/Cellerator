@@ -171,7 +171,8 @@ immediately and tracks the observed public/private and implementation-include de
 `cmake/repository_layout_allowlist.json`; each owning phase must shrink that
 allowlist as it removes the corresponding debt.
 
-The foundational border audit is recorded in `modules/BOUNDARIES.md`. Existing
+The foundational border audit is recorded in
+[the module boundary notes](../repository-notes/module-boundaries.md). Existing
 identity, operand, lifetime, order, and launch-binding headers are suitable
 future state/execution vocabulary. The current executable-program header is not
 a narrow cross-project module surface because it intentionally names internal

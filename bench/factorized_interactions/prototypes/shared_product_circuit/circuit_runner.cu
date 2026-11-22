@@ -1,7 +1,7 @@
 // Wire/parser/output fork of the existing native runner; see PROVENANCE.json.
 #include <Cellerator/layout/factorized_interaction.hh>
 #include <Cellerator/memory/cuda/resources.hh>
-#include <Cellerator/modeling/cuda/factorized_interaction.hh>
+#include <Cellerator/ops/mechanism/factorized_interaction_cuda.hh>
 #include "../../wire_input.hh"
 #include "circuit_kernels.cuh"
 
@@ -27,7 +27,7 @@
 
 namespace layout = cellerator::layout;
 namespace memory_cuda = cellerator::memory::cuda;
-namespace interaction = cellerator::modeling::cuda;
+namespace interaction = cellerator::ops::mechanism::cuda;
 
 namespace {
 

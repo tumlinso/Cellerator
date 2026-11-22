@@ -1,8 +1,7 @@
 # Cellerator biological ABI v1
 
-`biological_abi.hh` defines the versioned Cellerator CPU/CUDA contract for
-biological execution and Baseplane sequence consumers. The legacy sparse-layout
-C runtime API has been retired in coordination with Texo.
+`biological_abi.hh` defines the Cellerator-owned CPU/CUDA operand and identity
+contract for biological execution and Baseplane sequence bindings.
 
 ## Identity and size policy
 
@@ -33,8 +32,6 @@ identity semantics, or serialized width requires a new schema version.
 
 | Existing surface | Biological ABI v1 disposition |
 | --- | --- |
-| `cellerator_tensor_desc` | Remains public C API compatibility; future internal adapters bind a `dense_tensor_view` with explicit axes and residency. |
-| `cellerator_sparse_layout_desc` | Remains public sparse-layout compatibility; it is not the common Baseplane ABI or a universal physical representation. |
 | CP-Math `feature_order_identity` | Becomes an adapter input for explicit domain, order, geometry, and partition handles; its canonical/packed distinction is preserved, not reinterpreted. |
 | CP-Math `sparse_structure_identity` | Becomes an adapter input for typed persistent `structure_id` plus a generation-checked runtime handle. |
 | Baseplane `dna2_planes32_stream_view` | Binds to `bit_plane_view` with base count, validity, coordinate axis, and residency supplied explicitly. |

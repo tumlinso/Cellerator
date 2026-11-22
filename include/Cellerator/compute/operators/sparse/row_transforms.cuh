@@ -25,9 +25,20 @@ int masked_row_scale_log1p_inplace(
     const masked_row_scale_log1p_params *params,
     cudaStream_t stream = nullptr);
 
-// CSR over device arrays retained through completion on stream.
+// CSR with writable binary16 payload bytes and aligned, valid device arrays.
+// The caller retains storage until the supplied stream completes.
 int masked_row_scale_log1p_inplace(
-    const tensor::base::CompressedView<uint32_t, __half> *matrix,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, void> *matrix,
+    const masked_row_scale_log1p_params *params,
+    cudaStream_t stream = nullptr);
+
+int masked_row_scale_log1p_inplace(
+    const ::cellerator::tensor::base::CompressedView<int32_t, void> *matrix,
+    const masked_row_scale_log1p_params *params,
+    cudaStream_t stream = nullptr);
+
+int masked_row_scale_log1p_inplace(
+    const ::cellerator::tensor::base::CompressedView<int64_t, void> *matrix,
     const masked_row_scale_log1p_params *params,
     cudaStream_t stream = nullptr);
 

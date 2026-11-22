@@ -1,13 +1,10 @@
 #include <Cellerator/compute/operators/sparse/ops.hh>
 #include <Cellerator/tensor/base/blocked_ell_layout.hh>
-#include "../../../../ops/matrix/csr_multiply.cuh"
 #include "../primitives/common.cuh"
 
 #include <cub/cub.cuh>
 
 namespace cellerator::compute::sparse::ops::base {
-
-namespace matrix = ::cellerator::ops::matrix;
 
 namespace {
 
@@ -17,11 +14,6 @@ constexpr int kRowThreads = 256;
 constexpr int kValueThreads = 256;
 constexpr int kSpmmColsThreads = 128;
 constexpr int kFeatureThreads = 256;
-
-inline void cusparse_require_(cusparseStatus_t status, const char *label) {
-    if (status == CUSPARSE_STATUS_SUCCESS) return;
-    throw std::runtime_error(std::string(label) + ": cuSPARSE failure");
-}
 
 inline std::size_t align_up_(std::size_t value, std::size_t alignment) {
     const std::size_t mask = alignment - 1u;
@@ -165,19 +157,6 @@ void sparse_value_sum_bwd_fill_f32(
     runtime::cuda_require(cudaGetLastError(), "fill_from_scalar_kernel");
 }
 
-void csr_spmv_fwd_f16_f32(
-    const runtime::execution_context &ctx,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const __half *values,
-    std::uint32_t rows,
-    const float *vector,
-    float *out) {
-    runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmv_fwd)");
-    matrix::Csr<const __half> a{{rows, 0, 0, base::CompressedAxis::row, major_ptr, minor_idx}, values};
-    runtime::cuda_require(matrix::csr_spmv(a, vector, out, ctx.stream), "csr_spmv_fwd_kernel");
-}
-
 void csr_spmv_bwd_values_f16_f32(
     const runtime::execution_context &ctx,
     const std::uint32_t *major_ptr,
@@ -191,20 +170,6 @@ void csr_spmv_bwd_values_f16_f32(
     const int blocks = static_cast<int>((static_cast<std::size_t>(rows) + kRowThreads - 1u) / kRowThreads);
     csr_spmv_bwd_values_kernel_<<<blocks, kRowThreads, 0, ctx.stream>>>(major_ptr, minor_idx, grad_out, vector, rows, grad_values);
     runtime::cuda_require(cudaGetLastError(), "csr_spmv_bwd_values_kernel");
-}
-
-void csr_spmv_bwd_vector_f16_f32(
-    const runtime::execution_context &ctx,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const __half *values,
-    const float *grad_out,
-    std::uint32_t rows,
-    std::uint32_t cols,
-    float *grad_vector) {
-    runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmv_bwd_vector)");
-    matrix::Csr<const __half> a{{rows, cols, 0, base::CompressedAxis::row, major_ptr, minor_idx}, values};
-    runtime::cuda_require(matrix::csr_spmv_transpose(a, grad_out, grad_vector, ctx.stream), "csr_spmv_bwd_vector_kernel");
 }
 
 void csr_feature_affine_quantize_fwd_bwd_f16_f32(
@@ -364,62 +329,6 @@ void csr_spmm_bwd_values_f16_f32(
     if (rows == 0 || out_cols == 0) return;
     csr_spmm_bwd_values_kernel_<<<rows, kSpmmColsThreads, 0, ctx.stream>>>(major_ptr, minor_idx, grad_out, rhs, rows, rhs_ld, out_cols, grad_values);
     runtime::cuda_require(cudaGetLastError(), "csr_spmm_bwd_values_kernel");
-}
-
-void csr_spmm_bwd_rhs_f16_f32(
-    const runtime::execution_context &ctx,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const __half *values,
-    const float *grad_out,
-    std::uint32_t rows,
-    std::uint32_t cols,
-    std::int64_t grad_out_ld,
-    std::int64_t out_cols,
-    float *grad_rhs,
-    std::int64_t grad_rhs_ld) {
-    runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmm_bwd_rhs)");
-    matrix::Csr<const __half> a{{rows, cols, 0, base::CompressedAxis::row, major_ptr, minor_idx}, values};
-    runtime::cuda_require(matrix::csr_spmm_transpose(a, grad_out, grad_out_ld, out_cols, grad_rhs, grad_rhs_ld, ctx.stream), "csr_spmm_bwd_rhs_kernel");
-}
-
-void csr_spmv_fwd_f32_lib(
-    const runtime::execution_context &ctx,
-    runtime::cusparse_cache *cache,
-    const void *matrix_token,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const float *values,
-    std::uint32_t rows,
-    std::uint32_t cols,
-    std::uint32_t nnz,
-    const float *vector,
-    float *out) {
-    if (rows == 0 || cols == 0) return;
-    runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmv_f32_lib)");
-    cusparseHandle_t handle = runtime::acquire_cusparse(cache, ctx);
-    cusparseSpMatDescr_t mat = runtime::acquire_csr_f32_descriptor(cache, ctx, matrix_token, rows, cols, nnz, major_ptr, minor_idx, values);
-    cusparseDnVecDescr_t x = nullptr;
-    cusparseDnVecDescr_t y = nullptr;
-    const float alpha = 1.0f;
-    const float beta = 0.0f;
-    cusparse_require_(cusparseCreateDnVec(&x, static_cast<std::int64_t>(cols), const_cast<float *>(vector), CUDA_R_32F), "cusparseCreateDnVec(x)");
-    cusparse_require_(cusparseCreateDnVec(&y, static_cast<std::int64_t>(rows), out, CUDA_R_32F), "cusparseCreateDnVec(y)");
-    std::size_t &bytes = runtime::cached_spmv_bytes(cache, CUSPARSE_OPERATION_NON_TRANSPOSE);
-    if (bytes == 0) {
-        cusparse_require_(
-            cusparseSpMV_bufferSize(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, mat, x, &beta, y, CUDA_R_32F, CUSPARSE_SPMV_ALG_DEFAULT, &bytes),
-            "cusparseSpMV_bufferSize");
-    }
-    runtime::scratch_arena arena;
-    runtime::init(&arena);
-    void *scratch = runtime::request_scratch(&arena, bytes);
-    cusparse_require_(
-        cusparseSpMV(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, mat, x, &beta, y, CUDA_R_32F, CUSPARSE_SPMV_ALG_DEFAULT, scratch),
-        "cusparseSpMV");
-    runtime::clear(&arena);
-    if (y != nullptr) cusparseDestroyDnVec(y);
-    if (x != nullptr) cusparseDestroyDnVec(x);
 }
 
 } // namespace cellerator::compute::sparse::ops::base

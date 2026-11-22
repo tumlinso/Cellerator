@@ -1,4 +1,13 @@
-#include <Cellerator/compute/compute.hh>
+#include "compute_candidate_inventory.hh"
+
+#include <Cellerator/compute/architecture/providers/nvidia/sm70/contract/contract_catalog_v1.hh>
+#include <Cellerator/compute/architecture/providers/nvidia/sm70/relation_apply/apply_inventory_v1.hh>
+#include <Cellerator/compute/architecture/providers/nvidia/sm70/residual/portfolio_v1.h>
+#include <Cellerator/compute/architecture/providers/nvidia/sm70/transpose/transpose_candidates_v1.hh>
+#include <Cellerator/compute/candidate/segment/portfolio_v2.hh>
+#include <Cellerator/compute/operation/edge/gate_update_validation_v1.hh>
+#include <Cellerator/compute/operation/fusion/fusion_validation_v1.hh>
+#include <Cellerator/compute/operation/relation_bundle/catalog.hh>
 
 #include <cstddef>
 

@@ -22,11 +22,11 @@ std::size_t checked_count(std::uint64_t a, std::uint64_t b) {
 }
 std::vector<std::uint64_t> row_positions(const tensor::block_masked::Structure& structure,
                                         const std::vector<std::uint64_t>& batch_rows) {
-    const auto& rows = structure.canonical_rows();
+    const auto rows = structure.canonical_rows();
     std::unordered_map<std::uint64_t, std::uint64_t> physical_rows;
-    physical_rows.reserve(rows.size());
-    for (std::uint64_t physical = 0; physical < rows.size(); ++physical)
-        if (!physical_rows.emplace(rows[physical], physical).second)
+    physical_rows.reserve(rows.count);
+    for (std::uint64_t physical = 0; physical < rows.count; ++physical)
+        if (!physical_rows.emplace(rows.data[physical], physical).second)
             throw std::invalid_argument("duplicate canonical source row");
     std::vector<std::uint64_t> positions;
     positions.reserve(batch_rows.size());
@@ -38,7 +38,8 @@ std::vector<std::uint64_t> row_positions(const tensor::block_masked::Structure& 
     return positions;
 }
 std::vector<std::uint64_t> default_rows(const tensor::block_masked::Structure& structure) {
-    auto rows = structure.canonical_rows(); std::sort(rows.begin(), rows.end()); return rows;
+    const auto rows = structure.canonical_rows_in_order();
+    return {rows.data, rows.data + rows.count};
 }
 
 template<class Storage> __device__ float load(Storage value) { return static_cast<float>(value); }

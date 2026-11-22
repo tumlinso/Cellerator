@@ -39,13 +39,11 @@ def main():
         if config.get('active') is not False:
             raise RuntimeError('study lane is not inactive')
         campaign.preserve_archive(a.archive)
-        data = lane / '.autobench/data'
-        data.mkdir(parents=True, exist_ok=True)
         (lane / 'scripts').mkdir(exist_ok=True)
         shutil.copy2(campaign.STUDY / 'scripts/sanitize_chain.py', lane / 'scripts/sanitize_chain.py')
-        shutil.copyfile(a.archive, data / 'closure.tar.gz')
-        shutil.copyfile(a.binary, data / 'frozen-binary')
-        shutil.copyfile(a.receipt, data / 'frozen-build.json')
+        campaign.import_input(lane, 'closure.tar.gz', a.archive, a.archive_sha256)
+        campaign.import_input(lane, 'frozen-binary', a.binary, receipt['binary_sha256'])
+        campaign.import_input(lane, 'frozen-build.json', a.receipt)
         build = ['python3', '{snapshot}/scripts/sanitize_chain.py', 'build',
                  '--binary', '{snapshot}/.autobench/data/frozen-binary', '--receipt', '{snapshot}/.autobench/data/frozen-build.json',
                  '--archive', '{snapshot}/.autobench/data/closure.tar.gz', '--archive-sha256', a.archive_sha256, '--build', '{build}']

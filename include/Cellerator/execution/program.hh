@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Cellerator/compute/operation/preparation_factory.hh>
-#include <Cellerator/execution/projection_activation.hh>
 #include <Cellerator/planner/end_to_end_planner.hh>
 #include <Cellerator/runtime/value_readiness.cuh>
 
@@ -10,41 +9,11 @@
 
 namespace cellerator::execution {
 
-inline constexpr std::uint32_t executable_program_schema_version = 1u;
 inline constexpr std::uint32_t executable_program_schema_version_v2 = 2u;
 inline constexpr std::uint32_t maximum_program_candidates =
     planner::maximum_planner_candidates;
 
 namespace operation_core = compute::math::core;
-
-enum class activated_projection_type : std::uint8_t {
-    row_masked = 1u,
-    csr = 2u,
-    feature_major = 3u,
-    transpose = 4u
-};
-
-// One non-owning typed projection reference. The pointed-to view and all of
-// its payload bytes remain owned by the caller/session. This is compile-time
-// orchestration input, never persistent CPE2 state.
-struct activated_projection_reference {
-    operation_core::projection_key key{};
-    activated_projection_type type = activated_projection_type::row_masked;
-    const void *view = nullptr;
-};
-
-activated_projection_reference program_projection(
-    operation_core::projection_key key,
-    const cellpack::persistent_packing_payload_view &view) noexcept;
-activated_projection_reference program_projection(
-    operation_core::projection_key key,
-    const ::cellerator::layout::projection::CsrViewV1 &view) noexcept;
-activated_projection_reference program_projection(
-    operation_core::projection_key key,
-    const FeatureMajorBinding &view) noexcept;
-activated_projection_reference program_projection(
-    operation_core::projection_key key,
-    const TransposeBinding &view) noexcept;
 
 // Complete costs are supplied by the existing measurement/model layer. The
 // executable program never substitutes kernel-only ranking.
@@ -59,30 +28,6 @@ struct program_candidate_cost {
 struct program_axis {
     axis_identity live{};
     persistent_axis_identity persistent{};
-};
-
-struct executable_program_request {
-    std::uint32_t schema_version = executable_program_schema_version;
-    operation_core::operation_problem problem{};
-    operation_core::structure_set_key structures{};
-    operation_core::numeric_policy numeric{};
-    operation_core::prepare_policy preparation{};
-    planner::planning_keys planning{};
-    planner::planner_policy planner_policy{};
-    planner::measurement_hook measurement{};
-    planner::plan_cache_hooks cache{};
-    std::uint64_t current_evidence_revision = 0u;
-    operation_core::built_in_candidate_catalog_view catalog{};
-    const activated_projection_reference *projections = nullptr;
-    std::uint32_t projection_count = 0u;
-    const program_candidate_cost *costs = nullptr;
-    std::uint32_t cost_count = 0u;
-    runtime::execution_session *session = nullptr;
-    std::uint32_t dense_width = 0u;
-    program_axis source_axis{};
-    program_axis destination_axis{};
-    program_axis dense_column_axis{};
-    operation_core::preparation_state_storage preparation_state{};
 };
 
 // Program v2 consumes arbitrary source-linked preparation-bearing catalog
@@ -174,10 +119,6 @@ struct executable_program_status {
         return code == executable_program_status_code::ok;
     }
 };
-
-executable_program_status compile_executable_program(
-    const executable_program_request &request,
-    executable_program *program) noexcept;
 
 executable_program_status compile_executable_program_v2(
     const executable_program_request_v2 &request,

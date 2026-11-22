@@ -86,9 +86,9 @@ inline layout::projection::physical_view_status query_native_tile_requirements_h
     const auto checked = native_tile_detail::validate_source(plan, order, tiles);
     if (!checked) return checked;
     native_tile_requirements result;
-    result.union_mask_count = tiles.tile_block_count;
-    result.packed_offset_count = static_cast<std::size_t>(tiles.tile_block_count) + 1u;
-    result.block_metric_count = tiles.tile_block_count;
+    result.union_mask_count = tiles.layout.tile_blocks;
+    result.packed_offset_count = static_cast<std::size_t>(tiles.layout.tile_blocks) + 1u;
+    result.block_metric_count = tiles.layout.tile_blocks;
     if (result.union_mask_count > std::numeric_limits<std::size_t>::max() / sizeof(u32)
         || result.packed_offset_count > std::numeric_limits<std::size_t>::max() / sizeof(u32)
         || result.block_metric_count > std::numeric_limits<std::size_t>::max()

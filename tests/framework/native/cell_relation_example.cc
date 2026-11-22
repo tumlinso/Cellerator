@@ -1,119 +1,209 @@
-// Runnable C++ model/cell example and focused integration check. No Python,
-// tensor framework, biological ontology, scheduler or device is involved.
+// Two independent native states share one prepared relation.
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/dynamical.hh>
-#include <Cellerator/layout/entity_layout.hh>
-#include <Cellerator/modeling/value_field.hh>
-#include <Cellerator/geometry/dependency/explicit_pattern.hh>
-#include <Cellerator/geometry/dependency/pattern_owner.hh>
 #include <Cellerator/execution/dependency/incidence.hh>
-#include <Cellerator/execution/dependency/workset.hh>
-#include <Cellerator/ops/incidence.hh>
+#include <Cellerator/geometry/dependency/pattern_owner.hh>
+#include <Cellerator/layout/entity_layout.hh>
 
-#include <cassert>
-#include <iostream>
-#include <string>
+#include <assert.h>
+#include <float.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <memory>
+#include <vector>
 
-namespace m = cellerator::modeling;
 namespace g = cellerator::geometry::dependency;
 namespace e = cellerator::execution;
-namespace oi = cellerator::ops::incidence;
+
+namespace {
 
 struct State {
-    m::ValueField<float> field;
-    std::string phase;
+    const float* values;
+    size_t size;
+    double time = 0;
+    uint64_t generation = 0;
 };
+
 struct Parameters {
-    std::shared_ptr<const e::PreparedIncidence> plan;
+    const e::PreparedIncidence& plan;
     float coupling;
     float threshold;
 };
-struct Inputs { float drive = 0; };
-struct Event { std::uint64_t edge_id; double time; float signal; };
-using Context = m::StepContext<Parameters, Inputs>;
-using Result = m::StepResult<State, std::vector<Event>>;
+
+struct Event { uint64_t edge_id; double time; float signal; };
+struct Scratch { float* signals; size_t capacity; };
+struct Output {
+    float* values;
+    size_t value_capacity;
+    Event* events;
+    size_t event_capacity;
+};
+
+enum class Status {
+    success, invalid_clock, generation_overflow, invalid_state,
+    value_capacity, signal_capacity, event_capacity
+};
+
+struct Result {
+    Status status;
+    State state{};
+    const Event* events = nullptr;
+    size_t event_count = 0;
+    size_t required = 0;
+};
+
+// All buffers are disjoint. Only scratch may be overwritten on failure.
+// A successful result borrows the output until the caller reuses its storage.
+Result step(const Parameters& params, State current, double dt, float drive,
+            Scratch scratch, Output out, const double* endpoint = nullptr) noexcept {
+    if (!__builtin_isfinite(current.time) || !__builtin_isfinite(dt))
+        return {Status::invalid_clock};
+    const double time = endpoint ? *endpoint : current.time + dt;
+    if (!__builtin_isfinite(time)) return {Status::invalid_clock};
+    if (current.generation == UINT64_MAX) return {Status::generation_overflow};
+
+    const auto& plan = params.plan;
+    const size_t n = plan.layout().size(), ne = plan.edge_count();
+    if (current.size != n || (n && !current.values)) return {Status::invalid_state};
+    if (n && (!out.values || out.value_capacity < n))
+        return {.status = Status::value_capacity, .required = n};
+    if (ne && (!scratch.signals || scratch.capacity < ne))
+        return {.status = Status::signal_capacity, .required = ne};
+
+    const size_t* offsets = plan.offsets().data();
+    const size_t* slots = plan.slots().data();
+    const uint32_t* roles = plan.roles().data();
+    size_t event_count = 0;
+    for (size_t edge = 0; edge < ne; ++edge) {
+        float signal = 0;
+        for (size_t i = offsets[edge]; i < offsets[edge + 1]; ++i)
+            if (roles[i] == 0) signal += current.values[slots[i]];
+        scratch.signals[edge] = signal;
+        event_count += signal > params.threshold;
+    }
+    if (event_count && (!out.events || out.event_capacity < event_count))
+        return {.status = Status::event_capacity, .required = event_count};
+
+    const auto& work = plan.worklist();
+    const auto* edges = work.pattern()->view().edges;
+    const size_t* ordinals = work.ordinals().data();
+    for (size_t i = 0; i < n; ++i) out.values[i] = 0;
+    size_t emitted = 0;
+    for (size_t edge = 0; edge < ne; ++edge) {
+        const float signal = scratch.signals[edge];
+        for (size_t i = offsets[edge]; i < offsets[edge + 1]; ++i)
+            if (roles[i] == 1) out.values[slots[i]] += signal;
+        if (signal > params.threshold)
+            out.events[emitted++] = {edges[ordinals[edge]].logical_edge_id, time, signal};
+    }
+    for (size_t i = 0; i < n; ++i)
+        out.values[i] = current.values[i] + static_cast<float>(dt)*(params.coupling*out.values[i] + drive);
+    return {Status::success, {out.values, n, time, current.generation + 1}, out.events, event_count};
+}
+
+float observe(State state) noexcept {
+    float total = 0;
+    for (size_t i = 0; i < state.size; ++i) total += state.values[i];
+    return total;
+}
+
+void expect_values(State state, float a, float b, float c) {
+    assert(state.size == 3 && state.values[0] == a && state.values[1] == b && state.values[2] == c);
+}
+
+} // namespace
 
 int main() {
-    // Overlapping directed hyperedges; edge 10 reads entity 200 twice. Physical
-    // state order [300,100,200] differs from both identity and relation order.
-    auto relation = std::make_shared<g::ExplicitPattern>(std::vector<g::PatternEdge>{
+    // Edge 10 reads entity 200 twice. Physical order [300,100,200] differs
+    // from both identity and relation order.
+    const auto relation = std::make_shared<g::ExplicitPattern>(std::vector<g::PatternEdge>{
         {20, {{0,0,100}, {0,0,200}, {1,0,300}}},
         {10, {{0,0,200}, {0,0,200}, {1,0,100}}}});
-    cellerator::layout::EntityLayout layout({300,100,200});
-    auto plan = std::make_shared<e::PreparedIncidence>(e::ActivityState(relation).worklist(), layout);
-    auto parameters = std::make_shared<Parameters>(Parameters{plan, 1.0f, 3.5f});
+    const cellerator::layout::EntityLayout layout({300,100,200});
+    const e::ActivityState activity(relation);
+    const e::PreparedIncidence plan(activity.worklist(), layout);
+    const Parameters params{plan, 1.0f, 3.5f};
 
-    auto transition = [](const State& state, const Context& context) -> Result {
-        if (!context.parameters) throw std::invalid_argument("this transition requires parameters");
-        const auto& parameters = *context.parameters;
-        const auto& field = state.field;
-        const auto signals = oi::joint_reduce<float,float,float>(
-            *parameters.plan, field.values(), field.features(), oi::JointReduction::sum, 0);
-        auto increments = oi::scatter_add(*parameters.plan, signals, field.features(), 1);
-        auto values = field.values(); // State chooses its own ownership/copy policy.
-        const float drive = context.inputs ? context.inputs->drive : 0.0f;
-        for (std::size_t i = 0; i < values.size(); ++i)
-            values[i] += static_cast<float>(context.dt) * (parameters.coupling * increments[i] + drive);
-        State next = state;
-        next.field.replace(std::move(values));
-        next.phase = "advanced";
-        std::vector<Event> events;
-        const auto ids = parameters.plan->worklist().edge_ids();
-        for (std::size_t i = 0; i < signals.size(); ++i)
-            if (signals[i] > parameters.threshold)
-                events.push_back({ids[i], context.time + context.dt, signals[i]});
-        return {std::move(next), std::move(events)};
-    };
-    auto observation = [](const State& state, const Context&) {
-        float total = 0;
-        for (auto value : state.field.values()) total += value;
-        return total;
-    };
-    auto model = m::make_dynamical_model<State, Context>(transition, parameters, observation);
-    auto first = m::make_dynamical_cell(model, State{m::ValueField<float>(layout, 1, {3,1,2}), "initial"},
-                              std::string("cell-a"));
-    auto second = m::make_dynamical_cell(model, State{m::ValueField<float>(layout, 1, {0,0,1}), "initial"},
-                               std::string("cell-b"));
-    assert(first.model() == second.model()); // Behavior/parameters are shared.
+    const float initial_a[]{3, 1, 2}, initial_b[]{0, 0, 1};
+    State first{initial_a, 3}, second{initial_b, 3};
+    const State initial = first;
+    float values_a[3], values_edit[3], values_b[3], signals[2];
+    Event events_a[2], events_edit[2], events_b[2];
+    const Scratch scratch{signals, 2};
 
-    auto initial_handle = first.state_handle();
-    auto result = first.advance(0.5);
-    assert(first.id() == "cell-a" && first.time() == 0.5 && first.value_generation() == 1);
-    assert((first.state().field.values() == std::vector<float>{4.5f, 3.0f, 2.0f}));
-    assert(result->events.size() == 1 && result->events[0].edge_id == 10);
-    assert(result->events[0].time == 0.5 && result->events[0].signal == 4.0f);
-    assert(first.observe() == 9.5f);
-    assert(initial_handle->field.values()[0] == 3 && initial_handle->phase == "initial");
-    assert(second.state().field.values()[0] == 0 && second.time() == 0);
+    const auto result = step(params, first, 0.5, 0, scratch, {values_a, 3, events_a, 2});
+    assert(result.status == Status::success);
+    first = result.state;
+    assert(first.time == 0.5 && first.generation == 1);
+    expect_values(first, 4.5f, 3.0f, 2.0f);
+    assert(result.event_count == 1 && result.events[0].edge_id == 10);
+    assert(result.events[0].time == 0.5 && result.events[0].signal == 4.0f);
+    assert(observe(first) == 9.5f);
+    expect_values(initial, 3, 1, 2);
+    assert(initial.time == 0 && initial.generation == 0);
+    expect_values(second, 0, 0, 1);
+    assert(second.time == 0 && second.generation == 0);
 
-    // Publish a real topology edit while retaining the same cell/model. Disabled
-    // activity and old results/plans survive by stable identity and ownership.
-    g::PatternOwner dynamic(relation);
-    dynamic.stage_remove(10);
-    dynamic.stage_add(30, {{0,0,300}, {1,0,200}});
-    const auto changed = dynamic.publish();
-    const auto rebased = e::ActivityState(relation).rebase(changed);
-    auto new_plan = std::make_shared<e::PreparedIncidence>(rebased.worklist(), layout);
-    model->set_parameters(std::make_shared<Parameters>(Parameters{new_plan, 1.0f, 3.5f}));
-    auto after_edit = first.advance(0.5);
-    assert(first.time() == 1.0 && first.state().field.generation().value == 2);
-    assert((first.state().field.values() == std::vector<float>{7.0f, 3.0f, 4.25f}));
-    assert(result->state.field.values()[0] == 4.5f); // Pinned previous result.
-    assert(parameters->plan->worklist().pattern()->structure_epoch() == 1);
-    assert(new_plan->worklist().pattern()->structure_epoch() == 2);
-    assert(after_edit->events.size() == 2);
+    // Publish new topology and prepare its physical slots once. The old
+    // state, result events, and plan remain in their caller-owned buffers.
+    g::PatternOwner owner(relation);
+    owner.stage_remove(10);
+    owner.stage_add(30, {{0,0,300}, {1,0,200}});
+    const auto changed = owner.publish();
+    const e::PreparedIncidence new_plan(activity.rebase(changed).worklist(), layout);
+    const Parameters updated{new_plan, params.coupling, params.threshold};
 
-    // Shared model changes do not share cell state. Explicit inputs belong only
-    // to this invocation; the same updated topology also serves the other cell.
-    Inputs input{2};
-    Context context;
-    context.dt = 0.25;
-    context.inputs = &input;
-    second.advance(context);
-    assert(second.time() == 0.25 && first.time() == 1.0);
-    assert((second.state().field.values() == std::vector<float>{0.75f, 0.5f, 1.5f}));
-    std::cout << first.id() << " time=" << first.time() << " observed=" << first.observe()
-              << " structure_epoch=" << new_plan->worklist().pattern()->structure_epoch() << '\n';
+    const auto edited = step(updated, first, 0.5, 0, scratch, {values_edit, 3, events_edit, 2});
+    assert(edited.status == Status::success);
+    first = edited.state;
+    assert(first.time == 1.0 && first.generation == 2);
+    expect_values(first, 7.0f, 3.0f, 4.25f);
+    expect_values(result.state, 4.5f, 3.0f, 2.0f);
+    assert(observe(first) == 14.25f && observe(result.state) == 9.5f);
+    assert(result.event_count == 1 && result.events[0].edge_id == 10);
+    assert(plan.worklist().pattern()->structure_epoch() == 1 && changed->structure_epoch() == 2);
+    assert(edited.event_count == 2);
+    assert(edited.events[0].edge_id == 20 && edited.events[0].time == 1.0 && edited.events[0].signal == 5.0f);
+    assert(edited.events[1].edge_id == 30 && edited.events[1].time == 1.0 && edited.events[1].signal == 4.5f);
+
+    const auto driven = step(updated, second, 0.25, 2, scratch, {values_b, 3, events_b, 2});
+    assert(driven.status == Status::success && driven.event_count == 0);
+    second = driven.state;
+    assert(second.time == 0.25 && second.generation == 1 && first.time == 1.0);
+    expect_values(second, 0.75f, 0.5f, 1.5f);
+
+    float trial_values[3]{-1, -2, -3};
+    Event trial_events[2]{{99, -1, -2}, {100, -2, -3}};
+    const Output trial{trial_values, 3, trial_events, 2};
+    const double infinity = __builtin_inf(), nan = __builtin_nan("");
+    assert(step(updated, first, nan, 0, scratch, trial).status == Status::invalid_clock);
+    assert(step(updated, first, 0.5, 0, scratch, trial, &infinity).status == Status::invalid_clock);
+    assert(step(updated, {first.values, 3, infinity}, 0.5, 0, scratch, trial).status == Status::invalid_clock);
+    assert(step(updated, {first.values, 3, DBL_MAX}, DBL_MAX, 0, scratch, trial).status == Status::invalid_clock);
+    assert(step(updated, {first.values, 3, first.time, UINT64_MAX}, 0.5, 0, scratch, trial).status ==
+           Status::generation_overflow);
+    const auto no_values = step(updated, first, 0.5, 0, scratch, {trial_values, 2, trial_events, 2});
+    assert(no_values.status == Status::value_capacity && no_values.required == 3);
+    const auto no_signals = step(updated, first, 0.5, 0, {signals, 1}, trial);
+    assert(no_signals.status == Status::signal_capacity && no_signals.required == 2);
+    const auto no_events = step(updated, first, 0.5, 0, scratch, {trial_values, 3, trial_events, 1});
+    assert(no_events.status == Status::event_capacity && no_events.required == 2);
+    expect_values({trial_values, 3}, -1, -2, -3);
+    assert(trial_events[0].edge_id == 99 && trial_events[0].time == -1 && trial_events[0].signal == -2);
+    assert(trial_events[1].edge_id == 100 && trial_events[1].time == -2 && trial_events[1].signal == -3);
+    assert(first.time == 1.0 && first.generation == 2);
+    expect_values(first, 7.0f, 3.0f, 4.25f);
+
+    const double endpoint = 2.0;
+    const auto explicit_time = step(updated, first, 0.5, 0, scratch, trial, &endpoint);
+    assert(explicit_time.status == Status::success && explicit_time.state.time == endpoint);
+    assert(explicit_time.state.generation == 3 && explicit_time.event_count == 2);
+    assert(explicit_time.events[0].time == endpoint && explicit_time.events[1].time == endpoint);
+    expect_values(explicit_time.state, 10.625f, 3.0f, 7.75f);
+
+    printf("cell-a time=%g observed=%g structure_epoch=%llu\n", first.time, observe(first),
+           static_cast<unsigned long long>(changed->structure_epoch()));
+    return 0;
 }

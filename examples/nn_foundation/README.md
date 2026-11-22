@@ -16,11 +16,9 @@ no implicit count normalization or feature-order assumption. Its legacy masked
 MSE helper uses only the explicitly supplied target mask; a mask that selects
 no targets returns `None` so a caller can skip that optimization step.
 
-If the source data is sparse AnnData, keep it sparse during selection and
-convert only a deliberately bounded minibatch to dense values. Choose the
-layer/raw matrix and feature/cell identities explicitly, and decide what zero,
-missingness, and preprocessing mean for the experiment. The example does not
-make those scientific choices.
+Select source data and feature/cell identities explicitly, and convert only a
+deliberately bounded minibatch when a model needs dense values. The caller decides
+what zero, missingness, and preprocessing mean for the experiment.
 
 `attach_atac_view` adds a trainable binary ATAC readout to the base model's
 pooled feature result. `ModelWithViews.predict(batch, "atac")` evaluates the
@@ -117,11 +115,8 @@ only through a conditioner explicitly registered on `ModelWithViews`.
 `context_metadata` is descriptive metadata and does not condition the model.
 
 The bound expression route aligns supplied named features to the binding before
-encoding. `explicit_dense_anndata_minibatch(..., binding=genes)` can perform
-that alignment while the selected AnnData matrix remains sparse; dense values
-are made only for the explicitly bounded minibatch. The caller still chooses
-layers, preprocessing, masks, and target semantics. No normalization or
-interpretation is inferred.
+encoding. The caller supplies selected values and chooses preprocessing, masks,
+and target semantics. No normalization or interpretation is inferred.
 
 ## Event queries and auxiliary observations
 

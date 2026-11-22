@@ -112,9 +112,10 @@ same-shaped incompatible declarations are not interchangeable.
 `binding.map_occurrences(...)` separately maps ordered histories and preserves
 repeated genes. `FeatureEncoder(..., binding=genes).encode_bound(...)` accepts
 named occurrences or a reusable `PreparedAlignment`; raw integer `forward`
-calls keep their earlier behavior. `AnnDataView.align_features(...)` and
-`from_adata_bound(...)` perform explicit sparse-preserving boundary adaptation.
-Metadata does not automatically follow arbitrary neural transformations.
+calls keep their earlier behavior. CCell owns AnnData selection and alignment;
+callers pass prepared values and identities into these Cellerator APIs. There is
+no Cellerator `AnnDataView` or `from_adata_bound(...)` adapter. Metadata does
+not automatically follow arbitrary neural transformations.
 
 Those are Python facade types with their existing Python meanings. In native
 C++, biological identity resolution remains in `biology::FeatureBinding`,
@@ -324,9 +325,10 @@ compositions using shared building blocks:
 
 Auxiliary binary ATAC readouts use synthetic paired targets to exercise frozen
 and joint training. The examples use ordinary optimizers, not a new trainer
-system. Sparse AnnData inputs stay sparse during selection; conversion of an
-explicitly bounded minibatch is a caller-visible operation. Whole-dataset
-densification and implicit preprocessing are not required.
+system. CCell owns sparse AnnData selection and preparation. Cellerator accepts
+caller-prepared arrays or tensors; any conversion required by a model is explicit
+and bounded. Whole-dataset densification and implicit preprocessing are not
+required.
 
 The existing trajectory-window trainer remains useful for explicit dynamical
 models and truncation. It does not define static or autoregressive training.

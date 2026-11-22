@@ -13,6 +13,7 @@ keeps row-masked preferred at the declared eight-use horizon.
 */
 
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
+#include "../../ops/matrix/feature_major_tiles_internal.cuh"
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>
@@ -76,69 +77,16 @@ bool valid_device_projection(
         && header.tile_count == header.row_count / header.tile_row_width
             + (header.row_count % header.tile_row_width != 0u ? 1u : 0u)
         && header.value_size_bytes == sizeof(__half)
-        && view.tile_feature_offsets != nullptr
-        && view.execution_feature_ids != nullptr
-        && view.participating_row_masks != nullptr
-        && view.feature_value_offsets != nullptr
+        && layout::projection::valid_bound_feature_major_structure(view)
         && view.source_value_positions != nullptr
         && device_ordinal >= 0;
-}
-
-__global__ void feature_major_small_n_kernel(
-    ::cellerator::layout::projection::FeatureMajorViewV1 projection,
-    const __half *values,
-    const float *dense_rhs,
-    std::uint32_t dense_width,
-    float *output) {
-    const std::uint32_t lane = threadIdx.x;
-    const std::uint32_t tile = blockIdx.x;
-    if (lane >= 32u || tile >= projection.header.tile_count) return;
-
-    float accumulators[layout::projection::feature_major_small_n_maximum]{};
-    __shared__ float dense_feature[layout::projection::feature_major_small_n_maximum];
-    const std::uint32_t record_begin = projection.tile_feature_offsets[tile];
-    const std::uint32_t record_end = projection.tile_feature_offsets[tile + 1u];
-    for (std::uint32_t record = record_begin;
-         record < record_end; ++record) {
-        const std::uint32_t feature = projection.execution_feature_ids[record];
-        if (lane < dense_width)
-            dense_feature[lane] = dense_rhs[
-                static_cast<std::size_t>(feature) * dense_width + lane];
-        __syncwarp();
-        const std::uint32_t row_mask =
-            projection.participating_row_masks[record];
-        if ((row_mask & (1u << lane)) != 0u) {
-            const std::uint32_t lower_rows = lane == 0u
-                ? 0u : row_mask & ((1u << lane) - 1u);
-            const std::uint32_t value =
-                projection.feature_value_offsets[record]
-                + static_cast<std::uint32_t>(__popc(lower_rows));
-            const float sparse = __half2float(values[value]);
-            #pragma unroll
-            for (std::uint32_t column = 0u;
-                 column < layout::projection::feature_major_small_n_maximum; ++column)
-                if (column < dense_width)
-                    accumulators[column] += sparse * dense_feature[column];
-        }
-        __syncwarp();
-    }
-    const std::uint32_t row = tile * projection.header.tile_row_width + lane;
-    if (lane < projection.header.tile_row_width
-        && row < projection.header.row_count) {
-        #pragma unroll
-        for (std::uint32_t column = 0u;
-             column < layout::projection::feature_major_small_n_maximum; ++column)
-            if (column < dense_width)
-                output[static_cast<std::size_t>(row) * dense_width + column]
-                    = accumulators[column];
-    }
 }
 
 // Four warps cooperate on one FMP1 row tile. Threads with the same lane own
 // one row and split the N columns by warp. Each dense feature element is
 // fetched once into shared memory before all participating rows consume it.
 __global__ void feature_major_cta_medium_n_kernel(
-    ::cellerator::layout::projection::FeatureMajorViewV1 projection,
+    tensor::FeatureMajorTileStructureView structure,
     const __half *values,
     const float *dense_rhs,
     std::uint32_t dense_width,
@@ -150,27 +98,27 @@ __global__ void feature_major_cta_medium_n_kernel(
     const std::uint32_t lane = thread & 31u;
     const std::uint32_t column_group = thread >> 5u;
     const std::uint32_t tile = blockIdx.x;
-    if (thread >= 128u || tile >= projection.header.tile_count) return;
+    if (thread >= 128u || tile >= structure.tile_count) return;
 
     float accumulators[columns_per_thread]{};
     __shared__ float dense_feature[feature_major_cta_medium_n_maximum];
-    const std::uint32_t record_begin = projection.tile_feature_offsets[tile];
-    const std::uint32_t record_end = projection.tile_feature_offsets[tile + 1u];
+    const std::uint32_t record_begin = structure.tile_offsets[tile];
+    const std::uint32_t record_end = structure.tile_offsets[tile + 1u];
     for (std::uint32_t record = record_begin;
          record < record_end; ++record) {
-        const std::uint32_t feature = projection.execution_feature_ids[record];
+        const std::uint32_t feature = structure.feature_ids[record];
         for (std::uint32_t column = thread; column < dense_width;
              column += blockDim.x)
             dense_feature[column] = dense_rhs[
                 static_cast<std::size_t>(feature) * dense_width + column];
         __syncthreads();
         const std::uint32_t row_mask =
-            projection.participating_row_masks[record];
+            structure.row_masks[record];
         if ((row_mask & (1u << lane)) != 0u) {
             const std::uint32_t lower_rows = lane == 0u
                 ? 0u : row_mask & ((1u << lane) - 1u);
             const std::uint32_t value =
-                projection.feature_value_offsets[record]
+                structure.value_offsets[record]
                 + static_cast<std::uint32_t>(__popc(lower_rows));
             const float sparse = __half2float(values[value]);
             #pragma unroll
@@ -184,9 +132,9 @@ __global__ void feature_major_cta_medium_n_kernel(
         }
         __syncthreads();
     }
-    const std::uint32_t row = tile * projection.header.tile_row_width + lane;
-    if (lane < projection.header.tile_row_width
-        && row < projection.header.row_count) {
+    const std::uint32_t row = tile * structure.tile_row_width + lane;
+    if (lane < structure.tile_row_width
+        && row < structure.rows) {
         #pragma unroll
         for (std::uint32_t local = 0u;
              local < columns_per_thread; ++local) {
@@ -259,20 +207,23 @@ operation_status run_feature_major(
         return fail(operation_status_code::invalid_launch_bindings,
             "feature-major small-N order, shape, value, or residency is incompatible");
     }
+    const auto stream = static_cast<cudaStream_t>(launch.stream.stream);
+    cudaError_t status;
     if (state.regime == feature_major_execution_regime::small_n_warp) {
-        feature_major_small_n_kernel<<<projection.header.tile_count, 32u, 0u,
-            static_cast<cudaStream_t>(launch.stream.stream)>>>(projection,
-            static_cast<const __half *>(values.values),
-            static_cast<const float *>(rhs.data), state.dense_width,
-            static_cast<float *>(output.data));
+        const tensor::FeatureMajorTilesView<const __half> x{projection.structure,
+            static_cast<const __half *>(values.values)};
+        status = ::cellerator::ops::matrix::detail::enqueue_feature_major_tiles_forward(
+            x, nullptr, static_cast<const float *>(rhs.data), state.dense_width,
+            static_cast<float *>(output.data), stream);
     } else {
         feature_major_cta_medium_n_kernel<<<projection.header.tile_count,
-            128u, 0u, static_cast<cudaStream_t>(launch.stream.stream)>>>(
-            projection, static_cast<const __half *>(values.values),
+            128u, 0u, stream>>>(
+            projection.structure, static_cast<const __half *>(values.values),
             static_cast<const float *>(rhs.data), state.dense_width,
             static_cast<float *>(output.data));
+        status = cudaPeekAtLastError();
     }
-    if (cudaPeekAtLastError() != cudaSuccess) {
+    if (status != cudaSuccess) {
         return fail(operation_status_code::execution_failed,
             "feature-major small-N kernel launch failed");
     }

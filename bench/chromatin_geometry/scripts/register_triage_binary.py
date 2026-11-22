@@ -96,14 +96,12 @@ def main() -> None:
                 raise RuntimeError('previous lane job lacks terminal state and verified cleanup')
 
         campaign.preserve_archive(archive)
-        data = lane / '.autobench/data'
-        data.mkdir(parents=True, exist_ok=True)
         scripts = lane / 'scripts'
         scripts.mkdir(exist_ok=True)
         shutil.copy2(Path(__file__).with_name('triage_binary.py'), scripts / 'triage_binary.py')
-        shutil.copyfile(archive, data / 'closure.tar.gz')
-        shutil.copyfile(binary, data / 'frozen-binary')
-        shutil.copyfile(receipt_path, data / 'frozen-build.json')
+        campaign.import_input(lane, 'closure.tar.gz', archive, args.archive_sha256)
+        campaign.import_input(lane, 'frozen-binary', binary, build['binary_sha256'])
+        campaign.import_input(lane, 'frozen-build.json', receipt_path)
         shutil.copyfile(config_path, lane / 'experiment.json')
 
         build_command = [

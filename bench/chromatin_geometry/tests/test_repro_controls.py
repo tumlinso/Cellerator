@@ -14,6 +14,7 @@ import tempfile
 import unittest
 from argparse import Namespace
 from pathlib import Path
+from unittest.mock import patch
 
 
 REPO = Path(__file__).resolve().parents[3]
@@ -213,6 +214,56 @@ class BudgetTests(unittest.TestCase):
             campaign.settle(self.args())
         self.assertEqual(campaign.load()["reservations"][0]["state"], "submitted")
         self.assertEqual(campaign.charged(campaign.load()), 360)
+
+    def test_array_packet_settlement_verifies_attempt_and_snapshot_bytes(self):
+        lane = campaign.LANES / "0"
+        attempt, job = "attempt-1", "job-1"
+        runtime = self.root / "runtime"
+        scratch = runtime / "scratch" / attempt
+        scratch.mkdir(parents=True)
+        (scratch / "result.json").write_text('{"status":"succeeded"}')
+        snapshot = runtime / "run-inputs" / attempt
+        wrapper = snapshot / "scripts/run_packet.py"
+        wrapper.parent.mkdir(parents=True)
+        wrapper.write_text("reviewed wrapper")
+        wrapper.chmod(0o755)
+        wrapper_digest = campaign.file_sha256(wrapper)
+        files = {"scripts/run_packet.py": f"{wrapper_digest}:x111"}
+        fingerprint = hashlib.sha256(f"scripts/run_packet.py\0{wrapper_digest}:x111".encode()).hexdigest()
+        snapshots = self.root / "array/snapshots"
+        identity = snapshots / fingerprint / "manifest.json"
+        identity.parent.mkdir(parents=True)
+        identity.write_text(json.dumps({"version": 1, "files": files}))
+        manifest = lane / ".autobench/state/packets" / (attempt + ".json")
+        manifest.parent.mkdir(parents=True)
+        manifest.write_text(json.dumps({
+            "storage_version": 2, "allowed_root": str(lane), "attempt_id": attempt,
+            "result_directory": str(scratch), "working_directory": str(snapshot),
+            "snapshot_manifest": str(identity), "source_fingerprint": fingerprint,
+            "argv": ["python3", str(wrapper), "ste-test"],
+        }))
+        (lane / "registration.toml").write_text((lane / ".autobench/registry/fake.toml").read_text())
+        row = {"lane": 0, "state": "submitted", "reserved_seconds": 360,
+               "serialized_confirmation": True, "attempt_id": attempt, "job_id": job,
+               "expected_gpu_resource_id": "gpu:v100:GPU-test"}
+        campaign.save({"schema": "cgs.budget.v1", "budget_seconds": 14400, "reservations": [row]})
+        receipt = {"job": {"state": "succeeded", "cleanup_verified": True, "attempt": {
+            "created_at": "2026-11-02T00:00:00Z", "finished_at": "2026-11-02T00:00:10Z",
+            "execution_context": {"allocations": [{"resource_id": "gpu:v100:GPU-test"}]},
+        }}}
+        storage = {"scratch": str(scratch.parent), "run_inputs": str(snapshot.parent), "snapshots": str(snapshots)}
+        with patch.object(campaign, "get_job", return_value=receipt), \
+                patch.object(campaign, "command", return_value={"storage": storage}):
+            wrapper.write_text("changed wrapper")
+            with self.assertRaisesRegex(RuntimeError, "reconstructed snapshot fingerprint differs"):
+                campaign.settle(self.args())
+            self.assertEqual(campaign.charged(campaign.load()), 360)
+            self.assertFalse((self.root / "runs/packets" / job).exists())
+            wrapper.write_text("reviewed wrapper")
+            campaign.settle(self.args())
+        self.assertEqual(campaign.charged(campaign.load()), 10)
+        retained = self.root / "runs/packets" / job / "runtime-wrapper-identity.json"
+        self.assertEqual(json.loads(retained.read_text())["snapshot_inputs"], files)
 
 
 if __name__ == "__main__":

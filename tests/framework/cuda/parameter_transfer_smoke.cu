@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/cuda/parameter_transfer.hh>
+#include <Cellerator/execution/conditional/parameter_transfer_cuda.hh>
 #include <Cellerator/memory/cuda/resources.hh>
 #include <cassert>
 #include <cstring>
@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace cc = cellerator::execution::conditional;
-namespace cu = cellerator::modeling::cuda;
+namespace cu = cellerator::execution::conditional::cuda;
 namespace mem = cellerator::memory::cuda;
 
 cc::ParameterBuffers buffers(const std::vector<unsigned char>& bytes, std::string device = "host") {

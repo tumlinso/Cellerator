@@ -103,13 +103,24 @@ void row_masked_activation_is_typed_and_non_owning() {
 }
 
 void feature_major_activation_rejects_identity_and_stale_epoch() {
-    alignas(64) unsigned char host_payload[256]{};
-    alignas(64) unsigned char device_payload[256]{};
+    alignas(64) unsigned char host_payload[512]{};
+    alignas(64) unsigned char device_payload[512]{};
     execution::FeatureMajorBinding host;
     host.layout.header.payload_bytes = sizeof(host_payload);
     host.layout.header.structure_identity = {11u, 13u};
     host.layout.header.projection_identity = {31u, 37u};
     host.layout.header.structure_epoch = 17u;
+    host.layout.header.row_count = 1u;
+    host.layout.header.feature_count = 1u;
+    host.layout.header.tile_row_width = 32u;
+    host.layout.header.tile_count = 1u;
+    host.layout.header.feature_record_count = 1u;
+    host.layout.header.nnz_count = 1u;
+    host.layout.header.tile_feature_offsets_offset = 192u;
+    host.layout.header.execution_feature_ids_offset = 256u;
+    host.layout.header.participating_row_masks_offset = 320u;
+    host.layout.header.feature_value_offsets_offset = 384u;
+    host.layout.header.source_value_positions_offset = 448u;
     host.layout.payload_base = host_payload;
     host.runtime_structure = {2u, 1u};
     host.runtime_projection = {3u, 1u};
@@ -127,6 +138,14 @@ void feature_major_activation_rejects_identity_and_stale_epoch() {
         bound, context(), host, &activated);
     assert(status);
     assert(activated.layout.payload_base == device_payload);
+    const auto &structure = activated.layout.structure;
+    assert(layout::projection::valid_bound_feature_major_structure(activated.layout));
+    assert(structure.tile_offsets == reinterpret_cast<const std::uint32_t *>(device_payload + 192u));
+    assert(structure.feature_ids == reinterpret_cast<const std::uint32_t *>(device_payload + 256u));
+    assert(structure.row_masks == reinterpret_cast<const std::uint32_t *>(device_payload + 320u));
+    assert(structure.value_offsets == reinterpret_cast<const std::uint32_t *>(device_payload + 384u));
+    assert(activated.layout.source_value_positions
+        == reinterpret_cast<const std::uint32_t *>(device_payload + 448u));
     assert(execution::same_handle(
         activated.runtime_projection, context().runtime_projection));
 

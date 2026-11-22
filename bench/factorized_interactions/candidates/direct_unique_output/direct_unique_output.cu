@@ -13,8 +13,8 @@
 namespace cellerator::bench::factorized_interactions::candidates {
 namespace {
 
-namespace mc = modeling::cuda;
-namespace stable_detail = ::cellerator::modeling::cuda::stable_detail;
+namespace mc = ops::mechanism::cuda;
+namespace stable_detail = ::cellerator::ops::mechanism::cuda::stable_detail;
 using layout::FactorizedInteractionRecord;
 using layout::FactorizedInteractionTermRecord;
 using layout::FactorizedInteractionView;

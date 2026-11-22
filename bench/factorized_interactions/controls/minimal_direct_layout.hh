@@ -5,7 +5,7 @@
 // or postings. Do not use it with the shared stable fallback.
 
 #include <Cellerator/layout/factorized_interaction.hh>
-#include <Cellerator/modeling/cuda/factorized_interaction.hh>
+#include <Cellerator/ops/mechanism/factorized_interaction_cuda.hh>
 
 #include <algorithm>
 #include <cstddef>
@@ -174,18 +174,18 @@ public:
     }
 
     cudaError_t backend_for(
-        modeling::cuda::FactorizedInteractionProblem problem,
-        modeling::cuda::FactorizedInteractionBackend* selected) const noexcept {
-        return modeling::cuda::factorized_interaction_backend(
-            view(), problem, modeling::cuda::FactorizedInteractionRoute::direct,
+        ops::mechanism::cuda::FactorizedInteractionProblem problem,
+        ops::mechanism::cuda::FactorizedInteractionBackend* selected) const noexcept {
+        return ops::mechanism::cuda::factorized_interaction_backend(
+            view(), problem, ops::mechanism::cuda::FactorizedInteractionRoute::direct,
             selected);
     }
 
     bool direct_only_applicable(
-        modeling::cuda::FactorizedInteractionProblem problem) const noexcept {
-        modeling::cuda::FactorizedInteractionBackend selected{};
+        ops::mechanism::cuda::FactorizedInteractionProblem problem) const noexcept {
+        ops::mechanism::cuda::FactorizedInteractionBackend selected{};
         return backend_for(problem, &selected) == cudaSuccess &&
-               selected == modeling::cuda::FactorizedInteractionBackend::direct;
+               selected == ops::mechanism::cuda::FactorizedInteractionBackend::direct;
     }
 
     const std::vector<layout::FactorizedInteractionRecord>&
@@ -222,7 +222,7 @@ private:
 class MinimalDirectDeviceLayout final {
 public:
     MinimalDirectDeviceLayout(const MinimalDirectHostLayout& host,
-                              modeling::cuda::FactorizedInteractionProblem problem,
+                              ops::mechanism::cuda::FactorizedInteractionProblem problem,
                               int device,
                               const memory::cuda::Stream& upload_stream);
     ~MinimalDirectDeviceLayout() noexcept;
@@ -232,7 +232,7 @@ public:
     MinimalDirectDeviceLayout& operator=(const MinimalDirectDeviceLayout&) = delete;
 
     const layout::FactorizedInteractionView& view() const noexcept;
-    bool accepts(modeling::cuda::FactorizedInteractionProblem problem) const noexcept;
+    bool accepts(ops::mechanism::cuda::FactorizedInteractionProblem problem) const noexcept;
     int device() const noexcept;
     std::size_t bytes() const noexcept;
     void wait_on(const memory::cuda::Stream& stream) const;

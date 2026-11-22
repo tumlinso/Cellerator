@@ -15,7 +15,8 @@ from unittest.mock import patch
 HERE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(HERE))
 
-from common import candidate_tree_identity, digest_file, digest_json, write_json  # noqa: E402
+from candidate_manifest import make_manifest  # noqa: E402
+from common import AdapterError, candidate_tree_identity, digest_file, digest_json, write_json  # noqa: E402
 from run_dtype_qualification import source_closure_digest  # noqa: E402
 from run_performance_packet import (  # noqa: E402
     CHALLENGER_ID,
@@ -43,14 +44,19 @@ CONTEXT = {
 }
 
 
-def _write_source_fixture(root: Path) -> Path:
+def _write_source_fixture(
+    root: Path,
+    *,
+    provider_header: str = "include/Cellerator/ops/mechanism/factorized_interaction_cuda.hh",
+    provider_source: str = "src/ops/mechanism/factorized_interaction.cu",
+) -> Path:
     files = {
         "CMakeLists.txt": b"cmake_minimum_required(VERSION 3.26)\n",
         "bench/factorized_interactions/CMakeLists.txt": b"project(test)\n",
         "bench/factorized_interactions/build_runner.py": b"pass\n",
         "bench/factorized_interactions/native_runner.cu": b"// runner\n",
-        "include/Cellerator/modeling/cuda/factorized_interaction.hh": b"// API\n",
-        "src/modeling/cuda/factorized_interaction.cu": b"// CUDA\n",
+        provider_header: b"// API\n",
+        provider_source: b"// CUDA\n",
         "tests/factorized_interactions/reference.py": b"# oracle\n",
         "tests/factorized_interactions/workloads.py": b"# workloads\n",
         "bench/factorized_interactions/candidate_integration/build_candidate_runner.py": b"# builder\n",
@@ -86,6 +92,24 @@ def _build_source_entries(snapshot: Path) -> tuple[list[dict], str]:
             })
     source_hash, _ = source_closure_digest(rows)
     return rows, source_hash
+
+
+class CandidateManifestTests(unittest.TestCase):
+    def test_frozen_provider_layout_requires_both_original_paths(self) -> None:
+        legacy_header = "include/Cellerator/modeling/cuda/factorized_interaction.hh"
+        legacy_source = "src/modeling/cuda/factorized_interaction.cu"
+        with tempfile.TemporaryDirectory() as tmp:
+            legacy = Path(tmp) / "legacy" / "source"
+            manifest = _write_source_fixture(
+                legacy, provider_header=legacy_header, provider_source=legacy_source)
+            files = make_manifest(legacy, manifest, [])["files"]
+            self.assertIn(legacy_header, files)
+            self.assertIn(legacy_source, files)
+
+            mixed = Path(tmp) / "mixed" / "source"
+            manifest = _write_source_fixture(mixed, provider_header=legacy_header)
+            with self.assertRaisesRegex(AdapterError, "from the same source layout"):
+                make_manifest(mixed, manifest, [])
 
 
 class PerformancePacketTests(unittest.TestCase):

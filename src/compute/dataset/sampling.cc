@@ -512,7 +512,8 @@ bool build_density_sample_plan(std::uint64_t total_rows,
     return true;
 }
 
-bool build_csr_density_sample_plan(const tensor::base::CompressedStructureView<uint32_t> &source,
+template<class Index>
+bool build_csr_density_sample_plan(const tensor::base::CompressedStructureView<Index> &source,
                                    const density_sample_spec &spec,
                                    const cell_identity_view &identities,
                                    sample_plan *out,
@@ -526,18 +527,19 @@ bool build_csr_density_sample_plan(const tensor::base::CompressedStructureView<u
         set_error(error, "density sampling requires row-compressed CSR input");
         return false;
     }
-    if (source.major_ptr == nullptr || source.rows > UINT32_MAX || source.nnz > UINT32_MAX) {
+    if (source.major_ptr == nullptr || source.rows >= SIZE_MAX / sizeof(uint64_t)
+        || source.nnz > INT64_MAX) {
         set_error(error, "CSR density sampling requires row pointers");
         return false;
     }
-    if (source.major_ptr[0] != 0u || source.major_ptr[source.rows] != source.nnz) {
+    if (source.major_ptr[0] != 0 || uint64_t(source.major_ptr[source.rows]) != source.nnz) {
         set_error(error, "CSR row pointers do not span the declared nnz");
         return false;
     }
     row_nnz.reserve(source.rows);
-    for (std::uint64_t row = 0u; row < source.rows; ++row) {
-        const std::uint64_t begin = source.major_ptr[row], end = source.major_ptr[row + 1u];
-        if (end < begin) {
+    for (uint64_t row = 0; row < source.rows; ++row) {
+        const uint64_t begin = source.major_ptr[row], end = source.major_ptr[row + 1];
+        if (end < begin || end > source.nnz) {
             set_error(error, "CSR row pointers are not monotonic");
             return false;
         }
@@ -551,6 +553,10 @@ bool build_csr_density_sample_plan(const tensor::base::CompressedStructureView<u
         out,
         error);
 }
+
+template decltype(build_csr_density_sample_plan<uint32_t>) build_csr_density_sample_plan<uint32_t>;
+template decltype(build_csr_density_sample_plan<int32_t>) build_csr_density_sample_plan<int32_t>;
+template decltype(build_csr_density_sample_plan<int64_t>) build_csr_density_sample_plan<int64_t>;
 
 bool reproduce_density_sample_plan(const sample_provenance &provenance,
                                    const row_nnz_view &row_nnz,

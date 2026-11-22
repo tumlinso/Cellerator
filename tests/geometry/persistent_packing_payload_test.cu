@@ -240,15 +240,15 @@ int main() {
         packed.order, packed.tiles, {image.size(), image.data()}, &built),
         "build persistent image");
     require(built.payload_identity != 0u && built.tiles.full_row_count == 8u
-        && built.tiles.row_count == 4u, "persistent image identity/domain");
+        && built.tiles.layout.rows == 4u, "persistent image identity/domain");
 
     cs::execution_payload_identity identity;
     identity.dataset_identity = 0x9001u;
     identity.generation = {1u, 2u, 3u, 4u};
     identity.partition_identity = 0x9010u;
     identity.global_row_begin = built.tiles.global_row_begin;
-    identity.row_count = built.tiles.row_count;
-    identity.feature_count = built.tiles.feature_count;
+    identity.row_count = built.tiles.layout.rows;
+    identity.feature_count = built.tiles.layout.features;
     identity.feature_axis_fingerprint = built.tiles.feature_axis_fingerprint;
     identity.feature_axis_fingerprint_version = built.tiles.feature_axis_fingerprint_version;
     identity.payload_kind = built.payload_kind;
@@ -287,7 +287,7 @@ int main() {
         weights[feature] = static_cast<compute_t>(0.5f + 0.125f * feature);
     const auto host_input = cp::make_feature_weighted_row_reduction_view(plan,
         packed.tiles, 0xabcdefu, weights.size(), weights.data());
-    std::vector<accum_t> reference(packed.tiles.row_count);
+    std::vector<accum_t> reference(packed.tiles.layout.rows);
     cp::feature_weighted_row_reduction_result_view reference_result;
     require_status(cp::evaluate_feature_weighted_row_reduction_canonical_host(plan,
         application_context(), source_view(source), host_input,

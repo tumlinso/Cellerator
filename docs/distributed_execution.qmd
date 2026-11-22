@@ -185,7 +185,7 @@ device_plan = CudaDispatchPlan(host_plan, stream=stream)
 ```
 
 This is a source-verified connection to `adapters/cuda.py` and native
-`modeling/cuda/plans.hh`, not an executed GPU example. `CudaDispatchPlan` retains
+`execution/conditional/dispatch_cuda.hh`. `CudaDispatchPlan` retains
 `host_plan` with its logical expert revisions and origins while its device
 projection contains gather/combine indexes and FP32 route weights. Device
 expert callbacks must continue to bind the exact host keys to pinned parameter

@@ -1,5 +1,4 @@
 #include <Cellerator/compute/operation/builtin_catalog.hh>
-#include <Cellerator/compute/candidate/cusparse_csr_candidate.hh>
 #include <Cellerator/compute/operation/preparation_factory.hh>
 #include <Cellerator/execution/projection_activation.hh>
 #include <Cellerator/parameters.hh>
@@ -33,16 +32,8 @@ void test_candidate_surface() {
                 core::register_built_in_candidate_catalog(&registry))
             && registry.size == core::builtin_candidate_count,
         "built-in candidates did not register atomically");
-    require(static_cast<bool>(core::register_cusparse_csr_candidates(&registry))
-            && registry.size == core::builtin_candidate_count + 2u
-            && core::find_candidate(
-                registry, core::cusparse_csr_spmv_candidate_id) != nullptr
-            && core::find_candidate(
-                registry, core::cusparse_csr_spmm_candidate_id) != nullptr,
-        "strong conventional CSR candidates did not join the registry");
-
     const auto activation = &execution::activate_csr_projection;
-    const auto preparation = &core::prepare_catalog_csr;
+    const auto preparation = &core::prepare_catalog_candidate_v2;
     require(activation != nullptr && preparation != nullptr,
         "typed activation or preparation factory is not linkable");
 }

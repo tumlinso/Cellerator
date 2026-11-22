@@ -454,7 +454,6 @@ int main() {
             "compile independent hot-path plan");
     }
     require(preparation_count == 2u && projection_parse_count == 2u
-            && session.plans.size == 2u
             && programs[0].preparation_count == 1u
             && programs[1].preparation_count == 1u,
         "cold preparation did not produce exactly two independent plans");

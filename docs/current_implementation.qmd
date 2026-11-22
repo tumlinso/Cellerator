@@ -17,13 +17,24 @@ SDK builds omit CCell and AnnData++. The host checks cover both build modes,
 installed consumers, numerical and allocation regressions, and the same model
 example with caller buffers and with H5AD and Zarr input.
 
-## Native sparse consolidation
+## Support boundary, 2026-11-14
 
-The legacy sparse-layout C runtime API has been retired in coordination with
-Texo. The C++ biological execution ABI and core module remain available.
-Native sparse code takes borrowed COO and compressed views. CSR multiplication
-shares one implementation and build owner under `src/ops/matrix`. CellShard owns
-the allocation and device views for its dense and sparse storage.
+The supported Cellerator package no longer depends on Python AnnData,
+AnnData++, or Velocity++, and no longer exposes the Python AnnData adapter or a
+native H5AD API. CCell owns AnnData integration and scientific data workflows.
+See the [component ownership record](development/component-ownership.md)
+for the archived Python adapter sources.
+
+The Velocity++ build/export path is retired. `src/ops/velocity` and
+`tests/velocity` remain inactive source for later work; generic
+`CelleratorBinary16` remains separately buildable. CellShard source remains in
+`components/CellShard` but is quasi-deprecated and detached from supported
+Cellerator builds and installs. Existing ignored velocity/preprocess source,
+datasets, fixtures, and recovery material remain in place.
+
+The dated sections below record the states and qualifications observed at
+their stated dates. This boundary does not revise their historical receipts or
+extend their evidence to the current package.
 
 ## Compatibility retirement, 2026-11-10
 
@@ -126,8 +137,8 @@ enabled. Installed-consumer checks pass for relocated normal and substrate
 package installs; each has two separately linked executables importing
 `cellerator.core` and `anndata.h5ad`, and a C++23 consumer also executes. The
 fixtures are at
-[`tests/modules/installed_consumer`](../tests/modules/installed_consumer/CMakeLists.txt)
-and [`module_contract.cc`](../tests/modules/module_contract.cc).
+`tests/modules/installed_consumer`
+and `module_contract.cc`.
 
 Separate CellShard native-source host fixtures read synthetic H5AD files
 written by Python AnnData. They pass all 11 numeric dtype cases and the
@@ -161,20 +172,16 @@ current build baseline.
 Cellerator is an early biological machine-learning framework. Models can use
 measurements, identity-addressed sparse fields, molecular events, regulatory
 relations, latent representations, spatial environments, or combinations of
-these. The Python and native C++ APIs have distinct `Cell` contracts. Python's
-generic `modeling.Cell` API uses caller-owned data. Native C++
-`cellerator::Cell<Model, Instance>` is a continuing typed binding between a
-shared model and model-specific instance information. Optional runtime view
-discovery is exposed separately through `CellViews`. Explicit transitions remain optional and
-use `DynamicalCell` and `DynamicalModel`. PyTorch supplies the current ordinary training integration while
-native operations and arbitrary representations remain first-class.
+these. Native C++ calls ordinary models and transitions with caller-supplied data.
+PyTorch supplies the current ordinary training integration while native
+operations and arbitrary representations remain first-class.
 
 Implemented facilities have different backend and maturity boundaries. The 2026-10-29 framework expansion adds executable CPU reference mechanisms, C++ classes, optional bindings, and CUDA sources. A source file or namespace does not by itself establish numerical qualification, biological validity, or a performance advantage. In particular, topology planning and callback-based execution do not establish an autonomous distributed GPU service.
 
 ## Available package surfaces
 
 - The existing Python `modeling` package provides its general `Cell` information/program handle and explicit `DynamicalCell`/`DynamicalModel` transitions, step contexts/results, observations, and experiments. Generic handles use `Cell(data)`; explicit state and time use `DynamicalCell`. The package imports without Torch or a native extension.
-- Native C++ `<Cellerator/cell.hh>` defines `Cell<Model, Instance>` and inferred factories with borrowed or explicit shared model ownership. Forwarding invokes the associated callable and preserves its result type; copying follows the instance representation. Typed read/edit access is optional, and `<Cellerator/cells/access.hh>` supplies the separate runtime `CellViews` boundary. `EventPrefix` and dense-expression row selections borrow bulk storage. The core is backend-independent and uses the package's C++20 minimum build baseline. Time, ancestry, caches, and trajectories are not mandatory. Optional `DynamicalCell` preserves its explicit transition behavior.
+- Native C++ models use borrowed array and matrix views for token ranges and expression values. The [event example](../examples/native_cell/event_forward.cc) checks continuation against caller-owned storage. The [multimodal example](../examples/native_cell/multimodal.cc) edits a selected backing row through a direct view. Native generic `Cell`, `DynamicalCell`, `DynamicalModel`, and the Cell-only core module have been retired. The [native relation example](../tests/framework/native/cell_relation_example.cc) calls transition and observation operations directly and demonstrates clock publication and snapshot retention with caller-owned storage.
 - `nn` and `torch.nn` expose bound `FeatureEncoder`, dense/packed/CSR `RelationAttention`, reusable `PreparedRelation`, shared `InteractionPrograms`, `FeatureReadout`, labelled `ModelWithViews` queries, supervision helpers, biological manifests, and functional/module grouped linear composition. The Torch-free root provides model-local `FeatureBinding` and borrowed-value prediction/query records. Ordinary Torch parameters and optimizers remain ordinary; existing canonical native owners retain their guarded update contracts. The source examples cover masked expression, causal event history, and paired auxiliary readouts.
 - `state`, `events`, and `dynamics` provide sparse/ragged/layout-aware state, generation-safe store references, event histories and trajectories, lineage, discrete/continuous/stochastic reference dynamics, and explicit composition. Quantization profiles can be shared across cells and feature orderings; exact-value overrides remain per-payload and caller-controlled.
 - `interactions` provides directed, bipartite, and joint hyperedge computations with explicit activity gates, aggregation, and native sparse worklist adapters. Native model, relation, layout, and field classes preserve semantic identities independently of storage slots. Incremental native execution invalidates declared dependencies and caches unaffected results.
@@ -289,7 +296,7 @@ scientific biological validity or higher-order derivatives.
 
 ## Continuing native Cell instances, 2026-11-01
 
-The C++17 [`Cell<Model, Instance>`](../include/Cellerator/cell.hh) binds a
+At this historical checkpoint, the C++17 `Cell<Model, Instance>` bound a
 shared model to a decayed instance value. The default factory borrows an
 lvalue model; an explicit shared owner retains its lifetime. The same model
 can accept several instance representations. The core has no mandatory
@@ -298,28 +305,24 @@ Copy/move availability and sharing follow the stored representation. Forward
 returns the callable's exact result and normally acts on the continuing
 instance; owners determine physical mutation and retained-value lifetimes.
 
-Typed views use ordinary instance read/write hooks. The optional
-[`CellViews` bridge](../include/Cellerator/cells/access.hh) provides runtime
-capabilities with RTTI and an out-of-line destructor in `libCellerator`.
-Unsupported typed access is ill-formed; unsupported runtime requests throw
-`std::bad_cast`. Biological identity, when supplied, remains application-defined.
+At this checkpoint, typed views used ordinary instance read/write hooks.
+The then-available `CellViews` bridge offered runtime access through RTTI and
+an out-of-line destructor in `libCellerator`. Unsupported runtime requests
+threw `std::bad_cast`. Biological identity remained application-defined.
 
-`EventPrefix` retains ordered token occurrences and a prefix boundary over a
-stable borrowed descriptor. Its example appends through storage and extends
-the same Cell instance; explicit prefix copies preserve prior boundaries.
-`DenseExpressionRow` and `MutableDenseExpressionRow` preserve feature spans,
-row stride, placement, and numeric aliasing. Owners control synchronization,
-generations, reordering, and borrowed-view invalidation. Device descriptors do
-not cause transfers or host dereferences.
+`EventPrefix` retained ordered token occurrences and a prefix boundary over a
+stable borrowed descriptor. Its example appended through storage and extended
+the same Cell instance. Explicit prefix copies preserved prior boundaries.
+`DenseExpressionRow` and `MutableDenseExpressionRow` preserved feature spans,
+row stride, placement, and numeric aliasing. Owners controlled synchronization,
+generations, reordering, and borrowed-view invalidation.
 
-The [event](../examples/native_cell/event_forward.cc),
-[multimodal](../examples/native_cell/multimodal.cc), and
-[foundation](../examples/native_cell/foundation.cc) examples use host storage.
-They demonstrate representation choice, shared/pooled portions, joint
+The event, multimodal, and `foundation.cc` examples used host storage.
+They demonstrated representation choice, shared/pooled portions, joint
 operations, caller-estimated host execution choices, model-owned cache validity,
 and retained asynchronous resources. They do not implement distributed
 transport or an expert-residency scheduler. See the
-[native guide](native_nn.qmd#bind-a-continuing-native-instance). The Python API
+[native guide](native_nn.qmd#use-native-data-views-directly). The Python API
 and bindings are unchanged.
 
 Validation covers the backend-disabled core, adapters and examples, affected

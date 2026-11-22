@@ -155,9 +155,13 @@ void run_precision(ix::training_precision precision, int device, cudaStream_t st
     try { (void)program->forward(x_dev.value, false, 1, wrong_axis, y.value, stream); }
     catch (const std::exception&) { rejected = true; }
     check(rejected, "same-shaped wrong biological axis must reject");
+    rejected = false;
+    try { (void)program->forward(x_dev.value, false, 1, d.input.identity, y.value, stream); }
+    catch (const std::exception&) { rejected = true; }
+    check(rejected, "two live tapes must exhaust the prepared slots");
 
     const auto bwd_start = std::chrono::steady_clock::now();
-    program->backward(*tape, dy_dev.value, dx.value, dk.value, stream);
+    program->backward(tape, dy_dev.value, dx.value, dk.value, stream);
     cuda_check(cudaStreamSynchronize(stream), "backward synchronize");
     const auto bwd_us = std::chrono::duration<double, std::micro>(
         std::chrono::steady_clock::now() - bwd_start).count();
@@ -169,21 +173,24 @@ void run_precision(ix::training_precision precision, int device, cudaStream_t st
     try { owner->begin_write(stream); } catch (const std::exception&) { rejected = true; }
     check(rejected, "second outstanding tape must continue to prevent an update");
     device_buffer<float> dx2_dev(6), dk2_dev(2);
-    program->backward(*tape2, dy_dev.value, dx2_dev.value, dk2_dev.value, stream2);
+    program->backward(tape2, dy_dev.value, dx2_dev.value, dk2_dev.value, stream2);
     cuda_check(cudaStreamSynchronize(stream2), "second backward synchronize");
     near(download(dx2_dev.value, 6), expected.dx, mixed ? 3e-6f : 3e-6f,
          "second concurrent tape input VJP differs from reference");
     near(download(dk2_dev.value, 2), expected.dk, mixed ? 3e-6f : 3e-6f,
          "second concurrent tape coefficient VJP differs from reference");
     rejected = false;
-    try { program->backward(*tape, dy_dev.value, dx.value, dk.value, stream); }
+    try { program->backward(tape, dy_dev.value, dx.value, dk.value, stream); }
     catch (const std::exception&) { rejected = true; }
     check(rejected, "a mechanism tape must reject backward replay");
 
     // An abandoned tape releases its read ticket, while the completion event
     // still orders reuse of the associated saved-operand slot.
     auto abandoned = program->forward(x_dev.value, false, 2, d.input.identity, y.value, stream2);
+    auto moved = std::move(abandoned);
     abandoned.reset();
+    check(moved.batch() == 2, "moving a tape transfers its live slot");
+    moved.reset();
     const std::vector<float> next_coeff{0.25f, -0.5f};
     owner->begin_write(stream);
     cuda_check(cudaMemcpyAsync(owner->data(), next_coeff.data(), next_coeff.size() * sizeof(float),

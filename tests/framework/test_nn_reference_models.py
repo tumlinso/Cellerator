@@ -4,7 +4,6 @@ import unittest
 import torch
 from torch import nn
 
-from cellerator.adapters.anndata import AnnDataView
 from cellerator.modeling import Cell
 from examples.nn_foundation.reference_models import (
     EventHistoryReferenceModel,
@@ -13,7 +12,6 @@ from examples.nn_foundation.reference_models import (
     attach_atac_view,
     attach_history_view,
     event_next_token_loss,
-    explicit_dense_anndata_minibatch,
     masked_expression_mse,
 )
 
@@ -64,23 +62,6 @@ class ReferenceModelTests(unittest.TestCase):
         self.assertAlmostEqual(float(loss), 2.5)
         self.assertIsNone(masked_expression_mse(prediction, target, torch.zeros_like(mask)))
 
-    def test_ann_data_sparse_rows_are_densified_only_after_the_explicit_bound(self):
-        try:
-            from scipy import sparse
-        except ImportError:
-            self.skipTest("scipy is not installed")
-        matrix = sparse.csr_matrix([[1.0, 0.0, 2.0], [0.0, 4.0, 0.0]])
-        view = AnnDataView(matrix, ("cell-a", "cell-b"), ("g1", "g2", "g3"), "X")
-
-        values, feature_ids, cell_ids = explicit_dense_anndata_minibatch(
-            view, [1], max_elements=3
-        )
-
-        self.assertEqual(tuple(values.shape), (1, 3))
-        self.assertEqual(feature_ids, ("g1", "g2", "g3"))
-        self.assertEqual(cell_ids, ("cell-b",))
-        with self.assertRaisesRegex(ValueError, "max_elements"):
-            explicit_dense_anndata_minibatch(view, [0, 1], max_elements=5)
 
     def test_event_teacher_forcing_preserves_repeats_start_and_empty_rows(self):
         torch.manual_seed(13)

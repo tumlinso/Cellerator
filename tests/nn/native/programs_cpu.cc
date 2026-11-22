@@ -76,14 +76,17 @@ void prepared_overlapping_programs_keep_duplicates_and_empty_rows() {
         {"p0", "p1", "empty", "p0", "p1", "empty",
          "p0", "p1", "empty"},
         {0, 3, 6, 9}, {}, 7);
-    const auto relation = nn::PreparedRelation::from_csr(
+    const nn::PreparedRelationPair relation(nn::PreparedRelation::from_csr(
         nn::CsrSupport{
             {0, 3, 5, 5, 6, 6, 6, 6, 6, 6},
             {0, 0, 1, 1, 2, 3},
         },
-        features.order_token(), programs.order_token(), 7);
-    assert(relation.edge_count() == 6);
-    assert(relation.transpose().edge_count() == relation.edge_count());
+        features.order_token(), programs.order_token(), 7));
+    assert(relation.forward().edge_count() == 6);
+    assert((relation.reverse().host_row_ptr()
+            == std::vector<std::int64_t>{0, 2, 4, 5, 6, 6}));
+    assert((relation.reverse().host_col_indices()
+            == std::vector<std::int64_t>{0, 0, 0, 1, 1, 3}));
 
     nn::Parameters owner(at::Device(at::kCPU), at::kFloat);
     nn::InteractionPrograms model(owner.group(), 4, 3, 2);
@@ -105,13 +108,18 @@ void prepared_overlapping_programs_keep_duplicates_and_empty_rows() {
     assert(at::allclose(output.program_features.select(0, 8), at::zeros({4})));
     assert(at::allclose(output.feature_updates.select(0, 4), at::zeros({4})));
 
+    auto next_values = (values.detach() * 1.25).requires_grad_(true);
+    const auto next_output = model(next_values, call);
+    assert(!at::allclose(output.program_features, next_output.program_features));
+    assert(!at::allclose(output.feature_updates, next_output.feature_updates));
+
     const auto local_features = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"g0", "g1", "g2"}, {}, {}, 7);
     const auto local_programs = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"p0", "p1", "empty"}, {}, {}, 7);
-    const auto local_relation = nn::PreparedRelation::from_csr(
+    const nn::PreparedRelationPair local_relation(nn::PreparedRelation::from_csr(
         nn::CsrSupport{{0, 3, 5, 5}, {0, 0, 1, 1, 2}},
-        local_features.order_token(), local_programs.order_token(), 7);
+        local_features.order_token(), local_programs.order_token(), 7));
     nn::ProgramCall local_call;
     local_call.relation = &local_relation;
     local_call.feature_order = local_features.order_token();
@@ -129,13 +137,16 @@ void prepared_overlapping_programs_keep_duplicates_and_empty_rows() {
     assert(model.program_queries().grad().defined());
     assert(all_finite(model.program_queries().grad()));
     assert_all_parameters_receive_finite_gradients(owner);
+    (next_output.program_features.square().sum()
+     + next_output.feature_updates.square().sum()).backward();
+    assert(next_values.grad().defined() && all_finite(next_values.grad()));
 
-    const auto deduplicated_relation = nn::PreparedRelation::from_csr(
+    const nn::PreparedRelationPair deduplicated_relation(nn::PreparedRelation::from_csr(
         nn::CsrSupport{
             {0, 2, 4, 4, 5, 5, 5, 5, 5, 5},
             {0, 1, 1, 2, 3},
         },
-        features.order_token(), programs.order_token(), 7);
+        features.order_token(), programs.order_token(), 7));
     auto deduplicated_call = call;
     deduplicated_call.relation = &deduplicated_relation;
     const auto deduplicated = model(values.detach(), deduplicated_call);
@@ -152,6 +163,19 @@ void prepared_overlapping_programs_keep_duplicates_and_empty_rows() {
         rejected_stale_order = true;
     }
     assert(rejected_stale_order);
+
+    // Even a value-preserving mutation changes the retained tensor's version.
+    // A rebuilt reverse relation would hide it.
+    call.feature_order = features.order_token();
+    auto reverse_columns = relation.reverse().col_indices();
+    reverse_columns.add_(0);
+    bool rejected_mutated_reverse = false;
+    try {
+        static_cast<void>(model(next_values.detach(), call));
+    } catch (const std::invalid_argument&) {
+        rejected_mutated_reverse = true;
+    }
+    assert(rejected_mutated_reverse);
 }
 
 void gated_interactor_keeps_legacy_path_and_conditions_gate_logits() {

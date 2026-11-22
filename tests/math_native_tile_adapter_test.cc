@@ -70,22 +70,22 @@ struct fixture {
         tiles.ordering_identity = order.ordering_identity;
         tiles.global_row_begin = order.global_row_begin;
         tiles.full_row_count = order.full_row_count;
-        tiles.row_count = order.row_count;
-        tiles.feature_count = plan.feature_count;
-        tiles.feature_block_count = plan.feature_block_count;
-        tiles.tile_row_width = order.group_width;
-        tiles.tile_count = 1u;
-        tiles.nnz_count = 6u;
-        tiles.tile_block_count = 2u;
-        tiles.row_block_entry_count = 4u;
+        tiles.layout.rows = order.row_count;
+        tiles.layout.features = plan.feature_count;
+        tiles.layout.feature_blocks = plan.feature_block_count;
+        tiles.layout.tile_row_width = order.group_width;
+        tiles.layout.tiles = 1u;
+        tiles.layout.stored_values = 6u;
+        tiles.layout.tile_blocks = 2u;
+        tiles.layout.row_block_entries = 4u;
         tiles.value_size_bytes = sizeof(float);
         tiles.row_domain_identity = order.row_domain_identity;
-        tiles.tile_block_offsets = tile_blocks.data();
-        tiles.tile_block_ids = block_ids.data();
-        tiles.tile_block_cell_masks = cell_masks.data();
-        tiles.block_row_entry_offsets = block_entries.data();
-        tiles.row_block_gene_masks = gene_masks.data();
-        tiles.row_block_value_offsets = value_offsets.data();
+        tiles.layout.tile_block_offsets = tile_blocks.data();
+        tiles.layout.block_ids = block_ids.data();
+        tiles.layout.participating_row_masks = cell_masks.data();
+        tiles.layout.block_row_entry_offsets = block_entries.data();
+        tiles.layout.feature_masks = gene_masks.data();
+        tiles.layout.row_block_value_offsets = value_offsets.data();
         tiles.values = values.data();
     }
 
@@ -129,7 +129,7 @@ void test_sidecars_and_aliasing() {
         data.plan, data.order, data.tiles, storage.buffers(), &view), "adapter build failed");
 
     require(view.tiles.values == data.values.data(), "adapter copied compact values");
-    require(view.tiles.tile_block_offsets == data.tile_blocks.data(),
+    require(view.tiles.layout.tile_block_offsets == data.tile_blocks.data(),
         "adapter copied tile metadata");
     require(storage.unions == std::vector<std::uint32_t>({0x7u, 0x3u}),
         "union masks are incorrect");
@@ -175,7 +175,7 @@ void test_exact_decode() {
         require(decoded.value == &data.values[index], "decoder did not alias source value");
     }
     math::native_tile_decoded_value decoded;
-    require(!math::decode_native_tile_value_host(view, data.tiles.nnz_count, &decoded),
+    require(!math::decode_native_tile_value_host(view, data.tiles.layout.stored_values, &decoded),
         "out-of-range packed value was accepted");
     storage.offsets[1] = 4u;
     require(!math::decode_native_tile_value_host(view, 1u, &decoded),

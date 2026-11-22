@@ -30,11 +30,11 @@ u32 row_nnz_bucket(u32 count) noexcept {
 }
 
 u64 metadata_bytes(const warp_tile_view &tiles) noexcept {
-    const u64 words = static_cast<u64>(tiles.tile_count) + 1u
-        + 2u * tiles.tile_block_count
-        + static_cast<u64>(tiles.tile_block_count) + 1u
-        + tiles.row_block_entry_count
-        + static_cast<u64>(tiles.row_block_entry_count) + 1u;
+    const u64 words = static_cast<u64>(tiles.layout.tiles) + 1u
+        + 2u * tiles.layout.tile_blocks
+        + static_cast<u64>(tiles.layout.tile_blocks) + 1u
+        + tiles.layout.row_block_entries
+        + static_cast<u64>(tiles.layout.row_block_entries) + 1u;
     return words * sizeof(u32);
 }
 
@@ -49,16 +49,17 @@ bool valid_statistics_source(const CellPackingStatisticsSource &source) noexcept
         || order.order_schema_version != local_cell_order_schema_version
         || order.ordering_identity == 0u || order.row_count == 0u
         || order.row_nnz_counts == nullptr || source.row_group_count == 0u
+        || !packed_extents_fit(tiles)
         || tiles.tile_schema_version != warp_tile_schema_version || tiles.tile_identity == 0u
         || tiles.ordering_identity != order.ordering_identity
         || tiles.feature_block_geometry_identity != plan.feature_block_geometry_identity
-        || tiles.row_count != order.row_count || tiles.feature_count != plan.feature_count
-        || tiles.feature_block_count != plan.feature_block_count || tiles.value_size_bytes == 0u)
+        || tiles.layout.rows != order.row_count || tiles.layout.features != plan.feature_count
+        || tiles.layout.feature_blocks != plan.feature_block_count || tiles.value_size_bytes == 0u)
         return false;
-    if ((tiles.tile_block_count != 0u
-            && (tiles.tile_block_ids == nullptr || tiles.tile_block_cell_masks == nullptr
-                || tiles.block_row_entry_offsets == nullptr))
-        || (tiles.row_block_entry_count != 0u && tiles.row_block_gene_masks == nullptr))
+    if ((tiles.layout.tile_blocks != 0u
+            && (tiles.layout.block_ids == nullptr || tiles.layout.participating_row_masks == nullptr
+                || tiles.layout.block_row_entry_offsets == nullptr))
+        || (tiles.layout.row_block_entries != 0u && tiles.layout.feature_masks == nullptr))
         return false;
     for (u32 block = 0; block < plan.feature_block_count; ++block) {
         const u32 begin = plan.feature_block_offsets[block];
@@ -116,11 +117,11 @@ validation_result evaluate_cell_packing_statistics_host(
     hot_result.feature_count = source.plan.feature_count;
     hot_result.feature_block_count = source.plan.feature_block_count;
     hot_result.row_group_count = source.row_group_count;
-    hot_result.tile_count = tiles.tile_count;
-    hot_result.tile_block_count = tiles.tile_block_count;
-    hot_result.nnz_count = tiles.nnz_count;
+    hot_result.tile_count = tiles.layout.tiles;
+    hot_result.tile_block_count = tiles.layout.tile_blocks;
+    hot_result.nnz_count = tiles.layout.stored_values;
     hot_result.projection_metadata_bytes = metadata_bytes(tiles);
-    hot_result.projection_value_bytes = static_cast<u64>(tiles.nnz_count)
+    hot_result.projection_value_bytes = static_cast<u64>(tiles.layout.stored_values)
         * tiles.value_size_bytes;
     if (hot_result.projection_value_bytes != 0u) {
         hot_result.metadata_to_value_ratio =
@@ -144,22 +145,22 @@ validation_result evaluate_cell_packing_statistics_host(
     }
 
     double occupancy_sum = 0.0, reuse_sum = 0.0, imbalance_sum = 0.0;
-    for (u32 descriptor = 0; descriptor < tiles.tile_block_count; ++descriptor) {
-        if (tiles.block_row_entry_offsets[descriptor]
-                > tiles.block_row_entry_offsets[descriptor + 1u]
-            || tiles.block_row_entry_offsets[descriptor + 1u]
-                > tiles.row_block_entry_count
-            || tiles.tile_block_ids[descriptor] >= source.plan.feature_block_count) {
+    for (u32 descriptor = 0; descriptor < tiles.layout.tile_blocks; ++descriptor) {
+        if (tiles.layout.block_row_entry_offsets[descriptor]
+                > tiles.layout.block_row_entry_offsets[descriptor + 1u]
+            || tiles.layout.block_row_entry_offsets[descriptor + 1u]
+                > tiles.layout.row_block_entries
+            || tiles.layout.block_ids[descriptor] >= source.plan.feature_block_count) {
             return validation_error(validation_code::invalid_offsets, descriptor,
                 "CP-BP tile descriptor is outside packing geometry");
         }
-        const u32 active_rows = popcount(tiles.tile_block_cell_masks[descriptor]);
+        const u32 active_rows = popcount(tiles.layout.participating_row_masks[descriptor]);
         u32 feature_union = 0u, descriptor_nnz = 0u;
         u32 minimum_lane_nnz = std::numeric_limits<u32>::max(), maximum_lane_nnz = 0u;
-        const u32 entry_begin = tiles.block_row_entry_offsets[descriptor];
-        const u32 entry_end = tiles.block_row_entry_offsets[descriptor + 1u];
+        const u32 entry_begin = tiles.layout.block_row_entry_offsets[descriptor];
+        const u32 entry_end = tiles.layout.block_row_entry_offsets[descriptor + 1u];
         for (u32 entry = entry_begin; entry < entry_end; ++entry) {
-            const u32 mask = tiles.row_block_gene_masks[entry];
+            const u32 mask = tiles.layout.feature_masks[entry];
             const u32 lane_nnz = popcount(mask);
             feature_union |= mask;
             descriptor_nnz += lane_nnz;
@@ -169,7 +170,7 @@ validation_result evaluate_cell_packing_statistics_host(
         const u32 active_features = popcount(feature_union);
         ++cold_result.row_mask_popcount_histogram[active_rows];
         ++cold_result.feature_mask_popcount_histogram[active_features];
-        const u32 block = tiles.tile_block_ids[descriptor];
+        const u32 block = tiles.layout.block_ids[descriptor];
         const u32 block_width = source.plan.feature_block_offsets[block + 1u]
             - source.plan.feature_block_offsets[block];
         const u64 capacity = static_cast<u64>(active_rows) * block_width;
@@ -186,8 +187,8 @@ validation_result evaluate_cell_packing_statistics_host(
             ++hot_result.dense_fragment_candidate_count;
         }
     }
-    if (tiles.tile_block_count != 0u) {
-        const double count = static_cast<double>(tiles.tile_block_count);
+    if (tiles.layout.tile_blocks != 0u) {
+        const double count = static_cast<double>(tiles.layout.tile_blocks);
         hot_result.mean_block_occupancy = occupancy_sum / count;
         hot_result.mean_feature_reuse = reuse_sum / count;
         hot_result.mean_lane_imbalance = imbalance_sum / count;

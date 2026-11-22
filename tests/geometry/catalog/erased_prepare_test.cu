@@ -8,27 +8,6 @@ namespace core = cellerator::compute::math::core;
 namespace execution = cellerator::execution;
 namespace runtime = cellerator::runtime;
 
-namespace cellerator::runtime {
-
-// The erased factory depends only on the session cache contract. This focused
-// host test supplies a bounded implementation so no CUDA context is needed.
-session_status insert_session_cache(execution_session *session,
-    session_cache_kind kind, session_cache_key key, void *state,
-    std::uint64_t structure_epoch, std::uint64_t generation) noexcept {
-    if (session == nullptr || kind != session_cache_kind::plan
-        || state == nullptr || session->plans.size >= execution_session_cache_capacity)
-        return session_status::invalid_argument;
-    session_cache_entry &entry = session->plans.entries[session->plans.size++];
-    entry.key = key;
-    entry.state = state;
-    entry.structure_epoch = structure_epoch;
-    entry.generation = generation;
-    entry.occupied = true;
-    return session_status::success;
-}
-
-} // namespace cellerator::runtime
-
 namespace {
 
 void require(bool condition, const char *message) {
@@ -143,7 +122,7 @@ core::candidate_preparation_request_v2 request(
     return result;
 }
 
-void test_provider_owned_erased_dispatch_and_cache() {
+void test_provider_owned_erased_dispatch() {
     const core::candidate_descriptor_v2 candidate = descriptor();
     const core::candidate_preparation_adapter_v2 adapter{
         core::candidate_preparation_adapter_schema_version_v2,
@@ -171,10 +150,24 @@ void test_provider_owned_erased_dispatch_and_cache() {
     require(erased_prepare_calls == 1u
             && core::same_stable_id(prepared.kernel, candidate_id)
             && prepared.projection.runtime.slot == 41u
-            && session.plans.size == 1u
-            && session.plans.entries[0].state == &state
-            && session.plans.entries[0].structure_epoch == 9u,
-        "erased callback result or session cache mismatch");
+            && prepared.persistent.data == &state
+            && prepared.structures.structures[0].epoch.value == 9u,
+        "erased callback result or caller-owned state mismatch");
+
+    // Distinct preparations used to exhaust the fixed 64-entry session table.
+    std::uint64_t states[65]{};
+    auto next = preparation;
+    for (auto &candidate_state : states) {
+        ++next.structures.structures[0].epoch.value;
+        next.state = {&candidate_state, sizeof(candidate_state)};
+        require(static_cast<bool>(core::prepare_catalog_candidate_v2(adapter,
+                    next, activated, &prepared)),
+            "independent preparation in the same session");
+        require(prepared.persistent.data == &candidate_state
+                && prepared.structures.structures[0].epoch.value
+                    == next.structures.structures[0].epoch.value,
+            "independent preparation did not retain its own state and epoch");
+    }
 }
 
 void test_mismatch_rejected_before_provider_callback() {
@@ -216,7 +209,7 @@ void test_mismatch_rejected_before_provider_callback() {
 } // namespace
 
 int main() {
-    test_provider_owned_erased_dispatch_and_cache();
+    test_provider_owned_erased_dispatch();
     test_mismatch_rejected_before_provider_callback();
     std::cout << "erased_prepare_test: ok\n";
     return EXIT_SUCCESS;

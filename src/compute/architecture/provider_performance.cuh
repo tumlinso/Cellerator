@@ -1,16 +1,11 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
 
 namespace cellerator::compute::architecture {
-
-#if defined(__CUDACC__)
-#define CELLERATOR_PROVIDER_HOST_DEVICE __host__ __device__
-#else
-#define CELLERATOR_PROVIDER_HOST_DEVICE
-#endif
 
 struct provider_launch_shape_v1 {
     std::uint32_t blocks = 0u;
@@ -18,13 +13,13 @@ struct provider_launch_shape_v1 {
     std::uint32_t dynamic_shared_memory_bytes = 0u;
 };
 
-CELLERATOR_PROVIDER_HOST_DEVICE constexpr bool valid_provider_launch_shape_v1(
+CELLERATOR_HOST_DEVICE constexpr bool valid_provider_launch_shape_v1(
     provider_launch_shape_v1 shape) noexcept {
     return shape.blocks != 0u && shape.threads_per_block != 0u
         && shape.threads_per_block <= 1024u;
 }
 
-CELLERATOR_PROVIDER_HOST_DEVICE constexpr std::uint32_t
+CELLERATOR_HOST_DEVICE constexpr std::uint32_t
 provider_ceil_div_u32_v1(
     std::uint32_t numerator,
     std::uint32_t denominator) noexcept {
@@ -34,7 +29,7 @@ provider_ceil_div_u32_v1(
             + static_cast<std::uint32_t>(numerator % denominator != 0u);
 }
 
-CELLERATOR_PROVIDER_HOST_DEVICE constexpr bool provider_checked_round_up_u64_v1(
+CELLERATOR_HOST_DEVICE constexpr bool provider_checked_round_up_u64_v1(
     std::uint64_t value,
     std::uint64_t alignment,
     std::uint64_t *rounded) noexcept {
@@ -48,7 +43,7 @@ CELLERATOR_PROVIDER_HOST_DEVICE constexpr bool provider_checked_round_up_u64_v1(
     return true;
 }
 
-CELLERATOR_PROVIDER_HOST_DEVICE constexpr bool provider_pointer_aligned_v1(
+CELLERATOR_HOST_DEVICE constexpr bool provider_pointer_aligned_v1(
     const void *pointer,
     std::size_t alignment) noexcept {
     return pointer != nullptr && alignment != 0u
@@ -56,13 +51,11 @@ CELLERATOR_PROVIDER_HOST_DEVICE constexpr bool provider_pointer_aligned_v1(
         && reinterpret_cast<std::uintptr_t>(pointer) % alignment == 0u;
 }
 
-CELLERATOR_PROVIDER_HOST_DEVICE constexpr std::uint32_t
+CELLERATOR_HOST_DEVICE constexpr std::uint32_t
 provider_warp_count_v1(
     std::uint32_t threads,
     std::uint32_t warp_size = 32u) noexcept {
     return provider_ceil_div_u32_v1(threads, warp_size);
 }
-
-#undef CELLERATOR_PROVIDER_HOST_DEVICE
 
 } // namespace cellerator::compute::architecture

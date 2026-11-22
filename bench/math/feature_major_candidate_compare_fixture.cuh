@@ -319,24 +319,25 @@ host_case make_case(const char *name, cp::u32 rows,
     tiles.feature_block_geometry_identity = 0x76001000ull;
     tiles.ordering_identity = result.payload.order.ordering_identity;
     tiles.full_row_count = rows;
-    tiles.row_count = rows;
-    tiles.feature_count = features;
-    tiles.feature_block_count = block_count;
-    tiles.tile_row_width = tile_width;
-    tiles.tile_count = tile_count;
-    tiles.nnz_count = static_cast<cp::u32>(result.tile_values.size());
-    tiles.tile_block_count = static_cast<cp::u32>(result.tile_blocks.size());
-    tiles.row_block_entry_count = static_cast<cp::u32>(result.gene_masks.size());
+    tiles.layout.rows = rows;
+    tiles.layout.features = features;
+    tiles.layout.feature_blocks = block_count;
+    tiles.layout.tile_row_width = tile_width;
+    tiles.layout.tiles = tile_count;
+    tiles.layout.stored_values = static_cast<cp::u32>(result.tile_values.size());
+    tiles.layout.tile_blocks = static_cast<cp::u32>(result.tile_blocks.size());
+    tiles.layout.row_block_entries = static_cast<cp::u32>(result.gene_masks.size());
     tiles.value_size_bytes = sizeof(storage_t);
     tiles.feature_axis_fingerprint = 0x76005000ull;
     tiles.feature_axis_fingerprint_version = 1u;
     tiles.row_domain_identity = result.payload.order.row_domain_identity;
-    tiles.tile_block_offsets = result.tile_offsets.data();
-    tiles.tile_block_ids = result.tile_blocks.data();
-    tiles.tile_block_cell_masks = result.tile_cell_masks.data();
-    tiles.block_row_entry_offsets = result.entry_offsets.data();
-    tiles.row_block_gene_masks = result.gene_masks.data();
-    tiles.row_block_value_offsets = result.value_offsets.data();
+    tiles.layout.feature_block_offsets = result.feature_offsets.data();
+    tiles.layout.tile_block_offsets = result.tile_offsets.data();
+    tiles.layout.block_ids = result.tile_blocks.data();
+    tiles.layout.participating_row_masks = result.tile_cell_masks.data();
+    tiles.layout.block_row_entry_offsets = result.entry_offsets.data();
+    tiles.layout.feature_masks = result.gene_masks.data();
+    tiles.layout.row_block_value_offsets = result.value_offsets.data();
     tiles.values = result.tile_values.data();
     return result;
 }
@@ -346,12 +347,13 @@ void refresh_payload(host_case &source) {
     source.payload.plan.feature_block_offsets = source.feature_offsets.data();
     source.payload.plan.feature_permutation = source.feature_permutation.data();
     source.payload.order.row_permutation = source.row_permutation.data();
-    source.payload.tiles.tile_block_offsets = source.tile_offsets.data();
-    source.payload.tiles.tile_block_ids = source.tile_blocks.data();
-    source.payload.tiles.tile_block_cell_masks = source.tile_cell_masks.data();
-    source.payload.tiles.block_row_entry_offsets = source.entry_offsets.data();
-    source.payload.tiles.row_block_gene_masks = source.gene_masks.data();
-    source.payload.tiles.row_block_value_offsets = source.value_offsets.data();
+    source.payload.tiles.layout.feature_block_offsets = source.feature_offsets.data();
+    source.payload.tiles.layout.tile_block_offsets = source.tile_offsets.data();
+    source.payload.tiles.layout.block_ids = source.tile_blocks.data();
+    source.payload.tiles.layout.participating_row_masks = source.tile_cell_masks.data();
+    source.payload.tiles.layout.block_row_entry_offsets = source.entry_offsets.data();
+    source.payload.tiles.layout.feature_masks = source.gene_masks.data();
+    source.payload.tiles.layout.row_block_value_offsets = source.value_offsets.data();
     source.payload.tiles.values = source.tile_values.data();
 }
 
@@ -420,7 +422,7 @@ host_projections build_projections(const host_case &source,
     end = clock_type::now();
     result.feature_build_ms = milliseconds(begin, end);
     result.feature_values.resize(static_cast<std::size_t>(
-        source.payload.tiles.nnz_count) * source.payload.tiles.value_size_bytes);
+        source.payload.tiles.layout.stored_values) * source.payload.tiles.value_size_bytes);
     begin = clock_type::now();
     require(::cellerator::layout::projection::pack_feature_major_values_host(result.feature.layout,
         source.tile_values.data(), source.tile_values.size() * sizeof(storage_t),
@@ -740,12 +742,13 @@ void benchmark_case(const host_case &source,
     row_view.plan.feature_block_offsets = d_feature_offsets.data;
     row_view.plan.feature_permutation = d_feature_permutation.data;
     row_view.order.row_permutation = d_row_permutation.data;
-    row_view.tiles.tile_block_offsets = d_tile_offsets.data;
-    row_view.tiles.tile_block_ids = d_tile_blocks.data;
-    row_view.tiles.tile_block_cell_masks = d_tile_masks.data;
-    row_view.tiles.block_row_entry_offsets = d_entry_offsets.data;
-    row_view.tiles.row_block_gene_masks = d_gene_masks.data;
-    row_view.tiles.row_block_value_offsets = d_value_offsets.data;
+    row_view.tiles.layout.feature_block_offsets = d_feature_offsets.data;
+    row_view.tiles.layout.tile_block_offsets = d_tile_offsets.data;
+    row_view.tiles.layout.block_ids = d_tile_blocks.data;
+    row_view.tiles.layout.participating_row_masks = d_tile_masks.data;
+    row_view.tiles.layout.block_row_entry_offsets = d_entry_offsets.data;
+    row_view.tiles.layout.feature_masks = d_gene_masks.data;
+    row_view.tiles.layout.row_block_value_offsets = d_value_offsets.data;
     row_view.tiles.values = d_row_values.data;
     ::cellerator::layout::projection::CsrViewV1 csr_view = host_views.csr;
     csr_view.row_offsets = d_csr_rows.data;
@@ -761,11 +764,11 @@ void benchmark_case(const host_case &source,
     structures.structures[0] = {structure_id, structure_handle, epoch};
     const core::operation_problem vector_problem{core::operation_core_schema_version,
         core::operation_kind::weighted_relation_reduce, 0u,
-        {7601u, columns}, 1u, 1u, source.payload.tiles.nnz_count};
+        {7601u, columns}, 1u, 1u, source.payload.tiles.layout.stored_values};
     const core::operation_problem matrix_problem{core::operation_core_schema_version,
         core::operation_kind::sparse_dense_multiply, 0u,
         {7602u, columns}, 1u, 1u,
-        static_cast<std::uint64_t>(source.payload.tiles.nnz_count) * columns};
+        static_cast<std::uint64_t>(source.payload.tiles.layout.stored_values) * columns};
     const core::projection_key row_key{row_id, row_handle,
         core::projection_kind::native_row_masked,
         cp::persistent_packing_payload_schema_version, 1u};
@@ -815,7 +818,7 @@ void benchmark_case(const host_case &source,
     relation.source_axis = feature_axis;
     relation.destination_axis = row_axis;
     relation.projections = {1u, 1u};
-    relation.logical_edge_count = source.payload.tiles.nnz_count;
+    relation.logical_edge_count = source.payload.tiles.layout.stored_values;
     execution::value_plane row_plane{};
     row_plane.structure = structure_handle;
     row_plane.structure_epoch_value = epoch;
@@ -826,7 +829,7 @@ void benchmark_case(const host_case &source,
     row_plane.quantization.kind = execution::quantization_kind::none;
     row_plane.layout = execution::value_layout_kind::projection_local_order;
     row_plane.generation = {1u};
-    row_plane.element_count = source.payload.tiles.nnz_count;
+    row_plane.element_count = source.payload.tiles.layout.stored_values;
     row_plane.value_bytes = source.tile_values.size() * sizeof(storage_t);
     execution::value_plane csr_plane = row_plane;
     csr_plane.values = d_csr_values.data;
@@ -941,21 +944,22 @@ void benchmark_case(const host_case &source,
         * columns * sizeof(float);
     const std::uint64_t csr_metadata = (host_views.csr_rows.size()
         + host_views.csr_features.size()) * sizeof(cp::u32);
+    const auto nnz = static_cast<cp::u32>(source.payload.tiles.layout.stored_values);
     const char *const schema = medium_n
         ? "CE-ARCH-84-EVIDENCE/1" : "CE-ARCH-76-EVIDENCE/1";
     const evidence_record records[3] = {
         {schema, "row_masked", source.name, source.rows, source.features,
-            source.payload.tiles.nnz_count, source.sharing_groups, columns,
+            nnz, source.sharing_groups, columns,
             warmups, repeats, row_metadata_bytes(source), value_bytes,
             output_bytes, 0.0, 0.0, 0.0, row_prepare_ms, row_timing},
         {schema, "csr", source.name, source.rows, source.features,
-            source.payload.tiles.nnz_count, source.sharing_groups, columns,
+            nnz, source.sharing_groups, columns,
             warmups, repeats, csr_metadata, value_bytes, output_bytes,
             host_views.csr_query_ms, host_views.csr_build_ms, 0.0,
             csr_prepare_ms, csr_timing},
         {schema, medium_n ? "feature_major_cta" : "feature_major",
             source.name, source.rows, source.features,
-            source.payload.tiles.nnz_count, source.sharing_groups, columns,
+            nnz, source.sharing_groups, columns,
             warmups, repeats, host_views.feature_payload.size(), value_bytes,
             output_bytes, host_views.feature_query_ms,
             host_views.feature_build_ms, host_views.feature_value_pack_ms,

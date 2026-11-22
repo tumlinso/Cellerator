@@ -23,7 +23,6 @@ from examples.nn_foundation.reference_models import (
     attach_event_view,
     attach_expression_view,
     attach_history_view,
-    explicit_dense_anndata_minibatch,
 )
 
 
@@ -243,24 +242,6 @@ class BoundReferenceModelTests(unittest.TestCase):
         self.assertEqual(int(cell_count), 2)
         self.assertEqual(float(cell_loss), 6.0)
 
-    def test_bounded_sparse_minibatch_aligns_columns_without_densifying_full_data(self):
-        try:
-            from scipy import sparse
-        except ImportError:
-            self.skipTest("scipy is not installed")
-        from cellerator.adapters.anndata import AnnDataView
-
-        binding = _binding(("gA", "gB", "gC"), (2, 7, 11), capacity=13)
-        source = sparse.csr_matrix([[3.0, 1.0, 2.0], [6.0, 4.0, 5.0]])
-        view = AnnDataView(source, ("cell-1", "cell-2"), ("gC", "gA", "gB"), "X")
-        values, feature_ids, cell_ids = explicit_dense_anndata_minibatch(
-            view, [1], max_elements=3, binding=binding
-        )
-
-        self.assertEqual(feature_ids, ("gA", "gB", "gC"))
-        self.assertEqual(cell_ids, ("cell-2",))
-        self.assertEqual(values.tolist(), [[4.0, 5.0, 6.0]])
-        self.assertTrue(sparse.issparse(view.values))
 
     def test_history_atac_queries_train_with_frozen_or_joint_base_and_one_forward(self):
         torch.manual_seed(304)

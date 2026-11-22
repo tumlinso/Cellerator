@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/accessibility.hh>
+#include <Cellerator/ops/condition/accessibility.hh>
 
 #include <cassert>
 #include <stdexcept>
@@ -9,7 +9,7 @@
 #include <vector>
 
 int main() {
-    using namespace cellerator::modeling;
+    using namespace cellerator::ops::condition;
     using Program = AccessibilityProgram<std::string>;
     AccessibilityState<std::string> founder({
         Program{"express", {"accessible", "signal"}, {"repressor"}, 4, true},

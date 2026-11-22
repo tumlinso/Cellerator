@@ -13,6 +13,26 @@
 
 namespace cellerator::bindings {
 
+// Framework tapes may outlive the call that created them. Keep shared ownership
+// at this boundary while native callers use the value-returning forward.
+class FrameworkMechanismProgram final : public ops::mechanism::indexed::prepared_mechanism_program,
+    public std::enable_shared_from_this<FrameworkMechanismProgram> {
+public:
+    using prepared_mechanism_program::prepared_mechanism_program;
+
+    std::shared_ptr<ops::mechanism::indexed::mechanism_tape> forward(const void* input, bool input_half,
+        std::uint64_t batch, const execution::persistent_axis_identity& axis, float* output, void* stream) {
+        struct retained_tape {
+            std::shared_ptr<FrameworkMechanismProgram> program;
+            ops::mechanism::indexed::mechanism_tape tape;
+        };
+        auto owner = std::make_shared<retained_tape>(retained_tape{shared_from_this(),
+            prepared_mechanism_program::forward(input, input_half, batch, axis, output, stream)});
+        auto* tape = &owner->tape;
+        return {std::move(owner), tape};
+    }
+};
+
 // Torch-free lifetime handle for one native indexed-mechanism owner/program.
 // Tensor/framework adapters borrow these shared owners; they never rebuild the
 // declaration or create a second parameter store.
@@ -24,7 +44,7 @@ public:
             throw std::invalid_argument("initial coefficients do not match coefficient axis extent");
         owner_ = std::make_shared<ops::mechanism::indexed::mechanism_parameter_owner>(
             declaration.coefficients, declaration.coefficient_ids, initial_coefficients, device);
-        program_ = std::make_shared<ops::mechanism::indexed::prepared_mechanism_program>(
+        program_ = std::make_shared<FrameworkMechanismProgram>(
             std::move(declaration), owner_);
     }
     ~MechanismHandle() = default;
@@ -33,7 +53,7 @@ public:
 
     const ops::mechanism::indexed::mechanism_declaration& declaration() const { return program_->declaration(); }
     const std::shared_ptr<ops::mechanism::indexed::mechanism_parameter_owner>& owner() const { return owner_; }
-    const std::shared_ptr<ops::mechanism::indexed::prepared_mechanism_program>& program() const { return program_; }
+    const std::shared_ptr<FrameworkMechanismProgram>& program() const { return program_; }
 
     std::vector<float> snapshot(void* stream = nullptr) const { return owner_->snapshot(stream); }
     void restore(std::span<const float> values, void* stream = nullptr) { owner_->restore(values, stream); }
@@ -63,7 +83,7 @@ public:
 
 private:
     std::shared_ptr<ops::mechanism::indexed::mechanism_parameter_owner> owner_;
-    std::shared_ptr<ops::mechanism::indexed::prepared_mechanism_program> program_;
+    std::shared_ptr<FrameworkMechanismProgram> program_;
     mutable std::mutex adapter_state_mutex_;
     std::shared_ptr<void> adapter_state_;
 };

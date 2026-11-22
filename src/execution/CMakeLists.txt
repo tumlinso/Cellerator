@@ -17,8 +17,8 @@ target_include_directories(cellerator_geometry_acquisition PUBLIC
 )
 target_link_libraries(cellerator_geometry_acquisition PUBLIC
     Cellerator::operation_core
-    Cellerator::projection_activation
     Cellerator::planner
+    Cellerator::projection_activation
     Cellerator::semantic_geometry_v1
     CellPack::execution_image_v2
 )

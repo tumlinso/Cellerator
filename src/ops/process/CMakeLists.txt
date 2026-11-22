@@ -1,6 +1,5 @@
 get_filename_component(_ce_ops_root "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 add_library(cellerator_op_process_ports STATIC ports.cc ports_provider.cc)
-add_library(Cellerator::op_process_ports ALIAS cellerator_op_process_ports)
 add_library(Cellerator::private_ports ALIAS cellerator_op_process_ports)
 target_include_directories(cellerator_op_process_ports PUBLIC
     $<BUILD_INTERFACE:${_ce_ops_root}/include>

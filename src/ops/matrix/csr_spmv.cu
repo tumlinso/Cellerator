@@ -37,10 +37,10 @@ cudaError_t csr_spmv(Csr<const __half> a, const float* x, float* y, cudaStream_t
 cudaError_t csr_spmv_transpose(Csr<const __half> a, const float* x, float* y, cudaStream_t stream) noexcept {
     const auto& s = a.structure;
     if (s.axis != tensor::base::CompressedAxis::row) return cudaErrorInvalidValue;
-    if (!s.rows || !s.cols) return cudaSuccess;
+    if (!s.cols) return cudaSuccess;
     if (s.rows > UINT32_MAX || s.cols > SIZE_MAX/sizeof(float)) return cudaErrorInvalidValue;
     auto status = cudaMemsetAsync(y, 0, s.cols*sizeof(float), stream);
-    if (status != cudaSuccess) return status;
+    if (status != cudaSuccess || !s.rows) return status;
     unsigned blocks = unsigned((s.rows + threads-1)/threads);
     spmv_transpose<<<blocks, threads, 0, stream>>>(s.major_ptr, s.minor_idx, a.values, uint32_t(s.rows), x, y);
     return cudaGetLastError();

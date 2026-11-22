@@ -89,7 +89,6 @@ int main() {
     auto target = genes.prepare(output_axis, {"gene-A", "gene-B"}, &output_map);
     assert((target.canonical_ids() == std::vector<std::string>{"gene-A", "gene-B"}));
     assert((target.source_positions() == std::vector<std::int64_t>{1, 0}));
-    assert(target.output_columns() == target.source_positions());
     assert((target.model_indices() == std::vector<std::int64_t>{9, 3}));
     assert((target.physical_positions() == std::vector<std::int64_t>{10, 20}));
 
@@ -97,7 +96,7 @@ int main() {
     // retained by the prepared source binding.
     const std::vector<int> source_values{5, 7};
     std::vector<int> gathered;
-    for (const auto position : target.gather_positions()) {
+    for (const auto position : target.source_positions()) {
         gathered.push_back(source_values.at(static_cast<std::size_t>(position)));
     }
     assert((gathered == std::vector<int>{7, 5}));

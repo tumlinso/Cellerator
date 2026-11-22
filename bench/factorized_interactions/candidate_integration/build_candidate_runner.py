@@ -15,7 +15,7 @@ import sys
 DEFAULT_CUDA_ROOT = Path(
     "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9")
 DEFAULT_NVCC = DEFAULT_CUDA_ROOT / "bin" / "nvcc"
-DEFAULT_CXX = Path("/usr/bin/g++-12")
+DEFAULT_CXX = Path("/usr/bin/clang++-18")
 
 
 def sha256_file(path: Path) -> str:
@@ -88,7 +88,7 @@ def main() -> int:
         parser.error("--parallel must be positive")
     cuda_root = args.cuda_root.resolve(strict=True)
     nvcc = args.nvcc.resolve(strict=True)
-    cxx = args.cxx.resolve(strict=True)
+    cxx = args.cxx.absolute()
     cuda_host_cxx = args.cuda_host_cxx.resolve(strict=True)
     for path, label in ((nvcc, "nvcc"), (cxx, "C++ compiler"),
                         (cuda_host_cxx, "CUDA host compiler")):
@@ -160,6 +160,7 @@ set(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES OFF CACHE BOOL
     "Use the explicit SM70 target" FORCE)
 set(CELLERATOR_ENABLE_TORCH OFF CACHE BOOL "Keep candidate native-only" FORCE)
 set(CELLERATOR_ENABLE_PYTHON OFF CACHE BOOL "Keep candidate native-only" FORCE)
+set(CELLERATOR_BUILD_CCELL OFF CACHE BOOL "Keep candidate scoped to Cellerator" FORCE)
 set(CELLERATOR_ENABLE_TOKENIZATION OFF CACHE BOOL "Keep candidate native-only" FORCE)
 set(CELLERATOR_ENABLE_NN OFF CACHE BOOL "Keep candidate native-only" FORCE)
 set(CELLERATOR_ENABLE_NN_CUDA OFF CACHE BOOL "Keep candidate native-only" FORCE)
@@ -189,7 +190,7 @@ endif()
     attach_hook.write_text(attach_hook_text, encoding="utf-8")
 
     configure = [
-        "cmake", "-S", str(source), "-B", str(cmake_build),
+        "cmake", "-S", str(source), "-B", str(cmake_build), "-G", "Ninja",
         "-DCMAKE_BUILD_TYPE=Release",
         f"-DCMAKE_CXX_COMPILER={cxx}",
         f"-DCMAKE_CUDA_COMPILER={nvcc}",

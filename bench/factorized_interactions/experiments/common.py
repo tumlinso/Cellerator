@@ -15,10 +15,40 @@ EXPERIMENTS = BENCH / "experiments"
 NATIVE_MANIFEST_DEFAULT = Path(
     "native_candidate/native_build/factorized_interactions_build_manifest.json"
 )
+REQUIRED_PROJECT_FILES = {
+    "CMakeLists.txt",
+    "bench/factorized_interactions/CMakeLists.txt",
+    "bench/factorized_interactions/build_runner.py",
+    "bench/factorized_interactions/native_runner.cu",
+    "tests/factorized_interactions/reference.py",
+    "tests/factorized_interactions/workloads.py",
+}
+NATIVE_PROVIDER_LAYOUTS = (
+    {
+        "include/Cellerator/ops/mechanism/factorized_interaction_cuda.hh",
+        "src/ops/mechanism/factorized_interaction.cu",
+    },
+    # Frozen closures retain the source paths and SHA256s from the original build.
+    {
+        "include/Cellerator/modeling/cuda/factorized_interaction.hh",
+        "src/modeling/cuda/factorized_interaction.cu",
+    },
+)
 
 
 class AdapterError(RuntimeError):
     pass
+
+
+def require_factorized_project(paths: set[str]) -> None:
+    missing = REQUIRED_PROJECT_FILES - paths
+    if missing:
+        raise AdapterError(f"source closure is missing factorized-interaction project files: {sorted(missing)}")
+    if not any(provider <= paths for provider in NATIVE_PROVIDER_LAYOUTS):
+        raise AdapterError(
+            "source closure must include a complete factorized-interaction native provider "
+            "with a header and implementation from the same source layout"
+        )
 
 
 def canonical_json(value: Any) -> str:

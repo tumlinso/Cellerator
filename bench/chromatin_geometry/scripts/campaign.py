@@ -36,6 +36,27 @@ def command(argv):
     return json.loads(p.stdout)
 
 
+def import_input(lane, name, source, expected_sha256=None):
+    # These campaign inputs are data. The verified build copy restores execute
+    # permission when it needs to run a frozen binary.
+    argv = ['autobench', 'input', 'import', '--project', str(lane), '--name', name,
+            '--file', str(source), '--non-executable']
+    if expected_sha256 is not None:
+        argv.extend(['--expected-sha256', expected_sha256])
+    imported = command(argv)
+    if expected_sha256 is not None and imported['identity'] != expected_sha256:
+        raise RuntimeError(f'imported {name} differs from its declared identity')
+    return Path(imported['path'])
+
+
+def input_path(lane, name):
+    local = lane / '.autobench/data' / name
+    if not (lane / '.autobench/state/array-inputs').exists() and local.is_file() and not local.is_symlink():
+        return local
+    result = command(['autobench', 'input', 'path', '--project', str(lane), '--name', name])
+    return Path(result['path'])
+
+
 def save(ledger):
     LEDGER.parent.mkdir(parents=True, exist_ok=True)
     tmp = LEDGER.with_name(LEDGER.name + '.tmp')
@@ -94,9 +115,7 @@ def initialize(args):
     scripts = lane / 'scripts'
     scripts.mkdir(exist_ok=True)
     shutil.copy2(STUDY / 'scripts/run_packet.py', scripts / 'run_packet.py')
-    closure = lane / '.autobench/data/closure.tar.gz'
-    closure.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(args.archive, closure)
+    closure = import_input(lane, 'closure.tar.gz', args.archive)
     preserve_archive(Path(args.archive))
     print(json.dumps({'lane': args.lane, 'lane_root': str(LANES), 'inactive': True, 'archive': str(closure)}))
 
@@ -120,15 +139,14 @@ def register(args):
         if file_sha256(args.archive) != args.archive_sha256:
             raise RuntimeError('new archive hash does not match its declared identity')
         preserve_archive(Path(args.archive))
-        lane_archive = lane / '.autobench/data/closure.tar.gz'
         if args.reuse_inputs:
-            if file_sha256(lane_archive) != args.archive_sha256:
+            if file_sha256(input_path(lane, 'closure.tar.gz')) != args.archive_sha256:
                 raise RuntimeError('existing lane input differs from requested source archive')
         else:
-            shutil.copyfile(args.archive, lane_archive)
+            import_input(lane, 'closure.tar.gz', args.archive, args.archive_sha256)
     # Input reuse never reuses a stale execution wrapper. Bind the live wrapper
     # to the archived reviewed bytes before copying it into the lane snapshot.
-    lane_archive = lane / '.autobench/data/closure.tar.gz'
+    lane_archive = input_path(lane, 'closure.tar.gz')
     with tarfile.open(lane_archive, 'r:gz') as tar:
         manifest = json.load(tar.extractfile('SOURCE-MANIFEST.json'))['files']
     wrapper = STUDY / 'scripts/run_packet.py'
@@ -158,8 +176,8 @@ def register(args):
             raise RuntimeError('interference config, qualified binary and source archive disagree')
         if args.suite == 'interference' and args.interference_mode == 'concurrent' and not args.barrier_id:
             raise RuntimeError('concurrent interference requires a shared barrier id')
-        shutil.copy2(args.frozen_binary, lane / '.autobench/data/frozen-binary')
-        shutil.copy2(args.frozen_build_receipt, lane / '.autobench/data/frozen-build.json')
+        import_input(lane, 'frozen-binary', args.frozen_binary, build['binary_sha256'])
+        import_input(lane, 'frozen-build.json', args.frozen_build_receipt)
     if args.suite == 'kda':
         if not args.interference_evidence or not args.contract_freeze:
             raise RuntimeError('KDA confirmation requires frozen workload/validator and interference evidence')
@@ -349,6 +367,32 @@ def preserve_build(staged):
     return str(receipt_destination.relative_to(STUDY))
 
 
+def worker_paths(lane, attempt_id, manifest):
+    if not attempt_id or Path(attempt_id).name != attempt_id or attempt_id in ('.', '..'):
+        raise RuntimeError('invalid packet attempt identity')
+    legacy_scratch = lane / '.autobench/scratch' / attempt_id
+    version = manifest.get('storage_version', 1)
+    if version == 1:
+        return legacy_scratch, None, None
+    if version != 2 or manifest.get('attempt_id') != attempt_id or Path(manifest['allowed_root']) != lane.resolve():
+        raise RuntimeError('packet storage manifest does not identify this lane and attempt')
+    fingerprint = manifest.get('source_fingerprint')
+    if not isinstance(fingerprint, str) or len(fingerprint) != 64 or any(c not in '0123456789abcdef' for c in fingerprint):
+        raise RuntimeError('packet storage manifest has no valid source fingerprint')
+    storage = command(['autobench', 'status', '--project', str(lane)])['storage']
+    staged = Path(storage['scratch']) / attempt_id
+    snapshot = Path(storage['run_inputs']) / attempt_id
+    identity = Path(storage['snapshots']) / fingerprint / 'manifest.json'
+    for key, expected in (('result_directory', staged), ('working_directory', snapshot),
+                          ('snapshot_manifest', identity)):
+        if not expected.is_absolute() or Path(manifest[key]) != expected or expected.resolve(strict=True) != expected:
+            raise RuntimeError(f'packet {key} is outside its verified storage location')
+    stored = json.loads(identity.read_text())
+    if stored.get('version') != 1 or not isinstance(stored.get('files'), dict):
+        raise RuntimeError('packet source manifest is not a supported array snapshot')
+    return staged, snapshot, stored['files']
+
+
 def settle(args):
     ledger = load()
     rows = [r for r in ledger['reservations'] if same_lane(r, args.lane) and r['state'] == 'submitted']
@@ -397,50 +441,64 @@ def settle(args):
         raise RuntimeError('cannot prove exactly one allocated GPU; retain reservation')
     # Autobench removes scratch after import and can evict older successful
     # evidence. Preserve every packet before any later reconciliation.
-    staged = lane_path(args.lane) / '.autobench/scratch' / row['attempt_id']
+    lane = lane_path(args.lane)
+    packet_manifest = lane / '.autobench/state/packets' / (row['attempt_id'] + '.json')
+    packet_details = json.loads(packet_manifest.read_text()) if packet_manifest.is_file() else {}
+    staged, stored_snapshot, stored_inputs = worker_paths(lane, row['attempt_id'], packet_details)
     result_file = staged / 'result.json'
     if not result_file.is_file():
         raise RuntimeError('terminal job lacks its worker result; retain reservation')
     worker = json.loads(result_file.read_text())
     row['worker_status'] = worker.get('status')
-    preserved = STUDY / 'runs/packets' / row['job_id']
-    preserved.parent.mkdir(parents=True, exist_ok=True)
-    if not preserved.exists():
-        shutil.copytree(staged, preserved)
-    packet_manifest = lane_path(args.lane) / '.autobench/state/packets' / (row['attempt_id'] + '.json')
-    packet_details = json.loads(packet_manifest.read_text()) if packet_manifest.is_file() else {}
     adapters = ('sanitize_chain.py', 'triage_binary.py', 'probe_packet.py')
     adapter_names = [name for name in adapters if any(str(x).endswith('/' + name) for x in packet_details.get('argv', []))]
     if len(adapter_names) > 1:
         raise RuntimeError('packet ambiguously identifies multiple private adapters')
     adapter_name = adapter_names[0] if adapter_names else 'run_packet.py'
-    if row.get('serialized_confirmation') or adapter_names:
+    retains_snapshot = bool(row.get('serialized_confirmation') or adapter_names)
+    if retains_snapshot:
         if not packet_manifest.is_file():
             raise RuntimeError('serialized job lacks its actual Autobench packet manifest')
         manifest = packet_details
         snapshot = Path(manifest['working_directory']).resolve(strict=True)
-        snapshot_root = (lane_path(args.lane) / '.autobench/state/snapshots').resolve(strict=True)
+        if stored_snapshot is None:
+            snapshot_root = (lane / '.autobench/state/snapshots').resolve(strict=True)
+            if snapshot.parent != snapshot_root:
+                raise RuntimeError('serialized job wrapper is not bound to its immutable snapshot')
+        elif snapshot != stored_snapshot:
+            raise RuntimeError('serialized job wrapper is not bound to its verified private snapshot')
         wrapper = snapshot / 'scripts' / adapter_name
-        if snapshot.parent != snapshot_root or Path(manifest['argv'][1]).resolve() != wrapper or not wrapper.is_file():
+        if Path(manifest['argv'][1]).resolve() != wrapper or not wrapper.is_file():
             raise RuntimeError('serialized job wrapper is not bound to its immutable snapshot')
-        shutil.copy2(packet_manifest, preserved / 'registered-command.json')
-        shutil.copy2(wrapper, preserved / 'runtime-wrapper.py')
         files = {}
         for item in sorted(snapshot.rglob('*')):
             if item.is_symlink():
                 raise RuntimeError('serialized snapshot contains a symlink')
             if item.is_file():
-                files[item.relative_to(snapshot).as_posix()] = file_sha256(item)
+                digest = file_sha256(item)
+                mode = item.stat().st_mode & 0o111 if stored_inputs is not None else 0
+                files[item.relative_to(snapshot).as_posix()] = f'{digest}:x{mode:03o}' if mode else digest
         fingerprint = hashlib.sha256('\n'.join(f'{name}\0{files[name]}' for name in sorted(files)).encode()).hexdigest()
-        if fingerprint != snapshot.name:
+        expected_fingerprint = snapshot.name if stored_inputs is None else manifest['source_fingerprint']
+        if fingerprint != expected_fingerprint or (stored_inputs is not None and files != stored_inputs):
             raise RuntimeError('independently reconstructed snapshot fingerprint differs from its identity')
+    preserved = STUDY / 'runs/packets' / row['job_id']
+    preserved.parent.mkdir(parents=True, exist_ok=True)
+    if not preserved.exists():
+        shutil.copytree(staged, preserved)
+    if retains_snapshot:
+        shutil.copy2(packet_manifest, preserved / 'registered-command.json')
+        shutil.copy2(wrapper, preserved / 'runtime-wrapper.py')
         source_manifest = preserved / 'snapshot-manifest.json'
+        origin = ('independently reconstructed from the private worker snapshot and verified against its array manifest'
+                  if stored_inputs is not None else
+                  'independently reconstructed from the retained immutable Autobench snapshot')
         source_manifest.write_text(json.dumps({'schema': 'cgs.reconstructed-snapshot.v1',
                                                'snapshot_id': fingerprint, 'files': files,
-                                               'origin': 'independently reconstructed from the retained immutable Autobench snapshot'}, indent=2) + '\n')
-        shutil.copy2(lane_path(args.lane) / 'registration.toml', preserved / 'registration.toml')
+                                               'origin': origin}, indent=2) + '\n')
+        shutil.copy2(lane / 'registration.toml', preserved / 'registration.toml')
         identity = {'schema': 'cgs.runtime-wrapper.v1', 'job_id': row['job_id'],
-                    'attempt_id': row['attempt_id'], 'snapshot_id': snapshot.name,
+                    'attempt_id': row['attempt_id'], 'snapshot_id': fingerprint,
                     'wrapper_sha256': file_sha256(wrapper),
                     'packet_manifest_sha256': file_sha256(packet_manifest),
                     'snapshot_manifest_sha256': file_sha256(source_manifest),

@@ -156,19 +156,19 @@ cpk1_fixture make_cpk1_fixture() {
     records.feature_block_geometry_identity =
         plan.feature_block_geometry_identity();
     records.full_row_count = 1u;
-    records.row_count = 1u;
-    records.feature_count = 1u;
-    records.feature_block_count = 1u;
-    records.nnz_count = 1u;
-    records.record_count = 1u;
+    records.layout.rows = 1u;
+    records.layout.features = 1u;
+    records.layout.feature_blocks = 1u;
+    records.layout.stored_values = 1u;
+    records.layout.row_blocks = 1u;
     records.value_size_bytes = sizeof(record_values[0]);
     records.feature_axis_fingerprint = 0x55u;
     records.feature_axis_fingerprint_version = 1u;
     records.row_domain_identity = 0x66u;
-    records.row_record_offsets = row_record_offsets;
-    records.record_block_ids = record_blocks;
-    records.record_gene_masks = record_masks;
-    records.record_value_offsets = record_value_offsets;
+    records.layout.row_block_offsets = row_record_offsets;
+    records.layout.block_ids = record_blocks;
+    records.layout.feature_masks = record_masks;
+    records.layout.row_block_value_offsets = record_value_offsets;
     records.values = record_values;
     require_status(cp::validate_cell_block_record_view_host(plan, records),
         "validate minimal CPK1 records");
@@ -216,8 +216,8 @@ cpk1_fixture make_cpk1_fixture() {
         order, tiles, {result.image.size(), result.image.data()}, &result.view),
         "build minimal CPK1 image");
     result.compatibility.global_row_begin = result.view.tiles.global_row_begin;
-    result.compatibility.row_count = result.view.tiles.row_count;
-    result.compatibility.feature_count = result.view.tiles.feature_count;
+    result.compatibility.row_count = result.view.tiles.layout.rows;
+    result.compatibility.feature_count = result.view.tiles.layout.features;
     result.compatibility.feature_axis_fingerprint =
         result.view.tiles.feature_axis_fingerprint;
     result.compatibility.feature_axis_fingerprint_version =
@@ -403,9 +403,29 @@ int main() {
         cpk1.compatibility, &loaded_cpk1),
         "load frozen CPK1 through CPE2 compatibility adapter");
     require(loaded_cpk1.payload_identity == cpk1.view.payload_identity
-        && loaded_cpk1.tiles.row_count == cpk1.view.tiles.row_count
+        && loaded_cpk1.tiles.layout.rows == cpk1.view.tiles.layout.rows
         && loaded_cpk1.tiles.tile_identity == cpk1.view.tiles.tile_identity,
         "CPE2 CPK1 adapter changed semantic or projection identity");
+    const std::vector<unsigned char> relocated_tiles(cpk1.image);
+    cp::persistent_packing_payload_view rebound_cpk1{};
+    require_status(cp::rebind_persistent_packing_payload(loaded_cpk1,
+        relocated_tiles.data(), relocated_tiles.size(), &rebound_cpk1), "rebind packed row tiles");
+    const auto *source_base = static_cast<const unsigned char *>(loaded_cpk1.image_base);
+    const auto rebased = [&](const void *pointer) -> const void * {
+        return relocated_tiles.data() + (static_cast<const unsigned char *>(pointer) - source_base);
+    };
+    const auto &source_layout = loaded_cpk1.tiles.layout;
+    const auto &rebound_layout = rebound_cpk1.tiles.layout;
+    require(rebound_layout.tile_block_offsets == rebased(source_layout.tile_block_offsets)
+        && rebound_layout.block_ids == rebased(source_layout.block_ids)
+        && rebound_layout.participating_row_masks == rebased(source_layout.participating_row_masks)
+        && rebound_layout.block_row_entry_offsets == rebased(source_layout.block_row_entry_offsets)
+        && rebound_layout.feature_masks == rebased(source_layout.feature_masks)
+        && rebound_layout.row_block_value_offsets == rebased(source_layout.row_block_value_offsets)
+        && rebound_layout.feature_block_offsets == rebased(source_layout.feature_block_offsets)
+        && rebound_layout.feature_block_offsets == rebound_cpk1.plan.feature_block_offsets
+        && rebound_cpk1.tiles.values == rebased(loaded_cpk1.tiles.values),
+        "packed row tile rebind must preserve every relative address");
     auto stale_cpk1 = cpk1.compatibility;
     stale_cpk1.payload_identity ^= 1u;
     require(!static_cast<bool>(px::load_cpk1_v1_compatibility_host(

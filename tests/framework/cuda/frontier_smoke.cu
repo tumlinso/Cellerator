@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/cuda/frontier.hh>
+#include <Cellerator/execution/dependency/frontier_cuda.hh>
 #include <cuda_runtime.h>
 #include <algorithm>
 #include <cassert>
@@ -12,7 +12,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace m = cellerator::modeling::cuda;
+namespace m = cellerator::execution::dependency::cuda;
 
 void check(cudaError_t status) {
     if (status != cudaSuccess) throw std::runtime_error(cudaGetErrorString(status));

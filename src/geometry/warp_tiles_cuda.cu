@@ -200,6 +200,10 @@ validation_result validate_cuda_metadata(
     u32 *tile_count_out) {
     validation_result status = plan.validate();
     if (!status) return status;
+    if (!packed_extents_fit(records)) {
+        return validation_error(validation_code::integer_overflow, invalid_id,
+            "CUDA cell-block record extents exceed the packed schema");
+    }
     if (records.record_schema_version != cell_block_record_schema_version
         || records.semantic_plan_schema_version != packing_plan_semantic_schema_version
         || records.geometry_identity_version != feature_block_geometry_identity_version
@@ -212,8 +216,8 @@ validation_result validate_cuda_metadata(
         || plan.maximum_feature_block_width() > cell_block_gene_mask_bits
         || records.feature_block_geometry_identity != plan.feature_block_geometry_identity()
         || records.full_row_count != plan.row_count()
-        || records.feature_count != plan.feature_count()
-        || records.feature_block_count != plan.feature_block_count()
+        || records.layout.features != plan.feature_count()
+        || records.layout.feature_blocks != plan.feature_block_count()
         || records.feature_axis_fingerprint != plan.identity().feature_axis_fingerprint
         || records.feature_axis_fingerprint_version
             != plan.identity().feature_axis_fingerprint_version
@@ -222,50 +226,50 @@ validation_result validate_cuda_metadata(
         || order.row_domain_identity != records.row_domain_identity
         || order.global_row_begin != records.global_row_begin
         || order.full_row_count != records.full_row_count
-        || order.row_count != records.row_count
-        || order.feature_block_count != records.feature_block_count
+        || order.row_count != records.layout.rows
+        || order.feature_block_count != records.layout.feature_blocks
         || order.ordering_identity == 0u) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "CUDA warp-tile plan, record, or order identity is incompatible");
     }
-    const u64 row_end = records.global_row_begin + static_cast<u64>(records.row_count);
+    const u64 row_end = records.global_row_begin + static_cast<u64>(records.layout.rows);
     if (row_end < records.global_row_begin || row_end > records.full_row_count
         || records.value_size_bytes == 0u || order.group_width == 0u
         || order.group_width > warp_tile_cell_mask_bits) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "CUDA warp-tile row domain, value width, or tile width is invalid");
     }
-    if (records.row_record_offsets == nullptr || records.record_value_offsets == nullptr
-        || (records.row_count != 0u && order.row_permutation == nullptr)
-        || (records.record_count != 0u
-            && (records.record_block_ids == nullptr || records.record_gene_masks == nullptr))
-        || (records.nnz_count != 0u && records.values == nullptr)) {
+    if (records.layout.row_block_offsets == nullptr || records.layout.row_block_value_offsets == nullptr
+        || (records.layout.rows != 0u && order.row_permutation == nullptr)
+        || (records.layout.row_blocks != 0u
+            && (records.layout.block_ids == nullptr || records.layout.feature_masks == nullptr))
+        || (records.layout.stored_values != 0u && records.values == nullptr)) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "CUDA warp-tile device input array is null");
     }
-    const u32 tile_count = records.row_count / order.group_width
-        + (records.row_count % order.group_width != 0u ? 1u : 0u);
+    const u32 tile_count = records.layout.rows / order.group_width
+        + (records.layout.rows % order.group_width != 0u ? 1u : 0u);
     if (tile_count >= static_cast<u32>(INT_MAX)
         || expected.tile_block_count >= static_cast<u32>(INT_MAX)
         || expected.row_block_entry_count >= static_cast<u32>(INT_MAX)
         || expected.tile_block_offset_count != static_cast<std::size_t>(tile_count) + 1u
         || expected.block_row_entry_offset_count
             != static_cast<std::size_t>(expected.tile_block_count) + 1u
-        || expected.row_block_entry_count != records.record_count
+        || expected.row_block_entry_count != records.layout.row_blocks
         || expected.row_block_value_offset_count
-            != static_cast<std::size_t>(records.record_count) + 1u
-        || expected.tile_block_count > records.record_count
-        || (records.record_count == 0u) != (expected.tile_block_count == 0u)) {
+            != static_cast<std::size_t>(records.layout.row_blocks) + 1u
+        || expected.tile_block_count > records.layout.row_blocks
+        || (records.layout.row_blocks == 0u) != (expected.tile_block_count == 0u)) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "CUDA warp-tile expected counts are inconsistent");
     }
-    if (records.nnz_count != 0u
+    if (records.layout.stored_values != 0u
         && records.value_size_bytes > std::numeric_limits<std::size_t>::max()
-            / records.nnz_count) {
+            / records.layout.stored_values) {
         return validation_error(validation_code::integer_overflow, invalid_id,
             "CUDA warp-tile value byte count overflows size_t");
     }
-    const std::size_t value_bytes = static_cast<std::size_t>(records.nnz_count)
+    const std::size_t value_bytes = static_cast<std::size_t>(records.layout.stored_values)
         * records.value_size_bytes;
     if (expected.value_bytes != value_bytes) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
@@ -329,8 +333,8 @@ validation_result validate_cuda_buffers(
         }
     }
     const void *inputs[] = {
-        records.row_record_offsets, records.record_block_ids, records.record_gene_masks,
-        records.record_value_offsets, records.values, order.row_permutation
+        records.layout.row_block_offsets, records.layout.block_ids, records.layout.feature_masks,
+        records.layout.row_block_value_offsets, records.values, order.row_permutation
     };
     for (const void *output : outputs) {
         if (output == nullptr) continue;
@@ -363,24 +367,24 @@ void set_cuda_view(
     result.ordering_identity = order.ordering_identity;
     result.global_row_begin = records.global_row_begin;
     result.full_row_count = records.full_row_count;
-    result.row_count = records.row_count;
-    result.feature_count = records.feature_count;
-    result.feature_block_count = records.feature_block_count;
-    result.tile_row_width = order.group_width;
-    result.tile_count = tile_count;
-    result.nnz_count = records.nnz_count;
-    result.tile_block_count = expected.tile_block_count;
-    result.row_block_entry_count = expected.row_block_entry_count;
+    result.layout.rows = records.layout.rows;
+    result.layout.features = records.layout.features;
+    result.layout.feature_blocks = records.layout.feature_blocks;
+    result.layout.tile_row_width = order.group_width;
+    result.layout.tiles = tile_count;
+    result.layout.stored_values = records.layout.stored_values;
+    result.layout.tile_blocks = expected.tile_block_count;
+    result.layout.row_block_entries = expected.row_block_entry_count;
     result.value_size_bytes = records.value_size_bytes;
     result.feature_axis_fingerprint = records.feature_axis_fingerprint;
     result.feature_axis_fingerprint_version = records.feature_axis_fingerprint_version;
     result.row_domain_identity = records.row_domain_identity;
-    result.tile_block_offsets = buffers.tile_block_offsets;
-    result.tile_block_ids = buffers.tile_block_ids;
-    result.tile_block_cell_masks = buffers.tile_block_cell_masks;
-    result.block_row_entry_offsets = buffers.block_row_entry_offsets;
-    result.row_block_gene_masks = buffers.row_block_gene_masks;
-    result.row_block_value_offsets = buffers.row_block_value_offsets;
+    result.layout.tile_block_offsets = buffers.tile_block_offsets;
+    result.layout.block_ids = buffers.tile_block_ids;
+    result.layout.participating_row_masks = buffers.tile_block_cell_masks;
+    result.layout.block_row_entry_offsets = buffers.block_row_entry_offsets;
+    result.layout.feature_masks = buffers.row_block_gene_masks;
+    result.layout.row_block_value_offsets = buffers.row_block_value_offsets;
     result.values = buffers.values;
     *out = result;
 }
@@ -467,9 +471,9 @@ validation_result build_warp_tiles_cuda(
     if (error != cudaSuccess) return cuda_failure("CUDA tile-count sentinel clear failed");
     if (tile_count != 0u) {
         count_tile_blocks_kernel<<<tile_count, warp_width, 0u, stream>>>(
-            tile_count, device_records.row_count, device_order.group_width,
-            device_order.row_permutation, device_records.row_record_offsets,
-            device_records.record_block_ids, workspace.tile_block_counts);
+            tile_count, device_records.layout.rows, device_order.group_width,
+            device_order.row_permutation, device_records.layout.row_block_offsets,
+            device_records.layout.block_ids, workspace.tile_block_counts);
         error = cudaPeekAtLastError();
         if (error != cudaSuccess) return cuda_failure("CUDA tile-union count launch failed");
     }
@@ -484,9 +488,9 @@ validation_result build_warp_tiles_cuda(
     if (error != cudaSuccess) return cuda_failure("CUDA descriptor-count sentinel clear failed");
     if (tile_count != 0u) {
         emit_tile_descriptors_kernel<<<tile_count, warp_width, 0u, stream>>>(
-            tile_count, device_records.row_count, device_order.group_width,
-            device_order.row_permutation, device_records.row_record_offsets,
-            device_records.record_block_ids, device_buffers.tile_block_offsets,
+            tile_count, device_records.layout.rows, device_order.group_width,
+            device_order.row_permutation, device_records.layout.row_block_offsets,
+            device_records.layout.block_ids, device_buffers.tile_block_offsets,
             device_buffers.tile_block_ids, device_buffers.tile_block_cell_masks,
             workspace.descriptor_row_counts, workspace.descriptor_tile_ids);
         error = cudaPeekAtLastError();
@@ -504,11 +508,11 @@ validation_result build_warp_tiles_cuda(
     if (expected.tile_block_count != 0u) {
         emit_row_block_entries_kernel<<<launch_blocks_for_warps(expected.tile_block_count),
             threads_per_block, 0u, stream>>>(
-            expected.tile_block_count, device_records.row_count, device_order.group_width,
+            expected.tile_block_count, device_records.layout.rows, device_order.group_width,
             workspace.descriptor_tile_ids, device_buffers.tile_block_ids,
             device_buffers.tile_block_cell_masks, device_buffers.block_row_entry_offsets,
-            device_order.row_permutation, device_records.row_record_offsets,
-            device_records.record_block_ids, device_records.record_gene_masks,
+            device_order.row_permutation, device_records.layout.row_block_offsets,
+            device_records.layout.block_ids, device_records.layout.feature_masks,
             workspace.source_record_indices, workspace.row_value_counts,
             device_buffers.row_block_gene_masks);
         error = cudaPeekAtLastError();
@@ -524,7 +528,7 @@ validation_result build_warp_tiles_cuda(
         copy_compact_values_kernel<<<launch_blocks_for_warps(expected.row_block_entry_count),
             threads_per_block, 0u, stream>>>(
             expected.row_block_entry_count, device_records.value_size_bytes,
-            workspace.source_record_indices, device_records.record_value_offsets,
+            workspace.source_record_indices, device_records.layout.row_block_value_offsets,
             static_cast<const unsigned char *>(device_records.values),
             device_buffers.row_block_value_offsets,
             static_cast<unsigned char *>(device_buffers.values));

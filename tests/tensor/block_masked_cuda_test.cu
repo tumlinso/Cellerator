@@ -1,3 +1,5 @@
+#include "block_masked_fixture.hh"
+
 #include <Cellerator/memory/cuda/resources.hh>
 #include <Cellerator/ops/mechanism/packed_gated_product.cuh>
 #include <Cellerator/tensor/block_masked/owner.hh>
@@ -13,6 +15,8 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+using cellerator::test::make_block_masked_structure;
 
 namespace mc = cellerator::memory::cuda;
 namespace bm = cellerator::tensor::block_masked;
@@ -41,7 +45,7 @@ void compare(const std::vector<float>& actual, const std::vector<double>& expect
             throw std::runtime_error(std::string(label) + " differs at " + std::to_string(i));
 }
 void check_host_buffer_admission() {
-    const auto structure = bm::Structure::from_rows(1, {{0}});
+    const auto structure = make_block_masked_structure(1, {{0}});
     float values[20]{};
     op::GatedProductGroup group{0, 1, 0, 1, 0, 0, 1};
     std::uint64_t argument = 0, offset = 0;
@@ -124,7 +128,7 @@ Reference reference(op::GatedProductTopologyView topology, std::uint64_t batch,
     return out;
 }
 void check_saved_backward_phase_reads(int device, const mc::Stream& stream) {
-    const auto structure = std::make_shared<const bm::Structure>(bm::Structure::from_rows(3, {{0, 1, 2}}));
+    const auto structure = make_block_masked_structure<true>(3, {{0, 1, 2}});
     const bm::DeviceStructure device_structure(structure, stream);
     const std::vector<float> x{2, 3, 4}, z{1, .5f, -2, .25f};
     const std::vector<float> theta{2, .5f}, phi{.5f, .25f}, tau{.25f, .5f}, dy{1, -.5f, 2};
@@ -219,11 +223,11 @@ int main(int argc, char** argv) {
     try {
         check_host_buffer_admission();
         if (argc > 1 && std::string(argv[1]) == "--host-only") {
-            const auto structure = bm::Structure::from_rows(4, {{0, 1, 2, 3}, {0, 1, 2, 3}}, 2, 2,
+            const auto structure = make_block_masked_structure(4, {{0, 1, 2, 3}, {0, 1, 2, 3}}, 2, 2,
                                                             {2, 0, 3, 1}, {1, 0});
             const auto offsets = op::prepare_coordinate_value_offsets(structure, 4);
             require(offsets.size() == 8 && offsets[0] != 0, "canonical map was inferred from position");
-            const auto partition=bm::Structure::from_rows(1,{{0},{0}},1,2,{0},{101,100});
+            const auto partition=make_block_masked_structure(1,{{0},{0}},1,2,{0},{101,100});
             require(op::prepare_coordinate_value_offsets(partition,1)[0]==1,"global row mapping failed");
             require(op::prepare_coordinate_value_offsets(partition,1,{101}).size()==1,"row subset rejected");
             rejects([&] { (void)op::prepare_coordinate_value_offsets(partition,1,{999}); });
@@ -235,16 +239,23 @@ int main(int argc, char** argv) {
         static_assert(!std::is_move_constructible<bm::DeviceStructure>::value,
                       "device metadata owners must remain pinned");
         {
-            auto mutable_structure=std::make_shared<bm::Structure>(bm::Structure::from_rows(2,{{0,1}},2,1,{1,0}));
-            const bm::DeviceStructure replica(mutable_structure,stream);
-            *mutable_structure=bm::Structure::from_rows(2,{{0,1}},2,1,{0,1});
-            require(replica.host().canonical_features()[0]==1,"mutable host alias changed uploaded identity");
-            auto moved=std::move(*mutable_structure); (void)moved;
-            require(replica.host().canonical_features().size()==2,"host move invalidated uploaded metadata");
+            static_assert(!std::is_copy_assignable<bm::Structure>::value);
+            static_assert(!std::is_move_constructible<bm::Structure>::value);
+            auto host = make_block_masked_structure<true>(2, {{0, 1}}, 2, 1, {1, 0});
+            const bm::DeviceStructure first(host, stream);
+            const bm::DeviceStructure second(host, stream);
+            require(&first.host() == host.get() && &second.host() == host.get(),
+                    "replicas must retain one immutable host image");
+            host.reset();
+            require(first.host().canonical_features().data[0] == 1,
+                    "replica must keep the immutable host image alive");
+            require(first.view().tile_block_offsets != second.view().tile_block_offsets
+                        && first.metadata_bytes() == second.metadata_bytes(),
+                    "replicas must have independent device storage with equal extents");
         }
         const std::uint64_t batch = 2, coordinates = 4;
-        const auto structure = std::make_shared<const bm::Structure>(bm::Structure::from_rows(
-            coordinates, {{0, 1, 2, 3}, {0, 1, 2, 3}}, 2, 2, {2, 0, 3, 1}, {1, 0}));
+        const auto structure = make_block_masked_structure<true>(
+            coordinates, {{0, 1, 2, 3}, {0, 1, 2, 3}}, 2, 2, {2, 0, 3, 1}, {1, 0});
         const auto device_structure = std::make_shared<const bm::DeviceStructure>(structure, stream);
         std::vector<float> x{0, 2, 1, 4, 2, -1, 1, 0.5f};
         const std::vector<float> z{1, 0.5f, -1, 0, 1, 0.5f, 1, 0};

@@ -2,12 +2,12 @@
 
 // Private fixed-topology experiment. The shared numerical helpers are included
 // unchanged; neither arm changes the public native implementation.
-#include "../../../../src/modeling/cuda/factorized_interaction_numerics.cuh"
+#include "../../../../src/ops/mechanism/factorized_interaction_numerics.cuh"
 
 namespace shared_product_circuit {
 
-using Accurate = cellerator::modeling::cuda::stable_detail::Accurate;
-namespace numerics = cellerator::modeling::cuda::stable_detail;
+using Accurate = cellerator::ops::mechanism::cuda::stable_detail::Accurate;
+namespace numerics = cellerator::ops::mechanism::cuda::stable_detail;
 constexpr int mechanisms = 8;
 constexpr int channels = 32;
 constexpr int threads = 128;

@@ -29,33 +29,36 @@ if(CELLERATOR_ENABLE_PYTHON)
     endif()
 endif()
 
+add_executable(cellerator_conditional_scheduler_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    ${PROJECT_SOURCE_DIR}/tests/framework/native/scheduler_test.cc)
+target_link_libraries(cellerator_conditional_scheduler_test PRIVATE Cellerator::conditional)
+add_executable(cellerator_conditional_scheduler_example ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    ${PROJECT_SOURCE_DIR}/examples/framework/native/scheduler_example.cc)
+target_link_libraries(cellerator_conditional_scheduler_example PRIVATE Cellerator::conditional)
+find_package(Threads REQUIRED)
+add_executable(cellerator_parameter_store_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    ${PROJECT_SOURCE_DIR}/tests/framework/native/parameter_store_test.cc)
+target_link_libraries(cellerator_parameter_store_test PRIVATE Cellerator::conditional Threads::Threads)
+add_executable(cellerator_conditional_parameter_execution_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    ${PROJECT_SOURCE_DIR}/tests/framework/native/conditional_parameter_execution_test.cc)
+target_link_libraries(cellerator_conditional_parameter_execution_test PRIVATE Cellerator::conditional Threads::Threads)
+add_executable(cellerator_conditional_dispatch_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    ${PROJECT_SOURCE_DIR}/tests/framework/native/conditional_dispatch_test.cc)
+target_link_libraries(cellerator_conditional_dispatch_test PRIVATE Cellerator::conditional)
+add_executable(cellerator_conditional_dispatch_example ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    ${PROJECT_SOURCE_DIR}/tests/framework/native/conditional_dispatch_example.cc)
+target_link_libraries(cellerator_conditional_dispatch_example PRIVATE Cellerator::conditional)
+
 if(CELLERATOR_BUILD_TESTS)
-    enable_testing()
-    add_executable(cellerator_conditional_scheduler_test
-        ${PROJECT_SOURCE_DIR}/tests/framework/native/scheduler_test.cc)
-    target_link_libraries(cellerator_conditional_scheduler_test PRIVATE Cellerator::conditional)
-    add_test(NAME cellerator_conditional_scheduler_test COMMAND cellerator_conditional_scheduler_test)
-    add_executable(cellerator_conditional_scheduler_example
-        ${PROJECT_SOURCE_DIR}/examples/framework/native/scheduler_example.cc)
-    target_link_libraries(cellerator_conditional_scheduler_example PRIVATE Cellerator::conditional)
-    add_test(NAME cellerator_conditional_scheduler_example COMMAND cellerator_conditional_scheduler_example)
-    find_package(Threads REQUIRED)
-    add_executable(cellerator_parameter_store_test
-        ${PROJECT_SOURCE_DIR}/tests/framework/native/parameter_store_test.cc)
-    target_link_libraries(cellerator_parameter_store_test PRIVATE Cellerator::conditional Threads::Threads)
-    add_test(NAME cellerator_parameter_store_test COMMAND cellerator_parameter_store_test)
-    add_executable(cellerator_conditional_parameter_execution_test
-        ${PROJECT_SOURCE_DIR}/tests/framework/native/conditional_parameter_execution_test.cc)
-    target_link_libraries(cellerator_conditional_parameter_execution_test PRIVATE Cellerator::conditional Threads::Threads)
-    add_test(NAME cellerator_conditional_parameter_execution_test COMMAND cellerator_conditional_parameter_execution_test)
-    add_executable(cellerator_conditional_dispatch_test
-        ${PROJECT_SOURCE_DIR}/tests/framework/native/conditional_dispatch_test.cc)
-    target_link_libraries(cellerator_conditional_dispatch_test PRIVATE Cellerator::conditional)
-    add_test(NAME cellerator_conditional_dispatch_test COMMAND cellerator_conditional_dispatch_test)
-    add_executable(cellerator_conditional_dispatch_example
-        ${PROJECT_SOURCE_DIR}/tests/framework/native/conditional_dispatch_example.cc)
-    target_link_libraries(cellerator_conditional_dispatch_example PRIVATE Cellerator::conditional)
-    add_test(NAME cellerator_conditional_dispatch_example COMMAND cellerator_conditional_dispatch_example)
+    foreach(check IN ITEMS
+            cellerator_conditional_scheduler_test
+            cellerator_conditional_scheduler_example
+            cellerator_parameter_store_test
+            cellerator_conditional_parameter_execution_test
+            cellerator_conditional_dispatch_test
+            cellerator_conditional_dispatch_example)
+        add_test(NAME ${check} COMMAND ${check})
+    endforeach()
     if(TARGET cellerator_conditional_python)
         add_test(NAME cellerator_conditional_engine_bridge_test
             COMMAND ${CMAKE_COMMAND} -E env

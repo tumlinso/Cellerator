@@ -1,14 +1,9 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <Cellerator/tensor/sequence/dna2.hh>
 
 #include <stdint.h>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_SEQUENCE_MOTIF_HD __host__ __device__ __forceinline__
-#else
-#define CELLERATOR_SEQUENCE_MOTIF_HD inline
-#endif
 
 namespace cellerator::ops::sequence {
 
@@ -46,7 +41,7 @@ bool dna2_normalize_motif32_exact(uint64_t packed, uint8_t length,
     uint8_t max_mismatches, uint16_t motif_id, motif32_exact *output) noexcept;
 bool dna2_valid_motif32_exact(const motif32_exact &motif) noexcept;
 
-CELLERATOR_SEQUENCE_MOTIF_HD uint8_t motif_mismatches(
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE uint8_t motif_mismatches(
     uint64_t word, motif32_exact motif) noexcept {
     const uint64_t x = word ^ motif.packed;
     const uint64_t different = (x | (x >> 1)) & motif.active_fields;
@@ -59,7 +54,7 @@ CELLERATOR_SEQUENCE_MOTIF_HD uint8_t motif_mismatches(
 
 // The view and motif must have passed their admission checks. A start past the
 // final full window or a window with any invalid base does not match.
-CELLERATOR_SEQUENCE_MOTIF_HD bool match_exact_at(
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE bool match_exact_at(
     tensor::sequence::BitPlanesView input, uint32_t anchor, motif32_exact motif) noexcept {
     namespace ts = tensor::sequence;
     if (!ts::valid_window(input, anchor, motif.length)) return false;
@@ -94,5 +89,3 @@ bool dna2_match_allowed_window(uint32_t low, uint32_t high, uint32_t validity_ma
     const motif32_allowed &motif, dna2_allowed_match_result *result) noexcept;
 
 } // namespace cellerator::ops::sequence
-
-#undef CELLERATOR_SEQUENCE_MOTIF_HD

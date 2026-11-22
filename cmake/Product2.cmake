@@ -7,7 +7,7 @@ option(CELLERATOR_BUILD_PRODUCT2 "Build standalone prepared product2 operation" 
 if(CELLERATOR_BUILD_PRODUCT2)
   add_library(cellerator_product2 SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/product2/product2.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/execution/program/program_v2.cc)
+    $<TARGET_OBJECTS:cellerator_fixed_stage_program>)
   add_library(Cellerator::product2 ALIAS cellerator_product2)
   target_compile_features(cellerator_product2 PUBLIC cxx_std_20)
   target_include_directories(cellerator_product2 PUBLIC
@@ -21,17 +21,16 @@ if(CELLERATOR_BUILD_PRODUCT2)
       ${PROJECT_SOURCE_DIR}/src/runtime)
     set_target_properties(cellerator_product2 PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED ON)
     target_compile_definitions(cellerator_product2 PUBLIC CELLERATOR_PRODUCT2_HAS_CUDA=1)
-    if(CELLERATOR_BUILD_TESTS)
-      enable_testing()
-      add_executable(cellerator_product2_cuda_smoke ${CMAKE_CURRENT_SOURCE_DIR}/tests/ops/product2/cuda_product2_smoke.cu)
-      target_link_libraries(cellerator_product2_cuda_smoke PRIVATE Cellerator::product2 CUDA::cudart CUDA::cuda_driver)
-      set_target_properties(cellerator_product2_cuda_smoke PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED ON)
-    endif()
+    add_executable(cellerator_product2_cuda_smoke ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+      ${CMAKE_CURRENT_SOURCE_DIR}/tests/ops/product2/cuda_product2_smoke.cu)
+    target_link_libraries(cellerator_product2_cuda_smoke PRIVATE Cellerator::product2 CUDA::cudart CUDA::cuda_driver)
+    set_target_properties(cellerator_product2_cuda_smoke PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED ON)
   endif()
+  add_executable(cellerator_product2_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/ops/product2/native_product2_test.cc)
+  target_link_libraries(cellerator_product2_test PRIVATE Cellerator::product2)
   if(CELLERATOR_BUILD_TESTS)
     enable_testing()
-    add_executable(cellerator_product2_test ${CMAKE_CURRENT_SOURCE_DIR}/tests/ops/product2/native_product2_test.cc)
-    target_link_libraries(cellerator_product2_test PRIVATE Cellerator::product2)
     add_test(NAME cellerator_product2_native COMMAND cellerator_product2_test)
   endif()
 endif()

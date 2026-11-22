@@ -1,13 +1,8 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <cstdint>
 #include <type_traits>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_GATED_PRODUCT_HD __host__ __device__
-#else
-#define CELLERATOR_GATED_PRODUCT_HD
-#endif
 
 namespace cellerator::ops::mechanism {
 
@@ -54,7 +49,7 @@ struct GateEvaluation {
 // The squared positive part is C1, including its zero first derivative at 0;
 // this contract makes no claim about second derivatives at that boundary.
 template<class T>
-CELLERATOR_GATED_PRODUCT_HD constexpr GateEvaluation<T> evaluate_gate(
+CELLERATOR_HOST_DEVICE constexpr GateEvaluation<T> evaluate_gate(
     T z0, T z1, T phi, T tau) noexcept {
     const T argument = z0 + phi * z1 - tau;
     if (argument <= T{0}) return {argument, T{0}, T{0}, true};
@@ -62,7 +57,7 @@ CELLERATOR_GATED_PRODUCT_HD constexpr GateEvaluation<T> evaluate_gate(
 }
 
 template<class T>
-CELLERATOR_GATED_PRODUCT_HD constexpr T gated_contribution(
+CELLERATOR_HOST_DEVICE constexpr T gated_contribution(
     T theta, const GateEvaluation<T>& gate, T product) noexcept {
     return gate.excluded ? T{0} : theta * gate.value * product;
 }
@@ -81,7 +76,7 @@ struct GatedProductPartials {
 // Consumers use prefix/suffix products, never product / x, so zeros and
 // repeated occurrences retain their derivatives.
 template<class T>
-CELLERATOR_GATED_PRODUCT_HD constexpr GatedProductPartials<T> local_partials(
+CELLERATOR_HOST_DEVICE constexpr GatedProductPartials<T> local_partials(
     T upstream, T theta, T phi, T z1, const GateEvaluation<T>& gate,
     T product) noexcept {
     if (gate.excluded) return {T{0}, T{0}, T{0}, T{0}, T{0}, T{0}};
@@ -96,5 +91,3 @@ static_assert(std::is_trivially_copyable_v<OutputIncidence>);
 static_assert(std::is_trivially_copyable_v<GatedProductTopologyView>);
 
 } // namespace cellerator::ops::mechanism
-
-#undef CELLERATOR_GATED_PRODUCT_HD

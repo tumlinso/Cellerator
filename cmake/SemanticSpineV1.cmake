@@ -16,17 +16,16 @@ add_library(cellerator_relation_gradient_cover STATIC
 target_include_directories(cellerator_relation_gradient_cover PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_compile_features(cellerator_relation_gradient_cover PUBLIC cxx_std_20)
 
-if(CELLERATOR_BUILD_TESTS)
-    add_executable(ceSpineCoreTest tests/semantic_spine/core/descriptor_test.cc)
-    target_link_libraries(ceSpineCoreTest PRIVATE Cellerator::relation_semantics)
-    target_compile_options(ceSpineCoreTest PRIVATE -UNDEBUG)
-    add_executable(ceSpineMathematicalDualityTest
-        tests/semantic_spine/core/mathematical_duality_test.cc)
-    target_compile_features(ceSpineMathematicalDualityTest PRIVATE cxx_std_20)
-    target_compile_options(ceSpineMathematicalDualityTest PRIVATE -UNDEBUG)
-    set_target_properties(ceSpineCoreTest ceSpineMathematicalDualityTest PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-endif()
+add_executable(ceSpineCoreTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    tests/semantic_spine/core/descriptor_test.cc)
+target_link_libraries(ceSpineCoreTest PRIVATE Cellerator::relation_semantics)
+target_compile_options(ceSpineCoreTest PRIVATE -UNDEBUG)
+add_executable(ceSpineMathematicalDualityTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    tests/semantic_spine/core/mathematical_duality_test.cc)
+target_compile_features(ceSpineMathematicalDualityTest PRIVATE cxx_std_20)
+target_compile_options(ceSpineMathematicalDualityTest PRIVATE -UNDEBUG)
+set_target_properties(ceSpineCoreTest ceSpineMathematicalDualityTest PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 # Repository-local native execution and source-origin bridge.
 # The semantic foundation remains available to the host-only configuration.
@@ -54,12 +53,12 @@ if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
         cellerator_relation_update_support
         Cellerator::feature_major_small_n_candidate
         Cellerator::transpose_backward_candidate CUDA::cudart)
+    target_link_libraries(cellerator_prepared_relation_cuda PRIVATE
+        Cellerator::csr_multiply Cellerator::feature_major_tiles_cuda CUDA::cusparse)
     target_compile_features(cellerator_prepared_relation_cuda PUBLIC cxx_std_20)
     set_target_properties(cellerator_prepared_relation_cuda PROPERTIES
         CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 
-    if(CELLERATOR_BUILD_TESTS)
-        include(tests/semantic_spine/CMakeLists.txt)
-    endif()
-    include(examples/semantic_spine_v1/CMakeLists.txt)
+    cellerator_include_checks(tests/semantic_spine/CMakeLists.txt)
+    cellerator_include_checks(examples/semantic_spine_v1/CMakeLists.txt)
 endif()

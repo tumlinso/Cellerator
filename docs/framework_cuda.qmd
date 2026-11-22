@@ -2,10 +2,10 @@
 title: "Framework CUDA runtime"
 ---
 
-The optional `Cellerator::framework_cuda` library supplies resource ownership,
-sparse dispatch and compact numerical state for the biological modeling
-framework. It is independent of Torch and the compiler's experimental runtime.
-It does not choose models, experts, scientific state semantics or GPU placement.
+The optional `Cellerator::framework_cuda` target groups CUDA resources,
+execution and numerical operation targets. It is independent of Torch and the
+compiler's experimental runtime. Callers choose models, experts, scientific
+state semantics and GPU placement.
 
 ## Build and evidence boundary
 
@@ -13,8 +13,11 @@ Enable `CELLERATOR_ENABLE_FRAMEWORK_CUDA=ON`. Add
 `CELLERATOR_ENABLE_FRAMEWORK_CUDA_PYTHON=ON` for the optional
 `cellerator._modeling_cuda` extension and
 `CELLERATOR_BUILD_FRAMEWORK_CUDA_SMOKE=ON` to compile the smoke executables.
-The native target links CUDA Runtime and cuBLAS. The Python option requires
-Python development headers and pybind11.
+The Python option requires Python development headers and pybind11. Installed
+consumers request the `framework_cuda` component and link the operation targets
+they use, such as `Cellerator::attention_cuda`, `Cellerator::grouped_linear_cuda`
+or `Cellerator::packed_embedding_cuda`. `Cellerator::framework_cuda` links all
+of the framework operations together. Grouped linear links cuBLAS.
 
 The implementation was compiled with CUDA 12.9, GCC 12 and SM70 in a focused
 CMake harness, including the C++ library, Python module and CUDA smoke
@@ -76,9 +79,12 @@ can block while freeing allocations with outstanding work.
 
 ## Immutable dispatch plans
 
-`Cellerator/modeling/cuda/plans.hh` provides `DispatchPlan`, an immutable owning
-device projection of `cellerator::execution::conditional::DispatchPlan`. The
-constructor uploads and validates expert-major origin slots, FP32 occurrence
+`Cellerator/execution/conditional/dispatch_cuda.hh` declares the immutable
+CUDA `DispatchPlan`, provided by `Cellerator::conditional_dispatch_cuda`. It
+owns the device projection of `cellerator::execution::conditional::DispatchPlan`.
+`Cellerator::dispatch_cuda` provides the borrowed-buffer gather and combine
+functions and their derivatives. The constructor uploads and validates
+expert-major origin slots, FP32 occurrence
 weights and the reverse occurrence lists. Host double weights are explicitly
 converted to FP32: finite rounding and underflow to zero are accepted, while
 overflow and nonfinite results are rejected. This is a chosen precision
@@ -89,7 +95,7 @@ structure serves multiple compatible value widths.
 Native callers may construct directly from a host plan:
 
 ```cpp
-namespace gpu = cellerator::modeling::cuda;
+namespace gpu = cellerator::execution::conditional::cuda;
 namespace mem = cellerator::memory::cuda;
 mem::Stream stream(device);
 gpu::DispatchPlan device_plan(host_dispatch_plan, stream);
@@ -268,7 +274,7 @@ wrappers or performance qualification are implied.
 
 [Parameter transfer](framework_parameter_transfer.qmd) is a separate
 `Cellerator::framework_parameter_transfer` target linked to
-`Cellerator::framework_cuda` and `Cellerator::conditional`. Enable
+`Cellerator::memory_cuda` and `Cellerator::conditional`. Enable
 `CELLERATOR_ENABLE_FRAMEWORK_PARAMETER_TRANSFER=ON` after enabling the host
 conditional target; the option defaults on when that target already exists.
 The base CUDA numerical library remains independently usable.
@@ -279,8 +285,8 @@ A separate execution lease waits on upload, retains device storage through
 consumers and records their completion. Upload readiness and downstream-use
 completion are distinct. Memory accounting is explicit; the bridge neither
 selects a revision nor owns placement/admission decisions. Its export file is
-`CelleratorFrameworkParameterTransferTargets.cmake`; standalone installed
-consumers load the conditional and framework CUDA exports before that file.
+`CelleratorFrameworkParameterTransferTargets.cmake`. Installed consumers
+request the `framework_parameter_transfer` component to load its dependencies.
 
 ## Opt-in experimental alternatives
 

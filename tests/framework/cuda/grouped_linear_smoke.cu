@@ -1,4 +1,4 @@
-#include <Cellerator/modeling/cuda/grouped_linear.hh>
+#include <Cellerator/ops/matrix/grouped_linear_cuda.hh>
 #include <Cellerator/memory/cuda/resources.hh>
 
 #include <cuda_fp16.h>
@@ -18,7 +18,7 @@
 #include <vector>
 
 namespace {
-using namespace cellerator::modeling::cuda;
+using namespace cellerator::ops::matrix::cuda;
 namespace mem = cellerator::memory::cuda;
 
 template <class T> float as_float(T value) { return static_cast<float>(value); }
@@ -435,7 +435,7 @@ void host_reference_smoke() {
 }  // namespace
 
 int main(int argc, char** argv) {
-  using namespace cellerator::modeling::cuda;
+  using namespace cellerator::ops::matrix::cuda;
   if (argc < 2 || (std::string(argv[1]) != "--gpu" &&
                    std::string(argv[1]) != "--benchmark")) {
     host_reference_smoke();

@@ -60,30 +60,30 @@ const T* device_pointer(const void* base, Region region) noexcept {
 
 struct MinimalDirectDeviceLayout::State {
     struct Selection {
-        modeling::cuda::FactorizedInteractionProblem problem{};
+        ops::mechanism::cuda::FactorizedInteractionProblem problem{};
         int device = -1;
     };
 
     static Selection validate_selection(
         const MinimalDirectHostLayout& host_layout,
-        modeling::cuda::FactorizedInteractionProblem problem,
+        ops::mechanism::cuda::FactorizedInteractionProblem problem,
         int device, const memory::cuda::Stream& upload_stream) {
         if (device < 0)
             throw std::invalid_argument("direct control device must be nonnegative");
         if (upload_stream.device() != device)
             throw std::invalid_argument("direct control upload stream/device mismatch");
-        modeling::cuda::FactorizedInteractionBackend selected{};
+        ops::mechanism::cuda::FactorizedInteractionBackend selected{};
         const auto status = host_layout.backend_for(problem, &selected);
         if (status != cudaSuccess)
             throw std::invalid_argument("direct control backend query rejected the problem");
-        if (selected != modeling::cuda::FactorizedInteractionBackend::direct)
+        if (selected != ops::mechanism::cuda::FactorizedInteractionBackend::direct)
             throw std::invalid_argument(
                 "minimal direct layout cannot serve the shared stable backend");
         return {problem, device};
     }
 
     State(const MinimalDirectHostLayout& host_layout,
-          modeling::cuda::FactorizedInteractionProblem selected_problem,
+          ops::mechanism::cuda::FactorizedInteractionProblem selected_problem,
           int selected_device,
           const memory::cuda::Stream& upload_stream)
         : State(host_layout,
@@ -131,7 +131,7 @@ struct MinimalDirectDeviceLayout::State {
         }
     }
 
-    modeling::cuda::FactorizedInteractionProblem problem{};
+    ops::mechanism::cuda::FactorizedInteractionProblem problem{};
     int device = -1;
     cudaStream_t upload_stream_handle = nullptr;
     memory::cuda::DeviceBuffer storage;
@@ -143,7 +143,7 @@ struct MinimalDirectDeviceLayout::State {
 
 MinimalDirectDeviceLayout::MinimalDirectDeviceLayout(
     const MinimalDirectHostLayout& host,
-    modeling::cuda::FactorizedInteractionProblem problem,
+    ops::mechanism::cuda::FactorizedInteractionProblem problem,
     int device, const memory::cuda::Stream& upload_stream)
     : state_(std::make_unique<State>(host, problem, device, upload_stream)) {}
 
@@ -159,7 +159,7 @@ const layout::FactorizedInteractionView& MinimalDirectDeviceLayout::view() const
 }
 
 bool MinimalDirectDeviceLayout::accepts(
-    modeling::cuda::FactorizedInteractionProblem problem) const noexcept {
+    ops::mechanism::cuda::FactorizedInteractionProblem problem) const noexcept {
     return state_ && state_->problem.cells == problem.cells &&
            state_->problem.channels == problem.channels;
 }

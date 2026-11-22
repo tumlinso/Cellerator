@@ -208,7 +208,7 @@ void run_exact_case(const cp::frozen_packing_plan &plan, const host_source &host
     require_status(cp::build_cell_block_records_cuda(
         plan, device_source, exact.record_count, workspace, output, stream, &device_records),
         "build CUDA records");
-    require(device_records.row_record_offsets == d_output_rows.get()
+    require(device_records.layout.row_block_offsets == d_output_rows.get()
             && device_records.values == d_output_values.get()
             && device_records.feature_block_geometry_identity == plan.feature_block_geometry_identity(),
         "CUDA result view does not expose caller-owned device storage or identity");
@@ -242,10 +242,10 @@ void run_exact_case(const cp::frozen_packing_plan &plan, const host_source &host
     require(actual.values == oracle.values, "CPU/CUDA value bytes differ");
 
     actual.view = device_records;
-    actual.view.row_record_offsets = actual.rows.data();
-    actual.view.record_block_ids = actual.blocks.data();
-    actual.view.record_gene_masks = actual.masks.data();
-    actual.view.record_value_offsets = actual.values_offsets.data();
+    actual.view.layout.row_block_offsets = actual.rows.data();
+    actual.view.layout.block_ids = actual.blocks.data();
+    actual.view.layout.feature_masks = actual.masks.data();
+    actual.view.layout.row_block_value_offsets = actual.values_offsets.data();
     actual.view.values = actual.values.data();
     require_status(cp::validate_cell_block_record_view_host(plan, actual.view),
         "validate downloaded CUDA records");

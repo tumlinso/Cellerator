@@ -1,4 +1,5 @@
 # Selectable build projection of actual CE owners. This is not a runtime registry.
+include("${CMAKE_CURRENT_LIST_DIR}/../CelleratorRetiredComponents.cmake")
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 get_filename_component(CE_SUBSTRATE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
@@ -178,14 +179,13 @@ foreach(component IN LISTS _ce_selected)
 endforeach()
 # Public native headers are installed intact. Header presence is not a claim that
 # every declared GPU/adapter symbol is linked by a selected host component.
-foreach(dir IN ITEMS bindings biology cells common compute containers
-    examples execution geometry interop layout math memory modeling nn ops packing
+foreach(dir IN ITEMS bindings biology common compute containers
+    examples execution geometry interop layout math memory nn ops packing
     planner profiling runtime state structure tensor)
   install(DIRECTORY "${CE_SUBSTRATE_ROOT}/include/Cellerator/${dir}"
-      DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
+      DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" PATTERN "cellshard" EXCLUDE)
 endforeach()
-install(FILES "${CE_SUBSTRATE_ROOT}/include/Cellerator/Cellerator.hh"
-    "${CE_SUBSTRATE_ROOT}/include/Cellerator/cell.hh"
+install(FILES
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/nn.hh"
     "${CE_SUBSTRATE_ROOT}/include/Cellerator/parameters.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")

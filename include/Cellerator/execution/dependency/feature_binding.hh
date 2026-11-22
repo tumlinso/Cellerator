@@ -32,12 +32,6 @@ public:
     const std::vector<std::int64_t>& source_positions() const noexcept {
         return source_positions_;
     }
-    const std::vector<std::int64_t>& gather_positions() const noexcept {
-        return source_positions_;
-    }
-    const std::vector<std::int64_t>& output_columns() const noexcept {
-        return source_positions_;
-    }
     const std::vector<std::optional<std::int64_t>>& canonical_indices() const noexcept {
         return canonical_indices_;
     }

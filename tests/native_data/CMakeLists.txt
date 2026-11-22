@@ -49,6 +49,9 @@ cellerator_add_native_data_test(
     cellerator_native_data_block_masked_test block_masked
     tests/tensor/block_masked_test.cc Cellerator::block_masked 17)
 cellerator_add_native_data_test(
+    celleratorFeatureMajorTilesHostTest feature_major_tiles
+    tests/tensor/feature_major_tiles_host_test.cc Cellerator::layout 20)
+cellerator_add_native_data_test(
     cellerator_native_data_dependency_execution_test dependency_execution
     tests/execution_dependency/distributed_binding_test.cc
     Cellerator::dependency_execution 20)
@@ -65,29 +68,15 @@ set_tests_properties(native_data_condition_index PROPERTIES
 list(APPEND _cellerator_native_data_test_targets
     cellerator_native_data_condition_index_test)
 
-if(TARGET Cellerator::modeling)
-    function(cellerator_add_native_data_modeling_test target test_name source)
-        add_executable(${target} "${PROJECT_SOURCE_DIR}/${source}")
-        target_compile_features(${target} PRIVATE cxx_std_20)
-        target_link_libraries(${target} PRIVATE
-            Cellerator::native_data Cellerator::modeling)
-        add_test(NAME "native_data_${test_name}" COMMAND ${target})
-        set_tests_properties("native_data_${test_name}" PROPERTIES
-            LABELS "native_data" TIMEOUT 60)
-        set(_cellerator_native_data_test_targets
-            ${_cellerator_native_data_test_targets} ${target} PARENT_SCOPE)
-    endfunction()
-
-    cellerator_add_native_data_modeling_test(
-        cellerator_native_data_sparse_modeling_test sparse_modeling
-        tests/framework/native/sparse_modeling_test.cc)
-    cellerator_add_native_data_modeling_test(
-        cellerator_native_data_incremental_test incremental
-        tests/framework/native/incremental_test.cc)
-    cellerator_add_native_data_modeling_test(
-        cellerator_native_data_cell_relation_example cell_relation_example
-        tests/framework/native/cell_relation_example.cc)
-endif()
+cellerator_add_native_data_test(
+    cellerator_native_data_sparse_modeling_test sparse_modeling
+    tests/framework/native/sparse_modeling_test.cc Cellerator::dependency_execution 20)
+cellerator_add_native_data_test(
+    cellerator_native_data_incremental_test incremental
+    tests/framework/native/incremental_test.cc Cellerator::dependency_execution 20)
+cellerator_add_native_data_test(
+    cellerator_native_data_cell_relation_example cell_relation_example
+    tests/framework/native/cell_relation_example.cc Cellerator::dependency_execution 20)
 
 add_custom_target(cellerator_native_data_tests
     DEPENDS ${_cellerator_native_data_test_targets})

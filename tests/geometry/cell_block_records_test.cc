@@ -1,5 +1,5 @@
 #include "Cellerator/geometry/cell_block_records.hh"
-#include <Cellerator/interop/formats/cellpack.hh>
+#include <Cellerator/geometry/persistence/packed_tensor_views.hh>
 
 #include <algorithm>
 #include <cstdint>
@@ -140,9 +140,15 @@ void test_exact_host_contract() {
     const cellpack::frozen_packing_plan plan = make_fixture_plan();
     const ordered_fixture fixture;
     const record_storage records = build_records(plan, fixture.view());
-    const auto native = cellerator::interop::formats::borrow_validated_cellpack_records<u64>(plan, records.view, plan.feature_block_offsets());
+    cellerator::tensor::block_masked::RowView<const u64> native;
+    require_status(cellerator::geometry::bind_packed_row_records(plan, records.view,
+        nullptr, &native), "bind native row records");
+    const auto& packed = records.view.layout;
     require(native.values == records.view.values &&
-            native.layout.row_block_offsets == records.view.row_record_offsets &&
+            native.layout.row_block_offsets == packed.row_block_offsets &&
+            native.layout.block_ids == packed.block_ids &&
+            native.layout.feature_masks == packed.feature_masks &&
+            native.layout.row_block_value_offsets == packed.row_block_value_offsets &&
             native.layout.feature_block_offsets == plan.feature_block_offsets(),
         "native record import copied or detached payload/maps");
     require(native.layout.stored_values == fixture.values.size(), "native record import count mismatch");
@@ -289,37 +295,42 @@ void test_validation_failures() {
     bad_view.feature_block_geometry_identity ^= 1u;
     require(!cellpack::validate_cell_block_record_view_host(plan, bad_view),
         "wrong feature-block geometry identity was accepted");
+    bad_view = valid.view;
+    bad_view.layout.row_blocks = uint64_t{UINT32_MAX} + 1u;
+    require(cellpack::validate_cell_block_record_view_host(plan, bad_view).code
+            == cellpack::validation_code::integer_overflow,
+        "oversized row record count was accepted");
     std::vector<u32> bad_masks = valid.masks;
     bad_masks[0] = 4u;
     bad_view = valid.view;
-    bad_view.record_gene_masks = bad_masks.data();
+    bad_view.layout.feature_masks = bad_masks.data();
     require(!cellpack::validate_cell_block_record_view_host(plan, bad_view),
         "gene mask outside block width was accepted");
     std::vector<u32> bad_value_offsets = valid.value_offsets;
     ++bad_value_offsets[1];
     bad_view = valid.view;
-    bad_view.record_value_offsets = bad_value_offsets.data();
+    bad_view.layout.row_block_value_offsets = bad_value_offsets.data();
     require(!cellpack::validate_cell_block_record_view_host(plan, bad_view),
         "mask/value rank mismatch was accepted");
 
     std::vector<u32> bad_row_offsets = valid.row_offsets;
     bad_row_offsets[2] = bad_row_offsets[1] - 1u;
     bad_view = valid.view;
-    bad_view.row_record_offsets = bad_row_offsets.data();
+    bad_view.layout.row_block_offsets = bad_row_offsets.data();
     require(!cellpack::validate_cell_block_record_view_host(plan, bad_view),
         "nonmonotonic row-to-record offsets were accepted");
 
     bad_value_offsets = valid.value_offsets;
     --bad_value_offsets.back();
     bad_view = valid.view;
-    bad_view.record_value_offsets = bad_value_offsets.data();
+    bad_view.layout.row_block_value_offsets = bad_value_offsets.data();
     require(!cellpack::validate_cell_block_record_view_host(plan, bad_view),
         "wrong terminal value offset was accepted");
 
     std::vector<u32> bad_blocks = valid.blocks;
     bad_blocks[1] = bad_blocks[0];
     bad_view = valid.view;
-    bad_view.record_block_ids = bad_blocks.data();
+    bad_view.layout.block_ids = bad_blocks.data();
     require(!cellpack::validate_cell_block_record_view_host(plan, bad_view),
         "duplicate row block id was accepted");
 

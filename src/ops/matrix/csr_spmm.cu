@@ -56,16 +56,13 @@ cudaError_t csr_spmm(Csr<const V> a, const X* x, int64_t ldx, int64_t n, Y* y,
     if (!s.rows || !n) return cudaSuccess;
     if (s.rows > INT32_MAX || n < 0) return cudaErrorInvalidValue;
     int64_t blocks = n/columns + (n%columns != 0);
-    if (blocks > max_grid_y) {
-        if constexpr (__is_same(V, __half)) return cudaErrorInvalidConfiguration;
-        dim3 grid{unsigned(s.rows), unsigned(max_grid_y)};
+    dim3 grid(unsigned(s.rows), unsigned(blocks <= max_grid_y ? blocks : max_grid_y));
+    if (blocks <= max_grid_y)
+        spmm<V, X, Y, false><<<grid, columns, 0, stream>>>(s.major_ptr, s.minor_idx, a.values,
+            uint32_t(s.rows), x, ldx, n, y, ldy, value_indices, alpha, beta);
+    else
         spmm<V, X, Y, true><<<grid, columns, 0, stream>>>(s.major_ptr, s.minor_idx, a.values,
             uint32_t(s.rows), x, ldx, n, y, ldy, value_indices, alpha, beta);
-        return cudaGetLastError();
-    }
-    dim3 grid{unsigned(s.rows), unsigned(blocks)};
-    spmm<V, X, Y, false><<<grid, columns, 0, stream>>>(s.major_ptr, s.minor_idx, a.values,
-        uint32_t(s.rows), x, ldx, n, y, ldy, value_indices, alpha, beta);
     return cudaGetLastError();
 }
 
@@ -78,13 +75,15 @@ cudaError_t csr_spmm_transpose(Csr<const __half> a, const float* x, int64_t ldx,
                               float* y, int64_t ldy, cudaStream_t stream) noexcept {
     const auto& s = a.structure;
     if (s.axis != tensor::base::CompressedAxis::row) return cudaErrorInvalidValue;
-    if (!s.rows || !s.cols || !n) return cudaSuccess;
+    if (!s.cols || !n) return cudaSuccess;
     if (s.rows > INT32_MAX || n < 0 || ldy < n || uint64_t(ldy) > SIZE_MAX/sizeof(float)/s.cols)
         return cudaErrorInvalidValue;
     int64_t blocks = n/columns + (n%columns != 0);
     if (blocks > max_grid_y) return cudaErrorInvalidConfiguration;
-    const auto status = cudaMemsetAsync(y, 0, s.cols*uint64_t(ldy)*sizeof(float), stream);
-    if (status != cudaSuccess) return status;
+    auto status = ldy == n
+        ? cudaMemsetAsync(y, 0, s.cols*uint64_t(n)*sizeof(float), stream)
+        : cudaMemset2DAsync(y, uint64_t(ldy)*sizeof(float), 0, uint64_t(n)*sizeof(float), s.cols, stream);
+    if (status != cudaSuccess || !s.rows) return status;
     dim3 grid(unsigned(s.rows), unsigned(blocks));
     spmm_transpose<<<grid, columns, 0, stream>>>(s.major_ptr, s.minor_idx, a.values,
         uint32_t(s.rows), x, ldx, n, y, ldy);

@@ -36,7 +36,7 @@ records report these limits; no allocation-free/capture claim is made.
 | M03 Sylvester | Original `trajectory/flow.py` and `trajectory/test_flow.py` in the [Moonshot archive](../../../docs/history/baseplane.md) | Differentiable Torch exponential reference for the declared local flow. |
 | M04 micro-MMA | Original `mma/quad` candidate in the [Moonshot archive](../../../docs/history/baseplane.md) | Recorded SM70 FP16-input/FP32-output fixture checks. |
 | M05 private ports | `process/ports.hh`; original `src/ops/process/ports_provider.cc` | Ragged contiguous FP32 transport, forward/VJP/JVP; local nonlinear law and scientific port interpretation stay with caller. |
-| M06 process product | `process/product.hh` aliases existing `compute/operation/product2/product2.hh` | Existing typed native prepared owner, FP32 forward/VJP/JVP, ordered/repeated arguments, canonical coefficients and generation admission. Link `Cellerator::product2`; no duplicate owner or new optimizer. Original SM70 process-packet candidate remains at `mma/product/product.cu` with its narrower receipt. |
+| M06 process product | `compute/operation/product2/product2.hh` | Existing typed native prepared owner, FP32 forward/VJP/JVP, ordered/repeated arguments, canonical coefficients and generation admission. Link `Cellerator::product2`. The original SM70 process-packet candidate remains at `mma/product/product.cu` with its narrower receipt. |
 
 The [Moonshot archive](../../../docs/history/baseplane.md) retains the SM70
 patch candidate and its original receipts. The maintained native Product2 CUDA
@@ -67,12 +67,8 @@ The native consumer executes scalar and noncommuting square patches plus ragged
 port transport against independently stated algebra. It checks all input and
 parameter finite differences for ports, shared patch parameter multiplicity,
 JVP/VJP duality, repeated zero-weight edge gradients, stale generations,
-unsupported policy/layout, aliases, bad topology and empty edges. Product2 is
-included through its actual public owner; fresh product2 and GPU qualification
-remain their original task's evidence, not inferred from this consumer.
+unsupported policy/layout, aliases, bad topology and empty edges. The fixture
+also checks that the canonical Product2 header compiles.
 
-Shared integration request: add `src/math/matrix` and `src/math/process` to the
-selected root build, export the two component targets through BUILD, and route
-any shared candidate registry changes through MERGE-A. Native implementation
-sources remain in their preserved experimental paths; the supported public
-entry path is the checked math header. No source outside this leaf was modified.
+The standalone gate and normal root build use the native owners in
+`src/ops/matrix` and `src/ops/process` directly.

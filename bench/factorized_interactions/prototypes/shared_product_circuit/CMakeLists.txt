@@ -17,10 +17,10 @@ add_executable(shared_product_circuit_runner
     circuit_runner.cu
     "${CELLERATOR_SOURCE_ROOT}/src/layout/factorized_interaction.cc"
     "${CELLERATOR_SOURCE_ROOT}/src/memory/cuda/resources.cu"
-    "${CELLERATOR_SOURCE_ROOT}/src/modeling/cuda/factorized_interaction.cu"
-    "${CELLERATOR_SOURCE_ROOT}/src/modeling/cuda/factorized_interaction_direct.cu"
-    "${CELLERATOR_SOURCE_ROOT}/src/modeling/cuda/factorized_interaction_stable.cu"
-    "${CELLERATOR_SOURCE_ROOT}/src/modeling/cuda/prepared_factorized_interaction.cu")
+    "${CELLERATOR_SOURCE_ROOT}/src/ops/mechanism/factorized_interaction.cu"
+    "${CELLERATOR_SOURCE_ROOT}/src/ops/mechanism/factorized_interaction_direct.cu"
+    "${CELLERATOR_SOURCE_ROOT}/src/ops/mechanism/factorized_interaction_stable.cu"
+    "${CELLERATOR_SOURCE_ROOT}/src/ops/mechanism/prepared_factorized_interaction.cu")
 target_include_directories(shared_product_circuit_runner PRIVATE
     "${CELLERATOR_SOURCE_ROOT}/include")
 target_compile_options(shared_product_circuit_runner PRIVATE

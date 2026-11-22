@@ -1,7 +1,8 @@
+#include "../src/ops/matrix/csr_multiply.cuh"
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <Cellerator/compute/operators/sparse/ops.hh>
 #include <Cellerator/compute/candidate/sparse/project.hh>
-#include <Cellerator/tensor/base/blocked_ell.cuh>
+#include "blocked_ell_fixture.cuh"
 #include <Cellerator/memory/cuda/shared_buffer.hh>
 #include "benchmark_mutex.hh"
 #include "cellerator_cuda_mode.hh"
@@ -9,19 +10,18 @@
 #include <cuda_fp16.h>
 
 #include <chrono>
-#include <algorithm>
 #include <cmath>
 #include <cstdint>
-#include <cstring>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 namespace runtime = ::cellerator::runtime;
 namespace memory_cuda = ::cellerator::memory::cuda;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
+namespace matrix_ops = ::cellerator::ops::matrix;
 namespace sparse_project = ::cellerator::compute::sparse::project;
 namespace base = ::cellerator::tensor::base;
 
@@ -184,63 +184,6 @@ csr_host_matrix make_host_matrix_for_cfg(const bench_config &cfg, std::uint32_t 
     return make_host_csr(cfg.rows, cfg.cols, cfg.nnz_per_row, column_seed);
 }
 
-bool build_blocked_ell_from_csr(const csr_host_matrix &src, std::uint32_t block_size, base::blocked_ell *dst) {
-    if (block_size == 0u) return false;
-    const std::uint32_t row_blocks = (src.rows + block_size - 1u) / block_size;
-    const std::uint32_t col_blocks = (src.cols + block_size - 1u) / block_size;
-    if (row_blocks == 0u || col_blocks == 0u) return false;
-
-    std::vector<std::vector<std::uint32_t>> block_cols(row_blocks);
-    std::vector<unsigned char> seen(col_blocks, 0u);
-    std::vector<std::uint32_t> touched;
-    std::uint32_t max_width = 1u;
-
-    for (std::uint32_t rb = 0u; rb < row_blocks; ++rb) {
-        touched.clear();
-        const std::uint32_t row_begin = rb * block_size;
-        const std::uint32_t row_end = std::min(src.rows, row_begin + block_size);
-        for (std::uint32_t row = row_begin; row < row_end; ++row) {
-            for (std::uint32_t off = src.major_ptr[row]; off < src.major_ptr[row + 1u]; ++off) {
-                const std::uint32_t cb = src.minor_idx[off] / block_size;
-                if (cb >= col_blocks || seen[cb]) continue;
-                seen[cb] = 1u;
-                touched.push_back(cb);
-            }
-        }
-        std::sort(touched.begin(), touched.end());
-        block_cols[rb] = touched;
-        max_width = std::max<std::uint32_t>(max_width, static_cast<std::uint32_t>(touched.size()));
-        for (std::uint32_t cb : touched) seen[cb] = 0u;
-    }
-
-    base::init(dst, src.rows, src.cols, src.nnz, block_size, max_width * block_size);
-    if (!base::allocate(dst)) return false;
-    for (std::size_t idx = 0; idx < static_cast<std::size_t>(row_blocks) * max_width; ++idx) {
-        dst->blockColIdx[idx] = base::blocked_ell_invalid_col;
-    }
-    std::memset(dst->val, 0, static_cast<std::size_t>(src.rows) * dst->ell_cols * sizeof(__half));
-
-    for (std::uint32_t rb = 0u; rb < row_blocks; ++rb) {
-        for (std::uint32_t slot = 0u; slot < block_cols[rb].size(); ++slot) {
-            dst->blockColIdx[static_cast<std::size_t>(rb) * max_width + slot] = block_cols[rb][slot];
-        }
-    }
-    for (std::uint32_t row = 0u; row < src.rows; ++row) {
-        const std::uint32_t rb = row / block_size;
-        for (std::uint32_t off = src.major_ptr[row]; off < src.major_ptr[row + 1u]; ++off) {
-            const std::uint32_t col = src.minor_idx[off];
-            const std::uint32_t cb = col / block_size;
-            const auto &cols = block_cols[rb];
-            const auto it = std::find(cols.begin(), cols.end(), cb);
-            if (it == cols.end()) continue;
-            const std::uint32_t slot = static_cast<std::uint32_t>(it - cols.begin());
-            const std::uint32_t local_col = col - cb * block_size;
-            dst->val[static_cast<std::size_t>(row) * dst->ell_cols + slot * block_size + local_col] = src.values[off];
-        }
-    }
-    return true;
-}
-
 std::unique_ptr<float[]> make_host_vector(std::uint32_t count, std::uint32_t seed) {
     auto out = std::make_unique<float[]>(count);
     for (std::uint32_t i = 0; i < count; ++i) {
@@ -307,7 +250,7 @@ void print_summary(const bench_config &cfg, double total_ms, std::uint64_t total
         << '\n';
 }
 
-void print_blocked_ell_meta(const base::blocked_ell &blocked, double convert_ms) {
+void print_blocked_ell_meta(const base::device::BlockedEllView &blocked, double convert_ms) {
     const double logical = static_cast<double>(blocked.nnz);
     const double resident = static_cast<double>(blocked.rows) * blocked.ell_cols;
     const double fill = resident > 0.0 ? logical / resident : 1.0;
@@ -316,7 +259,7 @@ void print_blocked_ell_meta(const base::blocked_ell &blocked, double convert_ms)
         << " convert_ms=" << convert_ms
         << " block_size=" << blocked.block_size
         << " ell_cols=" << blocked.ell_cols
-        << " ell_width_blocks=" << base::ell_width_blocks(&blocked)
+        << " ell_width_blocks=" << (blocked.ell_cols / blocked.block_size)
         << " fill_ratio=" << fill
         << '\n';
 }
@@ -339,15 +282,17 @@ void run_base_spmv(const bench_config &cfg) {
     values.upload_async(matrix.values.get(), matrix.nnz, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     dense.upload_async(vector.get(), cfg.cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(base setup)");
+    matrix_ops::Csr<const __half> csr{{cfg.rows, cfg.cols, matrix.nnz, base::CompressedAxis::row,
+        major_ptr.data(), minor_idx.data()}, values.data()};
 
     for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
-        sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, major_ptr.data(), minor_idx.data(), values.data(), cfg.rows, dense.data(), out.data());
+        runtime::cuda_require(matrix_ops::csr_spmv(csr, dense.data(), out.data(), ctx.stream), "csr_spmv");
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(base warmup)");
 
     const auto start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0; i < cfg.iters; ++i) {
-        sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, major_ptr.data(), minor_idx.data(), values.data(), cfg.rows, dense.data(), out.data());
+        runtime::cuda_require(matrix_ops::csr_spmv(csr, dense.data(), out.data(), ctx.stream), "csr_spmv");
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(base timed)");
     const auto stop = std::chrono::steady_clock::now();
@@ -374,15 +319,19 @@ void run_base_csr_spmm(const bench_config &cfg) {
     values.upload_async(matrix.values.get(), matrix.nnz, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     dense.upload_async(rhs.get(), static_cast<std::size_t>(cfg.cols) * cfg.out_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(csr spmm setup)");
+    matrix_ops::Csr<const __half> csr{{cfg.rows, cfg.cols, matrix.nnz, base::CompressedAxis::row,
+        major_ptr.data(), minor_idx.data()}, values.data()};
 
     for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
-        sparse_project::csr_spmm_fwd_f16_f32(ctx, major_ptr.data(), minor_idx.data(), values.data(), cfg.rows, cfg.cols, dense.data(), cfg.out_cols, cfg.out_cols, out.data(), cfg.out_cols);
+        runtime::cuda_require(matrix_ops::csr_spmm(csr, dense.data(), cfg.out_cols,
+            cfg.out_cols, out.data(), cfg.out_cols, ctx.stream), "csr_spmm");
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(csr spmm warmup)");
 
     const auto start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0; i < cfg.iters; ++i) {
-        sparse_project::csr_spmm_fwd_f16_f32(ctx, major_ptr.data(), minor_idx.data(), values.data(), cfg.rows, cfg.cols, dense.data(), cfg.out_cols, cfg.out_cols, out.data(), cfg.out_cols);
+        runtime::cuda_require(matrix_ops::csr_spmm(csr, dense.data(), cfg.out_cols,
+            cfg.out_cols, out.data(), cfg.out_cols, ctx.stream), "csr_spmm");
     }
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(csr spmm timed)");
     const auto stop = std::chrono::steady_clock::now();
@@ -397,20 +346,34 @@ void run_base_blocked_ell_spmm(const bench_config &cfg) {
 
     const csr_host_matrix matrix = make_host_matrix_for_cfg(cfg, 0u);
     const auto rhs = make_host_half_matrix(cfg.cols, cfg.out_cols, 7u);
-    base::blocked_ell blocked;
+    base::device::BlockedEllView blocked{};
+    std::unique_ptr<std::uint32_t[]> host_block_columns;
+    std::unique_ptr<__half[]> host_block_values;
     const auto convert_start = std::chrono::steady_clock::now();
-    base::init(&blocked);
-    require(build_blocked_ell_from_csr(matrix, cfg.block_size, &blocked), "blocked ell construction failed");
+    {
+        const base::CompressedView<std::uint32_t, const __half> csr{
+            {matrix.rows, matrix.cols, matrix.nnz, base::CompressedAxis::row,
+             matrix.major_ptr.get(), matrix.minor_idx.get()}, matrix.values.get()};
+        cellerator::bench::BlockedEllColumns columns;
+        const auto width = cellerator::bench::plan_blocked_ell_columns(csr.structure, cfg.block_size, columns);
+        require(width != 0u, "blocked ell construction failed");
+        blocked = {matrix.rows, matrix.cols, matrix.nnz, cfg.block_size, width * cfg.block_size, nullptr, nullptr};
+        host_block_columns.reset(new std::uint32_t[cellerator::bench::blocked_ell_index_count(blocked)]);
+        host_block_values.reset(new __half[std::size_t(blocked.rows) * blocked.ell_cols]);
+        blocked.blockColIdx = host_block_columns.get();
+        blocked.val = host_block_values.get();
+        cellerator::bench::fill_blocked_ell(csr, columns, blocked);
+    }
     const auto convert_stop = std::chrono::steady_clock::now();
 
-    auto block_col_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(base::row_block_count(&blocked)) * base::ell_width_blocks(&blocked), ctx.device);
+    auto block_col_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(cellerator::bench::blocked_ell_index_count(blocked), ctx.device);
     auto blocked_values = memory_cuda::SharedDeviceBuffer<__half>::allocate(static_cast<std::size_t>(blocked.rows) * blocked.ell_cols, ctx.device);
     auto dense = memory_cuda::SharedDeviceBuffer<__half>::allocate(static_cast<std::size_t>(cfg.cols) * cfg.out_cols, ctx.device);
     auto out = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(cfg.rows) * cfg.out_cols, ctx.device);
     runtime::cusparse_cache cache;
     runtime::init(&cache);
 
-    block_col_idx.upload_async(blocked.blockColIdx, static_cast<std::size_t>(base::row_block_count(&blocked)) * base::ell_width_blocks(&blocked), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    block_col_idx.upload_async(blocked.blockColIdx, cellerator::bench::blocked_ell_index_count(blocked), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     blocked_values.upload_async(blocked.val, static_cast<std::size_t>(blocked.rows) * blocked.ell_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     dense.upload_async(rhs.get(), static_cast<std::size_t>(cfg.cols) * cfg.out_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked ell spmm setup)");
@@ -430,7 +393,6 @@ void run_base_blocked_ell_spmm(const bench_config &cfg) {
 
     print_summary(cfg, elapsed_ms(start, stop), matrix.nnz, static_cast<std::uint64_t>(cfg.rows) * cfg.out_cols, 1u);
     runtime::clear(&cache);
-    base::clear(&blocked);
     runtime::clear(&ctx);
 }
 
@@ -476,22 +438,22 @@ void run_pair_row_spmv(const bench_config &cfg) {
     upload_on_device(device1, &values1, matrix1.values.get(), matrix1.nnz);
     upload_on_device(device1, &vector1, vector.get(), cfg.cols);
 
-    const std::uint32_t *major_ptrs[] = { major0.data(), major1.data() };
-    const std::uint32_t *minor_ptrs[] = { minor0.data(), minor1.data() };
-    const __half *value_ptrs[] = { values0.data(), values1.data() };
+    matrix_ops::Csr<const __half> csr[] = {
+        {{rows0, cfg.cols, matrix0.nnz, base::CompressedAxis::row, major0.data(), minor0.data()}, values0.data()},
+        {{rows1, cfg.cols, matrix1.nnz, base::CompressedAxis::row, major1.data(), minor1.data()}, values1.data()},
+    };
     const float *vector_ptrs[] = { vector0.data(), vector1.data() };
-    const std::uint32_t rows[] = { rows0, rows1 };
     float *out_ptrs[] = { out0.data(), out1.data() };
 
     runtime::synchronize_slots(fleet, slots, 2u);
     for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
-        sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 2u, major_ptrs, minor_ptrs, value_ptrs, rows, vector_ptrs, out_ptrs);
+        sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 2u, csr, vector_ptrs, out_ptrs);
     }
     runtime::synchronize_slots(fleet, slots, 2u);
 
     const auto start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0; i < cfg.iters; ++i) {
-        sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 2u, major_ptrs, minor_ptrs, value_ptrs, rows, vector_ptrs, out_ptrs);
+        sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 2u, csr, vector_ptrs, out_ptrs);
     }
     runtime::synchronize_slots(fleet, slots, 2u);
     const auto stop = std::chrono::steady_clock::now();
@@ -569,17 +531,19 @@ void run_fleet_feature_spmv(const bench_config &cfg) {
     upload_on_device(runtime::fleet_device_id(fleet, slots[3]), &values3, matrices[3].values.get(), matrices[3].nnz);
     upload_on_device(runtime::fleet_device_id(fleet, slots[3]), &vector3, vectors3.get(), cols_per_slot);
 
-    const std::uint32_t *major_ptrs[] = { major0.data(), major1.data(), major2.data(), major3.data() };
-    const std::uint32_t *minor_ptrs[] = { minor0.data(), minor1.data(), minor2.data(), minor3.data() };
-    const __half *value_ptrs[] = { values0.data(), values1.data(), values2.data(), values3.data() };
+    matrix_ops::Csr<const __half> csr[] = {
+        {{cfg.rows, cols_per_slot, matrices[0].nnz, base::CompressedAxis::row, major0.data(), minor0.data()}, values0.data()},
+        {{cfg.rows, cols_per_slot, matrices[1].nnz, base::CompressedAxis::row, major1.data(), minor1.data()}, values1.data()},
+        {{cfg.rows, cols_per_slot, matrices[2].nnz, base::CompressedAxis::row, major2.data(), minor2.data()}, values2.data()},
+        {{cfg.rows, cols_per_slot, matrices[3].nnz, base::CompressedAxis::row, major3.data(), minor3.data()}, values3.data()},
+    };
     const float *vector_ptrs[] = { vector0.data(), vector1.data(), vector2.data(), vector3.data() };
-    const std::uint32_t rows[] = { cfg.rows, cfg.rows, cfg.rows, cfg.rows };
     float *out_ptrs[] = { out0.data(), out1.data(), out2.data(), out3.data() };
     const float *partial_ptrs[] = { out0.data(), out1.data(), out2.data(), out3.data() };
 
     runtime::synchronize_slots(fleet, slots, 4u);
     for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
-        sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 4u, major_ptrs, minor_ptrs, value_ptrs, rows, vector_ptrs, out_ptrs);
+        sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 4u, csr, vector_ptrs, out_ptrs);
         sparse_ops::dist::reduce_sum_to_leader_f32(&fleet, slots, 4u, partial_ptrs, cfg.rows, reduced0.data());
     }
     const unsigned int leader_only[1] = { slots[0] };
@@ -587,7 +551,7 @@ void run_fleet_feature_spmv(const bench_config &cfg) {
 
     const auto start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0; i < cfg.iters; ++i) {
-        sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 4u, major_ptrs, minor_ptrs, value_ptrs, rows, vector_ptrs, out_ptrs);
+        sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 4u, csr, vector_ptrs, out_ptrs);
         sparse_ops::dist::reduce_sum_to_leader_f32(&fleet, slots, 4u, partial_ptrs, cfg.rows, reduced0.data());
     }
     runtime::synchronize_slots(fleet, leader_only, 1u);

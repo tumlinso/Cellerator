@@ -64,22 +64,27 @@ class prepared_mechanism_program;
 class mechanism_tape {
 public:
     ~mechanism_tape();
+    mechanism_tape(mechanism_tape&& other) noexcept;
     mechanism_tape(const mechanism_tape&) = delete;
     mechanism_tape& operator=(const mechanism_tape&) = delete;
     std::uint64_t batch() const;
+    void reset() noexcept;
 private:
     friend class prepared_mechanism_program;
-    struct implementation;
-    explicit mechanism_tape(std::unique_ptr<implementation>);
-    std::unique_ptr<implementation> impl_;
+    mechanism_tape(prepared_mechanism_program* program, std::uint32_t slot, std::uint64_t serial) noexcept;
+    prepared_mechanism_program* program_;
+    std::uint32_t slot_;
+    std::uint64_t serial_;
 };
 
 // One input biological axis and one output axis, batched over independent cells.
 // Every pointer passed to forward/backward must refer to device memory on the
 // coefficient owner's device; output and VJP buffers are FP32. The caller owns
 // dense buffers and tensor lifetimes. Input/output streams must use that device.
-// Capacity is reserved during prepare.
-class prepared_mechanism_program : public std::enable_shared_from_this<prepared_mechanism_program> {
+// Capacity is reserved during prepare. A tape borrows the program through
+// backward or discard. The caller retains the program and serializes use of
+// each tape. Destroying a live tape discards it.
+class prepared_mechanism_program {
 public:
     prepared_mechanism_program(mechanism_declaration declaration,
                               std::shared_ptr<mechanism_parameter_owner> parameters);
@@ -87,7 +92,7 @@ public:
     const mechanism_declaration& declaration() const;
     const std::shared_ptr<mechanism_parameter_owner>& parameters() const;
     std::size_t reserved_bytes() const;
-    std::shared_ptr<mechanism_tape> forward(
+    mechanism_tape forward(
         const void* input, bool input_half, std::uint64_t batch,
         const execution::persistent_axis_identity& input_axis,
         float* output, void* stream);

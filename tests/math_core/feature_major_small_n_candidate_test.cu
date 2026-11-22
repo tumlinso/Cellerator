@@ -208,24 +208,25 @@ struct host_source_fixture {
         payload.tiles.feature_block_geometry_identity = 0x100175u;
         payload.tiles.ordering_identity = 0x200275u;
         payload.tiles.full_row_count = 5u;
-        payload.tiles.row_count = 5u;
-        payload.tiles.feature_count = 4u;
-        payload.tiles.feature_block_count = 1u;
-        payload.tiles.tile_row_width = 4u;
-        payload.tiles.tile_count = 2u;
-        payload.tiles.nnz_count = 8u;
-        payload.tiles.tile_block_count = 2u;
-        payload.tiles.row_block_entry_count = 4u;
+        payload.tiles.layout.rows = 5u;
+        payload.tiles.layout.features = 4u;
+        payload.tiles.layout.feature_blocks = 1u;
+        payload.tiles.layout.tile_row_width = 4u;
+        payload.tiles.layout.tiles = 2u;
+        payload.tiles.layout.stored_values = 8u;
+        payload.tiles.layout.tile_blocks = 2u;
+        payload.tiles.layout.row_block_entries = 4u;
         payload.tiles.value_size_bytes = sizeof(__half);
         payload.tiles.feature_axis_fingerprint = 0x500575u;
         payload.tiles.feature_axis_fingerprint_version = 1u;
         payload.tiles.row_domain_identity = 0x300375u;
-        payload.tiles.tile_block_offsets = tile_offsets.data();
-        payload.tiles.tile_block_ids = tile_blocks.data();
-        payload.tiles.tile_block_cell_masks = cell_masks.data();
-        payload.tiles.block_row_entry_offsets = entry_offsets.data();
-        payload.tiles.row_block_gene_masks = gene_masks.data();
-        payload.tiles.row_block_value_offsets = value_offsets.data();
+        payload.tiles.layout.feature_block_offsets = feature_offsets.data();
+        payload.tiles.layout.tile_block_offsets = tile_offsets.data();
+        payload.tiles.layout.block_ids = tile_blocks.data();
+        payload.tiles.layout.participating_row_masks = cell_masks.data();
+        payload.tiles.layout.block_row_entry_offsets = entry_offsets.data();
+        payload.tiles.layout.feature_masks = gene_masks.data();
+        payload.tiles.layout.row_block_value_offsets = value_offsets.data();
         payload.tiles.values = values_a.data();
     }
 };
@@ -261,22 +262,23 @@ void test_exact_projection_and_value_reconstruction(
     const host_source_fixture &source,
     const projection_fixture &projection) {
     const auto &view = projection.host_view.layout;
-    require(view.header.feature_record_count == 6u
-        && view.header.nnz_count == 8u
-        && view.tile_feature_offsets[0] == 0u
-        && view.tile_feature_offsets[1] == 4u
-        && view.tile_feature_offsets[2] == 6u,
+    const auto &structure = view.structure;
+    require(structure.record_count == 6u
+        && structure.nnz == 8u
+        && structure.tile_offsets[0] == 0u
+        && structure.tile_offsets[1] == 4u
+        && structure.tile_offsets[2] == 6u,
         "feature-major record counts and tile offsets");
     const std::vector<cp::u32> expected_features{0u, 1u, 2u, 3u, 2u, 3u};
     const std::vector<cp::u32> expected_masks{0x9u, 0x4u, 0x5u, 0x4u, 0x1u, 0x1u};
     const std::vector<cp::u32> expected_value_offsets{0u, 2u, 3u, 5u, 6u, 7u, 8u};
     const std::vector<cp::u32> expected_source_positions{0u, 5u, 2u, 1u, 3u, 4u, 6u, 7u};
     require(std::equal(expected_features.begin(), expected_features.end(),
-            view.execution_feature_ids)
+            structure.feature_ids)
         && std::equal(expected_masks.begin(), expected_masks.end(),
-            view.participating_row_masks)
+            structure.row_masks)
         && std::equal(expected_value_offsets.begin(), expected_value_offsets.end(),
-            view.feature_value_offsets)
+            structure.value_offsets)
         && std::equal(expected_source_positions.begin(),
             expected_source_positions.end(), view.source_value_positions),
         "exact feature-major reconstruction");
@@ -491,6 +493,17 @@ void run_supported_boundary(std::uint32_t dense_width,
     require(execution::rebind_feature_major_binding(projection.host_view,
         device_payload.data, projection.payload.size(), &device_view),
         "rebind feature-major device projection");
+    const auto &tiles = device_view.layout.structure;
+    const auto &header = device_view.layout.header;
+    const auto pointer = [&](std::uint64_t offset) {
+        return reinterpret_cast<const std::uint32_t *>(device_payload.data + offset);
+    };
+    require(tiles.tile_offsets == pointer(header.tile_feature_offsets_offset)
+        && tiles.feature_ids == pointer(header.execution_feature_ids_offset)
+        && tiles.row_masks == pointer(header.participating_row_masks_offset)
+        && tiles.value_offsets == pointer(header.feature_value_offsets_offset)
+        && device_view.layout.source_value_positions == pointer(header.source_value_positions_offset),
+        "feature-major binding borrows all device payload arrays");
 
     std::vector<float> rhs(4u * dense_width);
     for (std::uint32_t feature = 0u; feature < 4u; ++feature)
@@ -557,7 +570,7 @@ void run_supported_boundary(std::uint32_t dense_width,
             == execution::output_update_kind::overwrite,
         "feature-major workspace, order, and output effect");
     const void *const prepared_state = prepared.persistent.data;
-    const void *const prepared_records = state.projection.layout.execution_feature_ids;
+    const void *const prepared_records = state.projection.layout.structure.feature_ids;
 
     execution::relation_structure relation{};
     relation.identity = projection.structure_handle;
@@ -646,7 +659,7 @@ void run_supported_boundary(std::uint32_t dense_width,
         "compare generation B referee");
     require(comparison.within_tolerance && comparison.mismatch_count == 0u
         && prepared.persistent.data == prepared_state
-        && state.projection.layout.execution_feature_ids == prepared_records,
+        && state.projection.layout.structure.feature_ids == prepared_records,
         "generation B parity and immutable prepared structure reuse");
 
     binding.expected_generation.value = 3u;
@@ -676,6 +689,17 @@ void run_supported_boundary(std::uint32_t dense_width,
     require(mismatched_status.code
             == core::operation_status_code::unsupported_problem,
         "mismatched feature-major ProjectionId rejection");
+    auto wrong_extent = device_view;
+    ++wrong_extent.layout.structure.rows;
+    const auto extent_status = medium_n
+        ? core::prepare_feature_major_cta_medium_n_operation(problem, structures,
+            projection_key, numeric(), policy, wrong_extent, device,
+            dense_width, feature_axis, row_axis, dense_axis, &rejected_state, &rejected)
+        : core::prepare_feature_major_small_n_operation(problem, structures,
+            projection_key, numeric(), policy, wrong_extent, device,
+            dense_width, feature_axis, row_axis, dense_axis, &rejected_state, &rejected);
+    require(extent_status.code == core::operation_status_code::unsupported_problem,
+        "mismatched feature-major bound extent rejection");
     core::operation_problem unsupported_problem = problem;
     const std::uint32_t below = medium_n ? 16u : 0u;
     const std::uint32_t above = medium_n ? 65u : 17u;

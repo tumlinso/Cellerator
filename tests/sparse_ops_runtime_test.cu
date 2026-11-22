@@ -4,11 +4,10 @@
 #include <Cellerator/compute/candidate/sparse/project.hh>
 #include <Cellerator/ops/quantized/api.cuh>
 #include <Cellerator/memory/cuda/shared_buffer.hh>
-#include <Cellerator/tensor/base/blocked_ell.cuh>
+#include <Cellerator/tensor/base/device_views.cuh>
 
 #include <cmath>
 #include <cstdint>
-#include <cstring>
 #include <stdexcept>
 #include <vector>
 
@@ -149,20 +148,20 @@ void check_csr_multiply_edges(const runtime::execution_context& ctx,
     const uint32_t row[] = {0, 3, 3}, col[] = {0, 0, 2};
     const __half w[] = {__float2half(1), __float2half(2), __float2half(4)};
     const float x[] = {5, 50, 99, 6, 60, 99, 7, 70, 99};
-    const float initial[] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+    const float initial[] = {-1, -1, -1, -1, -1, -1, -1, -1};
     auto drow = allocate_on_device<uint32_t>(ctx.device, 3);
     auto dcol = allocate_on_device<uint32_t>(ctx.device, 3);
     auto dw = allocate_on_device<__half>(ctx.device, 3);
     auto dx = allocate_on_device<float>(ctx.device, 9);
-    auto dy = allocate_on_device<float>(ctx.device, 9);
+    auto dy = allocate_on_device<float>(ctx.device, 8);
     drow.upload_async(row, 3, stream);
     dcol.upload_async(col, 3, stream);
     dw.upload_async(w, 3, stream);
     dx.upload_async(x, 9, stream);
-    dy.upload_async(initial, 9, stream);
+    dy.upload_async(initial, 8, stream);
 
     matrix_ops::Csr<const __half> a{{2, 3, 3, base::CompressedAxis::row, drow.data(), dcol.data()}, dw.data()};
-    float actual[9] = {};
+    float actual[8] = {};
     runtime::cuda_require(matrix_ops::csr_spmv(a, dx.data(), dy.data(), ctx.stream), "csr_spmv");
     download_and_wait(dy, actual, 2, stream);
     require(actual[0] == 411 && actual[1] == 0, "SpMV duplicate and empty row");
@@ -172,61 +171,17 @@ void check_csr_multiply_edges(const runtime::execution_context& ctx,
     const float expected[] = {43, 430, -1, -1, 0, 0, -1, -1};
     for (int i = 0; i != 8; ++i) require(actual[i] == expected[i], "SpMM duplicate, empty row, and padded stride");
 
-    dy.upload_async(initial, 9, stream);
+    dy.upload_async(initial, 8, stream);
     runtime::cuda_require(matrix_ops::csr_spmm_transpose(a, dx.data(), 3, 2, dy.data(), 3, ctx.stream),
                           "csr_spmm_transpose with padded output");
-    download_and_wait(dy, actual, 9, stream);
-    const float expected_transpose[] = {15, 150, 0, 0, 0, 0, 20, 200, 0};
-    for (int i = 0; i != 9; ++i) require(actual[i] == expected_transpose[i], "transpose clears output padding");
+    download_and_wait(dy, actual, 8, stream);
+    const float expected_transpose[] = {15, 150, -1, 0, 0, -1, 20, 200};
+    for (int i = 0; i != 8; ++i) require(actual[i] == expected_transpose[i], "transpose respects logical columns");
 
-    dy.upload_async(initial, 9, stream);
     matrix_ops::Csr<const __half> empty{{0, 3, 0, base::CompressedAxis::row, nullptr, nullptr}, nullptr};
     runtime::cuda_require(matrix_ops::csr_spmv_transpose(empty, nullptr, dy.data(), ctx.stream), "csr_spmv_transpose");
-    download_and_wait(dy, actual, 9, stream);
-    for (float value : actual) require(value == -1, "zero-row SpMV transpose changed output");
-    runtime::cuda_require(matrix_ops::csr_spmm_transpose(empty, nullptr, 3, 2, dy.data(), 3, ctx.stream),
-                          "csr_spmm_transpose");
-    download_and_wait(dy, actual, 9, stream);
-    for (float value : actual) require(value == -1, "zero-row SpMM transpose changed output");
-
-    // Reuse one device slot so preflight is tested on a valid first operand
-    // and a rectangular CSC second operand even with a one-device lease.
-    runtime::fleet_context fleet{};
-    int device = ctx.device;
-    cudaStream_t launch_stream = ctx.stream;
-    fleet.local.device_count = 1;
-    fleet.local.device_ids = &device;
-    fleet.local.streams = &launch_stream;
-    const unsigned slots[] = {0, 0};
-    const matrix_ops::Csr<const __half> views[] = {
-        a, {{3, 2, 3, base::CompressedAxis::column, drow.data(), dcol.data()}, dw.data()}
-    };
-    const float* inputs[] = {dx.data(), dx.data()};
-    float* outputs[] = {dy.data(), dy.data()};
-    const int64_t ld[] = {3, 3}, widths[] = {2, 2};
-    auto rejects_before_enqueue = [&](auto launch) {
-        bool rejected = false;
-        try {
-            launch();
-        } catch (const std::runtime_error& error) {
-            rejected = std::strstr(error.what(), "requires CSR views") != nullptr;
-        }
-        require(rejected, "fleet CSR launch accepted CSC");
-        download_and_wait(dy, actual, 9, stream);
-        for (float value : actual) require(value == -1, "fleet launch wrote output before axis rejection");
-    };
-    rejects_before_enqueue([&] {
-        sparse_ops::dist::launch_csr_spmv_fwd_f16_f32(&fleet, slots, 2, views, inputs, outputs);
-    });
-    rejects_before_enqueue([&] {
-        sparse_ops::dist::launch_csr_spmv_bwd_vector_f16_f32(&fleet, slots, 2, views, inputs, outputs);
-    });
-    rejects_before_enqueue([&] {
-        sparse_project::dist::launch_csr_spmm_fwd_f16_f32(&fleet, slots, 2, views, inputs, ld, widths, outputs, ld);
-    });
-    rejects_before_enqueue([&] {
-        sparse_ops::dist::launch_csr_spmm_bwd_rhs_f16_f32(&fleet, slots, 2, views, inputs, ld, widths, outputs, ld);
-    });
+    download_and_wait(dy, actual, 3, stream);
+    for (int i = 0; i != 3; ++i) require(actual[i] == 0, "empty transpose overwrites destination");
 }
 
 } // namespace
@@ -388,11 +343,9 @@ int main() {
     require(close_value(spmm_out_host[4], 5.0f), "spmm out 4 mismatch");
     require(close_value(spmm_out_host[5], 10.0f), "spmm out 5 mismatch");
 
-    base::blocked_ell blocked_host;
-    base::init(&blocked_host, 3u, 3u, 5u, 1u, 2u);
-    require(base::allocate(&blocked_host) != 0, "blocked ell runtime setup failed");
-    const std::uint32_t block_col_idx_host[] = { 0u, 2u, 1u, 2u, 0u, base::blocked_ell_invalid_col };
-    const __half blocked_values_host[] = {
+    constexpr std::size_t blocked_slots = 6u;
+    std::uint32_t block_col_idx_host[blocked_slots] = { 0u, 2u, 1u, 2u, 0u, base::blocked_ell_invalid_col };
+    __half blocked_values_host[blocked_slots] = {
         __float2half(1.0f),
         __float2half(2.0f),
         __float2half(3.0f),
@@ -400,12 +353,12 @@ int main() {
         __float2half(5.0f),
         __float2half(0.0f)
     };
-    std::memcpy(blocked_host.blockColIdx, block_col_idx_host, sizeof(block_col_idx_host));
-    std::memcpy(blocked_host.val, blocked_values_host, sizeof(blocked_values_host));
-    auto blocked_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(base::row_block_count(&blocked_host)) * base::ell_width_blocks(&blocked_host), ctx.device);
-    auto blocked_values = memory_cuda::SharedDeviceBuffer<__half>::allocate(static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols, ctx.device);
-    upload_and_wait(blocked_idx, blocked_host.blockColIdx, static_cast<std::size_t>(base::row_block_count(&blocked_host)) * base::ell_width_blocks(&blocked_host), transfer_stream);
-    upload_and_wait(blocked_values, blocked_host.val, static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols, transfer_stream);
+    const base::device::BlockedEllView blocked_host{
+        3u, 3u, 5u, 1u, 2u, block_col_idx_host, blocked_values_host};
+    auto blocked_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(blocked_slots, ctx.device);
+    auto blocked_values = memory_cuda::SharedDeviceBuffer<__half>::allocate(blocked_slots, ctx.device);
+    upload_and_wait(blocked_idx, blocked_host.blockColIdx, blocked_slots, transfer_stream);
+    upload_and_wait(blocked_values, blocked_host.val, blocked_slots, transfer_stream);
 
     auto blocked_spmm_ref = memory_cuda::SharedDeviceBuffer<float>::allocate(6, ctx.device);
     sparse_project::blocked_ell_spmm_fwd_f16_f32(
@@ -654,7 +607,6 @@ int main() {
     }
 
     runtime::clear(&blocked_cache);
-    base::clear(&blocked_host);
 
     auto spmm_grad_values = memory_cuda::SharedDeviceBuffer<float>::allocate(5, ctx.device);
     sparse_ops::base::csr_spmm_bwd_values_f16_f32(

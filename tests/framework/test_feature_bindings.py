@@ -194,20 +194,13 @@ class GeneVocabularyBindingTests(unittest.TestCase):
             FeatureEncoder(17, 6, value_size=None, binding=binding)
 
 
-class AnnDataBindingTests(unittest.TestCase):
-    def test_sparse_anndata_features_align_by_binding_identity(self):
+class SparseBindingTests(unittest.TestCase):
+    def test_sparse_features_align_by_binding_identity(self):
         try:
             from scipy import sparse
         except ImportError as exc:
             self.skipTest(f"optional SciPy sparse support is unavailable: {exc}")
-        from cellerator.adapters.anndata import from_adata_bound
-
-        class FakeAnnData:
-            obs_names = ("cell-1", "cell-2")
-            var_names = ("symbol-b", "unmodeled", "gene-a")
-            layers = {}
-            raw = None
-            X = sparse.csr_matrix([[2.0, 99.0, 1.0], [3.0, 98.0, 4.0]])
+        values = sparse.csr_matrix([[2.0, 99.0, 1.0], [3.0, 98.0, 4.0]])
 
         binding = FeatureBinding.from_ids(
             ("gene-a", "gene-b"),
@@ -216,15 +209,13 @@ class AnnDataBindingTests(unittest.TestCase):
             aliases={"gene-b": ("symbol-b",)},
             unknown_policy="drop",
         )
-        view, alignment = from_adata_bound(
-            FakeAnnData(), binding, requested_ids=("gene-b", "gene-a")
-        )
-        self.assertEqual(view.feature_ids, ("gene-b", "gene-a"))
-        self.assertEqual(view.cell_ids, ("cell-1", "cell-2"))
-        self.assertTrue(sparse.issparse(view.values))
-        self.assertEqual(view.values.getformat(), "csr")
+        alignment = binding.prepare(("symbol-b", "unmodeled", "gene-a"), ("gene-b", "gene-a"))
+        aligned = alignment.gather(values, axis=1)
+        self.assertEqual(alignment.requested_ids, ("gene-b", "gene-a"))
+        self.assertTrue(sparse.issparse(aligned))
+        self.assertEqual(aligned.getformat(), "csr")
         self.assertEqual(alignment.source_positions, (0, 2))
-        self.assertEqual(view.values.toarray().tolist(), [[2.0, 1.0], [3.0, 4.0]])
+        self.assertEqual(aligned.toarray().tolist(), [[2.0, 1.0], [3.0, 4.0]])
 
 
 class PredictionRecordTests(unittest.TestCase):

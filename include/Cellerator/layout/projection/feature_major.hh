@@ -2,6 +2,7 @@
 
 #include <Cellerator/layout/projection/csr.hh>
 #include <Cellerator/structure/identity.hh>
+#include <Cellerator/tensor/feature_major_tiles.hh>
 
 #include <Cellerator/memory/workspace.hh>
 
@@ -81,17 +82,27 @@ struct feature_major_projection_buffer {
     std::size_t capacity_bytes = 0u;
 };
 
-// Hot typed view. Runtime handles are deliberately outside persistent bytes;
-// they are rebound by the owning projection catalog/session.
+// Bound projection metadata. The tensor structure holds the array addresses
+// and extents used by calculations. The header preserves the serialized schema.
 struct FeatureMajorViewV1 {
     FeatureMajorLayoutV1 header{};
     const void *payload_base = nullptr;
-    const u32 *tile_feature_offsets = nullptr;
-    const u32 *execution_feature_ids = nullptr;
-    const u32 *participating_row_masks = nullptr;
-    const u32 *feature_value_offsets = nullptr;
+    tensor::FeatureMajorTileStructureView structure{};
     const u32 *source_value_positions = nullptr;
 };
+
+inline bool valid_bound_feature_major_structure(const FeatureMajorViewV1 &view) noexcept {
+    const auto &header = view.header;
+    const auto &structure = view.structure;
+    return structure.rows == header.row_count
+        && structure.features == header.feature_count
+        && structure.tile_count == header.tile_count
+        && structure.record_count == header.feature_record_count
+        && structure.nnz == header.nnz_count
+        && structure.tile_row_width == header.tile_row_width
+        && structure.tile_offsets && structure.feature_ids
+        && structure.row_masks && structure.value_offsets;
+}
 
 struct feature_major_value_buffers {
     void *values = nullptr;

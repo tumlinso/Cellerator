@@ -4,7 +4,7 @@
 #include "../controls/minimal_direct_layout.hh"
 #include "../candidates/direct_unique_output/direct_unique_output.hh"
 #include <Cellerator/memory/cuda/resources.hh>
-#include <Cellerator/modeling/cuda/factorized_interaction.hh>
+#include <Cellerator/ops/mechanism/factorized_interaction_cuda.hh>
 
 #include <algorithm>
 #include <array>
@@ -28,7 +28,7 @@
 
 namespace layout = cellerator::layout;
 namespace memory_cuda = cellerator::memory::cuda;
-namespace interaction = cellerator::modeling::cuda;
+namespace interaction = cellerator::ops::mechanism::cuda;
 
 namespace controls = cellerator::bench::factorized_interactions::controls;
 namespace candidates = cellerator::bench::factorized_interactions::candidates;

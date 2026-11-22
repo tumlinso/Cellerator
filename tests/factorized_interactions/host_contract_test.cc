@@ -1,4 +1,4 @@
-#include <Cellerator/modeling/cuda/factorized_interaction.hh>
+#include <Cellerator/ops/mechanism/factorized_interaction_cuda.hh>
 
 #include <cuda_runtime_api.h>
 
@@ -27,7 +27,7 @@ void* address(std::uintptr_t value) {
     return reinterpret_cast<void*>(value);
 }
 
-using namespace cellerator::modeling::cuda;
+using namespace cellerator::ops::mechanism::cuda;
 namespace cuda_memory = cellerator::memory::cuda;
 
 cuda_memory::ConstDeviceView const_view(std::uintptr_t pointer,

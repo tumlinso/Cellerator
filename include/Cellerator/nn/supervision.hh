@@ -178,7 +178,7 @@ std::pair<at::Tensor, at::Tensor> align_prediction_targets(
         }
         target_columns = prepared_alignment.output_column_tensor();
     } else {
-        target_columns = at::tensor(prepared_alignment.output_columns(),
+        target_columns = at::tensor(prepared_alignment.source_positions(),
             at::TensorOptions().dtype(at::kLong).device(target_values.device()));
     }
     auto aligned_targets = target_values.index_select(axis, target_columns);

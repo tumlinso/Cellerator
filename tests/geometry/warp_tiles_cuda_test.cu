@@ -1,4 +1,5 @@
 #include "Cellerator/geometry/warp_tiles_cuda.hh"
+#include "Cellerator/geometry/persistence/packed_tensor_views.hh"
 
 #include <cuda_runtime.h>
 
@@ -171,10 +172,10 @@ struct host_records {
     cp::cell_block_record_view metadata{};
     cp::cell_block_record_view view() const {
         auto result = metadata;
-        result.row_record_offsets = rows.data();
-        result.record_block_ids = blocks.data();
-        result.record_gene_masks = masks.data();
-        result.record_value_offsets = values_offsets.data();
+        result.layout.row_block_offsets = rows.data();
+        result.layout.block_ids = blocks.data();
+        result.layout.feature_masks = masks.data();
+        result.layout.row_block_value_offsets = values_offsets.data();
         result.values = values.data();
         return result;
     }
@@ -218,13 +219,13 @@ struct host_order {
 host_order build_order(const cp::cell_block_record_view &records, cp::u32 width,
     cp::local_cell_order_kind kind) {
     host_order result;
-    result.primary.resize(records.row_count);
-    result.secondary.resize(records.row_count);
-    result.active.resize(records.row_count);
-    result.nnz.resize(records.row_count);
-    result.permutation.resize(records.row_count);
-    result.inverse.resize(records.row_count);
-    cp::local_cell_order_buffers buffers{records.row_count, result.primary.data(),
+    result.primary.resize(records.layout.rows);
+    result.secondary.resize(records.layout.rows);
+    result.active.resize(records.layout.rows);
+    result.nnz.resize(records.layout.rows);
+    result.permutation.resize(records.layout.rows);
+    result.inverse.resize(records.layout.rows);
+    cp::local_cell_order_buffers buffers{records.layout.rows, result.primary.data(),
         result.secondary.data(), result.active.data(), result.nnz.data(),
         result.permutation.data(), result.inverse.data()};
     cp::local_cell_order_config config;
@@ -245,12 +246,12 @@ struct host_tiles {
     cp::warp_tile_requirements required{};
     cp::warp_tile_view view() const {
         auto result = metadata;
-        result.tile_block_offsets = tile_offsets.data();
-        result.tile_block_ids = blocks.data();
-        result.tile_block_cell_masks = cell_masks.data();
-        result.block_row_entry_offsets = entry_offsets.data();
-        result.row_block_gene_masks = masks.data();
-        result.row_block_value_offsets = value_offsets.data();
+        result.layout.tile_block_offsets = tile_offsets.data();
+        result.layout.block_ids = blocks.data();
+        result.layout.participating_row_masks = cell_masks.data();
+        result.layout.block_row_entry_offsets = entry_offsets.data();
+        result.layout.feature_masks = masks.data();
+        result.layout.row_block_value_offsets = value_offsets.data();
         result.values = values.data();
         return result;
     }
@@ -288,16 +289,17 @@ void run_exact_case(const cp::frozen_packing_plan &plan, const ordered_fixture &
         d_permutation(order.permutation);
     device_array<unsigned char> d_record_values(records.values);
     cp::cell_block_record_view device_records = records.view();
-    device_records.row_record_offsets = d_record_rows.data;
-    device_records.record_block_ids = d_record_blocks.data;
-    device_records.record_gene_masks = d_record_masks.data;
-    device_records.record_value_offsets = d_record_values_offsets.data;
+    device_records.layout.row_block_offsets = d_record_rows.data;
+    device_records.layout.block_ids = d_record_blocks.data;
+    device_records.layout.feature_masks = d_record_masks.data;
+    device_records.layout.row_block_value_offsets = d_record_values_offsets.data;
+    device_records.layout.feature_block_offsets = nullptr;
     device_records.values = d_record_values.data;
     cp::local_cell_order_view device_order = order.view();
     device_order.row_permutation = d_permutation.data;
 
     cp::warp_tile_cuda_requirements scratch;
-    require_status(cp::query_warp_tile_cuda_requirements(oracle.metadata.tile_count,
+    require_status(cp::query_warp_tile_cuda_requirements(oracle.metadata.layout.tiles,
         oracle.required.tile_block_count, oracle.required.row_block_entry_count, &scratch),
         "query CUDA tiles");
     device_array<cp::u32> d_tile_offsets(oracle.required.tile_block_offset_count),
@@ -321,11 +323,41 @@ void run_exact_case(const cp::frozen_packing_plan &plan, const ordered_fixture &
         oracle.required.row_block_entry_count, oracle.required.row_block_value_offset_count,
         oracle.required.value_bytes, d_tile_offsets.data, d_blocks.data, d_cell_masks.data,
         d_entry_offsets.data, d_masks.data, d_value_offsets.data, d_values.data};
+    const bool check_borrow = source.value_size == sizeof(unsigned char);
+    device_array<cp::u32> d_feature_offsets(check_borrow ? plan.feature_block_count() + 1u : 0u);
+    if (check_borrow)
+        require_cuda(cudaMemcpy(d_feature_offsets.data, plan.feature_block_offsets(),
+            d_feature_offsets.size * sizeof(cp::u32), cudaMemcpyHostToDevice),
+            "upload feature block offsets");
     cudaStream_t stream = nullptr;
     require_cuda(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking), "create stream");
     cp::warp_tile_view device_tiles;
     require_status(cp::build_warp_tiles_cuda(plan, device_records, device_order,
         oracle.required, workspace, buffers, stream, &device_tiles), "build CUDA tiles");
+    if (check_borrow) {
+        namespace geometry = cellerator::geometry;
+        namespace tensor = cellerator::tensor::block_masked;
+        tensor::RowView<const unsigned char> record_view;
+        require_status(geometry::bind_packed_row_records(plan, device_records,
+            d_feature_offsets.data, &record_view), "bind CUDA row records");
+        require(record_view.layout.row_block_offsets == d_record_rows.data
+            && record_view.layout.block_ids == d_record_blocks.data
+            && record_view.layout.feature_masks == d_record_masks.data
+            && record_view.layout.row_block_value_offsets == d_record_values_offsets.data
+            && record_view.layout.feature_block_offsets == d_feature_offsets.data
+            && record_view.values == d_record_values.data, "CUDA row records must alias their source");
+        tensor::View<const unsigned char> tile_view;
+        require_status(geometry::bind_row_masked_tiles(plan, device_tiles,
+            d_feature_offsets.data, &tile_view), "bind CUDA tiles");
+        require(tile_view.layout.tile_block_offsets == d_tile_offsets.data
+            && tile_view.layout.block_ids == d_blocks.data
+            && tile_view.layout.participating_row_masks == d_cell_masks.data
+            && tile_view.layout.block_row_entry_offsets == d_entry_offsets.data
+            && tile_view.layout.feature_masks == d_masks.data
+            && tile_view.layout.row_block_value_offsets == d_value_offsets.data
+            && tile_view.layout.feature_block_offsets == d_feature_offsets.data
+            && tile_view.values == d_values.data, "CUDA tiles must alias their source");
+    }
     require_cuda(cudaStreamSynchronize(stream), "finish CUDA tiles");
 
     host_tiles actual;
@@ -345,9 +377,9 @@ void run_exact_case(const cp::frozen_packing_plan &plan, const ordered_fixture &
         "CPU and CUDA tile bytes differ");
     require(device_tiles.tile_identity == oracle.metadata.tile_identity
             && device_tiles.ordering_identity == oracle.metadata.ordering_identity
-            && device_tiles.tile_count == oracle.metadata.tile_count
-            && device_tiles.tile_block_count == oracle.metadata.tile_block_count
-            && device_tiles.row_block_entry_count == oracle.metadata.row_block_entry_count,
+            && device_tiles.layout.tiles == oracle.metadata.layout.tiles
+            && device_tiles.layout.tile_blocks == oracle.metadata.layout.tile_blocks
+            && device_tiles.layout.row_block_entries == oracle.metadata.layout.row_block_entries,
         "CUDA tile metadata differs from CPU oracle");
     require_status(cp::validate_warp_tile_view_host(
         plan, records.view(), order.view(), actual.view()), "validate downloaded CUDA tiles");
@@ -395,7 +427,7 @@ void test_query_and_metadata_failures() {
         "insufficient CUDA tile workspace/output capacity was accepted");
 
     cp::warp_tile_cuda_requirements scratch;
-    require_status(cp::query_warp_tile_cuda_requirements(oracle.metadata.tile_count,
+    require_status(cp::query_warp_tile_cuda_requirements(oracle.metadata.layout.tiles,
         oracle.required.tile_block_count, oracle.required.row_block_entry_count, &scratch),
         "query alias-validation scratch");
     workspace.tile_count_capacity = scratch.tile_count_capacity;

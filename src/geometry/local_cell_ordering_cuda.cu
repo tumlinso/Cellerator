@@ -126,6 +126,10 @@ bool add_size(std::size_t value, std::size_t *total) noexcept {
 validation_result validate_device_metadata(
     const cell_block_record_view &records,
     const local_cell_order_config &config) {
+    if (!packed_extents_fit(records)) {
+        return validation_error(validation_code::integer_overflow, invalid_id,
+            "CUDA cell-block record extents exceed the packed schema");
+    }
     if (!valid_kind(config.kind) || config.window_size == 0u || config.group_width == 0u
         || config.group_width > config.window_size
         || config.window_size % config.group_width != 0u) {
@@ -138,14 +142,14 @@ validation_result validate_device_metadata(
         return validation_error(validation_code::unsupported_version,
             records.record_schema_version, "CUDA cell-block record version is unsupported");
     }
-    const u64 row_end = records.global_row_begin + static_cast<u64>(records.row_count);
+    const u64 row_end = records.global_row_begin + static_cast<u64>(records.layout.rows);
     if (records.feature_block_geometry_identity == 0u || records.row_domain_identity == 0u
         || row_end < records.global_row_begin || row_end > records.full_row_count) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "CUDA cell-block record identity is invalid");
     }
-    if (records.row_record_offsets == nullptr || records.record_value_offsets == nullptr
-        || (records.record_count != 0u && records.record_block_ids == nullptr)) {
+    if (records.layout.row_block_offsets == nullptr || records.layout.row_block_value_offsets == nullptr
+        || (records.layout.row_blocks != 0u && records.layout.block_ids == nullptr)) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "CUDA cell-block record array is null");
     }
@@ -167,8 +171,8 @@ void set_view(
     result.ordering_identity = local_cell_order_identity(records, config);
     result.global_row_begin = records.global_row_begin;
     result.full_row_count = records.full_row_count;
-    result.row_count = records.row_count;
-    result.feature_block_count = records.feature_block_count;
+    result.row_count = records.layout.rows;
+    result.feature_block_count = records.layout.feature_blocks;
     result.feature_block_geometry_identity = records.feature_block_geometry_identity;
     result.row_domain_identity = records.row_domain_identity;
     result.primary_keys = buffers.primary_keys;
@@ -255,9 +259,9 @@ validation_result build_local_cell_order_cuda(
     validation_result status = validate_device_metadata(device_records, config);
     if (!status) return status;
     local_cell_order_cuda_requirements required;
-    status = query_local_cell_order_cuda_requirements(device_records.row_count, config, &required);
+    status = query_local_cell_order_cuda_requirements(device_records.layout.rows, config, &required);
     if (!status) return status;
-    const u32 rows = device_records.row_count;
+    const u32 rows = device_records.layout.rows;
     if (buffers.row_capacity < rows || workspace.row_capacity < rows
         || workspace.window_offset_capacity < required.window_offset_capacity
         || workspace.cub_temporary_bytes < required.cub_temporary_bytes) {
@@ -280,8 +284,8 @@ validation_result build_local_cell_order_cuda(
         const u32 blocks = (rows + 255u) / 256u;
         build_keys_kernel<<<blocks, 256u, 0u, stream>>>(rows,
             device_records.global_row_begin, config.kind, config.seed,
-            device_records.row_record_offsets, device_records.record_block_ids,
-            device_records.record_value_offsets, buffers.primary_keys,
+            device_records.layout.row_block_offsets, device_records.layout.block_ids,
+            device_records.layout.row_block_value_offsets, buffers.primary_keys,
             buffers.secondary_keys, buffers.active_block_counts,
             buffers.row_nnz_counts, buffers.row_permutation);
         cudaError_t error = cudaPeekAtLastError();

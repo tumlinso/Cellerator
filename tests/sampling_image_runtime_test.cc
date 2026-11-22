@@ -36,9 +36,9 @@ int main() {
             {selection_storage.data(), selection_storage.size(), {}}, &replay, &error)
         || replay.header->common.identity != selection.header->common.identity) return 4;
 
-    const std::uint32_t row_ptr[] = {0, 0, 1, 3, 4, 6, 7};
-    const std::uint32_t columns[] = {0, 0, 1, 2, 0, 2, 1};
-    const cm::CompressedStructureView<std::uint32_t> source{
+    const std::int64_t row_ptr[] = {0, 0, 1, 3, 4, 6, 7};
+    const std::int64_t columns[] = {0, 0, 1, 2, 0, 2, 1};
+    const cm::CompressedStructureView<std::int64_t> source{
         6u, 3u, 7u, cm::CompressedAxis::row, row_ptr, columns};
     std::uint64_t selected_nnz = 0u;
     for (std::uint64_t i = 0u; i < selection.header->selected_rows; ++i) {

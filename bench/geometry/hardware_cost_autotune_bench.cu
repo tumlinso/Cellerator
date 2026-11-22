@@ -1,3 +1,4 @@
+#include "../../src/ops/matrix/csr_multiply.cuh"
 // CP-BP-12 calibration benchmark, not a kernel-optimization claim.
 // Compared path: CP-BP-09 direct packed tiles versus Cellerator's maintained
 // f16-storage/f32-compute CSR SpMV on Tesla V100 sm_70. Matrix: rows
@@ -33,7 +34,7 @@
 namespace {
 
 namespace cp = cellpack;
-namespace sparse_ops = cellerator::compute::sparse::ops;
+namespace matrix_ops = cellerator::ops::matrix;
 using storage_t = cellerator::real::storage_t;
 using compute_t = cellerator::real::compute_t;
 using accum_t = cellerator::real::accum_t;
@@ -203,24 +204,24 @@ host_case make_case(cp::u32 rows, cp::u32 block_width, cp::u32 row_blocks,
     result.tiles.feature_block_geometry_identity = hash_mix(result.scenario_id, 2u);
     result.tiles.ordering_identity = hash_mix(result.scenario_id, 3u);
     result.tiles.full_row_count = rows;
-    result.tiles.row_count = rows;
-    result.tiles.feature_count = feature_count;
-    result.tiles.feature_block_count = block_count;
-    result.tiles.tile_row_width = tile_width;
-    result.tiles.tile_count = tile_count;
-    result.tiles.nnz_count = static_cast<cp::u32>(result.tile_values.size());
-    result.tiles.tile_block_count = static_cast<cp::u32>(result.tile_blocks.size());
-    result.tiles.row_block_entry_count = static_cast<cp::u32>(result.gene_masks.size());
+    result.tiles.layout.rows = rows;
+    result.tiles.layout.features = feature_count;
+    result.tiles.layout.feature_blocks = block_count;
+    result.tiles.layout.tile_row_width = tile_width;
+    result.tiles.layout.tiles = tile_count;
+    result.tiles.layout.stored_values = static_cast<cp::u32>(result.tile_values.size());
+    result.tiles.layout.tile_blocks = static_cast<cp::u32>(result.tile_blocks.size());
+    result.tiles.layout.row_block_entries = static_cast<cp::u32>(result.gene_masks.size());
     result.tiles.value_size_bytes = sizeof(storage_t);
     result.tiles.feature_axis_fingerprint = 0x400000000ull;
     result.tiles.feature_axis_fingerprint_version = 1u;
     result.tiles.row_domain_identity = 0x500000000ull;
-    result.tiles.tile_block_offsets = result.tile_offsets.data();
-    result.tiles.tile_block_ids = result.tile_blocks.data();
-    result.tiles.tile_block_cell_masks = result.tile_cell_masks.data();
-    result.tiles.block_row_entry_offsets = result.entry_offsets.data();
-    result.tiles.row_block_gene_masks = result.gene_masks.data();
-    result.tiles.row_block_value_offsets = result.value_offsets.data();
+    result.tiles.layout.tile_block_offsets = result.tile_offsets.data();
+    result.tiles.layout.block_ids = result.tile_blocks.data();
+    result.tiles.layout.participating_row_masks = result.tile_cell_masks.data();
+    result.tiles.layout.block_row_entry_offsets = result.entry_offsets.data();
+    result.tiles.layout.feature_masks = result.gene_masks.data();
+    result.tiles.layout.row_block_value_offsets = result.value_offsets.data();
     result.tiles.values = result.tile_values.data();
     return result;
 }
@@ -328,12 +329,13 @@ measured_pair measure_case(host_case host, const std::vector<compute_t> &weights
     upload(d_csr_values, host.csr_values); upload(d_weights, weights);
 
     auto device_tiles = host.tiles;
-    device_tiles.tile_block_offsets = d_tile_offsets.data;
-    device_tiles.tile_block_ids = d_tile_blocks.data;
-    device_tiles.tile_block_cell_masks = d_cell_masks.data;
-    device_tiles.block_row_entry_offsets = d_entry_offsets.data;
-    device_tiles.row_block_gene_masks = d_gene_masks.data;
-    device_tiles.row_block_value_offsets = d_value_offsets.data;
+    device_tiles.layout.tile_block_offsets = d_tile_offsets.data;
+    device_tiles.layout.block_ids = d_tile_blocks.data;
+    device_tiles.layout.participating_row_masks = d_cell_masks.data;
+    device_tiles.layout.block_row_entry_offsets = d_entry_offsets.data;
+    device_tiles.layout.feature_masks = d_gene_masks.data;
+    device_tiles.layout.row_block_value_offsets = d_value_offsets.data;
+    device_tiles.layout.feature_block_offsets = d_plan_offsets.data;
     device_tiles.values = d_tile_values.data;
     auto input = cp::make_feature_weighted_row_reduction_view(plan, host.tiles,
         hash_mix(host.scenario_id, 8u), weights.size(), weights.data());
@@ -362,14 +364,12 @@ measured_pair measure_case(host_case host, const std::vector<compute_t> &weights
         check_status(cp::evaluate_feature_weighted_row_reduction_tiles_cuda(
             input, order, buffers, stream, &result), "launch packed reduction");
     });
-    cellerator::runtime::execution_context ctx;
-    ctx.device = 0;
-    ctx.stream = stream;
+    matrix_ops::Csr<const __half> a{{host.rows, weights.size(), host.csr_columns.size(),
+        cellerator::tensor::base::CompressedAxis::row, d_csr_offsets.data, d_csr_columns.data},
+        reinterpret_cast<const __half*>(d_csr_values.data)};
     measured.csr_time = time_cuda(stream, [&] {
-        sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, d_csr_offsets.data,
-            d_csr_columns.data, reinterpret_cast<const __half *>(d_csr_values.data),
-            host.rows, reinterpret_cast<const float *>(d_weights.data),
-            reinterpret_cast<float *>(d_csr_output.data));
+        check_cuda(matrix_ops::csr_spmv(a, reinterpret_cast<const float*>(d_weights.data),
+            reinterpret_cast<float*>(d_csr_output.data), stream), "csr_spmv");
     });
 
     std::vector<accum_t> packed(host.rows), csr(host.rows);
@@ -400,9 +400,9 @@ measured_pair measure_case(host_case host, const std::vector<compute_t> &weights
     common.tile_row_width = tile_width;
     common.feature_block_width = host.block_width;
     common.nnz_count = host.tile_values.size();
-    common.tile_count = host.tiles.tile_count;
-    common.tile_block_count = host.tiles.tile_block_count;
-    common.row_block_entry_count = host.tiles.row_block_entry_count;
+    common.tile_count = host.tiles.layout.tiles;
+    common.tile_block_count = host.tiles.layout.tile_blocks;
+    common.row_block_entry_count = host.tiles.layout.row_block_entries;
     common.input_output_bytes = io_bytes;
     common.index_width_bytes = sizeof(cp::u32);
     common.alignment_bytes = alignof(cp::u32);

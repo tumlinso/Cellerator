@@ -6,7 +6,6 @@
 #include <cuda_fp16.h>
 
 #include <algorithm>
-#include <atomic>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -23,6 +22,9 @@ struct slot_storage {
     float *products = nullptr, *argument_gradients = nullptr, *mechanism_gradients = nullptr;
     std::unique_ptr<event> completion;
     bool busy = false, recorded = false;
+    std::uint32_t reader = 0;
+    std::uint64_t batch = 0, generation = 0, serial = 0;
+    void* stream = nullptr;
 };
 
 struct prepared_mechanism_program::implementation {
@@ -37,30 +39,34 @@ struct prepared_mechanism_program::implementation {
     std::mutex mutex;
     implementation(mechanism_declaration d, std::shared_ptr<mechanism_parameter_owner> p)
         : declaration(std::move(d)), parameters(std::move(p)), storage(parameters->device()) {}
-    void release(std::uint32_t slot, std::uint32_t reader, void* stream) noexcept {
+    void release(std::uint32_t slot, void* stream) noexcept {
         std::lock_guard lock(mutex);
         auto& s = slots[slot];
         if (cudaEventRecord(s.completion->value,static_cast<cudaStream_t>(stream)) != cudaSuccess) parameters->poison();
         s.recorded = true; s.busy = false;
-        parameters->complete_reader(reader,stream);
+        parameters->complete_reader(s.reader,stream);
     }
 };
-struct mechanism_tape::implementation {
-    std::shared_ptr<prepared_mechanism_program> program;
-    std::uint32_t slot, reader;
-    std::uint64_t batch, generation;
-    void* stream;
-    std::atomic<bool> consumed{false};
-};
-mechanism_tape::mechanism_tape(std::unique_ptr<implementation> p) : impl_(std::move(p)) {}
-mechanism_tape::~mechanism_tape() {
-    if (!impl_->consumed.load(std::memory_order_acquire)) {
-        try { device_scope scope(impl_->program->parameters()->device());
-              impl_->program->impl_->release(impl_->slot,impl_->reader,impl_->stream); }
-        catch (...) { impl_->program->parameters()->poison(); }
-    }
+mechanism_tape::mechanism_tape(prepared_mechanism_program* program, std::uint32_t slot, std::uint64_t serial) noexcept
+    : program_(program), slot_(slot), serial_(serial) {}
+mechanism_tape::mechanism_tape(mechanism_tape&& other) noexcept
+    : mechanism_tape(other.program_, other.slot_, other.serial_) { other.program_ = nullptr; }
+mechanism_tape::~mechanism_tape() { reset(); }
+
+void mechanism_tape::reset() noexcept {
+    auto* program = program_;
+    if (!program) return;
+    program_ = nullptr;
+    try {
+        device_scope scope(program->parameters()->device());
+        program->impl_->release(slot_, program->impl_->slots[slot_].stream);
+    } catch (...) { program->parameters()->poison(); }
 }
-std::uint64_t mechanism_tape::batch() const { return impl_->batch; }
+
+std::uint64_t mechanism_tape::batch() const {
+    require(program_, "mechanism tape is no longer live");
+    return program_->impl_->slots[slot_].batch;
+}
 
 prepared_mechanism_program::prepared_mechanism_program(mechanism_declaration d, std::shared_ptr<mechanism_parameter_owner> p) {
     require(bool(p), "missing coefficient owner"); device_scope scope(p->device());
@@ -157,7 +163,7 @@ prepared_mechanism_program::~prepared_mechanism_program() = default;
 const mechanism_declaration& prepared_mechanism_program::declaration() const { return impl_->declaration; }
 const std::shared_ptr<mechanism_parameter_owner>& prepared_mechanism_program::parameters() const { return impl_->parameters; }
 std::size_t prepared_mechanism_program::reserved_bytes() const { return impl_->bytes; }
-std::shared_ptr<mechanism_tape> prepared_mechanism_program::forward(const void* input, bool input_half,
+mechanism_tape prepared_mechanism_program::forward(const void* input, bool input_half,
         std::uint64_t batch, const execution::persistent_axis_identity& axis, float* output, void* stream) {
     device_scope scope(parameters()->device()); std::lock_guard lock(impl_->mutex);
     validate_stream_device(stream, parameters()->device());
@@ -171,13 +177,14 @@ std::shared_ptr<mechanism_tape> prepared_mechanism_program::forward(const void* 
     require(!overlaps(output, output_bytes, parameters()->data(), parameter_bytes) &&
             !overlaps(output, output_bytes, parameters()->half_data(), half_bytes),
             "mechanism output cannot alias canonical or derived coefficients");
-    auto self = shared_from_this();
     std::uint32_t index = 0;
     while (index < impl_->slots.size() && impl_->slots[index].busy) ++index;
     require(index < impl_->slots.size(), "mechanism tape capacity exceeded");
     auto& slot = impl_->slots[index];
+    require(slot.serial != UINT64_MAX, "mechanism tape serial exhausted");
     if (slot.recorded) check(cudaStreamWaitEvent(static_cast<cudaStream_t>(stream),slot.completion->value));
-    auto reader = parameters()->acquire_reader(stream); slot.busy = true;
+    slot.reader = parameters()->acquire_reader(stream);
+    slot.busy = true;
     try {
         bool mixed = declaration().precision == training_precision::mixed_f16;
         execution_binding call{impl_->plan, slot.x, slot.products, slot.argument_gradients,
@@ -187,15 +194,15 @@ std::shared_ptr<mechanism_tape> prepared_mechanism_program::forward(const void* 
         execution::program::launch_binding_v2 binding; binding.values = &call;
         require(execution::program::execute_prepared_program_v2(impl_->program,&binding,1,stream) == execution::program::program_status::success, "mechanism forward launch failed");
         check(cudaEventRecord(slot.completion->value,static_cast<cudaStream_t>(stream))); slot.recorded = true;
-        auto tape = std::make_unique<mechanism_tape::implementation>();
-        tape->program = std::move(self); tape->slot = index; tape->reader = reader;
-        tape->batch = batch; tape->generation = parameters()->generation(); tape->stream = stream;
-        return std::shared_ptr<mechanism_tape>(new mechanism_tape(std::move(tape)));
+        slot.batch = batch;
+        slot.generation = parameters()->generation();
+        slot.stream = stream;
+        return mechanism_tape(this, index, ++slot.serial);
     } catch (...) {
         if (cudaEventRecord(slot.completion->value, static_cast<cudaStream_t>(stream)) != cudaSuccess)
             parameters()->poison();
         else slot.recorded = true;
-        parameters()->complete_reader(reader,stream);
+        parameters()->complete_reader(slot.reader,stream);
         slot.busy = false;
         parameters()->poison();
         throw;
@@ -204,11 +211,13 @@ std::shared_ptr<mechanism_tape> prepared_mechanism_program::forward(const void* 
 void prepared_mechanism_program::backward(mechanism_tape& tape, const float* dy, float* dx, float* dk, void* stream) {
     device_scope scope(parameters()->device());
     validate_stream_device(stream, parameters()->device());
-    auto& t = *tape.impl_;
-    require(t.program.get() == this, "foreign mechanism tape");
-    require(!parameters()->poisoned() && t.generation == parameters()->generation(), "stale mechanism coefficient generation");
+    require(tape.program_ == this, "foreign or consumed mechanism tape");
+    const auto index = tape.slot_;
+    auto& slot = impl_->slots[index];
+    require(slot.busy && slot.serial == tape.serial_, "stale mechanism tape slot");
+    require(!parameters()->poisoned() && slot.generation == parameters()->generation(), "stale mechanism coefficient generation");
     require(dy && dx && dk, "missing VJP buffers");
-    const auto dx_bytes = checked_product(static_cast<std::size_t>(checked_elements(t.batch, declaration().input.extent)), sizeof(float));
+    const auto dx_bytes = checked_product(static_cast<std::size_t>(checked_elements(slot.batch, declaration().input.extent)), sizeof(float));
     const auto dk_bytes = checked_product(static_cast<std::size_t>(parameters()->size()), sizeof(float));
     const auto parameter_bytes = dk_bytes;
     const auto half_bytes = checked_product(static_cast<std::size_t>(parameters()->size()), sizeof(std::uint16_t));
@@ -218,20 +227,17 @@ void prepared_mechanism_program::backward(mechanism_tape& tape, const float* dy,
             !overlaps(dk, dk_bytes, parameters()->data(), parameter_bytes) &&
             !overlaps(dk, dk_bytes, parameters()->half_data(), half_bytes),
             "input and coefficient gradients must not alias each other or coefficient storage");
-    bool expected = false;
-    require(t.consumed.compare_exchange_strong(expected, true, std::memory_order_acq_rel),
-            "mechanism backward replay");
-    auto& slot = impl_->slots[t.slot];
+    tape.program_ = nullptr;
     try {
         check(cudaStreamWaitEvent(static_cast<cudaStream_t>(stream),slot.completion->value));
         bool mixed = declaration().precision == training_precision::mixed_f16;
         execution_binding call{impl_->plan, slot.x, slot.products, slot.argument_gradients,
             slot.mechanism_gradients, dy,
             mixed ? static_cast<const void*>(parameters()->half_data()) : parameters()->data(),
-            nullptr, dx, dk, t.batch, false, mixed, true};
+            nullptr, dx, dk, slot.batch, false, mixed, true};
         execution::program::launch_binding_v2 binding; binding.values = &call;
         require(execution::program::execute_prepared_program_v2(impl_->program,&binding,1,stream) == execution::program::program_status::success, "mechanism VJP launch failed");
-        impl_->release(t.slot,t.reader,stream);
-    } catch (...) { parameters()->poison(); impl_->release(t.slot,t.reader,stream); throw; }
+        impl_->release(index,stream);
+    } catch (...) { parameters()->poison(); impl_->release(index,stream); throw; }
 }
 } // namespace cellerator::ops::mechanism::indexed

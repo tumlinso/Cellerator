@@ -1,4 +1,5 @@
 #include <tests/fixtures/model_execution/quantitative_relation_fixture.hh>
+#include "../fixtures/model_execution/activated_projection.hh"
 
 #include <Cellerator/compute/operation/builtin_catalog.hh>
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
@@ -366,10 +367,10 @@ int main(int argc, char **argv) {
     device_projection.runtime_structure = relation.structure.identity;
     device_projection.runtime_projection = fmp_handle;
     device_projection.layout.payload_base = device_tile_offsets.data;
-    device_projection.layout.tile_feature_offsets = device_tile_offsets.data;
-    device_projection.layout.execution_feature_ids = device_features.data;
-    device_projection.layout.participating_row_masks = device_masks.data;
-    device_projection.layout.feature_value_offsets = device_value_offsets.data;
+    device_projection.layout.structure = {header.row_count, header.feature_count,
+        header.tile_count, header.feature_record_count, header.nnz_count,
+        header.tile_row_width, device_tile_offsets.data, device_features.data,
+        device_masks.data, device_value_offsets.data};
     device_projection.layout.source_value_positions = device_source_positions.data;
 
     device_buffer<__half> device_values_1(fixture.nnz);
@@ -411,8 +412,11 @@ int main(int argc, char **argv) {
         core::projection_kind::native_feature_major,
         ::cellerator::layout::projection::feature_major_projection_schema_version,
         ::cellerator::layout::projection::feature_major_projection_variant};
-    const execution::activated_projection_reference projection =
-        execution::program_projection(projection_key, device_projection);
+    const auto catalog = core::built_in_candidate_preparation_catalog_v2();
+    execution::activated_projection_reference_v2 projection{};
+    require(cellerator::fixtures::activate_builtin_projection(catalog,
+        core::feature_major_small_n_candidate_id, projection_key, device,
+        device_projection.layout, &projection), "activate feature-major projection");
     constexpr std::uint32_t widths[]{1u, 16u, 17u, 31u, 32u, 48u, 64u};
     constexpr std::uint64_t reuse_horizons[]{1u, 8u, 1024u};
 
@@ -424,17 +428,16 @@ int main(int argc, char **argv) {
             "upload dense operand");
         for (std::uint64_t reuse : reuse_horizons) {
             std::vector<execution::program_candidate_cost> costs;
-            const auto catalog = core::built_in_candidate_catalog();
-            for (std::uint32_t index = 0u; index < catalog.size; ++index) {
-                const auto &entry = catalog.entries[index];
-                if (entry.operation != core::operation_kind::sparse_dense_multiply
-                    || entry.projection
+            for (std::uint32_t index = 0u; index < catalog.entry_count; ++index) {
+                const auto &entry = *catalog.entries[index].candidate;
+                if (entry.candidate.operation != core::operation_kind::sparse_dense_multiply
+                    || entry.candidate.projection
                         != core::projection_kind::native_feature_major
                     || width < entry.minimum_dense_width
                     || width > entry.maximum_dense_width)
                     continue;
                 execution::program_candidate_cost cost{};
-                cost.candidate = entry.identity;
+                cost.candidate = entry.candidate.identity;
                 cost.projection = fmp_identity;
                 cost.phases.host_preparation_ns = 1000.0;
                 cost.phases.projection_construction_ns = projection_build_ns;
@@ -458,7 +461,7 @@ int main(int argc, char **argv) {
                 "expected exactly one legal FMP1 schedule for this width");
 
             alignas(64) unsigned char preparation_state[4096]{};
-            execution::executable_program_request request{};
+            execution::executable_program_request_v2 request{};
             request.problem = {core::operation_core_schema_version,
                 core::operation_kind::sparse_dense_multiply, 0u,
                 {0xce310001u, 0xce310002u}, 1u, 1u,
@@ -499,7 +502,7 @@ int main(int argc, char **argv) {
             request.preparation_state = {
                 preparation_state, sizeof(preparation_state)};
             execution::executable_program program{};
-            require(execution::compile_executable_program(request, &program),
+            require(execution::compile_executable_program_v2(request, &program),
                 "compile PBMC3K executable program");
             require(program.candidate_count == costs.size()
                 && program.legal_count == costs.size()

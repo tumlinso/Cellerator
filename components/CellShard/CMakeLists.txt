@@ -205,18 +205,10 @@ endif()
 get_filename_component(CELLSHARD_CELLERATOR_SOURCE_DIR
     "${CELLSHARD_CELLERATOR_SOURCE_DIR}" ABSOLUTE)
 set(CELLSHARD_CELLERATOR_INCLUDE_ROOT "${CELLSHARD_CELLERATOR_SOURCE_DIR}/include")
-foreach(cellshard_cellerator_base_header IN ITEMS
-    blocked_ell
-    sliced_ell
-    diagonal
-    device_views
-)
-    if(NOT EXISTS "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/tensor/base/${cellshard_cellerator_base_header}.cuh")
-        message(FATAL_ERROR
-            "CELLSHARD_CELLERATOR_SOURCE_DIR must provide the canonical Cellerator base header "
-            "include/Cellerator/tensor/base/${cellshard_cellerator_base_header}.cuh")
-    endif()
-endforeach()
+set(cellshard_compat_include "${CMAKE_CURRENT_SOURCE_DIR}/compat/include")
+if(NOT EXISTS "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/tensor/base/device_views.cuh")
+    message(FATAL_ERROR "CELLSHARD_CELLERATOR_SOURCE_DIR must provide Cellerator/tensor/base/device_views.cuh")
+endif()
 if(NOT EXISTS "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/interop/formats/affine_blocked_ell.hh"
    OR NOT EXISTS "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/interop/formats/affine_blocked_ell_view.hh"
    OR NOT EXISTS "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/tensor/quantized/blocked_ell.hh")
@@ -312,6 +304,7 @@ if(CELLSHARD_ENABLE_CUDA)
     target_link_libraries(cellshard_headers INTERFACE $<BUILD_INTERFACE:cellshard_cellerator_compute_matrix_convert>)
 endif()
 target_include_directories(cellshard_headers INTERFACE
+    $<BUILD_INTERFACE:${cellshard_compat_include}>
     $<BUILD_INTERFACE:${CELLSHARD_CELLERATOR_INCLUDE_ROOT}>
 )
 if(CELLSHARD_ENABLE_CUDA)
@@ -1409,6 +1402,7 @@ if(CELLSHARD_BUILD_INGEST)
     )
 endif()
 
+install(DIRECTORY "${cellshard_compat_include}/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(DIRECTORY "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/tensor/base/"
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/tensor/base
     FILES_MATCHING

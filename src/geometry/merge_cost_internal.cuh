@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 /*
  * Shared CPU/device integer byte-accounting helpers for CP-BP-03. Prefer these
  * helpers over copying the formula into either path. On 2026-08-16,
@@ -14,34 +15,28 @@
 #include <cstdint>
 #include <limits>
 
-#if defined(__CUDACC__)
-#define CELLPACK_MERGE_HD __host__ __device__
-#else
-#define CELLPACK_MERGE_HD
-#endif
-
 namespace cellpack::detail {
 
-CELLPACK_MERGE_HD inline bool checked_add_u64(u64 lhs, u64 rhs, u64 *out) {
+CELLERATOR_HOST_DEVICE inline bool checked_add_u64(u64 lhs, u64 rhs, u64 *out) {
     if (lhs > UINT64_MAX - rhs) return false;
     *out = lhs + rhs;
     return true;
 }
 
-CELLPACK_MERGE_HD inline bool checked_mul_u64(u64 lhs, u64 rhs, u64 *out) {
+CELLERATOR_HOST_DEVICE inline bool checked_mul_u64(u64 lhs, u64 rhs, u64 *out) {
     if (lhs != 0u && rhs > UINT64_MAX / lhs) return false;
     *out = lhs * rhs;
     return true;
 }
 
-CELLPACK_MERGE_HD inline bool align_up_u64(u64 value, u32 alignment, u64 *out) {
+CELLERATOR_HOST_DEVICE inline bool align_up_u64(u64 value, u32 alignment, u64 *out) {
     const u64 mask = static_cast<u64>(alignment) - 1u;
     if (value > UINT64_MAX - mask) return false;
     *out = (value + mask) & ~mask;
     return true;
 }
 
-CELLPACK_MERGE_HD inline bool calculate_block_cost(
+CELLERATOR_HOST_DEVICE inline bool calculate_block_cost(
     u32 block_width,
     u64 active_rows,
     u64 nnz,
@@ -97,7 +92,7 @@ CELLPACK_MERGE_HD inline bool calculate_block_cost(
     return true;
 }
 
-CELLPACK_MERGE_HD inline bool signed_gain(u64 separated, u64 merged, std::int64_t *out) {
+CELLERATOR_HOST_DEVICE inline bool signed_gain(u64 separated, u64 merged, std::int64_t *out) {
     if (separated >= merged) {
         const u64 magnitude = separated - merged;
         if (magnitude > static_cast<u64>(INT64_MAX)) return false;
@@ -113,7 +108,7 @@ CELLPACK_MERGE_HD inline bool signed_gain(u64 separated, u64 merged, std::int64_
     return true;
 }
 
-CELLPACK_MERGE_HD inline bool calculate_merge_cost(
+CELLERATOR_HOST_DEVICE inline bool calculate_merge_cost(
     u64 support_a,
     u64 support_b,
     u64 support_intersection,
@@ -152,5 +147,3 @@ candidate_relation make_exact_relation(
     const exact_gene_merge_cost &cost) noexcept;
 
 } // namespace cellpack::detail
-
-#undef CELLPACK_MERGE_HD

@@ -54,9 +54,9 @@ struct cpk1_fixture {
         payload.order.row_count = 3u;
         payload.order.row_permutation = row_permutation;
         payload.order.inverse_row_permutation = inverse_row_permutation;
-        payload.tiles.feature_count = 3u;
-        payload.tiles.row_count = 3u;
-        payload.tiles.nnz_count = 5u;
+        payload.tiles.layout.features = 3u;
+        payload.tiles.layout.rows = 3u;
+        payload.tiles.layout.stored_values = 5u;
     }
 };
 

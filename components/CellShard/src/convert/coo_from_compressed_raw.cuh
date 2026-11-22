@@ -160,30 +160,5 @@ static inline int build_coo_from_compressed_raw(
     );
 }
 
-// Alias kept for shorter call sites.
-static inline int build_coo_from_cs_raw(
-    const unsigned int cDim,
-    const unsigned int nnz,
-    const unsigned int *d_cAxPtr,
-    const unsigned int *d_uAxIdx,
-    const __half *d_val,
-    unsigned int *d_out_cAxIdx,
-    unsigned int *d_out_uAxIdx,
-    __half *d_out_val,
-    cudaStream_t stream
-) {
-    return build_coo_from_compressed_raw(
-        cDim,
-        nnz,
-        d_cAxPtr,
-        d_uAxIdx,
-        d_val,
-        d_out_cAxIdx,
-        d_out_uAxIdx,
-        d_out_val,
-        stream
-    );
-}
-
 } // namespace convert
 } // namespace cellshard

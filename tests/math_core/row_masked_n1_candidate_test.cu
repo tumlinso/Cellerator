@@ -163,24 +163,24 @@ struct fixture {
         payload.tiles.feature_block_geometry_identity = 0x1001u;
         payload.tiles.ordering_identity = 0x2002u;
         payload.tiles.full_row_count = 2u;
-        payload.tiles.row_count = 2u;
-        payload.tiles.feature_count = 3u;
-        payload.tiles.feature_block_count = 1u;
-        payload.tiles.tile_row_width = 2u;
-        payload.tiles.tile_count = 1u;
-        payload.tiles.nnz_count = 3u;
-        payload.tiles.tile_block_count = 1u;
-        payload.tiles.row_block_entry_count = 2u;
+        payload.tiles.layout.rows = 2u;
+        payload.tiles.layout.features = 3u;
+        payload.tiles.layout.feature_blocks = 1u;
+        payload.tiles.layout.tile_row_width = 2u;
+        payload.tiles.layout.tiles = 1u;
+        payload.tiles.layout.stored_values = 3u;
+        payload.tiles.layout.tile_blocks = 1u;
+        payload.tiles.layout.row_block_entries = 2u;
         payload.tiles.value_size_bytes = sizeof(cellerator::real::storage_t);
         payload.tiles.feature_axis_fingerprint = 0x5005u;
         payload.tiles.feature_axis_fingerprint_version = 1u;
         payload.tiles.row_domain_identity = 0x3003u;
-        payload.tiles.tile_block_offsets = tile_offsets.data;
-        payload.tiles.tile_block_ids = tile_blocks.data;
-        payload.tiles.tile_block_cell_masks = cell_masks.data;
-        payload.tiles.block_row_entry_offsets = entry_offsets.data;
-        payload.tiles.row_block_gene_masks = gene_masks.data;
-        payload.tiles.row_block_value_offsets = value_offsets.data;
+        payload.tiles.layout.tile_block_offsets = tile_offsets.data;
+        payload.tiles.layout.block_ids = tile_blocks.data;
+        payload.tiles.layout.participating_row_masks = cell_masks.data;
+        payload.tiles.layout.block_row_entry_offsets = entry_offsets.data;
+        payload.tiles.layout.feature_masks = gene_masks.data;
+        payload.tiles.layout.row_block_value_offsets = value_offsets.data;
         payload.tiles.values = values.data;
     }
 };
@@ -276,9 +276,9 @@ int main() {
         projection, numeric(), policy, data.payload, feature_axis, row_axis,
         &state, &prepared), "candidate preparation");
     const void *const prepared_state_address = prepared.persistent.data;
-    const void *const prepared_tile_offsets = state.projection.tiles.tile_block_offsets;
+    const void *const prepared_tile_offsets = state.projection.tiles.layout.tile_block_offsets;
     const void *const prepared_value_offsets =
-        state.projection.tiles.row_block_value_offsets;
+        state.projection.tiles.layout.row_block_value_offsets;
     require(prepared.binding_contract.workspace.minimum_bytes == 0u
         && prepared.binding_contract.output_effects[0].update
             == execution::output_update_kind::overwrite
@@ -358,8 +358,8 @@ int main() {
         && std::fabs(result[1] - 43.0f) < 1.0e-5f,
         "second generation numerical parity");
     require(prepared.persistent.data == prepared_state_address
-        && state.projection.tiles.tile_block_offsets == prepared_tile_offsets
-        && state.projection.tiles.row_block_value_offsets
+        && state.projection.tiles.layout.tile_block_offsets == prepared_tile_offsets
+        && state.projection.tiles.layout.row_block_value_offsets
             == prepared_value_offsets,
         "value generation rebuilt row-masked prepared geometry");
 

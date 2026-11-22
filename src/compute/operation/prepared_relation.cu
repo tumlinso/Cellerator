@@ -1,4 +1,6 @@
-#include <Cellerator/compute/candidate/sparse/project.hh>
+#include "../../ops/matrix/csr_multiply.cuh"
+#include "../../ops/matrix/csr_cusparse.cuh"
+#include "../../ops/matrix/feature_major_tiles_internal.cuh"
 #include <Cellerator/execution/native_value_instance/atom_binding.hh>
 #include <Cellerator/compute/operation/prepared_relation.hh>
 #include <Cellerator/compute/operation/operation_core.hh>
@@ -8,6 +10,8 @@
 namespace cellerator::compute::relation {
 namespace {
 namespace core = cellerator::compute::math::core;
+namespace matrix = cellerator::ops::matrix;
+namespace sparse = matrix::cusparse;
 // Persistent identities remain value-owned. Compact runtime handles are local
 // registry slots, never truncated low words of biological identities.
 struct native_contract {
@@ -206,13 +210,26 @@ struct cold_tiles {
         w.geometry_identity_version=cellpack::feature_block_geometry_identity_version;
         w.order_schema_version=cellpack::local_cell_order_schema_version;
         w.feature_block_geometry_identity=1;w.ordering_identity=1;w.tile_identity=1;
-        w.full_row_count=w.row_count=rows;w.feature_count=cols;w.feature_block_count=blocks.size()-1;
-        w.tile_row_width=32;w.tile_count=tile_offsets.size()-1;w.nnz_count=t.edge_count;
-        w.tile_block_count=tile_blocks.size();w.row_block_entry_count=gene_masks.size();w.value_size_bytes=2;
+        w.full_row_count = rows;
+        w.value_size_bytes = 2;
         w.feature_axis_fingerprint=1;w.feature_axis_fingerprint_version=1;w.row_domain_identity=1;
-        w.tile_block_offsets=tile_offsets.data();w.tile_block_ids=tile_blocks.data();w.tile_block_cell_masks=cell_masks.data();
-        w.block_row_entry_offsets=entry_offsets.data();w.row_block_gene_masks=gene_masks.data();
-        w.row_block_value_offsets=value_offsets.data();w.values=zero_values.data();
+        auto &layout = w.layout;
+        layout.rows = rows;
+        layout.features = cols;
+        layout.feature_blocks = blocks.size() - 1;
+        layout.tile_row_width = 32;
+        layout.tiles = tile_offsets.size() - 1;
+        layout.stored_values = t.edge_count;
+        layout.tile_blocks = tile_blocks.size();
+        layout.row_block_entries = gene_masks.size();
+        layout.tile_block_offsets = tile_offsets.data();
+        layout.block_ids = tile_blocks.data();
+        layout.participating_row_masks = cell_masks.data();
+        layout.block_row_entry_offsets = entry_offsets.data();
+        layout.feature_masks = gene_masks.data();
+        layout.row_block_value_offsets = value_offsets.data();
+        layout.feature_block_offsets = blocks.data();
+        w.values = zero_values.data();
     }
 };
 } // namespace
@@ -248,6 +265,36 @@ std::uint64_t next_pair_incarnation() noexcept {
     while(!serial.compare_exchange_weak(id,id+1));
     return id;
 }
+
+struct relation_cusparse {
+    cusparseHandle_t handle{};
+    sparse::spmm_plan forward, transpose;
+    sparse::sddmm_plan gradient;
+    fp32_fixed_buffers buffers{};
+    float* packed{};
+    float* samples{};
+    void* spmm_work{};
+    void* sddmm_work{};
+    const uint32_t* csr_to_physical{};
+    size_t value_bytes{}, spmm_bytes{}, sddmm_bytes{};
+
+    ~relation_cusparse() {
+        gradient.release();
+        transpose.release();
+        forward.release();
+        if (handle) (void)cusparseDestroy(handle);
+        if (sddmm_work) cudaFree(sddmm_work);
+        if (spmm_work) cudaFree(spmm_work);
+        if (samples) cudaFree(samples);
+        if (packed) cudaFree(packed);
+    }
+};
+
+status sparse_status(cusparseStatus_t status) noexcept {
+    if (status == CUSPARSE_STATUS_SUCCESS) return {};
+    return {status == CUSPARSE_STATUS_NOT_SUPPORTED || status == CUSPARSE_STATUS_ARCH_MISMATCH
+        ? status_code::unsupported_semantics : status_code::cuda_failure, cusparseGetErrorString(status)};
+}
 }
 struct prepared_relation_pair {
     native_contract forward{},transpose{};
@@ -266,6 +313,7 @@ struct prepared_relation_pair {
     runtime::relation_read_ticket reader_ticket{};
     value_read_lease active_lease{};
     gradient_provider::hybrid_gradient* hybrid=nullptr;
+    relation_cusparse* vendor=nullptr;
     bool hybrid_selected=false;
     std::uint64_t persistent_limit = 0, incarnation = 0;
 
@@ -273,7 +321,6 @@ struct prepared_relation_pair {
     ::cellerator::structure::order_id physical_order{};
     bool gradient_prepared = false;
     relation_calculus_descriptor calculus{};
-    gradient_preparation_options gradient_options{};
     gradient_stamp last_gradient{};
     edge_plane_view last_gradient_output{};
     ~prepared_relation_pair() {
@@ -281,6 +328,7 @@ struct prepared_relation_pair {
         if(prior!=device)cudaSetDevice(device);
         (void)readiness.close();
         cudaStreamSynchronize(stream);
+        delete vendor;
         gradient_provider::destroy_hybrid_gradient(hybrid);
         if(source_scratch)cudaFree(source_scratch);if(cotangent_scratch)cudaFree(cotangent_scratch);
         if(values)cudaFree(values);if(authoritative_f32)cudaFree(authoritative_f32);if(authoritative_f64)cudaFree(authoritative_f64);
@@ -293,7 +341,7 @@ std::uint64_t instance_values_bytes(const prepared_relation_pair& p) noexcept {
     const auto edges=p.forward.semantic.topology.edge_count;
     switch(p.forward.semantic.arithmetic.relation_storage) {
     case execution::numeric_type::f16:return edges*2;
-    case execution::numeric_type::f32:return edges*(4+(p.derive_f16?2:0));
+    case execution::numeric_type::f32:return edges*(4+(p.derive_f16?2:0))+(p.vendor?p.vendor->value_bytes:0);
     case execution::numeric_type::f64:return edges*8;
     default:return 0;
     }
@@ -355,6 +403,11 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
         report.forward_candidate=core::feature_major_small_n_candidate().name;
         report.transpose_candidate=forward.dense_width==1 ? core::transpose_backward_n1_candidate().name : core::transpose_backward_n16_candidate().name;
         if(forward.topology.edge_count) {
+            const auto weight_type = forward.arithmetic.relation_storage;
+            const bool f32 = weight_type == execution::numeric_type::f32;
+            const bool f64 = weight_type == execution::numeric_type::f64;
+            const bool needs_f16_projections =
+                weight_type == execution::numeric_type::f16 || p->derive_f16;
             cold_tiles cold(forward.topology,topology);
             layout::projection::feature_major_projection_build_request layout_request{
                 forward.topology.identity,forward.topology.epoch,
@@ -365,8 +418,8 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             s=physical(execution::query_feature_major_binding_requirements_host(request,&fr));if(!s)return s;
             std::vector<unsigned char> fh(fr.payload_bytes);execution::FeatureMajorBinding fv{};
             s=physical(execution::build_feature_major_binding_host(request,{fh.data(),fh.size()},&fv));if(!s)return s;
-            // FMP source-value positions originally name cold CP-BP order. Compose
-            // with CSR logical positions before CTP derives its bidirectional maps.
+            // Both routes use this physical edge order for values and gradients.
+            // Compose the feature-major positions with the original CSR positions.
             auto* map=reinterpret_cast<std::uint32_t*>(fh.data()+fv.layout.header.source_value_positions_offset);
             for(std::uint64_t i=0;i<forward.topology.edge_count;++i)map[i]=cold.logical[map[i]];
             p->structure->physical_to_logical.assign(map,map+forward.topology.edge_count);
@@ -382,17 +435,17 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             execution::TransposeBindingBuildRequest tr{
                 report.transpose_projection,{2,1},&fv};
             layout::projection::transpose_projection_requirements rr{};
-            s=physical(execution::query_transpose_binding_requirements_host(tr,&rr));if(!s)return s;
+            if (needs_f16_projections) {
+                s = physical(execution::query_transpose_binding_requirements_host(tr, &rr));
+                if (!s) return s;
+            }
             std::vector<unsigned char> th(rr.payload_bytes);execution::TransposeBinding tv{};
-            s=physical(execution::build_transpose_binding_host(tr,{th.data(),th.size()},&tv));if(!s)return s;
-            const auto weight_type=forward.arithmetic.relation_storage;
-            const bool f32=weight_type==execution::numeric_type::f32;
-            const bool f64=weight_type==execution::numeric_type::f64;
+            const auto forward_payload_bytes = needs_f16_projections ? fr.payload_bytes : 0;
             std::uint64_t edge_metadata_bytes=0,value_bytes=0,bytes=0;
             const auto per_edge= f32 ? (4+(p->derive_f16?2:0)) : f64 ? 8 : 2;
             if(!checked_bytes(forward.topology.edge_count,24,edge_metadata_bytes)
                 || !checked_bytes(forward.topology.edge_count,per_edge,value_bytes)
-                || !checked_add(fr.payload_bytes,rr.payload_bytes,bytes)
+                || !checked_add(forward_payload_bytes,rr.payload_bytes,bytes)
                 || !checked_add(bytes,edge_metadata_bytes,bytes)
                 || !checked_add(bytes,value_bytes,bytes))
                 return {status_code::invalid_shape,"persistent allocation size overflows 64 bits"};
@@ -400,10 +453,8 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             p->structure->base_bytes=bytes-value_bytes;
             if(options.persistent_byte_limit && bytes>options.persistent_byte_limit)
                 return {status_code::insufficient_capacity,"projection and mutable value storage exceed persistent limit"};
-            s=cuda_status(cudaMalloc(&p->structure->forward_payload,fr.payload_bytes));if(!s)return s;
-            s=cuda_status(cudaMalloc(&p->structure->transpose_payload,rr.payload_bytes));if(!s)return s;
             s=cuda_status(cudaMalloc(reinterpret_cast<void**>(&p->structure->logical_map),forward.topology.edge_count*4));if(!s)return s;
-            if(weight_type==execution::numeric_type::f16 || (f32 && p->derive_f16)){s=cuda_status(cudaMalloc(&p->values,forward.topology.edge_count*2));if(!s)return s;}
+            if(needs_f16_projections){s=cuda_status(cudaMalloc(&p->values,forward.topology.edge_count*2));if(!s)return s;}
             if(f32){s=cuda_status(cudaMalloc(&p->authoritative_f32,forward.topology.edge_count*4));if(!s)return s;}
             if(f64){s=cuda_status(cudaMalloc(reinterpret_cast<void**>(&p->authoritative_f64),forward.topology.edge_count*8));if(!s)return s;}
             auto upload=[&](void* dst,const void* src,std::size_t bytes) {
@@ -411,8 +462,6 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
                 auto completed=cudaStreamSynchronize(stream);
                 return cuda_status(submitted==cudaSuccess?completed:submitted);
             };
-            s=upload(p->structure->forward_payload,fh.data(),fh.size());if(!s)return s;
-            s=upload(p->structure->transpose_payload,th.data(),th.size());if(!s)return s;
             s=upload(p->structure->logical_map,map,forward.topology.edge_count*4);if(!s)return s;
             if(f32 || f64){
                 auto build_csr=[&](bool transposed,std::uint32_t** device,std::uint64_t& footprint)->status {
@@ -440,9 +489,14 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             }
             // Cold host arrays cease to be borrowed when preparation returns.
             s=cuda_status(cudaStreamSynchronize(stream));if(!s)return s;
-            s=physical(execution::rebind_feature_major_binding(fv,p->structure->forward_payload,fh.size(),&p->structure->forward_view));if(!s)return s;
-            s=physical(execution::rebind_transpose_binding(tv,p->structure->transpose_payload,th.size(),&p->structure->transpose_view));if(!s)return s;
-            if (weight_type==execution::numeric_type::f16 || (f32 && p->derive_f16)) {
+            if (needs_f16_projections) {
+                s=physical(execution::build_transpose_binding_host(tr,{th.data(),th.size()},&tv));if(!s)return s;
+                s=cuda_status(cudaMalloc(&p->structure->forward_payload,forward_payload_bytes));if(!s)return s;
+                s=cuda_status(cudaMalloc(&p->structure->transpose_payload,rr.payload_bytes));if(!s)return s;
+                s=upload(p->structure->forward_payload,fh.data(),fh.size());if(!s)return s;
+                s=upload(p->structure->transpose_payload,th.data(),th.size());if(!s)return s;
+                s=physical(execution::rebind_feature_major_binding(fv,p->structure->forward_payload,fh.size(),&p->structure->forward_view));if(!s)return s;
+                s=physical(execution::rebind_transpose_binding(tv,p->structure->transpose_payload,th.size(),&p->structure->transpose_view));if(!s)return s;
                 core::projection_key fk{report.forward_projection,{1,1},core::projection_kind::native_feature_major,::cellerator::layout::projection::feature_major_projection_schema_version,::cellerator::layout::projection::feature_major_projection_variant};
                 core::projection_key tk{report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,::cellerator::layout::projection::transpose_projection_schema_version,::cellerator::layout::projection::transpose_projection_variant};
                 auto projected_numeric=f.numeric;projected_numeric.sparse_storage=execution::numeric_type::f16;
@@ -479,6 +533,7 @@ status create_relation_instance(const prepared_relation_pair& source,cudaStream_
         p->persistent_limit=source.persistent_limit;p->derive_f16=source.derive_f16;p->incarnation=next_pair_incarnation();
         if(!p->incarnation)return {status_code::invalid_state,"pair incarnation exhausted"};
         p->report=source.report;p->report.latest_enqueued_generation={};
+        if (source.vendor) p->report.forward_candidate=p->report.transpose_candidate="retained-csr-f32";
         p->report.derived_f16_generation={};p->report.value_refreshes=0;p->report.accepted_forward_launches=0;p->report.accepted_transpose_launches=0;
         auto edges=p->forward.semantic.topology.edge_count;
         if(!checked_add(p->structure->base_bytes,instance_values_bytes(*p),p->updates.persistent_bytes))
@@ -614,17 +669,16 @@ bool protected_overlap(const prepared_relation_pair& p,const void* data,std::uin
         || overlaps(data,bytes,p.values,(weight_type==execution::numeric_type::f16 || p.derive_f16)?edges*2:0)
         || overlaps(data,bytes,p.authoritative_f32,p.authoritative_f32?edges*4:0)
         || overlaps(data,bytes,p.authoritative_f64,p.authoritative_f64?edges*8:0)
+        || (p.vendor && (overlaps(data,bytes,p.vendor->packed,p.vendor->value_bytes)
+            || overlaps(data,bytes,p.vendor->samples,p.vendor->value_bytes)
+            || overlaps(data,bytes,p.vendor->spmm_work,p.vendor->spmm_bytes)
+            || overlaps(data,bytes,p.vendor->sddmm_work,p.vendor->sddmm_bytes)))
         || overlaps(data,bytes,p.structure->csr_forward,p.structure->csr_forward_bytes) || overlaps(data,bytes,p.structure->csr_transpose,p.structure->csr_transpose_bytes) || overlaps(data,bytes,p.structure->logical_map,edges*4)
         || overlaps(data,bytes,p.structure->forward_payload,p.structure->forward_view.layout.header.payload_bytes)
         || overlaps(data,bytes,p.structure->transpose_payload,p.structure->transpose_view.layout.header.payload_bytes)
         || overlaps(data,bytes,p.structure->device_edges,edges*sizeof(gradient_contract::edge_ref_v1))
         || (p.source_scratch && overlaps(data,bytes,p.source_scratch,p.forward.semantic.topology.source.extent*32))
         || (p.cotangent_scratch && overlaps(data,bytes,p.cotangent_scratch,p.forward.semantic.topology.destination.extent*32));
-}
-__global__ void gather_values(const std::uint16_t* logical,const std::uint32_t* map,
-                             std::uint16_t* packed,std::uint32_t count) {
-    auto i=blockIdx.x*blockDim.x+threadIdx.x;
-    if(i<count)packed[i]=logical[map[i]];
 }
 } // namespace
 status publish_values(prepared_relation_pair& p,const device_values_binding& binding,cudaStream_t stream) noexcept {
@@ -648,13 +702,9 @@ status publish_values(prepared_relation_pair& p,const device_values_binding& bin
     if(protected_overlap(p,binding.f16_data,topology.edge_count*2))
         return {status_code::invalid_argument,"logical input cannot alias packed value storage"};
     s=readiness_status(p.readiness.validate_write(p.report.latest_enqueued_generation,binding.generation,stream));if(!s)return s;
-    cudaError_t submitted=cudaSuccess;
-    if(topology.edge_count) {
-        gather_values<<<(topology.edge_count+255)/256,256,0,stream>>>(
-            static_cast<const std::uint16_t*>(binding.f16_data),p.structure->logical_map,
-            static_cast<std::uint16_t*>(p.values),topology.edge_count);
-        submitted=cudaPeekAtLastError();
-    }
+    const auto submitted=::cellerator::ops::matrix::detail::enqueue_feature_major_values(
+        static_cast<const __half*>(binding.f16_data),p.structure->logical_map,
+        static_cast<__half*>(p.values),static_cast<std::uint32_t>(topology.edge_count),stream);
     s=readiness_status(p.readiness.publish(binding.generation,stream,submitted));
     if(submitted!=cudaSuccess||!s){p.poisoned=true;return submitted!=cudaSuccess?cuda_status(submitted):s;}
     p.last_gradient={};p.last_gradient_output={};
@@ -671,6 +721,26 @@ bool matching_axis(const axis_descriptor& a,const axis_descriptor& b) noexcept {
         && ::cellerator::structure::same_identity(x.domain,y.domain) && ::cellerator::structure::same_identity(x.order,y.order)
         && ::cellerator::structure::same_identity(x.geometry,y.geometry) && ::cellerator::structure::same_identity(x.partition,y.partition);
 }
+status check_dense_operands(const prepared_relation_pair& p, const operation_descriptor& op,
+    const device_state_view& input, const device_result_view& output) noexcept {
+    if(!matching_axis(input.axis,input_axis(op)) || !matching_axis(output.axis,result_axis(op)))
+        return {status_code::invalid_axis,"launch axis identity, order or extent is incompatible"};
+    std::uint64_t input_count=0,output_count=0,input_bytes=0,output_bytes=0;
+    if(!checked_bytes(input_axis(op).extent,op.dense_width,input_count)
+        || !checked_bytes(result_axis(op).extent,op.dense_width,output_count)
+        || !checked_bytes(input_count,numeric_bytes(input.dtype),input_bytes)
+        || !checked_bytes(output_count,numeric_bytes(output.dtype),output_bytes))
+        return {status_code::invalid_shape,"state or result byte range overflows 64 bits"};
+    if(input.count<input_count || output.count<output_count)
+        return {status_code::insufficient_capacity,"state or result buffer count is too small"};
+    auto s=check_pointer(input.data,input_bytes,p.device,numeric_bytes(input.dtype));if(!s)return s;
+    s=check_pointer(output.data,output_bytes,p.device,numeric_bytes(output.dtype));if(!s)return s;
+    if(protected_overlap(p,input.data,input_bytes) || protected_overlap(p,output.data,output_bytes)
+        || overlaps(input.data,input_bytes,output.data,output_bytes))
+        return {status_code::invalid_argument,"input and output byte ranges overlap"};
+    return {};
+}
+
 status check_launch(const prepared_relation_pair& p,const operation_descriptor& op,
     const device_state_view& input,const device_result_view& output,
     execution::value_generation expected,cudaStream_t stream) noexcept {
@@ -685,29 +755,21 @@ status check_launch(const prepared_relation_pair& p,const operation_descriptor& 
         return {status_code::unsupported_numeric_policy,"state/result dtype differs from operation contract"};
     if(!expected.value || expected.value!=p.report.latest_enqueued_generation.value)
         return {status_code::stale_generation,"launch must consume latest enqueued value generation"};
-    if(!matching_axis(input.axis,input_axis(op)) || !matching_axis(output.axis,result_axis(op)))
-        return {status_code::invalid_axis,"launch axis identity, order or extent is incompatible"};
-    std::uint64_t input_count=0,output_count=0,input_bytes=0,output_bytes=0;
-    if(!checked_bytes(input_axis(op).extent,op.dense_width,input_count)
-        || !checked_bytes(result_axis(op).extent,op.dense_width,output_count)
-        || !checked_bytes(input_count,numeric_bytes(input.dtype),input_bytes)
-        || !checked_bytes(output_count,numeric_bytes(output.dtype),output_bytes))
-        return {status_code::invalid_shape,"state or result byte range overflows 64 bits"};
-    if(input.count<input_count || output.count<output_count)
-        return {status_code::insufficient_capacity,"state or result buffer count is too small"};
-    s=check_pointer(input.data,input_bytes,p.device,numeric_bytes(input.dtype));if(!s)return s;
-    s=check_pointer(output.data,output_bytes,p.device,numeric_bytes(output.dtype));if(!s)return s;
-    if(protected_overlap(p,input.data,input_bytes) || protected_overlap(p,output.data,output_bytes)
-        || overlaps(input.data,input_bytes,output.data,output_bytes))
-        return {status_code::invalid_argument,"input and output byte ranges overlap"};
-    return {};
+    return check_dense_operands(p, op, input, output);
 }
 } // namespace
 status enqueue(prepared_relation_pair& p,const operation_descriptor& op,
     const device_state_view& input,const device_result_view& output,
     execution::value_generation expected,cudaStream_t stream) noexcept {
     auto s=check_launch(p,op,input,output,expected,stream);if(!s)return s;
-    if(op.arithmetic.relation_storage==execution::numeric_type::f32
+    if (p.vendor) {
+        const bool forward = op.direction == orientation::forward;
+        const auto& b = p.vendor->buffers;
+        if (input.data != (forward ? b.input.data : b.cotangent.data)
+            || output.data != (forward ? b.output.data : b.input_gradient.data))
+            return {status_code::invalid_argument,"dense addresses differ from cuSPARSE preparation"};
+        s = sparse_status((forward ? p.vendor->forward : p.vendor->transpose).enqueue());
+    } else if(op.arithmetic.relation_storage==execution::numeric_type::f32
         && op.arithmetic.multiply==execution::numeric_type::f32){
         const auto& t=op.topology;const auto rows=result_axis(op).extent;
         if(!t.edge_count) {
@@ -719,13 +781,14 @@ status enqueue(prepared_relation_pair& p,const operation_descriptor& op,
                 s=cuda_status(cudaPeekAtLastError());
             }
         }
-        else try {
-            auto* csr=op.direction==orientation::forward?p.structure->csr_forward:p.structure->csr_transpose;
-            runtime::execution_context context{};context.device=p.device;context.stream=stream;
-            compute::sparse::project::csr_spmm_fwd_f32(context,csr,csr+rows+1,p.authoritative_f32,rows,input_axis(op).extent,
-                static_cast<const float*>(input.data),op.dense_width,op.dense_width,static_cast<float*>(output.data),op.dense_width,csr+rows+1+t.edge_count,
-                effect_input_scale(op),effect_destination_scale(op));
-        }catch(...){s={status_code::invalid_state,"f32 candidate launch failed"};}
+        else {
+            const auto* csr = op.direction==orientation::forward?p.structure->csr_forward:p.structure->csr_transpose;
+            matrix::Csr<const float> a{{rows, input_axis(op).extent, t.edge_count,
+                tensor::base::CompressedAxis::row, csr, csr+rows+1}, p.authoritative_f32};
+            s = cuda_status(matrix::csr_spmm(a, static_cast<const float*>(input.data), op.dense_width,
+                op.dense_width, static_cast<float*>(output.data), op.dense_width, stream,
+                csr+rows+1+t.edge_count, effect_input_scale(op), effect_destination_scale(op)));
+        }
     }else if(op.arithmetic.multiply==execution::numeric_type::f64){
         const auto& t=op.topology;const auto rows=result_axis(op).extent;
         if(!t.edge_count){
@@ -736,29 +799,25 @@ status enqueue(prepared_relation_pair& p,const operation_descriptor& op,
                     static_cast<double*>(output.data),count,effect_destination_scale_f64(op));
                 s=cuda_status(cudaPeekAtLastError());
             }
-        }else try {
-            auto* csr=op.direction==orientation::forward?p.structure->csr_forward:p.structure->csr_transpose;
-            runtime::execution_context context{};context.device=p.device;context.stream=stream;
-            const auto* indices=csr+rows+1+t.edge_count;
-            auto* output_data=static_cast<double*>(output.data);
-            if(op.arithmetic.relation_storage==execution::numeric_type::f32
-                && op.arithmetic.input_storage==execution::numeric_type::f64)
-                compute::sparse::project::csr_spmm_fwd<float,double,double,double,double,double>(
-                    context,csr,csr+rows+1,p.authoritative_f32,rows,input_axis(op).extent,
-                    static_cast<const double*>(input.data),op.dense_width,op.dense_width,output_data,op.dense_width,
-                    indices,effect_input_scale_f64(op),effect_destination_scale_f64(op));
-            else if(op.arithmetic.relation_storage==execution::numeric_type::f64
-                && op.arithmetic.input_storage==execution::numeric_type::f32)
-                compute::sparse::project::csr_spmm_fwd<double,float,double,double,double,double>(
-                    context,csr,csr+rows+1,p.authoritative_f64,rows,input_axis(op).extent,
-                    static_cast<const float*>(input.data),op.dense_width,op.dense_width,output_data,op.dense_width,
-                    indices,effect_input_scale_f64(op),effect_destination_scale_f64(op));
-            else
-                compute::sparse::project::csr_spmm_fwd<double,double,double,double,double,double>(
-                    context,csr,csr+rows+1,p.authoritative_f64,rows,input_axis(op).extent,
-                    static_cast<const double*>(input.data),op.dense_width,op.dense_width,output_data,op.dense_width,
-                    indices,effect_input_scale_f64(op),effect_destination_scale_f64(op));
-        }catch(...){s={status_code::invalid_state,"f64 candidate launch failed"};}
+        }else {
+            const auto* csr = op.direction==orientation::forward?p.structure->csr_forward:p.structure->csr_transpose;
+            tensor::base::CompressedStructureView<uint32_t> layout{rows, input_axis(op).extent, t.edge_count,
+                tensor::base::CompressedAxis::row, csr, csr+rows+1};
+            const auto* indices = csr+rows+1+t.edge_count;
+            auto* y = static_cast<double*>(output.data);
+            auto n = op.dense_width;
+            auto alpha = effect_input_scale_f64(op), beta = effect_destination_scale_f64(op);
+            if (op.arithmetic.relation_storage==execution::numeric_type::f32) {
+                matrix::Csr<const float> a{layout, p.authoritative_f32};
+                s = cuda_status(matrix::csr_spmm(a, static_cast<const double*>(input.data), n, n, y, n,
+                    stream, indices, alpha, beta));
+            } else {
+                matrix::Csr<const double> a{layout, p.authoritative_f64};
+                s = cuda_status(op.arithmetic.input_storage==execution::numeric_type::f32
+                    ? matrix::csr_spmm(a, static_cast<const float*>(input.data), n, n, y, n, stream, indices, alpha, beta)
+                    : matrix::csr_spmm(a, static_cast<const double*>(input.data), n, n, y, n, stream, indices, alpha, beta));
+            }
+        }
     }else s=submit_half(p,op.direction,input.data,output.data);
     if(!s){p.poisoned=true;return s;}
     if(op.direction==orientation::forward)++p.report.accepted_forward_launches;
@@ -800,6 +859,95 @@ status inspect_updates(const prepared_relation_pair& p,relation_update_report* o
     *out=p.updates;out->relation=p.report;
     out->ready_records=p.readiness.ready_records();out->reader_returns=p.readiness.reader_returns();return {};
 }
+namespace {
+status provision_cusparse(relation_cusparse& v, const prepared_relation_pair& p,
+    const gradient_preparation_options& options, cudaStream_t stream) noexcept {
+    auto s = sparse_status(cusparseCreate(&v.handle)); if (!s) return s;
+    s = sparse_status(cusparseSetStream(v.handle, stream)); if (!s) return s;
+    const auto& t = p.forward.semantic.topology;
+    const auto rows = t.destination.extent, cols = t.source.extent, edges = t.edge_count;
+    constexpr size_t width = 16;
+    v.value_bytes = edges * sizeof(float);
+    s = cuda_status(cudaMalloc(&v.packed, v.value_bytes)); if (!s) return s;
+    s = cuda_status(cudaMalloc(&v.samples, v.value_bytes)); if (!s) return s;
+    const auto* indices = p.structure->csr_forward;
+    v.csr_to_physical = indices + rows + 1 + edges;
+    const auto* offsets = reinterpret_cast<const int32_t*>(indices);
+    const auto* columns = offsets + rows + 1;
+    const tensor::base::CompressedStructureView<int32_t> layout{rows, cols, edges,
+        tensor::base::CompressedAxis::row, offsets, columns};
+    const sparse::csr_view csr{layout, v.packed};
+    const auto& b = *options.fixed_buffers;
+    const memory::const_matrix_view<float> x{static_cast<const float*>(b.input.data), cols, width, width};
+    const memory::const_matrix_view<float> dy{static_cast<const float*>(b.cotangent.data), rows, width, width};
+    s = sparse_status(v.forward.provision(v.handle, CUSPARSE_OPERATION_NON_TRANSPOSE, csr, CUDA_R_32F,
+        x, {static_cast<float*>(b.output.data), rows, width, width}, CUSPARSE_SPMM_CSR_ALG2)); if (!s) return s;
+    s = sparse_status(v.transpose.provision(v.handle, CUSPARSE_OPERATION_TRANSPOSE, csr, CUDA_R_32F,
+        dy, {static_cast<float*>(b.input_gradient.data), cols, width, width}, CUSPARSE_SPMM_CSR_ALG2)); if (!s) return s;
+    s = sparse_status(v.gradient.provision(v.handle, {layout, v.samples}, dy, x)); if (!s) return s;
+    v.spmm_bytes = v.forward.workspace_bytes() > v.transpose.workspace_bytes()
+        ? v.forward.workspace_bytes() : v.transpose.workspace_bytes();
+    v.sddmm_bytes = v.gradient.workspace_bytes();
+    uint64_t scratch = 0, extra = 0, total = 0;
+    if (!checked_add(v.spmm_bytes, v.sddmm_bytes, scratch) || !checked_add(scratch, v.value_bytes, scratch)
+        || !checked_add(scratch, v.value_bytes, extra) || !checked_add(p.updates.persistent_bytes, extra, total)
+        || (options.scratch_byte_limit && scratch > options.scratch_byte_limit)
+        || (p.persistent_limit && total > p.persistent_limit))
+        return {status_code::insufficient_capacity,"cuSPARSE workspace exceeds prepared relation budget"};
+    if (v.spmm_bytes) { s = cuda_status(cudaMalloc(&v.spmm_work, v.spmm_bytes)); if (!s) return s; }
+    if (v.sddmm_bytes) { s = cuda_status(cudaMalloc(&v.sddmm_work, v.sddmm_bytes)); if (!s) return s; }
+    s = sparse_status(v.forward.bind_workspace(v.spmm_work, v.spmm_bytes)); if (!s) return s;
+    s = sparse_status(v.transpose.bind_workspace(v.spmm_work, v.spmm_bytes)); if (!s) return s;
+    // Preprocessing can enqueue work. Drain it before returning or releasing a partial plan.
+    s = sparse_status(v.gradient.bind_workspace(v.sddmm_work, v.sddmm_bytes));
+    const auto completed = cuda_status(cudaStreamSynchronize(stream));
+    if (!completed) return completed;
+    if (!s) return s;
+    v.buffers = b;
+    return {};
+}
+
+status prepare_cusparse(prepared_relation_pair& p, const relation_calculus_descriptor& calculus,
+    const gradient_preparation_options& options, cudaStream_t stream) noexcept {
+    const auto& t = p.forward.semantic.topology;
+    if (!t.edge_count || t.edge_count > INT32_MAX || t.destination.extent > INT32_MAX || t.source.extent > INT32_MAX
+        || p.derive_f16 || calculus.gradient != gradient_arithmetic::full_f32
+        || p.forward.semantic.update != output_update::overwrite)
+        return {status_code::unsupported_semantics,"cuSPARSE requires nonempty FP32 overwrite and full FP32 gradients"};
+    const auto value_bytes = t.edge_count * sizeof(float);
+    if ((options.scratch_byte_limit && value_bytes > options.scratch_byte_limit)
+        || (p.persistent_limit && (p.updates.persistent_bytes > p.persistent_limit
+            || 2 * value_bytes > p.persistent_limit - p.updates.persistent_bytes)))
+        return {status_code::insufficient_capacity,"cuSPARSE value planes exceed prepared relation budget"};
+    const auto& b = *options.fixed_buffers;
+    if (b.input.dtype != execution::numeric_type::f32 || b.cotangent.dtype != execution::numeric_type::f32
+        || b.output.dtype != execution::numeric_type::f32 || b.input_gradient.dtype != execution::numeric_type::f32)
+        return {status_code::unsupported_numeric_policy,"cuSPARSE requires FP32 dense buffers"};
+    if (b.input.device_ordinal != p.device || b.output.device_ordinal != p.device
+        || b.cotangent.device_ordinal != p.device || b.input_gradient.device_ordinal != p.device)
+        return {status_code::incompatible_device,"cuSPARSE buffers must use the owner device"};
+    auto s = check_dense_operands(p, p.forward.semantic, b.input, b.output); if (!s) return s;
+    s = check_dense_operands(p, p.transpose.semantic, b.cotangent, b.input_gradient); if (!s) return s;
+    const auto nx = t.source.extent * 16 * sizeof(float), ny = t.destination.extent * 16 * sizeof(float);
+    if (overlaps(b.output.data,ny,b.cotangent.data,ny) || overlaps(b.input_gradient.data,nx,b.input.data,nx)
+        || overlaps(b.output.data,ny,b.input_gradient.data,nx))
+        return {status_code::invalid_argument,"cuSPARSE training outputs must have disjoint storage"};
+    relation_cusparse* candidate = nullptr;
+    try { candidate = new relation_cusparse; }
+    catch (...) { return {status_code::insufficient_capacity,"cannot provision cuSPARSE descriptor owner"}; }
+    s = provision_cusparse(*candidate, p, options, stream);
+    if (!s) { delete candidate; return s; }
+    p.vendor = candidate;
+    p.calculus = calculus;
+    p.gradient_prepared = true;
+    p.report.forward_candidate = p.report.transpose_candidate = "cusparse-csr-f32";
+    p.updates.persistent_bytes += candidate->value_bytes;
+    p.updates.scratch_bytes += candidate->value_bytes + candidate->spmm_bytes + candidate->sddmm_bytes;
+    ++p.updates.gradient_preparations;
+    return {};
+}
+}
+
 status prepare_relation_gradient(prepared_relation_pair& p,const relation_calculus_descriptor& calculus,
     const gradient_preparation_options& options,cudaStream_t stream) noexcept {
     if(!float_gradient_contract(p))return {status_code::unsupported_numeric_policy,"gradient provider supports FP32 relation/input/output only"};
@@ -814,6 +962,12 @@ status prepare_relation_gradient(prepared_relation_pair& p,const relation_calcul
     if(options.route==gradient_route::force_hybrid && calculus.gradient!=gradient_arithmetic::round_operands_f16_rne)
         return {status_code::unsupported_semantics,"full-f32 semantics cannot use WMMA"};
     if(p.gradient_prepared)return {status_code::invalid_state,"gradient already prepared"};
+    if (options.fixed_buffers && options.route == gradient_route::automatic
+        && !p.report.latest_enqueued_generation.value) {
+        s = prepare_cusparse(p, calculus, options, stream);
+        if (s || (s.code != status_code::unsupported_semantics && s.code != status_code::insufficient_capacity))
+            return s;
+    }
     auto nx=calculus.forward.topology.source.extent*16,ny=calculus.forward.topology.destination.extent*16;
     auto bytes=p.structure->physical_edges.size()*sizeof(gradient_contract::edge_ref_v1);
     auto scratch=calculus.gradient==gradient_arithmetic::round_operands_f16_rne?(nx+ny)*2:0;
@@ -860,7 +1014,7 @@ status prepare_relation_gradient(prepared_relation_pair& p,const relation_calcul
     if(!selection.use_hybrid){gradient_provider::destroy_hybrid_gradient(hybrid);hybrid=nullptr;hybrid_report={};}
     p.structure->device_edges=edges;p.source_scratch=x;p.cotangent_scratch=y;
     p.hybrid=hybrid;p.hybrid_selected=selection.use_hybrid;
-    p.calculus=calculus;p.gradient_options=options;p.gradient_prepared=true;
+    p.calculus=calculus;p.gradient_prepared=true;
     p.updates.persistent_bytes+=bytes+hybrid_report.persistent_bytes;
     p.updates.scratch_bytes=scratch+hybrid_report.scratch_bytes;++p.updates.gradient_preparations;
     return {};
@@ -903,28 +1057,39 @@ status enqueue_edge_gradient(prepared_relation_pair& p,const relation_calculus_d
         overlaps(output.f32_data,t.edge_count*4,input.data,nx*4)||
         overlaps(output.f32_data,t.edge_count*4,cotangent.data,ny*4))
         return {status_code::invalid_argument,"gradient operands overlap protected or output storage"};
-    gradient_provider::relation_gradient_request request{};
-    request.support={p.structure->device_edges,0,static_cast<std::uint32_t>(t.edge_count),
-        static_cast<std::uint32_t>(t.source.extent),static_cast<std::uint32_t>(t.destination.extent)};
-    request.source=static_cast<const float*>(input.data);request.cotangent=static_cast<const float*>(cotangent.data);request.output=static_cast<float*>(output.f32_data);
-    request.source_capacity=input.count;request.cotangent_capacity=cotangent.count;request.output_capacity=output.count;
-    request.half_rounded=calculus.gradient==gradient_arithmetic::round_operands_f16_rne;
-    request.source_scratch=p.source_scratch;request.cotangent_scratch=p.cotangent_scratch;
-    request.source_scratch_capacity=nx;request.cotangent_scratch_capacity=ny;request.stream=stream;
-    auto before=p.hybrid?gradient_provider::inspect_hybrid_gradient(*p.hybrid):gradient_provider::hybrid_report{};
-    auto result=p.hybrid?gradient_provider::enqueue_hybrid_gradient(*p.hybrid,request,p.hybrid_selected):
-        gradient_provider::enqueue_relation_gradient(request);
-    if(result!=gradient_contract::status_v1::success) {
-        p.poisoned=true;return {status_code::cuda_failure,"gradient provider submission failed"};
+    if (p.vendor) {
+        const auto& v = *p.vendor;
+        if (input.data != v.buffers.input.data || cotangent.data != v.buffers.cotangent.data)
+            return {status_code::invalid_argument,"gradient addresses differ from cuSPARSE preparation"};
+        s = sparse_status(v.gradient.enqueue());
+        if (s) s = cuda_status(sparse::scatter_csr_samples(static_cast<float*>(output.f32_data),
+            v.samples, v.csr_to_physical, uint32_t(t.edge_count), stream));
+        if (!s) { p.poisoned = true; return s; }
+        ++p.updates.cusparse_gradient_launches;
+    } else {
+        gradient_provider::relation_gradient_request request{};
+        request.support={p.structure->device_edges,0,static_cast<std::uint32_t>(t.edge_count),
+            static_cast<std::uint32_t>(t.source.extent),static_cast<std::uint32_t>(t.destination.extent)};
+        request.source=static_cast<const float*>(input.data);request.cotangent=static_cast<const float*>(cotangent.data);request.output=static_cast<float*>(output.f32_data);
+        request.source_capacity=input.count;request.cotangent_capacity=cotangent.count;request.output_capacity=output.count;
+        request.half_rounded=calculus.gradient==gradient_arithmetic::round_operands_f16_rne;
+        request.source_scratch=p.source_scratch;request.cotangent_scratch=p.cotangent_scratch;
+        request.source_scratch_capacity=nx;request.cotangent_scratch_capacity=ny;request.stream=stream;
+        auto before=p.hybrid?gradient_provider::inspect_hybrid_gradient(*p.hybrid):gradient_provider::hybrid_report{};
+        auto result=p.hybrid?gradient_provider::enqueue_hybrid_gradient(*p.hybrid,request,p.hybrid_selected):
+            gradient_provider::enqueue_relation_gradient(request);
+        if(result!=gradient_contract::status_v1::success) {
+            p.poisoned=true;return {status_code::cuda_failure,"gradient provider submission failed"};
+        }
+        if(p.hybrid) {
+            auto after=gradient_provider::inspect_hybrid_gradient(*p.hybrid);
+            p.updates.sparse_launches+=after.sparse_launches-before.sparse_launches;
+            p.updates.wmma_launches+=after.wmma_launches-before.wmma_launches;
+            p.updates.residual_launches+=after.residual_launches-before.residual_launches;
+            p.updates.operand_pack_refreshes+=after.pack_refreshes-before.pack_refreshes;
+        } else if(t.edge_count) {++p.updates.sparse_launches;if(request.half_rounded)++p.updates.operand_pack_refreshes;}
     }
     ++p.updates.gradient_launches;
-    if(p.hybrid) {
-        auto after=gradient_provider::inspect_hybrid_gradient(*p.hybrid);
-        p.updates.sparse_launches+=after.sparse_launches-before.sparse_launches;
-        p.updates.wmma_launches+=after.wmma_launches-before.wmma_launches;
-        p.updates.residual_launches+=after.residual_launches-before.residual_launches;
-        p.updates.operand_pack_refreshes+=after.pack_refreshes-before.pack_refreshes;
-    } else if(t.edge_count) {++p.updates.sparse_launches;if(request.half_rounded)++p.updates.operand_pack_refreshes;}
     p.last_gradient={t.identity,t.epoch,p.physical_order,expected,input_version,cotangent_version,
         p.updates.gradient_launches,p.incarnation,calculus.gradient};
     p.last_gradient_output=output;*produced=p.last_gradient;return {};
@@ -968,7 +1133,10 @@ status enqueue_value_update(prepared_relation_pair& p,const value_update_request
     }
     s=readiness_status(p.readiness.validate_write(r.expected,r.next,stream));if(!s)return s;
     const bool f32=p.forward.semantic.arithmetic.relation_storage==execution::numeric_type::f32;
-    auto result=f32?gradient_provider::enqueue_relation_value_update_f32(p.authoritative_f32,p.values,
+    auto result=p.vendor?sparse::update_and_refresh_csr(p.authoritative_f32,p.vendor->packed,
+        static_cast<const float*>(r.operand.f32_data),p.vendor->csr_to_physical,
+        uint32_t(p.forward.semantic.topology.edge_count),r.kind==value_update_kind::gradient_step,r.alpha,false,stream)
+        :f32?gradient_provider::enqueue_relation_value_update_f32(p.authoritative_f32,p.values,
         static_cast<const float*>(r.operand.f32_data),static_cast<std::uint32_t>(p.forward.semantic.topology.edge_count),
         r.kind==value_update_kind::gradient_step,r.alpha,stream):
         gradient_provider::enqueue_relation_value_update(p.values,static_cast<const float*>(r.operand.f32_data),
@@ -976,6 +1144,7 @@ status enqueue_value_update(prepared_relation_pair& p,const value_update_request
     s=readiness_status(p.readiness.publish(r.next,stream,result));
     if(result!=cudaSuccess||!s){p.poisoned=true;return result!=cudaSuccess?cuda_status(result):s;}
     p.report.latest_enqueued_generation=r.next;++p.updates.physical_updates;
+    if (p.vendor) ++p.updates.csr_value_refreshes;
     if(f32)p.report.derived_f16_generation=p.derive_f16?r.next:execution::value_generation{};
     p.last_gradient={};p.last_gradient_output={};return {};
 }
@@ -1120,10 +1289,14 @@ template<class T> status publish_typed_values(prepared_relation_pair& p,
         else
             gather_authoritative<<<(t.edge_count+255)/256,256,0,stream>>>(binding.data,p.structure->logical_map,p.authoritative_f64,static_cast<std::uint32_t>(t.edge_count));
         submitted=cudaPeekAtLastError();
+        if (p.vendor && submitted==cudaSuccess)
+            submitted=sparse::refresh_csr_values(p.vendor->packed,p.authoritative_f32,
+                p.vendor->csr_to_physical,uint32_t(t.edge_count),stream);
     }
     s=readiness_status(p.readiness.publish(binding.generation,stream,submitted));
     if(submitted!=cudaSuccess||!s){p.poisoned=true;return submitted!=cudaSuccess?cuda_status(submitted):s;}
     p.report.latest_enqueued_generation=binding.generation;++p.report.value_refreshes;
+    if (p.vendor) ++p.updates.csr_value_refreshes;
     p.report.derived_f16_generation=(relation_type==execution::numeric_type::f32&&p.derive_f16)?binding.generation:execution::value_generation{};
     p.last_gradient={};p.last_gradient_output={};return {};
 }
