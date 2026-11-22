@@ -52,7 +52,7 @@ def main():
                 "tests/framework/test_nn_grouped_linear.py",
                 "include/Cellerator/modeling/cuda/grouped_linear.hh",
                 "src/modeling/cuda/grouped_linear.cu",
-                "bindings/modeling_cuda/module.cc",
+                "python/bindings/modeling_cuda/module.cc",
             )
         },
     }

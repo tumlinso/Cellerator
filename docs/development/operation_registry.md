@@ -99,7 +99,7 @@
 - Purpose: provide reusable FP32 CUDA pairwise local-smoothness and far-separation loss evaluation with first-order gradients.
 - Owner: `src/compute/operation/model_ops/`
 - Boundary:
-  Torch adapter in [`bindings/torch/src/model_ops.cu`](../../bindings/torch/src/model_ops.cu)
+  Torch adapter in [`src/interop/torch/model_ops.cu`](../../src/interop/torch/model_ops.cu)
   Torch-free pointer API in [`include/Cellerator/compute/operation/model_ops/model_ops.hh`](../../include/Cellerator/compute/operation/model_ops/model_ops.hh)
   CUDA backend in [`src/compute/operation/model_ops/model_ops.cu`](../../src/compute/operation/model_ops/model_ops.cu)
 - Inputs:
@@ -124,7 +124,7 @@
 - Purpose: provide reusable FP32 CUDA bucket ranking, anchor, and spread losses with first-order gradients.
 - Owner: `src/compute/operation/model_ops/`
 - Boundary:
-  Torch adapter in [`bindings/torch/src/model_ops.cu`](../../bindings/torch/src/model_ops.cu)
+  Torch adapter in [`src/interop/torch/model_ops.cu`](../../src/interop/torch/model_ops.cu)
   Torch-free pointer API in [`include/Cellerator/compute/operation/model_ops/model_ops.hh`](../../include/Cellerator/compute/operation/model_ops/model_ops.hh)
   CUDA backend in [`src/compute/operation/model_ops/model_ops.cu`](../../src/compute/operation/model_ops/model_ops.cu)
 - Inputs:
@@ -149,7 +149,7 @@
 - Purpose: build quantizer forward-neighbor dense targets on GPU when the reference feature table is already resident there.
 - Owner: `src/compute/operation/model_ops/` (numerical gather); quantizer remains a consumer
 - Boundary:
-  Torch adapter in [`bindings/torch/src/model_ops.cu`](../../bindings/torch/src/model_ops.cu)
+  Torch adapter in [`src/interop/torch/model_ops.cu`](../../src/interop/torch/model_ops.cu)
   Torch-free pointer API in [`include/Cellerator/compute/operation/model_ops/model_ops.hh`](../../include/Cellerator/compute/operation/model_ops/model_ops.hh)
   CUDA backend in [`src/compute/operation/model_ops/model_ops.cu`](../../src/compute/operation/model_ops/model_ops.cu)
 - Inputs:

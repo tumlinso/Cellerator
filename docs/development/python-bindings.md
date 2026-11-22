@@ -7,6 +7,11 @@ backend and maturity boundaries. See the [source routing map](routing.md) and
 [current implementation record](../current_implementation.qmd) before relying
 on a capability.
 
+Compiled Python extension sources live under `python/bindings/`. The wheel
+packages `python/cellerator/` and the compiled modules installed by CMake.
+Native LibTorch and ATen adapters live under `src/interop/torch/` and have
+their own C++ targets.
+
 AnnData is a required dependency (`anndata>=0.10`). The
 `cellerator.adapters.anndata` adapter selects explicit `X`, layer, or raw inputs,
 preserves sparse data, and aligns cells and output observations by identity.

@@ -24,7 +24,7 @@ target_link_libraries(cellerator_modeling INTERFACE
 if(CELLERATOR_ENABLE_PYTHON)
     # Python/pybind11 are already discovered by CelleratorPython.cmake.
     pybind11_add_module(cellerator_modeling_python MODULE
-        ${PROJECT_SOURCE_DIR}/bindings/modeling/module.cc)
+        ${PROJECT_SOURCE_DIR}/python/bindings/modeling/module.cc)
     target_link_libraries(cellerator_modeling_python PRIVATE Cellerator::modeling Python::Module)
     set_target_properties(cellerator_modeling_python PROPERTIES OUTPUT_NAME _modeling_native)
     install(TARGETS cellerator_modeling_python

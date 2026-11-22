@@ -18,7 +18,7 @@ target_include_directories(cellerator_conditional PUBLIC
 
 if(CELLERATOR_ENABLE_PYTHON)
     pybind11_add_module(cellerator_conditional_python MODULE
-        ${PROJECT_SOURCE_DIR}/bindings/conditional/module.cc)
+        ${PROJECT_SOURCE_DIR}/python/bindings/conditional/module.cc)
     target_link_libraries(cellerator_conditional_python PRIVATE Cellerator::conditional Python::Module)
     set_target_properties(cellerator_conditional_python PROPERTIES OUTPUT_NAME _conditional_native)
     install(TARGETS cellerator_conditional_python

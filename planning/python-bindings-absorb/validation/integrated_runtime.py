@@ -14,9 +14,9 @@ env = dict(os.environ, PYTHONPATH=str(args.package_root),
            CELLERATOR_REQUIRE_NATIVE="1", PYTHONDONTWRITEBYTECODE="1")
 for executable in (
     args.build / "cellerator_indexed_mechanism_binding_test",
-    args.build / "bindings/torch/cellerator_torch_native_views_test",
-    args.build / "bindings/torch/cellerator_torch_program_ops_test",
-    args.build / "bindings/torch/cellerator_torch_autograd_ops_test",
+    args.build / "src/interop/torch/cellerator_torch_native_views_test",
+    args.build / "src/interop/torch/cellerator_torch_program_ops_test",
+    args.build / "src/interop/torch/cellerator_torch_autograd_ops_test",
 ):
     print(f"Running rebuilt {executable.name}", flush=True)
     subprocess.run([str(executable)], check=True, env=env)

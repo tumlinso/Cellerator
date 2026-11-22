@@ -699,7 +699,8 @@ include/Cellerator/                 # public native contracts, including cell.hh
 src/                                 # native implementations, grouped by owner
   common/ structure/ support/ indexing/ gating/ layout/
   ops/<family>/                     # numeric, matrix, process, sparse, etc.
-bindings/                            # thin Python and optional Torch adapters
+  interop/torch/                    # optional native LibTorch and ATen adapters
+python/bindings/                     # compiled Python extension sources
 python/cellerator/                   # installed Python package
   nn/ ops/ adapters/ torch/           # neural compositions, operations, integrations
   interactions/ inference/            # relationships and inference mechanisms
