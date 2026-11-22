@@ -86,7 +86,7 @@ __host__ __device__ __forceinline__ real::storage_t *at(dense * __restrict__ m, 
 }
 
 __host__ __forceinline__ void clear(dense * __restrict__ m) {
-    if ((m->flags & dense_host_registered) != 0u && m->val != 0) cudaHostUnregister(m->val);
+    if ((m->flags & dense_host_registered) != 0u && m->val != 0) ::cellerator::cuda_compat::unregister_host_memory(m->val);
     if (m->storage != 0) free(m->storage);
     init(m);
 }
@@ -95,7 +95,7 @@ __host__ __forceinline__ int allocate(dense * __restrict__ m) {
     const size_t total_bytes = payload_bytes(m);
     void *storage = 0;
 
-    if ((m->flags & dense_host_registered) != 0u && m->val != 0) cudaHostUnregister(m->val);
+    if ((m->flags & dense_host_registered) != 0u && m->val != 0) ::cellerator::cuda_compat::unregister_host_memory(m->val);
     if (m->storage != 0) free(m->storage);
     m->flags = 0u;
     m->storage = 0;
@@ -114,23 +114,23 @@ __host__ __forceinline__ int pin(dense * __restrict__ m) {
 
     if (m == 0 || m->val == 0 || total_bytes == 0u) return 1;
     if ((m->flags & dense_host_registered) != 0u) return 1;
-    err = cudaHostRegister(m->val, total_bytes, cudaHostRegisterPortable);
+    err = ::cellerator::cuda_compat::register_host_memory(m->val, total_bytes);
     if (err == cudaSuccess) {
         m->flags |= dense_host_registered;
         return 1;
     }
     if (err == cudaErrorHostMemoryAlreadyRegistered) {
-        cudaGetLastError();
+        ::cellerator::cuda_compat::clear_host_registration_error();
         m->flags |= dense_host_registered;
         return 1;
     }
-    cudaGetLastError();
+    ::cellerator::cuda_compat::clear_host_registration_error();
     return 0;
 }
 
 __host__ __forceinline__ void unpin(dense * __restrict__ m) {
     if (m == 0 || (m->flags & dense_host_registered) == 0u || m->val == 0) return;
-    cudaHostUnregister(m->val);
+    ::cellerator::cuda_compat::unregister_host_memory(m->val);
     m->flags &= ~dense_host_registered;
 }
 

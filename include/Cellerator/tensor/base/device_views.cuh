@@ -1,8 +1,8 @@
 #pragma once
 
+#include <Cellerator/common/cuda_compat.cuh>
 #include <Cellerator/tensor/base/blocked_ell_layout.hh>
 #include <Cellerator/tensor/base/sliced_ell_layout.hh>
-#include <cuda_fp16.h>
 
 namespace cellerator::tensor::base::device {
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stddef.h>
+
 #ifndef CELLERATOR_ENABLE_CUDA
 #ifdef CELLSHARD_ENABLE_CUDA
 #define CELLERATOR_ENABLE_CUDA CELLSHARD_ENABLE_CUDA
@@ -189,3 +191,31 @@ inline __half __float2half(float value) {
 #endif
 
 #undef CELLERATOR_USE_NATIVE_CUDA_TYPES
+
+namespace cellerator::cuda_compat {
+
+inline cudaError_t register_host_memory(void *p, size_t n) {
+#if CELLERATOR_ENABLE_CUDA
+    return cudaHostRegister(p, n, cudaHostRegisterPortable);
+#else
+    (void)p;
+    (void)n;
+    return cudaSuccess;
+#endif
+}
+
+inline void unregister_host_memory(void *p) {
+#if CELLERATOR_ENABLE_CUDA
+    cudaHostUnregister(p);
+#else
+    (void)p;
+#endif
+}
+
+inline void clear_host_registration_error() {
+#if CELLERATOR_ENABLE_CUDA
+    cudaGetLastError();
+#endif
+}
+
+} // namespace cellerator::cuda_compat

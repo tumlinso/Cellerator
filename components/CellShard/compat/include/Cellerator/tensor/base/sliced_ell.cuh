@@ -133,7 +133,7 @@ __host__ __device__ __forceinline__ real::storage_t *at(sliced_ell * __restrict_
 }
 
 __host__ __forceinline__ void clear(sliced_ell * __restrict__ m) {
-    if ((m->flags & sliced_ell_host_registered) != 0u && m->storage != 0) cudaHostUnregister(m->storage);
+    if ((m->flags & sliced_ell_host_registered) != 0u && m->storage != 0) ::cellerator::cuda_compat::unregister_host_memory(m->storage);
     if (m->storage != 0) std::free(m->storage);
     else {
         std::free(m->slice_row_offsets);
@@ -165,7 +165,7 @@ __host__ __forceinline__ int allocate(sliced_ell * __restrict__ m,
     const std::size_t total_bytes = val_offset + val_bytes;
     void *storage = 0;
 
-    if ((m->flags & sliced_ell_host_registered) != 0u && m->storage != 0) cudaHostUnregister(m->storage);
+    if ((m->flags & sliced_ell_host_registered) != 0u && m->storage != 0) ::cellerator::cuda_compat::unregister_host_memory(m->storage);
     if (m->storage != 0) std::free(m->storage);
     else {
         std::free(m->slice_row_offsets);
@@ -203,23 +203,23 @@ __host__ __forceinline__ int pin(sliced_ell * __restrict__ m) {
     cudaError_t err = cudaSuccess;
     if (m->storage == 0 || total_bytes == 0u) return 1;
     if ((m->flags & sliced_ell_host_registered) != 0u) return 1;
-    err = cudaHostRegister(m->storage, total_bytes, cudaHostRegisterPortable);
+    err = ::cellerator::cuda_compat::register_host_memory(m->storage, total_bytes);
     if (err == cudaSuccess) {
         m->flags |= sliced_ell_host_registered;
         return 1;
     }
     if (err == cudaErrorHostMemoryAlreadyRegistered) {
-        cudaGetLastError();
+        ::cellerator::cuda_compat::clear_host_registration_error();
         m->flags |= sliced_ell_host_registered;
         return 1;
     }
-    cudaGetLastError();
+    ::cellerator::cuda_compat::clear_host_registration_error();
     return 0;
 }
 
 __host__ __forceinline__ void unpin(sliced_ell * __restrict__ m) {
     if ((m->flags & sliced_ell_host_registered) == 0u || m->storage == 0) return;
-    cudaHostUnregister(m->storage);
+    ::cellerator::cuda_compat::unregister_host_memory(m->storage);
     m->flags &= ~sliced_ell_host_registered;
 }
 

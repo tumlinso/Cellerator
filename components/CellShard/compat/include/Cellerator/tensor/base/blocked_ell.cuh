@@ -99,7 +99,7 @@ __host__ __device__ __forceinline__ real::storage_t *at(blocked_ell * __restrict
 }
 
 __host__ __forceinline__ void clear(blocked_ell * __restrict__ m) {
-    if ((m->flags & blocked_ell_host_registered) != 0u && m->storage != 0) cudaHostUnregister(m->storage);
+    if ((m->flags & blocked_ell_host_registered) != 0u && m->storage != 0) ::cellerator::cuda_compat::unregister_host_memory(m->storage);
     if (m->storage != 0) std::free(m->storage);
     else {
         std::free(m->blockColIdx);
@@ -114,7 +114,7 @@ __host__ __forceinline__ int allocate(blocked_ell * __restrict__ m) {
     const std::size_t total_bytes = val_offset + (std::size_t) m->rows * (std::size_t) m->ell_cols * sizeof(real::storage_t);
     void *storage = 0;
 
-    if ((m->flags & blocked_ell_host_registered) != 0u && m->storage != 0) cudaHostUnregister(m->storage);
+    if ((m->flags & blocked_ell_host_registered) != 0u && m->storage != 0) ::cellerator::cuda_compat::unregister_host_memory(m->storage);
     if (m->storage != 0) std::free(m->storage);
     else {
         std::free(m->blockColIdx);
@@ -142,23 +142,23 @@ __host__ __forceinline__ int pin(blocked_ell * __restrict__ m) {
 
     if (m->storage == 0 || total_bytes == 0u) return 1;
     if ((m->flags & blocked_ell_host_registered) != 0u) return 1;
-    err = cudaHostRegister(m->storage, total_bytes, cudaHostRegisterPortable);
+    err = ::cellerator::cuda_compat::register_host_memory(m->storage, total_bytes);
     if (err == cudaSuccess) {
         m->flags |= blocked_ell_host_registered;
         return 1;
     }
     if (err == cudaErrorHostMemoryAlreadyRegistered) {
-        cudaGetLastError();
+        ::cellerator::cuda_compat::clear_host_registration_error();
         m->flags |= blocked_ell_host_registered;
         return 1;
     }
-    cudaGetLastError();
+    ::cellerator::cuda_compat::clear_host_registration_error();
     return 0;
 }
 
 __host__ __forceinline__ void unpin(blocked_ell * __restrict__ m) {
     if ((m->flags & blocked_ell_host_registered) == 0u || m->storage == 0) return;
-    cudaHostUnregister(m->storage);
+    ::cellerator::cuda_compat::unregister_host_memory(m->storage);
     m->flags &= ~blocked_ell_host_registered;
 }
 

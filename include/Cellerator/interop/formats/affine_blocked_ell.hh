@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include <cuda_runtime.h>
+#include <Cellerator/common/cuda_compat.cuh>
 
 namespace cellerator::interop::formats {
 
@@ -142,7 +142,7 @@ __host__ __device__ __forceinline__ std::size_t bytes(const AffineBlockedEllCode
 }
 
 __host__ __forceinline__ void clear(AffineBlockedEllCodec * __restrict__ m) {
-    if ((m->flags & quantized_blocked_ell_host_registered) != 0u && m->storage != 0) cudaHostUnregister(m->storage);
+    if ((m->flags & quantized_blocked_ell_host_registered) != 0u && m->storage != 0) ::cellerator::cuda_compat::unregister_host_memory(m->storage);
     if (m->storage != 0) std::free(m->storage);
     else {
         std::free(m->blockColIdx);
@@ -164,7 +164,7 @@ __host__ __forceinline__ int allocate(AffineBlockedEllCodec * __restrict__ m) {
     const std::size_t total_bytes = row_offsets_offset + (std::size_t) m->rows * sizeof(float);
     void *storage = 0;
 
-    if ((m->flags & quantized_blocked_ell_host_registered) != 0u && m->storage != 0) cudaHostUnregister(m->storage);
+    if ((m->flags & quantized_blocked_ell_host_registered) != 0u && m->storage != 0) ::cellerator::cuda_compat::unregister_host_memory(m->storage);
     if (m->storage != 0) std::free(m->storage);
     else {
         std::free(m->blockColIdx);
@@ -199,23 +199,23 @@ __host__ __forceinline__ int pin(AffineBlockedEllCodec * __restrict__ m) {
 
     if (m->storage == 0 || total_bytes == 0u) return 1;
     if ((m->flags & quantized_blocked_ell_host_registered) != 0u) return 1;
-    err = cudaHostRegister(m->storage, total_bytes, cudaHostRegisterPortable);
+    err = ::cellerator::cuda_compat::register_host_memory(m->storage, total_bytes);
     if (err == cudaSuccess) {
         m->flags |= quantized_blocked_ell_host_registered;
         return 1;
     }
     if (err == cudaErrorHostMemoryAlreadyRegistered) {
-        cudaGetLastError();
+        ::cellerator::cuda_compat::clear_host_registration_error();
         m->flags |= quantized_blocked_ell_host_registered;
         return 1;
     }
-    cudaGetLastError();
+    ::cellerator::cuda_compat::clear_host_registration_error();
     return 0;
 }
 
 __host__ __forceinline__ void unpin(AffineBlockedEllCodec * __restrict__ m) {
     if ((m->flags & quantized_blocked_ell_host_registered) == 0u || m->storage == 0) return;
-    cudaHostUnregister(m->storage);
+    ::cellerator::cuda_compat::unregister_host_memory(m->storage);
     m->flags &= ~quantized_blocked_ell_host_registered;
 }
 
