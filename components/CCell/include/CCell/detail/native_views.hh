@@ -8,7 +8,8 @@
 namespace ccell::detail {
 
 enum class DType : uint8_t {
-    boolean, int8, uint8, int16, uint16, int32, uint32, int64, uint64, float32, float64, invalid
+    boolean, int8, uint8, int16, uint16, int32, uint32, int64, uint64, float32, float64, invalid,
+    float16
 };
 enum class Layout : uint8_t { dense, csr, csc, invalid };
 

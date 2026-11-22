@@ -31,7 +31,7 @@ size_t width(DType t) {
     case D::int16: case D::uint16: return 2;
     case D::int32: case D::uint32: case D::float32: return 4;
     case D::int64: case D::uint64: case D::float64: return 8;
-    case D::invalid: break;
+    case D::float16: case D::invalid: break;
     }
     return 0;
 }
@@ -49,7 +49,7 @@ template<class F> QcStatus dispatch(DType type, F f) {
     case D::uint64: return f.template operator()<uint64_t>();
     case D::float32: return f.template operator()<float>();
     case D::float64: return f.template operator()<double>();
-    case D::invalid: break;
+    case D::float16: case D::invalid: break;
     }
     return {QcCode::unsupported_type};
 }

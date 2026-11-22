@@ -1,8 +1,7 @@
 module;
-#include <float.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "CCell/detail/native_views.hh"
+#include "source_value.hh"
 
 module velocitypp;
 
@@ -11,6 +10,9 @@ namespace {
 
 using ccell::detail::DType;
 using ccell::detail::Layout;
+using detail::floating_width;
+using detail::source_value;
+using detail::with_source_type;
 
 struct MatrixData {
     const unsigned char* values;
@@ -24,12 +26,6 @@ struct MatrixData {
 
 Status status(Code code, size_t location = 0, size_t required = 0) {
     return {code, location, required};
-}
-
-size_t value_width(DType type) {
-    if (type == DType::float32) return sizeof(float);
-    if (type == DType::float64) return sizeof(double);
-    return 0;
 }
 
 size_t integer_width(DType type) {
@@ -91,14 +87,6 @@ template<class T> T load_value(const unsigned char* p) {
     return value;
 }
 
-bool finite_value(float x) {
-    return x == x && x <= FLT_MAX && x >= -FLT_MAX;
-}
-
-bool finite_value(double x) {
-    return x == x && x <= DBL_MAX && x >= -DBL_MAX;
-}
-
 Status to_size(uint64_t value, size_t location, size_t& out) {
     const size_t converted = static_cast<size_t>(value);
     if (static_cast<uint64_t>(converted) != value)
@@ -156,8 +144,7 @@ Status acquire(const AcquiredMatrix& binding, MatrixData& input) {
     const auto& matrix = matrix_storage(binding);
     if (matrix.code != Code::ok) return status(matrix.code);
     if (matrix.layout == Layout::dense) {
-        if (matrix.dtype != DType::float32 && matrix.dtype != DType::float64)
-            return status(Code::dtype);
+        if (!floating_width(matrix.dtype)) return status(Code::dtype);
         const size_t rows = matrix.dense.extent(0);
         if (rows != matrix.dense.extent(1)) return status(Code::shape);
         input.values = matrix.dense.data();
@@ -177,8 +164,7 @@ Status acquire(const AcquiredMatrix& binding, MatrixData& input) {
 
     if (matrix.layout != Layout::csr && matrix.layout != Layout::csc)
         return status(Code::layout);
-    if (matrix.dtype != DType::float32 && matrix.dtype != DType::float64)
-        return status(Code::dtype);
+    if (!floating_width(matrix.dtype)) return status(Code::dtype);
     if (!integer_width(matrix.index_type) || !integer_width(matrix.offset_type))
         return status(Code::dtype);
 
@@ -222,7 +208,7 @@ size_t sparse_index_at(const MatrixData& input, size_t i) {
 
 template<class T> bool finite_sparse_values(const MatrixData& input, size_t& bad) {
     for (size_t p = 0; p < input.nnz; ++p)
-        if (!finite_value(load_value<T>(input.values + p * sizeof(T)))) {
+        if (!__builtin_isfinite(source_value<T>(input.values + p*sizeof(T)))) {
             bad = p;
             return false;
         }
@@ -248,7 +234,7 @@ Status analyze(const MatrixData& input, NeighborhoodSize& result) {
     size_t offset_count;
     if (!add_size(input.n, 1, offset_count)) return status(Code::overflow);
 
-    if (input.layout == Layout::dense) {
+    if (input.layout == Layout::dense) return with_source_type(input.dtype,[&]<class T> {
         size_t total = 0;
         for (size_t row = 0; row < input.n; ++row) {
             size_t row_count = 0;
@@ -256,20 +242,9 @@ Status analyze(const MatrixData& input, NeighborhoodSize& result) {
                 ptrdiff_t offset;
                 if (!dense_offset(input, row, column, offset))
                     return status(Code::overflow, row);
-                const auto* p = input.values + offset;
-                bool positive;
-                bool finite;
-                if (input.dtype == DType::float32) {
-                    const float value = load_value<float>(p);
-                    finite = finite_value(value);
-                    positive = value > 0;
-                } else {
-                    const double value = load_value<double>(p);
-                    finite = finite_value(value);
-                    positive = value > 0;
-                }
-                if (!finite) return status(Code::nonfinite, row);
-                if (column == row || positive) {
+                const auto value = source_value<T>(input.values + offset);
+                if (!__builtin_isfinite(value)) return status(Code::nonfinite, row);
+                if (column == row || value > 0) {
                     if (!add_size(row_count, 1, row_count) ||
                         !add_size(total, 1, total)) return status(Code::overflow, row);
                 }
@@ -278,14 +253,14 @@ Status analyze(const MatrixData& input, NeighborhoodSize& result) {
         required.entries = total;
         result = required;
         return status(Code::ok);
-    }
+    });
 
     const size_t offset_width = integer_width(input.offset_type);
     const size_t index_width = integer_width(input.index_type);
     size_t byte_count;
     if (!multiply_size(offset_count, offset_width, byte_count) ||
         !multiply_size(input.nnz, index_width, byte_count) ||
-        !multiply_size(input.nnz, value_width(input.dtype), byte_count))
+        !multiply_size(input.nnz, floating_width(input.dtype), byte_count))
         return status(Code::overflow);
 
     size_t first;
@@ -312,12 +287,8 @@ Status analyze(const MatrixData& input, NeighborhoodSize& result) {
         if (index >= input.n) return status(Code::bounds, p);
     }
     size_t bad;
-    if (input.dtype == DType::float32) {
-        if (!finite_sparse_values<float>(input, bad))
-            return status(Code::nonfinite, bad);
-    } else if (!finite_sparse_values<double>(input, bad)) {
-        return status(Code::nonfinite, bad);
-    }
+    const bool finite = with_source_type(input.dtype,[&]<class T> {return finite_sparse_values<T>(input, bad);});
+    if (!finite) return status(Code::nonfinite, bad);
 
     bool bound_ok;
     required.entries = sparse_entries_bound(input.n, input.nnz, bound_ok);
@@ -369,9 +340,9 @@ size_t grouped_row(const MatrixData& input, const Entry* entries, size_t count,
     bool diagonal = false;
     while (p < count) {
         const size_t column = entries[p].index;
-        T sum = T(0);
+        decltype(source_value<T>(input.values)) sum = 0;
         do {
-            sum = T(sum + load_value<T>(input.values + entries[p].position * sizeof(T)));
+            sum += source_value<T>(input.values + entries[p].position*sizeof(T));
             ++p;
         } while (p < count && entries[p].index == column);
 
@@ -385,7 +356,7 @@ size_t grouped_row(const MatrixData& input, const Entry* entries, size_t count,
                 ++written;
                 diagonal = true;
             }
-            if (sum > T(0)) {
+            if (sum > 0) {
                 emit(column);
                 ++written;
             }
@@ -403,8 +374,8 @@ template<class T> size_t dense_row_count(const MatrixData& input, size_t row) {
     for (size_t column = 0; column < input.n; ++column) {
         ptrdiff_t offset;
         dense_offset(input, row, column, offset);
-        const T value = load_value<T>(input.values + offset);
-        if (column == row || value > T(0)) ++count;
+        const auto value = source_value<T>(input.values + offset);
+        if (column == row || value > 0) ++count;
     }
     return count;
 }
@@ -419,8 +390,8 @@ template<class T> void write_dense(const MatrixData& input,
         for (size_t column = 0; column < input.n; ++column) {
             ptrdiff_t offset;
             dense_offset(input, row, column, offset);
-            const T value = load_value<T>(input.values + offset);
-            if (column == row || value > T(0)) {
+            const auto value = source_value<T>(input.values + offset);
+            if (column == row || value > 0) {
                 buffers.columns[output] = column;
                 buffers.values[output] = weight;
                 ++output;
@@ -533,16 +504,11 @@ Status prepare_neighborhood(const AcquiredMatrix& matrix,
         return status(Code::capacity, 4, required_offsets);
 
     size_t output = 0;
-    if (input.layout == Layout::dense) {
-        if (input.dtype == DType::float32) write_dense<float>(input, buffers, output);
-        else write_dense<double>(input, buffers, output);
-    } else if (input.layout == Layout::csr) {
-        if (input.dtype == DType::float32) write_csr<float>(input, buffers, output);
-        else write_csr<double>(input, buffers, output);
-    } else {
-        if (input.dtype == DType::float32) write_csc<float>(input, buffers, output);
-        else write_csc<double>(input, buffers, output);
-    }
+    with_source_type(input.dtype,[&]<class T> {
+        if (input.layout == Layout::dense) write_dense<T>(input, buffers, output);
+        else if (input.layout == Layout::csr) write_csr<T>(input, buffers, output);
+        else write_csc<T>(input, buffers, output);
+    });
     used = output;
     return status(Code::ok);
 }

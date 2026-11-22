@@ -32,11 +32,14 @@ capacity diagnostics. Structural buffers and masks must remain stable during
 execution. Changes invalidate topology and require preparation again.
 
 Sparse logical duplicates are summed in original stored order before weighting
-and products. Prepared topology stores indices and original positions, never a
-shadow copy of expression values. Dense, CSR and CSC inputs, independent integer
-widths and FP32/FP64 value storage are supported. Finite expression and weights
-are required. Weights are supplied by the caller; neighborhood preparation is a
-separate operation, never an implicit normalization step.
+and products. Prepared topology stores indices and original positions. Dense,
+CSR and CSC inputs support independent integer index and offset widths and
+binary16, FP32 and FP64 values. Use `borrow_binary16(view)` for views whose
+two-byte elements hold native-endian IEEE binary16 bits, including raw `uint16_t`
+buffers and AnnData++ `Float16` views. Ordinary `borrow_matrix` retains the
+scalar type of the view. Binary16 values widen on read without a widened input
+buffer. Finite expression and weights are required. The caller supplies weights
+and explicitly runs neighborhood preparation if needed.
 
 ## Neighborhood construction
 
@@ -57,9 +60,10 @@ capacities, selected block width, and bytes. `RunOptions::unspliced_second` expl
 requests optional second-order unspliced storage; it is absent by default.
 Stochastic numerical scratch is independent of total gene count at fixed rows
 and block width, using a supplied result diagnostic for global selection scratch.
-T is float or double and explicitly
-chooses computation precision independently of source storage. `RunOptions`
-selects maximum block width and numerical workspace budget. Zero block width,
+T selects computation precision. Use `Workspace<float>` for any binary16
+input, including mixed storage. Products, accumulation, and fitting use FP32
+in this path. `Workspace<double>` remains available for FP32 and FP64 input.
+`RunOptions` selects maximum block width and numerical workspace budget. Zero block width,
 overflow and insufficient budgets are status failures.
 
 `bind_workspace` splits the supplied scalar buffer into visible moment, score,
@@ -104,6 +108,27 @@ span overflow and insufficient capacity return before result/output writes.
 Compute T and output O are independently float or double; conversion occurs
 directly into the chosen output, without full precision-shadow staging. Sinks receive borrowed
 reference moment/fit blocks and must consume them before workspace reuse.
+
+## Caller-scheduled blocks
+
+Call `bind_stages` once to initialize the shared result and the stage descriptor
+used between phases. Use `bind_worker` to bind a separate workspace and optional
+sink to each worker. Workers share the prepared input, masks and result arrays.
+Each `GeneRange{first, count}` addresses positions in the prepared gene order.
+Give workers disjoint ranges that cover the requested genes and keep each range
+within its worker's block capacity. Ranges can run in any order within a phase.
+
+For steady-state fitting, call `process_block(range)` on each worker and join
+before calling `finish()` once on the original stage descriptor. For stochastic
+fitting, call `initialize_block(range)` on each worker, join, and call
+`resolve_selection()` once on the original descriptor. Rebind the workers to
+share the resolved selection, call `process_block(range)` for refinement, and
+join before `finish()`. Match the coordinator's `unspliced_second` option when
+provisioning stochastic workers. Rebinding sets up worker scratch and preserves
+shared results. The caller owns scheduling and synchronization and supplies
+independent sink contexts or synchronizes shared sink state.
+
+## Custom operations
 
 `steady_state_with` and `stochastic_with` are narrow exported templates whose
 consumer-defined intermediates and results may be entirely unlike the reference.

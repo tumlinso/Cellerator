@@ -8,6 +8,7 @@
 import anndata;
 import ccell.interop.anndata;
 import ccell.preprocess;
+import ccell.velocity;
 
 #include "../examples/modeling.hh"
 
@@ -28,6 +29,29 @@ bool half_layer(const anndata::AnnData& data) {
         ccell::io::borrow_dense(layer, wrong_type) == BorrowCode::dtype && !wrong_type.data;
 }
 
+bool half_velocity(const anndata::ArrayView& layer) {
+    namespace velocity = ccell::velocity;
+    cellerator::memory::const_matrix_view<anndata::Float16, ptrdiff_t> half;
+    if (ccell::io::borrow_dense(layer, half) != ccell::io::BorrowCode::ok) return false;
+    const float weights[] = {1, 0, 0, 1};
+    const cellerator::memory::const_matrix_view<float> identity{weights, 2, 2, 2};
+    const auto expression = velocity::borrow_binary16(half);
+    const velocity::Input input{expression, expression, velocity::borrow_matrix(identity)};
+    velocity::PreparedInput prepared;
+    velocity::Workspace32 workspace;
+    float scratch[32]{}, gamma[2]{}, offset[2]{}, r2[2]{}, residuals[4]{};
+    uint8_t mask[2]{}, status[2]{};
+    bool selected[2]{};
+    velocity::FitResult32 result{gamma, offset, r2, selected, status, 2};
+    velocity::FitOptions options;
+    options.trimming = velocity::Trimming::none;
+    return velocity::prepare(input, {}, prepared) &&
+        velocity::bind_workspace(prepared, {}, false, scratch, 32, mask, 2, workspace) &&
+        velocity::reference::steady_state_into(prepared, workspace, result, residuals, 4, 2, options) &&
+        gamma[0] == 1 && gamma[1] == 1 && residuals[0] == 0 && residuals[1] == 0 &&
+        residuals[2] == 0 && residuals[3] == 0;
+}
+
 bool model(const anndata::AnnData& data) {
     const auto x = data.x();
     const auto features = data.var();
@@ -35,7 +59,7 @@ bool model(const anndata::AnnData& data) {
     return features.size() == 2 && features.name(0) == "gene-a" && features.name(1) == "gene-b" &&
         ccell::io::borrow_dense(x, counts) == ccell::io::BorrowCode::ok &&
         counts.data == x.dense<float>().data() && ccell_example::normalized_readout(counts) &&
-        half_layer(data);
+        half_layer(data) && half_velocity(data.layer("half"));
 }
 
 bool bindings(const anndata::AnnData& data) {

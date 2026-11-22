@@ -145,10 +145,10 @@ The method receives the same native view from either source.
 ## Storage and arithmetic
 
 Storage and computation are separate choices. Graph weights and expression
-arrays may use FP32 or FP64 storage, passed directly as Cellerator views.
-Numerical blocks use FP32 or FP64 for products, moments, scales, fitting, and
-diagnostics. Explicit computation precision wins. An optional selective
-precision composition can acquire chosen original FP64 columns; original data
+arrays may use binary16, FP32 or FP64 storage, passed directly as Cellerator
+views. Binary16 input uses FP32 products, moments, scales, fitting and
+diagnostics. FP32 and FP64 inputs retain the caller's computation choice. An
+optional selective precision composition can acquire chosen original FP64 columns; original data
 must match the prepared cell order, normalization, and units. The sensitivity
 report is advisory and never promotes genes automatically.
 

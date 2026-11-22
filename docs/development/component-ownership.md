@@ -15,3 +15,7 @@ The former [AnnData++ and Velocity source archives](https://github.com/tumlinso/
 remain available in Git history. Local cutover recovery files and the retired
 Python AnnData source snapshot with its checksum manifest were backed up
 outside the checkout.
+
+The former `src/velocity` checkout was archived outside the repository with
+its unpublished changes, Git metadata, and validation artifacts. CCell owns
+direct binary16 input and caller-scheduled gene blocks.
