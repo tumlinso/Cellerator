@@ -15,13 +15,27 @@ namespace anndata = ::anndatapp;
 
 namespace {
 
+bool half_layer(const anndata::AnnData& data) {
+    const auto layer = data.layer("half");
+    cellerator::memory::const_matrix_view<anndata::Float16, ptrdiff_t> half;
+    cellerator::memory::const_matrix_view<float, ptrdiff_t> wrong_type;
+    using ccell::io::BorrowCode;
+    return ccell::io::borrow_dense(layer, half) == BorrowCode::ok &&
+        half.data == layer.dense<anndata::Float16>().data() &&
+        half.rows == 2 && half.columns == 2 && half.row_stride == 2 && half.column_stride == 1 &&
+        half.data[0].bits == 0x3c00 && half.data[1].bits == 0x8000 &&
+        half.data[2].bits == 0x0001 && half.data[3].bits == 0x4200 &&
+        ccell::io::borrow_dense(layer, wrong_type) == BorrowCode::dtype && !wrong_type.data;
+}
+
 bool model(const anndata::AnnData& data) {
     const auto x = data.x();
     const auto features = data.var();
     cellerator::memory::const_matrix_view<float, ptrdiff_t> counts;
     return features.size() == 2 && features.name(0) == "gene-a" && features.name(1) == "gene-b" &&
         ccell::io::borrow_dense(x, counts) == ccell::io::BorrowCode::ok &&
-        counts.data == x.dense<float>().data() && ccell_example::normalized_readout(counts);
+        counts.data == x.dense<float>().data() && ccell_example::normalized_readout(counts) &&
+        half_layer(data);
 }
 
 bool bindings(const anndata::AnnData& data) {
@@ -67,6 +81,10 @@ int main() {
     auto data = anndata::AnnData::empty(2, 2);
     float values[] = {1, 3, 3, 1};
     data.set_x(anndata::Array::borrow_dense(values, {2, 2}, {2, 1}));
+    using Half = anndata::Float16;
+    const Half half[] = {Half::from_bits(0x3c00), Half::from_bits(0x8000),
+        Half::from_bits(0x0001), Half::from_bits(0x4200)};
+    data.set_layer("half", anndata::Array::borrow_dense(half, {2, 2}, {2, 1}));
     data.set_var(anndata::Table::with_index({"gene-a", "gene-b"}, "feature_id"));
     if (!model(data) || !bindings(data)) return 1;
     char pattern[] = "ccell-modeling.XXXXXX";
