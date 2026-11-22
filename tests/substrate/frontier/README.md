@@ -65,21 +65,19 @@ providers and compiles only this new component; it runs no Python/Torch or GPU c
 - `planning/integrated-substrate-v1/seed/python/is1/operators.py`: N04 QuadraticLedger,
   exact finite delta, N06 multilevel and solve JVP remain sealed mathematical
   references. A persistent ledger/cache and coefficient rebase are not added here.
-- `experiments/moonshot-parallel-v1/trajectory/polynomial.py`: original M02 Torch
-  polynomial/JVP/VJP remains the reference and adapter path.
-- `experiments/moonshot-parallel-v1/seeds/reference/moonref/operators.py`:
-  `low_rank_implicit_solve` remains callable M11 Woodbury reference. Native
-  diagonal/low-rank dispatch and recompression are deferred; these seeds are not
-  reported as implemented native mathematics.
+- The [original M02 Torch reference](https://github.com/tumlinso/Cellerator/blob/2c2c222f36c3aa1f7f8bb22d97031002c6420978/experiments/moonshot-parallel-v1/trajectory/polynomial.py)
+  preserves the polynomial, JVP, and VJP.
+- The [M11 Woodbury reference](https://github.com/tumlinso/Cellerator/blob/2c2c222f36c3aa1f7f8bb22d97031002c6420978/experiments/moonshot-parallel-v1/seeds/reference/moonref/operators.py)
+  preserves `low_rank_implicit_solve`. Native diagonal/low-rank dispatch and
+  recompression remain deferred.
 - The integrated `math/matrix/patch.hh` tanh law remains a distinct operation.
   Polynomial APIs reuse its metadata/lifetime seam, not its numerical formula.
 
-## Root MERGE-B SDK recipe
+## Select the installed component
 
-Add known component `frontier`, dependencies `effects;native_numeric`, and dispatch
-`_ce_owner(frontier SOURCES src/math/frontier/operators.cc CAPABILITIES
-"host_f64_quadratic_delta_jvp_vjp,ports_checked_solve,multilevel_input_vjp")` in the
-selected SDK module. Request `frontier` explicitly for its installed component export.
-The existing public-header install includes `include/Cellerator/math/frontier`.
-The source target from `src/math/frontier/CMakeLists.txt` is
-`Cellerator::frontier`. No shared root/SDK file was edited in this task.
+Configure the SDK with `-DCELLERATOR_SUBSTRATE_COMPONENTS=frontier`. It builds
+the frontier implementation and selects its native numeric dependency. The
+consumer links `Cellerator::frontier`.
+
+The [original dependency manifest](https://github.com/tumlinso/Cellerator/blob/2c2c222f36c3aa1f7f8bb22d97031002c6420978/tests/substrate/frontier/dependencies.sha256)
+records the historical source and reference hashes.

@@ -1,4 +1,11 @@
 @PACKAGE_INIT@
+foreach(component IN LISTS Cellerator_FIND_COMPONENTS)
+  if(component MATCHES "^moonshot_(effects|mechanisms|learning)$" AND Cellerator_FIND_REQUIRED_${component})
+    set(Cellerator_FOUND FALSE)
+    set(Cellerator_NOT_FOUND_MESSAGE "The requested ${component} component is retired from the Cellerator Substrate SDK. Select the maintained numerical or sequence component needed by the caller.")
+    return()
+  endif()
+endforeach()
 include(CMakeFindDependencyMacro)
 include("${CMAKE_CURRENT_LIST_DIR}/CelleratorCoreModulesTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/CelleratorModuleInterfaces.cmake")

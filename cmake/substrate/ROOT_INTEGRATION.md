@@ -27,17 +27,17 @@ real prerequisites have been created, separately from this standalone SDK projec
 ```cmake
 add_subdirectory(src/state)
 add_subdirectory(src/layout/packing/core) # native_numeric + selected indexed_incidence/full indexed_mechanism + cellpack
-add_subdirectory(src/math/matrix)
-add_subdirectory(src/math/process)
+add_subdirectory(src/ops/matrix)
+add_subdirectory(src/ops/process)
 add_subdirectory(src/math/effects)
 add_subdirectory(src/execution/prepared_host) # local_differential
 ```
 
 Their existing include paths need BUILD_INTERFACE/INSTALL_INTERFACE conversion
-before inclusion in the legacy native export set. `effects` should link retained
-`moonshot_effects` and `moonshot_mechanisms` components. BUILD exports provided here
-include only merged source; `CELLERATOR_SUBSTRATE_REQUIRE_INTEGRATED=ON` rejects
-missing prerequisites and adds all six public leaf target names.
+before inclusion in the legacy native export set. The `effects` component uses
+operation-family headers under `Cellerator/ops/`. The selectable SDK exports
+merged source, and `CELLERATOR_SUBSTRATE_REQUIRE_INTEGRATED=ON` rejects missing
+prerequisites and adds the six integrated leaf target names.
 
 The host SDK `indexed_incidence` is explicitly incidence-only. The unchanged
 `evaluators.cc` object references `evaluate_cuda_f32`, so even host evaluator use
@@ -47,13 +47,17 @@ native CUDA build; this installer neither stubs missing symbols nor copies owner
 
 The optional `native_numeric_sm70` package component compiles the actual existing
 `device_linear.cu`, links `native_numeric` and CUDA runtime, and requires CUDA 12.x,
-SM70. It does not export full indexed GPU training or Torch adapters. Its build and
-execution require separate controller-owned qualification before production use.
+SM70. It does not export full indexed GPU training or Torch adapters. Execution
+qualification uses Device Scheduler.
 
 ## Target dependency direction
 
-Baseplane exact `Baseplane::seq` is independent. Its selected representation interface
-links exact seq plus explicit imported CE numerical components. These CE host owner
-targets have no Baseplane back-edge. A future concrete CE bridge can depend on exact
-seq, but must not depend on BP representation. The installer tests the current actual
-CE target closure; root integration must qualify the real installed BP consumer.
+The SDK selects the same host `sequence_ops` target as the normal native
+build. The target owns exact packed sequence operations and predicate
+preparation. Select it with `find_package(Cellerator CONFIG REQUIRED COMPONENTS
+sequence_ops)`. It requires neither CUDA nor a separate sequence package.
+
+The former Moonshot component exports are retired. Consumers select maintained
+owners such as `effects`, `frontier`, and `sequence_ops` directly. Original inputs
+and evidence remain available in the
+[pre-retirement revision](https://github.com/tumlinso/Cellerator/tree/2c2c222f36c3aa1f7f8bb22d97031002c6420978/experiments).
