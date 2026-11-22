@@ -38,7 +38,7 @@ authoritative.
 - Validation: seven CPU/reference tests; admitted V100 numerical and memcheck
   runs each passed all 13 tests with zero skips. Memcheck reported zero errors,
   and both jobs verified cleanup. See
-  [the source-bound report](planning/nn-foundation-2026-10-31/grouped_linear/REPORT.md).
+  [the source-bound report](../../planning/nn-foundation-2026-10-31/grouped_linear/REPORT.md).
   Native higher-order differentiation, automatic mixed-precision registration,
   compiler integration, and performance remain outside this qualification.
 

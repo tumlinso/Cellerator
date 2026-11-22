@@ -379,6 +379,6 @@ FP16 computation. Each forward graph retains its own executor and borrowed
 views through backward on the current stream. These ownership and preparation
 costs do not establish a performance advantage.
 
-See the [extension contract record](../custom_torch_ops.md) and
+See the [extension contract record](development/custom_torch_ops.md) and
 [qualification report](../planning/nn-foundation-2026-10-31/grouped_linear/REPORT.md).
 No additional runtime operator registry or autograd engine is required.
