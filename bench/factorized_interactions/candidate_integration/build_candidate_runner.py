@@ -199,7 +199,6 @@ endif()
         f"-DCUDA_NVCC_EXECUTABLE={nvcc}",
         f"-DCMAKE_CUDA_ARCHITECTURES=70",
         f"-DCELLERATOR_SOURCE_ROOT={source}",
-        f"-DBASEPLANE_SOURCE_DIR={source / 'external' / 'Baseplane'}",
         f"-DCMAKE_PROJECT_INCLUDE={attach_hook}",
     ]
     run(configure, source, environment)

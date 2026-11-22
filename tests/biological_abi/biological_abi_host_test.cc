@@ -1,5 +1,5 @@
-#include <Baseplane/seq/dna2_views.hh>
 #include <Cellerator/execution/biological_abi.hh>
+#include <Cellerator/execution/sequence/bindings.hh>
 
 #include <array>
 #include <cstddef>
@@ -9,7 +9,8 @@
 #include <iostream>
 
 namespace ce = cellerator::execution;
-namespace bp = baseplane::seq;
+namespace seq = cellerator::execution::sequence;
+namespace packed = cellerator::tensor::sequence;
 
 namespace {
 
@@ -44,21 +45,6 @@ ce::dense_tensor_view dense_view(
     result.stride[0] = 5;
     result.stride[1] = 1;
     return result;
-}
-
-ce::bit_plane_view adapt_baseplane_planes(
-    bp::dna2_planes32_stream_view source,
-    const std::uint32_t *validity,
-    std::uint32_t base_count,
-    ce::axis_identity coordinate_axis) {
-    return ce::bit_plane_view{
-        coordinate_axis,
-        source.lo_words,
-        source.hi_words,
-        validity,
-        host_location(),
-        static_cast<ce::u32>(source.n_words),
-        base_count};
 }
 
 void test_identity_and_relocation() {
@@ -117,11 +103,25 @@ void test_sequence_views() {
         "large global coordinate with bounded local positions failed");
 
     std::uint32_t low[2]{}, high[2]{}, validity[2]{~0u, 1u};
-    const bp::dna2_planes32_stream_view baseplane{low, high, 2u};
-    const ce::bit_plane_view bits = adapt_baseplane_planes(
-        baseplane, validity, 33u, coordinates);
+    const packed::BitPlanesView planes{low, high, validity, 2u, 33u};
+    ce::biological_operand_view operand{};
+    require(seq::bind_sequence_planes(planes, coordinates, host_location(), &operand)
+            && operand.kind == ce::operand_kind::bit_plane,
+        "native sequence planes did not bind");
+    const ce::bit_plane_view bits = operand.storage.bits;
     require(ce::validate_bit_plane(bits) == ce::biological_validation_code::ok,
-        "Baseplane plane adapter did not preserve explicit tail validity");
+        "native plane binding did not preserve explicit tail validity");
+    const packed::BitPlanesView borrowed = seq::sequence_planes(bits);
+    require(borrowed.low == low && borrowed.high == high
+            && borrowed.validity == validity && borrowed.word_count == 2u
+            && borrowed.base_count == 33u,
+        "binding did not borrow all three native planes with original extents");
+    packed::BitPlanesView implicit_validity = planes;
+    implicit_validity.validity = nullptr;
+    require(!seq::bind_sequence_planes(
+                implicit_validity, coordinates, host_location(), &operand)
+            && operand.storage.bits.validity == validity,
+        "failed native binding changed the operand or accepted implicit validity");
     ce::bit_plane_view missing_validity = bits;
     missing_validity.validity = nullptr;
     require(ce::validate_bit_plane(missing_validity)

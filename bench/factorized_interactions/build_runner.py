@@ -98,7 +98,6 @@ def main() -> int:
         f"-DCUDA_TOOLKIT_ROOT_DIR={CUDA_ROOT}",
         f"-DCUDA_NVCC_EXECUTABLE={NVCC}",
         f"-DCUDA_CUDART_LIBRARY={CUDA_ROOT / 'lib64' / 'libcudart.so'}",
-        f"-DBASEPLANE_SOURCE_DIR={source / 'external' / 'Baseplane'}",
         f"-DPython_EXECUTABLE={PYTHON}",
         f"-Dpybind11_DIR={pybind11_cmake_dir}",
         "-DCMAKE_CUDA_ARCHITECTURES=70",

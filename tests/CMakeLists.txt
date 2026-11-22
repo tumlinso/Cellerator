@@ -282,7 +282,7 @@ add_executable(coreSparseLayoutRuntimeTest
     tests/core_sparse_layout_runtime_test.cu
 )
 target_include_directories(coreSparseLayoutRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(coreSparseLayoutRuntimeTest PRIVATE cellerator_compute_matrix_convert Baseplane::seq CUDA::cudart CUDA::cusparse)
+target_link_libraries(coreSparseLayoutRuntimeTest PRIVATE cellerator_compute_matrix_convert CUDA::cudart CUDA::cusparse)
 set_target_properties(coreSparseLayoutRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(coreSparseLayoutRuntimeTest)
 
@@ -378,7 +378,7 @@ add_executable(celleratorBiologicalAbiHostTest
 )
 target_link_libraries(celleratorBiologicalAbiHostTest PRIVATE
     Cellerator::biological_abi
-    Baseplane::seq
+    Cellerator::sequence_ops
 )
 set_target_properties(celleratorBiologicalAbiHostTest PROPERTIES
     CXX_STANDARD 20
@@ -399,22 +399,24 @@ set_target_properties(celleratorBiologicalAbiCudaCompileTest PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
-# CE-ARCH-40: Cellerator-owned preparation and execution over frozen Baseplane
-# predicate contracts. Baseplane remains independently buildable and owns no
-# Cellerator runtime or numerical policy.
-add_executable(celleratorBaseplaneSequenceIntegrationTest
-    tests/interop/baseplane/baseplane_integration_test.cu
+add_executable(celleratorSequenceRegulatoryTest
+    tests/execution/sequence/regulatory_test.cu
 )
-target_link_libraries(celleratorBaseplaneSequenceIntegrationTest PRIVATE
+target_link_libraries(celleratorSequenceRegulatoryTest PRIVATE
     Cellerator::sequence_integration
+    Cellerator::sequence_ops_cuda
 )
-set_target_properties(celleratorBaseplaneSequenceIntegrationTest PROPERTIES
+set_target_properties(celleratorSequenceRegulatoryTest PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 20
     CUDA_STANDARD_REQUIRED YES
 )
-cellerator_enable_perf(celleratorBaseplaneSequenceIntegrationTest)
+cellerator_enable_perf(celleratorSequenceRegulatoryTest)
+if(CELLERATOR_BUILD_TESTS)
+    add_test(NAME sequence_regulatory COMMAND celleratorSequenceRegulatoryTest)
+    set_tests_properties(sequence_regulatory PROPERTIES LABELS "sequence;cuda" TIMEOUT 60)
+endif()
 
 if(TARGET CellShard::runtime)
 add_executable(stateReduceRuntimeTest
