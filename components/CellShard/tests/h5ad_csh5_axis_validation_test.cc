@@ -82,8 +82,8 @@ struct validation_report {
 };
 
 struct options {
-    std::string h5ad_path = "data/test/reference/pbmc3k_raw.h5ad";
-    std::string csh5_path = "data/test/reference/pbmc3k_raw.csh5";
+    std::string h5ad_path;
+    std::string csh5_path;
     double abs_tolerance = default_abs_tolerance;
     double rel_tolerance = default_rel_tolerance;
 };
@@ -453,6 +453,21 @@ int main(int argc, char **argv) {
     std::string error;
 
     if (!parse_args(argc, argv, &opts)) return 2;
+    if (opts.h5ad_path.empty() || opts.csh5_path.empty()) {
+        const char *configured_root = std::getenv("CELLERATOR_DATA_ROOT");
+        const char *user_home = std::getenv("HOME");
+        std::string data_root;
+        if (configured_root != nullptr && *configured_root != '\0') {
+            data_root = configured_root;
+        } else if (user_home != nullptr && *user_home != '\0') {
+            data_root = std::string(user_home) + "/data/Cellerator";
+        } else {
+            std::fprintf(stderr, "Set CELLERATOR_DATA_ROOT or supply both fixture paths\n");
+            return 2;
+        }
+        if (opts.h5ad_path.empty()) opts.h5ad_path = data_root + "/data/test/reference/pbmc3k_raw.h5ad";
+        if (opts.csh5_path.empty()) opts.csh5_path = data_root + "/data/test/reference/pbmc3k_raw.csh5";
+    }
     if (!load_h5ad_x_as_csr(opts.h5ad_path, &h5ad, &error)) {
         std::fprintf(stderr, "failed to load h5ad fixture: %s\n", error.c_str());
         return 2;

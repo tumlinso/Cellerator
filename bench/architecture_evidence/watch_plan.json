@@ -51,8 +51,8 @@
   ],
   "future_command_templates": {
     "validate_package": "python3 Cellerator/bench/architecture_evidence/validate_evidence.py --verify-local-sources",
-    "correctness": "<snapshot>/build/architectureEvidenceBenchmark --contract <snapshot>/bench/architecture_evidence/benchmark_contract.json --workloads <snapshot>/data/manifests/architecture_evidence/workloads.json --tier <tier> --correctness-only --json <result.json>",
-    "benchmark": "<cuda-controller-benchmark-wrapper> -- <snapshot>/build/architectureEvidenceBenchmark --contract <snapshot>/bench/architecture_evidence/benchmark_contract.json --workloads <snapshot>/data/manifests/architecture_evidence/workloads.json --tier <representative|throughput|adversarial> --json <result.json>",
+    "correctness": "<snapshot>/build/architectureEvidenceBenchmark --contract <snapshot>/bench/architecture_evidence/benchmark_contract.json --workloads <snapshot>/bench/architecture_evidence/manifests/workloads.json --tier <tier> --correctness-only --json <result.json>",
+    "benchmark": "<cuda-controller-benchmark-wrapper> -- <snapshot>/build/architectureEvidenceBenchmark --contract <snapshot>/bench/architecture_evidence/benchmark_contract.json --workloads <snapshot>/bench/architecture_evidence/manifests/workloads.json --tier <representative|throughput|adversarial> --json <result.json>",
     "deep_profile": "<cuda-controller-profiler-wrapper> -- <snapshot>/build/architectureEvidenceBenchmark --workload <workload-id> --candidate <candidate-id> --profile-once --json <result.json>"
   },
   "prohibitions": [

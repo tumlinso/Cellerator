@@ -1,12 +1,11 @@
 # CE-LIVE quantitative fixture outputs
 
-Large extracted arrays are local evidence, not repository or runtime formats.
-Generate the representative fixture with:
+Generate the local extracted fixture from the PBMC3K source under
+`CELLERATOR_DATA_ROOT` (default `~/data/Cellerator`):
 
 ```bash
 python tests/live/fixture/quantitative_relation_fixture.py extract \
-  --source data/test/reference/pbmc3k_raw.h5ad \
-  --manifest data/manifests/ce_live/pbmc3k_quantitative_v1.json \
+  --manifest tests/live/fixture/pbmc3k_quantitative_v1.json \
   --output bench/ce_live/fixture/local/pbmc3k-r512-s7.npz
 ```
 

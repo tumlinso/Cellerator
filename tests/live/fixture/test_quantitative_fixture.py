@@ -7,7 +7,6 @@ import unittest
 from pathlib import Path
 
 
-REPOSITORY = Path(__file__).resolve().parents[3]
 SCRIPT = Path(__file__).with_name("quantitative_relation_fixture.py")
 SPEC = importlib.util.spec_from_file_location("quantitative_relation_fixture", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
@@ -28,10 +27,10 @@ class QuantitativeFixtureTest(unittest.TestCase):
         )
 
     def test_local_source_reproduces_manifest_and_extract(self) -> None:
-        source = REPOSITORY / "data/test/reference/pbmc3k_raw.h5ad"
+        source = FIXTURE.default_source()
         if not source.exists():
             self.skipTest("local checksum-pinned PBMC3K source is unavailable")
-        manifest_path = REPOSITORY / "data/manifests/ce_live/pbmc3k_quantitative_v1.json"
+        manifest_path = Path(__file__).with_name("pbmc3k_quantitative_v1.json")
         expected = json.loads(manifest_path.read_text(encoding="utf-8"))
         actual = FIXTURE.load_source(source)
         FIXTURE.verify_manifest(expected, actual)

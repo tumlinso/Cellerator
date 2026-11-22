@@ -12,6 +12,7 @@ import hashlib
 import heapq
 import json
 import math
+import os
 import struct
 import sys
 from pathlib import Path
@@ -20,7 +21,13 @@ from typing import Any, Iterable, Sequence
 
 SCHEMA = "cellerator.ce-live.quantitative-fixture.v1"
 SOURCE_SHA256 = "89a96f1beaa2dd83a687666d3f19a4513ac27a2a2d12581fcd77afed7ea653a1"
+SOURCE_RELATIVE_PATH = "data/test/reference/pbmc3k_raw.h5ad"
 MASK64 = (1 << 64) - 1
+
+
+def default_source() -> Path:
+    root = os.environ.get("CELLERATOR_DATA_ROOT")
+    return Path(root or "~/data/Cellerator").expanduser() / SOURCE_RELATIVE_PATH
 
 
 def sha256_file(path: Path) -> str:
@@ -159,7 +166,7 @@ def load_source(path: Path, selected_count: int = 512, seed: int = 7) -> dict[st
         "schema": SCHEMA,
         "source": {
             "id": "pbmc3k-raw-local",
-            "relative_path": "data/test/reference/pbmc3k_raw.h5ad",
+            "relative_path": SOURCE_RELATIVE_PATH,
             "sha256": source_digest,
             "size_bytes": path.stat().st_size,
             "matrix_path": "/X",
@@ -378,7 +385,8 @@ def main() -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
     for command in ("manifest", "verify", "extract"):
         child = subparsers.add_parser(command)
-        child.add_argument("--source", type=Path, required=True)
+        child.add_argument("--source", type=Path,
+                           help="H5AD path (default: PBMC3K under CELLERATOR_DATA_ROOT or ~/data/Cellerator)")
         if command == "verify":
             child.add_argument("--manifest", type=Path, required=True)
         if command == "extract":
@@ -393,7 +401,8 @@ def main() -> int:
         print("CE_LIVE_QUANTITATIVE_SMOKE_OK")
         return 0
 
-    actual = load_source(arguments.source)
+    source = arguments.source if arguments.source is not None else default_source()
+    actual = load_source(source)
     if arguments.command == "manifest":
         json.dump(actual, sys.stdout, indent=2)
         print()
@@ -401,7 +410,7 @@ def main() -> int:
     manifest = json.loads(arguments.manifest.read_text(encoding="utf-8"))
     verify_manifest(manifest, actual)
     if arguments.command == "extract":
-        write_npz(arguments.output, arguments.source, manifest)
+        write_npz(arguments.output, source, manifest)
         print(f"wrote local representative fixture: {arguments.output}")
     else:
         print("CELLERATOR_QUANTITATIVE_FIXTURE_V1_READY")

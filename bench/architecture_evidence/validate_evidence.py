@@ -10,12 +10,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from trace_tool import load_json, validate_compact_trace
+from trace_tool import load_json, local_source_path, validate_compact_trace
 
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "bench" / "architecture_evidence"
-MANIFESTS = ROOT / "data" / "manifests" / "architecture_evidence"
+MANIFESTS = PACKAGE / "manifests"
 
 REQUIRED_SOURCE_CLASSES = {
     "scRNA-seq",
@@ -148,7 +148,7 @@ def validate_sources(sources: dict[str, Any], verify_local: bool) -> set[str]:
         require(len(source.get("sha256", "")) == 64, f"source {source['id']} lacks a SHA-256")
         require(source.get("required_provenance_missing"), f"source {source['id']} hides missing provenance")
         if verify_local:
-            path = ROOT / source["local_path"]
+            path = local_source_path(source)
             require(path.is_file(), f"local source missing: {path}")
             require(path.stat().st_size == int(source["bytes"]), f"source size changed: {source['id']}")
             require(sha256_file(path) == source["sha256"], f"source checksum changed: {source['id']}")

@@ -14,7 +14,7 @@
     "bench/architecture_evidence/real_regime_bench.cu",
     "bench/architecture_evidence/run_ce_arch_92_campaign.py",
     "bench/architecture_evidence/real_traces/pbmc3k-support-512.json",
-    "data/manifests/ce_live/pbmc3k_quantitative_v1.json",
+    "tests/live/fixture/pbmc3k_quantitative_v1.json",
     "src/compute/math/operation_core/operation_core.cc"
   ],
   "resources": {
@@ -47,7 +47,7 @@
     "--binary", "./build-dissolution-smoke/celleratorCeArch92RealRegimeBench",
     "--runner", "bench/architecture_evidence/run_ce_arch_92_campaign.py",
     "--trace", "bench/architecture_evidence/real_traces/pbmc3k-support-512.json",
-    "--manifest", "data/manifests/ce_live/pbmc3k_quantitative_v1.json",
+    "--manifest", "tests/live/fixture/pbmc3k_quantitative_v1.json",
     "--output", "bench/ce_live/tensor_core/campaign/v100_decision_v1.json",
     "--raw-output", "bench/ce_live/tensor_core/campaign/v100_baselines.raw.jsonl",
     "--width", "16", "--width", "32", "--width", "64",

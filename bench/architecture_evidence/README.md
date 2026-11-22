@@ -13,7 +13,9 @@ destination axis. Values, normalization, batch correction, inferred biological
 labels, and cross-dataset feature reconciliation are outside this package.
 
 The two available local H5AD files are checksum-pinned in
-`../../data/manifests/architecture_evidence/sources.json`. They lack sufficient
+`manifests/sources.json`. Its local paths are relative to
+`CELLERATOR_DATA_ROOT`, which defaults to `~/data/Cellerator`. To use a different
+directory, set `CELLERATOR_DATA_ROOT` to its absolute path. The files lack sufficient
 donor, sample, batch, chemistry, and species provenance for quantitative or
 split-sensitive claims. The GSE147520 `X` values are non-integral and no count
 layer is present, so its filename is not treated as evidence of raw counts.
@@ -29,7 +31,7 @@ training-split provenance, immutable topology, and mutable values separate.
 
 ## Package contents
 
-- `workloads.json` specifies biological and adversarial structural regimes,
+- `manifests/workloads.json` specifies biological and adversarial structural regimes,
   required dense widths, precision activation rules, reuse horizons, and axis
   semantics.
 - `trace_tool.py` deterministically generates compact JSON smoke traces or
@@ -57,8 +59,8 @@ support edges; GSE147520 contributes 256 selected rows, 26,587 features, and
 occupancy distributions prevent the older high/medium/low-sharing synthetic
 fixtures from being the only planner feature evidence.
 
-Large generated `.mtx` files remain local under `Cellerator/data/` and are
-already ignored. Compact committed traces are capped at one million edges. A
+Large generated `.mtx` files remain in local output storage. Compact committed
+traces are capped at one million edges. A
 trace checksum identifies exact support bytes; it is not a semantic biological
 identity and must not substitute for future DomainId, OrderId, GeometryId, or
 StructureId contracts.
@@ -69,7 +71,7 @@ Run from the Cellerator repository root:
 
 ```bash
 python3 bench/architecture_evidence/trace_tool.py generate \
-  --workloads data/manifests/architecture_evidence/workloads.json \
+  --workloads bench/architecture_evidence/manifests/workloads.json \
   --workload scatac-modular-smoke \
   --output /tmp/scatac-modular-smoke.json
 
@@ -89,11 +91,11 @@ semantics, is:
 
 ```bash
 python3 bench/architecture_evidence/trace_tool.py extract-h5ad \
-  --sources data/manifests/architecture_evidence/sources.json \
+  --sources bench/architecture_evidence/manifests/sources.json \
   --source pbmc3k-raw-local \
   --rows 512 --seed 7 \
   --format matrix-market \
-  --output data/local/architecture_evidence/pbmc3k-support.mtx
+  --output "${CELLERATOR_DATA_ROOT:-$HOME/data/Cellerator}/data/test/generated/pbmc3k-support.mtx"
 ```
 
 ## CE-ARCH-76 small-N candidate evidence
@@ -208,8 +210,10 @@ the independent referee's `1e-5 + 1e-5 * |reference|` tolerance. Controller
 evidence id `490d2ba1-99ce-4d3e-ba1c-65db915a42d1` records quiescence,
 device/toolchain identity, binary digest, and source fingerprint. Reproduce the
 GPU run with `ce_arch_92_v100_spec.json`, then annotate and validate it with
-`finalize_ce_arch_92_evidence.py`. The derived high-sharing trace is reproduced
-by `trace_tool.py derive-block` and is byte-tested against the committed file.
+`finalize_ce_arch_92_evidence.py`. Use `--recorded-trace-paths` when rebuilding
+the historical checked-in JSONL from its raw results. The derived high-sharing
+trace is reproduced by `trace_tool.py derive-block` and is byte-tested against
+the committed file.
 
 The evidence justifies retaining all three forward organizations: row-masked
 for a preparation-sensitive high-sharing N=1 real regime, conventional CSR for

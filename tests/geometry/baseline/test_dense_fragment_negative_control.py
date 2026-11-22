@@ -23,7 +23,7 @@ class DenseFragmentNegativeControl(unittest.TestCase):
             "bench/architecture_evidence/real_traces/pbmc3k-support-512.json"
         ).read_text(encoding="utf-8"))
         manifest = json.loads((ROOT /
-            "data/manifests/ce_live/pbmc3k_quantitative_v1.json"
+            "tests/live/fixture/pbmc3k_quantitative_v1.json"
         ).read_text(encoding="utf-8"))
         result = MODULE.classify(trace, manifest)
         self.assertEqual(result["rows"], 512)

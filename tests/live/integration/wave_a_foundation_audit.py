@@ -46,7 +46,7 @@ class WaveAFoundationAudit(unittest.TestCase):
             REPOSITORY / "docs/CE_LIVE_QUANTITATIVE_FIXTURE.md"
         ).read_text(encoding="utf-8")
         manifest = load_json(
-            "data/manifests/ce_live/pbmc3k_quantitative_v1.json"
+            "tests/live/fixture/pbmc3k_quantitative_v1.json"
         )
 
         self.assertIn("computational fixture", fixture_doc)
