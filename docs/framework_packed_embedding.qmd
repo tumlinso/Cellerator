@@ -8,7 +8,9 @@ directly from a bit-packed state for an explicit list of active `(row, feature)`
 occurrences. It never decodes the full dense state. Caller-supplied segment
 offsets group occurrences into ragged bags, such as a cell/module's selected
 genes. Each feature has its own contiguous table range, sized to its codebook
-levels and the common embedding dimension.
+levels and the common embedding dimension. Native consumers include
+`Cellerator/ops/sequence/packed_embedding_cuda.hh` and link
+`Cellerator::packed_embedding_cuda`.
 
 The implementation reuses Cellerator's 1/2/4/8-bit packed code layout and
 physical-feature to profile-feature mapping. Each bag result is a weighted sum

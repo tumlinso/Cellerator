@@ -159,10 +159,8 @@ struct native_owner {
         forward.runtime_structure = structure;
         forward.runtime_projection = forward_handle;
         forward.layout.payload_base = tile_offsets.data;
-        forward.layout.tile_feature_offsets = tile_offsets.data;
-        forward.layout.execution_feature_ids = feature_ids.data;
-        forward.layout.participating_row_masks = masks.data;
-        forward.layout.feature_value_offsets = value_offsets.data;
+        forward.layout.structure = {rows, features, 1u, nnz, nnz, rows,
+            tile_offsets.data, feature_ids.data, masks.data, value_offsets.data};
         forward.layout.source_value_positions = source_positions.data;
 
         transpose.layout.header.structure_identity = persistent_structure;

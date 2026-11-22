@@ -9,25 +9,6 @@ namespace execution = cellerator::execution;
 namespace planner = cellerator::planner;
 namespace runtime = cellerator::runtime;
 
-namespace cellerator::runtime {
-
-session_status insert_session_cache(execution_session *session,
-    session_cache_kind kind, session_cache_key key, void *state,
-    std::uint64_t structure_epoch, std::uint64_t generation) noexcept {
-    if (session == nullptr || kind != session_cache_kind::plan
-        || state == nullptr || session->plans.size >= execution_session_cache_capacity)
-        return session_status::invalid_argument;
-    session_cache_entry &entry = session->plans.entries[session->plans.size++];
-    entry.key = key;
-    entry.state = state;
-    entry.structure_epoch = structure_epoch;
-    entry.generation = generation;
-    entry.occupied = true;
-    return session_status::success;
-}
-
-} // namespace cellerator::runtime
-
 namespace {
 
 void require(bool condition, const char *message) {

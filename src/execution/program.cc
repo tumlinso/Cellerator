@@ -65,22 +65,6 @@ bool matches_planning_identity(const Request &request) noexcept {
             geometry.partition);
 }
 
-bool projection_type_matches(
-    activated_projection_type type,
-    operation_core::projection_kind kind) noexcept {
-    switch (type) {
-    case activated_projection_type::row_masked:
-        return kind == operation_core::projection_kind::native_row_masked;
-    case activated_projection_type::csr:
-        return kind == operation_core::projection_kind::csr;
-    case activated_projection_type::feature_major:
-        return kind == operation_core::projection_kind::native_feature_major;
-    case activated_projection_type::transpose:
-        return kind == operation_core::projection_kind::transpose_or_backward;
-    }
-    return false;
-}
-
 const program_candidate_cost *find_cost(
     const program_candidate_cost *costs,
     std::uint32_t cost_count,
@@ -93,78 +77,6 @@ const program_candidate_cost *find_cost(
                 costs[index].projection, projection))
             return &costs[index];
     return nullptr;
-}
-
-bool catalog_is_canonical(
-    operation_core::built_in_candidate_catalog_view catalog) noexcept {
-    const auto canonical = operation_core::built_in_candidate_catalog();
-    return catalog.entries == canonical.entries
-        && catalog.size == canonical.size
-        && static_cast<bool>(
-            operation_core::validate_built_in_candidate_catalog());
-}
-
-std::uint64_t compatibility_view_bytes(
-    activated_projection_type type) noexcept {
-    switch (type) {
-    case activated_projection_type::row_masked:
-        return sizeof(cellpack::persistent_packing_payload_view);
-    case activated_projection_type::csr:
-        return sizeof(::cellerator::layout::projection::CsrViewV1);
-    case activated_projection_type::feature_major:
-        return sizeof(::cellerator::layout::projection::FeatureMajorViewV1);
-    case activated_projection_type::transpose:
-        return sizeof(::cellerator::layout::projection::TransposeViewV1);
-    }
-    return 0u;
-}
-
-bool same_contract_v2(
-    const operation_core::candidate_projection_contract_v2 &lhs,
-    const operation_core::candidate_projection_contract_v2 &rhs) noexcept {
-    return operation_core::same_stable_id(lhs.view_type, rhs.view_type)
-        && lhs.abi_major == rhs.abi_major && lhs.abi_minor == rhs.abi_minor
-        && lhs.schema_version == rhs.schema_version
-        && lhs.variant == rhs.variant;
-}
-
-bool projection_matches_candidate_v2(
-    const activated_projection_reference_v2 &projection,
-    const operation_core::candidate_descriptor_v2 &candidate) noexcept {
-    if (validate_activated_projection_reference_v2(projection)
-        != projection_reference_status_v2::success)
-        return false;
-    if (projection.schema_version
-            != activated_projection_reference_schema_version_v2
-        || projection.record_bytes != sizeof(activated_projection_reference_v2)
-        || !valid_identity(projection.key.persistent)
-        || !valid_handle(projection.key.runtime)
-        || !valid_location(projection.location)
-        || projection.location.residency == residency_kind::host
-        || projection.view == nullptr || projection.view_bytes == 0u
-        || !operation_core::same_stable_id(
-            projection.provider_identity, candidate.provider_identity)
-        || projection.key.kind != candidate.candidate.projection
-        || projection.key.schema_version
-            != candidate.projection_contract.schema_version
-        || projection.key.variant != candidate.projection_contract.variant
-        || !same_contract_v2(
-            projection.contract, candidate.projection_contract))
-        return false;
-    for (std::uint32_t value : projection.reserved)
-        if (value != 0u) return false;
-    const bool names_capability =
-        operation_core::valid_catalog_identity_v2(
-            candidate.capability_identity);
-    const bool requires_capability =
-        (candidate.flags
-            & operation_core::candidate_descriptor_requires_capability) != 0u;
-    return (!names_capability && !requires_capability)
-        || (operation_core::valid_catalog_identity_v2(
-                projection.capability_identity)
-            && operation_core::same_stable_id(
-                projection.capability_identity,
-                candidate.capability_identity));
 }
 
 bool valid_catalog_v2(
@@ -195,30 +107,6 @@ std::uint32_t selected_index(
 }
 
 } // namespace
-
-activated_projection_reference program_projection(
-    operation_core::projection_key key,
-    const cellpack::persistent_packing_payload_view &view) noexcept {
-    return {key, activated_projection_type::row_masked, &view};
-}
-
-activated_projection_reference program_projection(
-    operation_core::projection_key key,
-    const ::cellerator::layout::projection::CsrViewV1 &view) noexcept {
-    return {key, activated_projection_type::csr, &view};
-}
-
-activated_projection_reference program_projection(
-    operation_core::projection_key key,
-    const FeatureMajorBinding &view) noexcept {
-    return {key, activated_projection_type::feature_major, &view};
-}
-
-activated_projection_reference program_projection(
-    operation_core::projection_key key,
-    const TransposeBinding &view) noexcept {
-    return {key, activated_projection_type::transpose, &view};
-}
 
 executable_program_status compile_executable_program_v2(
     const executable_program_request_v2 &request,
@@ -281,7 +169,8 @@ executable_program_status compile_executable_program_v2(
         for (std::uint32_t projection_index = 0u;
              projection_index < request.projection_count; ++projection_index) {
             const auto &projection = request.projections[projection_index];
-            if (!projection_matches_candidate_v2(projection, descriptor))
+            if (match_activated_projection_reference_v2(projection, descriptor)
+                != projection_reference_status_v2::success)
                 continue;
             const auto *cost = find_cost(
                 request.costs, request.cost_count, operation.identity,
@@ -383,99 +272,6 @@ executable_program_status compile_executable_program_v2(
         ? selection.diagnostics[winner].empirical
         : selection.diagnostics[winner].analytical;
     return {};
-}
-
-executable_program_status compile_executable_program(
-    const executable_program_request &request,
-    executable_program *program) noexcept {
-    if (program == nullptr)
-        return fail(executable_program_status_code::invalid_argument,
-            "executable program output is null");
-    reset_program(program);
-    if (request.schema_version != executable_program_schema_version
-        || request.projection_count > maximum_program_candidates
-        || request.projections == nullptr || request.projection_count == 0u
-        || !catalog_is_canonical(request.catalog))
-        return fail(executable_program_status_code::invalid_argument,
-            "v1 compatibility program request is incomplete");
-
-    const operation_core::candidate_preparation_catalog_v2 catalog =
-        operation_core::built_in_candidate_preparation_catalog_v2();
-    activated_projection_reference_v2
-        projections[maximum_program_candidates]{};
-    std::uint32_t projection_count = 0u;
-    for (std::uint32_t projection_index = 0u;
-         projection_index < request.projection_count; ++projection_index) {
-        const activated_projection_reference &legacy =
-            request.projections[projection_index];
-        if (legacy.view == nullptr
-            || !projection_type_matches(legacy.type, legacy.key.kind))
-            continue;
-        const operation_core::candidate_descriptor_v2 *descriptor = nullptr;
-        for (std::uint32_t catalog_index = 0u;
-             catalog_index < catalog.entry_count; ++catalog_index) {
-            const auto *candidate = catalog.entries[catalog_index].candidate;
-            if (candidate != nullptr
-                && candidate->candidate.projection == legacy.key.kind
-                && candidate->projection_contract.schema_version
-                    == legacy.key.schema_version
-                && candidate->projection_contract.variant
-                    == legacy.key.variant) {
-                descriptor = candidate;
-                break;
-            }
-        }
-        if (descriptor == nullptr) continue;
-        activated_projection_reference_v2 converted{};
-        converted.key = legacy.key;
-        converted.provider_identity = descriptor->provider_identity;
-        converted.capability_identity = descriptor->capability_identity;
-        converted.contract = descriptor->projection_contract;
-        converted.location = {
-            residency_kind::device, {}, request.session == nullptr
-                ? -1 : request.session->device, 0u};
-        if (legacy.type == activated_projection_type::feature_major) {
-            const auto &binding = *static_cast<const FeatureMajorBinding *>(
-                legacy.view);
-            converted.view = &binding.layout;
-        } else if (legacy.type == activated_projection_type::transpose) {
-            const auto &binding = *static_cast<const TransposeBinding *>(
-                legacy.view);
-            converted.view = &binding.layout;
-            converted.runtime_forward_projection =
-                binding.runtime_forward_projection;
-        } else {
-            converted.view = legacy.view;
-        }
-        converted.view_bytes = compatibility_view_bytes(legacy.type);
-        projections[projection_count++] = converted;
-    }
-    if (projection_count == 0u)
-        return fail(executable_program_status_code::no_compatible_candidate,
-            "v1 projections cannot be represented by catalog v2");
-
-    executable_program_request_v2 v2{};
-    v2.problem = request.problem;
-    v2.structures = request.structures;
-    v2.numeric = request.numeric;
-    v2.preparation = request.preparation;
-    v2.planning = request.planning;
-    v2.planner_policy = request.planner_policy;
-    v2.measurement = request.measurement;
-    v2.cache = request.cache;
-    v2.current_evidence_revision = request.current_evidence_revision;
-    v2.catalog = catalog;
-    v2.projections = projections;
-    v2.projection_count = projection_count;
-    v2.costs = request.costs;
-    v2.cost_count = request.cost_count;
-    v2.session = request.session;
-    v2.dense_width = request.dense_width;
-    v2.source_axis = request.source_axis;
-    v2.destination_axis = request.destination_axis;
-    v2.dense_column_axis = request.dense_column_axis;
-    v2.preparation_state = request.preparation_state;
-    return compile_executable_program_v2(v2, program);
 }
 
 executable_program_status run_executable_program(

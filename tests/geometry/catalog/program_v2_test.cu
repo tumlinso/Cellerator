@@ -9,25 +9,6 @@ namespace execution = cellerator::execution;
 namespace planner = cellerator::planner;
 namespace runtime = cellerator::runtime;
 
-namespace cellerator::runtime {
-
-session_status insert_session_cache(execution_session *session,
-    session_cache_kind kind, session_cache_key key, void *state,
-    std::uint64_t structure_epoch, std::uint64_t generation) noexcept {
-    if (session == nullptr || kind != session_cache_kind::plan
-        || state == nullptr || session->plans.size >= execution_session_cache_capacity)
-        return session_status::invalid_argument;
-    session_cache_entry &entry = session->plans.entries[session->plans.size++];
-    entry.key = key;
-    entry.state = state;
-    entry.structure_epoch = structure_epoch;
-    entry.generation = generation;
-    entry.occupied = true;
-    return session_status::success;
-}
-
-} // namespace cellerator::runtime
-
 namespace {
 
 void require(bool condition, const char *message) {
@@ -209,8 +190,7 @@ void test_external_provider_without_program_switch() {
             && core::same_stable_id(
                 program.selected_candidate, candidate_id)
             && program.selected_projection.runtime.slot == 61u
-            && program.preparation_count == 1u
-            && session.plans.size == 1u,
+            && program.preparation_count == 1u,
         "v2 enumeration, selection, or candidate-owned preparation");
 
     core::candidate_preparation_adapter_v2 duplicates[2]{adapter, adapter};

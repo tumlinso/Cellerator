@@ -9,136 +9,33 @@ for native model authoring rather than generated from Python classes. Both sit
 within Cellerator's [biological machine-learning scope](scope.qmd) and
 [modeling architecture](architecture.qmd#cpp-and-python-modeling).
 
-The native Cell contract is a separate, Torch-free interface at
-[`<Cellerator/cell.hh>`](../include/Cellerator/cell.hh). A Cell is a continuing
-virtual instance: it binds a shared model to instance-specific information,
-independently of its physical layout or device placement. Its representation
-can be a borrowed row, pooled state, a structured owner, or a handle to
-separately placed portions. Python's existing Cell API is unchanged.
-
 The optional NN component uses C++20 and ATen/LibTorch tensors. Python is
 optional; LibTorch supplies tensor operations, ordinary optimizers, and
 autograd. Native models remain ordinary C++ callables with their own result
-types. The generic Cell remains Torch-independent, while Cellerator's supported
-native build baseline is C++20 for both C++ and CUDA targets.
+types. The supported native build baseline is C++20 for C++ and CUDA targets.
 
 The separate experimental [factorized joint-interaction component](factorized_interactions.qmd)
 provides native CUDA preparation and an explicit conditional joint forward/VJP
 without a Torch dependency. Its numerical law, lifetimes and source-bound
 qualification are distinct from the conventional NN components on this page.
 
-## Bind a continuing native instance
+## Use native data views directly
 
-`Cell<Model, Instance, ModelHandle = Model*>` stores the selected model handle
-and instance value. It adds no mandatory virtual base, allocation, identity,
-clock, trajectory, device, cache, or mutation tracker. Model and instance types
-are independent, so the same model can support different representations.
+Models take concrete arguments such as an expression batch, an ordered token
+range, or caller-owned transition state. Use `memory::const_array_view` for
+token ranges and `memory::matrix_view` for writable expression batches. Select
+a row by its matrix stride and pass its values as a borrowed array view. Pass
+feature labels separately and validate their count against the matrix columns
+when binding them. Owners control storage, mutation, and invalidation.
 
-```cpp
-#include <Cellerator/cell.hh>
-
-struct Reading { double value; };
-struct Scale {
-    double weight;
-    double operator()(Reading& instance, double input) const {
-        instance.value += input;
-        return weight * instance.value;
-    }
-};
-
-Scale model{2.0};
-auto cell = cellerator::make_cell(model, Reading{1.0});
-auto prediction = cell.forward(3.0); // 8.0; the same instance now contains 4.0
-```
-
-`make_cell(model, instance)` borrows an lvalue model and stores a decayed
-instance value, copying an lvalue or moving an rvalue. The model must outlive
-the Cell. Passing an explicit `std::shared_ptr<Model>` instead retains shared
-model ownership; null owners are rejected. Copying a Cell follows its stored
-instance and handle semantics: a row or pooled handle can alias storage, while
-an owning representation can duplicate private information or forbid copying.
-No operation implicitly clones state or generates a biological identity.
-
-`forward(args...)` invokes `model(instance, args...)` and preserves the exact
-result, including references, `void`, move-only values, and completion handles.
-Const forwarding requires a callable accepting a const model and const
-instance. `model()` and `instance()` expose const-correct lvalue references.
-Temporary access is rejected; moved-from Cells require reassignment before
-further operations unless their model and instance explicitly permit more.
-
-Logical in-place mutation does not require overwriting the same physical
-buffers. A model can replace a state tensor while retaining earlier values for
-backward, share a prefix, or relocate a portion through its owner. Models and
-owners define cache validity, parameter revisions, asynchronous readiness,
-retained-result lifetimes, and exception guarantees. Cell adds no automatic
-rollback or synchronization. A reference returned by an operation is valid
-only under that operation's lifetime contract.
-
-### Typed information access
-
-A representation can expose ordinary public hooks
-`View read(ViewTag<View>) const &` and
-`View write(ViewTag<View>) &`. `cell.view<View>()` and `cell.edit<View>()`
-delegate to those hooks. `supports<View>()` and `supports_edit<View>()` detect
-contracts at compile time; an unsupported typed acquisition is ill-formed.
-Reads require lvalues and edits require mutable lvalues. Capability presence
-does not establish data readiness, bounds validity, or cache freshness.
-
-The event and expression headers provide `EventPrefix`, `DenseExpressionRow`,
-and `MutableDenseExpressionRow`. These are storage selections, not complete
-Cells: bind a model to one, or include it in a richer instance representation.
-They borrow stable buffer or matrix descriptor objects, retain typed
-application identities, and reacquire pointers when producing views. Event
-prefixes preserve order and repeated occurrences. Dense rows preserve scalar
-type, feature IDs, explicit stride, and padding. Numeric writes use an explicit
-edit view; feature identity and layout remain read-only through that view.
-The expression adapter uses C++20 `std::span`.
-
-Descriptors retain native placement metadata and cause no transfer or host
-dereference of device data. The owner controls allocation, synchronization,
-reordering, and invalidation of existing borrowed views. Physical offsets are
-storage locations, not universal biological IDs. Caller-defined views need no
-central registry, and representations without views need no access boilerplate.
-
-### Optional runtime access
-
-Include [`<Cellerator/cells/access.hh>`](../include/Cellerator/cells/access.hh)
-when a heterogeneous consumer needs runtime view discovery. `CellViews` is the
-polymorphic access boundary, with protected `CellAccess<View>` and
-`CellEdit<View>` implementation hooks. An explicit borrowed bridge exposes only
-the selected capabilities:
-
-```cpp
-// event_cell is a typed Cell whose instance supplies EventView.
-auto bridge = cellerator::make_cell_views<
-    cellerator::CellAccess<EventView>>(event_cell);
-const cellerator::CellViews& runtime = bridge;
-auto events = runtime.view<EventView>();
-```
-
-Selected bridge contracts must be supported by the source; a const source
-cannot supply edits. Other runtime requests throw `std::bad_cast`, and runtime
-capability checks return false. The bridge borrows the Cell object: that object
-must outlive it and remain at the same address. Returned views separately obey
-their backing-storage contracts. The bridge cannot bind a temporary Cell.
-
-The typed path uses no RTTI or virtual call and needs no runtime destructor
-link. The optional runtime path performs one RTTI lookup and virtual dispatch
-per view acquisition and links `Cellerator::libCellerator` for `CellViews`'s
-out-of-line destructor. These are structural costs, not measured speedups.
-
-[`event_forward.cc`](../examples/native_cell/event_forward.cc) demonstrates
-storage-owned append extending the same Cell's prefix and returning an
-operation result. Copied prefix selections retain earlier boundaries; stale
-and foreign continuations are rejected. Its evaluator is deterministic
-scaffolding, not a scientific Karyoplast model.
-[`multimodal.cc`](../examples/native_cell/multimodal.cc) combines event,
-expression, identity, and custom views with an optional runtime bridge.
-[`foundation.cc`](../examples/native_cell/foundation.cc) explores shared and
-pooled portions, joint operations, host placement choices, cache revisions, and
-resource-retaining asynchronous results. Its supplied cost estimates do not
-constitute a placement engine or performance qualification. See the
-[host build route](developer_reference.qmd#native-cell-examples).
+The [event example](../examples/native_cell/event_forward.cc) appends to
+caller-provisioned storage after checking its source, current prefix length,
+and capacity. The [multimodal example](../examples/native_cell/multimodal.cc)
+checks that writes reach the selected backing row without touching the
+adjacent row or padding. The
+[native relation example](../tests/framework/native/cell_relation_example.cc)
+steps caller-owned state over prepared topology and explicitly retains
+earlier results. See the [host build route](developer_reference.qmd#native-data-and-transition-examples).
 
 ## Author a model as an ordinary C++ type
 
@@ -352,7 +249,12 @@ relations. The default `AttentionKernel::aten` implementation is differentiable
 ATen; `AttentionKernel::cellerator_csr` opts into the staged CSR CUDA kernel
 described under [backend limits](#native-operations-and-limits).
 `nn::InteractionPrograms` adds learned queries over features and can use a
-caller-prepared overlapping relation.
+caller-prepared overlapping relation. Construct an `nn::PreparedRelationPair`
+from the forward relation on the execution device, with features as sources
+and programs as targets. Pass its address in `ProgramCall::relation` and reuse
+the pair across calls with the same topology. Keep the pair alive until
+asynchronous work that uses it completes. Pair construction prepares the
+reverse relation. One-way attention accepts a `PreparedRelation`.
 [`programs.hh`](../include/Cellerator/nn/programs.hh) defines this composition
 and `nn::GatedInteractor`, which supplies a separate composition for
 independently gated participant occurrences. These components compute the
@@ -450,12 +352,11 @@ component and reference executable:
 
 ```sh
 cmake -S . -B /tmp/cellerator-native-nn -G Ninja \
-  -DCELLERATOR_BUILD_CCELL=OFF \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \
   -DTorch_DIR=/path/to/libtorch/share/cmake/Torch \
   -DCELLERATOR_ENABLE_CUDA=OFF \
+  -DCELLERATOR_BUILD_CCELL=OFF \
   -DCELLERATOR_ENABLE_NN=ON \
   -DCELLERATOR_ENABLE_MODULES=ON \
   -DCELLERATOR_ENABLE_NN_CUDA=OFF \
@@ -468,16 +369,14 @@ cmake --build /tmp/cellerator-native-nn \
 /tmp/cellerator-native-nn/native_nn_train
 ```
 
-The `anndatapp-install` prefix must contain the HDF5-only native package;
-the required CMake, Ninja, Clang and scanner versions are documented in the
-[developer reference](developer_reference.qmd#mandatory-native-toolchain-and-installed-dependencies).
+LibTorch is located with `Torch_DIR`; no AnnData or AnnData++ install
+prefix is required. The required CMake, Ninja, Clang and scanner versions are
+documented in the [developer reference](developer_reference.qmd#mandatory-native-toolchain).
 The [standalone build and installed-consumer route](../planning/native-nn-foundation-2026-10-31/build/README.md)
 records the environment-specific CMake invocation. Enabling the CUDA adapters
 is separate and also requires Cellerator framework CUDA, a loaded CUDA
 toolchain, and CUDA-enabled Torch.
 
-The normal Cellerator package always exports `Cellerator::core_module`, whose
-`cellerator.core` module provides the generic Cell and core public declarations.
 Request the installed `nn` component and link `Cellerator::nn` for both
 `#include <Cellerator/nn.hh>` and `import cellerator.nn;`. To import, use a
 package built with `CELLERATOR_ENABLE_MODULES=ON`, set

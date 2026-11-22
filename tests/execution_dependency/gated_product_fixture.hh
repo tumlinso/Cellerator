@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../native_data/reference/fixture.hh"
+#include "../tensor/block_masked_fixture.hh"
 
 #include <Cellerator/execution/dependency/distributed.cuh>
 #include <Cellerator/geometry/dependency/applicability.hh>
@@ -158,11 +159,9 @@ private:
         std::vector<std::uint64_t> canonical_rows;
         if (row_identity_regression)
             canonical_rows = {200, 100};
-        auto host_structure = block_masked::Structure::from_rows(
+        structure = make_block_masked_structure<true>(
             fixture_coordinates, physical_features_by_row, 32, 2,
-            std::move(canonical_features), std::move(canonical_rows));
-        structure = std::make_shared<const block_masked::Structure>(
-            std::move(host_structure));
+            canonical_features, canonical_rows);
 
         x.assign(fixture_batch * fixture_coordinates, 0.0f);
         for (std::size_t row = 0; row < fixture_batch; ++row)
@@ -204,10 +203,11 @@ private:
         }
 
         packed_values.resize(structure->stored_values());
-        auto sorted_rows = structure->canonical_rows();
+        const auto rows = structure->canonical_rows();
+        std::vector<std::uint64_t> sorted_rows(rows.data, rows.data + rows.count);
         std::sort(sorted_rows.begin(), sorted_rows.end());
         for (std::size_t physical_row = 0; physical_row < fixture_batch; ++physical_row) {
-            const auto canonical_row = structure->canonical_rows()[physical_row];
+            const auto canonical_row = structure->canonical_rows().data[physical_row];
             const auto batch_row = static_cast<std::size_t>(
                 std::lower_bound(sorted_rows.begin(), sorted_rows.end(), canonical_row)
                 - sorted_rows.begin());

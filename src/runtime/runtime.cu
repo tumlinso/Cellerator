@@ -76,22 +76,13 @@ void clear(cusparse_cache *cache) {
         cusparseDestroySpMat(cache->blocked_ell_f16);
         cache->blocked_ell_f16 = nullptr;
     }
-    if (cache->csr_f32 != nullptr) {
-        cusparseDestroySpMat(cache->csr_f32);
-        cache->csr_f32 = nullptr;
-    }
     if (cache->handle != nullptr && cache->owns_handle) {
         cusparseDestroy(cache->handle);
         cache->handle = nullptr;
     }
     cache->device = -1;
     cache->owns_handle = false;
-    cache->matrix_token = nullptr;
     cache->blocked_ell_token = nullptr;
-    cache->spmv_bytes_non_transpose = 0;
-    cache->spmv_bytes_transpose = 0;
-    cache->spmm_bytes_non_transpose = 0;
-    cache->spmm_bytes_transpose = 0;
     cache->blocked_ell_spmm_bytes_non_transpose = 0;
 }
 
@@ -154,45 +145,6 @@ cusparseHandle_t acquire_cusparse(cusparse_cache *cache, const execution_context
     return cache->handle;
 }
 
-cusparseSpMatDescr_t acquire_csr_f32_descriptor(
-    cusparse_cache *cache,
-    const execution_context &ctx,
-    const void *matrix_token,
-    std::uint32_t rows,
-    std::uint32_t cols,
-    std::uint32_t nnz,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const float *values) {
-    if (cache == nullptr) throw std::invalid_argument("acquire_csr_f32_descriptor requires a cache");
-    acquire_cusparse(cache, ctx);
-    if (cache->matrix_token == matrix_token && cache->csr_f32 != nullptr) return cache->csr_f32;
-    if (cache->csr_f32 != nullptr) {
-        cusparseDestroySpMat(cache->csr_f32);
-        cache->csr_f32 = nullptr;
-    }
-    if (cusparseCreateCsr(
-            &cache->csr_f32,
-            static_cast<std::int64_t>(rows),
-            static_cast<std::int64_t>(cols),
-            static_cast<std::int64_t>(nnz),
-            const_cast<std::uint32_t *>(major_ptr),
-            const_cast<std::uint32_t *>(minor_idx),
-            const_cast<float *>(values),
-            CUSPARSE_INDEX_32I,
-            CUSPARSE_INDEX_32I,
-            CUSPARSE_INDEX_BASE_ZERO,
-            CUDA_R_32F) != CUSPARSE_STATUS_SUCCESS) {
-        throw std::runtime_error("cusparseCreateCsr(core runtime f32 cache) failed");
-    }
-    cache->matrix_token = matrix_token;
-    cache->spmv_bytes_non_transpose = 0;
-    cache->spmv_bytes_transpose = 0;
-    cache->spmm_bytes_non_transpose = 0;
-    cache->spmm_bytes_transpose = 0;
-    return cache->csr_f32;
-}
-
 cusparseSpMatDescr_t acquire_blocked_ell_f16_descriptor(
     cusparse_cache *cache,
     const execution_context &ctx,
@@ -226,20 +178,6 @@ cusparseSpMatDescr_t acquire_blocked_ell_f16_descriptor(
     cache->blocked_ell_token = matrix_token;
     cache->blocked_ell_spmm_bytes_non_transpose = 0;
     return cache->blocked_ell_f16;
-}
-
-std::size_t &cached_spmv_bytes(cusparse_cache *cache, cusparseOperation_t op) {
-    if (cache == nullptr) throw std::invalid_argument("cached_spmv_bytes requires a cache");
-    return op == CUSPARSE_OPERATION_NON_TRANSPOSE
-        ? cache->spmv_bytes_non_transpose
-        : cache->spmv_bytes_transpose;
-}
-
-std::size_t &cached_spmm_bytes(cusparse_cache *cache, cusparseOperation_t op) {
-    if (cache == nullptr) throw std::invalid_argument("cached_spmm_bytes requires a cache");
-    return op == CUSPARSE_OPERATION_NON_TRANSPOSE
-        ? cache->spmm_bytes_non_transpose
-        : cache->spmm_bytes_transpose;
 }
 
 std::size_t &cached_blocked_ell_spmm_bytes(cusparse_cache *cache, cusparseOperation_t op) {

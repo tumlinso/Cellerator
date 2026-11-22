@@ -28,43 +28,6 @@ launch_runtime_binding bind_launch(
     return binding;
 }
 
-session_status insert_session_cache(
-    execution_session *session,
-    session_cache_kind kind,
-    session_cache_key key,
-    void *state,
-    std::uint64_t structure_epoch,
-    std::uint64_t generation) noexcept {
-    if (session == nullptr || !session->initialized || session->sealed || state == nullptr) {
-        return session_status::invalid_state;
-    }
-    fixed_session_cache *cache = cache_for(session, kind);
-    for (std::uint32_t index = 0; index < cache->size; ++index) {
-        if (same_key(cache->entries[index].key, key)) {
-            cache->entries[index] = {key, state, structure_epoch, generation, true};
-            return session_status::success;
-        }
-    }
-    if (cache->size == execution_session_cache_capacity) {
-        return session_status::capacity_exceeded;
-    }
-    cache->entries[cache->size++] = {key, state, structure_epoch, generation, true};
-    return session_status::success;
-}
-
-const session_cache_entry *find_session_cache(
-    const execution_session &session,
-    session_cache_kind kind,
-    session_cache_key key) noexcept {
-    const fixed_session_cache *cache = cache_for(session, kind);
-    for (std::uint32_t index = 0; index < cache->size; ++index) {
-        if (cache->entries[index].occupied && same_key(cache->entries[index].key, key)) {
-            return &cache->entries[index];
-        }
-    }
-    return nullptr;
-}
-
 bool graph_stable_address(
     const execution_session &session,
     const void *address,

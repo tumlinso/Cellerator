@@ -14,7 +14,6 @@
 
 namespace cellerator::compute::math::core {
 
-inline constexpr std::uint32_t preparation_factory_schema_version = 1u;
 inline constexpr std::uint32_t candidate_preparation_request_schema_version_v2 =
     2u;
 inline constexpr std::uint32_t candidate_preparation_adapter_schema_version_v2 =
@@ -91,45 +90,6 @@ operation_status prepare_catalog_candidate_v2(
     const candidate_preparation_adapter_v2 &adapter,
     const candidate_preparation_request_v2 &request,
     const execution::activated_projection_reference_v2 &projection,
-    prepared_operation *prepared) noexcept;
-
-struct preparation_factory_request {
-    std::uint32_t schema_version = preparation_factory_schema_version;
-    const built_in_candidate_descriptor *catalog_entry = nullptr;
-    operation_problem problem{};
-    structure_set_key structures{};
-    projection_key projection{};
-    numeric_policy numeric{};
-    prepare_policy policy{};
-    runtime::execution_session *session = nullptr;
-    std::uint32_t dense_width = 0u;
-    execution::axis_identity feature_axis{};
-    execution::axis_identity row_axis{};
-    execution::axis_identity dense_column_axis{};
-    preparation_state_storage state{};
-};
-
-// These typed overloads are the complete factory surface. They deliberately do
-// not introduce a global projection variant, virtual dispatch, or a second
-// candidate registry.
-operation_status prepare_catalog_row_masked(
-    const preparation_factory_request &request,
-    const cellpack::persistent_packing_payload_view &projection,
-    prepared_operation *prepared) noexcept;
-
-operation_status prepare_catalog_csr(
-    const preparation_factory_request &request,
-    const ::cellerator::layout::projection::CsrViewV1 &projection,
-    prepared_operation *prepared) noexcept;
-
-operation_status prepare_catalog_feature_major(
-    const preparation_factory_request &request,
-    const execution::FeatureMajorBinding &projection,
-    prepared_operation *prepared) noexcept;
-
-operation_status prepare_catalog_transpose(
-    const preparation_factory_request &request,
-    const execution::TransposeBinding &projection,
     prepared_operation *prepared) noexcept;
 
 static_assert(

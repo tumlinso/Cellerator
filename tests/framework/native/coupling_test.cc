@@ -1,12 +1,12 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/coupling.hh>
+#include <Cellerator/ops/process/exchange.hh>
 #include <cassert>
 #include <cmath>
 #include <stdexcept>
 
-using namespace cellerator::modeling;
+using namespace cellerator::ops::process;
 
 int main() {
     ExchangePlan plan(cellerator::layout::EntityLayout({42, 7}),

@@ -189,14 +189,22 @@ def lane_registration(data: dict, phase: str) -> tuple[Path, dict, int, str, str
 
 
 def check_lane_identities(lane: Path, data: dict) -> None:
-    files = {
-        'source_archive_sha256': lane / '.autobench/data/closure.tar.gz',
-        'binary_sha256': lane / '.autobench/data/frozen-binary',
-    }
-    for identity, path in files.items():
-        if path.is_symlink() or not path.is_file():
-            raise RuntimeError(f'probe lane {identity} input is missing or is a symlink')
-        if sha(path) != data[identity]:
+    array_inputs = (lane / '.autobench/state/array-inputs').exists()
+    for identity, name in (('source_archive_sha256', 'closure.tar.gz'), ('binary_sha256', 'frozen-binary')):
+        path = lane / '.autobench/data' / name
+        if array_inputs:
+            # The worker verifies array bytes against this identity when it
+            # stages its private copy. Avoid re-reading the bulk input here.
+            result = subprocess.run(['autobench', 'input', 'path', '--project', str(lane), '--name', name],
+                                    capture_output=True, text=True)
+            if result.returncode:
+                raise RuntimeError(f'cannot resolve probe lane {identity}: {result.stderr[-800:]}')
+            digest = json.loads(result.stdout)['identity']
+        else:
+            if path.is_symlink() or not path.is_file():
+                raise RuntimeError(f'probe lane {identity} input is missing or is a symlink')
+            digest = sha(path)
+        if digest != data[identity]:
             raise RuntimeError(f'probe lane {identity} differs from the frozen local identity')
 
 

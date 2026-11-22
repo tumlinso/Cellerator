@@ -268,7 +268,7 @@ inline bool remap_feature_subset(const csr_matrix_export &src,
 }
 
 inline bool build_compressed_from_csr(const csr_matrix_export &csr,
-                                      ::cellerator::tensor::base::compressed *out,
+                                      ::cellshard::compressed *out,
                                       std::string *error) {
     if (out == nullptr) {
         set_error(error, "compressed output is null");
@@ -279,7 +279,7 @@ inline bool build_compressed_from_csr(const csr_matrix_export &csr,
                  (types::dim_t) csr.rows,
                  (types::dim_t) csr.cols,
                  (types::nnz_t) csr.data.size(),
-                 ::cellerator::tensor::base::compressed_by_row);
+                 ::cellshard::compressed_by_row);
     if (!allocate(out)) {
         set_error(error, "failed to allocate compressed subset matrix");
         return false;
@@ -653,7 +653,7 @@ bool materialize_derived_dataset(const char *source_path,
     source_provenance_vectors source_provenance;
     csr_matrix_export row_subset;
     csr_matrix_export feature_subset;
-    ::cellerator::tensor::base::compressed compressed;
+    ::cellshard::compressed compressed;
     ::cellerator::tensor::base::blocked_ell blocked;
     bucketed_blocked_ell_shard optimized_shard;
     std::vector<observation_metadata_column> observation_columns;

@@ -1,21 +1,12 @@
 #include <Cellerator/compute/candidate/csr_fallback_candidate.hh>
 
-#include "compute/operators/sparse/primitives/common.cuh"
-
-#include <cuda_fp16.h>
-#include <cuda_runtime_api.h>
-
-#include <cstdint>
+#include "../../ops/matrix/csr_multiply.cuh"
 
 namespace cellerator::compute::math::core {
 namespace {
 
-namespace primitives = compute::sparse::ops::primitives;
+namespace matrix = ::cellerator::ops::matrix;
 namespace projection_layout = ::cellerator::layout::projection;
-
-#include "compute/operators/sparse/kernels/base_sparse/csr_spmv_fwd_kernel_.cuh"
-
-inline constexpr int csr_row_threads = 256;
 
 operation_status fail(operation_status_code code, const char *message) noexcept {
     return {code, execution::binding_validation_code::ok, message};
@@ -112,18 +103,12 @@ operation_status run_csr_fallback(
         return fail(operation_status_code::invalid_launch_bindings,
             "CSR fallback order, shape, value, or residency is incompatible");
 
-    const int blocks = static_cast<int>((
-        static_cast<std::size_t>(state.projection.row_count)
-        + csr_row_threads - 1u) / csr_row_threads);
-    csr_spmv_fwd_kernel_<<<blocks, csr_row_threads, 0,
-        static_cast<cudaStream_t>(launch.stream.stream)>>>(
-            state.projection.row_offsets,
-            state.projection.execution_feature_ids,
-            static_cast<const __half *>(values.values),
-            state.projection.row_count,
-            static_cast<const float *>(vector.data),
-            static_cast<float *>(output.data));
-    if (cudaGetLastError() != cudaSuccess)
+    const auto& p = state.projection;
+    matrix::Csr<const __half> a{{p.row_count, p.feature_count, p.nnz_count,
+        tensor::base::CompressedAxis::row, p.row_offsets, p.execution_feature_ids},
+        static_cast<const __half*>(values.values)};
+    if (matrix::csr_spmv(a, static_cast<const float*>(vector.data), static_cast<float*>(output.data),
+                        static_cast<cudaStream_t>(launch.stream.stream)) != cudaSuccess)
         return fail(operation_status_code::execution_failed,
             "existing CSR kernel launch failed");
     return {};

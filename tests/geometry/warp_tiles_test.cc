@@ -1,5 +1,5 @@
 #include "Cellerator/geometry/warp_tiles.hh"
-#include <Cellerator/interop/formats/cellpack.hh>
+#include <Cellerator/geometry/persistence/packed_tensor_views.hh>
 
 #include <algorithm>
 #include <cstdlib>
@@ -158,10 +158,10 @@ struct record_storage {
 
     cellpack::cell_block_record_view view() const {
         auto result = metadata;
-        result.row_record_offsets = row_offsets.data();
-        result.record_block_ids = block_ids.data();
-        result.record_gene_masks = gene_masks.data();
-        result.record_value_offsets = value_offsets.data();
+        result.layout.row_block_offsets = row_offsets.data();
+        result.layout.block_ids = block_ids.data();
+        result.layout.feature_masks = gene_masks.data();
+        result.layout.row_block_value_offsets = value_offsets.data();
         result.values = values.data();
         return result;
     }
@@ -217,14 +217,14 @@ order_storage make_order(
     u32 window_size,
     cellpack::local_cell_order_kind kind = cellpack::local_cell_order_kind::original) {
     order_storage result;
-    result.primary.resize(records.row_count);
-    result.secondary.resize(records.row_count);
-    result.active.resize(records.row_count);
-    result.nnz.resize(records.row_count);
-    result.permutation.resize(records.row_count);
-    result.inverse.resize(records.row_count);
+    result.primary.resize(records.layout.rows);
+    result.secondary.resize(records.layout.rows);
+    result.active.resize(records.layout.rows);
+    result.nnz.resize(records.layout.rows);
+    result.permutation.resize(records.layout.rows);
+    result.inverse.resize(records.layout.rows);
     cellpack::local_cell_order_buffers buffers;
-    buffers.row_capacity = records.row_count;
+    buffers.row_capacity = records.layout.rows;
     buffers.primary_keys = result.primary.data();
     buffers.secondary_keys = result.secondary.data();
     buffers.active_block_counts = result.active.data();
@@ -248,12 +248,12 @@ struct tile_storage {
 
     cellpack::warp_tile_view view() const {
         auto result = metadata;
-        result.tile_block_offsets = tile_offsets.data();
-        result.tile_block_ids = block_ids.data();
-        result.tile_block_cell_masks = cell_masks.data();
-        result.block_row_entry_offsets = entry_offsets.data();
-        result.row_block_gene_masks = gene_masks.data();
-        result.row_block_value_offsets = value_offsets.data();
+        result.layout.tile_block_offsets = tile_offsets.data();
+        result.layout.block_ids = block_ids.data();
+        result.layout.participating_row_masks = cell_masks.data();
+        result.layout.block_row_entry_offsets = entry_offsets.data();
+        result.layout.feature_masks = gene_masks.data();
+        result.layout.row_block_value_offsets = value_offsets.data();
         result.values = values.data();
         return result;
     }
@@ -399,16 +399,27 @@ void test_native_borrowed_tile_view() {
     const auto records=make_records(plan,source);
     const auto order=make_order(records.view(),32,32);
     const auto tiles=make_tiles(plan,records.view(),order.view());
-    const auto legacy=tiles.view();
-    const auto native=cellerator::interop::formats::borrow_validated_cellpack_tiles<unsigned char>(plan,legacy,plan.feature_block_offsets());
-    require(native.values==legacy.values && native.layout.block_ids==legacy.tile_block_ids &&
-            native.layout.feature_block_offsets==plan.feature_block_offsets(),
+    auto packed = tiles.view();
+    cellerator::tensor::block_masked::View<const unsigned char> native;
+    require_status(cellerator::geometry::bind_row_masked_tiles(plan, packed, nullptr, &native),
+        "bind native row-masked tiles");
+    require(native.values == packed.values && native.layout.block_ids == packed.layout.block_ids &&
+            native.layout.tile_block_offsets == packed.layout.tile_block_offsets &&
+            native.layout.participating_row_masks == packed.layout.participating_row_masks &&
+            native.layout.block_row_entry_offsets == packed.layout.block_row_entry_offsets &&
+            native.layout.feature_masks == packed.layout.feature_masks &&
+            native.layout.row_block_value_offsets == packed.layout.row_block_value_offsets &&
+            native.layout.feature_block_offsets == plan.feature_block_offsets(),
         "native tile import copied or detached payload/maps");
-    require(native.layout.stored_values==source.canonical_ids.size(),"native tile import count mismatch");
-    bool wrong_type=false;
-    try { (void)cellerator::interop::formats::borrow_validated_cellpack_tiles<u64>(plan,legacy,plan.feature_block_offsets()); }
-    catch (const std::invalid_argument&) { wrong_type=true; }
-    require(wrong_type,"native tile import accepted mismatched numeric width");
+    require(native.layout.stored_values == source.canonical_ids.size(), "native tile import count mismatch");
+    packed.layout.feature_block_offsets = nullptr;
+    require(!cellerator::geometry::bind_row_masked_tiles(plan, packed, nullptr, &native),
+        "native tile import accepted a missing feature-block offset replica");
+    require_status(cellerator::geometry::bind_row_masked_tiles(plan, packed,
+        plan.feature_block_offsets(), &native), "bind explicit feature-block offset replica");
+    cellerator::tensor::block_masked::View<const u64> wrong_width;
+    require(!cellerator::geometry::bind_row_masked_tiles(plan, packed,
+        plan.feature_block_offsets(), &wrong_width), "native tile import accepted mismatched numeric width");
 }
 
 void test_empty_inputs_and_value_widths() {
@@ -489,43 +500,43 @@ void test_capacity_and_validation_failures() {
     auto bad_tile_offsets = tiles.tile_offsets;
     bad_tile_offsets[1] = bad_tile_offsets[0];
     bad = valid;
-    bad.tile_block_offsets = bad_tile_offsets.data();
+    bad.layout.tile_block_offsets = bad_tile_offsets.data();
     require(!cellpack::validate_warp_tile_view_host(plan, records.view(), order.view(), bad),
         "omitted tile dictionary range was accepted");
     auto bad_blocks = tiles.block_ids;
     bad_blocks[1] = bad_blocks[0];
     bad = valid;
-    bad.tile_block_ids = bad_blocks.data();
+    bad.layout.block_ids = bad_blocks.data();
     require(!cellpack::validate_warp_tile_view_host(plan, records.view(), order.view(), bad),
         "duplicate/out-of-order tile block was accepted");
     auto bad_cell_masks = tiles.cell_masks;
     bad_cell_masks.back() |= 4u;
     bad = valid;
-    bad.tile_block_cell_masks = bad_cell_masks.data();
+    bad.layout.participating_row_masks = bad_cell_masks.data();
     require(!cellpack::validate_warp_tile_view_host(plan, records.view(), order.view(), bad),
         "tail cell-mask overflow was accepted");
     bad_cell_masks = tiles.cell_masks;
     bad_cell_masks[0] = 0u;
     bad = valid;
-    bad.tile_block_cell_masks = bad_cell_masks.data();
+    bad.layout.participating_row_masks = bad_cell_masks.data();
     require(!cellpack::validate_warp_tile_view_host(plan, records.view(), order.view(), bad),
         "empty cell mask was accepted");
     auto bad_entry_offsets = tiles.entry_offsets;
     --bad_entry_offsets.back();
     bad = valid;
-    bad.block_row_entry_offsets = bad_entry_offsets.data();
+    bad.layout.block_row_entry_offsets = bad_entry_offsets.data();
     require(!cellpack::validate_warp_tile_view_host(plan, records.view(), order.view(), bad),
         "wrong terminal row-entry offset was accepted");
     auto bad_gene_masks = tiles.gene_masks;
     bad_gene_masks[31] = 1u;
     bad = valid;
-    bad.row_block_gene_masks = bad_gene_masks.data();
+    bad.layout.feature_masks = bad_gene_masks.data();
     require(!cellpack::validate_warp_tile_view_host(plan, records.view(), order.view(), bad),
         "tampered gene mask was accepted");
     auto bad_value_offsets = tiles.value_offsets;
     ++bad_value_offsets[1];
     bad = valid;
-    bad.row_block_value_offsets = bad_value_offsets.data();
+    bad.layout.row_block_value_offsets = bad_value_offsets.data();
     require(!cellpack::validate_warp_tile_view_host(plan, records.view(), order.view(), bad),
         "tampered value offset was accepted");
     auto bad_values = tiles.values;

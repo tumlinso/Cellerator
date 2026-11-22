@@ -12,7 +12,7 @@ namespace kernels {
 // so repeated bucket rebuilds do not bounce three pointer lists through host
 // memory on every pass.
 __global__ static void gather_compressed_part_pointers(
-    const ::cellerator::tensor::base::device::CompressedView * __restrict__ part_views,
+    const ::cellshard::device::CompressedView * __restrict__ part_views,
     types::idx_t part_count,
     types::ptr_t ** __restrict__ out_major_ptr,
     types::idx_t ** __restrict__ out_minor_idx,
@@ -23,7 +23,7 @@ __global__ static void gather_compressed_part_pointers(
     types::idx_t i = tid;
 
     while (i < part_count) {
-        const ::cellerator::tensor::base::device::CompressedView view = part_views[i];
+        const ::cellshard::device::CompressedView view = part_views[i];
         out_major_ptr[i] = view.major_ptr;
         out_minor_idx[i] = view.minor_idx;
         out_val[i] = view.val;
@@ -54,7 +54,7 @@ struct alignas(16) sharded_major_bucket_workspace {
 };
 
 struct alignas(16) sharded_major_bucket_result {
-    ::cellerator::tensor::base::device::CompressedView rebuilt;
+    ::cellshard::device::CompressedView rebuilt;
     major_nnz_bucket_plan_view plan;
     unsigned long shard_id;
 };
@@ -135,8 +135,8 @@ __host__ __forceinline__ int reserve_parts(sharded_major_bucket_workspace *ws, u
 }
 
 __host__ __forceinline__ int build_bucketed_shard_major_view(
-    const device::sharded_device<::cellerator::tensor::base::compressed> *state,
-    const sharded<::cellerator::tensor::base::compressed> *view,
+    const device::sharded_device<::cellshard::compressed> *state,
+    const sharded<::cellshard::compressed> *view,
     unsigned long shard_id,
     types::idx_t requested_bucket_count,
     sharded_major_bucket_workspace *ws,
@@ -145,7 +145,7 @@ __host__ __forceinline__ int build_bucketed_shard_major_view(
     unsigned long part_begin = 0;
     unsigned long part_end = 0;
     unsigned long local_part = 0;
-    const ::cellerator::tensor::base::device::CompressedView *packed_views = 0;
+    const ::cellshard::device::CompressedView *packed_views = 0;
     types::dim_t shard_rows = 0;
     types::nnz_t shard_nnz = 0;
     types::idx_t bucket_count = 0;
@@ -165,13 +165,13 @@ __host__ __forceinline__ int build_bucketed_shard_major_view(
 
     ws->h_part_row_offsets[0] = 0u;
     if (part_begin < state->capacity && state->parts[part_begin].view != 0) {
-        packed_views = (const ::cellerator::tensor::base::device::CompressedView *) state->parts[part_begin].view;
+        packed_views = (const ::cellshard::device::CompressedView *) state->parts[part_begin].view;
     }
     for (local_part = 0; part_begin + local_part < part_end; ++local_part) {
         const unsigned long part_id = part_begin + local_part;
-        const device::partition_record<::cellerator::tensor::base::compressed> *record = state->parts + part_id;
+        const device::partition_record<::cellshard::compressed> *record = state->parts + part_id;
         if (part_id >= state->capacity || record->a0 == 0 || record->a1 == 0 || record->a2 == 0) return 0;
-        if (view->partition_aux[part_id] != ::cellerator::tensor::base::compressed_by_row) return 0;
+        if (view->partition_aux[part_id] != ::cellshard::compressed_by_row) return 0;
         if (packed_views == 0 ||
             record->group_begin != part_begin ||
             record->group_end != part_end ||
@@ -256,7 +256,7 @@ __host__ __forceinline__ int build_bucketed_shard_major_view(
     out->rebuilt.rows = shard_rows;
     out->rebuilt.cols = (types::dim_t) view->cols;
     out->rebuilt.nnz = shard_nnz;
-    out->rebuilt.axis = ::cellerator::tensor::base::compressed_by_row;
+    out->rebuilt.axis = ::cellshard::compressed_by_row;
     out->rebuilt.major_ptr = ws->base.d_rebuilt_major_ptr;
     out->rebuilt.minor_idx = ws->base.d_rebuilt_minor_idx;
     out->rebuilt.val = ws->base.d_rebuilt_val;

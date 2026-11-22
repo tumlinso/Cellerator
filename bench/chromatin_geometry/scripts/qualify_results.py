@@ -348,6 +348,20 @@ def frozen_workload(raw, frozen, matrix):
     require(len(matching) == 1, 'workload is outside frozen measurement matrix')
 
 
+def packet_workspace_matches(command, attempt_id, fingerprint):
+    working = Path(command['working_directory'])
+    result = Path(command['result_directory'])
+    version = command.get('storage_version', 1)
+    if result.name != attempt_id:
+        return False
+    if version == 1:
+        return working.name == fingerprint
+    return (version == 2 and command.get('attempt_id') == attempt_id and working.name == attempt_id and
+            command.get('source_fingerprint') == fingerprint and working.is_absolute() and result.is_absolute() and
+            working.parent.name == 'run-inputs' and result.parent.name == 'scratch' and
+            working.parent.parent == result.parent.parent)
+
+
 def runtime_wrapper(root, row, config, expected_hash):
     identity = read(root / 'runtime-wrapper-identity.json')
     command_path, manifest_path = root / 'registered-command.json', root / 'snapshot-manifest.json'
@@ -360,7 +374,7 @@ def runtime_wrapper(root, row, config, expected_hash):
     require(identity.get('schema') == 'cgs.runtime-wrapper.v1' and identity.get('job_id') == row['job_id'] and identity.get('attempt_id') == row['attempt_id'] and identity.get('wrapper_sha256') == wrapper_hash == expected_hash and identity.get('packet_manifest_sha256') == sha(command_path) and identity.get('snapshot_manifest_sha256') == sha(manifest_path), 'retained runtime wrapper identity mismatch')
     wd = Path(command['working_directory'])
     argv = command['argv']
-    require(wd.name == identity.get('snapshot_id') and len(argv) > 2 and argv[0] == 'python3' and argv[1] == str(wd / 'scripts/run_packet.py') and argv[2] == 'ste-test', 'registered command is not bound to immutable wrapper snapshot')
+    require(packet_workspace_matches(command, row['attempt_id'], fingerprint) and len(argv) > 2 and argv[0] == 'python3' and argv[1] == str(wd / 'scripts/run_packet.py') and argv[2] == 'ste-test', 'registered command is not bound to immutable wrapper snapshot')
     require(Path(command['result_directory']).name == row['attempt_id'] and command['result_directory'] == argv[argv.index('--output')+1], 'registered command scratch attempt mismatch')
     require(argv[argv.index('--archive-sha256')+1] == config['source_archive_sha256'] and argv[argv.index('--suite')+1] == 'kda' and argv[argv.index('--uuid')+1] == row['gpu_resource_id'].split(':')[-1] and argv[argv.index('--config')+1] == str(wd / 'experiment.json'), 'registered command source, suite, device or configuration mismatch')
     require(manifest.get('scripts/run_packet.py') == wrapper_hash and manifest.get('.autobench/data/closure.tar.gz') == config['source_archive_sha256'] and manifest.get('experiment.json') == sha(root / 'experiment.json') and manifest.get('contract-freeze.json') == sha(root / 'contract-freeze.json') and manifest.get('interference-evidence.json') == sha(root / 'interference-evidence.json') and manifest.get('.autobench/data/frozen-binary') == config['binary_sha256'] and identity.get('snapshot_inputs') == manifest, 'snapshot manifest inputs mismatch')
@@ -370,7 +384,10 @@ def runtime_wrapper(root, row, config, expected_hash):
     require(len(packets) == 1 and packets[0].get('kill_seconds', 901) <= 900 and packets[0].get('argv', [None, None])[1] == '{snapshot}/scripts/run_packet.py', 'registration does not bind a bounded wrapper packet')
     gpu = [x for x in packets[0].get('resources', {}).get('scheduler', []) if x.get('kind') == 'gpu']
     require(len(gpu) == 1 and gpu[0].get('mode') == 'exclusive' and gpu[0].get('selectors', {}).get('resource_id') == row['gpu_resource_id'], 'registration lacks the expected exclusive GPU')
-    return {'runtime_wrapper_sha256': wrapper_hash, 'runtime_wrapper_identity_sha256': sha(root / 'runtime-wrapper-identity.json'), 'registered_command_sha256': sha(command_path), 'snapshot_manifest_sha256': sha(manifest_path), 'registration_sha256': sha(root / 'registration.toml'), 'snapshot_id': identity['snapshot_id'], 'snapshot_manifest_origin': 'independently reconstructed and fingerprint verified; original SDK manifest unavailable'}
+    origin = ('independently reconstructed and verified against the original array manifest'
+              if command.get('storage_version') == 2 else
+              'independently reconstructed and fingerprint verified; original SDK manifest unavailable')
+    return {'runtime_wrapper_sha256': wrapper_hash, 'runtime_wrapper_identity_sha256': sha(root / 'runtime-wrapper-identity.json'), 'registered_command_sha256': sha(command_path), 'snapshot_manifest_sha256': sha(manifest_path), 'registration_sha256': sha(root / 'registration.toml'), 'snapshot_id': identity['snapshot_id'], 'snapshot_manifest_origin': origin}
 
 
 def verify_triage_adapter(study, row, metrics, summary, config):
@@ -388,7 +405,7 @@ def verify_triage_adapter(study, row, metrics, summary, config):
     original, original_sha = original_build(study,row)
     require(files.get('.autobench/data/closure.tar.gz') == metrics['archive_sha256'] and files.get('.autobench/data/frozen-binary') == metrics['binary_sha256'] and files.get('.autobench/data/frozen-build.json') == original_sha and files.get('experiment.json') == sha(root/'experiment.json') and original.get('target') == 'cgs_study', 'triage frozen inputs differ from exact original build')
     wd=Path(command['working_directory']); argv=command['argv']
-    require(wd.name == fingerprint and argv[:3] == ['python3',str(wd/'scripts/triage_binary.py'),'run'] and Path(command['result_directory']).name == row['attempt_id'], 'triage registered command or scratch identity mismatch')
+    require(packet_workspace_matches(command, row['attempt_id'], fingerprint) and argv[:3] == ['python3',str(wd/'scripts/triage_binary.py'),'run'], 'triage registered command or scratch identity mismatch')
     for flag, value in (('--config',str(wd/'experiment.json')),('--uuid',metrics['uuid']),('--output',str(Path(command['result_directory'])/'triage-packet'))):
         require(argv.count(flag) == 1 and argv[argv.index(flag)+1] == value, 'triage command mismatch: ' + flag)
     registration = tomllib.loads((root/'registration.toml').read_text()); packets=registration.get('packet',[])
@@ -624,7 +641,7 @@ def sanitizer_snapshot(root, row, metric, original_build_sha, adapter_sha=REVIEW
     require(digest == identity.get('snapshot_id') and identity.get('snapshot_inputs') == manifest and identity.get('schema') == 'cgs.runtime-wrapper.v1' and identity.get('job_id') == row['job_id'] and identity.get('attempt_id') == row['attempt_id'] and identity.get('wrapper_sha256') == wrapper_hash == manifest.get('scripts/sanitize_chain.py') == adapter_sha and identity.get('packet_manifest_sha256') == sha(command_path) and identity.get('snapshot_manifest_sha256') == sha(manifest_path), 'sanitizer snapshot identity mismatch')
     require(manifest.get('.autobench/data/closure.tar.gz') == metric['archive_sha256'] and manifest.get('.autobench/data/frozen-binary') == metric['binary_sha256'] and manifest.get('.autobench/data/frozen-build.json') == original_build_sha, 'sanitizer snapshot source, binary or build mismatch')
     wd = Path(command['working_directory']); argv = command['argv']
-    require(wd.name == digest and argv[:3] == ['python3',str(wd/'scripts/sanitize_chain.py'),'run'] and Path(command['result_directory']).name == row['attempt_id'] and argv[argv.index('--sanitizer')+1] == metric['sanitizer'] and argv[argv.index('--uuid')+1] == metric['uuid'] and (backend == 'cohort-shared' and ('--backend' not in argv or argv[argv.index('--backend')+1] == backend) or backend != 'cohort-shared' and '--backend' in argv and argv[argv.index('--backend')+1] == backend), 'sanitizer registered command mismatch')
+    require(packet_workspace_matches(command, row['attempt_id'], digest) and argv[:3] == ['python3',str(wd/'scripts/sanitize_chain.py'),'run'] and argv[argv.index('--sanitizer')+1] == metric['sanitizer'] and argv[argv.index('--uuid')+1] == metric['uuid'] and (backend == 'cohort-shared' and ('--backend' not in argv or argv[argv.index('--backend')+1] == backend) or backend != 'cohort-shared' and '--backend' in argv and argv[argv.index('--backend')+1] == backend), 'sanitizer registered command mismatch')
     return {'snapshot_id':digest,'reconstructed_snapshot_sha256':sha(manifest_path),'adapter_sha256':wrapper_hash,'registered_command_sha256':sha(command_path)}
 
 

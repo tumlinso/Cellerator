@@ -1,17 +1,12 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include "Cellerator/tensor/block_masked/layout.hh"
 
 #include <cstdint>
 #include <type_traits>
 
 namespace cellerator::tensor::block_masked {
-
-#if defined(__CUDACC__)
-#define CELLERATOR_BLOCK_MASKED_HD __host__ __device__
-#else
-#define CELLERATOR_BLOCK_MASKED_HD
-#endif
 
 template<class T, class Offset = std::uint32_t>
 struct View {
@@ -37,7 +32,7 @@ struct LoadResult {
     LoadStatus status = LoadStatus::invalid_layout;
     T value{};
 
-    CELLERATOR_BLOCK_MASKED_HD constexpr bool has_value() const noexcept {
+    CELLERATOR_HOST_DEVICE constexpr bool has_value() const noexcept {
         return status == LoadStatus::stored;
     }
 };
@@ -47,7 +42,7 @@ static_assert(std::is_trivially_copyable<LoadResult<float>>::value,
 
 namespace detail {
 
-CELLERATOR_BLOCK_MASKED_HD inline std::uint32_t popcount(std::uint32_t bits) noexcept {
+CELLERATOR_HOST_DEVICE inline std::uint32_t popcount(std::uint32_t bits) noexcept {
     std::uint32_t count = 0;
     while (bits != 0) {
         bits &= bits - 1;
@@ -57,7 +52,7 @@ CELLERATOR_BLOCK_MASKED_HD inline std::uint32_t popcount(std::uint32_t bits) noe
 }
 
 template<class Offset>
-CELLERATOR_BLOCK_MASKED_HD inline std::uint64_t offset_value(Offset value) noexcept {
+CELLERATOR_HOST_DEVICE inline std::uint64_t offset_value(Offset value) noexcept {
     return static_cast<std::uint64_t>(value);
 }
 
@@ -67,7 +62,7 @@ struct OffsetLookup {
 };
 
 template<class Offset>
-CELLERATOR_BLOCK_MASKED_HD inline OffsetLookup locate(
+CELLERATOR_HOST_DEVICE inline OffsetLookup locate(
     LayoutView<Offset> layout,
     std::uint64_t row,
     std::uint64_t physical_feature) noexcept {
@@ -236,7 +231,7 @@ CELLERATOR_BLOCK_MASKED_HD inline OffsetLookup locate(
 // Low-level prevalidated-layout lookup. False means either omitted support or
 // malformed local metadata; use try_load when the caller must distinguish them.
 template<class Offset>
-CELLERATOR_BLOCK_MASKED_HD inline bool value_offset(
+CELLERATOR_HOST_DEVICE inline bool value_offset(
     LayoutView<Offset> layout,
     std::uint64_t row,
     std::uint64_t physical_feature,
@@ -254,7 +249,7 @@ CELLERATOR_BLOCK_MASKED_HD inline bool value_offset(
 // device use; this hot lookup checks the metadata it traverses without scanning
 // the whole structure for every element.
 template<class T, class Offset>
-CELLERATOR_BLOCK_MASKED_HD inline LoadResult<T> try_load(
+CELLERATOR_HOST_DEVICE inline LoadResult<T> try_load(
     View<const T, Offset> view,
     std::uint64_t row,
     std::uint64_t physical_feature) noexcept {
@@ -263,7 +258,5 @@ CELLERATOR_BLOCK_MASKED_HD inline LoadResult<T> try_load(
     if (view.values == nullptr) return {LoadStatus::invalid_storage, T{}};
     return {LoadStatus::stored, view.values[result.offset]};
 }
-
-#undef CELLERATOR_BLOCK_MASKED_HD
 
 } // namespace cellerator::tensor::block_masked

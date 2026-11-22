@@ -49,22 +49,16 @@ owner, target, disposition, maturity, consumers, and evidence. This page
 summarizes build routes and points to that map; it is not a duplicate source
 catalog.
 
-## Mandatory native toolchain and installed dependencies
+## Mandatory native toolchain
 
 Every root CMake build requires CMake 3.28 or newer, Ninja 1.11 or newer,
-Clang 18 or newer, and the matching `clang-scan-deps` executable. Set
-`CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS` to that scanner when autodetection is not
-appropriate. Cellerator C++ and CUDA targets require at least C++20. Its named
-modules are built and exported by the normal package build. The core module is
-always exported as
-`Cellerator::core_module`; request it with
-`find_package(Cellerator CONFIG REQUIRED COMPONENTS core_module)` and import it
-as `cellerator.core;`. Set `CELLERATOR_ENABLE_MODULES=ON` to add the host
-tensor module and, when NN is enabled, the NN module. This option defaults to off.
-Module consumers must set `CMAKE_CXX_EXTENSIONS OFF` before creating importer
-targets, so Clang builds them in strict C++20 or C++23 mode rather than
-`gnu++20`. CUDA translation units keep using public headers and do not import
-named modules.
+and Clang 18 or newer. Native C++ and CUDA targets require C++20 or newer.
+Set `CELLERATOR_ENABLE_MODULES=ON` to build the host tensor module and, when
+NN is enabled, the NN module. This option defaults to off. Module builds
+require a matching `clang-scan-deps` executable. Set
+`CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS` if autodetection is unsuitable.
+Module consumers use strict C++20 or C++23. CUDA translation units use the
+public headers.
 
 The standard build includes CCell preprocessing and RNA velocity. Initialize
 the `extern/anndatapp` submodule to build its AnnData++ adapter and bundled H5AD
@@ -75,30 +69,15 @@ and installed targets and the
 [component ownership record](development/component-ownership.md) for source
 routing. The generic `CelleratorBinary16` component remains separately buildable.
 
-The standard RNA velocity entry point is the separate CCell
-`ccell::velocity` target. A build that explicitly selects the legacy
-external Velocity++ adapter must set `CELLERATOR_BUILD_CCELL=OFF`.
+Enabling retired CMake options `CELLERATOR_ENABLE_VELOCITY`,
+`CELLERATOR_VELOCITY_BUILD_TESTS`, or `CELLERATOR_ENABLE_CELLSHARD` fails during
+configuration. Setting `CELLERATOR_CELLSHARD_SOURCE_DIR` also fails. Requests
+for Cellerator package components `velocity`, `cellshard`, or `CellShard` fail
+clearly. The supported RNA velocity entry point is the separate CCell
+`ccell::velocity` target.
 
-See the [CCell host build](../components/CCell/README.md#build-and-consume) for
-checkout, build, and installation commands for the native distribution.
-
-An installed C++ consumer links the module targets directly:
-
-```cmake
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-find_package(Cellerator CONFIG REQUIRED COMPONENTS core_module)
-target_link_libraries(my_model PRIVATE Cellerator::core_module)
-```
-
-The corresponding C++ translation unit uses this import:
-
-```cpp
-import cellerator.core;
-```
-
-Tensor and NN consumers use the same
+Header consumers in the normal package can link `Cellerator::headers` for its
+include path and C++20 requirement. Tensor and NN consumers use the same
 targets for headers and imports. For an importing model:
 
 ```cmake
@@ -117,7 +96,7 @@ build when needed.
 ## Current high-level routes
 
 ```text
-include/Cellerator/   public native contracts, including cell.hh and cells/
+include/Cellerator/   public native contracts, including event and expression views
 src/                  native implementation (several owners and generations)
 components/CCell/    native preprocessing, RNA velocity, and optional data adapter
 extern/anndatapp/    pinned upstream AnnData++ source
@@ -126,14 +105,14 @@ src/interop/torch/    native LibTorch and ATen adapters
 python/cellerator/    installed Python package and Torch modules
 tests/                native, Python, and subsystem checks
 examples/biology/      host-only typed biological relation examples
-examples/native_cell/  host-only native Cell capability examples
+examples/native_cell/  host-only event and expression view examples
 bench/, experiments/  measured candidates and source-bound experiments
 docs/                 architecture, capability boundaries, and evidence links
 ```
 
 The [biological relation example](https://github.com/tumlinso/Cellerator/blob/main/examples/biology/README.md) exercises public typed-relation and execution-lifetime contracts on the host; it does not execute a numerical kernel or load a dataset.
 
-## Native Cell examples
+## Native data and transition examples
 
 The [native data guide](native_data.qmd) covers canonical dependency patterns,
 specialist tensor owners/views, layout maps and prepared multi-device bindings
@@ -143,51 +122,39 @@ keep numerical format and CUDA dependencies explicit. The focused
 `CELLERATOR_BUILD_NATIVE_DATA_TESTS=ON` route builds focused native-data tests
 without enabling the full root test suite (`CELLERATOR_BUILD_TESTS=OFF`).
 
-The [`event_forward.cc`](../examples/native_cell/event_forward.cc),
-[`multimodal.cc`](../examples/native_cell/multimodal.cc), and
-[`foundation.cc`](../examples/native_cell/foundation.cc) examples use the
-Torch-free typed Cell and adapter headers. The package baseline is C++20;
-dense-expression selection uses C++20 `std::span`. The optional `CellViews` runtime bridge links
-`Cellerator::libCellerator` for its out-of-line destructor; the typed binding
-needs neither that symbol nor RTTI. Configure a host-only tree with Python, Torch, CUDA, NN,
-tokenization, and sparse support disabled, then build and run the examples:
+The event and multimodal examples pass concrete data views directly.
+The native relation example evaluates a step over prepared topology using
+caller-provisioned state and result storage. Build these examples in a host tree:
 
 ```sh
 cmake -S . -B build/cell-host -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
-  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCELLERATOR_BUILD_CCELL=OFF \
   -DCELLERATOR_ENABLE_CUDA=OFF \
+  -DCELLERATOR_BUILD_CCELL=OFF \
   -DCELLERATOR_ENABLE_PYTHON=OFF \
   -DCELLERATOR_ENABLE_TORCH=OFF \
   -DCELLERATOR_ENABLE_NN=OFF \
   -DCELLERATOR_ENABLE_NN_CUDA=OFF \
   -DCELLERATOR_ENABLE_TOKENIZATION=OFF \
-  -DCELLERATOR_ENABLE_SPARSE_SUPPORT=OFF \
-  -DCELLERATOR_ENABLE_MODELING=OFF \
+  -DCELLERATOR_ENABLE_SPARSE_SUPPORT=ON \
   -DCELLERATOR_ENABLE_CONDITIONAL=OFF \
   -DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF \
-  -DCELLERATOR_ENABLE_CELLSHARD=OFF \
   -DCELLERATOR_BUILD_TORCH_EXAMPLES=OFF \
   -DCELLERATOR_BUILD_TESTS=ON
 cmake --build build/cell-host \
-  --target cellerator_cell_core_test cellerator_cell_views_bridge_test \
-    cellerator_typed_core_no_rtti_test cellerator_cell_adapters_test \
-    cellerator_cell_event_forward_example cellerator_cell_multimodal_example \
-    cellerator_cell_foundation_example
-ctest --test-dir build/cell-host -R cell_ --output-on-failure
+  --target cellerator_cell_event_forward_example \
+    cellerator_cell_multimodal_example cellerator_cell_relation_example
+ctest --test-dir build/cell-host -R 'cellerator_cell_(event_forward|multimodal|relation)' --output-on-failure
 ```
 
-The event example uses a deterministic evaluator and storage-owned append to
-extend the continuing instance while copied prefix selections retain prior
-boundaries. It rejects stale or foreign continuations and is not a trained
-Karyoplast model. The multimodal example demonstrates event, expression,
-identity, and custom access with explicit edits and an optional runtime bridge.
-The foundation example explores shared portions, joint operations, pooled
-batching, host-buffer movement and caller-supplied execution costs, cache
-validity, and retained asynchronous resources. These are host contracts, not a
-distributed scheduler or a performance measurement. Device-placement checks
-propagate metadata without executing on a GPU.
+The event example deterministically appends into fixed-capacity storage and
+extends the current prefix. A copied prefix retains its earlier boundary.
+Foreign and stale prefixes and requests against a full buffer are rejected
+before evaluation. The multimodal example checks that edits through a strided
+row selection reach the backing matrix and leave the adjacent row and padding
+untouched.
+The relation example checks clock and generation publication, explicit
+snapshot retention, and reuse of provisioned storage.
 
 Newer native organization includes `src/common`, `src/structure`, `src/support`,
 `src/indexing`, `src/gating`, `src/layout`, and `src/ops`. The public header
@@ -233,18 +200,18 @@ without requiring unrelated SDK libraries to be built.
 
 ## Configure and build
 
-Use the mandatory Clang/Ninja and installed HDF5-only AnnData++ baseline
-from the section above. For a Python host-only extension with Product2:
+Use the mandatory Clang/Ninja baseline from the section above. For a Python
+host-only extension with Product2:
 
 ```sh
-cmake -S . -B build-cpu -G Ninja \
+cmake -S . -B build/cpu -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCELLERATOR_BUILD_CCELL=OFF \
   -DCELLERATOR_ENABLE_CUDA=OFF \
+  -DCELLERATOR_BUILD_CCELL=OFF \
   -DCELLERATOR_ENABLE_PYTHON=ON \
   -DCELLERATOR_ENABLE_TORCH=OFF
-cmake --build build-cpu --target cellerator_python_extensions
+cmake --build build/cpu --target cellerator_python_extensions
 ```
 
 The Python distribution's default build is host-oriented: Python is enabled,
@@ -259,8 +226,8 @@ import behavior.
 Inspect the configured build rather than relying on old target lists:
 
 ```sh
-cmake --build build-cpu --target help
-ctest --test-dir build-cpu --output-on-failure
+cmake --build build/cpu --target help
+ctest --test-dir build/cpu --output-on-failure
 ```
 
 Tests may also be focused executables and not all are registered with CTest.

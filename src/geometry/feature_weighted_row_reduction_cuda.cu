@@ -58,6 +58,10 @@ validation_result validate_metadata(
     const feature_weighted_row_reduction_view &input,
     const local_cell_order_view &order) {
     const warp_tile_view &tiles = input.tiles;
+    if (!packed_extents_fit(tiles)) {
+        return validation_error(validation_code::integer_overflow, invalid_id,
+            "CUDA warp-tile extents exceed the packed schema");
+    }
     if (input.schema_version != feature_weighted_row_reduction_schema_version
         || tiles.tile_schema_version != warp_tile_schema_version
         || input.plan.semantic_plan_schema_version != packing_plan_semantic_schema_version
@@ -89,46 +93,46 @@ validation_result validate_metadata(
         return validation_error(validation_code::invalid_signature, invalid_id,
             "CUDA weighted-row-reduction identity is invalid");
     }
-    if (input.plan.feature_count != tiles.feature_count
-        || input.plan.feature_block_count != tiles.feature_block_count
+    if (input.plan.feature_count != tiles.layout.features
+        || input.plan.feature_block_count != tiles.layout.feature_blocks
         || input.plan.feature_block_geometry_identity
             != tiles.feature_block_geometry_identity
         || order.feature_block_geometry_identity != tiles.feature_block_geometry_identity
         || order.ordering_identity != tiles.ordering_identity
         || order.global_row_begin != tiles.global_row_begin
         || order.full_row_count != tiles.full_row_count
-        || order.row_count != tiles.row_count
-        || order.feature_block_count != tiles.feature_block_count
+        || order.row_count != tiles.layout.rows
+        || order.feature_block_count != tiles.layout.feature_blocks
         || order.row_domain_identity != tiles.row_domain_identity
-        || order.group_width != tiles.tile_row_width) {
+        || order.group_width != tiles.layout.tile_row_width) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "CUDA weighted-row-reduction plan, order, and tile domains disagree");
     }
-    if (tiles.tile_row_width == 0u || tiles.tile_row_width > warp_width
-        || tiles.row_count == UINT_MAX
-        || tiles.tile_count != (tiles.row_count / tiles.tile_row_width
-            + (tiles.row_count % tiles.tile_row_width != 0u ? 1u : 0u))
-        || tiles.tile_count >= static_cast<u32>(INT_MAX)
-        || tiles.tile_block_count > tiles.row_block_entry_count
-        || tiles.row_block_entry_count > tiles.nnz_count
-        || input.feature_weight_capacity < tiles.feature_count) {
+    if (tiles.layout.tile_row_width == 0u || tiles.layout.tile_row_width > warp_width
+        || tiles.layout.rows == UINT_MAX
+        || tiles.layout.tiles != (tiles.layout.rows / tiles.layout.tile_row_width
+            + (tiles.layout.rows % tiles.layout.tile_row_width != 0u ? 1u : 0u))
+        || tiles.layout.tiles >= static_cast<u32>(INT_MAX)
+        || tiles.layout.tile_blocks > tiles.layout.row_block_entries
+        || tiles.layout.row_block_entries > tiles.layout.stored_values
+        || input.feature_weight_capacity < tiles.layout.features) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "CUDA weighted-row-reduction dimensions or capacity are invalid");
     }
     if (input.plan.feature_block_offsets == nullptr
-        || (tiles.feature_count != 0u
+        || (tiles.layout.features != 0u
             && (input.plan.feature_permutation == nullptr
                 || input.feature_weights == nullptr))
-        || tiles.tile_block_offsets == nullptr
-        || tiles.block_row_entry_offsets == nullptr
-        || (tiles.row_count != 0u && order.row_permutation == nullptr)
-        || (tiles.tile_block_count != 0u
-            && (tiles.tile_block_ids == nullptr
-                || tiles.tile_block_cell_masks == nullptr))
-        || (tiles.row_block_entry_count != 0u
-            && (tiles.row_block_gene_masks == nullptr
-                || tiles.row_block_value_offsets == nullptr))
-        || (tiles.nnz_count != 0u && tiles.values == nullptr)) {
+        || tiles.layout.tile_block_offsets == nullptr
+        || tiles.layout.block_row_entry_offsets == nullptr
+        || (tiles.layout.rows != 0u && order.row_permutation == nullptr)
+        || (tiles.layout.tile_blocks != 0u
+            && (tiles.layout.block_ids == nullptr
+                || tiles.layout.participating_row_masks == nullptr))
+        || (tiles.layout.row_block_entries != 0u
+            && (tiles.layout.feature_masks == nullptr
+                || tiles.layout.row_block_value_offsets == nullptr))
+        || (tiles.layout.stored_values != 0u && tiles.values == nullptr)) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "CUDA weighted-row-reduction device input pointer is null");
     }
@@ -144,11 +148,11 @@ validation_result validate_output(
         return validation_error(validation_code::null_pointer, invalid_id,
             "CUDA weighted-row-reduction result output is null");
     }
-    if (buffers.row_capacity < input.tiles.row_count) {
+    if (buffers.row_capacity < input.tiles.layout.rows) {
         return validation_error(validation_code::insufficient_capacity, invalid_id,
             "CUDA weighted-row-reduction output capacity is insufficient");
     }
-    if (input.tiles.row_count != 0u && buffers.row_values == nullptr) {
+    if (input.tiles.layout.rows != 0u && buffers.row_values == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "CUDA weighted-row-reduction output values are null");
     }
@@ -157,12 +161,12 @@ validation_result validate_output(
         input.feature_weights,
         input.plan.feature_block_offsets,
         input.plan.feature_permutation,
-        input.tiles.tile_block_offsets,
-        input.tiles.tile_block_ids,
-        input.tiles.tile_block_cell_masks,
-        input.tiles.block_row_entry_offsets,
-        input.tiles.row_block_gene_masks,
-        input.tiles.row_block_value_offsets,
+        input.tiles.layout.tile_block_offsets,
+        input.tiles.layout.block_ids,
+        input.tiles.layout.participating_row_masks,
+        input.tiles.layout.block_row_entry_offsets,
+        input.tiles.layout.feature_masks,
+        input.tiles.layout.row_block_value_offsets,
         input.tiles.values,
         order.row_permutation
     };
@@ -183,27 +187,27 @@ __global__ void feature_weighted_row_reduction_kernel(
     accum_t *row_values) {
     const u32 warp = (blockIdx.x * blockDim.x + threadIdx.x) / warp_width;
     const u32 lane = threadIdx.x & (warp_width - 1u);
-    if (warp >= input.tiles.tile_count) return;
+    if (warp >= static_cast<u32>(input.tiles.layout.tiles)) return;
 
-    const u32 execution_row = warp * input.tiles.tile_row_width + lane;
-    const bool row_active = lane < input.tiles.tile_row_width
-        && execution_row < input.tiles.row_count;
+    const u32 execution_row = warp * input.tiles.layout.tile_row_width + lane;
+    const bool row_active = lane < input.tiles.layout.tile_row_width
+        && execution_row < static_cast<u32>(input.tiles.layout.rows);
     accum_t sum{};
     const storage_t *values = static_cast<const storage_t *>(input.tiles.values);
-    const u32 descriptor_begin = input.tiles.tile_block_offsets[warp];
-    const u32 descriptor_end = input.tiles.tile_block_offsets[warp + 1u];
+    const u32 descriptor_begin = input.tiles.layout.tile_block_offsets[warp];
+    const u32 descriptor_end = input.tiles.layout.tile_block_offsets[warp + 1u];
     for (u32 descriptor = descriptor_begin; descriptor < descriptor_end; ++descriptor) {
-        const u32 cell_mask = input.tiles.tile_block_cell_masks[descriptor];
+        const u32 cell_mask = input.tiles.layout.participating_row_masks[descriptor];
         const u32 lane_bit = 1u << lane;
         if (!row_active || (cell_mask & lane_bit) == 0u) continue;
         const u32 lower_mask = lane == 0u ? 0u : lane_bit - 1u;
-        const u32 entry = input.tiles.block_row_entry_offsets[descriptor]
+        const u32 entry = input.tiles.layout.block_row_entry_offsets[descriptor]
             + __popc(cell_mask & lower_mask);
-        const u32 block = input.tiles.tile_block_ids[descriptor];
+        const u32 block = input.tiles.layout.block_ids[descriptor];
         const u32 block_begin = input.plan.feature_block_offsets[block];
         const u32 block_end = input.plan.feature_block_offsets[block + 1u];
-        const u32 gene_mask = input.tiles.row_block_gene_masks[entry];
-        u32 value = input.tiles.row_block_value_offsets[entry];
+        const u32 gene_mask = input.tiles.layout.feature_masks[entry];
+        u32 value = input.tiles.layout.row_block_value_offsets[entry];
         for (u32 local = 0u; local < block_end - block_begin; ++local) {
             if ((gene_mask & (1u << local)) == 0u) continue;
             const u32 canonical_feature =
@@ -227,7 +231,7 @@ void set_result(
     result.feature_weight_identity = input.feature_weight_identity;
     result.global_row_begin = input.tiles.global_row_begin;
     result.full_row_count = input.tiles.full_row_count;
-    result.row_count = input.tiles.row_count;
+    result.row_count = input.tiles.layout.rows;
     result.row_domain_identity = input.tiles.row_domain_identity;
     result.row_values = buffers.row_values;
     *out = result;
@@ -246,9 +250,9 @@ validation_result evaluate_feature_weighted_row_reduction_tiles_cuda(
     status = validate_output(input, device_order, buffers, out);
     if (!status) return status;
     set_result(input, buffers, out);
-    if (input.tiles.row_count == 0u) return validation_ok();
+    if (input.tiles.layout.rows == 0u) return validation_ok();
 
-    const u32 blocks = (input.tiles.tile_count + warps_per_block - 1u)
+    const u32 blocks = (input.tiles.layout.tiles + warps_per_block - 1u)
         / warps_per_block;
     feature_weighted_row_reduction_kernel<<<blocks, threads_per_block, 0,
         caller_stream>>>(input, device_order.row_permutation, buffers.row_values);

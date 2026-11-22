@@ -47,14 +47,13 @@ if(NOT cellerator_nn_sources)
     message(FATAL_ERROR "CELLERATOR_ENABLE_NN=ON found no native NN sources")
 endif()
 
-# The CUDA adapter target depends on ATen/Torch, the generic framework runtime,
-# and the independently exported factorized-interaction component. It has no
-# link edge back to Cellerator::nn, avoiding a static-library cycle.
+# The CUDA adapter links the native operations it invokes and ATen/Torch.
+# Cellerator::nn links the adapter in one direction to avoid a static-library cycle.
 set(cellerator_nn_export_targets)
 if(CELLERATOR_ENABLE_NN_CUDA)
-    if(NOT TARGET Cellerator::framework_cuda)
+    if(NOT TARGET Cellerator::attention_cuda OR NOT TARGET Cellerator::grouped_linear_cuda)
         message(FATAL_ERROR
-            "CELLERATOR_ENABLE_NN_CUDA requires CELLERATOR_ENABLE_FRAMEWORK_CUDA=ON")
+            "CELLERATOR_ENABLE_NN_CUDA requires the native CUDA attention and grouped linear components (CELLERATOR_ENABLE_FRAMEWORK_CUDA=ON)")
     endif()
     if(NOT TARGET Cellerator::factorized_interaction_cuda)
         message(FATAL_ERROR
@@ -83,7 +82,9 @@ if(CELLERATOR_ENABLE_NN_CUDA)
         ${CELLERATOR_TORCH_LINK_TARGETS}
         torch_cuda
         c10_cuda
-        Cellerator::framework_cuda
+        Cellerator::memory_cuda
+        Cellerator::attention_cuda
+        Cellerator::grouped_linear_cuda
         Cellerator::factorized_interaction_cuda)
     if(CELLERATOR_TORCH_CXX_OPTIONS)
         target_compile_options(cellerator_nn_cuda PUBLIC
@@ -104,8 +105,7 @@ target_include_directories(cellerator_nn PUBLIC
 target_compile_features(cellerator_nn PUBLIC cxx_std_20)
 target_link_libraries(cellerator_nn PUBLIC
     ${CELLERATOR_TORCH_LINK_TARGETS}
-    Cellerator::product2
-    Cellerator::libCellerator)
+    Cellerator::product2)
 target_link_libraries(cellerator_nn PRIVATE OpenSSL::Crypto)
 if(CELLERATOR_TORCH_CXX_OPTIONS)
     target_compile_options(cellerator_nn PUBLIC ${CELLERATOR_TORCH_CXX_OPTIONS})
@@ -177,7 +177,7 @@ if(CELLERATOR_BUILD_NN_TESTS)
             continue()
         endif()
         set(cellerator_nn_test_target "native_nn_${cellerator_nn_test_name}_test")
-        add_executable(${cellerator_nn_test_target} "${cellerator_nn_test_source}")
+        add_executable(${cellerator_nn_test_target} ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL} "${cellerator_nn_test_source}")
         target_link_libraries(${cellerator_nn_test_target} PRIVATE Cellerator::nn)
         target_compile_features(${cellerator_nn_test_target} PRIVATE cxx_std_20)
         add_dependencies(cellerator_nn_tests ${cellerator_nn_test_target})
@@ -200,13 +200,17 @@ if(CELLERATOR_BUILD_NN_TRAIN)
         message(FATAL_ERROR
             "CELLERATOR_BUILD_NN_TRAIN requires examples/native_nn/train.cc")
     endif()
-    add_executable(native_nn_train "${PROJECT_SOURCE_DIR}/examples/native_nn/train.cc")
+    add_executable(native_nn_train ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL} "${PROJECT_SOURCE_DIR}/examples/native_nn/train.cc")
     target_link_libraries(native_nn_train PRIVATE Cellerator::nn)
     target_compile_features(native_nn_train PRIVATE cxx_std_20)
 endif()
 
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/nn"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
+    COMPONENT NN)
+
+install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/common/compiler_annotations.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common"
     COMPONENT NN)
 install(FILES
     "${PROJECT_SOURCE_DIR}/include/Cellerator/structure/coordinates.hh"
@@ -234,10 +238,6 @@ install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/structure/identity.hh"
 install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/nn.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
     COMPONENT NN)
-install(FILES
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/dynamical.hh"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/modeling"
-    COMPONENT NN)
 install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/layout/entity_layout.hh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/layout"
     COMPONENT NN)
@@ -257,7 +257,7 @@ function(cellerator_append_nn_package_config)
     if(CELLERATOR_ENABLE_NN_CUDA)
         string(CONCAT cellerator_nn_cuda_config
             "  find_dependency(CUDAToolkit REQUIRED)\n"
-            "  if(NOT TARGET Cellerator::framework_cuda)\n"
+            "  if(NOT TARGET Cellerator::attention_cuda)\n"
             "    include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFrameworkCUDATargets.cmake\")\n"
             "  endif()\n")
     endif()

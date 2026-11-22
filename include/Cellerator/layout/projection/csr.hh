@@ -143,28 +143,29 @@ inline bool valid_payload_metadata(
     return payload.payload_schema_version == cellpack::persistent_packing_payload_schema_version
         && payload.payload_kind == cellpack::persistent_packing_payload_kind
         && payload.payload_identity != 0u && valid_plan(payload.plan)
-        && tiles.feature_count == payload.plan.feature_count
-        && tiles.feature_block_count == payload.plan.feature_block_count
+        && cellpack::packed_extents_fit(tiles)
+        && tiles.layout.features == payload.plan.feature_count
+        && tiles.layout.feature_blocks == payload.plan.feature_block_count
         && tiles.feature_block_geometry_identity
             == payload.plan.feature_block_geometry_identity
-        && tiles.tile_row_width != 0u && tiles.tile_row_width <= 32u
-        && tiles.tile_count == tiles.row_count / tiles.tile_row_width
-            + (tiles.row_count % tiles.tile_row_width != 0u ? 1u : 0u)
+        && tiles.layout.tile_row_width != 0u && tiles.layout.tile_row_width <= 32u
+        && tiles.layout.tiles == tiles.layout.rows / tiles.layout.tile_row_width
+            + (tiles.layout.rows % tiles.layout.tile_row_width != 0u ? 1u : 0u)
         && tiles.value_size_bytes != 0u
-        && tiles.tile_block_offsets != nullptr
-        && tiles.block_row_entry_offsets != nullptr
-        && tiles.row_block_value_offsets != nullptr
-        && tiles.tile_block_offsets[tiles.tile_count] == tiles.tile_block_count
-        && tiles.block_row_entry_offsets[tiles.tile_block_count]
-            == tiles.row_block_entry_count
-        && tiles.row_block_value_offsets[tiles.row_block_entry_count]
-            == tiles.nnz_count
-        && (tiles.tile_block_count == 0u
-            || (tiles.tile_block_ids != nullptr
-                && tiles.tile_block_cell_masks != nullptr))
-        && (tiles.row_block_entry_count == 0u
-            || tiles.row_block_gene_masks != nullptr)
-        && (tiles.nnz_count == 0u || tiles.values != nullptr);
+        && tiles.layout.tile_block_offsets != nullptr
+        && tiles.layout.block_row_entry_offsets != nullptr
+        && tiles.layout.row_block_value_offsets != nullptr
+        && tiles.layout.tile_block_offsets[tiles.layout.tiles] == tiles.layout.tile_blocks
+        && tiles.layout.block_row_entry_offsets[tiles.layout.tile_blocks]
+            == tiles.layout.row_block_entries
+        && tiles.layout.row_block_value_offsets[tiles.layout.row_block_entries]
+            == tiles.layout.stored_values
+        && (tiles.layout.tile_blocks == 0u
+            || (tiles.layout.block_ids != nullptr
+                && tiles.layout.participating_row_masks != nullptr))
+        && (tiles.layout.row_block_entries == 0u
+            || tiles.layout.feature_masks != nullptr)
+        && (tiles.layout.stored_values == 0u || tiles.values != nullptr);
 }
 
 } // namespace physical_csr_detail
@@ -183,18 +184,18 @@ inline physical_view_status query_lazy_execution_csr_requirements(
             "lazy CSR requirements need a validated host CPK1 view"};
     }
     const auto &tiles = payload.tiles;
-    if (tiles.nnz_count != 0u
+    if (tiles.layout.stored_values != 0u
         && tiles.value_size_bytes > std::numeric_limits<std::size_t>::max()
-            / tiles.nnz_count) {
+            / tiles.layout.stored_values) {
         return {physical_view_status_code::overflow,
             "lazy CSR value byte count overflows"};
     }
     lazy_execution_csr_requirements result;
-    result.row_offset_count = static_cast<std::size_t>(tiles.row_count) + 1u;
-    result.execution_feature_count = tiles.nnz_count;
-    result.value_bytes = static_cast<std::size_t>(tiles.nnz_count)
+    result.row_offset_count = static_cast<std::size_t>(tiles.layout.rows) + 1u;
+    result.execution_feature_count = tiles.layout.stored_values;
+    result.value_bytes = static_cast<std::size_t>(tiles.layout.stored_values)
         * tiles.value_size_bytes;
-    result.row_cursor_count = tiles.row_count;
+    result.row_cursor_count = tiles.layout.rows;
     const std::size_t index_count = result.row_offset_count
         + result.execution_feature_count + result.row_cursor_count;
     if (index_count > (std::numeric_limits<std::size_t>::max() - result.value_bytes)

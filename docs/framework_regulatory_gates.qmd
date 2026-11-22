@@ -3,11 +3,13 @@ title: "Worklist regulatory gates"
 ---
 
 `PackedRegulatoryRules`, `PackedRegulatoryState`, and
-`cuda::evaluate_regulatory_gates` implement caller-authored boolean eligibility
-programs. The rule bank is shared; input and accessibility bits are private to
-each instance. The CUDA kernel evaluates only an explicit list of
+`cellerator::ops::condition::cuda::evaluate_regulatory_gates` implement
+caller-authored boolean eligibility programs. The rule bank is shared, and input
+and accessibility bits are private to each instance. The CUDA kernel evaluates only an explicit list of
 `(instance, rule)` occurrences. It does not construct a dense gene-by-module
-matrix or infer a biological ontology from bit positions.
+matrix or infer a biological ontology from bit positions. Native consumers include
+`Cellerator/ops/condition/regulatory_gates_cuda.hh` and link
+`Cellerator::regulatory_gates_cuda`.
 
 For an occurrence with instance state `x`, rule `r` is eligible exactly when:
 
@@ -66,7 +68,7 @@ The following conversion reads an inherited native state without changing it:
 ```cpp
 // bank contains the translated programs; input_ids is the exact bit mapping.
 // inherited is an AccessibilityState<uint64_t>, possibly returned by fork().
-cellerator::modeling::cuda::PackedRegulatoryState packed(
+cellerator::ops::condition::cuda::PackedRegulatoryState packed(
     input_ids.size(), bank.rule_ids().size(), false);
 for (std::size_t bit = 0; bit < input_ids.size(); ++bit)
     packed.set_input(bit, inherited.input_active(input_ids[bit]));
@@ -136,7 +138,7 @@ floor and does not revise that source-bound result.
 ```sh
 nvcc -std=c++20 -arch=sm_70 -Iinclude \
   tests/framework/cuda/regulatory_gates_smoke.cu \
-  src/modeling/cuda/regulatory_gates.cu \
+  src/ops/condition/regulatory_gates.cu \
   -o /tmp/cellerator-regulatory-gates-smoke
 /tmp/cellerator-regulatory-gates-smoke --host-only
 ```

@@ -4,7 +4,6 @@ target_sources(cellerator_operation_core PRIVATE
     src/compute/operation/operation_core_v2/composition.cc
     src/compute/operation/operation_core_v2/relation_algebra.cc
     src/compute/operation/operation_core_v2/schema.cc
-    src/compute/operation/operation_core_v2/v1_adapter.cc
 )
 
 add_library(cellerator_row_masked_n1_candidate STATIC
@@ -97,9 +96,7 @@ target_sources(cellerator_architecture_provider PRIVATE
 )
 
 add_library(cellerator_compute_candidate_inventory STATIC
-    src/compute/operation/compute_candidate_inventory.cc
-    src/compute/operation/candidate_catalog/catalog_v3.cc
-    src/planner/end_to_end_planner/resource_cost_v1.cc)
+    src/compute/operation/compute_candidate_inventory.cc)
 add_library(Cellerator::compute_candidate_inventory ALIAS
     cellerator_compute_candidate_inventory)
 target_include_directories(cellerator_compute_candidate_inventory PUBLIC
@@ -109,7 +106,7 @@ target_link_libraries(cellerator_compute_candidate_inventory PUBLIC
     Cellerator::architecture_provider)
 target_compile_features(cellerator_compute_candidate_inventory PUBLIC cxx_std_20)
 
-add_executable(cellerator_compute_candidate_inventory_test
+add_executable(cellerator_compute_candidate_inventory_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     src/compute/operation/compute_candidate_inventory_test.cc)
 target_link_libraries(cellerator_compute_candidate_inventory_test PRIVATE
     Cellerator::compute_candidate_inventory)
@@ -131,14 +128,18 @@ foreach(test_name IN LISTS CELLERATOR_OPERATION_FOCUSED_TESTS)
         set(test_source
             src/compute/architecture/providers/nvidia/sm70/transpose/${test_name}.cc)
     endif()
-    add_executable(cellerator_operation_${test_name} ${test_source})
+    add_executable(cellerator_operation_${test_name} ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL} ${test_source})
     target_link_libraries(cellerator_operation_${test_name} PRIVATE
         Cellerator::compute_candidate_inventory)
+    if(test_name STREQUAL "transpose_integration_v1_test")
+        target_link_libraries(cellerator_operation_${test_name} PRIVATE
+            Cellerator::builtin_candidate_catalog Cellerator::planner)
+    endif()
     target_compile_features(cellerator_operation_${test_name} PRIVATE cxx_std_20)
     target_compile_options(cellerator_operation_${test_name} PRIVATE -UNDEBUG)
 endforeach()
 
-add_executable(cellerator_operation_relation_apply_v1_test
+add_executable(cellerator_operation_relation_apply_v1_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     src/compute/architecture/providers/nvidia/sm70/relation_apply/tests/relation_apply_v1_test.cu)
 target_link_libraries(cellerator_operation_relation_apply_v1_test PRIVATE
     Cellerator::compute_candidate_inventory)
@@ -225,7 +226,7 @@ set_target_properties(cellerator_fusion_training PROPERTIES
 target_link_libraries(cellerator_compute_candidate_inventory PUBLIC
     Cellerator::fusion_training)
 
-add_executable(cellerator_operation_fusion_training_integration_test
+add_executable(cellerator_operation_fusion_training_integration_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     src/compute/operation/fusion_training_integration_test.cc)
 target_link_libraries(cellerator_operation_fusion_training_integration_test PRIVATE
     Cellerator::compute_candidate_inventory)
@@ -239,7 +240,7 @@ set(CELLERATOR_OPERATION_TRAINING_TESTS
     relation_closure
     value_modes)
 foreach(test_name IN LISTS CELLERATOR_OPERATION_TRAINING_TESTS)
-    add_executable(cellerator_operation_training_${test_name}_test
+    add_executable(cellerator_operation_training_${test_name}_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         src/compute/training/v2/${test_name}_test.cc)
     target_link_libraries(cellerator_operation_training_${test_name}_test PRIVATE
         Cellerator::fusion_training)
@@ -253,7 +254,7 @@ set(CELLERATOR_OPERATION_TRAINING_PROGRAM_TESTS
     graph_capture
     program)
 foreach(test_name IN LISTS CELLERATOR_OPERATION_TRAINING_PROGRAM_TESTS)
-    add_executable(cellerator_operation_training_${test_name}_test
+    add_executable(cellerator_operation_training_${test_name}_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         src/execution/training_program_v2/${test_name}_test.cc)
     target_link_libraries(cellerator_operation_training_${test_name}_test PRIVATE
         Cellerator::fusion_training)
@@ -263,7 +264,7 @@ foreach(test_name IN LISTS CELLERATOR_OPERATION_TRAINING_PROGRAM_TESTS)
         PRIVATE -UNDEBUG)
 endforeach()
 
-add_library(cellerator_operation_fusion_sm70_compile OBJECT
+add_library(cellerator_operation_fusion_sm70_compile OBJECT ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     src/compute/candidate/fusion/bundle_moments_v1.cu
     src/compute/candidate/fusion/contract_compositions_v1.cu
     src/compute/candidate/fusion/mma_same_owner_residual_v1.cu
@@ -289,14 +290,14 @@ foreach(test_source IN LISTS CELLERATOR_OPERATION_RELATION_HOST_TEST_SOURCES)
     get_filename_component(test_parent ${test_source} DIRECTORY)
     string(MD5 test_parent_hash ${test_parent})
     set(test_target cellerator_operation_relation_${test_parent_hash}_${test_stem})
-    add_executable(${test_target} ${test_source})
+    add_executable(${test_target} ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL} ${test_source})
     target_link_libraries(${test_target} PRIVATE Cellerator::relation_algebra)
     target_compile_features(${test_target} PRIVATE cxx_std_20)
     target_compile_options(${test_target} PRIVATE -UNDEBUG)
     list(APPEND CELLERATOR_OPERATION_RELATION_HOST_TEST_TARGETS ${test_target})
 endforeach()
 
-add_library(cellerator_operation_relation_sm70_compile OBJECT
+add_library(cellerator_operation_relation_sm70_compile OBJECT ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     src/compute/candidate/relation_bundle/sm70_compile_test.cu)
 target_include_directories(cellerator_operation_relation_sm70_compile PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -355,6 +356,7 @@ target_link_libraries(cellerator_csr_fallback_candidate PUBLIC
     CellPack::persistent_packing_payload
     CUDA::cudart
 )
+target_link_libraries(cellerator_csr_fallback_candidate PRIVATE Cellerator::csr_multiply)
 set_target_properties(cellerator_csr_fallback_candidate PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
@@ -412,6 +414,8 @@ target_link_libraries(cellerator_feature_major_small_n_candidate PUBLIC
     Cellerator::feature_major_projection
     CUDA::cudart
 )
+target_link_libraries(cellerator_feature_major_small_n_candidate PRIVATE
+    Cellerator::feature_major_tiles_cuda)
 set_target_properties(cellerator_feature_major_small_n_candidate PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
@@ -470,6 +474,7 @@ set_target_properties(cellerator_transpose_backward_candidate PROPERTIES
 # rendezvous owns their shared native target and test wiring.
 add_library(cellerator_projection_activation STATIC
     src/execution/projection_activation.cc
+    src/execution/projection_activation_v2.cc
 )
 add_library(Cellerator::projection_activation ALIAS
     cellerator_projection_activation)
@@ -508,30 +513,6 @@ target_link_libraries(cellerator_builtin_candidate_catalog PUBLIC
 )
 target_compile_features(cellerator_builtin_candidate_catalog PUBLIC cxx_std_20)
 
-add_library(cellerator_cusparse_csr_candidate STATIC
-    src/compute/candidate/cusparse_csr_candidate.cu
-)
-add_library(Cellerator::cusparse_csr_candidate ALIAS
-    cellerator_cusparse_csr_candidate)
-target_include_directories(cellerator_cusparse_csr_candidate PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellerator_cusparse_csr_candidate PUBLIC
-    Cellerator::operation_core
-    Cellerator::runtime
-    CellPack::apply_plan
-    CUDA::cudart
-    CUDA::cusparse
-)
-set_target_properties(cellerator_cusparse_csr_candidate PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 20
-    CUDA_STANDARD_REQUIRED YES
-)
-
 add_library(cellerator_preparation_factory STATIC
     src/compute/operation/preparation_factory.cc
 )
@@ -544,6 +525,7 @@ target_include_directories(cellerator_preparation_factory PUBLIC
 )
 target_link_libraries(cellerator_preparation_factory PUBLIC
     Cellerator::builtin_candidate_catalog
+    Cellerator::projection_activation
     Cellerator::runtime
 )
 target_compile_features(cellerator_preparation_factory PUBLIC cxx_std_20)
@@ -554,7 +536,6 @@ target_link_libraries(cellerator_executable_core INTERFACE
     Cellerator::projection_activation
     Cellerator::builtin_candidate_catalog
     Cellerator::relation_catalog
-    Cellerator::cusparse_csr_candidate
     Cellerator::preparation_factory
     Cellerator::compute_candidate_inventory
 )
@@ -564,7 +545,7 @@ target_link_libraries(cellerator_executable_core INTERFACE
 # contract instead of compiling or reimplementing it privately.
 add_library(cellerator_executable_program STATIC
     src/execution/program.cc
-    src/execution/program/program_v2.cc
+    $<TARGET_OBJECTS:cellerator_fixed_stage_program>
 )
 add_library(Cellerator::executable_program ALIAS
     cellerator_executable_program)

@@ -190,7 +190,7 @@ endif()
 if(NOT CELLSHARD_CELLERATOR_SOURCE_DIR)
     get_filename_component(cellshard_cellerator_parent
         "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
-    if(EXISTS "${cellshard_cellerator_parent}/include/Cellerator/tensor/base/dense.cuh")
+    if(EXISTS "${cellshard_cellerator_parent}/include/Cellerator/common/types.cuh")
         set(CELLSHARD_CELLERATOR_SOURCE_DIR "${cellshard_cellerator_parent}" CACHE PATH
             "Local Cellerator source tree used by CellShard." FORCE)
     endif()
@@ -206,9 +206,6 @@ get_filename_component(CELLSHARD_CELLERATOR_SOURCE_DIR
     "${CELLSHARD_CELLERATOR_SOURCE_DIR}" ABSOLUTE)
 set(CELLSHARD_CELLERATOR_INCLUDE_ROOT "${CELLSHARD_CELLERATOR_SOURCE_DIR}/include")
 foreach(cellshard_cellerator_base_header IN ITEMS
-    dense
-    compressed
-    triplet
     blocked_ell
     sliced_ell
     diagonal

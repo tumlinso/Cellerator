@@ -290,4 +290,8 @@ PreparedRelation PreparedRelation::transpose() const {
                    structural_generation_, device_, target_layout_, source_layout_);
 }
 
+PreparedRelationPair::PreparedRelationPair(PreparedRelation&& forward)
+    : reverse_(forward.transpose()),
+      forward_(static_cast<PreparedRelation&&>(forward)) {}
+
 } // namespace cellerator::nn

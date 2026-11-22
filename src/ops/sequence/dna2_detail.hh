@@ -1,12 +1,7 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <Cellerator/ops/sequence/dna2.hh>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_DNA2_OP_HD __host__ __device__ __forceinline__
-#else
-#define CELLERATOR_DNA2_OP_HD inline
-#endif
 
 namespace cellerator::ops::sequence::detail {
 namespace s = tensor::sequence;
@@ -21,18 +16,18 @@ inline uint32_t window_count(s::PackedView input, motif32_exact motif) noexcept 
     return input.base_count >= motif.length ? input.base_count - motif.length + 1u : 0u;
 }
 
-CELLERATOR_DNA2_OP_HD uint8_t match_mismatches(s::PackedView input, uint32_t start, motif32_exact motif) noexcept {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE uint8_t match_mismatches(s::PackedView input, uint32_t start, motif32_exact motif) noexcept {
     return s::valid_window(input, start, motif.length) ? motif_mismatches(s::packed_window(input, start), motif) : UINT8_MAX;
 }
 
-CELLERATOR_DNA2_OP_HD uint32_t code_mask(uint32_t low, uint32_t high, uint8_t code) noexcept {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE uint32_t code_mask(uint32_t low, uint32_t high, uint8_t code) noexcept {
     return ((code & 1u) ? low : ~low) & ((code & 2u) ? high : ~high);
 }
 
 enum class Mask { base, gc, cpg };
 
 template<Mask mask>
-CELLERATOR_DNA2_OP_HD uint32_t mask_word(s::BitPlanesView input, uint32_t i, uint8_t code) noexcept {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE uint32_t mask_word(s::BitPlanesView input, uint32_t i, uint8_t code) noexcept {
     uint32_t lo = input.low[i], hi = input.high[i], valid = s::validity_word32(input, i);
     if constexpr (mask == Mask::base) return valid & code_mask(lo, hi, code);
     if constexpr (mask == Mask::gc) return valid & (lo ^ hi);
@@ -45,5 +40,3 @@ CELLERATOR_DNA2_OP_HD uint32_t mask_word(s::BitPlanesView input, uint32_t i, uin
 }
 
 }  // namespace cellerator::ops::sequence::detail
-
-#undef CELLERATOR_DNA2_OP_HD

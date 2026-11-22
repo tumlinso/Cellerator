@@ -1,8 +1,6 @@
 #include <Cellerator/examples/models/developmental_time_trajectory/developmentalTimeTrajectory.hh>
 #include <Cellerator/memory/cuda/shared_buffer.hh>
-
-#include <Cellerator/interop/cellshard/access.cuh>
-#include <CellShard/runtime/device/sharded_device.cuh>
+#include "model_runtime_fixtures.cuh"
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -14,71 +12,11 @@
 
 namespace dtt = ::cellerator::models::developmental_time_trajectory;
 namespace runtime = ::cellerator::runtime;
-namespace css = ::cellerator::tensor::base;
-namespace csv = ::cellshard::device;
 
 namespace {
 
 void require(bool condition, const char *message) {
     if (!condition) throw std::runtime_error(message);
-}
-
-bool populate_blocked_ell(css::blocked_ell *matrix, const std::vector<float> &dense, unsigned int rows, unsigned int cols) {
-    css::init(matrix, rows, cols, rows * cols, 1u, cols);
-    if (!css::allocate(matrix)) return false;
-    for (unsigned int row = 0; row < rows; ++row) {
-        for (unsigned int col = 0; col < cols; ++col) {
-            matrix->blockColIdx[static_cast<std::size_t>(row) * cols + col] = col;
-            matrix->val[static_cast<std::size_t>(row) * cols + col] = __float2half_rn(dense[static_cast<std::size_t>(row) * cols + col]);
-        }
-    }
-    return true;
-}
-
-bool populate_sliced_ell(css::sliced_ell *matrix, const std::vector<float> &dense, unsigned int rows, unsigned int cols) {
-    std::vector<unsigned int> slice_offsets(rows + 1u, 0u), slice_widths(rows, cols);
-    for (unsigned int row = 0; row <= rows; ++row) slice_offsets[row] = row;
-    css::init(matrix, rows, cols, rows * cols);
-    if (!css::allocate(matrix, rows, slice_offsets.data(), slice_widths.data())) return false;
-    for (unsigned int row = 0; row < rows; ++row) {
-        const std::size_t base = static_cast<std::size_t>(row) * cols;
-        for (unsigned int col = 0; col < cols; ++col) {
-            matrix->col_idx[base + col] = col;
-            matrix->val[base + col] = __float2half_rn(dense[base + col]);
-        }
-    }
-    return true;
-}
-
-::cellerator::tensor::base::device::BlockedEllView make_blocked_view(const css::blocked_ell &host, const csv::partition_record<css::blocked_ell> &record) {
-    ::cellerator::tensor::base::device::BlockedEllView out{};
-    out.rows = host.rows;
-    out.cols = host.cols;
-    out.nnz = host.nnz;
-    out.block_size = host.block_size;
-    out.ell_cols = host.ell_cols;
-    out.blockColIdx = static_cast<unsigned int *>(record.a0);
-    out.val = static_cast<__half *>(record.a1);
-    return out;
-}
-
-::cellerator::tensor::base::device::SlicedEllView make_sliced_view(const css::sliced_ell &host, const csv::partition_record<css::sliced_ell> &record) {
-    ::cellerator::tensor::base::device::SlicedEllView out{};
-    const std::size_t offsets_bytes = static_cast<std::size_t>(host.slice_count + 1u) * sizeof(unsigned int);
-    const std::size_t widths_offset = csv::align_up_bytes(offsets_bytes, alignof(unsigned int));
-    const std::size_t widths_bytes = static_cast<std::size_t>(host.slice_count) * sizeof(unsigned int);
-    const std::size_t slot_offsets_offset = csv::align_up_bytes(widths_offset + widths_bytes, alignof(unsigned int));
-    out.rows = host.rows;
-    out.cols = host.cols;
-    out.nnz = host.nnz;
-    out.slice_count = host.slice_count;
-    out.slice_rows = css::uniform_slice_rows(&host);
-    out.slice_row_offsets = static_cast<unsigned int *>(record.a0);
-    out.slice_widths = static_cast<unsigned int *>(record.a1);
-    out.slice_slot_offsets = host.slice_count != 0u ? reinterpret_cast<unsigned int *>(static_cast<char *>(record.storage) + slot_offsets_offset) : nullptr;
-    out.col_idx = static_cast<unsigned int *>(record.a2);
-    out.val = static_cast<__half *>(record.a3);
-    return out;
 }
 
 float download_first(const ::cellerator::memory::cuda::SharedDeviceBuffer<float> &buf,
@@ -136,15 +74,7 @@ int main() {
         }
     }
 
-    css::blocked_ell blocked{};
-    css::sliced_ell sliced{};
-    require(populate_blocked_ell(&blocked, dense, rows, cols), "populate_blocked_ell failed");
-    require(populate_sliced_ell(&sliced, dense, rows, cols), "populate_sliced_ell failed");
-
-    csv::partition_record<css::blocked_ell> blocked_record{};
-    csv::partition_record<css::sliced_ell> sliced_record{};
-    require(csv::upload(&blocked, &blocked_record) == cudaSuccess, "blocked upload failed");
-    require(csv::upload(&sliced, &sliced_record) == cudaSuccess, "sliced upload failed");
+    model_test::DenseEllFixture<rows, cols> host_ell(dense.data());
 
     int device = 0;
     require(cudaGetDevice(&device) == cudaSuccess, "cudaGetDevice failed");
@@ -159,6 +89,9 @@ int main() {
     d_weight.upload_async(graph_weight.data(), graph_weight.size(), upload_stream);
     upload_stream.synchronize();
 
+    model_test::BlockedEllUpload blocked_upload = model_test::upload_blocked_ell(host_ell.blocked(), upload_stream);
+    model_test::SlicedEllUpload sliced_upload = model_test::upload_sliced_ell(host_ell.sliced(), upload_stream);
+
     const dtt::DevelopmentalTimeGraphView graph{
         static_cast<std::uint32_t>(graph_src.size()),
         d_src.data(),
@@ -167,16 +100,12 @@ int main() {
     };
 
     const dtt::DevelopmentalTimeTrajectoryBatchView blocked_batch =
-        dtt::make_developmental_time_trajectory_blocked_ell_batch(make_blocked_view(blocked, blocked_record), d_target.data(), graph);
+        dtt::make_developmental_time_trajectory_blocked_ell_batch(blocked_upload.view, d_target.data(), graph);
     const dtt::DevelopmentalTimeTrajectoryBatchView sliced_batch =
-        dtt::make_developmental_time_trajectory_sliced_ell_batch(make_sliced_view(sliced, sliced_record), d_target.data(), graph);
+        dtt::make_developmental_time_trajectory_sliced_ell_batch(sliced_upload.view, d_target.data(), graph);
 
     run_case(blocked_batch);
     run_case(sliced_batch);
 
-    require(csv::release(&blocked_record) == cudaSuccess, "release blocked record failed");
-    require(csv::release(&sliced_record) == cudaSuccess, "release sliced record failed");
-    css::clear(&blocked);
-    css::clear(&sliced);
     return 0;
 }

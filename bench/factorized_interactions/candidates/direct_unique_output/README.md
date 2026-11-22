@@ -25,11 +25,11 @@ the assigned Autobench/Scheduler and KDA experiment workflow.
 
 The candidate consumes the shared contract in
 `planning/interaction-layout-proposal-2026-11-02/CONTRACT.md`, the public native
-types in `include/Cellerator/modeling/cuda/factorized_interaction.hh`, and the
+types in `include/Cellerator/ops/mechanism/factorized_interaction_cuda.hh`, and the
 exact compensated gate helper in
-`src/modeling/cuda/factorized_interaction_numerics.cuh`. Its pointer, alignment,
+`src/ops/mechanism/factorized_interaction_numerics.cuh`. Its pointer, alignment,
 device, capacity, overflow, and alias guards mirror the frozen direct forward
-guard in `src/modeling/cuda/factorized_interaction_direct.cu`; this duplication
+guard in `src/ops/mechanism/factorized_interaction_direct.cu`; this duplication
 is isolated here because the task forbids modifying the captured core while it
 qualifies.
 
@@ -38,8 +38,8 @@ qualifies.
 From the repository root with CUDA 12.9:
 
 ```sh
-nvcc -std=c++17 -O3 -arch=sm_70 -lineinfo -Xptxas=-v \
-  -Iinclude -Isrc/modeling/cuda \
+nvcc -std=c++20 -O3 -arch=sm_70 -lineinfo -Xptxas=-v \
+  -Iinclude -Isrc/ops/mechanism \
   -c bench/factorized_interactions/candidates/direct_unique_output/direct_unique_output.cu \
   -o /tmp/direct_unique_output_sm70.o
 ```

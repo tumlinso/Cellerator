@@ -12,7 +12,6 @@
 namespace cellerator::runtime {
 
 inline constexpr std::uint32_t execution_session_max_streams = 8;
-inline constexpr std::uint32_t execution_session_cache_capacity = 64;
 inline constexpr std::uint32_t execution_session_max_persistent_allocations = 64;
 
 enum class session_status : std::uint8_t {
@@ -31,12 +30,6 @@ enum class persistent_lifetime : std::uint8_t {
     graph_stable
 };
 
-enum class session_cache_kind : std::uint8_t {
-    plan = 0,
-    projection,
-    order_transform
-};
-
 struct device_performance_class {
     int device = -1;
     int compute_major = 0;
@@ -44,24 +37,6 @@ struct device_performance_class {
     int multiprocessor_count = 0;
     int warp_size = 0;
     std::size_t global_memory_bytes = 0;
-};
-
-struct session_cache_key {
-    std::uint64_t high = 0;
-    std::uint64_t low = 0;
-};
-
-struct session_cache_entry {
-    session_cache_key key{};
-    void *state = nullptr;
-    std::uint64_t structure_epoch = 0;
-    std::uint64_t generation = 0;
-    bool occupied = false;
-};
-
-struct fixed_session_cache {
-    session_cache_entry entries[execution_session_cache_capacity]{};
-    std::uint32_t size = 0;
 };
 
 struct allocation_accounting {
@@ -109,9 +84,6 @@ struct execution_session {
     persistent_allocation_record
         persistent_allocations[execution_session_max_persistent_allocations]{};
     session_stream_slot streams[execution_session_max_streams]{};
-    fixed_session_cache plans{};
-    fixed_session_cache projections{};
-    fixed_session_cache order_transforms{};
     session_accounting accounting{};
     std::uint32_t persistent_allocation_count = 0;
     std::uint32_t stream_count = 0;
@@ -157,18 +129,6 @@ launch_runtime_binding bind_launch(
     execution_session *session,
     std::uint32_t stream_index,
     std::size_t required_workspace_bytes) noexcept;
-
-session_status insert_session_cache(
-    execution_session *session,
-    session_cache_kind kind,
-    session_cache_key key,
-    void *state,
-    std::uint64_t structure_epoch,
-    std::uint64_t generation) noexcept;
-const session_cache_entry *find_session_cache(
-    const execution_session &session,
-    session_cache_kind kind,
-    session_cache_key key) noexcept;
 
 bool graph_stable_address(
     const execution_session &session,

@@ -3,7 +3,7 @@
 #include <Cellerator/compute/candidate/sparse/project.hh>
 #include <Cellerator/ops/quantized/api.cuh>
 #include <Cellerator/memory/cuda/shared_buffer.hh>
-#include <Cellerator/tensor/base/blocked_ell.cuh>
+#include "blocked_ell_fixture.cuh"
 #include "benchmark_mutex.hh"
 
 #include <cuda_fp16.h>
@@ -14,7 +14,6 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -243,63 +242,6 @@ csr_host_matrix make_host_matrix_for_cfg(const bench_config &cfg, std::uint32_t 
     return make_host_csr(cfg.rows, cfg.cols, cfg.nnz_per_row, column_seed);
 }
 
-bool build_blocked_ell_from_csr(const csr_host_matrix &src, std::uint32_t block_size, base::blocked_ell *dst) {
-    if (block_size == 0u) return false;
-    const std::uint32_t row_blocks = (src.rows + block_size - 1u) / block_size;
-    const std::uint32_t col_blocks = (src.cols + block_size - 1u) / block_size;
-    if (row_blocks == 0u || col_blocks == 0u) return false;
-
-    std::vector<std::vector<std::uint32_t>> block_cols(row_blocks);
-    std::vector<unsigned char> seen(col_blocks, 0u);
-    std::vector<std::uint32_t> touched;
-    std::uint32_t max_width = 1u;
-
-    for (std::uint32_t rb = 0u; rb < row_blocks; ++rb) {
-        touched.clear();
-        const std::uint32_t row_begin = rb * block_size;
-        const std::uint32_t row_end = std::min(src.rows, row_begin + block_size);
-        for (std::uint32_t row = row_begin; row < row_end; ++row) {
-            for (std::uint32_t off = src.major_ptr[row]; off < src.major_ptr[row + 1u]; ++off) {
-                const std::uint32_t cb = src.minor_idx[off] / block_size;
-                if (cb >= col_blocks || seen[cb]) continue;
-                seen[cb] = 1u;
-                touched.push_back(cb);
-            }
-        }
-        std::sort(touched.begin(), touched.end());
-        block_cols[rb] = touched;
-        max_width = std::max<std::uint32_t>(max_width, static_cast<std::uint32_t>(touched.size()));
-        for (std::uint32_t cb : touched) seen[cb] = 0u;
-    }
-
-    base::init(dst, src.rows, src.cols, src.nnz, block_size, max_width * block_size);
-    if (!base::allocate(dst)) return false;
-    for (std::size_t idx = 0; idx < static_cast<std::size_t>(row_blocks) * max_width; ++idx) {
-        dst->blockColIdx[idx] = base::blocked_ell_invalid_col;
-    }
-    std::memset(dst->val, 0, static_cast<std::size_t>(src.rows) * dst->ell_cols * sizeof(__half));
-
-    for (std::uint32_t rb = 0u; rb < row_blocks; ++rb) {
-        for (std::uint32_t slot = 0u; slot < block_cols[rb].size(); ++slot) {
-            dst->blockColIdx[static_cast<std::size_t>(rb) * max_width + slot] = block_cols[rb][slot];
-        }
-    }
-    for (std::uint32_t row = 0u; row < src.rows; ++row) {
-        const std::uint32_t rb = row / block_size;
-        for (std::uint32_t off = src.major_ptr[row]; off < src.major_ptr[row + 1u]; ++off) {
-            const std::uint32_t col = src.minor_idx[off];
-            const std::uint32_t cb = col / block_size;
-            const auto &cols = block_cols[rb];
-            const auto it = std::find(cols.begin(), cols.end(), cb);
-            if (it == cols.end()) continue;
-            const std::uint32_t slot = static_cast<std::uint32_t>(it - cols.begin());
-            const std::uint32_t local_col = col - cb * block_size;
-            dst->val[static_cast<std::size_t>(row) * dst->ell_cols + slot * block_size + local_col] = src.values[off];
-        }
-    }
-    return true;
-}
-
 std::unique_ptr<float[]> make_host_rhs(std::uint32_t rows, std::uint32_t cols, std::uint32_t seed) {
     auto out = std::make_unique<float[]>(static_cast<std::size_t>(rows) * cols);
     for (std::uint32_t r = 0u; r < rows; ++r) {
@@ -315,8 +257,8 @@ double elapsed_ms(const std::chrono::steady_clock::time_point &start, const std:
     return std::chrono::duration<double, std::milli>(stop - start).count();
 }
 
-std::uint32_t column_for_slot(const base::blocked_ell &blocked, std::uint32_t row, std::uint32_t slot) {
-    const std::uint32_t width = base::ell_width_blocks(&blocked);
+std::uint32_t column_for_slot(const base::device::BlockedEllView &blocked, std::uint32_t row, std::uint32_t slot) {
+    const std::uint32_t width = blocked.ell_cols / blocked.block_size;
     const std::uint32_t row_block = row / blocked.block_size;
     const std::uint32_t slot_block = slot / blocked.block_size;
     const std::uint32_t slot_offset = slot % blocked.block_size;
@@ -327,7 +269,7 @@ std::uint32_t column_for_slot(const base::blocked_ell &blocked, std::uint32_t ro
 }
 
 void extract_slot_values(
-    const base::blocked_ell &blocked,
+    const base::device::BlockedEllView &blocked,
     std::vector<float> *slot_values,
     std::vector<int> *slot_columns) {
     const std::size_t total_slots = static_cast<std::size_t>(blocked.rows) * blocked.ell_cols;
@@ -346,7 +288,7 @@ void extract_slot_values(
 }
 
 void calibrate_per_gene_affine(
-    const base::blocked_ell &blocked,
+    const base::device::BlockedEllView &blocked,
     const std::vector<float> &slot_values,
     const std::vector<int> &slot_columns,
     std::uint32_t max_code,
@@ -380,7 +322,7 @@ void calibrate_per_gene_affine(
 }
 
 void calibrate_column_scale_row_offset(
-    const base::blocked_ell &blocked,
+    const base::device::BlockedEllView &blocked,
     const std::vector<float> &slot_values,
     const std::vector<int> &slot_columns,
     std::uint32_t max_code,
@@ -424,7 +366,7 @@ void calibrate_column_scale_row_offset(
 
 template<int Bits>
 bool pack_quantized_payload_impl(
-    const base::blocked_ell &blocked,
+    const base::device::BlockedEllView &blocked,
     const std::vector<float> &slot_values,
     const bench_config &cfg,
     quantized_host_payload *out) {
@@ -461,7 +403,7 @@ bool pack_quantized_payload_impl(
 }
 
 quantized_host_payload build_quantized_payload(
-    const base::blocked_ell &blocked,
+    const base::device::BlockedEllView &blocked,
     const std::vector<float> &slot_values,
     const std::vector<int> &slot_columns,
     const bench_config &cfg,
@@ -504,7 +446,7 @@ double compute_max_abs_error(const std::vector<float> &lhs, const std::vector<fl
 
 bench_result run_blocked_ell_case(
     const bench_config &cfg,
-    const base::blocked_ell &blocked,
+    const base::device::BlockedEllView &blocked,
     const float *rhs_host) {
     bench_result out;
     runtime::execution_context ctx;
@@ -515,13 +457,13 @@ bench_result run_blocked_ell_case(
     runtime::init(&ctx, 0);
     runtime::init(&cache);
 
-    auto block_col_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(base::row_block_count(&blocked)) * base::ell_width_blocks(&blocked), ctx.device);
+    auto block_col_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(cellerator::bench::blocked_ell_index_count(blocked), ctx.device);
     auto blocked_values = memory_cuda::SharedDeviceBuffer<__half>::allocate(static_cast<std::size_t>(blocked.rows) * blocked.ell_cols, ctx.device);
     auto rhs = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(blocked.cols) * cfg.out_cols, ctx.device);
     auto out_dev = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(blocked.rows) * cfg.out_cols, ctx.device);
 
     const auto upload_start = std::chrono::steady_clock::now();
-    block_col_idx.upload_async(blocked.blockColIdx, static_cast<std::size_t>(base::row_block_count(&blocked)) * base::ell_width_blocks(&blocked), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    block_col_idx.upload_async(blocked.blockColIdx, cellerator::bench::blocked_ell_index_count(blocked), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     blocked_values.upload_async(blocked.val, static_cast<std::size_t>(blocked.rows) * blocked.ell_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     rhs.upload_async(rhs_host, static_cast<std::size_t>(blocked.cols) * cfg.out_cols, memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked upload)");
@@ -570,9 +512,7 @@ bench_result run_blocked_ell_case(
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(download)");
 
     out.payload_bytes =
-        static_cast<std::uint64_t>(base::row_block_count(&blocked))
-            * static_cast<std::uint64_t>(base::ell_width_blocks(&blocked))
-            * sizeof(std::uint32_t)
+        cellerator::bench::blocked_ell_index_count(blocked) * sizeof(std::uint32_t)
         + static_cast<std::uint64_t>(blocked.rows) * static_cast<std::uint64_t>(blocked.ell_cols) * sizeof(__half);
     out.h2d_bytes = out.payload_bytes + static_cast<std::uint64_t>(blocked.cols) * cfg.out_cols * sizeof(float);
     out.upload_ms = elapsed_ms(upload_start, upload_stop);
@@ -586,7 +526,7 @@ bench_result run_blocked_ell_case(
 
 bench_result run_quantized_case(
     const bench_config &cfg,
-    const base::blocked_ell &blocked,
+    const base::device::BlockedEllView &blocked,
     const quantized_host_payload &payload,
     const float *rhs_host,
     const std::vector<float> &reference_output) {
@@ -598,7 +538,7 @@ bench_result run_quantized_case(
     out.bits = cfg.bits;
     runtime::init(&ctx, 0);
 
-    auto block_col_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(static_cast<std::size_t>(base::row_block_count(&blocked)) * base::ell_width_blocks(&blocked), ctx.device);
+    auto block_col_idx = memory_cuda::SharedDeviceBuffer<std::uint32_t>::allocate(cellerator::bench::blocked_ell_index_count(blocked), ctx.device);
     auto packed_values = memory_cuda::SharedDeviceBuffer<std::uint8_t>::allocate(payload.packed_values.size(), ctx.device);
     auto column_scales = memory_cuda::SharedDeviceBuffer<float>::allocate(payload.column_scales.size(), ctx.device);
     auto rhs = memory_cuda::SharedDeviceBuffer<float>::allocate(static_cast<std::size_t>(blocked.cols) * cfg.out_cols, ctx.device);
@@ -614,7 +554,7 @@ bench_result run_quantized_case(
     }
 
     const auto upload_start = std::chrono::steady_clock::now();
-    block_col_idx.upload_async(blocked.blockColIdx, static_cast<std::size_t>(base::row_block_count(&blocked)) * base::ell_width_blocks(&blocked), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
+    block_col_idx.upload_async(blocked.blockColIdx, cellerator::bench::blocked_ell_index_count(blocked), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     packed_values.upload_async(payload.packed_values.data(), payload.packed_values.size(), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     column_scales.upload_async(payload.column_scales.data(), payload.column_scales.size(), memory_cuda::Stream::borrow(ctx.stream, ctx.device));
     if (!payload.column_offsets.empty()) {
@@ -659,9 +599,7 @@ bench_result run_quantized_case(
     runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(download)");
 
     out.payload_bytes =
-        static_cast<std::uint64_t>(base::row_block_count(&blocked))
-            * static_cast<std::uint64_t>(base::ell_width_blocks(&blocked))
-            * sizeof(std::uint32_t)
+        cellerator::bench::blocked_ell_index_count(blocked) * sizeof(std::uint32_t)
         + static_cast<std::uint64_t>(payload.packed_values.size()) * sizeof(std::uint8_t)
         + static_cast<std::uint64_t>(payload.column_scales.size()) * sizeof(float)
         + static_cast<std::uint64_t>(payload.column_offsets.size()) * sizeof(float)
@@ -719,7 +657,9 @@ int main(int argc, char **argv) {
     bench_config cfg = parse_args(argc, argv);
     const auto rhs = make_host_rhs(cfg.cols, cfg.out_cols, 7u);
     const csr_host_matrix matrix = make_host_matrix_for_cfg(cfg, 0u);
-    base::blocked_ell blocked;
+    base::device::BlockedEllView blocked{};
+    std::unique_ptr<std::uint32_t[]> host_block_columns;
+    std::unique_ptr<__half[]> host_block_values;
     std::vector<float> slot_values;
     std::vector<int> slot_columns;
     double quantized_host_prep_ms = 0.0;
@@ -728,8 +668,20 @@ int main(int argc, char **argv) {
     require(device_count > 0, "quantizedTransferSpmmBench requires at least one visible CUDA device");
     cellerator::bench::benchmark_mutex_guard benchmark_mutex("quantizedTransferSpmmBench");
 
-    base::init(&blocked);
-    require(build_blocked_ell_from_csr(matrix, cfg.block_size, &blocked), "blocked ell construction failed");
+    {
+        const base::CompressedView<std::uint32_t, const __half> csr{
+            {matrix.rows, matrix.cols, matrix.nnz, base::CompressedAxis::row,
+             matrix.major_ptr.get(), matrix.minor_idx.get()}, matrix.values.get()};
+        cellerator::bench::BlockedEllColumns columns;
+        const auto width = cellerator::bench::plan_blocked_ell_columns(csr.structure, cfg.block_size, columns);
+        require(width != 0u, "blocked ell construction failed");
+        blocked = {matrix.rows, matrix.cols, matrix.nnz, cfg.block_size, width * cfg.block_size, nullptr, nullptr};
+        host_block_columns.reset(new std::uint32_t[cellerator::bench::blocked_ell_index_count(blocked)]);
+        host_block_values.reset(new __half[std::size_t(blocked.rows) * blocked.ell_cols]);
+        blocked.blockColIdx = host_block_columns.get();
+        blocked.val = host_block_values.get();
+        cellerator::bench::fill_blocked_ell(csr, columns, blocked);
+    }
 
     extract_slot_values(blocked, &slot_values, &slot_columns);
     quantized_host_payload quantized = build_quantized_payload(blocked, slot_values, slot_columns, cfg, &quantized_host_prep_ms);
@@ -741,6 +693,5 @@ int main(int argc, char **argv) {
     print_case(cfg, blocked_result, &blocked_result);
     print_case(cfg, quantized_result, &blocked_result);
 
-    base::clear(&blocked);
     return 0;
 }

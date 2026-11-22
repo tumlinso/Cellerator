@@ -1,6 +1,6 @@
 #include <Cellerator/compute/operation/device_elementwise.hh>
 #include <Cellerator/compute/operation/prepared_relation.hh>
-#include <Cellerator/compute/candidate/sparse/project.hh>
+#include "../../src/ops/matrix/csr_multiply.cuh"
 
 #include <cuda_runtime.h>
 #include <algorithm>
@@ -405,12 +405,11 @@ static void shared_csr_duplicate_case(std::uint32_t width, ce::orientation direc
     upload(d_weights, weights, stream); upload(d_features, features, stream);
     upload(d_offsets, projected_offsets, stream); upload(d_indices, projected_indices, stream);
     upload(d_value_indices, value_indices, stream);
-    cellerator::runtime::execution_context context{0, stream, false};
-    cellerator::compute::sparse::project::csr_spmm_fwd<W, X, Y, Y, Y, Y>(
-        context, d_offsets, d_indices, d_weights,
-        direction == ce::orientation::forward ? nr : nc,
-        direction == ce::orientation::forward ? nc : nr, d_features, width, width,
-        d_output, width, d_value_indices, Y(1), Y(0));
+    namespace matrix = cellerator::ops::matrix;
+    matrix::Csr<const W> a{{direction == ce::orientation::forward ? nr : nc,
+        direction == ce::orientation::forward ? nc : nr, projected_indices.size(),
+        cellerator::tensor::base::CompressedAxis::row, d_offsets, d_indices}, d_weights};
+    gpu(matrix::csr_spmm(a, d_features, width, width, d_output, width, stream, d_value_indices, Y(1), Y(0)));
     gpu(cudaStreamSynchronize(stream));
     std::vector<Y> actual(std::size_t(output_extent) * width);
     gpu(cudaMemcpy(actual.data(), d_output, actual.size() * sizeof(Y), cudaMemcpyDeviceToHost));

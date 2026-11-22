@@ -35,6 +35,10 @@ validation_result validate_config(const local_cell_order_config &config) {
 }
 
 validation_result validate_records(const cell_block_record_view &records) {
+    if (!packed_extents_fit(records)) {
+        return validation_error(validation_code::integer_overflow, invalid_id,
+            "cell-block record extents exceed the packed schema");
+    }
     if (records.record_schema_version != cell_block_record_schema_version
         || records.semantic_plan_schema_version != packing_plan_semantic_schema_version
         || records.geometry_identity_version != feature_block_geometry_identity_version) {
@@ -45,49 +49,49 @@ validation_result validate_records(const cell_block_record_view &records) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "cell-block record semantic identity is missing");
     }
-    const u64 row_end = records.global_row_begin + static_cast<u64>(records.row_count);
+    const u64 row_end = records.global_row_begin + static_cast<u64>(records.layout.rows);
     if (row_end < records.global_row_begin || row_end > records.full_row_count) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "cell-block record partition is outside the row domain");
     }
-    if (records.row_record_offsets == nullptr || records.record_value_offsets == nullptr) {
+    if (records.layout.row_block_offsets == nullptr || records.layout.row_block_value_offsets == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "cell-block record offsets are null");
     }
-    if (records.record_count != 0u && records.record_block_ids == nullptr) {
+    if (records.layout.row_blocks != 0u && records.layout.block_ids == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "cell-block record block ids are null");
     }
-    if (records.row_record_offsets[0] != 0u || records.record_value_offsets[0] != 0u) {
+    if (records.layout.row_block_offsets[0] != 0u || records.layout.row_block_value_offsets[0] != 0u) {
         return validation_error(validation_code::invalid_offsets, 0u,
             "cell-block record offsets must start at zero");
     }
-    for (u32 row = 0u; row < records.row_count; ++row) {
-        const u32 begin = records.row_record_offsets[row];
-        const u32 end = records.row_record_offsets[row + 1u];
-        if (end < begin || end > records.record_count) {
+    for (u32 row = 0u; row < records.layout.rows; ++row) {
+        const u32 begin = records.layout.row_block_offsets[row];
+        const u32 end = records.layout.row_block_offsets[row + 1u];
+        if (end < begin || end > records.layout.row_blocks) {
             return validation_error(validation_code::invalid_offsets, row,
                 "cell-block row offsets are not monotonic");
         }
         u32 previous = invalid_id;
         for (u32 record = begin; record < end; ++record) {
-            const u32 block = records.record_block_ids[record];
-            if (block >= records.feature_block_count
+            const u32 block = records.layout.block_ids[record];
+            if (block >= records.layout.feature_blocks
                 || (previous != invalid_id && block <= previous)) {
                 return validation_error(validation_code::invalid_offsets, record,
                     "cell-block ids are not strictly increasing per row");
             }
-            if (records.record_value_offsets[record + 1u]
-                < records.record_value_offsets[record]) {
+            if (records.layout.row_block_value_offsets[record + 1u]
+                < records.layout.row_block_value_offsets[record]) {
                 return validation_error(validation_code::invalid_offsets, record,
                     "cell-block value offsets are not monotonic");
             }
             previous = block;
         }
     }
-    if (records.row_record_offsets[records.row_count] != records.record_count
-        || records.record_value_offsets[records.record_count] != records.nnz_count) {
-        return validation_error(validation_code::invalid_offsets, records.record_count,
+    if (records.layout.row_block_offsets[records.layout.rows] != records.layout.row_blocks
+        || records.layout.row_block_value_offsets[records.layout.row_blocks] != records.layout.stored_values) {
+        return validation_error(validation_code::invalid_offsets, records.layout.row_blocks,
             "cell-block record terminal offset disagrees with its count");
     }
     return validation_ok();
@@ -120,7 +124,7 @@ u64 compute_ordering_identity(
         ^ local_cell_signature_algorithm_version);
     identity = splitmix64(identity ^ records.row_domain_identity);
     identity = splitmix64(identity ^ records.global_row_begin);
-    identity = splitmix64(identity ^ (static_cast<u64>(records.row_count) << 32u)
+    identity = splitmix64(identity ^ (static_cast<u64>(records.layout.rows) << 32u)
         ^ records.full_row_count);
     identity = splitmix64(identity ^ (static_cast<u64>(config.window_size) << 32u)
         ^ config.group_width);
@@ -136,16 +140,16 @@ void row_keys(
     u32 *secondary,
     u32 *active_count,
     u32 *nnz_count) noexcept {
-    const u32 begin = records.row_record_offsets[row];
-    const u32 end = records.row_record_offsets[row + 1u];
+    const u32 begin = records.layout.row_block_offsets[row];
+    const u32 end = records.layout.row_block_offsets[row + 1u];
     const u32 active = end - begin;
-    const u32 nnz = records.record_value_offsets[end] - records.record_value_offsets[begin];
+    const u32 nnz = records.layout.row_block_value_offsets[end] - records.layout.row_block_value_offsets[begin];
     *active_count = active;
     *nnz_count = nnz;
     *secondary = active;
     switch (config.kind) {
     case local_cell_order_kind::inferred_minhash:
-        *primary = inferred_signature(records.record_block_ids, begin, end, config.seed);
+        *primary = inferred_signature(records.layout.block_ids, begin, end, config.seed);
         break;
     case local_cell_order_kind::original:
         *primary = row;
@@ -194,8 +198,8 @@ void set_view(
     result.ordering_identity = compute_ordering_identity(records, config);
     result.global_row_begin = records.global_row_begin;
     result.full_row_count = records.full_row_count;
-    result.row_count = records.row_count;
-    result.feature_block_count = records.feature_block_count;
+    result.row_count = records.layout.rows;
+    result.feature_block_count = records.layout.feature_blocks;
     result.feature_block_geometry_identity = records.feature_block_geometry_identity;
     result.row_domain_identity = records.row_domain_identity;
     result.primary_keys = buffers.primary_keys;
@@ -224,8 +228,8 @@ validation_result query_local_cell_order_requirements_host(
     }
     const validation_result status = validate_records(records);
     if (!status) return status;
-    out->row_capacity = records.row_count;
-    out->block_epoch_capacity = records.feature_block_count;
+    out->row_capacity = records.layout.rows;
+    out->block_epoch_capacity = records.layout.feature_blocks;
     return validation_ok();
 }
 
@@ -242,17 +246,17 @@ validation_result build_local_cell_order_host(
     if (!status) return status;
     status = validate_config(config);
     if (!status) return status;
-    status = validate_buffers(records.row_count, buffers);
+    status = validate_buffers(records.layout.rows, buffers);
     if (!status) return status;
 
-    for (u32 row = 0u; row < records.row_count; ++row) {
+    for (u32 row = 0u; row < records.layout.rows; ++row) {
         row_keys(records, config, row, buffers.primary_keys + row,
             buffers.secondary_keys + row, buffers.active_block_counts + row,
             buffers.row_nnz_counts + row);
         buffers.row_permutation[row] = row;
     }
-    for (u32 window_begin = 0u; window_begin < records.row_count;) {
-        const u32 remaining = records.row_count - window_begin;
+    for (u32 window_begin = 0u; window_begin < records.layout.rows;) {
+        const u32 remaining = records.layout.rows - window_begin;
         const u32 window_end = window_begin + std::min(config.window_size, remaining);
         std::sort(buffers.row_permutation + window_begin,
             buffers.row_permutation + window_end,
@@ -265,7 +269,7 @@ validation_result build_local_cell_order_host(
             });
         window_begin = window_end;
     }
-    for (u32 execution = 0u; execution < records.row_count; ++execution) {
+    for (u32 execution = 0u; execution < records.layout.rows; ++execution) {
         buffers.inverse_row_permutation[buffers.row_permutation[execution]] = execution;
     }
     set_view(records, config, buffers, out);
@@ -288,8 +292,8 @@ validation_result validate_local_cell_order_view_host(
     if (order.ordering_identity != compute_ordering_identity(records, config)
         || order.global_row_begin != records.global_row_begin
         || order.full_row_count != records.full_row_count
-        || order.row_count != records.row_count
-        || order.feature_block_count != records.feature_block_count
+        || order.row_count != records.layout.rows
+        || order.feature_block_count != records.layout.feature_blocks
         || order.feature_block_geometry_identity != records.feature_block_geometry_identity
         || order.row_domain_identity != records.row_domain_identity) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
@@ -349,14 +353,14 @@ validation_result evaluate_local_cell_order_metrics_host(
     }
     validation_result status = validate_local_cell_order_view_host(records, order);
     if (!status) return status;
-    if (workspace.block_epoch_capacity < records.feature_block_count
-        || (records.feature_block_count != 0u && workspace.block_epochs == nullptr)) {
+    if (workspace.block_epoch_capacity < records.layout.feature_blocks
+        || (records.layout.feature_blocks != 0u && workspace.block_epochs == nullptr)) {
         return validation_error(validation_code::insufficient_capacity, invalid_id,
             "local-cell metric workspace is insufficient");
     }
-    if (records.feature_block_count != 0u) {
+    if (records.layout.feature_blocks != 0u) {
         std::fill(workspace.block_epochs,
-            workspace.block_epochs + records.feature_block_count, 0u);
+            workspace.block_epochs + records.layout.feature_blocks, 0u);
     }
     local_cell_order_metrics result;
     result.group_width = order.group_width;
@@ -365,20 +369,20 @@ validation_result evaluate_local_cell_order_metrics_host(
         const u32 group_end = group_begin
             + std::min(order.group_width, order.row_count - group_begin);
         if (++epoch == 0u) {
-            if (records.feature_block_count != 0u) {
+            if (records.layout.feature_blocks != 0u) {
                 std::fill(workspace.block_epochs,
-                    workspace.block_epochs + records.feature_block_count, 0u);
+                    workspace.block_epochs + records.layout.feature_blocks, 0u);
             }
             epoch = 1u;
         }
         u32 group_union = 0u;
         for (u32 execution = group_begin; execution < group_end; ++execution) {
             const u32 row = order.row_permutation[execution];
-            const u32 begin = records.row_record_offsets[row];
-            const u32 end = records.row_record_offsets[row + 1u];
+            const u32 begin = records.layout.row_block_offsets[row];
+            const u32 end = records.layout.row_block_offsets[row + 1u];
             result.total_active_block_references += end - begin;
             for (u32 record = begin; record < end; ++record) {
-                const u32 block = records.record_block_ids[record];
+                const u32 block = records.layout.block_ids[record];
                 if (workspace.block_epochs[block] != epoch) {
                     workspace.block_epochs[block] = epoch;
                     ++group_union;

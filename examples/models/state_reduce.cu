@@ -1,7 +1,6 @@
 #include <Cellerator/examples/models/state_reduce/stateReduce.hh>
 #include <Cellerator/compute/candidate/sparse/project.hh>
-#include <Cellerator/tensor/base/blocked_ell.cuh>
-#include <Cellerator/tensor/base/sliced_ell.cuh>
+#include <Cellerator/tensor/base/device_views.cuh>
 
 #include <cublas_v2.h>
 #include <cuda_runtime.h>

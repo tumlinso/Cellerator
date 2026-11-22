@@ -10,9 +10,9 @@ bool valid_payload_contract(
         && payload.payload_kind == cellpack::persistent_packing_payload_kind
         && payload.payload_identity != 0u && payload.image_base != nullptr
         && payload.image_bytes != 0u
-        && payload.plan.feature_count == payload.tiles.feature_count
-        && payload.order.row_count == payload.tiles.row_count
-        && payload.tiles.nnz_count != 0u
+        && payload.plan.feature_count == payload.tiles.layout.features
+        && payload.order.row_count == payload.tiles.layout.rows
+        && payload.tiles.layout.stored_values != 0u
         && payload.plan.feature_count != 0u
         && payload.plan.feature_block_count != 0u
         && payload.row_group_count != 0u
@@ -61,7 +61,7 @@ cpbp_v1_semantic_adapter_status adapt_validated_cpbp_v1_payload(
     if (!work_window_is_cpk1_row_domain(payload, binding.work_window))
         return cpbp_v1_semantic_adapter_status::incompatible_work_window;
 
-    const u64 logical_edge_count = payload.tiles.nnz_count;
+    const u64 logical_edge_count = payload.tiles.layout.stored_values;
     if (buffers.component == nullptr || buffers.logical_edge_ids == nullptr
         || buffers.logical_edge_capacity < logical_edge_count)
         return cpbp_v1_semantic_adapter_status::insufficient_capacity;

@@ -5,7 +5,7 @@
 #include "../common/hdf5.hh"
 #include "../mtx/mtx_reader.cuh"
 
-#include <Cellerator/tensor/base/triplet.cuh>
+#include <CellShard/formats/triplet.cuh>
 #include <CellShard/runtime/host/sharded_host.cuh>
 #include <CellShard/runtime/layout/sharded.cuh>
 
@@ -23,9 +23,9 @@ namespace cellshard {
 namespace ingest {
 namespace loom {
 
-using clear;
+using ::cellshard::clear;
 using ::cellshard::find_offset_span;
-using init;
+using ::cellshard::init;
 using ::cellshard::sharded;
 
 struct matrix_info {
@@ -437,7 +437,7 @@ inline bool load_part_window_coo(const char *path,
                                  unsigned long num_parts,
                                  unsigned long part_begin,
                                  unsigned long part_end,
-                                 sharded<::cellerator::tensor::base::triplet> *out,
+                                 sharded<::cellshard::triplet> *out,
                                  std::string *error) {
     hid_t file = (hid_t) -1;
     hid_t dset = (hid_t) -1;
@@ -494,7 +494,7 @@ inline bool load_part_window_coo(const char *path,
                         const unsigned long local_part = global_part - part_begin;
                         if (global_part < part_begin || global_part >= part_end || local_part >= out->num_partitions) goto done;
                         {
-                            ::cellerator::tensor::base::triplet *part = out->parts[local_part];
+                            ::cellshard::triplet *part = out->parts[local_part];
                             const unsigned long idx = write_ptr[(std::size_t) local_part]++;
                             if (idx >= part->nnz) goto done;
                             part->rowIdx[idx] = (::cellshard::types::idx_t) (global_row - row_offsets[global_part]);

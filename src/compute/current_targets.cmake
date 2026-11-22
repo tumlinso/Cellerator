@@ -26,9 +26,6 @@ target_link_libraries(cellerator_compute_forward_neighbors
 set_target_properties(cellerator_compute_forward_neighbors PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_forward_neighbors)
 
-add_library(cellerator_neighbor_math INTERFACE)
-target_link_libraries(cellerator_neighbor_math INTERFACE cellerator_compute_exact_search)
-
 add_library(cellerator_compute_sampling STATIC
     src/compute/dataset/sampling.cc
     src/compute/dataset/sampling_materialization.cc
@@ -95,7 +92,7 @@ target_include_directories(cellerator_compute_sparse_ops
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_link_libraries(cellerator_compute_sparse_ops PUBLIC Cellerator::runtime_fleet)
-target_link_libraries(cellerator_compute_sparse_ops PRIVATE CUDA::cudart CUDA::cusparse)
+target_link_libraries(cellerator_compute_sparse_ops PRIVATE Cellerator::csr_multiply CUDA::cudart CUDA::cusparse)
 set_target_properties(cellerator_compute_sparse_ops PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_sparse_ops)
 
@@ -104,13 +101,6 @@ add_library(cellerator_compute_sparse_project STATIC
 )
 target_include_directories(cellerator_compute_sparse_project PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellerator_compute_sparse_project PUBLIC cellerator_compute_sparse_ops Cellerator::runtime_fleet)
-target_link_libraries(cellerator_compute_sparse_project PRIVATE CUDA::cudart CUDA::cusparse)
+target_link_libraries(cellerator_compute_sparse_project PRIVATE Cellerator::csr_multiply CUDA::cudart CUDA::cusparse)
 set_target_properties(cellerator_compute_sparse_project PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_sparse_project)
-
-add_library(cellerator_sparse_math INTERFACE)
-target_link_libraries(cellerator_sparse_math INTERFACE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet)
-add_library(cellerator_sparse_linalg INTERFACE)
-target_link_libraries(cellerator_sparse_linalg INTERFACE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet)
-add_library(cellerator_sparse_ml INTERFACE)
-target_link_libraries(cellerator_sparse_ml INTERFACE cellerator_compute_gene_candidates cellerator_compute_gene_support cellerator_compute_sampling cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet)

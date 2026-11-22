@@ -23,7 +23,6 @@ add_library(cellerator_runtime STATIC
     src/runtime/memory/generation_marks.cc
     src/runtime/memory/image.cc
     src/runtime/memory/session_memory.cu
-    src/runtime/value_readiness.cu
 )
 add_library(Cellerator::runtime ALIAS cellerator_runtime)
 target_include_directories(cellerator_runtime PUBLIC
@@ -32,7 +31,7 @@ target_include_directories(cellerator_runtime PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 target_compile_features(cellerator_runtime PUBLIC cxx_std_20)
-target_link_libraries(cellerator_runtime PUBLIC CUDA::cudart)
+target_link_libraries(cellerator_runtime PUBLIC CUDA::cudart Cellerator::value_readiness)
 target_link_libraries(cellerator_runtime PRIVATE CUDA::cublas CUDA::cusparse)
 set_target_properties(cellerator_runtime PROPERTIES
     CXX_STANDARD 20

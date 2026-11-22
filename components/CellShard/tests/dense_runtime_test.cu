@@ -33,9 +33,9 @@ static std::string temp_path(const char *suffix) {
     return std::string(buf) + suffix;
 }
 
-static void fill_dense(::cellerator::tensor::base::dense *m, std::initializer_list<float> values) {
+static void fill_dense(::cellshard::dense *m, std::initializer_list<float> values) {
     std::size_t i = 0u;
-    require(::cellerator::tensor::base::dense_is_packed_row_major(m), "dense fill requires packed row-major matrix");
+    require(::cellshard::dense_is_packed_row_major(m), "dense fill requires packed row-major matrix");
     require(values.size() == (std::size_t) m->rows * (std::size_t) m->cols, "dense fill value count mismatch");
     for (float value : values) m->val[i++] = __float2half(value);
 }
@@ -46,14 +46,14 @@ static bool close_half(const real::storage_t &value, float expected) {
 
 static void test_raw_pack_and_reject_layouts() {
     const std::string path = temp_path(".cspackpart");
-    ::cellerator::tensor::base::dense m;
-    ::cellerator::tensor::base::dense loaded;
-    ::cellerator::tensor::base::dense bad_stride;
-    ::cellerator::tensor::base::dense bad_order;
-    init(&m, 2u, 3u, ::cellerator::tensor::base::dense_row_major, 3u);
+    ::cellshard::dense m;
+    ::cellshard::dense loaded;
+    ::cellshard::dense bad_stride;
+    ::cellshard::dense bad_order;
+    init(&m, 2u, 3u, ::cellshard::dense_row_major, 3u);
     init(&loaded);
-    init(&bad_stride, 2u, 3u, ::cellerator::tensor::base::dense_row_major, 4u);
-    init(&bad_order, 2u, 3u, ::cellerator::tensor::base::dense_col_major, 2u);
+    init(&bad_stride, 2u, 3u, ::cellshard::dense_row_major, 4u);
+    init(&bad_order, 2u, 3u, ::cellshard::dense_col_major, 2u);
     require(allocate(&m) != 0, "dense allocation failed");
     require(allocate(&bad_stride) != 0, "bad-stride dense allocation failed");
     require(allocate(&bad_order) != 0, "bad-order dense allocation failed");
@@ -62,7 +62,7 @@ static void test_raw_pack_and_reject_layouts() {
     require(cs::store(path.c_str(), &m) != 0, "packed dense raw store failed");
     require(cs::load(path.c_str(), &loaded) != 0, "packed dense raw load failed");
     require(loaded.rows == 2u && loaded.cols == 3u, "loaded dense shape mismatch");
-    require(loaded.order == ::cellerator::tensor::base::dense_row_major && loaded.stride == loaded.cols, "loaded dense layout mismatch");
+    require(loaded.order == ::cellshard::dense_row_major && loaded.stride == loaded.cols, "loaded dense layout mismatch");
     require(close_half(*at(&loaded, 1u, 2u), 6.0f), "loaded dense value mismatch");
     require(cs::store(path.c_str(), &bad_stride) == 0, "non-packed dense store unexpectedly succeeded");
     require(cs::store(path.c_str(), &bad_order) == 0, "column-major dense store unexpectedly succeeded");
@@ -75,12 +75,12 @@ static void test_raw_pack_and_reject_layouts() {
 }
 
 static void test_sharded_dense_metadata() {
-    cs::sharded<::cellerator::tensor::base::dense> matrix;
-    ::cellerator::tensor::base::dense *part0 = new ::cellerator::tensor::base::dense;
-    ::cellerator::tensor::base::dense *part1 = new ::cellerator::tensor::base::dense;
+    cs::sharded<::cellshard::dense> matrix;
+    ::cellshard::dense *part0 = new ::cellshard::dense;
+    ::cellshard::dense *part1 = new ::cellshard::dense;
     init(&matrix);
-    init(part0, 1u, 3u, ::cellerator::tensor::base::dense_row_major, 3u);
-    init(part1, 2u, 3u, ::cellerator::tensor::base::dense_row_major, 3u);
+    init(part0, 1u, 3u, ::cellshard::dense_row_major, 3u);
+    init(part1, 2u, 3u, ::cellshard::dense_row_major, 3u);
     require(allocate(part0) != 0 && allocate(part1) != 0, "sharded dense allocation failed");
     fill_dense(part0, {1.0f, 2.0f, 3.0f});
     fill_dense(part1, {4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f});
@@ -128,13 +128,13 @@ static void test_dense_csh5_fetch_and_stage() {
         &codec,
         1u
     };
-    ::cellerator::tensor::base::dense part0;
-    ::cellerator::tensor::base::dense part1;
-    cs::sharded<::cellerator::tensor::base::dense> matrix;
+    ::cellshard::dense part0;
+    ::cellshard::dense part1;
+    cs::sharded<::cellshard::dense> matrix;
     cs::shard_storage storage;
 
-    init(&part0, 2u, 3u, ::cellerator::tensor::base::dense_row_major, 3u);
-    init(&part1, 1u, 3u, ::cellerator::tensor::base::dense_row_major, 3u);
+    init(&part0, 2u, 3u, ::cellshard::dense_row_major, 3u);
+    init(&part1, 1u, 3u, ::cellshard::dense_row_major, 3u);
     require(allocate(&part0) != 0 && allocate(&part1) != 0, "dense csh5 allocation failed");
     fill_dense(&part0, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
     fill_dense(&part1, {7.0f, 8.0f, 9.0f});
@@ -155,8 +155,8 @@ static void test_dense_csh5_fetch_and_stage() {
 
     int device_count = 0;
     if (cudaGetDeviceCount(&device_count) == cudaSuccess && device_count > 0) {
-        cs::device::sharded_device<::cellerator::tensor::base::dense> device_state;
-        ::cellerator::tensor::base::device::DenseView host_view{};
+        cs::device::sharded_device<::cellshard::dense> device_state;
+        ::cellshard::device::DenseView host_view{};
         real::storage_t payload[3] = {};
         cs::device::init(&device_state);
         require(cs::device::reserve(&device_state, matrix.num_partitions) != 0, "dense device reserve failed");
@@ -165,14 +165,14 @@ static void test_dense_csh5_fetch_and_stage() {
         require(cudaMemcpy(&host_view, device_state.parts[1].view, sizeof(host_view), cudaMemcpyDeviceToHost) == cudaSuccess,
                 "dense descriptor copy failed");
         require(host_view.rows == 1u && host_view.cols == 3u, "dense device descriptor shape mismatch");
-        require(host_view.order == ::cellerator::tensor::base::dense_row_major && host_view.stride == 3u, "dense device descriptor layout mismatch");
+        require(host_view.order == ::cellshard::dense_row_major && host_view.stride == 3u, "dense device descriptor layout mismatch");
         require(cudaMemcpy(payload, host_view.val, sizeof(payload), cudaMemcpyDeviceToHost) == cudaSuccess,
                 "dense payload copy failed");
         require(close_half(payload[2], 9.0f), "dense device payload mismatch");
 
-        ::cellerator::tensor::base::dense bad;
-        cs::device::partition_record<::cellerator::tensor::base::dense> bad_record{};
-        init(&bad, 1u, 3u, ::cellerator::tensor::base::dense_row_major, 4u);
+        ::cellshard::dense bad;
+        cs::device::partition_record<::cellshard::dense> bad_record{};
+        init(&bad, 1u, 3u, ::cellshard::dense_row_major, 4u);
         require(allocate(&bad) != 0, "bad dense device allocation failed");
         require(cs::device::upload(&bad, &bad_record) == cudaErrorInvalidValue,
                 "non-packed dense device upload unexpectedly succeeded");

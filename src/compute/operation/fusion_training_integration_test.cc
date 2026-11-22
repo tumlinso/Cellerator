@@ -1,4 +1,6 @@
-#include <Cellerator/compute/compute.hh>
+#include <Cellerator/compute/operation/fusion/fusion_validation_v1.hh>
+#include <Cellerator/compute/operation/fusion/prepared_stage_graph_v1.hh>
+#include <Cellerator/compute/training/v2/interface.hh>
 
 #include <array>
 #include <cassert>

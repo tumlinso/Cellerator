@@ -1,6 +1,5 @@
 #include <Cellerator/geometry/gene_support_bitset.hh>
 
-#include <cuda_fp16.h>
 #include <cuda_runtime.h>
 
 #include <algorithm>
@@ -23,29 +22,30 @@ int require(bool ok, const char *label) {
     return ok ? 1 : 0;
 }
 
-bool fill_patterned_source(ct::dim_t rows, ct::dim_t genes, cm::compressed *source) {
-    std::vector<ct::ptr_t> row_ptr((std::size_t) rows + 1u, 0u);
+struct PatternedSource {
+    ct::dim_t rows, genes;
+    std::vector<ct::ptr_t> row_ptr;
     std::vector<ct::idx_t> columns;
-    for (ct::dim_t row = 0u; row < rows; ++row) {
-        if (row % 7u != 1u) {
-            const ct::idx_t primary = row % (genes - 1u);
-            columns.push_back(primary);
-            if (row % 5u == 0u) columns.push_back(primary); // duplicate is intentional
-            if (row % 3u == 0u) columns.push_back((primary + 2u) % (genes - 1u));
-        }
-        row_ptr[(std::size_t) row + 1u] = (ct::ptr_t) columns.size();
-    }
-    cm::init(source, rows, genes, (ct::nnz_t) columns.size(), cm::compressed_by_row);
-    if (!cm::allocate(source)) return false;
-    std::copy(row_ptr.begin(), row_ptr.end(), source->majorPtr);
-    for (std::size_t slot = 0u; slot < columns.size(); ++slot) {
-        source->minorIdx[slot] = columns[slot];
-        source->val[slot] = __float2half((float) slot + 1.0f);
-    }
-    return true;
-}
 
-bool build_exact_sample(const cm::compressed &source,
+    PatternedSource(ct::dim_t rows, ct::dim_t genes)
+        : rows(rows), genes(genes), row_ptr((std::size_t) rows + 1u, 0u) {
+        for (ct::dim_t row = 0u; row < rows; ++row) {
+            if (row % 7u != 1u) {
+                const ct::idx_t primary = row % (genes - 1u);
+                columns.push_back(primary);
+                if (row % 5u == 0u) columns.push_back(primary); // duplicate is intentional
+                if (row % 3u == 0u) columns.push_back((primary + 2u) % (genes - 1u));
+            }
+            row_ptr[(std::size_t) row + 1u] = (ct::ptr_t) columns.size();
+        }
+    }
+
+    cm::CompressedStructureView<ct::idx_t> view() const {
+        return {rows, genes, columns.size(), cm::CompressedAxis::row, row_ptr.data(), columns.data()};
+    }
+};
+
+bool build_exact_sample(const cm::CompressedStructureView<ct::idx_t> &source,
                         std::uint64_t requested,
                         const char *split,
                         cs::owned_sampled_csr_structure *sampled,
@@ -58,7 +58,7 @@ bool build_exact_sample(const cm::compressed &source,
     spec.split_name = split;
     spec.requested_row_count = requested;
     return cs::build_sample_plan(source.rows, spec, identities, &plan, error)
-        && cs::materialize_sampled_csr_structure(&source, plan, sampled, error);
+        && cs::materialize_sampled_csr_structure(source, plan, sampled, error);
 }
 
 void reconstruct_expected(const cs::sampled_csr_structure_view &sampled,
@@ -118,16 +118,13 @@ bool results_equal(const cg::gene_support_bitset_view &lhs,
 }
 
 int test_sample_count_boundary(std::uint64_t cell_count, bool gpu_available) {
-    cm::compressed source;
+    const PatternedSource source((ct::dim_t) cell_count, 7u);
     cs::owned_sampled_csr_structure sampled;
     cg::owned_gene_support_bitsets cpu, gpu;
     std::vector<cg::support_word_t> expected_support;
     std::vector<ct::count_value_t> expected_counts;
     std::string error;
-    cm::init(&source);
-    if (!require(fill_patterned_source((ct::dim_t) cell_count, 7u, &source),
-                 "failed to allocate patterned CSR fixture")) return 10;
-    if (!require(build_exact_sample(source, cell_count, "support-boundary", &sampled, &error),
+    if (!require(build_exact_sample(source.view(), cell_count, "support-boundary", &sampled, &error),
                  error.c_str())) return 11;
     const cs::sampled_csr_structure_view sampled_view = sampled.view();
     if (!require(cg::build_gene_support_bitsets_cpu(sampled_view, &cpu, &error), error.c_str())) return 12;
@@ -154,17 +151,15 @@ int test_sample_count_boundary(std::uint64_t cell_count, bool gpu_available) {
         if (!require(cg::build_gene_support_bitsets_cuda(sampled_view, 0, &gpu, &error), error.c_str())) return 19;
         if (!require(results_equal(cpu_view, gpu.view()), "CPU/GPU gene-support results differ")) return 20;
     }
-    cm::clear(&source);
     return 0;
 }
 
 int test_deterministic_subset_alignment(bool gpu_available) {
-    cm::compressed source;
+    const PatternedSource fixture(48u, 7u);
+    const auto source = fixture.view();
     cs::owned_sampled_csr_structure first_sample, second_sample;
     cg::owned_gene_support_bitsets first, second, gpu;
     std::string error;
-    cm::init(&source);
-    if (!require(fill_patterned_source(48u, 7u, &source), "failed to allocate subset CSR fixture")) return 30;
     if (!require(build_exact_sample(source, 33u, "support-subset", &first_sample, &error), error.c_str())) return 31;
     if (!require(build_exact_sample(source, 33u, "support-subset", &second_sample, &error), error.c_str())) return 32;
     if (!require(cg::build_gene_support_bitsets_cpu(first_sample.view(), &first, &error), error.c_str())) return 33;
@@ -177,8 +172,8 @@ int test_deterministic_subset_alignment(bool gpu_available) {
         if (global_row != cell) non_identity_position = true;
         const cg::support_word_t bit = 1u << (cell % 32u);
         const std::size_t word = (std::size_t) cell / 32u;
-        for (ct::ptr_t slot = source.majorPtr[global_row]; slot < source.majorPtr[global_row + 1u]; ++slot) {
-            const ct::idx_t gene = source.minorIdx[slot];
+        for (ct::ptr_t slot = source.major_ptr[global_row]; slot < source.major_ptr[global_row + 1u]; ++slot) {
+            const ct::idx_t gene = source.minor_idx[slot];
             if (!require((view.gene_support[(std::size_t) gene * view.layout.words_per_gene + word] & bit) != 0u,
                          "sampled position bit is not aligned to its global source row")) return 36;
         }
@@ -188,19 +183,16 @@ int test_deterministic_subset_alignment(bool gpu_available) {
         if (!require(cg::build_gene_support_bitsets_cuda(first_sample.view(), 0, &gpu, &error), error.c_str())) return 38;
         if (!require(results_equal(view, gpu.view()), "subset CPU/GPU results differ")) return 39;
     }
-    cm::clear(&source);
     return 0;
 }
 
 int test_zero_cells_and_zero_genes(bool gpu_available) {
     std::string error;
     {
-        cm::compressed source;
+        const PatternedSource source(4u, 7u);
         cs::owned_sampled_csr_structure sampled;
         cg::owned_gene_support_bitsets cpu, gpu;
-        cm::init(&source);
-        if (!require(fill_patterned_source(4u, 7u, &source), "failed to allocate zero-cell source")) return 40;
-        if (!require(build_exact_sample(source, 0u, "support-zero-cells", &sampled, &error), error.c_str())) return 41;
+        if (!require(build_exact_sample(source.view(), 0u, "support-zero-cells", &sampled, &error), error.c_str())) return 41;
         if (!require(cg::build_gene_support_bitsets_cpu(sampled.view(), &cpu, &error), error.c_str())) return 42;
         const cg::gene_support_bitset_view view = cpu.view();
         if (!require(view.layout.sampled_cell_count == 0u && view.layout.words_per_gene == 0u
@@ -213,24 +205,22 @@ int test_zero_cells_and_zero_genes(bool gpu_available) {
             if (!require(cg::build_gene_support_bitsets_cuda(sampled.view(), 0, &gpu, &error), error.c_str())) return 45;
             if (!require(results_equal(view, gpu.view()), "zero-cell CPU/GPU results differ")) return 46;
         }
-        cm::clear(&source);
     }
     {
-        cm::compressed source;
+        const ct::ptr_t row_ptr[4]{};
+        const cm::CompressedStructureView<ct::idx_t> source{
+            3u, 0u, 0u, cm::CompressedAxis::row, row_ptr, nullptr};
         cs::sample_plan plan;
         cs::sample_spec spec;
         cs::cell_identity_view identities;
         cs::owned_sampled_csr_structure sampled;
         cg::owned_gene_support_bitsets cpu, gpu;
-        cm::init(&source, 3u, 0u, 0u, cm::compressed_by_row);
-        if (!require(cm::allocate(&source), "failed to allocate zero-gene source")) return 47;
-        std::fill_n(source.majorPtr, 4u, 0u);
         spec.mode = cs::selection_mode::exact_lowest_hash;
         spec.seed = 9u;
         spec.split_name = "support-zero-genes";
         spec.requested_row_count = 3u;
         if (!require(cs::build_sample_plan(3u, spec, identities, &plan, &error)
-                     && cs::materialize_sampled_csr_structure(&source, plan, &sampled, &error),
+                     && cs::materialize_sampled_csr_structure(source, plan, &sampled, &error),
                      error.c_str())) return 48;
         if (!require(cg::build_gene_support_bitsets_cpu(sampled.view(), &cpu, &error), error.c_str())) return 49;
         const cg::gene_support_bitset_view view = cpu.view();
@@ -242,7 +232,6 @@ int test_zero_cells_and_zero_genes(bool gpu_available) {
             if (!require(cg::build_gene_support_bitsets_cuda(sampled.view(), 0, &gpu, &error), error.c_str())) return 51;
             if (!require(results_equal(view, gpu.view()), "zero-gene CPU/GPU results differ")) return 52;
         }
-        cm::clear(&source);
     }
     return 0;
 }

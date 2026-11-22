@@ -69,7 +69,7 @@ public:
         return alignment_.model_indices();
     }
     const std::vector<std::int64_t>& output_columns() const noexcept {
-        return alignment_.output_columns();
+        return alignment_.source_positions();
     }
     const at::Tensor& model_index_tensor() const noexcept { return model_indices_; }
     const at::Tensor& output_column_tensor() const noexcept { return output_columns_; }
@@ -100,7 +100,7 @@ PreparedTargets<FeatureId> prepare_targets(
     auto alignment = binding.prepare(binding.canonical_ids(), requested_ids);
     const auto options = at::TensorOptions().dtype(at::kLong).device(device);
     auto model_indices = at::tensor(alignment.model_indices(), options);
-    auto output_columns = at::tensor(alignment.output_columns(), options);
+    auto output_columns = at::tensor(alignment.source_positions(), options);
     const auto realized_device = model_indices.device();
     if (output_columns.device() != realized_device) {
         throw std::logic_error("prepared target index tensors landed on different devices");
@@ -596,13 +596,6 @@ auto predict(Model&& model, Input&& input, Run run, Requests&&... requests) {
 template<class Model, class Input, class... Requests>
 requires (sizeof...(Requests) > 0 && (detail::query_request<Requests> && ...))
 auto predict(Model&& model, Input&& input, Requests&&... requests) {
-    return predict(std::forward<Model>(model), std::forward<Input>(input), Run{},
-                   std::forward<Requests>(requests)...);
-}
-
-template<class Model, class Input, class... Requests>
-requires (sizeof...(Requests) > 0 && (detail::query_request<Requests> && ...))
-auto predict_query(Model&& model, Input&& input, Requests&&... requests) {
     return predict(std::forward<Model>(model), std::forward<Input>(input), Run{},
                    std::forward<Requests>(requests)...);
 }

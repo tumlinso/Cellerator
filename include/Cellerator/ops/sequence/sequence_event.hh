@@ -1,13 +1,8 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <stddef.h>
 #include <stdint.h>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_SEQUENCE_EVENT_HD __host__ __device__
-#else
-#define CELLERATOR_SEQUENCE_EVENT_HD
-#endif
 
 namespace cellerator::ops::sequence {
 
@@ -52,7 +47,7 @@ struct sequence_output_descriptor {
     uint8_t reserved;
 };
 
-CELLERATOR_SEQUENCE_EVENT_HD constexpr bool sequence_buffer_location_valid(
+CELLERATOR_HOST_DEVICE constexpr bool sequence_buffer_location_valid(
     sequence_buffer_residency residency, int32_t device_ordinal) noexcept {
     using R = sequence_buffer_residency;
     return residency == R::host ? device_ordinal == -1
@@ -60,7 +55,7 @@ CELLERATOR_SEQUENCE_EVENT_HD constexpr bool sequence_buffer_location_valid(
             || residency == R::peer_device);
 }
 
-CELLERATOR_SEQUENCE_EVENT_HD constexpr bool sequence_emit_counts_valid(
+CELLERATOR_HOST_DEVICE constexpr bool sequence_emit_counts_valid(
     sequence_output_mode mode, uint64_t capacity, const sequence_emit_counts &counts) noexcept {
     using M = sequence_output_mode;
     if (counts.required_capacity != counts.total_matches) return false;
@@ -71,7 +66,7 @@ CELLERATOR_SEQUENCE_EVENT_HD constexpr bool sequence_emit_counts_valid(
         && counts.dropped_records == counts.total_matches - counts.stored_records;
 }
 
-CELLERATOR_SEQUENCE_EVENT_HD constexpr bool sequence_output_descriptor_valid(
+CELLERATOR_HOST_DEVICE constexpr bool sequence_output_descriptor_valid(
     const sequence_output_descriptor &out) noexcept {
     using M = sequence_output_mode;
     using O = sequence_event_ordering;
@@ -103,5 +98,3 @@ static_assert(__is_trivially_copyable(sequence_emit_counts));
 static_assert(__is_trivially_copyable(sequence_output_descriptor));
 
 } // namespace cellerator::ops::sequence
-
-#undef CELLERATOR_SEQUENCE_EVENT_HD

@@ -31,7 +31,7 @@ set_target_properties(cellerator_factorized_interaction_candidate_runner PROPERT
     CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
 target_include_directories(cellerator_factorized_interaction_candidate_runner PRIVATE
     "${CELLERATOR_SOURCE_ROOT}/include"
-    "${CELLERATOR_SOURCE_ROOT}/src/modeling/cuda"
+    "${CELLERATOR_SOURCE_ROOT}/src/ops/mechanism"
     "${CELLERATOR_SOURCE_ROOT}/bench/factorized_interactions/controls"
     "${CELLERATOR_SOURCE_ROOT}/bench/factorized_interactions/candidates/direct_unique_output")
 target_link_libraries(cellerator_factorized_interaction_candidate_runner PRIVATE

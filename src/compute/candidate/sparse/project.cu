@@ -1,14 +1,13 @@
 #include <Cellerator/compute/candidate/sparse/project.hh>
-#include <Cellerator/tensor/base/blocked_ell.cuh>
+#include <Cellerator/tensor/base/blocked_ell_layout.hh>
 #include "../../operators/sparse/primitives/common.cuh"
+#include "../../../ops/matrix/csr_multiply.cuh"
 #include <Cellerator/ops/quantized/dispatch.cuh>
 #include <Cellerator/tensor/quantized/blocked_ell.cuh>
 #include <Cellerator/tensor/quantized/metadata.cuh>
 
 #include <stdexcept>
 #include <string>
-#include <type_traits>
-#include <limits>
 
 namespace cellerator::compute::sparse::project {
 
@@ -26,147 +25,10 @@ inline void cusparse_require_(cusparseStatus_t status, const char *label) {
 }
 
 #include "kernels/narrow_float_to_half_kernel_.cuh"
-#include "kernels/csr_spmm_fwd_kernel_.cuh"
 #include "kernels/blocked_ell_spmm_fwd_kernel_.cuh"
 #include "kernels/quantized_blocked_ell_spmm_fwd_kernel_.cuh"
 
 } // namespace
-
-namespace {
-
-// Prepared relations retain an authoritative edge-value plane. This shared
-// traversal also handles the optional edge-to-value projection used by
-// transpose views.
-template<class V, class X, class M, class A, class Y, class C, bool GridStride>
-__global__ void csr_spmm_fwd_kernel_(
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const V *values,
-    std::uint32_t rows,
-    const X *rhs,
-    std::int64_t rhs_ld,
-    std::int64_t out_cols,
-    Y *out,
-    std::int64_t out_ld,
-    const std::uint32_t *value_indices,
-    C input_scale,
-    C destination_scale) {
-    const std::uint32_t row = static_cast<std::uint32_t>(blockIdx.x);
-    std::int64_t col = static_cast<std::int64_t>(threadIdx.x) +
-        static_cast<std::int64_t>(blockIdx.y) * blockDim.x;
-    if (row >= rows) return;
-
-    for (; col < out_cols;) {
-        A accum = A{0};
-        for (std::uint32_t edge = major_ptr[row]; edge < major_ptr[row + 1u]; ++edge) {
-            const std::uint32_t value = value_indices == nullptr ? edge : value_indices[edge];
-            if constexpr (std::is_same_v<V, float> && std::is_same_v<X, float> &&
-                          std::is_same_v<M, float> && std::is_same_v<A, float>) {
-                // Preserve the historical FP32 expression and its codegen.
-                accum += values[value] * rhs[static_cast<std::int64_t>(minor_idx[edge]) * rhs_ld + col];
-            } else {
-                accum += static_cast<A>(
-                    static_cast<M>(values[value]) *
-                    static_cast<M>(rhs[static_cast<std::int64_t>(minor_idx[edge]) * rhs_ld + col]));
-            }
-        }
-        Y* destination = out + static_cast<std::int64_t>(row) * out_ld + col;
-        if (destination_scale == C{0}) {
-            *destination = static_cast<Y>(static_cast<Y>(input_scale) * static_cast<Y>(accum));
-        } else if constexpr (std::is_same_v<A, float> && std::is_same_v<Y, float> && std::is_same_v<C, float>) {
-            // Keep the historical FP32 epilogue, including its fused operation.
-            *destination = fmaf(input_scale, accum, destination_scale * *destination);
-        } else {
-            const Y alpha = static_cast<Y>(input_scale);
-            const Y beta_y = static_cast<Y>(destination_scale);
-            const Y scaled_destination = beta_y * *destination;
-            *destination = static_cast<Y>(::fma(alpha, static_cast<Y>(accum), scaled_destination));
-        }
-
-        if constexpr (!GridStride) {
-            break;
-        } else {
-            const std::int64_t stride = static_cast<std::int64_t>(blockDim.x) * gridDim.y;
-            if (out_cols - col <= stride) break;
-            col += stride;
-        }
-    }
-}
-
-} // namespace
-
-void csr_spmm_fwd_f16_f32(
-    const runtime::execution_context &ctx,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const __half *values,
-    std::uint32_t rows,
-    std::uint32_t,
-    const float *rhs,
-    std::int64_t rhs_ld,
-    std::int64_t out_cols,
-    float *out,
-    std::int64_t out_ld) {
-    runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmm_fwd)");
-    if (rows == 0 || out_cols == 0) return;
-    const dim3 grid(rows, static_cast<unsigned int>((out_cols + kSpmmColsThreads - 1) / kSpmmColsThreads), 1u);
-    csr_spmm_fwd_kernel_<<<grid, kSpmmColsThreads, 0, ctx.stream>>>(major_ptr, minor_idx, values, rows, rhs, rhs_ld, out_cols, out, out_ld);
-    runtime::cuda_require(cudaGetLastError(), "csr_spmm_fwd_kernel");
-}
-
-template<class V, class X, class M, class A, class Y, class C,
-         std::enable_if_t<supported_csr_spmm_fwd_v<V, X, M, A, Y, C>, int>>
-void csr_spmm_fwd(const runtime::execution_context& ctx,
-    const std::uint32_t* major_ptr, const std::uint32_t* minor_idx, const V* values,
-    std::uint32_t rows, std::uint32_t, const X* rhs, std::int64_t rhs_ld,
-    std::int64_t out_cols, Y* out, std::int64_t out_ld,
-    const std::uint32_t* value_indices, C input_scale, C destination_scale) {
-    runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmm_fwd)");
-    if(!rows || !out_cols)return;
-    if (rows > static_cast<std::uint32_t>(std::numeric_limits<int>::max())) {
-        throw std::invalid_argument("csr_spmm_fwd rows exceed the CUDA grid.x limit");
-    }
-    constexpr std::int64_t max_grid_y = 65535;
-    const std::int64_t column_blocks = out_cols / kSpmmColsThreads +
-        (out_cols % kSpmmColsThreads != 0);
-    const unsigned int grid_y = static_cast<unsigned int>(column_blocks < max_grid_y ? column_blocks : max_grid_y);
-    const dim3 grid(rows, grid_y, 1u);
-    if (column_blocks <= max_grid_y) {
-        csr_spmm_fwd_kernel_<V, X, M, A, Y, C, false><<<grid,kSpmmColsThreads,0,ctx.stream>>>(
-            major_ptr,minor_idx,values,rows,rhs,rhs_ld,out_cols,out,out_ld,value_indices,input_scale,destination_scale);
-    } else {
-        csr_spmm_fwd_kernel_<V, X, M, A, Y, C, true><<<grid,kSpmmColsThreads,0,ctx.stream>>>(
-            major_ptr,minor_idx,values,rows,rhs,rhs_ld,out_cols,out,out_ld,value_indices,input_scale,destination_scale);
-    }
-    runtime::cuda_require(cudaGetLastError(),"csr_spmm_fwd_kernel");
-}
-
-template void csr_spmm_fwd<float, float, float, float, float, float>(
-    const runtime::execution_context&, const std::uint32_t*, const std::uint32_t*,
-    const float*, std::uint32_t, std::uint32_t, const float*, std::int64_t,
-    std::int64_t, float*, std::int64_t, const std::uint32_t*, float, float);
-template void csr_spmm_fwd<float, double, double, double, double, double>(
-    const runtime::execution_context&, const std::uint32_t*, const std::uint32_t*,
-    const float*, std::uint32_t, std::uint32_t, const double*, std::int64_t,
-    std::int64_t, double*, std::int64_t, const std::uint32_t*, double, double);
-template void csr_spmm_fwd<double, float, double, double, double, double>(
-    const runtime::execution_context&, const std::uint32_t*, const std::uint32_t*,
-    const double*, std::uint32_t, std::uint32_t, const float*, std::int64_t,
-    std::int64_t, double*, std::int64_t, const std::uint32_t*, double, double);
-template void csr_spmm_fwd<double, double, double, double, double, double>(
-    const runtime::execution_context&, const std::uint32_t*, const std::uint32_t*,
-    const double*, std::uint32_t, std::uint32_t, const double*, std::int64_t,
-    std::int64_t, double*, std::int64_t, const std::uint32_t*, double, double);
-
-void csr_spmm_fwd_f32(const runtime::execution_context& ctx,
-    const std::uint32_t* major_ptr,const std::uint32_t* minor_idx,const float* values,
-    std::uint32_t rows,std::uint32_t cols,const float* rhs,std::int64_t rhs_ld,
-    std::int64_t out_cols,float* out,std::int64_t out_ld,const std::uint32_t* value_indices,
-    float input_scale,float destination_scale) {
-    csr_spmm_fwd<float, float, float, float, float, float>(
-        ctx, major_ptr, minor_idx, values, rows, cols, rhs, rhs_ld, out_cols, out,
-        out_ld, value_indices, input_scale, destination_scale);
-}
 
 void blocked_ell_spmm_fwd_f16_f32(
     const runtime::execution_context &ctx,
@@ -288,48 +150,6 @@ void quantized_blocked_ell_spmm_fwd_f32(
     }
 }
 
-void csr_spmm_fwd_f32_lib(
-    const runtime::execution_context &ctx,
-    runtime::cusparse_cache *cache,
-    const void *matrix_token,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const float *values,
-    std::uint32_t rows,
-    std::uint32_t cols,
-    std::uint32_t nnz,
-    const float *rhs,
-    std::int64_t rhs_ld,
-    std::int64_t out_cols,
-    float *out,
-    std::int64_t out_ld) {
-    if (rows == 0 || cols == 0 || out_cols == 0) return;
-    runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmm_f32_lib)");
-    cusparseHandle_t handle = runtime::acquire_cusparse(cache, ctx);
-    cusparseSpMatDescr_t mat = runtime::acquire_csr_f32_descriptor(cache, ctx, matrix_token, rows, cols, nnz, major_ptr, minor_idx, values);
-    cusparseDnMatDescr_t b = nullptr;
-    cusparseDnMatDescr_t c = nullptr;
-    const float alpha = 1.0f;
-    const float beta = 0.0f;
-    cusparse_require_(cusparseCreateDnMat(&b, static_cast<std::int64_t>(cols), out_cols, rhs_ld, const_cast<float *>(rhs), CUDA_R_32F, CUSPARSE_ORDER_ROW), "cusparseCreateDnMat(rhs)");
-    cusparse_require_(cusparseCreateDnMat(&c, static_cast<std::int64_t>(rows), out_cols, out_ld, out, CUDA_R_32F, CUSPARSE_ORDER_ROW), "cusparseCreateDnMat(out)");
-    std::size_t &bytes = runtime::cached_spmm_bytes(cache, CUSPARSE_OPERATION_NON_TRANSPOSE);
-    if (bytes == 0) {
-        cusparse_require_(
-            cusparseSpMM_bufferSize(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, mat, b, &beta, c, CUDA_R_32F, CUSPARSE_SPMM_ALG_DEFAULT, &bytes),
-            "cusparseSpMM_bufferSize");
-    }
-    runtime::scratch_arena arena;
-    runtime::init(&arena);
-    void *scratch = runtime::request_scratch(&arena, bytes);
-    cusparse_require_(
-        cusparseSpMM(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, mat, b, &beta, c, CUDA_R_32F, CUSPARSE_SPMM_ALG_DEFAULT, scratch),
-        "cusparseSpMM");
-    runtime::clear(&arena);
-    if (c != nullptr) cusparseDestroyDnMat(c);
-    if (b != nullptr) cusparseDestroyDnMat(b);
-}
-
 void blocked_ell_spmm_fwd_f16_f32_lib(
     const runtime::execution_context &ctx,
     runtime::cusparse_cache *cache,
@@ -443,11 +263,7 @@ void launch_csr_spmm_fwd_f16_f32(
     runtime::fleet_context *fleet,
     const unsigned int *slots,
     unsigned int slot_count,
-    const std::uint32_t *const *major_ptr,
-    const std::uint32_t *const *minor_idx,
-    const __half *const *values,
-    const std::uint32_t *rows,
-    const std::uint32_t *cols,
+    const base::CompressedView<uint32_t, const __half>* matrices,
     const float *const *rhs,
     const std::int64_t *rhs_ld,
     const std::int64_t *out_cols,
@@ -457,7 +273,9 @@ void launch_csr_spmm_fwd_f16_f32(
     require_slots_(*fleet, slots, slot_count);
     for (unsigned int i = 0; i < slot_count; ++i) {
         const runtime::execution_context ctx = slot_context_(*fleet, slots[i]);
-        csr_spmm_fwd_f16_f32(ctx, major_ptr[i], minor_idx[i], values[i], rows[i], cols[i], rhs[i], rhs_ld[i], out_cols[i], out[i], out_ld[i]);
+        runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmm)");
+        runtime::cuda_require(::cellerator::ops::matrix::csr_spmm(matrices[i], rhs[i], rhs_ld[i],
+            out_cols[i], out[i], out_ld[i], ctx.stream), "csr_spmm");
     }
 }
 

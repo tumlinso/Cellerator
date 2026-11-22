@@ -1,6 +1,6 @@
 #include <Cellerator/layout/factorized_interaction.hh>
 #include <Cellerator/memory/cuda/resources.hh>
-#include <Cellerator/modeling/cuda/factorized_interaction.hh>
+#include <Cellerator/ops/mechanism/factorized_interaction_cuda.hh>
 
 #include <cuda_fp16.h>
 
@@ -17,7 +17,7 @@
 
 namespace {
 using namespace cellerator;
-using namespace cellerator::modeling::cuda;
+using namespace cellerator::ops::mechanism::cuda;
 
 void check(cudaError_t status, const char* operation) {
     if (status != cudaSuccess)

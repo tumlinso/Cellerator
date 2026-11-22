@@ -239,42 +239,6 @@ def atac_binary_loss(logits: Tensor, targets: Tensor) -> Tensor:
     return F.binary_cross_entropy_with_logits(logits, targets)
 
 
-def explicit_dense_anndata_minibatch(
-    view: Any, row_indices: Sequence[int], *, max_elements: int,
-    device: torch.device | str = "cpu",
-    binding: FeatureBinding | None = None,
-    requested_ids: Sequence[Any] | None = None,
-) -> tuple[Tensor, tuple[Any, ...], tuple[Any, ...]]:
-    """Convert selected AnnDataView rows only after an explicit size check.
-
-    The returned tensors contain raw selected values; feature identities and
-    cell identities are returned alongside them. No normalization, imputation,
-    or vocabulary mapping is inferred. Sparse storage remains untouched until
-    this bounded call.
-    """
-    if max_elements <= 0:
-        raise ValueError("max_elements must be positive")
-    rows = tuple(row_indices)
-    if any(not isinstance(index, int) or isinstance(index, bool) for index in rows):
-        raise TypeError("row_indices must contain integers")
-    if any(index < 0 or index >= len(view.cell_ids) for index in rows):
-        raise IndexError("row_indices contain a row outside the selected AnnDataView")
-    if binding is None:
-        aligned_feature_ids = tuple(view.feature_ids)
-        selected = view.values[list(rows), :]
-    else:
-        requested = binding.identities if requested_ids is None else tuple(requested_ids)
-        alignment = binding.prepare(view.feature_ids, requested)
-        aligned_feature_ids = alignment.requested_ids
-        # Keep the source sparse while selecting and aligning its columns.
-        selected = view.values[list(rows), :][:, list(alignment.source_positions)]
-    row_count, feature_count = selected.shape
-    if row_count * feature_count > max_elements:
-        raise ValueError("selected dense minibatch exceeds max_elements")
-    dense = selected.toarray() if hasattr(selected, "toarray") else selected
-    values = torch.as_tensor(dense, dtype=torch.float32, device=device)
-    cell_ids = tuple(view.cell_ids[index] for index in rows)
-    return values, aligned_feature_ids, cell_ids
 
 
 def _validated_offsets(offsets: Sequence[int], extent: int) -> tuple[int, ...]:
@@ -490,5 +454,5 @@ __all__ = [
     "ExpressionReferenceModel", "EventHistoryReferenceModel", "attach_expression_view",
     "attach_event_view", "attach_atac_view", "attach_history_view", "masked_expression_mse",
     "atac_binary_loss", "shifted_event_batch",
-    "event_next_token_loss", "explicit_dense_anndata_minibatch",
+    "event_next_token_loss",
 ]

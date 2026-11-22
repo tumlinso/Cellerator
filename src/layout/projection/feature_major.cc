@@ -1,6 +1,5 @@
 #include <Cellerator/layout/projection/feature_major.hh>
 
-#include <algorithm>
 #include <cstring>
 #include <limits>
 #include <vector>
@@ -60,32 +59,32 @@ physical_view_status inspect_source(
             "feature-major construction requires a validated host CPK1 view");
     }
     const auto &plan = payload.plan;
-    const auto &tiles = payload.tiles;
+    const auto &tiles = payload.tiles.layout;
     source_counts counts{};
-    for (u32 tile = 0u; tile < tiles.tile_count; ++tile) {
+    for (u32 tile = 0u; tile < tiles.tiles; ++tile) {
         const u32 descriptor_begin = tiles.tile_block_offsets[tile];
         const u32 descriptor_end = tiles.tile_block_offsets[tile + 1u];
         if (descriptor_end < descriptor_begin
-            || descriptor_end > tiles.tile_block_count) {
+            || descriptor_end > tiles.tile_blocks) {
             return fail(physical_view_status_code::invalid_geometry,
                 "CPK1 tile descriptor offsets are invalid");
         }
-        const u32 remaining = tiles.row_count - tile * tiles.tile_row_width;
-        const u32 lane_count = std::min(tiles.tile_row_width, remaining);
+        const u32 remaining = static_cast<u32>(tiles.rows) - tile * tiles.tile_row_width;
+        const u32 lane_count = remaining < tiles.tile_row_width ? remaining : tiles.tile_row_width;
         const u32 valid_rows = lane_count == 32u
             ? std::numeric_limits<u32>::max() : (1u << lane_count) - 1u;
         u32 previous_block = std::numeric_limits<u32>::max();
         for (u32 descriptor = descriptor_begin;
              descriptor < descriptor_end; ++descriptor) {
-            const u32 block = tiles.tile_block_ids[descriptor];
-            const u32 row_mask = tiles.tile_block_cell_masks[descriptor];
+            const u32 block = tiles.block_ids[descriptor];
+            const u32 row_mask = tiles.participating_row_masks[descriptor];
             const u32 entry_begin = tiles.block_row_entry_offsets[descriptor];
             const u32 entry_end = tiles.block_row_entry_offsets[descriptor + 1u];
             if (block >= plan.feature_block_count || row_mask == 0u
                 || (row_mask & ~valid_rows) != 0u
                 || (descriptor != descriptor_begin && block <= previous_block)
                 || entry_end < entry_begin
-                || entry_end > tiles.row_block_entry_count
+                || entry_end > tiles.row_block_entries
                 || entry_end - entry_begin
                     != static_cast<u32>(__builtin_popcount(row_mask))) {
                 return fail(physical_view_status_code::invalid_geometry,
@@ -104,18 +103,18 @@ physical_view_status inspect_source(
                 : (1u << (feature_end - feature_begin)) - 1u;
             u32 feature_union = 0u;
             for (u32 entry = entry_begin; entry < entry_end; ++entry) {
-                const u32 mask = tiles.row_block_gene_masks[entry];
+                const u32 mask = tiles.feature_masks[entry];
                 const u32 value_begin = tiles.row_block_value_offsets[entry];
                 const u32 value_end = tiles.row_block_value_offsets[entry + 1u];
                 const u32 value_count = static_cast<u32>(__builtin_popcount(mask));
                 if (mask == 0u || (mask & ~valid_features) != 0u
-                    || value_end < value_begin || value_end > tiles.nnz_count
+                    || value_end < value_begin || value_end > tiles.stored_values
                     || value_end - value_begin != value_count) {
                     return fail(physical_view_status_code::invalid_geometry,
                         "CPK1 row feature/value record is invalid");
                 }
                 feature_union |= mask;
-                if (counts.compact_values > tiles.nnz_count - value_count) {
+                if (counts.compact_values > tiles.stored_values - value_count) {
                     return fail(physical_view_status_code::overflow,
                         "feature-major compact value count overflows");
                 }
@@ -131,7 +130,7 @@ physical_view_status inspect_source(
             counts.feature_records += record_count;
         }
     }
-    if (counts.compact_values != tiles.nnz_count) {
+    if (counts.compact_values != tiles.stored_values) {
         return fail(physical_view_status_code::invalid_geometry,
             "CPK1 compact values do not span logical nnz");
     }
@@ -211,14 +210,12 @@ void set_view(const FeatureMajorLayoutV1 &header,
     FeatureMajorViewV1 view{};
     view.header = header;
     view.payload_base = base;
-    view.tile_feature_offsets = pointer_at<u32>(
-        base, header.tile_feature_offsets_offset);
-    view.execution_feature_ids = pointer_at<u32>(
-        base, header.execution_feature_ids_offset);
-    view.participating_row_masks = pointer_at<u32>(
-        base, header.participating_row_masks_offset);
-    view.feature_value_offsets = pointer_at<u32>(
-        base, header.feature_value_offsets_offset);
+    view.structure = {header.row_count, header.feature_count, header.tile_count,
+        header.feature_record_count, header.nnz_count, header.tile_row_width,
+        pointer_at<u32>(base, header.tile_feature_offsets_offset),
+        pointer_at<u32>(base, header.execution_feature_ids_offset),
+        pointer_at<u32>(base, header.participating_row_masks_offset),
+        pointer_at<u32>(base, header.feature_value_offsets_offset)};
     view.source_value_positions = pointer_at<u32>(
         base, header.source_value_positions_offset);
     *out = view;
@@ -238,7 +235,7 @@ physical_view_status query_feature_major_projection_requirements_host(
     if (!source) return source;
     FeatureMajorLayoutV1 header{};
     std::size_t payload_bytes = 0u;
-    if (!compute_layout(request.source.tiles.tile_count,
+    if (!compute_layout(static_cast<u32>(request.source.tiles.layout.tiles),
             counts.feature_records, counts.compact_values,
             &header, &payload_bytes)) {
         return fail(physical_view_status_code::overflow,
@@ -247,7 +244,7 @@ physical_view_status query_feature_major_projection_requirements_host(
     feature_major_projection_requirements result{};
     result.payload_bytes = payload_bytes;
     result.tile_feature_offset_count =
-        static_cast<std::size_t>(request.source.tiles.tile_count) + 1u;
+        static_cast<std::size_t>(request.source.tiles.layout.tiles) + 1u;
     result.feature_record_count = counts.feature_records;
     result.feature_value_offset_count =
         static_cast<std::size_t>(counts.feature_records) + 1u;
@@ -274,7 +271,7 @@ physical_view_status build_feature_major_projection_host(
     std::memset(buffer.payload, 0, required.payload_bytes);
     FeatureMajorLayoutV1 header{};
     std::size_t computed_bytes = 0u;
-    if (!compute_layout(request.source.tiles.tile_count,
+    if (!compute_layout(static_cast<u32>(request.source.tiles.layout.tiles),
             static_cast<u32>(required.feature_record_count),
             static_cast<u32>(required.source_value_position_count),
             &header, &computed_bytes)) {
@@ -282,7 +279,8 @@ physical_view_status build_feature_major_projection_host(
             "feature-major payload layout changed during construction");
     }
     const auto &source = request.source;
-    const auto &tiles = source.tiles;
+    const auto &image = source.tiles;
+    const auto &tiles = image.layout;
     header.structure_identity = request.structure_identity;
     header.projection_identity = request.projection_identity;
     header.structure_epoch = request.structure_epoch_value.value;
@@ -290,19 +288,19 @@ physical_view_status build_feature_major_projection_host(
     header.feature_block_geometry_identity =
         source.plan.feature_block_geometry_identity;
     header.ordering_identity = source.order.ordering_identity;
-    header.global_row_begin = tiles.global_row_begin;
-    header.row_domain_identity = tiles.row_domain_identity;
-    header.feature_axis_fingerprint = tiles.feature_axis_fingerprint;
+    header.global_row_begin = image.global_row_begin;
+    header.row_domain_identity = image.row_domain_identity;
+    header.feature_axis_fingerprint = image.feature_axis_fingerprint;
     header.feature_axis_fingerprint_version =
-        tiles.feature_axis_fingerprint_version;
-    header.full_row_count = tiles.full_row_count;
-    header.row_count = tiles.row_count;
-    header.feature_count = tiles.feature_count;
+        image.feature_axis_fingerprint_version;
+    header.full_row_count = image.full_row_count;
+    header.row_count = static_cast<u32>(tiles.rows);
+    header.feature_count = static_cast<u32>(tiles.features);
     header.tile_row_width = tiles.tile_row_width;
-    header.tile_count = tiles.tile_count;
+    header.tile_count = static_cast<u32>(tiles.tiles);
     header.feature_record_count = static_cast<u32>(required.feature_record_count);
-    header.nnz_count = tiles.nnz_count;
-    header.value_size_bytes = tiles.value_size_bytes;
+    header.nnz_count = static_cast<u32>(tiles.stored_values);
+    header.value_size_bytes = image.value_size_bytes;
     std::memcpy(buffer.payload, &header, sizeof(header));
 
     auto *tile_offsets = mutable_at<u32>(
@@ -320,19 +318,19 @@ physical_view_status build_feature_major_projection_host(
     u32 value_cursor = 0u;
     tile_offsets[0] = 0u;
     value_offsets[0] = 0u;
-    for (u32 tile = 0u; tile < tiles.tile_count; ++tile) {
+    for (u32 tile = 0u; tile < tiles.tiles; ++tile) {
         for (u32 descriptor = tiles.tile_block_offsets[tile];
              descriptor < tiles.tile_block_offsets[tile + 1u]; ++descriptor) {
-            const u32 block = tiles.tile_block_ids[descriptor];
+            const u32 block = tiles.block_ids[descriptor];
             const u32 feature_begin = source.plan.feature_block_offsets[block];
             const u32 feature_end = source.plan.feature_block_offsets[block + 1u];
             u32 lane_gene_masks[32]{};
             u32 lane_value_begins[32]{};
             u32 entry = tiles.block_row_entry_offsets[descriptor];
-            const u32 descriptor_rows = tiles.tile_block_cell_masks[descriptor];
+            const u32 descriptor_rows = tiles.participating_row_masks[descriptor];
             for (u32 lane = 0u; lane < tiles.tile_row_width; ++lane) {
                 if ((descriptor_rows & (1u << lane)) == 0u) continue;
-                lane_gene_masks[lane] = tiles.row_block_gene_masks[entry];
+                lane_gene_masks[lane] = tiles.feature_masks[entry];
                 lane_value_begins[lane] =
                     tiles.row_block_value_offsets[entry];
                 ++entry;
@@ -435,32 +433,33 @@ physical_view_status validate_feature_major_projection_payload_host(
 
     FeatureMajorViewV1 view{};
     set_view(header, payload, &view);
-    if (view.tile_feature_offsets[0] != 0u
-        || view.tile_feature_offsets[header.tile_count]
+    const auto &structure = view.structure;
+    if (structure.tile_offsets[0] != 0u
+        || structure.tile_offsets[header.tile_count]
             != header.feature_record_count
-        || view.feature_value_offsets[0] != 0u
-        || view.feature_value_offsets[header.feature_record_count]
+        || structure.value_offsets[0] != 0u
+        || structure.value_offsets[header.feature_record_count]
             != header.nnz_count) {
         return fail(physical_view_status_code::invalid_geometry,
             "feature-major terminal offsets are invalid");
     }
     for (u32 tile = 0u; tile < header.tile_count; ++tile) {
-        const u32 begin = view.tile_feature_offsets[tile];
-        const u32 end = view.tile_feature_offsets[tile + 1u];
+        const u32 begin = structure.tile_offsets[tile];
+        const u32 end = structure.tile_offsets[tile + 1u];
         if (end < begin || end > header.feature_record_count) {
             return fail(physical_view_status_code::invalid_geometry,
                 "feature-major tile offsets are not monotonic");
         }
         const u32 remaining = header.row_count - tile * header.tile_row_width;
-        const u32 lanes = std::min(header.tile_row_width, remaining);
+        const u32 lanes = remaining < header.tile_row_width ? remaining : header.tile_row_width;
         const u32 valid_rows = lanes == 32u
             ? std::numeric_limits<u32>::max() : (1u << lanes) - 1u;
         u32 previous_feature = std::numeric_limits<u32>::max();
         for (u32 record = begin; record < end; ++record) {
-            const u32 feature = view.execution_feature_ids[record];
-            const u32 mask = view.participating_row_masks[record];
-            const u32 value_begin = view.feature_value_offsets[record];
-            const u32 value_end = view.feature_value_offsets[record + 1u];
+            const u32 feature = structure.feature_ids[record];
+            const u32 mask = structure.row_masks[record];
+            const u32 value_begin = structure.value_offsets[record];
+            const u32 value_end = structure.value_offsets[record + 1u];
             if (feature >= header.feature_count
                 || (record != begin && feature <= previous_feature)
                 || mask == 0u || (mask & ~valid_rows) != 0u

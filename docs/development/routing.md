@@ -31,8 +31,11 @@ GlassHelix investigates formal inferability, while Cellerator supplies reusable
 learning mechanisms that can reflect the question and its available constraints.
 
 CCell owns preprocessing, RNA velocity, and optional AnnData++ interop.
-Cellerator provides the reusable native views and modeling primitives.
-See the [component ownership record](component-ownership.md).
+Cellerator owns the reusable modeling and numerical substrate. Callers provide
+explicit prepared arrays, tensors, or views. AnnData++ owns native H5AD and
+Zarr access. CellShard source is retained as a quasi-deprecated component
+detached from supported Cellerator builds and installs. See the
+[component ownership record](component-ownership.md).
 
 Keep entity and relation identity, structural order, activity/eligibility,
 values and parameters, logical/physical layout, and runtime bindings distinct.
@@ -71,16 +74,17 @@ validity, or task completion.
 |---|---|---|---|
 | Learned representations, neural composition, objectives, and training | `python/cellerator/nn.py`, `ops.py`, `torch`, `adapters`, with relevant interaction/inference and native operation owners | Reusable biological learning capabilities, using existing numerical and ML infrastructure where appropriate | Begin with the representation and learning question. Current namespace placement is not a hierarchy of importance. Do not force a learned component into `Cell` or a state-transition wrapper; do not imply that every intended architecture or objective exists. |
 | Optional model instances, dynamics, and population mechanics | `python/cellerator/modeling`, `state`, `events`, `dynamics`, `interactions`, `execution`, and `inference` | Composable mechanisms for model rules, opaque state, event histories, numerical updates, relations, population execution, and inference | Use relevant contracts without requiring every model to adopt dynamics or a lifecycle. Preserve arbitrary representations and general neural composition. Do not place consumer hypotheses in general packages or assume package presence qualifies a native/GPU backend. See the [biological framework](../biological_framework.qmd) for current APIs and [architecture](../architecture.qmd) for their intended role. |
-| Learned/data adapters | `python/cellerator/adapters` | Optional bridges to general learning libraries and explicit AnnData boundaries | Keep optional dependencies lazy. AnnData identity/layer selection is caller supplied; preserve sparse inputs and exact row/column identities. Do not make Torch the core state contract. |
+| Learned-model adapters | `python/cellerator/adapters` | Optional bridges to general learning libraries such as Torch, distributed execution, CUDA, and ggml | Keep optional dependencies lazy. Adapters must not define native types, data ownership, or the core state contract. |
 | Single-cell preprocessing and RNA velocity | `components/CCell/src/{preprocess,velocity}` | CCell owns method behavior and reference implementations. | Link `ccell::preprocess` or `ccell::velocity`. Use native views and preserve biological axis identity. |
 | AnnData++ file access and view binding | `extern/anndatapp`, `components/CCell/src/ccell.interop.anndata.cppm` | AnnData++ owns data storage and file I/O. CCell owns checked numerical view binding. | Use `import anndata;` for file and array access and `import ccell.interop.anndata;` for the borrowing adapter. |
-| Legacy RNA velocity | `src/ops/velocity` | Optional external Velocity++ adapter | Configure separately from CCell. |
-| Native mathematical or model operation | `src/ops/{numeric,matrix,process,mechanism,sparse_support}` and the still-active `src/compute/<family>` operations, with matching public headers | Keep each numerical contract with its operation family and concrete build owner: `Cellerator::ops_numeric`, `Cellerator::op_matrix_patch`, `Cellerator::op_process_ports`, `Cellerator::indexed_mechanism`, or the family-specific compute target | The indexed mechanism API is under `include/Cellerator/ops/mechanism/indexed` and its implementation under `src/ops/mechanism/indexed`; it is not owned by `src/compute`. Other active `src/compute` families retain their own headers, targets and evidence. The source map does not imply every file is built or qualified. Keep derivatives, precision, registration and callers with the operation. |
-| Native data and cellular geometry representations | `include/Cellerator/{structure,geometry/dependency,containers,tensor,layout,memory,ops,execution,interop/formats}` and their source/build owners | Route each responsibility to its semantic owner: persistent identities to `structure`; declared relationships to `geometry::dependency`; generic postings to `containers`; encodings to `tensor`; physical maps to `layout`; allocations and CUDA resources to `memory`; arithmetic to `ops`; prepared bindings, current work and readiness to `execution`; persisted payloads/codecs to `interop::formats` | The installed `Cellerator::native_data` host component composes native geometry, execution and tensor owners; `Cellerator::tensor` is the smaller format surface and `Cellerator::modeling` composes `native_data`. CUDA composition is optional. See [native data structures and cellular geometry](../native_data.qmd) for concrete boundaries and build guidance. Namespace names describe ownership; they do not qualify a backend or operation. |
+| Retained velocity source | `src/ops/velocity`, `tests/velocity` | Inactive source retained for later work | Use the CCell method target for active integration. Generic `CelleratorBinary16` remains separately buildable. |
+| Retained CellShard component | `components/CellShard/**` | Quasi-deprecated source detached from supported Cellerator builds and installs | Source is preserved; CellShard headers are excluded from host and SDK installs. Retired CMake options and Cellerator package-component requests fail clearly. |
+| Native mathematical or model operation | `src/ops/{numeric,matrix,process,mechanism,sparse_support}` and the still-active `src/compute/<family>` operations, with matching public headers | Keep each numerical contract with its operation family and concrete build owner. Use `Cellerator::ops_numeric`, `Cellerator::matrix_patch`, `Cellerator::private_ports`, `Cellerator::indexed_mechanism`, or the family-specific compute target. | The indexed mechanism API and implementation live under `include/Cellerator/ops/mechanism/indexed` and `src/ops/mechanism/indexed`. Other active `src/compute` families retain their own headers, targets and evidence. The source map does not imply every file is built or qualified. Keep derivatives, precision, registration and callers with the operation. |
+| Native data and cellular geometry representations | `include/Cellerator/{structure,geometry/dependency,containers,tensor,layout,memory,ops,execution,interop/formats}` and their source/build owners | Persistent identities go in `structure`, declared relationships in `geometry::dependency`, generic postings in `containers`, encodings in `tensor`, and physical maps in `layout`. Resource ownership belongs to `memory`, arithmetic to `ops`, prepared bindings and readiness to `execution`, and persisted payloads and codecs to `interop::formats`. | The installed `native_data` component exposes geometry, execution, tensor and direct host operation targets. CUDA owners are available through their corresponding components. See [native data structures and cellular geometry](../native_data.qmd) for build guidance. |
 | Identity, support, indexing, and gating | `include/Cellerator/structure`, `geometry/dependency`, `containers`, and `execution/dependency`; current support, indexing and gating APIs also remain under `include/Cellerator/compute/{support,indexing,gating}`, with implementations under `src/{support,indexing,gating}` and condition operations under `src/ops/condition` | Persistent identity belongs to `structure`; dependency meaning to `geometry::dependency`; generic posting storage to `containers`; current work and condition invalidation to `execution`; support/discovery, indexing and condition evaluation retain their concrete operation owners | CMake owners include `Cellerator::biological_abi`, `::identity_registry`, `::support`, `::indexing`, `::gating`, `::dependency_geometry` and `::dependency_execution`; `::sparse_support` is a compatibility umbrella. The existing `compute/...` include paths describe those support APIs' current public locations, not the semantic owner of new identity, dependency, posting or execution types. Host checks include `tests/biological_abi/biological_abi_host_test.cc`, `tests/execution_identity/identity_registry_test.cc`, and focused `tests/sparse_support/*`; CUDA workset checks are separately gated. |
 | Native sequence and regulatory execution | `biology/sequence.hh`, `tensor/sequence`, `layout/sequence`, `ops/sequence`, and `execution/sequence` under `include/Cellerator` | Sequence meaning and coordinates, borrowed encodings, packing, predicates, and prepared execution have distinct owners. | Link `Cellerator::sequence_ops` for host calls or `Cellerator::sequence_ops_cuda` for optional device operations. See the [native sequence guide](sequence.md). |
 | Prepared model routing | `include/Cellerator/ops/sparse_support/prepared_routing.hh`, `src/ops/sparse_support/prepared_routing.{cc,cu}`, its sparse-support Torch binding and Python adapter | Opt-in prepared entity-to-mechanism route query; current Python query remains the default | Frozen binary passed 16 tests, exact CUDA correctness, and memcheck/racecheck/synccheck. V100 lifecycle timing found a bounded long-reuse win for ranked `[32,8]`, an inconclusive event shape, and dense Torch wins on larger stress shapes. Preserve caller-supplied route and binding generations; see the [qualification report](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/bench/sparse_support/experiments/prepared_routing/REPORT.md). |
-| Geometry, physical layouts, values and gradients | `include/Cellerator/geometry/dependency`, `structure`, `tensor`, `layout`, `ops`, `execution` and `interop/formats`; the CellPack planner and payload ABI live under `include/Cellerator/geometry` and `src/geometry` | Keep semantic pattern structure, persistent identity, data encoding, physical realization, numerical operations, live bindings and file-format compatibility in their respective Cellerator owners; retain CellPack's planning and public format contracts in CellPack | `Cellerator::dependency_geometry`, `::dependency_execution`, `::tensor`, `::native_data`, `CellPack::cellpack`, `CellPack::execution_image_v2` and `Cellerator::cellpack_interop` represent distinct owners. `layout::CellPackingGeometryView` carries physical summaries and `execution::CellPackingBinding` carries live association. Do not route semantic dependencies through physical packing. Measure preparation and conversion when making operation-cost claims. |
+| Geometry, physical layouts, values and gradients | `geometry`, `structure`, `tensor`, `layout`, `ops`, and `execution` | Geometry chooses row and feature groups. Tensor views define the numerical encoding. Layout materializes the chosen order and its maps. Packed image readers bind native views through `geometry/persistence`. | `layout::CellPackingGeometryView` carries physical summaries and `execution::CellPackingBinding` carries live association. Measure preparation and conversion when making operation-cost claims. |
 | Prepared execution and runtime | `include/Cellerator/execution` and `src/execution`, including `execution/dependency`; allocation/resource owners under `include/Cellerator/memory` and `src/memory`; multi-device coordination and readiness records under `runtime` and `src/runtime`; planning under `planner` | Execution owns prepared bindings, current work and readiness checks; `memory` owns allocations and CUDA resource lifetimes; `runtime` retains fleet coordination and runtime readiness records; `planner` owns plans | The native-data dependency owner is `Cellerator::dependency_execution`, exported through `Cellerator::native_data`; optional CUDA composition uses `Cellerator::native_data_cuda`. Route other execution families by their actual headers, target registration and callers. ExecutionField live recompilation remains experimental; preparation or gating alone does not prove adaptive recompilation. |
 | Torch and Python adapters | `src/interop/torch`, `python/bindings`, `python/cellerator`, `tests/bindings`, `tests/package` | Native LibTorch integration and Python-only extension sources | Compose Torch rather than duplicate its tensor, autograd, or optimizer systems. Current optional build/API limits are in the Python binding guide. The paused CelleraTorch proposal is archived in `docs/history/celleratorch.qmd`; it is not `python/cellerator/torch`. |
 | Language compiler | [Texo](https://github.com/tumlinso/Texo) | Texo owns language-compiler source, build/install integration, public APIs, tools, resources, tests, examples, and documentation | Cellerator does not bundle or install the language compiler. Consult Texo for compiler implementation and evidence; the ownership move does not assert a complete compiler pipeline. |
@@ -117,14 +121,14 @@ resolves retired Todo projections and runtime artifacts. The current
 `.todo-orchestrator/project.json` and authority database remain live workflow
 state and are not part of that archive.
 
-Local generated output has a different lifecycle from source history. Keep only
-build trees with a current configured consumer in the checkout. Retired builds,
+Use `build/` as the checkout's local CMake output directory. The IDE uses
+`build/`, and separate configurations use subdirectories such as
+`build/ctxpp/`. Keep only build trees with a current configured consumer in the
+checkout. Retired builds,
 local source captures, test receipts and profiler output belong in one verified
 durable archive with original-path and content manifests. Historical reports
 retain their recorded build paths; recover their original bytes from the archive
-instead of keeping every old build live. The configured `build/` verification
-tree and `build-ctxpp/` compilation database remain local outputs; this repository
-cleanup does not change shared retrieval state or its tooling configuration.
+when an old build is needed.
 
 ## Editing and claim rules
 
@@ -202,9 +206,27 @@ expected layout and identifies the tracked manifests used by each caller.
 
 ## Optional C++ retrieval maintenance
 
-[ctxpp](https://github.com/tumlinso/ctxpp) is an optional standalone C++ context tool. Ordinary source navigation and coding do not require it or a globally installed skill. `build-ctxpp/compile_commands.json` is the compilation database selected by `.ctxpp.toml`. The generated `.ctxpp/index.sqlite` holds the graph; `.ctxpp/observer-export.json` is a small descriptor for the optional reader. Canonical source files remain authoritative.
+[ctxpp](https://github.com/tumlinso/ctxpp) is an optional standalone C++ context tool. Ordinary source navigation and coding do not require it or a globally installed skill. `.ctxpp.toml` selects `build/ctxpp/compile_commands.json`. The generated `.ctxpp/index.sqlite` holds the graph. `.ctxpp/observer-export.json` describes the published generation for optional readers. Canonical source files remain authoritative.
 
-When maintaining this index, refresh and export through the CLI:
+Configure a dedicated database for the source configurations you want indexed.
+For example, this configuration includes CUDA translation units for SM70.
+
+```sh
+cmake -S . -B build/ctxpp -G Ninja \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+  -DCELLERATOR_ENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=70 \
+  -DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF \
+  -DCELLERATOR_BUILD_TESTS=ON \
+  -DCELLERATOR_ENABLE_PYTHON=OFF -DCELLERATOR_ENABLE_TORCH=OFF \
+  -DCELLERATOR_ENABLE_TOKENIZATION=OFF \
+  -DCELLERATOR_ENABLE_SPARSE_SUPPORT=ON \
+  -DCELLERATOR_ENABLE_CONDITIONAL=ON \
+  -DCELLERATOR_ENABLE_CCELL_ANNDATA=OFF
+```
+
+Refresh and export through the CLI.
 
 ```sh
 ctxpp scan

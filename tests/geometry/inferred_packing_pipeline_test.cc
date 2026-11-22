@@ -46,9 +46,9 @@ void require_status(const cellpack::validation_result &status, const char *conte
     if (!status) fail(std::string(context) + ": " + status.message);
 }
 
-bool fill_full_source(matrix::compressed *source) {
-    const std::vector<types::ptr_t> row_offsets{0u, 3u, 5u, 7u, 10u, 12u, 14u, 17u, 20u};
-    const std::vector<types::idx_t> features{
+struct FullSource {
+    const types::ptr_t row_offsets[9]{0u, 3u, 5u, 7u, 10u, 12u, 14u, 17u, 20u};
+    const types::idx_t features[20]{
         0u, 1u, 4u,
         0u, 1u,
         2u, 3u,
@@ -58,15 +58,17 @@ bool fill_full_source(matrix::compressed *source) {
         0u, 1u, 4u,
         2u, 3u, 5u
     };
-    matrix::init(source, 8u, 6u, static_cast<types::nnz_t>(features.size()), matrix::compressed_by_row);
-    if (!matrix::allocate(source)) return false;
-    std::copy(row_offsets.begin(), row_offsets.end(), source->majorPtr);
-    for (std::size_t entry = 0u; entry < features.size(); ++entry) {
-        source->minorIdx[entry] = features[entry];
-        source->val[entry] = __float2half(static_cast<float>(entry + 1u));
+    ::cellerator::real::storage_t values[20];
+
+    FullSource() {
+        for (std::size_t entry = 0u; entry < 20u; ++entry)
+            values[entry] = __float2half(static_cast<float>(entry + 1u));
     }
-    return true;
-}
+
+    matrix::CompressedStructureView<types::idx_t> view() const {
+        return {8u, 6u, 20u, matrix::CompressedAxis::row, row_offsets, features};
+    }
+};
 
 bool contains_pair(const candidates::gene_candidate_pair_view &view, u32 lhs, u32 rhs) {
     if (lhs > rhs) std::swap(lhs, rhs);
@@ -108,7 +110,8 @@ struct optimizer_workspace {
 };
 
 void require_exact_round_trip(
-    const matrix::compressed &source,
+    const matrix::CompressedStructureView<types::idx_t> &source,
+    const ::cellerator::real::storage_t *source_values,
     const cellpack::frozen_packing_plan &plan,
     const cellpack::ordered_plan_partition_view &ordered,
     const std::vector<types::idx_t> &ordered_features,
@@ -132,9 +135,9 @@ void require_exact_round_trip(
             have_previous = true;
 
             bool found = false;
-            for (u32 source_entry = source.majorPtr[row]; source_entry < source.majorPtr[row + 1u]; ++source_entry) {
-                if (source.minorIdx[source_entry] != canonical) continue;
-                require(std::memcmp(&ordered_values[output_entry], &source.val[source_entry],
+            for (u32 source_entry = source.major_ptr[row]; source_entry < source.major_ptr[row + 1u]; ++source_entry) {
+                if (source.minor_idx[source_entry] != canonical) continue;
+                require(std::memcmp(&ordered_values[output_entry], &source_values[source_entry],
                             sizeof(::cellerator::real::storage_t)) == 0,
                     "ordered value bytes changed during application");
                 found = true;
@@ -142,15 +145,14 @@ void require_exact_round_trip(
             }
             require(found, "ordered canonical feature is absent from source row");
         }
-        require(end - begin == source.majorPtr[row + 1u] - source.majorPtr[row],
+        require(end - begin == source.major_ptr[row + 1u] - source.major_ptr[row],
             "ordered row changed nonzero count");
     }
 }
 
 void run_pipeline() {
-    matrix::compressed source;
-    matrix::init(&source);
-    require(fill_full_source(&source), "failed to allocate full CSR fixture");
+    const FullSource fixture;
+    const auto source = fixture.view();
 
     sampling::sample_spec sample_spec;
     sample_spec.mode = sampling::selection_mode::exact_lowest_hash;
@@ -163,7 +165,7 @@ void run_pipeline() {
     require(sampling::build_sample_plan(source.rows, sample_spec, cell_identities, &sample_plan, &error), error);
 
     sampling::owned_sampled_csr_structure sampled;
-    require(sampling::materialize_sampled_csr_structure(&source, sample_plan, &sampled, &error), error);
+    require(sampling::materialize_sampled_csr_structure(source, sample_plan, &sampled, &error), error);
     require(sampled.view().sampled_row_count == 6u
             && sampled.view().provenance->total_rows == source.rows,
         "sample materialization lost full-domain provenance");
@@ -203,8 +205,8 @@ void run_pipeline() {
     full_support.row_count = source.rows;
     full_support.feature_count = source.cols;
     full_support.nnz_count = source.nnz;
-    full_support.row_offsets = source.majorPtr;
-    full_support.feature_ids = source.minorIdx;
+    full_support.row_offsets = source.major_ptr;
+    full_support.feature_ids = source.minor_idx;
     cellpack::prepared_csr_support prepared;
     require_status(cellpack::prepare_csr_support(full_support, &prepared), "prepare full evaluator source");
     cellpack::sampled_feature_support_view sampled_support;
@@ -243,7 +245,7 @@ void run_pipeline() {
 
     cellpack::csr_support_view incomplete_support = full_support;
     incomplete_support.row_count = source.rows - 1u;
-    incomplete_support.nnz_count = source.majorPtr[incomplete_support.row_count];
+    incomplete_support.nnz_count = source.major_ptr[incomplete_support.row_count];
     cellpack::prepared_csr_support incomplete_prepared;
     require_status(cellpack::prepare_csr_support(
         incomplete_support, &incomplete_prepared), "prepare incomplete evaluator source");
@@ -278,9 +280,9 @@ void run_pipeline() {
     application_source.feature_count = source.cols;
     application_source.nnz_count = source.nnz;
     application_source.value_size_bytes = sizeof(::cellerator::real::storage_t);
-    application_source.row_offsets = source.majorPtr;
-    application_source.canonical_feature_ids = source.minorIdx;
-    application_source.values = source.val;
+    application_source.row_offsets = source.major_ptr;
+    application_source.canonical_feature_ids = source.minor_idx;
+    application_source.values = fixture.values;
 
     std::vector<u32> output_row_offsets(static_cast<std::size_t>(source.rows) + 1u);
     std::vector<u32> output_blocks(source.nnz), output_locals(source.nnz), output_features(source.nnz);
@@ -304,9 +306,8 @@ void run_pipeline() {
     require_status(cellpack::apply_frozen_plan_host(
         optimized.plan, context, application_source, application_workspace,
         output_buffers, &ordered), "apply optimized full-domain plan");
-    require_exact_round_trip(source, optimized.plan, ordered, output_features, output_values);
+    require_exact_round_trip(source, fixture.values, optimized.plan, ordered, output_features, output_values);
 
-    matrix::clear(&source);
 }
 
 } // namespace

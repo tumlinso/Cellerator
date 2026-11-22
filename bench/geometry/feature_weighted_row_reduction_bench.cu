@@ -1,3 +1,4 @@
+#include "../../src/ops/matrix/csr_multiply.cuh"
 #include "Cellerator/geometry/feature_weighted_row_reduction_cuda.hh"
 #include "benchmark_mutex.hh"
 #include <Cellerator/compute/operators/sparse/ops.hh>
@@ -19,7 +20,7 @@
 namespace {
 
 namespace cp = cellpack;
-namespace sparse_ops = cellerator::compute::sparse::ops;
+namespace matrix_ops = cellerator::ops::matrix;
 using storage_t = cellerator::real::storage_t;
 using compute_t = cellerator::real::compute_t;
 using accum_t = cellerator::real::accum_t;
@@ -169,24 +170,24 @@ host_case make_case(const char *name, cp::u32 sharing_groups) {
     result.tiles.feature_block_geometry_identity = 0x200000000ull;
     result.tiles.ordering_identity = 0x300000000ull + sharing_groups;
     result.tiles.full_row_count = rows;
-    result.tiles.row_count = rows;
-    result.tiles.feature_count = features;
-    result.tiles.feature_block_count = block_count;
-    result.tiles.tile_row_width = tile_width;
-    result.tiles.tile_count = tile_count;
-    result.tiles.nnz_count = static_cast<cp::u32>(result.tile_values.size());
-    result.tiles.tile_block_count = static_cast<cp::u32>(result.tile_blocks.size());
-    result.tiles.row_block_entry_count = static_cast<cp::u32>(result.gene_masks.size());
+    result.tiles.layout.rows = rows;
+    result.tiles.layout.features = features;
+    result.tiles.layout.feature_blocks = block_count;
+    result.tiles.layout.tile_row_width = tile_width;
+    result.tiles.layout.tiles = tile_count;
+    result.tiles.layout.stored_values = static_cast<cp::u32>(result.tile_values.size());
+    result.tiles.layout.tile_blocks = static_cast<cp::u32>(result.tile_blocks.size());
+    result.tiles.layout.row_block_entries = static_cast<cp::u32>(result.gene_masks.size());
     result.tiles.value_size_bytes = sizeof(storage_t);
     result.tiles.feature_axis_fingerprint = 0x400000000ull;
     result.tiles.feature_axis_fingerprint_version = 1u;
     result.tiles.row_domain_identity = 0x500000000ull;
-    result.tiles.tile_block_offsets = result.tile_offsets.data();
-    result.tiles.tile_block_ids = result.tile_blocks.data();
-    result.tiles.tile_block_cell_masks = result.tile_cell_masks.data();
-    result.tiles.block_row_entry_offsets = result.entry_offsets.data();
-    result.tiles.row_block_gene_masks = result.gene_masks.data();
-    result.tiles.row_block_value_offsets = result.value_offsets.data();
+    result.tiles.layout.tile_block_offsets = result.tile_offsets.data();
+    result.tiles.layout.block_ids = result.tile_blocks.data();
+    result.tiles.layout.participating_row_masks = result.tile_cell_masks.data();
+    result.tiles.layout.block_row_entry_offsets = result.entry_offsets.data();
+    result.tiles.layout.feature_masks = result.gene_masks.data();
+    result.tiles.layout.row_block_value_offsets = result.value_offsets.data();
     result.tiles.values = result.tile_values.data();
     return result;
 }
@@ -299,12 +300,13 @@ void run_case(const cp::frozen_packing_plan &plan, host_case host,
     upload(d_weights, weights);
 
     auto device_tiles = host.tiles;
-    device_tiles.tile_block_offsets = d_tile_offsets.data;
-    device_tiles.tile_block_ids = d_tile_blocks.data;
-    device_tiles.tile_block_cell_masks = d_cell_masks.data;
-    device_tiles.block_row_entry_offsets = d_entry_offsets.data;
-    device_tiles.row_block_gene_masks = d_gene_masks.data;
-    device_tiles.row_block_value_offsets = d_value_offsets.data;
+    device_tiles.layout.tile_block_offsets = d_tile_offsets.data;
+    device_tiles.layout.block_ids = d_tile_blocks.data;
+    device_tiles.layout.participating_row_masks = d_cell_masks.data;
+    device_tiles.layout.block_row_entry_offsets = d_entry_offsets.data;
+    device_tiles.layout.feature_masks = d_gene_masks.data;
+    device_tiles.layout.row_block_value_offsets = d_value_offsets.data;
+    device_tiles.layout.feature_block_offsets = d_plan_offsets.data;
     device_tiles.values = d_tile_values.data;
     auto input = cp::make_feature_weighted_row_reduction_view(plan, host.tiles,
         0x800000000ull + host.sharing_groups, weights.size(), weights.data());
@@ -333,14 +335,12 @@ void run_case(const cp::frozen_packing_plan &plan, host_case host,
             input, order, buffers, stream, &result), "launch packed reduction");
     });
 
-    cellerator::runtime::execution_context ctx;
-    ctx.device = 0;
-    ctx.stream = stream;
+    matrix_ops::Csr<const __half> a{{rows, features, host.csr_columns.size(),
+        cellerator::tensor::base::CompressedAxis::row, d_csr_offsets.data, d_csr_columns.data},
+        reinterpret_cast<const __half*>(d_csr_values.data)};
     const auto csr_timing = time_cuda(stream, [&] {
-        sparse_ops::base::csr_spmv_fwd_f16_f32(ctx, d_csr_offsets.data,
-            d_csr_columns.data, reinterpret_cast<const __half *>(d_csr_values.data),
-            rows, reinterpret_cast<const float *>(d_weights.data),
-            reinterpret_cast<float *>(d_csr_output.data));
+        check_cuda(matrix_ops::csr_spmv(a, reinterpret_cast<const float*>(d_weights.data),
+            reinterpret_cast<float*>(d_csr_output.data), stream), "csr_spmv");
     });
 
     std::vector<accum_t> packed(rows), csr(rows);
@@ -370,8 +370,8 @@ void run_case(const cp::frozen_packing_plan &plan, host_case host,
     const double csr_seconds = csr_timing.median_ms * 1.0e-3;
     std::cout << "regime=" << host.name
               << " groups_per_tile=" << host.sharing_groups
-              << " tile_blocks=" << host.tiles.tile_block_count
-              << " row_entries=" << host.tiles.row_block_entry_count << '\n'
+              << " tile_blocks=" << host.tiles.layout.tile_blocks
+              << " row_entries=" << host.tiles.layout.row_block_entries << '\n'
               << "  packed_ms min/median/mean=" << packed_timing.minimum_ms << '/'
               << packed_timing.median_ms << '/' << packed_timing.mean_ms
               << " nnz_s=" << static_cast<double>(nnz) / packed_seconds

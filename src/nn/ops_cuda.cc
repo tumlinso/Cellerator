@@ -1,7 +1,7 @@
 #include <Cellerator/nn/ops.hh>
-#include <Cellerator/modeling/cuda/attention.hh>
-#include <Cellerator/modeling/cuda/factorized_interaction.hh>
-#include <Cellerator/modeling/cuda/grouped_linear.hh>
+#include <Cellerator/ops/attention/sparse_cuda.hh>
+#include <Cellerator/ops/mechanism/factorized_interaction_cuda.hh>
+#include <Cellerator/ops/matrix/grouped_linear_cuda.hh>
 #include <Cellerator/memory/cuda/resources.hh>
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDACachingAllocator.h>
@@ -20,7 +20,9 @@
 
 namespace cellerator::nn::ops {
 namespace {
-namespace native = cellerator::modeling::cuda;
+namespace attention_cuda = ::cellerator::ops::attention::cuda;
+namespace matrix_cuda = ::cellerator::ops::matrix::cuda;
+namespace interaction_cuda = ::cellerator::ops::mechanism::cuda;
 namespace resources = cellerator::memory::cuda;
 using torch::autograd::AutogradContext;
 using torch::autograd::variable_list;
@@ -127,7 +129,7 @@ resources::DeviceView writable(const at::Tensor& t) {
     return {t.data_ptr(), static_cast<std::size_t>(t.nbytes()), t.get_device()};
 }
 struct GroupState : torch::CustomClassHolder {
-    std::unique_ptr<native::GroupedLinear> executor;
+    std::unique_ptr<matrix_cuda::GroupedLinear> executor;
     std::mutex mutex;
 };
 class GroupedFunction : public torch::autograd::Function<GroupedFunction> {
@@ -146,7 +148,7 @@ public:
         hold.resource(state);
         std::vector<resources::ConstDeviceView> views;
         for (std::int64_t e = 0; e < w.size(0); ++e) views.push_back(view(w[e]));
-        state->executor = std::make_unique<native::GroupedLinear>(
+        state->executor = std::make_unique<matrix_cuda::GroupedLinear>(
             x.size(1), w.size(1), std::move(offsets), std::move(views),
             x.scalar_type() == at::kHalf ? resources::DType::float16 : resources::DType::float32,
             x.get_device());
@@ -174,7 +176,7 @@ public:
         for (std::int64_t e = 0; e < w.size(0); ++e) views.push_back(writable(dw[e]));
         record(saved, stream); record({gradients[0], dy, dx, dw}, stream);
         state->executor->backward(view(x), view(dy), writable(dx), views,
-            native::GradientMode::overwrite, native::GradientMode::overwrite,
+            matrix_cuda::GradientMode::overwrite, matrix_cuda::GradientMode::overwrite,
             resources::Stream::borrow(stream.stream(), x.get_device()));
         return {dx, dw, at::Tensor()};
     }
@@ -182,14 +184,14 @@ public:
 
 // Storage is [H,Q,D] for each native 2D per-head call. Each head has private
 // intermediates; no workspace is shared between autograd invocations.
-native::SparseAttentionWorkspace workspace(const variable_list& s, std::int64_t h) {
+attention_cuda::SparseAttentionWorkspace workspace(const variable_list& s, std::int64_t h) {
     auto ptr = [h](const at::Tensor& t) { return t[h].data_ptr<float>(); };
     return {ptr(s[10]), static_cast<std::size_t>(s[10].size(1)),
             ptr(s[11]), static_cast<std::size_t>(s[11].size(1)),
             ptr(s[12]), static_cast<std::size_t>(s[12].size(1)),
             ptr(s[13]), static_cast<std::size_t>(s[13].size(1))};
 }
-native::SparseAttentionPlan plan(const variable_list& s) {
+attention_cuda::SparseAttentionPlan plan(const variable_list& s) {
     return {s[8].data_ptr<std::int64_t>(), s[9].data_ptr<std::int64_t>(),
             s[5].size(1), s[6].size(1), s[9].numel(), s[5].size(2), s[7].size(2)};
 }
@@ -200,12 +202,12 @@ void attention_forward(const variable_list& s, at::Tensor& output, float scale,
         const auto q = s[5][h], k = s[6][h], v = s[7][h], y = output[h];
         cudaError_t status;
         if (q.scalar_type() == at::kHalf)
-            status = native::sparse_attention_fp16(
+            status = attention_cuda::sparse_attention_fp16(
                 reinterpret_cast<const __half*>(q.const_data_ptr()), q.numel(),
                 reinterpret_cast<const __half*>(k.const_data_ptr()), k.numel(),
                 reinterpret_cast<const __half*>(v.const_data_ptr()), v.numel(),
                 reinterpret_cast<__half*>(y.data_ptr()), y.numel(), p, scale, workspace(s,h), stream);
-        else status = native::sparse_attention_fp32(q.data_ptr<float>(), q.numel(),
+        else status = attention_cuda::sparse_attention_fp32(q.data_ptr<float>(), q.numel(),
                 k.data_ptr<float>(), k.numel(), v.data_ptr<float>(), v.numel(),
                 y.data_ptr<float>(), y.numel(), p, scale, workspace(s,h), stream);
         resources::check(status, "native staged CSR attention forward");
@@ -267,18 +269,18 @@ public:
             const auto q=s[5][h], k=s[6][h], v=s[7][h], g=dy[h];
             cudaError_t status;
             if (q.scalar_type() == at::kHalf)
-                status = native::sparse_attention_backward_fp16(
+                status = attention_cuda::sparse_attention_backward_fp16(
                     reinterpret_cast<const __half*>(q.const_data_ptr()), q.numel(),
                     reinterpret_cast<const __half*>(k.const_data_ptr()), k.numel(),
                     reinterpret_cast<const __half*>(v.const_data_ptr()), v.numel(),
                     reinterpret_cast<const __half*>(g.const_data_ptr()), g.numel(),p,scale,workspace(s,h),
                     dq[h].data_ptr<float>(),dq[h].numel(),dk[h].data_ptr<float>(),dk[h].numel(),
-                    dv[h].data_ptr<float>(),dv[h].numel(),native::GradientWriteMode::zero,stream.stream());
-            else status = native::sparse_attention_backward_fp32(q.data_ptr<float>(),q.numel(),
+                    dv[h].data_ptr<float>(),dv[h].numel(),attention_cuda::GradientWriteMode::zero,stream.stream());
+            else status = attention_cuda::sparse_attention_backward_fp32(q.data_ptr<float>(),q.numel(),
                     k.data_ptr<float>(),k.numel(),v.data_ptr<float>(),v.numel(),g.data_ptr<float>(),g.numel(),
                     p,scale,workspace(s,h),dq[h].data_ptr<float>(),dq[h].numel(),
                     dk[h].data_ptr<float>(),dk[h].numel(),dv[h].data_ptr<float>(),dv[h].numel(),
-                    native::GradientWriteMode::zero,stream.stream());
+                    attention_cuda::GradientWriteMode::zero,stream.stream());
             resources::check(status,"native staged CSR attention backward");
         }
         auto restore = [&](const at::Tensor& t) { return t.permute({1,0,2}).to(s[0].scalar_type()).contiguous(); };
@@ -337,10 +339,10 @@ void validate_factorized_inputs(
 
 struct FactorizedAutogradState : torch::CustomClassHolder {
     FactorizedAutogradState(
-                            std::shared_ptr<native::FactorizedInteractionDeviceLayout> selected_layout,
-                            native::FactorizedInteractionProblem shape,
-                            native::FactorizedInteractionPrecision selected_precision,
-                            native::FactorizedInteractionRoute selected_route,
+                            std::shared_ptr<interaction_cuda::FactorizedInteractionDeviceLayout> selected_layout,
+                            interaction_cuda::FactorizedInteractionProblem shape,
+                            interaction_cuda::FactorizedInteractionPrecision selected_precision,
+                            interaction_cuda::FactorizedInteractionRoute selected_route,
                             const resources::Stream& stream)
         : device(stream.device()), forward_stream(stream.get()), problem(shape),
           precision(selected_precision), route(selected_route),
@@ -353,18 +355,18 @@ struct FactorizedAutogradState : torch::CustomClassHolder {
 
     int device;
     cudaStream_t forward_stream;
-    native::FactorizedInteractionProblem problem;
-    native::FactorizedInteractionPrecision precision;
-    native::FactorizedInteractionRoute route;
-    std::shared_ptr<native::FactorizedInteractionDeviceLayout> device_layout;
-    native::FactorizedInteractionWorkspace workspace;
+    interaction_cuda::FactorizedInteractionProblem problem;
+    interaction_cuda::FactorizedInteractionPrecision precision;
+    interaction_cuda::FactorizedInteractionRoute route;
+    std::shared_ptr<interaction_cuda::FactorizedInteractionDeviceLayout> device_layout;
+    interaction_cuda::FactorizedInteractionWorkspace workspace;
     resources::Event forward_complete;
 };
 
 class FactorizedInteractionFunction : public torch::autograd::Function<FactorizedInteractionFunction> {
 public:
     static at::Tensor forward(AutogradContext* ctx,
-                              std::shared_ptr<native::FactorizedInteractionDeviceLayout> device_layout,
+                              std::shared_ptr<interaction_cuda::FactorizedInteractionDeviceLayout> device_layout,
                               at::Tensor x, at::Tensor z, at::Tensor alpha,
                               at::Tensor bias, at::Tensor gamma,
                               std::int64_t output_type, std::int64_t route_code) {
@@ -381,20 +383,20 @@ public:
         record({x, z, alpha, bias, gamma}, torch_stream);
         const auto native_stream = resources::Stream::borrow(
             torch_stream.stream(), x.get_device());
-        const native::FactorizedInteractionProblem problem{
+        const interaction_cuda::FactorizedInteractionProblem problem{
             static_cast<std::uint64_t>(x.size(2)),
             static_cast<std::uint64_t>(x.size(1))};
-        const native::FactorizedInteractionPrecision precision{
+        const interaction_cuda::FactorizedInteractionPrecision precision{
             factorized_dtype(x.scalar_type()), factorized_dtype(alpha.scalar_type()),
             factorized_dtype(output_dtype)};
         auto state = c10::make_intrusive<FactorizedAutogradState>(
             std::move(device_layout), problem, precision,
-            route_code == 0 ? native::FactorizedInteractionRoute::packet
-                            : native::FactorizedInteractionRoute::direct,
+            route_code == 0 ? interaction_cuda::FactorizedInteractionRoute::packet
+                            : interaction_cuda::FactorizedInteractionRoute::direct,
             native_stream);
         hold.resource(state);
         state->device_layout->wait_on(native_stream);
-        resources::check(native::factorized_interaction_workspace(
+        resources::check(interaction_cuda::factorized_interaction_workspace(
             state->device_layout->view(), problem, state->route, &state->workspace),
             "factorized interaction workspace query");
 
@@ -404,9 +406,9 @@ public:
         auto tape = float_workspace(state->workspace.tape_bytes, x.options());
         auto scratch = float_workspace(state->workspace.forward_bytes, x.options());
         record({output, tape, scratch}, torch_stream);
-        const native::FactorizedInteractionValues values{
+        const interaction_cuda::FactorizedInteractionValues values{
             view(x), view(z), view(alpha), view(bias), view(gamma)};
-        resources::check(native::factorized_interaction_forward(
+        resources::check(interaction_cuda::factorized_interaction_forward(
             state->device_layout->view(), problem, precision, values,
             writable(output), writable(tape), writable(scratch),
             torch_stream.stream(), state->route), "factorized interaction forward");
@@ -449,15 +451,15 @@ public:
         auto scratch = float_workspace(state->workspace.backward_bytes, x.options());
         record({gradients[0], dy, dx32, dz32, dalpha32, dbias32, dgamma32, scratch},
                torch_stream);
-        const native::FactorizedInteractionValues values{
+        const interaction_cuda::FactorizedInteractionValues values{
             view(x), view(z), view(alpha), view(bias), view(gamma)};
-        const native::FactorizedInteractionGradients destinations{
+        const interaction_cuda::FactorizedInteractionGradients destinations{
             writable(dx32), writable(dz32), writable(dalpha32),
             writable(dbias32), writable(dgamma32)};
-        resources::check(native::factorized_interaction_backward(
+        resources::check(interaction_cuda::factorized_interaction_backward(
             state->device_layout->view(), state->problem, state->precision, values,
             view(dy), view(tape), destinations, writable(scratch),
-            native::FactorizedInteractionGradientMode::overwrite,
+            interaction_cuda::FactorizedInteractionGradientMode::overwrite,
             torch_stream.stream(), state->route), "factorized interaction backward");
         auto dx = dx32.to(x.scalar_type());
         auto dz = dz32.to(z.scalar_type());
@@ -520,14 +522,14 @@ at::Tensor factorized_interaction_cuda(
     const auto torch_stream = c10::cuda::getCurrentCUDAStream(x.get_device());
     auto native_stream = resources::Stream::borrow(
         torch_stream.stream(), x.get_device());
-    auto device_layout = std::make_shared<native::FactorizedInteractionDeviceLayout>(
+    auto device_layout = std::make_shared<interaction_cuda::FactorizedInteractionDeviceLayout>(
         plan, x.get_device(), native_stream);
     return factorized_interaction_cuda_prepared(
         device_layout, x, z, alpha, bias, gamma, output_dtype, direct);
 }
 
 at::Tensor factorized_interaction_cuda_prepared(
-    const std::shared_ptr<native::FactorizedInteractionDeviceLayout>& plan,
+    const std::shared_ptr<interaction_cuda::FactorizedInteractionDeviceLayout>& plan,
     const at::Tensor& x, const at::Tensor& z, const at::Tensor& alpha,
     const at::Tensor& bias, const at::Tensor& gamma,
     at::ScalarType output_dtype, bool direct) {

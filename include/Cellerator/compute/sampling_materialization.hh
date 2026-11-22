@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compute/sampling.hh>
-#include <Cellerator/tensor/base/compressed.cuh>
+#include <Cellerator/common/types.cuh>
 
 #include <cstdint>
 #include <memory>
@@ -34,12 +34,19 @@ struct sampled_csr_image_view {
 
 std::size_t sampled_csr_image_bytes(std::uint64_t sampled_rows,
                                     std::uint64_t nnz) noexcept;
+// Gathers selected rows from a host CSR structure into the supplied image.
+// The compiled input index types are uint32_t, int32_t, and int64_t.
+template<class Index>
 bool materialize_sampled_csr_image(
-    const ::cellerator::tensor::base::compressed *source,
+    const tensor::base::CompressedStructureView<Index> &source,
     const sample_selection_view &selection,
     ::cellerator::memory::image_buffer image,
     sampled_csr_image_view *out,
     std::string *error = nullptr);
+
+extern template decltype(materialize_sampled_csr_image<uint32_t>) materialize_sampled_csr_image<uint32_t>;
+extern template decltype(materialize_sampled_csr_image<int32_t>) materialize_sampled_csr_image<int32_t>;
+extern template decltype(materialize_sampled_csr_image<int64_t>) materialize_sampled_csr_image<int64_t>;
 bool materialize_selected_csr_image(
     const selected_csr_structure_view &source,
     const sample_selection_view &selection,
@@ -102,26 +109,23 @@ private:
     std::unique_ptr<std::uint64_t[]> sampled_position_to_global_row_;
     sample_provenance provenance_;
 
-    friend bool materialize_sampled_csr_structure(
-        const ::cellerator::tensor::base::compressed *,
-        const sample_plan &,
-        owned_sampled_csr_structure *,
-        std::string *);
-    friend bool materialize_selected_csr_structure(
-        const selected_csr_structure_view &,
-        const sample_plan &,
-        owned_sampled_csr_structure *,
-        std::string *);
+    friend struct staged_csr_structure;
 };
 
 // Sample positions are canonicalized to ascending global row index even if a
 // caller supplies the selected rows in another order. Each complete source row
-// is copied structurally; expression values are neither retained nor exposed.
+// is copied structurally from host storage. The compiled input index types are
+// uint32_t, int32_t, and int64_t.
+template<class Index>
 bool materialize_sampled_csr_structure(
-    const ::cellerator::tensor::base::compressed *source,
+    const tensor::base::CompressedStructureView<Index> &source,
     const sample_plan &plan,
     owned_sampled_csr_structure *out,
     std::string *error = nullptr);
+
+extern template decltype(materialize_sampled_csr_structure<uint32_t>) materialize_sampled_csr_structure<uint32_t>;
+extern template decltype(materialize_sampled_csr_structure<int32_t>) materialize_sampled_csr_structure<int32_t>;
+extern template decltype(materialize_sampled_csr_structure<int64_t>) materialize_sampled_csr_structure<int64_t>;
 
 // Converts already-loaded selected CSR rows into Cellerator's owned structural
 // representation. This performs no storage access and retains no values.

@@ -31,9 +31,9 @@ struct ProgramResult {
 // program order token describes those same occurrences; the mapping from token
 // identities to bank rows remains caller-owned. structural_generation, when
 // supplied, is checked against the prepared relation's declaration.
-// Offsets and views are borrowed for the duration of operator().
+// The relation pair, offsets, and views are borrowed for operator().
 struct ProgramCall {
-    const PreparedRelation* relation = nullptr;
+    const PreparedRelationPair* relation = nullptr;
     std::optional<structure::OccurrenceOrderToken> feature_order;
     std::optional<structure::OccurrenceOrderToken> program_order;
     std::span<const std::int64_t> feature_offsets{};

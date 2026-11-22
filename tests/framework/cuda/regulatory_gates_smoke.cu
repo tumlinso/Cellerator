@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/cuda/regulatory_gates.hh>
+#include <Cellerator/ops/condition/regulatory_gates_cuda.hh>
 #include <cuda_runtime.h>
 #include <cassert>
 #include <iomanip>
@@ -10,7 +10,7 @@
 #include <random>
 #include <string>
 
-namespace m = cellerator::modeling::cuda;
+namespace m = cellerator::ops::condition::cuda;
 void check(cudaError_t error) {
     if (error != cudaSuccess) throw std::runtime_error(cudaGetErrorString(error));
 }

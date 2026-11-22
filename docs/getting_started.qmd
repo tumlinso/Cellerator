@@ -11,13 +11,11 @@ uses first-order Torch autograd for input and coefficient gradients. This is a
 bounded example, not a claim that all operations work on CPU or that the
 package already provides a full model-building API.
 
-Install the native HDF5-only AnnData++ dependency first, as described in
-the [developer reference](developer_reference.qmd#mandatory-native-toolchain-and-h5ad-dependency).
-Then build the host package from the repository root:
+Build the host package from the repository root:
 
 ```sh
 CMAKE_GENERATOR=Ninja \
-CMAKE_ARGS='-DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install' \
+CMAKE_ARGS='-DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18' \
 python -m pip install .
 ```
 
@@ -53,21 +51,20 @@ order derivatives, or a model-level scientific interpretation.
 
 The [host-only biological relations example](https://github.com/tumlinso/Cellerator/blob/main/examples/biology/README.md) constructs six biological scenarios using Cellerator's public relation and execution-lifetime contracts. It is a small source-level example, separate from the installed Python Product2 route above.
 
-## Build the host native extension directly
-
 For the standard native build with single-cell preprocessing, RNA velocity, and
 AnnData++ file access, follow the [CCell build guide](../components/CCell/README.md).
 
+## Build the host native extension directly
+
 ```sh
-cmake -S . -B build-cpu -G Ninja \
-  -DCELLERATOR_BUILD_CCELL=OFF \
+cmake -S . -B build/cpu -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \
   -DCELLERATOR_ENABLE_CUDA=OFF \
+  -DCELLERATOR_BUILD_CCELL=OFF \
   -DCELLERATOR_ENABLE_PYTHON=ON \
   -DCELLERATOR_ENABLE_TORCH=OFF
-cmake --build build-cpu --target cellerator_python_extensions
+cmake --build build/cpu --target cellerator_python_extensions
 ```
 
 The complete build and optional backend boundaries are in the

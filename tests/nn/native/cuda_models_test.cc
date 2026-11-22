@@ -172,12 +172,12 @@ std::pair<Tensor, Tensor> build_supervised_frozen_composition(
         {"module-a", "module-b", "empty",
          "module-a", "module-b", "empty"},
         {0, 3, 6}, {}, 23);
-    const auto relation = nn::PreparedRelation::from_csr(
+    const nn::PreparedRelationPair relation(nn::PreparedRelation::from_csr(
         nn::CsrSupport{
             {0, 3, 5, 5, 7, 9, 9},
             {0, 1, 1, 1, 2, 3, 4, 4, 5},
         },
-        feature_order.order_token(), program_order.order_token(), 23, device);
+        feature_order.order_token(), program_order.order_token(), 23, device));
 
     nn::ObservationCoordinates<std::string> observations{
         {"cell-a", "cell-b"}, {0, 1, 2}};
@@ -266,9 +266,9 @@ void overlapping_programs_produce_finite_vjps(const at::Device& device) {
         {"g0", "g1", "g2", "g3"}, {}, {}, 31);
     const auto program_order = cellerator::structure::OccurrenceCoordinates<std::string>::from_ids(
         {"module-a", "module-b", "empty"}, {}, {}, 31);
-    const auto relation = nn::PreparedRelation::from_csr(
+    const nn::PreparedRelationPair relation(nn::PreparedRelation::from_csr(
         nn::CsrSupport{{0, 3, 5, 5}, {0, 1, 1, 1, 2}},
-        feature_order.order_token(), program_order.order_token(), 31, device);
+        feature_order.order_token(), program_order.order_token(), 31, device));
 
     nn::ProgramCall call;
     call.relation = &relation;
@@ -294,6 +294,12 @@ void overlapping_programs_produce_finite_vjps(const at::Device& device) {
         check(parameter.grad().defined() && finite(parameter.grad()),
               "overlapping program attention parameters must receive finite VJPs");
     }
+
+    auto next_features = (features.detach() * 1.25).requires_grad_(true);
+    const auto next_output = programs(next_features, call);
+    next_output.feature_updates.to(at::kFloat).square().sum().backward();
+    check(next_features.grad().defined() && finite(next_features.grad()),
+          "reused overlapping relations must produce finite input VJPs");
 }
 
 void run_device_tests() {

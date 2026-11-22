@@ -512,45 +512,51 @@ bool build_density_sample_plan(std::uint64_t total_rows,
     return true;
 }
 
-bool build_csr_density_sample_plan(const ::cellerator::tensor::base::compressed *source,
+template<class Index>
+bool build_csr_density_sample_plan(const tensor::base::CompressedStructureView<Index> &source,
                                    const density_sample_spec &spec,
                                    const cell_identity_view &identities,
                                    sample_plan *out,
                                    std::string *error) {
     std::vector<std::uint64_t> row_nnz;
-    if (source == nullptr || out == nullptr) {
-        set_error(error, "CSR density sampling requires source and output");
+    if (out == nullptr) {
+        set_error(error, "CSR density sampling requires output");
         return false;
     }
-    if (source->axis != ::cellerator::tensor::base::compressed_by_row) {
+    if (source.axis != tensor::base::CompressedAxis::row) {
         set_error(error, "density sampling requires row-compressed CSR input");
         return false;
     }
-    if (source->majorPtr == nullptr) {
+    if (source.major_ptr == nullptr || source.rows >= SIZE_MAX / sizeof(uint64_t)
+        || source.nnz > INT64_MAX) {
         set_error(error, "CSR density sampling requires row pointers");
         return false;
     }
-    if (source->majorPtr[0] != 0u || source->majorPtr[source->rows] != source->nnz) {
+    if (source.major_ptr[0] != 0 || uint64_t(source.major_ptr[source.rows]) != source.nnz) {
         set_error(error, "CSR row pointers do not span the declared nnz");
         return false;
     }
-    row_nnz.reserve(source->rows);
-    for (std::uint64_t row = 0u; row < source->rows; ++row) {
-        const std::uint64_t begin = source->majorPtr[row], end = source->majorPtr[row + 1u];
-        if (end < begin) {
+    row_nnz.reserve(source.rows);
+    for (uint64_t row = 0; row < source.rows; ++row) {
+        const uint64_t begin = source.major_ptr[row], end = source.major_ptr[row + 1];
+        if (end < begin || end > source.nnz) {
             set_error(error, "CSR row pointers are not monotonic");
             return false;
         }
         row_nnz.push_back(end - begin);
     }
     return build_density_sample_plan(
-        source->rows,
+        source.rows,
         {row_nnz.data(), (std::uint64_t) row_nnz.size()},
         spec,
         identities,
         out,
         error);
 }
+
+template decltype(build_csr_density_sample_plan<uint32_t>) build_csr_density_sample_plan<uint32_t>;
+template decltype(build_csr_density_sample_plan<int32_t>) build_csr_density_sample_plan<int32_t>;
+template decltype(build_csr_density_sample_plan<int64_t>) build_csr_density_sample_plan<int64_t>;
 
 bool reproduce_density_sample_plan(const sample_provenance &provenance,
                                    const row_nnz_view &row_nnz,

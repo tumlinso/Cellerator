@@ -60,7 +60,7 @@ target_link_libraries(celleratorBuiltinCatalogTest PRIVATE
     Cellerator::builtin_candidate_catalog
 )
 target_link_libraries(celleratorCusparseCsrCandidateTest PRIVATE
-    Cellerator::cusparse_csr_candidate
+    Cellerator::csr_multiply CUDA::cudart CUDA::cusparse
 )
 target_link_libraries(celleratorPreparationFactoryTest PRIVATE
     Cellerator::preparation_factory

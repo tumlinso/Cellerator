@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Cellerator/tensor/base/compressed.cuh>
 #include <Cellerator/memory/image.hh>
 #include <Cellerator/memory/workspace.hh>
+#include <Cellerator/tensor/base/compressed.hh>
 
 #include <cstddef>
 #include <cstdint>
@@ -176,11 +176,18 @@ bool build_density_sample_plan(std::uint64_t total_rows,
                                sample_plan *out,
                                std::string *error = nullptr);
 
-bool build_csr_density_sample_plan(const ::cellerator::tensor::base::compressed *source,
+// Reads host CSR row offsets. Column indices are optional for density sampling.
+// The compiled index types are uint32_t, int32_t, and int64_t.
+template<class Index>
+bool build_csr_density_sample_plan(const tensor::base::CompressedStructureView<Index> &source,
                                    const density_sample_spec &spec,
                                    const cell_identity_view &identities,
                                    sample_plan *out,
                                    std::string *error = nullptr);
+
+extern template decltype(build_csr_density_sample_plan<uint32_t>) build_csr_density_sample_plan<uint32_t>;
+extern template decltype(build_csr_density_sample_plan<int32_t>) build_csr_density_sample_plan<int32_t>;
+extern template decltype(build_csr_density_sample_plan<int64_t>) build_csr_density_sample_plan<int64_t>;
 
 bool reproduce_density_sample_plan(const sample_provenance &provenance,
                                    const row_nnz_view &row_nnz,

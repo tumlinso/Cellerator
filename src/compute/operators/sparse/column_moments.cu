@@ -1,11 +1,13 @@
 #include <Cellerator/compute/operators/sparse/column_moments.cuh>
 
-#include <cuda_fp16.h>
+#include "compressed_fp16.cuh"
+#include "sliced_ell_row.cuh"
 
 namespace cellerator::compute::sparse {
 namespace {
 
-__device__ inline void add_value(unsigned int column, float value, column_moments_view moments) {
+template<class Column>
+__device__ inline void add_value(Column column, float value, column_moments_view moments) {
     if (column >= moments.columns || value == 0.0f) return;
     atomicAdd(moments.sum + column, value);
     atomicAdd(moments.sum_of_squares + column, value * value);
@@ -52,30 +54,27 @@ __global__ void sliced_ell_kernel(::cellerator::tensor::base::device::SlicedEllV
     const unsigned int warp_stride = gridDim.x * (blockDim.x >> 5u);
     for (unsigned int row = warp; row < matrix.rows; row += warp_stride) {
         if (row_mask != nullptr && row_mask[row] == 0u) continue;
-        unsigned int slice = matrix.slice_rows != 0u ? row / matrix.slice_rows : 0u;
-        while (slice + 1u < matrix.slice_count && row >= matrix.slice_row_offsets[slice + 1u]) ++slice;
-        if (slice >= matrix.slice_count) continue;
-        const unsigned int width = matrix.slice_widths[slice];
-        const unsigned long base = static_cast<unsigned long>(matrix.slice_slot_offsets[slice])
-            + static_cast<unsigned long>(row - matrix.slice_row_offsets[slice]) * width;
-        for (unsigned int slot = lane; slot < width; slot += 32u) {
-            const unsigned long index = base + slot;
+        const auto slots = detail::locate_sliced_ell_row(matrix, row);
+        for (unsigned int slot = lane; slot < slots.width; slot += 32u) {
+            const unsigned long index = slots.slot_offset + slot;
             add_value(matrix.col_idx[index], __half2float(matrix.val[index]), moments);
         }
     }
 }
 
-__global__ void compressed_kernel(::cellerator::tensor::base::device::CompressedView matrix,
+template<class Index, class Offset>
+__global__ void compressed_kernel(tensor::base::CompressedView<Index, const void> matrix,
                                   const std::uint8_t *row_mask,
                                   column_moments_view moments) {
+    const auto &s = matrix.structure;
     const unsigned int lane = threadIdx.x & 31u;
     const unsigned int warp = blockIdx.x * (blockDim.x >> 5u) + (threadIdx.x >> 5u);
     const unsigned int warp_stride = gridDim.x * (blockDim.x >> 5u);
-    for (unsigned int row = warp; row < matrix.rows; row += warp_stride) {
+    for (unsigned int row = warp; row < uint32_t(s.rows); row += warp_stride) {
         if (row_mask != nullptr && row_mask[row] == 0u) continue;
-        const unsigned int end = matrix.major_ptr[row + 1u];
-        for (unsigned int index = matrix.major_ptr[row] + lane; index < end; index += 32u) {
-            add_value(matrix.minor_idx[index], __half2float(matrix.val[index]), moments);
+        const Offset end = Offset(s.major_ptr[row + 1u]);
+        for (Offset i = Offset(s.major_ptr[row]) + lane; i < end; i += 32u) {
+            add_value(Offset(s.minor_idx[i]), __half2float(detail::load_fp16(matrix.values, i)), moments);
         }
     }
 }
@@ -98,6 +97,25 @@ int count_rows(unsigned int rows, const std::uint8_t *mask, column_moments_view 
 bool valid(const column_moments_view *moments) {
     return moments != nullptr && moments->sum != nullptr && moments->sum_of_squares != nullptr
         && moments->nonzero_count != nullptr;
+}
+
+template<class Index>
+int accumulate_compressed(const tensor::base::CompressedView<Index, const void> *matrix,
+                          const uint8_t *row_mask, column_moments_view *moments, cudaStream_t stream) {
+    if (matrix == nullptr || !valid(moments) || moments->columns != matrix->structure.cols
+        || !detail::valid_csr_fp16(*matrix)) return 0;
+    const uint32_t rows = uint32_t(matrix->structure.rows);
+    if (matrix->structure.nnz == 0) return count_rows(rows, row_mask, moments, stream);
+    const uint32_t blocks = row_blocks(rows);
+    if constexpr (sizeof(Index) == sizeof(uint32_t)) {
+        // The warp's last offset increment must fit in the loop counter.
+        if (matrix->structure.nnz <= UINT32_MAX - 31u) {
+            compressed_kernel<Index, uint32_t><<<blocks, 256, 0, stream>>>(*matrix, row_mask, *moments);
+            return cudaGetLastError() == cudaSuccess && count_rows(rows, row_mask, moments, stream);
+        }
+    }
+    compressed_kernel<Index, uint64_t><<<blocks, 256, 0, stream>>>(*matrix, row_mask, *moments);
+    return cudaGetLastError() == cudaSuccess && count_rows(rows, row_mask, moments, stream);
 }
 
 } // namespace
@@ -133,14 +151,25 @@ int accumulate_column_moments(const ::cellerator::tensor::base::device::SlicedEl
     return cudaGetLastError() == cudaSuccess && count_rows(matrix->rows, row_mask, moments, stream);
 }
 
-int accumulate_column_moments(const ::cellerator::tensor::base::device::CompressedView *matrix,
+int accumulate_column_moments(const tensor::base::CompressedView<uint32_t, const void> *matrix,
                               const std::uint8_t *row_mask,
                               column_moments_view *moments,
                               cudaStream_t stream) {
-    if (matrix == nullptr || !valid(moments) || moments->columns != matrix->cols
-        || matrix->axis != ::cellerator::tensor::base::device::compressed_by_row) return 0;
-    compressed_kernel<<<row_blocks(matrix->rows), 256, 0, stream>>>(*matrix, row_mask, *moments);
-    return cudaGetLastError() == cudaSuccess && count_rows(matrix->rows, row_mask, moments, stream);
+    return accumulate_compressed(matrix, row_mask, moments, stream);
+}
+
+int accumulate_column_moments(const tensor::base::CompressedView<int32_t, const void> *matrix,
+                              const std::uint8_t *row_mask,
+                              column_moments_view *moments,
+                              cudaStream_t stream) {
+    return accumulate_compressed(matrix, row_mask, moments, stream);
+}
+
+int accumulate_column_moments(const tensor::base::CompressedView<int64_t, const void> *matrix,
+                              const std::uint8_t *row_mask,
+                              column_moments_view *moments,
+                              cudaStream_t stream) {
+    return accumulate_compressed(matrix, row_mask, moments, stream);
 }
 
 } // namespace cellerator::compute::sparse

@@ -138,7 +138,7 @@ inline int load_bucketed_sliced_ell_partition_payload(dataset_h5_state *state,
 
 inline int load_dense_partition_payload(dataset_h5_state *state,
                                         unsigned long partition_id,
-                                        ::cellerator::tensor::base::dense *part) {
+                                        ::cellshard::dense *part) {
     std::vector<unsigned char> blob;
     char dataset_name[64];
     std::FILE *fp = 0;
@@ -154,7 +154,7 @@ inline int load_dense_partition_payload(dataset_h5_state *state,
     init(part);
     ok = ::cellshard::load(fp, part);
     std::fclose(fp);
-    if (!ok || !::cellerator::tensor::base::dense_is_packed_row_major(part)) {
+    if (!ok || !::cellshard::dense_is_packed_row_major(part)) {
         clear(part);
         return 0;
     }
@@ -719,7 +719,7 @@ inline int build_shard_column_maps(::cellerator::tensor::base::blocked_ell *cons
 }
 
 inline int blocked_ell_to_canonical_coo(const ::cellerator::tensor::base::blocked_ell *part,
-                                        ::cellerator::tensor::base::triplet *out) {
+                                        ::cellshard::triplet *out) {
     const std::uint32_t block_size = part != 0 ? part->block_size : 0u;
     const std::uint32_t width_blocks = part != 0 ? ell_width_blocks(part) : 0u;
     std::size_t actual_nnz = 0u;
@@ -766,10 +766,10 @@ inline int blocked_ell_to_canonical_coo(const ::cellerator::tensor::base::blocke
     return 1;
 }
 
-inline int extract_sampled_rows_from_coo(const ::cellerator::tensor::base::triplet *src,
+inline int extract_sampled_rows_from_coo(const ::cellshard::triplet *src,
                                          std::uint32_t global_row_base,
                                          std::uint32_t sample_stride,
-                                         ::cellerator::tensor::base::triplet *out) {
+                                         ::cellshard::triplet *out) {
     std::vector<std::uint32_t> row_map;
     std::size_t sampled_nnz = 0u;
     std::uint32_t sampled_rows = 0u;
@@ -804,12 +804,12 @@ inline int build_sampled_shard_coo(::cellerator::tensor::base::blocked_ell *cons
                                    std::uint32_t partition_count,
                                    std::uint32_t cols,
                                    std::uint32_t max_sample_rows,
-                                   ::cellerator::tensor::base::triplet *out) {
+                                   ::cellshard::triplet *out) {
     std::uint64_t total_rows = 0u;
     std::uint32_t sample_stride = 1u;
     std::uint32_t global_row_base = 0u;
-    ::cellerator::tensor::base::triplet canonical;
-    ::cellerator::tensor::base::triplet sampled_part;
+    ::cellshard::triplet canonical;
+    ::cellshard::triplet sampled_part;
     int ok = 0;
     if (out == 0) return 0;
     clear(out);
@@ -852,10 +852,10 @@ done:
     return ok;
 }
 
-inline int apply_coo_permutation(const ::cellerator::tensor::base::triplet *src,
+inline int apply_coo_permutation(const ::cellshard::triplet *src,
                                  const std::uint32_t *canonical_to_exec_rows,
                                  const std::uint32_t *canonical_to_exec_cols,
-                                 ::cellerator::tensor::base::triplet *out) {
+                                 ::cellshard::triplet *out) {
     if (src == 0 || out == 0) return 0;
     clear(out);
     init(out, src->rows, src->cols, src->nnz);
@@ -940,7 +940,7 @@ inline int build_single_segment_execution_partition(bucketed_blocked_ell_partiti
 
 inline int bucketed_partition_to_canonical_coo(const bucketed_blocked_ell_partition *part,
                                                const std::uint32_t *exec_to_canonical_cols,
-                                               ::cellerator::tensor::base::triplet *out) {
+                                               ::cellshard::triplet *out) {
     std::size_t actual_nnz = 0u;
     std::size_t emitted = 0u;
     if (part == 0 || out == 0) return 0;
@@ -1647,7 +1647,7 @@ inline int build_optimized_partition_from_canonical_part(bucketed_blocked_ell_pa
                                                          const std::uint32_t *exec_to_canonical_cols,
                                                          std::uint32_t bucket_count,
                                                          std::uint64_t *bucketed_bytes_out) {
-    ::cellerator::tensor::base::triplet canonical_coo;
+    ::cellshard::triplet canonical_coo;
     ::cellerator::tensor::base::blocked_ell permuted_part;
     int ok = 0;
     init(&canonical_coo);
@@ -1678,7 +1678,7 @@ inline int reconstruct_canonical_blocked_ell_part(const bucketed_blocked_ell_par
                                                   const std::uint32_t *exec_to_canonical_cols,
                                                   std::uint32_t block_size,
                                                   ::cellerator::tensor::base::blocked_ell *out) {
-    ::cellerator::tensor::base::triplet canonical_coo;
+    ::cellshard::triplet canonical_coo;
     int ok = 0;
     init(&canonical_coo);
     if (optimized_part == 0 || out == 0 || block_size == 0u) return 0;
@@ -1746,7 +1746,7 @@ inline int build_heuristic_bucketed_optimized_shard_from_parts(::cellerator::ten
     std::uint64_t fill_weight = 0u;
     double fill_weighted_sum = 0.0;
     std::uint32_t shard_segment_count = 0u;
-    ::cellerator::tensor::base::triplet canonical_coo;
+    ::cellshard::triplet canonical_coo;
     ::cellerator::tensor::base::blocked_ell permuted;
 
     if (out == 0) return 0;
@@ -1872,9 +1872,9 @@ inline int build_graph_bucketed_optimized_shard_from_parts(::cellerator::tensor:
     std::uint64_t shard_blocked_bytes = 0u;
     std::uint64_t fill_weight = 0u;
     double fill_weighted_sum = 0.0;
-    ::cellerator::tensor::base::triplet sampled_shard;
-    ::cellerator::tensor::base::triplet canonical_coo;
-    ::cellerator::tensor::base::triplet permuted_coo;
+    ::cellshard::triplet sampled_shard;
+    ::cellshard::triplet canonical_coo;
+    ::cellshard::triplet permuted_coo;
     ::cellerator::tensor::base::blocked_ell optimized_part;
     int device = 0;
 

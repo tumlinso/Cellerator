@@ -12,8 +12,9 @@
 
 namespace cellerator::tensor::block_masked {
 
-// One immutable metadata replica. Upload is preparation-time work and completes
-// on the supplied stream before construction returns. Values have another owner.
+// Retains the immutable host image and uploads its metadata prefix. The upload
+// completes on the supplied stream before construction returns. Values have
+// another owner.
 class DeviceStructure final {
 public:
     DeviceStructure(std::shared_ptr<const Structure> structure,

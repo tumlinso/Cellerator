@@ -66,7 +66,7 @@ def main() -> int:
     # actual compiler-reported dependencies enter the final source closure.
     possible = list((source / 'include').rglob('*'))
     possible += list((source / 'src/layout').glob('factorized_interaction*'))
-    possible += list((source / 'src/modeling/cuda').glob('*factorized_interaction*'))
+    possible += list((source / 'src/ops/mechanism').glob('*factorized_interaction*'))
     possible += [source / 'src/memory/cuda/resources.cu',
                  source / 'bench/factorized_interactions/wire_input.hh']
     possible += [source / PROTOTYPE / name for name in

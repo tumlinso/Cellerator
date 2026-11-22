@@ -88,6 +88,10 @@ install(EXPORT CelleratorTokenizationTargets NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator
     COMPONENT Tokenization)
 
+install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/common/compiler_annotations.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common"
+    COMPONENT Tokenization)
+
 if(EXISTS "${PROJECT_SOURCE_DIR}/include/Cellerator/compute/operators/aten_ops.hh")
     install(FILES include/Cellerator/compute/operators/aten_ops.hh
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/compute/operators

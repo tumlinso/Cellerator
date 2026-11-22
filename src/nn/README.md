@@ -7,9 +7,6 @@ types and functions. Header, module, and CUDA translation units therefore use
 the same declarations, layouts, and ABI. CUDA sources continue to include the
 ordinary headers; NVCC does not parse module syntax.
 
-`cellerator.core.ccm` is built by the normal package build.
-The unwired `cellerator.ccm` re-exports the core and NN interfaces.
-
 With `CELLERATOR_ENABLE_NN=ON` and `CELLERATOR_ENABLE_MODULES=ON`,
 [`cellerator.nn.ccm`](cellerator.nn.ccm) is built and installed with the NN
 component. Both header and import consumers link `Cellerator::nn`. Installed

@@ -27,16 +27,129 @@ coordinate and physical slot are different concepts. Domain-local zero is a
 valid entity/occurrence ID; an all-zero persistent domain identity is invalid.
 Matching counts or pointers do not establish matching logical order.
 
-## Borrowed matrix views
+## Borrowed dense matrices
 
-Dense views from `<Cellerator/memory/view.hh>` describe both strides in elements.
+`<Cellerator/memory/view.hh>` defines typed, non-owning matrix views with row
+and column strides in elements. The column stride defaults to one. Consumers
+can require contiguous rows or use both strides for general strided access.
 `matrix_view<T, ptrdiff_t>` and `const_matrix_view<T, ptrdiff_t>` represent
 reversed axes with a signed stride and a pointer to the first logical element.
 
-`CompressedView<Index, Value, Offset>` from
-`<Cellerator/tensor/base/compressed.hh>` borrows CSR or CSC buffers and allows
-offsets and minor indices to use different widths. The offset type defaults to
-`Index`. CCell methods borrow these views and use caller-owned output and scratch.
+Set `CELLERATOR_ENABLE_TORCH_DENSE=ON` in the regular build and link
+`Cellerator::torch_dense`. Installed callers request
+`find_package(Cellerator CONFIG REQUIRED COMPONENTS torch_dense)`.
+`<Cellerator/interop/torch/dense.hh>` borrows rank-two CPU or CUDA ATen
+tensors with their actual strides and starting pointer. `wrap_dense` creates
+an ATen tensor over caller-owned strided storage. Keep the storage alive and
+order streams through the last use of either view. Mutable borrowing and
+wrapping require nonoverlapping elements. Raw writes require exclusive access
+outside autograd.
+
+## Borrowed CSR and CSC
+
+`<Cellerator/tensor/base/compressed.hh>` defines `CompressedStructureView` for
+offsets and minor indices, and `CompressedView` for structure with values.
+`CompressedView<Index, Value, Offset>` allows offsets and minor indices to use
+different widths. The offset type defaults to `Index`.
+Callers can back either view with an existing native buffer or an external
+allocation. The view's axis specifies whether offsets select rows (CSR) or
+columns (CSC). Keep the backing storage live through the last use, including
+asynchronous CUDA work.
+
+Set `CELLERATOR_ENABLE_TORCH_SPARSE=ON` in the regular Cellerator build to make
+the optional C++ target `Cellerator::torch_sparse` available. Installed callers
+request `find_package(Cellerator CONFIG REQUIRED COMPONENTS torch_sparse)`.
+The API at `<Cellerator/interop/torch/compressed.hh>` borrows compatible
+rank-two scalar `at::Tensor` CSR and CSC storage with matching signed 32- or
+64-bit index arrays. `wrap_compressed` creates ATen matrix metadata over
+existing component tensors and retains their storage. Both directions share
+the arrays in their existing placement. For external buffers, construct the
+component tensors with `at::from_blob` and keep their backing owner alive.
+Prepare canonical, contiguous arrays before binding and order producer and
+consumer streams explicitly. Mutable FP16 borrowing is for exclusive value
+writes outside autograd.
+
+## Borrowed COO
+
+`<Cellerator/tensor/base/coo.hh>` defines `CooView` over contiguous row, column,
+and value arrays. Each stored entry keeps its position, including repeated
+coordinates. The CUDA COO conversion routines consume these views and use
+caller-supplied output and workspace buffers.
+
+For 64-bit COO already sorted along the chosen compression axis,
+`build_compressed_view_from_sorted_coo` writes only the major offsets. The
+result shares the other coordinate plane and the values in their original
+order. Repeated entries remain separate and need explicit reduction before
+forming a canonical CSR or CSC matrix.
+
+`Cellerator::torch_sparse` also exports `<Cellerator/interop/torch/coo.hh>`.
+`borrow_coo_entries` shares the two planes of a contiguous `int64[2, nnz]`
+coordinate tensor and the matching values. It can read uncoalesced entries in
+storage order. This is a raw storage view with caller-managed lifetime and
+stream ordering. Supply a derivative at the operation boundary if one is needed.
+
+Use `pack_coo_indices` to copy split coordinates into an explicitly supplied
+packed tensor. Packing preserves entry order and duplicates. `wrap_coo_entries`
+shares compatible packed tensors. Select `CooEntryOrder::preserve` for general
+entries or `CooEntryOrder::assume_sorted_unique` when the coordinates are already
+lexicographically sorted and unique. Call ATen's `coalesce()` explicitly when
+you want sorted coordinates with duplicate values summed.
+
+## Feature-major tiled sparse tensors
+
+This format supports repeated width-16 training of a sparse $X$ and dense
+$W$ on CUDA. $Y=XW$ and $dW=X^\mathsf{T}G$ share one packed FP16 array
+for $X$. The sampled gradient $dX_{ij}=\langle G_i,W_j\rangle$ is computed
+for each stored coordinate, including explicit zeros. Dense operands and
+results are contiguous row-major FP32 in logical order. Choose the format
+explicitly and use a conventional sparse route for other widths. Forward
+can use FP32 atomics to combine record ranges, which can vary the summation
+order across runs.
+
+1. Link `Cellerator::layout` and include
+   `<Cellerator/layout/projection/feature_major_tiles.hh>`. Call
+   `feature_major_tiles_workspace_count`, provision that many `uint32_t`
+   entries, and call `query_feature_major_tiles` for exact index and chunk
+   counts. Use `prepare_feature_major_tiles` to fill the supplied arrays.
+   The CSR structure accepts unordered unique columns. Use contiguous row
+   groups to start. The geometry-owned local feature hash groups rows within
+   128-row windows without changing their logical identities.
+2. Copy the index and chunk arrays to the device and call
+   `bind_feature_major_tiles` with their device addresses. Link
+   `Cellerator::native_data_cuda` and include
+   `<Cellerator/ops/matrix/feature_major_tiles.cuh>`. Allocate one FP16
+   execution value per stored entry. For trainable sparse values,
+   `feature_major_tiles_initialize_master` imports FP32 CSR values into a
+   packed FP32 master array and rounds them into the execution array.
+3. Enqueue `feature_major_tiles_spmm`, compute the output cotangent $G$,
+   then enqueue `feature_major_tiles_spmm_transpose` and
+   `feature_major_tiles_sampled_gradient` with the same $X$ and $W$.
+   Provision the transpose scratch using
+   `feature_major_tiles_transpose_partial_count`. Sparse gradients and the
+   master share packed order. Apply your optimizer to the master and call
+   `feature_major_tiles_cast_master`, or use
+   `feature_major_tiles_sparse_sgd` for a plain SGD update and cast in one
+   pass. Weight-only updates reuse the current sparse values.
+4. Order updates after all readers and retain all arrays and events through
+   their last use. For work across streams, use
+   `publish_value_generation` and `wait_for_value_generation` from
+   `<Cellerator/runtime/value_readiness.cuh>`. Check their status before using
+   a generation. An in-place update with a failed publication leaves the slot
+   unusable until the caller restores it. Overlapping value generations need
+   separate value arrays.
+
+Prepare the layout once for the dataset's declared model structure. Reuse it
+across training examples and gather the current values into the prepared
+slots. The structure describes admissible dependencies shared by the examples.
+Observations, numerical state, and context-dependent activity are supplied
+per example.
+
+For inputs with the same support and CSR order, `feature_major_tiles_refresh`
+implements the FP16 value gather through the prepared map. A different source
+order requires a matching gather map. Rebuild the layout when the declared
+structure changes. To replace trainable values, initialize both the master
+and execution arrays together. The caller decides which coordinates belong
+to support, and each stored coordinate has a sampled gradient slot.
 
 ## Patterns, conditions and actual operations
 
@@ -102,22 +215,33 @@ struct GeometryModel {
 ```
 
 The result contains values and an owning tape for
-`mech::gated_product_backward`. A `Cell` may bind this callable to an instance;
-direct and batched callers use the same types. The host reference snapshots
-needed inputs. Device execution uses retained reads and completion events
-instead. The checked [host example](../tests/native_data/reference/native_data_reference_test.cc)
+`mech::gated_product_backward`. Direct and batched callers use the same types.
+The host reference snapshots needed inputs. Device execution uses retained
+reads and completion events. The checked
+[host example](../tests/native_data/reference/native_data_reference_test.cc)
 and [two-device example](../tests/execution_dependency/distributed_cuda_test.cu)
 exercise the complete preparation and gradient paths.
 
+`execution::PreparedIncidence` supplies selected physical addresses to
+`ops::incidence`, which preserves participant role order, repeated occurrences
+and explicit output effects. `joint_reduce` reads directly from entity storage.
+`joint_reduce_scatter` uses an edge-sized intermediate. The
+[native relation example](../tests/framework/native/cell_relation_example.cc)
+calls transition and observation operations over caller-owned state. It
+controls successor storage, clock publication and snapshot retention.
+
 ## Concrete storage and physical realization
 
-`tensor::block_masked::Structure` owns immutable host row/feature maps,
-tile/block offsets and masks. A `LayoutView` borrows format metadata; a typed
+`tensor::block_masked::Structure` prepares one immutable host image of the
+tile and block offsets, masks, and canonical row and feature maps. Pass flat
+row support and supply the scratch reported by `structure_scratch_bytes`
+during construction. A `LayoutView` borrows the metadata, and a typed
 `View<T>` adds numerical storage. Allocated masks describe valid stored slots,
 including numerical zeros. A missing required coordinate is an error, not a
 value inferred to be zero.
 
-`DeviceStructure` owns a device-local immutable metadata replica.
+`DeviceStructure` retains the same host image and uploads its contiguous
+metadata once per device replica.
 `NativeTensor<T>` owns a bulk value allocation and exposes explicit reads and
 edits. A retained read pins actual published contents through its consumers;
 an unresolved read prevents in-place edits. Allocation retention or a
@@ -141,8 +265,9 @@ biological labels and annotations remain in `biology`.
 gather/reduce/scatter live in `ops::incidence`. A prepared read index can reuse
 one semantic posting owner while producing an explicit compact device ordinal
 projection. That projection has preparation and memory cost of its own.
-The [CellPack bridge](development/cellpack_interop.md) retains existing payload
-encodings while separating physical summaries from live execution bindings.
+[Packed geometry images](development/packed_geometry_images.md) expose their
+validated arrays through the native tensor views. Physical summaries remain
+separate from live execution bindings.
 
 ## Connected execution
 
@@ -194,18 +319,23 @@ find_package(Cellerator REQUIRED COMPONENTS native_data)
 target_link_libraries(my_model PRIVATE Cellerator::native_data)
 ```
 
+The same component exposes `Cellerator::reaction`, `Cellerator::exchange`,
+`Cellerator::accessibility`, `Cellerator::inheritance` and
+`Cellerator::event_memory` for consumers that use those operations directly.
+`execution::ValueField<T>` is an optional owner for values addressed by entity
+identity. Successful replacements and nonempty writes advance its value
+generation. Models can also use caller-owned arrays directly.
+
 `Cellerator::tensor` is the smaller host format surface. With
 `CELLERATOR_ENABLE_MODULES=ON`, the same target supplies
 `import cellerator.tensor;` for compressed and COO views and block-masked
-views and accessors. See the [module build instructions](developer_reference.qmd#mandatory-native-toolchain-and-installed-dependencies).
+views and accessors. See the [module build instructions](developer_reference.qmd#mandatory-native-toolchain).
 
 The optional `Cellerator::native_data_cuda` target composes CUDA owners and execution; these
 dependencies are not required by host semantic headers. All package targets
 require at least C++20, including CUDA translation units. Kernel-facing format
 views remain ordinary header interfaces, but they do not define a separately
-supported C++17 build lane. The package's C++20 `Cellerator::core_module`
-target is built and exported normally; CUDA translation units continue to use
-public headers rather than importing named modules.
+supported C++17 build lane. CUDA translation units use the public headers.
 
 Build the focused host checks without the unrelated compiler test suite:
 
@@ -213,7 +343,6 @@ Build the focused host checks without the unrelated compiler test suite:
 cmake -S . -B /tmp/cellerator-native-data-host -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \
   -DCELLERATOR_ENABLE_CUDA=OFF -DCELLERATOR_BUILD_TESTS=OFF \
   -DCELLERATOR_BUILD_NATIVE_DATA_TESTS=ON
 cmake --build /tmp/cellerator-native-data-host --target cellerator_native_data

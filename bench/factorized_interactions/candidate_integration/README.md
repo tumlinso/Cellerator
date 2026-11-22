@@ -47,9 +47,8 @@ python3 "$SOURCE/bench/factorized_interactions/validate_runner.py" \
   --artifact-dir "$ARTIFACTS"
 ```
 
-The builder targets CUDA 12.9 and SM70 by default, uses GCC 12 as the host
-compiler, and does not enable fast math. Configuration and compilation do not
-launch a kernel. Runtime validation and timing remain subject to the existing
-independent oracle and Scheduler admission path. The source and binary hashes
-in the manifest identify the candidate build; they do not imply that the
-candidate has passed runtime qualification or performance selection.
+The builder uses Ninja and Clang 18 for the root build, and GCC 12 as NVCC's
+host compiler. It targets CUDA 12.9 and SM70 by default with fast math disabled.
+Runtime validation and timing use the existing independent oracle and
+Scheduler admission path. The source and binary hashes identify the compiled
+candidate.

@@ -1,6 +1,6 @@
+#include <Cellerator/compute/operation/product2/product2.hh>
 #include <Cellerator/ops/matrix/patch.hh>
 #include <Cellerator/ops/process/ports.hh>
-#include <Cellerator/math/process/product.hh>
 #include <array>
 #include <cmath>
 #include <iostream>

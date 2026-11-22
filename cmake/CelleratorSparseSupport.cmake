@@ -45,11 +45,9 @@ if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     file(APPEND "${CELLERATOR_HOST_CONFIG}"
         "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorSparseSupportTargets.cmake\")\n"
         "set(Cellerator_sparse_support_FOUND TRUE)\n")
-    if(CELLERATOR_BUILD_TESTS)
-        add_subdirectory(tests/sparse_support)
-    endif()
+    add_subdirectory(tests/sparse_support ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
     if(EXISTS "${PROJECT_SOURCE_DIR}/bench/sparse_support/CMakeLists.txt")
-        add_subdirectory(bench/sparse_support)
+        add_subdirectory(bench/sparse_support ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
     endif()
 endif()
 install(DIRECTORY
@@ -62,4 +60,8 @@ install(DIRECTORY
     "${PROJECT_SOURCE_DIR}/include/Cellerator/geometry/dependency"
     "${PROJECT_SOURCE_DIR}/include/Cellerator/execution/dependency"
     "${PROJECT_SOURCE_DIR}/include/Cellerator/ops/condition"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
+    PATTERN "accessibility.hh" EXCLUDE
+    PATTERN "frontier_cuda.hh" EXCLUDE
+    PATTERN "regulatory_gates_cuda.hh" EXCLUDE
+    PATTERN "value_field.hh" EXCLUDE)

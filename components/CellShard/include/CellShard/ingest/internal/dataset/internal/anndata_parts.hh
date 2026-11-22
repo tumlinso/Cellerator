@@ -89,14 +89,14 @@ static inline bool anndata_partition_window(const anndata_io::matrix_info& info,
 static inline int load_anndata_coo(const manifest* m, unsigned int idx, const mtx::header* h,
                                    const unsigned long* offsets, const unsigned long* nnz,
                                    unsigned long count, unsigned long first, unsigned long last,
-                                   sharded<::cellerator::tensor::base::triplet>* out, std::size_t bytes) {
+                                   sharded<::cellshard::triplet>* out, std::size_t bytes) {
     clear(out); init(out);
     try {
         anndata_io::source source(matrix_path_at(m, idx), select_anndata_matrix(matrix_source_at(m, idx)), bytes);
         if (!anndata_partition_window(source.info(), h, offsets, nnz, count, first, last)) return 0;
         if (!mtx::allocate_part_window_coo(h, offsets, nnz, count, first, last, out)) return 0;
         struct output {
-            sharded<::cellerator::tensor::base::triplet>* parts;
+            sharded<::cellshard::triplet>* parts;
             const unsigned long* offsets;
             unsigned long count, first;
             std::vector<unsigned long> cursors;
@@ -123,7 +123,7 @@ static inline int load_anndata_coo(const manifest* m, unsigned int idx, const mt
 static inline int load_anndata_compressed(const manifest* m, unsigned int idx, const mtx::header* h,
                                           const unsigned long* offsets, const unsigned long* nnz,
                                           unsigned long count, unsigned long first, unsigned long last,
-                                          sharded<::cellerator::tensor::base::compressed>* out, std::size_t bytes) {
+                                          sharded<::cellshard::compressed>* out, std::size_t bytes) {
     clear(out); init(out);
     try {
         anndata_io::source source(matrix_path_at(m, idx), select_anndata_matrix(matrix_source_at(m, idx)), bytes);
@@ -133,8 +133,8 @@ static inline int load_anndata_compressed(const manifest* m, unsigned int idx, c
         out->num_partitions = last - first; out->cols = info.cols;
         for (auto p = first; p < last; ++p) {
             const auto local = p - first, rows = offsets[p + 1] - offsets[p];
-            auto* part = new ::cellerator::tensor::base::compressed;
-            init(part, rows, info.cols, nnz[p], info.csr ? ::cellerator::tensor::base::compressed_by_row : ::cellerator::tensor::base::compressed_by_col);
+            auto* part = new ::cellshard::compressed;
+            init(part, rows, info.cols, nnz[p], info.csr ? ::cellshard::compressed_by_row : ::cellshard::compressed_by_col);
             out->parts[local] = part;
             if (!allocate(part)) throw std::bad_alloc();
             out->partition_rows[local] = rows; out->partition_nnz[local] = nnz[p]; out->partition_aux[local] = 0;
@@ -143,7 +143,7 @@ static inline int load_anndata_compressed(const manifest* m, unsigned int idx, c
         rebuild_partition_offsets(out);
         if (!set_shards_to_partitions(out)) throw std::bad_alloc();
         struct output {
-            sharded<::cellerator::tensor::base::compressed>* parts;
+            sharded<::cellshard::compressed>* parts;
             const unsigned long* offsets;
             unsigned long count, first;
             bool csr, fill;

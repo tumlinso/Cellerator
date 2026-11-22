@@ -5,6 +5,7 @@ module;
 #include <Cellerator/execution/dependency/feature_binding.hh>
 #include <Cellerator/layout/axis_binding.hh>
 #include <Cellerator/layout/occurrence_map.hh>
+#include <Cellerator/memory/view.hh>
 #include <Cellerator/structure/coordinates.hh>
 
 export module cellerator.nn;
@@ -19,19 +20,6 @@ using ::at::ScalarType;
 using ::at::TensorOptions;
 }
 
-// Cell contracts and borrowed memory descriptors are part of the native
-// modeling surface re-exported by this module.
-export namespace cellerator {
-using ::cellerator::Cell;
-using ::cellerator::ViewTag;
-using ::cellerator::CellViews;
-using ::cellerator::CellAccess;
-using ::cellerator::CellEdit;
-using ::cellerator::CellIdentityView;
-using ::cellerator::make_cell;
-using ::cellerator::make_cell_views;
-}
-
 export namespace cellerator::memory {
 using ::cellerator::memory::domain;
 using ::cellerator::memory::placement;
@@ -39,19 +27,6 @@ using ::cellerator::memory::array_view;
 using ::cellerator::memory::const_array_view;
 using ::cellerator::memory::matrix_view;
 using ::cellerator::memory::const_matrix_view;
-}
-
-export namespace cellerator::cells {
-using ::cellerator::cells::EventView;
-using ::cellerator::cells::EventPrefix;
-using ::cellerator::cells::ExpressionView;
-using ::cellerator::cells::MutableExpressionView;
-using ::cellerator::cells::DenseExpressionRow;
-using ::cellerator::cells::MutableDenseExpressionRow;
-}
-
-export namespace cellerator::modeling {
-using ::cellerator::modeling::DynamicalStateSnapshotView;
 }
 
 export namespace cellerator::structure {
@@ -106,7 +81,6 @@ using ::cellerator::nn::QueryPayload;
 using ::cellerator::nn::QueryRequest;
 using ::cellerator::nn::query;
 using ::cellerator::nn::predict;
-using ::cellerator::nn::predict_query;
 using ::cellerator::nn::ConditionedInvocation;
 using ::cellerator::nn::conditioned;
 using ::cellerator::nn::align_prediction_targets;
@@ -115,6 +89,7 @@ using ::cellerator::nn::reduce_prediction_loss;
 
 using ::cellerator::nn::CsrSupport;
 using ::cellerator::nn::PreparedRelation;
+using ::cellerator::nn::PreparedRelationPair;
 using ::cellerator::nn::InteractionPrograms;
 using ::cellerator::nn::ProgramCall;
 using ::cellerator::nn::ProgramResult;

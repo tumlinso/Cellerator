@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Cellerator/tensor/base/blocked_ell.cuh>
-#include <Cellerator/tensor/base/compressed.cuh>
-#include <Cellerator/tensor/base/triplet.cuh>
+#include <CellShard/formats/compressed.cuh>
+#include <CellShard/formats/triplet.cuh>
 #include "../sharded/sharded.cuh"
 #include "../sharded/sharded_host.cuh"
 
@@ -91,7 +91,7 @@ inline int count_blocked_ell_shape_(
 }
 
 struct compressed_row_accessor {
-    const ::cellerator::tensor::base::compressed *src;
+    const ::cellshard::compressed *src;
 
     __host__ __device__ __forceinline__ const types::ptr_t *major_ptr(types::u32 row) const {
         return src->majorPtr + row;
@@ -108,7 +108,7 @@ inline types::u32 mapped_col_(types::idx_t col,
 }
 
 inline int bucket_coo_block_cols_(
-    const ::cellerator::tensor::base::triplet *src,
+    const ::cellshard::triplet *src,
     types::dim_t cols,
     types::u32 block_size,
     const types::u32 *feature_to_global,
@@ -155,7 +155,7 @@ inline int bucket_coo_block_cols_(
 } // namespace detail
 
 inline int choose_blocked_ell_block_size(
-    const ::cellerator::tensor::base::compressed *src,
+    const ::cellshard::compressed *src,
     const unsigned int *candidates,
     unsigned int candidate_count,
     blocked_ell_tune_result *out
@@ -164,7 +164,7 @@ inline int choose_blocked_ell_block_size(
     detail::compressed_row_accessor accessor = { src };
 
     if (src == 0 || out == 0 || candidates == 0 || candidate_count == 0u) return 0;
-    if (src->axis != ::cellerator::tensor::base::compressed_by_row) return 0;
+    if (src->axis != ::cellshard::compressed_by_row) return 0;
 
     for (unsigned int i = 0; i < candidate_count; ++i) {
         const unsigned int block_size = candidates[i];
@@ -190,7 +190,7 @@ inline int choose_blocked_ell_block_size(
 }
 
 inline int choose_blocked_ell_block_size_from_coo(
-    const ::cellerator::tensor::base::triplet *src,
+    const ::cellshard::triplet *src,
     types::dim_t cols,
     const types::u32 *feature_to_global,
     const unsigned int *candidates,
@@ -255,7 +255,7 @@ inline int choose_blocked_ell_block_size_from_coo(
     return 1;
 }
 
-inline int blocked_ell_from_compressed(const ::cellerator::tensor::base::compressed *src, unsigned int block_size, ::cellerator::tensor::base::blocked_ell *dst) {
+inline int blocked_ell_from_compressed(const ::cellshard::compressed *src, unsigned int block_size, ::cellerator::tensor::base::blocked_ell *dst) {
     detail::compressed_row_accessor accessor = { src };
     types::u32 ell_width = 0u;
     double fill_ratio = 0.0;
@@ -268,7 +268,7 @@ inline int blocked_ell_from_compressed(const ::cellerator::tensor::base::compres
     types::nnz_t actual_nnz = 0u;
 
     if (src == 0 || dst == 0 || block_size == 0u) return 0;
-    if (src->axis != ::cellerator::tensor::base::compressed_by_row) return 0;
+    if (src->axis != ::cellshard::compressed_by_row) return 0;
     if (!detail::count_blocked_ell_shape_(src->rows, src->cols, block_size, accessor, &ell_width, &fill_ratio)) return 0;
 
     clear(dst);
@@ -347,7 +347,7 @@ inline int blocked_ell_from_compressed(const ::cellerator::tensor::base::compres
 }
 
 inline int blocked_ell_from_coo(
-    const ::cellerator::tensor::base::triplet *src,
+    const ::cellshard::triplet *src,
     types::dim_t cols,
     const types::u32 *feature_to_global,
     unsigned int block_size,
@@ -447,7 +447,7 @@ inline int blocked_ell_from_coo(
 }
 
 inline int blocked_ell_from_compressed_auto(
-    const ::cellerator::tensor::base::compressed *src,
+    const ::cellshard::compressed *src,
     const unsigned int *candidates,
     unsigned int candidate_count,
     ::cellerator::tensor::base::blocked_ell *dst,
@@ -461,7 +461,7 @@ inline int blocked_ell_from_compressed_auto(
 }
 
 inline int blocked_ell_from_coo_auto(
-    const ::cellerator::tensor::base::triplet *src,
+    const ::cellshard::triplet *src,
     types::dim_t cols,
     const types::u32 *feature_to_global,
     const unsigned int *candidates,
@@ -478,7 +478,7 @@ inline int blocked_ell_from_coo_auto(
 }
 
 inline int repack_sharded_compressed_to_blocked_ell(
-    const sharded<::cellerator::tensor::base::compressed> *src,
+    const sharded<::cellshard::compressed> *src,
     unsigned int block_size,
     unsigned long target_block_rows,
     sharded<::cellerator::tensor::base::blocked_ell> *dst
@@ -493,23 +493,23 @@ inline int repack_sharded_compressed_to_blocked_ell(
 
     while (row_begin < src->rows) {
         const unsigned long row_end = rows_per_part == 0ul || row_begin + rows_per_part >= src->rows ? src->rows : row_begin + rows_per_part;
-        ::cellerator::tensor::base::compressed stitched;
+        ::cellshard::compressed stitched;
         ::cellerator::tensor::base::blocked_ell *part = 0;
         std::unique_ptr<types::ptr_t[]> row_ptr;
         std::unique_ptr<types::idx_t[]> col_idx;
         std::unique_ptr<real::storage_t[]> values;
         types::nnz_t nnz = 0u;
 
-        init(&stitched, (types::dim_t) (row_end - row_begin), (types::dim_t) src->cols, 0u, ::cellerator::tensor::base::compressed_by_row);
+        init(&stitched, (types::dim_t) (row_end - row_begin), (types::dim_t) src->cols, 0u, ::cellshard::compressed_by_row);
 
         row_ptr.reset(new types::ptr_t[(std::size_t) stitched.rows + 1u]());
         if (!row_ptr) return 0;
 
         for (unsigned long global_row = row_begin; global_row < row_end; ++global_row) {
             const unsigned long part_id = find_partition(src, global_row);
-            const ::cellerator::tensor::base::compressed *src_part = part_id < src->num_partitions ? src->parts[part_id] : 0;
+            const ::cellshard::compressed *src_part = part_id < src->num_partitions ? src->parts[part_id] : 0;
             const unsigned long local_row = global_row - src->partition_offsets[part_id];
-            if (src_part == 0 || src_part->axis != ::cellerator::tensor::base::compressed_by_row) return 0;
+            if (src_part == 0 || src_part->axis != ::cellshard::compressed_by_row) return 0;
             nnz += src_part->majorPtr[local_row + 1u] - src_part->majorPtr[local_row];
             row_ptr[(global_row - row_begin) + 1u] = nnz;
         }
@@ -520,7 +520,7 @@ inline int repack_sharded_compressed_to_blocked_ell(
 
         for (unsigned long global_row = row_begin; global_row < row_end; ++global_row) {
             const unsigned long part_id = find_partition(src, global_row);
-            const ::cellerator::tensor::base::compressed *src_part = part_id < src->num_partitions ? src->parts[part_id] : 0;
+            const ::cellshard::compressed *src_part = part_id < src->num_partitions ? src->parts[part_id] : 0;
             const unsigned long local_row = global_row - src->partition_offsets[part_id];
             const types::ptr_t begin = src_part->majorPtr[local_row];
             const types::ptr_t end = src_part->majorPtr[local_row + 1u];
@@ -554,7 +554,7 @@ inline int repack_sharded_compressed_to_blocked_ell(
 }
 
 inline int repack_sharded_compressed_to_blocked_ell_auto(
-    const sharded<::cellerator::tensor::base::compressed> *src,
+    const sharded<::cellshard::compressed> *src,
     const unsigned int *candidates,
     unsigned int candidate_count,
     unsigned long target_block_rows,
@@ -562,22 +562,22 @@ inline int repack_sharded_compressed_to_blocked_ell_auto(
     blocked_ell_tune_result *picked = 0
 ) {
     blocked_ell_tune_result tune = { 0u, 0.0, 0u };
-    ::cellerator::tensor::base::compressed whole;
+    ::cellshard::compressed whole;
     std::unique_ptr<types::ptr_t[]> row_ptr;
     std::unique_ptr<types::idx_t[]> col_idx;
     std::unique_ptr<real::storage_t[]> values;
     types::nnz_t cursor = 0u;
 
     if (src == 0 || dst == 0 || candidates == 0 || candidate_count == 0u) return 0;
-    init(&whole, (types::dim_t) src->rows, (types::dim_t) src->cols, (types::nnz_t) src->nnz, ::cellerator::tensor::base::compressed_by_row);
+    init(&whole, (types::dim_t) src->rows, (types::dim_t) src->cols, (types::nnz_t) src->nnz, ::cellshard::compressed_by_row);
     row_ptr.reset(new types::ptr_t[(std::size_t) src->rows + 1u]());
     col_idx.reset(src->nnz != 0u ? new types::idx_t[src->nnz] : 0);
     values.reset(src->nnz != 0u ? new real::storage_t[src->nnz] : 0);
     if (!row_ptr || (src->nnz != 0u && (!col_idx || !values))) return 0;
     row_ptr[0] = 0u;
     for (unsigned long part = 0; part < src->num_partitions; ++part) {
-        const ::cellerator::tensor::base::compressed *p = src->parts[part];
-        if (p == 0 || p->axis != ::cellerator::tensor::base::compressed_by_row) return 0;
+        const ::cellshard::compressed *p = src->parts[part];
+        if (p == 0 || p->axis != ::cellshard::compressed_by_row) return 0;
         for (types::u32 row = 0u; row < p->rows; ++row) {
             const types::ptr_t begin = p->majorPtr[row];
             const types::ptr_t end = p->majorPtr[row + 1u];

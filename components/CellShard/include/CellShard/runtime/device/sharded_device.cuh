@@ -8,6 +8,9 @@
 #include <cuda_runtime.h>
 
 #include <Cellerator/tensor/base/device_views.cuh>
+#include <CellShard/formats/compressed_device_view.cuh>
+#include <CellShard/formats/dense_device_view.cuh>
+#include <CellShard/formats/triplet_device_view.cuh>
 
 #include "../host/sharded_host.cuh"
 
@@ -194,17 +197,17 @@ __host__ __forceinline__ cudaError_t cache_allocation(sharded_device<MatrixT> *s
 // 4. one host->device copy of that descriptor
 //
 // Callers should treat this as a full materialization step.
-__host__ __forceinline__ cudaError_t upload(const ::cellerator::tensor::base::dense *src, partition_record< ::cellerator::tensor::base::dense > *record) {
-    ::cellerator::tensor::base::device::DenseView host;
+__host__ __forceinline__ cudaError_t upload(const ::cellshard::dense *src, partition_record< ::cellshard::dense > *record) {
+    ::cellshard::device::DenseView host;
     const std::size_t count = (std::size_t) src->rows * (std::size_t) src->cols;
     const std::size_t view_offset = 0;
-    const std::size_t val_offset = align_up_bytes(sizeof(::cellerator::tensor::base::device::DenseView), alignof(__half));
+    const std::size_t val_offset = align_up_bytes(sizeof(::cellshard::device::DenseView), alignof(__half));
     const std::size_t total_bytes = val_offset + count * sizeof(__half);
     char *storage = 0;
     cudaError_t err = cudaSuccess;
 
     zero_record(record);
-    if (!::cellerator::tensor::base::dense_is_packed_row_major(src)) return cudaErrorInvalidValue;
+    if (!::cellshard::dense_is_packed_row_major(src)) return cudaErrorInvalidValue;
     host.rows = src->rows;
     host.cols = src->cols;
     host.stride = src->stride;
@@ -218,14 +221,14 @@ __host__ __forceinline__ cudaError_t upload(const ::cellerator::tensor::base::de
         err = cudaMemcpy(host.val, src->val, count * sizeof(__half), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) goto fail;
     } else {
-        err = cudaMalloc((void **) &storage, sizeof(::cellerator::tensor::base::device::DenseView));
+        err = cudaMalloc((void **) &storage, sizeof(::cellshard::device::DenseView));
         if (err != cudaSuccess) goto fail;
     }
     err = cudaMemcpy(storage + view_offset, &host, sizeof(host), cudaMemcpyHostToDevice);
     if (err != cudaSuccess) goto fail;
 
     record->allocation = storage;
-    record->allocation_bytes = total_bytes != 0 ? total_bytes : sizeof(::cellerator::tensor::base::device::DenseView);
+    record->allocation_bytes = total_bytes != 0 ? total_bytes : sizeof(::cellshard::device::DenseView);
     record->storage = storage;
     record->view = storage + view_offset;
     record->a0 = host.val;
@@ -240,19 +243,19 @@ fail:
 // Async upload only makes the memcpy operations asynchronous relative to the
 // supplied stream. The function still performs host-side allocation work before
 // returning, and the source still lives in host memory.
-__host__ __forceinline__ cudaError_t upload_async(const ::cellerator::tensor::base::dense *src,
-                                                  partition_record< ::cellerator::tensor::base::dense > *record,
+__host__ __forceinline__ cudaError_t upload_async(const ::cellshard::dense *src,
+                                                  partition_record< ::cellshard::dense > *record,
                                                   cudaStream_t stream) {
-    ::cellerator::tensor::base::device::DenseView host;
+    ::cellshard::device::DenseView host;
     const std::size_t count = (std::size_t) src->rows * (std::size_t) src->cols;
     const std::size_t view_offset = 0;
-    const std::size_t val_offset = align_up_bytes(sizeof(::cellerator::tensor::base::device::DenseView), alignof(__half));
+    const std::size_t val_offset = align_up_bytes(sizeof(::cellshard::device::DenseView), alignof(__half));
     const std::size_t total_bytes = val_offset + count * sizeof(__half);
     char *storage = 0;
     cudaError_t err = cudaSuccess;
 
     zero_record(record);
-    if (!::cellerator::tensor::base::dense_is_packed_row_major(src)) return cudaErrorInvalidValue;
+    if (!::cellshard::dense_is_packed_row_major(src)) return cudaErrorInvalidValue;
     host.rows = src->rows;
     host.cols = src->cols;
     host.stride = src->stride;
@@ -266,14 +269,14 @@ __host__ __forceinline__ cudaError_t upload_async(const ::cellerator::tensor::ba
         err = cudaMemcpyAsync(host.val, src->val, count * sizeof(__half), cudaMemcpyHostToDevice, stream);
         if (err != cudaSuccess) goto fail;
     } else {
-        err = cudaMalloc((void **) &storage, sizeof(::cellerator::tensor::base::device::DenseView));
+        err = cudaMalloc((void **) &storage, sizeof(::cellshard::device::DenseView));
         if (err != cudaSuccess) goto fail;
     }
     err = cudaMemcpyAsync(storage + view_offset, &host, sizeof(host), cudaMemcpyHostToDevice, stream);
     if (err != cudaSuccess) goto fail;
 
     record->allocation = storage;
-    record->allocation_bytes = total_bytes != 0 ? total_bytes : sizeof(::cellerator::tensor::base::device::DenseView);
+    record->allocation_bytes = total_bytes != 0 ? total_bytes : sizeof(::cellshard::device::DenseView);
     record->storage = storage;
     record->view = storage + view_offset;
     record->a0 = host.val;
@@ -291,11 +294,11 @@ fail:
 // - value array
 //
 // Then it copies a small descriptor struct containing those device pointers.
-__host__ __forceinline__ cudaError_t upload(const ::cellerator::tensor::base::compressed *src, partition_record< ::cellerator::tensor::base::compressed > *record) {
-    ::cellerator::tensor::base::device::CompressedView host;
+__host__ __forceinline__ cudaError_t upload(const ::cellshard::compressed *src, partition_record< ::cellshard::compressed > *record) {
+    ::cellshard::device::CompressedView host;
     const std::size_t ptr_count = (std::size_t) major_dim(src) + 1u;
     const std::size_t view_offset = 0;
-    const std::size_t major_offset = align_up_bytes(sizeof(::cellerator::tensor::base::device::CompressedView), alignof(unsigned int));
+    const std::size_t major_offset = align_up_bytes(sizeof(::cellshard::device::CompressedView), alignof(unsigned int));
     const std::size_t minor_offset = align_up_bytes(major_offset + ptr_count * sizeof(unsigned int), alignof(unsigned int));
     const std::size_t val_offset = align_up_bytes(minor_offset + (std::size_t) src->nnz * sizeof(unsigned int), alignof(__half));
     const std::size_t total_bytes = val_offset + (std::size_t) src->nnz * sizeof(__half);
@@ -311,7 +314,7 @@ __host__ __forceinline__ cudaError_t upload(const ::cellerator::tensor::base::co
     host.minor_idx = 0;
     host.val = 0;
 
-    err = cudaMalloc((void **) &storage, total_bytes == 0 ? sizeof(::cellerator::tensor::base::device::CompressedView) : total_bytes);
+    err = cudaMalloc((void **) &storage, total_bytes == 0 ? sizeof(::cellshard::device::CompressedView) : total_bytes);
     if (err != cudaSuccess) goto fail;
     if (ptr_count != 0) {
         host.major_ptr = (unsigned int *) (storage + major_offset);
@@ -347,13 +350,13 @@ fail:
 
 // Async compressed upload still allocates on the host thread. Only the payload
 // transfers and descriptor copy are queued on the supplied stream.
-__host__ __forceinline__ cudaError_t upload_async(const ::cellerator::tensor::base::compressed *src,
-                                                  partition_record< ::cellerator::tensor::base::compressed > *record,
+__host__ __forceinline__ cudaError_t upload_async(const ::cellshard::compressed *src,
+                                                  partition_record< ::cellshard::compressed > *record,
                                                   cudaStream_t stream) {
-    ::cellerator::tensor::base::device::CompressedView host;
+    ::cellshard::device::CompressedView host;
     const std::size_t ptr_count = (std::size_t) major_dim(src) + 1u;
     const std::size_t view_offset = 0;
-    const std::size_t major_offset = align_up_bytes(sizeof(::cellerator::tensor::base::device::CompressedView), alignof(unsigned int));
+    const std::size_t major_offset = align_up_bytes(sizeof(::cellshard::device::CompressedView), alignof(unsigned int));
     const std::size_t minor_offset = align_up_bytes(major_offset + ptr_count * sizeof(unsigned int), alignof(unsigned int));
     const std::size_t val_offset = align_up_bytes(minor_offset + (std::size_t) src->nnz * sizeof(unsigned int), alignof(__half));
     const std::size_t total_bytes = val_offset + (std::size_t) src->nnz * sizeof(__half);
@@ -369,7 +372,7 @@ __host__ __forceinline__ cudaError_t upload_async(const ::cellerator::tensor::ba
     host.minor_idx = 0;
     host.val = 0;
 
-    err = cudaMalloc((void **) &storage, total_bytes == 0 ? sizeof(::cellerator::tensor::base::device::CompressedView) : total_bytes);
+    err = cudaMalloc((void **) &storage, total_bytes == 0 ? sizeof(::cellshard::device::CompressedView) : total_bytes);
     if (err != cudaSuccess) goto fail;
     if (ptr_count != 0) {
         host.major_ptr = (unsigned int *) (storage + major_offset);
@@ -706,10 +709,10 @@ fail:
 
 // COO upload is another full host->device materialization:
 // row index copy, column index copy, value copy, then descriptor copy.
-__host__ __forceinline__ cudaError_t upload(const ::cellerator::tensor::base::triplet *src, partition_record< ::cellerator::tensor::base::triplet > *record) {
-    ::cellerator::tensor::base::device::TripletView host;
+__host__ __forceinline__ cudaError_t upload(const ::cellshard::triplet *src, partition_record< ::cellshard::triplet > *record) {
+    ::cellshard::device::TripletView host;
     const std::size_t view_offset = 0;
-    const std::size_t row_offset = align_up_bytes(sizeof(::cellerator::tensor::base::device::TripletView), alignof(unsigned int));
+    const std::size_t row_offset = align_up_bytes(sizeof(::cellshard::device::TripletView), alignof(unsigned int));
     const std::size_t col_offset = align_up_bytes(row_offset + (std::size_t) src->nnz * sizeof(unsigned int), alignof(unsigned int));
     const std::size_t val_offset = align_up_bytes(col_offset + (std::size_t) src->nnz * sizeof(unsigned int), alignof(__half));
     const std::size_t total_bytes = val_offset + (std::size_t) src->nnz * sizeof(__half);
@@ -724,7 +727,7 @@ __host__ __forceinline__ cudaError_t upload(const ::cellerator::tensor::base::tr
     host.colIdx = 0;
     host.val = 0;
 
-    err = cudaMalloc((void **) &storage, total_bytes == 0 ? sizeof(::cellerator::tensor::base::device::TripletView) : total_bytes);
+    err = cudaMalloc((void **) &storage, total_bytes == 0 ? sizeof(::cellshard::device::TripletView) : total_bytes);
     if (err != cudaSuccess) goto fail;
     if (src->nnz != 0) {
         host.rowIdx = (unsigned int *) (storage + row_offset);
@@ -757,12 +760,12 @@ fail:
 
 // Async COO upload has the same copy volume as upload(); the only difference is
 // stream-ordered memcpy submission.
-__host__ __forceinline__ cudaError_t upload_async(const ::cellerator::tensor::base::triplet *src,
-                                                  partition_record< ::cellerator::tensor::base::triplet > *record,
+__host__ __forceinline__ cudaError_t upload_async(const ::cellshard::triplet *src,
+                                                  partition_record< ::cellshard::triplet > *record,
                                                   cudaStream_t stream) {
-    ::cellerator::tensor::base::device::TripletView host;
+    ::cellshard::device::TripletView host;
     const std::size_t view_offset = 0;
-    const std::size_t row_offset = align_up_bytes(sizeof(::cellerator::tensor::base::device::TripletView), alignof(unsigned int));
+    const std::size_t row_offset = align_up_bytes(sizeof(::cellshard::device::TripletView), alignof(unsigned int));
     const std::size_t col_offset = align_up_bytes(row_offset + (std::size_t) src->nnz * sizeof(unsigned int), alignof(unsigned int));
     const std::size_t val_offset = align_up_bytes(col_offset + (std::size_t) src->nnz * sizeof(unsigned int), alignof(__half));
     const std::size_t total_bytes = val_offset + (std::size_t) src->nnz * sizeof(__half);
@@ -777,7 +780,7 @@ __host__ __forceinline__ cudaError_t upload_async(const ::cellerator::tensor::ba
     host.colIdx = 0;
     host.val = 0;
 
-    err = cudaMalloc((void **) &storage, total_bytes == 0 ? sizeof(::cellerator::tensor::base::device::TripletView) : total_bytes);
+    err = cudaMalloc((void **) &storage, total_bytes == 0 ? sizeof(::cellshard::device::TripletView) : total_bytes);
     if (err != cudaSuccess) goto fail;
     if (src->nnz != 0) {
         host.rowIdx = (unsigned int *) (storage + row_offset);
@@ -998,14 +1001,14 @@ __host__ __forceinline__ cudaError_t upload_partition_current_device_async(shard
 // Byte estimates below are the resident device footprint after upload. They are
 // not disk bytes and not host bytes. Use them when balancing shard ownership
 // across GPUs.
-__host__ __forceinline__ std::size_t device_partition_bytes(const ::cellshard::sharded< ::cellerator::tensor::base::dense > *view, unsigned long partId) {
-    const std::size_t val_offset = align_up_bytes(sizeof(::cellerator::tensor::base::device::DenseView), alignof(__half));
+__host__ __forceinline__ std::size_t device_partition_bytes(const ::cellshard::sharded< ::cellshard::dense > *view, unsigned long partId) {
+    const std::size_t val_offset = align_up_bytes(sizeof(::cellshard::device::DenseView), alignof(__half));
     return val_offset + (std::size_t) view->partition_nnz[partId] * sizeof(__half);
 }
 
-__host__ __forceinline__ std::size_t device_partition_bytes(const ::cellshard::sharded< ::cellerator::tensor::base::compressed > *view, unsigned long partId) {
-    const unsigned long ptr_dim = view->partition_aux[partId] == ::cellerator::tensor::base::compressed_by_col ? view->cols : view->partition_rows[partId];
-    const std::size_t major_offset = align_up_bytes(sizeof(::cellerator::tensor::base::device::CompressedView), alignof(unsigned int));
+__host__ __forceinline__ std::size_t device_partition_bytes(const ::cellshard::sharded< ::cellshard::compressed > *view, unsigned long partId) {
+    const unsigned long ptr_dim = view->partition_aux[partId] == ::cellshard::compressed_by_col ? view->cols : view->partition_rows[partId];
+    const std::size_t major_offset = align_up_bytes(sizeof(::cellshard::device::CompressedView), alignof(unsigned int));
     const std::size_t minor_offset = align_up_bytes(major_offset + (std::size_t) (ptr_dim + 1) * sizeof(unsigned int), alignof(unsigned int));
     const std::size_t val_offset = align_up_bytes(minor_offset + (std::size_t) view->partition_nnz[partId] * sizeof(unsigned int), alignof(__half));
     return val_offset + (std::size_t) view->partition_nnz[partId] * sizeof(__half);
@@ -1032,8 +1035,8 @@ __host__ __forceinline__ std::size_t device_partition_bytes(const ::cellshard::s
     return payload_offset + payload_bytes;
 }
 
-__host__ __forceinline__ std::size_t device_partition_bytes(const ::cellshard::sharded< ::cellerator::tensor::base::triplet > *view, unsigned long partId) {
-    const std::size_t row_offset = align_up_bytes(sizeof(::cellerator::tensor::base::device::TripletView), alignof(unsigned int));
+__host__ __forceinline__ std::size_t device_partition_bytes(const ::cellshard::sharded< ::cellshard::triplet > *view, unsigned long partId) {
+    const std::size_t row_offset = align_up_bytes(sizeof(::cellshard::device::TripletView), alignof(unsigned int));
     const std::size_t col_offset = align_up_bytes(row_offset + (std::size_t) view->partition_nnz[partId] * sizeof(unsigned int), alignof(unsigned int));
     const std::size_t val_offset = align_up_bytes(col_offset + (std::size_t) view->partition_nnz[partId] * sizeof(unsigned int), alignof(__half));
     return val_offset + (std::size_t) view->partition_nnz[partId] * sizeof(__half);
@@ -1161,7 +1164,7 @@ __host__ __forceinline__ cudaError_t release_partition(sharded_device<MatrixT> *
 //
 // The payload copies remain because the host parts are separate allocations, but
 // allocator churn and descriptor traffic drop sharply.
-__host__ __forceinline__ std::size_t compressed_payload_bytes(const ::cellerator::tensor::base::compressed *src) {
+__host__ __forceinline__ std::size_t compressed_payload_bytes(const ::cellshard::compressed *src) {
     const std::size_t ptr_count = (std::size_t) major_dim(src) + 1u;
     const std::size_t minor_offset = align_up_bytes(ptr_count * sizeof(unsigned int), alignof(unsigned int));
     const std::size_t val_offset = align_up_bytes(minor_offset + (std::size_t) src->nnz * sizeof(unsigned int), alignof(__half));
@@ -1169,8 +1172,8 @@ __host__ __forceinline__ std::size_t compressed_payload_bytes(const ::cellerator
 }
 
 __host__ __forceinline__ cudaError_t upload_compressed_shard_current_device_async(
-    sharded_device< ::cellerator::tensor::base::compressed > *state,
-    const ::cellshard::sharded< ::cellerator::tensor::base::compressed > *view,
+    sharded_device< ::cellshard::compressed > *state,
+    const ::cellshard::sharded< ::cellshard::compressed > *view,
     unsigned long shardId,
     int deviceId,
     cudaStream_t stream
@@ -1184,7 +1187,7 @@ __host__ __forceinline__ cudaError_t upload_compressed_shard_current_device_asyn
     char *allocation = 0;
     char *descriptor_base = 0;
     char *payload_base = 0;
-    std::vector<::cellerator::tensor::base::device::CompressedView> host_views;
+    std::vector<::cellshard::device::CompressedView> host_views;
     cudaError_t err = cudaSuccess;
 
     if (shardId >= view->num_shards) return cudaErrorInvalidValue;
@@ -1208,7 +1211,7 @@ __host__ __forceinline__ cudaError_t upload_compressed_shard_current_device_asyn
     }
 
     host_views.resize((std::size_t) (end - begin));
-    descriptor_bytes = align_up_bytes(host_views.size() * sizeof(::cellerator::tensor::base::device::CompressedView), alignof(unsigned int));
+    descriptor_bytes = align_up_bytes(host_views.size() * sizeof(::cellshard::device::CompressedView), alignof(unsigned int));
     total_bytes = descriptor_bytes;
     for (part = begin; part < end; ++part) {
         total_bytes = align_up_bytes(total_bytes, alignof(unsigned int));
@@ -1225,12 +1228,12 @@ __host__ __forceinline__ cudaError_t upload_compressed_shard_current_device_asyn
     descriptor_base = allocation;
     payload_base = allocation + descriptor_bytes;
     for (part = begin; part < end; ++part) {
-        const ::cellerator::tensor::base::compressed *src = view->parts[part];
+        const ::cellshard::compressed *src = view->parts[part];
         const std::size_t part_payload_bytes = compressed_payload_bytes(src);
         const std::size_t ptr_count = (std::size_t) major_dim(src) + 1u;
         const std::size_t minor_offset = align_up_bytes(ptr_count * sizeof(unsigned int), alignof(unsigned int));
         const std::size_t val_offset = align_up_bytes(minor_offset + (std::size_t) src->nnz * sizeof(unsigned int), alignof(__half));
-        ::cellerator::tensor::base::device::CompressedView &dst = host_views[(std::size_t) (part - begin)];
+        ::cellshard::device::CompressedView &dst = host_views[(std::size_t) (part - begin)];
 
         payload_base = (char *) align_up_bytes((std::size_t) payload_base, alignof(unsigned int));
         dst.rows = src->rows;
@@ -1252,7 +1255,7 @@ __host__ __forceinline__ cudaError_t upload_compressed_shard_current_device_asyn
 
     err = cudaMemcpyAsync(descriptor_base,
                           host_views.data(),
-                          host_views.size() * sizeof(::cellerator::tensor::base::device::CompressedView),
+                          host_views.size() * sizeof(::cellshard::device::CompressedView),
                           cudaMemcpyHostToDevice,
                           stream);
     if (err != cudaSuccess) goto fail;
@@ -1262,7 +1265,7 @@ __host__ __forceinline__ cudaError_t upload_compressed_shard_current_device_asyn
         state->parts[part].allocation = part == begin ? allocation : 0;
         state->parts[part].allocation_bytes = part == begin ? allocation_bytes : 0;
         state->parts[part].storage = part == begin ? allocation : 0;
-        state->parts[part].view = descriptor_base + slot * sizeof(::cellerator::tensor::base::device::CompressedView);
+        state->parts[part].view = descriptor_base + slot * sizeof(::cellshard::device::CompressedView);
         state->parts[part].a0 = host_views[(std::size_t) slot].major_ptr;
         state->parts[part].a1 = host_views[(std::size_t) slot].minor_idx;
         state->parts[part].a2 = host_views[(std::size_t) slot].val;
@@ -1404,8 +1407,8 @@ __host__ __forceinline__ cudaError_t upload_shard(sharded_device<MatrixT> *state
 }
 
 __host__ __forceinline__ cudaError_t upload_shard(
-    sharded_device< ::cellerator::tensor::base::compressed > *state,
-    const ::cellshard::sharded< ::cellerator::tensor::base::compressed > *view,
+    sharded_device< ::cellshard::compressed > *state,
+    const ::cellshard::sharded< ::cellshard::compressed > *view,
     unsigned long shardId,
     int deviceId
 ) {
@@ -1459,8 +1462,8 @@ __host__ __forceinline__ cudaError_t upload_shard_async(sharded_device<MatrixT> 
 }
 
 __host__ __forceinline__ cudaError_t upload_shard_async(
-    sharded_device< ::cellerator::tensor::base::compressed > *state,
-    const ::cellshard::sharded< ::cellerator::tensor::base::compressed > *view,
+    sharded_device< ::cellshard::compressed > *state,
+    const ::cellshard::sharded< ::cellshard::compressed > *view,
     unsigned long shardId,
     int deviceId,
     cudaStream_t stream

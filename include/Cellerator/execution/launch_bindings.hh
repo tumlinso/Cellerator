@@ -1,15 +1,10 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <Cellerator/execution/execution_order.hh>
 
 #include <cstdint>
 #include <type_traits>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_EXECUTION_BINDINGS_HD __host__ __device__
-#else
-#define CELLERATOR_EXECUTION_BINDINGS_HD
-#endif
 
 namespace cellerator::execution {
 
@@ -121,7 +116,7 @@ enum class binding_validation_code : u8 {
     illegal_operand_alias = 16u
 };
 
-CELLERATOR_EXECUTION_BINDINGS_HD constexpr bool valid_output_update_kind(
+CELLERATOR_HOST_DEVICE constexpr bool valid_output_update_kind(
     output_update_kind kind) noexcept {
     return kind == output_update_kind::overwrite
         || kind == output_update_kind::accumulate
@@ -129,7 +124,7 @@ CELLERATOR_EXECUTION_BINDINGS_HD constexpr bool valid_output_update_kind(
         || kind == output_update_kind::partial_write;
 }
 
-CELLERATOR_EXECUTION_BINDINGS_HD constexpr bool valid_output_effect_contract(
+CELLERATOR_HOST_DEVICE constexpr bool valid_output_effect_contract(
     const output_effect_contract &effect) noexcept {
     if (!valid_output_update_kind(effect.update)) return false;
     if (effect.update == output_update_kind::overwrite
@@ -146,7 +141,7 @@ CELLERATOR_EXECUTION_BINDINGS_HD constexpr bool valid_output_effect_contract(
         && effect.destination_scale_binding_id == invalid_scalar_binding_id;
 }
 
-CELLERATOR_EXECUTION_BINDINGS_HD constexpr const void *operand_data_address(
+CELLERATOR_HOST_DEVICE constexpr const void *operand_data_address(
     const biological_operand_view &operand) noexcept {
     switch (operand.kind) {
     case operand_kind::dense_tensor: return operand.storage.dense.data;
@@ -162,7 +157,7 @@ CELLERATOR_EXECUTION_BINDINGS_HD constexpr const void *operand_data_address(
     return nullptr;
 }
 
-CELLERATOR_EXECUTION_BINDINGS_HD constexpr bool has_scalar_binding(
+CELLERATOR_HOST_DEVICE constexpr bool has_scalar_binding(
     const scalar_bindings &bindings, u32 binding_id) noexcept {
     for (u32 index = 0u; index < bindings.count; ++index)
         if (bindings.values[index].binding_id == binding_id
@@ -171,7 +166,7 @@ CELLERATOR_EXECUTION_BINDINGS_HD constexpr bool has_scalar_binding(
     return false;
 }
 
-CELLERATOR_EXECUTION_BINDINGS_HD constexpr const relation_structure *
+CELLERATOR_HOST_DEVICE constexpr const relation_structure *
 find_bound_structure(
     const launch_bindings &launch,
     structure_handle identity) noexcept {
@@ -182,7 +177,7 @@ find_bound_structure(
     return nullptr;
 }
 
-CELLERATOR_EXECUTION_BINDINGS_HD constexpr bool matches_operand_contract(
+CELLERATOR_HOST_DEVICE constexpr bool matches_operand_contract(
     const biological_operand_view &operand,
     const operand_axis_contract &contract) noexcept {
     if (operand.kind != contract.kind
@@ -216,7 +211,7 @@ CELLERATOR_EXECUTION_BINDINGS_HD constexpr bool matches_operand_contract(
     return false;
 }
 
-CELLERATOR_EXECUTION_BINDINGS_HD constexpr bool output_axis_matches(
+CELLERATOR_HOST_DEVICE constexpr bool output_axis_matches(
     const biological_operand_view &operand,
     const output_axis_contract &contract) noexcept {
     switch (operand.kind) {
@@ -246,7 +241,7 @@ CELLERATOR_EXECUTION_BINDINGS_HD constexpr bool output_axis_matches(
     return false;
 }
 
-CELLERATOR_EXECUTION_BINDINGS_HD constexpr binding_validation_code
+CELLERATOR_HOST_DEVICE constexpr binding_validation_code
 validate_launch_bindings(
     const prepared_binding_contract &prepared,
     const launch_bindings &launch) noexcept {
@@ -396,5 +391,3 @@ static_assert(std::is_trivially_copyable<launch_bindings>::value,
     "launch bindings must remain device-copyable");
 
 } // namespace cellerator::execution
-
-#undef CELLERATOR_EXECUTION_BINDINGS_HD

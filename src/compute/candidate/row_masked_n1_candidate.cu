@@ -64,31 +64,32 @@ bool valid_device_cpk1(
             == cellpack::packing_plan_semantic_schema_version
         && plan.geometry_identity_version
             == cellpack::feature_block_geometry_identity_version
-        && plan.feature_count == tiles.feature_count
-        && plan.feature_block_count == tiles.feature_block_count
+        && plan.feature_count == tiles.layout.features
+        && plan.feature_block_count == tiles.layout.feature_blocks
         && plan.feature_block_geometry_identity
             == tiles.feature_block_geometry_identity
         && order.order_schema_version == cellpack::local_cell_order_schema_version
         && order.signature_algorithm_version
             == cellpack::local_cell_signature_algorithm_version
         && order.ordering_identity == tiles.ordering_identity
-        && order.row_count == tiles.row_count
+        && order.row_count == tiles.layout.rows
         && order.row_domain_identity == tiles.row_domain_identity
+        && cellpack::packed_extents_fit(tiles)
         && tiles.tile_schema_version == cellpack::warp_tile_schema_version
         && tiles.record_schema_version == cellpack::cell_block_record_schema_version
         && tiles.value_size_bytes == sizeof(cellerator::real::storage_t)
         && plan.feature_block_offsets != nullptr
         && (plan.feature_count == 0u || plan.feature_permutation != nullptr)
         && (order.row_count == 0u || order.row_permutation != nullptr)
-        && tiles.tile_block_offsets != nullptr
-        && tiles.block_row_entry_offsets != nullptr
-        && tiles.row_block_value_offsets != nullptr
-        && (tiles.tile_block_count == 0u
-            || (tiles.tile_block_ids != nullptr
-                && tiles.tile_block_cell_masks != nullptr))
-        && (tiles.row_block_entry_count == 0u
-            || tiles.row_block_gene_masks != nullptr)
-        && (tiles.nnz_count == 0u || tiles.values != nullptr);
+        && tiles.layout.tile_block_offsets != nullptr
+        && tiles.layout.block_row_entry_offsets != nullptr
+        && tiles.layout.row_block_value_offsets != nullptr
+        && (tiles.layout.tile_blocks == 0u
+            || (tiles.layout.block_ids != nullptr
+                && tiles.layout.participating_row_masks != nullptr))
+        && (tiles.layout.row_block_entries == 0u
+            || tiles.layout.feature_masks != nullptr)
+        && (tiles.layout.stored_values == 0u || tiles.values != nullptr);
 }
 
 bool same_location(
@@ -140,13 +141,13 @@ operation_status run_row_masked_n1(
         || weights.shape[0] != state.projection.plan.feature_count
         || weights.stride[0] != 1
         || output.value_type != accumulation_type || output.rank != 1u
-        || output.shape[0] != state.projection.tiles.row_count
+        || output.shape[0] != state.projection.tiles.layout.rows
         || output.stride[0] != 1
         || values.numeric.storage != sparse_type
         || values.numeric.dequantized != compute_type
         || values.numeric.accumulation != accumulation_type
         || values.layout != execution::value_layout_kind::projection_local_order
-        || values.element_count != state.projection.tiles.nnz_count
+        || values.element_count != state.projection.tiles.layout.stored_values
         || values.value_bytes != values.element_count
             * sizeof(cellerator::real::storage_t)
         || weights.location.residency == execution::residency_kind::host
@@ -199,7 +200,7 @@ operation_status prepare_impl(
         || !execution::valid_axis_identity(state->row_axis)
         || structures.count != 1u || problem.input_count != 1u
         || problem.output_count != 1u
-        || problem.logical_work_items != state->projection.tiles.nnz_count
+        || problem.logical_work_items != state->projection.tiles.layout.stored_values
         || projection.schema_version
             != cellpack::persistent_packing_payload_schema_version
         || projection.variant != 1u)

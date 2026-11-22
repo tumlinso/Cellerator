@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/tensor/base/triplet.cuh>
+#include <CellShard/formats/triplet.cuh>
 
 #include <cub/cub.cuh>
 
@@ -284,7 +284,7 @@ __global__ inline void build_entity_sort_keys_kernel_(std::uint32_t count,
 } // namespace detail
 
 inline int upload_coo(blocked_ell_bipartite_optimize_workspace *ws,
-                      const ::cellerator::tensor::base::triplet *src) {
+                      const ::cellshard::triplet *src) {
     if (ws == nullptr || src == nullptr) return 0;
     if (!reserve(ws, src->nnz, src->rows, src->cols, std::max<std::size_t>(src->rows, src->cols))) return 0;
     if (src->nnz != 0u) {
@@ -358,7 +358,7 @@ inline int invert_permutation(const std::vector<std::uint32_t> &exec_to_canonica
     return 1;
 }
 
-inline int build_column_order_from_sampled_coo(const ::cellerator::tensor::base::triplet *sampled,
+inline int build_column_order_from_sampled_coo(const ::cellshard::triplet *sampled,
                                                const std::uint32_t *sample_row_rank,
                                                int device,
                                                std::vector<std::uint32_t> *exec_to_canonical_cols,
@@ -425,7 +425,7 @@ inline int build_column_order_from_sampled_coo(const ::cellerator::tensor::base:
     return 1;
 }
 
-inline int build_row_order_from_coo(const ::cellerator::tensor::base::triplet *src,
+inline int build_row_order_from_coo(const ::cellshard::triplet *src,
                                     const std::uint32_t *canonical_to_exec_cols,
                                     int device,
                                     std::vector<std::uint32_t> *exec_to_canonical_rows,

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/tensor/base/compressed.cuh>
+#include <CellShard/formats/compressed.cuh>
 #include <Cellerator/tensor/base/sliced_ell.cuh>
 #include "../sharded/sharded_device.cuh"
 #include "sliced_ell_from_blocked_ell.cuh"
@@ -17,13 +17,13 @@ namespace convert {
 
 namespace detail {
 
-inline int count_compressed_row_nnz_(const ::cellerator::tensor::base::compressed *src,
+inline int count_compressed_row_nnz_(const ::cellshard::compressed *src,
                                      std::unique_ptr<types::u32[]> *row_nnz_out) {
     std::unique_ptr<types::u32[]> row_nnz;
     if (src == nullptr || row_nnz_out == nullptr) return 0;
     row_nnz.reset(src->rows != 0u ? new types::u32[src->rows]() : nullptr);
     if (src->rows != 0u && !row_nnz) return 0;
-    if (src->axis == ::cellerator::tensor::base::compressed_by_row) {
+    if (src->axis == ::cellshard::compressed_by_row) {
         for (types::u32 row = 0u; row < src->rows; ++row) {
             const types::ptr_t begin = src->majorPtr[row];
             const types::ptr_t end = src->majorPtr[row + 1u];
@@ -47,7 +47,7 @@ inline int count_compressed_row_nnz_(const ::cellerator::tensor::base::compresse
 namespace kernels {
 
 __global__ static void emit_sliced_ell_from_compressed_csr_kernel(
-    ::cellerator::tensor::base::device::CompressedView src,
+    ::cellshard::device::CompressedView src,
     ::cellerator::tensor::base::device::SlicedEllView dst
 ) {
     const types::u32 tid = (types::u32) (blockIdx.x * blockDim.x + threadIdx.x);
@@ -83,7 +83,7 @@ __global__ static void emit_sliced_ell_from_compressed_csr_kernel(
 
 } // namespace detail
 
-inline int choose_sliced_ell_slice_rows_from_compressed(const ::cellerator::tensor::base::compressed *src,
+inline int choose_sliced_ell_slice_rows_from_compressed(const ::cellshard::compressed *src,
                                                         const unsigned int *candidates,
                                                         unsigned int candidate_count,
                                                         sliced_ell_tune_result *out) {
@@ -93,7 +93,7 @@ inline int choose_sliced_ell_slice_rows_from_compressed(const ::cellerator::tens
     return choose_sliced_ell_slice_rows(row_nnz.get(), src->rows, src->nnz, candidates, candidate_count, out);
 }
 
-inline int sliced_ell_from_compressed(const ::cellerator::tensor::base::compressed *src,
+inline int sliced_ell_from_compressed(const ::cellshard::compressed *src,
                                       unsigned int slice_rows,
                                       ::cellerator::tensor::base::sliced_ell *dst) {
     std::unique_ptr<types::u32[]> row_nnz;
@@ -121,7 +121,7 @@ inline int sliced_ell_from_compressed(const ::cellerator::tensor::base::compress
         return 0;
     }
 
-    if (src->axis == ::cellerator::tensor::base::compressed_by_row) {
+    if (src->axis == ::cellshard::compressed_by_row) {
         for (types::u32 slice = 0u; slice < dst->slice_count; ++slice) {
             const types::u32 row_begin = dst->slice_row_offsets[slice];
             const types::u32 row_end = dst->slice_row_offsets[slice + 1u];
@@ -163,7 +163,7 @@ inline int sliced_ell_from_compressed(const ::cellerator::tensor::base::compress
     return 1;
 }
 
-inline int sliced_ell_from_compressed_cuda(const ::cellerator::tensor::base::compressed *src,
+inline int sliced_ell_from_compressed_cuda(const ::cellshard::compressed *src,
                                            unsigned int slice_rows,
                                            ::cellerator::tensor::base::sliced_ell *dst,
                                            int device = 0,
@@ -172,9 +172,9 @@ inline int sliced_ell_from_compressed_cuda(const ::cellerator::tensor::base::com
     std::unique_ptr<types::u32[]> slice_row_offsets;
     std::unique_ptr<types::u32[]> slice_widths;
     types::u32 slice_count = 0u;
-    device::partition_record<::cellerator::tensor::base::compressed> src_record;
+    device::partition_record<::cellshard::compressed> src_record;
     device::partition_record<::cellerator::tensor::base::sliced_ell> dst_record;
-    ::cellerator::tensor::base::device::CompressedView src_view{};
+    ::cellshard::device::CompressedView src_view{};
     ::cellerator::tensor::base::device::SlicedEllView dst_view{};
     std::size_t total_slots = 0u;
     int ok = 0;
@@ -182,7 +182,7 @@ inline int sliced_ell_from_compressed_cuda(const ::cellerator::tensor::base::com
     device::zero_record(&src_record);
     device::zero_record(&dst_record);
     if (src == nullptr || dst == nullptr || slice_rows == 0u) return 0;
-    if (src->axis != ::cellerator::tensor::base::compressed_by_row) {
+    if (src->axis != ::cellshard::compressed_by_row) {
         return sliced_ell_from_compressed(src, slice_rows, dst);
     }
     if (!detail::count_compressed_row_nnz_(src, &row_nnz)) return 0;
@@ -253,7 +253,7 @@ done:
     return ok;
 }
 
-inline int sliced_ell_from_compressed_auto(const ::cellerator::tensor::base::compressed *src,
+inline int sliced_ell_from_compressed_auto(const ::cellshard::compressed *src,
                                            const unsigned int *candidates,
                                            unsigned int candidate_count,
                                            ::cellerator::tensor::base::sliced_ell *dst,
@@ -265,7 +265,7 @@ inline int sliced_ell_from_compressed_auto(const ::cellerator::tensor::base::com
     return 1;
 }
 
-inline int sliced_ell_from_compressed_cuda_auto(const ::cellerator::tensor::base::compressed *src,
+inline int sliced_ell_from_compressed_cuda_auto(const ::cellshard::compressed *src,
                                                 const unsigned int *candidates,
                                                 unsigned int candidate_count,
                                                 ::cellerator::tensor::base::sliced_ell *dst,

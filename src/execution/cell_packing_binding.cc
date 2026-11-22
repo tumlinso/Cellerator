@@ -26,20 +26,20 @@ bool valid_payload_metadata(const persistent_packing_payload_view &payload) noex
         || order.row_nnz_counts == nullptr || payload.row_group_count == 0u
         || payload.row_group_offsets == nullptr)
         return false;
-    if (tiles.tile_schema_version != warp_tile_schema_version
+    if (!packed_extents_fit(tiles) || tiles.tile_schema_version != warp_tile_schema_version
         || tiles.tile_identity == 0u || tiles.ordering_identity != order.ordering_identity
         || tiles.feature_block_geometry_identity != plan.feature_block_geometry_identity
-        || tiles.row_count != order.row_count || tiles.feature_count != plan.feature_count
-        || tiles.feature_block_count != plan.feature_block_count
+        || tiles.layout.rows != order.row_count || tiles.layout.features != plan.feature_count
+        || tiles.layout.feature_blocks != plan.feature_block_count
         || tiles.value_size_bytes == 0u)
         return false;
-    if ((tiles.tile_count != 0u && tiles.tile_block_offsets == nullptr)
-        || (tiles.tile_block_count != 0u
-            && (tiles.tile_block_ids == nullptr || tiles.tile_block_cell_masks == nullptr
-                || tiles.block_row_entry_offsets == nullptr))
-        || (tiles.row_block_entry_count != 0u && tiles.row_block_gene_masks == nullptr)
-        || (tiles.nnz_count != 0u
-            && (tiles.row_block_value_offsets == nullptr || tiles.values == nullptr)))
+    if ((tiles.layout.tiles != 0u && tiles.layout.tile_block_offsets == nullptr)
+        || (tiles.layout.tile_blocks != 0u
+            && (tiles.layout.block_ids == nullptr || tiles.layout.participating_row_masks == nullptr
+                || tiles.layout.block_row_entry_offsets == nullptr))
+        || (tiles.layout.row_block_entries != 0u && tiles.layout.feature_masks == nullptr)
+        || (tiles.layout.stored_values != 0u
+            && (tiles.layout.row_block_value_offsets == nullptr || tiles.values == nullptr)))
         return false;
     return true;
 }
@@ -62,8 +62,8 @@ validation_result validate_cell_packing_binding_host(
             != lifetime_validation_code::ok
         || validate_value_plane(adapter.structure, adapter.values)
             != lifetime_validation_code::ok
-        || adapter.structure.logical_edge_count != adapter.payload.tiles.nnz_count
-        || adapter.values.element_count != adapter.payload.tiles.nnz_count
+        || adapter.structure.logical_edge_count != adapter.payload.tiles.layout.stored_values
+        || adapter.values.element_count != adapter.payload.tiles.layout.stored_values
         || adapter.values.values != adapter.payload.tiles.values
         || adapter.direct_tiles.values != adapter.payload.tiles.values
         || adapter.direct_plan.feature_permutation
@@ -100,10 +100,10 @@ validation_result build_cell_packing_binding_host(
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "CP-BP adapter numeric policy is invalid");
     }
-    const u64 value_bytes = static_cast<u64>(payload.tiles.nnz_count)
+    const u64 value_bytes = static_cast<u64>(payload.tiles.layout.stored_values)
         * payload.tiles.value_size_bytes;
-    if (payload.tiles.nnz_count != 0u
-        && value_bytes / payload.tiles.nnz_count != payload.tiles.value_size_bytes) {
+    if (payload.tiles.layout.stored_values != 0u
+        && value_bytes / payload.tiles.layout.stored_values != payload.tiles.value_size_bytes) {
         return validation_error(validation_code::integer_overflow, invalid_id,
             "CP-BP v1 value byte count overflows");
     }
@@ -135,7 +135,7 @@ validation_result build_cell_packing_binding_host(
     result.structure.source_axis = request.feature_axis;
     result.structure.destination_axis = request.row_axis;
     result.structure.projections = request.projection_catalog;
-    result.structure.logical_edge_count = payload.tiles.nnz_count;
+    result.structure.logical_edge_count = payload.tiles.layout.stored_values;
     result.values.structure = request.structure;
     result.values.structure_epoch_value = request.structure_epoch_value;
     result.values.values = const_cast<void *>(payload.tiles.values);
@@ -146,7 +146,7 @@ validation_result build_cell_packing_binding_host(
     result.values.quantization.offset_type = numeric_type::invalid;
     result.values.layout = value_layout_kind::projection_local_order;
     result.values.generation = request.value_generation_value;
-    result.values.element_count = payload.tiles.nnz_count;
+    result.values.element_count = payload.tiles.layout.stored_values;
     result.values.value_bytes = value_bytes;
     result.projection = request.projection;
     result.payload = payload;

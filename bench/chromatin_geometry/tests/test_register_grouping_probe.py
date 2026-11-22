@@ -50,6 +50,20 @@ class RegistrationTest(unittest.TestCase):
             campaign.STUDY, campaign.LANES, campaign.LEDGER = study, study/'runs/lanes', study/'runs/campaign-budget.json'
             try:
                 campaign.LEDGER.parent.mkdir(parents=True)
+                imports = []
+
+                def autobench(argv):
+                    if argv[1] == 'status':
+                        return {'paused': False, 'attempts': []}
+                    self.assertEqual(argv[1:3], ['input', 'import'])
+                    self.assertIn('--non-executable', argv)
+                    name = argv[argv.index('--name') + 1]
+                    identity = digest(Path(argv[argv.index('--file') + 1]))
+                    if '--expected-sha256' in argv:
+                        self.assertEqual(argv[argv.index('--expected-sha256') + 1], identity)
+                    imports.append((name, identity))
+                    return {'path': str(root / 'array' / identity), 'identity': identity}
+
                 for lane, phase in enumerate(('qualification', 'r1')):
                     lane_dir = campaign.LANES / str(lane)
                     (lane_dir / '.autobench').mkdir(parents=True)
@@ -58,15 +72,20 @@ class RegistrationTest(unittest.TestCase):
                         resource_id='gpu:host:GPU-test',archive=archive,archive_sha256=digest(archive),
                         binary=study_binary,receipt=receipts[0],qualification_binary=qual_binary,
                         qualification_receipt=receipts[1],qualification_proof=proof if phase=='r1' else None)
-                    with patch.object(campaign, 'command', return_value={'paused':False,'attempts':[]}), \
+                    with patch.object(campaign, 'command', side_effect=autobench), \
                          patch.object(module.subprocess, 'run', return_value=argparse.Namespace(returncode=0,stdout='registered',stderr='')):
                         module.register(args)
-                    packet = tomllib.loads((lane_dir/'registration.toml').read_text())['packet'][0]
+                    registration = tomllib.loads((lane_dir/'registration.toml').read_text())
+                    self.assertIn('.autobench/data/closure.tar.gz', registration['data']['paths'])
+                    self.assertFalse((lane_dir / '.autobench/data').exists())
+                    packet = registration['packet'][0]
                     argv = packet['argv']
                     self.assertEqual(argv[argv.index('--output')+1], '{output}/probe-packet')
                     self.assertEqual(packet['kill_seconds'], 240 if phase=='qualification' else 90)
                     self.assertEqual(('--suite' in argv), phase!='qualification')
                     self.assertEqual(('--qualification-proof' in argv), phase!='qualification')
+                self.assertEqual([identity for name, identity in imports if name == 'closure.tar.gz'],
+                                 [digest(archive), digest(archive)])
             finally:
                 campaign.STUDY, campaign.LANES, campaign.LEDGER = old_study, old_lanes, old_ledger
 

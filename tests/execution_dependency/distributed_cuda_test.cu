@@ -233,7 +233,9 @@ void compare_vector(std::span<const float> actual,
 void check_permuted_canonical_rows(std::array<int, 2> devices,
                                    dependency::TransferMode mode) {
     fixture::GatedProductFixture data(false, true);
-    require(data.structure->canonical_rows() == std::vector<std::uint64_t>{200, 100},
+    const auto canonical_rows = data.structure->canonical_rows();
+    require(canonical_rows.count == 2 && canonical_rows.data[0] == 200
+                && canonical_rows.data[1] == 100,
             "row-identity fixture keeps its nontrivial physical canonical row order");
 
     dependency::PreparedDistributedGatedProduct runner(

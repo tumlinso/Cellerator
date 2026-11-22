@@ -3,9 +3,10 @@
 `import_consumer.cc` is an installed external consumer, not a constant-only
 module check. It maps typed biological feature identities to model indices,
 runs a feature encoder and a user-defined two-layer native model, computes an
-autograd loss, and steps an ordinary Torch C++ SGD optimizer. A separate
+autograd loss, and steps an ordinary Torch C++ SGD optimizer. An import-only
+translation unit checks direct borrowed memory views and NN types. The header
 translation unit includes `<Cellerator/nn.hh>`. With
-`CELLERATOR_NN_MODULES_TEST_CUDA=ON`, a third translation unit is compiled by
+`CELLERATOR_NN_MODULES_TEST_CUDA=ON`, an additional translation unit is compiled by
 NVCC 12.9 with GNU 12 as its host compiler. Both header TUs accept the same
 `Parameters`, `at::Tensor`, and `at::Device` values as the importing TU; they do
 not import modules or launch a kernel. In a CUDA-enabled Cellerator package, the

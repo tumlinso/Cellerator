@@ -299,10 +299,40 @@ struct DistributedProductState {
             posting_offsets.push_back(posting_users.size());
         }
         std::sort(physical_features.begin(), physical_features.end());
-        std::vector<std::vector<std::uint32_t>> remote_rows(batch, physical_features);
-        auto remote_structure = std::make_shared<bm::Structure>(bm::Structure::from_rows(
-            topology.coordinates, remote_rows, 32, options.structure->view().tile_row_width,
-            options.structure->canonical_features(), options.structure->canonical_rows()));
+        const auto remote_entries = product(batch, physical_features.size());
+        require(remote_entries <= UINT32_MAX && batch < SIZE_MAX / sizeof(uint64_t),
+                "distributed support exceeds block-masked extents");
+        const auto offsets_bytes = product(batch + 1u, sizeof(uint64_t));
+        const auto features_bytes = product(remote_entries, sizeof(uint32_t));
+        require(features_bytes <= SIZE_MAX - offsets_bytes, "distributed support size overflow");
+        auto* source = static_cast<unsigned char*>(::operator new(offsets_bytes + features_bytes));
+        void* scratch = nullptr;
+        decltype(options.structure) remote_structure;
+        try {
+            auto* row_offsets = reinterpret_cast<uint64_t*>(source);
+            auto* features = reinterpret_cast<uint32_t*>(source + offsets_bytes);
+            for (size_t row = 0; row < batch; ++row) {
+                const auto begin = row * physical_features.size();
+                row_offsets[row] = begin;
+                if (physical_features.size())
+                    __builtin_memcpy(features + begin, physical_features.data(),
+                        physical_features.size() * sizeof(*features));
+            }
+            row_offsets[batch] = remote_entries;
+            const bm::StructureInput input{topology.coordinates,
+                {row_offsets, batch, features, remote_entries},
+                32, options.structure->view().tile_row_width,
+                options.structure->canonical_features(), options.structure->canonical_rows()};
+            const auto bytes = bm::structure_scratch_bytes(input);
+            if (bytes) scratch = ::operator new(bytes);
+            remote_structure.reset(new bm::Structure(input, scratch, bytes));
+        } catch (...) {
+            ::operator delete(scratch);
+            ::operator delete(source);
+            throw;
+        }
+        ::operator delete(scratch);
+        ::operator delete(source);
         devices[0] = std::make_unique<LocalDevice>(options.devices[0], options.structure, topology, groups[0], batch, true);
         devices[1] = std::make_unique<LocalDevice>(options.devices[1], remote_structure, topology, groups[1], batch, false);
         for (unsigned d = 0; d != 2; ++d) {
@@ -321,18 +351,22 @@ struct DistributedProductState {
         auto& home = *devices[0]; auto& remote = *devices[1];
         const auto remote_values = remote_structure->stored_values();
         std::vector<std::uint64_t> offsets(remote_values), rows(remote_values), coordinates(remote_values);
-        auto canonical_batch_rows = options.structure->canonical_rows();
-        std::sort(canonical_batch_rows.begin(), canonical_batch_rows.end());
+        const auto canonical_rows = options.structure->canonical_rows();
+        const auto canonical_batch_rows = options.structure->canonical_rows_in_order();
+        const auto canonical_features = options.structure->canonical_features();
         for (std::size_t row = 0; row < batch; ++row) {
-            const auto row_id = options.structure->canonical_rows()[row];
-            const auto batch_ordinal = static_cast<std::uint64_t>(
-                std::lower_bound(canonical_batch_rows.begin(), canonical_batch_rows.end(), row_id)
-                - canonical_batch_rows.begin());
+            const auto row_id = canonical_rows.data[row];
+            size_t batch_ordinal = 0, end = canonical_batch_rows.count;
+            while (batch_ordinal != end) {
+                const auto middle = batch_ordinal + (end - batch_ordinal) / 2;
+                if (canonical_batch_rows.data[middle] < row_id) batch_ordinal = middle + 1;
+                else end = middle;
+            }
             for (auto feature : physical_features) {
                 const auto destination = remote_structure->value_offset(row, feature);
                 offsets[destination] = options.structure->value_offset(row, feature);
                 rows[destination] = batch_ordinal;
-                coordinates[destination] = options.structure->canonical_features()[feature];
+                coordinates[destination] = canonical_features.data[feature];
             }
         }
         DrainOnFailure drain(home.stream, &remote.stream);

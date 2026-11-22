@@ -1,13 +1,8 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <cstdint>
 #include <type_traits>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_STRUCTURE_IDENTITY_HD __host__ __device__
-#else
-#define CELLERATOR_STRUCTURE_IDENTITY_HD
-#endif
 
 namespace cellerator::structure {
 
@@ -63,20 +58,20 @@ struct LogicalAxis {
 };
 
 template<typename Tag>
-CELLERATOR_STRUCTURE_IDENTITY_HD constexpr bool valid_identity(
+CELLERATOR_HOST_DEVICE constexpr bool valid_identity(
     const persistent_identity<Tag> &identity) noexcept {
     return identity.low != 0u || identity.high != 0u;
 }
 
 template<typename Tag>
-CELLERATOR_STRUCTURE_IDENTITY_HD constexpr bool same_identity(
+CELLERATOR_HOST_DEVICE constexpr bool same_identity(
     const persistent_identity<Tag> &lhs,
     const persistent_identity<Tag> &rhs) noexcept {
     return lhs.low == rhs.low && lhs.high == rhs.high;
 }
 
 template<typename Tag>
-CELLERATOR_STRUCTURE_IDENTITY_HD constexpr bool valid_identity(
+CELLERATOR_HOST_DEVICE constexpr bool valid_identity(
     const local_identity<Tag> &) noexcept {
     // Every domain-local number is usable, including zero. Presence and scope
     // are established by the containing domain/reference, not a reserved slot.
@@ -84,23 +79,23 @@ CELLERATOR_STRUCTURE_IDENTITY_HD constexpr bool valid_identity(
 }
 
 template<typename Tag>
-CELLERATOR_STRUCTURE_IDENTITY_HD constexpr bool same_identity(
+CELLERATOR_HOST_DEVICE constexpr bool same_identity(
     const local_identity<Tag> &lhs,
     const local_identity<Tag> &rhs) noexcept {
     return lhs.value == rhs.value;
 }
 
-CELLERATOR_STRUCTURE_IDENTITY_HD constexpr bool valid_epoch(
+CELLERATOR_HOST_DEVICE constexpr bool valid_epoch(
     structure_epoch epoch) noexcept {
     return epoch.value != 0u;
 }
 
-CELLERATOR_STRUCTURE_IDENTITY_HD constexpr bool same_epoch(
+CELLERATOR_HOST_DEVICE constexpr bool same_epoch(
     structure_epoch lhs, structure_epoch rhs) noexcept {
     return lhs.value == rhs.value;
 }
 
-CELLERATOR_STRUCTURE_IDENTITY_HD constexpr bool valid_logical_axis(
+CELLERATOR_HOST_DEVICE constexpr bool valid_logical_axis(
     const LogicalAxis &axis) noexcept {
     return valid_identity(axis.domain) && valid_identity(axis.logical_order);
 }
@@ -113,5 +108,3 @@ static_assert(std::is_trivially_copyable<occurrence_id>::value,
     "domain-local occurrence IDs must remain compact value records");
 
 } // namespace cellerator::structure
-
-#undef CELLERATOR_STRUCTURE_IDENTITY_HD

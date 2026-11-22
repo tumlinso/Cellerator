@@ -14,6 +14,38 @@ if(NOT TARGET cellerator_memory_cuda)
     cellerator_add_native_data_memory_cuda_owner()
 endif()
 
+add_library(cellerator_feature_major_tiles_cuda STATIC
+    "${PROJECT_SOURCE_DIR}/src/ops/matrix/feature_major_tiles.cu")
+add_library(Cellerator::feature_major_tiles_cuda ALIAS cellerator_feature_major_tiles_cuda)
+cellerator_configure_native_data_host_target(
+    cellerator_feature_major_tiles_cuda feature_major_tiles_cuda)
+set_target_properties(cellerator_feature_major_tiles_cuda PROPERTIES
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
+target_compile_features(cellerator_feature_major_tiles_cuda PUBLIC cxx_std_20)
+target_link_libraries(cellerator_feature_major_tiles_cuda PUBLIC CUDA::cudart)
+
+add_library(cellerator_value_readiness STATIC
+    "${PROJECT_SOURCE_DIR}/src/runtime/value_readiness.cu")
+add_library(Cellerator::value_readiness ALIAS cellerator_value_readiness)
+cellerator_configure_native_data_host_target(cellerator_value_readiness value_readiness)
+set_target_properties(cellerator_value_readiness PROPERTIES
+    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
+target_compile_features(cellerator_value_readiness PUBLIC cxx_std_20)
+target_link_libraries(cellerator_value_readiness PUBLIC CUDA::cudart)
+
+# The legacy providers also use these targets. Import their CUDA runtime-only
+# export before the native foundation, which precedes the NativeData facade.
+install(TARGETS cellerator_feature_major_tiles_cuda cellerator_value_readiness
+    EXPORT CelleratorNativeDataCUDAPrimitiveTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(EXPORT CelleratorNativeDataCUDAPrimitiveTargets NAMESPACE Cellerator::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
+if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")
+    file(APPEND "${CELLERATOR_HOST_CONFIG}"
+        "include(CMakeFindDependencyMacro)\nfind_dependency(CUDAToolkit)\n"
+        "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorNativeDataCUDAPrimitiveTargets.cmake\")\n")
+endif()
+
 add_library(cellerator_state_codes_cuda STATIC
     "${PROJECT_SOURCE_DIR}/src/tensor/state_codes/operations.cu"
     "${PROJECT_SOURCE_DIR}/src/tensor/state_codes/owner.cu")
@@ -74,10 +106,10 @@ target_compile_options(cellerator_dependency_execution_cuda PRIVATE
 # realization while the general structural packer remains in Cellerator::layout.
 # It deliberately has no Torch dependency.
 add_library(cellerator_factorized_interaction_cuda STATIC
-    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/factorized_interaction.cu"
-    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/factorized_interaction_direct.cu"
-    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/factorized_interaction_stable.cu"
-    "${PROJECT_SOURCE_DIR}/src/modeling/cuda/prepared_factorized_interaction.cu")
+    "${PROJECT_SOURCE_DIR}/src/ops/mechanism/factorized_interaction.cu"
+    "${PROJECT_SOURCE_DIR}/src/ops/mechanism/factorized_interaction_direct.cu"
+    "${PROJECT_SOURCE_DIR}/src/ops/mechanism/factorized_interaction_stable.cu"
+    "${PROJECT_SOURCE_DIR}/src/ops/mechanism/prepared_factorized_interaction.cu")
 add_library(Cellerator::factorized_interaction_cuda
     ALIAS cellerator_factorized_interaction_cuda)
 set_target_properties(cellerator_factorized_interaction_cuda PROPERTIES
@@ -107,8 +139,8 @@ install(FILES
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/layout"
         COMPONENT FactorizedInteractionCUDA)
 install(FILES
-        "${PROJECT_SOURCE_DIR}/include/Cellerator/modeling/cuda/factorized_interaction.hh"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/modeling/cuda"
+        "${PROJECT_SOURCE_DIR}/include/Cellerator/ops/mechanism/factorized_interaction_cuda.hh"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/ops/mechanism"
         COMPONENT FactorizedInteractionCUDA)
 
 add_library(cellerator_tensor_cuda INTERFACE)
@@ -135,6 +167,8 @@ target_compile_features(cellerator_native_data_cuda_api INTERFACE
 target_link_libraries(cellerator_native_data_cuda_api INTERFACE
     Cellerator::native_data
     Cellerator::tensor_cuda
+    Cellerator::feature_major_tiles_cuda
+    Cellerator::value_readiness
     Cellerator::dependency_execution_cuda)
 
 install(TARGETS
@@ -150,6 +184,11 @@ install(TARGETS cellerator_native_data_cuda_api
 install(EXPORT ${_cellerator_native_data_cuda_export} NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
 
+install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/ops/matrix/feature_major_tiles.cuh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/ops/matrix" COMPONENT NativeDataCUDA)
+install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/runtime/value_readiness.cuh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/runtime" COMPONENT NativeDataCUDA)
+
 foreach(_header_subtree IN ITEMS
         tensor/state_codes
         tensor/block_masked)
@@ -160,9 +199,10 @@ foreach(_header_subtree IN ITEMS
         COMPONENT NativeDataCUDA)
 endforeach()
 foreach(_header IN ITEMS
+        common/compiler_annotations.hh
         layout/factorized_interaction.hh
         layout/factorized_interaction_pattern.hh
-        modeling/cuda/factorized_interaction.hh
+        ops/mechanism/factorized_interaction_cuda.hh
         ops/mechanism/packed_gated_product.cuh
         ops/quantized/api.cuh
         ops/quantized/dispatch.cuh
@@ -185,12 +225,11 @@ foreach(_header IN ITEMS
         execution/dependency/distributed.cuh
         execution/dependency/packed_program.cuh
         execution/dependency/transfer.cuh
-        tensor/base/dense.cuh
-        tensor/base/compressed.cuh
-        tensor/base/triplet.cuh
-        tensor/base/blocked_ell.cuh
-        tensor/base/sliced_ell.cuh
-        tensor/base/diagonal.cuh
+        memory/domain.hh
+        memory/view.hh
+        tensor/base/compressed.hh
+        tensor/base/coo.hh
+        tensor/base/blocked_ell_layout.hh
         tensor/base/device_views.cuh)
     get_filename_component(_header_parent "${_header}" DIRECTORY)
     install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/${_header}"
@@ -213,7 +252,7 @@ endfunction()
 option(CELLERATOR_BUILD_FACTORIZED_INTERACTION_EXAMPLE
     "Build the native C++ factorized interaction training example" OFF)
 if(CELLERATOR_BUILD_FACTORIZED_INTERACTION_EXAMPLE)
-    add_executable(cellerator_factorized_interaction_training
+    add_executable(cellerator_factorized_interaction_training ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         "${PROJECT_SOURCE_DIR}/examples/native_cuda/factorized_interaction_training.cu")
     target_link_libraries(cellerator_factorized_interaction_training PRIVATE
         Cellerator::factorized_interaction_cuda)
@@ -227,11 +266,12 @@ option(CELLERATOR_BUILD_FACTORIZED_INTERACTION_VALIDATOR
 if(CELLERATOR_BUILD_FACTORIZED_INTERACTION_VALIDATOR)
     add_subdirectory(
         "${PROJECT_SOURCE_DIR}/bench/factorized_interactions"
-        "${CMAKE_CURRENT_BINARY_DIR}/factorized_interactions_validator")
+        "${CMAKE_CURRENT_BINARY_DIR}/factorized_interactions_validator"
+        ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 endif()
 
 if(CELLERATOR_BUILD_FACTORIZED_INTERACTION_TESTS)
-    add_executable(cellerator_factorized_interaction_cuda_contract_test
+    add_executable(cellerator_factorized_interaction_cuda_contract_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         "${PROJECT_SOURCE_DIR}/tests/factorized_interactions/host_contract_test.cc")
     target_link_libraries(cellerator_factorized_interaction_cuda_contract_test PRIVATE
         Cellerator::factorized_interaction_cuda)
@@ -249,7 +289,14 @@ endif()
 # cases: running them requires a Scheduler-admitted GPU lease.
 if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     set(_cellerator_native_data_cuda_test_targets)
-    add_executable(cellerator_native_data_transfer_compile_test
+    add_executable(celleratorFeatureMajorTilesTrainingTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+        "${PROJECT_SOURCE_DIR}/tests/tensor/feature_major_tiles_training_test.cu")
+    target_link_libraries(celleratorFeatureMajorTilesTrainingTest PRIVATE Cellerator::native_data_cuda)
+    set_target_properties(celleratorFeatureMajorTilesTrainingTest PROPERTIES
+        CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
+    list(APPEND _cellerator_native_data_cuda_test_targets celleratorFeatureMajorTilesTrainingTest)
+
+    add_executable(cellerator_native_data_transfer_compile_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         "${PROJECT_SOURCE_DIR}/tests/execution_dependency/transfer_contract_test.cu")
     target_link_libraries(cellerator_native_data_transfer_compile_test PRIVATE
         Cellerator::dependency_execution_cuda)
@@ -259,7 +306,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     list(APPEND _cellerator_native_data_cuda_test_targets
         cellerator_native_data_transfer_compile_test)
 
-    add_executable(cellerator_native_data_block_masked_compile_test
+    add_executable(cellerator_native_data_block_masked_compile_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         "${PROJECT_SOURCE_DIR}/tests/tensor/block_masked_cuda_test.cu")
     target_link_libraries(cellerator_native_data_block_masked_compile_test PRIVATE
         Cellerator::block_masked_cuda)
@@ -272,7 +319,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     # The default executable path needs a Scheduler-admitted GPU. This target
     # is compiled and linked only; its separate host-only branch is useful to
     # the owner but is not registered with CTest here.
-    add_executable(cellerator_native_owner_cuda_test
+    add_executable(cellerator_native_owner_cuda_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         "${PROJECT_SOURCE_DIR}/tests/tensor/native_owner_cuda_test.cu")
     target_link_libraries(cellerator_native_owner_cuda_test PRIVATE
         Cellerator::memory_cuda Cellerator::state_codes_cuda)
@@ -282,7 +329,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     list(APPEND _cellerator_native_data_cuda_test_targets
         cellerator_native_owner_cuda_test)
 
-    add_executable(tensor_quantized_format_test
+    add_executable(tensor_quantized_format_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         "${PROJECT_SOURCE_DIR}/tests/tensor/quantized_format_test.cu")
     target_include_directories(tensor_quantized_format_test PRIVATE
         "${PROJECT_SOURCE_DIR}/include")
@@ -300,7 +347,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     # This payload contract test uses NVCC so the public CUDA-aware view
     # headers are parsed in their intended compilation mode, but the test
     # itself exercises host-side descriptors only and does not require a GPU.
-    add_executable(tensor_format_payload_contract_test
+    add_executable(tensor_format_payload_contract_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         "${PROJECT_SOURCE_DIR}/tests/native_data/format_payload_contract_test.cu")
     target_include_directories(tensor_format_payload_contract_test PRIVATE
         "${PROJECT_SOURCE_DIR}/include")
@@ -315,7 +362,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     list(APPEND _cellerator_native_data_cuda_test_targets
         tensor_format_payload_contract_test)
 
-    add_executable(cellerator_native_data_distributed_cuda_test
+    add_executable(cellerator_native_data_distributed_cuda_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         "${PROJECT_SOURCE_DIR}/tests/execution_dependency/distributed_cuda_test.cu")
     target_link_libraries(cellerator_native_data_distributed_cuda_test PRIVATE
         Cellerator::native_data_cuda)
@@ -328,7 +375,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     # This two-device contract executable checks 32-way distributed binding
     # and VJPs. It is intentionally build-only: execution requires an
     # explicitly admitted two-device Scheduler lease.
-    add_executable(cellerator_native_data_distributed_32way_test
+    add_executable(cellerator_native_data_distributed_32way_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         "${PROJECT_SOURCE_DIR}/tests/execution_dependency/distributed_32way_test.cu")
     target_link_libraries(cellerator_native_data_distributed_32way_test PRIVATE
         Cellerator::native_data_cuda)
@@ -342,7 +389,7 @@ if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     # admission on two devices. Build and link it here, but leave execution to
     # an explicitly admitted Scheduler job rather than registering it with
     # CTest.
-    add_executable(cellerator_native_data_packed_program_contract_test
+    add_executable(cellerator_native_data_packed_program_contract_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         "${PROJECT_SOURCE_DIR}/tests/execution_dependency/packed_program_contract_test.cu")
     target_link_libraries(cellerator_native_data_packed_program_contract_test PRIVATE
         Cellerator::native_data_cuda)

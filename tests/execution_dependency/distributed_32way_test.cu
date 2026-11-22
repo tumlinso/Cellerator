@@ -1,3 +1,5 @@
+#include "../tensor/block_masked_fixture.hh"
+
 #include <Cellerator/execution/dependency/distributed.cuh>
 #include <Cellerator/geometry/dependency/applicability.hh>
 #include <Cellerator/ops/mechanism/gated_product_binding.hh>
@@ -181,11 +183,8 @@ private:
         std::vector<std::uint64_t> canonical_features(coordinates);
         for (std::size_t physical = 0; physical < coordinates; ++physical)
             canonical_features[physical] = (13 * physical) % coordinates;
-        auto host_structure = block_masked::Structure::from_rows(
-            coordinates, physical_features_by_row, 32, 1,
-            std::move(canonical_features));
-        structure = std::make_shared<const block_masked::Structure>(
-            std::move(host_structure));
+        structure = cellerator::test::make_block_masked_structure<true>(
+            coordinates, physical_features_by_row, 32, 1, canonical_features);
 
         packed_values.resize(structure->stored_values());
         const auto one = one_as_fp16_bits();

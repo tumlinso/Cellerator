@@ -163,10 +163,10 @@ struct record_owner {
 
     cellpack::cell_block_record_view view() const {
         auto result = metadata;
-        result.row_record_offsets = rows.data();
-        result.record_block_ids = blocks.data();
-        result.record_gene_masks = masks.data();
-        result.record_value_offsets = value_offsets.data();
+        result.layout.row_block_offsets = rows.data();
+        result.layout.block_ids = blocks.data();
+        result.layout.feature_masks = masks.data();
+        result.layout.row_block_value_offsets = value_offsets.data();
         result.values = values.data();
         return result;
     }
@@ -218,14 +218,14 @@ struct order_owner {
 
 order_owner make_order(const cellpack::cell_block_record_view &records) {
     order_owner result;
-    result.primary.resize(records.row_count);
-    result.secondary.resize(records.row_count);
-    result.active.resize(records.row_count);
-    result.nnz.resize(records.row_count);
-    result.permutation.resize(records.row_count);
-    result.inverse.resize(records.row_count);
+    result.primary.resize(records.layout.rows);
+    result.secondary.resize(records.layout.rows);
+    result.active.resize(records.layout.rows);
+    result.nnz.resize(records.layout.rows);
+    result.permutation.resize(records.layout.rows);
+    result.inverse.resize(records.layout.rows);
     cellpack::local_cell_order_buffers buffers;
-    buffers.row_capacity = records.row_count;
+    buffers.row_capacity = records.layout.rows;
     buffers.primary_keys = result.primary.data();
     buffers.secondary_keys = result.secondary.data();
     buffers.active_block_counts = result.active.data();
@@ -249,12 +249,12 @@ struct tile_owner {
 
     cellpack::warp_tile_view view() const {
         auto result = metadata;
-        result.tile_block_offsets = tile_offsets.data();
-        result.tile_block_ids = blocks.data();
-        result.tile_block_cell_masks = cell_masks.data();
-        result.block_row_entry_offsets = entry_offsets.data();
-        result.row_block_gene_masks = gene_masks.data();
-        result.row_block_value_offsets = value_offsets.data();
+        result.layout.tile_block_offsets = tile_offsets.data();
+        result.layout.block_ids = blocks.data();
+        result.layout.participating_row_masks = cell_masks.data();
+        result.layout.block_row_entry_offsets = entry_offsets.data();
+        result.layout.feature_masks = gene_masks.data();
+        result.layout.row_block_value_offsets = value_offsets.data();
         result.values = values.data();
         return result;
     }
@@ -312,7 +312,7 @@ void test_canonical_record_and_direct_tile_agreement() {
     const auto tiles = make_tiles(plan, records.view(), order.view());
     require(order.permutation != std::vector<u32>({0u, 1u, 2u, 3u, 4u}),
         "test ordering remained identity");
-    require(tiles.view().tile_count == 2u, "tail tile fixture was not created");
+    require(tiles.view().layout.tiles == 2u, "tail tile fixture was not created");
 
     std::vector<compute_t> weights{
         static_cast<compute_t>(1.25), static_cast<compute_t>(-2.0),

@@ -91,11 +91,9 @@ masked reconstruction objective is one choice, not the default definition of
 cellular learning. Reconstruction of observations alone does not establish that
 the responsible dynamics or intervention responses have been learned.
 
-`Cell`, `DynamicalModel`, step contexts, events, and trajectory APIs support the models
-for which their contracts are useful. They do not define every permissible
-network or require every learning problem to be expressed as explicit cellular
-state transitions. Conventional neural modules and alternative representations
-must remain composable without adopting those APIs.
+Explicit transitions, observations, events, and trajectories serve models that
+need them. Conventional neural modules and alternative representations can
+compose directly through their own operations.
 
 ## Virtual models and structural specialization {#virtual-models-and-structural-specialization}
 
@@ -281,9 +279,8 @@ renaming existing classes.
 
 The 2026-10-31 implementation provides a general Python `Cell`, explicit
 dynamical wrappers, feature encoding, relation attention, shared readouts, and a
-trainable grouped-linear adapter. The native C++ `Cell` contract is a separate
-typed capability interface; the distinction is recorded in the Cells section
-below. Read the [NN foundation guide](nn_foundation.qmd) and
+trainable grouped-linear adapter. The current native C++ interface passes
+concrete data directly to models. Read the [NN foundation guide](nn_foundation.qmd) and
 [dated implementation record](current_implementation.qmd) for current contracts
 and qualification. The table below preserves the motivation for that work;
 the broader modeling capabilities remain open-ended.
@@ -302,7 +299,7 @@ target below remains broader.
 
 | Concern | Existing machinery to build on | Remaining conceptual capability |
 |---|---|---|
-| Information and representations | Feature identities, ranked/event vocabularies, sparse and ragged state, event histories, and explicit AnnData exchange. | A coherent model-facing vocabulary spanning measured, historical, and learned information without requiring one persistent state representation. |
+| Information and representations | Feature identities, ranked/event vocabularies, sparse and ragged state, event histories, and explicit caller-prepared data boundaries. | A coherent model-facing vocabulary spanning measured, historical, and learned information without requiring one persistent state representation. |
 | Trainable composition | A small `nn` surface for Product2, mechanisms, and shared-support relations; optional Torch learned dynamics, gated interactors, event heads, and expert banks. | Natural general neural composition across structured biological representations and ordinary modules, with clear parameter and gradient ownership. |
 | Interactions | Directed, bipartite, and hyperedge computations, activity gates, sparse support, worklists, and numerical attention/dispatch operations. | A unified modeling experience for learned participation, contextual computation, and aggregation across dense, sparse, and overlapping relationships. |
 | History and behavior | Explicit model/cell transition APIs, external state references, trajectories, events, and population context/lifecycle mechanisms. | General history-conditioned and recurrent modeling that composes with static encoders and does not make `advance()` the universal model operation. |
@@ -369,7 +366,7 @@ even when their syntax and extension mechanisms differ.
 |---|---|
 | Typed model composition, generic algorithms, and compile-time specialization where they improve usability or execution. | Interactive model exploration, runtime composition, and rapid experiments with representations and objectives. |
 | Direct inheritance, callables, and templates for extending biological modules and operators without a Python dependency. | Ordinary Python and `torch.nn.Module` composition, callable readouts, and custom-operation prototyping. |
-| Predictable ownership and lifetimes, reusable workspaces, borrowed storage, and specialized dynamic layouts. | Convenient integration with AnnData, scientific data tools, training utilities, notebooks, and analysis workflows. |
+| Predictable ownership and lifetimes, reusable workspaces, borrowed storage, and specialized dynamic layouts. | Convenient integration with scientific data tools, training utilities, notebooks, and analysis workflows through explicit owner-defined data boundaries. |
 | Native HPC embedding, CPU parallelism, CUDA integration, and control over batching, memory, and communication when needed. | Orchestration of the same native work through coarse batched calls, with access to advanced execution controls when needed. |
 
 These are complementary strengths, not exclusive roles. C++ should support
@@ -438,7 +435,7 @@ Primitive borrowed views, explicit allocation owners, typed identities, and
 compile-time composition are part of the native experience. The first training
 backend uses ATen tensors honestly; Cellerator-specific data representations
 remain separate. Cellerator C++ and CUDA targets require at least C++20; its
-C++20 named modules are built and exported through the normal package. The
+C++20 named modules are available through the normal package when enabled. The
 language compiler is maintained separately in
 [Texo](https://github.com/tumlinso/Texo). CUDA translation units use Cellerator's
 public headers and do not compile named modules.
@@ -448,48 +445,25 @@ every backend or the framework's full biological ML ambition.
 
 ## Cells, representations, and auxiliary views
 
-**Native interface revised 2026-11-01.** A native `Cell<Model, Instance>`
-is a continuing virtual instance that binds a shared model to instance-specific
-information. The same model can support different instance representations.
-Model and instance copying, ownership, and mutation semantics remain explicit;
-the primary binding adds no universal state vector, clock, identity, device,
-cache, or trajectory. Its meaning is independent of the physical placement of
-its values and parameters.
+Native C++ models are ordinary typed callables. Operations take the specific
+data they consume, including event ranges, expression rows, pooled state, or
+model-specific representations. Ordered token ranges and expression values can
+use borrowed array or matrix views over caller-owned storage. The caller keeps
+biological identity and feature labels distinct from storage position.
 
-`forward(args...)` invokes the associated callable with the stored instance.
-It can update that same logical instance and return any model-defined result.
-Const forwarding is available only when the model and instance permit it.
-A logical update may replace or retain physical values for gradients,
-snapshots, or outstanding readers. Models and owners define those lifetimes,
-parameter consistency, and invalidation; Cell adds no implicit rollback,
-synchronization, or universal mutation tracking.
-
-Optional typed view and edit access delegates to instance-defined contracts.
-Typed support checks are compile-time; unsupported typed acquisitions are
-ill-formed. `CellViews` retains an optional runtime capability boundary and
-`std::bad_cast` behavior through explicit borrowed bridges. Application-defined
-identities remain distinct from storage rows, token offsets, and physical
-placement. The native core remains independent of Torch and CUDA, with a C++20
-minimum build baseline. Header APIs remain available; the normal package also
-builds and exports `cellerator.core`. CUDA translation units compile as CUDA
-C++20 and continue to use the ordinary public headers.
-
-`EventPrefix`, `DenseExpressionRow`, and `MutableDenseExpressionRow` select
-caller-owned bulk storage without prescribing the complete instance. Their
-views preserve token occurrences, feature identities, row stride, scalar type,
-and placement. Owners control append, movement, and mutation. A single Cell
-can contain shared or separately placed portions; operations can jointly read
-multiple Cells or batch pooled instances. This foundation does not implement
-an expert-residency scheduler, distributed transport, or automatic placement.
-See the [native guide](native_nn.qmd#bind-a-continuing-native-instance) and
-[event example](../examples/native_cell/event_forward.cc).
+A continuing model can evaluate a transition into caller-provisioned storage
+and publish state, clock, and generation after validation. The storage owner
+controls snapshot retention, asynchronous completion, and reuse. Observation
+and learned readouts are separate operations. See the
+[native guide](native_nn.qmd#use-native-data-views-directly) and the
+[relation example](../tests/framework/native/cell_relation_example.cc).
 
 The modeling goal remains to make the information relevant to a question
 addressable without requiring one complete, persistently materialized cell
 vector. Relevant information may be distributed across features, inferred
 context, event history, recurrent memory, or learned representations. Static
 and limited-domain objectives are first-class. A model evaluates conditions;
-the Cell interface enables access to the information its operations require.
+the operation's typed arguments expose the information it requires.
 
 ### Motivating request: an auxiliary ATAC model for Karyoplast
 
@@ -553,17 +527,9 @@ recurrent systems, and explicit dynamical models alike.
   caches and temporary activations. Physical eviction must preserve the
   model's declared information dependencies.
 
-These are design constraints and performance goals, not measured speedup
-claims. The native `Cell` binds a model and instance while operations choose their
-concrete result types. Typed access and optional runtime bridges expose the
-representations those operations support. `DynamicalCell` remains
-an optional state-transition utility with its own state snapshot, identity,
-clock, observation, and shared-model behavior. The native NN readout/query
-compositions are separate model-level facilities. The Python API is unchanged
-by this native interface. None of these interfaces makes a per-cell virtual
-call a batch execution strategy or introduces a persistent cache. Further
-representation, execution, and modeling capabilities still require their own
-scoped development.
+Native readout and query composition works with caller-defined models and
+concrete results. The requirements above guide representation and execution
+choices for each model.
 
 ## Scientific questions and identifiability
 
@@ -623,8 +589,8 @@ boundaries per operation.
 | Scientific interpretation and model assumptions | Karyoplast, Cytoplast, Blastback, other consumers | Consumers choose biological meaning and validate their models. |
 | Formal inferability of mechanisms or features | GlassHelix | Investigate question-specific identifiability and assumptions; Cellerator supplies reusable modeling and learning machinery. |
 | Sequence-grounded representations | Cellerator | Preserve exact sequence, strand, validity, and source coordinates through packing and prepared regulatory execution. Use shared native layout and execution owners. |
-| Persistence, sharding, transport, delivery | CellShard and owning systems | Integrate across explicit data boundaries. |
 | Single-cell methods and AnnData integration | CCell | Own preprocessing, RNA velocity, and the optional adapter from acquired AnnData++ arrays to Cellerator views. |
+| Persistence, sharding, transport, delivery | CCell and owning systems | Cellerator consumes explicit data boundaries and does not own dataset custody. CellShard source is retained but detached from supported Cellerator builds and installs. |
 | Native H5AD and Zarr I/O | AnnData++ | Maintain the file and array APIs independently. The standard build bundles a pinned source revision. |
 | Broader single-cell analysis | AnnData ecosystem, Scanpy, RAPIDS-singlecell | Retain the wider analysis ecosystem and its own method contracts. |
 
@@ -692,7 +658,7 @@ make dynamics the framework core or impose a ceiling on learned architectures.
 This clarification changes architectural intent, not implementation paths.
 
 ```text
-include/Cellerator/                 # public native contracts, including cell.hh and cells/
+include/Cellerator/                 # public native contracts, including concrete data views
   structure/ support/ indexing/     # identity and reusable work preparation
   layout/                           # logical-to-physical mapping contracts
   ops/<family>/                     # open-ended native operation families

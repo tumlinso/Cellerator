@@ -82,29 +82,29 @@ endif()
 
 if(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS)
     enable_testing()
-    add_subdirectory(tests/native_foundation/reference)
-    add_subdirectory(tests/native_foundation/numeric)
-    add_subdirectory(tests/native_foundation/program)
-    add_subdirectory(tests/native_foundation/build)
+    add_subdirectory(tests/native_foundation/reference ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
+    add_subdirectory(tests/native_foundation/numeric ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
+    add_subdirectory(tests/native_foundation/program ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
+    add_subdirectory(tests/native_foundation/build ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
     if(TARGET Cellerator::local_differential)
-        add_subdirectory(tests/native_foundation/differential)
+        add_subdirectory(tests/native_foundation/differential ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
     endif()
     if(TARGET Cellerator::indexed_mechanism)
-        add_subdirectory(tests/native_foundation/nary)
+        add_subdirectory(tests/native_foundation/nary ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
     endif()
     if(TARGET Cellerator::relation_algebra AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/native_foundation/support/CMakeLists.txt")
-        add_subdirectory(tests/native_foundation/support)
+        add_subdirectory(tests/native_foundation/support ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
     endif()
     if(TARGET Cellerator::native_value_instance)
-        add_subdirectory(tests/native_foundation/values)
+        add_subdirectory(tests/native_foundation/values ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
     endif()
     if(TARGET Cellerator::local_differential)
-        add_subdirectory(tests/native_foundation/integration)
+        add_subdirectory(tests/native_foundation/integration ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
     endif()
 endif()
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bench/native_foundation/CMakeLists.txt")
-    add_subdirectory(bench/native_foundation)
+    add_subdirectory(bench/native_foundation ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 endif()
 
 # Export the actual linked dependency closure, including the preserved program
@@ -175,6 +175,7 @@ endwhile()
 # small shared set so both that component and the full native-foundation set
 # can load them without defining a partial second copy of the targets.
 set(_nf_buildtree_exports "${_nf_exports}")
+list(REMOVE_ITEM _nf_exports cellerator_feature_major_tiles_cuda cellerator_value_readiness)
 if(CMAKE_CUDA_COMPILER_LOADED
    AND TARGET cellerator_factorized_interaction_cuda
    AND TARGET cellerator_support

@@ -49,7 +49,6 @@ include(cmake/CelleratorBuildContract.cmake)
 # Branch before legacy compiler/native/Torch exports to avoid namespace collisions.
 option(CELLERATOR_BUILD_SUBSTRATE_SDK "Build the selected substrate SDK" OFF)
 if(CELLERATOR_BUILD_SUBSTRATE_SDK)
-    add_subdirectory(modules)
     include(cmake/substrate/Substrate.cmake)
     return()
 endif()
@@ -116,9 +115,30 @@ if(CELLERATOR_ENABLE_MODULES)
             DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator" COMPONENT NN)
     endif()
 endif()
-option(CELLERATOR_BUILD_TORCH_EXAMPLES "Build optional CellShard-dependent Torch examples" OFF)
-option(CELLERATOR_ENABLE_CELLSHARD "Build the retained CellShard component" OFF)
-option(CELLERATOR_BUILD_TESTS "Build Cellerator test executables" ON)
+option(CELLERATOR_BUILD_TESTS "Include Cellerator checks, examples, and benchmarks in the default build" ON)
+set(CELLERATOR_CHECK_EXCLUDE_FROM_ALL)
+if(NOT CELLERATOR_BUILD_TESTS)
+    set(CELLERATOR_CHECK_EXCLUDE_FROM_ALL EXCLUDE_FROM_ALL)
+endif()
+
+# These files declare only checks, examples, and benchmarks in the root
+# directory. Keep their named targets available when building just libraries.
+function(cellerator_include_checks path)
+    if(NOT CELLERATOR_BUILD_TESTS)
+        get_property(existing DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
+    endif()
+    include("${PROJECT_SOURCE_DIR}/${path}")
+    if(NOT CELLERATOR_BUILD_TESTS)
+        get_property(checks DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
+        if(existing)
+            list(REMOVE_ITEM checks ${existing})
+        endif()
+        if(checks)
+            set_target_properties(${checks} PROPERTIES EXCLUDE_FROM_ALL TRUE)
+        endif()
+    endif()
+endfunction()
+
 option(CELLERATOR_BUILD_NATIVE_DATA_TESTS
     "Build focused native data and cellular geometry tests" OFF)
 option(CELLERATOR_BUILD_NATIVE_DATA_BENCHMARKS
@@ -131,9 +151,6 @@ endif()
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visible CUDA device capability at configure time." ON)
 option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the default CMAKE_CUDA_ARCHITECTURES when the user did not provide one." ON)
-if(CELLERATOR_BUILD_TORCH_EXAMPLES AND NOT CELLERATOR_ENABLE_TORCH)
-    message(FATAL_ERROR "CELLERATOR_BUILD_TORCH_EXAMPLES requires CELLERATOR_ENABLE_TORCH")
-endif()
 
 include(cmake/CelleratorHost.cmake)
 add_subdirectory(src/ops/sequence)
@@ -155,14 +172,7 @@ endif()
 ]=])
 endif()
 add_subdirectory(src/math/reference)
-add_subdirectory(modules)
-option(CELLERATOR_ENABLE_VELOCITY "Build the legacy external Velocity++ adapter" OFF)
-if(CELLERATOR_ENABLE_VELOCITY)
-    if(CELLERATOR_BUILD_CCELL)
-        message(FATAL_ERROR "Choose CCell or the legacy external Velocity++ adapter in a single build.")
-    endif()
-    include(cmake/CelleratorVelocity.cmake)
-endif()
+add_subdirectory(src/ops/numeric/binary16)
 option(CELLERATOR_BUILD_SEMANTIC_SPINE_V1 "Build the bounded Semantic Spine v1 conformance suite" OFF)
 option(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1 "Build the internal relation update spine and conformance suite" OFF)
 if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
@@ -174,37 +184,33 @@ endif()
 if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
     if(CELLERATOR_BUILD_TESTS)
         enable_testing()
-        include(tests/relation_update_spine_v1/CMakeLists.txt)
     endif()
+    cellerator_include_checks(tests/relation_update_spine_v1/CMakeLists.txt)
 endif()
+add_subdirectory(src/execution/program)
 include(cmake/Product2.cmake)
 # Product2 is host-capable and must be available to the Python module before
 # the CUDA-off early return. Mechanism bindings are attached after their CUDA
 # owner targets have been declared below.
 if(CELLERATOR_ENABLE_PYTHON)
     include(cmake/CelleratorPython.cmake)
-    add_dependencies(cellerator_python_extensions cellerator_module_contract)
 endif()
 # ATen numerical operations and tokenization have a separate optional
 # dependency boundary from the CUDA mechanism Torch adapters below.
 include(cmake/CelleratorTokenization.cmake)
 include(cmake/CelleratorSparseSupport.cmake)
-# Data and geometry owners precede the modeling umbrella so model contracts
-# compose these native targets without compiling duplicate relation sources.
+# Native data and geometry owners supply the direct host operation targets.
 include(cmake/CelleratorNativeData.cmake)
 if(CELLERATOR_BUILD_TESTS)
     enable_testing()
-    add_subdirectory(tests/math_reference)
 endif()
+add_subdirectory(tests/math_reference ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 add_subdirectory(tests/sequence ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 add_subdirectory(bench/sequence ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
-    # The host-only sparse-support export is already imported, so the native
-    # data package can load here before the modeling umbrella that depends on
-    # it.
     cellerator_append_native_data_package_config()
 endif()
-include(cmake/CelleratorModeling.cmake)
+add_subdirectory(tests/framework/native ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 if(CELLERATOR_BUILD_NATIVE_DATA_TESTS)
     enable_testing()
 endif()
@@ -217,6 +223,8 @@ include(cmake/CelleratorFrameworkCUDA.cmake)
 # independent native-data CUDA targets. The module is include-guarded because
 # FrameworkCUDA also includes it when that optional SDK is enabled.
 include(cmake/CelleratorNativeDataCUDA.cmake)
+include(cmake/CelleratorTorchSparse.cmake)
+include(cmake/CelleratorTorchDense.cmake)
 include(cmake/CelleratorNN.cmake)
 
 macro(cellerator_append_component_validation)
@@ -252,8 +260,20 @@ if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
             "CELLERATOR_ENABLE_TORCH requires the CUDA indexed-mechanism owner; "
             "configure with CELLERATOR_ENABLE_CUDA=AUTO or ON.")
     endif()
+    if(COMMAND cellerator_append_native_data_cuda_package_config)
+        cellerator_append_native_data_cuda_package_config()
+    endif()
+    if(COMMAND cellerator_append_framework_cuda_package_config)
+        cellerator_append_framework_cuda_package_config()
+    endif()
     if(TARGET Cellerator::nn)
         cellerator_append_nn_package_config()
+    endif()
+    if(TARGET Cellerator::torch_sparse)
+        cellerator_append_torch_sparse_package_config()
+    endif()
+    if(TARGET Cellerator::torch_dense)
+        cellerator_append_torch_dense_package_config()
     endif()
     cellerator_append_component_validation()
     return()
@@ -283,8 +303,6 @@ set(CELLERATOR_DEFAULT_GRADIENT_CLIP_NORM "1.0" CACHE STRING
     "Default global-norm gradient clipping threshold for future model configs")
 set(CELLERATOR_DEFAULT_GRADIENT_CLIP_VALUE "1.0" CACHE STRING
     "Default value gradient clipping threshold for future model configs")
-set(CELLERATOR_CELLSHARD_SOURCE_DIR "" CACHE PATH
-    "Optional CellShard source override. Defaults to components/CellShard when CELLERATOR_ENABLE_CELLSHARD is enabled.")
 
 function(cellerator_require_choice var)
     set(cellerator_allowed_values ${ARGN})
@@ -370,63 +388,11 @@ find_path(NCCL_INCLUDE_DIR
         /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/comm_libs/12.9/nccl/include
 )
 
-# Canonical subsystem target ownership. These files are included here because
-# the runtime and format ABI must exist before the sibling CellShard project
-# is added below.
+# Canonical computational subsystem owners.
 include(src/runtime/CMakeLists.txt)
 include(src/execution/CMakeLists.txt)
 include(src/compute/foundation_targets.cmake)
-function(cellerator_add_cellshard_source cellshard_source_dir)
-    if(NOT EXISTS "${cellshard_source_dir}/CMakeLists.txt")
-        message(FATAL_ERROR "CELLERATOR_CELLSHARD_SOURCE_DIR does not point to a CellShard source tree: ${cellshard_source_dir}")
-    endif()
-    if(NOT EXISTS "${cellshard_source_dir}/include/CellShard/CellShard.hh")
-        message(FATAL_ERROR
-            "CellShard source tree must expose the package include layout at include/CellShard. "
-            "Update the CellShard checkout or set CELLERATOR_CELLSHARD_SOURCE_DIR to a compatible source tree: "
-            "${cellshard_source_dir}")
-    endif()
-    if(DEFINED CELLSHARD_ENABLE_CUDA AND NOT CELLSHARD_ENABLE_CUDA)
-        message(FATAL_ERROR
-            "Cellerator requires the CUDA CellShard runtime. "
-            "Do not configure with CELLSHARD_ENABLE_CUDA=OFF.")
-    endif()
-    if(NOT DEFINED CELLSHARD_ENABLE_CUDA)
-        set(CELLSHARD_ENABLE_CUDA ON CACHE BOOL
-            "Enable the CUDA CellShard runtime required by Cellerator.")
-    endif()
-    if(NOT DEFINED CELLSHARD_ENABLE_CELLERATOR_QUANTIZED)
-        set(CELLSHARD_ENABLE_CELLERATOR_QUANTIZED ON CACHE BOOL
-            "Use the Cellerator-owned quantized format ABI inside CellShard.")
-    endif()
-    if(NOT DEFINED CELLSHARD_ENABLE_CUDA_LINEINFO)
-        set(CELLSHARD_ENABLE_CUDA_LINEINFO ${CELLERATOR_ENABLE_CUDA_LINEINFO} CACHE BOOL
-            "Emit CUDA line mapping for Nsight profiling inside CellShard.")
-    endif()
-    if(NOT DEFINED CELLSHARD_CUDA_MODE)
-        set(CELLSHARD_CUDA_MODE ${CELLERATOR_CUDA_MODE} CACHE STRING
-            "CellShard CUDA optimization mode: generic, native, or native-extreme.")
-    endif()
-    set(CELLSHARD_CELLERATOR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH
-        "Cellerator source checkout used by CellShard compatibility conversion." FORCE)
-    if(NOT TARGET cellshard_cellerator_compute_matrix_convert)
-        add_library(cellshard_cellerator_compute_matrix_convert INTERFACE)
-        target_link_libraries(cellshard_cellerator_compute_matrix_convert INTERFACE
-            $<BUILD_INTERFACE:cellerator_compute_matrix_convert>)
-    endif()
-    add_subdirectory("${cellshard_source_dir}" "${CMAKE_CURRENT_BINARY_DIR}/CellShard" EXCLUDE_FROM_ALL)
-endfunction()
 
-if(CELLERATOR_ENABLE_CELLSHARD)
-    if(CELLERATOR_CELLSHARD_SOURCE_DIR)
-        cellerator_add_cellshard_source("${CELLERATOR_CELLSHARD_SOURCE_DIR}")
-    else()
-        cellerator_add_cellshard_source("${CMAKE_CURRENT_SOURCE_DIR}/components/CellShard")
-    endif()
-    if(NOT TARGET CellShard::runtime)
-        message(FATAL_ERROR "CELLERATOR_ENABLE_CELLSHARD requires CellShard::runtime")
-    endif()
-endif()
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
@@ -530,21 +496,22 @@ endfunction()
 cellerator_enable_perf(cellerator_runtime)
 cellerator_enable_perf(cellerator_compute_matrix_convert)
 cellerator_enable_perf(cellerator_runtime_fleet)
+cellerator_enable_perf(cellerator_csr_multiply)
 
 include(src/CMakeLists.txt)
 # General numerical operations used by both native C++ and optional framework
 # adapters remain in Cellerator even when the Torch integration is disabled.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/model_ops/CMakeLists.txt")
     add_subdirectory(src/compute/operation/model_ops)
-    if(CELLERATOR_BUILD_TESTS AND
-       EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/bindings/model_ops/model_ops_dimension_contract_test.cc")
-        enable_testing()
-        add_executable(celleratorModelOpsDimensionContractTest
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/bindings/model_ops/model_ops_dimension_contract_test.cc")
+        add_executable(celleratorModelOpsDimensionContractTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
             tests/bindings/model_ops/model_ops_dimension_contract_test.cc)
         target_link_libraries(celleratorModelOpsDimensionContractTest PRIVATE
             Cellerator::model_ops)
-        add_test(NAME cellerator_model_ops_dimension_contract
-            COMMAND celleratorModelOpsDimensionContractTest)
+        if(CELLERATOR_BUILD_TESTS)
+            add_test(NAME cellerator_model_ops_dimension_contract
+                COMMAND celleratorModelOpsDimensionContractTest)
+        endif()
     endif()
 endif()
 # The legacy compute manifest declares the provider source inventories.  Split
@@ -553,7 +520,6 @@ endif()
 include(cmake/providers/CelleratorProviderTargets.cmake)
 cellerator_finalize_cuda_provider_targets()
 include(src/geometry/owned_targets.cmake)
-include(cmake/CelleratorCellpackInterop.cmake)
 include(src/planner/CMakeLists.txt)
 
 # CE-EXOP core-contract fan-in.  Keep the portfolio and profiling surfaces
@@ -629,20 +595,23 @@ if(TARGET cellerator_dependency_execution_cuda)
         Cellerator::execution_preparation Cellerator::gated_product)
 endif()
 
-if(CELLERATOR_BUILD_TESTS)
+block()
     add_executable(cellerator_operation_core_v2_test
+        ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         src/compute/operation/operation_core_v2/operation_core_v2_test.cc)
     target_link_libraries(cellerator_operation_core_v2_test PRIVATE
         Cellerator::operation_core)
     target_compile_features(cellerator_operation_core_v2_test PRIVATE cxx_std_20)
 
     add_executable(cellerator_geometry_acquisition_v2_test
+        ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         src/execution/geometry_acquisition_v2/geometry_acquisition_v2_test.cc)
     target_link_libraries(cellerator_geometry_acquisition_v2_test PRIVATE
         Cellerator::geometry_acquisition)
     target_compile_features(cellerator_geometry_acquisition_v2_test PRIVATE cxx_std_20)
 
     add_executable(cellerator_geometry_v2_test
+        ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         src/geometry/planning/v2/geometry_v2_test.cc)
     target_link_libraries(cellerator_geometry_v2_test PRIVATE
         Cellerator::architecture_provider
@@ -650,6 +619,7 @@ if(CELLERATOR_BUILD_TESTS)
     target_compile_features(cellerator_geometry_v2_test PRIVATE cxx_std_20)
 
     add_executable(cellerator_planner_portfolio_v1_test
+        ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         src/planner/portfolio/tests/planner_portfolio_v1_test.cc)
     target_link_libraries(cellerator_planner_portfolio_v1_test PRIVATE
         Cellerator::planner)
@@ -659,23 +629,11 @@ if(CELLERATOR_BUILD_TESTS)
     # Cellerator public headers and the Cellerator-owned profiling library;
     # it must not gain a CellShard source, include, or link dependency.
     add_executable(cellerator_jbc_standalone_abi_gate
+        ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         tests/jbc/verification/standalone_abi_gate_v1_test.cc)
     target_link_libraries(cellerator_jbc_standalone_abi_gate PRIVATE
         Cellerator::profiling_v1)
     target_compile_features(cellerator_jbc_standalone_abi_gate PRIVATE cxx_std_20)
-
-    # The privileged bridge is a combined-build-only gate. It consumes the
-    # CellShard transport envelope and the Cellerator-owned opaque execution
-    # contract without making either surface mandatory for standalone builds.
-    if(CELLERATOR_ENABLE_CELLSHARD)
-        add_executable(cellerator_jbc_cellshard_bridge_gate
-            tests/jbc/verification/cellshard_bridge_gate_v1_test.cc)
-        target_link_libraries(cellerator_jbc_cellshard_bridge_gate PRIVATE
-            CellShard::inspect
-            Cellerator::opaque_execution_artifact)
-        target_compile_features(cellerator_jbc_cellshard_bridge_gate PRIVATE
-            cxx_std_20)
-    endif()
 
     file(GLOB_RECURSE CELLERATOR_EXECUTION_PREPARATION_TEST_SOURCES CONFIGURE_DEPENDS
         tests/jbc/atom_plane/*.cc
@@ -702,6 +660,7 @@ if(CELLERATOR_BUILD_TESTS)
         set(cellerator_jbc_test_target
             "cellerator_jbc_${cellerator_jbc_test_name}")
         add_executable(${cellerator_jbc_test_target}
+            ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
             "${cellerator_jbc_test_source}")
         target_link_libraries(${cellerator_jbc_test_target} PRIVATE
             Cellerator::execution_preparation)
@@ -710,18 +669,17 @@ if(CELLERATOR_BUILD_TESTS)
     endforeach()
 
     add_executable(cellerator_jbc_multi_extent_assembly_bench
+        ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         bench/jbc/multi_extent/assembly_vs_direct_v1.cc)
     target_link_libraries(cellerator_jbc_multi_extent_assembly_bench PRIVATE
         Cellerator::execution_preparation)
     target_compile_features(cellerator_jbc_multi_extent_assembly_bench PRIVATE
         cxx_std_20)
-endif()
+endblock()
 
-include(bench/CMakeLists.txt)
-if(CELLERATOR_BUILD_TESTS)
-    include(tests/CMakeLists.txt)
-
-    enable_testing()
+cellerator_include_checks(bench/CMakeLists.txt)
+cellerator_include_checks(tests/CMakeLists.txt)
+block()
     # CE-EXOP final acceptance entry points. These targets keep correctness,
     # profiler-fixture validation, and CUDA compile validation explicit. The
     # CUDA target compiles sm_70 binaries only; device execution remains under
@@ -752,7 +710,7 @@ if(CELLERATOR_BUILD_TESTS)
             all
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         USES_TERMINAL)
-endif()
+endblock()
 
 include(cmake/NativeFoundation.cmake)
 
@@ -763,31 +721,34 @@ cellerator_append_native_data_package_config()
 if(COMMAND cellerator_append_native_data_cuda_package_config)
     cellerator_append_native_data_cuda_package_config()
 endif()
-if(COMMAND cellerator_append_cellpack_interop_package_config)
-    cellerator_append_cellpack_interop_package_config()
-endif()
 if(COMMAND cellerator_append_framework_cuda_package_config)
     cellerator_append_framework_cuda_package_config()
 endif()
 if(TARGET Cellerator::nn)
     cellerator_append_nn_package_config()
 endif()
+if(TARGET Cellerator::torch_sparse)
+    cellerator_append_torch_sparse_package_config()
+endif()
+if(TARGET Cellerator::torch_dense)
+    cellerator_append_torch_dense_package_config()
+endif()
 
-if(CELLERATOR_ENABLE_SPARSE_SUPPORT AND CELLERATOR_BUILD_TESTS)
-    add_subdirectory(tests/sparse_support)
+if(CELLERATOR_ENABLE_SPARSE_SUPPORT)
+    add_subdirectory(tests/sparse_support ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 endif()
 if(CELLERATOR_ENABLE_SPARSE_SUPPORT AND EXISTS "${PROJECT_SOURCE_DIR}/bench/sparse_support/CMakeLists.txt")
-    add_subdirectory(bench/sparse_support)
+    add_subdirectory(bench/sparse_support ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 endif()
 
-if(CELLERATOR_BUILD_TESTS AND NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
-    add_executable(celleratorCudaStreamDeviceTest
-        tests/bindings/native/cuda_stream_device_test.cc)
-    target_include_directories(celleratorCudaStreamDeviceTest PRIVATE
-        "${PROJECT_SOURCE_DIR}/src/runtime")
-    target_link_libraries(celleratorCudaStreamDeviceTest PRIVATE
-        CUDA::cudart CUDA::cuda_driver)
-    target_compile_features(celleratorCudaStreamDeviceTest PRIVATE cxx_std_20)
+add_executable(celleratorCudaStreamDeviceTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    tests/bindings/native/cuda_stream_device_test.cc)
+target_include_directories(celleratorCudaStreamDeviceTest PRIVATE
+    "${PROJECT_SOURCE_DIR}/src/runtime")
+target_link_libraries(celleratorCudaStreamDeviceTest PRIVATE
+    CUDA::cudart CUDA::cuda_driver)
+target_compile_features(celleratorCudaStreamDeviceTest PRIVATE cxx_std_20)
+if(CELLERATOR_BUILD_TESTS)
     add_test(NAME cellerator_cuda_stream_device
         COMMAND celleratorCudaStreamDeviceTest)
     set_tests_properties(cellerator_cuda_stream_device PROPERTIES SKIP_RETURN_CODE 77)

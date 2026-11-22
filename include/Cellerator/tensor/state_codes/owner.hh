@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Cellerator/memory/cuda/resources.hh>
+#include <Cellerator/memory/view.hh>
 #include <Cellerator/tensor/state_codes/operations.hh>
 
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <vector>
 
 namespace cellerator::tensor::state_codes {
 
@@ -14,9 +14,11 @@ namespace cellerator::tensor::state_codes {
 // Profile identity and biological feature binding remain with the caller.
 class Profile final {
  public:
-  Profile(std::vector<std::uint32_t> offsets,
-          std::vector<float> levels,
-          std::vector<std::uint32_t> feature_map,
+  // Sources must be host-readable and remain unchanged until construction
+  // returns. The profile uploads all three arrays before that boundary.
+  Profile(memory::const_array_view<std::uint32_t> offsets,
+          memory::const_array_view<float> levels,
+          memory::const_array_view<std::uint32_t> feature_map,
           std::uint32_t code_bits, const memory::cuda::Stream& stream);
   Profile(const Profile&) = delete;
   Profile& operator=(const Profile&) = delete;

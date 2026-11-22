@@ -1,3 +1,4 @@
+#include "../../src/ops/matrix/csr_multiply.cuh"
 #include <Cellerator/compute/candidate/sparse/project.hh>
 #include <Cellerator/compute/operation/device_elementwise.hh>
 #include <Cellerator/compute/operation/prepared_relation.hh>
@@ -20,7 +21,7 @@
 
 namespace ce = cellerator::compute::relation;
 namespace ex = cellerator::execution;
-namespace project = cellerator::compute::sparse::project;
+namespace matrix = cellerator::ops::matrix;
 namespace runtime = cellerator::runtime;
 
 namespace {
@@ -412,8 +413,11 @@ void run_direct_f32(const char* label, old_csr_fn baseline, cudaStream_t stream,
     cuda_check(cudaMemcpyAsync(d_features, features.data(), feature_count * sizeof(float), cudaMemcpyHostToDevice, stream));
     cuda_check(cudaStreamSynchronize(stream));
     runtime::execution_context context{device_id, stream, false};
-    auto current_call = [&] { project::csr_spmm_fwd_f32(context, d_offsets, d_indices, d_weights,
-        kRows, kCols, d_features, kWidth, kWidth, d_output, kWidth); };
+    matrix::Csr<const float> a{{kRows, kCols, nnz, cellerator::tensor::base::CompressedAxis::row,
+        d_offsets, d_indices}, d_weights};
+    auto current_call = [&] {
+        cuda_check(matrix::csr_spmm(a, d_features, kWidth, kWidth, d_output, kWidth, stream));
+    };
     auto old_call = [&] { baseline(&context, d_offsets, d_indices, d_weights, kRows,
         kCols, d_features, kWidth, kWidth, d_output, kWidth, nullptr, 1.0f, 0.0f); };
     for (int i = 0; i < kWarmups; ++i) { current_call(); old_call(); }

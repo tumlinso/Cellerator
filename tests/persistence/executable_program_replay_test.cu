@@ -1,6 +1,8 @@
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
 #include <CellShard/interop/cellerator/execution_payload.hh>
 #include <Cellerator/execution/program.hh>
+#include <Cellerator/execution/projection_activation.hh>
+#include "../fixtures/model_execution/activated_projection.hh"
 
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
 
@@ -178,24 +180,24 @@ struct source_fixture {
         payload.tiles.feature_block_geometry_identity = 0x100134u;
         payload.tiles.ordering_identity = 0x200234u;
         payload.tiles.full_row_count = 5u;
-        payload.tiles.row_count = 5u;
-        payload.tiles.feature_count = 4u;
-        payload.tiles.feature_block_count = 1u;
-        payload.tiles.tile_row_width = 4u;
-        payload.tiles.tile_count = 2u;
-        payload.tiles.nnz_count = 8u;
-        payload.tiles.tile_block_count = 2u;
-        payload.tiles.row_block_entry_count = 4u;
+        payload.tiles.layout.rows = 5u;
+        payload.tiles.layout.features = 4u;
+        payload.tiles.layout.feature_blocks = 1u;
+        payload.tiles.layout.tile_row_width = 4u;
+        payload.tiles.layout.tiles = 2u;
+        payload.tiles.layout.stored_values = 8u;
+        payload.tiles.layout.tile_blocks = 2u;
+        payload.tiles.layout.row_block_entries = 4u;
         payload.tiles.value_size_bytes = sizeof(__half);
         payload.tiles.feature_axis_fingerprint = 0x500534u;
         payload.tiles.feature_axis_fingerprint_version = 1u;
         payload.tiles.row_domain_identity = 0x300334u;
-        payload.tiles.tile_block_offsets = tile_offsets.data();
-        payload.tiles.tile_block_ids = tile_blocks.data();
-        payload.tiles.tile_block_cell_masks = cell_masks.data();
-        payload.tiles.block_row_entry_offsets = entry_offsets.data();
-        payload.tiles.row_block_gene_masks = gene_masks.data();
-        payload.tiles.row_block_value_offsets = value_offsets.data();
+        payload.tiles.layout.tile_block_offsets = tile_offsets.data();
+        payload.tiles.layout.block_ids = tile_blocks.data();
+        payload.tiles.layout.participating_row_masks = cell_masks.data();
+        payload.tiles.layout.block_row_entry_offsets = entry_offsets.data();
+        payload.tiles.layout.feature_masks = gene_masks.data();
+        payload.tiles.layout.row_block_value_offsets = value_offsets.data();
         payload.tiles.values = values.data();
     }
 };
@@ -388,8 +390,11 @@ int main() {
         core::projection_kind::native_feature_major,
         ::cellerator::layout::projection::feature_major_projection_schema_version,
         ::cellerator::layout::projection::feature_major_projection_variant};
-    const auto projection = execution::program_projection(
-        projection_key, device_projection);
+    const auto catalog = core::built_in_candidate_preparation_catalog_v2();
+    execution::activated_projection_reference_v2 projection{};
+    require(cellerator::fixtures::activate_builtin_projection(catalog,
+        core::feature_major_small_n_candidate_id, projection_key, device,
+        device_projection.layout, &projection), "activate reloaded projection");
     execution::program_candidate_cost cost{};
     cost.candidate = core::feature_major_small_n_candidate_id;
     cost.projection = projection_id;
@@ -401,7 +406,7 @@ int main() {
         | planner::planner_candidate_deterministic
         | planner::planner_candidate_graph_capture;
     alignas(64) unsigned char preparation_state[4096]{};
-    execution::executable_program_request request{};
+    execution::executable_program_request_v2 request{};
     request.problem = {core::operation_core_schema_version,
         core::operation_kind::sparse_dense_multiply, 0u,
         {0xce340001u, 0xce340002u}, 1u, 1u, 8u};
@@ -423,7 +428,7 @@ int main() {
     request.planner_policy.minimum_tuning_work_items =
         std::numeric_limits<std::uint64_t>::max();
     request.current_evidence_revision = 1u;
-    request.catalog = core::built_in_candidate_catalog();
+    request.catalog = catalog;
     request.projections = &projection;
     request.projection_count = 1u;
     request.costs = &cost;
@@ -435,7 +440,7 @@ int main() {
     request.dense_column_axis = dense_axis;
     request.preparation_state = {preparation_state, sizeof(preparation_state)};
     execution::executable_program program{};
-    require(execution::compile_executable_program(request, &program),
+    require(execution::compile_executable_program_v2(request, &program),
         "compile planner-selected replay program");
     require(core::same_stable_id(program.selected_candidate,
             core::feature_major_small_n_candidate_id)

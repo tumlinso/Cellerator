@@ -33,9 +33,9 @@ namespace cellshard {
 namespace ingest {
 namespace dataset {
 
-using clear;
+using ::cellshard::clear;
 using ::cellshard::find_offset_span;
-using init;
+using ::cellshard::init;
 using ::cellshard::sharded;
 
 // Conversion knobs for MTX-dataset ingest.
@@ -275,7 +275,7 @@ static inline std::size_t standard_csr_bytes(unsigned long rows, unsigned long n
         + (std::size_t) nnz * sizeof(::real::storage_t);
 }
 
-static inline int convert_coo_part_to_blocked_ell_auto(const ::cellerator::tensor::base::triplet *src,
+static inline int convert_coo_part_to_blocked_ell_auto(const ::cellshard::triplet *src,
                                                        std::uint32_t global_cols,
                                                        const std::uint32_t *feature_to_global,
                                                        int device,
@@ -328,7 +328,7 @@ static inline cellshard::dataset_text_column_view as_text_view(const common::tex
 
 #include "internal/source_load_part.hh"
 
-static inline int convert_compressed_part_to_sliced_ell_auto(const ::cellerator::tensor::base::compressed *src,
+static inline int convert_compressed_part_to_sliced_ell_auto(const ::cellshard::compressed *src,
                                                              int device,
                                                              ::cellerator::tensor::base::sliced_ell *dst,
                                                              cellshard::convert::sliced_ell_tune_result *tune) {
@@ -336,7 +336,7 @@ static inline int convert_compressed_part_to_sliced_ell_auto(const ::cellerator:
     clear(dst);
     init(dst);
     if (src == nullptr) return 0;
-    if (src->axis == ::cellerator::tensor::base::compressed_by_row
+    if (src->axis == ::cellshard::compressed_by_row
         && cellshard::convert::sliced_ell_from_compressed_cuda_auto(src,
                                                                     candidates,
                                                                     sizeof(candidates) / sizeof(candidates[0]),
@@ -353,7 +353,7 @@ static inline int convert_compressed_part_to_sliced_ell_auto(const ::cellerator:
                                                                tune);
 }
 
-static inline int convert_coo_part_to_sliced_ell_auto(const ::cellerator::tensor::base::triplet *src,
+static inline int convert_coo_part_to_sliced_ell_auto(const ::cellshard::triplet *src,
                                                       ::cellerator::tensor::base::sliced_ell *dst,
                                                       cellshard::convert::sliced_ell_tune_result *tune) {
     static constexpr unsigned int candidates[] = { 8u, 16u, 32u, 64u };
@@ -409,7 +409,7 @@ static inline int convert_coo_part_to_sliced_ell_auto(const ::cellerator::tensor
 }
 
 static inline int blocked_ell_to_canonical_coo(const ::cellerator::tensor::base::blocked_ell *part,
-                                               ::cellerator::tensor::base::triplet *out) {
+                                               ::cellshard::triplet *out) {
     const std::uint32_t block_size = part != nullptr ? part->block_size : 0u;
     const std::uint32_t width_blocks = part != nullptr ? ell_width_blocks(part) : 0u;
     std::size_t actual_nnz = 0u;

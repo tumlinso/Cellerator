@@ -32,12 +32,12 @@ EXACT_FILES = (
     "planning/interaction-layout-proposal-2026-11-02/CONTRACT.md",
     "planning/interaction-layout-proposal-2026-11-02/PERFORMANCE_PLAN.md",
 )
-OWNED_SUFFIXES = {".cc", ".cu", ".json", ".md", ".py", ".toml", ".txt"}
+OWNED_SUFFIXES = BENCH_SOURCE_SUFFIXES | {".json", ".md", ".py", ".toml"}
 OWNED_PREFIXES = (
     "bench/factorized_interactions",
     "tests/factorized_interactions",
     "tests/factorized_interactions_preparation",
-    "bindings",
+    "python/bindings",
     "python/cellerator",
 )
 

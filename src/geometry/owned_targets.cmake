@@ -17,7 +17,7 @@ set_target_properties(cellpack_statistical_validation PROPERTIES
 )
 cellerator_enable_perf(cellpack_statistical_validation)
 
-add_executable(cellPackStatisticalValidationTest
+add_executable(cellPackStatisticalValidationTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     tests/geometry/statistical_validation_test.cc
 )
 target_link_libraries(cellPackStatisticalValidationTest PRIVATE
@@ -48,7 +48,7 @@ set_target_properties(cellpack_record_statistical_validation PROPERTIES
 )
 cellerator_enable_perf(cellpack_record_statistical_validation)
 
-add_executable(cellPackRecordStatisticalValidationTest
+add_executable(cellPackRecordStatisticalValidationTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     tests/geometry/record_statistical_validation_test.cc
 )
 target_link_libraries(cellPackRecordStatisticalValidationTest PRIVATE
@@ -82,7 +82,7 @@ set_target_properties(cellpack_tile_statistical_validation PROPERTIES
 )
 cellerator_enable_perf(cellpack_tile_statistical_validation)
 
-add_executable(cellPackTileStatisticalValidationTest
+add_executable(cellPackTileStatisticalValidationTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     tests/geometry/tile_statistical_validation_test.cc
 )
 target_link_libraries(cellPackTileStatisticalValidationTest PRIVATE
@@ -113,7 +113,7 @@ set_target_properties(cellpack_alternating_refinement PROPERTIES
 )
 cellerator_enable_perf(cellpack_alternating_refinement)
 
-add_executable(cellPackAlternatingRefinementTest
+add_executable(cellPackAlternatingRefinementTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     tests/geometry/alternating_refinement_test.cc
 )
 target_link_libraries(cellPackAlternatingRefinementTest PRIVATE
@@ -144,7 +144,7 @@ set_target_properties(cellpack_runtime_statistical_validation PROPERTIES
 )
 cellerator_enable_perf(cellpack_runtime_statistical_validation)
 
-add_executable(cellPackRuntimeStatisticalValidationTest
+add_executable(cellPackRuntimeStatisticalValidationTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     tests/geometry/runtime_statistical_validation_test.cc
 )
 target_link_libraries(cellPackRuntimeStatisticalValidationTest PRIVATE
@@ -175,7 +175,7 @@ set_target_properties(cellpack_local_cell_ordering PROPERTIES
 )
 cellerator_enable_perf(cellpack_local_cell_ordering)
 
-add_executable(cellPackLocalCellOrderingTest
+add_executable(cellPackLocalCellOrderingTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     tests/geometry/local_cell_ordering_test.cu
 )
 target_link_libraries(cellPackLocalCellOrderingTest PRIVATE CellPack::local_cell_ordering)
@@ -187,7 +187,7 @@ set_target_properties(cellPackLocalCellOrderingTest PROPERTIES
 )
 cellerator_enable_perf(cellPackLocalCellOrderingTest)
 
-add_executable(cellPackLocalCellOrderingBench
+add_executable(cellPackLocalCellOrderingBench ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     bench/geometry/local_cell_ordering_bench.cu
 )
 target_include_directories(cellPackLocalCellOrderingBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/bench)
@@ -258,24 +258,7 @@ set_target_properties(cellpack_persistent_packing_payload PROPERTIES
 )
 cellerator_enable_perf(cellpack_persistent_packing_payload)
 
-if(TARGET CellShard::inspect)
-    add_executable(cellPackPersistentPackingPayloadTest
-        tests/geometry/persistent_packing_payload_test.cu
-    )
-    target_link_libraries(cellPackPersistentPackingPayloadTest PRIVATE
-        CellPack::persistent_packing_payload
-        CellPack::feature_weighted_row_reduction_cuda
-        CellShard::inspect
-        CUDA::cudart
-    )
-    set_target_properties(cellPackPersistentPackingPayloadTest PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 20
-        CUDA_STANDARD_REQUIRED YES
-    )
-    cellerator_enable_perf(cellPackPersistentPackingPayloadTest)
-endif()
+
 
 # CP-BP physical metadata summaries and their execution association are native
 # host contracts. CellPack continues to own its packing payload and codecs.
@@ -297,7 +280,7 @@ target_link_libraries(cellerator_cellpack_geometry PUBLIC
 )
 target_compile_features(cellerator_cellpack_geometry PUBLIC cxx_std_20)
 
-add_executable(cellPackingBindingTest
+add_executable(cellPackingBindingTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     tests/layout/cell_packing_binding_test.cc
 )
 target_link_libraries(cellPackingBindingTest PRIVATE
@@ -338,7 +321,7 @@ target_link_libraries(cellerator_opaque_execution_artifact PUBLIC
 )
 target_compile_features(cellerator_opaque_execution_artifact PUBLIC cxx_std_20)
 
-add_executable(cellPackExecutionImageV2Test
+add_executable(cellPackExecutionImageV2Test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     tests/geometry/persistence/execution_image_v2_test.cc
 )
 target_link_libraries(cellPackExecutionImageV2Test PRIVATE
@@ -349,40 +332,7 @@ set_target_properties(cellPackExecutionImageV2Test PROPERTIES
     CXX_STANDARD_REQUIRED YES
 )
 
-# The device proof is intentionally a separately scheduled executable. It
-# performs one opaque CellShard upload and consumes a CPE2-prebound projection
-# directly on the caller stream; resource-aware CUDA gates launch it.
-if(TARGET CellShard::inspect)
-    add_executable(cellPackExecutionImageV2DeviceTest
-        tests/geometry/persistence/execution_image_v2_device_test.cu
-    )
-    target_link_libraries(cellPackExecutionImageV2DeviceTest PRIVATE
-        CellPack::execution_image_v2
-        CellShard::inspect
-        CUDA::cudart
-    )
-    set_target_properties(cellPackExecutionImageV2DeviceTest PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 20
-        CUDA_STANDARD_REQUIRED YES
-    )
 
-    add_executable(celleratorOpaqueExecutionArtifactTest
-        tests/persistence/opaque_execution_artifact_test.cu
-    )
-    target_link_libraries(celleratorOpaqueExecutionArtifactTest PRIVATE
-        Cellerator::opaque_execution_artifact
-        CellShard::inspect
-        CUDA::cudart
-    )
-    set_target_properties(celleratorOpaqueExecutionArtifactTest PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 20
-        CUDA_STANDARD_REQUIRED YES
-    )
-endif()
 
 add_library(cellpack_hardware_cost_model STATIC
     src/geometry/hardware_cost_model.cc

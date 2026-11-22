@@ -3,7 +3,7 @@
 #include "../../include/CellShard/export/dataset_export.hh"
 #include "../../include/CellShard/core/real.cuh"
 #include <Cellerator/tensor/base/blocked_ell.cuh>
-#include <Cellerator/tensor/base/compressed.cuh>
+#include <CellShard/formats/compressed.cuh>
 #include <Cellerator/tensor/base/sliced_ell.cuh>
 #include "../../include/CellShard/runtime/layout/sharded.cuh"
 #include "../../include/CellShard/runtime/host/sharded_host.cuh"

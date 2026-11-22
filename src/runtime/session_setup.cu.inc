@@ -8,26 +8,6 @@ allocation_accounting *accounting_for(
     return &session->accounting.graph_stable;
 }
 
-fixed_session_cache *cache_for(
-    execution_session *session,
-    session_cache_kind kind) noexcept {
-    if (kind == session_cache_kind::plan) return &session->plans;
-    if (kind == session_cache_kind::projection) return &session->projections;
-    return &session->order_transforms;
-}
-
-const fixed_session_cache *cache_for(
-    const execution_session &session,
-    session_cache_kind kind) noexcept {
-    if (kind == session_cache_kind::plan) return &session.plans;
-    if (kind == session_cache_kind::projection) return &session.projections;
-    return &session.order_transforms;
-}
-
-bool same_key(session_cache_key left, session_cache_key right) noexcept {
-    return left.high == right.high && left.low == right.low;
-}
-
 bool valid_persistent_lifetime(persistent_lifetime lifetime) noexcept {
     return lifetime == persistent_lifetime::structure
         || lifetime == persistent_lifetime::plan

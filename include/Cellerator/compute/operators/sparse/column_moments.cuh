@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cellerator/tensor/base/compressed.hh>
 #include <Cellerator/tensor/base/device_views.cuh>
 
 #include <cstdint>
@@ -30,8 +31,22 @@ int accumulate_column_moments(
     column_moments_view *moments,
     cudaStream_t stream = nullptr);
 
+// CSR with binary16 payload bytes and aligned, valid device arrays. The
+// caller retains storage until the supplied stream completes.
 int accumulate_column_moments(
-    const ::cellerator::tensor::base::device::CompressedView *matrix,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const void> *matrix,
+    const std::uint8_t *row_mask,
+    column_moments_view *moments,
+    cudaStream_t stream = nullptr);
+
+int accumulate_column_moments(
+    const ::cellerator::tensor::base::CompressedView<int32_t, const void> *matrix,
+    const std::uint8_t *row_mask,
+    column_moments_view *moments,
+    cudaStream_t stream = nullptr);
+
+int accumulate_column_moments(
+    const ::cellerator::tensor::base::CompressedView<int64_t, const void> *matrix,
     const std::uint8_t *row_mask,
     column_moments_view *moments,
     cudaStream_t stream = nullptr);

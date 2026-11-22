@@ -1,14 +1,9 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <Cellerator/execution/lifetimes.hh>
 
 #include <type_traits>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_EXECUTION_ORDER_HD __host__ __device__
-#else
-#define CELLERATOR_EXECUTION_ORDER_HD
-#endif
 
 namespace cellerator::execution {
 
@@ -79,7 +74,7 @@ enum class order_validation_code : u8 {
     invalid_residency = 7u
 };
 
-CELLERATOR_EXECUTION_ORDER_HD constexpr order_validation_code
+CELLERATOR_HOST_DEVICE constexpr order_validation_code
 validate_order_transform(const order_transform_view &transform) noexcept {
     if (!valid_handle(transform.identity)
         || !valid_axis_identity(transform.source_axis)
@@ -99,7 +94,7 @@ validate_order_transform(const order_transform_view &transform) noexcept {
     return order_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_ORDER_HD constexpr order_validation_code
+CELLERATOR_HOST_DEVICE constexpr order_validation_code
 validate_output_axis_contract(const output_axis_contract &contract) noexcept {
     if (!valid_axis_identity(contract.input_axis)
         || !valid_axis_identity(contract.output_axis)
@@ -129,7 +124,7 @@ validate_output_axis_contract(const output_axis_contract &contract) noexcept {
     return order_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_ORDER_HD constexpr order_validation_code
+CELLERATOR_HOST_DEVICE constexpr order_validation_code
 validate_value_position_map(
     const relation_structure &structure,
     const value_position_map_view &map) noexcept {
@@ -151,7 +146,7 @@ validate_value_position_map(
     return order_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_ORDER_HD constexpr bool compatible_without_transform(
+CELLERATOR_HOST_DEVICE constexpr bool compatible_without_transform(
     const output_axis_contract &producer,
     const axis_identity &consumer_input) noexcept {
     return validate_output_axis_contract(producer) == order_validation_code::ok
@@ -166,5 +161,3 @@ static_assert(std::is_trivially_copyable<value_position_map_view>::value,
     "value position map must remain device-copyable");
 
 } // namespace cellerator::execution
-
-#undef CELLERATOR_EXECUTION_ORDER_HD

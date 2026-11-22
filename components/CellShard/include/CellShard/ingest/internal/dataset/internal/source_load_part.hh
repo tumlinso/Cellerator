@@ -80,7 +80,7 @@ static inline int load_source_part_window_coo(const manifest *m,
                                               unsigned long num_parts,
                                               unsigned long part_begin,
                                               unsigned long part_end,
-                                              sharded<::cellerator::tensor::base::triplet> *out,
+                                              sharded<::cellshard::triplet> *out,
                                               std::size_t reader_bytes) {
     std::string error;
     const unsigned int format = format_at(m, idx);
@@ -134,7 +134,7 @@ static inline int load_source_part_window_compressed(const manifest *m,
                                                      unsigned long num_parts,
                                                      unsigned long part_begin,
                                                      unsigned long part_end,
-                                                     sharded<::cellerator::tensor::base::compressed> *out,
+                                                     sharded<::cellshard::compressed> *out,
                                                      std::size_t reader_bytes) {
     std::string error;
     const unsigned int format = format_at(m, idx);

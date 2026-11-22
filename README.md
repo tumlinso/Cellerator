@@ -31,10 +31,9 @@ Use the bundled AnnData++ library for native H5AD and Zarr access, and CCell's
 optional adapter to borrow a Cellerator view over acquired data. The Cellerator
 core package keeps an independent dependency graph. See the
 [component ownership guide](docs/development/component-ownership.md).
-C++ and CUDA builds require C++20 or newer; the normal
-CMake/Ninja package build exports named modules. See the
-[developer reference](docs/developer_reference.qmd) for the native dependency
-and build commands, and the [implementation record](docs/current_implementation.qmd)
+C++ and CUDA builds require C++20 or newer; the normal CMake/Ninja package build
+exports named modules. See the [developer reference](docs/developer_reference.qmd)
+for build commands and the [implementation record](docs/current_implementation.qmd)
 for qualification status.
 
 The language compiler and its source, build/install integration, public API,

@@ -2,6 +2,7 @@
 
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <Cellerator/tensor/quantized/blocked_ell.hh>
+#include <Cellerator/tensor/base/compressed.hh>
 
 #include <cuda_runtime.h>
 #include <cusparse.h>
@@ -64,15 +65,6 @@ void sparse_value_sum_bwd_fill_f32(
     std::uint32_t nnz,
     float *grad_values);
 
-void csr_spmv_fwd_f16_f32(
-    const runtime::execution_context &ctx,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const __half *values,
-    std::uint32_t rows,
-    const float *vector,
-    float *out);
-
 void csr_spmv_bwd_values_f16_f32(
     const runtime::execution_context &ctx,
     const std::uint32_t *major_ptr,
@@ -81,16 +73,6 @@ void csr_spmv_bwd_values_f16_f32(
     const float *vector,
     std::uint32_t rows,
     float *grad_values);
-
-void csr_spmv_bwd_vector_f16_f32(
-    const runtime::execution_context &ctx,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const __half *values,
-    const float *grad_out,
-    std::uint32_t rows,
-    std::uint32_t cols,
-    float *grad_vector);
 
 void csr_spmm_bwd_values_f16_f32(
     const runtime::execution_context &ctx,
@@ -102,32 +84,6 @@ void csr_spmm_bwd_values_f16_f32(
     std::int64_t rhs_ld,
     std::int64_t out_cols,
     float *grad_values);
-
-void csr_spmm_bwd_rhs_f16_f32(
-    const runtime::execution_context &ctx,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const __half *values,
-    const float *grad_out,
-    std::uint32_t rows,
-    std::uint32_t cols,
-    std::int64_t grad_out_ld,
-    std::int64_t out_cols,
-    float *grad_rhs,
-    std::int64_t grad_rhs_ld);
-
-void csr_spmv_fwd_f32_lib(
-    const runtime::execution_context &ctx,
-    runtime::cusparse_cache *cache,
-    const void *matrix_token,
-    const std::uint32_t *major_ptr,
-    const std::uint32_t *minor_idx,
-    const float *values,
-    std::uint32_t rows,
-    std::uint32_t cols,
-    std::uint32_t nnz,
-    const float *vector,
-    float *out);
 
 void csr_feature_affine_quantize_fwd_bwd_f16_f32(
     const runtime::execution_context &ctx,
@@ -215,10 +171,7 @@ void launch_csr_spmv_fwd_f16_f32(
     runtime::fleet_context *fleet,
     const unsigned int *slots,
     unsigned int slot_count,
-    const std::uint32_t *const *major_ptr,
-    const std::uint32_t *const *minor_idx,
-    const __half *const *values,
-    const std::uint32_t *rows,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
     const float *const *vector,
     float *const *out);
 
@@ -237,12 +190,8 @@ void launch_csr_spmv_bwd_vector_f16_f32(
     runtime::fleet_context *fleet,
     const unsigned int *slots,
     unsigned int slot_count,
-    const std::uint32_t *const *major_ptr,
-    const std::uint32_t *const *minor_idx,
-    const __half *const *values,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
     const float *const *grad_out,
-    const std::uint32_t *rows,
-    const std::uint32_t *cols,
     float *const *grad_vector);
 
 void launch_csr_spmm_bwd_values_f16_f32(
@@ -262,12 +211,8 @@ void launch_csr_spmm_bwd_rhs_f16_f32(
     runtime::fleet_context *fleet,
     const unsigned int *slots,
     unsigned int slot_count,
-    const std::uint32_t *const *major_ptr,
-    const std::uint32_t *const *minor_idx,
-    const __half *const *values,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
     const float *const *grad_out,
-    const std::uint32_t *rows,
-    const std::uint32_t *cols,
     const std::int64_t *grad_out_ld,
     const std::int64_t *out_cols,
     float *const *grad_rhs,

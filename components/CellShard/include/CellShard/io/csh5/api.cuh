@@ -4,13 +4,13 @@
 #define CELLSHARD_ENABLE_CELLERATOR_QUANTIZED 1
 #endif
 
-#include <Cellerator/tensor/base/compressed.cuh>
+#include <CellShard/formats/compressed.cuh>
 #include <Cellerator/tensor/base/blocked_ell.cuh>
 #if CELLSHARD_ENABLE_CELLERATOR_QUANTIZED
 #include "../../formats/quantized_blocked_ell.cuh"
 #endif
 #include <Cellerator/tensor/base/sliced_ell.cuh>
-#include <Cellerator/tensor/base/dense.cuh>
+#include <CellShard/formats/dense.cuh>
 #include "../../core/real.cuh"
 #include "../../runtime/storage/shard_storage.cuh"
 #include "../../runtime/layout/sharded.cuh"
@@ -608,7 +608,7 @@ int append_sliced_ell_partition_h5(const char *filename,
                                    const bucketed_sliced_ell_partition *part);
 int append_dense_partition_h5(const char *filename,
                               unsigned long partition_id,
-                              const ::cellerator::tensor::base::dense *part);
+                              const ::cellshard::dense *part);
 int append_bucketed_blocked_ell_shard_h5(const char *filename,
                                          unsigned long shard_id,
                                          const bucketed_blocked_ell_shard *shard);
@@ -652,7 +652,7 @@ int load_dataset_sliced_ell_h5_header(const char *filename,
                                       sharded<::cellerator::tensor::base::sliced_ell> *m,
                                       shard_storage *s);
 int load_dataset_dense_h5_header(const char *filename,
-                                 sharded<::cellerator::tensor::base::dense> *m,
+                                 sharded<::cellshard::dense> *m,
                                  shard_storage *s);
 int prefetch_dataset_blocked_ell_h5_partition_cache(const sharded<::cellerator::tensor::base::blocked_ell> *m,
                                               shard_storage *s,
@@ -674,10 +674,10 @@ int prefetch_dataset_sliced_ell_h5_partition_cache(const sharded<::cellerator::t
 int prefetch_dataset_sliced_ell_h5_shard_cache(const sharded<::cellerator::tensor::base::sliced_ell> *m,
                                                shard_storage *s,
                                                unsigned long shard_id);
-int prefetch_dataset_dense_h5_partition_cache(const sharded<::cellerator::tensor::base::dense> *m,
+int prefetch_dataset_dense_h5_partition_cache(const sharded<::cellshard::dense> *m,
                                               shard_storage *s,
                                               unsigned long partition_id);
-int prefetch_dataset_dense_h5_shard_cache(const sharded<::cellerator::tensor::base::dense> *m,
+int prefetch_dataset_dense_h5_shard_cache(const sharded<::cellshard::dense> *m,
                                           shard_storage *s,
                                           unsigned long shard_id);
 int warm_dataset_blocked_ell_h5_cache_range(const char *filename,
@@ -746,10 +746,10 @@ int fetch_dataset_sliced_ell_h5_partition(sharded<::cellerator::tensor::base::sl
 int fetch_dataset_sliced_ell_h5_shard(sharded<::cellerator::tensor::base::sliced_ell> *m,
                                       const shard_storage *s,
                                       unsigned long shard_id);
-int fetch_dataset_dense_h5_partition(sharded<::cellerator::tensor::base::dense> *m,
+int fetch_dataset_dense_h5_partition(sharded<::cellshard::dense> *m,
                                      const shard_storage *s,
                                      unsigned long partition_id);
-int fetch_dataset_dense_h5_shard(sharded<::cellerator::tensor::base::dense> *m,
+int fetch_dataset_dense_h5_shard(sharded<::cellshard::dense> *m,
                                  const shard_storage *s,
                                  unsigned long shard_id);
 int build_bucketed_blocked_ell_partition(bucketed_blocked_ell_partition *out,

@@ -1,4 +1,4 @@
-#include <Cellerator/modeling/cuda/plans.hh>
+#include <Cellerator/execution/conditional/dispatch_cuda.hh>
 #include <Cellerator/memory/cuda/resources.hh>
 #include <Cellerator/tensor/state_codes/owner.hh>
 #include <cassert>
@@ -8,7 +8,7 @@
 #include <iostream>
 #include <limits>
 #include <vector>
-using namespace cellerator::modeling::cuda;
+using namespace cellerator::execution::conditional::cuda;
 using namespace cellerator::memory::cuda;
 namespace state_codes = cellerator::tensor::state_codes;
 
@@ -85,9 +85,14 @@ int main(int argc, char** argv) {
     std::memcpy(actual.data(), output.data(), output.bytes());
     const std::vector<float> expected{1, 2, 0, 0, 10, 12};
     assert(actual == expected);
+    const std::uint32_t profile_offsets[] = {0, 2, 4};
+    const float profile_levels[] = {0, 4, 0, 8};
+    const std::uint32_t feature_map[] = {0, 1};
+    using cellerator::memory::const_array_view;
     auto profile = std::make_shared<state_codes::Profile>(
-        std::vector<std::uint32_t>{0, 2, 4}, std::vector<float>{0, 4, 0, 8},
-        std::vector<std::uint32_t>{0, 1}, 1, stream);
+        const_array_view<std::uint32_t>{profile_offsets, 3},
+        const_array_view<float>{profile_levels, 4},
+        const_array_view<std::uint32_t>{feature_map, 2}, 1, stream);
     state_codes::NativeTensor packed(profile, 3);
     packed.encode(input_view, DType::float32, {}, stream);
     packed.decode(result.view(), DType::float32, stream);

@@ -66,27 +66,27 @@ bool multiply_size(std::size_t a, std::size_t b,
 }
 
 __global__ void native_training_forward_kernel(
-    ::cellerator::layout::projection::FeatureMajorViewV1 projection,
+    tensor::FeatureMajorTileStructureView structure,
     const __half *values, const float *input, const float *bias,
     float epsilon, float *activated, float *inverse_rms, float *output) {
     const u32 lane = threadIdx.x;
     const u32 tile = blockIdx.x;
-    if (lane >= 32u || tile >= projection.header.tile_count) return;
+    if (lane >= 32u || tile >= structure.tile_count) return;
     float accum[native_training_dense_width]{};
     __shared__ float feature_vector[native_training_dense_width];
-    for (u32 record = projection.tile_feature_offsets[tile];
-         record < projection.tile_feature_offsets[tile + 1u]; ++record) {
-        const u32 feature = projection.execution_feature_ids[record];
+    for (u32 record = structure.tile_offsets[tile];
+         record < structure.tile_offsets[tile + 1u]; ++record) {
+        const u32 feature = structure.feature_ids[record];
         if (lane < native_training_dense_width)
             feature_vector[lane] = input[
                 static_cast<std::size_t>(feature)
                     * native_training_dense_width + lane];
         __syncwarp();
-        const u32 mask = projection.participating_row_masks[record];
+        const u32 mask = structure.row_masks[record];
         if ((mask & (1u << lane)) != 0u) {
             const u32 lower = lane == 0u ? 0u
                 : mask & ((1u << lane) - 1u);
-            const u32 value = projection.feature_value_offsets[record]
+            const u32 value = structure.value_offsets[record]
                 + static_cast<u32>(__popc(lower));
             const float sparse = __half2float(values[value]);
             #pragma unroll
@@ -96,9 +96,9 @@ __global__ void native_training_forward_kernel(
         }
         __syncwarp();
     }
-    const u32 row = tile * projection.header.tile_row_width + lane;
-    if (lane >= projection.header.tile_row_width
-        || row >= projection.header.row_count) return;
+    const u32 row = tile * structure.tile_row_width + lane;
+    if (lane >= structure.tile_row_width
+        || row >= structure.rows) return;
     float square_sum = 0.0f;
     #pragma unroll
     for (u32 column = 0u; column < native_training_dense_width; ++column) {
@@ -143,23 +143,23 @@ __global__ void native_training_epilogue_backward_kernel(
 }
 
 __global__ void native_training_sparse_update_kernel(
-    ::cellerator::layout::projection::FeatureMajorViewV1 projection, __half *values,
+    tensor::FeatureMajorTileStructureView structure, __half *values,
     const float *input, const float *preactivation_gradient,
     float learning_rate, float *sparse_gradient) {
     const u32 lane = threadIdx.x;
     const u32 tile = blockIdx.x;
-    if (lane >= 32u || tile >= projection.header.tile_count) return;
-    const u32 row = tile * projection.header.tile_row_width + lane;
-    for (u32 record = projection.tile_feature_offsets[tile];
-         record < projection.tile_feature_offsets[tile + 1u]; ++record) {
-        const u32 mask = projection.participating_row_masks[record];
-        if ((mask & (1u << lane)) == 0u || row >= projection.header.row_count)
+    if (lane >= 32u || tile >= structure.tile_count) return;
+    const u32 row = tile * structure.tile_row_width + lane;
+    for (u32 record = structure.tile_offsets[tile];
+         record < structure.tile_offsets[tile + 1u]; ++record) {
+        const u32 mask = structure.row_masks[record];
+        if ((mask & (1u << lane)) == 0u || row >= structure.rows)
             continue;
         const u32 lower = lane == 0u ? 0u
             : mask & ((1u << lane) - 1u);
-        const u32 value = projection.feature_value_offsets[record]
+        const u32 value = structure.value_offsets[record]
             + static_cast<u32>(__popc(lower));
-        const u32 feature = projection.execution_feature_ids[record];
+        const u32 feature = structure.feature_ids[record];
         const std::size_t row_offset = static_cast<std::size_t>(row)
             * native_training_dense_width;
         const std::size_t feature_offset = static_cast<std::size_t>(feature)
@@ -236,6 +236,7 @@ native_training_status prepare_native_training_slice(
             transpose.runtime_structure)
         || !execution::same_handle(forward.runtime_projection,
             transpose.runtime_forward_projection)
+        || !layout::projection::valid_bound_feature_major_structure(forward.layout)
         || forward.layout.payload_base == nullptr
         || transpose.layout.payload_base == nullptr)
         return fail(native_training_status_code::incompatible_identity,
@@ -331,8 +332,9 @@ native_training_status run_native_training_step(
         static_cast<cudaStream_t>(launch.stream.stream);
     auto *values = static_cast<__half *>(launch.learned_values->values);
     native_training_forward_kernel<<<header.tile_count, 32u, 0u, stream>>>(
-        prepared.forward.layout, values, static_cast<const float *>(launch.input.data),
-        launch.bias, launch.normalization_epsilon, workspace.activated,
+        prepared.forward.layout.structure, values,
+        static_cast<const float *>(launch.input.data), launch.bias,
+        launch.normalization_epsilon, workspace.activated,
         workspace.inverse_rms, static_cast<float *>(launch.output.data));
     const u32 row_blocks = (header.row_count + 127u) / 128u;
     native_training_epilogue_backward_kernel<<<row_blocks, 128u, 0u, stream>>>(
@@ -343,7 +345,8 @@ native_training_status run_native_training_step(
         workspace.preactivation_gradient,
         static_cast<float *>(launch.input_gradient.data), stream);
     native_training_sparse_update_kernel<<<header.tile_count, 32u, 0u, stream>>>(
-        prepared.forward.layout, values, static_cast<const float *>(launch.input.data),
+        prepared.forward.layout.structure, values,
+        static_cast<const float *>(launch.input.data),
         workspace.preactivation_gradient, launch.learning_rate,
         workspace.sparse_gradient);
     native_training_bias_update_kernel<<<1u, native_training_dense_width,

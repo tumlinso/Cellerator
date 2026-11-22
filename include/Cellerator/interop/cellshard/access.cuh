@@ -3,8 +3,8 @@
 #include <CellShard/access/adapter.cuh>
 
 #include <Cellerator/tensor/base/blocked_ell.cuh>
-#include <Cellerator/tensor/base/compressed.cuh>
-#include <Cellerator/tensor/base/dense.cuh>
+#include <CellShard/formats/compressed.cuh>
+#include <CellShard/formats/dense.cuh>
 #include <Cellerator/interop/formats/affine_blocked_ell.hh>
 #include <Cellerator/tensor/base/sliced_ell.cuh>
 
@@ -24,7 +24,7 @@ template<class MatrixT>
 struct cellshard_matrix_traits;
 
 template<>
-struct cellshard_matrix_traits<tensor::base::dense> {
+struct cellshard_matrix_traits<cellshard::dense> {
     static constexpr cellshard::disk_format archive_format = cellshard::disk_format_dense;
     static constexpr std::uint32_t execution_format = cellshard::dataset_execution_format_dense;
     static constexpr std::uint64_t capabilities =
@@ -32,15 +32,15 @@ struct cellshard_matrix_traits<tensor::base::dense> {
         cellshard::access::capability_cell_span_copy |
         cellshard::access::capability_feature_span_copy;
 
-    static std::uint64_t rows(const tensor::base::dense *m) { return m != nullptr ? m->rows : 0u; }
-    static std::uint64_t cols(const tensor::base::dense *m) { return m != nullptr ? m->cols : 0u; }
-    static std::uint64_t nnz(const tensor::base::dense *m) { return m != nullptr ? (std::uint64_t) m->rows * (std::uint64_t) m->cols : 0u; }
-    static std::size_t payload_bytes(const tensor::base::dense *m) { return m != nullptr ? tensor::base::payload_bytes(m) : 0u; }
-    static std::uint32_t value_code(const tensor::base::dense *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
+    static std::uint64_t rows(const cellshard::dense *m) { return m != nullptr ? m->rows : 0u; }
+    static std::uint64_t cols(const cellshard::dense *m) { return m != nullptr ? m->cols : 0u; }
+    static std::uint64_t nnz(const cellshard::dense *m) { return m != nullptr ? (std::uint64_t) m->rows * (std::uint64_t) m->cols : 0u; }
+    static std::size_t payload_bytes(const cellshard::dense *m) { return m != nullptr ? cellshard::payload_bytes(m) : 0u; }
+    static std::uint32_t value_code(const cellshard::dense *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
 };
 
 template<>
-struct cellshard_matrix_traits<tensor::base::compressed> {
+struct cellshard_matrix_traits<cellshard::compressed> {
     static constexpr cellshard::disk_format archive_format = cellshard::disk_format_compressed;
     static constexpr std::uint32_t execution_format = cellshard::dataset_execution_format_compressed;
     static constexpr std::uint64_t capabilities =
@@ -49,11 +49,11 @@ struct cellshard_matrix_traits<tensor::base::compressed> {
         cellshard::access::capability_feature_span_copy |
         cellshard::access::capability_pinned_host_staging;
 
-    static std::uint64_t rows(const tensor::base::compressed *m) { return m != nullptr ? m->rows : 0u; }
-    static std::uint64_t cols(const tensor::base::compressed *m) { return m != nullptr ? m->cols : 0u; }
-    static std::uint64_t nnz(const tensor::base::compressed *m) { return m != nullptr ? m->nnz : 0u; }
-    static std::size_t payload_bytes(const tensor::base::compressed *m) { return m != nullptr ? tensor::base::bytes(m) : 0u; }
-    static std::uint32_t value_code(const tensor::base::compressed *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
+    static std::uint64_t rows(const cellshard::compressed *m) { return m != nullptr ? m->rows : 0u; }
+    static std::uint64_t cols(const cellshard::compressed *m) { return m != nullptr ? m->cols : 0u; }
+    static std::uint64_t nnz(const cellshard::compressed *m) { return m != nullptr ? m->nnz : 0u; }
+    static std::size_t payload_bytes(const cellshard::compressed *m) { return m != nullptr ? cellshard::bytes(m) : 0u; }
+    static std::uint32_t value_code(const cellshard::compressed *) { return cellerator::types::value_code<cellerator::types::storage_value_t>::code; }
 };
 
 template<>

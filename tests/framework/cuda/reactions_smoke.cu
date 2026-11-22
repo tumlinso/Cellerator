@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/modeling/cuda/reactions.hh>
+#include <Cellerator/ops/reaction/apply_cuda.hh>
 #include <Cellerator/memory/cuda/resources.hh>
 #include <cassert>
 #include <cstdlib>
@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 namespace mem = cellerator::memory::cuda;
-using namespace cellerator::modeling::cuda;
+using namespace cellerator::ops::reaction::cuda;
 
 struct ReactionFixture {
     std::vector<std::uint64_t> offsets, slots, cell_offsets, reactions, source_map;

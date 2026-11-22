@@ -154,7 +154,7 @@ std::size_t packed_dense_bytes(types::nnz_t nnz, std::size_t value_size) {
 }
 
 std::size_t packed_compressed_bytes(types::dim_t rows, types::dim_t cols, types::nnz_t nnz, types::u32 axis, std::size_t value_size) {
-    const types::dim_t major_dim = axis == ::cellerator::tensor::base::compressed_by_col ? cols : rows;
+    const types::dim_t major_dim = axis == ::cellshard::compressed_by_col ? cols : rows;
     return header_bytes()
         + sizeof(types::u32)
         + (std::size_t) nnz * value_size
@@ -279,7 +279,7 @@ int load_compressed_raw(const char *filename, std::size_t value_size, compressed
     std::FILE *fp = 0;
     int ok = 0;
 
-    out->axis = ::cellerator::tensor::base::compressed_by_row;
+    out->axis = ::cellshard::compressed_by_row;
     out->storage = 0;
     out->majorPtr = 0;
     out->minorIdx = 0;
@@ -302,7 +302,7 @@ int load_compressed_raw(std::FILE *fp, std::size_t value_size, compressed_load_r
     std::size_t val_offset = 0;
     std::size_t total_bytes = 0;
 
-    out->axis = ::cellerator::tensor::base::compressed_by_row;
+    out->axis = ::cellshard::compressed_by_row;
     out->storage = 0;
     out->majorPtr = 0;
     out->minorIdx = 0;
@@ -310,7 +310,7 @@ int load_compressed_raw(std::FILE *fp, std::size_t value_size, compressed_load_r
     if (!read_header(fp, &out->h)) goto done;
     if (!check_disk_format(disk_format_compressed, out->h.format, "compressed matrix")) goto done;
     if (!read_block(fp, &out->axis, sizeof(out->axis), 1)) goto done;
-    major_dim = out->axis == ::cellerator::tensor::base::compressed_by_col ? out->h.cols : out->h.rows;
+    major_dim = out->axis == ::cellshard::compressed_by_col ? out->h.cols : out->h.rows;
     major_bytes = ((std::size_t) major_dim + 1u) * sizeof(types::ptr_t);
     minor_offset = align_up_bytes(major_bytes, alignof(types::idx_t));
     val_offset = align_up_bytes(minor_offset + (std::size_t) out->h.nnz * sizeof(types::idx_t), alignof(real::storage_t));
@@ -844,32 +844,32 @@ done:
     return ok;
 }
 
-int store(std::FILE *fp, const ::cellerator::tensor::base::dense *m) {
-    if (!::cellerator::tensor::base::dense_is_packed_row_major(m)) return 0;
+int store(std::FILE *fp, const ::cellshard::dense *m) {
+    if (!::cellshard::dense_is_packed_row_major(m)) return 0;
     return store_dense_raw(fp, m->rows, m->cols, (types::nnz_t) ((std::size_t) m->rows * (std::size_t) m->cols), m->val, sizeof(real::storage_t));
 }
 
-int load(std::FILE *fp, ::cellerator::tensor::base::dense *m) {
+int load(std::FILE *fp, ::cellshard::dense *m) {
     dense_load_result tmp;
 
     tmp.storage = 0;
     tmp.val = 0;
     if (!load_dense_raw(fp, sizeof(real::storage_t), &tmp)) return 0;
     clear(m);
-    init(m, tmp.h.rows, tmp.h.cols, ::cellerator::tensor::base::dense_row_major, tmp.h.cols);
+    init(m, tmp.h.rows, tmp.h.cols, ::cellshard::dense_row_major, tmp.h.cols);
     m->storage = tmp.storage;
     m->val = (real::storage_t *) tmp.val;
     return 1;
 }
 
-int store(std::FILE *fp, const ::cellerator::tensor::base::compressed *m) {
+int store(std::FILE *fp, const ::cellshard::compressed *m) {
     return store_compressed_raw(fp, m->rows, m->cols, m->nnz, m->axis, major_dim(m), m->majorPtr, m->minorIdx, m->val, sizeof(real::storage_t));
 }
 
-int load(std::FILE *fp, ::cellerator::tensor::base::compressed *m) {
+int load(std::FILE *fp, ::cellshard::compressed *m) {
     compressed_load_result tmp;
 
-    tmp.axis = ::cellerator::tensor::base::compressed_by_row;
+    tmp.axis = ::cellshard::compressed_by_row;
     tmp.storage = 0;
     tmp.majorPtr = 0;
     tmp.minorIdx = 0;
@@ -987,11 +987,11 @@ int load(std::FILE *fp, ::cellerator::tensor::base::sliced_ell *m) {
     return 1;
 }
 
-int store(std::FILE *fp, const ::cellerator::tensor::base::triplet *m) {
+int store(std::FILE *fp, const ::cellshard::triplet *m) {
     return store_coo_raw(fp, m->rows, m->cols, m->nnz, m->rowIdx, m->colIdx, m->val, sizeof(real::storage_t));
 }
 
-int load(std::FILE *fp, ::cellerator::tensor::base::triplet *m) {
+int load(std::FILE *fp, ::cellshard::triplet *m) {
     coo_load_result tmp;
 
     tmp.storage = 0;

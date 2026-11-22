@@ -83,19 +83,19 @@ struct record_fixture {
         records.feature_block_geometry_identity = 0x1111222233334444ull;
         records.global_row_begin = 40u;
         records.full_row_count = 100u;
-        records.row_count = static_cast<u32>(row_offsets.size() - 1u);
-        records.feature_count = 64u;
-        records.feature_block_count = 8u;
-        records.nnz_count = static_cast<u32>(value_offsets.back());
-        records.record_count = static_cast<u32>(block_ids.size());
+        records.layout.rows = static_cast<u32>(row_offsets.size() - 1u);
+        records.layout.features = 64u;
+        records.layout.feature_blocks = 8u;
+        records.layout.stored_values = static_cast<u32>(value_offsets.back());
+        records.layout.row_blocks = static_cast<u32>(block_ids.size());
         records.value_size_bytes = sizeof(float);
         records.feature_axis_fingerprint = 0x777u;
         records.feature_axis_fingerprint_version = 1u;
         records.row_domain_identity = 0x5555666677778888ull;
-        records.row_record_offsets = row_offsets.data();
-        records.record_block_ids = block_ids.data();
-        records.record_gene_masks = masks.data();
-        records.record_value_offsets = value_offsets.data();
+        records.layout.row_block_offsets = row_offsets.data();
+        records.layout.block_ids = block_ids.data();
+        records.layout.feature_masks = masks.data();
+        records.layout.row_block_value_offsets = value_offsets.data();
         return records;
     }
 };
@@ -110,7 +110,7 @@ host_order run_host(
     const cellpack::cell_block_record_view &records,
     const cellpack::local_cell_order_config &config) {
     host_order result;
-    const std::size_t rows = records.row_count;
+    const std::size_t rows = records.layout.rows;
     result.primary.resize(rows);
     result.secondary.resize(rows);
     result.active.resize(rows);
@@ -133,7 +133,7 @@ host_order run_host(
 cellpack::local_cell_order_metrics metrics(
     const cellpack::cell_block_record_view &records,
     const host_order &order) {
-    std::vector<u32> epochs(records.feature_block_count);
+    std::vector<u32> epochs(records.layout.feature_blocks);
     cellpack::local_cell_order_metric_workspace workspace;
     workspace.block_epoch_capacity = epochs.size();
     workspace.block_epochs = epochs.data();
@@ -159,7 +159,7 @@ void test_host_contract_and_baselines() {
     const host_order repeated = run_host(records, config);
     require(inferred.primary == repeated.primary && inferred.permutation == repeated.permutation,
         "inferred ordering is not deterministic");
-    for (u32 execution = 0u; execution < records.row_count; ++execution) {
+    for (u32 execution = 0u; execution < records.layout.rows; ++execution) {
         const u32 row = inferred.permutation[execution];
         require(row / config.window_size == execution / config.window_size,
             "row crossed its local window");
@@ -202,10 +202,10 @@ void test_cuda_exact_agreement() {
     upload(d_block_ids, fixture.block_ids);
     upload(d_value_offsets, fixture.value_offsets);
     auto device_records = host_records;
-    device_records.row_record_offsets = d_row_offsets.data;
-    device_records.record_block_ids = d_block_ids.data;
-    device_records.record_gene_masks = nullptr;
-    device_records.record_value_offsets = d_value_offsets.data;
+    device_records.layout.row_block_offsets = d_row_offsets.data;
+    device_records.layout.block_ids = d_block_ids.data;
+    device_records.layout.feature_masks = nullptr;
+    device_records.layout.row_block_value_offsets = d_value_offsets.data;
 
     const std::vector<cellpack::local_cell_order_kind> kinds{
         cellpack::local_cell_order_kind::inferred_minhash,
@@ -220,8 +220,8 @@ void test_cuda_exact_agreement() {
         const host_order reference = run_host(host_records, config);
         cellpack::local_cell_order_cuda_requirements required;
         require(static_cast<bool>(cellpack::query_local_cell_order_cuda_requirements(
-            host_records.row_count, config, &required)), "CUDA requirements failed");
-        const std::size_t rows = host_records.row_count;
+            host_records.layout.rows, config, &required)), "CUDA requirements failed");
+        const std::size_t rows = host_records.layout.rows;
         device_buffer<u64> d_primary(rows), d_primary_gathered(rows), d_primary_sorted(rows);
         device_buffer<u32> d_secondary(rows), d_active(rows), d_nnz(rows), d_permutation(rows),
             d_inverse(rows), d_secondary_sorted(rows), d_row_scratch(rows),

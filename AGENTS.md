@@ -1,5 +1,25 @@
 # Repository work contract
 
+## Current planning priority
+
+Until the user explicitly changes direction, the
+[direction review](planning/review-direction-cellerator/) and its two priorities
+take precedence over other Cellerator development. Simplify and consolidate the
+implementation, reusing established numerical machinery where appropriate.
+Expand Cellerator as a reusable, high-performance numerical substrate for
+biological modeling and learning. Evaluate the research and proposals with the
+user and agree on the direction before beginning substantial implementation.
+
+Use the [source layout and cleanup guide](docs/development/source-layout-cleanup.md)
+when adding or moving native code. Give each operation one canonical source and
+build owner.
+
+## Native scope
+
+Python work is out of scope until the user explicitly unblocks it. This applies
+to Python APIs, bindings, packaging, examples, and tests. Native C++
+interoperability with LibTorch and ATen is within the C++ scope.
+
 ## CCell methods and AnnData++ interop
 
 Work on single-cell preprocessing and RNA velocity under
@@ -74,6 +94,25 @@ documentation, or refactoring request does not grant that authorization. Report
 conflicts with other guidance, tooling, or implementation to the user; do not
 silently revise these rules to match. Keep the rendered include faithful to
 the canonical root text.
+
+Apply its strict numerical style to all authored native production, including
+planners, resource owners, and public examples. Use direct arrays, pointers,
+indices, loops, minimal scalar headers, and compiler builtins. All authored
+native production has no STL machinery. Necessary platform/vendor declarations
+and foreign API-mandated types stay at their concrete boundaries. Cellerator objects may
+own real resources or enforce invariants, and CCell may compose these native
+abstractions as a normal dependency. Their implementation remains subject to
+the same rules; abstraction ownership is not a style exemption.
+
+Explicit provisioning must reuse sufficient storage without allocation, copying,
+or transfer. Numerical sizing/preparation/validation/binding/evaluation use
+supplied storage; repeated execution within capacity has zero allocations or
+growth, including bookkeeping. Preserve asynchronous lifetimes and avoid
+per-cell allocation. Do not introduce new allocators, pools, caches, or generic
+frameworks without an in-scope need. Existing debt is no precedent; follow the
+[implementation style guide](docs/development/implementation_style.md) for the
+scoped source check and focused review, without making unrelated cleanup a
+prerequisite for delivery.
 
 ## Biological machine learning is the organizing principle
 
@@ -224,9 +263,11 @@ within demonstrated evidence and retain suitable alternatives for unsupported
 or unsafe regimes. See [Numerical policy](docs/architecture.qmd#numerical-policy)
 for the provisional evidence boundary and current implementation distinction.
 
-Prefer templates for algorithms whose behavior is independent of numeric type.
-Keep genuinely type-specific arithmetic, numerical constraints and hardware
-specializations explicit; do not force them into a shared implementation.
+Use small templates where numeric type independence or useful specialization
+removes identifiable repetition or runtime work. Keep genuinely type-specific
+arithmetic, numerical constraints, and hardware specializations explicit.
+Separately compile ordinary host implementations/common instantiations; expose
+device code and templates where their compilation or customization requires it.
 
 When a basic reusable primitive appears missing or insufficient, report this
 promptly to the user. Include the concrete computation and evidence, current

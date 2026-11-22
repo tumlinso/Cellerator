@@ -15,8 +15,6 @@ namespace runtime = cellerator::runtime;
 using runtime::execution_session;
 using runtime::execution_session_options;
 using runtime::persistent_lifetime;
-using runtime::session_cache_key;
-using runtime::session_cache_kind;
 using runtime::session_status;
 
 int require(bool condition, const char *message) {
@@ -117,20 +115,6 @@ int main() {
                        == runtime::execution_session_max_persistent_allocations,
                    "persistent allocation count accounting")) return 1;
 
-    int plan_state = 11, projection_state = 12, transform_state = 13;
-    if (require(runtime::insert_session_cache(
-                    &session, session_cache_kind::plan, {1, 1}, &plan_state, 4, 9)
-                    == session_status::success,
-                "plan cache insert")
-        || require(runtime::insert_session_cache(
-                       &session, session_cache_kind::projection, {2, 2},
-                       &projection_state, 4, 9) == session_status::success,
-                   "projection cache insert")
-        || require(runtime::insert_session_cache(
-                       &session, session_cache_kind::order_transform, {3, 3},
-                       &transform_state, 4, 9) == session_status::success,
-                   "order transform cache insert")) return 1;
-
     if (require(runtime::prepare_stream_libraries(&session, 0)
                     == session_status::success,
                 "stream zero handles")
@@ -215,14 +199,9 @@ int main() {
         || require(!runtime::graph_stable_address(session, workspace0, 1),
                    "transient address is not graph-stable")) return 1;
 
-    const auto *cached = runtime::find_session_cache(
-        session, session_cache_kind::projection, session_cache_key{2, 2});
     const auto fleet = runtime::single_device_fleet(session);
-    if (require(cached != nullptr && cached->state == &projection_state
-                    && cached->structure_epoch == 4 && cached->generation == 9,
-                "cache identity and generations")
-        || require(fleet.device_count == 1 && fleet.devices == &session.performance,
-                   "single-device fleet view")) return 1;
+    if (require(fleet.device_count == 1 && fleet.devices == &session.performance,
+                "single-device fleet view")) return 1;
 
     runtime::clear_session(&session);
     if (require(!session.initialized && session.persistent_allocation_count == 0u

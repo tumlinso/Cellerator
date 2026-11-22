@@ -1,4 +1,4 @@
-#include <Cellerator/modeling/cuda/attention.hh>
+#include <Cellerator/ops/attention/sparse_cuda.hh>
 
 #include <cuda_runtime.h>
 
@@ -13,9 +13,9 @@
 #include <vector>
 
 namespace {
-using cellerator::modeling::cuda::GradientWriteMode;
-using cellerator::modeling::cuda::SparseAttentionPlan;
-using cellerator::modeling::cuda::SparseAttentionWorkspace;
+using cellerator::ops::attention::cuda::GradientWriteMode;
+using cellerator::ops::attention::cuda::SparseAttentionPlan;
+using cellerator::ops::attention::cuda::SparseAttentionWorkspace;
 
 void check(cudaError_t status, const char* expression, const char* file, int line) {
   if (status != cudaSuccess) {
@@ -34,14 +34,14 @@ template<> struct Scalar<float> {
                             const float* v, size_t vc, float* out, size_t oc,
                             SparseAttentionPlan plan, float scale,
                             SparseAttentionWorkspace workspace, cudaStream_t stream) {
-    return cellerator::modeling::cuda::sparse_attention_fp32(
+    return cellerator::ops::attention::cuda::sparse_attention_fp32(
         q, qc, k, kc, v, vc, out, oc, plan, scale, workspace, stream);
   }
   static cudaError_t mixed(const float* q, size_t qc, const float* k, size_t kc,
                            const float* v, size_t vc, float* out, size_t oc,
                            SparseAttentionPlan plan, float scale,
                            SparseAttentionWorkspace workspace, cudaStream_t stream) {
-    return cellerator::modeling::cuda::sparse_attention_fused_small_fp32(
+    return cellerator::ops::attention::cuda::sparse_attention_fused_small_fp32(
         q, qc, k, kc, v, vc, out, oc, plan, scale, workspace, stream);
   }
   static cudaError_t backward(const float* q, size_t qc, const float* k, size_t kc,
@@ -50,7 +50,7 @@ template<> struct Scalar<float> {
                               SparseAttentionWorkspace workspace, float* gq, size_t gqc,
                               float* gk, size_t gkc, float* gv, size_t gvc,
                               GradientWriteMode mode, cudaStream_t stream) {
-    return cellerator::modeling::cuda::sparse_attention_backward_fp32(
+    return cellerator::ops::attention::cuda::sparse_attention_backward_fp32(
         q, qc, k, kc, v, vc, go, goc, plan, scale, workspace, gq, gqc, gk, gkc,
         gv, gvc, mode, stream);
   }
@@ -62,14 +62,14 @@ template<> struct Scalar<__half> {
                             const __half* v, size_t vc, __half* out, size_t oc,
                             SparseAttentionPlan plan, float scale,
                             SparseAttentionWorkspace workspace, cudaStream_t stream) {
-    return cellerator::modeling::cuda::sparse_attention_fp16(
+    return cellerator::ops::attention::cuda::sparse_attention_fp16(
         q, qc, k, kc, v, vc, out, oc, plan, scale, workspace, stream);
   }
   static cudaError_t mixed(const __half* q, size_t qc, const __half* k, size_t kc,
                            const __half* v, size_t vc, __half* out, size_t oc,
                            SparseAttentionPlan plan, float scale,
                            SparseAttentionWorkspace workspace, cudaStream_t stream) {
-    return cellerator::modeling::cuda::sparse_attention_fused_small_fp16(
+    return cellerator::ops::attention::cuda::sparse_attention_fused_small_fp16(
         q, qc, k, kc, v, vc, out, oc, plan, scale, workspace, stream);
   }
   static cudaError_t backward(const __half* q, size_t qc, const __half* k, size_t kc,
@@ -78,7 +78,7 @@ template<> struct Scalar<__half> {
                               SparseAttentionWorkspace workspace, float* gq, size_t gqc,
                               float* gk, size_t gkc, float* gv, size_t gvc,
                               GradientWriteMode mode, cudaStream_t stream) {
-    return cellerator::modeling::cuda::sparse_attention_backward_fp16(
+    return cellerator::ops::attention::cuda::sparse_attention_backward_fp16(
         q, qc, k, kc, v, vc, go, goc, plan, scale, workspace, gq, gqc, gk, gkc,
         gv, gvc, mode, stream);
   }
@@ -442,12 +442,12 @@ void check_capacity_validation() {
   plan.query_count = 1; plan.key_count = 1; plan.edge_count = 1;
   plan.query_key_dim = 1; plan.value_dim = 1;
   float dummy = 0.0f;
-  assert(cellerator::modeling::cuda::sparse_attention_fp32(
+  assert(cellerator::ops::attention::cuda::sparse_attention_fp32(
       &dummy, 1, &dummy, 1, &dummy, 1, &dummy, 1, plan, 1.0f, workspace, nullptr)
       == cudaErrorInvalidValue);
   plan.edge_count = 0;
   plan.query_count = -1;
-  assert(cellerator::modeling::cuda::sparse_attention_fp32(
+  assert(cellerator::ops::attention::cuda::sparse_attention_fp32(
       &dummy, 1, &dummy, 1, &dummy, 1, &dummy, 1, plan, 1.0f, workspace, nullptr)
       == cudaErrorInvalidValue);
 }

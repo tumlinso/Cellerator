@@ -1,8 +1,8 @@
 #pragma once
 
 #include "adapter.cuh"
-#include <Cellerator/tensor/base/compressed.cuh>
-#include <Cellerator/tensor/base/dense.cuh>
+#include <CellShard/formats/compressed.cuh>
+#include <CellShard/formats/dense.cuh>
 
 #include <cstring>
 
@@ -10,46 +10,46 @@ namespace cellshard {
 namespace access {
 
 struct dense_fallback_binding {
-    const ::cellerator::tensor::base::dense *archive;
-    ::cellerator::tensor::base::dense *pack;
+    const ::cellshard::dense *archive;
+    ::cellshard::dense *pack;
     std::uint32_t assay_id;
 };
 
 struct compressed_fallback_binding {
-    const ::cellerator::tensor::base::compressed *archive;
-    ::cellerator::tensor::base::compressed *pack;
+    const ::cellshard::compressed *archive;
+    ::cellshard::compressed *pack;
     std::uint32_t assay_id;
 };
 
 template<>
-struct payload_traits<::cellerator::tensor::base::dense> {
-    __host__ __device__ __forceinline__ static std::uint64_t rows(const ::cellerator::tensor::base::dense *matrix) {
+struct payload_traits<::cellshard::dense> {
+    __host__ __device__ __forceinline__ static std::uint64_t rows(const ::cellshard::dense *matrix) {
         return matrix != nullptr ? matrix->rows : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t cols(const ::cellerator::tensor::base::dense *matrix) {
+    __host__ __device__ __forceinline__ static std::uint64_t cols(const ::cellshard::dense *matrix) {
         return matrix != nullptr ? matrix->cols : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t nnz(const ::cellerator::tensor::base::dense *matrix) {
+    __host__ __device__ __forceinline__ static std::uint64_t nnz(const ::cellshard::dense *matrix) {
         return matrix != nullptr ? static_cast<std::uint64_t>(matrix->rows) * static_cast<std::uint64_t>(matrix->cols) : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t aux(const ::cellerator::tensor::base::dense *) {
+    __host__ __device__ __forceinline__ static std::uint64_t aux(const ::cellshard::dense *) {
         return 0u;
     }
 
     __host__ __device__ __forceinline__ static std::size_t host_bytes(
-        const ::cellerator::tensor::base::dense *matrix,
+        const ::cellshard::dense *matrix,
         std::uint64_t,
         std::uint64_t,
         std::uint64_t nnz,
         std::uint64_t) {
-        return matrix != nullptr ? bytes(matrix) : sizeof(::cellerator::tensor::base::dense) + static_cast<std::size_t>(nnz) * sizeof(types::storage_value_t);
+        return matrix != nullptr ? bytes(matrix) : sizeof(::cellshard::dense) + static_cast<std::size_t>(nnz) * sizeof(types::storage_value_t);
     }
 
     __host__ __device__ __forceinline__ static const types::storage_value_t *debug_at(
-        const ::cellerator::tensor::base::dense *matrix,
+        const ::cellshard::dense *matrix,
         std::uint64_t row,
         types::idx_t col) {
         return at(matrix, static_cast<types::dim_t>(row), col);
@@ -57,39 +57,39 @@ struct payload_traits<::cellerator::tensor::base::dense> {
 };
 
 template<>
-struct payload_traits<::cellerator::tensor::base::compressed> {
-    __host__ __device__ __forceinline__ static std::uint64_t rows(const ::cellerator::tensor::base::compressed *matrix) {
+struct payload_traits<::cellshard::compressed> {
+    __host__ __device__ __forceinline__ static std::uint64_t rows(const ::cellshard::compressed *matrix) {
         return matrix != nullptr ? matrix->rows : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t cols(const ::cellerator::tensor::base::compressed *matrix) {
+    __host__ __device__ __forceinline__ static std::uint64_t cols(const ::cellshard::compressed *matrix) {
         return matrix != nullptr ? matrix->cols : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t nnz(const ::cellerator::tensor::base::compressed *matrix) {
+    __host__ __device__ __forceinline__ static std::uint64_t nnz(const ::cellshard::compressed *matrix) {
         return matrix != nullptr ? matrix->nnz : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t aux(const ::cellerator::tensor::base::compressed *matrix) {
+    __host__ __device__ __forceinline__ static std::uint64_t aux(const ::cellshard::compressed *matrix) {
         return matrix != nullptr ? matrix->axis : 0u;
     }
 
     __host__ __device__ __forceinline__ static std::size_t host_bytes(
-        const ::cellerator::tensor::base::compressed *matrix,
+        const ::cellshard::compressed *matrix,
         std::uint64_t rows,
         std::uint64_t cols,
         std::uint64_t nnz,
         std::uint64_t aux_value) {
-        const std::uint64_t ptr_dim = aux_value == ::cellerator::tensor::base::compressed_by_col ? cols : rows;
+        const std::uint64_t ptr_dim = aux_value == ::cellshard::compressed_by_col ? cols : rows;
         return matrix != nullptr ? bytes(matrix)
-                                 : sizeof(::cellerator::tensor::base::compressed)
+                                 : sizeof(::cellshard::compressed)
                                      + static_cast<std::size_t>(ptr_dim + 1u) * sizeof(types::ptr_t)
                                      + static_cast<std::size_t>(nnz) * sizeof(types::idx_t)
                                      + static_cast<std::size_t>(nnz) * sizeof(types::storage_value_t);
     }
 
     __host__ __device__ __forceinline__ static const types::storage_value_t *debug_at(
-        const ::cellerator::tensor::base::compressed *matrix,
+        const ::cellshard::compressed *matrix,
         std::uint64_t row,
         types::idx_t col) {
         return at(matrix, static_cast<types::dim_t>(row), col);
@@ -110,18 +110,18 @@ inline std::uint64_t selected_feature_count(const feature_selection_view &featur
     return selected_count(features, fallback_all_count);
 }
 
-inline const types::storage_value_t *dense_value_ptr(const ::cellerator::tensor::base::dense *matrix, std::uint64_t row, std::uint64_t col) {
+inline const types::storage_value_t *dense_value_ptr(const ::cellshard::dense *matrix, std::uint64_t row, std::uint64_t col) {
     return at(matrix, static_cast<types::dim_t>(row), static_cast<types::idx_t>(col));
 }
 
 inline std::size_t dense_copy_feature_spans(
-    const ::cellerator::tensor::base::dense *matrix,
+    const ::cellshard::dense *matrix,
     std::uint64_t row,
     const feature_selection_view &features,
     types::storage_value_t *out) {
     std::size_t written = 0u;
     if (selection_is_all(features)) {
-        if (matrix->order == ::cellerator::tensor::base::dense_row_major) {
+        if (matrix->order == ::cellshard::dense_row_major) {
             const types::storage_value_t *src = dense_value_ptr(matrix, row, 0u);
             const std::size_t count = static_cast<std::size_t>(matrix->cols);
             std::memcpy(out, src, count * sizeof(types::storage_value_t));
@@ -142,7 +142,7 @@ inline std::size_t dense_copy_feature_spans(
     }
     for (std::uint32_t span_i = 0u; span_i < features.span_count; ++span_i) {
         const cell_span span = features.spans[span_i];
-        if (matrix->order == ::cellerator::tensor::base::dense_row_major) {
+        if (matrix->order == ::cellshard::dense_row_major) {
             const types::storage_value_t *src = dense_value_ptr(matrix, row, span.begin);
             const std::size_t count = static_cast<std::size_t>(span.size());
             std::memcpy(out + written, src, count * sizeof(types::storage_value_t));
@@ -157,7 +157,7 @@ inline std::size_t dense_copy_feature_spans(
     return written;
 }
 
-inline std::uint64_t compressed_major_count(const ::cellerator::tensor::base::compressed *matrix) {
+inline std::uint64_t compressed_major_count(const ::cellshard::compressed *matrix) {
     return static_cast<std::uint64_t>(major_dim(matrix));
 }
 
@@ -166,7 +166,7 @@ inline std::uint64_t compressed_major_count(const ::cellerator::tensor::base::co
 template<>
 struct archive_adapter<dense_fallback_binding> {
     static archive_descriptor describe(const adapter_view<dense_fallback_binding> &view) {
-        const ::cellerator::tensor::base::dense *matrix = view.binding != nullptr ? view.binding->archive : nullptr;
+        const ::cellshard::dense *matrix = view.binding != nullptr ? view.binding->archive : nullptr;
         if (matrix == nullptr) return archive_descriptor{};
         return archive_descriptor{
             matrix->rows,
@@ -181,7 +181,7 @@ struct archive_adapter<dense_fallback_binding> {
     }
 
     static fallback_payload_view contiguous_payload(const adapter_view<dense_fallback_binding> &view) {
-        const ::cellerator::tensor::base::dense *matrix = view.binding != nullptr ? view.binding->archive : nullptr;
+        const ::cellshard::dense *matrix = view.binding != nullptr ? view.binding->archive : nullptr;
         if (matrix == nullptr) return fallback_payload_view{};
         return fallback_payload_view{
             byte_span{matrix, sizeof(*matrix), 0u},
@@ -211,7 +211,7 @@ struct archive_adapter<dense_fallback_binding> {
     static pack_build_result copy_cell_spans(
         const adapter_view<dense_fallback_binding> &view,
         const cell_span_copy_request &request) {
-        const ::cellerator::tensor::base::dense *matrix = view.binding != nullptr ? view.binding->archive : nullptr;
+        const ::cellshard::dense *matrix = view.binding != nullptr ? view.binding->archive : nullptr;
         if (matrix == nullptr) return pack_build_result{};
         const copy_preflight need = preflight_cell_spans(view, request.cells, request.features);
         if (request.output.data == nullptr || request.output.bytes < need.output_bytes) return pack_build_result{};
@@ -239,7 +239,7 @@ struct archive_adapter<dense_fallback_binding> {
 template<>
 struct pack_adapter<dense_fallback_binding> {
     static pack_descriptor describe(const adapter_view<dense_fallback_binding> &view) {
-        const ::cellerator::tensor::base::dense *matrix = view.binding != nullptr
+        const ::cellshard::dense *matrix = view.binding != nullptr
             ? (view.binding->pack != nullptr ? view.binding->pack : view.binding->archive)
             : nullptr;
         if (matrix == nullptr) return pack_descriptor{};
@@ -258,7 +258,7 @@ struct pack_adapter<dense_fallback_binding> {
 template<>
 struct archive_adapter<compressed_fallback_binding> {
     static archive_descriptor describe(const adapter_view<compressed_fallback_binding> &view) {
-        const ::cellerator::tensor::base::compressed *matrix = view.binding != nullptr ? view.binding->archive : nullptr;
+        const ::cellshard::compressed *matrix = view.binding != nullptr ? view.binding->archive : nullptr;
         if (matrix == nullptr) return archive_descriptor{};
         return archive_descriptor{
             matrix->rows,
@@ -273,7 +273,7 @@ struct archive_adapter<compressed_fallback_binding> {
     }
 
     static fallback_payload_view contiguous_payload(const adapter_view<compressed_fallback_binding> &view) {
-        const ::cellerator::tensor::base::compressed *matrix = view.binding != nullptr ? view.binding->archive : nullptr;
+        const ::cellshard::compressed *matrix = view.binding != nullptr ? view.binding->archive : nullptr;
         if (matrix == nullptr) return fallback_payload_view{};
         return fallback_payload_view{
             byte_span{matrix, sizeof(*matrix), 0u},
@@ -298,7 +298,7 @@ struct archive_adapter<compressed_fallback_binding> {
 template<>
 struct pack_adapter<compressed_fallback_binding> {
     static pack_descriptor describe(const adapter_view<compressed_fallback_binding> &view) {
-        const ::cellerator::tensor::base::compressed *matrix = view.binding != nullptr
+        const ::cellshard::compressed *matrix = view.binding != nullptr
             ? (view.binding->pack != nullptr ? view.binding->pack : view.binding->archive)
             : nullptr;
         if (matrix == nullptr) return pack_descriptor{};

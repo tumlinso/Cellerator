@@ -19,8 +19,9 @@ target_link_libraries(cellerator_native_numeric PUBLIC Cellerator::relation_sema
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(cellerator_native_numeric PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall;-Wextra;-Wpedantic;-Werror;-fno-fast-math;-ffp-contract=off>)
 endif()
-if(CMAKE_CUDA_COMPILER AND (CELLERATOR_BUILD_TESTS OR CELLERATOR_BUILD_SEMANTIC_SPINE_V1))
-  add_executable(ceNativeArithmeticTest "${_nf1_numeric_root}/tests/native_numeric/device_arithmetic.cc")
+if(CMAKE_CUDA_COMPILER_LOADED)
+  add_executable(ceNativeArithmeticTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
+    "${_nf1_numeric_root}/tests/native_numeric/device_arithmetic.cc")
   target_link_libraries(ceNativeArithmeticTest PRIVATE Cellerator::native_numeric)
   target_compile_features(ceNativeArithmeticTest PRIVATE cxx_std_20)
   if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")

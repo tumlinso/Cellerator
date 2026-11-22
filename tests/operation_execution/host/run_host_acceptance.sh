@@ -36,7 +36,6 @@ operation_sources=(
     src/compute/operation/operation_core_v2/schema.cc
     src/compute/operation/operation_core_v2/relation_algebra.cc
     src/compute/operation/operation_core_v2/composition.cc
-    src/compute/operation/operation_core_v2/v1_adapter.cc
 )
 acquisition_sources=(
     src/execution/geometry_acquisition_v2/schema.cc
@@ -51,9 +50,6 @@ boundary_sources=(
 )
 
 for mode in strict sanitized; do
-    build_and_run "${mode}" legacy-baseline \
-        tests/operation_execution/host/legacy_baseline_regression_test.cc \
-        "${operation_sources[@]}"
     build_and_run "${mode}" scalable-index \
         tests/geometry/partitioning/scalable_index_validation_test.cc \
         src/geometry/validation/scalable_validation_v2.cc

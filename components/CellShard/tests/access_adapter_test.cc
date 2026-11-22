@@ -109,11 +109,11 @@ int main() {
     assert(fake_pack_binding_value.selected_format == dataset_execution_format_dense);
 
     types::storage_value_t dense_values[6] = {
-        types::storage_value_t(1), types::storage_value_t(2), types::storage_value_t(3),
-        types::storage_value_t(4), types::storage_value_t(5), types::storage_value_t(6)
+        __float2half(1.0f), __float2half(2.0f), __float2half(3.0f),
+        __float2half(4.0f), __float2half(5.0f), __float2half(6.0f)
     };
-    ::cellerator::tensor::base::dense dense_matrix{};
-    attach(&dense_matrix, 2u, 3u, dense_values, ::cellerator::tensor::base::dense_row_major);
+    ::cellshard::dense dense_matrix{};
+    attach(&dense_matrix, 2u, 3u, dense_values, ::cellshard::dense_row_major);
     dense_fallback_binding dense_binding{&dense_matrix, nullptr, 9u};
     auto dense_view = make_adapter_view(dense_binding);
     const archive_descriptor dense_desc = describe_archive(dense_view);
@@ -149,14 +149,14 @@ int main() {
             nullptr
         });
     assert(dense_copy.status == 1u);
-    assert(dense_out[0] == types::storage_value_t(5));
-    assert(dense_out[1] == types::storage_value_t(6));
+    assert(__half2float(dense_out[0]) == 5.0f);
+    assert(__half2float(dense_out[1]) == 6.0f);
 
     types::ptr_t ptrs[] = {0u, 1u, 1u, 2u};
     types::idx_t idx[] = {2u, 0u};
-    types::storage_value_t vals[] = {types::storage_value_t(7), types::storage_value_t(8)};
-    ::cellerator::tensor::base::compressed compressed_matrix{};
-    init(&compressed_matrix, 3u, 4u, 2u, ::cellerator::tensor::base::compressed_by_row);
+    types::storage_value_t vals[] = {__float2half(7.0f), __float2half(8.0f)};
+    ::cellshard::compressed compressed_matrix{};
+    init(&compressed_matrix, 3u, 4u, 2u, ::cellshard::compressed_by_row);
     compressed_matrix.majorPtr = ptrs;
     compressed_matrix.minorIdx = idx;
     compressed_matrix.val = vals;

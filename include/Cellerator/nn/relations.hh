@@ -210,4 +210,24 @@ private:
     std::int64_t causal_mask_version_ = -1;
 };
 
+// Owns the two orientations of one declared relation. Prepare once on
+// the execution device, then borrow each direction across model calls.
+class PreparedRelationPair {
+public:
+    explicit PreparedRelationPair(PreparedRelation&& forward);
+    PreparedRelationPair(const PreparedRelationPair&) = delete;
+    PreparedRelationPair& operator=(const PreparedRelationPair&) = delete;
+    PreparedRelationPair(PreparedRelationPair&&) = default;
+    PreparedRelationPair& operator=(PreparedRelationPair&&) = default;
+
+    const PreparedRelation& forward() const & noexcept { return forward_; }
+    const PreparedRelation& reverse() const & noexcept { return reverse_; }
+    const PreparedRelation& forward() const && = delete;
+    const PreparedRelation& reverse() const && = delete;
+
+private:
+    PreparedRelation reverse_;
+    PreparedRelation forward_;
+};
+
 } // namespace cellerator::nn

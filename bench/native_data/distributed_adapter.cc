@@ -228,14 +228,23 @@ struct DistributedGatedProductAdapter::Impl {
         std::vector<std::uint64_t> canonical_features(workload.coordinates);
         for (std::size_t physical = 0; physical < workload.coordinates; ++physical)
             canonical_features[physical] = workload.coordinates - 1 - physical;
-        std::vector<std::uint32_t> full_physical_row;
-        full_physical_row.reserve(workload.coordinates);
-        for (std::size_t physical = 0; physical < workload.coordinates; ++physical)
-            full_physical_row.push_back(static_cast<std::uint32_t>(physical));
-        std::vector<std::vector<std::uint32_t>> rows(workload.batch, full_physical_row);
-        auto owned = block_masked::Structure::from_rows(
-            workload.coordinates, rows, 32, 32, std::move(canonical_features));
-        layout_owner = std::make_shared<const block_masked::Structure>(std::move(owned));
+        if (workload.coordinates && workload.batch > UINT32_MAX / workload.coordinates)
+            throw std::overflow_error("benchmark support exceeds block-masked offset width");
+        std::vector<std::uint64_t> row_offsets(workload.batch + 1);
+        std::vector<std::uint32_t> support(workload.batch * workload.coordinates);
+        for (std::size_t row = 0; row < workload.batch; ++row) {
+            const auto begin = row * workload.coordinates;
+            row_offsets[row] = begin;
+            for (std::size_t physical = 0; physical < workload.coordinates; ++physical)
+                support[begin + physical] = static_cast<std::uint32_t>(physical);
+        }
+        row_offsets.back() = support.size();
+        const block_masked::StructureInput input{workload.coordinates,
+            {row_offsets.data(), workload.batch, support.data(), support.size()}, 32, 32,
+            {canonical_features.data(), canonical_features.size()}};
+        const auto scratch_bytes = block_masked::structure_scratch_bytes(input);
+        std::vector<std::uint64_t> scratch(scratch_bytes / sizeof(std::uint64_t));
+        layout_owner = std::make_shared<const block_masked::Structure>(input, scratch.data(), scratch_bytes);
 
         packed_values.resize(layout_owner->stored_values());
         for (std::size_t batch = 0; batch < workload.batch; ++batch) {

@@ -333,15 +333,13 @@ ProgramResult InteractionPrograms::apply(const at::Tensor& features,
             throw std::invalid_argument(
                 "prepared relation calls require valid occurrence order tokens");
         }
-        const auto& relation = *call.relation;
+        const auto& relation = call.relation->forward();
         if (!offsets_match(call.feature_offsets, relation.source_offsets())
             || !offsets_match(call.program_offsets, relation.target_offsets())) {
             throw std::invalid_argument(
                 "explicit call offsets must match the prepared relation endpoints");
         }
         target_count = relation.target_count();
-        source_offsets = relation.source_offsets();
-        target_offsets = relation.target_offsets();
         if (call.structural_generation) {
             relation.validate_for(*call.feature_order, *call.program_order,
                                   features.size(0), target_count,
@@ -351,7 +349,7 @@ ProgramResult InteractionPrograms::apply(const at::Tensor& features,
                                   features.size(0), target_count, features.device());
         }
         bank_indices = selected_bank_indices(
-            call, target_offsets, target_count, num_programs_);
+            call, relation.target_offsets(), target_count, num_programs_);
     } else if (dense) {
         if (!call.feature_offsets.empty() || !call.program_offsets.empty()) {
             throw std::invalid_argument(
@@ -422,10 +420,9 @@ ProgramResult InteractionPrograms::apply(const at::Tensor& features,
     at::Tensor feature_updates;
     if (call.relation != nullptr) {
         program_features = feature_to_program_.cross(
-            features, queries, *call.relation, run);
-        const auto reverse = call.relation->transpose();
+            features, queries, call.relation->forward(), run);
         feature_updates = program_to_feature_.cross(
-            program_features, features, reverse, run);
+            program_features, features, call.relation->reverse(), run);
     } else if (dense) {
         program_features = feature_to_program_.cross(
             features, queries, AttentionLayout{}, run);

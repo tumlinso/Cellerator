@@ -10,15 +10,15 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <Cellerator/tensor/base/compressed.cuh>
+#include <CellShard/formats/compressed.cuh>
 #include <Cellerator/tensor/base/blocked_ell.cuh>
 #if CELLSHARD_ENABLE_CELLERATOR_QUANTIZED
 #include "../../formats/quantized_blocked_ell.cuh"
 #endif
 #include <Cellerator/tensor/base/sliced_ell.cuh>
-#include <Cellerator/tensor/base/dense.cuh>
+#include <CellShard/formats/dense.cuh>
 #include <Cellerator/tensor/base/diagonal.cuh>
-#include <Cellerator/tensor/base/triplet.cuh>
+#include <CellShard/formats/triplet.cuh>
 
 #include "packfile_header.cuh"
 #include "../common/matrix_traits.hh"
@@ -215,15 +215,15 @@ int load_dia_raw(const char *filename, std::size_t value_size, dia_load_result *
 int store_dia_raw(std::FILE *fp, types::dim_t rows, types::dim_t cols, types::nnz_t nnz, types::idx_t num_diagonals, const int *offsets, const void *val, std::size_t value_size);
 int load_dia_raw(std::FILE *fp, std::size_t value_size, dia_load_result *out);
 
-inline std::size_t packed_bytes(const ::cellerator::tensor::base::dense *, types::dim_t, types::dim_t, types::nnz_t nnz, unsigned long, std::size_t value_size) {
+inline std::size_t packed_bytes(const ::cellshard::dense *, types::dim_t, types::dim_t, types::nnz_t nnz, unsigned long, std::size_t value_size) {
     return packed_dense_bytes(nnz, value_size);
 }
 
-inline std::size_t packed_bytes(const ::cellerator::tensor::base::compressed *, types::dim_t rows, types::dim_t cols, types::nnz_t nnz, unsigned long axis, std::size_t value_size) {
+inline std::size_t packed_bytes(const ::cellshard::compressed *, types::dim_t rows, types::dim_t cols, types::nnz_t nnz, unsigned long axis, std::size_t value_size) {
     return packed_compressed_bytes(rows, cols, nnz, (types::u32) axis, value_size);
 }
 
-inline std::size_t packed_bytes(const ::cellerator::tensor::base::triplet *, types::dim_t, types::dim_t, types::nnz_t nnz, unsigned long, std::size_t value_size) {
+inline std::size_t packed_bytes(const ::cellshard::triplet *, types::dim_t, types::dim_t, types::nnz_t nnz, unsigned long, std::size_t value_size) {
     return packed_coo_bytes(nnz, value_size);
 }
 
@@ -251,10 +251,10 @@ inline std::size_t packed_bytes(const ::cellerator::tensor::base::sliced_ell *, 
 
 // FILE* variants let shard-pack cache code write/read many parts through one open file
 // handle, which avoids reopen churn in sequential shard fetch/store loops.
-int store(std::FILE *fp, const ::cellerator::tensor::base::dense *m);
-int load(std::FILE *fp, ::cellerator::tensor::base::dense *m);
-int store(std::FILE *fp, const ::cellerator::tensor::base::compressed *m);
-int load(std::FILE *fp, ::cellerator::tensor::base::compressed *m);
+int store(std::FILE *fp, const ::cellshard::dense *m);
+int load(std::FILE *fp, ::cellshard::dense *m);
+int store(std::FILE *fp, const ::cellshard::compressed *m);
+int load(std::FILE *fp, ::cellshard::compressed *m);
 int store(std::FILE *fp, const ::cellerator::tensor::base::blocked_ell *m);
 int load(std::FILE *fp, ::cellerator::tensor::base::blocked_ell *m);
 #if CELLSHARD_ENABLE_CELLERATOR_QUANTIZED
@@ -263,15 +263,15 @@ int load(std::FILE *fp, sparse::quantized_blocked_ell *m);
 #endif
 int store(std::FILE *fp, const ::cellerator::tensor::base::sliced_ell *m);
 int load(std::FILE *fp, ::cellerator::tensor::base::sliced_ell *m);
-int store(std::FILE *fp, const ::cellerator::tensor::base::triplet *m);
-int load(std::FILE *fp, ::cellerator::tensor::base::triplet *m);
+int store(std::FILE *fp, const ::cellshard::triplet *m);
+int load(std::FILE *fp, ::cellshard::triplet *m);
 int store(std::FILE *fp, const ::cellerator::tensor::base::dia *m);
 int load(std::FILE *fp, ::cellerator::tensor::base::dia *m);
 
 // Filename variants open a file and do a full synchronous host I/O operation.
 // Load paths allocate and take ownership of a fresh host payload every call.
-inline int store(const char *filename, const ::cellerator::tensor::base::dense *m) {
-    if (!::cellerator::tensor::base::dense_is_packed_row_major(m)) return 0;
+inline int store(const char *filename, const ::cellshard::dense *m) {
+    if (!::cellshard::dense_is_packed_row_major(m)) return 0;
     return store_dense_raw(
         filename,
         m->rows,
@@ -282,20 +282,20 @@ inline int store(const char *filename, const ::cellerator::tensor::base::dense *
     );
 }
 
-inline int load(const char *filename, ::cellerator::tensor::base::dense *m) {
+inline int load(const char *filename, ::cellshard::dense *m) {
     dense_load_result tmp;
 
     tmp.storage = 0;
     tmp.val = 0;
     if (!load_dense_raw(filename, sizeof(real::storage_t), &tmp)) return 0;
     clear(m);
-    init(m, tmp.h.rows, tmp.h.cols, ::cellerator::tensor::base::dense_row_major, tmp.h.cols);
+    init(m, tmp.h.rows, tmp.h.cols, ::cellshard::dense_row_major, tmp.h.cols);
     m->storage = tmp.storage;
     m->val = (real::storage_t *) tmp.val;
     return 1;
 }
 
-inline int store(const char *filename, const ::cellerator::tensor::base::compressed *m) {
+inline int store(const char *filename, const ::cellshard::compressed *m) {
     return store_compressed_raw(
         filename,
         m->rows,
@@ -310,10 +310,10 @@ inline int store(const char *filename, const ::cellerator::tensor::base::compres
     );
 }
 
-inline int load(const char *filename, ::cellerator::tensor::base::compressed *m) {
+inline int load(const char *filename, ::cellshard::compressed *m) {
     compressed_load_result tmp;
 
-    tmp.axis = ::cellerator::tensor::base::compressed_by_row;
+    tmp.axis = ::cellshard::compressed_by_row;
     tmp.storage = 0;
     tmp.majorPtr = 0;
     tmp.minorIdx = 0;
@@ -441,11 +441,11 @@ inline int load(const char *filename, ::cellerator::tensor::base::sliced_ell *m)
     return 1;
 }
 
-inline int store(const char *filename, const ::cellerator::tensor::base::triplet *m) {
+inline int store(const char *filename, const ::cellshard::triplet *m) {
     return store_coo_raw(filename, m->rows, m->cols, m->nnz, m->rowIdx, m->colIdx, m->val, sizeof(real::storage_t));
 }
 
-inline int load(const char *filename, ::cellerator::tensor::base::triplet *m) {
+inline int load(const char *filename, ::cellshard::triplet *m) {
     coo_load_result tmp;
 
     tmp.storage = 0;

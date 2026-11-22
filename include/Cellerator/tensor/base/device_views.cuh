@@ -1,17 +1,18 @@
 #pragma once
 
+#include <Cellerator/tensor/base/blocked_ell_layout.hh>
 #include <cuda_fp16.h>
+
+namespace cellerator::tensor::base {
+
+enum { sliced_ell_invalid_col = 0xffffffffu };
+
+} // namespace cellerator::tensor::base
 
 namespace cellerator::tensor::base::device {
 
-struct alignas(16) DenseView {
-    unsigned int rows;
-    unsigned int cols;
-    unsigned int stride;
-    unsigned int order;
-    __half *val;
-};
-
+// Borrowed payloads. Supply device-accessible arrays for CUDA operations
+// and keep them live through launch completion.
 struct alignas(16) BlockedEllView {
     unsigned int rows;
     unsigned int cols;
@@ -30,30 +31,9 @@ struct alignas(16) SlicedEllView {
     unsigned int slice_rows;
     unsigned int *slice_row_offsets;
     unsigned int *slice_widths;
+    // Rows within each slice are padded to its width and packed contiguously.
     unsigned int *slice_slot_offsets;
     unsigned int *col_idx;
-    __half *val;
-};
-
-enum compressed_axis : unsigned int {
-    compressed_by_row = 0u,
-    compressed_by_column = 1u
-};
-
-struct alignas(16) CompressedView {
-    unsigned int rows;
-    unsigned int cols;
-    unsigned int nnz;
-    unsigned int axis;
-    unsigned int *major_ptr;
-    unsigned int *minor_idx;
-    __half *val;
-};
-
-struct alignas(16) TripletView {
-    unsigned int rows, cols, nnz;
-    unsigned int *rowIdx;
-    unsigned int *colIdx;
     __half *val;
 };
 

@@ -63,9 +63,13 @@ validation_result validate_record_metadata(
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "cell-block records do not match the frozen feature-block geometry");
     }
+    if (!packed_extents_fit(records)) {
+        return validation_error(validation_code::integer_overflow, invalid_id,
+            "cell-block record extents exceed the packed schema");
+    }
     if (records.full_row_count != plan.row_count()
-        || records.feature_count != plan.feature_count()
-        || records.feature_block_count != plan.feature_block_count()
+        || records.layout.features != plan.feature_count()
+        || records.layout.feature_blocks != plan.feature_block_count()
         || records.feature_axis_fingerprint != plan.identity().feature_axis_fingerprint
         || records.feature_axis_fingerprint_version
             != plan.identity().feature_axis_fingerprint_version
@@ -77,7 +81,7 @@ validation_result validate_record_metadata(
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "cell-block record value size is zero");
     }
-    const u64 row_end = records.global_row_begin + static_cast<u64>(records.row_count);
+    const u64 row_end = records.global_row_begin + static_cast<u64>(records.layout.rows);
     if (row_end < records.global_row_begin || row_end > records.full_row_count) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "cell-block record partition is outside the full row domain");
@@ -139,19 +143,20 @@ void set_record_view(
     result.feature_block_geometry_identity = plan.feature_block_geometry_identity();
     result.global_row_begin = source.global_row_begin;
     result.full_row_count = source.full_row_count;
-    result.row_count = source.row_count;
-    result.feature_count = source.feature_count;
-    result.feature_block_count = plan.feature_block_count();
-    result.nnz_count = source.nnz_count;
-    result.record_count = record_count;
+    result.layout.rows = source.row_count;
+    result.layout.features = source.feature_count;
+    result.layout.feature_blocks = plan.feature_block_count();
+    result.layout.stored_values = source.nnz_count;
+    result.layout.row_blocks = record_count;
     result.value_size_bytes = source.value_size_bytes;
     result.feature_axis_fingerprint = source.feature_axis_fingerprint;
     result.feature_axis_fingerprint_version = source.feature_axis_fingerprint_version;
     result.row_domain_identity = source.row_domain_identity;
-    result.row_record_offsets = buffers.row_record_offsets;
-    result.record_block_ids = buffers.record_block_ids;
-    result.record_gene_masks = buffers.record_gene_masks;
-    result.record_value_offsets = buffers.record_value_offsets;
+    result.layout.row_block_offsets = buffers.row_record_offsets;
+    result.layout.block_ids = buffers.record_block_ids;
+    result.layout.feature_masks = buffers.record_gene_masks;
+    result.layout.row_block_value_offsets = buffers.record_value_offsets;
+    result.layout.feature_block_offsets = plan.feature_block_offsets();
     result.values = buffers.values;
     *out = result;
 }
@@ -317,33 +322,33 @@ validation_result validate_cell_block_record_view_host(
     const cell_block_record_view &records) {
     validation_result status = validate_record_metadata(plan, records);
     if (!status) return status;
-    if (records.row_record_offsets == nullptr || records.record_value_offsets == nullptr) {
+    if (records.layout.row_block_offsets == nullptr || records.layout.row_block_value_offsets == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "cell-block record offsets are null");
     }
-    if (records.record_count != 0u
-        && (records.record_block_ids == nullptr || records.record_gene_masks == nullptr)) {
+    if (records.layout.row_blocks != 0u
+        && (records.layout.block_ids == nullptr || records.layout.feature_masks == nullptr)) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "cell-block record descriptors are null");
     }
-    if (records.nnz_count != 0u && records.values == nullptr) {
+    if (records.layout.stored_values != 0u && records.values == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "cell-block record values are null");
     }
-    if (records.row_record_offsets[0] != 0u || records.record_value_offsets[0] != 0u) {
+    if (records.layout.row_block_offsets[0] != 0u || records.layout.row_block_value_offsets[0] != 0u) {
         return validation_error(validation_code::invalid_offsets, 0u,
             "cell-block record offsets must start at zero");
     }
-    for (u32 row = 0u; row < records.row_count; ++row) {
-        const u32 begin = records.row_record_offsets[row];
-        const u32 end = records.row_record_offsets[row + 1u];
-        if (end < begin || end > records.record_count) {
+    for (u32 row = 0u; row < records.layout.rows; ++row) {
+        const u32 begin = records.layout.row_block_offsets[row];
+        const u32 end = records.layout.row_block_offsets[row + 1u];
+        if (end < begin || end > records.layout.row_blocks) {
             return validation_error(validation_code::invalid_offsets, row,
                 "cell-block row-to-record offsets are not monotonic");
         }
         u32 previous_block = invalid_id;
         for (u32 record = begin; record < end; ++record) {
-            const u32 block = records.record_block_ids[record];
+            const u32 block = records.layout.block_ids[record];
             if (block >= plan.feature_block_count()
                 || (previous_block != invalid_id && block <= previous_block)) {
                 return validation_error(validation_code::invalid_offsets, record,
@@ -351,14 +356,14 @@ validation_result validate_cell_block_record_view_host(
             }
             const u32 width = plan.feature_block_offsets()[block + 1u]
                 - plan.feature_block_offsets()[block];
-            const u32 mask = records.record_gene_masks[record];
+            const u32 mask = records.layout.feature_masks[record];
             if (mask == 0u || (mask & ~valid_mask_for_width(width)) != 0u) {
                 return validation_error(validation_code::invalid_plan_geometry, record,
                     "cell-block gene mask is empty or outside its block width");
             }
-            const u32 value_begin = records.record_value_offsets[record];
-            const u32 value_end = records.record_value_offsets[record + 1u];
-            if (value_end < value_begin || value_end > records.nnz_count
+            const u32 value_begin = records.layout.row_block_value_offsets[record];
+            const u32 value_end = records.layout.row_block_value_offsets[record + 1u];
+            if (value_end < value_begin || value_end > records.layout.stored_values
                 || value_end - value_begin != popcount_u32(mask)) {
                 return validation_error(validation_code::invalid_offsets, record,
                     "cell-block value offsets disagree with the gene-mask rank");
@@ -366,13 +371,13 @@ validation_result validate_cell_block_record_view_host(
             previous_block = block;
         }
     }
-    if (records.row_record_offsets[records.row_count] != records.record_count
-        || records.record_value_offsets[records.record_count] != records.nnz_count) {
-        return validation_error(validation_code::invalid_offsets, records.record_count,
+    if (records.layout.row_block_offsets[records.layout.rows] != records.layout.row_blocks
+        || records.layout.row_block_value_offsets[records.layout.row_blocks] != records.layout.stored_values) {
+        return validation_error(validation_code::invalid_offsets, records.layout.row_blocks,
             "cell-block terminal offset does not match its declared count");
     }
     std::size_t ignored = 0u;
-    if (multiply_overflows(records.nnz_count, records.value_size_bytes, &ignored)) {
+    if (multiply_overflows(records.layout.stored_values, records.value_size_bytes, &ignored)) {
         return validation_error(validation_code::integer_overflow, invalid_id,
             "cell-block record value byte count overflows size_t");
     }
@@ -391,37 +396,37 @@ validation_result decode_cell_block_records_host(
     validation_result status = validate_cell_block_record_view_host(plan, records);
     if (!status) return status;
     std::size_t value_bytes = 0u;
-    if (multiply_overflows(records.nnz_count, records.value_size_bytes, &value_bytes)) {
+    if (multiply_overflows(records.layout.stored_values, records.value_size_bytes, &value_bytes)) {
         return validation_error(validation_code::integer_overflow, invalid_id,
             "decoded cell-block value byte count overflows size_t");
     }
-    if (buffers.row_offset_capacity < static_cast<std::size_t>(records.row_count) + 1u
-        || buffers.entry_capacity < records.nnz_count
+    if (buffers.row_offset_capacity < static_cast<std::size_t>(records.layout.rows) + 1u
+        || buffers.entry_capacity < records.layout.stored_values
         || buffers.value_capacity_bytes < value_bytes) {
         return validation_error(validation_code::insufficient_capacity, invalid_id,
             "decoded cell-block output capacity is insufficient");
     }
     if (buffers.row_offsets == nullptr
-        || (records.nnz_count != 0u
+        || (records.layout.stored_values != 0u
             && (buffers.canonical_feature_ids == nullptr || buffers.values == nullptr))) {
         return validation_error(validation_code::null_pointer, invalid_id,
             "decoded cell-block output arrays are null");
     }
-    if (records.nnz_count != 0u && buffers.values == records.values) {
+    if (records.layout.stored_values != 0u && buffers.values == records.values) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "cell-block decoding is out-of-place");
     }
 
-    for (u32 row = 0u; row <= records.row_count; ++row) {
+    for (u32 row = 0u; row <= records.layout.rows; ++row) {
         buffers.row_offsets[row] =
-            records.record_value_offsets[records.row_record_offsets[row]];
+            records.layout.row_block_value_offsets[records.layout.row_block_offsets[row]];
     }
-    for (u32 record = 0u; record < records.record_count; ++record) {
-        const u32 block = records.record_block_ids[record];
+    for (u32 record = 0u; record < records.layout.row_blocks; ++record) {
+        const u32 block = records.layout.block_ids[record];
         const u32 block_begin = plan.feature_block_offsets()[block];
         const u32 width = plan.feature_block_offsets()[block + 1u] - block_begin;
-        const u32 mask = records.record_gene_masks[record];
-        u32 output_entry = records.record_value_offsets[record];
+        const u32 mask = records.layout.feature_masks[record];
+        u32 output_entry = records.layout.row_block_value_offsets[record];
         for (u32 local = 0u; local < width; ++local) {
             if ((mask & (1u << local)) != 0u) {
                 buffers.canonical_feature_ids[output_entry++] =
@@ -434,9 +439,9 @@ validation_result decode_cell_block_records_host(
     decoded_cell_block_partition_view result;
     result.global_row_begin = records.global_row_begin;
     result.full_row_count = records.full_row_count;
-    result.row_count = records.row_count;
-    result.feature_count = records.feature_count;
-    result.nnz_count = records.nnz_count;
+    result.row_count = records.layout.rows;
+    result.feature_count = records.layout.features;
+    result.nnz_count = records.layout.stored_values;
     result.value_size_bytes = records.value_size_bytes;
     result.feature_axis_fingerprint = records.feature_axis_fingerprint;
     result.feature_axis_fingerprint_version = records.feature_axis_fingerprint_version;

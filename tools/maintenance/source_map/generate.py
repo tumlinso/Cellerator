@@ -19,6 +19,48 @@ OUT.mkdir(parents=True, exist_ok=True)
 def split_ignored():
     return split0(git(REPO, "ls-files", "--others", "--ignored", "--exclude-standard", "-z"))
 
+# The retired modeling tree is recorded in the active migration closure.
+closure_path = REPO / 'planning/active-source-cleanup/source-migrations.json'
+closure = json.loads(closure_path.read_text()) if closure_path.is_file() else {}
+modeling_migrations = {
+    row['old_path']: row['new_path'] for row in closure.get('path_migrations', [])
+    if row['old_path'].startswith(('include/Cellerator/modeling/', 'src/modeling/'))
+    or row['old_path'] == 'cmake/CelleratorModeling.cmake'
+}
+
+# These operation headers and implementations have individual build owners.
+native_operation_owners = {
+    'reaction': ('host reaction network', 'ops/reaction/network.hh', None, 'reactions_test.cc'),
+    'exchange': ('conservative exchange', 'ops/process/exchange.hh', None, 'coupling_test.cc'),
+    'inheritance': ('inheritance policies', 'ops/process/inheritance.hh', None, 'inheritance_test.cc'),
+    'accessibility': ('host accessibility conditions', 'ops/condition/accessibility.hh', None, 'accessibility_test.cc'),
+    'event_memory': ('host event memory', 'ops/sequence/event_memory.hh', None, None),
+    'attention_cuda': ('sparse attention', 'ops/attention/sparse_cuda.hh', 'ops/attention/attention.cu', 'attention_smoke.cu'),
+    'dispatch_cuda': ('routing gather and combine', 'ops/routing/dispatch_cuda.hh', 'ops/routing/dispatch.cu', 'dispatch_smoke.cu'),
+    'conditional_dispatch_cuda': ('conditional dispatch device preparation', 'execution/conditional/dispatch_cuda.hh', 'execution/conditional/dispatch.cu', 'dispatch_smoke.cu'),
+    'dependency_frontier_cuda': ('changed-source work frontier', 'execution/dependency/frontier_cuda.hh', 'execution/dependency/frontier.cu', 'frontier_smoke.cu'),
+    'grouped_linear_cuda': ('grouped linear', 'ops/matrix/grouped_linear_cuda.hh', 'ops/matrix/grouped_linear.cu', 'grouped_linear_smoke.cu'),
+    'event_memory_cuda': ('device event memory', 'ops/sequence/event_memory_cuda.hh', 'ops/sequence/event_memory.cu', 'memory_smoke.cu'),
+    'packed_embedding_cuda': ('packed embedding bags', 'ops/sequence/packed_embedding_cuda.hh', 'ops/sequence/packed_embedding.cu', 'packed_embedding_smoke.cu'),
+    'framework_parameter_transfer': ('revision-pinned CUDA parameter transfer', 'execution/conditional/parameter_transfer_cuda.hh', 'execution/conditional/parameter_transfer.cu', 'parameter_transfer_smoke.cu'),
+    'reaction_cuda': ('device reaction events', 'ops/reaction/apply_cuda.hh', 'ops/reaction/reactions.cu', 'reactions_smoke.cu'),
+    'regulatory_gates_cuda': ('packed regulatory conditions', 'ops/condition/regulatory_gates_cuda.hh', 'ops/condition/regulatory_gates.cu', 'regulatory_gates_smoke.cu'),
+}
+native_operation_paths = {}
+for target, (operation, header, source, check) in native_operation_owners.items():
+    test_dir = 'cuda' if source else 'native'
+    paths = [f'include/Cellerator/{header}']
+    if source:
+        paths.append(f'src/{source}')
+    for path in paths:
+        native_operation_paths[path] = (
+            operation, f'Cellerator::{target}', f'keep the {operation} contract with its direct build owner',
+            'retain_native_operation_owner', 'validation is operation-specific',
+            'native callers, installed consumers and relevant adapters',
+            f'tests/framework/{test_dir}/{check}' if check else 'host header consumer compilation',
+            'preserve numerical, precision and storage contracts through the source move',
+        )
+
 # Canonical destinations after the 2026-11-10 compatibility retirement.
 COMPATIBILITY_RETIREMENTS = {
     'include/Cellerator/compute/gene_candidate_discovery.hh': 'include/Cellerator/geometry/gene_candidate_discovery.hh',
@@ -56,8 +98,6 @@ COMPATIBILITY_RETIREMENTS = {
     'include/Cellerator/interop/cellshard_access.cuh': 'include/Cellerator/interop/cellshard/access.cuh',
     'include/Cellerator/math/matrix/patch.hh': 'include/Cellerator/ops/matrix/patch.hh',
     'include/Cellerator/math/process/ports.hh': 'include/Cellerator/ops/process/ports.hh',
-    'include/Cellerator/modeling/cell.hh': 'include/Cellerator/cell.hh',
-    'include/Cellerator/modeling/model.hh': 'include/Cellerator/modeling/dynamical.hh',
     'include/Cellerator/models/developmental_time.hh': 'include/Cellerator/examples/models/developmental_time/developmentalTime.hh',
     'include/Cellerator/models/developmental_time_trajectory.hh': 'include/Cellerator/examples/models/developmental_time_trajectory/developmentalTimeTrajectory.hh',
     'include/Cellerator/models/state_reduce.hh': 'include/Cellerator/examples/models/state_reduce/stateReduce.hh',
@@ -74,6 +114,21 @@ COMPATIBILITY_RETIREMENTS = {
 
 # Order matters: narrow exceptions precede broad tree rules.
 def classify(p):
+    if p in modeling_migrations:
+        destination = modeling_migrations[p]
+        return ('retired native modeling source path', destination,
+                f'use the canonical path {destination}', 'record_canonical_native_source_move',
+                'historical source path', 'native callers and installed consumers',
+                'active source migration closure and focused owner checks',
+                'preserve historical bytes and qualification in Git and source-bound evidence')
+    if p in native_operation_paths:
+        return native_operation_paths[p]
+    if p == 'include/Cellerator/execution/dependency/value_field.hh':
+        return ('identity-addressed value storage and write publication', 'Cellerator::dependency_execution',
+                'keep the value generation beside the execution state that observes it',
+                'retain_native_value_field', 'host ownership and generation contract',
+                'native-data and optional host bindings', 'tests/framework/native/sparse_modeling_test.cc',
+                'preserve identity-addressed writes and value generation semantics')
     if p.startswith(('include/Cellerator/execution/sequence/', 'src/execution/sequence/')):
         return ('sequence operand binding and prepared regulatory execution', 'Cellerator::sequence_integration for the CUDA regulatory path', 'bind borrowed native sequence planes and run the supported forward predicate and regulatory projection', 'retain_native_sequence_execution', 'bounded forward exact-mask path', 'tests/execution/sequence and the biological operand checks', 'sequence_regulatory CTest and CUDA qualification', 'preserve axis, source generation, readiness, and projection identity')
     if p == 'include/Cellerator/biology/sequence.hh' or p.startswith(('include/Cellerator/tensor/sequence/', 'include/Cellerator/layout/sequence/', 'src/layout/sequence/')):
@@ -85,6 +140,10 @@ def classify(p):
         return ('pinned AnnData++ source dependency', 'AnnData++ upstream repository', 'bundle the indexed gitlink revision for the optional CCell data adapter', 'retain_pinned_anndatapp', 'standard native build includes H5AD and Zarr when their backends are enabled', 'anndatapp::anndatapp and ccell::anndata_interop', 'pinned source archive and installed H5AD/Zarr consumer checks', 'keep upstream module and package names and update the pin explicitly')
     if p.startswith('components/CCell/') or p == 'cmake/CelleratorCCell.cmake':
         return ('native single-cell methods and component integration', 'components/CCell', 'route method behavior, references, and adapter code to the CCell component', 'retain_ccell_native_methods', 'host methods and optional AnnData++ borrowing adapter; imported evidence retains its original source identity', 'ccell::preprocess, ccell::velocity, ccell::ccell, and ccell::anndata_interop', 'native, installed-package, allocation, numerical-parity, and file-backed modeling checks by target', 'preserve borrowed layout and logical order, caller storage, and the separation of method and acquisition dependencies')
+    if p == '.vscode/settings.json':
+        return ('local editor configuration', '.vscode/settings.json', 'retain developer editor preferences without treating paths as package dependency authority', 'retain_editor_configuration', 'editor metadata only', 'local development tools', 'preserve existing preferences; builds use maintained CMake contracts', 'do not rewrite local developer settings as part of component detachment')
+    if p.startswith(('components/CellShard/', 'src/preprocess/', 'src/ops/velocity/', 'tests/velocity/', 'include/Cellerator/interop/cellshard/', 'examples/torch/')) or p in {'cmake/CelleratorVelocity.cmake', 'cmake/CelleratorVelocityModule.cmake'}:
+        return ('retained inactive data or scientific integration source', 'docs/development/component-ownership.md', 'preserve source in place outside supported Cellerator builds and installations; CCell owns scientific integration', 'retain_detached_component_source', 'inactive source; historical qualification is not current substrate qualification', 'no supported Cellerator target or installed adapter', 'preservation hashes and dependency-free host/SDK consumer checks', 'preserve original source, fixtures, local histories and source data; no algorithm transfer or new acceleration API')
     if p in COMPATIBILITY_RETIREMENTS:
         destination = COMPATIBILITY_RETIREMENTS[p]
         return ('retired source compatibility surface', destination,
@@ -109,12 +168,42 @@ def classify(p):
         return ('independent SpMM numerical reference and request validation', 'src/math/reference/CMakeLists.txt; Cellerator::spmm_reference', 'keep stable request schemas and logical referees separate from supported planning and runtime APIs', 'retain_numerical_reference_owner', 'local host reference tests; CUDA and performance evidence remain separate', 'candidate tests, numerical validation and benchmark reporting', 'cpMathOperationContractTest and cpMathRefereeFoundationTest; installed reference consumer', 'preserve numerical signatures, precision, transpose and epilogue meanings')
     if p in {'src/layout/projection/CMakeLists.txt', 'src/layout/projection/csr.cc', 'src/layout/native_tile_view.cc', 'src/layout/projection/bell.cc', 'src/layout/projection/bell_candidates.cc', 'src/layout/projection/packed_dense_operand.cu', 'include/Cellerator/layout/projection/bell.hh', 'include/Cellerator/layout/projection/packed_dense_operand.hh', 'include/Cellerator/layout/projection/dense_layout.hh'}:
         return ('physical projection construction or packed operand helper', 'src/layout/projection/CMakeLists.txt; Cellerator::physical_projection and optional Cellerator::packed_dense_operand', 'keep borrowed CSR/native-tile adaptation and BELL construction with layout; CUDA packing depends on the physical owner without pulling numerical reference code into execution', 'retain_physical_projection_owner', 'host construction checks and installed headers; no new CUDA or performance qualification', 'native projection consumers, focused layout tests and optional packing benchmark', 'cpMathNativeTileAdapterTest, cpMathBellLoweringTest and installed projection consumer; CUDA checks deferred', 'preserve canonical recovery, value borrowing, versioned identities and explicit caller storage')
-    if p.startswith(('include/Cellerator/layout/factorized_interaction', 'include/Cellerator/modeling/cuda/factorized_interaction', 'include/Cellerator/modeling/cuda/prepared_factorized_interaction', 'src/layout/factorized_interaction', 'src/modeling/cuda/factorized_interaction', 'src/modeling/cuda/prepared_factorized_interaction')):
+    if p.startswith(('include/Cellerator/layout/factorized_interaction', 'include/Cellerator/ops/mechanism/factorized_interaction', 'src/layout/factorized_interaction', 'src/ops/mechanism/factorized_interaction', 'src/ops/mechanism/prepared_factorized_interaction')):
         return ('factorized conditional joint-interaction layout and native CUDA evaluator', 'native factorized-interaction family; Cellerator::factorized_interaction_cuda with host preparation', 'retain typed physical preparation, explicit forward/VJP, and optional checked logical-pattern binding with the native numerical owner', 'retain_factorized_interaction_component', 'source-bound host, device, and performance qualification are recorded separately; source presence is not a speedup claim', 'native C++ model authors and optional ATen adapters; Torch is not a core dependency', 'tests/factorized_interactions_preparation, tests/factorized_interactions, bench/factorized_interactions and planning/interaction-layout-proposal-2026-11-02', 'preserve ordered/repeated occurrences, parameter identities, caller-owned numerical lifetimes, independent oracle and captured measurement evidence')
-    if p in {'include/Cellerator/cell.hh', 'src/cell.cc'} or p.startswith(('include/Cellerator/cells/', 'tests/cell/', 'examples/native_cell/')):
-        return ('native continuing typed Cell bindings, optional runtime access, and bulk-data selections', 'libCellerator optional CellViews runtime; header-only Cell binding; include/Cellerator/cells selections; tests/cell and examples/native_cell', 'bind shared callable models to independent instance representations and expose optional typed or runtime access without mandatory temporal or device structure', 'retain_native_cell_access', 'host binding and descriptor contracts; placement metadata and supplied costs are not GPU or performance qualification', 'native C++ callers, optional modeling and NN interfaces, installed host SDK', 'typed and no-RTTI core, runtime bridge, adapters, native model/readout tests, installed/module consumers and native_cell examples', 'preserve model/instance lifetime, model-defined copying, logical continuity, view invalidation, and explicit owner mutation contracts')
+    if p in {'include/Cellerator/cells/access.hh', 'src/cell.cc', 'tests/cell/cell_views_bridge_test.cc'}:
+        return ('retired native Cell runtime bridge', 'docs/native_nn.qmd',
+                'use concrete typed views directly',
+                'record_native_cell_runtime_bridge_retirement',
+                'removed from the worktree and host package',
+                'native C++ and installed header/module consumers',
+                'focused host Cell, modeling, and installed consumer checks',
+                'historical implementation and evidence remain in Git and the dated record')
+    if p in {'include/Cellerator/modeling/model.hh', 'include/Cellerator/modeling/dynamical.hh', 'tests/framework/native/model_contract_test.cc'}:
+        return ('retired native dynamical model wrapper or dedicated contract test',
+                'tests/framework/native/cell_relation_example.cc',
+                'call concrete transitions and observations over caller-owned state',
+                'record_native_dynamical_model_retirement', 'historical source and test paths',
+                'native C++ callers and installed native-data consumers',
+                'direct transition, clock publication, and retained snapshot checks',
+                'preserve historical implementation and evidence in Git')
+    if p in {
+        'include/Cellerator/cell.hh', 'include/Cellerator/modeling/cell.hh',
+        'modules/cellerator.ccm', 'modules/cellerator.core.ccm', 'modules/CMakeLists.txt',
+        'examples/native_cell/foundation.cc', 'tests/cell/cell_core_test.cc',
+        'tests/cell/typed_core_no_rtti_test.cc', 'tests/cell/install_consumer/core.cc',
+        'tests/modules/module_contract.cc', 'tests/modules/installed_consumer/CMakeLists.txt',
+        'tests/nn/native/cell_contract_test.cc', 'tests/nn/native/cell_query_integration_test.cc',
+    }:
+        return ('retired native Cell binding or demonstration', 'docs/native_nn.qmd',
+                'call models with concrete data and use typed views directly',
+                'record_native_cell_retirement', 'historical source and test paths',
+                'native C++ callers and installed NN consumers',
+                'native adapter, model, recurrent, query, and installed module checks',
+                'preserve historical implementation and evidence in Git')
+    if p.startswith(('include/Cellerator/cells/', 'tests/cell/', 'examples/native_cell/')):
+        return ('native event and expression selections over caller-owned storage', 'Cellerator::headers; include/Cellerator/cells; tests/cell and examples/native_cell', 'expose concrete event prefixes and expression rows with typed read and edit access', 'retain_native_cell_access', 'host descriptor and backing-storage contracts', 'native C++ callers and the optional NN interface', 'adapter, installed consumer, and native examples', 'preserve view lifetime, logical identity, physical position, and owner mutation contracts')
     if p == 'include/Cellerator/geometry/CP_BP_V1_COMPATIBILITY.md':
-        return ('migrated CP-BP compatibility design note', 'docs/development/cellpack_interop.md', 'the compatibility rationale moved to the maintained interop guide; its statements describe format boundaries and do not establish implementation or runtime support', 'record_canonical_native_document_move', 'documentation provenance only; codec and runtime capabilities are established by their source and exact tests', 'docs/development/cellpack_interop.md and geometry/interoperability maintainers', 'review links against the actual CellPack codec and selected format consumers; documentation is not qualification', 'preserve the protected cellular geometry definition and keep format compatibility explicit')
+        return ('migrated CP-BP compatibility design note', 'docs/development/packed_geometry_images.md', 'the packing image guide records format boundaries and points to current code and tests', 'record_canonical_native_document_move', 'documentation provenance only', 'native geometry contributors', 'review the packed image readers and current consumers', 'preserve the protected cellular geometry definition and keep format compatibility explicit')
     if p == 'src/quantized/README.md':
         return ('retired quantized source-folder guide', 'tensor::quantized and ops::quantized source families', 'the former src/quantized folder no longer owns a monolithic format/operation layer; current encoding views and kernels have separate canonical owners', 'record_retired_quantized_subsystem_guide', 'former documentation path is removed from the worktree; do not infer implementation or performance from its prose', 'maintainers of the split tensor format and operation families', 'review current headers, build targets, exact numerical tests, and operation-specific device receipts', 'preserve the historical design note as provenance without carrying forward stale ownership or universal policy claims')
     if p.startswith('planning/archive/legacy-todo/'):
@@ -128,7 +217,7 @@ def classify(p):
     if p.startswith('.autobench/'):
         return ('Autobench registry input or ignore metadata', '.autobench registry and its supported Autobench tooling', 'retain benchmark definitions and pause metadata at their source paths; use Autobench for registration and execution', 'retain_autobench_registry_metadata', 'configuration metadata only; active or paused definitions are not measurement or qualification evidence', 'Autobench registry readers and maintainers of the named benchmark definitions', 'validate through Autobench; only source-bound execution receipts establish the result of a run', 'preserve each definition and status marker; do not infer that a paused or registered benchmark ran')
     if p == 'include/CellPack/README.md':
-        return ('retired CellPack forwarding-header guide', 'docs/development/cellpack_interop.md', 'use canonical Cellerator/geometry headers; the temporary include directory has been removed', 'record_canonical_native_document_move', 'documentation migration only; payload and target contracts are unchanged', 'native geometry contributors and external header consumers', 'audit include paths and canonical header consumers', 'preserve historical evidence without retaining obsolete forwarding headers')
+        return ('retired CellPack forwarding-header guide', 'docs/development/packed_geometry_images.md', 'use the canonical Cellerator/geometry headers', 'record_canonical_native_document_move', 'documentation provenance only', 'native geometry contributors and installed header consumers', 'audit include paths and canonical header consumers', 'preserve historical evidence without retaining obsolete forwarding headers')
     if p.startswith('include/CellPack/') and p != 'include/CellPack/semantic_geometry.hh':
         target = p.replace('include/CellPack/', 'include/Cellerator/geometry/', 1)
         return ('retired CellPack forwarding header', target, 'include the canonical geometry header directly; no implementation lived in this wrapper', 'record_canonical_native_source_move', 'source-compatibility include path removed after consumer audit; numerical and payload contracts unchanged', 'native geometry and external C++ consumers', 'canonical header compilation and focused host geometry tests; CUDA qualification remains separate', 'preserve cellpack namespace, CellPack:: targets and versioned payload meanings')
@@ -149,8 +238,6 @@ def classify(p):
         return ('native NN contracts and numerical checks', 'tests/nn with include/Cellerator/nn, include/Cellerator/biology, and src/nn', 'retain beside the native NN implementation; execute only with the required optional dependencies and hardware authority', 'retain_native_nn_checks', 'test source only; collection, compilation, and passing execution are separate evidence', 'native NN CMake test registration and operation-specific qualification runners', 'inspect the exact test and its admitted execution receipt; no blanket native or CUDA acceptance', 'preserve independent references, gradient checks, and device/precision contracts')
     if p == 'cmake/CelleratorTorchDependency.cmake':
         return ('shared optional Torch and ATen dependency discovery', 'cmake/CelleratorTorchDependency.cmake and its current CMake include sites', 'retain consistent optional native/Python Torch ABI discovery while allowing an explicit LibTorch prefix', 'retain_optional_torch_dependency_discovery', 'build configuration source; successful configured builds require separate evidence', 'optional native NN, tokenization, and Python binding build registration', 'CMake configure/build acceptance with the selected dependency installation; not numerical qualification', 'preserve optional dependency boundaries and caller-visible package/ABI selection')
-    if p == 'include/Cellerator/modeling/cuda/parameter_transfer.hh':
-        return ('optional CUDA parameter-transfer contract', 'cmake/CelleratorFrameworkCUDA.cmake; optional Cellerator::framework_parameter_transfer target', 'retain the revision-aware transfer bridge as a separate optional target from the CUDA numerical library', 'retain_framework_parameter_transfer_contract', 'public header is installed only with the optional transfer target; runtime qualification is operation-specific', 'Cellerator::conditional and Cellerator::framework_cuda; binding and transfer callers remain optional', 'tests/framework/cuda/parameter_transfer_smoke.cu is a buildable smoke source, not an automatically run CTest or runtime qualification', 'preserve revision, stream, and transfer semantics; do not imply residency scheduling')
     if p.startswith('include/Cellerator/examples/'):
         return ('native model and trajectory examples', 'Cellerator examples/model fixtures', 'move to examples/model families or consumer-owned projects after include/build references are mapped', 'retain_example_until_consumer_audit', 'example_or_model_support_unqualified', 'unknown; inspect downstream includes', 'related tests/examples and model tests; exact mapping pending', 'retain biological assumptions with consumer')
     migrated_native_paths = {
@@ -214,10 +301,6 @@ def classify(p):
         if item:
             owner, destination = item
             return ('migrated legacy matrix header', owner, f'the canonical interface is {destination}', 'record_canonical_native_source_move', 'former tracked path is removed from the worktree; codec compatibility and runtime support are format-specific', 'audit C++/CUDA and CellShard consumers before retiring wrappers', 'format-specific byte, consumer, or numerical checks; do not infer they all ran', 'do not rebuild conventional sparse execution inside Cellerator; migrate persisted payloads explicitly')
-    if p.startswith('include/Cellerator/modeling/cuda/'):
-        return ('optional framework CUDA operation contracts', 'cmake/CelleratorFrameworkCUDA.cmake; public declarations under include/Cellerator/modeling/cuda', 'retain remaining CUDA-facing operations under the optional Cellerator::framework_cuda library', 'retain_framework_cuda_operation_contracts', 'installed with the opt-in CUDA target; source and target registration do not establish device qualification', 'src/modeling/cuda family implementations and optional framework CUDA consumers', 'tests/framework/cuda/*_smoke.cu sources are optional build targets and are deliberately not automatically run', 'preserve stream, ownership, precision, and workspace contracts; keep runtime evidence operation-specific')
-    if p.startswith('include/Cellerator/modeling/'):
-        return ('public host biological-modeling contracts', 'cmake/CelleratorModeling.cmake; installed include/Cellerator/modeling headers and Cellerator::modeling', 'retain optional model composition and dynamics contracts over native data and execution owners', 'retain_host_modeling_contracts', 'public headers and host target are present; this surface is not the complete neural-network framework', 'Cellerator::modeling links Cellerator::libCellerator and Cellerator::native_data; optional Python binding is a separate adapter', 'tests/framework/native model, reaction, Cell, dynamics, and contract targets by their exact assertions and registration', 'preserve caller-defined representations; neither a Cell lifecycle nor a biological ontology is mandatory for models')
     if p.startswith('include/Cellerator/memory/cuda/') or p == 'src/memory/cuda/resources.cu':
         return ('explicit-device CUDA resource owners and shared buffers', 'Cellerator::memory_cuda; declarations under include/Cellerator/memory/cuda and implementation under src/memory/cuda', 'own streams, device and pinned allocations, events, and shared device-buffer storage with explicit device/stream selection', 'retain_native_cuda_resource_owner', 'CUDA resource sources and consumers are present; runtime behavior remains resource- and operation-specific', 'Cellerator::memory_cuda is linked by optional CUDA owners and direct out-of-line DeviceBuffer consumers', 'NVCC compilation and bounded resource smoke coverage where registered; build evidence does not qualify every allocation or asynchronous lifetime', 'keep memory ownership below model, tensor, and kernel layers; require callers to retain allocations and establish completion')
     if p.startswith('include/Cellerator/memory/'):
@@ -236,12 +319,6 @@ def classify(p):
         return ('native public umbrella, ABI or binding handle', 'native public API boundary', 'retain direct native API while package-facing route is clarified', 'retain_public_native_boundary', 'public_contract_review_required', 'include consumers and ABI probes required', 'tests/biological_abi, tests/bindings candidate', 'preserve schema/ABI until explicit migration')
     if p in {'src/CMakeLists.txt','src/config.cuh.in'}:
         return ('native source build/configuration', 'native build system', 'retain and update atomically with source ownership moves', 'retain_build_boundary', 'build_infrastructure', 'all native targets and consumers', 'native builds/test registration', 'preserve feature gates')
-    if p == 'src/modeling/cuda/parameter_transfer.cu':
-        return ('revision-aware CUDA parameter-transfer implementation', 'cmake/CelleratorFrameworkCUDA.cmake; optional Cellerator::framework_parameter_transfer target', 'retain the bridge separately from framework CUDA numerical operators and require its conditional-owner dependency', 'retain_framework_parameter_transfer_implementation', 'source is registered in an opt-in CUDA target; no runtime qualification is inferred', 'Cellerator::conditional, Cellerator::framework_cuda, and explicit transfer callers', 'tests/framework/cuda/parameter_transfer_smoke.cu is buildable only when requested and is not automatically executed', 'preserve revision validation, ordering, and stream/lifetime contracts; do not imply a distributed runtime')
-    if p.startswith('src/modeling/cuda/'):
-        return ('optional framework CUDA numerical implementation', 'cmake/CelleratorFrameworkCUDA.cmake; Cellerator::framework_cuda', 'retain registered CUDA operations as an optional native family with per-operation contracts', 'retain_framework_cuda_implementations', 'sources are registered when CELLERATOR_ENABLE_FRAMEWORK_CUDA is enabled; smoke executables are opt-in and not CTest jobs', 'public contracts under include/Cellerator/modeling/cuda; optional bindings/modeling_cuda and native consumers', 'tests/framework/cuda/*_smoke.cu are buildable smoke sources only; device execution and qualification are separate', 'preserve stream, precision, buffer ownership, and backward contracts; make no blanket performance claim')
-    if p == 'src/modeling/sparse_relation.cc':
-        return ('host sparse biological-relation implementation', 'cmake/CelleratorModeling.cmake; Cellerator::modeling', 'retain as the implementation of the public host SparseRelation and DynamicRelation contracts', 'retain_host_sparse_relation_owner', 'source and host target are registered behind CELLERATOR_ENABLE_MODELING; no complete neural-model or scientific claim implied', 'public headers under include/Cellerator/modeling and existing Cellerator::support/Cellerator::indexing dependencies', 'tests/framework/native sparse-modeling and cell-relation targets are registered by CelleratorModeling.cmake; execution evidence remains separate', 'preserve relation identity, occurrence multiplicity, snapshot, and publication contracts')
     if p in {'src/compiler/driver/downstream_compiler_invocation.cc', 'include/Cellerator/compiler/driver/downstream_compiler_invocation_v1.hh'}:
         return ('installed host compiler invocation API', p.rsplit('/', 1)[0], 'retain the narrow downstream compiler invocation contract in the optional host SDK', 'retain_installed_host_compiler_invocation', 'built and installed by Cellerator::libCellerator; it forwards to the configured downstream compiler and is not a biological model compiler', 'cmake/compiler/CelleratorHostSdk.cmake defines libCellerator and installs compiler headers; tools/cellerator/driver_passthrough.cc consumes this API', 'compiler driver acceptance tests exercise bounded passthrough; source build does not qualify all compiler frontends or backends', 'preserve existing subprocess, diagnostics, and error propagation contract')
     if p in {'src/compiler/tooling/celleratord_architecture.cc', 'include/Cellerator/compiler/tooling/celleratord_architecture_v1.hh'}:
@@ -479,6 +556,8 @@ def classify(p):
         owner = '/'.join(parts[:3] if parts[0] == 'src' else parts[:4])
         role = {'math': 'native mathematical operations and numeric helpers', 'packing': 'native packing implementation or compatibility API', 'quantized': 'native quantized operation or storage contract', 'optimize': 'native optimization interface', 'models': 'native model support interface', 'trajectory': 'native trajectory interface'}.get(family, f'native {family} subsystem')
         return (role, owner, f'retain in its existing {family} subsystem until implementation and caller evidence supports a move', 'retain_named_legacy_native_subsystem', 'implementation present; target, consumer, and numerical maturity are operation-specific', 'inspect the family CMake and direct native includes before claiming target or package exposure', 'tests/math_core, tests/native_numeric, model tests, or examples only where they exercise this exact contract', 'preserve formulas, parameters, derivative behavior, and checkpoint/schema semantics')
+    if p.startswith(('bindings/torch/', 'src/interop/torch/')):
+        return ('native LibTorch or ATen integration', 'src/interop/torch', 'retain native adapters at their C++ build and package boundary', 'retain_native_torch_integration', 'optional native implementation; configure and test each selected component', 'native C++ Torch consumers and optional Python extensions', 'tests/bindings/torch, tests/interop, and the installed Torch consumer', 'preserve installed include paths, target names, and direct native consumers')
     if p.startswith(('src/planner/','include/Cellerator/planner/','src/profiling/','include/Cellerator/profiling/','src/preprocess/','include/Cellerator/preprocess/','src/state/','include/Cellerator/state/','src/support/','include/Cellerator/support/','src/interop/','include/Cellerator/interop/','src/abi/','include/Cellerator/abi/')):
         parts = Path(p).parts
         family = parts[1] if parts[0] == 'src' else parts[2]
@@ -490,9 +569,27 @@ def classify(p):
     if p in {'bindings/ggml/module.cc', 'python/bindings/ggml/module.cc'}:
         return ('optional Python binding for ggml quantization interoperability', 'cmake/CelleratorGGML.cmake; optional _ggml_native module and Cellerator::ggml_quantization', 'retain as a separately gated adapter; do not add a package-wide ggml dependency', 'retain_optional_ggml_binding', 'built only when CELLERATOR_ENABLE_GGML and Python support are enabled; no runtime qualification implied', 'src/interop/ggml/quantization.cc and pinned upstream ggml-base dependency', 'ggml binding and quantization checks where configured; source/build registration is not numerical validation', 'preserve optional dependency boundary and caller-visible storage/quantization contracts')
     if p in {'bindings/modeling/module.cc', 'python/bindings/modeling/module.cc'}:
-        return ('Python binding for host biological-modeling primitives', 'cmake/CelleratorModeling.cmake; optional _modeling_native module linked to Cellerator::modeling', 'retain as a narrow bridge to host modeling types; keep ordinary neural composition in the Python/Torch modeling surface', 'retain_host_modeling_python_binding', 'target is registered under Python/modeling build flags; binding behavior is checked only by its scoped tests', 'Cellerator::modeling and Python host modeling adapters', 'tests/framework/native/test_native_binding.py is registered when the module and tests are enabled', 'preserve native type/ownership behavior; do not make this binding the universal cell-model API')
+        return (
+            'Python binding for host dependency geometry and value fields',
+            'cmake/CelleratorNativeData.cmake; _modeling_native links Cellerator::native_data',
+            'adapt current geometry, incidence and value owners',
+            'retain_host_modeling_python_binding',
+            'available with the Python build; validate the scoped binding',
+            'Python host interaction adapters',
+            'tests/framework/native/test_native_binding.py',
+            'preserve extension import, native type and ownership behavior',
+        )
     if p in {'bindings/modeling_cuda/module.cc', 'python/bindings/modeling_cuda/module.cc'}:
-        return ('optional Python binding for framework CUDA operations', 'cmake/CelleratorFrameworkCUDA.cmake; optional _modeling_cuda module linked to Cellerator::framework_cuda', 'retain as an optional bridge to selected native CUDA operations', 'retain_framework_cuda_python_binding', 'built only when framework CUDA and its Python binding option are enabled; binding source does not establish device qualification', 'Cellerator::framework_cuda and Python adapter consumers', 'tests/framework/cuda/test_runtime_binding.py and operation-specific smoke sources are separate checks; CMake deliberately does not auto-run GPU smoke jobs', 'preserve stream/device contracts and keep optional CUDA dependencies lazy')
+        return (
+            'optional Python binding for framework CUDA operations',
+            'cmake/CelleratorFrameworkCUDA.cmake; _modeling_cuda links the selected CUDA owners',
+            'adapt device resources, dispatch, grouped linear and state-code operations',
+            'retain_framework_cuda_python_binding',
+            'build and device qualification are separate',
+            'CUDA owners and Python adapter consumers',
+            'tests/framework/cuda/test_runtime_binding.py and operation-specific smoke checks',
+            'preserve stream and device contracts and keep optional CUDA dependencies lazy',
+        )
     if p in {'bindings/sparse_support/prepared_routing.cc', 'python/bindings/sparse_support/prepared_routing.cc'}:
         return ('Torch binding for opt-in prepared entity-to-mechanism routing', 'python/bindings/sparse_support/prepared_routing.cc registered by python/bindings/sparse_support/module.cc and python/bindings/torch/CMakeLists.txt', 'retain internal binding; preserve opt-in API and Python fallback', 'retain_opt_in_prepared_routing_adapter', 'binding integration present; CUDA runtime qualification pending', 'python/cellerator/torch/prepared_routing.py and tests/prepared_routing/test_prepared_routing.py', 'Torch binding translation unit compiled; CUDA correctness, sanitizers and complete-query timing pending', 'preserve dependency identity/generation arguments and per-stream workspace ownership')
     if p.startswith(('bindings/python/','bindings/sparse_support/','bindings/tokenization/','python/bindings/')):
@@ -518,8 +615,6 @@ def classify(p):
             return ('Product2 Python/package contract checks', 'tests/bindings/python over native Product2 and Product2Module', 'retain with the standalone Product2 operation', 'retain_product2_python_tests', 'CPU FP32 installed/package behavior only; not a GPU test', 'cellerator.ops and Product2Module', 'exact Python test files; native and GPU coverage are separate', 'preserve operation fixtures and first-order autograd contract')
         if p in {'tests/bindings/native/mechanism_handle_test.cc','tests/bindings/python/test_native_mechanism.py','tests/bindings/python/test_mechanism.py'}:
             return ('optional indexed-mechanism binding lifecycle checks', 'native/Python mechanism adapter checks', 'retain with CUDA indexed-mechanism owner and optional framework adapters', 'retain_mechanism_binding_checks', 'contract coverage present; GPU runtime qualification remains separate', 'Cellerator::indexed_mechanism, bindings/python and bindings/torch', 'exact native and Python test files; do not infer all CUDA mechanism paths are covered', 'preserve owner lifecycle and checkpoint expectations')
-    if p.startswith(('bindings/torch/', 'src/interop/torch/')):
-        return ('native LibTorch or ATen integration', 'src/interop/torch', 'retain native adapters at their C++ build and package boundary', 'retain_native_torch_integration', 'optional native implementation; configure and test each selected component', 'native C++ Torch consumers and optional Python extensions', 'tests/bindings/torch, tests/interop, and the installed Torch consumer', 'preserve installed include paths, target names, and direct native consumers')
         if p.startswith('tests/tokenization/'):
             return ('ATen tokenization CPU/CUDA operation tests', 'tests/tokenization and cmake/CelleratorTokenization.cmake', 'retain with optional tokenization facility', 'retain_tokenization_operation_tests', 'per-operation CPU/CUDA checks; scientific interpretation remains downstream', 'Cellerator::tokenization and optional Python binding', 'core_test.cc, numerics_test.cc, append_test.cc; use the dated tokenization qualification for aggregate installed evidence', 'preserve independent test inputs and reported source identity')
         if p.startswith('tests/substrate/operators/'):
@@ -569,8 +664,8 @@ def classify(p):
         return ('historical or archived documentation', p.rsplit('/',1)[0], 'retain in this archive directory with banner and provenance; exclude from current book except through indexes', 'preserve_archive', 'historical', 'historical readers; current status stays in maintained docs and Project Control', 'source-bound historical records; do not rewrite bytes', 'preserve original path and source identity')
     if p == 'docs/local_pipeline_ops.qmd' or p.startswith('docs/pipeline/'):
         return ('local pipeline operations and scripts', 'docs/pipeline and docs/local_pipeline_ops.qmd; outside installed numerical package', 'retain as local operator/testbed guidance; classical data acquisition and preprocessing remain upstream', 'retain_local_operational_material', 'operational_not_package_api', 'local pipeline operators, not general model builders', 'documented local scripts/manifests; no Cellerator numerical capability claim', 'preserve local configs, scripts and dataset links pending owner review')
-    if p == 'docs/development/cellpack_interop.md':
-        return ('CellPack payload and interoperability developer guide', p, 'document explicit adapters and versioned payload boundaries for CellPack and native formats; source code and exact tests remain authoritative for implementation claims', 'retain_cellpack_interop_developer_guide', 'maintained documentation; not a codec or execution capability claim', 'CellPack and Cellerator interop format maintainers', 'validate links against actual payload/codec sources and consumer checks', 'preserve explicit format migration and ownership boundaries')
+    if p == 'docs/development/packed_geometry_images.md':
+        return ('packed geometry image guide', p, 'document the versioned image boundaries and native tensor bindings', 'retain_packed_geometry_image_guide', 'maintained documentation', 'native geometry and tensor contributors', 'validate links against the image readers and consumer checks', 'preserve explicit format migration and ownership boundaries')
     if p in {'custom_torch_ops.md', 'docs/development/custom_torch_ops.md'}:
         return ('custom Torch operation authoring guide', 'Cellerator biological-ML and Torch operation documentation', 'retain as an operation-specific extension recipe subordinate to the general biological modeling and neural-network architecture', 'retain_custom_torch_operation_guide', 'developer guidance; operation maturity and qualification remain tied to each linked source and report', 'contributors implementing custom Torch operations and users composing the optional Torch integration', 'the grouped_linear section links its concrete adapter, native operation, tests, and source-bound qualification; no universal operator registry is implied', 'preserve Torch ownership, numerical/lifetime contracts, and the distinction between operation-specific evidence and framework-wide capability')
     if p.startswith('docs/'):
@@ -635,7 +730,7 @@ def classify(p):
     if p == '.project-context.json':
         return ('Project Control source-guidance declaration', p, 'retain as the repository-facing pointer set for agent source/workflow, architecture, routing, and developer-reference contracts', 'retain_project_context_guidance_declaration', 'tracked guidance metadata; it is not Todo authority, task status, or generated workflow state', 'Project Control/Codex context loader resolves the four declared repository documents', 'validate that each declared target exists and keep target names aligned with maintained docs', 'preserve declarations as source configuration; mutate only with corresponding documentation changes')
     if p == '.ctxpp.toml':
-        return ('C++ context compiler source and build configuration', p, 'retain as the context-compaction tool configuration for C++/CUDA source roots, exclusions, budgets, and build/test commands', 'retain_context_compiler_configuration', 'tracked developer-tool config; compilation database path and configured commands are not evidence that they ran', 'cpp-context-compiler reads this file; generated database resolves to build-ctxpp/compile_commands.json', 'config syntax/tool checks and declared compiler/test commands only; actual builds and tests need separate receipts', 'preserve source-write/API/ABI protection settings and explicit source/exclusion patterns')
+        return ('C++ context compiler source and build configuration', p, 'retain as the context-compaction tool configuration for C++/CUDA source roots, exclusions, budgets, and build/test commands', 'retain_context_compiler_configuration', 'tracked developer-tool config; compilation database path and configured commands are not evidence that they ran', 'cpp-context-compiler reads this file; generated database resolves to build/ctxpp/compile_commands.json', 'config syntax/tool checks and declared compiler/test commands only; actual builds and tests need separate receipts', 'preserve source-write/API/ABI protection settings and explicit source/exclusion patterns')
     if p.startswith('.project-control/') or p in {'.codex','.gitignore','.gitmodules'}:
         return ('repository workflow, tooling, or dependency metadata', 'repository/Project Control owners', 'preserve metadata; mutate only via supported workflow/approved project action', 'managed_or_repository_metadata', 'metadata_not_product_capability', 'not applicable or supported workflow', 'tooling-specific checks', 'do not hand edit generated authority; retain submodule declarations')
     if p == 'cellular_geometry.md':

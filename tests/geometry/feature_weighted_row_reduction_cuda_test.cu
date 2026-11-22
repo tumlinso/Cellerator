@@ -276,7 +276,7 @@ struct device_fixture {
           tile_gene_masks(packed.tile_gene_masks.size()),
           tile_value_offsets(packed.tile_value_offsets.size()),
           tile_values(packed.tile_values.size()), weights(host_weights.size()),
-          output(packed.tiles.row_count) {
+          output(packed.tiles.layout.rows) {
         std::vector<cp::u32> offsets(plan.feature_block_offsets(),
             plan.feature_block_offsets() + plan.feature_block_count() + 1u);
         std::vector<cp::u32> permutation(plan.feature_permutation(),
@@ -301,12 +301,13 @@ cp::feature_weighted_row_reduction_view device_input(
     auto result = host;
     result.plan.feature_block_offsets = device.plan_offsets.data;
     result.plan.feature_permutation = device.plan_permutation.data;
-    result.tiles.tile_block_offsets = device.tile_offsets.data;
-    result.tiles.tile_block_ids = device.tile_blocks.data;
-    result.tiles.tile_block_cell_masks = device.tile_cell_masks.data;
-    result.tiles.block_row_entry_offsets = device.tile_entry_offsets.data;
-    result.tiles.row_block_gene_masks = device.tile_gene_masks.data;
-    result.tiles.row_block_value_offsets = device.tile_value_offsets.data;
+    result.tiles.layout.tile_block_offsets = device.tile_offsets.data;
+    result.tiles.layout.block_ids = device.tile_blocks.data;
+    result.tiles.layout.participating_row_masks = device.tile_cell_masks.data;
+    result.tiles.layout.block_row_entry_offsets = device.tile_entry_offsets.data;
+    result.tiles.layout.feature_masks = device.tile_gene_masks.data;
+    result.tiles.layout.row_block_value_offsets = device.tile_value_offsets.data;
+    result.tiles.layout.feature_block_offsets = device.plan_offsets.data;
     result.tiles.values = device.tile_values.data;
     result.feature_weights = device.weights.data;
     return result;
@@ -316,7 +317,7 @@ void run_case(bool all_empty) {
     const auto plan = make_plan();
     const auto source = make_fixture(all_empty);
     const auto packed = pack(plan, source);
-    require(packed.tiles.tile_count == 2u, "tail tile was not built");
+    require(packed.tiles.layout.tiles == 2u, "tail tile was not built");
     if (!all_empty) {
         require(packed.order_permutation
                 != std::vector<cp::u32>({0u, 1u, 2u, 3u, 4u}),
@@ -383,7 +384,7 @@ void run_case(bool all_empty) {
         require(!cp::evaluate_feature_weighted_row_reduction_tiles_cuda(
             tampered, order, buffers, stream, &result), "identity tamper accepted");
         tampered = input;
-        tampered.feature_weight_capacity = input.tiles.feature_count - 1u;
+        tampered.feature_weight_capacity = input.tiles.layout.features - 1u;
         require(!cp::evaluate_feature_weighted_row_reduction_tiles_cuda(
             tampered, order, buffers, stream, &result), "weight capacity tamper accepted");
         auto tampered_order = order;

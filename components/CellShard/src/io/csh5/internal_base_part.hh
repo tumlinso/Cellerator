@@ -173,7 +173,7 @@ inline int build_bucketed_execution_partition(bucketed_blocked_ell_partition *ou
                                               std::uint32_t requested_bucket_count,
                                               std::uint64_t *bucketed_bytes_out);
 inline int blocked_ell_to_canonical_coo(const ::cellerator::tensor::base::blocked_ell *part,
-                                        ::cellerator::tensor::base::triplet *out);
+                                        ::cellshard::triplet *out);
 
 inline float blocked_ell_value_fill_ratio(const ::cellerator::tensor::base::blocked_ell *part) {
     const std::uint64_t total_slots = part != nullptr ? (std::uint64_t) part->rows * (std::uint64_t) part->ell_cols : 0u;

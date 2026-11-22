@@ -7,7 +7,7 @@
 #include <CellShard/runtime/layout/sharded.cuh>
 
 int main() {
-    ::cellshard::sharded<::cellerator::tensor::base::compressed> matrix;
+    ::cellshard::sharded<::cellshard::compressed> matrix;
     init(&matrix);
     static_assert(::cellshard::access::is_archive_adapter<::cellshard::access::dense_fallback_binding>::value,
                   "installed access fallback headers should compile for package consumers");

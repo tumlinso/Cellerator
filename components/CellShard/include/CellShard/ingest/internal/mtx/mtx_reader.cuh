@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 
 #include <CellShard/core/offset_span.cuh>
-#include <Cellerator/tensor/base/triplet.cuh>
+#include <CellShard/formats/triplet.cuh>
 #include <CellShard/runtime/layout/sharded.cuh>
 #include <CellShard/runtime/host/sharded_host.cuh>
 #include "../scan.cuh"
@@ -22,9 +22,9 @@ namespace cellshard {
 namespace ingest {
 namespace mtx {
 
-using clear;
+using ::cellshard::clear;
 using ::cellshard::find_offset_span;
-using init;
+using ::cellshard::init;
 using ::cellshard::reserve_partitions;
 using ::cellshard::set_shards_to_partitions;
 using ::cellshard::sharded;
@@ -438,7 +438,7 @@ static inline int cast_dim(unsigned long v, unsigned int *out) {
 
 // Conservative host-byte estimate for one COO part.
 static inline std::size_t estimate_coo_part_bytes(unsigned long rows, unsigned long nnz) {
-    return sizeof(::cellerator::tensor::base::triplet)
+    return sizeof(::cellshard::triplet)
          + (std::size_t) nnz * sizeof(unsigned int)
          + (std::size_t) nnz * sizeof(unsigned int)
          + (std::size_t) nnz * sizeof(__half);
@@ -519,12 +519,12 @@ static inline int allocate_sharded_coo(const header *h,
                                        const unsigned long *row_offsets,
                                        unsigned long num_parts,
                                        const unsigned long *part_nnz,
-                                       sharded<::cellerator::tensor::base::triplet> *out) {
+                                       sharded<::cellshard::triplet> *out) {
     unsigned long i = 0;
     unsigned int rows_u32 = 0;
     unsigned int cols_u32 = 0;
     unsigned int nnz_u32 = 0;
-    ::cellerator::tensor::base::triplet *part = 0;
+    ::cellshard::triplet *part = 0;
 
     clear(out);
     init(out);
@@ -537,7 +537,7 @@ static inline int allocate_sharded_coo(const header *h,
     for (i = 0; i < num_parts; ++i) {
         if (!cast_dim(row_offsets[i + 1] - row_offsets[i], &rows_u32)) return 0;
         if (!cast_dim(part_nnz[i], &nnz_u32)) return 0;
-        part = new ::cellerator::tensor::base::triplet;
+        part = new ::cellshard::triplet;
         init(part, rows_u32, cols_u32, nnz_u32);
         if (!allocate(part)) {
             delete part;
@@ -559,7 +559,7 @@ static inline int fill_sharded_coo(scan::buffered_file_reader *reader,
                                    const header *h,
                                    const unsigned long *row_offsets,
                                    unsigned long num_parts,
-                                   sharded<::cellerator::tensor::base::triplet> *out) {
+                                   sharded<::cellshard::triplet> *out) {
     int rc = 0;
     char *line = 0;
     std::size_t line_len = 0;
@@ -608,7 +608,7 @@ fail:
 static inline int load_row_sharded_coo(const char *path,
                                        const unsigned long *row_offsets,
                                        unsigned long num_parts,
-                                       sharded<::cellerator::tensor::base::triplet> *out) {
+                                       sharded<::cellshard::triplet> *out) {
     scan::buffered_file_reader reader;
     header h;
     unsigned long *part_nnz = 0;
@@ -642,11 +642,11 @@ done:
 }
 
 // Single-part convenience loader built on the row-sharded loader above.
-static inline int load_coo(const char *path, ::cellerator::tensor::base::triplet *out) {
+static inline int load_coo(const char *path, ::cellshard::triplet *out) {
     header h;
     unsigned long row_offsets[2];
-    sharded<::cellerator::tensor::base::triplet> tmp;
-    ::cellerator::tensor::base::triplet *part = 0;
+    sharded<::cellshard::triplet> tmp;
+    ::cellshard::triplet *part = 0;
     int ok = 0;
 
     init(&h);
@@ -677,13 +677,13 @@ static inline int allocate_part_window_coo(const header *h,
                                            unsigned long num_parts,
                                            unsigned long part_begin,
                                            unsigned long part_end,
-                                           sharded<::cellerator::tensor::base::triplet> *out) {
+                                           sharded<::cellshard::triplet> *out) {
     unsigned long i = 0;
     unsigned long local = 0;
     unsigned int rows_u32 = 0;
     unsigned int cols_u32 = 0;
     unsigned int nnz_u32 = 0;
-    ::cellerator::tensor::base::triplet *part = 0;
+    ::cellshard::triplet *part = 0;
 
     clear(out);
     init(out);
@@ -697,7 +697,7 @@ static inline int allocate_part_window_coo(const header *h,
         local = i - part_begin;
         if (!cast_dim(row_offsets[i + 1] - row_offsets[i], &rows_u32)) return 0;
         if (!cast_dim(part_nnz[i], &nnz_u32)) return 0;
-        part = new ::cellerator::tensor::base::triplet;
+        part = new ::cellshard::triplet;
         init(part, rows_u32, cols_u32, nnz_u32);
         if (!allocate(part)) {
             delete part;
@@ -720,7 +720,7 @@ static inline int fill_part_window_coo(scan::buffered_file_reader *reader,
                                        unsigned long num_parts,
                                        unsigned long part_begin,
                                        unsigned long part_end,
-                                       sharded<::cellerator::tensor::base::triplet> *out) {
+                                       sharded<::cellshard::triplet> *out) {
     int rc = 0;
     char *line = 0;
     std::size_t line_len = 0;
@@ -777,7 +777,7 @@ static inline int load_part_window_coo(const char *path,
                                        unsigned long num_parts,
                                        unsigned long part_begin,
                                        unsigned long part_end,
-                                       sharded<::cellerator::tensor::base::triplet> *out,
+                                       sharded<::cellshard::triplet> *out,
                                        std::size_t reader_bytes = (std::size_t) 8u << 20u) {
     scan::buffered_file_reader reader;
     header local;

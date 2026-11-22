@@ -12,14 +12,13 @@ packages `python/cellerator/` and the compiled modules installed by CMake.
 Native LibTorch and ATen adapters live under `src/interop/torch/` and have
 their own C++ targets.
 
-AnnData is a required dependency (`anndata>=0.10`). The
-`cellerator.adapters.anndata` adapter selects explicit `X`, layer, or raw inputs,
-preserves sparse data, and aligns cells and output observations by identity.
-Numerical entry points retain their explicit array/tensor contracts. Scanpy and
-RAPIDS-singlecell remain upstream for classical analysis and preprocessing.
-
-The separate native CCell distribution bundles AnnData++ for H5AD and Zarr.
-See the [CCell build and API guide](../../components/CCell/README.md).
+Native H5AD and Zarr access is provided by AnnData++. CCell's optional
+borrowing adapter is a C++ module. The former `cellerator.adapters.anndata`
+Python source was backed up outside the checkout.
+Cellerator numerical entry points keep explicit array and tensor contracts. See the
+[component ownership record](component-ownership.md) and
+[developer reference](../developer_reference.qmd#mandatory-native-toolchain)
+for current package boundaries and build requirements.
 
 ## Modeling without a native extension
 
@@ -52,12 +51,11 @@ that those compiled components are installed.
 ## Host Python and Product2
 
 The default Python build enables the `_native` extension and native Product2,
-with CUDA and the compiled Torch adapters disabled. After installing the native
-AnnData++ dependency, build the wheel from the repository root with:
+with CUDA and the compiled Torch adapters disabled. Build the wheel from the repository root with:
 
 ```sh
 CMAKE_GENERATOR=Ninja \
-CMAKE_ARGS='-DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install' \
+CMAKE_ARGS='-DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18' \
 python -m pip install .
 ```
 
@@ -103,7 +101,7 @@ build route is:
 
 ```sh
 CMAKE_GENERATOR=Ninja \
-CMAKE_ARGS='-DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install -DTorch_DIR=/path/to/libtorch/share/cmake/Torch' \
+CMAKE_ARGS='-DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 -DTorch_DIR=/path/to/libtorch/share/cmake/Torch' \
 python -m pip install '.[torch]' \
   --config-settings=cmake.define.CELLERATOR_ENABLE_CUDA=ON \
   --config-settings=cmake.define.CELLERATOR_ENABLE_TORCH=ON
@@ -162,7 +160,6 @@ backend.
 cmake -S . -B build-cpu -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_PYTHON=ON \
   -DCELLERATOR_ENABLE_TORCH=OFF

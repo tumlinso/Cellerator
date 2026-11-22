@@ -1,16 +1,11 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <Cellerator/execution/operands.hh>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_EXECUTION_VALIDATION_HD __host__ __device__
-#else
-#define CELLERATOR_EXECUTION_VALIDATION_HD
-#endif
 
 namespace cellerator::execution {
 
-CELLERATOR_EXECUTION_VALIDATION_HD constexpr biological_validation_code
+CELLERATOR_HOST_DEVICE constexpr biological_validation_code
 validate_sequence_domain(const sequence_domain &domain) noexcept {
     if (!valid_handle(domain.genome_domain))
         return biological_validation_code::invalid_identity;
@@ -25,7 +20,7 @@ validate_sequence_domain(const sequence_domain &domain) noexcept {
     return biological_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_VALIDATION_HD constexpr biological_validation_code
+CELLERATOR_HOST_DEVICE constexpr biological_validation_code
 validate_dense_tensor(const dense_tensor_view &view) noexcept {
     if (!valid_location(view.location))
         return biological_validation_code::invalid_residency;
@@ -45,7 +40,7 @@ validate_dense_tensor(const dense_tensor_view &view) noexcept {
     return biological_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_VALIDATION_HD constexpr biological_validation_code
+CELLERATOR_HOST_DEVICE constexpr biological_validation_code
 validate_bit_plane(const bit_plane_view &view) noexcept {
     if (!valid_axis_identity(view.coordinate_axis))
         return biological_validation_code::invalid_identity;
@@ -62,7 +57,7 @@ validate_bit_plane(const bit_plane_view &view) noexcept {
     return biological_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_VALIDATION_HD constexpr biological_validation_code
+CELLERATOR_HOST_DEVICE constexpr biological_validation_code
 validate_event_stream(const event_stream_view &view) noexcept {
     if (!valid_axis_identity(view.event_axis))
         return biological_validation_code::invalid_identity;
@@ -85,7 +80,7 @@ validate_event_stream(const event_stream_view &view) noexcept {
     return biological_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_VALIDATION_HD constexpr biological_validation_code
+CELLERATOR_HOST_DEVICE constexpr biological_validation_code
 validate_segment_stream(const segment_stream_view &view) noexcept {
     if (!valid_axis_identity(view.segment_axis))
         return biological_validation_code::invalid_identity;
@@ -101,7 +96,7 @@ validate_segment_stream(const segment_stream_view &view) noexcept {
     return biological_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_VALIDATION_HD constexpr biological_validation_code
+CELLERATOR_HOST_DEVICE constexpr biological_validation_code
 validate_sparse_relation(const sparse_relation_view &view) noexcept {
     if (!valid_axis_identity(view.source_axis)
         || !valid_axis_identity(view.destination_axis)
@@ -116,7 +111,7 @@ validate_sparse_relation(const sparse_relation_view &view) noexcept {
     return biological_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_VALIDATION_HD constexpr biological_validation_code
+CELLERATOR_HOST_DEVICE constexpr biological_validation_code
 validate_scalar_parameter(const scalar_parameter_view &view) noexcept {
     if (!valid_location(view.location))
         return biological_validation_code::invalid_residency;
@@ -127,7 +122,7 @@ validate_scalar_parameter(const scalar_parameter_view &view) noexcept {
     return biological_validation_code::ok;
 }
 
-CELLERATOR_EXECUTION_VALIDATION_HD constexpr biological_validation_code
+CELLERATOR_HOST_DEVICE constexpr biological_validation_code
 validate_operand(const biological_operand_view &view) noexcept {
     switch (view.kind) {
     case operand_kind::dense_tensor:
@@ -146,7 +141,7 @@ validate_operand(const biological_operand_view &view) noexcept {
     return biological_validation_code::invalid_operand_kind;
 }
 
-CELLERATOR_EXECUTION_VALIDATION_HD constexpr bool same_dense_contract(
+CELLERATOR_HOST_DEVICE constexpr bool same_dense_contract(
     const dense_tensor_view &lhs,
     const dense_tensor_view &rhs) noexcept {
     if (lhs.rank != rhs.rank || lhs.value_type != rhs.value_type)
@@ -161,5 +156,3 @@ CELLERATOR_EXECUTION_VALIDATION_HD constexpr bool same_dense_contract(
 }
 
 } // namespace cellerator::execution
-
-#undef CELLERATOR_EXECUTION_VALIDATION_HD

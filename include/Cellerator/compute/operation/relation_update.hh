@@ -6,9 +6,23 @@
 #include <cstdint>
 namespace cellerator::compute::relation {
 enum class gradient_route : std::uint8_t { automatic, force_sparse, force_hybrid };
+// Bind these addresses for the lifetime of this pair. Contents may change on
+// the owner stream. Forward reads input, transpose reads cotangent, and the
+// gradient uses both. Their dense outputs must match these bindings.
+// Callers keep operands, published values, and intermediate results finite.
+struct fp32_fixed_buffers {
+    device_state_view input{}, cotangent{};
+    device_result_view output{}, input_gradient{};
+};
 struct gradient_preparation_options {
     gradient_route route = gradient_route::automatic;
     std::uint64_t scratch_byte_limit = 0;
+    // Automatic selection prefers cuSPARSE before initial publication for a
+    // nonempty width-16 FP32 overwrite pair with full FP32 gradients and no
+    // derived f16 plane. The views are consumed during preparation and cuSPARSE
+    // borrows their arrays. Supply new views for siblings or replacement epochs.
+    // Forced native routes take precedence.
+    const fp32_fixed_buffers* fixed_buffers = nullptr;
 };
 struct operand_version { std::uint64_t identity = 0, version = 0; };
 struct edge_layout_view {
@@ -60,6 +74,7 @@ struct relation_update_report {
     std::uint64_t implicit_canonicalizations = 0;
     std::uint64_t persistent_bytes = 0, scratch_bytes = 0;
     std::uint64_t ready_records = 0, reader_returns = 0;
+    std::uint64_t cusparse_gradient_launches = 0, csr_value_refreshes = 0;
 };
 // All entrypoints are externally host-serialized and owner-stream-only except
 // begin/end read. Operands must not overlap pair-owned values, immutable

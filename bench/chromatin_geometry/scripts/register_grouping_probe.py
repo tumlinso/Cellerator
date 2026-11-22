@@ -29,10 +29,12 @@ def register(args):
         raise RuntimeError('registration inputs must be regular files')
     if sha(args.archive) != args.archive_sha256:
         raise RuntimeError('archive differs from declared identity')
+    binaries = {}
     for binary, receipt in ((args.binary, args.receipt), (args.qualification_binary, args.qualification_receipt)):
         data = json.loads(receipt.read_text())
         if data.get('schema') != 'cgs.build.v1' or data.get('archive_sha256') != args.archive_sha256 or data.get('binary_sha256') != sha(binary):
             raise RuntimeError('build receipt does not bind archive and binary')
+        binaries[binary] = data['binary_sha256']
     if not args.uuid.startswith('GPU-') or not args.resource_id.endswith(':' + args.uuid):
         raise RuntimeError('Scheduler UUID and resource do not match')
     with tarfile.open(args.archive, 'r:gz') as tar:
@@ -49,17 +51,17 @@ def register(args):
         status = campaign.command(['autobench', 'status', '--project', str(lane)])
         if cfg.get('active') is not False or status.get('paused') or status.get('attempts'):
             raise RuntimeError('probe registration requires a fresh inactive and unpaused lane')
-        data = lane / '.autobench/data'
-        data.mkdir(parents=True, exist_ok=True)
         scripts = lane / 'scripts'
         scripts.mkdir(exist_ok=True)
         shutil.copy2(adapter, scripts / 'probe_packet.py')
-        for source, name in ((args.archive, 'closure.tar.gz'), (args.binary, 'frozen-binary'),
-                             (args.receipt, 'frozen-build.json'), (args.qualification_binary, 'qualification-binary'),
-                             (args.qualification_receipt, 'qualification-build.json')):
-            shutil.copyfile(source, data / name)
+        for name, source, digest in (('closure.tar.gz', args.archive, args.archive_sha256),
+                                     ('frozen-binary', args.binary, binaries[args.binary]),
+                                     ('frozen-build.json', args.receipt, None),
+                                     ('qualification-binary', args.qualification_binary, binaries[args.qualification_binary]),
+                                     ('qualification-build.json', args.qualification_receipt, None)):
+            campaign.import_input(lane, name, source, digest)
         if args.qualification_proof:
-            shutil.copyfile(args.qualification_proof, data / 'qualification-proof.json')
+            campaign.import_input(lane, 'qualification-proof.json', args.qualification_proof)
         build = ['python3', '{snapshot}/scripts/probe_packet.py', 'build',
                  '--archive', '{snapshot}/.autobench/data/closure.tar.gz', '--archive-sha256', args.archive_sha256,
                  '--binary', '{snapshot}/.autobench/data/frozen-binary', '--receipt', '{snapshot}/.autobench/data/frozen-build.json',

@@ -1,16 +1,11 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
 #include <cstdint>
 #include <limits>
 #include <type_traits>
 
 #include <Cellerator/layout/local_index_space.hh>
-
-#if defined(__CUDACC__)
-#define CELLERATOR_INDEX_HOST_DEVICE __host__ __device__
-#else
-#define CELLERATOR_INDEX_HOST_DEVICE
-#endif
 
 namespace cellerator::execution {
 
@@ -22,7 +17,7 @@ struct local_index_device_view_v1 {
     std::uint8_t reserved[7]{};
 };
 
-CELLERATOR_INDEX_HOST_DEVICE inline std::uint64_t load_local_index_v1(
+CELLERATOR_HOST_DEVICE inline std::uint64_t load_local_index_v1(
     const local_index_device_view_v1 &view, std::uint32_t position) noexcept {
     switch (view.width) {
         case layout::LocalIndexWidth::u16:
@@ -99,7 +94,7 @@ inline component_dispatch_status_v1 make_component_grid_v1(
     return component_dispatch_status_v1::valid;
 }
 
-CELLERATOR_INDEX_HOST_DEVICE inline std::uint64_t flattened_thread_index_v1(
+CELLERATOR_HOST_DEVICE inline std::uint64_t flattened_thread_index_v1(
     std::uint32_t block_x, std::uint32_t block_y,
     std::uint32_t grid_x, std::uint32_t block_threads,
     std::uint32_t thread_x) noexcept {
@@ -107,13 +102,13 @@ CELLERATOR_INDEX_HOST_DEVICE inline std::uint64_t flattened_thread_index_v1(
         * block_threads + thread_x;
 }
 
-CELLERATOR_INDEX_HOST_DEVICE inline std::uint64_t recover_global_index_v1(
+CELLERATOR_HOST_DEVICE inline std::uint64_t recover_global_index_v1(
     const component_dispatch_v1 &dispatch,
     std::uint32_t local_position) noexcept {
     return dispatch.local_to_global[local_position];
 }
 
-CELLERATOR_INDEX_HOST_DEVICE inline std::uint64_t recover_global_identity_v1(
+CELLERATOR_HOST_DEVICE inline std::uint64_t recover_global_identity_v1(
     const component_dispatch_v1 &dispatch,
     std::uint32_t local_position) noexcept {
     return dispatch.global_identity_sidecar == nullptr
@@ -126,5 +121,3 @@ static_assert(std::is_trivially_copyable_v<component_dispatch_v1>);
 static_assert(std::is_trivially_copyable_v<chunked_dispatch_view_v1>);
 
 }  // namespace cellerator::execution
-
-#undef CELLERATOR_INDEX_HOST_DEVICE

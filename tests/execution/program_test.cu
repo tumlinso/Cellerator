@@ -1,4 +1,5 @@
 #include <Cellerator/execution/program.hh>
+#include "../fixtures/model_execution/activated_projection.hh"
 
 #include <Cellerator/compute/candidate/csr_fallback_candidate.hh>
 #include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
@@ -146,12 +147,13 @@ bool measure(void *, const planner::planner_candidate &candidate,
     return true;
 }
 
-execution::executable_program_request make_request(
+execution::executable_program_request_v2 make_request(
     runtime::execution_session *session,
-    const execution::activated_projection_reference *projections,
+    core::candidate_preparation_catalog_v2 catalog,
+    const execution::activated_projection_reference_v2 *projections,
     const execution::program_candidate_cost *costs,
     void *state, std::size_t state_bytes) {
-    execution::executable_program_request request{};
+    execution::executable_program_request_v2 request{};
     request.problem = {core::operation_core_schema_version,
         core::operation_kind::weighted_relation_reduce, 0u,
         {73u, 1u}, 1u, 1u, 3u};
@@ -183,7 +185,7 @@ execution::executable_program_request make_request(
     request.planner_policy.tune_one_shot = true;
     request.measurement = {nullptr, measure};
     request.current_evidence_revision = 1u;
-    request.catalog = core::built_in_candidate_catalog();
+    request.catalog = catalog;
     request.projections = projections;
     request.projection_count = 2u;
     request.costs = costs;
@@ -223,9 +225,14 @@ int main() {
         cellpack::persistent_packing_payload_schema_version, 1u};
     const core::projection_key csr_key{{33u, 34u}, {42u, 1u},
         core::projection_kind::csr, ::cellerator::layout::projection::execution_csr_schema_version, 1u};
-    const execution::activated_projection_reference projections[]{
-        execution::program_projection(row_key, activated_row),
-        execution::program_projection(csr_key, fixture.view)};
+    const auto catalog = core::built_in_candidate_preparation_catalog_v2();
+    execution::activated_projection_reference_v2 projections[2]{};
+    require(cellerator::fixtures::activate_builtin_projection(catalog,
+        core::row_masked_n1_candidate_id, row_key, device, activated_row,
+        &projections[0]), "activate row-masked projection");
+    require(cellerator::fixtures::activate_builtin_projection(catalog,
+        core::csr_fallback_candidate_id, csr_key, device, fixture.view,
+        &projections[1]), "activate CSR projection");
     execution::program_candidate_cost costs[2]{};
     costs[0] = {core::row_masked_n1_candidate_id, row_key.persistent,
         {}, planner::planner_candidate_correct
@@ -241,16 +248,16 @@ int main() {
     costs[1].phases.kernel_ns = 50.0;
     alignas(64) unsigned char state[2048]{};
     auto request = make_request(
-        &session, projections, costs, state, sizeof(state));
+        &session, catalog, projections, costs, state, sizeof(state));
     execution::executable_program program{};
-    require(execution::compile_executable_program(request, &program),
+    require(execution::compile_executable_program_v2(request, &program),
         "compile planner-backed program");
     require(program.candidate_count == 2u && program.legal_count == 2u
         && program.selection == planner::selection_source::empirical
         && program.conventional_winner
         && core::same_stable_id(program.selected_candidate,
             core::csr_fallback_candidate_id)
-        && program.preparation_count == 1u && session.plans.size == 1u,
+        && program.preparation_count == 1u,
         "enumeration, planner selection, or preparation metadata");
 
     planner::total_cost row_once{}, row_reused{}, csr_once{}, csr_reused{};
@@ -268,31 +275,31 @@ int main() {
 
     auto invalid = request;
     invalid.source_axis = request.destination_axis;
-    require(execution::compile_executable_program(invalid, &program).code
+    require(execution::compile_executable_program_v2(invalid, &program).code
             == execution::executable_program_status_code::identity_mismatch,
         "swapped logical axes were accepted");
     invalid = request;
     invalid.numeric.dense_storage = execution::numeric_type::f16;
-    require(execution::compile_executable_program(invalid, &program).code
+    require(execution::compile_executable_program_v2(invalid, &program).code
             == execution::executable_program_status_code::no_compatible_candidate,
         "unsupported numeric tuple was accepted");
     invalid = request;
     invalid.dense_width = 17u;
-    require(execution::compile_executable_program(invalid, &program).code
+    require(execution::compile_executable_program_v2(invalid, &program).code
             == execution::executable_program_status_code::no_compatible_candidate,
         "unsupported width was accepted");
-    execution::activated_projection_reference incompatible[]{
+    execution::activated_projection_reference_v2 incompatible[]{
         projections[0], projections[1]};
     incompatible[0].key.kind = core::projection_kind::csr;
     incompatible[1].key.kind = core::projection_kind::native_feature_major;
     invalid = request;
     invalid.projections = incompatible;
-    require(execution::compile_executable_program(invalid, &program).code
+    require(execution::compile_executable_program_v2(invalid, &program).code
             == execution::executable_program_status_code::no_compatible_candidate,
         "incompatible projection was accepted");
 
     // Negative compile attempts reset the output object.
-    require(execution::compile_executable_program(request, &program),
+    require(execution::compile_executable_program_v2(request, &program),
         "recompile program after negative cases");
     device_buffer<float> input_a{3u}, input_b{3u}, output_a{2u}, output_b{2u};
     device_buffer<__half> values_b{3u};

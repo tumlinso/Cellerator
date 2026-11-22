@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Cellerator/geometry/local_cell_ordering.hh"
+#include "Cellerator/tensor/block_masked/layout.hh"
 
 #include <cstddef>
 #include <type_traits>
@@ -38,14 +39,8 @@ struct warp_tile_buffers {
     void *values = nullptr;
 };
 
-// Pointer-first, device-ready logical warp-tile ABI. Tile t owns execution rows
-// [t * tile_row_width, min((t + 1) * tile_row_width, row_count)). Its block
-// descriptors are sorted by global feature-block id. Descriptor d stores one
-// bit per participating tile-local row in tile_block_cell_masks[d]. The
-// corresponding row-block entries are compacted in increasing lane order in
-// [block_row_entry_offsets[d], block_row_entry_offsets[d + 1]). Each entry's
-// values follow set bits of row_block_gene_masks[e] in increasing local-feature
-// order. No zero or padding value is stored.
+// Packed row-masked tiles with the geometry and value type metadata needed for
+// validation and binding.
 struct warp_tile_view {
     u32 tile_schema_version = 0u;
     u32 record_schema_version = 0u;
@@ -57,26 +52,21 @@ struct warp_tile_view {
     u64 ordering_identity = 0u;
     u64 global_row_begin = 0u;
     u32 full_row_count = 0u;
-    u32 row_count = 0u;
-    u32 feature_count = 0u;
-    u32 feature_block_count = 0u;
-    u32 tile_row_width = 0u;
-    u32 tile_count = 0u;
-    u32 nnz_count = 0u;
-    u32 tile_block_count = 0u;
-    u32 row_block_entry_count = 0u;
     u32 value_size_bytes = 0u;
     u64 feature_axis_fingerprint = 0u;
     u32 feature_axis_fingerprint_version = 0u;
     u64 row_domain_identity = 0u;
-    const u32 *tile_block_offsets = nullptr;
-    const u32 *tile_block_ids = nullptr;
-    const u32 *tile_block_cell_masks = nullptr;
-    const u32 *block_row_entry_offsets = nullptr;
-    const u32 *row_block_gene_masks = nullptr;
-    const u32 *row_block_value_offsets = nullptr;
+    ::cellerator::tensor::block_masked::LayoutView<> layout{};
     const void *values = nullptr;
 };
+
+inline bool packed_extents_fit(const warp_tile_view &view) noexcept {
+    const auto &layout = view.layout;
+    return layout.rows <= UINT32_MAX && layout.features <= UINT32_MAX
+        && layout.feature_blocks <= UINT32_MAX && layout.tiles <= UINT32_MAX
+        && layout.stored_values <= UINT32_MAX && layout.tile_blocks <= UINT32_MAX
+        && layout.row_block_entries <= UINT32_MAX;
+}
 
 struct warp_tile_decode_workspace {
     std::size_t row_capacity = 0u;

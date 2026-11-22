@@ -229,8 +229,8 @@ static inline int convert_manifest_dataset_to_hdf5(const manifest *m,
     dataset_feature_offsets.push_back((std::uint64_t) dataset_feature_to_global.size());
     for (manifest_i = 0; manifest_i < plans.size(); ++manifest_i) {
         partition windows;
-        sharded<::cellerator::tensor::base::compressed> window_compressed;
-        sharded<::cellerator::tensor::base::triplet> window_view;
+        sharded<::cellshard::compressed> window_compressed;
+        sharded<::cellshard::triplet> window_view;
         ::cellerator::tensor::base::sliced_ell sliced_part;
         unsigned long window_i = 0;
 

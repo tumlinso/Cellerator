@@ -1,6 +1,9 @@
 #include <Cellerator/compute/operators/sparse/ops.hh>
+#include "../../../../ops/matrix/csr_multiply.cuh"
 
 namespace cellerator::compute::sparse::ops::dist {
+
+namespace matrix = ::cellerator::ops::matrix;
 
 namespace {
 
@@ -103,17 +106,15 @@ void launch_csr_spmv_fwd_f16_f32(
     runtime::fleet_context *fleet,
     const unsigned int *slots,
     unsigned int slot_count,
-    const std::uint32_t *const *major_ptr,
-    const std::uint32_t *const *minor_idx,
-    const __half *const *values,
-    const std::uint32_t *rows,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
     const float *const *vector,
     float *const *out) {
     if (fleet == nullptr) throw std::invalid_argument("launch_csr_spmv_fwd_f16_f32 requires a fleet");
     require_slots_(*fleet, slots, slot_count);
     for (unsigned int i = 0; i < slot_count; ++i) {
         const runtime::execution_context ctx = slot_context_(*fleet, slots[i]);
-        base::csr_spmv_fwd_f16_f32(ctx, major_ptr[i], minor_idx[i], values[i], rows[i], vector[i], out[i]);
+        runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(launch_csr_spmv_fwd_f16_f32)");
+        runtime::cuda_require(matrix::csr_spmv(matrices[i], vector[i], out[i], ctx.stream), "launch_csr_spmv_fwd_f16_f32");
     }
 }
 
@@ -139,18 +140,15 @@ void launch_csr_spmv_bwd_vector_f16_f32(
     runtime::fleet_context *fleet,
     const unsigned int *slots,
     unsigned int slot_count,
-    const std::uint32_t *const *major_ptr,
-    const std::uint32_t *const *minor_idx,
-    const __half *const *values,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
     const float *const *grad_out,
-    const std::uint32_t *rows,
-    const std::uint32_t *cols,
     float *const *grad_vector) {
     if (fleet == nullptr) throw std::invalid_argument("launch_csr_spmv_bwd_vector_f16_f32 requires a fleet");
     require_slots_(*fleet, slots, slot_count);
     for (unsigned int i = 0; i < slot_count; ++i) {
         const runtime::execution_context ctx = slot_context_(*fleet, slots[i]);
-        base::csr_spmv_bwd_vector_f16_f32(ctx, major_ptr[i], minor_idx[i], values[i], grad_out[i], rows[i], cols[i], grad_vector[i]);
+        runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(launch_csr_spmv_bwd_vector_f16_f32)");
+        runtime::cuda_require(matrix::csr_spmv_transpose(matrices[i], grad_out[i], grad_vector[i], ctx.stream), "launch_csr_spmv_bwd_vector_f16_f32");
     }
 }
 
@@ -178,12 +176,8 @@ void launch_csr_spmm_bwd_rhs_f16_f32(
     runtime::fleet_context *fleet,
     const unsigned int *slots,
     unsigned int slot_count,
-    const std::uint32_t *const *major_ptr,
-    const std::uint32_t *const *minor_idx,
-    const __half *const *values,
+    const ::cellerator::tensor::base::CompressedView<uint32_t, const __half>* matrices,
     const float *const *grad_out,
-    const std::uint32_t *rows,
-    const std::uint32_t *cols,
     const std::int64_t *grad_out_ld,
     const std::int64_t *out_cols,
     float *const *grad_rhs,
@@ -192,7 +186,9 @@ void launch_csr_spmm_bwd_rhs_f16_f32(
     require_slots_(*fleet, slots, slot_count);
     for (unsigned int i = 0; i < slot_count; ++i) {
         const runtime::execution_context ctx = slot_context_(*fleet, slots[i]);
-        base::csr_spmm_bwd_rhs_f16_f32(ctx, major_ptr[i], minor_idx[i], values[i], grad_out[i], rows[i], cols[i], grad_out_ld[i], out_cols[i], grad_rhs[i], grad_rhs_ld[i]);
+        runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(launch_csr_spmm_bwd_rhs_f16_f32)");
+        runtime::cuda_require(matrix::csr_spmm_transpose(
+            matrices[i], grad_out[i], grad_out_ld[i], out_cols[i], grad_rhs[i], grad_rhs_ld[i], ctx.stream), "launch_csr_spmm_bwd_rhs_f16_f32");
     }
 }
 

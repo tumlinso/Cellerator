@@ -88,7 +88,7 @@ auto prepared = layout::prepare_factorized_interactions(
     {mechanism}, layout::FactorizedInteractionExtents{2, 2, 1, 1, 1, 2});
 ```
 
-[`modeling/cuda/factorized_interaction.hh`](../include/Cellerator/modeling/cuda/factorized_interaction.hh)
+[`ops/mechanism/factorized_interaction_cuda.hh`](../include/Cellerator/ops/mechanism/factorized_interaction_cuda.hh)
 supplies the device owner, workspace query and asynchronous forward/VJP calls.
 `FactorizedInteractionDeviceLayout` owns uploaded structural buffers; its
 readiness and numerical-use lifetimes follow the declared stream contract.

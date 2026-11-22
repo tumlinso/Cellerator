@@ -23,6 +23,19 @@ def raw():
 
 
 class QualificationTests(unittest.TestCase):
+    def test_packet_workspace_supports_legacy_and_private_attempt_storage(self):
+        fingerprint = 'f' * 64
+        attempt = 'attempt'
+        self.assertTrue(q.packet_workspace_matches({'working_directory': f'/legacy/snapshots/{fingerprint}',
+                                                     'result_directory': f'/legacy/scratch/{attempt}'}, attempt, fingerprint))
+        command = {'storage_version': 2, 'attempt_id': attempt, 'source_fingerprint': fingerprint,
+                   'working_directory': f'/runtime/run-inputs/{attempt}', 'result_directory': f'/runtime/scratch/{attempt}'}
+        self.assertTrue(q.packet_workspace_matches(command, attempt, fingerprint))
+        for field, value in (('source_fingerprint', '0' * 64), ('attempt_id', 'other'),
+                             ('working_directory', '/foreign/run-inputs/attempt')):
+            with self.subTest(field=field):
+                self.assertFalse(q.packet_workspace_matches(dict(command, **{field: value}), attempt, fingerprint))
+
     def test_serial_guard_fails_closed(self):
         q.telemetry(samples(), 'job', 'GPU-a')
         for change in ('no_during', 'other_busy', 'foreign_process', 'issue', 'missing_device', 'target_busy'):

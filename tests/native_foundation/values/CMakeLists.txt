@@ -58,7 +58,8 @@ add_test(NAME ce_nf1_v05 COMMAND "${Python3_EXECUTABLE}" -B "${CMAKE_CURRENT_LIS
   --executable $<TARGET_FILE:ce_nf1_v05> --sanitizer "${NF1_COMPUTE_SANITIZER}")
 set_tests_properties(ce_nf1_v05 PROPERTIES LABELS "nf1;cuda;values;sanitizer" TIMEOUT 180)
 add_executable(ce_nf1_v06 relation_value_update_test.cu)
-target_link_libraries(ce_nf1_v06 PRIVATE Cellerator::native_value_instance)
+find_package(CUDAToolkit REQUIRED)
+target_link_libraries(ce_nf1_v06 PRIVATE Cellerator::native_value_instance Cellerator::csr_multiply CUDA::cusparse)
 set_target_properties(ce_nf1_v06 PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 add_test(NAME ce_nf1_v06 COMMAND "${Python3_EXECUTABLE}" -B "${CMAKE_CURRENT_LIST_DIR}/run_leased_test.py"
   --executable $<TARGET_FILE:ce_nf1_v06> --sanitizer "${NF1_COMPUTE_SANITIZER}")

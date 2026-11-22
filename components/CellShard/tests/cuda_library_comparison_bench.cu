@@ -1,8 +1,7 @@
 #include <CellShard/export/dataset_export.hh>
 
 #include "../src/bucket/major_nnz_raw.cuh"
-#include "../src/convert/compressed_from_coo_raw.cuh"
-#include "../src/convert/compressed_transpose_raw.cuh"
+#include <Cellerator/compute/matrix/convert/compressed.cuh>
 #include "../src/convert/coo_from_compressed_raw.cuh"
 #include "../src/repack/kernels/sharded_blocked_ell.cuh"
 
@@ -484,6 +483,8 @@ struct nonzero_half {
 };
 
 static metric bench_coo_to_compressed(const scenario &s, int warmup, int repeats, cudaStream_t stream) {
+    namespace matrix_convert = ::cellerator::compute::matrix::convert;
+    namespace tensor_base = ::cellerator::tensor::base;
     const unsigned int nnz = (unsigned int) s.coo.size();
     std::vector<unsigned int> h_row(nnz), h_col(nnz);
     std::vector<__half> h_val(nnz);
@@ -498,6 +499,9 @@ static metric bench_coo_to_compressed(const scenario &s, int warmup, int repeats
     upload(d_row, h_row, stream);
     upload(d_col, h_col, stream);
     upload(d_val, h_val, stream);
+    const tensor_base::CooView<unsigned int, const __half> source{
+        s.rows, s.cols, nnz, d_row.ptr, d_col.ptr, d_val.ptr};
+    constexpr auto axis = tensor_base::CompressedAxis::row;
 
     device_buffer<unsigned int> custom_ptr((std::size_t) s.rows + 1u), custom_heads(s.rows), custom_minor(nnz);
     device_buffer<__half> custom_val(nnz);
@@ -505,27 +509,25 @@ static metric bench_coo_to_compressed(const scenario &s, int warmup, int repeats
     device_buffer<unsigned int> lib_ptr((std::size_t) s.rows + 1u), lib_sort_row(nnz), lib_minor(nnz), lib_perm(nnz);
     device_buffer<__half> lib_val(nnz);
     std::size_t sort_bytes = 0;
-    require_ok(cs::convert::compressed_from_coo_library_workspace_bytes(s.rows, s.cols, nnz, lib_sort_row.ptr, lib_minor.ptr, stream, &sort_bytes),
+    require_ok(matrix_convert::compressed_from_coo_library_workspace_bytes(source, axis, stream, &sort_bytes),
                "coo_to_compressed library workspace");
     raw_device_buffer lib_tmp(sort_bytes);
 
     auto custom_op = [&]() {
         if (s.coo_sorted_by_row) {
-            require_ok(cs::convert::build_compressed_from_sorted_coo_custom_raw(s.rows, nnz, d_row.ptr, d_col.ptr, d_val.ptr,
-                                                                               custom_ptr.ptr, custom_minor.ptr,
-                                                                               custom_val.ptr, stream),
+            require_ok(matrix_convert::build_compressed_from_sorted_coo_custom(source, axis,
+                custom_ptr.ptr, custom_minor.ptr, custom_val.ptr, stream),
                        "coo_to_compressed sorted custom");
         } else {
-            require_ok(cs::convert::build_compressed_from_coo_custom_raw(s.rows, nnz, d_row.ptr, d_col.ptr, d_val.ptr,
-                                                                         custom_ptr.ptr, custom_heads.ptr, custom_minor.ptr,
-                                                                         custom_val.ptr, custom_scan.ptr, custom_scan.bytes, stream),
+            require_ok(matrix_convert::build_compressed_from_coo_custom(source, axis,
+                custom_ptr.ptr, custom_heads.ptr, custom_minor.ptr, custom_val.ptr,
+                custom_scan.ptr, custom_scan.bytes, stream),
                        "coo_to_compressed custom");
         }
     };
     auto library_op = [&]() {
-        require_ok(cs::convert::build_compressed_from_coo_library_raw(s.rows, s.cols, nnz, d_row.ptr, d_col.ptr, d_val.ptr,
-                                                                      lib_ptr.ptr, lib_sort_row.ptr, lib_minor.ptr,
-                                                                      lib_val.ptr, lib_perm.ptr, lib_tmp.ptr, lib_tmp.bytes, stream),
+        require_ok(matrix_convert::build_compressed_from_coo_library(source, axis,
+            lib_ptr.ptr, lib_sort_row.ptr, lib_minor.ptr, lib_val.ptr, lib_perm.ptr, lib_tmp.ptr, lib_tmp.bytes, stream),
                    "coo_to_compressed library");
     };
 
@@ -573,6 +575,7 @@ static metric bench_compressed_to_coo(const scenario &s, int warmup, int repeats
 }
 
 static metric bench_compressed_transpose(const scenario &s, int warmup, int repeats, cudaStream_t stream) {
+    namespace matrix_convert = ::cellerator::compute::matrix::convert;
     const unsigned int nnz = (unsigned int) s.csr_col.size();
     device_buffer<unsigned int> d_ptr, d_col;
     device_buffer<__half> d_val;
@@ -586,21 +589,23 @@ static metric bench_compressed_transpose(const scenario &s, int warmup, int repe
     device_buffer<unsigned int> lib_ptr((std::size_t) s.cols + 1u), lib_minor(nnz);
     device_buffer<__half> lib_val(nnz);
     std::size_t lib_bytes = 0;
-    require_ok(cs::convert::compressed_transpose_library_workspace_bytes(s.rows, s.cols, nnz, d_ptr.ptr, d_col.ptr, d_val.ptr,
-                                                                         lib_ptr.ptr, lib_minor.ptr, lib_val.ptr, stream, &lib_bytes),
+    require_ok(matrix_convert::compressed_transpose_library_workspace_bytes(
+                   s.rows, s.cols, nnz, d_ptr.ptr, d_col.ptr, d_val.ptr,
+                   lib_ptr.ptr, lib_minor.ptr, lib_val.ptr, stream, &lib_bytes),
                "transpose library workspace");
     raw_device_buffer lib_tmp(lib_bytes);
 
     auto custom_op = [&]() {
-        require_ok(cs::convert::build_compressed_transpose_custom_raw(s.rows, s.cols, nnz, d_ptr.ptr, d_col.ptr, d_val.ptr,
-                                                                      custom_ptr.ptr, custom_heads.ptr, custom_minor.ptr,
-                                                                      custom_val.ptr, custom_scan.ptr, custom_scan.bytes, stream),
+        require_ok(matrix_convert::build_compressed_transpose_custom_raw(
+                       s.rows, s.cols, nnz, d_ptr.ptr, d_col.ptr, d_val.ptr,
+                       custom_ptr.ptr, custom_heads.ptr, custom_minor.ptr,
+                       custom_val.ptr, custom_scan.ptr, custom_scan.bytes, stream),
                    "transpose custom");
     };
     auto library_op = [&]() {
-        require_ok(cs::convert::build_compressed_transpose_library_raw(s.rows, s.cols, nnz, d_ptr.ptr, d_col.ptr, d_val.ptr,
-                                                                       lib_ptr.ptr, lib_minor.ptr, lib_val.ptr,
-                                                                       lib_tmp.ptr, lib_tmp.bytes, stream),
+        require_ok(matrix_convert::build_compressed_transpose_library_raw(
+                       s.rows, s.cols, nnz, d_ptr.ptr, d_col.ptr, d_val.ptr,
+                       lib_ptr.ptr, lib_minor.ptr, lib_val.ptr, lib_tmp.ptr, lib_tmp.bytes, stream),
                    "transpose library");
     };
 

@@ -89,10 +89,7 @@ bool valid_forward(const FeatureMajorViewV1 &view) noexcept {
         && ::cellerator::structure::valid_identity(header.structure_identity)
         && ::cellerator::structure::valid_identity(header.projection_identity)
         && header.structure_epoch != 0u
-        && view.tile_feature_offsets != nullptr
-        && view.execution_feature_ids != nullptr
-        && view.participating_row_masks != nullptr
-        && view.feature_value_offsets != nullptr
+        && valid_bound_feature_major_structure(view)
         && view.source_value_positions != nullptr;
 }
 
@@ -139,6 +136,7 @@ physical_view_status build_transpose_projection_host(
     std::memset(buffer.payload, 0, required.payload_bytes);
     const auto &forward = request.forward;
     const auto &source = forward.header;
+    const auto &structure = forward.structure;
     TransposeMapV1 header{};
     std::size_t bytes = 0u;
     if (!compute_layout(source.feature_count, source.nnz_count,
@@ -177,11 +175,11 @@ physical_view_status build_transpose_projection_host(
         header.transpose_to_logical_offset);
 
     for (u32 tile = 0u; tile < source.tile_count; ++tile)
-        for (u32 record = forward.tile_feature_offsets[tile];
-             record < forward.tile_feature_offsets[tile + 1u]; ++record)
-            offsets[forward.execution_feature_ids[record] + 1u]
+        for (u32 record = structure.tile_offsets[tile];
+             record < structure.tile_offsets[tile + 1u]; ++record)
+            offsets[structure.feature_ids[record] + 1u]
                 += static_cast<u32>(__builtin_popcount(
-                    forward.participating_row_masks[record]));
+                    structure.row_masks[record]));
     for (u32 feature = 0u; feature < source.feature_count; ++feature)
         offsets[feature + 1u] += offsets[feature];
     // The prefix table is the exact construction workspace. Each start offset
@@ -189,15 +187,15 @@ physical_view_status build_transpose_projection_host(
     // immutable CSR offsets after construction. This avoids a feature-count
     // heap allocation without adding scratch bytes or changing CTP1.
     for (u32 tile = 0u; tile < source.tile_count; ++tile) {
-        for (u32 record = forward.tile_feature_offsets[tile];
-             record < forward.tile_feature_offsets[tile + 1u]; ++record) {
-            const u32 feature = forward.execution_feature_ids[record];
-            const u32 mask = forward.participating_row_masks[record];
+        for (u32 record = structure.tile_offsets[tile];
+             record < structure.tile_offsets[tile + 1u]; ++record) {
+            const u32 feature = structure.feature_ids[record];
+            const u32 mask = structure.row_masks[record];
             u32 local = 0u;
             for (u32 lane = 0u; lane < source.tile_row_width; ++lane) {
                 if ((mask & (1u << lane)) == 0u) continue;
                 const u32 forward_position =
-                    forward.feature_value_offsets[record] + local++;
+                    structure.value_offsets[record] + local++;
                 const u32 transpose_position = offsets[feature]++;
                 const u32 logical = forward.source_value_positions[
                     forward_position];

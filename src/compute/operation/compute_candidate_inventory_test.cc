@@ -1,4 +1,7 @@
-#include <Cellerator/compute/compute.hh>
+#include "compute_candidate_inventory.hh"
+
+#include <Cellerator/compute/candidate/segment/portfolio_v2.hh>
+#include <Cellerator/compute/operation/edge/gate_update_validation_v1.hh>
 
 #include <cassert>
 #include <array>

@@ -20,6 +20,7 @@
 #include <vector>
 
 namespace memory_cuda = ::cellerator::memory::cuda;
+using ::cellerator::memory::const_array_view;
 namespace state_codes = ::cellerator::tensor::state_codes;
 
 namespace {
@@ -89,17 +90,45 @@ std::shared_ptr<const state_codes::Profile> make_profile(
     std::uint32_t bits, int device, const memory_cuda::Stream& stream) {
   // Each profile feature has a distinct codebook. State columns deliberately
   // use a non-identity map so accidentally indexing by column cannot pass.
-  std::vector<std::uint32_t> offsets{0U, 2U, 4U, 6U, 8U};
-  std::vector<float> levels{0.0f, 1.0f, 2.0f, 3.0f,
-                            4.0f, 5.0f, 6.0f, 7.0f};
-  std::vector<std::uint32_t> feature_map{2U, 0U, 3U, 1U};
+  const std::array<std::uint32_t, 5> offsets{0U, 2U, 4U, 6U, 8U};
+  const std::array<float, 8> levels{0.0f, 1.0f, 2.0f, 3.0f,
+                                  4.0f, 5.0f, 6.0f, 7.0f};
+  const std::array<std::uint32_t, 4> feature_map{2U, 0U, 3U, 1U};
   auto profile = std::make_shared<state_codes::Profile>(
-      std::move(offsets), std::move(levels), std::move(feature_map), bits, stream);
+      const_array_view<std::uint32_t>{offsets.data(), offsets.size()},
+      const_array_view<float>{levels.data(), levels.size()},
+      const_array_view<std::uint32_t>{feature_map.data(), feature_map.size()},
+      bits, stream);
   require(profile->device() == device, "profile was not placed on requested device");
   require(profile->feature_count() == kFeatures,
           "profile feature map has the wrong state width");
   require(profile->bits() == bits, "profile reports an unexpected code width");
   return profile;
+}
+
+void qualify_profile_validation() {
+  const std::uint32_t offsets[] = {0U, 2U};
+  const float levels[] = {0.0f, 1.0f};
+  const float unsorted[] = {1.0f, 0.0f};
+  const std::uint32_t map[] = {0U};
+  const std::uint32_t invalid_map[] = {1U};
+  // A borrowed default stream performs no CUDA calls until it is used.
+  const auto stream = memory_cuda::Stream::borrow(nullptr, 0);
+  const auto reject = [&](const_array_view<std::uint32_t> offset_view,
+                          const_array_view<float> level_view,
+                          const_array_view<std::uint32_t> map_view) {
+    try {
+      const state_codes::Profile profile(offset_view, level_view, map_view, 1, stream);
+    } catch (const std::invalid_argument&) {
+      return;
+    }
+    throw std::runtime_error("invalid state-code profile was accepted");
+  };
+  reject({nullptr, 2}, {levels, 2}, {map, 1});
+  reject({offsets, 2}, {levels, 1}, {map, 1});
+  reject({offsets, 2}, {unsorted, 2}, {map, 1});
+  reject({offsets, 2}, {levels, 2}, {invalid_map, 1});
+  reject({offsets, 2}, {levels, 2, {::cellerator::memory::domain::device}}, {map, 1});
 }
 
 template <typename Input>
@@ -206,14 +235,12 @@ int main(int argc, char** argv) {
     }
   }
 
-  if (host_only) {
-    // This branch intentionally avoids every CUDA runtime/API call. It is a
-    // safe smoke check when compilation is permitted but device execution is not.
-    std::puts("native owner host-only contract check passed; no CUDA calls made");
-    return 0;
-  }
-
   try {
+    qualify_profile_validation();
+    if (host_only) {
+      std::puts("native owner host-only contract check passed; no CUDA calls made");
+      return 0;
+    }
     int device_count = 0;
     memory_cuda::check(cudaGetDeviceCount(&device_count), "query CUDA device count");
     require(device < device_count, "requested CUDA device ordinal is unavailable");

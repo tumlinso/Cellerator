@@ -162,10 +162,10 @@ struct record_storage {
 
     cellpack::cell_block_record_view view() const {
         auto result = metadata;
-        result.row_record_offsets = rows.data();
-        result.record_block_ids = blocks.empty() ? nullptr : blocks.data();
-        result.record_gene_masks = masks.empty() ? nullptr : masks.data();
-        result.record_value_offsets = values_offsets.data();
+        result.layout.row_block_offsets = rows.data();
+        result.layout.block_ids = blocks.empty() ? nullptr : blocks.data();
+        result.layout.feature_masks = masks.empty() ? nullptr : masks.data();
+        result.layout.row_block_value_offsets = values_offsets.data();
         result.values = values.empty() ? nullptr : values.data();
         return result;
     }
@@ -251,12 +251,12 @@ struct tile_storage {
 
     cellpack::warp_tile_view view() const {
         auto result = metadata;
-        result.tile_block_offsets = tile_offsets.data();
-        result.tile_block_ids = blocks.empty() ? nullptr : blocks.data();
-        result.tile_block_cell_masks = cell_masks.empty() ? nullptr : cell_masks.data();
-        result.block_row_entry_offsets = entry_offsets.data();
-        result.row_block_gene_masks = gene_masks.empty() ? nullptr : gene_masks.data();
-        result.row_block_value_offsets = value_offsets.data();
+        result.layout.tile_block_offsets = tile_offsets.data();
+        result.layout.block_ids = blocks.empty() ? nullptr : blocks.data();
+        result.layout.participating_row_masks = cell_masks.empty() ? nullptr : cell_masks.data();
+        result.layout.block_row_entry_offsets = entry_offsets.data();
+        result.layout.feature_masks = gene_masks.empty() ? nullptr : gene_masks.data();
+        result.layout.row_block_value_offsets = value_offsets.data();
         result.values = values.empty() ? nullptr : values.data();
         return result;
     }
