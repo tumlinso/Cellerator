@@ -8,7 +8,7 @@ find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
 
 pybind11_add_module(cellerator_python_native MODULE
-    ${PROJECT_SOURCE_DIR}/bindings/python/module.cc)
+    ${PROJECT_SOURCE_DIR}/python/bindings/native/module.cc)
 set_target_properties(cellerator_python_native PROPERTIES
     OUTPUT_NAME _native
     CXX_STANDARD 20
@@ -52,7 +52,7 @@ function(cellerator_configure_python_mechanism_bindings)
        TARGET Cellerator::native_numeric AND TARGET Cellerator::memory_cuda AND
        TARGET CUDA::cudart)
         target_sources(cellerator_python_native PRIVATE
-            ${PROJECT_SOURCE_DIR}/bindings/python/native_numeric.cc)
+            ${PROJECT_SOURCE_DIR}/python/bindings/native/native_numeric.cc)
         target_compile_definitions(cellerator_python_native PRIVATE
             CELLERATOR_HAS_RESIDENT_CUDA=1)
         target_include_directories(cellerator_python_native PRIVATE

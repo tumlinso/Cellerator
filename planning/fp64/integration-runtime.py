@@ -79,9 +79,9 @@ def main() -> int:
     receipt_path = output / "runtime-result.json"
     binaries = [
         build / "cellerator_indexed_mechanism_binding_test",
-        build / "bindings/torch/cellerator_torch_native_views_test",
-        build / "bindings/torch/cellerator_torch_program_ops_test",
-        build / "bindings/torch/cellerator_torch_autograd_ops_test",
+        build / "src/interop/torch/cellerator_torch_native_views_test",
+        build / "src/interop/torch/cellerator_torch_program_ops_test",
+        build / "src/interop/torch/cellerator_torch_autograd_ops_test",
         native_build / "src/compute/operation/native_numeric/ceNativeArithmeticTest",
         native_build / "ceNativeNeighborhoodMoments",
     ]

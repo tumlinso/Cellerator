@@ -121,8 +121,8 @@ include/Cellerator/   public native contracts, including cell.hh and cells/
 src/                  native implementation (several owners and generations)
 components/CCell/    native preprocessing, RNA velocity, and optional data adapter
 extern/anndatapp/    pinned upstream AnnData++ source
-bindings/python/      optional pybind Python extension
-bindings/torch/       optional compiled Torch adapters
+python/bindings/      optional compiled Python extensions
+src/interop/torch/    native LibTorch and ATen adapters
 python/cellerator/    installed Python package and Torch modules
 tests/                native, Python, and subsystem checks
 examples/biology/      host-only typed biological relation examples

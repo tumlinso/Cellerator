@@ -1,7 +1,7 @@
 #include <Cellerator/bindings/torch/mechanism.hh>
 
 #ifdef CELLERATOR_HAS_SPARSE_SUPPORT
-#include "../../sparse_support/module.hh"
+#include "../sparse_support/module.hh"
 #endif
 
 #include <torch/csrc/utils/pybind.h>

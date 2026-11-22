@@ -96,5 +96,5 @@ authoritative.
 - Distributed implications: local execution only; no communication, routing,
   or optimizer ownership is added.
 - Code: `include/Cellerator/nn/ops.hh`, `src/nn/ops_cuda.cc`, and
-  `bindings/nn/module.cc`, backed by
+  `python/bindings/nn/module.cc`, backed by
   `include/Cellerator/modeling/cuda/factorized_interaction.hh`.

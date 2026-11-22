@@ -162,8 +162,8 @@ if(CELLERATOR_ENABLE_PYTHON)
             "from the Torch installation selected by Python")
     endif()
     pybind11_add_module(cellerator_python_tokenization MODULE
-        bindings/tokenization/module.cc
-        bindings/tokenization/gene_tokenization.cc)
+        python/bindings/tokenization/module.cc
+        python/bindings/tokenization/gene_tokenization.cc)
     set_target_properties(cellerator_python_tokenization PROPERTIES
         OUTPUT_NAME _tokenization
         CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES

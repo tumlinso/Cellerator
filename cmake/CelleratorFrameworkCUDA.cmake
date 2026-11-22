@@ -45,7 +45,7 @@ if(CELLERATOR_ENABLE_FRAMEWORK_CUDA_PYTHON)
     find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
     find_package(pybind11 CONFIG REQUIRED)
     pybind11_add_module(cellerator_modeling_cuda_python MODULE
-        "${_cellerator_framework_root}/bindings/modeling_cuda/module.cc")
+        "${_cellerator_framework_root}/python/bindings/modeling_cuda/module.cc")
     target_link_libraries(cellerator_modeling_cuda_python PRIVATE Cellerator::framework_cuda Python::Module)
     set_target_properties(cellerator_modeling_cuda_python PROPERTIES OUTPUT_NAME _modeling_cuda)
     install(TARGETS cellerator_modeling_cuda_python

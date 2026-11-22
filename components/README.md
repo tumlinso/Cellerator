@@ -17,9 +17,10 @@ owned by `include/Cellerator/geometry/` and `src/geometry/`. Historical
 forwarding headers have been removed; include `Cellerator/geometry/...` directly.
 
 Torch integration is an optional adapter owned by Cellerator. Python modules
-live under `python/cellerator/torch/`, and C++ bindings live under
-`bindings/torch/`; they adapt framework calls to Cellerator-owned structures,
-parameters, and numerical operations. They do not form a separate component.
+live under `python/cellerator/torch/`, with the compiled Python entry point
+under `python/bindings/torch/`. Native LibTorch integration lives under
+`src/interop/torch/` and links to Cellerator-owned structures, parameters, and
+numerical operations.
 
 ## Privileged compiler components
 

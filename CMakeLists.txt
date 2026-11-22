@@ -855,7 +855,7 @@ if(CELLERATOR_ENABLE_PYTHON)
 endif()
 
 if(CELLERATOR_ENABLE_TORCH)
-    add_subdirectory(bindings/torch)
+    add_subdirectory(src/interop/torch)
 endif()
 
 cellerator_append_component_validation()

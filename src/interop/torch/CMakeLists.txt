@@ -95,7 +95,7 @@ if(TORCH_CXX_FLAGS)
 endif()
 
 add_library(cellerator_torch_native_views STATIC
-    src/native_views.cc)
+    native_views.cc)
 add_library(Cellerator::torch_native_views ALIAS cellerator_torch_native_views)
 target_include_directories(cellerator_torch_native_views PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -107,7 +107,7 @@ target_link_libraries(cellerator_torch_native_views PUBLIC
 target_compile_features(cellerator_torch_native_views PUBLIC cxx_std_20)
 
 add_library(cellerator_torch_program_ops STATIC
-    src/program_ops.cu)
+    program_ops.cu)
 add_library(Cellerator::torch_program_ops ALIAS cellerator_torch_program_ops)
 target_include_directories(cellerator_torch_program_ops PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -122,7 +122,7 @@ set_target_properties(cellerator_torch_program_ops PROPERTIES
     POSITION_INDEPENDENT_CODE ON)
 
 add_library(cellerator_torch_autograd_ops STATIC
-    src/autograd_ops.cu)
+    autograd_ops.cu)
 add_library(Cellerator::torch_autograd_ops ALIAS cellerator_torch_autograd_ops)
 target_include_directories(cellerator_torch_autograd_ops PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -137,7 +137,7 @@ set_target_properties(cellerator_torch_autograd_ops PROPERTIES
     POSITION_INDEPENDENT_CODE ON)
 
 add_library(cellerator_torch_mechanism STATIC
-    src/mechanism.cc)
+    mechanism.cc)
 add_library(Cellerator::torch_mechanism ALIAS cellerator_torch_mechanism)
 target_include_directories(cellerator_torch_mechanism PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -152,7 +152,7 @@ set_target_properties(cellerator_torch_mechanism PROPERTIES
 
 if(TARGET Cellerator::model_ops)
     add_library(cellerator_torch_model_ops STATIC
-        src/model_ops.cu)
+        model_ops.cu)
     add_library(Cellerator::torch_model_ops ALIAS cellerator_torch_model_ops)
     target_include_directories(cellerator_torch_model_ops PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -186,44 +186,7 @@ endif()
 target_compile_features(cellerator_torch INTERFACE cxx_std_20)
 
 if(CELLERATOR_ENABLE_PYTHON)
-    find_library(CELLERATOR_TORCH_PYTHON_LIBRARY
-        NAMES torch_python
-        PATHS "${TORCH_INSTALL_PREFIX}/lib"
-        NO_DEFAULT_PATH)
-    if(NOT CELLERATOR_TORCH_PYTHON_LIBRARY)
-        message(FATAL_ERROR
-            "The optional Python Torch adapter requires torch_python from the selected Torch installation")
-    endif()
-    pybind11_add_module(cellerator_python_torch MODULE
-        src/python_module.cc)
-    set_target_properties(cellerator_python_torch PROPERTIES
-        OUTPUT_NAME _torch
-        CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
-        INSTALL_RPATH "$ORIGIN/../.libs"
-        BUILD_WITH_INSTALL_RPATH ON)
-    target_include_directories(cellerator_python_torch PRIVATE
-        ${PROJECT_SOURCE_DIR}/include)
-    target_link_libraries(cellerator_python_torch PRIVATE
-        Cellerator::torch
-        Cellerator::indexed_mechanism
-        ${CELLERATOR_TORCH_PYTHON_LIBRARY})
-    if(CELLERATOR_ENABLE_SPARSE_SUPPORT)
-        target_sources(cellerator_python_torch PRIVATE
-            ${PROJECT_SOURCE_DIR}/bindings/sparse_support/module.cc
-            ${PROJECT_SOURCE_DIR}/bindings/sparse_support/indexing_bindings.cc
-            ${PROJECT_SOURCE_DIR}/bindings/sparse_support/geometry_bindings.cc
-            ${PROJECT_SOURCE_DIR}/bindings/sparse_support/prepared_routing.cc)
-        target_link_libraries(cellerator_python_torch PRIVATE
-            Cellerator::sparse_support Cellerator::sparse_support_numeric)
-        target_compile_definitions(cellerator_python_torch PRIVATE
-            CELLERATOR_HAS_SPARSE_SUPPORT=1)
-    endif()
-    install(TARGETS cellerator_python_torch
-        LIBRARY DESTINATION cellerator/torch COMPONENT Python
-        RUNTIME DESTINATION cellerator/torch COMPONENT Python)
-    if(TARGET cellerator_python_extensions)
-        add_dependencies(cellerator_python_extensions cellerator_python_torch)
-    endif()
+    include("${PROJECT_SOURCE_DIR}/python/bindings/torch/CMakeLists.txt")
 endif()
 
 if(CELLERATOR_BUILD_TESTS)

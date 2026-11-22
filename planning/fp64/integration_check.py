@@ -36,9 +36,9 @@ COMBINED_TARGETS = (
 )
 COMBINED_BINARIES = (
     "cellerator_indexed_mechanism_binding_test",
-    "bindings/torch/cellerator_torch_native_views_test",
-    "bindings/torch/cellerator_torch_program_ops_test",
-    "bindings/torch/cellerator_torch_autograd_ops_test",
+    "src/interop/torch/cellerator_torch_native_views_test",
+    "src/interop/torch/cellerator_torch_program_ops_test",
+    "src/interop/torch/cellerator_torch_autograd_ops_test",
 )
 SOURCE_ROOTS = (
     "bindings", "python/cellerator", "include/Cellerator",

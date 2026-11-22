@@ -124,8 +124,8 @@ if(CELLERATOR_ENABLE_PYTHON)
         message(FATAL_ERROR
             "The NN Python binding requires the existing CELLERATOR_ENABLE_PYTHON setup")
     endif()
-    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/bindings/nn/module.cc")
-        message(FATAL_ERROR "bindings/nn/module.cc is required for the NN Python binding")
+    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/python/bindings/nn/module.cc")
+        message(FATAL_ERROR "python/bindings/nn/module.cc is required for the NN Python binding")
     endif()
     unset(CELLERATOR_NN_TORCH_PYTHON_LIBRARY CACHE)
     find_library(CELLERATOR_NN_TORCH_PYTHON_LIBRARY
@@ -137,7 +137,7 @@ if(CELLERATOR_ENABLE_PYTHON)
             "The NN Python binding requires torch_python from the Torch installation selected by Python")
     endif()
     pybind11_add_module(cellerator_nn_python MODULE
-        "${PROJECT_SOURCE_DIR}/bindings/nn/module.cc")
+        "${PROJECT_SOURCE_DIR}/python/bindings/nn/module.cc")
     set_target_properties(cellerator_nn_python PROPERTIES
         OUTPUT_NAME _nn_native
         CXX_STANDARD 20

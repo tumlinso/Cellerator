@@ -87,7 +87,7 @@ if(CELLERATOR_ENABLE_GGML)
 
     if(CELLERATOR_ENABLE_PYTHON)
         pybind11_add_module(cellerator_python_ggml
-            "${cellerator_ggml_source_root}/bindings/ggml/module.cc")
+            "${cellerator_ggml_source_root}/python/bindings/ggml/module.cc")
         set_target_properties(cellerator_python_ggml PROPERTIES OUTPUT_NAME _ggml_native)
         target_compile_features(cellerator_python_ggml PRIVATE cxx_std_20)
         target_link_libraries(cellerator_python_ggml PRIVATE
