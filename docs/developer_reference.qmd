@@ -59,8 +59,8 @@ modules are built and exported by the normal package build. The core module is
 always exported as
 `Cellerator::core_module`; request it with
 `find_package(Cellerator CONFIG REQUIRED COMPONENTS core_module)` and import it
-as `cellerator.core;`. When NN is enabled, use the `nn_modules` package
-component and target `Cellerator::nn_modules` for `import cellerator.nn;`.
+as `cellerator.core;`. Set `CELLERATOR_ENABLE_MODULES=ON` to add the host
+tensor module and, when NN is enabled, the NN module. This option defaults to off.
 Module consumers must set `CMAKE_CXX_EXTENSIONS OFF` before creating importer
 targets, so Clang builds them in strict C++20 or C++23 mode rather than
 `gnu++20`. CUDA translation units keep using public headers and do not import
@@ -98,11 +98,21 @@ The corresponding C++ translation unit uses this import:
 import cellerator.core;
 ```
 
-For the optional native NN module, configure Cellerator with NN enabled and use
-`find_package(Cellerator CONFIG REQUIRED COMPONENTS nn_modules)` with
-`Cellerator::nn_modules`. Keep `CMAKE_CXX_EXTENSIONS OFF` for its importer as
-well. The installed module sources are compiled by the consumer's
-module-capable build; module support is not an optional side build.
+Tensor and NN consumers use the same
+targets for headers and imports. For an importing model:
+
+```cmake
+set(CMAKE_CXX_EXTENSIONS OFF)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS native_data nn)
+add_executable(my_model model.cc)
+target_link_libraries(my_model PRIVATE Cellerator::tensor Cellerator::nn)
+set_property(TARGET my_model PROPERTY CXX_SCAN_FOR_MODULES ON)
+```
+
+The consumer builds the installed module interfaces with its own toolchain.
+With modules enabled, header-only targets can skip scanning their own sources
+by setting `CXX_SCAN_FOR_MODULES OFF`. Their linked module providers still
+build when needed.
 
 ## Current high-level routes
 

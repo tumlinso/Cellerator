@@ -12,14 +12,15 @@ not import modules or launch a kernel. In a CUDA-enabled Cellerator package, the
 consumer also resolves an existing NN CUDA operation symbol by address without
 calling it.
 
-Build and install the main Cellerator package first. Then run:
+Build and install the main Cellerator package with `CELLERATOR_ENABLE_NN=ON`
+and `CELLERATOR_ENABLE_MODULES=ON`. Then run:
 
 ```sh
 tests/nn/modules/run_qualification.sh <cellerator-install-prefix> /tmp/cellerator-nn-module
 ```
 
-The module is included in the main package as `Cellerator::nn_modules`. The
-script configures an external consumer against that package. It requires CMake
+The script configures an external consumer that links `Cellerator::nn`
+from the installed `nn` component. It requires CMake
 3.28+, Ninja 1.11+, Clang 18+, and the matching `clang-scan-deps`; set
 `CELLERATOR_MODULE_NINJA` and `CELLERATOR_MODULE_SCANNER` if those tools are not
 on `PATH`. Consumers must set `CMAKE_CXX_EXTENSIONS=OFF` so their C++ dialect

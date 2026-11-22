@@ -106,6 +106,9 @@ target_include_directories(cellerator_tensor INTERFACE
 target_compile_features(cellerator_tensor INTERFACE cxx_std_20)
 target_link_libraries(cellerator_tensor INTERFACE
     Cellerator::block_masked Cellerator::state_codes)
+if(CELLERATOR_ENABLE_MODULES)
+    include("${PROJECT_SOURCE_DIR}/src/tensor/tensor_module.cmake")
+endif()
 
 add_library(cellerator_dependency_execution STATIC
     "${PROJECT_SOURCE_DIR}/src/execution/dependency/distributed.cc"
@@ -203,6 +206,8 @@ foreach(_header IN ITEMS
         tensor/block_masked/layout.hh
         tensor/block_masked/view.hh
         tensor/block_masked/structure.hh
+        tensor/base/compressed.hh
+        tensor/base/coo.hh
         tensor/state_codes/view.hh
         execution/dependency/distributed.hh
         execution/dependency/condition_index.hh
@@ -231,6 +236,12 @@ function(cellerator_append_native_data_package_config)
         file(APPEND "${CELLERATOR_HOST_CONFIG}"
             "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorNativeDataTargets.cmake\")\n"
             "set(Cellerator_native_data_FOUND TRUE)\n")
+        if(CELLERATOR_ENABLE_MODULES)
+            file(APPEND "${CELLERATOR_HOST_CONFIG}"
+                "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorTensorInterfaceTargets.cmake\")\n"
+                "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorModuleInterfaces.cmake\")\n"
+                "cellerator_attach_module(Cellerator::tensor Cellerator::tensor_interface_binary)\n")
+        endif()
     endif()
 endfunction()
 install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/ops/incidence.hh"

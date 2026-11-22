@@ -194,8 +194,12 @@ find_package(Cellerator REQUIRED COMPONENTS native_data)
 target_link_libraries(my_model PRIVATE Cellerator::native_data)
 ```
 
-`Cellerator::tensor` is the smaller host format surface. Optional
-`Cellerator::native_data_cuda` composes CUDA owners and execution; these
+`Cellerator::tensor` is the smaller host format surface. With
+`CELLERATOR_ENABLE_MODULES=ON`, the same target supplies
+`import cellerator.tensor;` for compressed and COO views and block-masked
+views and accessors. See the [module build instructions](developer_reference.qmd#mandatory-native-toolchain-and-installed-dependencies).
+
+The optional `Cellerator::native_data_cuda` target composes CUDA owners and execution; these
 dependencies are not required by host semantic headers. All package targets
 require at least C++20, including CUDA translation units. Kernel-facing format
 views remain ordinary header interfaces, but they do not define a separately

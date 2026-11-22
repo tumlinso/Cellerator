@@ -104,6 +104,18 @@ option(CELLERATOR_ENABLE_NN
     "Build the optional native C++ neural-network foundation" OFF)
 option(CELLERATOR_ENABLE_NN_CUDA
     "Build optional CUDA neural-network derivative adapters" OFF)
+option(CELLERATOR_ENABLE_MODULES "Build the host tensor and NN C++20 modules" OFF)
+if(CELLERATOR_ENABLE_MODULES)
+    include(GNUInstallDirs)
+    include(cmake/CelleratorModuleInterfaces.cmake)
+    cellerator_require_module_scanner()
+    install(FILES "${PROJECT_SOURCE_DIR}/cmake/CelleratorModuleInterfaces.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator" COMPONENT NativeData)
+    if(CELLERATOR_ENABLE_NN)
+        install(FILES "${PROJECT_SOURCE_DIR}/cmake/CelleratorModuleInterfaces.cmake"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator" COMPONENT NN)
+    endif()
+endif()
 option(CELLERATOR_BUILD_TORCH_EXAMPLES "Build optional CellShard-dependent Torch examples" OFF)
 option(CELLERATOR_ENABLE_CELLSHARD "Build the retained CellShard component" OFF)
 option(CELLERATOR_BUILD_TESTS "Build Cellerator test executables" ON)

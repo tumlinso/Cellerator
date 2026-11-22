@@ -113,6 +113,9 @@ endif()
 if(CELLERATOR_ENABLE_NN_CUDA)
     target_link_libraries(cellerator_nn PUBLIC Cellerator::nn_cuda)
 endif()
+if(CELLERATOR_ENABLE_MODULES)
+    include("${PROJECT_SOURCE_DIR}/src/nn/module.cmake")
+endif()
 list(APPEND cellerator_nn_export_targets cellerator_nn)
 list(APPEND cellerator_nn_export_targets cellerator_product2)
 
@@ -246,8 +249,6 @@ install(EXPORT CelleratorNNTargets NAMESPACE Cellerator::
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator"
     COMPONENT NN)
 
-include("${PROJECT_SOURCE_DIR}/src/nn/nn_modules.cmake")
-
 function(cellerator_append_nn_package_config)
     if(NOT DEFINED CELLERATOR_HOST_CONFIG OR NOT EXISTS "${CELLERATOR_HOST_CONFIG}")
         return()
@@ -260,8 +261,17 @@ function(cellerator_append_nn_package_config)
             "    include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorFrameworkCUDATargets.cmake\")\n"
             "  endif()\n")
     endif()
+    set(cellerator_nn_module_config "")
+    if(CELLERATOR_ENABLE_MODULES)
+        string(CONCAT cellerator_nn_module_config
+            "  if(NOT TARGET Cellerator::nn_interface_binary)\n"
+            "    include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorNNModuleTargets.cmake\")\n"
+            "  endif()\n"
+            "  include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorModuleInterfaces.cmake\")\n"
+            "  cellerator_attach_module(Cellerator::nn Cellerator::nn_interface_binary)\n")
+    endif()
     file(APPEND "${CELLERATOR_HOST_CONFIG}"
-        "if(\"nn\" IN_LIST Cellerator_FIND_COMPONENTS OR \"nn_cuda\" IN_LIST Cellerator_FIND_COMPONENTS OR \"nn_modules\" IN_LIST Cellerator_FIND_COMPONENTS)\n"
+        "if(\"nn\" IN_LIST Cellerator_FIND_COMPONENTS OR \"nn_cuda\" IN_LIST Cellerator_FIND_COMPONENTS)\n"
         "  include(CMakeFindDependencyMacro)\n"
         "  if(Torch_DIR)\n"
         "    get_filename_component(_cellerator_torch_caffe2_dir \"\${Torch_DIR}/../Caffe2\" REALPATH)\n"
@@ -280,15 +290,8 @@ function(cellerator_append_nn_package_config)
         "  if(NOT TARGET Cellerator::nn)\n"
         "    include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorNNTargets.cmake\")\n"
         "  endif()\n"
+        "${cellerator_nn_module_config}"
         "  set(Cellerator_nn_FOUND TRUE)\n"
-        "endif()\n"
-        "if(\"nn\" IN_LIST Cellerator_FIND_COMPONENTS OR \"nn_modules\" IN_LIST Cellerator_FIND_COMPONENTS)\n"
-        "  if(NOT TARGET Cellerator::nn_modules_binary)\n"
-        "    include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorNNModulesTargets.cmake\")\n"
-        "  endif()\n"
-        "  include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorModuleInterfaces.cmake\")\n"
-        "  cellerator_import_module(nn_modules Cellerator::nn_modules_binary Cellerator::nn)\n"
-        "  set(Cellerator_nn_modules_FOUND TRUE)\n"
         "endif()\n"
         "if(\"nn_cuda\" IN_LIST Cellerator_FIND_COMPONENTS)\n"
         "  set(Cellerator_nn_cuda_FOUND TRUE)\n"

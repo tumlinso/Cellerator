@@ -8,20 +8,22 @@ the same declarations, layouts, and ABI. CUDA sources continue to include the
 ordinary headers; NVCC does not parse module syntax.
 
 `cellerator.core.ccm` is built by the normal package build.
-[`cellerator.nn.ccm`](cellerator.nn.ccm) is built when the NN component is enabled.
-`cellerator.ccm` re-exports both interfaces; it is not yet wired into the build.
+The unwired `cellerator.ccm` re-exports the core and NN interfaces.
 
-Build with CMake 3.28 or newer, Ninja, and a Clang compiler with a matching
-`clang-scan-deps` executable.
+With `CELLERATOR_ENABLE_NN=ON` and `CELLERATOR_ENABLE_MODULES=ON`,
+[`cellerator.nn.ccm`](cellerator.nn.ccm) is built and installed with the NN
+component. Both header and import consumers link `Cellerator::nn`. Installed
+consumers request `find_package(Cellerator CONFIG REQUIRED COMPONENTS nn)`.
+Enable `CXX_SCAN_FOR_MODULES` on the target or C++ sources that use
+`import cellerator.nn;`.
 
-The package installs the module source and CMake file-set metadata. CMake
-re-scans the installed interface source while building an importing consumer,
-so it generates the BMI with that consumer's compiler instead of requiring a
-compiler-version-specific BMI from the package.
+Module builds require CMake 3.28 or newer, Ninja, and a Clang compiler with a
+matching `clang-scan-deps` executable.
 
-The bounded external qualification uses CMake 3.28, Clang 18, Ninja, and
-`clang-scan-deps` 18. Its NVCC bridge used NVCC 12.9 with GNU 12 as the host
-compiler. On CMake 3.28/Ninja, separate executable targets importing the same
-installed module target generated a duplicate Ninja rule; place importing
-translation units in one target or verify this behavior with another CMake
-version. The tested package does not launch CUDA code.
+The module-enabled package installs the module source and CMake file-set
+metadata. CMake builds the interface with the consumer's compiler when a target
+links `Cellerator::nn`, including targets whose own sources use only headers.
+
+The [external qualification](../../tests/nn/modules/README.md) uses CMake 3.28,
+Clang 18, Ninja, and `clang-scan-deps` 18. Its optional NVCC bridge compiles
+against the ordinary headers with NVCC 12.9 and GNU 12 as the host compiler.

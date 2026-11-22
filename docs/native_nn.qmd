@@ -457,19 +457,20 @@ cmake -S . -B /tmp/cellerator-native-nn -G Ninja \
   -DTorch_DIR=/path/to/libtorch/share/cmake/Torch \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_NN=ON \
+  -DCELLERATOR_ENABLE_MODULES=ON \
   -DCELLERATOR_ENABLE_NN_CUDA=OFF \
   -DCELLERATOR_ENABLE_PYTHON=OFF \
   -DCELLERATOR_ENABLE_TORCH=OFF \
   -DCELLERATOR_BUILD_PRODUCT2=ON \
   -DCELLERATOR_BUILD_NN_TRAIN=ON
 cmake --build /tmp/cellerator-native-nn \
-  --target cellerator_nn cellerator_nn_modules native_nn_train
+  --target cellerator_nn native_nn_train
 /tmp/cellerator-native-nn/native_nn_train
 ```
 
 The `anndatapp-install` prefix must contain the HDF5-only native package;
 the required CMake, Ninja, Clang and scanner versions are documented in the
-[developer reference](developer_reference.qmd#mandatory-native-toolchain-and-h5ad-dependency).
+[developer reference](developer_reference.qmd#mandatory-native-toolchain-and-installed-dependencies).
 The [standalone build and installed-consumer route](../planning/native-nn-foundation-2026-10-31/build/README.md)
 records the environment-specific CMake invocation. Enabling the CUDA adapters
 is separate and also requires Cellerator framework CUDA, a loaded CUDA
@@ -477,13 +478,12 @@ toolchain, and CUDA-enabled Torch.
 
 The normal Cellerator package always exports `Cellerator::core_module`, whose
 `cellerator.core` module provides the generic Cell and core public declarations.
-When NN is enabled, the same package exports `Cellerator::nn_modules` through
-`find_package(Cellerator CONFIG REQUIRED COMPONENTS nn_modules)`; import it as
-`cellerator.nn`. Set `CMAKE_CXX_EXTENSIONS OFF` before creating importer targets
-so they use strict C++20 or C++23 mode, matching the module interfaces. Both are
-host module interfaces, not NVCC module entry points. CUDA translation units
-use the ordinary public headers. The module interfaces do not change the
-underlying C++ types or ABI.
+Request the installed `nn` component and link `Cellerator::nn` for both
+`#include <Cellerator/nn.hh>` and `import cellerator.nn;`. To import, use a
+package built with `CELLERATOR_ENABLE_MODULES=ON`, set
+`CMAKE_CXX_EXTENSIONS OFF` before creating importer targets, and enable
+`CXX_SCAN_FOR_MODULES` on those targets. CUDA translation units use the public
+headers. The module re-exports their declarations.
 
 For Python-facing behavior and its distinct implementation boundary, see the
 [Python NN foundation guide](nn_foundation.qmd). The shared goals and remaining
