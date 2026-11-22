@@ -57,7 +57,7 @@ admission:
 
 ```sh
 /home/tumlinson/Software/miniconda3/bin/python \
-  '{snapshot}/scripts/validation/kda_packed_autobench.py' \
+  '{snapshot}/planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_autobench.py' \
   --source '{snapshot}' \
   --workspace /home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2 \
   --mode evaluate

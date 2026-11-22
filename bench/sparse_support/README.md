@@ -81,7 +81,7 @@ do not establish a target speedup.
 Run the reproducible CPU matrix with:
 
 ```sh
-python3 scripts/sparse_support/run_cpu_matrix.py \
+python3 bench/sparse_support/run_cpu_matrix.py \
   --build-dir /tmp/cellerator_sparse_support_cpu_bench_build \
   --output /tmp/cellerator_sparse_support_cpu_indexing.jsonl
 ```

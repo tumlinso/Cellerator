@@ -18,9 +18,9 @@ include = [
   "planning/v100-framework-2026-10-29/dispatch/launch_geometry/candidate-sources/**",
   "planning/v100-framework-2026-10-29/dispatch/launch_geometry/dispatch_geometry_driver.cu",
   "planning/v100-framework-2026-10-29/dispatch/launch_geometry/task.json",
-  "scripts/validation/kda_dispatch_geometry.py",
-  "scripts/validation/kda_dispatch_geometry_autobench.py",
-  "scripts/validation/kda_autobench_artifacts.py",
+  "planning/v100-framework-2026-10-29/dispatch/launch_geometry/kda_dispatch_geometry.py",
+  "planning/v100-framework-2026-10-29/dispatch/launch_geometry/kda_dispatch_geometry_autobench.py",
+  "planning/v100-framework-2026-10-29/autobench/kda_autobench_artifacts.py",
 ]
 
 [protocol]
@@ -29,7 +29,7 @@ id = "cellerator-dispatch-v100-sm70-weight-gradient-grid-v2"
 [build]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/kda_dispatch_geometry_autobench.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/dispatch/launch_geometry/kda_dispatch_geometry_autobench.py",
   "--source", "{snapshot}",
   "--workspace", "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/dispatch/launch_geometry/workspace",
   "--autobench-build", "{build}",
@@ -44,7 +44,7 @@ name = "dispatch-weight-gradient-geometry-evaluate"
 kind = "timing"
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/kda_dispatch_geometry_autobench.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/dispatch/launch_geometry/kda_dispatch_geometry_autobench.py",
   "--source", "{snapshot}",
   "--workspace", "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/dispatch/launch_geometry/workspace",
   "--autobench-build", "{build}",

@@ -112,7 +112,7 @@ def stale_entries(repo_root: pathlib.Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--repo-root", type=pathlib.Path, default=pathlib.Path(__file__).resolve().parents[1])
+    parser.add_argument("--repo-root", type=pathlib.Path, default=pathlib.Path(__file__).resolve().parents[2])
     parser.add_argument("--strict-stale", action="store_true", help="also reject allowlist entries whose debt has been removed")
     args = parser.parse_args()
     repo_root = args.repo_root.resolve()
