@@ -10,3 +10,8 @@ The standard build installs CCell and AnnData++ together. `find_package(ccell
 CONFIG REQUIRED)` loads the method targets. Request the `anndata_interop`
 component for CCell's borrowing adapter. AnnData++ itself supplies
 `import anndata;`. The Cellerator core package can be discovered independently.
+
+The former [AnnData++ and Velocity source archives](https://github.com/tumlinso/Cellerator/tree/d7414e7f830fcd25cac585399a0535b72e75ff01/quarantine)
+remain available in Git history. Local cutover recovery files and the retired
+Python AnnData source snapshot with its checksum manifest were backed up
+outside the checkout.
