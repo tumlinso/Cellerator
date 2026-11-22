@@ -21,9 +21,13 @@ TRACE_PATHS = {
         "bench/architecture_evidence/real_traces/pbmc3k-support-512.json"
     ),
     "adversarial-tiny-partial-blocks": Path(
-        "data/manifests/architecture_evidence/smoke_traces/"
+        "bench/architecture_evidence/manifests/smoke_traces/"
         "adversarial-tiny-partial-blocks.json"
     ),
+}
+RECORDED_TRACE_PATHS = {
+    "adversarial-tiny-partial-blocks":
+        "data/manifests/architecture_evidence/smoke_traces/adversarial-tiny-partial-blocks.json",
 }
 WIDTHS = (1, 16, 32)
 EXPECTED_CANDIDATES = {
@@ -48,14 +52,21 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--summary", type=Path, required=True)
     parser.add_argument("--controller-evidence-id", required=True)
+    parser.add_argument(
+        "--recorded-trace-paths", action="store_true",
+        help="emit the trace paths recorded in the original checked-in campaign",
+    )
     options = parser.parse_args()
 
     traces = {}
     for trace_id, path in TRACE_PATHS.items():
         trace = json.loads(path.read_text())
         require(trace["trace_id"] == trace_id, f"trace id mismatch: {path}")
+        recorded_path = str(path)
+        if options.recorded_trace_paths:
+            recorded_path = RECORDED_TRACE_PATHS.get(trace_id, recorded_path)
         traces[trace_id] = {
-            "path": str(path),
+            "path": recorded_path,
             "sha256": sha256(path),
             "payload_sha256": trace["payload_sha256"],
             "trace_kind": trace["trace_kind"],

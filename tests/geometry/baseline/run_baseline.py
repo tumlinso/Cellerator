@@ -84,7 +84,7 @@ def main() -> int:
         "tests/geometry/baseline/test_dense_fragment_negative_control.py",
         "bench/ce_live/tensor_core/campaign/run_v100_decision.py",
         "bench/architecture_evidence/real_traces/pbmc3k-support-512.json",
-        "data/manifests/ce_live/pbmc3k_quantitative_v1.json",
+        "tests/live/fixture/pbmc3k_quantitative_v1.json",
     ]
     hashes = {}
     for relative in pinned_files:

@@ -122,37 +122,8 @@ cuda_profile*.log
 /.todo-orchestrator/
 /.todo-orchestrator-cutover-stage-*/
 
-# Local fixture payloads. The scaffold under data/test is tracked, but large
-# biological inputs and generated conversion outputs remain local.
-/data/**/*.h5ad
-/data/**/*.csh5
-/data/**/*.mtx
-/data/**/*.npy
-/data/**/*.npz
-/data/**/*.bam
-/data/**/*.bai
-/data/**/*.cram
-/data/**/*.crai
-/data/**/*.fastq
-/data/**/*.fastq.gz
-/data/**/*.fq
-/data/**/*.fq.gz
-/data/**/*.fasta
-/data/**/*.fasta.gz
-/data/**/*.fa
-/data/**/*.fa.gz
-/data/test/reference/*
-!/data/test/reference/.gitkeep
-/data/test/generated/csh5/*
-!/data/test/generated/csh5/.gitkeep
-/data/test/generated/cache/*
-!/data/test/generated/cache/.gitkeep
-/data/test/generated/blocked_ell_optimization/*
-!/data/test/generated/blocked_ell_optimization/.gitkeep
-/data/test/generated/logs/*
-!/data/test/generated/logs/.gitkeep
-/data/test/generated/tmp/*
-!/data/test/generated/tmp/.gitkeep
+# Local fixture payloads and compatibility symlinks.
+/data/
 
 /.quarto/
 **/*.quarto_ipynb

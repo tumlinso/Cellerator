@@ -13,6 +13,7 @@ import hashlib
 import heapq
 import json
 import math
+import os
 import sys
 from pathlib import Path
 from typing import Any, Callable, Iterable, Iterator
@@ -457,6 +458,12 @@ def command_generate(args: argparse.Namespace) -> None:
     )
 
 
+def local_source_path(source: dict[str, Any]) -> Path:
+    configured_root = os.environ.get("CELLERATOR_DATA_ROOT")
+    root = Path(configured_root).expanduser() if configured_root else Path.home() / "data" / "Cellerator"
+    return root / source["local_path"]
+
+
 def command_extract(args: argparse.Namespace) -> None:
     sources = load_json(args.sources)
     source = next((item for item in sources["sources"] if item["id"] == args.source), None)
@@ -464,8 +471,7 @@ def command_extract(args: argparse.Namespace) -> None:
         raise ValueError(f"unknown source id: {args.source}")
     if not source.get("structure_only", False):
         raise ValueError("CE-ARCH-30 H5AD extraction must be structure-only")
-    repository = Path(__file__).resolve().parents[2]
-    source_path = repository / source["local_path"]
+    source_path = local_source_path(source)
     row_factory, columns, selection = h5ad_support_factory(
         source_path, args.rows, args.seed,
     )

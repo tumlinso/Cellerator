@@ -197,6 +197,12 @@ The earlier [coherence migration snapshot](https://github.com/tumlinso/Cellerato
 
 A required native evidence name needs a configured producer that records that passing fact. Committed reports, scheduler receipts, and external test runs belong in source references and reviewed assertions; their presence alone does not create a native passing fact. Live task state remains in Project Control.
 
+## Local fixture data
+
+Use `CELLERATOR_DATA_ROOT` for external test and benchmark payloads. The default
+is `~/data/Cellerator`. The [fixture staging guide](data-fixtures.md) gives the
+expected layout and identifies the tracked manifests used by each caller.
+
 ## Optional C++ retrieval maintenance
 
 [ctxpp](https://github.com/tumlinso/ctxpp) is an optional standalone C++ context tool. Ordinary source navigation and coding do not require it or a globally installed skill. `build-ctxpp/compile_commands.json` is the compilation database selected by `.ctxpp.toml`. The generated `.ctxpp/index.sqlite` holds the graph; `.ctxpp/observer-export.json` is a small descriptor for the optional reader. Canonical source files remain authoritative.

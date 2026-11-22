@@ -33,7 +33,7 @@ class DenseFragmentDecisionTest(unittest.TestCase):
             "bench/architecture_evidence/real_traces/pbmc3k-support-512.json"
         ).read_text())
         manifest = json.loads((ROOT /
-            "data/manifests/ce_live/pbmc3k_quantitative_v1.json").read_text())
+            "tests/live/fixture/pbmc3k_quantitative_v1.json").read_text())
         result = MODULE.classify(trace, manifest)
         self.assertEqual(result["rows"], 512)
         self.assertEqual(result["features"], 32738)

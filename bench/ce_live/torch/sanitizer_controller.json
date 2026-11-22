@@ -5,6 +5,8 @@
   "recipe": "compute-sanitizer",
   "paths": [
     "bench/ce_live/torch",
+    "bench/ce_live/forward/prepare_pbmc3k_fixture.py",
+    "tests/live/fixture/pbmc3k_quantitative_v1.json",
     "tests/bindings/torch/quantitative_smoke_test.cc",
     "bindings/torch/src/program_ops.cu"
   ],
@@ -17,7 +19,7 @@
       ["cmake", "-S", ".", "-B", "build-cellerator-torch", "-DCELLERATOR_ENABLE_CUDA=ON", "-DCELLERATOR_ENABLE_TORCH=ON", "-DCELLERATOR_BUILD_TESTS=ON", "-DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF", "-DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF", "-DCMAKE_CUDA_ARCHITECTURES=70", "-DCMAKE_BUILD_TYPE=Release"],
       ["cmake", "--build", "build-cellerator-torch", "--target", "celleratorTorchQuantitativeSmokeTest", "-j", "2"],
       ["mkdir", "-p", "/tmp/cellerator-ce-live-44"],
-      ["python", "bench/ce_live/forward/prepare_pbmc3k_fixture.py", "--fixture", "bench/ce_live/fixture/local/pbmc3k-r512-s7.npz", "--manifest", "data/manifests/ce_live/pbmc3k_quantitative_v1.json", "--output", "/tmp/cellerator-ce-live-44/pbmc3k-r512-s7.bin"]
+      ["python", "bench/ce_live/forward/prepare_pbmc3k_fixture.py", "--fixture", "bench/ce_live/fixture/local/pbmc3k-r512-s7.npz", "--manifest", "tests/live/fixture/pbmc3k_quantitative_v1.json", "--output", "/tmp/cellerator-ce-live-44/pbmc3k-r512-s7.bin"]
     ]
   },
   "argv": [

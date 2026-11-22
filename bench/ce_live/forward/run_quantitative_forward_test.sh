@@ -12,7 +12,7 @@ fixture_bin="$build_dir/pbmc3k-r512-s7.bin"
 mkdir -p "$build_dir"
 python "$repo_root/bench/ce_live/forward/prepare_pbmc3k_fixture.py" \
     --fixture "$fixture" \
-    --manifest "$repo_root/data/manifests/ce_live/pbmc3k_quantitative_v1.json" \
+    --manifest "$repo_root/tests/live/fixture/pbmc3k_quantitative_v1.json" \
     --output "$fixture_bin"
 
 common=(

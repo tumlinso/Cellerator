@@ -8,7 +8,9 @@ Usage:
 
 Options:
   --build-dir DIR        CMake build directory. Default: ./build
-  --manifest PATH        Study manifest. Default: bench/real_data/generated/blocked_ell_optimization/manifest.tsv
+  --manifest PATH        Explicit study manifest. The default uses the recorded
+                         study rows and resolves their matrices under
+                         CELLERATOR_DATA_ROOT (default: ~/data/Cellerator).
   --dataset ID           Dataset id filter. Default: all
   --algorithm NAME       Algorithm filter. Default: all
   --block-size N         Fixed blocked-ELL block size. Default: 16
@@ -27,7 +29,7 @@ EOF
 }
 
 BUILD_DIR="./build"
-MANIFEST="bench/real_data/generated/blocked_ell_optimization/manifest.tsv"
+MANIFEST=""
 DATASET="all"
 ALGORITHM="all"
 BLOCK_SIZE="16"
@@ -122,6 +124,19 @@ fi
 
 RUN_ROOT="bench/real_data/generated/blocked_ell_optimization/runs/$(date -u +%Y%m%dT%H%M%SZ)"
 mkdir -p "${RUN_ROOT}"
+if [[ -z "${MANIFEST}" ]]; then
+  data_root=${CELLERATOR_DATA_ROOT:-"$HOME/data/Cellerator"}
+  matrix_dir="$data_root/data/test/generated/blocked_ell_optimization"
+  MANIFEST="$RUN_ROOT/manifest.tsv"
+  # Keep the original run manifest as a receipt and rebase its matrix paths.
+  CELLERATOR_STUDY_MATRIX_DIR="$matrix_dir" awk -F '\t' -v OFS='\t' '
+    NR > 1 {
+      sub(/^.*\//, "", $2)
+      $2 = ENVIRON["CELLERATOR_STUDY_MATRIX_DIR"] "/" $2
+    }
+    { print }
+  ' bench/real_data/generated/blocked_ell_optimization/manifest.tsv > "$MANIFEST"
+fi
 nvidia-smi > "${RUN_ROOT}/nvidia-smi.before.txt" || true
 printf 'selected_gpu=%s\n' "${GPU_ID}" | tee "${RUN_ROOT}/gpu.txt"
 

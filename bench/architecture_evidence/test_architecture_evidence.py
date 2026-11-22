@@ -139,6 +139,7 @@ class CeArch92EvidenceTest(unittest.TestCase):
                 "--raw", str(raw), "--output", str(rebuilt),
                 "--summary", str(rebuilt_summary),
                 "--controller-evidence-id", summary["controller_evidence_id"],
+                "--recorded-trace-paths",
             ], cwd=validate_evidence.ROOT, check=True)
             self.assertEqual(rebuilt.read_bytes(), evidence.read_bytes())
             self.assertEqual(rebuilt_summary.read_bytes(), summary_path.read_bytes())
