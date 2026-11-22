@@ -13,7 +13,8 @@ The [first-party relocation receipt](../planning/velocity-relocation.json) and
 [portable segmentation receipt](../planning/portable-segmentation.json) record
 an earlier source organization in the Cellerator checkout. Those JSON records
 remain unchanged and describe their recorded paths and source snapshot. They do
-not describe the current package boundary.
+not describe the current package boundary. The recorded accelerator files
+can be found in the [archived Git tree](https://github.com/tumlinso/Cellerator/tree/d7414e7f830fcd25cac585399a0535b72e75ff01/quarantine/velocity-accelerators).
 
 Earlier documentation and receipts describe an FP16 numeric-view migration,
 Cellerator binary16 helper, and quarantined AVX2/CUDA implementations. They are
