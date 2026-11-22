@@ -20,9 +20,8 @@ Paths in the fixture store are relative to this root:
 | `data/test/generated/logs/` and `data/test/generated/tmp/` | Local diagnostics and scratch space. |
 
 Preserve source fixture names and the source checksums recorded in the
-manifests. Create an output directory when a recipe needs it. Existing checkout
-`data/` directories, generated outputs, and compatibility symlinks can stay in
-place. Git ignores the whole checkout `data/` tree.
+manifests. Keep existing datasets and generated files in place. When a recipe
+needs a new fixture output directory, create it under `CELLERATOR_DATA_ROOT`.
 
 The [architecture benchmark manifests](../../bench/architecture_evidence/manifests/)
 describe workload inputs and smoke traces. The

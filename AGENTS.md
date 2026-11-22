@@ -237,8 +237,8 @@ choices with the user before committing to them.
 For dataset-backed tests and benchmarks, resolve local fixture payloads under
 `CELLERATOR_DATA_ROOT`, which defaults to `~/data/Cellerator`. Use an absolute
 override for another machine or an isolated run. Keep small fixture manifests
-with their owning tests or benchmarks. Preserve existing datasets, generated
-files and compatibility symlinks in the checkout. See the
+with their owning tests or benchmarks. Keep existing datasets and generated
+files in place. See the
 [fixture staging guide](docs/development/data-fixtures.md) for paths and commands.
 
 Use the [developer reference](docs/developer_reference.qmd) for build and test commands. Run affected source/build/tests after code moves. For prose-only changes check links, status boundaries and rendered pages. Keep scientific claims scoped; record what was not run. Benchmarks require the existing assigned resources and clean timing interval. Include setup/transfer/routing when the claim needs them; no benchmark is launched by document generation.
