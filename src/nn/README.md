@@ -8,7 +8,7 @@ the same declarations, layouts, and ABI. CUDA sources continue to include the
 ordinary headers; NVCC does not parse module syntax.
 
 `cellerator.core.ccm` is built by the normal package build.
-`cellerator.nn.ccm` is built when the NN component is enabled.
+[`cellerator.nn.ccm`](cellerator.nn.ccm) is built when the NN component is enabled.
 `cellerator.ccm` re-exports both interfaces; it is not yet wired into the build.
 
 Build with CMake 3.28 or newer, Ninja, and a Clang compiler with a matching

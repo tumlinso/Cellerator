@@ -172,9 +172,6 @@ include(cmake/CelleratorFrameworkCUDA.cmake)
 # FrameworkCUDA also includes it when that optional SDK is enabled.
 include(cmake/CelleratorNativeDataCUDA.cmake)
 include(cmake/CelleratorNN.cmake)
-if(TARGET Cellerator::nn)
-    include(modules/nn.cmake)
-endif()
 
 macro(cellerator_append_component_validation)
     if(DEFINED CELLERATOR_HOST_CONFIG AND EXISTS "${CELLERATOR_HOST_CONFIG}")

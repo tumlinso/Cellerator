@@ -246,6 +246,8 @@ install(EXPORT CelleratorNNTargets NAMESPACE Cellerator::
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator"
     COMPONENT NN)
 
+include("${PROJECT_SOURCE_DIR}/src/nn/nn_modules.cmake")
+
 function(cellerator_append_nn_package_config)
     if(NOT DEFINED CELLERATOR_HOST_CONFIG OR NOT EXISTS "${CELLERATOR_HOST_CONFIG}")
         return()
