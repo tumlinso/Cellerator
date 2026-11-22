@@ -21,7 +21,7 @@ hashes, Python 3.13.11 / Torch 2.7.0+cu126, and the compatible installed CPU
 extension used without replacing it. Reproduce from a checkout:
 
 ```sh
-python scripts/validation/nn_foundation_cpu.py \
+python tools/validation/nn_foundation_cpu.py \
   --native-package /path/to/installed/cellerator \
   --require-native --pattern 'test*.py' --output /tmp/biological-cpu.json
 ```

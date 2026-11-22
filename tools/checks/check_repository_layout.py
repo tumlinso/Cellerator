@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 ALLOWLIST_PATH = ROOT / "cmake" / "repository_layout_allowlist.json"
 
 CANONICAL_SOURCE_ROOTS = (

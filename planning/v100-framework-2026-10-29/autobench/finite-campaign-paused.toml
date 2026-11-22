@@ -22,8 +22,8 @@ include = [
   "planning/v100-framework-2026-10-29/quantization/decode_bench.cu",
   "planning/v100-framework-2026-10-29/regulatory/regulatory_gate_comparison.cu",
   "planning/v100-framework-2026-10-29/grouped_linear/benchmark/benchmark.cu",
-  "scripts/validation/autobench_build_framework_v100.py",
-  "scripts/validation/autobench_run_framework_v100.py",
+  "planning/v100-framework-2026-10-29/autobench/autobench_build_framework_v100.py",
+  "planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
 ]
 
 [protocol]
@@ -32,7 +32,7 @@ id = "cellerator-framework-v100-oracle-and-resident-timing-v2"
 [build]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_build_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_build_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}", "--jobs", "4",
 ]
 expected_seconds = 300
@@ -44,7 +44,7 @@ name = "correctness-core-a"
 kind = "correctness"
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "correctness", "--cases", "runtime", "dispatch", "quantization",
 ]
@@ -57,7 +57,7 @@ name = "correctness-core-b"
 kind = "correctness"
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "correctness", "--cases", "memory", "frontier", "attention",
 ]
@@ -70,7 +70,7 @@ name = "correctness-core-c"
 kind = "correctness"
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "correctness", "--cases", "grouped_linear", "packed_embedding", "reactions",
 ]
@@ -83,7 +83,7 @@ name = "correctness-core-d"
 kind = "correctness"
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "correctness", "--cases", "regulatory_gates", "parameter_transfer", "bindings",
 ]
@@ -97,7 +97,7 @@ kind = "timing"
 depends_on = ["correctness-core-b"]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "benchmark", "--cases", "attention",
 ]
@@ -111,7 +111,7 @@ kind = "timing"
 depends_on = ["correctness-core-c"]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "benchmark", "--cases", "grouped_linear",
 ]
@@ -125,7 +125,7 @@ kind = "timing"
 depends_on = ["correctness-core-c"]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "benchmark", "--cases", "packed_embedding", "packed_embedding_candidate",
 ]
@@ -139,7 +139,7 @@ kind = "timing"
 depends_on = ["correctness-core-a"]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "benchmark", "--cases", "dispatch",
 ]
@@ -153,7 +153,7 @@ kind = "timing"
 depends_on = ["correctness-core-b"]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "benchmark", "--cases", "frontier",
 ]
@@ -167,7 +167,7 @@ kind = "timing"
 depends_on = ["correctness-core-b"]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "benchmark", "--cases", "memory",
 ]
@@ -181,7 +181,7 @@ kind = "timing"
 depends_on = ["correctness-core-a"]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "benchmark", "--cases", "quantization",
 ]
@@ -195,7 +195,7 @@ kind = "timing"
 depends_on = ["correctness-core-d"]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/autobench_run_framework_v100.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/autobench/autobench_run_framework_v100.py",
   "--source", "{snapshot}", "--build", "{build}/cmake", "--output", "{output}",
   "--mode", "benchmark", "--cases", "regulatory",
 ]

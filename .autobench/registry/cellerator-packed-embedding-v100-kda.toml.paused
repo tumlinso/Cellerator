@@ -15,8 +15,10 @@ include = [
   "planning/v100-framework-2026-10-29/kda/packed_embedding/CMakeLists.txt",
   "planning/v100-framework-2026-10-29/kda/packed_embedding/base-source-manifest.json",
   "planning/v100-framework-2026-10-29/kda/packed_embedding/task.json",
-  "scripts/validation/kda_packed_embedding.py",
-  "scripts/validation/kda_packed_autobench.py",
+  "planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_embedding.py",
+  "planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_autobench.py",
+  "planning/v100-framework-2026-10-29/autobench/kda_autobench_artifacts.py",
+  "planning/v100-framework-2026-10-29/kda/packed_embedding/autobench-definition.toml",
 ]
 
 [protocol]
@@ -25,9 +27,10 @@ id = "cellerator-packed-embedding-kda-sm70-resident-backward-v1"
 [build]
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/kda_packed_autobench.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_autobench.py",
   "--source", "{snapshot}",
   "--workspace", "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2",
+  "--autobench-build", "{build}",
   "--mode", "prepare",
 ]
 expected_seconds = 150
@@ -39,9 +42,10 @@ name = "packed-embedding-kda-evaluate"
 kind = "timing"
 argv = [
   "/home/tumlinson/Software/miniconda3/bin/python",
-  "{snapshot}/scripts/validation/kda_packed_autobench.py",
+  "{snapshot}/planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_autobench.py",
   "--source", "{snapshot}",
   "--workspace", "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/workspace-v2",
+  "--autobench-build", "{build}",
   "--mode", "evaluate",
 ]
 expected_seconds = 240

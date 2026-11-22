@@ -6,7 +6,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
-    "check_no_production_file_io", ROOT / "tools" / "check_no_production_file_io.py")
+    "check_no_production_file_io", ROOT / "tools/checks/check_no_production_file_io.py")
 assert SPEC is not None and SPEC.loader is not None
 CHECKER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CHECKER)

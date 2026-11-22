@@ -30,7 +30,7 @@ def contains_c_posix_file_api(line: str) -> bool:
 
 
 def main() -> int:
-    root = pathlib.Path(__file__).resolve().parents[1]
+    root = pathlib.Path(__file__).resolve().parents[2]
     violations: list[str] = []
     for source_root in (root / "include", root / "src"):
         for path in sorted(source_root.rglob("*")):

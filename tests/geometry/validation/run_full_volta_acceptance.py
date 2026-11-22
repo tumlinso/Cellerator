@@ -234,7 +234,7 @@ def main() -> int:
              "--build", "build"],
             *direct_validation_commands(build),
             [sys.executable, "tests/geometry/validation/test_static_contracts.py"],
-            [sys.executable, "scripts/geometry/check_geometry_contracts.py",
+            [sys.executable, "tools/checks/check_geometry_contracts.py",
              "--manifest", "tests/geometry/validation/owned_production_paths.json"],
             [sys.executable, "tests/geometry/validation/run_compute_sanitizer.py",
              "--build", "build", "--output", str(SANITIZER_OUTPUT)],

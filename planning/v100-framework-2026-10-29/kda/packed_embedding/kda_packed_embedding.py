@@ -13,7 +13,7 @@ import subprocess
 import sys
 
 
-ROOT = Path(os.environ.get("CELLERATOR_KDA_SOURCE_ROOT", Path(__file__).resolve().parents[2])).resolve()
+ROOT = Path(os.environ.get("CELLERATOR_KDA_SOURCE_ROOT", Path(__file__).resolve().parents[4])).resolve()
 KDA_DIR = ROOT / "planning/v100-framework-2026-10-29/kda/packed_embedding"
 NVCC = Path("/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc")
 SOURCE_FILES = (

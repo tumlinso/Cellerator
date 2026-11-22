@@ -27,7 +27,7 @@ simulation, population, inference, inheritance, and trajectory-training users.
 Reproduction using a compatible installed CPU extension without replacing it:
 
 ```sh
-python scripts/validation/nn_foundation_cpu.py \
+python tools/validation/nn_foundation_cpu.py \
   --native-package /path/to/installed/cellerator \
   --require-native --pattern 'test*.py' --output /tmp/nn-cpu-validation.json
 ```

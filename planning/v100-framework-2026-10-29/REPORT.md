@@ -68,7 +68,7 @@ installed CUDA 12.9 executable directly:
 uninstalled CUDA 13.1 tool and is not accepted as sanitizer evidence.
 
 The [plan](PLAN.md), per-family drafts, registered Autobench definition and
-`scripts/validation/` runners retain the contracts and reproduction commands.
+[campaign runners](autobench/) retain the contracts and reproduction commands.
 Project Control returned `workflow_task_already_active`; existing claims were
 preserved rather than replaced.
 

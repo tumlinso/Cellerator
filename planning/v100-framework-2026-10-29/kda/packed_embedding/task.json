@@ -21,7 +21,7 @@
     "build": {
       "argv": [
         "/home/tumlinson/Software/miniconda3/bin/python",
-        "/home/tumlinson/Cellerator/scripts/validation/kda_packed_embedding.py",
+        "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_embedding.py",
         "build",
         "{request}",
         "{result}"
@@ -32,7 +32,7 @@
     "validate": {
       "argv": [
         "/home/tumlinson/Software/miniconda3/bin/python",
-        "/home/tumlinson/Cellerator/scripts/validation/kda_packed_embedding.py",
+        "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_embedding.py",
         "validate",
         "{request}",
         "{result}"
@@ -42,7 +42,7 @@
     "benchmark": {
       "argv": [
         "/home/tumlinson/Software/miniconda3/bin/python",
-        "/home/tumlinson/Cellerator/scripts/validation/kda_packed_embedding.py",
+        "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_embedding.py",
         "benchmark",
         "{request}",
         "{result}"
@@ -53,7 +53,7 @@
   "trusted_inputs": [
     {
       "id": "packed_embedding_adapter",
-      "path": "/home/tumlinson/Cellerator/scripts/validation/kda_packed_embedding.py",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_embedding.py",
       "role": "harness"
     },
     {
@@ -88,12 +88,12 @@
     },
     {
       "id": "packed_autobench_wrapper",
-      "path": "/home/tumlinson/Cellerator/scripts/validation/kda_packed_autobench.py",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_autobench.py",
       "role": "harness"
     },
     {
       "id": "packed_autobench_artifact_binder",
-      "path": "/home/tumlinson/Cellerator/scripts/validation/kda_autobench_artifacts.py",
+      "path": "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/autobench/kda_autobench_artifacts.py",
       "role": "harness"
     },
     {
@@ -115,7 +115,7 @@
   "probe": {
     "argv": [
       "/home/tumlinson/Software/miniconda3/bin/python",
-      "/home/tumlinson/Cellerator/scripts/validation/kda_packed_embedding.py",
+      "/home/tumlinson/Cellerator/planning/v100-framework-2026-10-29/kda/packed_embedding/kda_packed_embedding.py",
       "probe",
       "{request}",
       "{result}"

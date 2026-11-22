@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 REPOSITORY = Path(__file__).resolve().parents[3]
-SCRIPT = REPOSITORY / "scripts" / "fixtures" / "quantitative_relation_fixture.py"
+SCRIPT = Path(__file__).with_name("quantitative_relation_fixture.py")
 SPEC = importlib.util.spec_from_file_location("quantitative_relation_fixture", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 FIXTURE = importlib.util.module_from_spec(SPEC)

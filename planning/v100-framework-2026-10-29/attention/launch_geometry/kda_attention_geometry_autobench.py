@@ -8,7 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "scripts/validation"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "autobench"))
 from kda_autobench_artifacts import prepare_into_autobench, verify_autobench_build
 
 

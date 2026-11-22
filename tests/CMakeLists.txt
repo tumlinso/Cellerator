@@ -6,7 +6,7 @@ include(tests/relation_algebra/CMakeLists.txt)
 find_program(CELLERATOR_PYTHON3_EXECUTABLE NAMES python3 REQUIRED)
 add_custom_target(celleratorNoProductionFileIoCheck ALL
     COMMAND ${CELLERATOR_PYTHON3_EXECUTABLE}
-            ${CMAKE_CURRENT_SOURCE_DIR}/tools/check_no_production_file_io.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/tools/checks/check_no_production_file_io.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Checking that Cellerator production sources do not own files"
     VERBATIM
