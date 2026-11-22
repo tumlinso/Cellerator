@@ -223,6 +223,11 @@ discovering models; they do not define Cellerator's architectures, establish sci
 validity, or demonstrate performance. This is product direction, not a claim
 of an existing integration or authorization to implement or register one.
 
+Bundled CCell methods cover preprocessing and RNA velocity. They operate on
+caller-prepared Cellerator views. The optional CCell data adapter borrows
+views of arrays acquired through the independently maintained AnnData++
+library.
+
 ## What remains elsewhere
 
 - **PyTorch:** reusable tensor, neural network, autograd, and optimizer
@@ -233,16 +238,8 @@ of an existing integration or authorization to implement or register one.
 - **GlassHelix:** formal investigation of what mechanisms or features are
   inferable for a specified question, model family, assumptions, and experiment.
   Reusable learning and numerical machinery can still belong in Cellerator.
-- **AnnData and upstream single-cell libraries:** established data models and
-  classical preprocessing, QC, normalization, and analysis workflows. The
-  Python AnnData adapter requires explicit input selection and does not
-  preprocess or choose scientific semantics automatically. Cellerator also
-  provides native H5AD I/O through the HDF5-only AnnData++ package;
-  it supports that library's declared modern encoding subset, including sparse
-  CSR/CSC, without a legacy-format fallback. This file-format boundary does
-  not transfer preprocessing, QC, scientific interpretation, or durable
-  storage/sharding ownership to Cellerator. Scanpy and RAPIDS-singlecell stay
-  upstream for established analysis workflows.
+- **Broader single-cell analysis:** Scanpy and RAPIDS-singlecell remain upstream
+  tools for established analysis.
 - **Storage and delivery systems:** durable dataset storage, sharding, transport,
   and hosting services remain with their owning projects, such as CellShard or
   model hubs. Cellerator owns the model save/load and sharing interfaces that

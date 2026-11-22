@@ -25,11 +25,13 @@ The new [biological modeling framework](docs/biological_framework.qmd)
 describes the shared state/dynamics/context vocabulary and current package
 entry points.
 
-Native and Python wheel builds require the installed C++
-[AnnData++](https://github.com/tumlinso/anndatapp) package, configured for HDF5
-with Zarr disabled. Its H5AD reader supports the
-declared modern encoding subset, including sparse CSR and CSC, and has no
-legacy-format fallback. C++ and CUDA builds require C++20 or newer; the normal
+The standard build includes [CCell](components/CCell/README.md) for preprocessing
+and RNA velocity. Its methods take Cellerator views over caller-owned arrays.
+Use the bundled AnnData++ library for native H5AD and Zarr access, and CCell's
+optional adapter to borrow a Cellerator view over acquired data. The Cellerator
+core package keeps an independent dependency graph. See the
+[component ownership guide](docs/development/component-ownership.md).
+C++ and CUDA builds require C++20 or newer; the normal
 CMake/Ninja package build exports named modules. See the
 [developer reference](docs/developer_reference.qmd) for the native dependency
 and build commands, and the [implementation record](docs/current_implementation.qmd)

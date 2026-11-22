@@ -361,14 +361,12 @@ group compatible work to reuse parameters, while placement maps that work to
 available hardware. These decisions have different owners and should remain
 separately inspectable.
 
-Established single-cell analysis remains upstream in AnnData, Scanpy, and
-RAPIDS-singlecell. Cellerator's Python AnnData adapter provides explicit input
-selection for observations where installed; it does not silently preprocess or
-select a scientific layer. Native C++ H5AD I/O uses the pinned HDF5-only
-AnnData++ dependency and its declared modern encoding subset.
-Sequence-specific meaning remains with Baseplane, and data persistence/delivery
-remains with its owning system. See the [developer reference](developer_reference.qmd)
-for the native reader boundary and build requirements.
+Model and numerical contracts accept caller-prepared values and identities.
+AnnData++ provides file access and CCell provides native single-cell methods
+and optional view binding for acquired data. Sequence-specific meaning
+remains with Baseplane, and data persistence and delivery remain with their
+owning systems. See the
+[component ownership guide](development/component-ownership.md).
 
 For subsystem entry points, see [architecture](architecture.qmd),
 [model building](model_building.qmd), and the

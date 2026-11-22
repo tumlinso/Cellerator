@@ -39,14 +39,12 @@ inventing a domain ontology. The broader Cellerator framework can still provide
 natural modeling objects: `Cell` denotes a persistent model instance, while
 the model defines the meaning of its state, behavior, and observation.
 
-The Python AnnData adapter makes matrix selection explicit and preserves
-cell/feature identities and sparse values. It does not select a layer,
-normalize, infer events, or create biological meaning without the caller's
-instruction. Native C++ H5AD I/O is provided through the installed
-HDF5-only AnnData++ dependency; see the [developer reference](developer_reference.qmd)
-for its build requirements and format boundary.
-Established preprocessing remains upstream in AnnData, Scanpy, or
-RAPIDS-singlecell.
+Models receive caller-prepared values and identities through explicit array
+and tensor contracts. For file-backed input, use AnnData++ for data
+acquisition and CCell's optional adapter for native view binding. CCell
+preprocessing and RNA velocity take those same native views. See the
+[component ownership guide](development/component-ownership.md) for the
+source and package boundaries.
 
 ## Parameters, state, and structure
 

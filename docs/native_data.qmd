@@ -27,6 +27,17 @@ coordinate and physical slot are different concepts. Domain-local zero is a
 valid entity/occurrence ID; an all-zero persistent domain identity is invalid.
 Matching counts or pointers do not establish matching logical order.
 
+## Borrowed matrix views
+
+Dense views from `<Cellerator/memory/view.hh>` describe both strides in elements.
+`matrix_view<T, ptrdiff_t>` and `const_matrix_view<T, ptrdiff_t>` represent
+reversed axes with a signed stride and a pointer to the first logical element.
+
+`CompressedView<Index, Value, Offset>` from
+`<Cellerator/tensor/base/compressed.hh>` borrows CSR or CSC buffers and allows
+offsets and minor indices to use different widths. The offset type defaults to
+`Index`. CCell methods borrow these views and use caller-owned output and scratch.
+
 ## Patterns, conditions and actual operations
 
 `geometry::dependency::ExplicitPattern` owns ordered/repeated participant

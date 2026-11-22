@@ -2,6 +2,21 @@
 title: "Current implementation"
 ---
 
+## CCell native methods and AnnData++ distribution, 2026-11-22
+
+The standard native build includes [CCell](../components/CCell/README.md) and
+the independently maintained AnnData++ v1.1.0 source pinned under
+`extern/anndatapp`. CCell's preprocessing and Velocity methods accept borrowed
+Cellerator dense and compressed views and use caller-provisioned buffers.
+Signed dense strides support reversed axes. Compressed views support separate
+index and offset types. AnnData++ owns acquisition through `import anndata;`,
+and `ccell.interop.anndata` binds acquired storage to Cellerator views.
+
+CCell methods also build without AnnData++. Core-only and selectable substrate
+SDK builds omit CCell and AnnData++. The host checks cover both build modes,
+installed consumers, numerical and allocation regressions, and the same model
+example with caller buffers and with H5AD and Zarr input.
+
 ## Native sparse consolidation
 
 The legacy sparse-layout C runtime API has been retired in coordination with

@@ -18,6 +18,14 @@ function(cellerator_install_native_headers)
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN})
 endfunction()
 
+add_library(cellerator_headers INTERFACE)
+add_library(Cellerator::headers ALIAS cellerator_headers)
+set_target_properties(cellerator_headers PROPERTIES EXPORT_NAME headers)
+target_include_directories(cellerator_headers INTERFACE
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_compile_features(cellerator_headers INTERFACE cxx_std_20)
+
 add_library(libCellerator STATIC src/cell.cc)
 add_library(Cellerator::libCellerator ALIAS libCellerator)
 target_include_directories(libCellerator PUBLIC
@@ -40,6 +48,7 @@ install(TARGETS cellerator_cpu_numerics EXPORT CelleratorCoreTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(TARGETS libCellerator EXPORT CelleratorCoreTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS cellerator_headers EXPORT CelleratorCoreTargets)
 install(EXPORT CelleratorCoreTargets NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
 cellerator_install_native_headers()

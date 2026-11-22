@@ -66,53 +66,21 @@ targets, so Clang builds them in strict C++20 or C++23 mode rather than
 `gnu++20`. CUDA translation units keep using public headers and do not import
 named modules.
 
-Native builds require the separately installed HDF5-only
-[AnnData++](https://github.com/tumlinso/anndatapp) package version 1.0 or newer;
-the example below uses `v1.0.0`.
-The package must be built with HDF5 on and Zarr off. This is Cellerator's sole
-native H5AD path: the old reader is retired, with no legacy parser or fallback.
-See its [declared encoding boundary](https://github.com/tumlinso/anndatapp/blob/v1.0.0/docs/h5ad.md)
-and [native dependency installation guide](https://github.com/tumlinso/anndatapp/blob/v1.0.0/docs/storage-dependencies.md).
-The native H5AD route accepts the supported modern subset, including sparse
-CSR/CSC. Root CMake requires `anndatapp::anndatapp` to be discoverable; it does not
-download or silently replace that dependency.
+The standard build includes CCell preprocessing and RNA velocity. Initialize
+the `extern/anndatapp` submodule to build its AnnData++ adapter and bundled H5AD
+and Zarr support. Method-only builds set `CELLERATOR_ENABLE_CCELL_ANNDATA=OFF`.
+Core-only builds set `CELLERATOR_BUILD_CCELL=OFF`. See the
+[CCell build and API guide](../components/CCell/README.md) for module imports
+and installed targets and the
+[component ownership record](development/component-ownership.md) for source
+routing. The generic `CelleratorBinary16` component remains separately buildable.
 
-Normal builds also require installed Velocity++ 0.1.1 or newer by default.
-Expose its prefix alongside AnnData++ through `CMAKE_PREFIX_PATH`; Cellerator
-uses `find_package(velocitypp CONFIG REQUIRED)` without a bundled fallback.
-`CELLERATOR_ENABLE_VELOCITY=OFF` skips this dependency and the FP16 extension.
-The installed `velocity` component exports `Cellerator::velocity` and
-`import cellerator.velocity;`, re-exporting Velocity++ with Cellerator-owned
-binary16 operations under `cellerator::velocity`. Its caller-storage API and
-FP16 boundary are described in [the adapter guide](../src/ops/velocity/README.md).
-The old allocating `velocity` module is retired from the active build; the
-former local checkout is preserved for recovery and is not compiled.
+The standard RNA velocity entry point is the separate CCell
+`ccell::velocity` target. A build that explicitly selects the legacy
+external Velocity++ adapter must set `CELLERATOR_BUILD_CCELL=OFF`.
 
-Build and install that dependency at the pinned revision, then configure the
-Cellerator package against its prefix:
-
-```sh
-git clone https://github.com/tumlinso/anndatapp.git /tmp/anndatapp
-git -C /tmp/anndatapp checkout --detach v1.0.0
-cmake -S /tmp/anndatapp -B /tmp/anndatapp-build -G Ninja \
-  -DCMAKE_CXX_COMPILER=clang++-18 \
-  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DANNDATAPP_ENABLE_HDF5=ON \
-  -DANNDATAPP_ENABLE_ZARR=OFF \
-  -DCMAKE_INSTALL_PREFIX=/tmp/anndatapp-install
-cmake --build /tmp/anndatapp-build
-cmake --install /tmp/anndatapp-build
-
-# Build/install Velocity++ >=0.1.1 separately against this AnnData++ prefix.
-# Set VELOCITYPP_PREFIX to that installation, or disable velocity explicitly.
-
-cmake -S . -B build-cpu -G Ninja \
-  -DCMAKE_CXX_COMPILER=clang++-18 \
-  -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH="/tmp/anndatapp-install;${VELOCITYPP_PREFIX}" \
-  -DCELLERATOR_ENABLE_CUDA=OFF
-cmake --build build-cpu
-```
+See the [CCell host build](../components/CCell/README.md#build-and-consume) for
+checkout, build, and installation commands for the native distribution.
 
 An installed C++ consumer links the module targets directly:
 
@@ -121,15 +89,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(Cellerator CONFIG REQUIRED COMPONENTS core_module)
-find_package(anndatapp CONFIG REQUIRED)
-target_link_libraries(my_model PRIVATE Cellerator::core_module anndatapp::anndatapp)
+target_link_libraries(my_model PRIVATE Cellerator::core_module)
 ```
 
-The corresponding C++ translation unit imports both interfaces:
+The corresponding C++ translation unit uses this import:
 
 ```cpp
 import cellerator.core;
-import anndatapp.h5ad;
 ```
 
 For the optional native NN module, configure Cellerator with NN enabled and use
@@ -143,6 +109,8 @@ module-capable build; module support is not an optional side build.
 ```text
 include/Cellerator/   public native contracts, including cell.hh and cells/
 src/                  native implementation (several owners and generations)
+components/CCell/    native preprocessing, RNA velocity, and optional data adapter
+extern/anndatapp/    pinned upstream AnnData++ source
 bindings/python/      optional pybind Python extension
 bindings/torch/       optional compiled Torch adapters
 python/cellerator/    installed Python package and Torch modules
@@ -178,7 +146,7 @@ tokenization, and sparse support disabled, then build and run the examples:
 cmake -S . -B build/cell-host -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \
+  -DCELLERATOR_BUILD_CCELL=OFF \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_PYTHON=OFF \
   -DCELLERATOR_ENABLE_TORCH=OFF \
@@ -262,7 +230,7 @@ from the section above. For a Python host-only extension with Product2:
 cmake -S . -B build-cpu -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
-  -DCMAKE_PREFIX_PATH=/path/to/anndatapp-install \
+  -DCELLERATOR_BUILD_CCELL=OFF \
   -DCELLERATOR_ENABLE_CUDA=OFF \
   -DCELLERATOR_ENABLE_PYTHON=ON \
   -DCELLERATOR_ENABLE_TORCH=OFF
