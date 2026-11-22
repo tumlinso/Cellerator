@@ -2,7 +2,6 @@
 #include <Cellerator/tensor/base/sliced_ell.cuh>
 #include <Cellerator/compute/matrix/convert/bucket.cuh>
 #include <Cellerator/compute/matrix/convert/compressed.cuh>
-#include <Baseplane/seq/dna2.cuh>
 
 #include <cub/cub.cuh>
 
@@ -17,7 +16,6 @@
 namespace convert = ::cellerator::compute::matrix::convert;
 namespace bucket = ::cellerator::compute::matrix::convert::bucket;
 namespace matrix = ::cellerator::tensor::base;
-namespace sequence = ::baseplane::seq;
 
 namespace {
 
@@ -51,22 +49,6 @@ void download(T *dst, const T *src, std::size_t count) {
 
 bool close_half(__half value, float expected) {
     return std::fabs(__half2float(value) - expected) <= 1.0e-3f;
-}
-
-void check_sequence_bases() {
-    sequence::dna2_word64 word{0u};
-    require(sequence::make_base('A') == static_cast<std::uint8_t>(sequence::dna2_base::A), "A base mismatch");
-    require(sequence::make_base('u') == static_cast<std::uint8_t>(sequence::dna2_base::T), "u should map to T storage");
-    require(sequence::make_base('N') == static_cast<std::uint8_t>(sequence::dna2_base::A), "N should collapse to A in dna2");
-    require(sequence::base_to_char(static_cast<std::uint8_t>(sequence::dna2_base::A) ^ 0x3u) == 'T', "A complement mismatch");
-    sequence::set_base(word, 0, static_cast<std::uint8_t>(sequence::dna2_base::A));
-    sequence::set_base(word, 1, static_cast<std::uint8_t>(sequence::dna2_base::C));
-    sequence::set_base(word, 2, static_cast<std::uint8_t>(sequence::dna2_base::G));
-    sequence::set_base(word, 3, static_cast<std::uint8_t>(sequence::dna2_base::T));
-    require(sequence::get_base(word, 0) == static_cast<std::uint8_t>(sequence::dna2_base::A), "packed A mismatch");
-    require(sequence::get_base(word, 1) == static_cast<std::uint8_t>(sequence::dna2_base::C), "packed C mismatch");
-    require(sequence::get_base(word, 2) == static_cast<std::uint8_t>(sequence::dna2_base::G), "packed G mismatch");
-    require(sequence::get_base(word, 3) == static_cast<std::uint8_t>(sequence::dna2_base::T), "packed T mismatch");
 }
 
 void check_sorted_coo_view() {
@@ -114,7 +96,6 @@ int main() {
     int device_count = 0;
     cuda_require(cudaGetDeviceCount(&device_count), "cudaGetDeviceCount failed");
     require(device_count > 0, "core sparse runtime test requires a CUDA device");
-    check_sequence_bases();
     check_sorted_coo_view();
 
     const std::uint32_t rows = 3u;

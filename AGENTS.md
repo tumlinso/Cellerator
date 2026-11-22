@@ -172,12 +172,13 @@ Use the installed Project Control/Codex front door and this repository's Todo au
 - Preserve biological domain/order identity and distinguish immutable structure epochs from mutable value generations.
 - Keep discovery/semantic geometry separate from physical realization and actual runtime state. Prediscovered runtime gates are part of the intended design; do not relabel a narrower value update as complete adaptive execution.
 - Keep execution order/conversion, allocation, streams and complete costs explicit. Candidate choice is measured, not mandated by a favored sparse format or Tensor Core path.
-- Cellerator owns biological modeling and neural-network APIs, numerical
-  geometry planning, operations and derivatives, layout, and execution
-  preparation/runtime, including optional Python and Torch adapters. Texo owns
+- Cellerator owns biological modeling, sequence meaning and representation,
+  neural-network APIs, numerical geometry planning, operations and derivatives,
+  layout, and execution preparation/runtime, including optional Python and Torch
+  adapters. Texo owns
   the language compiler's source, build/install integration, public API, tools,
-  resources, tests, examples, and documentation. Baseplane owns sequence
-  meaning, GH owns scientific inference, and CellShard owns persistence/delivery.
+  resources, tests, examples, and documentation. GH owns scientific inference,
+  and CellShard owns persistence/delivery.
   Preserve actual cross-project consumers.
 - Existing code/contract evidence survives cleanup. Resolve a real interface change through its owner; no silent broad ABI rewrite.
 
@@ -207,8 +208,9 @@ permission for additive changes to Cellerator, without renewed permission. Keep
 additions general, clean, and maintainable, with explicit contracts and
 validation; use small architectural cleanup only to resolve demonstrated
 friction. General numerical, state, graph, relation, statistical, and
-iterative mechanisms belong in Cellerator; Baseplane should own only
-intrinsically sequence-grounded functionality.
+iterative mechanisms belong with their concrete Cellerator operation owners.
+Use the [native sequence guide](docs/development/sequence.md) to route sequence
+meaning, encodings, packing, and prepared execution.
 
 Use FP16 as the general computation default, retaining FP32, FP64 and other
 supported precision types as explicit alternatives. FP16 execution may use

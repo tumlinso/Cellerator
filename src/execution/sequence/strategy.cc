@@ -1,8 +1,6 @@
-#include <Cellerator/interop/baseplane/baseplane_integration.cuh>
+#include <Cellerator/execution/sequence/regulatory.cuh>
 
-#include <cmath>
-
-namespace cellerator::compute::sequence {
+namespace cellerator::execution::sequence {
 namespace {
 
 bool same_device_class(
@@ -86,19 +84,19 @@ sequence_strategy_decision select_sequence_strategy(
     }
 
     const sequence_strategy_evidence *evidence = policy.evidence;
-    const bool valid_policy = std::isfinite(policy.practical_tolerance_percent)
+    const bool valid_policy = __builtin_isfinite(policy.practical_tolerance_percent)
         && policy.practical_tolerance_percent >= 0.0
         && policy.practical_tolerance_percent < 100.0
-        && std::isfinite(policy.maximum_spread_percent)
+        && __builtin_isfinite(policy.maximum_spread_percent)
         && policy.maximum_spread_percent >= 0.0;
     const bool valid_evidence = evidence != nullptr && valid_policy
         && same_measurement_key(evidence->key, key)
         && evidence->sample_count >= 3u
-        && std::isfinite(evidence->fused_per_use_ns)
-        && std::isfinite(evidence->first_materialized_use_ns)
-        && std::isfinite(evidence->cached_materialized_use_ns)
-        && std::isfinite(evidence->fused_spread_percent)
-        && std::isfinite(evidence->materialized_spread_percent)
+        && __builtin_isfinite(evidence->fused_per_use_ns)
+        && __builtin_isfinite(evidence->first_materialized_use_ns)
+        && __builtin_isfinite(evidence->cached_materialized_use_ns)
+        && __builtin_isfinite(evidence->fused_spread_percent)
+        && __builtin_isfinite(evidence->materialized_spread_percent)
         && evidence->fused_per_use_ns > 0.0
         && evidence->first_materialized_use_ns > 0.0
         && evidence->cached_materialized_use_ns > 0.0
@@ -112,10 +110,10 @@ sequence_strategy_decision select_sequence_strategy(
         return decision;
     }
 
-    const std::uint32_t state_count = policy.expected_cell_state_count != 0u
+    const uint32_t state_count = policy.expected_cell_state_count != 0u
         ? policy.expected_cell_state_count
         : policy.expected_predicate_reuse;
-    const double reuse = static_cast<double>(state_count == 0u ? 1u : state_count);
+    const double reuse = double(state_count == 0u ? 1u : state_count);
     decision.fused_total_ns = evidence->fused_per_use_ns * reuse;
     decision.materialized_total_ns = evidence->first_materialized_use_ns
         + evidence->cached_materialized_use_ns * (reuse - 1.0);
@@ -132,4 +130,4 @@ sequence_strategy_decision select_sequence_strategy(
     return decision;
 }
 
-} // namespace cellerator::compute::sequence
+} // namespace cellerator::execution::sequence

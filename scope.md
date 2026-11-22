@@ -244,9 +244,10 @@ library.
   and hosting services remain with their owning projects, such as CellShard or
   model hubs. Cellerator owns the model save/load and sharing interfaces that
   connect to those services; it need not build another hosting platform.
-- **Sequence-specialized representation:** intrinsically sequence-grounded
-  functionality remains with Baseplane; Cellerator owns general numerical
-  execution around reusable inputs.
+- **Sequence-grounded representation:** Cellerator owns exact sequence views,
+  provenance, and the operations that connect sequence evidence to structured
+  numerical execution. Model-specific hypotheses and their scientific
+  validation belong to the model consumer.
 
 ## Maturity
 

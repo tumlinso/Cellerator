@@ -76,6 +76,8 @@ boundaries and evidence.
   maturity.
 - [Layout and execution](docs/layout_execution.qmd): identity, support,
   routing, layout, preparation, and runtime boundaries.
+- [Native sequence](docs/development/sequence.md) covers packed sequence,
+  predicate operations, and regulatory execution.
 - [Experiments and history](docs/experiments_and_history.qmd): execution-field,
   tokenization, and source-bound records.
 - [Python bindings](docs/development/python-bindings.md): import surfaces and

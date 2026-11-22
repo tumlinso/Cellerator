@@ -92,14 +92,10 @@ hashes in its build directory:
 
     python tests/native_numeric/build_probe.py \
       --build /tmp/moments-probe-20261006/ce-build \
-      --baseplane-source /home/tumlinson/Baseplane \
       --cuda-root /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
 
-The explicit Baseplane source path is needed when an isolated Cellerator
-worktree has no sibling Baseplane checkout. The helper enables the optional
-Semantic Spine examples and builds ceNativeNeighborhoodMoments; it does not
-run GPU work. Its --baseplane-source argument sets CMake's
-BASEPLANE_SOURCE_DIR.
+The helper enables the optional Semantic Spine examples and builds
+ceNativeNeighborhoodMoments. It does not run GPU work.
 
 Run correctness, Compute Sanitizer, and timing through the shared-host CUDA
 controller, using a task-bound spec and the same CUDA toolkit for nvcc and

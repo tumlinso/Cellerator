@@ -26,7 +26,6 @@ GPU_UUID = "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
 PYTHON = Path("/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python")
 FP64_PYTHON = Path("/home/tumlinson/Software/miniconda3/bin/python3")
 TORCH_DIR = PYTHON.parent.parent / "lib/python3.13/site-packages/torch/share/cmake/Torch"
-BASEPLANE = Path("/home/tumlinson/Baseplane")
 CONTROLLER = Path.home() / ".agents/skills/cuda/scripts/cuda_controller.py"
 
 COMBINED_TARGETS = (
@@ -142,7 +141,7 @@ def cmake_combined(build: Path, install: Path, logs: Path,
 def build_native(build: Path, logs: Path, records: list[dict[str, Any]]) -> list[Path]:
     run_step(records, logs, "native_probe_build", [
         str(PYTHON), "-B", str(ROOT / "tests/native_numeric/build_probe.py"),
-        "--build", str(build), "--baseplane-source", str(BASEPLANE),
+        "--build", str(build),
         "--cuda-root", str(CUDA_ROOT), "--cxx", "/usr/bin/g++-12", "--jobs", "4", "--arch", "70",
     ])
     manifest_path = build / "ce_native_probe_build_manifest.json"

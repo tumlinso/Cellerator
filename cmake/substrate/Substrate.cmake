@@ -4,7 +4,7 @@ include(CMakePackageConfigHelpers)
 get_filename_component(CE_SUBSTRATE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
 option(CELLERATOR_SUBSTRATE_REQUIRE_INTEGRATED "Require all merged IS1 leaf sources" OFF)
 option(CELLERATOR_SUBSTRATE_ENABLE_SM70 "Build the existing device-linear CUDA 12.x provider" OFF)
-set(CELLERATOR_SUBSTRATE_COMPONENTS "host_operation_contracts;relation_semantics;native_numeric;executable_program;indexed_incidence;cellpack;moonshot_effects;moonshot_mechanisms;moonshot_learning" CACHE STRING "Explicit host component roots; dependencies are selected automatically")
+set(CELLERATOR_SUBSTRATE_COMPONENTS "host_operation_contracts;relation_semantics;native_numeric;executable_program;indexed_incidence;cellpack;moonshot_effects;moonshot_mechanisms;moonshot_learning;sequence_ops" CACHE STRING "Explicit host component roots; dependencies are selected automatically")
 if(CELLERATOR_SUBSTRATE_REQUIRE_INTEGRATED)
   foreach(path include/Cellerator/state/structured_state.hh include/Cellerator/packing/strategy.hh
       include/Cellerator/ops/matrix/patch.hh include/Cellerator/ops/process/ports.hh
@@ -24,6 +24,7 @@ set(_ce_deps_executable_program "")
 set(_ce_deps_indexed_incidence host_operation_contracts)
 set(_ce_deps_cellpack "")
 set(_ce_deps_local_differential native_numeric executable_program operation_schema)
+set(_ce_deps_sequence_ops "")
 set(_ce_deps_moonshot_effects "")
 set(_ce_deps_moonshot_mechanisms "")
 set(_ce_deps_moonshot_learning "")
@@ -39,7 +40,7 @@ set(_ce_deps_response prepared_host)
 set(_ce_deps_adaptive structured_state)
 set(_ce_deps_native_numeric_sm70 native_numeric)
 set(_ce_known operation_schema host_operation_contracts relation_semantics ops_numeric native_numeric executable_program indexed_incidence
-  cellpack local_differential moonshot_effects moonshot_mechanisms moonshot_learning structured_state
+  cellpack local_differential sequence_ops moonshot_effects moonshot_mechanisms moonshot_learning structured_state
   packing_strategy matrix_patch private_ports effects prepared_host packing_strategies frontier response adaptive native_numeric_sm70)
 if(CELLERATOR_SUBSTRATE_ENABLE_SM70)
   list(APPEND CELLERATOR_SUBSTRATE_COMPONENTS native_numeric_sm70)
@@ -80,6 +81,14 @@ if(local_differential IN_LIST _ce_selected)
   find_path(CE_SUBSTRATE_CUDA_HEADERS cuda_runtime_api.h HINTS
     /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include REQUIRED)
 endif()
+
+function(_ce_install_component target name capabilities)
+  set_target_properties(${target} PROPERTIES EXPORT_NAME ${name}
+    CELLERATOR_CAPABILITIES "${capabilities}" EXPORT_PROPERTIES CELLERATOR_CAPABILITIES)
+  install(TARGETS ${target} EXPORT Cellerator_${name} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  install(EXPORT Cellerator_${name} FILE Cellerator_${name}Targets.cmake
+    NAMESPACE Cellerator:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
+endfunction()
 
 function(_ce_owner name)
   cmake_parse_arguments(ARG "" "CAPABILITIES" "SOURCES;INCLUDES" ${ARGN})
@@ -142,6 +151,9 @@ foreach(component IN LISTS _ce_selected)
     _ce_owner(${component} CAPABILITIES "host_f32_f64_forward_jvp_vjp,cuda_headers_required" SOURCES
       src/compute/operation/differential/local_arithmetic.cc)
     target_include_directories(cellerator_substrate_${component} SYSTEM PRIVATE "${CE_SUBSTRATE_CUDA_HEADERS}")
+  elseif(component STREQUAL sequence_ops)
+    add_subdirectory("${CE_SUBSTRATE_ROOT}/src/ops/sequence" "${CMAKE_CURRENT_BINARY_DIR}/sequence_ops")
+    _ce_install_component(cellerator_sequence_ops sequence_ops "host_packed_sequence,predicate_preparation")
   elseif(component STREQUAL moonshot_effects)
     _ce_owner(${component} CAPABILITIES "experimental_host_effects" INCLUDES
       experiments/baseplane_moonshot/include experiments/baseplane_moonshot/families/effects/include)

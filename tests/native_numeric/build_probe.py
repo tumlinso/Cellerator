@@ -109,7 +109,6 @@ def scoped_git_evidence(source_root: Path, paths: Sequence[str]) -> dict[str, ob
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build", required=True, type=Path, help="isolated CMake build directory")
-    parser.add_argument("--baseplane-source", required=True, type=Path)
     parser.add_argument("--cuda-root", required=True, type=Path)
     parser.add_argument("--cxx", default="/usr/bin/g++-12")
     parser.add_argument("--jobs", type=int, default=4)
@@ -118,7 +117,6 @@ def main() -> int:
 
     source_root = Path(__file__).resolve().parents[2]
     build_dir = args.build.expanduser().resolve()
-    baseplane_root = args.baseplane_source.expanduser().resolve()
     cuda_root = args.cuda_root.expanduser().resolve()
     cxx = shutil.which(args.cxx) if not Path(args.cxx).is_absolute() else args.cxx
     if args.jobs < 1:
@@ -128,12 +126,8 @@ def main() -> int:
     nvcc = cuda_root / "bin" / "nvcc"
     if not nvcc.is_file():
         parser.error(f"CUDA compiler not found under --cuda-root: {nvcc}")
-    if not (baseplane_root / "CMakeLists.txt").is_file():
-        parser.error(f"Baseplane source tree is missing CMakeLists.txt: {baseplane_root}")
     if build_dir == source_root or source_root in build_dir.parents:
         parser.error("--build must be outside the Cellerator source checkout")
-    if build_dir == baseplane_root or baseplane_root in build_dir.parents:
-        parser.error("--build must be outside the Baseplane source checkout")
 
     sources = [source_root / item for item in SOURCE_PATHS]
     optional_sources = [source_root / item for item in OPTIONAL_SOURCE_PATHS]
@@ -162,7 +156,6 @@ def main() -> int:
         f"-DCMAKE_CUDA_ARCHITECTURES={args.arch}",
         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
         f"-DCUDAToolkit_ROOT={cuda_root}",
-        f"-DBASEPLANE_SOURCE_DIR={baseplane_root}",
         "-DCELLERATOR_ENABLE_CUDA=ON",
         "-DCELLERATOR_BUILD_SEMANTIC_SPINE_V1=ON",
         "-DCELLERATOR_BUILD_TESTS=OFF",
@@ -206,13 +199,11 @@ def main() -> int:
     cmake_version = version_output([cmake, "--version"])
     cxx_version = version_output([cxx, "--version"])
     cuda_version = version_output([str(nvcc), "--version"])
-    baseplane_head = version_output(["git", "-C", str(baseplane_root), "rev-parse", "HEAD"])
     metadata = {
         "schema_version": 1,
         "status": "built" if complete_build else "failed",
         "source_root": str(source_root),
         "source_head": version_output(["git", "-C", str(source_root), "rev-parse", "HEAD"]),
-        "baseplane_head": baseplane_head,
         "build_dir": str(build_dir),
         "targets": list(TARGETS),
         "architecture": f"sm_{args.arch}",
@@ -228,7 +219,6 @@ def main() -> int:
             "native_foundation_tests": "OFF",
             "cuda_lineinfo": "OFF",
             "cuda_architectures": args.arch,
-            "baseplane_source": str(baseplane_root),
         },
         "toolchain": {
             "cmake": cmake_version,

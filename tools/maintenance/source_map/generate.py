@@ -43,7 +43,8 @@ COMPATIBILITY_RETIREMENTS = {
     'include/Cellerator/compute/operation/native_numeric/local_arithmetic.hh': 'include/Cellerator/ops/numeric/local_arithmetic.hh',
     'include/Cellerator/compute/operation/sparse_support/training.hh': 'include/Cellerator/ops/sparse_support/training.hh',
     'include/Cellerator/compute/runtime.hh': 'include/Cellerator/runtime/multi_gpu/fleet.cuh',
-    'include/Cellerator/compute/sequence/baseplane_integration.cuh': 'include/Cellerator/interop/baseplane/baseplane_integration.cuh',
+    'include/Cellerator/compute/sequence/baseplane_integration.cuh': 'include/Cellerator/execution/sequence/regulatory.cuh',
+    'include/Cellerator/interop/baseplane/baseplane_integration.cuh': 'include/Cellerator/execution/sequence/regulatory.cuh',
     'include/Cellerator/compute/sparse/ops.hh': 'include/Cellerator/compute/operators/sparse/ops.hh',
     'include/Cellerator/compute/sparse/project.hh': 'include/Cellerator/compute/candidate/sparse/project.hh',
     'include/Cellerator/dist/distributed.cuh': 'include/Cellerator/runtime/multi_gpu/context.cuh',
@@ -73,6 +74,13 @@ COMPATIBILITY_RETIREMENTS = {
 
 # Order matters: narrow exceptions precede broad tree rules.
 def classify(p):
+    if p.startswith(('include/Cellerator/execution/sequence/', 'src/execution/sequence/')):
+        return ('sequence operand binding and prepared regulatory execution', 'Cellerator::sequence_integration for the CUDA regulatory path', 'bind borrowed native sequence planes and run the supported forward predicate and regulatory projection', 'retain_native_sequence_execution', 'bounded forward exact-mask path', 'tests/execution/sequence and the biological operand checks', 'sequence_regulatory CTest and CUDA qualification', 'preserve axis, source generation, readiness, and projection identity')
+    if p == 'include/Cellerator/biology/sequence.hh' or p.startswith(('include/Cellerator/tensor/sequence/', 'include/Cellerator/layout/sequence/', 'src/layout/sequence/')):
+        return ('native sequence coordinates, encodings, and packing', 'biology owns sequence meaning, tensor describes borrowed storage, and layout prepares it through Cellerator::sequence_ops or sequence_ops_cuda', 'retain direct packing into supplied buffers and share bit-plane addressing with execution', 'retain_native_sequence_packing', 'host and optional CUDA sequence paths', 'ops/sequence and execution/sequence', 'tests/sequence and bench/sequence', 'preserve validity, source coordinates, and halo ownership')
+    if (p.startswith(('include/Cellerator/ops/sequence/', 'src/ops/sequence/'))
+            and p.rsplit('/', 1)[-1] not in {'lifting.hh', 'monomial_checkpoints.hh'}):
+        return ('exact native sequence operations', 'src/ops/sequence targets Cellerator::sequence_ops and Cellerator::sequence_ops_cuda', 'retain exact scans, masks, borrowed detail queries, and bounded predicate preparation', 'retain_native_sequence_operations', 'host and optional specialized CUDA paths', 'native sequence callers and regulatory execution', 'tests/sequence, tests/execution/sequence, and bench/sequence', 'preserve ordering, capacity, and validity contracts')
     if p == 'extern/anndatapp':
         return ('pinned AnnData++ source dependency', 'AnnData++ upstream repository', 'bundle the indexed gitlink revision for the optional CCell data adapter', 'retain_pinned_anndatapp', 'standard native build includes H5AD and Zarr when their backends are enabled', 'anndatapp::anndatapp and ccell::anndata_interop', 'pinned source archive and installed H5AD/Zarr consumer checks', 'keep upstream module and package names and update the pin explicitly')
     if p.startswith('components/CCell/') or p == 'cmake/CelleratorCCell.cmake':

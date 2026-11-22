@@ -40,15 +40,13 @@ def prepare():
     if status:
         raise ValueError("qualification requires committed clean source")
     head = run(["git", "rev-parse", "HEAD"], source)["stdout"].strip()
-    dependency = Path("/home/tumlinson/Baseplane")
-    dependency_head = run(["git", "rev-parse", "HEAD"], dependency)["stdout"].strip()
-    if run(["git", "status", "--porcelain=v1", "--untracked-files=no"], dependency)["stdout"]:
-        raise ValueError("Baseplane tracked dependency must be clean")
     reused = None
     if args.reuse_clean_build_receipt:
         prior_bytes = args.reuse_clean_build_receipt.read_bytes()
         prior = json.loads(prior_bytes)
-        if prior['source_root'] != str(source) or prior['build_dir'] != str(build) or prior['dependency_commit'] != dependency_head:
+        if 'dependency_commit' in prior:
+            raise ValueError("prior receipt used a separate sequence checkout; start a clean build")
+        if prior['source_root'] != str(source) or prior['build_dir'] != str(build):
             raise ValueError("prior clean build has different owners")
         for file, key in [(build / args.target, 'executable_sha256'), (build / 'CMakeCache.txt', 'cmake_cache_sha256'),
                           (build / 'compile_commands.json', 'compile_commands_sha256')]:
@@ -70,7 +68,7 @@ def prepare():
                      "-DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
                      "-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-12", "-DCMAKE_CUDA_ARCHITECTURES=70",
                      "-DCUDAToolkit_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
-                     "-DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane",
+                     "-DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF",
                      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
                      "-DNF1_VALUES_RU1_REGRESSIONS=" + ("ON" if args.target == "ce_nf1_v07" else "OFF")])]
     cache = build / "CMakeCache.txt"
@@ -86,10 +84,7 @@ def prepare():
         raise ValueError("source changed during build")
     if binding_bytes != bindings_path.read_bytes():
         raise ValueError("bindings changed during build")
-    if run(["git", "rev-parse", "HEAD"], dependency)["stdout"].strip() != dependency_head or run(["git", "status", "--porcelain=v1", "--untracked-files=no"], dependency)["stdout"]:
-        raise ValueError("Baseplane changed during build")
-    record = {"dependency_root": str(dependency), "dependency_commit": dependency_head,
-              "reused_clean_build_receipt": reused,
+    record = {"reused_clean_build_receipt": reused,
               "compile_commands_sha256": hashlib.sha256((build / "compile_commands.json").read_bytes()).hexdigest(),
               "executable_sha256": hashlib.sha256((build / args.target).read_bytes()).hexdigest(),"kind": "nf1-cuda-build-v1", "source_root": str(source), "source_commit": head,
               "source_clean": True, "build_dir": str(build), "bindings_sha256": hashlib.sha256(binding_bytes).hexdigest(),

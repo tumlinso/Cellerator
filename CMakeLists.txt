@@ -124,6 +124,24 @@ if(CELLERATOR_BUILD_TORCH_EXAMPLES AND NOT CELLERATOR_ENABLE_TORCH)
 endif()
 
 include(cmake/CelleratorHost.cmake)
+add_subdirectory(src/ops/sequence)
+install(TARGETS cellerator_sequence_ops EXPORT CelleratorCoreTargets
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+file(APPEND "${CELLERATOR_HOST_CONFIG}" "set(Cellerator_sequence_ops_FOUND TRUE)\n")
+if(TARGET cellerator_sequence_ops_cuda)
+    install(TARGETS cellerator_sequence_ops_cuda EXPORT CelleratorSequenceCudaTargets
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    install(EXPORT CelleratorSequenceCudaTargets NAMESPACE Cellerator::
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator")
+    file(APPEND "${CELLERATOR_HOST_CONFIG}" [=[
+if("sequence_ops_cuda" IN_LIST Cellerator_FIND_COMPONENTS)
+    include(CMakeFindDependencyMacro)
+    find_dependency(CUDAToolkit)
+    include("${CMAKE_CURRENT_LIST_DIR}/CelleratorSequenceCudaTargets.cmake")
+    set(Cellerator_sequence_ops_cuda_FOUND TRUE)
+endif()
+]=])
+endif()
 add_subdirectory(src/math/reference)
 add_subdirectory(modules)
 option(CELLERATOR_ENABLE_VELOCITY "Build the legacy external Velocity++ adapter" OFF)
@@ -166,6 +184,8 @@ if(CELLERATOR_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests/math_reference)
 endif()
+add_subdirectory(tests/sequence ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
+add_subdirectory(bench/sequence ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
 if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     # The host-only sparse-support export is already imported, so the native
     # data package can load here before the modeling umbrella that depends on
@@ -256,8 +276,6 @@ set(CELLERATOR_DEFAULT_GRADIENT_CLIP_VALUE "1.0" CACHE STRING
     "Default value gradient clipping threshold for future model configs")
 set(CELLERATOR_CELLSHARD_SOURCE_DIR "" CACHE PATH
     "Optional CellShard source override. Defaults to components/CellShard when CELLERATOR_ENABLE_CELLSHARD is enabled.")
-set(BASEPLANE_SOURCE_DIR "" CACHE PATH
-    "Optional local Baseplane source checkout. Defaults to ../Baseplane before find_package(Baseplane).")
 
 function(cellerator_require_choice var)
     set(cellerator_allowed_values ${ARGN})
@@ -400,81 +418,6 @@ if(CELLERATOR_ENABLE_CELLSHARD)
         message(FATAL_ERROR "CELLERATOR_ENABLE_CELLSHARD requires CellShard::runtime")
     endif()
 endif()
-function(cellerator_add_baseplane_source baseplane_source_dir)
-    if(NOT EXISTS "${baseplane_source_dir}/CMakeLists.txt")
-        message(FATAL_ERROR "BASEPLANE_SOURCE_DIR does not point to a Baseplane source tree: ${baseplane_source_dir}")
-    endif()
-    set(cellerator_baseplane_required_sequence_headers
-        include/Baseplane/seq/dna2.cuh
-        include/Baseplane/seq/dna2_validity.hh
-        include/Baseplane/seq/predicate_plan.hh
-        include/Baseplane/seq/sequence_event.hh
-    )
-    foreach(cellerator_baseplane_header IN LISTS
-            cellerator_baseplane_required_sequence_headers)
-        if(NOT EXISTS "${baseplane_source_dir}/${cellerator_baseplane_header}")
-            message(FATAL_ERROR
-                "Baseplane sequence predicate ABI incompatibility: required "
-                "header ${cellerator_baseplane_header} is absent. Cellerator "
-                "requires Baseplane sequence predicate ABI version 1. Update "
-                "the Baseplane checkout or set BASEPLANE_SOURCE_DIR to a "
-                "compatible source tree: ${baseplane_source_dir}")
-        endif()
-    endforeach()
-    if(NOT DEFINED BASEPLANE_ENABLE_CUDA)
-        set(BASEPLANE_ENABLE_CUDA ON CACHE BOOL
-            "Enable the CUDA Baseplane sequence kernels preferred by Cellerator.")
-    endif()
-    if(NOT DEFINED BASEPLANE_ENABLE_CUDA_LINEINFO)
-        set(BASEPLANE_ENABLE_CUDA_LINEINFO ${CELLERATOR_ENABLE_CUDA_LINEINFO} CACHE BOOL
-            "Emit CUDA line mapping for Nsight profiling inside Baseplane.")
-    endif()
-    add_subdirectory("${baseplane_source_dir}" "${CMAKE_CURRENT_BINARY_DIR}/Baseplane" EXCLUDE_FROM_ALL)
-    # The embedded project may still declare older dialects. Raise only the
-    # targets declared by Baseplane itself, leaving nested dependencies alone.
-    get_filename_component(_baseplane_root "${baseplane_source_dir}" ABSOLUTE
-        BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-    get_property(_baseplane_targets DIRECTORY "${_baseplane_root}" PROPERTY BUILDSYSTEM_TARGETS)
-    foreach(_baseplane_target IN LISTS _baseplane_targets)
-        get_target_property(_baseplane_type "${_baseplane_target}" TYPE)
-        if(_baseplane_type STREQUAL "INTERFACE_LIBRARY" OR _baseplane_type STREQUAL "UTILITY")
-            continue()
-        endif()
-        foreach(_baseplane_language IN ITEMS CXX CUDA)
-            get_target_property(_baseplane_standard "${_baseplane_target}" "${_baseplane_language}_STANDARD")
-            if(NOT _baseplane_standard OR _baseplane_standard STREQUAL "98" OR _baseplane_standard LESS 20)
-                set_property(TARGET "${_baseplane_target}" PROPERTY "${_baseplane_language}_STANDARD" 20)
-            endif()
-            set_property(TARGET "${_baseplane_target}" PROPERTY "${_baseplane_language}_STANDARD_REQUIRED" YES)
-        endforeach()
-        if(_baseplane_type MATCHES "^(STATIC|SHARED|MODULE|OBJECT)_LIBRARY$")
-            target_compile_features("${_baseplane_target}" PUBLIC cxx_std_20)
-        endif()
-    endforeach()
-endfunction()
-
-if(BASEPLANE_SOURCE_DIR)
-    cellerator_add_baseplane_source("${BASEPLANE_SOURCE_DIR}")
-elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../Baseplane/CMakeLists.txt")
-    cellerator_add_baseplane_source("${CMAKE_CURRENT_SOURCE_DIR}/../Baseplane")
-else()
-    find_package(Baseplane CONFIG REQUIRED)
-endif()
-
-if(NOT TARGET Baseplane::seq)
-    message(FATAL_ERROR "Cellerator requires Baseplane::seq for sequence bit primitives")
-endif()
-get_target_property(cellerator_baseplane_sequence_predicate_abi
-    Baseplane::seq BASEPLANE_SEQUENCE_PREDICATE_ABI_VERSION)
-if(NOT cellerator_baseplane_sequence_predicate_abi
-   OR NOT cellerator_baseplane_sequence_predicate_abi STREQUAL "1")
-    message(FATAL_ERROR
-        "Baseplane sequence predicate ABI incompatibility: Cellerator requires "
-        "Baseplane::seq ABI version 1, but the target reports "
-        "'${cellerator_baseplane_sequence_predicate_abi}'. Update the "
-        "Baseplane checkout or package before configuring Cellerator.")
-endif()
-
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()

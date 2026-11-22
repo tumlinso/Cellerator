@@ -50,7 +50,7 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def closure_paths(source: Path, baseplane_root: Path) -> list[tuple[Path, str]]:
+def closure_paths(source: Path) -> list[tuple[Path, str]]:
     selected: dict[str, Path] = {}
     for name in EXACT_FILES:
         path = source / name
@@ -85,22 +85,6 @@ def closure_paths(source: Path, baseplane_root: Path) -> list[tuple[Path, str]]:
                                path.suffix in BENCH_SOURCE_SUFFIXES):
             selected[path.relative_to(source).as_posix()] = path
 
-    if not (baseplane_root / "CMakeLists.txt").is_file():
-        raise FileNotFoundError(
-            f"Baseplane source root does not contain CMakeLists.txt: {baseplane_root}")
-    baseplane_files = [baseplane_root / "CMakeLists.txt"]
-    for prefix in ("cmake", "include", "src", "tests", "bench"):
-        root = baseplane_root / prefix
-        if not root.exists():
-            continue
-        for path in root.rglob("*"):
-            if path.is_symlink():
-                raise RuntimeError(f"Baseplane source closure contains symlink: {path}")
-            if path.is_file():
-                baseplane_files.append(path)
-    for path in baseplane_files:
-        relative = path.relative_to(baseplane_root).as_posix()
-        selected[f"external/Baseplane/{relative}"] = path
     return sorted(((path, relative) for relative, path in selected.items()),
                   key=lambda entry: entry[1])
 
@@ -119,8 +103,6 @@ def digest_manifest(entries: list[dict]) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, required=True)
-    parser.add_argument("--baseplane-root", type=Path, required=True,
-                        help="read-only Baseplane dependency source tree")
     parser.add_argument("--workspace", type=Path, required=True,
                         help="isolated nested Autobench workspace")
     parser.add_argument("--label", default="source",
@@ -129,7 +111,6 @@ def main() -> int:
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}", args.label):
         parser.error("--label must be a simple versioned directory name")
     source = args.source.resolve(strict=True)
-    baseplane_root = args.baseplane_root.resolve(strict=True)
     workspace = args.workspace.resolve(strict=True)
     data_root = workspace / ".autobench" / "data" / "factorized-interactions"
     staged_root = data_root / args.label
@@ -139,7 +120,7 @@ def main() -> int:
             "factorized-interactions source staging already exists; preserve it and "
             "create a new versioned staging directory instead of overwriting")
 
-    paths = closure_paths(source, baseplane_root)
+    paths = closure_paths(source)
     entries = []
     for path, relative in paths:
         entries.append({"path": relative, "bytes": path.stat().st_size,
