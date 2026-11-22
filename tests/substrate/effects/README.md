@@ -5,7 +5,7 @@
 directly from their operation-family headers under `<Cellerator/ops/...>`:
 DFA/counted DFA, monomial/block-affine maps, weighted algebras, lifting/residual
 trees, finite relations, response jets/checkpoints and port condensation/recovery.
-Existing `ce_moon` header consumers retain the same types and mathematical owner.
+The operation-family headers retain their existing types and mathematical owners.
 
 The new `accumulated_affine<N,Q>` carries precisely
 `h'=A h+b`, `q'=q+C h+d`. Composition visits the left region then the right:
@@ -43,14 +43,10 @@ radius admission supply no certified Taylor error bound; changed parameters or
 expansion context require recomputation. Port condensation retains the original
 linear-model/pivot threshold limits and is not a conditioning certificate.
 
-The single-cell campaign's native private-port transport is owned by OPS
-(`diff/ports/transport.cc`), distinct from the linear condensed-port effect
-provider. Its nonlinear matrix-polynomial/trajectory experiments retain their
-Torch source at `trajectory/polynomial.py`, `flow.py` and `delta.py`; MATH/DIFF
-own promotion. Supplied state rewrites and nonlinear residual regrowth at
-`rewrite/` remain ADAPT work. A scalar residual tree or affine carrier is not
-an equivalent replacement for those broader functions. Original code and
-receipts from both campaigns remain untouched.
+Native private-port transport lives under `src/ops/process`. The
+[original Moonshot campaign](https://github.com/tumlinso/Cellerator/tree/2c2c222f36c3aa1f7f8bb22d97031002c6420978/experiments/moonshot-parallel-v1)
+preserves nonlinear matrix and trajectory references, supplied state rewrites,
+residual regrowth, and their source-bound receipts.
 
 ## Native gate
 
@@ -69,12 +65,7 @@ math and no contraction remain enabled. No GPU or benchmark is launched.
 
 ## Shared build and installed ownership
 
-Add `src/math/effects` and export `Cellerator::effects` through BUILD. Root's
-accepted existing component names remain `Cellerator::moonshot_effects`
-(`ce_moon/reference.hpp`, `ce_moon/effects.hpp`), `::moonshot_mechanisms`
-(`ce_moon/mechanisms.hpp`) and `::moonshot_learning` (`learning.hpp`). No BP
-`substrate_*` aliases are requested. BUILD retains the original implementation
-headers in the installed SDK and qualifies actual consumer targets; BP's higher
-combined consumer waits for that accepted SDK. This host source gate establishes
-neither installed package compatibility nor GPU/capture/performance capability.
-No existing BP source includes or scientific/sequence semantics were changed.
+The selectable SDK exports `Cellerator::effects`. Source consumers use the
+target defined in `src/math/effects`, and installed consumers select the
+`effects` component. The independent source gate exercises host arithmetic.
+The installed package has a separate relocation check.

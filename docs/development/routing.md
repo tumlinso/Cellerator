@@ -93,15 +93,11 @@ validity, or task completion.
 | Source map and agent routing | `docs/development/routing.md`, `tools/maintenance/source_map/`, generated `docs/development/source_map/` | Documentation/maintenance owner with source owners | Generated map gives per-path role, current owner, destination, disposition, maturity, consumers, tests/evidence, and archive reference. Regenerate after source or routing-rule changes; Project Control remains live task status. |
 | Plans, Todo state, and repository metadata | `planning`, including `planning/archive/legacy-plans` and `planning/archive/legacy-todo`; current `.todo-orchestrator/project.json` and authority database; `.project-control` | Approved plan, supported Project Control authority, or preserved history | Plans record intent; Project Control owns live status. The [legacy Todo archive index](https://github.com/tumlinso/Cellerator/blob/main/planning/archive/legacy-todo/README.md) resolves archived projections, snapshots, plan inputs and runtime artifacts by former path and content identity. The live project metadata and authority database remain under `.todo-orchestrator`; never hand-edit them or any generated Todo projections to mimic completion. |
 
-One specific preservation constraint: the reusable host patch and ragged-port
-providers now live at `src/ops/matrix/patch_provider.cc` and
-`src/ops/process/ports_provider.cc`, with explicit native targets and selectable
-Substrate SDK components. The legacy Python proofs under
-`experiments/moonshot-parallel-v1/diff/{patch,ports}/ops.py` still compile those
-current provider files by path. Keep those proofs and provider contracts
-connected until the wrappers have a deliberate replacement. The broader
-experiment directories still contain separate candidate material; do not infer
-its disposition from the extracted providers' new homes.
+Host patch and ragged-port providers live in `src/ops/matrix` and
+`src/ops/process` with explicit targets and selectable Substrate SDK components.
+Run the current native operator checks to validate those providers. The original
+path-based Python proofs and their source-bound receipts are preserved at the
+pinned checkout listed in the [Baseplane source history](../history/baseplane.md).
 
 Historical branch closure and artifact holds are documented in the
 [archive disposition](https://github.com/tumlinso/Cellerator/blob/94c534fc794fe8cc3e0434e4a50f379401ddbb3c/planning/coherence/archive-disposition.md)

@@ -32,17 +32,16 @@ records report these limits; no allocation-free/capture claim is made.
 | Card | Callable owner or preserved alternative | Current boundary |
 | --- | --- | --- |
 | M01 patch | `matrix/patch.hh`; original `src/ops/matrix/patch_provider.cc` | FP32 contiguous square nonlinear patch, forward/VJP/JVP; no arbitrary sparse lowering or decay interpretation. Plain LXR is a distinct restricted family. |
-| M02 polynomial | `experiments/moonshot-parallel-v1/trajectory/polynomial.py`; `trajectory/test_polynomial.py` | Existing Torch polynomial forward/state+factor derivatives retained; native promotion belongs to MATH/DIFF. No new native polynomial claim. |
-| M03 Sylvester | `experiments/moonshot-parallel-v1/trajectory/flow.py`; `trajectory/test_flow.py` | Existing differentiable Torch exponential route retained; CE MATH owns future generator/dt/cache integration. No detached generator or stale-cache shortcut. |
-| M04 micro-MMA | `experiments/moonshot-parallel-v1/mma/quad/quad_mma.cuh`, `quad_mma.cu`; `quad_test.cu` | Existing checked SM70 FP16-input/FP32-output provider retained; no CUDA execution or derivative grant from this host gate. |
+| M02 polynomial | `Cellerator::frontier`; original `trajectory/polynomial.py` in the [Moonshot archive](../../../docs/history/baseplane.md) | Native host polynomial forward, JVP, and VJP have their own frontier checks. |
+| M03 Sylvester | Original `trajectory/flow.py` and `trajectory/test_flow.py` in the [Moonshot archive](../../../docs/history/baseplane.md) | Differentiable Torch exponential reference for the declared local flow. |
+| M04 micro-MMA | Original `mma/quad` candidate in the [Moonshot archive](../../../docs/history/baseplane.md) | Recorded SM70 FP16-input/FP32-output fixture checks. |
 | M05 private ports | `process/ports.hh`; original `src/ops/process/ports_provider.cc` | Ragged contiguous FP32 transport, forward/VJP/JVP; local nonlinear law and scientific port interpretation stay with caller. |
 | M06 process product | `process/product.hh` aliases existing `compute/operation/product2/product2.hh` | Existing typed native prepared owner, FP32 forward/VJP/JVP, ordered/repeated arguments, canonical coefficients and generation admission. Link `Cellerator::product2`; no duplicate owner or new optimizer. Original SM70 process-packet candidate remains at `mma/product/product.cu` with its narrower receipt. |
 
-Existing SM70 patch provider `mma/patch16/patch16.cuh` and product2 native CUDA
-provider `src/compute/operation/product2/product2.cu` remain available through
-their original owners and exact receipts. Reusing these providers requires their
-actual prepared/device/precision/stream contracts. This change does not run GPU
-code, install new candidates or waive native GPU acceptance.
+The [Moonshot archive](../../../docs/history/baseplane.md) retains the SM70
+patch candidate and its original receipts. The maintained native Product2 CUDA
+provider is `src/compute/operation/product2/product2.cu`. This host operator gate
+checks the selected host contracts.
 
 ## Accepted GH numerical requests
 

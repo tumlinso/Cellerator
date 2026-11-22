@@ -42,20 +42,28 @@ with tempfile.TemporaryDirectory(prefix='ce-substrate-relocated-') as temporary:
             raise RuntimeError('producer source path leaked into installed SDK: '+str(path))
     unavailable = build/'unavailable-component'
     unavailable.mkdir(parents=True, exist_ok=True)
-    (unavailable/'CMakeLists.txt').write_text('cmake_minimum_required(VERSION 3.24)\n'
-        'project(MissingFullOwner LANGUAGES CXX)\n'
-        'find_package(Cellerator CONFIG REQUIRED COMPONENTS indexed_mechanism)\n')
-    missing = subprocess.run(['cmake', '-S', str(unavailable), '-B', str(unavailable/'build'),
-                              '-DCMAKE_PREFIX_PATH='+str(relocated)], text=True, capture_output=True)
-    if missing.returncode == 0 or 'FOUND to FALSE' not in missing.stderr:
-        raise RuntimeError('unavailable full indexed owner did not fail package discovery')
-    print('Unavailable full indexed_mechanism correctly rejected', flush=True)
-    for profile in ['baseline', 'effects-only']:
+    unavailable_components = [
+        ('indexed_mechanism', 'FOUND to FALSE'),
+        ('moonshot_effects', 'component is retired from the Cellerator Substrate SDK'),
+        ('moonshot_mechanisms', 'component is retired from the Cellerator Substrate SDK'),
+        ('moonshot_learning', 'component is retired from the Cellerator Substrate SDK'),
+    ]
+    for component, diagnostic in unavailable_components:
+        (unavailable/'CMakeLists.txt').write_text('cmake_minimum_required(VERSION 3.24)\n'
+            'project(UnavailableOwner LANGUAGES CXX)\n'
+            f'find_package(Cellerator CONFIG REQUIRED COMPONENTS {component})\n')
+        missing = subprocess.run(['cmake', '-S', str(unavailable), '-B', str(unavailable/component),
+                                  '-DCMAKE_PREFIX_PATH='+str(relocated)], text=True, capture_output=True)
+        if missing.returncode == 0 or diagnostic not in ' '.join(missing.stderr.split()):
+            raise RuntimeError(f'unavailable component {component} was not rejected: {missing.stderr}')
+        print(f'Unavailable {component} correctly rejected', flush=True)
+    for profile in ['baseline', 'effects-only', 'sequence-only']:
         consumer = build/('consumer-'+profile)
         run(['cmake', '-S', root/'examples/substrate/install', '-B', consumer,
              '-DCMAKE_PREFIX_PATH='+str(relocated),
              '-DCE_REQUIRE_INTEGRATED='+('ON' if a.require_integrated and profile=='baseline' else 'OFF'),
-             '-DCE_EFFECTS_ONLY='+('ON' if profile=='effects-only' else 'OFF')])
+             '-DCE_EFFECTS_ONLY='+('ON' if profile=='effects-only' else 'OFF'),
+             '-DCE_SEQUENCE_ONLY='+('ON' if profile=='sequence-only' else 'OFF')])
         run(['cmake', '--build', consumer, '--parallel', '2'])
         run(['ctest', '--test-dir', consumer, '--output-on-failure'])
 
