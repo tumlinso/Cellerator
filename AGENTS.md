@@ -220,7 +220,18 @@ Use the installed Project Control/Codex front door and this repository's Todo au
   Preserve actual cross-project consumers.
 - Existing code/contract evidence survives cleanup. Resolve a real interface change through its owner; no silent broad ABI rewrite.
 
-External compatibility is not an absolute constraint at this stage. A reviewed internal move may change names/interfaces if it improves development; repair real sibling consumers and relevant tests together. Frozen contracts and overlapping active work still require their owner's explicit reconciliation. Do not use a documentation task to rewrite numerical behavior, introduce another planner, or complete unrelated old epics.
+Cellerator is in active development. Make direct API changes and remove obsolete
+code when doing so simplifies the library. Update affected sibling consumers and
+relevant tests together. Frozen contracts and overlapping active work still
+require their owner's explicit reconciliation.
+
+Having no callers today is insufficient reason to discard a promising
+experiment. Before retiring a mechanism, review what it was meant to achieve,
+what worked or failed, and what could be reused. Carry forward the useful pieces
+and leave enough source-linked evidence to revisit the findings.
+
+Do not use a documentation task to rewrite numerical behavior, introduce another
+planner, or complete unrelated old epics.
 
 ## Hardware and algorithm choice
 
