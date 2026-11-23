@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common/barcode_table.cuh"
+#include <Cellerator/common/real/fp16.cuh>
 #include "../common/feature_table.cuh"
 #include "../common/hdf5.hh"
 #include "../mtx/mtx_reader.cuh"
@@ -446,7 +447,7 @@ inline bool load_part_window_compressed(const char *path,
                     goto done;
                 }
                 part->minorIdx[(std::size_t) (i - part_nnz_begin)] = (::cellshard::types::idx_t) feature;
-                part->val[(std::size_t) (i - part_nnz_begin)] = __float2half((float) values[(std::size_t) i]);
+                part->val[(std::size_t) (i - part_nnz_begin)] = ::cellerator::real::store_f16_storage((float) values[(std::size_t) i]);
             }
         }
     }

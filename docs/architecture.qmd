@@ -762,10 +762,9 @@ accumulation is appropriate when it improves the operation's error behavior,
 but each operation declares its own policy for storage, multiplication,
 accumulation, and output.
 
-This is the design policy; it does not claim that every current algorithm or
-build configuration implements FP16 arithmetic. The source CMake defaults
-currently select FP16 storage, FP32 computation, and FP32 accumulation for new,
-unspecified real work. Author-reported tests on biological data support FP16
+Each implemented operation specifies its available precision combinations and
+chooses any default arithmetic at the operation boundary. Author-reported
+tests on biological data support FP16
 as a reasonable approximation so far, but exhaustive scientific validation
 and a general error bound have not been established. Preserve per-operation
 evidence and compare against the upstream/native computation or a suitable

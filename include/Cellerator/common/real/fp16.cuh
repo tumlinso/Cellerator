@@ -1,19 +1,20 @@
 #pragma once
 
-#include "../detail/cuda_types.hh"
+#include <Cellerator/common/compiler_annotations.hh>
 
-#if CELLERATOR_DETAIL_USE_CUDA_SDK_TYPES
-#include <cuda_fp16.h>
-#else
+#if (defined(CELLERATOR_ENABLE_CUDA) && !CELLERATOR_ENABLE_CUDA) || \
+    (!defined(CELLERATOR_ENABLE_CUDA) && defined(CELLSHARD_ENABLE_CUDA) && !CELLSHARD_ENABLE_CUDA)
 #include <stdint.h>
 
-struct __half {
+namespace cellerator::real {
+
+struct f16_t {
     uint16_t x;
 };
 
 // Keep the legacy host compatibility results, including its handling of ties,
 // subnormals and NaN payloads. The portable binary16 API is in fp16.hh.
-inline float __half2float(__half value) {
+inline float load_f16_storage(f16_t value) noexcept {
     const uint32_t sign = uint32_t(value.x & 0x8000u) << 16u;
     const uint32_t exp = (value.x >> 10u) & 0x1fu;
     const uint32_t mant = value.x & 0x03ffu;
@@ -35,7 +36,7 @@ inline float __half2float(__half value) {
     return __builtin_bit_cast(float, bits);
 }
 
-inline __half __float2half(float value) {
+inline f16_t store_f16_storage(float value) noexcept {
     const uint32_t bits = __builtin_bit_cast(uint32_t, value);
     const uint32_t sign = (bits >> 16u) & 0x8000u;
     uint32_t exp = (bits >> 23u) & 0xffu;
@@ -60,4 +61,17 @@ inline __half __float2half(float value) {
     return {uint16_t(sign | (exp >= 31u ? 0x7c00u : (exp << 10u) | (mant >> 13u)))};
 }
 
+}
+
+#else
+#include <cuda_fp16.h>
+
+namespace cellerator::real {
+
+using f16_t = __half;
+
+CELLERATOR_HOST_DEVICE inline float load_f16_storage(f16_t value) noexcept { return __half2float(value); }
+CELLERATOR_HOST_DEVICE inline f16_t store_f16_storage(float value) noexcept { return __float2half(value); }
+
+}
 #endif

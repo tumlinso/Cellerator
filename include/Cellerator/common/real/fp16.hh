@@ -3,10 +3,12 @@
 
 #include <stdint.h>
 
-namespace cellerator::numeric {
+namespace cellerator::real {
+
+using f16_bits = uint16_t;
 
 // Decode IEEE binary16 bits and canonicalize NaNs.
-inline float load_f16(uint16_t bits) noexcept {
+inline float load_f16(f16_bits bits) noexcept {
     const auto sign = uint32_t(bits & 0x8000) << 16;
     auto exponent = unsigned((bits >> 10) & 0x1f);
     auto fraction = uint32_t(bits & 0x3ff);
@@ -22,7 +24,7 @@ inline float load_f16(uint16_t bits) noexcept {
 }
 
 // Encode directly from binary64 with round-to-nearest, ties-to-even.
-inline uint16_t round_f16(double value) noexcept {
+inline f16_bits round_f16(double value) noexcept {
     const auto u = __builtin_bit_cast(uint64_t, value);
     const auto sign = uint16_t((u >> 48) & 0x8000);
     const auto exponent = unsigned((u >> 52) & 0x7ff);
@@ -43,7 +45,7 @@ inline uint16_t round_f16(double value) noexcept {
     return uint16_t(sign | encoded);
 }
 
-inline uint16_t round_f16(float value) noexcept { return round_f16(double(value)); }
+inline f16_bits round_f16(float value) noexcept { return round_f16(double(value)); }
 
 }
 

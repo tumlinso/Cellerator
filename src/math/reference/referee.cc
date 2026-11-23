@@ -1,4 +1,5 @@
 #include <Cellerator/math/reference/referee.hh>
+#include <Cellerator/common/real/fp16.cuh>
 
 #include <algorithm>
 #include <cmath>
@@ -22,8 +23,8 @@ bool supported_reference_type(u32 type_code) noexcept {
 bool read_value(const void *values, u32 type_code, u64 index, double *out) noexcept {
     if (values == nullptr || out == nullptr) return false;
     if (type_code == static_cast<u32>(real::value_f16)) {
-        *out = static_cast<double>(__half2float(
-            static_cast<const __half *>(values)[index]));
+        *out = static_cast<double>(::cellerator::real::load_f16_storage(
+            static_cast<const ::cellerator::real::f16_t *>(values)[index]));
         return true;
     }
     if (type_code == static_cast<u32>(real::value_f32)) {

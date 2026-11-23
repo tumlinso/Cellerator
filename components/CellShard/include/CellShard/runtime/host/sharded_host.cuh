@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../layout/sharded.cuh"
+#include <Cellerator/common/compiler_annotations.hh>
 #include "../storage/shard_storage.cuh"
 #include "../../io/csh5/api.cuh"
 #include "../../io/pack/packfile.cuh"
@@ -13,14 +14,14 @@
 namespace cellshard {
 
 template<typename MatrixT>
-__host__ __forceinline__ void destroy(MatrixT *m) {
+CELLERATOR_CUDA_FORCEINLINE void destroy(MatrixT *m) {
     if (m == 0) return;
     clear(m);
     delete m;
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ void clear(sharded<MatrixT> * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE void clear(sharded<MatrixT> * __restrict__ m) {
     unsigned long i = 0;
     if (m->parts != 0) {
         for (i = 0; i < m->num_partitions; ++i) destroy(m->parts[i]);
@@ -36,7 +37,7 @@ __host__ __forceinline__ void clear(sharded<MatrixT> * __restrict__ m) {
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int reserve_partitions(sharded<MatrixT> * __restrict__ m, unsigned long capacity) {
+CELLERATOR_CUDA_FORCEINLINE int reserve_partitions(sharded<MatrixT> * __restrict__ m, unsigned long capacity) {
     MatrixT **newParts = 0;
     unsigned long *newOffsets = 0;
     unsigned long *newRows = 0;
@@ -83,7 +84,7 @@ __host__ __forceinline__ int reserve_partitions(sharded<MatrixT> * __restrict__ 
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int reserve_shards(sharded<MatrixT> * __restrict__ m, unsigned long capacity) {
+CELLERATOR_CUDA_FORCEINLINE int reserve_shards(sharded<MatrixT> * __restrict__ m, unsigned long capacity) {
     unsigned long *newOffsets = 0;
     unsigned long *newParts = 0;
 
@@ -111,7 +112,7 @@ __host__ __forceinline__ int reserve_shards(sharded<MatrixT> * __restrict__ m, u
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ void rebuild_shard_parts(sharded<MatrixT> * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE void rebuild_shard_parts(sharded<MatrixT> * __restrict__ m) {
     unsigned long shard = 0;
     unsigned long part = 0;
 
@@ -128,7 +129,7 @@ __host__ __forceinline__ void rebuild_shard_parts(sharded<MatrixT> * __restrict_
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ void rebuild_partition_offsets(sharded<MatrixT> * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE void rebuild_partition_offsets(sharded<MatrixT> * __restrict__ m) {
     unsigned long i = 0;
 
     m->rows = 0;
@@ -143,7 +144,7 @@ __host__ __forceinline__ void rebuild_partition_offsets(sharded<MatrixT> * __res
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int define_partitions(sharded<MatrixT> * __restrict__ m,
+CELLERATOR_CUDA_FORCEINLINE int define_partitions(sharded<MatrixT> * __restrict__ m,
                                           unsigned long cols,
                                           unsigned long num_partitions,
                                           const unsigned long * __restrict__ partition_rows,
@@ -168,7 +169,7 @@ __host__ __forceinline__ int define_partitions(sharded<MatrixT> * __restrict__ m
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int set_shards_to_partitions(sharded<MatrixT> * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE int set_shards_to_partitions(sharded<MatrixT> * __restrict__ m) {
     unsigned long i = 0;
     if (!reserve_shards(m, m->num_partitions)) return 0;
     m->num_shards = m->num_partitions;
@@ -178,7 +179,7 @@ __host__ __forceinline__ int set_shards_to_partitions(sharded<MatrixT> * __restr
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int append_partition(sharded<MatrixT> * __restrict__ m, MatrixT *part) {
+CELLERATOR_CUDA_FORCEINLINE int append_partition(sharded<MatrixT> * __restrict__ m, MatrixT *part) {
     unsigned long next = 0;
 
     if (m->num_partitions == m->partition_capacity) {
@@ -198,7 +199,7 @@ __host__ __forceinline__ int append_partition(sharded<MatrixT> * __restrict__ m,
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int concatenate(sharded<MatrixT> * __restrict__ dst, sharded<MatrixT> * __restrict__ src) {
+CELLERATOR_CUDA_FORCEINLINE int concatenate(sharded<MatrixT> * __restrict__ dst, sharded<MatrixT> * __restrict__ src) {
     unsigned long i = 0;
 
     if (src->num_partitions == 0) return 1;
@@ -229,7 +230,7 @@ __host__ __forceinline__ int concatenate(sharded<MatrixT> * __restrict__ dst, sh
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int set_equal_shards(sharded<MatrixT> * __restrict__ m, unsigned long count) {
+CELLERATOR_CUDA_FORCEINLINE int set_equal_shards(sharded<MatrixT> * __restrict__ m, unsigned long count) {
     unsigned long shardCount = 0;
     unsigned long rows = 0;
     unsigned long target = 0;
@@ -268,7 +269,7 @@ __host__ __forceinline__ int set_equal_shards(sharded<MatrixT> * __restrict__ m,
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int build_shard_offsets_by_rows(const sharded<MatrixT> * __restrict__ m,
+CELLERATOR_CUDA_FORCEINLINE int build_shard_offsets_by_rows(const sharded<MatrixT> * __restrict__ m,
                                                          unsigned long target_rows_per_shard,
                                                          unsigned long **out_offsets,
                                                          unsigned long *out_count) {
@@ -311,7 +312,7 @@ __host__ __forceinline__ int build_shard_offsets_by_rows(const sharded<MatrixT> 
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int reshard(sharded<MatrixT> * __restrict__ m, unsigned long count, const unsigned long * __restrict__ offsets) {
+CELLERATOR_CUDA_FORCEINLINE int reshard(sharded<MatrixT> * __restrict__ m, unsigned long count, const unsigned long * __restrict__ offsets) {
     unsigned long i = 0;
 
     if (count == 0 || offsets == 0) {
@@ -332,7 +333,7 @@ __host__ __forceinline__ int reshard(sharded<MatrixT> * __restrict__ m, unsigned
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int set_shards_by_nnz(sharded<MatrixT> * __restrict__ m, unsigned long max_nnz) {
+CELLERATOR_CUDA_FORCEINLINE int set_shards_by_nnz(sharded<MatrixT> * __restrict__ m, unsigned long max_nnz) {
     unsigned long used = 0;
     unsigned long shardCount = 0;
     unsigned long i = 0;
@@ -363,7 +364,7 @@ __host__ __forceinline__ int set_shards_by_nnz(sharded<MatrixT> * __restrict__ m
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int set_shards_by_part_bytes(sharded<MatrixT> * __restrict__ m, std::size_t max_bytes) {
+CELLERATOR_CUDA_FORCEINLINE int set_shards_by_part_bytes(sharded<MatrixT> * __restrict__ m, std::size_t max_bytes) {
     std::size_t used = 0;
     std::size_t partBytes = 0;
     unsigned long shardCount = 0;
@@ -396,14 +397,14 @@ __host__ __forceinline__ int set_shards_by_part_bytes(sharded<MatrixT> * __restr
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int fetch_partition(sharded<MatrixT> *m, const shard_storage *s, unsigned long partId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_partition(sharded<MatrixT> *m, const shard_storage *s, unsigned long partId) {
     (void) m;
     (void) s;
     (void) partId;
     return 0;
 }
 
-__host__ __forceinline__ int fetch_partition(sharded<::cellshard::compressed> *m, const shard_storage *s, unsigned long partId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_partition(sharded<::cellshard::compressed> *m, const shard_storage *s, unsigned long partId) {
     (void) m;
     (void) s;
     (void) partId;
@@ -411,7 +412,7 @@ __host__ __forceinline__ int fetch_partition(sharded<::cellshard::compressed> *m
     return 0;
 }
 
-__host__ __forceinline__ int fetch_partition(sharded<::cellerator::tensor::base::blocked_ell> *m, const shard_storage *s, unsigned long partId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_partition(sharded<::cellerator::tensor::base::blocked_ell> *m, const shard_storage *s, unsigned long partId) {
     shard_storage *storage = const_cast<shard_storage *>(s);
 
     if (partId >= m->num_partitions || storage == 0 || storage->backend != shard_storage_backend_dataset_h5) return 0;
@@ -419,7 +420,7 @@ __host__ __forceinline__ int fetch_partition(sharded<::cellerator::tensor::base:
 }
 
 #if CELLSHARD_ENABLE_CELLERATOR_QUANTIZED
-__host__ __forceinline__ int fetch_partition(sharded<sparse::quantized_blocked_ell> *m, const shard_storage *s, unsigned long partId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_partition(sharded<sparse::quantized_blocked_ell> *m, const shard_storage *s, unsigned long partId) {
     shard_storage *storage = const_cast<shard_storage *>(s);
 
     if (partId >= m->num_partitions || storage == 0 || storage->backend != shard_storage_backend_dataset_h5) return 0;
@@ -427,14 +428,14 @@ __host__ __forceinline__ int fetch_partition(sharded<sparse::quantized_blocked_e
 }
 #endif
 
-__host__ __forceinline__ int fetch_partition(sharded<::cellerator::tensor::base::sliced_ell> *m, const shard_storage *s, unsigned long partId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_partition(sharded<::cellerator::tensor::base::sliced_ell> *m, const shard_storage *s, unsigned long partId) {
     shard_storage *storage = const_cast<shard_storage *>(s);
 
     if (partId >= m->num_partitions || storage == 0 || storage->backend != shard_storage_backend_dataset_h5) return 0;
     return fetch_dataset_sliced_ell_h5_partition(m, s, partId);
 }
 
-__host__ __forceinline__ int fetch_partition(sharded<::cellshard::dense> *m, const shard_storage *s, unsigned long partId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_partition(sharded<::cellshard::dense> *m, const shard_storage *s, unsigned long partId) {
     shard_storage *storage = const_cast<shard_storage *>(s);
 
     if (partId >= m->num_partitions || storage == 0 || storage->backend != shard_storage_backend_dataset_h5) return 0;
@@ -442,20 +443,20 @@ __host__ __forceinline__ int fetch_partition(sharded<::cellshard::dense> *m, con
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int fetch_all_partitions(sharded<MatrixT> *m, const shard_storage *s) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_all_partitions(sharded<MatrixT> *m, const shard_storage *s) {
     (void) m;
     (void) s;
     return 0;
 }
 
-__host__ __forceinline__ int fetch_all_partitions(sharded<::cellshard::compressed> *m, const shard_storage *s) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_all_partitions(sharded<::cellshard::compressed> *m, const shard_storage *s) {
     (void) m;
     (void) s;
     std::fprintf(stderr, "Error: legacy compressed .csh5 partition fetch is no longer supported\n");
     return 0;
 }
 
-__host__ __forceinline__ int fetch_all_partitions(sharded<::cellerator::tensor::base::blocked_ell> *m, const shard_storage *s) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_all_partitions(sharded<::cellerator::tensor::base::blocked_ell> *m, const shard_storage *s) {
     unsigned long i = 0;
     shard_storage *storage = const_cast<shard_storage *>(s);
 
@@ -468,7 +469,7 @@ __host__ __forceinline__ int fetch_all_partitions(sharded<::cellerator::tensor::
 }
 
 #if CELLSHARD_ENABLE_CELLERATOR_QUANTIZED
-__host__ __forceinline__ int fetch_all_partitions(sharded<sparse::quantized_blocked_ell> *m, const shard_storage *s) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_all_partitions(sharded<sparse::quantized_blocked_ell> *m, const shard_storage *s) {
     unsigned long i = 0;
     shard_storage *storage = const_cast<shard_storage *>(s);
 
@@ -481,7 +482,7 @@ __host__ __forceinline__ int fetch_all_partitions(sharded<sparse::quantized_bloc
 }
 #endif
 
-__host__ __forceinline__ int fetch_all_partitions(sharded<::cellerator::tensor::base::sliced_ell> *m, const shard_storage *s) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_all_partitions(sharded<::cellerator::tensor::base::sliced_ell> *m, const shard_storage *s) {
     unsigned long i = 0;
     shard_storage *storage = const_cast<shard_storage *>(s);
 
@@ -493,7 +494,7 @@ __host__ __forceinline__ int fetch_all_partitions(sharded<::cellerator::tensor::
     return 1;
 }
 
-__host__ __forceinline__ int fetch_all_partitions(sharded<::cellshard::dense> *m, const shard_storage *s) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_all_partitions(sharded<::cellshard::dense> *m, const shard_storage *s) {
     unsigned long i = 0;
     shard_storage *storage = const_cast<shard_storage *>(s);
 
@@ -506,14 +507,14 @@ __host__ __forceinline__ int fetch_all_partitions(sharded<::cellshard::dense> *m
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int fetch_shard(sharded<MatrixT> *m, const shard_storage *s, unsigned long shardId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_shard(sharded<MatrixT> *m, const shard_storage *s, unsigned long shardId) {
     (void) m;
     (void) s;
     (void) shardId;
     return 0;
 }
 
-__host__ __forceinline__ int fetch_shard(sharded<::cellshard::compressed> *m, const shard_storage *s, unsigned long shardId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_shard(sharded<::cellshard::compressed> *m, const shard_storage *s, unsigned long shardId) {
     (void) m;
     (void) s;
     (void) shardId;
@@ -521,7 +522,7 @@ __host__ __forceinline__ int fetch_shard(sharded<::cellshard::compressed> *m, co
     return 0;
 }
 
-__host__ __forceinline__ int fetch_shard(sharded<::cellerator::tensor::base::blocked_ell> *m, const shard_storage *s, unsigned long shardId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_shard(sharded<::cellerator::tensor::base::blocked_ell> *m, const shard_storage *s, unsigned long shardId) {
     shard_storage *storage = const_cast<shard_storage *>(s);
 
     if (shardId >= m->num_shards || storage == 0 || storage->backend != shard_storage_backend_dataset_h5) return 0;
@@ -529,7 +530,7 @@ __host__ __forceinline__ int fetch_shard(sharded<::cellerator::tensor::base::blo
 }
 
 #if CELLSHARD_ENABLE_CELLERATOR_QUANTIZED
-__host__ __forceinline__ int fetch_shard(sharded<sparse::quantized_blocked_ell> *m, const shard_storage *s, unsigned long shardId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_shard(sharded<sparse::quantized_blocked_ell> *m, const shard_storage *s, unsigned long shardId) {
     shard_storage *storage = const_cast<shard_storage *>(s);
 
     if (shardId >= m->num_shards || storage == 0 || storage->backend != shard_storage_backend_dataset_h5) return 0;
@@ -537,14 +538,14 @@ __host__ __forceinline__ int fetch_shard(sharded<sparse::quantized_blocked_ell> 
 }
 #endif
 
-__host__ __forceinline__ int fetch_shard(sharded<::cellerator::tensor::base::sliced_ell> *m, const shard_storage *s, unsigned long shardId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_shard(sharded<::cellerator::tensor::base::sliced_ell> *m, const shard_storage *s, unsigned long shardId) {
     shard_storage *storage = const_cast<shard_storage *>(s);
 
     if (shardId >= m->num_shards || storage == 0 || storage->backend != shard_storage_backend_dataset_h5) return 0;
     return fetch_dataset_sliced_ell_h5_shard(m, s, shardId);
 }
 
-__host__ __forceinline__ int fetch_shard(sharded<::cellshard::dense> *m, const shard_storage *s, unsigned long shardId) {
+CELLERATOR_CUDA_FORCEINLINE int fetch_shard(sharded<::cellshard::dense> *m, const shard_storage *s, unsigned long shardId) {
     shard_storage *storage = const_cast<shard_storage *>(s);
 
     if (shardId >= m->num_shards || storage == 0 || storage->backend != shard_storage_backend_dataset_h5) return 0;
@@ -552,7 +553,7 @@ __host__ __forceinline__ int fetch_shard(sharded<::cellshard::dense> *m, const s
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int drop_partition(sharded<MatrixT> *m, unsigned long partId) {
+CELLERATOR_CUDA_FORCEINLINE int drop_partition(sharded<MatrixT> *m, unsigned long partId) {
     if (partId >= m->num_partitions) return 0;
     // Drop only releases the host materialization for this part. Packfile bytes
     // remain on disk, and any device residency is managed separately.
@@ -562,7 +563,7 @@ __host__ __forceinline__ int drop_partition(sharded<MatrixT> *m, unsigned long p
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int drop_all_partitions(sharded<MatrixT> *m) {
+CELLERATOR_CUDA_FORCEINLINE int drop_all_partitions(sharded<MatrixT> *m) {
     unsigned long i = 0;
     for (i = 0; i < m->num_partitions; ++i) {
         if (!drop_partition(m, i)) return 0;
@@ -571,7 +572,7 @@ __host__ __forceinline__ int drop_all_partitions(sharded<MatrixT> *m) {
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int drop_shard(sharded<MatrixT> *m, unsigned long shardId) {
+CELLERATOR_CUDA_FORCEINLINE int drop_shard(sharded<MatrixT> *m, unsigned long shardId) {
     unsigned long begin = 0;
     unsigned long end = 0;
     unsigned long i = 0;

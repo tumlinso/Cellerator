@@ -1,7 +1,7 @@
 #include <Cellerator/execution/cell_packing_binding.hh>
+#include <Cellerator/common/real/fp16.cuh>
 #include <Cellerator/layout/cell_packing_geometry.hh>
 
-#include <Cellerator/common/types.cuh>
 
 #include <cstdint>
 #include <cstdlib>
@@ -41,8 +41,8 @@ cp::persistent_packing_payload_view fixture() {
     static const cp::u32 block_row_entry_offsets[] = {0u, 2u, 3u};
     static const cp::u32 row_block_gene_masks[] = {1u, 2u, 3u};
     static const cp::u32 row_block_value_offsets[] = {0u, 1u, 2u, 4u};
-    alignas(cellerator::real::storage_t) static const unsigned char values[
-        4u * sizeof(cellerator::real::storage_t)]{};
+    alignas(cellerator::real::f16_t) static const unsigned char values[
+        4u * sizeof(cellerator::real::f16_t)]{};
 
     cp::persistent_packing_payload_view payload;
     payload.payload_schema_version = cp::persistent_packing_payload_schema_version;
@@ -84,7 +84,7 @@ cp::persistent_packing_payload_view fixture() {
     payload.tiles.layout.tile_blocks = 2u;
     payload.tiles.layout.row_block_entries = 3u;
     payload.tiles.layout.stored_values = 4u;
-    payload.tiles.value_size_bytes = sizeof(cellerator::real::storage_t);
+    payload.tiles.value_size_bytes = sizeof(cellerator::real::f16_t);
     payload.tiles.layout.tile_block_offsets = tile_block_offsets;
     payload.tiles.layout.block_ids = tile_block_ids;
     payload.tiles.layout.participating_row_masks = tile_block_cell_masks;
@@ -155,7 +155,7 @@ int main() {
                     statistics_source, &hot, &cold)),
         "evaluate physical packing statistics");
     require(hot.nnz_count == 4u && hot.projection_value_bytes
-                == 4u * sizeof(cellerator::real::storage_t)
+                == 4u * sizeof(cellerator::real::f16_t)
             && hot.maximum_row_nnz == 3u && hot.tile_block_count == 2u,
         "hot physical summary is incorrect");
     require(cold.row_nnz_histogram[1] == 1u && cold.row_nnz_histogram[2] == 1u

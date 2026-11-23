@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cuda_fp16.h>
+#include <Cellerator/common/real/fp16.cuh>
 
 namespace cellshard::device {
 
@@ -17,7 +18,7 @@ struct alignas(16) CompressedView {
     unsigned int axis;
     unsigned int *major_ptr;
     unsigned int *minor_idx;
-    __half *val;
+    ::cellerator::real::f16_t *val;
 };
 
 } // namespace cellshard::device

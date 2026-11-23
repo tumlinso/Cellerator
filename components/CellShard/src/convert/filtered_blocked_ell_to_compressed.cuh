@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../bucket/routes/compressed_major_nnz.cuh"
+#include <Cellerator/common/real/fp16.cuh>
 #include "../sharded/sharded_device.cuh"
 
 #include <cstdio>
@@ -58,8 +59,8 @@ __global__ static void count_filtered_blocked_ell_row_nnz(
                     const unsigned int col = block_col != ::cellerator::tensor::base::blocked_ell_invalid_col
                         ? block_col * block_size + lane
                         : src.cols;
-                    const __half value = src.val[(unsigned long) row * src.ell_cols + ell_col];
-                    if (col >= src.cols || __half2float(value) == 0.0f) continue;
+                    const ::cellerator::real::f16_t value = src.val[(unsigned long) row * src.ell_cols + ell_col];
+                    if (col >= src.cols || ::cellerator::real::load_f16_storage(value) == 0.0f) continue;
                     if (keep_cols != 0 && keep_cols[col] == 0u) continue;
                     if (col_remap != 0) {
                         if (col_remap[col] >= output_cols) continue;
@@ -85,7 +86,7 @@ __global__ static void emit_filtered_blocked_ell_compressed(
     const unsigned int * __restrict__ col_remap,
     const unsigned int * __restrict__ dst_row_ptr,
     unsigned int * __restrict__ dst_minor_idx,
-    __half * __restrict__ dst_val
+    ::cellerator::real::f16_t * __restrict__ dst_val
 ) {
     const unsigned int tid = (unsigned int) ::cellshard::cuda_index::global_tid_1d();
     const unsigned int stride = (unsigned int) ::cellshard::cuda_index::global_stride_1d();
@@ -108,9 +109,9 @@ __global__ static void emit_filtered_blocked_ell_compressed(
                     const unsigned int col = block_col != ::cellerator::tensor::base::blocked_ell_invalid_col
                         ? block_col * block_size + lane
                         : src.cols;
-                    const __half value = src.val[(unsigned long) row * src.ell_cols + ell_col];
+                    const ::cellerator::real::f16_t value = src.val[(unsigned long) row * src.ell_cols + ell_col];
                     unsigned int out_col = 0u;
-                    if (col >= src.cols || __half2float(value) == 0.0f) continue;
+                    if (col >= src.cols || ::cellerator::real::load_f16_storage(value) == 0.0f) continue;
                     if (keep_cols != 0 && keep_cols[col] == 0u) continue;
                     out_col = col_remap != 0 ? col_remap[col] : col;
                     if (out_col >= output_cols) continue;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <Cellerator/common/compiler_annotations.hh>
 
 #ifndef __host__
 #define __host__
@@ -45,11 +46,11 @@ enum {
     dataset_codec_quantized_decode_policy_mask = 0xffu << dataset_codec_quantized_decode_policy_shift
 };
 
-__host__ __device__ __forceinline__ std::uint32_t dataset_codec_quantized_decode_policy(std::uint32_t flags) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE std::uint32_t dataset_codec_quantized_decode_policy(std::uint32_t flags) {
     return (flags & dataset_codec_quantized_decode_policy_mask) >> dataset_codec_quantized_decode_policy_shift;
 }
 
-__host__ __device__ __forceinline__ std::uint32_t set_dataset_codec_quantized_decode_policy(
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE std::uint32_t set_dataset_codec_quantized_decode_policy(
     std::uint32_t flags,
     std::uint32_t policy) {
     return (flags & ~dataset_codec_quantized_decode_policy_mask)

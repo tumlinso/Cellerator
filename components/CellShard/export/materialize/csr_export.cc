@@ -1,4 +1,5 @@
 #include "../internal/common.hh"
+#include <Cellerator/common/real/fp16.cuh>
 
 #include "../../include/CellShard/io/pack/packfile.cuh"
 #include "../../include/CellShard/io/common/layout_policy.hh"
@@ -289,7 +290,7 @@ inline bool build_compressed_from_csr(const csr_matrix_export &csr,
     }
     for (std::size_t i = 0; i < csr.indices.size(); ++i) {
         out->minorIdx[i] = (types::idx_t) csr.indices[i];
-        out->val[i] = __float2half(csr.data[i]);
+        out->val[i] = ::cellerator::real::store_f16_storage(csr.data[i]);
     }
     return true;
 }
@@ -860,7 +861,7 @@ bool materialize_derived_dataset(const char *source_path,
 
     codec.codec_id = 0u;
     codec.family = dataset_codec_family_blocked_ell;
-    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
+    codec.value_code = (std::uint32_t) ::real::storage_code;
     codec.scale_value_code = 0u;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
     codec.flags = 0u;

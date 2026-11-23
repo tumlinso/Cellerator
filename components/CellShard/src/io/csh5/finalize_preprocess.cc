@@ -313,7 +313,7 @@ int finalize_preprocessed_blocked_ell_dataset_h5_to_output(const char *source_fi
 
     codec.codec_id = 0u;
     codec.family = matrix_traits<::cellerator::tensor::base::blocked_ell>::codec_family;
-    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
+    codec.value_code = (std::uint32_t) ::real::storage_code;
     codec.scale_value_code = 0u;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
     codec.flags = 0u;
@@ -863,7 +863,7 @@ int finalize_preprocessed_sliced_ell_dataset_h5_to_output(const char *source_fil
 
     codec.codec_id = 0u;
     codec.family = matrix_traits<::cellerator::tensor::base::sliced_ell>::codec_family;
-    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
+    codec.value_code = (std::uint32_t) ::real::storage_code;
     codec.scale_value_code = 0u;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
     codec.flags = 0u;

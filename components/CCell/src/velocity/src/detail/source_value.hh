@@ -23,7 +23,7 @@ template<class Run> auto with_source_type(ccell::detail::DType type, Run run) {
 template<class Storage> auto source_value(const unsigned char* p) noexcept {
     Storage value;
     __builtin_memcpy(&value, p, sizeof(Storage));
-    if constexpr (__is_same(Storage, uint16_t)) return cellerator::numeric::load_f16(value);
+    if constexpr (__is_same(Storage, uint16_t)) return cellerator::real::load_f16(value);
     else return value;
 }
 

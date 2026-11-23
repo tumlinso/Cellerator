@@ -1,4 +1,5 @@
 #include "../../../include/CellShard/io/cshard.hh"
+#include <Cellerator/common/real/fp16.cuh>
 
 #include <Cellerator/tensor/base/blocked_ell.cuh>
 #include <Cellerator/tensor/base/sliced_ell.cuh>
@@ -528,7 +529,7 @@ std::uint32_t add_csr_matrix(file_plan *plan,
     for (std::size_t i = 0u; i < csr.indices.size(); ++i) {
         if (csr.indices[i] < 0 || (std::uint64_t) csr.indices[i] >= csr.cols) throw std::runtime_error("CSR column index out of range");
         col_idx[i] = (std::uint32_t) csr.indices[i];
-        values[i] = __float2half(csr.data[i]);
+        values[i] = ::cellerator::real::store_f16_storage(csr.data[i]);
     }
     spec::matrix_descriptor desc{};
     desc.matrix_id = matrix_id;
@@ -771,7 +772,7 @@ void append_sliced_shard_row(const bucketed_sliced_ell_shard &shard,
                              exporting::csr_matrix_export *out);
 
 void append_row_value(exporting::csr_matrix_export *out, std::uint32_t col, const real::storage_t &raw) {
-    const float value = __half2float(raw);
+    const float value = ::cellerator::real::load_f16_storage(raw);
     if (value == 0.0f) return;
     out->indices.push_back((std::int64_t) col);
     out->data.push_back(value);

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Cellerator/common/types.cuh>
+#include <Cellerator/common/index_types.hh>
+#include <cuda_runtime_api.h>
+#include <Cellerator/common/real/fp16.cuh>
 
 
 #include <cstddef>
@@ -80,12 +82,12 @@ int build_shard_major_nnz_bucket_plan_raw(
 int rebuild_compressed_major_order_raw(
     const types::ptr_t *d_src_major_ptr,
     const types::idx_t *d_src_minor_idx,
-    const real::storage_t *d_src_val,
+    const real::f16_t *d_src_val,
     types::dim_t major_dim,
     const types::idx_t *d_major_order,
     types::ptr_t *d_dst_major_ptr,
     types::idx_t *d_dst_minor_idx,
-    real::storage_t *d_dst_val,
+    real::f16_t *d_dst_val,
     types::idx_t *d_inverse_major_order,
     void *d_scan_tmp,
     std::size_t scan_tmp_bytes,
@@ -94,14 +96,14 @@ int rebuild_compressed_major_order_raw(
 int rebuild_bucketed_shard_compressed_raw(
     const types::ptr_t * const *d_part_major_ptr,
     const types::idx_t * const *d_part_minor_idx,
-    const real::storage_t * const *d_part_val,
+    const real::f16_t * const *d_part_val,
     const types::idx_t *d_part_row_offsets,
     types::idx_t part_count,
     types::dim_t shard_rows,
     const types::idx_t *d_major_order,
     types::ptr_t *d_dst_major_ptr,
     types::idx_t *d_dst_minor_idx,
-    real::storage_t *d_dst_val,
+    real::f16_t *d_dst_val,
     types::idx_t *d_inverse_major_order,
     void *d_scan_tmp,
     std::size_t scan_tmp_bytes,

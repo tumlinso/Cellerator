@@ -110,7 +110,7 @@ inline bool read_dense(
     if (out == nullptr || !valid_dense(view)) return false;
     const u64 index = dense_offset(view, row, column);
     if (view.value_type_code == static_cast<u32>(real::value_f16)) {
-        *out = __half2float(static_cast<const __half *>(view.values)[index]);
+        *out = ::cellerator::real::load_f16_storage(static_cast<const ::cellerator::real::f16_t *>(view.values)[index]);
         return true;
     }
     if (view.value_type_code == static_cast<u32>(real::value_f32)) {

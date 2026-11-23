@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stddef.h>
+#include <Cellerator/common/compiler_annotations.hh>
+#include <Cellerator/memory/cuda/host_registration.hh>
 #include <stdlib.h>
 
 #include <CellShard/core/types.cuh>
@@ -25,11 +27,11 @@ struct alignas(16) dense {
     real::storage_t *val;
 };
 
-__host__ __device__ __forceinline__ types::u32 packed_stride(types::dim_t rows, types::dim_t cols, types::u32 order) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE types::u32 packed_stride(types::dim_t rows, types::dim_t cols, types::u32 order) {
     return order == dense_col_major ? rows : cols;
 }
 
-__host__ __device__ __forceinline__ void init(
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE void init(
     dense * __restrict__ m,
     types::dim_t rows = 0,
     types::dim_t cols = 0,
@@ -44,7 +46,7 @@ __host__ __device__ __forceinline__ void init(
     m->val = 0;
 }
 
-__host__ __device__ __forceinline__ void attach(
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE void attach(
     dense * __restrict__ m,
     types::dim_t rows,
     types::dim_t cols,
@@ -55,47 +57,47 @@ __host__ __device__ __forceinline__ void attach(
     m->val = val;
 }
 
-__host__ __device__ __forceinline__ size_t payload_elements(const dense * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE size_t payload_elements(const dense * __restrict__ m) {
     if (m == 0) return 0u;
     return m->order == dense_col_major
         ? (size_t) m->cols * (size_t) m->stride
         : (size_t) m->rows * (size_t) m->stride;
 }
 
-__host__ __device__ __forceinline__ size_t payload_bytes(const dense * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE size_t payload_bytes(const dense * __restrict__ m) {
     return payload_elements(m) * sizeof(real::storage_t);
 }
 
-__host__ __device__ __forceinline__ size_t bytes(const dense * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE size_t bytes(const dense * __restrict__ m) {
     return sizeof(*m) + payload_bytes(m);
 }
 
-__host__ __device__ __forceinline__ size_t offset(const dense * __restrict__ m, types::dim_t r, types::idx_t c) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE size_t offset(const dense * __restrict__ m, types::dim_t r, types::idx_t c) {
     return m->order == dense_col_major
         ? (size_t) c * (size_t) m->stride + r
         : (size_t) r * (size_t) m->stride + c;
 }
 
-__host__ __device__ __forceinline__ const real::storage_t *at(const dense * __restrict__ m, types::dim_t r, types::idx_t c) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE const real::storage_t *at(const dense * __restrict__ m, types::dim_t r, types::idx_t c) {
     if (m == 0 || m->val == 0 || r >= m->rows || c >= m->cols) return 0;
     return m->val + offset(m, r, c);
 }
 
-__host__ __device__ __forceinline__ real::storage_t *at(dense * __restrict__ m, types::dim_t r, types::idx_t c) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE real::storage_t *at(dense * __restrict__ m, types::dim_t r, types::idx_t c) {
     return const_cast<real::storage_t *>(at(static_cast<const dense *>(m), r, c));
 }
 
-__host__ __forceinline__ void clear(dense * __restrict__ m) {
-    if ((m->flags & dense_host_registered) != 0u && m->val != 0) ::cellerator::cuda_compat::unregister_host_memory(m->val);
+CELLERATOR_CUDA_FORCEINLINE void clear(dense * __restrict__ m) {
+    if ((m->flags & dense_host_registered) != 0u && m->val != 0) ::cellerator::memory::cuda::unregister_host_memory(m->val);
     if (m->storage != 0) free(m->storage);
     init(m);
 }
 
-__host__ __forceinline__ int allocate(dense * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE int allocate(dense * __restrict__ m) {
     const size_t total_bytes = payload_bytes(m);
     void *storage = 0;
 
-    if ((m->flags & dense_host_registered) != 0u && m->val != 0) ::cellerator::cuda_compat::unregister_host_memory(m->val);
+    if ((m->flags & dense_host_registered) != 0u && m->val != 0) ::cellerator::memory::cuda::unregister_host_memory(m->val);
     if (m->storage != 0) free(m->storage);
     m->flags = 0u;
     m->storage = 0;
@@ -108,37 +110,27 @@ __host__ __forceinline__ int allocate(dense * __restrict__ m) {
     return 1;
 }
 
-__host__ __forceinline__ int pin(dense * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE int pin(dense * __restrict__ m) {
     const size_t total_bytes = payload_bytes(m);
-    cudaError_t err = cudaSuccess;
 
     if (m == 0 || m->val == 0 || total_bytes == 0u) return 1;
     if ((m->flags & dense_host_registered) != 0u) return 1;
-    err = ::cellerator::cuda_compat::register_host_memory(m->val, total_bytes);
-    if (err == cudaSuccess) {
-        m->flags |= dense_host_registered;
-        return 1;
-    }
-    if (err == cudaErrorHostMemoryAlreadyRegistered) {
-        ::cellerator::cuda_compat::clear_host_registration_error();
-        m->flags |= dense_host_registered;
-        return 1;
-    }
-    ::cellerator::cuda_compat::clear_host_registration_error();
-    return 0;
+    if (!::cellerator::memory::cuda::register_host_memory(m->val, total_bytes)) return 0;
+    m->flags |= dense_host_registered;
+    return 1;
 }
 
-__host__ __forceinline__ void unpin(dense * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE void unpin(dense * __restrict__ m) {
     if (m == 0 || (m->flags & dense_host_registered) == 0u || m->val == 0) return;
-    ::cellerator::cuda_compat::unregister_host_memory(m->val);
+    ::cellerator::memory::cuda::unregister_host_memory(m->val);
     m->flags &= ~dense_host_registered;
 }
 
-__host__ __device__ __forceinline__ int host_registered(const dense * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE int host_registered(const dense * __restrict__ m) {
     return m != 0 && (m->flags & dense_host_registered) != 0u;
 }
 
-__host__ __device__ __forceinline__ int dense_is_packed_row_major(const dense *m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE int dense_is_packed_row_major(const dense *m) {
     return m != 0 && m->order == dense_row_major && m->stride == m->cols;
 }
 

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <CellShard/core/types.cuh>
+#include <Cellerator/common/compiler_annotations.hh>
+#include <Cellerator/memory/cuda/host_registration.hh>
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -27,15 +29,15 @@ struct alignas(16) compressed {
     real::storage_t *val;
 };
 
-__host__ __device__ __forceinline__ types::dim_t major_dim(const compressed * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE types::dim_t major_dim(const compressed * __restrict__ m) {
     return m->axis == compressed_by_col ? m->cols : m->rows;
 }
 
-__host__ __device__ __forceinline__ types::dim_t minor_dim(const compressed * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE types::dim_t minor_dim(const compressed * __restrict__ m) {
     return m->axis == compressed_by_col ? m->rows : m->cols;
 }
 
-__host__ __device__ __forceinline__ void init(
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE void init(
     compressed * __restrict__ m,
     types::dim_t rows = 0,
     types::dim_t cols = 0,
@@ -52,14 +54,14 @@ __host__ __device__ __forceinline__ void init(
     m->val = 0;
 }
 
-__host__ __device__ __forceinline__ size_t bytes(const compressed * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE size_t bytes(const compressed * __restrict__ m) {
     return sizeof(*m)
         + (size_t) (major_dim(m) + 1u) * sizeof(types::ptr_t)
         + (size_t) m->nnz * sizeof(types::idx_t)
         + (size_t) m->nnz * sizeof(real::storage_t);
 }
 
-__host__ __device__ __forceinline__ const real::storage_t *at(const compressed * __restrict__ m, types::dim_t r, types::idx_t c) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE const real::storage_t *at(const compressed * __restrict__ m, types::dim_t r, types::idx_t c) {
     const types::dim_t major = m->axis == compressed_by_col ? c : r;
     const types::idx_t minor = m->axis == compressed_by_col ? r : c;
     const types::ptr_t begin = m->majorPtr[major];
@@ -70,12 +72,12 @@ __host__ __device__ __forceinline__ const real::storage_t *at(const compressed *
     return 0;
 }
 
-__host__ __device__ __forceinline__ real::storage_t *at(compressed * __restrict__ m, types::dim_t r, types::idx_t c) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE real::storage_t *at(compressed * __restrict__ m, types::dim_t r, types::idx_t c) {
     return const_cast<real::storage_t *>(at(static_cast<const compressed *>(m), r, c));
 }
 
-__host__ __forceinline__ void clear(compressed * __restrict__ m) {
-    if ((m->flags & compressed_host_registered) != 0u && m->storage != 0) ::cellerator::cuda_compat::unregister_host_memory(m->storage);
+CELLERATOR_CUDA_FORCEINLINE void clear(compressed * __restrict__ m) {
+    if ((m->flags & compressed_host_registered) != 0u && m->storage != 0) ::cellerator::memory::cuda::unregister_host_memory(m->storage);
     if (m->storage != 0) free(m->storage);
     else {
         free(m->majorPtr);
@@ -85,7 +87,7 @@ __host__ __forceinline__ void clear(compressed * __restrict__ m) {
     init(m);
 }
 
-__host__ __forceinline__ int allocate(compressed * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE int allocate(compressed * __restrict__ m) {
     const size_t ptr_count = (size_t) major_dim(m) + 1u;
     const size_t major_bytes = ptr_count * sizeof(types::ptr_t);
     const size_t minor_offset = ((major_bytes + alignof(types::idx_t) - 1u) / alignof(types::idx_t)) * alignof(types::idx_t);
@@ -93,7 +95,7 @@ __host__ __forceinline__ int allocate(compressed * __restrict__ m) {
     const size_t total_bytes = val_offset + (size_t) m->nnz * sizeof(real::storage_t);
     void *storage = 0;
 
-    if ((m->flags & compressed_host_registered) != 0u && m->storage != 0) ::cellerator::cuda_compat::unregister_host_memory(m->storage);
+    if ((m->flags & compressed_host_registered) != 0u && m->storage != 0) ::cellerator::memory::cuda::unregister_host_memory(m->storage);
     if (m->storage != 0) free(m->storage);
     else {
         free(m->majorPtr);
@@ -116,37 +118,27 @@ __host__ __forceinline__ int allocate(compressed * __restrict__ m) {
     return 1;
 }
 
-__host__ __forceinline__ int pin(compressed * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE int pin(compressed * __restrict__ m) {
     const size_t ptr_count = (size_t) major_dim(m) + 1u;
     const size_t major_bytes = ptr_count * sizeof(types::ptr_t);
     const size_t minor_offset = ((major_bytes + alignof(types::idx_t) - 1u) / alignof(types::idx_t)) * alignof(types::idx_t);
     const size_t val_offset = ((minor_offset + (size_t) m->nnz * sizeof(types::idx_t) + alignof(real::storage_t) - 1u) / alignof(real::storage_t)) * alignof(real::storage_t);
     const size_t total_bytes = val_offset + (size_t) m->nnz * sizeof(real::storage_t);
-    cudaError_t err = cudaSuccess;
 
     if (m->storage == 0 || total_bytes == 0u) return 1;
     if ((m->flags & compressed_host_registered) != 0u) return 1;
-    err = ::cellerator::cuda_compat::register_host_memory(m->storage, total_bytes);
-    if (err == cudaSuccess) {
-        m->flags |= compressed_host_registered;
-        return 1;
-    }
-    if (err == cudaErrorHostMemoryAlreadyRegistered) {
-        ::cellerator::cuda_compat::clear_host_registration_error();
-        m->flags |= compressed_host_registered;
-        return 1;
-    }
-    ::cellerator::cuda_compat::clear_host_registration_error();
-    return 0;
+    if (!::cellerator::memory::cuda::register_host_memory(m->storage, total_bytes)) return 0;
+    m->flags |= compressed_host_registered;
+    return 1;
 }
 
-__host__ __forceinline__ void unpin(compressed * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE void unpin(compressed * __restrict__ m) {
     if ((m->flags & compressed_host_registered) == 0u || m->storage == 0) return;
-    ::cellerator::cuda_compat::unregister_host_memory(m->storage);
+    ::cellerator::memory::cuda::unregister_host_memory(m->storage);
     m->flags &= ~compressed_host_registered;
 }
 
-__host__ __device__ __forceinline__ int host_registered(const compressed * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE int host_registered(const compressed * __restrict__ m) {
     return (m->flags & compressed_host_registered) != 0u;
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../include/CellShard/export/dataset_export.hh"
+#include <Cellerator/common/real/fp16.cuh>
 #include "../../export/h5ad_writer.hh"
 #include "../../include/CellShard/formats/blocked_ell.cuh"
 #include "../../include/CellShard/formats/compressed.cuh"
@@ -50,10 +51,10 @@ inline py::array_t<T> copy_1d_array(const std::vector<T> &values) {
     return out;
 }
 
-inline py::array_t<float> copy_half_values(const __half *values, std::size_t count) {
+inline py::array_t<float> copy_half_values(const ::cellerator::real::f16_t *values, std::size_t count) {
     py::array_t<float> out((py::ssize_t) count);
     float *dst = out.mutable_data();
-    for (std::size_t i = 0; i < count; ++i) dst[i] = __half2float(values[i]);
+    for (std::size_t i = 0; i < count; ++i) dst[i] = ::cellerator::real::load_f16_storage(values[i]);
     return out;
 }
 
@@ -191,7 +192,7 @@ struct blocked_ell_partition_export {
         for (std::size_t i = 0; i < values_storage.size(); ++i) {
             real::storage_t stored;
             std::memcpy(&stored, values_storage.data() + i, sizeof(stored));
-            dst[i] = __half2float(stored);
+            dst[i] = ::cellerator::real::load_f16_storage(stored);
         }
         return out;
     }
@@ -234,7 +235,7 @@ struct sliced_ell_partition_export {
         for (std::size_t i = 0; i < values_storage.size(); ++i) {
             real::storage_t stored;
             std::memcpy(&stored, values_storage.data() + i, sizeof(stored));
-            dst[i] = __half2float(stored);
+            dst[i] = ::cellerator::real::load_f16_storage(stored);
         }
         return out;
     }

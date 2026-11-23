@@ -1,11 +1,11 @@
 #include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
+#include <Cellerator/common/real/fp16.cuh>
 
 #include <Cellerator/geometry/feature_weighted_row_reduction_cuda.hh>
 
 #include <cuda_runtime_api.h>
 
 #include <cstdint>
-#include <type_traits>
 
 namespace cellerator::compute::math::core {
 namespace {
@@ -14,28 +14,9 @@ operation_status fail(operation_status_code code, const char *message) noexcept 
     return {code, execution::binding_validation_code::ok, message};
 }
 
-template<typename T>
-constexpr execution::numeric_type execution_numeric_type() noexcept {
-    if constexpr (std::is_same<T, __half>::value)
-        return execution::numeric_type::f16;
-    else if constexpr (std::is_same<T, float>::value)
-        return execution::numeric_type::f32;
-    else if constexpr (std::is_same<T, double>::value)
-        return execution::numeric_type::f64;
-#if CELLERATOR_REAL_HAS_CUDA_BF16_HEADER
-    else if constexpr (std::is_same<T, __nv_bfloat16>::value)
-        return execution::numeric_type::bf16;
-#endif
-    else
-        return execution::numeric_type::invalid;
-}
-
-constexpr execution::numeric_type sparse_type =
-    execution_numeric_type<cellerator::real::storage_t>();
-constexpr execution::numeric_type compute_type =
-    execution_numeric_type<cellerator::real::compute_t>();
-constexpr execution::numeric_type accumulation_type =
-    execution_numeric_type<cellerator::real::accum_t>();
+constexpr auto sparse_type = execution::numeric_type::f16;
+constexpr auto compute_type = execution::numeric_type::f32;
+constexpr auto accumulation_type = execution::numeric_type::f32;
 
 bool supports_numeric(const numeric_policy &numeric) noexcept {
     return numeric.sparse_storage == sparse_type
@@ -77,7 +58,7 @@ bool valid_device_cpk1(
         && cellpack::packed_extents_fit(tiles)
         && tiles.tile_schema_version == cellpack::warp_tile_schema_version
         && tiles.record_schema_version == cellpack::cell_block_record_schema_version
-        && tiles.value_size_bytes == sizeof(cellerator::real::storage_t)
+        && tiles.value_size_bytes == sizeof(cellerator::real::f16_t)
         && plan.feature_block_offsets != nullptr
         && (plan.feature_count == 0u || plan.feature_permutation != nullptr)
         && (order.row_count == 0u || order.row_permutation != nullptr)
@@ -149,7 +130,7 @@ operation_status run_row_masked_n1(
         || values.layout != execution::value_layout_kind::projection_local_order
         || values.element_count != state.projection.tiles.layout.stored_values
         || values.value_bytes != values.element_count
-            * sizeof(cellerator::real::storage_t)
+            * sizeof(cellerator::real::f16_t)
         || weights.location.residency == execution::residency_kind::host
         || output.location.residency == execution::residency_kind::host
         || values.location.residency == execution::residency_kind::host
@@ -162,14 +143,14 @@ operation_status run_row_masked_n1(
     auto direct = cellpack::make_persistent_feature_weighted_row_reduction_view(
         state.projection, weight_generation->bits,
         static_cast<std::size_t>(weights.shape[0]),
-        static_cast<const cellerator::real::compute_t *>(weights.data));
+        static_cast<const float *>(weights.data));
     // CPK1 v1 carries initial values for compatibility. Mutable relation values
     // are launch-bound and replace only that pointer; geometry is unchanged.
     direct.tiles.values = values.values;
     cellpack::feature_weighted_row_reduction_result_view result{};
     const cellpack::feature_weighted_row_reduction_buffers buffers{
         static_cast<std::size_t>(output.shape[0]),
-        static_cast<cellerator::real::accum_t *>(output.data)};
+        static_cast<float *>(output.data)};
     const cellpack::validation_result status =
         cellpack::evaluate_feature_weighted_row_reduction_tiles_cuda(
             direct, state.projection.order, buffers,

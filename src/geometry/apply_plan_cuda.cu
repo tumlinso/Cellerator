@@ -10,7 +10,7 @@ the two custom kernels only form plan keys and gather application-specific
 block/local/canonical/value outputs. A specialized short-row sort remains
 deferred until it beats this same end-to-end boundary.
 */
-#include "Cellerator/geometry/apply_plan.hh"
+#include "Cellerator/geometry/apply_plan_cuda.hh"
 
 #include <cub/cub.cuh>
 

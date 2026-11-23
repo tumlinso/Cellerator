@@ -1,4 +1,5 @@
 #include "Cellerator/geometry/feature_weighted_row_reduction.hh"
+#include <Cellerator/common/real/fp16.cuh>
 
 #include <algorithm>
 #include <cmath>
@@ -11,9 +12,9 @@ namespace {
 
 using cellpack::u32;
 using cellpack::u64;
-using storage_t = cellerator::real::storage_t;
-using compute_t = cellerator::real::compute_t;
-using accum_t = cellerator::real::accum_t;
+using storage_t = cellerator::real::f16_t;
+using compute_t = float;
+using accum_t = float;
 
 void require(bool condition, const char *message) {
     if (!condition) {
@@ -462,7 +463,7 @@ void test_contract_and_capacity_failures() {
 } // namespace
 
 int main() {
-    static_assert(std::is_same<storage_t, cellerator::real::storage_t>::value,
+    static_assert(std::is_same<storage_t, cellerator::real::f16_t>::value,
         "test must use configured Cellerator storage values");
     test_canonical_record_and_direct_tile_agreement();
     test_zero_nnz_rows();

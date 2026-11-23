@@ -1,4 +1,5 @@
 #include <Cellerator/compute/matrix/convert/bucket.cuh>
+#include <Cellerator/common/real/fp16.cuh>
 
 #include <cub/cub.cuh>
 
@@ -127,10 +128,10 @@ __global__ void reorder_compressed_major_segments(
     const types::idx_t * __restrict__ major_order,
     const types::ptr_t * __restrict__ src_major_ptr,
     const types::idx_t * __restrict__ src_minor_idx,
-    const real::storage_t * __restrict__ src_val,
+    const real::f16_t * __restrict__ src_val,
     const types::ptr_t * __restrict__ dst_major_ptr,
     types::idx_t * __restrict__ dst_minor_idx,
-    real::storage_t * __restrict__ dst_val) {
+    real::f16_t * __restrict__ dst_val) {
     unsigned int i = blockIdx.x * blockDim.y + threadIdx.y;
     while (i < major_dim) {
         const types::idx_t src_major = major_order[i];
@@ -152,10 +153,10 @@ __global__ void reorder_shard_major_segments(
     types::idx_t part_count,
     const types::ptr_t * const * __restrict__ part_major_ptr,
     const types::idx_t * const * __restrict__ part_minor_idx,
-    const real::storage_t * const * __restrict__ part_val,
+    const real::f16_t * const * __restrict__ part_val,
     const types::ptr_t * __restrict__ dst_major_ptr,
     types::idx_t * __restrict__ dst_minor_idx,
-    real::storage_t * __restrict__ dst_val) {
+    real::f16_t * __restrict__ dst_val) {
     unsigned int i = blockIdx.x * blockDim.y + threadIdx.y;
     while (i < shard_rows) {
         const types::idx_t global_row = major_order[i];
@@ -163,7 +164,7 @@ __global__ void reorder_shard_major_segments(
         const types::idx_t local_row = global_row - part_row_offsets[part];
         const types::ptr_t *src_ptr = part_major_ptr[part];
         const types::idx_t *src_idx = part_minor_idx[part];
-        const real::storage_t *src_val = part_val[part];
+        const real::f16_t *src_val = part_val[part];
         const types::ptr_t src_begin = src_ptr[local_row];
         const types::ptr_t src_end = src_ptr[local_row + 1u];
         const types::ptr_t dst_begin = dst_major_ptr[i];
@@ -336,12 +337,12 @@ int build_shard_major_nnz_bucket_plan_raw(
 int rebuild_compressed_major_order_raw(
     const types::ptr_t *d_src_major_ptr,
     const types::idx_t *d_src_minor_idx,
-    const real::storage_t *d_src_val,
+    const real::f16_t *d_src_val,
     types::dim_t major_dim,
     const types::idx_t *d_major_order,
     types::ptr_t *d_dst_major_ptr,
     types::idx_t *d_dst_minor_idx,
-    real::storage_t *d_dst_val,
+    real::f16_t *d_dst_val,
     types::idx_t *d_inverse_major_order,
     void *d_scan_tmp,
     std::size_t scan_tmp_bytes,
@@ -370,14 +371,14 @@ int rebuild_compressed_major_order_raw(
 int rebuild_bucketed_shard_compressed_raw(
     const types::ptr_t * const *d_part_major_ptr,
     const types::idx_t * const *d_part_minor_idx,
-    const real::storage_t * const *d_part_val,
+    const real::f16_t * const *d_part_val,
     const types::idx_t *d_part_row_offsets,
     types::idx_t part_count,
     types::dim_t shard_rows,
     const types::idx_t *d_major_order,
     types::ptr_t *d_dst_major_ptr,
     types::idx_t *d_dst_minor_idx,
-    real::storage_t *d_dst_val,
+    real::f16_t *d_dst_val,
     types::idx_t *d_inverse_major_order,
     void *d_scan_tmp,
     std::size_t scan_tmp_bytes,

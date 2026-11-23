@@ -1,6 +1,7 @@
 #pragma once
 
 #include <CellShard/core/types.cuh>
+#include <Cellerator/common/compiler_annotations.hh>
 
 #include <stddef.h>
 #include <stdio.h>
@@ -20,7 +21,7 @@ struct alignas(16) triplet {
     real::storage_t *val;
 };
 
-__host__ __device__ __forceinline__ void init(
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE void init(
     triplet * __restrict__ m,
     types::dim_t rows = 0,
     types::dim_t cols = 0,
@@ -34,25 +35,25 @@ __host__ __device__ __forceinline__ void init(
     m->val = 0;
 }
 
-__host__ __device__ __forceinline__ size_t bytes(const triplet * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE size_t bytes(const triplet * __restrict__ m) {
     return sizeof(*m)
         + (size_t) m->nnz * sizeof(types::idx_t)
         + (size_t) m->nnz * sizeof(types::idx_t)
         + (size_t) m->nnz * sizeof(real::storage_t);
 }
 
-__host__ __device__ __forceinline__ const real::storage_t *at(const triplet * __restrict__ m, types::idx_t r, types::idx_t c) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE const real::storage_t *at(const triplet * __restrict__ m, types::idx_t r, types::idx_t c) {
     for (types::nnz_t i = 0; i < m->nnz; ++i) {
         if (m->rowIdx[i] == r && m->colIdx[i] == c) return m->val + i;
     }
     return 0;
 }
 
-__host__ __device__ __forceinline__ real::storage_t *at(triplet * __restrict__ m, types::idx_t r, types::idx_t c) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE real::storage_t *at(triplet * __restrict__ m, types::idx_t r, types::idx_t c) {
     return const_cast<real::storage_t *>(at(static_cast<const triplet *>(m), r, c));
 }
 
-__host__ __forceinline__ void clear(triplet * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE void clear(triplet * __restrict__ m) {
     if (m->storage != 0) free(m->storage);
     else {
         free(m->rowIdx);
@@ -62,7 +63,7 @@ __host__ __forceinline__ void clear(triplet * __restrict__ m) {
     init(m);
 }
 
-__host__ __forceinline__ int allocate(triplet * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE int allocate(triplet * __restrict__ m) {
     const size_t row_bytes = (size_t) m->nnz * sizeof(types::idx_t);
     const size_t col_offset = ((row_bytes + alignof(types::idx_t) - 1u) / alignof(types::idx_t)) * alignof(types::idx_t);
     const size_t val_offset = ((col_offset + (size_t) m->nnz * sizeof(types::idx_t) + alignof(real::storage_t) - 1u) / alignof(real::storage_t)) * alignof(real::storage_t);
@@ -89,7 +90,7 @@ __host__ __forceinline__ int allocate(triplet * __restrict__ m) {
     return 1;
 }
 
-__host__ __forceinline__ int concatenate_rows(triplet * __restrict__ dst, const triplet * __restrict__ top, const triplet * __restrict__ bottom) {
+CELLERATOR_CUDA_FORCEINLINE int concatenate_rows(triplet * __restrict__ dst, const triplet * __restrict__ top, const triplet * __restrict__ bottom) {
     if (top->cols != 0u && bottom->cols != 0u && top->cols != bottom->cols) {
         fprintf(stderr, "Error: cannot concatenate coo matrices with different column counts\n");
         return 0;
@@ -118,7 +119,7 @@ __host__ __forceinline__ int concatenate_rows(triplet * __restrict__ dst, const 
     return 1;
 }
 
-__host__ __forceinline__ int append_rows(triplet * __restrict__ dst, const triplet * __restrict__ src) {
+CELLERATOR_CUDA_FORCEINLINE int append_rows(triplet * __restrict__ dst, const triplet * __restrict__ src) {
     triplet merged;
     init(&merged);
     if (!concatenate_rows(&merged, dst, src)) return 0;

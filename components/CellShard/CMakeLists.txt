@@ -150,7 +150,7 @@ endif()
 if(NOT CELLSHARD_CELLERATOR_SOURCE_DIR)
     get_filename_component(cellshard_cellerator_parent
         "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
-    if(EXISTS "${cellshard_cellerator_parent}/include/Cellerator/common/types.cuh")
+    if(EXISTS "${cellshard_cellerator_parent}/include/Cellerator/common/types.hh")
         set(CELLSHARD_CELLERATOR_SOURCE_DIR "${cellshard_cellerator_parent}" CACHE PATH
             "Local Cellerator source tree used by CellShard." FORCE)
     endif()
@@ -1374,15 +1374,13 @@ install(FILES
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/tensor/quantized
 )
 install(FILES
-    "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/real.cuh"
-    "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/types.cuh"
+    "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/compiler_annotations.hh"
     "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/index_types.hh"
-    "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/cuda_compat.cuh"
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common
 )
 install(FILES
-    "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/detail/cuda_types.hh"
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common/detail
+    "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/memory/cuda/host_registration.hh"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/memory/cuda
 )
 install(FILES
     "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/real/format_codes.hh"

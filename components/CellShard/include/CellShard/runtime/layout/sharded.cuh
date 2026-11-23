@@ -5,6 +5,7 @@
 #endif
 
 #include "../../core/offset_span.cuh"
+#include <Cellerator/common/compiler_annotations.hh>
 #include "../../core/real.cuh"
 #include "../../access/fallback_adapters.cuh"
 #include <CellShard/formats/compressed.cuh>
@@ -90,7 +91,7 @@ inline bool adapt_legacy_row_partition(
 
 // Zero metadata and pointers. No deallocation happens here.
 template<typename MatrixT>
-__host__ __device__ __forceinline__ void init(sharded<MatrixT> * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE void init(sharded<MatrixT> * __restrict__ m) {
     m->rows = 0;
     m->cols = 0;
     m->nnz = 0;
@@ -109,45 +110,45 @@ __host__ __device__ __forceinline__ void init(sharded<MatrixT> * __restrict__ m)
 
 // Default auxiliary metadata for formats that do not need it.
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long partition_aux(const MatrixT *m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long partition_aux(const MatrixT *m) {
     return access::payload_traits<MatrixT>::aux(m);
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long partition_nnz(const MatrixT *m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long partition_nnz(const MatrixT *m) {
     return access::payload_traits<MatrixT>::nnz(m);
 }
 
 // Row -> part lookup over partition_offsets[].
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long find_partition(const sharded<MatrixT> * __restrict__ m, unsigned long row) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long find_partition(const sharded<MatrixT> * __restrict__ m, unsigned long row) {
     if (m->partition_offsets == 0 || m->num_partitions == 0) return m->num_partitions;
     return find_offset_span(row, m->partition_offsets, m->num_partitions);
 }
 
 // Row -> shard lookup over shard_offsets[].
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long find_shard(const sharded<MatrixT> * __restrict__ m, unsigned long row) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long find_shard(const sharded<MatrixT> * __restrict__ m, unsigned long row) {
     if (m->shard_offsets == 0 || m->num_shards == 0) return m->num_shards;
     return find_offset_span(row, m->shard_offsets, m->num_shards);
 }
 
 // Boundary helpers keep row ownership explicit and cheap.
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long first_row_in_partition(const sharded<MatrixT> * __restrict__ m, unsigned long partId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long first_row_in_partition(const sharded<MatrixT> * __restrict__ m, unsigned long partId) {
     if (partId >= m->num_partitions || m->partition_offsets == 0) return m->rows;
     return m->partition_offsets[partId];
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long last_row_in_partition(const sharded<MatrixT> * __restrict__ m, unsigned long partId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long last_row_in_partition(const sharded<MatrixT> * __restrict__ m, unsigned long partId) {
     if (partId >= m->num_partitions || m->partition_offsets == 0) return m->rows;
     return m->partition_offsets[partId + 1];
 }
 
 // Legal resharding cut points are exactly the part boundaries.
 template<typename MatrixT>
-__host__ __device__ __forceinline__ int row_is_partition_boundary(const sharded<MatrixT> * __restrict__ m, unsigned long row) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE int row_is_partition_boundary(const sharded<MatrixT> * __restrict__ m, unsigned long row) {
     if (row == 0 || row == m->rows) return 1;
     if (m->partition_offsets == 0 || m->num_partitions == 0) return 0;
     const unsigned long hit = find_partition(m, row);
@@ -157,7 +158,7 @@ __host__ __device__ __forceinline__ int row_is_partition_boundary(const sharded<
 
 // at() only works if the target part is already materialized in parts[].
 template<typename MatrixT>
-__host__ __device__ __forceinline__ const real::storage_t *at(const sharded<MatrixT> * __restrict__ m, unsigned long r, types::idx_t c) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE const real::storage_t *at(const sharded<MatrixT> * __restrict__ m, unsigned long r, types::idx_t c) {
     const unsigned long partId = find_partition(m, r);
     MatrixT *part = 0;
     if (partId >= m->num_partitions) return 0;
@@ -167,7 +168,7 @@ __host__ __device__ __forceinline__ const real::storage_t *at(const sharded<Matr
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ real::storage_t *at(sharded<MatrixT> * __restrict__ m, unsigned long r, types::idx_t c) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE real::storage_t *at(sharded<MatrixT> * __restrict__ m, unsigned long r, types::idx_t c) {
     const unsigned long partId = find_partition(m, r);
     MatrixT *part = 0;
     if (partId >= m->num_partitions) return 0;
@@ -179,14 +180,14 @@ __host__ __device__ __forceinline__ real::storage_t *at(sharded<MatrixT> * __res
 // Shard membership is derived from row boundaries and therefore stays aligned
 // to whole parts.
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long first_partition_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long first_partition_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
     if (m->shard_parts != 0 && shardId < m->num_shards) return m->shard_parts[shardId];
     if (shardId >= m->num_shards || m->num_partitions == 0) return m->num_partitions;
     return find_partition(m, m->shard_offsets[shardId]);
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long last_partition_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long last_partition_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
     unsigned long rowEnd = 0;
     if (m->shard_parts != 0 && shardId < m->num_shards) return m->shard_parts[shardId + 1];
     if (shardId >= m->num_shards) return m->num_partitions;
@@ -196,19 +197,19 @@ __host__ __device__ __forceinline__ unsigned long last_partition_in_shard(const 
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long first_row_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long first_row_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
     if (shardId >= m->num_shards || m->shard_offsets == 0) return m->rows;
     return m->shard_offsets[shardId];
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long last_row_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long last_row_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
     if (shardId >= m->num_shards || m->shard_offsets == 0) return m->rows;
     return m->shard_offsets[shardId + 1];
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long partition_count_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long partition_count_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
     const unsigned long begin = first_partition_in_shard(m, shardId);
     const unsigned long end = last_partition_in_shard(m, shardId);
     if (begin >= end) return 0;
@@ -216,7 +217,7 @@ __host__ __device__ __forceinline__ unsigned long partition_count_in_shard(const
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long rows_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long rows_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
     const unsigned long rowBegin = first_row_in_shard(m, shardId);
     const unsigned long rowEnd = last_row_in_shard(m, shardId);
     if (rowBegin >= rowEnd) return 0;
@@ -225,13 +226,13 @@ __host__ __device__ __forceinline__ unsigned long rows_in_shard(const sharded<Ma
 
 // Loaded-state checks look only at host materialization state.
 template<typename MatrixT>
-__host__ __device__ __forceinline__ int partition_loaded(const sharded<MatrixT> * __restrict__ m, unsigned long partId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE int partition_loaded(const sharded<MatrixT> * __restrict__ m, unsigned long partId) {
     if (partId >= m->num_partitions) return 0;
     return m->parts[partId] != 0;
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ int shard_loaded(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE int shard_loaded(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
     unsigned long begin = 0;
     unsigned long end = 0;
     unsigned long i = 0;
@@ -247,7 +248,7 @@ __host__ __device__ __forceinline__ int shard_loaded(const sharded<MatrixT> * __
 
 // Metadata reductions over the parts that make up one shard.
 template<typename MatrixT>
-__host__ __device__ __forceinline__ unsigned long nnz_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long nnz_in_shard(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
     unsigned long begin = 0;
     unsigned long end = 0;
     unsigned long i = 0;
@@ -263,7 +264,7 @@ __host__ __device__ __forceinline__ unsigned long nnz_in_shard(const sharded<Mat
 // Host-side footprint estimates. If a part is not materialized, the active
 // access payload trait reconstructs bytes from partition metadata.
 template<typename MatrixT>
-__host__ __device__ __forceinline__ std::size_t partition_bytes(const sharded<MatrixT> *m, unsigned long partId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE std::size_t partition_bytes(const sharded<MatrixT> *m, unsigned long partId) {
     if (partId >= m->num_partitions) return 0;
     return access::payload_traits<MatrixT>::host_bytes(
         m->parts[partId],
@@ -274,7 +275,7 @@ __host__ __device__ __forceinline__ std::size_t partition_bytes(const sharded<Ma
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ std::size_t bytes(const sharded<MatrixT> * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE std::size_t bytes(const sharded<MatrixT> * __restrict__ m) {
     unsigned long i = 0;
     std::size_t total = sizeof(*m);
     total += (std::size_t) m->partition_capacity * sizeof(MatrixT *);
@@ -289,7 +290,7 @@ __host__ __device__ __forceinline__ std::size_t bytes(const sharded<MatrixT> * _
 }
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ std::size_t shard_bytes(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE std::size_t shard_bytes(const sharded<MatrixT> * __restrict__ m, unsigned long shardId) {
     unsigned long begin = 0;
     unsigned long end = 0;
     unsigned long i = 0;

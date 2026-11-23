@@ -345,7 +345,7 @@ static inline int convert_manifest_dataset_to_hdf5(const manifest *m,
 
     codec.codec_id = 0u;
     codec.family = cellshard::dataset_codec_family_sliced_ell;
-    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
+    codec.value_code = (std::uint32_t) ::real::storage_code;
     codec.scale_value_code = 0u;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
     codec.flags = 0u;

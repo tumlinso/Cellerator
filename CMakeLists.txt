@@ -278,90 +278,11 @@ if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     cellerator_append_component_validation()
     return()
 endif()
-set(CELLERATOR_REAL_STORAGE "f16" CACHE STRING
-    "Default Cellerator real storage type for new, unspecified in-memory work: f16, bf16, fp8_e4m3, fp8_e5m2, f32, or f64")
-set_property(CACHE CELLERATOR_REAL_STORAGE PROPERTY STRINGS f16 bf16 fp8_e4m3 fp8_e5m2 f32 f64)
-set(CELLERATOR_REAL_COMPUTE "f32" CACHE STRING
-    "Default Cellerator real compute type for new, unspecified arithmetic: f32 or f64")
-set_property(CACHE CELLERATOR_REAL_COMPUTE PROPERTY STRINGS f32 f64)
-set(CELLERATOR_REAL_ACCUM "f32" CACHE STRING
-    "Default Cellerator real accumulation type for new, unspecified reductions: f32 or f64")
-set_property(CACHE CELLERATOR_REAL_ACCUM PROPERTY STRINGS f32 f64)
-set(CELLERATOR_DEFAULT_SPARSE_LAYOUT "blocked_ell" CACHE STRING
-    "Legacy compatibility fallback for unspecified sparse surfaces; the planner selects operation projections: blocked_ell, sliced_ell, or csr")
-set_property(CACHE CELLERATOR_DEFAULT_SPARSE_LAYOUT PROPERTY STRINGS blocked_ell sliced_ell csr)
-set(CELLERATOR_DEFAULT_TRAINING_PRECISION "f32" CACHE STRING
-    "Default training precision policy for future model configs: f32, mixed_f16, mixed_bf16, or mixed_fp8")
-set_property(CACHE CELLERATOR_DEFAULT_TRAINING_PRECISION PROPERTY STRINGS f32 mixed_f16 mixed_bf16 mixed_fp8)
-set(CELLERATOR_DEFAULT_GRADIENT_CLIPPING "none" CACHE STRING
-    "Default gradient clipping policy for future model configs: none, global_norm, or value")
-set_property(CACHE CELLERATOR_DEFAULT_GRADIENT_CLIPPING PROPERTY STRINGS none global_norm value)
-set(CELLERATOR_DEFAULT_GRADIENT_CLIP_NORM "1.0" CACHE STRING
-    "Default global-norm gradient clipping threshold for future model configs")
-set(CELLERATOR_DEFAULT_GRADIENT_CLIP_VALUE "1.0" CACHE STRING
-    "Default value gradient clipping threshold for future model configs")
-
-function(cellerator_require_choice var)
-    set(cellerator_allowed_values ${ARGN})
-    set(cellerator_choice_ok 0)
-    foreach(cellerator_allowed IN LISTS cellerator_allowed_values)
-        if("${${var}}" STREQUAL "${cellerator_allowed}")
-            set(cellerator_choice_ok 1)
-        endif()
-    endforeach()
-    if(NOT cellerator_choice_ok)
-        string(REPLACE ";" ", " cellerator_allowed_text "${cellerator_allowed_values}")
-        message(FATAL_ERROR "${var} must be one of: ${cellerator_allowed_text}")
-    endif()
-endfunction()
-
-function(cellerator_real_kind_code out_var real_kind)
-    if("${real_kind}" STREQUAL "f16")
-        set(${out_var} 3 PARENT_SCOPE)
-    elseif("${real_kind}" STREQUAL "f32")
-        set(${out_var} 4 PARENT_SCOPE)
-    elseif("${real_kind}" STREQUAL "f64")
-        set(${out_var} 5 PARENT_SCOPE)
-    elseif("${real_kind}" STREQUAL "bf16")
-        set(${out_var} 6 PARENT_SCOPE)
-    elseif("${real_kind}" STREQUAL "fp8_e4m3")
-        set(${out_var} 7 PARENT_SCOPE)
-    elseif("${real_kind}" STREQUAL "fp8_e5m2")
-        set(${out_var} 8 PARENT_SCOPE)
-    else()
-        message(FATAL_ERROR "unknown real kind: ${real_kind}")
-    endif()
-endfunction()
-
 # CE-EXOP provider inclusion and tuning are explicit build inputs.  The
 # provider policy module deliberately does not inspect a visible device or
 # mutate CMAKE_CUDA_ARCHITECTURES; binary content remains reproducible from
 # the cache configuration alone.
 include(cmake/providers/CelleratorProviderPolicy.cmake)
-
-cellerator_require_choice(CELLERATOR_REAL_STORAGE f16 bf16 fp8_e4m3 fp8_e5m2 f32 f64)
-cellerator_require_choice(CELLERATOR_REAL_COMPUTE f32 f64)
-cellerator_require_choice(CELLERATOR_REAL_ACCUM f32 f64)
-cellerator_require_choice(CELLERATOR_DEFAULT_SPARSE_LAYOUT blocked_ell sliced_ell csr)
-cellerator_require_choice(CELLERATOR_DEFAULT_TRAINING_PRECISION f32 mixed_f16 mixed_bf16 mixed_fp8)
-cellerator_require_choice(CELLERATOR_DEFAULT_GRADIENT_CLIPPING none global_norm value)
-
-cellerator_real_kind_code(CELLERATOR_REAL_STORAGE_CODE "${CELLERATOR_REAL_STORAGE}")
-cellerator_real_kind_code(CELLERATOR_REAL_COMPUTE_CODE "${CELLERATOR_REAL_COMPUTE}")
-cellerator_real_kind_code(CELLERATOR_REAL_ACCUM_CODE "${CELLERATOR_REAL_ACCUM}")
-set(CELLERATOR_REAL_STORAGE_ENUM "${CELLERATOR_REAL_STORAGE}")
-set(CELLERATOR_REAL_COMPUTE_ENUM "${CELLERATOR_REAL_COMPUTE}")
-set(CELLERATOR_REAL_ACCUM_ENUM "${CELLERATOR_REAL_ACCUM}")
-set(CELLERATOR_DEFAULT_SPARSE_LAYOUT_ENUM "${CELLERATOR_DEFAULT_SPARSE_LAYOUT}")
-set(CELLERATOR_DEFAULT_TRAINING_PRECISION_ENUM "${CELLERATOR_DEFAULT_TRAINING_PRECISION}")
-set(CELLERATOR_DEFAULT_GRADIENT_CLIPPING_ENUM "${CELLERATOR_DEFAULT_GRADIENT_CLIPPING}")
-
-message(STATUS
-    "Cellerator default real: storage=${CELLERATOR_REAL_STORAGE}, "
-    "compute=${CELLERATOR_REAL_COMPUTE}, accum=${CELLERATOR_REAL_ACCUM}")
-message(STATUS
-    "Cellerator compatibility sparse fallback: ${CELLERATOR_DEFAULT_SPARSE_LAYOUT} "
-    "(operation projections remain planner-selected)")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/detect_hardware.cmake)
 cellerator_detect_host_vector_ops()
@@ -393,16 +314,6 @@ include(src/compute/foundation_targets.cmake)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
-
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/config.cuh.in
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/config.cuh
-    @ONLY
-)
-
-install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/config.cuh"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
 
 function(cellerator_enable_perf target)
     set(cellerator_cuda_perf_flags

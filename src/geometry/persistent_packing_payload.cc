@@ -1,4 +1,6 @@
 #include "Cellerator/geometry/persistent_packing_payload.hh"
+#include <Cellerator/common/real/format_codes.hh>
+#include <Cellerator/common/real/fp16.cuh>
 
 #include <algorithm>
 #include <climits>
@@ -444,10 +446,10 @@ u64 reduction_identity(const feature_weighted_row_reduction_view &input) noexcep
     identity = splitmix64(identity ^ input.feature_weight_identity);
     identity = splitmix64(identity
         ^ (static_cast<u64>(feature_weighted_row_reduction_schema_version) << 32u)
-        ^ static_cast<u32>(cellerator::real::code_of<cellerator::real::storage_t>::code));
+        ^ static_cast<u32>(cellerator::real::value_f16));
     identity = splitmix64(identity
-        ^ (static_cast<u64>(cellerator::real::code_of<cellerator::real::compute_t>::code) << 32u)
-        ^ static_cast<u32>(cellerator::real::code_of<cellerator::real::accum_t>::code));
+        ^ (static_cast<u64>(cellerator::real::value_f32) << 32u)
+        ^ static_cast<u32>(cellerator::real::value_f32));
     return identity == 0u ? 1u : identity;
 }
 
@@ -633,7 +635,7 @@ validation_result validate_persistent_packing_payload_host(
         || header.row_group_width == 0u || header.feature_axis_fingerprint == 0u
         || header.feature_axis_fingerprint_version == 0u
         || header.row_domain_identity == 0u
-        || header.value_size_bytes != sizeof(cellerator::real::storage_t)
+        || header.value_size_bytes != sizeof(cellerator::real::f16_t)
         || header.global_row_begin > header.full_row_count
         || header.row_count > header.full_row_count - header.global_row_begin
         || header.objective_kind < static_cast<u32>(packing_exact_objective_kind::total_bytes)
@@ -743,15 +745,15 @@ make_persistent_feature_weighted_row_reduction_view(
     const persistent_packing_payload_view &payload,
     u64 feature_weight_identity,
     std::size_t feature_weight_capacity,
-    const cellerator::real::compute_t *feature_weights) noexcept {
+    const float *feature_weights) noexcept {
     feature_weighted_row_reduction_view result;
     result.schema_version = feature_weighted_row_reduction_schema_version;
     result.storage_type_code = static_cast<u32>(
-        cellerator::real::code_of<cellerator::real::storage_t>::code);
+        cellerator::real::value_f16);
     result.weight_type_code = static_cast<u32>(
-        cellerator::real::code_of<cellerator::real::compute_t>::code);
+        cellerator::real::value_f32);
     result.accumulation_type_code = static_cast<u32>(
-        cellerator::real::code_of<cellerator::real::accum_t>::code);
+        cellerator::real::value_f32);
     result.feature_weight_identity = feature_weight_identity;
     result.plan = payload.plan;
     result.tiles = payload.tiles;

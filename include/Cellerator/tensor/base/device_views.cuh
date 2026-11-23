@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/common/cuda_compat.cuh>
+#include <Cellerator/common/real/fp16.cuh>
 #include <Cellerator/tensor/base/blocked_ell_layout.hh>
 #include <Cellerator/tensor/base/sliced_ell_layout.hh>
 
@@ -15,7 +15,7 @@ struct alignas(16) BlockedEllView {
     unsigned int block_size;
     unsigned int ell_cols;
     unsigned int *blockColIdx;
-    __half *val;
+    ::cellerator::real::f16_t *val;
 };
 
 struct alignas(16) SlicedEllView {
@@ -29,13 +29,13 @@ struct alignas(16) SlicedEllView {
     // Rows within each slice are padded to its width and packed contiguously.
     unsigned int *slice_slot_offsets;
     unsigned int *col_idx;
-    __half *val;
+    ::cellerator::real::f16_t *val;
 };
 
 struct alignas(16) DiaView {
     unsigned int rows, cols, nnz, num_diagonals;
     int *offsets;
-    __half *val;
+    ::cellerator::real::f16_t *val;
 };
 
 } // namespace cellerator::tensor::base::device

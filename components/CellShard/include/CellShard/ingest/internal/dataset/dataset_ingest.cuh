@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <Cellerator/common/real/fp16.cuh>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -425,7 +426,7 @@ static inline int blocked_ell_to_canonical_coo(const ::cellerator::tensor::base:
                 const std::uint32_t col = (std::uint32_t) block_col * block_size + col_in_block;
                 const ::real::storage_t value =
                     part->val[(std::size_t) row * part->ell_cols + (std::size_t) slot * block_size + col_in_block];
-                if (__half2float(value) == 0.0f || col >= part->cols) continue;
+                if (::cellerator::real::load_f16_storage(value) == 0.0f || col >= part->cols) continue;
                 ++actual_nnz;
             }
         }
@@ -441,7 +442,7 @@ static inline int blocked_ell_to_canonical_coo(const ::cellerator::tensor::base:
                 const std::uint32_t col = (std::uint32_t) block_col * block_size + col_in_block;
                 const ::real::storage_t value =
                     part->val[(std::size_t) row * part->ell_cols + (std::size_t) slot * block_size + col_in_block];
-                if (__half2float(value) == 0.0f || col >= part->cols) continue;
+                if (::cellerator::real::load_f16_storage(value) == 0.0f || col >= part->cols) continue;
                 out->rowIdx[emitted] = row;
                 out->colIdx[emitted] = col;
                 out->val[emitted] = value;

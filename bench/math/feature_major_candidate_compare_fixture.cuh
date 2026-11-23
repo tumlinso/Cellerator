@@ -8,6 +8,7 @@ The production candidate kernels and layouts are unchanged by this harness.
 */
 
 #include <Cellerator/compute/candidate/csr_fallback_candidate.hh>
+#include <Cellerator/common/real/fp16.cuh>
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
 #include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
 #include <Cellerator/layout/projection/csr.hh>
@@ -38,9 +39,9 @@ namespace cp = cellpack;
 namespace {
 
 using clock_type = std::chrono::steady_clock;
-using storage_t = cellerator::real::storage_t;
-using compute_t = cellerator::real::compute_t;
-using accum_t = cellerator::real::accum_t;
+using storage_t = cellerator::real::f16_t;
+using compute_t = float;
+using accum_t = float;
 
 constexpr cp::u32 full_rows = 65536u;
 constexpr cp::u32 quick_rows = 256u;

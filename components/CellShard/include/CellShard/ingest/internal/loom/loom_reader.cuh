@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common/barcode_table.cuh"
+#include <Cellerator/common/real/fp16.cuh>
 #include "../common/feature_table.cuh"
 #include "../common/hdf5.hh"
 #include "../mtx/mtx_reader.cuh"
@@ -499,7 +500,7 @@ inline bool load_part_window_coo(const char *path,
                             if (idx >= part->nnz) goto done;
                             part->rowIdx[idx] = (::cellshard::types::idx_t) (global_row - row_offsets[global_part]);
                             part->colIdx[idx] = (::cellshard::types::idx_t) (feature_begin + f);
-                            part->val[idx] = __float2half((float) value);
+                            part->val[idx] = ::cellerator::real::store_f16_storage((float) value);
                         }
                     }
                 }

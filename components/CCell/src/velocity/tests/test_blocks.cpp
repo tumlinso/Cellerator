@@ -33,7 +33,7 @@ struct Fixture {
     std::array<uint16_t, rows * source_genes> half_unspliced = [this] {
         std::array<uint16_t, rows * source_genes> half;
         for (size_t i = 0; i < half.size(); ++i) {
-            half[i] = cellerator::numeric::round_f16(unspliced[i]);
+            half[i] = cellerator::real::round_f16(unspliced[i]);
         }
         return half;
     }();

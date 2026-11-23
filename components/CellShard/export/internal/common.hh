@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../include/CellShard/export/dataset_export.hh"
+#include <Cellerator/common/real/fp16.cuh>
 #include "../../include/CellShard/core/real.cuh"
 #include <Cellerator/tensor/base/blocked_ell.cuh>
 #include <CellShard/formats/compressed.cuh>
@@ -228,7 +229,7 @@ inline void append_blocked_ell_row(const ::cellerator::tensor::base::blocked_ell
         if (stored == ::cellerator::tensor::base::blocked_ell_invalid_col) continue;
         for (std::uint32_t col_in_block = 0u; col_in_block < block_size; ++col_in_block) {
             const std::uint32_t col = stored * block_size + col_in_block;
-            const float value = __half2float(
+            const float value = ::cellerator::real::load_f16_storage(
                 part->val[(std::size_t) row * part->ell_cols + (std::size_t) slot * block_size + col_in_block]);
             if (col >= part->cols || value == 0.0f) continue;
             indices->push_back((std::int64_t) col);
@@ -252,7 +253,7 @@ inline void append_sliced_ell_row(const ::cellerator::tensor::base::sliced_ell *
 
     for (std::uint32_t slot = 0u; slot < width; ++slot) {
         const std::uint32_t col = part->col_idx[slot_base + slot];
-        const float value = __half2float(part->val[slot_base + slot]);
+        const float value = ::cellerator::real::load_f16_storage(part->val[slot_base + slot]);
         if (col == ::cellerator::tensor::base::sliced_ell_invalid_col || col >= part->cols || value == 0.0f) continue;
         indices->push_back((std::int64_t) col);
         data->push_back(value);

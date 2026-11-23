@@ -4,7 +4,9 @@
 
 #include <Cellerator/math/reference/referee.hh>
 
-#include <Cellerator/common/cuda_compat.cuh>
+#if CELLERATOR_ENABLE_CUDA || defined(__CUDACC__)
+#include <cuda_runtime_api.h>
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -137,7 +139,7 @@ inline referee_status account_benchmark_memory(
     return {};
 }
 
-#if CELLERATOR_ENABLE_CUDA
+#if CELLERATOR_ENABLE_CUDA || defined(__CUDACC__)
 class cuda_event_timer {
 public:
     cuda_event_timer() noexcept = default;
@@ -257,7 +259,7 @@ inline referee_status write_benchmark_report_json(
         : referee_status{};
 }
 
-#if CELLERATOR_ENABLE_CUDA
+#if CELLERATOR_ENABLE_CUDA || defined(__CUDACC__)
 static_assert(!std::is_copy_constructible<cuda_event_timer>::value,
     "CUDA events must remain unique-owner resources");
 #endif

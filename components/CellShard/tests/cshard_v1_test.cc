@@ -1,4 +1,5 @@
 #include <CellShard/CellShard.hh>
+#include <Cellerator/common/real/fp16.cuh>
 #include <CellShard/io/cshard.hh>
 
 #include <cmath>
@@ -80,14 +81,14 @@ void fill_blocked_ell_part(::cellerator::tensor::base::blocked_ell *part) {
     require(allocate(part) != 0, "blocked-ELL allocate failed");
     part->blockColIdx[0] = 0u;
     part->blockColIdx[1] = 1u;
-    part->val[0] = __float2half(1.0f);
-    part->val[1] = __float2half(0.0f);
-    part->val[2] = __float2half(2.0f);
-    part->val[3] = __float2half(0.0f);
-    part->val[4] = __float2half(0.0f);
-    part->val[5] = __float2half(3.0f);
-    part->val[6] = __float2half(0.0f);
-    part->val[7] = __float2half(4.0f);
+    part->val[0] = ::cellerator::real::store_f16_storage(1.0f);
+    part->val[1] = ::cellerator::real::store_f16_storage(0.0f);
+    part->val[2] = ::cellerator::real::store_f16_storage(2.0f);
+    part->val[3] = ::cellerator::real::store_f16_storage(0.0f);
+    part->val[4] = ::cellerator::real::store_f16_storage(0.0f);
+    part->val[5] = ::cellerator::real::store_f16_storage(3.0f);
+    part->val[6] = ::cellerator::real::store_f16_storage(0.0f);
+    part->val[7] = ::cellerator::real::store_f16_storage(4.0f);
 }
 
 std::string write_small_blocked_csh5() {
@@ -159,7 +160,7 @@ std::string write_small_blocked_csh5() {
     cs::dataset_codec_descriptor codec{};
     codec.codec_id = 0u;
     codec.family = cs::dataset_codec_family_blocked_ell;
-    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
+    codec.value_code = (std::uint32_t) ::real::storage_code;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
     const cs::dataset_layout_view layout{
         2u,

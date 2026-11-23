@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cellerator/tensor/base/blocked_ell.cuh>
+#include <Cellerator/common/real/fp16.cuh>
 #include <CellShard/formats/triplet.cuh>
 
 #include <cub/cub.cuh>
@@ -26,7 +27,7 @@ struct blocked_ell_from_coo_cuda_workspace {
 
     unsigned int *d_row_idx;
     unsigned int *d_col_idx;
-    __half *d_val;
+    ::cellerator::real::f16_t *d_val;
 
     unsigned int *d_feature_to_global;
 
@@ -198,7 +199,7 @@ __global__ static void count_nonzero_blocked_values_kernel(types::u64 value_coun
         if (row < rows
             && block_col != ::cellerator::tensor::base::blocked_ell_invalid_col
             && col < cols
-            && __half2float(values[i]) != 0.0f) {
+            && ::cellerator::real::load_f16_storage(values[i]) != 0.0f) {
             ++local;
         }
     }
@@ -271,7 +272,7 @@ __host__ __forceinline__ int reserve_upload(blocked_ell_from_coo_cuda_workspace 
                                                      "cudaMalloc blocked_ell_from_coo row_idx")) return 0;
         if (!detail::blocked_ell_from_coo_cuda_check(cudaMalloc(&ws->d_col_idx, (std::size_t) nnz * sizeof(unsigned int)),
                                                      "cudaMalloc blocked_ell_from_coo col_idx")) return 0;
-        if (!detail::blocked_ell_from_coo_cuda_check(cudaMalloc(&ws->d_val, (std::size_t) nnz * sizeof(__half)),
+        if (!detail::blocked_ell_from_coo_cuda_check(cudaMalloc(&ws->d_val, (std::size_t) nnz * sizeof(::cellerator::real::f16_t)),
                                                      "cudaMalloc blocked_ell_from_coo val")) return 0;
     }
     ws->nnz_capacity = nnz;
@@ -487,7 +488,7 @@ __host__ __forceinline__ int upload_coo(blocked_ell_from_coo_cuda_workspace *ws,
                                                      "cudaMemcpyAsync blocked_ell_from_coo col_idx")) return 0;
         if (!detail::blocked_ell_from_coo_cuda_check(cudaMemcpyAsync(ws->d_val,
                                                                      src->val,
-                                                                     (std::size_t) src->nnz * sizeof(__half),
+                                                                     (std::size_t) src->nnz * sizeof(::cellerator::real::f16_t),
                                                                      cudaMemcpyHostToDevice,
                                                                      ws->stream),
                                                      "cudaMemcpyAsync blocked_ell_from_coo val")) return 0;

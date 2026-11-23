@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cerrno>
+#include <Cellerator/common/real/fp16.cuh>
 #include <climits>
 #include <cstddef>
 #include <cstdio>
@@ -47,19 +48,19 @@ struct compressed_workspace {
     void *h_block;
     unsigned int *h_row_idx;
     unsigned int *h_col_idx;
-    __half *h_in_val;
+    ::cellerator::real::f16_t *h_in_val;
     unsigned int *h_major_ptr;
     unsigned int *h_minor_idx;
-    __half *h_out_val;
+    ::cellerator::real::f16_t *h_out_val;
 
     void *d_block;
     unsigned int *d_row_idx;
     unsigned int *d_col_idx;
-    __half *d_in_val;
+    ::cellerator::real::f16_t *d_in_val;
     unsigned int *d_major_ptr;
     unsigned int *d_heads;
     unsigned int *d_minor_idx;
-    __half *d_out_val;
+    ::cellerator::real::f16_t *d_out_val;
     unsigned int *d_sort_cax;
     unsigned int *d_permutation;
 
@@ -140,29 +141,29 @@ static inline int reserve(compressed_workspace *ws, unsigned int cdim, unsigned 
     h_bytes += (std::size_t) nnz * sizeof(unsigned int);
     h_bytes = ingest_align_up_bytes(h_bytes, alignof(unsigned int));
     h_bytes += (std::size_t) nnz * sizeof(unsigned int);
-    h_bytes = ingest_align_up_bytes(h_bytes, alignof(__half));
-    h_bytes += (std::size_t) nnz * sizeof(__half);
+    h_bytes = ingest_align_up_bytes(h_bytes, alignof(::cellerator::real::f16_t));
+    h_bytes += (std::size_t) nnz * sizeof(::cellerator::real::f16_t);
     h_bytes = ingest_align_up_bytes(h_bytes, alignof(unsigned int));
     h_bytes += (std::size_t) (cdim + 1u) * sizeof(unsigned int);
     h_bytes = ingest_align_up_bytes(h_bytes, alignof(unsigned int));
     h_bytes += (std::size_t) nnz * sizeof(unsigned int);
-    h_bytes = ingest_align_up_bytes(h_bytes, alignof(__half));
-    h_bytes += (std::size_t) nnz * sizeof(__half);
+    h_bytes = ingest_align_up_bytes(h_bytes, alignof(::cellerator::real::f16_t));
+    h_bytes += (std::size_t) nnz * sizeof(::cellerator::real::f16_t);
 
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     d_bytes += (std::size_t) nnz * sizeof(unsigned int);
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     d_bytes += (std::size_t) nnz * sizeof(unsigned int);
-    d_bytes = ingest_align_up_bytes(d_bytes, alignof(__half));
-    d_bytes += (std::size_t) nnz * sizeof(__half);
+    d_bytes = ingest_align_up_bytes(d_bytes, alignof(::cellerator::real::f16_t));
+    d_bytes += (std::size_t) nnz * sizeof(::cellerator::real::f16_t);
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     d_bytes += (std::size_t) (cdim + 1u) * sizeof(unsigned int);
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     d_bytes += (std::size_t) cdim * sizeof(unsigned int);
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     d_bytes += (std::size_t) nnz * sizeof(unsigned int);
-    d_bytes = ingest_align_up_bytes(d_bytes, alignof(__half));
-    d_bytes += (std::size_t) nnz * sizeof(__half);
+    d_bytes = ingest_align_up_bytes(d_bytes, alignof(::cellerator::real::f16_t));
+    d_bytes += (std::size_t) nnz * sizeof(::cellerator::real::f16_t);
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     d_bytes += (std::size_t) nnz * sizeof(unsigned int);
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
@@ -204,17 +205,17 @@ static inline int reserve(compressed_workspace *ws, unsigned int cdim, unsigned 
     h_bytes = ingest_align_up_bytes(h_bytes, alignof(unsigned int));
     ws->h_col_idx = (unsigned int *) (h_base + h_bytes);
     h_bytes += (std::size_t) nnz * sizeof(unsigned int);
-    h_bytes = ingest_align_up_bytes(h_bytes, alignof(__half));
-    ws->h_in_val = (__half *) (h_base + h_bytes);
-    h_bytes += (std::size_t) nnz * sizeof(__half);
+    h_bytes = ingest_align_up_bytes(h_bytes, alignof(::cellerator::real::f16_t));
+    ws->h_in_val = (::cellerator::real::f16_t *) (h_base + h_bytes);
+    h_bytes += (std::size_t) nnz * sizeof(::cellerator::real::f16_t);
     h_bytes = ingest_align_up_bytes(h_bytes, alignof(unsigned int));
     ws->h_major_ptr = (unsigned int *) (h_base + h_bytes);
     h_bytes += (std::size_t) (cdim + 1u) * sizeof(unsigned int);
     h_bytes = ingest_align_up_bytes(h_bytes, alignof(unsigned int));
     ws->h_minor_idx = (unsigned int *) (h_base + h_bytes);
     h_bytes += (std::size_t) nnz * sizeof(unsigned int);
-    h_bytes = ingest_align_up_bytes(h_bytes, alignof(__half));
-    ws->h_out_val = (__half *) (h_base + h_bytes);
+    h_bytes = ingest_align_up_bytes(h_bytes, alignof(::cellerator::real::f16_t));
+    ws->h_out_val = (::cellerator::real::f16_t *) (h_base + h_bytes);
 
     d_bytes = 0;
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
@@ -223,9 +224,9 @@ static inline int reserve(compressed_workspace *ws, unsigned int cdim, unsigned 
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     ws->d_col_idx = (unsigned int *) (d_base + d_bytes);
     d_bytes += (std::size_t) nnz * sizeof(unsigned int);
-    d_bytes = ingest_align_up_bytes(d_bytes, alignof(__half));
-    ws->d_in_val = (__half *) (d_base + d_bytes);
-    d_bytes += (std::size_t) nnz * sizeof(__half);
+    d_bytes = ingest_align_up_bytes(d_bytes, alignof(::cellerator::real::f16_t));
+    ws->d_in_val = (::cellerator::real::f16_t *) (d_base + d_bytes);
+    d_bytes += (std::size_t) nnz * sizeof(::cellerator::real::f16_t);
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     ws->d_major_ptr = (unsigned int *) (d_base + d_bytes);
     d_bytes += (std::size_t) (cdim + 1u) * sizeof(unsigned int);
@@ -235,9 +236,9 @@ static inline int reserve(compressed_workspace *ws, unsigned int cdim, unsigned 
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     ws->d_minor_idx = (unsigned int *) (d_base + d_bytes);
     d_bytes += (std::size_t) nnz * sizeof(unsigned int);
-    d_bytes = ingest_align_up_bytes(d_bytes, alignof(__half));
-    ws->d_out_val = (__half *) (d_base + d_bytes);
-    d_bytes += (std::size_t) nnz * sizeof(__half);
+    d_bytes = ingest_align_up_bytes(d_bytes, alignof(::cellerator::real::f16_t));
+    ws->d_out_val = (::cellerator::real::f16_t *) (d_base + d_bytes);
+    d_bytes += (std::size_t) nnz * sizeof(::cellerator::real::f16_t);
     d_bytes = ingest_align_up_bytes(d_bytes, alignof(unsigned int));
     ws->d_sort_cax = (unsigned int *) (d_base + d_bytes);
     d_bytes += (std::size_t) nnz * sizeof(unsigned int);
@@ -361,7 +362,7 @@ static inline int load_transposed_byte_range_pinned_triplet(const char *path,
             if (out_row >= rows_out) goto fail;
             ws->h_row_idx[write_pos] = (unsigned int) out_row;
             ws->h_col_idx[write_pos] = (unsigned int) file_row;
-            ws->h_in_val[write_pos] = __float2half(value);
+            ws->h_in_val[write_pos] = ::cellerator::real::store_f16_storage(value);
             ++write_pos;
         }
 
@@ -399,11 +400,11 @@ static inline int build_pinned_triplet_to_compressed(compressed_workspace *ws,
     if (nnz != 0) {
         if (cudaMemcpyAsync(ws->d_row_idx, ws->h_row_idx, (std::size_t) nnz * sizeof(unsigned int), cudaMemcpyHostToDevice, ws->stream) != cudaSuccess) return 0;
         if (cudaMemcpyAsync(ws->d_col_idx, ws->h_col_idx, (std::size_t) nnz * sizeof(unsigned int), cudaMemcpyHostToDevice, ws->stream) != cudaSuccess) return 0;
-        if (cudaMemcpyAsync(ws->d_in_val, ws->h_in_val, (std::size_t) nnz * sizeof(__half), cudaMemcpyHostToDevice, ws->stream) != cudaSuccess) return 0;
+        if (cudaMemcpyAsync(ws->d_in_val, ws->h_in_val, (std::size_t) nnz * sizeof(::cellerator::real::f16_t), cudaMemcpyHostToDevice, ws->stream) != cudaSuccess) return 0;
     }
     const auto compressed_axis = axis == ::cellshard::compressed_by_col
         ? tensor_base::CompressedAxis::column : tensor_base::CompressedAxis::row;
-    const tensor_base::CoordinateView<unsigned int, const __half> source{
+    const tensor_base::CoordinateView<unsigned int, const ::cellerator::real::f16_t> source{
         rows, cols, nnz, ws->d_row_idx, ws->d_col_idx, ws->d_in_val};
     if (!matrix_convert::build_compressed_from_coo_library(
             source, compressed_axis, ws->d_major_ptr, ws->d_sort_cax, ws->d_minor_idx,
@@ -415,7 +416,7 @@ static inline int build_pinned_triplet_to_compressed(compressed_workspace *ws,
     if (cudaMemcpyAsync(ws->h_major_ptr, ws->d_major_ptr, (std::size_t) (cdim + 1) * sizeof(unsigned int), cudaMemcpyDeviceToHost, ws->stream) != cudaSuccess) return 0;
     if (nnz != 0) {
         if (cudaMemcpyAsync(ws->h_minor_idx, ws->d_minor_idx, (std::size_t) nnz * sizeof(unsigned int), cudaMemcpyDeviceToHost, ws->stream) != cudaSuccess) return 0;
-        if (cudaMemcpyAsync(ws->h_out_val, ws->d_out_val, (std::size_t) nnz * sizeof(__half), cudaMemcpyDeviceToHost, ws->stream) != cudaSuccess) return 0;
+        if (cudaMemcpyAsync(ws->h_out_val, ws->d_out_val, (std::size_t) nnz * sizeof(::cellerator::real::f16_t), cudaMemcpyDeviceToHost, ws->stream) != cudaSuccess) return 0;
     }
     return cudaStreamSynchronize(ws->stream) == cudaSuccess;
 }
@@ -429,7 +430,7 @@ static inline int store_row_compressed_part_window(const char *part_prefix,
                                                    unsigned long part_count,
                                                    const unsigned int *row_ptr,
                                                    const unsigned int *col_idx,
-                                                   const __half *val) {
+                                                   const ::cellerator::real::f16_t *val) {
     unsigned long part_i = 0;
     unsigned long local_row_begin = 0;
 
@@ -454,7 +455,7 @@ static inline int store_row_compressed_part_window(const char *part_prefix,
                                                part_row_ptr,
                                                col_idx + nnz_begin,
                                                val + nnz_begin,
-                                               sizeof(__half))) {
+                                               sizeof(::cellerator::real::f16_t))) {
             std::free(part_row_ptr);
             return 0;
         }

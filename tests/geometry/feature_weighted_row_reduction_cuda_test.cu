@@ -1,4 +1,5 @@
 #include "Cellerator/geometry/feature_weighted_row_reduction_cuda.hh"
+#include <Cellerator/common/real/fp16.cuh>
 
 #include <cuda_runtime.h>
 
@@ -11,9 +12,9 @@
 namespace {
 
 namespace cp = cellpack;
-using storage_t = cellerator::real::storage_t;
-using compute_t = cellerator::real::compute_t;
-using accum_t = cellerator::real::accum_t;
+using storage_t = cellerator::real::f16_t;
+using compute_t = float;
+using accum_t = float;
 
 void require(bool condition, const char *message) {
     if (!condition) {

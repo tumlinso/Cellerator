@@ -1,4 +1,5 @@
 #include "Cellerator/geometry/apply_plan.hh"
+#include <Cellerator/common/real/fp16.cuh>
 #include "Cellerator/geometry/merge_cost.hh"
 #include "Cellerator/geometry/optimizer.hh"
 
@@ -58,11 +59,11 @@ struct FullSource {
         0u, 1u, 4u,
         2u, 3u, 5u
     };
-    ::cellerator::real::storage_t values[20];
+    ::cellerator::real::f16_t values[20];
 
     FullSource() {
         for (std::size_t entry = 0u; entry < 20u; ++entry)
-            values[entry] = __float2half(static_cast<float>(entry + 1u));
+            values[entry] = ::cellerator::real::store_f16_storage(static_cast<float>(entry + 1u));
     }
 
     matrix::CompressedStructureView<types::idx_t> view() const {
@@ -111,11 +112,11 @@ struct optimizer_workspace {
 
 void require_exact_round_trip(
     const matrix::CompressedStructureView<types::idx_t> &source,
-    const ::cellerator::real::storage_t *source_values,
+    const ::cellerator::real::f16_t *source_values,
     const cellpack::frozen_packing_plan &plan,
     const cellpack::ordered_plan_partition_view &ordered,
     const std::vector<types::idx_t> &ordered_features,
-    const std::vector<::cellerator::real::storage_t> &ordered_values) {
+    const std::vector<::cellerator::real::f16_t> &ordered_values) {
     require(ordered.row_count == source.rows && ordered.nnz_count == source.nnz,
         "ordered full-partition shape mismatch");
     for (u32 row = 0u; row < source.rows; ++row) {
@@ -138,7 +139,7 @@ void require_exact_round_trip(
             for (u32 source_entry = source.major_ptr[row]; source_entry < source.major_ptr[row + 1u]; ++source_entry) {
                 if (source.minor_idx[source_entry] != canonical) continue;
                 require(std::memcmp(&ordered_values[output_entry], &source_values[source_entry],
-                            sizeof(::cellerator::real::storage_t)) == 0,
+                            sizeof(::cellerator::real::f16_t)) == 0,
                     "ordered value bytes changed during application");
                 found = true;
                 break;
@@ -279,14 +280,14 @@ void run_pipeline() {
     application_source.row_count = source.rows;
     application_source.feature_count = source.cols;
     application_source.nnz_count = source.nnz;
-    application_source.value_size_bytes = sizeof(::cellerator::real::storage_t);
+    application_source.value_size_bytes = sizeof(::cellerator::real::f16_t);
     application_source.row_offsets = source.major_ptr;
     application_source.canonical_feature_ids = source.minor_idx;
     application_source.values = fixture.values;
 
     std::vector<u32> output_row_offsets(static_cast<std::size_t>(source.rows) + 1u);
     std::vector<u32> output_blocks(source.nnz), output_locals(source.nnz), output_features(source.nnz);
-    std::vector<::cellerator::real::storage_t> output_values(source.nnz);
+    std::vector<::cellerator::real::f16_t> output_values(source.nnz);
     std::vector<u64> keys(source.nnz);
     std::vector<u32> source_order(source.nnz);
     cellpack::plan_application_host_workspace_view application_workspace;

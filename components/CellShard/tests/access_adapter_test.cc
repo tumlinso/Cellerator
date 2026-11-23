@@ -1,4 +1,5 @@
 #include <CellShard/access.hh>
+#include <Cellerator/common/real/fp16.cuh>
 
 #if CELLSHARD_ENABLE_CUDA
 #include <CellShard/formats/compressed_device_view.cuh>
@@ -30,8 +31,8 @@ void require(bool condition, const char *message) {
     std::exit(1);
 }
 
-bool close_half(__half value, float expected) {
-    return __builtin_fabsf(__half2float(value) - expected) < 1.0e-3f;
+bool close_half(::cellerator::real::f16_t value, float expected) {
+    return __builtin_fabsf(::cellerator::real::load_f16_storage(value) - expected) < 1.0e-3f;
 }
 
 std::size_t align_up(std::size_t value, std::size_t alignment) {
@@ -46,14 +47,14 @@ void check_dense() {
     require(formats::bytes(&matrix) == sizeof(matrix) + 6u * sizeof(types::storage_value_t), "dense descriptor byte count changed");
     require(formats::allocate(&matrix) != 0, "dense allocation failed");
     require(matrix.storage == matrix.val, "dense value pointer no longer begins at owned storage");
-    *formats::at(&matrix, 1u, 2u) = __float2half(7.0f);
+    *formats::at(&matrix, 1u, 2u) = ::cellerator::real::store_f16_storage(7.0f);
     require(close_half(*formats::at(&matrix, 1u, 2u), 7.0f), "dense row-major mapping changed");
     require(formats::at(&matrix, 2u, 0u) == nullptr, "dense bounds check changed");
     formats::clear(&matrix);
 
-    __half columns[8]{};
+    ::cellerator::real::f16_t columns[8]{};
     formats::attach(&matrix, 3u, 2u, columns, formats::dense_col_major, 4u);
-    columns[1u * 4u + 2u] = __float2half(9.0f);
+    columns[1u * 4u + 2u] = ::cellerator::real::store_f16_storage(9.0f);
     require(formats::offset(&matrix, 2u, 1u) == 6u, "dense column-major offset changed");
     require(close_half(*formats::at(&matrix, 2u, 1u), 9.0f), "dense column-major mapping changed");
 }
@@ -74,9 +75,9 @@ void check_compressed() {
     const types::idx_t columns[] = {0u, 3u, 2u};
     std::memcpy(matrix.majorPtr, row_ptr, sizeof(row_ptr));
     std::memcpy(matrix.minorIdx, columns, sizeof(columns));
-    matrix.val[0] = __float2half(1.0f);
-    matrix.val[1] = __float2half(3.0f);
-    matrix.val[2] = __float2half(6.0f);
+    matrix.val[0] = ::cellerator::real::store_f16_storage(1.0f);
+    matrix.val[1] = ::cellerator::real::store_f16_storage(3.0f);
+    matrix.val[2] = ::cellerator::real::store_f16_storage(6.0f);
     require(formats::bytes(&matrix) == sizeof(matrix) + 4u * sizeof(types::ptr_t)
                 + 3u * sizeof(types::idx_t) + 3u * sizeof(types::storage_value_t),
             "compressed descriptor/payload byte count changed");
@@ -91,7 +92,7 @@ void check_compressed() {
     const types::idx_t rows[] = {2u, 0u};
     std::memcpy(matrix.majorPtr, col_ptr, sizeof(col_ptr));
     std::memcpy(matrix.minorIdx, rows, sizeof(rows));
-    matrix.val[0] = __float2half(8.0f); matrix.val[1] = __float2half(9.0f);
+    matrix.val[0] = ::cellerator::real::store_f16_storage(8.0f); matrix.val[1] = ::cellerator::real::store_f16_storage(9.0f);
     require(formats::major_dim(&matrix) == 4u && formats::minor_dim(&matrix) == 3u, "CSC axes changed");
     require(close_half(*formats::at(&matrix, 2u, 1u), 8.0f), "CSC lookup changed");
     require(close_half(*formats::at(&matrix, 0u, 3u), 9.0f), "CSC second lookup changed");
@@ -108,10 +109,10 @@ void check_coo() {
             "COO descriptor/payload byte count changed");
     matrix.rowIdx[0] = 1u;
     matrix.colIdx[0] = 2u;
-    matrix.val[0] = __float2half(5.0f);
+    matrix.val[0] = ::cellerator::real::store_f16_storage(5.0f);
     matrix.rowIdx[1] = 0u;
     matrix.colIdx[1] = 1u;
-    matrix.val[1] = __float2half(4.0f);
+    matrix.val[1] = ::cellerator::real::store_f16_storage(4.0f);
     require(close_half(*formats::at(&matrix, 1u, 2u), 5.0f), "COO coordinate lookup changed");
     require(formats::at(&matrix, 1u, 1u) == nullptr, "COO absent lookup changed");
     formats::clear(&matrix);
@@ -229,8 +230,8 @@ int main() {
     assert(fake_pack_binding_value.selected_format == dataset_execution_format_dense);
 
     types::storage_value_t dense_values[6] = {
-        __float2half(1.0f), __float2half(2.0f), __float2half(3.0f),
-        __float2half(4.0f), __float2half(5.0f), __float2half(6.0f)
+        ::cellerator::real::store_f16_storage(1.0f), ::cellerator::real::store_f16_storage(2.0f), ::cellerator::real::store_f16_storage(3.0f),
+        ::cellerator::real::store_f16_storage(4.0f), ::cellerator::real::store_f16_storage(5.0f), ::cellerator::real::store_f16_storage(6.0f)
     };
     ::cellshard::dense dense_matrix{};
     attach(&dense_matrix, 2u, 3u, dense_values, ::cellshard::dense_row_major);
@@ -269,12 +270,12 @@ int main() {
             nullptr
         });
     assert(dense_copy.status == 1u);
-    assert(__half2float(dense_out[0]) == 5.0f);
-    assert(__half2float(dense_out[1]) == 6.0f);
+    assert(::cellerator::real::load_f16_storage(dense_out[0]) == 5.0f);
+    assert(::cellerator::real::load_f16_storage(dense_out[1]) == 6.0f);
 
     types::ptr_t ptrs[] = {0u, 1u, 1u, 2u};
     types::idx_t idx[] = {2u, 0u};
-    types::storage_value_t vals[] = {__float2half(7.0f), __float2half(8.0f)};
+    types::storage_value_t vals[] = {::cellerator::real::store_f16_storage(7.0f), ::cellerator::real::store_f16_storage(8.0f)};
     ::cellshard::compressed compressed_matrix{};
     init(&compressed_matrix, 3u, 4u, 2u, ::cellshard::compressed_by_row);
     compressed_matrix.majorPtr = ptrs;

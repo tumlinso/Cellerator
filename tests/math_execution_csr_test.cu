@@ -1,4 +1,4 @@
-#include <Cellerator/layout/projection/packed_dense_operand.hh>
+#include <Cellerator/layout/projection/packed_dense_operand_cuda.hh>
 #include <Cellerator/math/reference/referee.hh>
 
 #include <cuda_runtime_api.h>

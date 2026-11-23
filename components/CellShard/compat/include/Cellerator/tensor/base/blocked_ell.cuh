@@ -1,8 +1,11 @@
 #pragma once
 
 #include <cstdlib>
+#include <Cellerator/common/compiler_annotations.hh>
+#include <Cellerator/common/real/fp16.cuh>
+#include <Cellerator/memory/cuda/host_registration.hh>
 
-#include <Cellerator/common/types.cuh>
+#include <Cellerator/common/index_types.hh>
 #include <Cellerator/tensor/base/blocked_ell_layout.hh>
 
 namespace cellerator::tensor::base {
@@ -20,41 +23,41 @@ struct alignas(16) blocked_ell {
 
     void *storage;
     types::idx_t *blockColIdx;
-    real::storage_t *val;
+    real::f16_t *val;
 };
 
-__host__ __device__ __forceinline__ types::dim_t row_block_count(const blocked_ell * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE types::dim_t row_block_count(const blocked_ell * __restrict__ m) {
     if (m->block_size == 0u) return 0u;
     return (m->rows + m->block_size - 1u) / m->block_size;
 }
 
-__host__ __device__ __forceinline__ types::dim_t col_block_count(const blocked_ell * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE types::dim_t col_block_count(const blocked_ell * __restrict__ m) {
     if (m->block_size == 0u) return 0u;
     return (m->cols + m->block_size - 1u) / m->block_size;
 }
 
-__host__ __device__ __forceinline__ types::u32 ell_width_blocks(const blocked_ell * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE types::u32 ell_width_blocks(const blocked_ell * __restrict__ m) {
     if (m->block_size == 0u || m->ell_cols == 0u) return 0u;
     return m->ell_cols / m->block_size;
 }
 
-__host__ __device__ __forceinline__ unsigned long pack_blocked_ell_aux(types::u32 block_size, unsigned long ell_width) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long pack_blocked_ell_aux(types::u32 block_size, unsigned long ell_width) {
     return ((unsigned long) ell_width << 16u) | (unsigned long) block_size;
 }
 
-__host__ __device__ __forceinline__ types::u32 unpack_blocked_ell_block_size(unsigned long aux) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE types::u32 unpack_blocked_ell_block_size(unsigned long aux) {
     return (types::u32) (aux & 0xfffful);
 }
 
-__host__ __device__ __forceinline__ unsigned long unpack_blocked_ell_ell_width(unsigned long aux) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE unsigned long unpack_blocked_ell_ell_width(unsigned long aux) {
     return aux >> 16u;
 }
 
-__host__ __device__ __forceinline__ types::u32 unpack_blocked_ell_cols(unsigned long aux) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE types::u32 unpack_blocked_ell_cols(unsigned long aux) {
     return (types::u32) (unpack_blocked_ell_ell_width(aux) * (unsigned long) unpack_blocked_ell_block_size(aux));
 }
 
-__host__ __device__ __forceinline__ void init(
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE void init(
     blocked_ell * __restrict__ m,
     types::dim_t rows = 0,
     types::dim_t cols = 0,
@@ -72,13 +75,13 @@ __host__ __device__ __forceinline__ void init(
     m->val = 0;
 }
 
-__host__ __device__ __forceinline__ std::size_t bytes(const blocked_ell * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE std::size_t bytes(const blocked_ell * __restrict__ m) {
     return sizeof(*m)
         + (std::size_t) row_block_count(m) * (std::size_t) ell_width_blocks(m) * sizeof(types::idx_t)
-        + (std::size_t) m->rows * (std::size_t) m->ell_cols * sizeof(real::storage_t);
+        + (std::size_t) m->rows * (std::size_t) m->ell_cols * sizeof(real::f16_t);
 }
 
-__host__ __device__ __forceinline__ const real::storage_t *at(const blocked_ell * __restrict__ m, types::dim_t r, types::idx_t c) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE const real::f16_t *at(const blocked_ell * __restrict__ m, types::dim_t r, types::idx_t c) {
     const types::u32 block = m->block_size;
     const types::u32 width = ell_width_blocks(m);
     const types::u32 row_block = block == 0u ? 0u : r / block;
@@ -94,12 +97,12 @@ __host__ __device__ __forceinline__ const real::storage_t *at(const blocked_ell 
     return 0;
 }
 
-__host__ __device__ __forceinline__ real::storage_t *at(blocked_ell * __restrict__ m, types::dim_t r, types::idx_t c) {
-    return const_cast<real::storage_t *>(at(static_cast<const blocked_ell *>(m), r, c));
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE real::f16_t *at(blocked_ell * __restrict__ m, types::dim_t r, types::idx_t c) {
+    return const_cast<real::f16_t *>(at(static_cast<const blocked_ell *>(m), r, c));
 }
 
-__host__ __forceinline__ void clear(blocked_ell * __restrict__ m) {
-    if ((m->flags & blocked_ell_host_registered) != 0u && m->storage != 0) ::cellerator::cuda_compat::unregister_host_memory(m->storage);
+CELLERATOR_CUDA_FORCEINLINE void clear(blocked_ell * __restrict__ m) {
+    if ((m->flags & blocked_ell_host_registered) != 0u && m->storage != 0) ::cellerator::memory::cuda::unregister_host_memory(m->storage);
     if (m->storage != 0) std::free(m->storage);
     else {
         std::free(m->blockColIdx);
@@ -108,13 +111,13 @@ __host__ __forceinline__ void clear(blocked_ell * __restrict__ m) {
     init(m);
 }
 
-__host__ __forceinline__ int allocate(blocked_ell * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE int allocate(blocked_ell * __restrict__ m) {
     const std::size_t idx_bytes = (std::size_t) row_block_count(m) * (std::size_t) ell_width_blocks(m) * sizeof(types::idx_t);
-    const std::size_t val_offset = ((idx_bytes + alignof(real::storage_t) - 1u) / alignof(real::storage_t)) * alignof(real::storage_t);
-    const std::size_t total_bytes = val_offset + (std::size_t) m->rows * (std::size_t) m->ell_cols * sizeof(real::storage_t);
+    const std::size_t val_offset = ((idx_bytes + alignof(real::f16_t) - 1u) / alignof(real::f16_t)) * alignof(real::f16_t);
+    const std::size_t total_bytes = val_offset + (std::size_t) m->rows * (std::size_t) m->ell_cols * sizeof(real::f16_t);
     void *storage = 0;
 
-    if ((m->flags & blocked_ell_host_registered) != 0u && m->storage != 0) ::cellerator::cuda_compat::unregister_host_memory(m->storage);
+    if ((m->flags & blocked_ell_host_registered) != 0u && m->storage != 0) ::cellerator::memory::cuda::unregister_host_memory(m->storage);
     if (m->storage != 0) std::free(m->storage);
     else {
         std::free(m->blockColIdx);
@@ -130,39 +133,29 @@ __host__ __forceinline__ int allocate(blocked_ell * __restrict__ m) {
     if (storage == 0) return 0;
     m->storage = storage;
     m->blockColIdx = idx_bytes != 0u ? (types::idx_t *) storage : 0;
-    m->val = m->rows != 0u && m->ell_cols != 0u ? (real::storage_t *) ((char *) storage + val_offset) : 0;
+    m->val = m->rows != 0u && m->ell_cols != 0u ? (real::f16_t *) ((char *) storage + val_offset) : 0;
     return 1;
 }
 
-__host__ __forceinline__ int pin(blocked_ell * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE int pin(blocked_ell * __restrict__ m) {
     const std::size_t idx_bytes = (std::size_t) row_block_count(m) * (std::size_t) ell_width_blocks(m) * sizeof(types::idx_t);
-    const std::size_t val_offset = ((idx_bytes + alignof(real::storage_t) - 1u) / alignof(real::storage_t)) * alignof(real::storage_t);
-    const std::size_t total_bytes = val_offset + (std::size_t) m->rows * (std::size_t) m->ell_cols * sizeof(real::storage_t);
-    cudaError_t err = cudaSuccess;
+    const std::size_t val_offset = ((idx_bytes + alignof(real::f16_t) - 1u) / alignof(real::f16_t)) * alignof(real::f16_t);
+    const std::size_t total_bytes = val_offset + (std::size_t) m->rows * (std::size_t) m->ell_cols * sizeof(real::f16_t);
 
     if (m->storage == 0 || total_bytes == 0u) return 1;
     if ((m->flags & blocked_ell_host_registered) != 0u) return 1;
-    err = ::cellerator::cuda_compat::register_host_memory(m->storage, total_bytes);
-    if (err == cudaSuccess) {
-        m->flags |= blocked_ell_host_registered;
-        return 1;
-    }
-    if (err == cudaErrorHostMemoryAlreadyRegistered) {
-        ::cellerator::cuda_compat::clear_host_registration_error();
-        m->flags |= blocked_ell_host_registered;
-        return 1;
-    }
-    ::cellerator::cuda_compat::clear_host_registration_error();
-    return 0;
+    if (!::cellerator::memory::cuda::register_host_memory(m->storage, total_bytes)) return 0;
+    m->flags |= blocked_ell_host_registered;
+    return 1;
 }
 
-__host__ __forceinline__ void unpin(blocked_ell * __restrict__ m) {
+CELLERATOR_CUDA_FORCEINLINE void unpin(blocked_ell * __restrict__ m) {
     if ((m->flags & blocked_ell_host_registered) == 0u || m->storage == 0) return;
-    ::cellerator::cuda_compat::unregister_host_memory(m->storage);
+    ::cellerator::memory::cuda::unregister_host_memory(m->storage);
     m->flags &= ~blocked_ell_host_registered;
 }
 
-__host__ __device__ __forceinline__ int host_registered(const blocked_ell * __restrict__ m) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE int host_registered(const blocked_ell * __restrict__ m) {
     return (m->flags & blocked_ell_host_registered) != 0u;
 }
 

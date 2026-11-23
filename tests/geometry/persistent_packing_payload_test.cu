@@ -1,4 +1,5 @@
 #include "Cellerator/geometry/persistent_packing_payload.hh"
+#include <Cellerator/common/real/fp16.cuh>
 #include "Cellerator/geometry/feature_weighted_row_reduction_cuda.hh"
 
 #include <CellShard/io/pack/execution_payload.cuh>
@@ -17,9 +18,9 @@ namespace {
 
 namespace cp = cellpack;
 namespace cs = cellshard;
-using storage_t = cellerator::real::storage_t;
-using compute_t = cellerator::real::compute_t;
-using accum_t = cellerator::real::accum_t;
+using storage_t = cellerator::real::f16_t;
+using compute_t = float;
+using accum_t = float;
 
 void require(bool condition, const char *message) {
     if (!condition) {

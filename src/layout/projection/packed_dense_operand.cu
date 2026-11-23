@@ -7,7 +7,7 @@ a 15-sample median 0.191168 ms per fused pack versus 89.9482 ms for the exact
 host-issued cudaMemcpyAsync-per-row reference (470.5x); outputs agreed bitwise.
 */
 
-#include <Cellerator/layout/projection/packed_dense_operand.hh>
+#include <Cellerator/layout/projection/packed_dense_operand_cuda.hh>
 
 #include <algorithm>
 #include <cstring>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "adapter.cuh"
+#include <Cellerator/common/compiler_annotations.hh>
 #include <CellShard/formats/compressed.cuh>
 #include <CellShard/formats/dense.cuh>
 
@@ -23,23 +24,23 @@ struct compressed_fallback_binding {
 
 template<>
 struct payload_traits<::cellshard::dense> {
-    __host__ __device__ __forceinline__ static std::uint64_t rows(const ::cellshard::dense *matrix) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t rows(const ::cellshard::dense *matrix) {
         return matrix != nullptr ? matrix->rows : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t cols(const ::cellshard::dense *matrix) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t cols(const ::cellshard::dense *matrix) {
         return matrix != nullptr ? matrix->cols : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t nnz(const ::cellshard::dense *matrix) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t nnz(const ::cellshard::dense *matrix) {
         return matrix != nullptr ? static_cast<std::uint64_t>(matrix->rows) * static_cast<std::uint64_t>(matrix->cols) : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t aux(const ::cellshard::dense *) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t aux(const ::cellshard::dense *) {
         return 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::size_t host_bytes(
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::size_t host_bytes(
         const ::cellshard::dense *matrix,
         std::uint64_t,
         std::uint64_t,
@@ -48,7 +49,7 @@ struct payload_traits<::cellshard::dense> {
         return matrix != nullptr ? bytes(matrix) : sizeof(::cellshard::dense) + static_cast<std::size_t>(nnz) * sizeof(types::storage_value_t);
     }
 
-    __host__ __device__ __forceinline__ static const types::storage_value_t *debug_at(
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static const types::storage_value_t *debug_at(
         const ::cellshard::dense *matrix,
         std::uint64_t row,
         types::idx_t col) {
@@ -58,23 +59,23 @@ struct payload_traits<::cellshard::dense> {
 
 template<>
 struct payload_traits<::cellshard::compressed> {
-    __host__ __device__ __forceinline__ static std::uint64_t rows(const ::cellshard::compressed *matrix) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t rows(const ::cellshard::compressed *matrix) {
         return matrix != nullptr ? matrix->rows : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t cols(const ::cellshard::compressed *matrix) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t cols(const ::cellshard::compressed *matrix) {
         return matrix != nullptr ? matrix->cols : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t nnz(const ::cellshard::compressed *matrix) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t nnz(const ::cellshard::compressed *matrix) {
         return matrix != nullptr ? matrix->nnz : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t aux(const ::cellshard::compressed *matrix) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t aux(const ::cellshard::compressed *matrix) {
         return matrix != nullptr ? matrix->axis : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::size_t host_bytes(
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::size_t host_bytes(
         const ::cellshard::compressed *matrix,
         std::uint64_t rows,
         std::uint64_t cols,
@@ -88,7 +89,7 @@ struct payload_traits<::cellshard::compressed> {
                                      + static_cast<std::size_t>(nnz) * sizeof(types::storage_value_t);
     }
 
-    __host__ __device__ __forceinline__ static const types::storage_value_t *debug_at(
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static const types::storage_value_t *debug_at(
         const ::cellshard::compressed *matrix,
         std::uint64_t row,
         types::idx_t col) {

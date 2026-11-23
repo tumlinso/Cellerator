@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../core/types.cuh"
+#include <Cellerator/common/compiler_annotations.hh>
 #include "../io/common/generation.hh"
 #include "../io/common/layout.hh"
 #include "../io/common/partition.hh"
@@ -172,23 +173,23 @@ struct archive_to_pack;
 
 template<class MatrixT>
 struct payload_traits {
-    __host__ __device__ __forceinline__ static std::uint64_t rows(const MatrixT *matrix) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t rows(const MatrixT *matrix) {
         return matrix != nullptr ? matrix->rows : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t cols(const MatrixT *matrix) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t cols(const MatrixT *matrix) {
         return matrix != nullptr ? matrix->cols : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t nnz(const MatrixT *matrix) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t nnz(const MatrixT *matrix) {
         return matrix != nullptr ? matrix->nnz : 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::uint64_t aux(const MatrixT *) {
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::uint64_t aux(const MatrixT *) {
         return 0u;
     }
 
-    __host__ __device__ __forceinline__ static std::size_t host_bytes(
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static std::size_t host_bytes(
         const MatrixT *matrix,
         std::uint64_t,
         std::uint64_t,
@@ -197,7 +198,7 @@ struct payload_traits {
         return matrix != nullptr ? bytes(matrix) : 0u;
     }
 
-    __host__ __device__ __forceinline__ static const types::storage_value_t *debug_at(
+    CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE static const types::storage_value_t *debug_at(
         const MatrixT *matrix,
         std::uint64_t row,
         types::idx_t col) {

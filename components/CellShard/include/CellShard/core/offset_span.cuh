@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Cellerator/common/compiler_annotations.hh>
+
 namespace cellshard {
 
 // Binary-search an offset table laid out like:
@@ -9,7 +11,7 @@ namespace cellshard {
 // It is cheap relative to any real I/O or copy path and is safe on host or
 // device.
 template<typename OffsetT>
-__host__ __device__ __forceinline__ OffsetT find_offset_span(OffsetT row, const OffsetT *offsets, OffsetT count) {
+CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE OffsetT find_offset_span(OffsetT row, const OffsetT *offsets, OffsetT count) {
     OffsetT lo = 0;
     OffsetT hi = count;
     while (lo < hi) {

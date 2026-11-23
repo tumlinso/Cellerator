@@ -1,4 +1,5 @@
 #include "../../src/ops/matrix/csr_multiply.cuh"
+#include <Cellerator/common/real/fp16.cuh>
 // CP-BP-12 calibration benchmark, not a kernel-optimization claim.
 // Compared path: CP-BP-09 direct packed tiles versus Cellerator's maintained
 // f16-storage/f32-compute CSR SpMV on Tesla V100 sm_70. Matrix: rows
@@ -35,9 +36,9 @@ namespace {
 
 namespace cp = cellpack;
 namespace matrix_ops = cellerator::ops::matrix;
-using storage_t = cellerator::real::storage_t;
-using compute_t = cellerator::real::compute_t;
-using accum_t = cellerator::real::accum_t;
+using storage_t = cellerator::real::f16_t;
+using compute_t = float;
+using accum_t = float;
 
 constexpr cp::u32 feature_count = 32768u;
 constexpr cp::u32 tile_width = 32u;

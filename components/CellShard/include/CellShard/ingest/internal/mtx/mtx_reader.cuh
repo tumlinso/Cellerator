@@ -1,6 +1,7 @@
 #pragma once
 
 #include <climits>
+#include <Cellerator/common/real/fp16.cuh>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -441,7 +442,7 @@ static inline std::size_t estimate_coo_part_bytes(unsigned long rows, unsigned l
     return sizeof(::cellshard::triplet)
          + (std::size_t) nnz * sizeof(unsigned int)
          + (std::size_t) nnz * sizeof(unsigned int)
-         + (std::size_t) nnz * sizeof(__half);
+         + (std::size_t) nnz * sizeof(::cellerator::real::f16_t);
 }
 
 // Full second pass to count part nnz for arbitrary row partitions.
@@ -582,7 +583,7 @@ static inline int fill_sharded_coo(scan::buffered_file_reader *reader,
         idx = write_ptr[part]++;
         out->parts[part]->rowIdx[idx] = (unsigned int) (row - row_offsets[part]);
         out->parts[part]->colIdx[idx] = (unsigned int) col;
-        out->parts[part]->val[idx] = __float2half(value);
+        out->parts[part]->val[idx] = ::cellerator::real::store_f16_storage(value);
 
         if (h->symmetric && row != col) {
             part = find_offset_span(col, row_offsets, num_parts);
@@ -590,7 +591,7 @@ static inline int fill_sharded_coo(scan::buffered_file_reader *reader,
             idx = write_ptr[part]++;
             out->parts[part]->rowIdx[idx] = (unsigned int) (col - row_offsets[part]);
             out->parts[part]->colIdx[idx] = (unsigned int) row;
-            out->parts[part]->val[idx] = __float2half(value);
+            out->parts[part]->val[idx] = ::cellerator::real::store_f16_storage(value);
         }
     }
     if (rc < 0) goto fail;
@@ -745,7 +746,7 @@ static inline int fill_part_window_coo(scan::buffered_file_reader *reader,
             idx = write_ptr[local_part]++;
             out->parts[local_part]->rowIdx[idx] = (unsigned int) (row - row_offsets[global_part]);
             out->parts[local_part]->colIdx[idx] = (unsigned int) col;
-            out->parts[local_part]->val[idx] = __float2half(value);
+            out->parts[local_part]->val[idx] = ::cellerator::real::store_f16_storage(value);
         }
 
         if (h->symmetric && row != col) {
@@ -755,7 +756,7 @@ static inline int fill_part_window_coo(scan::buffered_file_reader *reader,
                 idx = write_ptr[local_part]++;
                 out->parts[local_part]->rowIdx[idx] = (unsigned int) (col - row_offsets[global_part]);
                 out->parts[local_part]->colIdx[idx] = (unsigned int) row;
-                out->parts[local_part]->val[idx] = __float2half(value);
+                out->parts[local_part]->val[idx] = ::cellerator::real::store_f16_storage(value);
             }
         }
     }

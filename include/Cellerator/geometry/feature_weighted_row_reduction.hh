@@ -2,7 +2,6 @@
 
 #include "Cellerator/geometry/warp_tiles.hh"
 
-#include <Cellerator/common/types.cuh>
 
 #include <cstddef>
 #include <type_traits>
@@ -40,12 +39,12 @@ struct feature_weighted_row_reduction_view {
     feature_weighted_row_reduction_plan_view plan{};
     warp_tile_view tiles{};
     std::size_t feature_weight_capacity = 0u;
-    const cellerator::real::compute_t *feature_weights = nullptr;
+    const float *feature_weights = nullptr;
 };
 
 struct feature_weighted_row_reduction_buffers {
     std::size_t row_capacity = 0u;
-    cellerator::real::accum_t *row_values = nullptr;
+    float *row_values = nullptr;
 };
 
 // Results are in canonical partition-local row order. Global row identity is
@@ -58,15 +57,15 @@ struct feature_weighted_row_reduction_result_view {
     u32 full_row_count = 0u;
     u32 row_count = 0u;
     u64 row_domain_identity = 0u;
-    const cellerator::real::accum_t *row_values = nullptr;
+    const float *row_values = nullptr;
 };
 
 // V1 comparison rule for canonical-order versus block/local-order accumulation:
 // |candidate-reference| <= absolute + relative * |reference|. NaN never
 // compares equal; identical finite values and same-signed infinities do.
 bool feature_weighted_row_reduction_within_tolerance(
-    cellerator::real::accum_t reference,
-    cellerator::real::accum_t candidate,
+    float reference,
+    float candidate,
     double absolute_tolerance = feature_weighted_row_reduction_default_absolute_tolerance,
     double relative_tolerance = feature_weighted_row_reduction_default_relative_tolerance) noexcept;
 
@@ -88,7 +87,7 @@ feature_weighted_row_reduction_view make_feature_weighted_row_reduction_view(
     const warp_tile_view &tiles,
     u64 feature_weight_identity,
     std::size_t feature_weight_capacity,
-    const cellerator::real::compute_t *feature_weights) noexcept;
+    const float *feature_weights) noexcept;
 
 validation_result validate_feature_weighted_row_reduction_view_host(
     const frozen_packing_plan &plan,

@@ -65,7 +65,7 @@ Status source(Matrix m,Source& s) {
     return {};
 }
 template<class T> T value(const Source& a,const unsigned char* p) {
-    return a.half ? T(numeric::load_f16(load<uint16_t>(p))) :
+    return a.half ? T(real::load_f16(load<uint16_t>(p))) :
         a.type==DType::float32 ? T(load<float>(p)) : T(load<double>(p));
 }
 size_t value_width(const Source& a) { return a.half ? 2 : width(a.type); }
@@ -160,13 +160,13 @@ template<class T> void second_moments(const Input& in,size_t first,size_t count,
 }
 template<class T> void residuals_f16(const velocitypp::BasicMomentBlock<T>& m,const velocitypp::BasicFitBlock<T>& f,T* scratch,uint16_t* out,ptrdiff_t rs,ptrdiff_t cs) {
     velocitypp::reference::residuals(m,f,scratch,ptrdiff_t(m.count));
-    for(size_t i=0;i<m.rows;++i)for(size_t j=0;j<m.count;++j)out[ptrdiff_t(i)*rs+ptrdiff_t(j)*cs]=numeric::round_f16(scratch[i*m.count+j]);
+    for(size_t i=0;i<m.rows;++i)for(size_t j=0;j<m.count;++j)out[ptrdiff_t(i)*rs+ptrdiff_t(j)*cs]=real::round_f16(scratch[i*m.count+j]);
 }
 template<class T> void stochastic_residuals_f16(const velocitypp::BasicStochasticMomentBlock<T>& m,const velocitypp::BasicStochasticFitBlock<T>& f,T* scratch,uint16_t* out,uint16_t* second,ptrdiff_t rs,ptrdiff_t cs) {
     if(out) { velocitypp::reference::stochastic_residuals(m,f,scratch,(T*)nullptr,ptrdiff_t(m.count));
-        for(size_t i=0;i<m.rows;++i)for(size_t j=0;j<m.count;++j)out[ptrdiff_t(i)*rs+ptrdiff_t(j)*cs]=numeric::round_f16(scratch[i*m.count+j]); }
+        for(size_t i=0;i<m.rows;++i)for(size_t j=0;j<m.count;++j)out[ptrdiff_t(i)*rs+ptrdiff_t(j)*cs]=real::round_f16(scratch[i*m.count+j]); }
     if(second) { velocitypp::reference::stochastic_residuals(m,f,(T*)nullptr,scratch,ptrdiff_t(m.count));
-        for(size_t i=0;i<m.rows;++i)for(size_t j=0;j<m.count;++j)second[ptrdiff_t(i)*rs+ptrdiff_t(j)*cs]=numeric::round_f16(scratch[i*m.count+j]); }
+        for(size_t i=0;i<m.rows;++i)for(size_t j=0;j<m.count;++j)second[ptrdiff_t(i)*rs+ptrdiff_t(j)*cs]=real::round_f16(scratch[i*m.count+j]); }
 }
 namespace {
 template<class T> velocitypp::precision::PrecisionCode replace(void* context,size_t position,size_t offset,

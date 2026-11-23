@@ -1,4 +1,4 @@
-#include "Cellerator/geometry/apply_plan.hh"
+#include "Cellerator/geometry/apply_plan_cuda.hh"
 
 #include "benchmark_mutex.hh"
 

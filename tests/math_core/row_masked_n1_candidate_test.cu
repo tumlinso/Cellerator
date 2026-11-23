@@ -1,4 +1,5 @@
 #include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
+#include <Cellerator/common/real/fp16.cuh>
 #include <Cellerator/planner/end_to_end_planner.hh>
 
 #include <cuda_fp16.h>
@@ -97,12 +98,12 @@ struct fixture {
     device_array<cp::u32> entry_offsets{2u};
     device_array<cp::u32> gene_masks{2u};
     device_array<cp::u32> value_offsets{3u};
-    device_array<cellerator::real::storage_t> values{3u};
-    device_array<cellerator::real::storage_t> values_b{3u};
-    device_array<cellerator::real::storage_t> relocated_values{3u};
-    device_array<cellerator::real::compute_t> weights{3u};
-    device_array<cellerator::real::accum_t> output{2u};
-    device_array<cellerator::real::accum_t> output_b{2u};
+    device_array<cellerator::real::f16_t> values{3u};
+    device_array<cellerator::real::f16_t> values_b{3u};
+    device_array<cellerator::real::f16_t> relocated_values{3u};
+    device_array<float> weights{3u};
+    device_array<float> output{2u};
+    device_array<float> output_b{2u};
     cp::persistent_packing_payload_view payload{};
 
     fixture() {
@@ -115,13 +116,13 @@ struct fixture {
         upload(entry_offsets, std::vector<cp::u32>{0u, 2u});
         upload(gene_masks, std::vector<cp::u32>{0x5u, 0x2u});
         upload(value_offsets, std::vector<cp::u32>{0u, 2u, 3u});
-        upload(values, std::vector<cellerator::real::storage_t>{
+        upload(values, std::vector<cellerator::real::f16_t>{
             __float2half(1.0f), __float2half(2.0f), __float2half(3.0f)});
-        upload(values_b, std::vector<cellerator::real::storage_t>{
+        upload(values_b, std::vector<cellerator::real::f16_t>{
             __float2half(4.0f), __float2half(5.0f), __float2half(6.0f)});
-        upload(relocated_values, std::vector<cellerator::real::storage_t>{
+        upload(relocated_values, std::vector<cellerator::real::f16_t>{
             __float2half(1.0f), __float2half(2.0f), __float2half(3.0f)});
-        upload(weights, std::vector<cellerator::real::compute_t>{
+        upload(weights, std::vector<float>{
             2.0f, 5.0f, 7.0f});
 
         payload.payload_schema_version =
@@ -171,7 +172,7 @@ struct fixture {
         payload.tiles.layout.stored_values = 3u;
         payload.tiles.layout.tile_blocks = 1u;
         payload.tiles.layout.row_block_entries = 2u;
-        payload.tiles.value_size_bytes = sizeof(cellerator::real::storage_t);
+        payload.tiles.value_size_bytes = sizeof(cellerator::real::f16_t);
         payload.tiles.feature_axis_fingerprint = 0x5005u;
         payload.tiles.feature_axis_fingerprint_version = 1u;
         payload.tiles.row_domain_identity = 0x3003u;
@@ -304,7 +305,7 @@ int main() {
     plane.layout = execution::value_layout_kind::projection_local_order;
     plane.generation = {1u};
     plane.element_count = 3u;
-    plane.value_bytes = 3u * sizeof(cellerator::real::storage_t);
+    plane.value_bytes = 3u * sizeof(cellerator::real::f16_t);
     execution::value_binding value_binding{&plane, {1u}};
     execution::biological_operand_view input{}, output{};
     input.kind = execution::operand_kind::dense_tensor;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cuda_fp16.h>
+#include <Cellerator/common/real/fp16.cuh>
 
 namespace cellshard::device {
 
@@ -9,7 +10,7 @@ struct alignas(16) TripletView {
     unsigned int rows, cols, nnz;
     unsigned int *rowIdx;
     unsigned int *colIdx;
-    __half *val;
+    ::cellerator::real::f16_t *val;
 };
 
 } // namespace cellshard::device

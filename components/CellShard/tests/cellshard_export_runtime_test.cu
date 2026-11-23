@@ -764,7 +764,7 @@ int main() {
     cs::dataset_codec_descriptor codec{};
     codec.codec_id = 0u;
     codec.family = cs::dataset_codec_family_blocked_ell;
-    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
+    codec.value_code = (std::uint32_t) ::real::storage_code;
     codec.scale_value_code = 0u;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
     codec.flags = 0u;

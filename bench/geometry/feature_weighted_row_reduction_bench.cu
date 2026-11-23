@@ -1,4 +1,5 @@
 #include "../../src/ops/matrix/csr_multiply.cuh"
+#include <Cellerator/common/real/fp16.cuh>
 #include "Cellerator/geometry/feature_weighted_row_reduction_cuda.hh"
 #include "benchmark_mutex.hh"
 #include <Cellerator/compute/operators/sparse/ops.hh>
@@ -21,9 +22,9 @@ namespace {
 
 namespace cp = cellpack;
 namespace matrix_ops = cellerator::ops::matrix;
-using storage_t = cellerator::real::storage_t;
-using compute_t = cellerator::real::compute_t;
-using accum_t = cellerator::real::accum_t;
+using storage_t = cellerator::real::f16_t;
+using compute_t = float;
+using accum_t = float;
 
 constexpr cp::u32 rows = 65536u;
 constexpr cp::u32 features = 32768u;

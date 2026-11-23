@@ -1,4 +1,5 @@
 #include <Cellerator/compute/matrix/convert/compressed.cuh>
+#include <Cellerator/common/real/fp16.cuh>
 
 #include <cub/cub.cuh>
 #include <cusparse.h>
@@ -9,7 +10,7 @@ namespace cellerator::compute::matrix::convert {
 
 namespace {
 
-using native_coo_view = tensor::base::CoordinateView<types::idx_t, const real::storage_t>;
+using native_coo_view = tensor::base::CoordinateView<types::idx_t, const real::f16_t>;
 using tensor::base::CompressedAxis;
 
 template<class Index, class Value>
@@ -78,8 +79,8 @@ __device__ __forceinline__ unsigned int global_stride_1d() {
 __global__ void gather_half_by_permutation(
     types::nnz_t nnz,
     const types::idx_t * __restrict__ permutation,
-    const real::storage_t * __restrict__ src_val,
-    real::storage_t * __restrict__ dst_val) {
+    const real::f16_t * __restrict__ src_val,
+    real::f16_t * __restrict__ dst_val) {
     unsigned int i = global_tid_1d();
     const unsigned int stride = global_stride_1d();
 
@@ -143,10 +144,10 @@ __global__ void scatter_coo_to_compressed(
     types::nnz_t nnz,
     const types::idx_t * __restrict__ major_idx,
     const types::idx_t * __restrict__ minor_idx,
-    const real::storage_t * __restrict__ val,
+    const real::f16_t * __restrict__ val,
     types::ptr_t * __restrict__ heads,
     types::idx_t * __restrict__ out_minor,
-    real::storage_t * __restrict__ out_val) {
+    real::f16_t * __restrict__ out_val) {
     unsigned int i = global_tid_1d();
     const unsigned int stride = global_stride_1d();
 
@@ -177,10 +178,10 @@ __global__ void scatter_transpose(
     types::dim_t cDim,
     const types::ptr_t * __restrict__ cAxPtr,
     const types::idx_t * __restrict__ uAxIdx,
-    const real::storage_t * __restrict__ val,
+    const real::f16_t * __restrict__ val,
     types::ptr_t * __restrict__ heads,
     types::idx_t * __restrict__ out_cAxIdx,
-    real::storage_t * __restrict__ out_val) {
+    real::f16_t * __restrict__ out_val) {
     unsigned int major = blockIdx.x * blockDim.y + threadIdx.y;
     while (major < cDim) {
         for (types::ptr_t i = cAxPtr[major] + threadIdx.x; i < cAxPtr[major + 1u]; i += blockDim.x) {
@@ -197,10 +198,10 @@ __global__ void transpose_coo_entries_kernel(
     types::nnz_t nnz,
     const types::idx_t * __restrict__ src_row,
     const types::idx_t * __restrict__ src_col,
-    const real::storage_t * __restrict__ src_val,
+    const real::f16_t * __restrict__ src_val,
     types::idx_t * __restrict__ dst_row,
     types::idx_t * __restrict__ dst_col,
-    real::storage_t * __restrict__ dst_val) {
+    real::f16_t * __restrict__ dst_val) {
     unsigned int i = global_tid_1d();
     const unsigned int stride = global_stride_1d();
 
@@ -263,7 +264,7 @@ int build_compressed_from_coo_library(
     types::ptr_t *d_cAxPtr,
     types::idx_t *d_sort_cAxIdx,
     types::idx_t *d_out_uAx,
-    real::storage_t *d_out_val,
+    real::f16_t *d_out_val,
     types::idx_t *d_permutation,
     void *d_sort_tmp,
     std::size_t sort_bytes,
@@ -321,7 +322,7 @@ int build_compressed_from_coo_custom(
     types::ptr_t *d_cAxPtr,
     types::ptr_t *d_heads,
     types::idx_t *d_out_uAx,
-    real::storage_t *d_out_val,
+    real::f16_t *d_out_val,
     void *d_scan_tmp,
     std::size_t scan_bytes,
     cudaStream_t stream) {
@@ -354,7 +355,7 @@ int build_compressed_from_sorted_coo_custom(
     CompressedAxis axis,
     types::ptr_t *d_cAxPtr,
     types::idx_t *d_out_uAx,
-    real::storage_t *d_out_val,
+    real::f16_t *d_out_val,
     cudaStream_t stream) {
     if (!valid_native_coo(source, axis, false) || d_cAxPtr == nullptr) return 0;
     const bool by_row = axis == CompressedAxis::row;
@@ -370,7 +371,7 @@ int build_compressed_from_sorted_coo_custom(
     if (cudaGetLastError() != cudaSuccess) return 0;
     if (nnz == 0u) return 1;
     if (d_out_uAx != minor && !cuda_check(cudaMemcpyAsync(d_out_uAx, minor, size_t(nnz) * sizeof(types::idx_t), cudaMemcpyDeviceToDevice, stream), "cudaMemcpyAsync sorted COO minor idx")) return 0;
-    if (d_out_val != source.values && !cuda_check(cudaMemcpyAsync(d_out_val, source.values, size_t(nnz) * sizeof(real::storage_t), cudaMemcpyDeviceToDevice, stream), "cudaMemcpyAsync sorted COO values")) return 0;
+    if (d_out_val != source.values && !cuda_check(cudaMemcpyAsync(d_out_val, source.values, size_t(nnz) * sizeof(real::f16_t), cudaMemcpyDeviceToDevice, stream), "cudaMemcpyAsync sorted COO values")) return 0;
     return 1;
 }
 
@@ -403,10 +404,10 @@ int compressed_transpose_library_workspace_bytes(
     types::nnz_t nnz,
     const types::ptr_t *d_cAxPtr,
     const types::idx_t *d_uAxIdx,
-    const real::storage_t *d_val,
+    const real::f16_t *d_val,
     types::ptr_t *d_out_uAxPtr,
     types::idx_t *d_out_cAxIdx,
-    real::storage_t *d_out_val,
+    real::f16_t *d_out_val,
     cudaStream_t stream,
     std::size_t *bytes_out) {
     cusparseHandle_t handle = 0;
@@ -444,10 +445,10 @@ int build_compressed_transpose_library_raw(
     types::nnz_t nnz,
     const types::ptr_t *d_cAxPtr,
     const types::idx_t *d_uAxIdx,
-    const real::storage_t *d_val,
+    const real::f16_t *d_val,
     types::ptr_t *d_out_uAxPtr,
     types::idx_t *d_out_cAxIdx,
-    real::storage_t *d_out_val,
+    real::f16_t *d_out_val,
     void *d_tmp,
     std::size_t tmp_bytes,
     cudaStream_t stream) {
@@ -485,11 +486,11 @@ int build_compressed_transpose_custom_raw(
     types::nnz_t nnz,
     const types::ptr_t *d_cAxPtr,
     const types::idx_t *d_uAxIdx,
-    const real::storage_t *d_val,
+    const real::f16_t *d_val,
     types::ptr_t *d_out_uAxPtr,
     types::ptr_t *d_heads,
     types::idx_t *d_out_cAxIdx,
-    real::storage_t *d_out_val,
+    real::f16_t *d_out_val,
     void *d_scan_tmp,
     std::size_t scan_bytes,
     cudaStream_t stream) {
@@ -514,11 +515,11 @@ int build_compressed_transpose_raw(
     types::nnz_t nnz,
     const types::ptr_t *d_cAxPtr,
     const types::idx_t *d_uAxIdx,
-    const real::storage_t *d_val,
+    const real::f16_t *d_val,
     types::ptr_t *d_out_uAxPtr,
     types::ptr_t *d_heads,
     types::idx_t *d_out_cAxIdx,
-    real::storage_t *d_out_val,
+    real::f16_t *d_out_val,
     void *d_scan_tmp,
     std::size_t scan_bytes,
     cudaStream_t stream) {
@@ -530,7 +531,7 @@ int transpose_coo_entries(
     const native_coo_view &source,
     types::idx_t *d_dst_rowIdx,
     types::idx_t *d_dst_colIdx,
-    real::storage_t *d_dst_val,
+    real::f16_t *d_dst_val,
     cudaStream_t stream) {
     if (!valid_native_coo(source, CompressedAxis::row, false)) return 0;
     if (source.nnz == 0u) return 1;

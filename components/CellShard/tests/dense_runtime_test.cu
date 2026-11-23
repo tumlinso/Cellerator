@@ -109,7 +109,7 @@ static void test_dense_csh5_fetch_and_stage() {
     cs::dataset_codec_descriptor codec{};
     codec.codec_id = 0u;
     codec.family = cs::dataset_codec_family_dense;
-    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
+    codec.value_code = (std::uint32_t) ::real::storage_code;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
     const cs::dataset_layout_view layout{
         3u,

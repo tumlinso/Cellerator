@@ -1,9 +1,10 @@
 #include <Cellerator/math/reference/referee.hh>
-#include <Cellerator/common/types.cuh>
 
 #include <bench/math/benchmark_support.hh>
 
-#include <Cellerator/common/cuda_compat.cuh>
+#if CELLERATOR_ENABLE_CUDA
+#include <cuda_runtime_api.h>
+#endif
 
 #include <cmath>
 #include <cstdio>

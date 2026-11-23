@@ -19,6 +19,8 @@ kernel remains justified for its measured high/medium-sharing regimes. This
 irregular single-RHS reduction is not Tensor Core eligible.
 */
 #include "Cellerator/geometry/feature_weighted_row_reduction_cuda.hh"
+#include <Cellerator/common/real/format_codes.hh>
+#include <Cellerator/common/real/fp16.cuh>
 
 #include <climits>
 #include <cstdint>
@@ -26,9 +28,9 @@ irregular single-RHS reduction is not Tensor Core eligible.
 namespace cellpack {
 namespace {
 
-using storage_t = cellerator::real::storage_t;
-using compute_t = cellerator::real::compute_t;
-using accum_t = cellerator::real::accum_t;
+using storage_t = cellerator::real::f16_t;
+using compute_t = float;
+using accum_t = float;
 
 constexpr u32 warp_width = 32u;
 constexpr u32 warps_per_block = 4u;
@@ -47,10 +49,10 @@ u64 reduction_identity(const feature_weighted_row_reduction_view &input) noexcep
     identity = splitmix64(identity ^ input.feature_weight_identity);
     identity = splitmix64(identity
         ^ (static_cast<u64>(feature_weighted_row_reduction_schema_version) << 32u)
-        ^ static_cast<u32>(cellerator::real::code_of<storage_t>::code));
+        ^ static_cast<u32>(cellerator::real::value_f16));
     identity = splitmix64(identity
-        ^ (static_cast<u64>(cellerator::real::code_of<compute_t>::code) << 32u)
-        ^ static_cast<u32>(cellerator::real::code_of<accum_t>::code));
+        ^ (static_cast<u64>(cellerator::real::value_f32) << 32u)
+        ^ static_cast<u32>(cellerator::real::value_f32));
     return identity == 0u ? 1u : identity;
 }
 
@@ -74,11 +76,11 @@ validation_result validate_metadata(
             "CUDA weighted-row-reduction version is unsupported");
     }
     if (input.storage_type_code
-            != static_cast<u32>(cellerator::real::code_of<storage_t>::code)
+            != static_cast<u32>(cellerator::real::value_f16)
         || input.weight_type_code
-            != static_cast<u32>(cellerator::real::code_of<compute_t>::code)
+            != static_cast<u32>(cellerator::real::value_f32)
         || input.accumulation_type_code
-            != static_cast<u32>(cellerator::real::code_of<accum_t>::code)
+            != static_cast<u32>(cellerator::real::value_f32)
         || tiles.value_size_bytes != sizeof(storage_t)) {
         return validation_error(validation_code::invalid_matrix_view,
             tiles.value_size_bytes,
@@ -212,7 +214,7 @@ __global__ void feature_weighted_row_reduction_kernel(
             if ((gene_mask & (1u << local)) == 0u) continue;
             const u32 canonical_feature =
                 input.plan.feature_permutation[block_begin + local];
-            const compute_t product = static_cast<compute_t>(values[value])
+            const compute_t product = cellerator::real::load_f16_storage(values[value])
                 * input.feature_weights[canonical_feature];
             sum += static_cast<accum_t>(product);
             ++value;

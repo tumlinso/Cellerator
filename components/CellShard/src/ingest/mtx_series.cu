@@ -1029,7 +1029,7 @@ int convert_to_optimized_sliced_ell_csh5(const options &input_opts, stats *out_s
     cs::dataset_codec_descriptor codec{};
     codec.codec_id = 0u;
     codec.family = cs::dataset_codec_family_sliced_ell;
-    codec.value_code = (std::uint32_t) real::code_of<real::storage_t>::code;
+    codec.value_code = (std::uint32_t) real::storage_code;
     codec.bits = (std::uint32_t) (sizeof(real::storage_t) * 8u);
 
     cs::dataset_layout_view layout{};

@@ -1,4 +1,6 @@
 #include "Cellerator/geometry/feature_weighted_row_reduction.hh"
+#include <Cellerator/common/real/format_codes.hh>
+#include <Cellerator/common/real/fp16.cuh>
 
 #include <algorithm>
 #include <cmath>
@@ -7,9 +9,9 @@
 namespace cellpack {
 namespace {
 
-using storage_t = cellerator::real::storage_t;
-using compute_t = cellerator::real::compute_t;
-using accum_t = cellerator::real::accum_t;
+using storage_t = cellerator::real::f16_t;
+using compute_t = float;
+using accum_t = float;
 
 u64 splitmix64(u64 value) noexcept {
     value += 0x9e3779b97f4a7c15ull;
@@ -27,10 +29,10 @@ u64 compute_reduction_identity(
     identity = splitmix64(identity ^ feature_weight_identity);
     identity = splitmix64(identity
         ^ (static_cast<u64>(feature_weighted_row_reduction_schema_version) << 32u)
-        ^ static_cast<u32>(cellerator::real::code_of<storage_t>::code));
+        ^ static_cast<u32>(cellerator::real::value_f16));
     identity = splitmix64(identity
-        ^ (static_cast<u64>(cellerator::real::code_of<compute_t>::code) << 32u)
-        ^ static_cast<u32>(cellerator::real::code_of<accum_t>::code));
+        ^ (static_cast<u64>(cellerator::real::value_f32) << 32u)
+        ^ static_cast<u32>(cellerator::real::value_f32));
     return identity == 0u ? 1u : identity;
 }
 
@@ -39,7 +41,7 @@ compute_t load_storage_value(const void *values, u32 index) noexcept {
     const auto *bytes = static_cast<const unsigned char *>(values);
     std::memcpy(&stored, bytes + static_cast<std::size_t>(index) * sizeof(storage_t),
         sizeof(storage_t));
-    return static_cast<compute_t>(stored);
+    return cellerator::real::load_f16_storage(stored);
 }
 
 validation_result validate_plan_view(
@@ -79,11 +81,11 @@ validation_result validate_contract(
             "weighted-row-reduction contract version is unsupported");
     }
     if (input.storage_type_code
-            != static_cast<u32>(cellerator::real::code_of<storage_t>::code)
+            != static_cast<u32>(cellerator::real::value_f16)
         || input.weight_type_code
-            != static_cast<u32>(cellerator::real::code_of<compute_t>::code)
+            != static_cast<u32>(cellerator::real::value_f32)
         || input.accumulation_type_code
-            != static_cast<u32>(cellerator::real::code_of<accum_t>::code)
+            != static_cast<u32>(cellerator::real::value_f32)
         || input.tiles.value_size_bytes != sizeof(storage_t)) {
         return validation_error(validation_code::invalid_matrix_view,
             input.tiles.value_size_bytes,
@@ -265,11 +267,11 @@ feature_weighted_row_reduction_view make_feature_weighted_row_reduction_view(
     feature_weighted_row_reduction_view result;
     result.schema_version = feature_weighted_row_reduction_schema_version;
     result.storage_type_code =
-        static_cast<u32>(cellerator::real::code_of<storage_t>::code);
+        static_cast<u32>(cellerator::real::value_f16);
     result.weight_type_code =
-        static_cast<u32>(cellerator::real::code_of<compute_t>::code);
+        static_cast<u32>(cellerator::real::value_f32);
     result.accumulation_type_code =
-        static_cast<u32>(cellerator::real::code_of<accum_t>::code);
+        static_cast<u32>(cellerator::real::value_f32);
     result.feature_weight_identity = feature_weight_identity;
     result.reduction_identity = compute_reduction_identity(
         plan, tiles, feature_weight_identity);

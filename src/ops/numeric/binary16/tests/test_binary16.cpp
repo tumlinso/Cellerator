@@ -37,17 +37,17 @@ std::uint32_t expected_float_bits(std::uint16_t bits) {
 void exhaustive_load() {
     for (unsigned i = 0; i <= 0xffff; ++i) {
         const auto bits = std::uint16_t(i);
-        const auto value = cellerator::numeric::load_f16(bits);
+        const auto value = cellerator::real::load_f16(bits);
         expect(std::bit_cast<std::uint32_t>(value) == expected_float_bits(bits),
                "load matches exact binary32 value for every binary16 encoding");
         const bool nan = (bits & 0x7c00) == 0x7c00 && (bits & 0x03ff) != 0;
-        expect(cellerator::numeric::round_f16(value) == (nan ? 0x7e00 : bits),
+        expect(cellerator::real::round_f16(value) == (nan ? 0x7e00 : bits),
                "load then round reproduces every value, canonicalizing NaNs");
     }
 }
 
 void rounding_edges() {
-    using cellerator::numeric::round_f16;
+    using cellerator::real::round_f16;
     const auto inf = std::numeric_limits<double>::infinity();
     const auto half_min_subnormal = std::ldexp(1.0, -24);
     const auto subnormal_tie = std::ldexp(1.0, -25);
@@ -96,9 +96,9 @@ int oracle_driver() {
     while (std::cin >> kind >> std::hex >> bits) {
         std::uint16_t result;
         if (kind == 'f' && bits <= 0xffffffffu)
-            result = cellerator::numeric::round_f16(std::bit_cast<float>(std::uint32_t(bits)));
+            result = cellerator::real::round_f16(std::bit_cast<float>(std::uint32_t(bits)));
         else if (kind == 'd')
-            result = cellerator::numeric::round_f16(std::bit_cast<double>(bits));
+            result = cellerator::real::round_f16(std::bit_cast<double>(bits));
         else return EXIT_FAILURE;
         std::cout << std::hex << std::setw(4) << std::setfill('0') << result << '\n';
     }

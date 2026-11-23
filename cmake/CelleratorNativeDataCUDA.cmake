@@ -225,7 +225,8 @@ foreach(_header IN ITEMS
         tensor/base/coordinate.hh
         tensor/base/blocked_ell_layout.hh
         tensor/base/sliced_ell_layout.hh
-        tensor/base/device_views.cuh)
+        tensor/base/device_views.cuh
+        common/real/fp16.cuh)
     get_filename_component(_header_parent "${_header}" DIRECTORY)
     install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/${_header}"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/${_header_parent}"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cellerator/tensor/base/blocked_ell.cuh>
+#include <Cellerator/common/real/fp16.cuh>
 #include <Cellerator/tensor/base/sliced_ell.cuh>
 #include "../sharded/sharded_device.cuh"
 
@@ -51,7 +52,7 @@ inline int count_blocked_ell_row_nnz_(const ::cellerator::tensor::base::blocked_
             for (types::u32 lane = 0u; lane < block_size; ++lane) {
                 const types::u32 col = (types::u32) block_col * block_size + lane;
                 if (col >= src->cols) continue;
-                const float value = __half2float(src->val[(std::size_t) row * src->ell_cols + (std::size_t) slot * block_size + lane]);
+                const float value = ::cellerator::real::load_f16_storage(src->val[(std::size_t) row * src->ell_cols + (std::size_t) slot * block_size + lane]);
                 if (value != 0.0f) ++count;
             }
         }
@@ -178,7 +179,7 @@ __global__ static void emit_sliced_ell_from_blocked_ell_kernel(
                 const types::u32 col = (types::u32) block_col * block_size + lane;
                 const real::storage_t value =
                     src.val[(std::size_t) row * src.ell_cols + (std::size_t) slot * block_size + lane];
-                if (col >= src.cols || __half2float(value) == 0.0f) continue;
+                if (col >= src.cols || ::cellerator::real::load_f16_storage(value) == 0.0f) continue;
                 if (dst_slot >= width) continue;
                 dst.col_idx[row_slot_base + dst_slot] = col;
                 dst.val[row_slot_base + dst_slot] = value;
@@ -265,7 +266,7 @@ inline int sliced_ell_from_blocked_ell(const ::cellerator::tensor::base::blocked
                 for (types::u32 lane = 0u; lane < src->block_size; ++lane) {
                     const types::u32 col = (types::u32) block_col * src->block_size + lane;
                     const real::storage_t value = src->val[(std::size_t) row * src->ell_cols + (std::size_t) slot * src->block_size + lane];
-                    if (col >= src->cols || __half2float(value) == 0.0f) continue;
+                    if (col >= src->cols || ::cellerator::real::load_f16_storage(value) == 0.0f) continue;
                     dst->col_idx[dst_row_base + dst_slot] = col;
                     dst->val[dst_row_base + dst_slot] = value;
                     ++dst_slot;

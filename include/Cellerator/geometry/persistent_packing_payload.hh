@@ -91,6 +91,6 @@ make_persistent_feature_weighted_row_reduction_view(
     const persistent_packing_payload_view &payload,
     u64 feature_weight_identity,
     std::size_t feature_weight_capacity,
-    const cellerator::real::compute_t *feature_weights) noexcept;
+    const float *feature_weights) noexcept;
 
 } // namespace cellpack
