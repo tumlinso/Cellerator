@@ -2,3 +2,4 @@
 
 #include <Cellerator/common/index_types.hh>
 #include <Cellerator/common/real.hh>
+#include <Cellerator/common/integer/int8.hh>

@@ -10,7 +10,34 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(cellerator_op_matrix_patch PRIVATE -fno-fast-math -ffp-contract=off)
 endif()
 
+add_library(cellerator_narrow_matmul STATIC narrow_matmul.cc)
+add_library(Cellerator::narrow_matmul ALIAS cellerator_narrow_matmul)
+target_include_directories(cellerator_narrow_matmul PUBLIC
+    $<BUILD_INTERFACE:${_ce_ops_root}/include>
+    $<INSTALL_INTERFACE:include>)
+target_compile_features(cellerator_narrow_matmul PUBLIC cxx_std_20)
+target_compile_options(cellerator_narrow_matmul PRIVATE -fno-fast-math -ffp-contract=off)
+set_target_properties(cellerator_narrow_matmul PROPERTIES EXPORT_NAME narrow_matmul)
+install(TARGETS cellerator_narrow_matmul EXPORT CelleratorCoreTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+if(CELLERATOR_BUILD_TESTS)
+    add_executable(cellerator_narrow_numeric_test
+        ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL} "${_ce_ops_root}/tests/math_reference/narrow_numeric_test.cc")
+    target_link_libraries(cellerator_narrow_numeric_test PRIVATE Cellerator::narrow_matmul)
+    add_test(NAME cellerator_narrow_numeric COMMAND cellerator_narrow_numeric_test)
+endif()
+
 if(CELLERATOR_HAS_CUDA)
+    add_library(cellerator_narrow_matmul_cuda STATIC narrow_matmul_cuda.cu)
+    add_library(Cellerator::narrow_matmul_cuda ALIAS cellerator_narrow_matmul_cuda)
+    target_link_libraries(cellerator_narrow_matmul_cuda PUBLIC
+        Cellerator::narrow_matmul CUDA::cublasLt CUDA::cudart)
+    set_target_properties(cellerator_narrow_matmul_cuda PROPERTIES
+        EXPORT_NAME narrow_matmul_cuda CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
+    install(TARGETS cellerator_narrow_matmul_cuda EXPORT CelleratorCoreTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
     add_library(cellerator_csr_multiply STATIC csr_spmm.cu csr_spmv.cu csr_cusparse.cu)
     add_library(Cellerator::csr_multiply ALIAS cellerator_csr_multiply)
     target_include_directories(cellerator_csr_multiply

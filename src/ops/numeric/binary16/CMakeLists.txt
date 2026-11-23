@@ -19,8 +19,11 @@ if(NOT TARGET Cellerator::binary16)
   install(FILES ${CMAKE_CURRENT_LIST_DIR}/../../../../include/Cellerator/ops/numeric/binary16.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/ops/numeric)
   install(FILES ${CMAKE_CURRENT_LIST_DIR}/../../../../include/Cellerator/common/real.hh
+    ${CMAKE_CURRENT_LIST_DIR}/../../../../include/Cellerator/common/compiler_annotations.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common)
   install(FILES ${CMAKE_CURRENT_LIST_DIR}/../../../../include/Cellerator/common/real/fp16.hh
+    ${CMAKE_CURRENT_LIST_DIR}/../../../../include/Cellerator/common/real/bf16.hh
+    ${CMAKE_CURRENT_LIST_DIR}/../../../../include/Cellerator/common/real/fp8.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common/real)
 
   configure_package_config_file(cmake/CelleratorBinary16Config.cmake.in
