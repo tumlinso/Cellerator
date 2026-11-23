@@ -216,8 +216,7 @@ Use the installed Project Control/Codex front door and this repository's Todo au
   layout, and execution preparation/runtime, including optional Python and Torch
   adapters. Texo owns
   the language compiler's source, build/install integration, public API, tools,
-  resources, tests, examples, and documentation. GH owns scientific inference,
-  and CellShard owns persistence/delivery.
+  resources, tests, examples, and documentation. GH owns scientific inference.
   Preserve actual cross-project consumers.
 - Existing code/contract evidence survives cleanup. Resolve a real interface change through its owner; no silent broad ABI rewrite.
 
