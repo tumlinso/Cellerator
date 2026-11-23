@@ -5,7 +5,7 @@ include(CMakePackageConfigHelpers)
 # the regular and selectable substrate installations.
 function(cellerator_install_native_headers)
     foreach(dir IN ITEMS bindings biology common compute containers
-            examples execution geometry interop layout math memory nn
+            execution geometry interop layout math memory nn
             ops packing planner profiling runtime state structure tensor)
         install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/${dir}"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN}
@@ -41,6 +41,7 @@ install(TARGETS cellerator_headers EXPORT CelleratorCoreTargets)
 install(EXPORT CelleratorCoreTargets NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
 cellerator_install_native_headers()
+include("${PROJECT_SOURCE_DIR}/examples/install_headers.cmake")
 
 set(CELLERATOR_HOST_CONFIG "${CMAKE_CURRENT_BINARY_DIR}/CelleratorConfig.cmake")
 file(WRITE "${CELLERATOR_HOST_CONFIG}"

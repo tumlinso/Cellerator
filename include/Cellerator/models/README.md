@@ -1,5 +1,4 @@
 # Model compatibility
 
-These headers forward to research workload interfaces under
-`Cellerator/examples/models`. Model orchestration is not foundational runtime
-architecture.
+Research workload headers live under [examples/models](../../../examples/models)
+and install under `Cellerator/examples/models`.

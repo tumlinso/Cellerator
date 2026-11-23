@@ -1,4 +1,4 @@
-#include <Cellerator/examples/models/state_reduce/stateReduce.hh>
+#include "models/state_reduce/stateReduce.hh"
 #include <Cellerator/memory/cuda/shared_buffer.hh>
 #include "model_runtime_fixtures.cuh"
 

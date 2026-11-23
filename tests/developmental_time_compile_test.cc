@@ -1,5 +1,5 @@
-#include <Cellerator/examples/models/developmental_time/developmentalTime.hh>
-#include <Cellerator/examples/models/developmental_time_trajectory/developmentalTimeTrajectory.hh>
+#include "models/developmental_time/developmentalTime.hh"
+#include "models/developmental_time_trajectory/developmentalTimeTrajectory.hh"
 #include "model_runtime_fixtures.cuh"
 
 int main() {

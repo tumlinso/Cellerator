@@ -1,4 +1,4 @@
-#include <Cellerator/examples/models/developmental_time_trajectory/dTT_model.hh>
+#include "developmental_time_trajectory/dTT_model.hh"
 #include <Cellerator/compute/candidate/sparse/project.hh>
 #include <Cellerator/tensor/base/device_views.cuh>
 

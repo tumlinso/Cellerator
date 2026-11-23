@@ -23,11 +23,17 @@ FAMILIES = (
     "list",
 )
 SOURCE_SUFFIXES = {".h", ".hh", ".hpp", ".cuh", ".cc", ".cpp", ".cu"}
-PRODUCTION_ROOTS = ("include/Cellerator", "src")
+PRODUCTION_ROOTS = (
+    "include/Cellerator", "src", "examples/models/developmental_time",
+    "examples/models/developmental_time_trajectory", "examples/models/state_reduce",
+    "examples/trajectory",
+)
 
 # Explicit core ownership exceptions and existing migration debt only. Values
 # are non-increasing ceilings, not quotas. Every entry names its ownership lane.
 ALLOWLIST: dict[str, dict[str, tuple[int, str]]] = {
+    "examples/trajectory/trajectory_build.cuh": {"vector": (1, "CE-PTR-10 example-facing graph migration")},
+    "examples/trajectory/trajectory_query.cuh": {"vector": (6, "CE-PTR-10 caller-owned query views")},
     "include/Cellerator/compute/operators/graph/forward_candidates.cuh": {"vector": (3, "CE-PTR-10 bounded edge table")},
     "include/Cellerator/compute/operators/graph/forward_prune.cuh": {"vector": (10, "CE-PTR-10 fixed-width graph relation")},
     "include/Cellerator/compute/operators/graph/incremental_insert.cuh": {"vector": (5, "CE-PTR-10 slab assignment relation")},
@@ -35,8 +41,6 @@ ALLOWLIST: dict[str, dict[str, tuple[int, str]]] = {
     "include/Cellerator/compute/operators/graph/slab_index.cuh": {"vector": (7, "CE-PTR-10 embryo span table")},
     "include/Cellerator/compute/operators/graph/supernode_reduce.cuh": {"vector": (27, "CE-PTR-10 topology and member images")},
     "include/Cellerator/compute/sampling.hh": {"vector": (7, "CE-PTR-07 sample image and workspace")},
-    "include/Cellerator/examples/trajectory/trajectory_build.cuh": {"vector": (1, "CE-PTR-10 example-facing graph migration")},
-    "include/Cellerator/examples/trajectory/trajectory_query.cuh": {"vector": (6, "CE-PTR-10 caller-owned query views")},
     "include/Cellerator/geometry/gating.hh": {"vector": (2, "CE-PTR-04 region selection table")},
     "include/Cellerator/geometry/gating_cuda.cuh": {"vector": (4, "CE-PTR-04 compiled route image")},
     "include/Cellerator/geometry/layout_metrics.hh": {"vector": (1, "CE-PTR-04 exact metrics table")},

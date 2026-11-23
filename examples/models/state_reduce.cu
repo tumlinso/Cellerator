@@ -1,4 +1,4 @@
-#include <Cellerator/examples/models/state_reduce/stateReduce.hh>
+#include "state_reduce/stateReduce.hh"
 #include <Cellerator/compute/candidate/sparse/project.hh>
 #include <Cellerator/tensor/base/device_views.cuh>
 

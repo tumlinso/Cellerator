@@ -221,7 +221,7 @@ cellerator_enable_perf(quantizedMatrixTest)
 add_executable(trajectoryCompileTest
     tests/trajectory_compile_test.cu
 )
-target_include_directories(trajectoryCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(trajectoryCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/examples)
 target_link_libraries(trajectoryCompileTest PRIVATE CUDA::cudart)
 set_target_properties(trajectoryCompileTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(trajectoryCompileTest)
@@ -229,7 +229,7 @@ cellerator_enable_perf(trajectoryCompileTest)
 add_executable(trajectoryRuntimeTest
     tests/trajectory_runtime_test.cu
 )
-target_include_directories(trajectoryRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(trajectoryRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/examples)
 target_link_libraries(trajectoryRuntimeTest PRIVATE CUDA::cudart)
 set_target_properties(trajectoryRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(trajectoryRuntimeTest)
@@ -362,7 +362,7 @@ endif()
 add_executable(stateReduceRuntimeTest
     tests/state_reduce_runtime_test.cu
 )
-target_include_directories(stateReduceRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(stateReduceRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/examples)
 target_link_libraries(stateReduceRuntimeTest PRIVATE cellerator_state_reduce_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CUDA::cudart CUDA::cusparse CUDA::cublas)
 set_target_properties(stateReduceRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(stateReduceRuntimeTest)
@@ -370,7 +370,7 @@ cellerator_enable_perf(stateReduceRuntimeTest)
 add_executable(developmentalTimeCompileTest
     tests/developmental_time_compile_test.cc
 )
-target_include_directories(developmentalTimeCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(developmentalTimeCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/examples)
 target_link_libraries(developmentalTimeCompileTest PRIVATE CUDA::cudart)
 set_target_properties(developmentalTimeCompileTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(developmentalTimeCompileTest)
@@ -378,7 +378,7 @@ cellerator_enable_perf(developmentalTimeCompileTest)
 add_executable(developmentalTimeRuntimeTest
     tests/developmental_time_runtime_test.cu
 )
-target_include_directories(developmentalTimeRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(developmentalTimeRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/examples)
 target_link_libraries(developmentalTimeRuntimeTest PRIVATE cellerator_developmental_time_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CUDA::cudart CUDA::cusparse)
 set_target_properties(developmentalTimeRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(developmentalTimeRuntimeTest)
@@ -386,7 +386,7 @@ cellerator_enable_perf(developmentalTimeRuntimeTest)
 add_executable(developmentalTimeTrajectoryRuntimeTest
     tests/developmental_time_trajectory_runtime_test.cu
 )
-target_include_directories(developmentalTimeTrajectoryRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(developmentalTimeTrajectoryRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/examples)
 target_link_libraries(developmentalTimeTrajectoryRuntimeTest PRIVATE cellerator_developmental_time_trajectory_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet Cellerator::memory_cuda CUDA::cudart CUDA::cusparse)
 set_target_properties(developmentalTimeTrajectoryRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(developmentalTimeTrajectoryRuntimeTest)

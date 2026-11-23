@@ -98,10 +98,10 @@ COMPATIBILITY_RETIREMENTS = {
     'include/Cellerator/interop/cellshard_access.cuh': 'include/Cellerator/interop/cellshard/access.cuh',
     'include/Cellerator/math/matrix/patch.hh': 'include/Cellerator/ops/matrix/patch.hh',
     'include/Cellerator/math/process/ports.hh': 'include/Cellerator/ops/process/ports.hh',
-    'include/Cellerator/models/developmental_time.hh': 'include/Cellerator/examples/models/developmental_time/developmentalTime.hh',
-    'include/Cellerator/models/developmental_time_trajectory.hh': 'include/Cellerator/examples/models/developmental_time_trajectory/developmentalTimeTrajectory.hh',
-    'include/Cellerator/models/state_reduce.hh': 'include/Cellerator/examples/models/state_reduce/stateReduce.hh',
-    'include/Cellerator/trajectory/trajectory_tree.cuh': 'include/Cellerator/examples/trajectory/trajectory_tree.cuh',
+    'include/Cellerator/models/developmental_time.hh': 'examples/models/developmental_time/developmentalTime.hh',
+    'include/Cellerator/models/developmental_time_trajectory.hh': 'examples/models/developmental_time_trajectory/developmentalTimeTrajectory.hh',
+    'include/Cellerator/models/state_reduce.hh': 'examples/models/state_reduce/stateReduce.hh',
+    'include/Cellerator/trajectory/trajectory_tree.cuh': 'examples/trajectory/trajectory_tree.cuh',
     'include/Cellerator/types.cuh': 'include/Cellerator/common/types.cuh',
     'include/Cellerator/runtime/legacy_execution_context.hh': 'include/Cellerator/runtime/multi_gpu/fleet.cuh',
     'src/common/real.cuh': 'include/Cellerator/common/real.cuh',
@@ -243,7 +243,8 @@ def classify(p):
     if p == 'cmake/CelleratorTorchDependency.cmake':
         return ('shared optional Torch and ATen dependency discovery', 'cmake/CelleratorTorchDependency.cmake and its current CMake include sites', 'retain consistent optional native/Python Torch ABI discovery while allowing an explicit LibTorch prefix', 'retain_optional_torch_dependency_discovery', 'build configuration source; successful configured builds require separate evidence', 'optional native NN, tokenization, and Python binding build registration', 'CMake configure/build acceptance with the selected dependency installation; not numerical qualification', 'preserve optional dependency boundaries and caller-visible package/ABI selection')
     if p.startswith('include/Cellerator/examples/'):
-        return ('native model and trajectory examples', 'Cellerator examples/model fixtures', 'move to examples/model families or consumer-owned projects after include/build references are mapped', 'retain_example_until_consumer_audit', 'example_or_model_support_unqualified', 'unknown; inspect downstream includes', 'related tests/examples and model tests; exact mapping pending', 'retain biological assumptions with consumer')
+        destination = p.removeprefix('include/Cellerator/')
+        return ('former native example header path', destination, f'use {destination} in source builds and retain the installed Cellerator/examples include path', 'record_canonical_native_source_move', 'source moved with existing example contracts', 'model and trajectory tests and installed consumers', 'examples/install_headers.cmake and tests/CMakeLists.txt', 'retain biological assumptions with consumer')
     migrated_native_paths = {
         'include/Cellerator/structure/identity_registry.hh': ('execution::identity_registry', 'include/Cellerator/execution/identity_registry.hh', 'process-local registry handles remain separate from persistent structure identities', 'tests/execution_identity/identity_registry_test.cc'),
         'include/Cellerator/biology/coordinates.hh': ('structure occurrence coordinates', 'include/Cellerator/structure/coordinates.hh', 'canonical occurrence order and domain coordinates are separate from layout-owned physical positions', 'native-data identity and occurrence consumers by exact contract'),

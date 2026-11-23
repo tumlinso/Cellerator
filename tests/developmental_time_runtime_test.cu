@@ -1,4 +1,4 @@
-#include <Cellerator/examples/models/developmental_time/developmentalTime.hh>
+#include "models/developmental_time/developmentalTime.hh"
 #include <Cellerator/memory/cuda/shared_buffer.hh>
 #include "model_runtime_fixtures.cuh"
 
