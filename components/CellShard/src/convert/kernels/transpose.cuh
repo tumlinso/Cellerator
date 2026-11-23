@@ -9,7 +9,7 @@
 
 #include "csScatter.cuh"
 
-#include "../../extreme_ptx_primitives.cuh"
+#include "../../cuda_index.cuh"
 #include "../../types.cuh"
 
 namespace cellshard {

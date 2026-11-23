@@ -11,9 +11,6 @@ mkdir -p "$build_dir"
 common=(
     -ccbin=/usr/bin/g++-12
     -DCELLSHARD_ENABLE_CUDA=1
-    -DCELLSHARD_CUDA_MODE_GENERIC=1
-    -DCELLSHARD_CUDA_MODE_NATIVE=0
-    -DCELLSHARD_CUDA_MODE_NATIVE_EXTREME=0
     -I"$configured_build/generated"
     -I"$repo_root/include"
     -I"$repo_root"

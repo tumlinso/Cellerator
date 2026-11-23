@@ -4,18 +4,6 @@
 
 #include "detail/cuda_types.hh"
 
-#ifndef CELLERATOR_CUDA_MODE_GENERIC
-#define CELLERATOR_CUDA_MODE_GENERIC 1
-#endif
-
-#ifndef CELLERATOR_CUDA_MODE_NATIVE
-#define CELLERATOR_CUDA_MODE_NATIVE 0
-#endif
-
-#ifndef CELLERATOR_CUDA_MODE_NATIVE_EXTREME
-#define CELLERATOR_CUDA_MODE_NATIVE_EXTREME 0
-#endif
-
 #if CELLERATOR_DETAIL_USE_CUDA_SDK_TYPES
 #include <cuda_runtime.h>
 #endif

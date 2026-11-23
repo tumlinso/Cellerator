@@ -206,12 +206,6 @@ foreach(_header IN ITEMS
         ops/mechanism/packed_gated_product.cuh
         ops/quantized/api.cuh
         ops/quantized/dispatch.cuh
-        ops/quantized/extreme_backend.cuh
-        ops/quantized/extreme_dequantize_kernel.cuh
-        ops/quantized/extreme_metadata_access.cuh
-        ops/quantized/extreme_ptx_primitives.cuh
-        ops/quantized/extreme_quantize_kernel.cuh
-        ops/quantized/kernels.cuh
         ops/quantized/portable_backend.cuh
         ops/quantized/portable_dequantize_kernel.cuh
         ops/quantized/portable_quantize_kernel.cuh

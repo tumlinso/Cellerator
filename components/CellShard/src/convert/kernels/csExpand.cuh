@@ -3,7 +3,7 @@
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
 
-#include "../../extreme_ptx_primitives.cuh"
+#include "../../cuda_index.cuh"
 
 namespace cellshard {
 namespace convert {

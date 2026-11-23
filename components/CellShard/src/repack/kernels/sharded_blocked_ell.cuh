@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../extreme_ptx_primitives.cuh"
+#include "../../cuda_index.cuh"
 #include <Cellerator/tensor/base/blocked_ell.cuh>
 #include "../../sharded/sharded_device.cuh"
 
@@ -35,8 +35,8 @@ __global__ static void count_filtered_shard_blocked_ell_row_nnz(
     unsigned long long * __restrict__ kept_rows_out,
     unsigned long long * __restrict__ kept_slots_out
 ) {
-    const types::idx_t tid = (types::idx_t) ::cellshard::ptx::global_tid_1d();
-    const types::idx_t stride = (types::idx_t) ::cellshard::ptx::global_stride_1d();
+    const types::idx_t tid = (types::idx_t) ::cellshard::cuda_index::global_tid_1d();
+    const types::idx_t stride = (types::idx_t) ::cellshard::cuda_index::global_stride_1d();
     types::idx_t shard_row = tid;
 
     while (shard_row < shard_rows) {
@@ -94,8 +94,8 @@ __global__ static void emit_filtered_shard_blocked_ell_compressed(
     types::idx_t * __restrict__ dst_minor_idx,
     real::storage_t * __restrict__ dst_val
 ) {
-    const types::idx_t tid = (types::idx_t) ::cellshard::ptx::global_tid_1d();
-    const types::idx_t stride = (types::idx_t) ::cellshard::ptx::global_stride_1d();
+    const types::idx_t tid = (types::idx_t) ::cellshard::cuda_index::global_tid_1d();
+    const types::idx_t stride = (types::idx_t) ::cellshard::cuda_index::global_stride_1d();
     types::idx_t shard_row = tid;
 
     while (shard_row < shard_rows) {
@@ -137,8 +137,8 @@ __global__ static void emit_filtered_shard_blocked_ell_compressed(
 }
 
 __global__ static void init_index_identity(types::nnz_t n, types::idx_t *out) {
-    const types::idx_t tid = (types::idx_t) ::cellshard::ptx::global_tid_1d();
-    const types::idx_t stride = (types::idx_t) ::cellshard::ptx::global_stride_1d();
+    const types::idx_t tid = (types::idx_t) ::cellshard::cuda_index::global_tid_1d();
+    const types::idx_t stride = (types::idx_t) ::cellshard::cuda_index::global_stride_1d();
     types::idx_t i = tid;
     while (i < n) {
         out[i] = i;
@@ -154,8 +154,8 @@ __global__ static void build_block_sort_keys(
     types::u64 * __restrict__ keys,
     types::idx_t * __restrict__ positions
 ) {
-    const types::idx_t tid = (types::idx_t) ::cellshard::ptx::global_tid_1d();
-    const types::idx_t stride = (types::idx_t) ::cellshard::ptx::global_stride_1d();
+    const types::idx_t tid = (types::idx_t) ::cellshard::cuda_index::global_tid_1d();
+    const types::idx_t stride = (types::idx_t) ::cellshard::cuda_index::global_stride_1d();
     types::idx_t i = tid;
     while (i < nnz) {
         const types::u32 row_block = block_size != 0u ? row_idx[i] / block_size : 0u;
@@ -173,8 +173,8 @@ __global__ static void mark_block_group_heads_and_count(
     types::idx_t * __restrict__ head_flags,
     types::idx_t * __restrict__ row_block_counts
 ) {
-    const types::idx_t tid = (types::idx_t) ::cellshard::ptx::global_tid_1d();
-    const types::idx_t stride = (types::idx_t) ::cellshard::ptx::global_stride_1d();
+    const types::idx_t tid = (types::idx_t) ::cellshard::cuda_index::global_tid_1d();
+    const types::idx_t stride = (types::idx_t) ::cellshard::cuda_index::global_stride_1d();
     types::idx_t i = tid;
     (void) row_blocks;
     while (i < nnz) {
@@ -193,8 +193,8 @@ __global__ static void fill_blocked_ell_invalid_cols(
     types::idx_t count,
     types::idx_t * __restrict__ block_col_idx
 ) {
-    const types::idx_t tid = (types::idx_t) ::cellshard::ptx::global_tid_1d();
-    const types::idx_t stride = (types::idx_t) ::cellshard::ptx::global_stride_1d();
+    const types::idx_t tid = (types::idx_t) ::cellshard::cuda_index::global_tid_1d();
+    const types::idx_t stride = (types::idx_t) ::cellshard::cuda_index::global_stride_1d();
     types::idx_t i = tid;
     while (i < count) {
         block_col_idx[i] = ::cellerator::tensor::base::blocked_ell_invalid_col;
@@ -211,8 +211,8 @@ __global__ static void scatter_blocked_ell_block_cols(
     types::u32 ell_width,
     types::idx_t * __restrict__ block_col_idx
 ) {
-    const types::idx_t tid = (types::idx_t) ::cellshard::ptx::global_tid_1d();
-    const types::idx_t stride = (types::idx_t) ::cellshard::ptx::global_stride_1d();
+    const types::idx_t tid = (types::idx_t) ::cellshard::cuda_index::global_tid_1d();
+    const types::idx_t stride = (types::idx_t) ::cellshard::cuda_index::global_stride_1d();
     types::idx_t i = tid;
     while (i < nnz) {
         if (head_flags[i] != 0u) {
@@ -240,8 +240,8 @@ __global__ static void scatter_blocked_ell_values(
     types::u32 ell_cols,
     real::storage_t * __restrict__ out_val
 ) {
-    const types::idx_t tid = (types::idx_t) ::cellshard::ptx::global_tid_1d();
-    const types::idx_t stride = (types::idx_t) ::cellshard::ptx::global_stride_1d();
+    const types::idx_t tid = (types::idx_t) ::cellshard::cuda_index::global_tid_1d();
+    const types::idx_t stride = (types::idx_t) ::cellshard::cuda_index::global_stride_1d();
     types::idx_t i = tid;
     while (i < nnz) {
         const types::u64 key = sorted_keys[i];

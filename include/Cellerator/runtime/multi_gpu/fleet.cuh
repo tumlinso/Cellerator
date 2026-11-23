@@ -2,7 +2,6 @@
 
 #include <Cellerator/runtime/runtime.cuh>
 #include <Cellerator/runtime/multi_gpu/context.cuh>
-#include "cellerator_cuda_mode.hh"
 
 #include <cuda_runtime.h>
 
@@ -13,23 +12,11 @@ namespace cellerator::runtime {
 
 namespace cdist = ::cellerator::dist;
 
-struct fleet_topology_descriptor {
-    enum class profile {
-        generic = 0,
-        native_v100_pairs = 1
-    };
-
-    profile active_profile = profile::generic;
-    int best_peer_rank = -1;
-    unsigned int native_pair_count = 0u;
-};
-
 struct fleet_context {
     cdist::local_context local;
     void **reduce_scratch = nullptr;
     std::size_t *reduce_scratch_bytes = nullptr;
     int *peer_performance_rank = nullptr;
-    fleet_topology_descriptor topology;
 };
 
 struct reduce_sum_to_leader_f32_options {
@@ -50,7 +37,6 @@ bool fleet_slot_available(const fleet_context &fleet, unsigned int slot);
 int fleet_device_id(const fleet_context &fleet, unsigned int slot);
 cudaStream_t fleet_stream(const fleet_context &fleet, unsigned int slot);
 int fleet_peer_performance_rank(const fleet_context &fleet, unsigned int src_slot, unsigned int dst_slot);
-bool fleet_has_native_v100_topology(const fleet_context &fleet);
 void synchronize_slots(const fleet_context &fleet, const unsigned int *slots, unsigned int slot_count);
 void dense_add_inplace_f32(const execution_context &ctx, float *dst, const float *src, std::size_t count);
 void reduce_sum_to_leader_f32(
@@ -63,20 +49,19 @@ void reduce_sum_to_leader_f32(
     float *leader_out,
     const reduce_sum_to_leader_f32_options *options = nullptr);
 
-inline unsigned int default_generic_pair_slots(
+inline unsigned int default_pair_slots(
     const fleet_context &fleet,
     unsigned int pair_index,
     unsigned int *slots,
     unsigned int capacity) {
-    if (slots == nullptr || capacity < 2u) return 0u;
+    if (slots == nullptr || capacity < 2u || pair_index >= fleet.local.device_count / 2u) return 0u;
     const unsigned int begin = pair_index * 2u;
-    if (begin + 1u >= fleet.local.device_count) return 0u;
     slots[0] = begin;
     slots[1] = begin + 1u;
     return 2u;
 }
 
-inline unsigned int default_generic_fleet_slots(
+inline unsigned int default_fleet_slots(
     const fleet_context &fleet,
     unsigned int *slots,
     unsigned int capacity) {
@@ -84,58 +69,6 @@ inline unsigned int default_generic_fleet_slots(
     const unsigned int use_count = fleet.local.device_count < capacity ? fleet.local.device_count : capacity;
     for (unsigned int i = 0; i < use_count; ++i) slots[i] = i;
     return use_count;
-}
-
-inline unsigned int default_native_pair_slots(
-    const fleet_context &fleet,
-    unsigned int pair_index,
-    unsigned int *slots,
-    unsigned int capacity) {
-    if (!fleet_has_native_v100_topology(fleet) || slots == nullptr || capacity < 2u) return 0u;
-    if (pair_index >= fleet.topology.native_pair_count) return 0u;
-    if (pair_index == 0u) {
-        slots[0] = 0u;
-        slots[1] = 2u;
-        return 2u;
-    }
-    slots[0] = 1u;
-    slots[1] = 3u;
-    return 2u;
-}
-
-inline unsigned int default_native_fleet_slots(
-    const fleet_context &fleet,
-    unsigned int *slots,
-    unsigned int capacity) {
-    if (!fleet_has_native_v100_topology(fleet) || slots == nullptr || capacity < 4u) return 0u;
-    slots[0] = 0u;
-    slots[1] = 2u;
-    slots[2] = 1u;
-    slots[3] = 3u;
-    return 4u;
-}
-
-inline unsigned int default_mode_pair_slots(
-    const fleet_context &fleet,
-    unsigned int pair_index,
-    unsigned int *slots,
-    unsigned int capacity) {
-    if (!build::cuda_mode_is_generic) {
-        const unsigned int native_count = default_native_pair_slots(fleet, pair_index, slots, capacity);
-        if (native_count != 0u) return native_count;
-    }
-    return default_generic_pair_slots(fleet, pair_index, slots, capacity);
-}
-
-inline unsigned int default_mode_fleet_slots(
-    const fleet_context &fleet,
-    unsigned int *slots,
-    unsigned int capacity) {
-    if (!build::cuda_mode_is_generic) {
-        const unsigned int native_count = default_native_fleet_slots(fleet, slots, capacity);
-        if (native_count != 0u) return native_count;
-    }
-    return default_generic_fleet_slots(fleet, slots, capacity);
 }
 
 } // namespace cellerator::runtime

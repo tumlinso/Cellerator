@@ -128,46 +128,6 @@ option(CELLSHARD_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profili
 option(CELLSHARD_ENABLE_CELLERATOR_QUANTIZED "Build quantized storage plumbing against Cellerator's quantized format ABI." ON)
 set(CELLSHARD_CELLERATOR_SOURCE_DIR "" CACHE PATH
     "Local Cellerator source tree used by CellShard.")
-set(CELLSHARD_CUDA_MODE "generic" CACHE STRING
-    "CellShard CUDA optimization mode: generic, native, or native-extreme")
-set_property(CACHE CELLSHARD_CUDA_MODE PROPERTY STRINGS generic native native-extreme)
-
-if(NOT CELLSHARD_CUDA_MODE STREQUAL "generic"
-   AND NOT CELLSHARD_CUDA_MODE STREQUAL "native"
-   AND NOT CELLSHARD_CUDA_MODE STREQUAL "native-extreme")
-    message(FATAL_ERROR "CELLSHARD_CUDA_MODE must be one of: generic, native, native-extreme")
-endif()
-
-if(CELLSHARD_ENABLE_CUDA AND CELLSHARD_CUDA_MODE STREQUAL "native-extreme")
-    set(cellshard_extreme_arch_count 0)
-    foreach(cellshard_cuda_arch IN LISTS CMAKE_CUDA_ARCHITECTURES)
-        math(EXPR cellshard_extreme_arch_count "${cellshard_extreme_arch_count} + 1")
-        string(STRIP "${cellshard_cuda_arch}" cellshard_cuda_arch_clean)
-        if(NOT cellshard_cuda_arch_clean MATCHES "^(70|7\\.0)(-real|-virtual)?$")
-            message(FATAL_ERROR
-                "CELLSHARD_CUDA_MODE=native-extreme is a Volta-only path and currently requires "
-                "CMAKE_CUDA_ARCHITECTURES to contain only sm_70 entries.")
-        endif()
-    endforeach()
-    if(cellshard_extreme_arch_count EQUAL 0)
-        message(FATAL_ERROR
-            "CELLSHARD_CUDA_MODE=native-extreme requires at least one explicit sm_70 architecture entry.")
-    endif()
-endif()
-
-set(CELLSHARD_CUDA_MODE_GENERIC 0)
-set(CELLSHARD_CUDA_MODE_NATIVE 0)
-set(CELLSHARD_CUDA_MODE_NATIVE_EXTREME 0)
-if(CELLSHARD_CUDA_MODE STREQUAL "generic")
-    set(CELLSHARD_CUDA_MODE_GENERIC 1)
-elseif(CELLSHARD_CUDA_MODE STREQUAL "native")
-    set(CELLSHARD_CUDA_MODE_NATIVE 1)
-else()
-    set(CELLSHARD_CUDA_MODE_NATIVE_EXTREME 1)
-endif()
-
-message(STATUS "CellShard CUDA mode: ${CELLSHARD_CUDA_MODE}")
-
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if(CELLSHARD_ENABLE_CUDA AND NOT TARGET CUDA::cudart)
@@ -317,11 +277,6 @@ if(CELLSHARD_ENABLE_CELLERATOR_QUANTIZED)
 else()
     target_compile_definitions(cellshard_headers INTERFACE CELLSHARD_ENABLE_CELLERATOR_QUANTIZED=0)
 endif()
-target_compile_definitions(cellshard_headers INTERFACE
-    CELLSHARD_CUDA_MODE_GENERIC=${CELLSHARD_CUDA_MODE_GENERIC}
-    CELLSHARD_CUDA_MODE_NATIVE=${CELLSHARD_CUDA_MODE_NATIVE}
-    CELLSHARD_CUDA_MODE_NATIVE_EXTREME=${CELLSHARD_CUDA_MODE_NATIVE_EXTREME}
-)
 
 add_library(cellshard_anndata_ingest STATIC
     src/ingest/anndata.cc

@@ -2,64 +2,14 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <limits>
 #include <stdexcept>
 
 namespace cellerator::runtime {
 
 namespace {
 
-constexpr int kNoPeerRank = std::numeric_limits<int>::max();
-
 int peer_rank_index_(const fleet_context &fleet, unsigned int src_slot, unsigned int dst_slot) {
     return static_cast<int>(src_slot * fleet.local.device_count + dst_slot);
-}
-
-int best_peer_rank_(const fleet_context &fleet) {
-    if (fleet.peer_performance_rank == nullptr) return -1;
-    int best_rank = kNoPeerRank;
-    for (unsigned int src = 0; src < fleet.local.device_count; ++src) {
-        for (unsigned int dst = 0; dst < fleet.local.device_count; ++dst) {
-            if (src == dst) continue;
-            const int rank = fleet.peer_performance_rank[peer_rank_index_(fleet, src, dst)];
-            if (rank >= 0 && rank < best_rank) best_rank = rank;
-        }
-    }
-    return best_rank == kNoPeerRank ? -1 : best_rank;
-}
-
-bool rank_strictly_worse_(const fleet_context &fleet, unsigned int src_slot, unsigned int dst_slot, int best_rank) {
-    const int rank = fleet_peer_performance_rank(fleet, src_slot, dst_slot);
-    return rank >= 0 && rank > best_rank;
-}
-
-void detect_topology_profile_(fleet_context *fleet) {
-    fleet->topology = fleet_topology_descriptor{};
-    fleet->topology.best_peer_rank = best_peer_rank_(*fleet);
-    if (fleet->local.device_count < 4u || fleet->topology.best_peer_rank < 0) return;
-
-    const int best_rank = fleet->topology.best_peer_rank;
-    const bool pair02_best =
-        fleet_peer_performance_rank(*fleet, 0u, 2u) == best_rank
-        && fleet_peer_performance_rank(*fleet, 2u, 0u) == best_rank;
-    const bool pair13_best =
-        fleet_peer_performance_rank(*fleet, 1u, 3u) == best_rank
-        && fleet_peer_performance_rank(*fleet, 3u, 1u) == best_rank;
-    const bool leaders_worse =
-        rank_strictly_worse_(*fleet, 0u, 1u, best_rank)
-        && rank_strictly_worse_(*fleet, 1u, 0u, best_rank)
-        && rank_strictly_worse_(*fleet, 2u, 3u, best_rank)
-        && rank_strictly_worse_(*fleet, 3u, 2u, best_rank);
-    const bool cross_worse =
-        rank_strictly_worse_(*fleet, 0u, 3u, best_rank)
-        && rank_strictly_worse_(*fleet, 3u, 0u, best_rank)
-        && rank_strictly_worse_(*fleet, 1u, 2u, best_rank)
-        && rank_strictly_worse_(*fleet, 2u, 1u, best_rank);
-
-    if (pair02_best && pair13_best && leaders_worse && cross_worse) {
-        fleet->topology.active_profile = fleet_topology_descriptor::profile::native_v100_pairs;
-        fleet->topology.native_pair_count = 2u;
-    }
 }
 
 } // namespace
@@ -70,7 +20,6 @@ void init(fleet_context *fleet) {
     fleet->reduce_scratch = nullptr;
     fleet->reduce_scratch_bytes = nullptr;
     fleet->peer_performance_rank = nullptr;
-    fleet->topology = fleet_topology_descriptor{};
 }
 
 void clear(fleet_context *fleet) {
@@ -89,7 +38,6 @@ void clear(fleet_context *fleet) {
     fleet->reduce_scratch = nullptr;
     fleet->reduce_scratch_bytes = nullptr;
     fleet->peer_performance_rank = nullptr;
-    fleet->topology = fleet_topology_descriptor{};
     cdist::clear(&fleet->local);
 }
 
@@ -141,7 +89,6 @@ void discover_fleet(
                 fleet->peer_performance_rank[index] = rank;
             }
         }
-        detect_topology_profile_(fleet);
     }
 }
 
@@ -181,10 +128,6 @@ int fleet_peer_performance_rank(const fleet_context &fleet, unsigned int src_slo
     }
     if (fleet.peer_performance_rank == nullptr) return -1;
     return fleet.peer_performance_rank[peer_rank_index_(fleet, src_slot, dst_slot)];
-}
-
-bool fleet_has_native_v100_topology(const fleet_context &fleet) {
-    return fleet.topology.active_profile == fleet_topology_descriptor::profile::native_v100_pairs;
 }
 
 void synchronize_slots(const fleet_context &fleet, const unsigned int *slots, unsigned int slot_count) {

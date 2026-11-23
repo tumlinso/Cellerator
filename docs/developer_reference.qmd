@@ -76,6 +76,14 @@ for Cellerator package components `velocity`, `cellshard`, or `CellShard` fail
 clearly. The supported RNA velocity entry point is the separate CCell
 `ccell::velocity` target.
 
+For CUDA builds, use `CELLERATOR_ENABLE_CUDA` to choose whether to build CUDA
+support and `CMAKE_CUDA_ARCHITECTURES` to select the GPU targets. For example,
+use `-DCMAKE_CUDA_ARCHITECTURES=80` for SM80 or
+`'-DCMAKE_CUDA_ARCHITECTURES=70;80'` with a toolkit that supports both targets.
+When upgrading from a build that used the retired CUDA optimization modes,
+configure in a fresh build directory and install to a fresh prefix to clear
+cached architecture values and previously installed headers.
+
 Header consumers in the normal package can link `Cellerator::headers` for its
 include path and C++20 requirement. Tensor and NN consumers use the same
 targets for headers and imports. For an importing model:

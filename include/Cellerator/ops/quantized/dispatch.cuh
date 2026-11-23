@@ -4,8 +4,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "kernels.cuh"
-#include "cellerator_cuda_mode.hh"
+#include "portable_backend.cuh"
 
 namespace cellerator::ops::quantized {
 
@@ -42,11 +41,7 @@ inline cudaError_t launch_quantize_block(
     CsrBlock block,
     const Real* values_by_nnz_block,
     cudaStream_t stream = 0) {
-    if constexpr (build::cuda_mode_is_native_extreme) {
-        return extreme_backend::launch_quantize_block(matrix, block, values_by_nnz_block, stream);
-    } else {
-        return portable_backend::launch_quantize_block(matrix, block, values_by_nnz_block, stream);
-    }
+    return portable_backend::launch_quantize_block(matrix, block, values_by_nnz_block, stream);
 }
 
 template<int Bits, typename Real, typename Metadata>
@@ -55,11 +50,7 @@ inline cudaError_t launch_dequantize_block(
     CsrBlock block,
     Real* values_by_nnz_block,
     cudaStream_t stream = 0) {
-    if constexpr (build::cuda_mode_is_native_extreme) {
-        return extreme_backend::launch_dequantize_block(matrix, block, values_by_nnz_block, stream);
-    } else {
-        return portable_backend::launch_dequantize_block(matrix, block, values_by_nnz_block, stream);
-    }
+    return portable_backend::launch_dequantize_block(matrix, block, values_by_nnz_block, stream);
 }
 
 template<int Bits, typename Real, typename Metadata>
@@ -68,11 +59,7 @@ inline cudaError_t launch_quantize_block_v100(
     CsrBlock block,
     const Real* values_by_nnz_block,
     cudaStream_t stream = 0) {
-    if constexpr (build::cuda_mode_is_native_extreme) {
-        return extreme_backend::launch_quantize_block_v100(matrix, block, values_by_nnz_block, stream);
-    } else {
-        return portable_backend::launch_quantize_block_v100(matrix, block, values_by_nnz_block, stream);
-    }
+    return portable_backend::launch_quantize_block_v100(matrix, block, values_by_nnz_block, stream);
 }
 
 template<int Bits, typename Real, typename Metadata>
@@ -81,11 +68,7 @@ inline cudaError_t launch_dequantize_block_v100(
     CsrBlock block,
     Real* values_by_nnz_block,
     cudaStream_t stream = 0) {
-    if constexpr (build::cuda_mode_is_native_extreme) {
-        return extreme_backend::launch_dequantize_block_v100(matrix, block, values_by_nnz_block, stream);
-    } else {
-        return portable_backend::launch_dequantize_block_v100(matrix, block, values_by_nnz_block, stream);
-    }
+    return portable_backend::launch_dequantize_block_v100(matrix, block, values_by_nnz_block, stream);
 }
 
 } // namespace cellerator::ops::quantized

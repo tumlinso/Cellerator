@@ -76,16 +76,6 @@ int pair_link_score_(const fleet_context &fleet, unsigned int lhs_slot, unsigned
     return -(lhs_rank + rhs_rank);
 }
 
-bool matches_native_slot_order_(const fleet_context &fleet, const unsigned int *slots, unsigned int slot_count) {
-    if (slot_count != 4u || !fleet_has_native_v100_topology(fleet)) return false;
-    unsigned int native_slots[4] = {};
-    if (default_native_fleet_slots(fleet, native_slots, 4u) != 4u) return false;
-    for (unsigned int i = 0u; i < 4u; ++i) {
-        if (slots[i] != native_slots[i]) return false;
-    }
-    return true;
-}
-
 void warn_nccl_fallback_once_(const char *reason) {
     static bool warned = false;
     if (warned) return;
@@ -97,7 +87,7 @@ void warn_nccl_fallback_once_(const char *reason) {
         reason != nullptr ? reason : "NCCL collective path is unavailable");
 }
 
-pair_reduction_plan build_generic_pair_plan_(const fleet_context &fleet, const unsigned int *slots, unsigned int slot_count) {
+pair_reduction_plan build_pair_plan_(const fleet_context &fleet, const unsigned int *slots, unsigned int slot_count) {
     pair_reduction_plan best_plan;
     if (slot_count != 4u || slots == nullptr) return best_plan;
 
@@ -224,17 +214,7 @@ void reduce_sum_to_leader_f32(
 
     pair_reduction_plan pair_plan;
     if (leader_index == 0 && slot_count == 4u) {
-        if (!::cellerator::build::cuda_mode_is_generic && matches_native_slot_order_(*fleet, slots, slot_count)) {
-            pair_plan.peer0_index = 1u;
-            pair_plan.leader1_index = 2u;
-            pair_plan.peer1_index = 3u;
-            pair_plan.peer0 = slots[1];
-            pair_plan.leader1 = slots[2];
-            pair_plan.peer1 = slots[3];
-            pair_plan.valid = true;
-        } else {
-            pair_plan = build_generic_pair_plan_(*fleet, slots, slot_count);
-        }
+        pair_plan = build_pair_plan_(*fleet, slots, slot_count);
     }
 
     if (pair_plan.valid) {

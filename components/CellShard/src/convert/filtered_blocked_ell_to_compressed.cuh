@@ -37,8 +37,8 @@ __global__ static void count_filtered_blocked_ell_row_nnz(
     const unsigned int * __restrict__ col_remap,
     unsigned int * __restrict__ row_ptr_shifted
 ) {
-    const unsigned int tid = (unsigned int) ::cellshard::ptx::global_tid_1d();
-    const unsigned int stride = (unsigned int) ::cellshard::ptx::global_stride_1d();
+    const unsigned int tid = (unsigned int) ::cellshard::cuda_index::global_tid_1d();
+    const unsigned int stride = (unsigned int) ::cellshard::cuda_index::global_stride_1d();
     const unsigned int block_size = src.block_size;
     const unsigned int ell_width_blocks = block_size != 0u ? src.ell_cols / block_size : 0u;
     unsigned int row = tid;
@@ -87,8 +87,8 @@ __global__ static void emit_filtered_blocked_ell_compressed(
     unsigned int * __restrict__ dst_minor_idx,
     __half * __restrict__ dst_val
 ) {
-    const unsigned int tid = (unsigned int) ::cellshard::ptx::global_tid_1d();
-    const unsigned int stride = (unsigned int) ::cellshard::ptx::global_stride_1d();
+    const unsigned int tid = (unsigned int) ::cellshard::cuda_index::global_tid_1d();
+    const unsigned int stride = (unsigned int) ::cellshard::cuda_index::global_stride_1d();
     const unsigned int block_size = src.block_size;
     const unsigned int ell_width_blocks = block_size != 0u ? src.ell_cols / block_size : 0u;
     unsigned int row = tid;

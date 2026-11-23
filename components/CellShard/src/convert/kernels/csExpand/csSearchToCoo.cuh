@@ -8,8 +8,8 @@ __global__ static void csSearchToCoo(
     unsigned int * __restrict__ out_uAxIdx,
     __half * __restrict__ out_val
 ) {
-    const unsigned int tid = (unsigned int) ::cellshard::ptx::global_tid_1d();
-    const unsigned int stride = (unsigned int) ::cellshard::ptx::global_stride_1d();
+    const unsigned int tid = (unsigned int) ::cellshard::cuda_index::global_tid_1d();
+    const unsigned int stride = (unsigned int) ::cellshard::cuda_index::global_stride_1d();
     unsigned int i = tid;
 
     while (i < nnz) {
@@ -17,8 +17,8 @@ __global__ static void csSearchToCoo(
         unsigned int hi = cDim;
 
         while (lo < hi) {
-            const unsigned int mid = ::cellshard::ptx::add_u32(lo, ::cellshard::ptx::shr_u32(::cellshard::ptx::sub_u32(hi, lo), 1u));
-            if (i >= cAxPtr[mid + 1u]) lo = ::cellshard::ptx::add_u32(mid, 1u);
+            const unsigned int mid = ::cellshard::cuda_index::add_u32(lo, ::cellshard::cuda_index::shr_u32(::cellshard::cuda_index::sub_u32(hi, lo), 1u));
+            if (i >= cAxPtr[mid + 1u]) lo = ::cellshard::cuda_index::add_u32(mid, 1u);
             else hi = mid;
         }
 

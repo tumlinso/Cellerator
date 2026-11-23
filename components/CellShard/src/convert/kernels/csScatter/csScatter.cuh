@@ -7,11 +7,11 @@ __global__ static void csScatter(
     unsigned int * __restrict__ out_uAx,
     __half * __restrict__ out_val
 ) {
-    const unsigned int tid = (unsigned int) ::cellshard::ptx::global_tid_1d();
-    const unsigned int stride = (unsigned int) ::cellshard::ptx::global_stride_1d();
+    const unsigned int tid = (unsigned int) ::cellshard::cuda_index::global_tid_1d();
+    const unsigned int stride = (unsigned int) ::cellshard::cuda_index::global_stride_1d();
     unsigned int i = tid;
     while (i < nnz) {
-        const unsigned int dst = ::cellshard::ptx::atomic_add_u32(heads + cAxIdx[i], 1u);
+        const unsigned int dst = ::cellshard::cuda_index::atomic_add_u32(heads + cAxIdx[i], 1u);
         out_uAx[dst] = uAxIdx[i];
         out_val[dst] = val[i];
         i += stride;

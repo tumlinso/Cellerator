@@ -278,9 +278,6 @@ if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     cellerator_append_component_validation()
     return()
 endif()
-set(CELLERATOR_CUDA_MODE "generic" CACHE STRING
-    "CUDA optimization mode: generic, native, or native-extreme")
-set_property(CACHE CELLERATOR_CUDA_MODE PROPERTY STRINGS generic native native-extreme)
 set(CELLERATOR_REAL_STORAGE "f16" CACHE STRING
     "Default Cellerator real storage type for new, unspecified in-memory work: f16, bf16, fp8_e4m3, fp8_e5m2, f32, or f64")
 set_property(CACHE CELLERATOR_REAL_STORAGE PROPERTY STRINGS f16 bf16 fp8_e4m3 fp8_e5m2 f32 f64)
@@ -397,77 +394,12 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
-if(NOT CELLERATOR_CUDA_MODE STREQUAL "generic"
-   AND NOT CELLERATOR_CUDA_MODE STREQUAL "native"
-   AND NOT CELLERATOR_CUDA_MODE STREQUAL "native-extreme")
-    message(FATAL_ERROR "CELLERATOR_CUDA_MODE must be one of: generic, native, native-extreme")
-endif()
-
-if(CELLERATOR_CUDA_MODE STREQUAL "native-extreme")
-    set(CMAKE_CUDA_ARCHITECTURES 70 CACHE STRING
-        "Native-extreme mode hard-locks the build to Volta sm_70." FORCE)
-    set(cellerator_extreme_arch_count 0)
-    foreach(cellerator_cuda_arch IN LISTS CMAKE_CUDA_ARCHITECTURES)
-        math(EXPR cellerator_extreme_arch_count "${cellerator_extreme_arch_count} + 1")
-        string(STRIP "${cellerator_cuda_arch}" cellerator_cuda_arch_clean)
-        if(NOT cellerator_cuda_arch_clean MATCHES "^(70|7\\.0)(-real|-virtual)?$")
-            message(FATAL_ERROR
-                "CELLERATOR_CUDA_MODE=native-extreme is a Volta-only path and currently requires "
-                "CMAKE_CUDA_ARCHITECTURES to contain only sm_70 entries.")
-        endif()
-    endforeach()
-    if(cellerator_extreme_arch_count EQUAL 0)
-        message(FATAL_ERROR
-            "CELLERATOR_CUDA_MODE=native-extreme requires at least one explicit sm_70 architecture entry.")
-    endif()
-endif()
-
-set(CELLERATOR_CUDA_MODE_GENERIC 0)
-set(CELLERATOR_CUDA_MODE_NATIVE 0)
-set(CELLERATOR_CUDA_MODE_NATIVE_EXTREME 0)
-set(CELLERATOR_CUDA_MODE_ENUM generic)
-if(CELLERATOR_CUDA_MODE STREQUAL "generic")
-    set(CELLERATOR_CUDA_MODE_GENERIC 1)
-elseif(CELLERATOR_CUDA_MODE STREQUAL "native")
-    set(CELLERATOR_CUDA_MODE_NATIVE 1)
-    set(CELLERATOR_CUDA_MODE_ENUM native)
-else()
-    set(CELLERATOR_CUDA_MODE_NATIVE_EXTREME 1)
-    set(CELLERATOR_CUDA_MODE_ENUM native_extreme)
-endif()
-
-message(STATUS "Cellerator CUDA mode: ${CELLERATOR_CUDA_MODE}")
-
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/cuda_mode.hh.in
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/cellerator_cuda_mode.hh
-    @ONLY
-)
-
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/config.cuh.in
     ${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/config.cuh
     @ONLY
 )
 
-add_library(cellerator_cuda_mode INTERFACE)
-target_include_directories(cellerator_cuda_mode INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-target_compile_definitions(cellerator_cuda_mode INTERFACE
-    CELLERATOR_CUDA_MODE_GENERIC=${CELLERATOR_CUDA_MODE_GENERIC}
-    CELLERATOR_CUDA_MODE_NATIVE=${CELLERATOR_CUDA_MODE_NATIVE}
-    CELLERATOR_CUDA_MODE_NATIVE_EXTREME=${CELLERATOR_CUDA_MODE_NATIVE_EXTREME}
-)
-target_compile_features(cellerator_cuda_mode INTERFACE cxx_std_20)
-
-# These generated public configuration headers are consumed through the
-# exported CUDA-mode target and therefore must accompany the installed SDK.
-install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/generated/cellerator_cuda_mode.hh"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/config.cuh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
@@ -487,7 +419,7 @@ function(cellerator_enable_perf target)
         $<$<COMPILE_LANGUAGE:CXX>:-O3 -DNDEBUG -march=native -mtune=native>
         $<$<COMPILE_LANGUAGE:CUDA>:${cellerator_cuda_perf_flags}>
     )
-    target_link_libraries(${target} PRIVATE cellerator_cuda_mode)
+    target_include_directories(${target} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
     set_target_properties(${target} PROPERTIES
         INTERPROCEDURAL_OPTIMIZATION_RELEASE YES
     )

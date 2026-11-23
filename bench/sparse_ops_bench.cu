@@ -5,7 +5,6 @@
 #include "blocked_ell_fixture.cuh"
 #include <Cellerator/memory/cuda/shared_buffer.hh>
 #include "benchmark_mutex.hh"
-#include "cellerator_cuda_mode.hh"
 
 #include <cuda_fp16.h>
 
@@ -470,7 +469,7 @@ void run_fleet_feature_spmv(const bench_config &cfg) {
     require((cfg.cols % 4u) == 0u, "fleet-feature-spmv requires cols divisible by 4");
 
     unsigned int slots[4] = {};
-    require(runtime::default_mode_fleet_slots(fleet, slots, 4u) == 4u, "default fleet slots unavailable");
+    require(runtime::default_fleet_slots(fleet, slots, 4u) == 4u, "default fleet slots unavailable");
     const std::uint32_t cols_per_slot = cfg.cols / 4u;
 
     bench_config shard_cfg = cfg;
@@ -568,7 +567,6 @@ void run_fleet_feature_spmv(const bench_config &cfg) {
 int main(int argc, char **argv) {
     cellerator::bench::benchmark_mutex_guard benchmark_mutex("sparseOpsBench");
     const bench_config cfg = parse_args(argc, argv);
-    std::cout << "cuda_mode=" << cellerator::build::cuda_mode_name << '\n';
     if (cfg.mode == "base-spmv") {
         run_base_spmv(cfg);
         return 0;

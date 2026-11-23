@@ -498,6 +498,9 @@ CUDA/runtime umbrella include:
 ```
 
 If CellShard is configured with `CELLSHARD_ENABLE_CUDA=OFF`, the install does not export `CellShard::runtime`.
+For a standalone CUDA build, select the GPU targets with
+`CMAKE_CUDA_ARCHITECTURES`. When upgrading from a build that used the retired
+CUDA optimization modes, use a fresh build directory and install prefix.
 
 Python package basics:
 

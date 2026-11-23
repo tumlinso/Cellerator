@@ -182,6 +182,7 @@ bool run_device_case() {
     unsigned char* d_packed_values = nullptr;
     bool ok = true;
     std::vector<unsigned char> expected_packed;
+    const float first_level = fixture.gene_scales.front();
 
     if (!check_cuda(cudaGetDeviceCount(&device_count), "cudaGetDeviceCount")) {
         return false;
@@ -197,6 +198,8 @@ bool run_device_case() {
     msq::build_uniform_block_row_ptr(fixture.rows, 2, fixture.block_row_ptr.data());
     fixture.packed_values.assign(static_cast<std::size_t>(fixture.packed_row_ptr.back()), 0u);
     fill_fixture_inputs<Bits, Metadata>(&fixture);
+    // Row zero, column zero has zero offset for both metadata policies.
+    fixture.input_values.front() = first_level * 0.5f;
 
     {
         auto host_matrix = msq::make_csr_view<Bits>(
@@ -212,6 +215,10 @@ bool run_device_case() {
             host_metadata);
 
         if (msq::pack_nnz_values(&host_matrix, fixture.input_values.data()) != 0) {
+            return false;
+        }
+        if (msq::get_code(&host_matrix, 0, 0) != 1u) {
+            std::fprintf(stderr, "positive half-step must pack to code 1\n");
             return false;
         }
         expected_packed = fixture.packed_values;
@@ -358,13 +365,14 @@ bool run_device_case() {
     }
 
     for (std::size_t i = 0; i < fixture.input_values.size(); ++i) {
-        if (!nearly_equal(fixture.input_values[i], fixture.unpacked_values[i])) {
+        const float expected = i == 0u ? first_level : fixture.input_values[i];
+        if (!nearly_equal(expected, fixture.unpacked_values[i])) {
             std::fprintf(stderr,
                          "device mismatch policy=%s bits=%d index=%zu expected=%f got=%f\n",
                          metadata_case<Metadata>::label(),
                          Bits,
                          i,
-                         fixture.input_values[i],
+                         expected,
                          fixture.unpacked_values[i]);
             ok = false;
             break;

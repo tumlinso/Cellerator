@@ -453,7 +453,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    std::printf("cuda_mode=%s\n", cellerator::build::cuda_mode_name);
 
     if (!check_cuda(cudaGetDeviceCount(&device_count), "cudaGetDeviceCount")) {
         return 1;

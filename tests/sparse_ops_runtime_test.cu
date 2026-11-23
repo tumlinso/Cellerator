@@ -657,7 +657,7 @@ int main() {
         runtime::discover_fleet(&fleet, true, cudaStreamNonBlocking, true);
 
         unsigned int pair_slots[2] = {};
-        require(runtime::default_mode_pair_slots(fleet, 0u, pair_slots, 2u) == 2u, "pair slots unavailable");
+        require(runtime::default_pair_slots(fleet, 0u, pair_slots, 2u) == 2u, "pair slots unavailable");
         require(runtime::fleet_slot_available(fleet, pair_slots[0]), "pair leader slot 0 unavailable");
         require(runtime::fleet_slot_available(fleet, pair_slots[1]), "pair peer slot unavailable");
 
@@ -748,7 +748,7 @@ int main() {
 
         if (device_count >= 4) {
             unsigned int fleet_slots[4] = {};
-            require(runtime::default_mode_fleet_slots(fleet, fleet_slots, 4) == 4u, "default fleet slots unavailable");
+            require(runtime::default_fleet_slots(fleet, fleet_slots, 4u) == 4u, "default fleet slots unavailable");
             for (unsigned int i = 0; i < 4; ++i) {
                 require(runtime::fleet_slot_available(fleet, fleet_slots[i]), "fleet slot unavailable");
             }
