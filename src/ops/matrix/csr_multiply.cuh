@@ -6,6 +6,8 @@
 
 namespace cellerator::ops::matrix {
 
+// CSR operands must have structure.axis == CompressedAxis::row.
+// The entry points reject any other axis with cudaErrorInvalidValue before enqueueing work.
 template<class T> using Csr = tensor::base::CompressedView<uint32_t, T>;
 
 // Check the entire host view array before any fleet slot enqueues work.

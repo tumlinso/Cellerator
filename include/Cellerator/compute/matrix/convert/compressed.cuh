@@ -2,7 +2,7 @@
 
 #include <Cellerator/common/types.cuh>
 #include <Cellerator/tensor/base/compressed.hh>
-#include <Cellerator/tensor/base/coo.hh>
+#include <Cellerator/tensor/base/coordinate.hh>
 
 
 #include <cstddef>
@@ -17,13 +17,13 @@ namespace types = ::cellerator::types;
 // preserve stored occurrences, including duplicates. The workspace query
 // only needs the coordinate arrays and extents.
 int compressed_from_coo_library_workspace_bytes(
-    const tensor::base::CooView<types::idx_t, const real::storage_t> &source,
+    const tensor::base::CoordinateView<types::idx_t, const real::storage_t> &source,
     tensor::base::CompressedAxis axis,
     cudaStream_t stream,
     std::size_t *bytes_out);
 
 int build_compressed_from_coo_library(
-    const tensor::base::CooView<types::idx_t, const real::storage_t> &source,
+    const tensor::base::CoordinateView<types::idx_t, const real::storage_t> &source,
     tensor::base::CompressedAxis axis,
     types::ptr_t *d_cAxPtr,
     types::idx_t *d_sort_cAxIdx,
@@ -35,7 +35,7 @@ int build_compressed_from_coo_library(
     cudaStream_t stream);
 
 int build_compressed_from_coo_custom(
-    const tensor::base::CooView<types::idx_t, const real::storage_t> &source,
+    const tensor::base::CoordinateView<types::idx_t, const real::storage_t> &source,
     tensor::base::CompressedAxis axis,
     types::ptr_t *d_cAxPtr,
     types::ptr_t *d_heads,
@@ -48,7 +48,7 @@ int build_compressed_from_coo_custom(
 // Coordinates must already be nondecreasing along the compressed axis. An
 // output minor or value pointer equal to its input pointer avoids that copy.
 int build_compressed_from_sorted_coo_custom(
-    const tensor::base::CooView<types::idx_t, const real::storage_t> &source,
+    const tensor::base::CoordinateView<types::idx_t, const real::storage_t> &source,
     tensor::base::CompressedAxis axis,
     types::ptr_t *d_cAxPtr,
     types::idx_t *d_out_uAx,
@@ -62,7 +62,7 @@ int build_compressed_from_sorted_coo_custom(
 // those buffers live through all consumers. Repeated coordinates stay repeated
 // and may require canonicalization for ATen CSR/CSC.
 int build_compressed_view_from_sorted_coo(
-    const tensor::base::CooView<int64_t, const void> &source,
+    const tensor::base::CoordinateView<int64_t, const void> &source,
     tensor::base::CompressedAxis axis,
     int64_t *d_major_ptr,
     uint64_t major_capacity,
@@ -127,7 +127,7 @@ int build_compressed_transpose_library_raw(
     cudaStream_t stream);
 
 int transpose_coo_entries(
-    const tensor::base::CooView<types::idx_t, const real::storage_t> &source,
+    const tensor::base::CoordinateView<types::idx_t, const real::storage_t> &source,
     types::idx_t *d_dst_rowIdx,
     types::idx_t *d_dst_colIdx,
     real::storage_t *d_dst_val,

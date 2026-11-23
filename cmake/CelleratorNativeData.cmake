@@ -237,7 +237,7 @@ foreach(_header IN ITEMS
         tensor/block_masked/row_view.hh
         tensor/block_masked/structure.hh
         tensor/base/compressed.hh
-        tensor/base/coo.hh
+        tensor/base/coordinate.hh
         tensor/feature_major_tiles.hh
         tensor/state_codes/view.hh
         execution/dependency/distributed.hh

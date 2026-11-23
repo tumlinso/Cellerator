@@ -71,10 +71,10 @@ writes outside autograd.
 
 ## Borrowed COO
 
-`<Cellerator/tensor/base/coo.hh>` defines `CooView` over contiguous row, column,
-and value arrays. Each stored entry keeps its position, including repeated
-coordinates. The CUDA COO conversion routines consume these views and use
-caller-supplied output and workspace buffers.
+`<Cellerator/tensor/base/coordinate.hh>` defines `CoordinateView` over contiguous
+row, column, and value arrays. Each stored entry keeps its position, including
+repeated coordinates. The CUDA COO conversion routines consume these views and
+use caller-supplied output and workspace buffers.
 
 For 64-bit COO already sorted along the chosen compression axis,
 `build_compressed_view_from_sorted_coo` writes only the major offsets. The

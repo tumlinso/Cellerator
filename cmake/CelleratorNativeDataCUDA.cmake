@@ -228,7 +228,7 @@ foreach(_header IN ITEMS
         memory/domain.hh
         memory/view.hh
         tensor/base/compressed.hh
-        tensor/base/coo.hh
+        tensor/base/coordinate.hh
         tensor/base/blocked_ell_layout.hh
         tensor/base/sliced_ell_layout.hh
         tensor/base/device_views.cuh)

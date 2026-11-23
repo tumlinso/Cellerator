@@ -1,5 +1,5 @@
 #include <Cellerator/tensor/base/compressed.hh>
-#include <Cellerator/tensor/base/coo.hh>
+#include <Cellerator/tensor/base/coordinate.hh>
 #include <Cellerator/memory/view.hh>
 #include <Cellerator/tensor/base/device_views.cuh>
 
@@ -72,7 +72,7 @@ void check_coo() {
     const uint32_t rows[] = {1, 0, 1};
     const uint32_t cols[] = {2, 1, 2};
     __half values[] = {__float2half(5.0f), __float2half(4.0f), __float2half(7.0f)};
-    const formats::CooView<uint32_t, const __half> view{2, 3, 3, rows, cols, values};
+    const formats::CoordinateView<uint32_t, const __half> view{2, 3, 3, rows, cols, values};
     require(view.row_idx == rows && view.col_idx == cols && view.values == values,
             "COO view should borrow its arrays");
     require(view.row_idx[0] == view.row_idx[2] && view.col_idx[0] == view.col_idx[2] &&

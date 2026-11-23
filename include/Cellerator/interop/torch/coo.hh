@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/tensor/base/coo.hh>
+#include <Cellerator/tensor/base/coordinate.hh>
 
 #include <ATen/core/Tensor.h>
 
@@ -10,7 +10,7 @@ enum class CooEntryOrder : uint8_t { preserve, assume_sorted_unique };
 
 namespace detail {
 
-tensor::base::CooView<int64_t, const void> borrow_coo_storage(
+tensor::base::CoordinateView<int64_t, const void> borrow_coo_storage(
     const at::Tensor &matrix, at::ScalarType value_type);
 
 } // namespace detail
@@ -20,21 +20,21 @@ tensor::base::CooView<int64_t, const void> borrow_coo_storage(
 // and orders CUDA streams through completion. This raw view does not record
 // autograd operations. It requires contiguous int64[2, nnz] and values[nnz].
 template<class Value>
-tensor::base::CooView<int64_t, const Value> borrow_coo_entries(const at::Tensor &matrix) {
+tensor::base::CoordinateView<int64_t, const Value> borrow_coo_entries(const at::Tensor &matrix) {
     const auto view = detail::borrow_coo_storage(matrix, c10::CppTypeToScalarType<Value>::value);
     return {view.rows, view.cols, view.nnz, view.row_idx, view.col_idx,
             static_cast<const Value *>(view.values)};
 }
 
 template<class Value>
-tensor::base::CooView<int64_t, const Value> borrow_coo_entries(const at::Tensor &&) = delete;
+tensor::base::CoordinateView<int64_t, const Value> borrow_coo_entries(const at::Tensor &&) = delete;
 
-inline tensor::base::CooView<int64_t, const void> borrow_coo_entries_fp16(const at::Tensor &matrix) {
+inline tensor::base::CoordinateView<int64_t, const void> borrow_coo_entries_fp16(const at::Tensor &matrix) {
     static_assert(sizeof(at::Half) == sizeof(uint16_t), "native FP16 views require binary16 storage");
     return detail::borrow_coo_storage(matrix, at::kHalf);
 }
 
-inline tensor::base::CooView<int64_t, const void> borrow_coo_entries_fp16(const at::Tensor &&) = delete;
+inline tensor::base::CoordinateView<int64_t, const void> borrow_coo_entries_fp16(const at::Tensor &&) = delete;
 
 // Wrap contiguous int64[2, nnz] and values[nnz] on the same CPU or CUDA device.
 // Coordinates must be in range. preserve marks the result uncoalesced and keeps

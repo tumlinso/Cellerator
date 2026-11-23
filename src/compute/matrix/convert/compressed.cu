@@ -9,11 +9,11 @@ namespace cellerator::compute::matrix::convert {
 
 namespace {
 
-using native_coo_view = tensor::base::CooView<types::idx_t, const real::storage_t>;
+using native_coo_view = tensor::base::CoordinateView<types::idx_t, const real::storage_t>;
 using tensor::base::CompressedAxis;
 
 template<class Index, class Value>
-bool valid_coo_coordinates(const tensor::base::CooView<Index, Value> &source, CompressedAxis axis) {
+bool valid_coo_coordinates(const tensor::base::CoordinateView<Index, Value> &source, CompressedAxis axis) {
     return (axis == CompressedAxis::row || axis == CompressedAxis::column)
         && (source.nnz == 0 || (source.rows != 0 && source.cols != 0
             && source.row_idx != nullptr && source.col_idx != nullptr));
@@ -375,7 +375,7 @@ int build_compressed_from_sorted_coo_custom(
 }
 
 int build_compressed_view_from_sorted_coo(
-    const tensor::base::CooView<int64_t, const void> &source,
+    const tensor::base::CoordinateView<int64_t, const void> &source,
     CompressedAxis axis,
     int64_t *d_major_ptr,
     uint64_t major_capacity,

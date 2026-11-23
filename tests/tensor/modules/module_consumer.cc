@@ -16,7 +16,7 @@ int main() {
     const float values[]{3.0f};
     const base::CompressedStructureView<uint32_t, uint64_t> csr{
         1, 2, 1, base::CompressedAxis::row, major, cols};
-    const base::CooView<uint32_t, const float> coo{1, 2, 1, rows, cols, values};
+    const base::CoordinateView<uint32_t, const float> coo{1, 2, 1, rows, cols, values};
     if (read_compressed({csr, values}) != 3.0f || coo.col_idx[0] != 1 ||
         coo.values[0] != 3.0f) return 1;
 

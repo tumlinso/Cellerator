@@ -403,7 +403,7 @@ static inline int build_pinned_triplet_to_compressed(compressed_workspace *ws,
     }
     const auto compressed_axis = axis == ::cellshard::compressed_by_col
         ? tensor_base::CompressedAxis::column : tensor_base::CompressedAxis::row;
-    const tensor_base::CooView<unsigned int, const __half> source{
+    const tensor_base::CoordinateView<unsigned int, const __half> source{
         rows, cols, nnz, ws->d_row_idx, ws->d_col_idx, ws->d_in_val};
     if (!matrix_convert::build_compressed_from_coo_library(
             source, compressed_axis, ws->d_major_ptr, ws->d_sort_cax, ws->d_minor_idx,

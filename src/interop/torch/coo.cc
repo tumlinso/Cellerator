@@ -41,7 +41,7 @@ bool storage_overlaps(const at::Tensor &a, const at::Tensor &b) {
 
 } // namespace
 
-tensor::base::CooView<int64_t, const void> detail::borrow_coo_storage(
+tensor::base::CoordinateView<int64_t, const void> detail::borrow_coo_storage(
     const at::Tensor &matrix, at::ScalarType value_type) {
     TORCH_CHECK(matrix.defined() && matrix.layout() == at::kSparse &&
                 matrix.dim() == 2 && matrix.sparse_dim() == 2 && matrix.dense_dim() == 0,

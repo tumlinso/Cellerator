@@ -1,7 +1,7 @@
 module;
 
 #include <Cellerator/tensor/base/compressed.hh>
-#include <Cellerator/tensor/base/coo.hh>
+#include <Cellerator/tensor/base/coordinate.hh>
 #include <Cellerator/tensor/block_masked/view.hh>
 
 export module cellerator.tensor;
@@ -10,7 +10,7 @@ export namespace cellerator::tensor::base {
 using ::cellerator::tensor::base::CompressedAxis;
 using ::cellerator::tensor::base::CompressedStructureView;
 using ::cellerator::tensor::base::CompressedView;
-using ::cellerator::tensor::base::CooView;
+using ::cellerator::tensor::base::CoordinateView;
 }
 
 export namespace cellerator::tensor::block_masked {

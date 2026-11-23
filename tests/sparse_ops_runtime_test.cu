@@ -182,6 +182,18 @@ void check_csr_multiply_edges(const runtime::execution_context& ctx,
     runtime::cuda_require(matrix_ops::csr_spmv_transpose(empty, nullptr, dy.data(), ctx.stream), "csr_spmv_transpose");
     download_and_wait(dy, actual, 3, stream);
     for (int i = 0; i != 3; ++i) require(actual[i] == 0, "empty transpose overwrites destination");
+
+    const matrix_ops::Csr<const __half> csc{{0, 0, 0, base::CompressedAxis::column, nullptr, nullptr}, nullptr};
+    const matrix_ops::Csr<const __half> batch[] = {a, csc};
+    require(matrix_ops::validate_csr_batch(batch, 2) == cudaErrorInvalidValue, "CSR batch must reject CSC");
+    require(matrix_ops::csr_spmv(csc, nullptr, nullptr, ctx.stream) == cudaErrorInvalidValue,
+            "CSR SpMV must reject CSC even for empty input");
+    require(matrix_ops::csr_spmv_transpose(csc, nullptr, nullptr, ctx.stream) == cudaErrorInvalidValue,
+            "CSR transpose SpMV must reject CSC even for empty input");
+    require(matrix_ops::csr_spmm(csc, nullptr, 0, 0, nullptr, 0, ctx.stream) == cudaErrorInvalidValue,
+            "CSR SpMM must reject CSC even for empty input");
+    require(matrix_ops::csr_spmm_transpose(csc, nullptr, 0, 0, nullptr, 0, ctx.stream) == cudaErrorInvalidValue,
+            "CSR transpose SpMM must reject CSC even for empty input");
 }
 
 } // namespace

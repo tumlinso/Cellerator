@@ -1,6 +1,6 @@
 #include <Cellerator/memory/view.hh>
 #include <Cellerator/tensor/base/compressed.hh>
-#include <Cellerator/tensor/base/coo.hh>
+#include <Cellerator/tensor/base/coordinate.hh>
 #include <Cellerator/compute/matrix/convert/bucket.cuh>
 #include <Cellerator/compute/matrix/convert/compressed.cuh>
 
@@ -80,7 +80,7 @@ void check_sorted_coo_view() {
     auto *d_offsets = device_alloc<int64_t>(rows + 1);
     upload(d_coordinates, coordinates, 2 * nnz);
     upload(d_values, values, nnz);
-    const matrix::CooView<int64_t, const void> csr_source{
+    const matrix::CoordinateView<int64_t, const void> csr_source{
         rows, cols, nnz, d_coordinates, d_coordinates + nnz, d_values};
     matrix::CompressedView<int64_t, const void> view;
     require(!convert::build_compressed_view_from_sorted_coo(
@@ -90,7 +90,7 @@ void check_sorted_coo_view() {
     constexpr matrix::CompressedAxis axes[] = {matrix::CompressedAxis::row, matrix::CompressedAxis::column};
     for (const auto axis : axes) {
         const auto source = axis == matrix::CompressedAxis::row ? csr_source
-            : matrix::CooView<int64_t, const void>{cols, rows, nnz, csr_source.col_idx, csr_source.row_idx, d_values};
+            : matrix::CoordinateView<int64_t, const void>{cols, rows, nnz, csr_source.col_idx, csr_source.row_idx, d_values};
         require(convert::build_compressed_view_from_sorted_coo(source, axis, d_offsets, rows + 1, &view, nullptr),
                 "sorted int64 COO compression failed");
         require(view.structure.axis == axis && view.structure.rows == source.rows && view.structure.cols == source.cols
@@ -139,7 +139,7 @@ int main() {
     upload(d_col, h_col, nnz);
     upload(d_val, h_val, nnz);
 
-    const matrix::CooView<uint32_t, const __half> coo{rows, cols, nnz, d_row, d_col, d_val};
+    const matrix::CoordinateView<uint32_t, const __half> coo{rows, cols, nnz, d_row, d_col, d_val};
     require(convert::build_compressed_from_sorted_coo_custom(
                 coo,
                 matrix::CompressedAxis::row,

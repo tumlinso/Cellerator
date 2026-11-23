@@ -499,7 +499,7 @@ static metric bench_coo_to_compressed(const scenario &s, int warmup, int repeats
     upload(d_row, h_row, stream);
     upload(d_col, h_col, stream);
     upload(d_val, h_val, stream);
-    const tensor_base::CooView<unsigned int, const __half> source{
+    const tensor_base::CoordinateView<unsigned int, const __half> source{
         s.rows, s.cols, nnz, d_row.ptr, d_col.ptr, d_val.ptr};
     constexpr auto axis = tensor_base::CompressedAxis::row;
 
