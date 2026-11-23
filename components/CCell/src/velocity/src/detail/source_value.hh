@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include <Cellerator/ops/numeric/binary16.hh>
+#include <Cellerator/common/real/fp16.hh>
 #include "CCell/detail/native_views.hh"
 
 namespace velocitypp::detail {

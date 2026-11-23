@@ -1,17 +1,14 @@
 #pragma once
 
-#include <Cellerator/common/types.cuh>
 #include <Cellerator/layout/projection/identity.hh>
 #include <Cellerator/layout/projection/dense_layout.hh>
 
-#include <cstddef>
-#include <cstdint>
-#include <type_traits>
+#include <stdint.h>
 
 namespace cellerator::compute::math {
 
-using ::cellerator::types::u32;
-using ::cellerator::types::u64;
+using u32 = uint32_t;
+using u64 = uint64_t;
 using ::cellerator::layout::projection::feature_order_kind;
 using ::cellerator::layout::projection::feature_order_identity_schema_version;
 using ::cellerator::layout::projection::sparse_structure_identity_schema_version;
@@ -189,9 +186,9 @@ request_validation_result validate_math_request(const math_request &request) noe
 operation_signature make_operation_signature(const spmm_request &request) noexcept;
 trivial_operation_kind classify_trivial_operation(const spmm_request &request) noexcept;
 
-static_assert(std::is_trivially_copyable<spmm_request>::value,
+static_assert(__is_trivially_copyable(spmm_request),
     "SpMM request metadata must remain serializable");
-static_assert(std::is_trivially_copyable<operation_signature>::value,
+static_assert(__is_trivially_copyable(operation_signature),
     "operation signature must remain serializable");
 
 } // namespace cellerator::compute::math

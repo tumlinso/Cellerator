@@ -4,7 +4,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
-#include <Cellerator/ops/numeric/binary16.hh>
+#include <Cellerator/common/real/fp16.hh>
 
 import velocitypp;
 #include "stochastic_support.hh"

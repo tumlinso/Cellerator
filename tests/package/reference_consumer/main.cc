@@ -1,4 +1,5 @@
 #include <Cellerator/math/reference/operation.hh>
+#include <Cellerator/common/real/format_codes.hh>
 #include <Cellerator/math/reference/referee.hh>
 #include <Cellerator/layout/projection/bell.hh>
 #include <Cellerator/layout/projection/packed_dense_operand.hh>

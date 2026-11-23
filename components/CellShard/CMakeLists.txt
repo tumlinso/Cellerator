@@ -1421,8 +1421,18 @@ install(FILES
 install(FILES
     "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/real.cuh"
     "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/types.cuh"
+    "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/index_types.hh"
     "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/cuda_compat.cuh"
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common
+)
+install(FILES
+    "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/detail/cuda_types.hh"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common/detail
+)
+install(FILES
+    "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/real/format_codes.hh"
+    "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/common/real/fp16.cuh"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/common/real
 )
 install(FILES
     "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/interop/cellshard/access.cuh"

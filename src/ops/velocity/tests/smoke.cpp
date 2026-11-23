@@ -1,5 +1,5 @@
 #include <cstddef>
-#include <Cellerator/ops/numeric/binary16.hh>
+#include <Cellerator/common/real/fp16.hh>
 #include <cstdint>
 import cellerator.velocity;
 int main() {

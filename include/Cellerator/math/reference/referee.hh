@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Cellerator/common/real/format_codes.hh>
+#include <Cellerator/common/real/fp16.cuh>
 #include <Cellerator/math/reference/operation.hh>
 
 #include <cmath>

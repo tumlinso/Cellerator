@@ -1,4 +1,5 @@
 #include <Cellerator/math/reference/operation.hh>
+#include <Cellerator/common/real/format_codes.hh>
 
 #include <cstdlib>
 #include <iostream>

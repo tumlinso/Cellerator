@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cellerator/common/index_types.hh>
 #include <Cellerator/compute/sampling_materialization.hh>
 #include <Cellerator/memory/view.hh>
 #include <Cellerator/memory/workspace.hh>

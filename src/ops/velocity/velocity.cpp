@@ -1,7 +1,7 @@
 module;
 #include <stddef.h>
 #include <stdint.h>
-#include <Cellerator/ops/numeric/binary16.hh>
+#include <Cellerator/common/real/fp16.hh>
 module cellerator.velocity;
 
 namespace cellerator::velocity {

@@ -1,5 +1,4 @@
 #include <Cellerator/math/reference/referee.hh>
-#include <Cellerator/common/types.cuh>
 
 #include <algorithm>
 #include <cmath>

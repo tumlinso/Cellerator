@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "real/format_codes.hh"
+
 #if defined(__has_include)
 #if __has_include(<cuda_bf16.h>)
 #define CELLERATOR_REAL_HAS_CUDA_BF16_HEADER 1
@@ -147,15 +149,6 @@ inline constexpr bool stored_payload_precision_is_explicit = true;
 #endif
 
 namespace cellerator::real {
-
-enum {
-    value_f16 = 3,
-    value_f32 = 4,
-    value_f64 = 5,
-    value_bf16 = 6,
-    value_fp8_e4m3 = 7,
-    value_fp8_e5m2 = 8
-};
 
 static constexpr int has_bf16_types = CELLERATOR_REAL_HAS_CUDA_BF16_HEADER;
 static constexpr int has_fp8_types = CELLERATOR_REAL_HAS_CUDA_FP8_HEADER;

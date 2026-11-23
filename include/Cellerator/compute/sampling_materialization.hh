@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/compute/sampling.hh>
-#include <Cellerator/common/types.cuh>
+#include <Cellerator/common/index_types.hh>
 
 #include <cstdint>
 #include <memory>
