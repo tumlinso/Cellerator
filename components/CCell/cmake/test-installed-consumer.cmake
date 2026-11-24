@@ -22,7 +22,6 @@ checked("${CMAKE_COMMAND}" -S "${CCELL_SOURCE_DIR}/tests/consumer" -B "${consume
   "-DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=${CCELL_SCAN_DEPS}"
   "-DCMAKE_BUILD_TYPE=${CCELL_CONFIG}"
   "-DCMAKE_PREFIX_PATH=${prefix}"
-  "-DCCELL_ANNDATA_INTEROP=${CCELL_ANNDATA_INTEROP}"
   "-DCCELL_TEST_ANNDATA_MODELING=${CCELL_TEST_ANNDATA_MODELING}")
 checked("${CMAKE_COMMAND}" --build "${consumer}" --parallel 2)
 checked("${CMAKE_CTEST_COMMAND}" --test-dir "${consumer}" --output-on-failure)

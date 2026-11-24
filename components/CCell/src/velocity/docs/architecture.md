@@ -138,9 +138,8 @@ private. Fast imports and incremental consumer compilation are important
 deliverables to measure, rather than assume from the use of modules.
 
 Velocity builds with the CCell native methods. For file-backed data, use
-`import anndata;` for access and serialization and
-`import ccell.interop.anndata;` to bind an acquired array to a native view.
-The method receives the same native view from either source.
+`import cellerator.anndata;` for file access and backed reads into native
+buffers. The method receives native views over those buffers.
 
 ## Storage and arithmetic
 

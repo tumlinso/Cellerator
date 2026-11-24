@@ -589,7 +589,8 @@ boundaries per operation.
 | Scientific interpretation and model assumptions | Karyoplast, Cytoplast, Blastback, other consumers | Consumers choose biological meaning and validate their models. |
 | Formal inferability of mechanisms or features | GlassHelix | Investigate question-specific identifiability and assumptions; Cellerator supplies reusable modeling and learning machinery. |
 | Sequence-grounded representations | Cellerator | Preserve exact sequence, strand, validity, and source coordinates through packing and prepared regulatory execution. Use shared native layout and execution owners. |
-| Single-cell methods and AnnData integration | CCell | Own preprocessing, RNA velocity, and the optional adapter from acquired AnnData++ arrays to Cellerator views. |
+| Single-cell methods | CCell | Own preprocessing and RNA velocity over native views. |
+| AnnData buffer reads | Cellerator | Read backed selections into native buffers through the optional AnnData component. |
 | Persistence, sharding, transport, delivery | CCell and owning systems | Cellerator consumes explicit data boundaries and does not own dataset custody. CellShard source is retained but detached from supported Cellerator builds and installs. |
 | Native H5AD and Zarr I/O | AnnData++ | Maintain the file and array APIs independently. The standard build bundles a pinned source revision. |
 | Broader single-cell analysis | AnnData ecosystem, Scanpy, RAPIDS-singlecell | Retain the wider analysis ecosystem and its own method contracts. |
@@ -747,8 +748,8 @@ current evidence. Cellerator's adaptive fields, tokenization, and candidate
 layout work remain separately labeled by their actual maturity. An
 experimental implementation can still be useful and routed; its location does
 not promote it to a stable API. CCell's numerical entry points use the same
-caller-owned view contracts as Cellerator. For file-backed inputs, AnnData++
-acquires the data and CCell's interop module binds it to native views. Scanpy
+caller-owned view contracts as Cellerator. For file-backed inputs, Cellerator
+uses AnnData++ to fill native buffers. Scanpy
 and RAPIDS-singlecell remain upstream analysis tools.
 
 ## Numerical policy

@@ -30,7 +30,7 @@ assumptions, and experiment; latent ambiguity is not a universal prohibition.
 GlassHelix investigates formal inferability, while Cellerator supplies reusable
 learning mechanisms that can reflect the question and its available constraints.
 
-CCell owns preprocessing, RNA velocity, and optional AnnData++ interop.
+CCell owns preprocessing and RNA velocity.
 Cellerator owns the reusable modeling and numerical substrate. Callers provide
 explicit prepared arrays, tensors, or views. AnnData++ owns native H5AD and
 Zarr access. CellShard source is retained as a quasi-deprecated component
@@ -55,8 +55,8 @@ planning (`plan_geometry`), while operation and joint-work preparation belong
 to execution. New backend-neutral modeling interfaces, state/event
 representations, interaction mechanisms, dynamics, and adapters have been
 added in rapid development; their implementation maturity and validated
-backends differ. Within CCell, the AnnData++ adapter handles the acquisition
-boundary. Native method calls take caller-prepared views.
+backends differ. The Cellerator AnnData component handles backed buffer reads.
+Native method calls take caller-prepared views.
 
 ## Source routing
 
@@ -76,7 +76,7 @@ validity, or task completion.
 | Optional model instances, dynamics, and population mechanics | `python/cellerator/modeling`, `state`, `events`, `dynamics`, `interactions`, `execution`, and `inference` | Composable mechanisms for model rules, opaque state, event histories, numerical updates, relations, population execution, and inference | Use relevant contracts without requiring every model to adopt dynamics or a lifecycle. Preserve arbitrary representations and general neural composition. Do not place consumer hypotheses in general packages or assume package presence qualifies a native/GPU backend. See the [biological framework](../biological_framework.qmd) for current APIs and [architecture](../architecture.qmd) for their intended role. |
 | Learned-model adapters | `python/cellerator/adapters` | Optional bridges to general learning libraries such as Torch, distributed execution, CUDA, and ggml | Keep optional dependencies lazy. Adapters must not define native types, data ownership, or the core state contract. |
 | Single-cell preprocessing and RNA velocity | `components/CCell/src/{preprocess,velocity}` | CCell owns method behavior and reference implementations. | Link `ccell::preprocess` or `ccell::velocity`. Use native views and preserve biological axis identity. |
-| AnnData++ file access and view binding | `extern/anndatapp`, `components/CCell/src/ccell.interop.anndata.cppm` | AnnData++ owns data storage and file I/O. CCell owns checked numerical view binding. | Use `import anndata;` for file and array access and `import ccell.interop.anndata;` for the borrowing adapter. |
+| AnnData++ file access and buffer reads | `extern/anndatapp`, `src/interop/anndata` | AnnData++ owns data storage and file I/O. Cellerator owns native backed-buffer reads. | Use `import anndatapp;` for standalone access and `import cellerator.anndata;` for native buffer reads. |
 | Retained velocity source | `src/ops/velocity`, `tests/velocity` | Inactive source retained for later work | Use the CCell method target for active integration. Generic `CelleratorBinary16` remains separately buildable. |
 | Retained CellShard component | `components/CellShard/**` | Quasi-deprecated source detached from supported Cellerator builds and installs | Source is preserved; CellShard headers are excluded from host and SDK installs. Retired CMake options and Cellerator package-component requests fail clearly. |
 | Native mathematical or model operation | `src/ops/{numeric,matrix,process,mechanism,sparse_support}` and the still-active `src/compute/<family>` operations, with matching public headers | Keep each numerical contract with its operation family and concrete build owner. Use `Cellerator::ops_numeric`, `Cellerator::matrix_patch`, `Cellerator::private_ports`, `Cellerator::indexed_mechanism`, or the family-specific compute target. | The indexed mechanism API and implementation live under `include/Cellerator/ops/mechanism/indexed` and `src/ops/mechanism/indexed`. Other active `src/compute` families retain their own headers, targets and evidence. The source map does not imply every file is built or qualified. Keep derivatives, precision, registration and callers with the operation. |
@@ -223,7 +223,7 @@ cmake -S . -B build/ctxpp -G Ninja \
   -DCELLERATOR_ENABLE_TOKENIZATION=OFF \
   -DCELLERATOR_ENABLE_SPARSE_SUPPORT=ON \
   -DCELLERATOR_ENABLE_CONDITIONAL=ON \
-  -DCELLERATOR_ENABLE_CCELL_ANNDATA=OFF
+  -DCELLERATOR_ENABLE_ANNDATA=OFF
 ```
 
 Refresh and export through the CLI.

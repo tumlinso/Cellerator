@@ -61,11 +61,10 @@ Module consumers use strict C++20 or C++23. CUDA translation units use the
 public headers.
 
 The standard build includes CCell preprocessing and RNA velocity. Initialize
-the `extern/anndatapp` submodule to build its AnnData++ adapter and bundled H5AD
-and Zarr support. Method-only builds set `CELLERATOR_ENABLE_CCELL_ANNDATA=OFF`.
-Core-only builds set `CELLERATOR_BUILD_CCELL=OFF`. See the
-[CCell build and API guide](../components/CCell/README.md) for module imports
-and installed targets and the
+the `extern/anndatapp` submodule for the optional Cellerator AnnData component
+and its H5AD and Zarr support. Set `CELLERATOR_ENABLE_ANNDATA=OFF` to omit it.
+Core-only builds also set `CELLERATOR_BUILD_CCELL=OFF`. See the
+[AnnData buffer guide](development/anndata.md) for its build and imports and the
 [component ownership record](development/component-ownership.md) for source
 routing. The generic `CelleratorBinary16` component remains separately buildable.
 

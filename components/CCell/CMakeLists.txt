@@ -16,29 +16,8 @@ target_compile_features(ccell PUBLIC cxx_std_20)
 target_sources(ccell PUBLIC FILE_SET CXX_MODULES BASE_DIRS src FILES src/ccell.cppm)
 target_link_libraries(ccell PUBLIC ccell::preprocess ccell::velocity)
 
-if(CELLERATOR_ENABLE_CCELL_ANNDATA)
-  add_library(ccell_anndata_interop)
-  add_library(ccell::anndata_interop ALIAS ccell_anndata_interop)
-  set_target_properties(ccell_anndata_interop PROPERTIES
-    POSITION_INDEPENDENT_CODE ON EXPORT_NAME anndata_interop_binary)
-  target_compile_features(ccell_anndata_interop PUBLIC cxx_std_20)
-  target_sources(ccell_anndata_interop PUBLIC FILE_SET CXX_MODULES BASE_DIRS src
-    FILES src/ccell.interop.anndata.cppm)
-  target_include_directories(ccell_anndata_interop PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-  target_link_libraries(ccell_anndata_interop PUBLIC Cellerator::headers
-    $<BUILD_INTERFACE:anndatapp::anndatapp> $<INSTALL_INTERFACE:anndatapp::anndatapp>)
-  install(TARGETS ccell_anndata_interop EXPORT ccellAnndataInteropTargets
-    FILE_SET CXX_MODULES DESTINATION "${CCELL_INSTALL_MODULE_DIR}"
-    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-  install(EXPORT ccellAnndataInteropTargets NAMESPACE ccell::
-    CXX_MODULES_DIRECTORY anndata-interop-cxx-modules DESTINATION "${CCELL_INSTALL_PACKAGE_DIR}")
-endif()
-
 if(CCELL_ENABLE_SANITIZERS)
-  foreach(target IN ITEMS ccell_preprocess ccell_velocity ccell ccell_anndata_interop)
+  foreach(target IN ITEMS ccell_preprocess ccell_velocity ccell)
     if(TARGET ${target})
       target_compile_options(${target} PUBLIC -fsanitize=address,undefined -fno-omit-frame-pointer)
       target_link_options(${target} PUBLIC -fsanitize=address,undefined)
@@ -70,7 +49,7 @@ if(CCELL_BUILD_TESTS)
     add_test(NAME ccell-native-style COMMAND "${Python3_EXECUTABLE}"
       "${CMAKE_CURRENT_SOURCE_DIR}/tools/check_native_style.py"
       --source src/ccell.cppm --source src/ccell.preprocess.cppm
-      --source src/ccell.velocity.cppm --source src/ccell.interop.anndata.cppm
+      --source src/ccell.velocity.cppm
       --source src/preprocess --source src/velocity/src
       --source examples --source src/velocity/examples --source include)
     add_test(NAME ccell-native-style-fixtures COMMAND "${Python3_EXECUTABLE}"
@@ -87,10 +66,10 @@ if(CCELL_BUILD_TESTS)
   add_test(NAME ccell-modeling-example COMMAND ccell_modeling_example)
 
   set(CCELL_TEST_ANNDATA_MODELING OFF)
-  if(CELLERATOR_ENABLE_CCELL_ANNDATA AND (ANNDATAPP_ENABLE_HDF5 OR ANNDATAPP_ENABLE_ZARR))
+  if(TARGET Cellerator::anndata AND (ANNDATAPP_ENABLE_HDF5 OR ANNDATAPP_ENABLE_ZARR))
     set(CCELL_TEST_ANNDATA_MODELING ON)
     add_executable(ccell_anndata_modeling_test tests/anndata_modeling.cpp)
-    target_link_libraries(ccell_anndata_modeling_test PRIVATE ccell::anndata_interop ccell::preprocess ccell::velocity)
+    target_link_libraries(ccell_anndata_modeling_test PRIVATE Cellerator::anndata ccell::preprocess ccell::velocity)
     add_test(NAME ccell-anndata-modeling COMMAND ccell_anndata_modeling_test)
   endif()
 
@@ -101,7 +80,6 @@ if(CCELL_BUILD_TESTS)
     "-DCCELL_COMPILER=${CMAKE_CXX_COMPILER}"
     "-DCCELL_SCAN_DEPS=${CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS}"
     "-DCCELL_CONFIG=$<CONFIG>"
-    "-DCCELL_ANNDATA_INTEROP=${CELLERATOR_ENABLE_CCELL_ANNDATA}"
     "-DCCELL_TEST_ANNDATA_MODELING=${CCELL_TEST_ANNDATA_MODELING}"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/test-installed-consumer.cmake")
 endif()

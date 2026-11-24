@@ -7,9 +7,8 @@ allocation. Callers acquire storage, supply outputs and scratch, and choose
 threading and synchronization. See the [numerical contract](operations.md).
 
 Use `import ccell.preprocess;` and call methods in `ccell::preprocess`.
-For AnnData++ input, acquire storage through `import anndata;` and bind it with
-the optional `ccell.interop.anndata` adapter. The input owner stays with the
-caller.
+For file-backed input, use `import cellerator.anndata;` to fill native buffers.
+The input owner stays with the caller.
 The API exposes reference operations and permits replacement of individual
 operations or larger regions with caller defined algorithms and layouts.
 

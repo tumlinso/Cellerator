@@ -3,13 +3,13 @@
 CCell owns the native preprocessing and RNA velocity implementations under
 [`components/CCell`](../../components/CCell/README.md). Cellerator supplies
 their numerical and modeling primitives and view contracts. AnnData++ owns
-arrays and file I/O. CCell's optional adapter binds acquired AnnData++ arrays
-to Cellerator views for use by either method.
+arrays and file I/O. The optional Cellerator AnnData component reads selected
+backed arrays into Cellerator buffers for models or numerical methods.
 
 The standard build installs CCell and AnnData++ together. `find_package(ccell
-CONFIG REQUIRED)` loads the method targets. Request the `anndata_interop`
-component for CCell's borrowing adapter. AnnData++ itself supplies
-`import anndata;`. The Cellerator core package can be discovered independently.
+CONFIG REQUIRED)` loads the method targets. Request the Cellerator `anndata`
+component for native buffer reads. AnnData++ itself supplies
+`import anndatapp;`. See the [AnnData buffer guide](anndata.md).
 
 The former [AnnData++ and Velocity source archives](https://github.com/tumlinso/Cellerator/tree/d7414e7f830fcd25cac585399a0535b72e75ff01/quarantine)
 remain available in Git history. Local cutover recovery files and the retired

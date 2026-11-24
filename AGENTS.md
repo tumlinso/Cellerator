@@ -26,13 +26,12 @@ Work on single-cell preprocessing and RNA velocity under
 [`components/CCell`](components/CCell/AGENTS.md). CCell methods use native
 Cellerator views and caller-owned storage. Keep reusable computational
 primitives with their Cellerator operation families. Keep dataset acquisition and
-AnnData++ conversions in CCell's optional data adapter.
+Cellerator buffer interoperability in the optional Cellerator AnnData component.
 
-Use `import anndata;` for AnnData++ data access. The pinned upstream source is
-`extern/anndatapp`. Use `import ccell.interop.anndata;` only when binding
-AnnData++ storage to Cellerator views. See the [CCell build and API
-guide](components/CCell/README.md) for package targets, aliases, view lifetimes,
-and the native-method and core-only builds.
+Use `import anndatapp;` for standalone AnnData++ data access. The pinned
+upstream source is `extern/anndatapp`. Use `import cellerator.anndata;` to read
+backed selections into native Cellerator buffers. See the [AnnData buffer
+guide](docs/development/anndata.md) for package targets and allocation contracts.
 
 <!-- project-control:start -->
 This repository has a canonical Project Control interface.

@@ -10,8 +10,7 @@ and stochastic refinement.
 
 Configure from the Cellerator root with CMake 3.28 or newer, Ninja 1.11 or newer,
 Clang 18 or newer, and matching `clang-scan-deps`. The standard build includes
-CCell, the AnnData++ adapter, and the pinned AnnData++ source with native H5AD
-and Zarr support. Install the system dependencies described by
+CCell and the optional Cellerator AnnData component with native H5AD and Zarr support. Install the system dependencies described by
 [AnnData++](../../extern/anndatapp/docs/storage-dependencies.md).
 
 ```sh
@@ -25,7 +24,7 @@ ctest --test-dir build/standard --output-on-failure
 cmake --install build/standard --prefix "$PWD/build/install"
 ```
 
-For a new build directory, set `CELLERATOR_ENABLE_CCELL_ANNDATA=OFF` to build
+For a new build directory, set `CELLERATOR_ENABLE_ANNDATA=OFF` to build
 both CCell methods without the data dependency. Set `CELLERATOR_BUILD_CCELL=OFF`
 for the Cellerator core alone. `CCELL_BUILD_TESTS` defaults to the root test
 setting. AnnData++ backend switches are `ANNDATAPP_ENABLE_HDF5` and
@@ -41,18 +40,16 @@ recorded by that revision. An extracted archive can be configured directly.
 | `ccell` | `ccell::ccell` | Numerical method umbrella |
 | `ccell.preprocess` | `ccell::preprocess` | Preprocessing methods under `ccell::preprocess` |
 | `ccell.velocity` | `ccell::velocity` | Velocity methods under `ccell::velocity` |
-| `anndata` | `anndatapp::anndatapp` | Upstream AnnData++ storage and file access |
-| `ccell.interop.anndata` | `ccell::anndata_interop` | Checked borrowing helpers under `ccell::io` |
+| `cellerator.anndata` | `Cellerator::anndata` | AnnData++ backed access and native buffer reads |
 
 Installed applications can set `CMAKE_PREFIX_PATH` to the install prefix.
-Use `find_package(ccell CONFIG REQUIRED)` for methods and request the
-`anndata_interop` component when binding AnnData++ storage. Applications that
-use AnnData++ directly can discover it with `find_package(anndatapp CONFIG
-REQUIRED)`. Set C++ extensions off on module-consuming targets.
+Request the CCell method targets and the optional Cellerator AnnData component
+when the application reads backed data.
 
 ```cmake
-find_package(ccell CONFIG REQUIRED COMPONENTS anndata_interop)
-target_link_libraries(my_app PRIVATE ccell::preprocess ccell::anndata_interop)
+find_package(ccell CONFIG REQUIRED COMPONENTS preprocess)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS anndata)
+target_link_libraries(my_app PRIVATE ccell::preprocess Cellerator::anndata)
 set_target_properties(my_app PROPERTIES CXX_EXTENSIONS OFF)
 ```
 
@@ -72,28 +69,14 @@ owners alive through every use of the view and any prepared object that
 retains it. Use the same provisioned outputs and scratch on repeated calls
 when the capacities suffice.
 
-Data-facing code uses the upstream module and requests the adapter only when
-borrowing views. The namespace alias is local to the translation unit.
+File-backed callers can fill supplied native buffers using
+`cellerator::anndata::read_into` or explicitly request an owner with
+`cellerator::anndata::read_allocated`. See the [AnnData buffer
+guide](../../docs/development/anndata.md) for setup and allocation costs.
 
-```cpp
-import anndata;
-import ccell.interop.anndata;
-
-namespace anndata = ::anndatapp;
-```
-
-Use `ccell::io::borrow_dense` for dense arrays and
-`ccell::io::borrow_compressed` for CSR or CSC. Check the returned
-`ccell::io::BorrowCode` before using the view. The adapter borrows the existing
-pointers and preserves the cell and feature order. Acquire and retain the
-source owner in the caller. Materialize non-addressable selections explicitly
-before borrowing.
-
-The [native example](examples/modeling.cpp) normalizes caller-owned counts and
-passes the result to a model. The [AnnData++ test](tests/anndata_modeling.cpp)
-uses the same model path with acquired H5AD and Zarr data and checks feature
-order and borrowed pointer identity. It also runs Velocity directly on a
-borrowed FP16 layer through both backends. Use
+The [native example](examples/modeling.cpp) normalizes caller-owned counts.
+The [file-backed test](tests/anndata_modeling.cpp) runs the same model and
+checks feature order and FP16 Velocity input for H5AD and Zarr. Use
 `ccell::velocity::borrow_binary16` and `Workspace<float>` for FP16 input. See
 the [Velocity API](src/velocity/docs/api.md#caller-scheduled-blocks) for running
 disjoint gene blocks with caller-owned workers and scratch.
@@ -103,9 +86,8 @@ disjoint gene blocks with caller-owned workers and scratch.
 - `src/preprocess/` owns the [preprocessing methods](docs/preprocess/README.md).
 - `src/velocity/` owns the [Velocity methods](src/velocity/README.md) as tracked
   CCell source.
-- `src/ccell.interop.anndata.cppm` owns the optional checked borrowing adapter.
-- `extern/anndatapp/` at the Cellerator root pins AnnData++ v1.1.1 at
-  `fb9ab10bb4c91182dad0ba1d7e9ce3ee7f6d10ce`.
+- `extern/anndatapp/` at the Cellerator root pins the upstream AnnData++
+  source used by the optional Cellerator component.
 
 The initial tracked imports came from CCell
 `62438b8b1b76b798009745a6d7c8a66370d3b859` and Velocity++

@@ -19,7 +19,7 @@ With the reference Python environment installed, run the independent Scanpy
 python -m pip install -r components/CCell/tests/preprocess/requirements-reference.txt
 cmake -S . -B build/debug -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 -DCELLERATOR_ENABLE_CUDA=OFF \
-  -DCELLERATOR_ENABLE_CCELL_ANNDATA=OFF -DCCELL_BUILD_QUALIFICATION=ON
+  -DCELLERATOR_ENABLE_ANNDATA=OFF -DCCELL_BUILD_QUALIFICATION=ON
 cmake --build build/debug --target ccell_preprocess_interop_driver --parallel 2
 (cd components/CCell && python tools/preprocess/qualify.py \
   --driver ../../build/debug/components/CCell/src/preprocess/ccell_preprocess_interop_driver)

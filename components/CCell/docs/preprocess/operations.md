@@ -19,8 +19,8 @@ Callers must use the status to determine whether outputs are valid and re-run
 the operation after correcting the input if needed.
 
 Callers create or acquire arrays, attach metadata, materialize selections, and
-perform any required conversion. The optional AnnData++ adapter can bind a
-native view over acquired storage. Dense matrix inputs may have signed element
+perform any required conversion. The optional Cellerator AnnData component can fill native
+buffers from backed selections. Dense matrix inputs may have signed element
 strides. Sparse inputs use canonical CSR or CSC with independently typed indices
 and offsets. Stored zeros do not alter mathematical values. Materialize an
 arbitrary gather before passing it to direct numerical traversal.

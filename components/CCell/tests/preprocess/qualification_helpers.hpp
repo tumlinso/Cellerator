@@ -8,25 +8,14 @@
 
 namespace qualification {
 template<class T> auto dense(const anndatapp::ArrayView& array) {
-    cellerator::memory::const_matrix_view<T,std::ptrdiff_t> x;
-    if (ccell::io::borrow_dense(array,x) != ccell::io::BorrowCode::ok)
-        throw std::runtime_error("dense input binding failed");
-    return x;
+    auto v = array.dense<T>();
+    return cellerator::memory::const_matrix_view<T,std::ptrdiff_t>{v.data(), v.extent(0), v.extent(1),
+        v.stride(0), {cellerator::memory::domain::host}, v.stride(1)};
 }
 template<class T> auto dense(const anndatapp::ArrayEdit& array) {
-    cellerator::memory::matrix_view<T,std::ptrdiff_t> x;
-    if (ccell::io::borrow_dense(array,x) != ccell::io::BorrowCode::ok)
-        throw std::runtime_error("dense output binding failed");
-    return x;
-}
-template<class T, class Operation> auto visit(const anndatapp::ArrayView& array, Operation operation) {
-    if (array.layout() == anndatapp::Layout::dense) return operation(dense<T>(array));
-    using Axis = cellerator::tensor::base::CompressedAxis;
-    cellerator::tensor::base::CompressedView<std::int32_t,const T,std::int64_t> x;
-    Axis axis = array.layout() == anndatapp::Layout::csr ? Axis::row : Axis::column;
-    if (ccell::io::borrow_compressed(array,axis,x) != ccell::io::BorrowCode::ok)
-        throw std::runtime_error("compressed input binding failed");
-    return operation(x);
+    auto v = array.dense<T>();
+    return cellerator::memory::matrix_view<T,std::ptrdiff_t>{v.data(), v.extent(0), v.extent(1),
+        v.stride(0), {cellerator::memory::domain::host}, v.stride(1)};
 }
 
 // Byte arrays provide storage in which the kernel may create scalar objects.

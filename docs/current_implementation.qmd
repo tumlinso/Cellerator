@@ -2,6 +2,15 @@
 title: "Current implementation"
 ---
 
+## Cellerator AnnData buffer reads, 2026-11-24
+
+The optional [Cellerator AnnData component](development/anndata.md) exposes
+the standalone AnnData++ API through `import cellerator.anndata;`. Backed
+H5AD and Zarr selections can fill supplied Cellerator host buffers or return
+an explicitly allocated owner. Dense, CSR, and CSC reads preserve the stored
+types and logical ordering. CCell uses its native view interfaces for these
+buffers as for any other data source.
+
 ## CCell native methods and AnnData++ distribution, 2026-11-22
 
 The standard native build includes [CCell](../components/CCell/README.md) and

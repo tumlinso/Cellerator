@@ -14,8 +14,8 @@ method.
 
 Bind a native view with `ccell::velocity::borrow_matrix` and use the result
 in the method's `Input`. Keep the underlying buffers alive through preparation
-and execution. For file-backed inputs, use the CCell AnnData++ adapter before
-binding the method. See the [API](docs/api.md) and [precision](docs/precision.md)
+and execution. For file-backed inputs, use `import cellerator.anndata;` to fill native buffers
+before binding the method. See the [API](docs/api.md) and [precision](docs/precision.md)
 guides for sizing, preparation, and numerical contracts.
 
 Build and install from the Cellerator root using the

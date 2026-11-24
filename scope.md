@@ -224,9 +224,9 @@ validity, or demonstrate performance. This is product direction, not a claim
 of an existing integration or authorization to implement or register one.
 
 Bundled CCell methods cover preprocessing and RNA velocity. They operate on
-caller-prepared Cellerator views. The optional CCell data adapter borrows
-views of arrays acquired through the independently maintained AnnData++
-library.
+caller-prepared Cellerator views. The optional Cellerator AnnData component
+uses the independently maintained AnnData++ library to read backed selections
+into native buffers.
 
 ## What remains elsewhere
 

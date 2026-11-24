@@ -14,7 +14,6 @@
 #include <Cellerator/tensor/base/compressed.hh>
 
 import anndata;
-import ccell.interop.anndata;
 import preprocess;
 
 #include "qualification_helpers.hpp"
@@ -103,15 +102,12 @@ void run(const std::string& operation, int layout, int mode, std::size_t n, std:
     std::vector<T> values;
     std::vector<std::int32_t> indices;
     std::vector<std::int64_t> offsets;
-    anndatapp::Array a;
+    const auto row_stride = layout == 3 ? -std::ptrdiff_t(g) : std::ptrdiff_t(g);
     if (layout == 0 || layout == 3) {
         values.resize(n*g);
         for (std::size_t i = 0; i < n; ++i)
             for (std::size_t j = 0; j < g; ++j)
                 values[(layout == 3 ? n - 1 - i : i)*g + j] = T(input[i*g + j]);
-        T* p = values.data();
-        if (layout == 3 && n) p += (n-1)*g;
-        a = anndatapp::Array::borrow_dense(p, {n,g}, {layout == 3 ? -std::ptrdiff_t(g) : std::ptrdiff_t(g), 1});
     } else {
         const bool csr = layout == 1;
         const std::size_t major = csr ? n : g, minor = csr ? g : n;
@@ -126,19 +122,29 @@ void run(const std::string& operation, int layout, int mode, std::size_t n, std:
             }
             offsets.push_back(std::int64_t(values.size()));
         }
-        a = anndatapp::Array::borrow_sparse(csr ? anndatapp::Layout::csr : anndatapp::Layout::csc,
-            n, g, values.size(), values.data(), indices.data(), offsets.data());
     }
     if (operation == "annotations") {
         if (layout != 0 || std::is_integral_v<T>) throw std::invalid_argument("annotations require dense floating input");
+        auto a = anndatapp::Array::borrow_dense(values.data(), {n,g}, {row_stride, 1});
         run_annotations<T>(a, mode, n, g, group_values);
         return;
     }
-    auto x = a.view();
+    auto visit = [&](auto operation) {
+        using namespace cellerator::memory;
+        using namespace cellerator::tensor::base;
+        if (layout == 0 || layout == 3) {
+            const T* p = values.data();
+            if (layout == 3 && n && g) p += (n-1)*g;
+            return operation(const_matrix_view<T, std::ptrdiff_t>{p, n, g, row_stride, {domain::host}});
+        }
+        auto axis = layout == 1 ? CompressedAxis::row : CompressedAxis::column;
+        return operation(CompressedView<std::int32_t, const T, std::int64_t>{
+            {n,g,values.size(),axis,offsets.data(),indices.data()}, values.data()});
+    };
     std::vector<std::uint8_t> mask(n);
     for (std::size_t i=0; i<n; ++i) mask[i] = observation_values[i] != 0;
     if (operation == "qc" || operation == "filters") {
-        auto q = qualification::visit<T>(x,[&](auto view) {
+        auto q = visit([&](auto view) {
             return qualification::Qc(view,n,g,group_values);
         });
         if (operation == "filters") {
@@ -160,7 +166,7 @@ void run(const std::string& operation, int layout, int mode, std::size_t n, std:
     } else if (operation == "stats") {
         std::vector<double> mean(g), variance(g); std::vector<std::uint64_t> scratch(g); std::size_t observations=0;
         const auto* m = mode ? mask.data() : nullptr;
-        auto status = qualification::visit<T>(x,[&](auto view) {
+        auto status = visit([&](auto view) {
             return preprocess::feature_stats(view,m,mean.data(),variance.data(),g,scratch.data(),scratch.size(),&observations);
         });
         if (!status) throw std::runtime_error("feature_stats failed");
@@ -170,7 +176,7 @@ void run(const std::string& operation, int layout, int mode, std::size_t n, std:
         o.method=(mode & 1) ? preprocess::HvgMethod::cell_ranger : preprocess::HvgMethod::seurat;
         o.n_bins=10; o.has_top=!(mode & 4); o.n_top_genes=12; o.batched=mode & 2;
         o.has_log_base=mode & (8|16); o.log_base=(mode & 8) ? 2 : .5;
-        auto h = qualification::visit<T>(x,[&](auto view) {
+        auto h = visit([&](auto view) {
             return qualification::Hvg(view,n,g,batch_values,o);
         });
         emit("mean",h.mean); emit("dispersion",h.dispersion); emit("normalized_dispersion",h.normalized_dispersion);
@@ -180,7 +186,7 @@ void run(const std::string& operation, int layout, int mode, std::size_t n, std:
         anndatapp::Array output = single ? anndatapp::Array::empty<float>({n,g}) : anndatapp::Array::empty<double>({n,g});
         auto y=output.edit(); preprocess::QcStatus status;
         auto transform = [&](auto operation) {
-            return qualification::visit<T>(x,[&](auto view) {
+            return visit([&](auto view) {
                 return single ? operation(view,qualification::dense<float>(y))
                               : operation(view,qualification::dense<double>(y));
             });
