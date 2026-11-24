@@ -29,7 +29,7 @@ primitives with their Cellerator operation families. Keep dataset acquisition an
 Cellerator buffer interoperability in the optional Cellerator AnnData component.
 
 Use `import anndatapp;` for standalone AnnData++ data access. The pinned
-upstream source is `extern/anndatapp`. Use `import cellerator.anndata;` to read
+upstream source is `packages/anndatapp`. Use `import cellerator.anndata;` to read
 backed selections into native Cellerator buffers. See the [AnnData buffer
 guide](docs/development/anndata.md) for package targets and allocation contracts.
 

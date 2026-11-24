@@ -44,7 +44,7 @@ See the [pinned Scanpy 1.11.5 source](https://github.com/scverse/scanpy/tree/1.1
 
 AnnData++ provides array storage and file I/O. The standard Cellerator
 distribution bundles this independently maintained Git submodule. Its license
-is reproduced below and in `extern/anndatapp/LICENSE` at the Cellerator root.
+is reproduced below and in `packages/anndatapp/LICENSE` at the Cellerator root.
 
 MIT License
 

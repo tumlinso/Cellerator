@@ -107,7 +107,7 @@ target_compile_features(cellerator_tensor INTERFACE cxx_std_20)
 target_link_libraries(cellerator_tensor INTERFACE
     Cellerator::block_masked Cellerator::state_codes)
 if(CELLERATOR_ENABLE_MODULES)
-    include("${PROJECT_SOURCE_DIR}/src/tensor/tensor_module.cmake")
+    include("${PROJECT_SOURCE_DIR}/cmake/CelleratorPrimaryModule.cmake")
 endif()
 
 add_library(cellerator_dependency_execution STATIC
@@ -274,10 +274,14 @@ function(cellerator_append_native_data_package_config)
             "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorNativeDataTargets.cmake\")\n"
             "set(Cellerator_native_data_FOUND TRUE)\n")
         if(CELLERATOR_ENABLE_MODULES)
-            file(APPEND "${CELLERATOR_HOST_CONFIG}"
-                "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorTensorInterfaceTargets.cmake\")\n"
-                "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorModuleInterfaces.cmake\")\n"
-                "cellerator_attach_module(Cellerator::tensor Cellerator::tensor_interface_binary)\n")
+            file(APPEND "${CELLERATOR_HOST_CONFIG}" [=[
+if("module" IN_LIST Cellerator_FIND_COMPONENTS)
+    include("${CMAKE_CURRENT_LIST_DIR}/CelleratorModuleTargets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/CelleratorModuleInterfaces.cmake")
+    cellerator_import_module(cellerator Cellerator::module_interface_binary Cellerator::tensor)
+    set(Cellerator_module_FOUND TRUE)
+endif()
+]=])
         endif()
     endif()
 endfunction()

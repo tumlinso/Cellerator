@@ -15,7 +15,7 @@ buffers as for any other data source.
 
 The standard native build includes [CCell](../components/CCell/README.md) and
 the independently maintained AnnData++ v1.1.1 source pinned under
-`extern/anndatapp`. CCell's preprocessing and Velocity methods accept borrowed
+`packages/anndatapp`. CCell's preprocessing and Velocity methods accept borrowed
 Cellerator dense and compressed views and use caller-provisioned buffers.
 Signed dense strides support reversed axes. Compressed views support separate
 index and offset types. AnnData++ owns acquisition through `import anndata;`,
@@ -161,7 +161,7 @@ under Clang 18/C++23 at CellShard source revision
 
 The NN CPU suite passes 15/15, and the installed NN module CPU consumer passes
 1/1 with strict C++ mode. The unchanged
-[`tests/nn/modules/run_qualification.sh`](../tests/nn/modules/run_qualification.sh)
+[`components/nn/tests/modules/run_qualification.sh`](../components/nn/tests/modules/run_qualification.sh)
 qualification passes with Clang 18 and its matching scanner. Its installed
 C++20 module and CUDA-header bridge compile and link with NVCC 12.9/GCC 12
 (`-std=c++20`, SM70), including taking the `grouped_linear_cuda` symbol address

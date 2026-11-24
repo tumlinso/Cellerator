@@ -42,7 +42,7 @@ earlier results. See the [host build route](developer_reference.qmd#native-data-
 A model can be a struct with an `operator()` and concrete components. There is
 no required model superclass, `torch::nn::Module`, member walk, parameter
 registration, or universal tensor-valued forward result. The reference
-[`ExpressionReferenceModel`](../examples/native_nn/reference_models.hh)
+[`ExpressionReferenceModel`](../components/nn/examples/reference_models.hh)
 contains explicit `Parameters`, groups, a feature encoder, attention, a linear
 projection, and a target-bound readout. Its base call keeps the composition
 visible:
@@ -66,8 +66,8 @@ a caller-selected pooled view `[samples, width]`, and feature/sample identities.
 Returning it does not require wrapping it in
 `nn::Prediction`. That wrapper is available when a boundary needs typed query
 labels. The complete expression and event-history compositions are in the
-[reference models](../examples/native_nn/reference_models.hh), with their
-small CPU training loops in [`train.cc`](../examples/native_nn/train.cc). The
+[reference models](../components/nn/examples/reference_models.hh), with their
+small CPU training loops in [`train.cc`](../components/nn/examples/train.cc). The
 event-history model builds packed `[START, e0, ..., e(n-2)]` inputs, keeps
 repeated event occurrences distinct, applies a prepared causal relation, and
 returns packed logits plus per-history features. Empty histories retain a START
@@ -75,7 +75,7 @@ representation but have no next-event target.
 
 ## Make parameter ownership explicit
 
-[`parameters.hh`](../include/Cellerator/nn/parameters.hh) defines `nn::Parameters`
+[`parameters.hh`](../components/nn/include/Cellerator/nn/parameters.hh) defines `nn::Parameters`
 as the owner of parameter slots. Components allocate through cheap, copyable
 `nn::ParameterGroup` handles; groups can be kept separate, frozen, or made
 trainable explicitly. Slot IDs and structural layout are available for
@@ -112,10 +112,10 @@ existing parameter adopts the same leaf handle and rejects implicit device or
 dtype conversions; detach, cast, and placement choices are explicit.
 
 Several functional forms accept borrowed tensors instead of allocating slots:
-[`layers.hh`](../include/Cellerator/nn/layers.hh) exposes
+[`layers.hh`](../components/nn/include/Cellerator/nn/layers.hh) exposes
 `nn::LinearParameters`, which can refer to caller-owned weight and bias tensors;
-[`features.hh`](../include/Cellerator/nn/features.hh) and
-[`attention.hh`](../include/Cellerator/nn/attention.hh) provide corresponding
+[`features.hh`](../components/nn/include/Cellerator/nn/features.hh) and
+[`attention.hh`](../components/nn/include/Cellerator/nn/attention.hh) provide corresponding
 functional parameter records. These calls do not move, clone, or register the
 borrowed tensors. The caller keeps their ownership and lifetime.
 By contrast, `Parameters` owns its slots, `PreparedRelation` copies its host CSR
@@ -228,7 +228,7 @@ or assign biological meaning to integer rows.
 For ordered or repeated participants, use `structure::OccurrenceCoordinates`
 and pass any physical placement separately through `layout::OccurrenceMap`.
 
-[`PreparedRelation`](../include/Cellerator/nn/relations.hh) binds CSR support
+[`PreparedRelation`](../components/nn/include/Cellerator/nn/relations.hh) binds CSR support
 to source and target occurrence-order tokens, group declarations, structural
 generation, and an explicit device.
 CSR rows address target occurrence ordinals and columns address source
@@ -243,7 +243,7 @@ alone do not redefine that structure.
 
 ## Compose interactions, readouts, and learning questions
 
-[`attention.hh`](../include/Cellerator/nn/attention.hh) defines
+[`attention.hh`](../components/nn/include/Cellerator/nn/attention.hh) defines
 `nn::RelationAttention`, which supports dense grouped layouts and prepared
 relations. The default `AttentionKernel::aten` implementation is differentiable
 ATen; `AttentionKernel::cellerator_csr` opts into the staged CSR CUDA kernel
@@ -255,7 +255,7 @@ and programs as targets. Pass its address in `ProgramCall::relation` and reuse
 the pair across calls with the same topology. Keep the pair alive until
 asynchronous work that uses it completes. Pair construction prepares the
 reverse relation. One-way attention accepts a `PreparedRelation`.
-[`programs.hh`](../include/Cellerator/nn/programs.hh) defines this composition
+[`programs.hh`](../components/nn/include/Cellerator/nn/programs.hh) defines this composition
 and `nn::GatedInteractor`, which supplies a separate composition for
 independently gated participant occurrences. These components compute the
 relationships the caller declares; they do not infer a hard regulatory
@@ -264,7 +264,7 @@ topology or establish causal interpretation.
 Readouts are also concrete values. `nn::readout(decoder, selector, binding)`
 combines a decoder with a selector for the model result and a target binding.
 The selector can be a member pointer, as in the example below.
-[`query.hh`](../include/Cellerator/nn/query.hh) provides the typed request
+[`query.hh`](../components/nn/include/Cellerator/nn/query.hh) provides the typed request
 composer. A `query` request supplies prepared target identities and
 `nn::ObservationCoordinates`; `nn::predict` invokes the base model once and
 evaluates the requested readouts against that same result:
@@ -286,7 +286,7 @@ tensors. A plain `binding.prepare(...)` is a host alignment; the direct
 Calling a `Readout` directly returns the decoder's value type. The optional
 `Prediction` wrapper is added at the query boundary by `nn::predict`.
 
-[`readouts.hh`](../include/Cellerator/nn/readouts.hh) implements
+[`readouts.hh`](../components/nn/include/Cellerator/nn/readouts.hh) implements
 `FeatureReadout`, a query-capable head that selects the requested target
 embedding rows and computes those outputs. A conventional full-output head can
 instead compute all outputs and gather requested columns afterward. The
@@ -301,7 +301,7 @@ observation coordinates only label predictions; they are not silently used as
 conditioning. For tensor-valued predictions,
 `align_prediction_targets` aligns target feature IDs and sample/window groups,
 and `categorical_target_columns` maps event labels to prediction class columns.
-[`supervision.hh`](../include/Cellerator/nn/supervision.hh) provides these
+[`supervision.hh`](../components/nn/include/Cellerator/nn/supervision.hh) provides these
 alignment helpers. `reduce_prediction_loss` requires a declared
 `SupervisionUnit::observation` or `SupervisionUnit::cell`. Observation
 reduction weights valid scalar loss terms equally; cell reduction pools valid
@@ -309,7 +309,7 @@ terms within each physical cell and then weights valid cells equally, requiring
 physical cell IDs separately from sample/window IDs. These helpers align or
 reduce a caller-defined objective rather than choosing one for every model.
 
-The [training example](../examples/native_nn/train.cc) shows ordinary optimizer
+The [training example](../components/nn/examples/train.cc) shows ordinary optimizer
 loops for masked expression prediction, next-event prediction, and auxiliary
 ATAC readouts with either a frozen or jointly trained base. Its fixtures are
 synthetic examples of API composition, not biological validation or a
@@ -318,7 +318,7 @@ prescribed model architecture.
 ## Native operations and limits
 
 The focused numerical adapters declared in
-[`ops.hh`](../include/Cellerator/nn/ops.hh) retain narrow contracts:
+[`ops.hh`](../components/nn/include/Cellerator/nn/ops.hh) retain narrow contracts:
 
 - `product2_cpu` is CPU FP32 over a one-dimensional input, coefficients, and
   int64 index arrays; it supplies first-order gradients only.
@@ -341,8 +341,8 @@ or biological claim.
 ## Headers, CMake, and named modules
 
 The canonical header entry point is
-[`<Cellerator/nn.hh>`](../include/Cellerator/nn.hh), with focused declarations
-under [`include/Cellerator/nn`](https://github.com/tumlinso/Cellerator/tree/main/include/Cellerator/nn).
+[`<Cellerator/nn.hh>`](../components/nn/include/Cellerator/nn.hh), with focused declarations
+under [`components/nn/include/Cellerator/nn`](https://github.com/tumlinso/Cellerator/tree/main/components/nn/include/Cellerator/nn).
 Biological identity resolution remains under `biology`; logical identities and
 occurrences live under `structure`, physical bindings under `layout`, and
 prepared source mappings under `execution`. The optional C++20

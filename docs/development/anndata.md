@@ -8,7 +8,7 @@ selection. Standalone consumers can use `import anndatapp;` and link
 
 ## Build and import
 
-Initialize the `extern/anndatapp` submodule for the standard native build.
+Initialize the `packages/anndatapp` submodule for the standard native build.
 Set `CELLERATOR_ENABLE_ANNDATA=OFF` to omit the component. To build it
 independently of CCell, set `CELLERATOR_BUILD_CCELL=OFF` and
 `CELLERATOR_ENABLE_ANNDATA=ON`. AnnData++ controls its individual backends

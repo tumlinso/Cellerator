@@ -53,7 +53,7 @@ authoritative.
 - Autograd/lifetime: first-order VJP only, original version checks, per-invocation native executor/workspace, current guarded stream and allocator stream records. Ordinary Torch parameter ownership and optimizer updates.
 - Allocator boundary: Torch `native`/`cudaMallocAsync` backends; foreign from_blob/DLPack owners and native executor handles retained through completion events, outside CUDA callbacks. Arbitrary globally installed pluggable allocators fail clearly. Trusted prepared CSR route reuses validated immutable structure without content reads or snapshots.
 - Distributed implications: local operations only, no communication or model ownership policy.
-- Code: `src/nn/ops_cpu.cc`, `src/nn/ops_cuda.cc`; tests in `tests/nn/native/ops*.cc`.
+- Code: `components/nn/src/ops_cpu.cc`, `components/nn/src/ops_cuda.cc`; tests in `components/nn/tests/native/ops*.cc`.
 
 ## `factorized_interaction_cuda`
 
@@ -95,6 +95,6 @@ authoritative.
   supported.
 - Distributed implications: local execution only; no communication, routing,
   or optimizer ownership is added.
-- Code: `include/Cellerator/nn/ops.hh`, `src/nn/ops_cuda.cc`, and
+- Code: `components/nn/include/Cellerator/nn/ops.hh`, `components/nn/src/ops_cuda.cc`, and
   `python/bindings/nn/module.cc`, backed by
   `include/Cellerator/ops/mechanism/factorized_interaction_cuda.hh`.

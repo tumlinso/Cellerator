@@ -1,9 +1,12 @@
+#include <Cellerator/biology/gene_annotation.hh>
 #include <Cellerator/compute/tokenization/gene_tokenizer.hh>
 
 #include <torch/csrc/utils/pybind.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <cstdint>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -11,8 +14,33 @@
 
 namespace py = pybind11;
 namespace ce = cellerator;
+namespace bio = cellerator::biology;
+namespace tok = cellerator::tokenization;
 
 namespace {
+struct GeneAnnotationOptions {
+    std::string feature_type = "gene";
+    tok::GeneVocabularyMetadata metadata;
+    tok::unknown_identity_policy unknown_policy = tok::unknown_identity_policy::error;
+    std::optional<std::int64_t> unknown_token_id;
+};
+
+tok::GeneVocabulary vocabulary_from_annotation(const std::string& path,
+    bio::GeneAnnotationFormat format, const GeneAnnotationOptions& options) {
+    bio::GeneAnnotation catalog;
+    const auto error = bio::read_gene_annotation(path.c_str(),
+        format, catalog, options.feature_type.c_str());
+    if (error.io) throw std::runtime_error(std::string(error.message) + ": " + path);
+    if (error.line)
+        throw std::invalid_argument("annotation line " + std::to_string(error.line) + ": " + error.message);
+    if (error.message) throw std::invalid_argument(error.message);
+
+    auto metadata = options.metadata;
+    if (metadata.source.empty()) metadata.source = path;
+    return tok::GeneVocabulary::from_catalog(catalog, std::move(metadata),
+        options.unknown_policy, options.unknown_token_id);
+}
+
 std::optional<at::ScalarType> compute_type_from_name(
     const std::optional<std::string>& name) {
     if (!name) return std::nullopt;
@@ -23,9 +51,9 @@ std::optional<at::ScalarType> compute_type_from_name(
 } // namespace
 
 void register_gene_tokenization(py::module_& module) {
-    py::enum_<ce::tokenization::GeneAnnotationFormat>(module, "GeneAnnotationFormat")
-        .value("gtf", ce::tokenization::GeneAnnotationFormat::gtf)
-        .value("gff3", ce::tokenization::GeneAnnotationFormat::gff3);
+    py::enum_<bio::GeneAnnotationFormat>(module, "GeneAnnotationFormat")
+        .value("gtf", bio::GeneAnnotationFormat::gtf)
+        .value("gff3", bio::GeneAnnotationFormat::gff3);
 
     py::class_<ce::tokenization::GeneRecord>(module, "GeneRecord")
         .def(py::init<>())
@@ -50,12 +78,12 @@ void register_gene_tokenization(py::module_& module) {
         .def_readwrite("assembly", &ce::tokenization::GeneVocabularyMetadata::assembly)
         .def_readwrite("release", &ce::tokenization::GeneVocabularyMetadata::release);
 
-    py::class_<ce::tokenization::GeneAnnotationOptions>(module, "GeneAnnotationOptions")
+    py::class_<GeneAnnotationOptions>(module, "GeneAnnotationOptions")
         .def(py::init<>())
-        .def_readwrite("feature_type", &ce::tokenization::GeneAnnotationOptions::feature_type)
-        .def_readwrite("metadata", &ce::tokenization::GeneAnnotationOptions::metadata)
-        .def_readwrite("unknown_policy", &ce::tokenization::GeneAnnotationOptions::unknown_policy)
-        .def_readwrite("unknown_token_id", &ce::tokenization::GeneAnnotationOptions::unknown_token_id);
+        .def_readwrite("feature_type", &GeneAnnotationOptions::feature_type)
+        .def_readwrite("metadata", &GeneAnnotationOptions::metadata)
+        .def_readwrite("unknown_policy", &GeneAnnotationOptions::unknown_policy)
+        .def_readwrite("unknown_token_id", &GeneAnnotationOptions::unknown_token_id);
 
 
     py::class_<ce::tokenization::GeneVocabulary,
@@ -65,9 +93,9 @@ void register_gene_tokenization(py::module_& module) {
             py::arg("records"), py::arg("metadata") = ce::tokenization::GeneVocabularyMetadata{},
             py::arg("unknown_policy") = ce::tokenization::unknown_identity_policy::error,
             py::arg("unknown_token_id") = std::nullopt)
-        .def_static("from_annotation", &ce::tokenization::GeneVocabulary::from_annotation,
+        .def_static("from_annotation", &vocabulary_from_annotation,
             py::arg("path"), py::arg("format"),
-            py::arg("options") = ce::tokenization::GeneAnnotationOptions{})
+            py::arg("options") = GeneAnnotationOptions{})
         .def_static("load", &ce::tokenization::GeneVocabulary::load, py::arg("path"))
         .def("save", &ce::tokenization::GeneVocabulary::save, py::arg("path"))
         .def("resolve_identity", &ce::tokenization::GeneVocabulary::resolve_identity,

@@ -125,6 +125,27 @@ def classify(p):
                 'historical source path', 'native callers and installed consumers',
                 'active source migration closure and focused owner checks',
                 'preserve historical bytes and qualification in Git and source-bound evidence')
+    if p == 'src/compute/tokenization/gene_annotation.cc':
+        return ('former annotation reader path', 'components/biology/src/gene_annotation.cc',
+                'route format parsing to Biology and vocabulary construction to Tokenization',
+                'record_canonical_native_source_move', 'historical source path', 'annotation reader and GeneVocabulary',
+                'annotation and vocabulary format tests', 'retain source-linked behavior and format evidence')
+    moved_component_paths = {
+        'include/Cellerator/nn': 'components/nn/include/Cellerator/nn',
+        'src/nn/': 'components/nn/src/',
+        'tests/nn/': 'components/nn/tests/',
+        'examples/native_nn/': 'components/nn/examples/',
+        'src/interop/anndata/': 'components/anndata/',
+        'tests/interop/anndata/': 'components/anndata/tests/',
+        'include/Cellerator/compute/tokenization/': 'components/tokenization/include/Cellerator/compute/tokenization/',
+        'src/compute/tokenization/': 'components/tokenization/src/',
+    }
+    for old_prefix, new_prefix in moved_component_paths.items():
+        if p.startswith(old_prefix):
+            destination = new_prefix + p[len(old_prefix):]
+            return ('former optional component source path', destination, 'use the component source owner',
+                    'record_canonical_native_source_move', 'historical ownership path', 'optional native package consumers',
+                    'focused component and installed consumer checks', 'preserve historical source and evidence')
     if p in native_operation_paths:
         return native_operation_paths[p]
     if p == 'include/Cellerator/execution/dependency/value_field.hh':
@@ -140,8 +161,14 @@ def classify(p):
     if (p.startswith(('include/Cellerator/ops/sequence/', 'src/ops/sequence/'))
             and p.rsplit('/', 1)[-1] not in {'lifting.hh', 'monomial_checkpoints.hh'}):
         return ('exact native sequence operations', 'src/ops/sequence targets Cellerator::sequence_ops and Cellerator::sequence_ops_cuda', 'retain exact scans, masks, borrowed detail queries, and bounded predicate preparation', 'retain_native_sequence_operations', 'host and optional specialized CUDA paths', 'native sequence callers and regulatory execution', 'tests/sequence, tests/execution/sequence, and bench/sequence', 'preserve ordering, capacity, and validity contracts')
-    if p == 'extern/anndatapp':
-        return ('pinned AnnData++ source dependency', 'AnnData++ upstream repository', 'bundle the indexed gitlink revision for the optional CCell data adapter', 'retain_pinned_anndatapp', 'standard native build includes H5AD and Zarr when their backends are enabled', 'anndatapp::anndatapp and ccell::anndata_interop', 'pinned source archive and installed H5AD/Zarr consumer checks', 'keep upstream module and package names and update the pin explicitly')
+    if p == 'packages/anndatapp':
+        return ('pinned AnnData++ source dependency', 'AnnData++ upstream repository', 'bundle the indexed gitlink revision for the optional AnnData adapter', 'retain_pinned_anndatapp', 'standard native build includes H5AD and Zarr when their backends are enabled', 'anndatapp::anndatapp and Cellerator::anndata', 'pinned source archive and installed H5AD/Zarr consumer checks', 'keep upstream module and package names and update the pin explicitly')
+    if p.startswith('components/biology/'):
+        return ('native annotation catalog and GTF/GFF3 I/O', 'components/biology', 'optional host annotation component', 'retain_biology_annotation', 'plain-text annotation input', 'Cellerator::biology and GeneVocabulary', 'component annotation format checks', 'preserve identifiers, aliases, format selection and diagnostics')
+    if p.startswith('components/anndata/'):
+        return ('AnnData++ backed reads into native views', 'components/anndata', 'optional native acquisition adapter', 'retain_anndata_adapter', 'AnnData++ backed array reads', 'Cellerator::anndata', 'component read and installed consumer checks', 'preserve native buffer ownership and the AnnData++ package boundary')
+    if p in ('src/cellerator.ccm', 'src/tensor/cellerator.tensor-partition.ccm', 'cmake/CelleratorPrimaryModule.cmake'):
+        return ('native primary C++ module interface', 'Cellerator::cellerator', 'export canonical tensor declarations through the primary module', 'retain_primary_module', 'host C++20 module frontend', 'import cellerator', 'tests/tensor/modules', 'preserve type identity with native headers')
     if p.startswith('components/CCell/') or p == 'cmake/CelleratorCCell.cmake':
         return ('native single-cell methods and component integration', 'components/CCell', 'route method behavior, references, and adapter code to the CCell component', 'retain_ccell_native_methods', 'host methods and optional AnnData++ borrowing adapter; imported evidence retains its original source identity', 'ccell::preprocess, ccell::velocity, ccell::ccell, and ccell::anndata_interop', 'native, installed-package, allocation, numerical-parity, and file-backed modeling checks by target', 'preserve borrowed layout and logical order, caller storage, and the separation of method and acquisition dependencies')
     if p == '.vscode/settings.json':
@@ -196,7 +223,7 @@ def classify(p):
         'examples/native_cell/foundation.cc', 'tests/cell/cell_core_test.cc',
         'tests/cell/typed_core_no_rtti_test.cc', 'tests/cell/install_consumer/core.cc',
         'tests/modules/module_contract.cc', 'tests/modules/installed_consumer/CMakeLists.txt',
-        'tests/nn/native/cell_contract_test.cc', 'tests/nn/native/cell_query_integration_test.cc',
+        'components/nn/tests/native/cell_contract_test.cc', 'components/nn/tests/native/cell_query_integration_test.cc',
     }:
         return ('retired native Cell binding or demonstration', 'docs/native_nn.qmd',
                 'call models with concrete data and use typed views directly',
@@ -233,13 +260,13 @@ def classify(p):
     if p == 'include/CellPack/semantic_geometry.hh':
         return ('migrated CP-BP semantic/physical geometry contracts', 'include/Cellerator/layout/cell_packing_geometry.hh and include/Cellerator/geometry/strategy/cpbp_v1_compatibility.hh', 'the former combined API was split into physical statistics and explicit adaptation of a validated CellPack payload', 'record_canonical_native_source_move', 'former tracked path is removed from the worktree; exact source and runtime evidence remain destination-specific', 'CellPack payload callers and Cellerator layout/geometry consumers', 'CellPack compatibility and layout-statistics checks by exact contract; no blanket support claim', 'preserve payload version meaning and keep physical summaries separate from semantic relations')
     if p.startswith('include/Cellerator/biology/'):
-        return ('native biological identity and alignment contracts', 'include/Cellerator/biology; native NN consumers under include/Cellerator/nn and src/nn', 'retain caller-defined biological coordinates, feature bindings, aliases, and prepared alignment independently of storage', 'retain_native_biological_boundary_contracts', 'concurrent native NN source; qualification is separate from the Python-facing NN pass', 'native modeling and NN source; inspect current CMake registration and actual consumers', 'tests/nn/native and native NN qualification records when available; source presence is not passing evidence', 'preserve typed identity, order, unknown-policy, and ownership semantics; do not infer Python/C++ authoring parity')
-    if p == 'include/Cellerator/nn.hh' or p.startswith(('include/Cellerator/nn/','src/nn/')):
-        return ('native neural composition and differentiable operation source', 'include/Cellerator/nn and src/nn; inspect top-level CMake registration', 'retain native parameters, layers, interactions, queries, and numerical adapters as an independently qualified modeling surface', 'retain_native_nn_source', 'concurrent native NN implementation; build and runtime qualification remain operation-specific', 'native C++ modeling consumers, optional ATen dependencies, and exact NN tests', 'tests/nn/native and source-bound native NN evidence; prior Python tests do not qualify this new source', 'preserve idiomatic native ownership and biological meaning without claiming all components are implemented or qualified')
+        return ('native biological identity and alignment contracts', 'include/Cellerator/biology; native NN consumers under components/nn', 'retain caller-defined biological coordinates, feature bindings, aliases, and prepared alignment independently of storage', 'retain_native_biological_boundary_contracts', 'concurrent native NN source; qualification is separate from the Python-facing NN pass', 'native modeling and NN source; inspect current CMake registration and actual consumers', 'components/nn/tests/native and native NN qualification records when available; source presence is not passing evidence', 'preserve typed identity, order, unknown-policy, and ownership semantics; do not infer Python/C++ authoring parity')
+    if p.startswith(('components/nn/include/', 'components/nn/src/')):
+        return ('native neural composition and differentiable operation source', 'components/nn; inspect top-level CMake registration', 'retain native parameters, layers, interactions, queries, and numerical adapters as an independently qualified modeling surface', 'retain_native_nn_source', 'concurrent native NN implementation; build and runtime qualification remain operation-specific', 'native C++ modeling consumers, optional ATen dependencies, and exact NN tests', 'components/nn/tests/native and source-bound native NN evidence; prior Python tests do not qualify this new source', 'preserve idiomatic native ownership and biological meaning without claiming all components are implemented or qualified')
     if p.startswith(('bindings/nn/', 'python/bindings/nn/')):
-        return ('optional Python adapter for shared native neural functions', 'python/bindings/nn with src/nn and python/cellerator/torch', 'retain a thin borrowed-parameter bridge to shared native functions; preserve ordinary Python parameter ownership and explicit optional loading', 'retain_native_nn_python_adapter', 'binding source only; extension import and numerical composition need their own qualification', 'optional _nn_native extension and Python NN facade', 'tests/framework/test_native_nn_bridge.py and isolated native-enabled wheel validation', 'coordinate signatures with native functional owners and Python frontend owners; do not mirror Python registration in native model authoring')
-    if p.startswith('tests/nn/'):
-        return ('native NN contracts and numerical checks', 'tests/nn with include/Cellerator/nn, include/Cellerator/biology, and src/nn', 'retain beside the native NN implementation; execute only with the required optional dependencies and hardware authority', 'retain_native_nn_checks', 'test source only; collection, compilation, and passing execution are separate evidence', 'native NN CMake test registration and operation-specific qualification runners', 'inspect the exact test and its admitted execution receipt; no blanket native or CUDA acceptance', 'preserve independent references, gradient checks, and device/precision contracts')
+        return ('optional Python adapter for shared native neural functions', 'python/bindings/nn with components/nn and python/cellerator/torch', 'retain a thin borrowed-parameter bridge to shared native functions; preserve ordinary Python parameter ownership and explicit optional loading', 'retain_native_nn_python_adapter', 'binding source only; extension import and numerical composition need their own qualification', 'optional _nn_native extension and Python NN facade', 'tests/framework/test_native_nn_bridge.py and isolated native-enabled wheel validation', 'coordinate signatures with native functional owners and Python frontend owners; do not mirror Python registration in native model authoring')
+    if p.startswith('components/nn/tests/'):
+        return ('native NN contracts and numerical checks', 'components/nn/tests with components/nn/include, include/Cellerator/biology, and components/nn/src', 'retain beside the native NN implementation; execute only with the required optional dependencies and hardware authority', 'retain_native_nn_checks', 'test source only; collection, compilation, and passing execution are separate evidence', 'native NN CMake test registration and operation-specific qualification runners', 'inspect the exact test and its admitted execution receipt; no blanket native or CUDA acceptance', 'preserve independent references, gradient checks, and device/precision contracts')
     if p == 'cmake/CelleratorTorchDependency.cmake':
         return ('shared optional Torch and ATen dependency discovery', 'cmake/CelleratorTorchDependency.cmake and its current CMake include sites', 'retain consistent optional native/Python Torch ABI discovery while allowing an explicit LibTorch prefix', 'retain_optional_torch_dependency_discovery', 'build configuration source; successful configured builds require separate evidence', 'optional native NN, tokenization, and Python binding build registration', 'CMake configure/build acceptance with the selected dependency installation; not numerical qualification', 'preserve optional dependency boundaries and caller-visible package/ABI selection')
     if p.startswith('include/Cellerator/examples/'):
@@ -482,7 +509,9 @@ def classify(p):
         return ('native relation arithmetic owner', 'src/compute/operation/native_numeric/CMakeLists.txt target Cellerator::native_numeric, linked to Cellerator::ops_numeric', 'retain native relation arithmetic and share the reusable local arithmetic owner with SDK consumers', 'retain_native_numeric_operation_owner', 'host and optional device source present; type/operation claims remain contract-specific', 'Cellerator::native_foundation, Cellerator::local_differential and selectable Substrate native_numeric component', 'tests/native_numeric/device_arithmetic.cc when CUDA/testing is enabled; installed Substrate SDK/operator/effects/frontier checks recorded in source-bound math extraction report', 'preserve relation semantics and shared numeric dependency; do not duplicate local arithmetic')
     if p.startswith(('src/compute/operation/differential/','include/Cellerator/compute/operation/differential/')):
         return ('local operation derivative owner', 'src/compute/operation/differential target Cellerator::local_differential', 'retain derivative actions as a distinct owner consuming the shared native numeric primal', 'retain_shared_local_differential_owner', 'host/device sources present; derivative claims are operation-specific', 'Cellerator::native_numeric and executable program consumers; selectable Substrate native_numeric SDK dependency', 'tests/native_foundation/differential and tests/relation_update_spine_v1; CUDA run evidence remains separately bounded', 'preserve derivative/primal separation and no-fast-math contract')
-    if p.startswith(('src/compute/tokenization/','include/Cellerator/compute/tokenization/')):
+    if p.startswith('components/tokenization/vocabulary/'):
+        return ('vocabulary prototype', 'components/tokenization/vocabulary', 'retain the local vocabulary inputs independently of installed tokenizer targets', 'preserve_tokenizer_vocabulary_prototype', 'prototype source without package build registration', 'inspect explicitly before adoption', 'none recorded by this routing map', 'preserve existing content and provenance')
+    if p.startswith('components/tokenization/'):
         return ('optional ATen tokenization and sequence-buffer operations', 'cmake/CelleratorTokenization.cmake target Cellerator::tokenization with optional Python _tokenization binding', 'retain as optional tensor/tokenization operations; biological event and history meaning stay with consumers', 'retain_optional_tokenization_facility', 'CPU and optional CUDA implementations; installed suite evidence remains tied to its record', 'cellerator.tokenization, ATen operation modules, and sequence-buffer callers', 'tests/tokenization/core_test.cc, numerics_test.cc, append_test.cc and source-bound 2026-10-26 qualification; do not generalize to biological model validity', 'preserve caller-defined vocabularies, event interpretation boundary and capacity/overflow contracts')
     if p.startswith(('include/Cellerator/ops/','src/ops/')):
         parts = Path(p).parts

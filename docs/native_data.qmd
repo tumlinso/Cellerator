@@ -326,10 +326,10 @@ The same component exposes `Cellerator::reaction`, `Cellerator::exchange`,
 identity. Successful replacements and nonempty writes advance its value
 generation. Models can also use caller-owned arrays directly.
 
-`Cellerator::tensor` is the smaller host format surface. With
-`CELLERATOR_ENABLE_MODULES=ON`, the same target supplies
-`import cellerator.tensor;` for compressed and COO views and block-masked
-views and accessors. See the [module build instructions](developer_reference.qmd#mandatory-native-toolchain).
+`Cellerator::tensor` is the focused host target for tensor format headers.
+With `CELLERATOR_ENABLE_MODULES=ON`, request the installed `module` component
+and link `Cellerator::cellerator` to use `import cellerator;` for compressed,
+COO, and block-masked views and accessors. See the [module build instructions](developer_reference.qmd#mandatory-native-toolchain).
 
 The optional `Cellerator::native_data_cuda` target composes CUDA owners and execution; these
 dependencies are not required by host semantic headers. All package targets

@@ -177,10 +177,13 @@ Include `<Cellerator/compute/tokenization/gene_tokenizer.hh>` and link
 `Cellerator::tokenization`:
 
 ```cpp
+namespace bio = cellerator::biology;
 using namespace cellerator::tokenization;
 
-auto vocabulary = std::make_shared<GeneVocabulary>(
-    GeneVocabulary::from_annotation("genes.gtf", GeneAnnotationFormat::gtf));
+bio::GeneAnnotation catalog;
+const auto error = bio::read_gene_annotation("genes.gtf", bio::GeneAnnotationFormat::gtf, catalog);
+if (error.message) return 1;
+auto vocabulary = std::make_shared<GeneVocabulary>(GeneVocabulary::from_catalog(catalog));
 EventStreamGeneTokenizer events(vocabulary);
 RankedGeneTokenizer ranked(vocabulary);
 ```
@@ -193,15 +196,13 @@ virtual execution signature remain deferred. There is no tagged universal
 
 ### Building and preserving a gene vocabulary
 
-`GeneVocabulary::from_annotation(path, format, options)` accepts uncompressed
-GTF or GFF3 with an explicit `GeneAnnotationFormat`. The default
-`GeneAnnotationOptions.feature_type` is `"gene"`. GTF reads `gene_id` and
-`gene_name`; GFF3 reads `ID`, `Name` and `Alias`. This is an identifier-table
-builder, not a complete annotation validator or a transcript-to-gene inference
-engine. GTF attribute conventions follow the
-[GENCODE format](https://www.gencodegenes.org/pages/data_format.html), and GFF3
-attribute escaping follows the
-[GFF3 specification](https://github.com/the-sequence-ontology/specifications/blob/master/gff3.md).
+Biology defines the annotation format and owns the plain GTF and GFF3 reader.
+`GeneVocabulary::from_catalog()` takes a loaded `biology::GeneAnnotation` and
+assigns token IDs. Call `biology::read_gene_annotation()` to load a file.
+The reader defaults to the `"gene"` feature type. GTF reads `gene_id` and
+`gene_name`. GFF3 reads `ID`, `Name`, and `Alias`. See the
+[GENCODE format](https://www.gencodegenes.org/pages/data_format.html)
+and the [GFF3 specification](https://github.com/the-sequence-ontology/specifications/blob/master/gff3.md).
 
 Records are ordered by canonical gene identifier, and internal integer
 identities follow that order. Repeated records for a gene merge compatible
@@ -210,7 +211,7 @@ Identifier versions are retained. Canonical identifiers take precedence over
 aliases, and ambiguous alias lookup raises an error. Gene symbols are not
 assumed unique.
 
-`from_records` accepts caller-created `GeneRecord` entries. Token IDs default
+`from_records` accepts caller-created `GeneVocabularyEntry` entries. Token IDs default
 to the canonical identity order; an existing model's assignments can be supplied
 explicitly for every gene. Annotation contents alone do not determine which
 genes a model represents or its required token assignments. `save` and `load`

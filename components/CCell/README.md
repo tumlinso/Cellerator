@@ -11,10 +11,10 @@ and stochastic refinement.
 Configure from the Cellerator root with CMake 3.28 or newer, Ninja 1.11 or newer,
 Clang 18 or newer, and matching `clang-scan-deps`. The standard build includes
 CCell and the optional Cellerator AnnData component with native H5AD and Zarr support. Install the system dependencies described by
-[AnnData++](../../extern/anndatapp/docs/storage-dependencies.md).
+[AnnData++](../../packages/anndatapp/docs/storage-dependencies.md).
 
 ```sh
-git submodule update --init -- extern/anndatapp
+git submodule update --init -- packages/anndatapp
 cmake -S . -B build/standard -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 \
@@ -86,7 +86,7 @@ disjoint gene blocks with caller-owned workers and scratch.
 - `src/preprocess/` owns the [preprocessing methods](docs/preprocess/README.md).
 - `src/velocity/` owns the [Velocity methods](src/velocity/README.md) as tracked
   CCell source.
-- `extern/anndatapp/` at the Cellerator root pins the upstream AnnData++
+- `packages/anndatapp/` at the Cellerator root pins the upstream AnnData++
   source used by the optional Cellerator component.
 
 The initial tracked imports came from CCell

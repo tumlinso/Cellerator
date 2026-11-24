@@ -32,7 +32,7 @@ import cellerator._nn_native as native
 suite = unittest.defaultTestLoader.discover(str(root / "tests/framework"), pattern=args.pattern)
 started = time.monotonic()
 result = unittest.TextTestRunner(verbosity=1).run(suite)
-paths = [*root.glob("include/Cellerator/nn/**/*.hh"), *root.glob("src/nn/*.cc"),
+paths = [*root.glob("components/nn/include/Cellerator/nn/**/*.hh"), *root.glob("components/nn/src/*.cc"),
          *root.glob("python/cellerator/torch/*.py"), *root.glob("tests/framework/test_native_nn_bridge.py")]
 record = {
     "head_provenance": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),

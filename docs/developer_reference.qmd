@@ -61,7 +61,7 @@ Module consumers use strict C++20 or C++23. CUDA translation units use the
 public headers.
 
 The standard build includes CCell preprocessing and RNA velocity. Initialize
-the `extern/anndatapp` submodule for the optional Cellerator AnnData component
+the `packages/anndatapp` submodule for the optional Cellerator AnnData component
 and its H5AD and Zarr support. Set `CELLERATOR_ENABLE_ANNDATA=OFF` to omit it.
 Core-only builds also set `CELLERATOR_BUILD_CCELL=OFF`. See the
 [AnnData buffer guide](development/anndata.md) for its build and imports and the
@@ -84,14 +84,14 @@ configure in a fresh build directory and install to a fresh prefix to clear
 cached architecture values and previously installed headers.
 
 Header consumers in the normal package can link `Cellerator::headers` for its
-include path and C++20 requirement. Tensor and NN consumers use the same
-targets for headers and imports. For an importing model:
+include path and C++20 requirement. An importing model selects the
+primary module and any components it uses:
 
 ```cmake
 set(CMAKE_CXX_EXTENSIONS OFF)
-find_package(Cellerator CONFIG REQUIRED COMPONENTS native_data nn)
+find_package(Cellerator CONFIG REQUIRED COMPONENTS module nn)
 add_executable(my_model model.cc)
-target_link_libraries(my_model PRIVATE Cellerator::tensor Cellerator::nn)
+target_link_libraries(my_model PRIVATE Cellerator::cellerator Cellerator::nn)
 set_property(TARGET my_model PROPERTY CXX_SCAN_FOR_MODULES ON)
 ```
 
@@ -100,13 +100,16 @@ With modules enabled, header-only targets can skip scanning their own sources
 by setting `CXX_SCAN_FOR_MODULES OFF`. Their linked module providers still
 build when needed.
 
+See the [native C++ module hierarchy](development/component-ownership.md#native-module-hierarchy)
+for the primary import, lower-level headers, and optional components.
+
 ## Current high-level routes
 
 ```text
 include/Cellerator/   public native contracts, including event and expression views
 src/                  native implementation (several owners and generations)
-components/CCell/    native preprocessing, RNA velocity, and optional data adapter
-extern/anndatapp/    pinned upstream AnnData++ source
+components/           optional feature libraries and CCell methods
+packages/anndatapp/    pinned upstream AnnData++ source
 python/bindings/      optional compiled Python extensions
 src/interop/torch/    native LibTorch and ATen adapters
 python/cellerator/    installed Python package and Torch modules

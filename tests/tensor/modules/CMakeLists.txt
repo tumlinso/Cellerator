@@ -7,12 +7,12 @@ set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 option(CELLERATOR_TENSOR_MODULE_TEST_CUDA
     "Compile the tensor header bridge with NVCC" OFF)
 
-if(NOT TARGET Cellerator::tensor)
-    find_package(Cellerator CONFIG REQUIRED COMPONENTS native_data)
+if(NOT TARGET Cellerator::cellerator)
+    find_package(Cellerator CONFIG REQUIRED COMPONENTS module)
 endif()
 add_executable(cellerator_tensor_module_consumer module_consumer.cc header_bridge.cc)
 set_source_files_properties(module_consumer.cc PROPERTIES CXX_SCAN_FOR_MODULES ON)
-target_link_libraries(cellerator_tensor_module_consumer PRIVATE Cellerator::tensor)
+target_link_libraries(cellerator_tensor_module_consumer PRIVATE Cellerator::cellerator)
 
 if(CELLERATOR_TENSOR_MODULE_TEST_CUDA)
     enable_language(CUDA)

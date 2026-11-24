@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-import cellerator.tensor;
+import cellerator;
 
 namespace base = cellerator::tensor::base;
 namespace bm = cellerator::tensor::block_masked;

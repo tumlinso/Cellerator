@@ -5,14 +5,13 @@ include(CMakePackageConfigHelpers)
 # the regular and selectable substrate installations.
 function(cellerator_install_native_headers)
     foreach(dir IN ITEMS bindings biology common compute containers
-            execution geometry interop layout math memory nn
+            execution geometry interop layout math memory
             ops packing planner profiling runtime state structure tensor)
         install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/${dir}"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN}
             PATTERN "cellshard" EXCLUDE)
     endforeach()
     install(FILES
-        "${PROJECT_SOURCE_DIR}/include/Cellerator/nn.hh"
         "${PROJECT_SOURCE_DIR}/include/Cellerator/parameters.hh"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN})
 endfunction()
@@ -60,6 +59,27 @@ write_basic_package_version_file(
 install(FILES "${CELLERATOR_HOST_CONFIG}"
     "${CMAKE_CURRENT_BINARY_DIR}/CelleratorConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
+
+# Import optional providers after the core build has registered its own exports.
+function(cellerator_append_optional_component_config)
+    file(APPEND "${CELLERATOR_HOST_CONFIG}" [=[
+if(("biology" IN_LIST Cellerator_FIND_COMPONENTS OR "tokenization" IN_LIST Cellerator_FIND_COMPONENTS)
+   AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/BiologyComponent.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/BiologyComponent.cmake")
+endif()
+if(("nn" IN_LIST Cellerator_FIND_COMPONENTS OR "nn_cuda" IN_LIST Cellerator_FIND_COMPONENTS)
+   AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/NNComponent.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/NNComponent.cmake")
+endif()
+if(("aten_ops" IN_LIST Cellerator_FIND_COMPONENTS OR "tokenization" IN_LIST Cellerator_FIND_COMPONENTS)
+   AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/TokenizationComponent.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/TokenizationComponent.cmake")
+endif()
+if("anndata" IN_LIST Cellerator_FIND_COMPONENTS AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/AnnDataComponent.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/AnnDataComponent.cmake")
+endif()
+]=])
+endfunction()
 
 if(CELLERATOR_BUILD_TESTS)
     enable_testing()
