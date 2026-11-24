@@ -29,6 +29,29 @@ if(CELLERATOR_BUILD_TESTS)
 endif()
 
 if(CELLERATOR_HAS_CUDA)
+    if(CUDAToolkit_VERSION VERSION_LESS 13
+       AND CMAKE_CUDA_ARCHITECTURES MATCHES "(^|;)70(-real|-virtual)?(;|$)")
+        add_library(cellerator_tiled_matmul_cuda STATIC tiled_matmul_cuda.cu)
+        add_library(Cellerator::tiled_matmul_cuda ALIAS cellerator_tiled_matmul_cuda)
+        target_link_libraries(cellerator_tiled_matmul_cuda PUBLIC Cellerator::headers CUDA::cudart)
+        set_target_properties(cellerator_tiled_matmul_cuda PROPERTIES
+            EXPORT_NAME tiled_matmul_cuda CUDA_ARCHITECTURES 70-real
+            CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
+        install(TARGETS cellerator_tiled_matmul_cuda EXPORT CelleratorCoreTargets
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+        if(CELLERATOR_BUILD_TESTS)
+            add_executable(cellerator_tiled_matmul_volta_test
+                "${_ce_ops_root}/tests/tensor_core/sm70/tiled_matmul_test.cu")
+            target_link_libraries(cellerator_tiled_matmul_volta_test PRIVATE
+                Cellerator::tiled_matmul_cuda Cellerator::memory_cuda)
+            set_target_properties(cellerator_tiled_matmul_volta_test PROPERTIES
+                CUDA_ARCHITECTURES 70-real CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
+            add_test(NAME cellerator_tiled_matmul_volta COMMAND cellerator_tiled_matmul_volta_test)
+            set_tests_properties(cellerator_tiled_matmul_volta PROPERTIES SKIP_RETURN_CODE 77)
+        endif()
+    endif()
+
     add_library(cellerator_narrow_matmul_cuda STATIC narrow_matmul_cuda.cu)
     add_library(Cellerator::narrow_matmul_cuda ALIAS cellerator_narrow_matmul_cuda)
     target_link_libraries(cellerator_narrow_matmul_cuda PUBLIC

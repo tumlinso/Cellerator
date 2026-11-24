@@ -63,6 +63,10 @@ install(FILES "${CELLERATOR_HOST_CONFIG}"
 
 if(CELLERATOR_BUILD_TESTS)
     enable_testing()
+    add_executable(cellerator_memory_tile_test tests/memory/tile_test.cc)
+    target_link_libraries(cellerator_memory_tile_test PRIVATE Cellerator::headers)
+    target_compile_options(cellerator_memory_tile_test PRIVATE -nostdinc)
+    add_test(NAME cellerator_memory_tile COMMAND cellerator_memory_tile_test)
     find_package(Python3 COMPONENTS Interpreter QUIET)
     if(Python3_Interpreter_FOUND)
         add_test(NAME cellerator_core_stl_policy_test
