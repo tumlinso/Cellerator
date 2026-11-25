@@ -38,15 +38,23 @@ public:
     array_view<TileType> view() noexcept { return {data(), capacity(), where()}; }
     const_array_view<TileType> view() const noexcept { return {data(), capacity(), where()}; }
 
+    // A raw range can hold an interleaved panel that spans several slots.
+    cuda::DeviceView slot_bytes(size_t first, size_t count) {
+        return storage_.view().subview(cuda::checked_bytes(first, tile_bytes),
+                                       cuda::checked_bytes(count, tile_bytes));
+    }
+    cuda::ConstDeviceView slot_bytes(size_t first, size_t count) const {
+        return storage_.view().subview(cuda::checked_bytes(first, tile_bytes),
+                                       cuda::checked_bytes(count, tile_bytes));
+    }
+
     // Offsets and counts are measured in physical tile slots.
     array_view<TileType> view(size_t first, size_t count) {
-        const auto range = storage_.view().subview(cuda::checked_bytes(first, tile_bytes),
-                                                  cuda::checked_bytes(count, tile_bytes));
+        const auto range = slot_bytes(first, count);
         return {static_cast<TileType *>(range.data), count, where()};
     }
     const_array_view<TileType> view(size_t first, size_t count) const {
-        const auto range = storage_.view().subview(cuda::checked_bytes(first, tile_bytes),
-                                                  cuda::checked_bytes(count, tile_bytes));
+        const auto range = slot_bytes(first, count);
         return {static_cast<const TileType *>(range.data), count, where()};
     }
 
@@ -54,6 +62,10 @@ public:
     // storage when the transfer must overlap other work.
     void upload_async(const TileType *source, size_t count, const cuda::Stream &stream,
                       size_t first = 0) {
+        upload_slots_async(source, count, stream, first);
+    }
+    void upload_slots_async(const void *source, size_t count, const cuda::Stream &stream,
+                            size_t first = 0) {
         storage_.upload_async(source, cuda::checked_bytes(count, tile_bytes), stream,
                               cuda::checked_bytes(first, tile_bytes));
     }
@@ -65,6 +77,7 @@ public:
 
 private:
     static int checked_device(int device) {
+        // Borrowed views store the device ordinal in a signed 16-bit field.
         if (device < 0 || device > INT16_MAX)
             cuda::check(cudaErrorInvalidDevice, "TiledBuffer device ordinal");
         return device;

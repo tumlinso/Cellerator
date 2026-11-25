@@ -2,6 +2,7 @@ get_filename_component(_ce_layout_root "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUT
 add_library(cellerator_layout STATIC
     factorized_interaction.cc
     projection/feature_major_tiles.cc
+    projection/panel_projection.cc
     projection/mma_hybrid.cc
     projection/mma_hybrid_builder.cc
     mma_physical_cover_validation.cc)

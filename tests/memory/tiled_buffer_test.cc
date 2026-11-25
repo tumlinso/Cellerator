@@ -40,6 +40,7 @@ void check_empty() {
 }
 
 void check_uploads() {
+    Tile source[2]{}, result[2]{}, last{};
     gpu::Stream stream(0);
     Buffer buffer(5, stream.device());
     const auto slots = buffer.view();
@@ -49,7 +50,6 @@ void check_uploads() {
     require(buffer.view(1, 2).data == slots.data + 1, "ranged view offset");
     require(buffer.view(5, 0).count == 0, "empty view at end");
 
-    Tile source[2]{}, result[2]{}, last{};
     for (unsigned i = 0; i < Tile::rows * Tile::columns; ++i) {
         source[0].data()[i] = __float2half(float(i));
         source[1].data()[i] = __float2half(float(i + 256));

@@ -250,6 +250,17 @@ costs, including preparation, conversion, memory and communication. Compare
 with the strongest conventional or library alternative and retain the evidence
 that supports or rejects each candidate.
 
+### To try
+
+Try fragment-aware SELL with [`StripView`](include/Cellerator/tensor/striped.hh)
+when a kernel can consume a row fragment as it arrives or release its storage
+before the rest of that row. Use
+[`SlicedEllLayout`](include/Cellerator/tensor/base/sliced_ell_binding.cuh) to
+bind the ordinary SELL view in a
+[`StripedBuffer`](include/Cellerator/memory/striped/StripedBuffer.hh) as the
+baseline. Match value and index widths and include packing, transfers, retained
+bytes and partial-output traffic when evaluating the fragment path.
+
 ## Software ports and design probes
 
 During active library development, any explicitly user-authorized software

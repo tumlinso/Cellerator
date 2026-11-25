@@ -1,4 +1,4 @@
-#include <Cellerator/memory/Tile.hh>
+#include <Cellerator/memory/tiled/Tile.hh>
 
 using cellerator::memory::Tile;
 

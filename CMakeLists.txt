@@ -58,7 +58,7 @@ endif()
 option(CELLERATOR_ENABLE_VELOCITY "Build native RNA velocity methods" OFF)
 option(CELLERATOR_ENABLE_PREPROCESS "Build native single-cell preprocessing methods" OFF)
 option(CELLERATOR_ENABLE_ANNDATA "Build the optional AnnData++ component" OFF)
-option(CELLERATOR_ENABLE_RDS "Build the optional libR-backed RDS reader" OFF)
+option(CELLERATOR_ENABLE_RDS "Build the optional indexed RDS reader" OFF)
 
 # Native session and execution targets are declared early. They also back the
 # optional shared Torch producer, so PIC must be enabled before target creation.

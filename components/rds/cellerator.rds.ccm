@@ -1,0 +1,135 @@
+module;
+
+#include <stddef.h>
+#include <stdint.h>
+#include <Cellerator/memory/view.hh>
+#include <Cellerator/tensor/base/compressed.hh>
+
+export module cellerator.rds;
+
+namespace cellerator::rds::detail {
+struct IndexedFile;
+struct Transfer;
+}
+
+export namespace cellerator::rds {
+
+enum class Status {
+    ok, invalid_argument, io_error, unsupported, invalid_format,
+    invalid_index, stale_index, insufficient_capacity
+};
+
+struct IoStats {
+    uint64_t compressed_bytes = 0, decoded_bytes = 0;
+};
+
+struct FileInfo {
+    uint32_t rows = 0, columns = 0, entries = 0;
+    bool has_names[2]{};
+    uint64_t source_bytes = 0, index_bytes = 0, decoded_bytes = 0;
+};
+
+struct ColumnRange {
+    uint32_t start, count;
+};
+
+// Caller-owned storage for the source-ordered prepare_read overload.
+struct ReadRun {
+    ColumnRange source;
+    size_t output_column, output_entry;
+};
+
+struct ReadRequirements {
+    size_t rows = 0, columns = 0, entries = 0, offsets = 0;
+};
+
+enum class Axis { features, cells };
+enum class NameEncoding { native, utf8, latin1, bytes };
+enum class TransferMode { numeric, numeric_and_names };
+
+struct AxisName {
+    const char *text = nullptr;
+    size_t size = 0;
+    NameEncoding encoding = NameEncoding::native;
+};
+
+using CscView = tensor::base::CompressedView<int32_t, const double, int32_t>;
+
+// Creates a new index atomically at index_path. The source remains read-only.
+// The default minimum checkpoint spacing is 8 MiB of decoded bytes.
+[[nodiscard]] Status build_index(const char *source, const char *index_path, IoStats&) noexcept;
+
+// The spacing must be positive. Checkpoints are restricted to DEFLATE block boundaries,
+// so the actual spacing can be greater. Smaller spacing can increase the index size.
+[[nodiscard]] Status build_index(const char *source, const char *index_path,
+                                uint64_t checkpoint_spacing_bytes, IoStats&) noexcept;
+
+class RdsFile;
+
+class PreparedRead {
+public:
+    ReadRequirements requirements() const noexcept { return required_; }
+
+private:
+    friend class RdsFile;
+    friend class ReadContext;
+    const RdsFile *file_ = nullptr;
+    uint64_t generation_ = 0;
+    const ColumnRange *ranges_ = nullptr;
+    const ReadRun *runs_ = nullptr;
+    size_t count_ = 0;
+    ReadRequirements required_{};
+};
+
+class RdsFile {
+public:
+    RdsFile() noexcept = default;
+    ~RdsFile() noexcept;
+    RdsFile(const RdsFile&) = delete;
+    RdsFile& operator=(const RdsFile&) = delete;
+
+    [[nodiscard]] Status open(const char *source, const char *index_path) noexcept;
+    // Drain all readers before closing or replacing the session.
+    void close() noexcept;
+    FileInfo info() const noexcept;
+
+    // The source, this session, and the unchanged range list must outlive the read.
+    [[nodiscard]] Status prepare_read(const ColumnRange *, size_t, PreparedRead&) const noexcept;
+    // Supply at least one run slot per input range. Keep the used run storage
+    // unchanged and disjoint from the destinations through all reads.
+    [[nodiscard]] Status prepare_read(const ColumnRange *, size_t, memory::array_view<ReadRun>,
+                                      PreparedRead&) const noexcept;
+
+private:
+    friend class ReadContext;
+    detail::IndexedFile *file_ = nullptr;
+    uint64_t generation_ = 0;
+};
+
+class ReadContext {
+public:
+    ReadContext() noexcept = default;
+    ~ReadContext() noexcept;
+    ReadContext(const ReadContext&) = delete;
+    ReadContext& operator=(const ReadContext&) = delete;
+
+    // One context per worker. The file stays open through all uses of the context.
+    // The one-argument form prepares numeric and available name reads.
+    [[nodiscard]] Status prepare_transfer(const RdsFile&) noexcept;
+    // Numeric mode retains any previously provisioned name storage for reuse.
+    [[nodiscard]] Status prepare_transfer(const RdsFile&, TransferMode) noexcept;
+    [[nodiscard]] Status read_into(const PreparedRead&, memory::array_view<double> values,
+                                   memory::array_view<int32_t> indices, memory::array_view<int32_t> offsets,
+                                   CscView&) noexcept;
+
+    // Two empty destination descriptors request the exact byte count including terminators.
+    [[nodiscard]] Status read_names_into(Axis, ColumnRange, memory::array_view<AxisName>,
+                                         memory::array_view<char>, size_t& bytes_needed) noexcept;
+
+    IoStats stats() const noexcept;
+
+private:
+    detail::Transfer *transfer_ = nullptr;
+};
+
+} // namespace cellerator::rds

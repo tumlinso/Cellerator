@@ -36,6 +36,13 @@ function(cellerator_add_native_data_memory_cuda_owner)
         target_link_libraries(cellerator_tiled_buffer_test PRIVATE Cellerator::memory_cuda)
         add_test(NAME cellerator_tiled_buffer COMMAND cellerator_tiled_buffer_test)
         set_tests_properties(cellerator_tiled_buffer PROPERTIES SKIP_RETURN_CODE 77)
+        add_executable(cellerator_striped_buffer_cuda_test
+            "${PROJECT_SOURCE_DIR}/tests/memory/striped_buffer_cuda_test.cu")
+        target_link_libraries(cellerator_striped_buffer_cuda_test PRIVATE Cellerator::memory_cuda)
+        set_target_properties(cellerator_striped_buffer_cuda_test PROPERTIES
+            CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
+        add_test(NAME cellerator_striped_buffer_cuda COMMAND cellerator_striped_buffer_cuda_test)
+        set_tests_properties(cellerator_striped_buffer_cuda PROPERTIES SKIP_RETURN_CODE 77)
     endif()
     # Keep the one canonical memory target in a small export set.  Both the
     # full SDK and the factorized-interaction component import this file, so
@@ -49,6 +56,9 @@ function(cellerator_add_native_data_memory_cuda_owner)
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator
         COMPONENT FactorizedInteractionCUDA)
     install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/memory/cuda"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/memory"
+        COMPONENT NativeDataCUDA)
+    install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/memory/tiled"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/memory"
         COMPONENT NativeDataCUDA)
     install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/memory/cuda"
@@ -260,6 +270,8 @@ foreach(_header IN ITEMS
         containers/value_shape.hh
         containers/posting_index.hh
         memory/domain.hh
+        memory/view.hh
+        memory/tiled/Panel.hh
         ops/reaction/network.hh
         ops/process/exchange.hh
         ops/process/inheritance.hh
