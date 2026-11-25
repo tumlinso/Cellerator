@@ -410,6 +410,19 @@ void verify_overlapping_blocks() {
                     residual_features[0] == (block ? 0 : 2),
                 "prepared layout retained stale columns for an overlapping catalog");
     }
+    require(layout::prepare_panel_packing_layout(source, nullptr, 0, {}, &panel_layout) == Status::ok &&
+                layout::query_panel_packing(source, panel_layout, nullptr, 1, {}, &selection) == Status::ok,
+            "prepare an empty shared layout without column storage");
+    const uint16_t values[]{half_bits(1), half_bits(2), half_bits(3)};
+    uint16_t empty_features[3]{}, empty_values[3]{};
+    const layout::PanelPackingMetadata empty_metadata{nullptr, 0, residual_offsets, 17, empty_features, 3};
+    require(selection.shape.dense_values == 0 && selection.shape.residual_nnz == 3 &&
+                layout::pack_panel_values_once(selection, {}, empty_metadata, values, 3,
+                    nullptr, 0, empty_values, 3) == Status::ok &&
+                std::equal(empty_features, empty_features + 3, features) &&
+                std::equal(empty_values, empty_values + 3, values) &&
+                residual_offsets[0] == 0 && residual_offsets[1] == 3 && residual_offsets[16] == 3,
+            "empty shared layout did not send the complete row to the residual");
 }
 
 struct PanelWorklists {

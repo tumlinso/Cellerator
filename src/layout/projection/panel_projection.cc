@@ -314,12 +314,48 @@ PanelPackingStatus prepare_panel_packing_source(
     return Status::ok;
 }
 
-PanelPackingStatus query_panel_packing(const PanelPackingSource &source, PanelPackingInput input,
-    PanelPackingWorkspace workspace, PanelPackingSelection *selection) noexcept {
+PanelPackingStatus prepare_panel_packing_layout(const PanelPackingSource &source,
+    const uint16_t *block_ids, size_t block_count, PanelPackingLayoutStorage storage,
+    PanelPackingLayout *layout) noexcept {
+    if (!layout) return Status::invalid_argument;
+    *layout = {};
+    if (!source.csr.major_ptr || block_count > source.block_count ||
+        block_count > UINT16_MAX || (block_count && !block_ids)) return Status::invalid_argument;
+
+    const size_t features = size_t(source.csr.cols);
+    const size_t panels = block_count/panel_tiles + (block_count%panel_tiles != 0);
+    const bool wide = block_count*panel_tile_columns > UINT16_MAX;
+    if (block_count && (storage.dense_feature_capacity < panels*panel_columns ||
+        storage.feature_capacity < features || !storage.dense_features ||
+        (wide ? !storage.wide_columns : !storage.columns))) return Status::insufficient_capacity;
+
+    const auto status = wide
+        ? build_layout_columns(source, block_ids, block_count, panels, storage.dense_features,
+                               storage.wide_columns)
+        : build_layout_columns(source, block_ids, block_count, panels, storage.dense_features,
+                               storage.columns);
+    if (status != Status::ok) return status;
+    *layout = {features, block_count, panels, block_count ? block_ids : nullptr,
+               block_count ? storage.dense_features : nullptr,
+               block_count && !wide ? storage.columns : nullptr,
+               wide ? storage.wide_columns : nullptr,
+               source.block_features, source.block_count, wide, true};
+    return Status::ok;
+}
+
+namespace {
+
+Status query_panel_packing_impl(const PanelPackingSource &source, PanelPackingInput input,
+    const PanelPackingLayout *layout, PanelPackingWorkspace workspace,
+    PanelPackingSelection *selection) noexcept {
     if (!selection) return Status::invalid_argument;
     *selection = {};
     const auto &csr = source.csr;
-    if (!csr.major_ptr || input.dense_block_count > source.block_count ||
+    if (!csr.major_ptr) return Status::invalid_argument;
+    if (layout && (!layout->prepared || layout->features != csr.cols ||
+        layout->catalog != source.block_features || layout->catalog_blocks != source.block_count))
+        return Status::invalid_argument;
+    if (input.dense_block_count > source.block_count ||
         input.dense_block_count > UINT16_MAX ||
         (input.dense_block_count && !input.dense_block_ids)) return Status::invalid_argument;
 
@@ -329,9 +365,10 @@ PanelPackingStatus query_panel_packing(const PanelPackingSource &source, PanelPa
     r.features = size_t(csr.cols);
     r.source_nnz = size_t(csr.nnz);
     r.groups = r.rows/panel_rows + (r.rows%panel_rows != 0);
-    r.panels = input.dense_block_count/panel_tiles + (input.dense_block_count%panel_tiles != 0);
+    r.panels = layout ? layout->panels :
+        input.dense_block_count/panel_tiles + (input.dense_block_count%panel_tiles != 0);
     r.dense_features = r.panels*panel_columns;
-    r.wide_routes = input.dense_block_count*panel_tile_columns > UINT16_MAX;
+    r.wide_routes = layout ? layout->wide_routes : input.dense_block_count*panel_tile_columns > UINT16_MAX;
     if (r.groups > (SIZE_MAX/sizeof(uint32_t) - 1)/panel_rows ||
         (r.panels && r.groups > SIZE_MAX/sizeof(float)/panel_elements/r.panels)) return Status::overflow;
     r.dense_values = r.groups*r.panels*panel_elements;
@@ -339,23 +376,34 @@ PanelPackingStatus query_panel_packing(const PanelPackingSource &source, PanelPa
 
     auto status = validate_rows(input, size_t(csr.rows), workspace);
     if (status != Status::ok) return status;
-    status = bind_blocks(source, input, workspace);
-    if (status != Status::ok) return status;
-
-    for (size_t row = 0; row < r.rows; ++row) {
-        const size_t id = input.row_ids ? input.row_ids[row] : row;
-        const uint32_t first = csr.major_ptr[id], end = csr.major_ptr[id + 1];
-        r.routes += end - first;
-        if (r.panels) {
-            for (uint32_t k = first; k < end; ++k)
-                r.residual_nnz += packed_column(source.feature_positions, workspace,
-                                                csr.minor_idx[k]) == UINT32_MAX;
+    status = visit_columns(source, input, layout, workspace, [&](auto lookup) {
+        for (size_t row = 0; row < r.rows; ++row) {
+            const size_t id = input.row_ids ? input.row_ids[row] : row;
+            const uint32_t first = csr.major_ptr[id], end = csr.major_ptr[id + 1];
+            r.routes += end - first;
+            if (r.panels)
+                for (uint32_t k = first; k < end; ++k)
+                    r.residual_nnz += packed_column(lookup, csr.minor_idx[k]) == UINT32_MAX;
         }
-    }
+    });
+    if (status != Status::ok) return status;
     if (!r.panels) r.residual_nnz = r.routes;
-    unbind_selection(source, input, workspace);
-    *selection = {r, source, input};
+    *selection = {r, source, input, layout};
     return Status::ok;
+}
+
+} // namespace
+
+PanelPackingStatus query_panel_packing(const PanelPackingSource &source, PanelPackingInput input,
+    PanelPackingWorkspace workspace, PanelPackingSelection *selection) noexcept {
+    return query_panel_packing_impl(source, input, nullptr, workspace, selection);
+}
+
+PanelPackingStatus query_panel_packing(const PanelPackingSource &source,
+    const PanelPackingLayout &layout, const uint32_t *row_ids, size_t row_count,
+    PanelPackingWorkspace workspace, PanelPackingSelection *selection) noexcept {
+    const PanelPackingInput input{row_ids, row_count, layout.block_ids, layout.block_count};
+    return query_panel_packing_impl(source, input, &layout, workspace, selection);
 }
 
 PanelPackingStatus prepare_panel_packing(const PanelPackingSelection &selection,
@@ -364,22 +412,27 @@ PanelPackingStatus prepare_panel_packing(const PanelPackingSelection &selection,
     *plan = {};
     if (!selection.source.csr.major_ptr) return Status::invalid_argument;
     const auto &r = selection.shape;
-    if (!metadata_fits(r, storage.metadata, true) || storage.route_capacity < r.routes ||
+    const auto &metadata = storage.metadata;
+    if (selection.layout && (metadata.dense_features || metadata.dense_feature_capacity))
+        return Status::invalid_argument;
+    if (!metadata_fits(r, metadata, !selection.layout) || storage.route_capacity < r.routes ||
         (r.routes && (r.wide_routes ? !storage.wide_columns : !storage.columns)))
         return Status::insufficient_capacity;
-    const auto status = bind_blocks(selection.source, selection.input, workspace);
+    const auto status = visit_columns(selection.source, selection.input, selection.layout, workspace,
+        [&](auto lookup) {
+            if (r.wide_routes)
+                emit_packing<uint32_t, false>(selection, lookup, metadata,
+                                             storage.wide_columns, nullptr, nullptr, nullptr);
+            else
+                emit_packing<uint16_t, false>(selection, lookup, metadata,
+                                             storage.columns, nullptr, nullptr, nullptr);
+        });
     if (status != Status::ok) return status;
 
-    if (r.wide_routes)
-        emit_packing<uint32_t, false>(selection, workspace, storage.metadata,
-                                     storage.wide_columns, nullptr, nullptr, nullptr);
-    else
-        emit_packing<uint16_t, false>(selection, workspace, storage.metadata,
-                                     storage.columns, nullptr, nullptr, nullptr);
-    unbind_selection(selection.source, selection.input, workspace);
-    *plan = {r, selection.input.row_ids, selection.source.csr.major_ptr, storage.metadata.dense_features,
+    const uint16_t *features = selection.layout ? selection.layout->dense_features : metadata.dense_features;
+    *plan = {r, selection.input.row_ids, selection.source.csr.major_ptr, features,
              r.wide_routes ? nullptr : storage.columns, r.wide_routes ? storage.wide_columns : nullptr,
-             storage.metadata.residual_offsets, storage.metadata.residual_features};
+             metadata.residual_offsets, metadata.residual_features};
     return Status::ok;
 }
 
@@ -422,17 +475,17 @@ PanelPackingStatus pack_panel_values_once(const PanelPackingSelection &selection
     uint16_t *residual, size_t residual_count) noexcept {
     if (!selection.source.csr.major_ptr) return Status::invalid_argument;
     const auto &r = selection.shape;
+    if (selection.layout && (metadata.dense_features || metadata.dense_feature_capacity))
+        return Status::invalid_argument;
     if (!metadata_fits(r, metadata, false) || source_count < r.source_nnz ||
         dense_count < r.dense_values || residual_count < r.residual_nnz ||
         (r.routes && !src) || (r.dense_values && !dense) || (r.residual_nnz && !residual))
         return Status::insufficient_capacity;
-    const auto status = bind_blocks(selection.source, selection.input, workspace);
-    if (status != Status::ok) return status;
-
-    if (r.dense_values) __builtin_memset(dense, 0, r.dense_values*sizeof(uint16_t));
-    emit_packing<uint16_t, true>(selection, workspace, metadata, nullptr, src, dense, residual);
-    unbind_selection(selection.source, selection.input, workspace);
-    return Status::ok;
+    return visit_columns(selection.source, selection.input, selection.layout, workspace,
+        [&](auto lookup) {
+            if (r.dense_values) __builtin_memset(dense, 0, r.dense_values*sizeof(uint16_t));
+            emit_packing<uint16_t, true>(selection, lookup, metadata, nullptr, src, dense, residual);
+        });
 }
 
 namespace {
@@ -470,6 +523,14 @@ PanelPackingStatus pack_panel_weights(const PanelPackingPlan &plan,
     const uint16_t *weights, size_t output_tiles, size_t stride,
     uint16_t *packed, size_t capacity) noexcept {
     return pack_weight_blocks(plan.dense_features, plan.shape.panels*panel_tiles, plan.shape.features,
+                              weights, output_tiles, stride, packed, capacity);
+}
+
+PanelPackingStatus pack_panel_weights(const PanelPackingLayout &layout,
+    const uint16_t *weights, size_t output_tiles, size_t stride,
+    uint16_t *packed, size_t capacity) noexcept {
+    if (!layout.prepared) return Status::invalid_argument;
+    return pack_weight_blocks(layout.dense_features, layout.panels*panel_tiles, layout.features,
                               weights, output_tiles, stride, packed, capacity);
 }
 
