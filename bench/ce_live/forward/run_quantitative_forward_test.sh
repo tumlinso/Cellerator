@@ -26,7 +26,7 @@ common=(
 )
 
 if [[ ${1:-} != --run-only ]]; then
-    "$nvcc" "${common[@]}" -x cu -c "$repo_root/src/execution/program.cc" \
+    "$nvcc" "${common[@]}" -x cu -c "$repo_root/src/execution/program/operation.cc" \
         -o "$build_dir/program.o"
     "$nvcc" "${common[@]}" -c \
         "$repo_root/tests/live/quantitative_forward_test.cu" \

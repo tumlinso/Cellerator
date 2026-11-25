@@ -1,8 +1,8 @@
-#include <Cellerator/planner/external_cost/compiler_exchange_v1.hh>
+#include <Cellerator/execution/planning/external_cost/compiler_exchange_v1.hh>
 
 #include <cassert>
 
-namespace external = cellerator::planner::external_cost;
+namespace external = cellerator::execution::planning::external_cost;
 
 int main() {
     external::external_frontier_candidate_v1 proposals[] = {

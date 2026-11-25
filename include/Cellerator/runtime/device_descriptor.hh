@@ -8,10 +8,6 @@ namespace cellerator::execution {
 struct device_performance_class;
 }
 
-namespace cellerator::planner {
-struct device_performance_key;
-}
-
 namespace cellerator::runtime {
 
 struct device_performance_class;
@@ -84,9 +80,6 @@ device_performance_class derive_runtime_device_performance_class(
     const device_descriptor_v1 &descriptor) noexcept;
 
 execution::device_performance_class derive_execution_device_performance_class(
-    const device_descriptor_v1 &descriptor) noexcept;
-
-planner::device_performance_key derive_planner_device_performance_key(
     const device_descriptor_v1 &descriptor) noexcept;
 
 static_assert(std::is_trivially_copyable<device_descriptor_v1>::value,

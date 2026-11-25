@@ -1,4 +1,4 @@
-#include <Cellerator/execution/program.hh>
+#include <Cellerator/execution/program/operation.hh>
 #include <Cellerator/runtime/device_descriptor.hh>
 #include <Cellerator/runtime/session.cuh>
 
@@ -14,7 +14,7 @@
 
 namespace core = cellerator::compute::math::core;
 namespace execution = cellerator::execution;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 namespace runtime = cellerator::runtime;
 
 namespace {
@@ -449,7 +449,7 @@ int main() {
     for (std::uint32_t index = 0u; index < programs.size(); ++index) {
         requests[index] = make_request(&session, &adapter, &projections[index],
             &costs[index], &states[index], index);
-        require(static_cast<bool>(execution::compile_executable_program_v2(
+        require(static_cast<bool>(execution::prepare_operation_program(
                     requests[index], &programs[index])),
             "compile independent hot-path plan");
     }
@@ -492,7 +492,7 @@ int main() {
             && sealed_query_count == 0u,
         "sealed session reached device discovery");
     execution::executable_program rejected{};
-    require(execution::compile_executable_program_v2(requests[0], &rejected).code
+    require(execution::prepare_operation_program(requests[0], &rejected).code
             == execution::executable_program_status_code::invalid_argument,
         "sealed session admitted catalog search or preparation");
 
@@ -516,10 +516,10 @@ int main() {
     auto launch_b = make_launch(requests[1], buffers[2], buffers[3], buffers[4],
         streams[1], device, &readiness, 1u);
     execution::executable_program_result result_a{}, result_b{};
-    require(static_cast<bool>(execution::run_executable_program(
+    require(static_cast<bool>(execution::run_operation_program(
                 &programs[0], launch_a.launch, &result_a)),
         "run first plan on producer stream");
-    require(static_cast<bool>(execution::run_executable_program(
+    require(static_cast<bool>(execution::run_operation_program(
                 &programs[1], launch_b.launch, &result_b)),
         "run concurrent plan on consumer stream");
     check_output(buffers[1], 1.0f, views[0].scale, 1u, streams[0]);
@@ -536,7 +536,7 @@ int main() {
             == runtime::value_readiness_status::success,
         "publish generation two");
     set_generation(&launch_a, 2u);
-    require(static_cast<bool>(execution::run_executable_program(
+    require(static_cast<bool>(execution::run_operation_program(
                 &programs[0], launch_a.launch, &result_a)),
         "reuse first plan for new value generation");
     check_output(buffers[1], 4.0f, views[0].scale, 2u, streams[0]);
@@ -553,7 +553,7 @@ int main() {
     require_cuda(cudaStreamBeginCapture(
                      streams[0], cudaStreamCaptureModeThreadLocal),
         "begin hot-path graph capture");
-    require(static_cast<bool>(execution::run_executable_program(
+    require(static_cast<bool>(execution::run_operation_program(
                 &programs[0], launch_a.launch, &result_a)),
         "capture sealed prepared launch");
     cudaGraph_t graph = nullptr;

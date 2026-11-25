@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/execution/conditional/scheduler.hh>
+#include <Cellerator/execution/conditional/run_queue.hh>
 #include <cassert>
 #include <cmath>
 #include <iostream>

@@ -82,8 +82,8 @@ live_input_status derive_values(const quantitative_relation_input &relation,
 live_input_status derive_live_planner_input(
     const quantitative_relation_input &relation,
     compute::math::core::stable_id problem,
-    const cellerator::planner::device_performance_key &device,
-    const cellerator::planner::runtime_build_key &build,
+    const cellerator::execution::planning::device_performance_key &device,
+    const cellerator::execution::planning::runtime_build_key &build,
     reuse_horizons reuse,
     std::uint32_t numeric_policy,
     std::uint32_t determinism_policy,
@@ -119,13 +119,13 @@ live_input_status derive_live_planner_input(
 
 live_input_status account_candidate_phases(
     const candidate_phase_input &input,
-    cellerator::planner::total_cost *output) noexcept {
-    const cellerator::planner::planner_status status =
-        cellerator::planner::compute_total_cost(input.phases,
+    cellerator::execution::planning::total_cost *output) noexcept {
+    const cellerator::execution::planning::planner_status status =
+        cellerator::execution::planning::compute_total_cost(input.phases,
             input.reuse.structure, input.reuse.projection,
             input.reuse.value, output);
     if (status) return live_input_status::ok;
-    return status.code == cellerator::planner::planner_status_code::invalid_cost
+    return status.code == cellerator::execution::planning::planner_status_code::invalid_cost
         ? live_input_status::invalid_cost
         : live_input_status::invalid_reuse;
 }

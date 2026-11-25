@@ -35,6 +35,6 @@ if(CELLERATOR_BUILD_TESTS AND (ANNDATAPP_ENABLE_HDF5 OR ANNDATAPP_ENABLE_ZARR OR
     enable_testing()
     add_executable(cellerator_anndata_test "${CMAKE_CURRENT_SOURCE_DIR}/tests/read.cpp")
     set_target_properties(cellerator_anndata_test PROPERTIES CXX_EXTENSIONS OFF)
-    target_link_libraries(cellerator_anndata_test PRIVATE Cellerator::anndata)
+    target_link_libraries(cellerator_anndata_test PRIVATE Cellerator::anndata Cellerator::execution_streaming)
     add_test(NAME cellerator-anndata-read COMMAND cellerator_anndata_test)
 endif()

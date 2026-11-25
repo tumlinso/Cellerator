@@ -2,7 +2,7 @@
 
 #include <Cellerator/compute/operation/operation_core_v2/schema.hh>
 #include <Cellerator/execution/launch_bindings.hh>
-#include <Cellerator/execution/program/program_v2.h>
+#include <Cellerator/execution/program/stages.hh>
 
 #include <cmath>
 #include <cstddef>

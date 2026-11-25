@@ -1,5 +1,6 @@
+#include <Cellerator/execution/planning/device_key.hh>
 #include <Cellerator/execution/identity.hh>
-#include <Cellerator/planner/end_to_end_planner.hh>
+#include <Cellerator/execution/planning/operation_planning.hh>
 #include <Cellerator/runtime/device_descriptor.hh>
 #include <Cellerator/runtime/session.cuh>
 
@@ -47,7 +48,7 @@ int main() {
     const auto execution_view =
         runtime::derive_execution_device_performance_class(descriptor);
     const auto planner_view =
-        runtime::derive_planner_device_performance_key(descriptor);
+        cellerator::execution::planning::derive_device_performance_key(descriptor);
     if (require(runtime_view.device == descriptor.ordinal
                     && runtime_view.compute_major == descriptor.compute_major
                     && runtime_view.compute_minor == descriptor.compute_minor,

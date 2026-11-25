@@ -82,17 +82,17 @@ transpose_status_v1 build_transpose_integration_v1(
                 ? 32u : 128u,
             0u};
 
-        planner::resource::planning_stage_v1 &planning_stage =
+        ::cellerator::execution::planning::resource::planning_stage_v1 &planning_stage =
             storage.planning_stages[index];
         planning_stage = {};
         planning_stage.identity = {candidate.stage_id, candidate.kernel_id};
         planning_stage.correlation_id = candidate.stage_id;
         planning_stage.static_name = candidate.stable_name;
-        planning_stage.kind = planner::resource::planning_stage_kind_v1::kernel;
+        planning_stage.kind = ::cellerator::execution::planning::resource::planning_stage_kind_v1::kernel;
         planning_stage.flags = candidate.experimental
-            ? planner::resource::planning_stage_experimental_v1
-                | planner::resource::planning_stage_requires_measurement_v1
-            : planner::resource::planning_stage_requires_measurement_v1;
+            ? ::cellerator::execution::planning::resource::planning_stage_experimental_v1
+                | ::cellerator::execution::planning::resource::planning_stage_requires_measurement_v1
+            : ::cellerator::execution::planning::resource::planning_stage_requires_measurement_v1;
         planning_stage.launch_count = 1u;
         planning_stage.analytical_ns =
             candidate.kind == transpose_candidate_kind_v1::mma16_source_owner
@@ -100,17 +100,17 @@ transpose_status_v1 build_transpose_integration_v1(
         planning_stage.persistent_bytes = profile.persistent_bytes;
         planning_stage.transient_bytes = profile.transient_bytes;
 
-        planner::resource::stage_resource_receipt_v1 &receipt =
+        ::cellerator::execution::planning::resource::stage_resource_receipt_v1 &receipt =
             storage.resource_receipts[index];
         receipt = {};
         receipt.stage = planning_stage.identity;
-        receipt.evidence = planner::resource::resource_evidence_kind_v1::declared;
+        receipt.evidence = ::cellerator::execution::planning::resource::resource_evidence_kind_v1::declared;
         receipt.threads_per_cta =
             candidate.kind == transpose_candidate_kind_v1::mma16_source_owner
                 ? 32u : 128u;
         receipt.warps_per_cta = receipt.threads_per_cta / 32u;
 
-        planner::resource::candidate_resource_manifest_v1 &manifest =
+        ::cellerator::execution::planning::resource::candidate_resource_manifest_v1 &manifest =
             storage.resource_manifests[index];
         manifest = {};
         manifest.candidate = {candidate.candidate_id, candidate.kernel_id};

@@ -1,7 +1,7 @@
 #include "bench/benchmark_mutex.hh"
 
 #include <Cellerator/geometry/support_atlas.hh>
-#include <Cellerator/planner/candidate_measurement.hh>
+#include <Cellerator/execution/tuning/candidate_measurement.hh>
 
 #include <algorithm>
 #include <chrono>
@@ -15,7 +15,7 @@
 #include <vector>
 
 namespace geometry = cellerator::geometry;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 
 namespace cellerator::compute::architecture::providers::nvidia {
 bool build_sm70_support_groups_v1(

@@ -1,5 +1,7 @@
+#include <Cellerator/execution/streaming/source.hh>
 #include <Cellerator/memory/view.hh>
 #include <Cellerator/tensor/base/compressed.hh>
+#include "../../../tests/execution/streaming/source_pack_fixture.hh"
 #include <algorithm>
 #include <cstdlib>
 #include <cstdio>
@@ -14,6 +16,7 @@ import cellerator.rds;
 namespace {
 using namespace cellerator::rds;
 namespace memory = cellerator::memory;
+namespace streaming = cellerator::execution::streaming;
 namespace fs = std::filesystem;
 constexpr memory::placement host{memory::domain::host};
 
@@ -104,6 +107,43 @@ bool read(const RdsFile& file) {
         !names[1].text || std::string_view(names[1].text, names[1].size) != "cell-e") return false;
     return true;
 }
+
+bool fetch(const RdsFile& file) {
+    using memory::status;
+    ReadContext context;
+    if (context.prepare_transfer(file, TransferMode::numeric) != Status::ok) return false;
+    FetchReader reader{file, context, 17};
+    const auto source = reader.source();
+    if (source.info.cells != 5 || source.info.features != 4 || source.info.feature_axis != 17 ||
+        source.info.value != streaming::ScalarType::f64 || source.info.index != streaming::ScalarType::i32 ||
+        source.info.offset != streaming::ScalarType::i32 || !source.cell_lengths ||
+        !source.requirements || !source.read_into) return false;
+
+    const streaming::CellRange cells{1, 3};
+    uint64_t lengths[3]{}, nnz = 0;
+    if (source.cell_lengths(source.context, cells, lengths, 2) != status::capacity_exceeded ||
+        source.cell_lengths(source.context, cells, lengths, 3) != status::success ||
+        lengths[0] != 0 || lengths[1] != 1 || lengths[2] != 1 ||
+        source.requirements(source.context, cells, &nnz) != status::success || nnz != 2 ||
+        source.requirements(source.context, {UINT64_MAX, 1}, &nnz) != status::invalid_argument ||
+        context.stats().compressed_bytes || context.stats().decoded_bytes) return false;
+
+    double values[2]{-9, -9};
+    int32_t indices[2]{-9, -9}, offsets[4]{-9, -9, -9, -9};
+    const streaming::SparseBuffers out{values, indices, offsets, sizeof(values), sizeof(indices), sizeof(offsets)};
+    auto short_out = out; short_out.offset_bytes -= sizeof(int32_t);
+    if (source.read_into(source.context, cells, short_out, nullptr) != status::capacity_exceeded ||
+        values[0] != -9 || indices[0] != -9 || offsets[0] != -9) return false;
+
+    streaming::ReadStats stats;
+    const double expected_values[]{2.5, -7};
+    const int32_t expected_indices[]{1, 2}, expected_offsets[]{0, 0, 1, 2};
+    return source.read_into(source.context, cells, out, &stats) == status::success &&
+        values[0] == 2.5 && values[1] == -7 && indices[0] == 1 && indices[1] == 2 &&
+        offsets[0] == 0 && offsets[1] == 0 && offsets[2] == 1 && offsets[3] == 2 &&
+        stats.decoded_bytes != 0 && cellerator::test::check_source_packet(
+            source, cells, expected_values, expected_indices, expected_offsets);
+}
 }
 
 int main(int argc, char** argv) {
@@ -130,6 +170,7 @@ int main(int argc, char** argv) {
     other.join();
     check(local_result && other_result, "independent worker reads");
     check(read(file), "repeat read");
+    check(fetch(file), "source adapter lengths, typed payload and read statistics");
 
     RdsFile rejected;
     fs::copy_file(argv[1], copy);
@@ -163,6 +204,8 @@ int main(int argc, char** argv) {
     check(context.prepare_transfer(file) == Status::ok &&
           file.prepare_read(&column, 1, original) == Status::ok &&
           load(original) == Status::ok, "read before reopen");
+    FetchReader old_reader{file, context, 17};
+    const auto old_source = old_reader.source();
     file.close();
     check(load(original) == Status::invalid_argument, "closed session");
     check(file.open(argv[1], index.c_str()) == Status::ok &&
@@ -170,5 +213,8 @@ int main(int argc, char** argv) {
           file.prepare_read(&column, 1, reopened) == Status::ok &&
           load(original) == Status::invalid_argument &&
           load(reopened) == Status::ok && values[0] == 1.25, "rebind after reopen");
+    uint64_t old_entries = 42;
+    check(old_source.requirements(old_source.context, {0, 1}, &old_entries) == memory::status::invalid_state &&
+          old_entries == 42, "source adapter preserves file generation");
     fs::remove_all(dir);
 }

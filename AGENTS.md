@@ -237,9 +237,14 @@ planner, or complete unrelated old epics.
 ## Hardware and algorithm choice
 
 Use the [CUDA skill](/home/tumlinson/.agents/skills/cuda/SKILL.md) for GPU
-computation, porting, correctness, profiling and optimization. Follow its focused
-guidance for the actual operation and target hardware, including host execution
-rules when running GPU work.
+computation, porting, correctness, profiling and optimization. Follow its
+guidance for the actual operation and target hardware.
+
+The user has granted this Cellerator checkout a direct GPU execution override.
+GPU correctness checks and bounded foreground measurements may run directly
+without a Device Scheduler lease. Check current GPU processes and utilization,
+select an idle device by UUID, and keep the run within the requested scope.
+Preserve the CUDA skill's correctness and measurement practices.
 
 Aim to make full use of the hardware. Reflect on algorithm, representation and
 ownership choices before tuning a kernel: consider how layout, locality, reuse,

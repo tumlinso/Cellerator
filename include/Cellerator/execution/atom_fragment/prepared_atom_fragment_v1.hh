@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/execution/atom_fragment/atom_bound_candidate_v1.hh>
-#include <Cellerator/execution/program/program_v2.h>
+#include <Cellerator/execution/program/stages.hh>
 
 namespace cellerator::execution::atom_fragment {
 

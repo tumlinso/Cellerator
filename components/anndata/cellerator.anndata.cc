@@ -3,8 +3,10 @@ module;
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <Cellerator/execution/streaming/source.hh>
 #include <Cellerator/memory/allocation.hh>
 #include <Cellerator/memory/view.hh>
+#include <Cellerator/tensor/base/compressed.hh>
 
 module cellerator.anndata;
 
@@ -215,5 +217,130 @@ BufferedMatrix read_allocated(const PreparedRead& source) {
 }
 
 BufferedMatrix read_allocated(const BackedArray& source) { return read_allocated(source.prepare_read()); }
+
+namespace {
+
+using namespace execution::streaming;
+
+ScalarType fetch_type(DType type) noexcept {
+    switch (type) {
+    case DType::boolean: return ScalarType::boolean;
+    case DType::int8: return ScalarType::i8;
+    case DType::uint8: return ScalarType::u8;
+    case DType::int16: return ScalarType::i16;
+    case DType::uint16: return ScalarType::u16;
+    case DType::int32: return ScalarType::i32;
+    case DType::uint32: return ScalarType::u32;
+    case DType::int64: return ScalarType::i64;
+    case DType::uint64: return ScalarType::u64;
+    case DType::float16: return ScalarType::f16;
+    case DType::float32: return ScalarType::f32;
+    case DType::float64: return ScalarType::f64;
+    }
+    return ScalarType::invalid;
+}
+
+memory::status fetch_status(ErrorCode code) noexcept {
+    switch (code) {
+    case ErrorCode::out_of_bounds:
+    case ErrorCode::shape_mismatch:
+    case ErrorCode::dtype_mismatch:
+    case ErrorCode::invalid_argument: return memory::status::invalid_argument;
+    case ErrorCode::unsupported_layout:
+    case ErrorCode::unsupported_encoding:
+    case ErrorCode::unsupported_dtype: return memory::status::unsupported_domain;
+    default: return memory::status::invalid_state;
+    }
+}
+
+} // namespace
+
+FetchReader::FetchReader(::anndatapp::TransferContext& context, tensor::base::CompressedAxis cells,
+                         uint64_t feature_axis)
+    : context_(context), start_(2), count_(2), major_(cells == tensor::base::CompressedAxis::row ? 0 : 1) {
+    const auto g = context_.geometry();
+    const auto minor = 1 - major_;
+    if ((cells != tensor::base::CompressedAxis::row && cells != tensor::base::CompressedAxis::column) ||
+        g.layout != (major_ == 0 ? Layout::csr : Layout::csc) ||
+        g.shape.size() != 2 || g.source_shape.size() != 2 || g.axes.size() != 2 ||
+        g.shape[major_] != g.source_shape[major_] || !g.axes[major_].affine ||
+        g.axes[major_].start != 0 || g.axes[major_].step != 1)
+        fail(ErrorCode::unsupported_layout, "fetch requires the complete native cell axis");
+    count_[minor] = g.shape[minor];
+
+    // An empty block obtains the stored widths without reading values.
+    const auto req = context_.requirements(start_, count_);
+    value_ = req.dtype; index_ = req.index_dtype; offset_ = req.offset_dtype;
+    info_ = {g.shape[major_], g.shape[minor], feature_axis,
+             fetch_type(value_), fetch_type(index_), fetch_type(offset_)};
+    if (!scalar_bytes(info_.value) || !scalar_bytes(info_.index) || !scalar_bytes(info_.offset))
+        fail(ErrorCode::unsupported_dtype, "sparse fetch type has no native representation");
+}
+
+execution::streaming::FetchSource FetchReader::source() noexcept {
+    return {this, info_, requirements, read_into, nullptr};
+}
+
+bool FetchReader::select(CellRange cells) noexcept {
+    if (cells.first > info_.cells || cells.count > info_.cells - cells.first || cells.count == SIZE_MAX)
+        return false;
+    if (start_[major_] != cells.first || count_[major_] != cells.count) {
+        start_[major_] = size_t(cells.first); count_[major_] = size_t(cells.count);
+        entries_ = SIZE_MAX;
+    }
+    return true;
+}
+
+size_t FetchReader::prepare_block() {
+    entries_ = SIZE_MAX;
+    const auto req = context_.requirements(start_, count_);
+    if (req.layout != (major_ == 0 ? Layout::csr : Layout::csc) ||
+        req.dtype != value_ || req.index_dtype != index_ || req.offset_dtype != offset_)
+        fail(ErrorCode::dtype_mismatch, "fetch source structure differs from its prepared widths");
+    return entries_ = req.nnz;
+}
+
+memory::status FetchReader::requirements(void *context, CellRange cells, uint64_t *entries) noexcept {
+    auto& reader = *static_cast<FetchReader*>(context);
+    if (!entries || !reader.select(cells)) return memory::status::invalid_argument;
+    try {
+        *entries = reader.prepare_block();
+        return memory::status::success;
+    } catch (const Error& error) {
+        return fetch_status(error.code());
+    } catch (...) {
+        return memory::status::invalid_state;
+    }
+}
+
+memory::status FetchReader::read_into(void *context, CellRange cells, SparseBuffers out,
+                                     ReadStats *stats) noexcept {
+    auto& reader = *static_cast<FetchReader*>(context);
+    if (!reader.select(cells)) return memory::status::invalid_argument;
+    const size_t vw = scalar_bytes(reader.info_.value), iw = scalar_bytes(reader.info_.index),
+                 ow = scalar_bytes(reader.info_.offset), offsets = size_t(cells.count) + 1;
+    try {
+        const auto before = stats ? reader.context_.stats().read_bytes : 0;
+        const auto nnz = reader.entries_ == SIZE_MAX ? reader.prepare_block() : reader.entries_;
+        const size_t vcap = out.value_bytes/vw, icap = out.index_bytes/iw, ocap = out.offset_bytes/ow;
+        if (vcap < nnz || icap < nnz || ocap < offsets) return memory::status::capacity_exceeded;
+        constexpr memory::placement host_memory{memory::domain::host};
+        const auto v = sparse_range({out.values, vcap, host_memory}, nnz, vw);
+        const auto i = sparse_range({out.indices, icap, host_memory}, nnz, iw);
+        const auto o = sparse_range({out.offsets, ocap, host_memory}, offsets, ow);
+        if (overlap(v, i) || overlap(v, o) || overlap(i, o)) return memory::status::invalid_argument;
+        reader.context_.read_into(reader.start_, reader.count_,
+            {out.values, out.indices, out.offsets, reader.value_, reader.index_, reader.offset_, vcap, icap, ocap});
+        // The backend exposes decoded logical bytes and no compressed count.
+        if (stats) *stats = {0, reader.context_.stats().read_bytes - before};
+        return memory::status::success;
+    } catch (const Error& error) {
+        reader.entries_ = SIZE_MAX;
+        return fetch_status(error.code());
+    } catch (...) {
+        reader.entries_ = SIZE_MAX;
+        return memory::status::invalid_state;
+    }
+}
 
 }

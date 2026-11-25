@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/execution/geometry_acquisition_v2/external_payload.hh>
+#include <Cellerator/execution/preparation/acquisition/external_payload.hh>
 #include <Cellerator/execution/object_binding/multi_extent_v1.hh>
 
 #include <cstdint>

@@ -1,4 +1,4 @@
-#include <Cellerator/execution/training_program.hh>
+#include <Cellerator/execution/program/feature_major_training.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>

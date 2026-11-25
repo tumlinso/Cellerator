@@ -1,4 +1,4 @@
-#include <Cellerator/execution/geometry_acquisition.hh>
+#include <Cellerator/execution/preparation/geometry_acquisition.hh>
 #include <Cellerator/execution/opaque_artifact.hh>
 #include <Cellerator/geometry/persistence/execution_capability_manifest_v1.hh>
 

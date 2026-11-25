@@ -14,7 +14,9 @@ show which paths are in use today.
 | `layout` | Physical order, projections, and maps to and from logical order. |
 | `memory` | Allocation and resource ownership. |
 | `ops/<family>` | Native calculations, derivatives, and the provider code that performs them. |
-| `execution` | Prepared bindings, readiness, and the lifetime of values used by an operation. |
+| `execution/planning` | Legal operation and placement candidates, cost comparison, and reusable plan evidence. |
+| `execution` | Preparation, program launch, tuning, and streaming, with explicit readiness and borrowed lifetimes. |
+| `runtime` | Device sessions, streams, library handles, and fleet primitives. |
 | `interop` | Boundaries to external storage formats and frameworks. |
 
 Keep implementations under `src/` and mirror the owning path under

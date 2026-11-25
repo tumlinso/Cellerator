@@ -17,7 +17,7 @@ target_link_libraries(cellerator_indexed_mechanism PUBLIC
     CUDA::cudart
     CUDA::cuda_driver
     Cellerator::runtime
-    Cellerator::executable_program)
+    Cellerator::execution_program)
 set_target_properties(cellerator_indexed_mechanism PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     EXPORT_NAME indexed_mechanism

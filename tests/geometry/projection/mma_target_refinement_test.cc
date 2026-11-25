@@ -1,10 +1,10 @@
-#include <Cellerator/planner/candidate_measurement.hh>
+#include <Cellerator/execution/tuning/candidate_measurement.hh>
 
 #include <cassert>
 #include <cmath>
 #include <cstdint>
 
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 
 namespace cellerator::compute::architecture::providers::nvidia {
 bool refine_mma_target_candidates_v1(

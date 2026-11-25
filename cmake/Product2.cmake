@@ -7,7 +7,7 @@ option(CELLERATOR_BUILD_PRODUCT2 "Build standalone prepared product2 operation" 
 if(CELLERATOR_BUILD_PRODUCT2)
   add_library(cellerator_product2 SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/product2/product2.cc
-    $<TARGET_OBJECTS:cellerator_fixed_stage_program>)
+    $<TARGET_OBJECTS:cellerator_execution_stage_program>)
   add_library(Cellerator::product2 ALIAS cellerator_product2)
   target_compile_features(cellerator_product2 PUBLIC cxx_std_20)
   target_include_directories(cellerator_product2 PUBLIC

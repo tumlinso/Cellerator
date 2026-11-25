@@ -1,4 +1,4 @@
-#include <Cellerator/planner/candidate_measurement.hh>
+#include <Cellerator/execution/tuning/candidate_measurement.hh>
 
 #include <cmath>
 #include <cstdint>
@@ -7,7 +7,7 @@
 namespace cellerator::compute::architecture::providers::nvidia {
 namespace {
 
-bool valid_phase_costs(const planner::phase_costs &cost) noexcept {
+bool valid_phase_costs(const ::cellerator::execution::planning::phase_costs &cost) noexcept {
     const double values[] = {cost.host_preparation_ns,
         cost.semantic_packing_ns, cost.projection_construction_ns,
         cost.backend_prepare_ns, cost.static_value_pack_ns, cost.h2d_ns,
@@ -19,7 +19,7 @@ bool valid_phase_costs(const planner::phase_costs &cost) noexcept {
     return true;
 }
 
-double complete_amortized_cost(const planner::phase_costs &cost,
+double complete_amortized_cost(const ::cellerator::execution::planning::phase_costs &cost,
     std::uint64_t structure_reuse, std::uint64_t projection_reuse,
     std::uint64_t value_reuse) noexcept {
     const double structure_once = cost.host_preparation_ns
@@ -45,12 +45,12 @@ bool valid_move_kind(std::uint8_t kind) noexcept {
 // 6 remove rectangle, 7 admissible cross-group exchange. Proposals are cold
 // target-calibrated data; the solver never substitutes a density threshold.
 bool refine_mma_target_candidates_v1(
-    const planner::phase_costs *sparse_costs,
+    const ::cellerator::execution::planning::phase_costs *sparse_costs,
     std::uint32_t rectangle_count,
     const std::uint32_t *proposal_rectangles,
     const std::uint8_t *proposal_move_kinds,
     const std::uint8_t *proposal_admissible,
-    const planner::phase_costs *proposal_costs,
+    const ::cellerator::execution::planning::phase_costs *proposal_costs,
     std::uint32_t proposal_count,
     std::uint64_t structure_reuse,
     std::uint64_t projection_reuse,

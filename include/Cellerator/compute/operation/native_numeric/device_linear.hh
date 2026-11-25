@@ -1,5 +1,5 @@
 #pragma once
-#include <Cellerator/execution/program/program_v2.h>
+#include <Cellerator/execution/program/stages.hh>
 #include <Cellerator/execution/identity.hh>
 #include <cuda_runtime_api.h>
 #include <cstdint>

@@ -115,7 +115,7 @@ target_include_directories(cellerator_torch_program_ops PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(cellerator_torch_program_ops PUBLIC
     Cellerator::torch_runtime
-    Cellerator::executable_program)
+    Cellerator::execution_program)
 set_target_properties(cellerator_torch_program_ops PROPERTIES
     CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES
@@ -130,7 +130,7 @@ target_include_directories(cellerator_torch_autograd_ops PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(cellerator_torch_autograd_ops PUBLIC
     Cellerator::torch_runtime
-    Cellerator::training_program)
+    Cellerator::execution_feature_major_training)
 set_target_properties(cellerator_torch_autograd_ops PROPERTIES
     CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES

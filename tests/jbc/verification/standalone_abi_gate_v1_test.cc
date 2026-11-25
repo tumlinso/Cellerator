@@ -1,4 +1,4 @@
-#include <Cellerator/execution/geometry_acquisition_v2/schema.hh>
+#include <Cellerator/execution/preparation/acquisition/schema.hh>
 #include <Cellerator/profiling/preparation/manifest_v1.hh>
 
 #include <cassert>

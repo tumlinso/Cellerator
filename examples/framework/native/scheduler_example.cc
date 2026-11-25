@@ -1,4 +1,4 @@
-#include <Cellerator/execution/conditional/scheduler.hh>
+#include <Cellerator/execution/conditional/run_queue.hh>
 #include <iostream>
 
 using namespace cellerator::execution::conditional;

@@ -18,6 +18,6 @@ else()
     "${CE_ROOT}/src/ops/numeric/local_arithmetic.cc"
     "${CE_ROOT}/src/compute/operation/differential/local_arithmetic.cc"
     "${CE_ROOT}/src/compute/operation/operation_core_v2/schema.cc"
-    "${CE_ROOT}/src/execution/program/program_v2.cc")
+    "${CE_ROOT}/src/execution/program/stages.cc")
 endif()
 add_test(NAME ce_prepared_host COMMAND ce_prepared_host)

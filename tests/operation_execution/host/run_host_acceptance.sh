@@ -38,9 +38,9 @@ operation_sources=(
     src/compute/operation/operation_core_v2/composition.cc
 )
 acquisition_sources=(
-    src/execution/geometry_acquisition_v2/schema.cc
-    src/execution/geometry_acquisition_v2/assembly.cc
-    src/execution/geometry_acquisition_v2/projections.cc
+    src/execution/preparation/acquisition/schema.cc
+    src/execution/preparation/acquisition/assembly.cc
+    src/execution/preparation/acquisition/projections.cc
 )
 boundary_sources=(
     "${acquisition_sources[@]}"
@@ -63,9 +63,9 @@ for mode in strict sanitized; do
         src/compute/operation/operation_core_v2/operation_core_v2_test.cc \
         "${operation_sources[@]}"
     build_and_run "${mode}" acquisition-v2-integrated \
-        src/execution/geometry_acquisition_v2/geometry_acquisition_v2_test.cc \
+        tests/execution/geometry_artifacts_test.cc \
         "${acquisition_sources[@]}" \
-        src/execution/geometry_acquisition_v2/external_payload.cc
+        src/execution/preparation/acquisition/external_payload.cc
     build_and_run "${mode}" relation-algebra-contract \
         tests/relation_algebra/contract_test.cc
 done

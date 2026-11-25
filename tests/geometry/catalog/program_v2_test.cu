@@ -1,4 +1,4 @@
-#include <Cellerator/execution/program.hh>
+#include <Cellerator/execution/program/operation.hh>
 
 #include <cstdint>
 #include <cstdlib>
@@ -6,7 +6,7 @@
 
 namespace core = cellerator::compute::math::core;
 namespace execution = cellerator::execution;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 namespace runtime = cellerator::runtime;
 
 namespace {
@@ -183,7 +183,7 @@ void test_external_provider_without_program_switch() {
     const auto compile_request = request(
         &session, &adapter, 1u, &projection, &cost, &state);
     execution::executable_program program{};
-    require(static_cast<bool>(execution::compile_executable_program_v2(
+    require(static_cast<bool>(execution::prepare_operation_program(
                 compile_request, &program)),
         "external provider program compilation");
     require(adapter_calls == 1u && program.candidate_count == 1u
@@ -196,14 +196,14 @@ void test_external_provider_without_program_switch() {
     core::candidate_preparation_adapter_v2 duplicates[2]{adapter, adapter};
     auto invalid = request(
         &session, duplicates, 2u, &projection, &cost, &state);
-    require(execution::compile_executable_program_v2(invalid, &program).code
+    require(execution::prepare_operation_program(invalid, &program).code
             == execution::executable_program_status_code::invalid_argument,
         "duplicate candidate identities were accepted");
     invalid = compile_request;
     auto mismatched = projection;
     mismatched.provider_identity.low += 1u;
     invalid.projections = &mismatched;
-    require(execution::compile_executable_program_v2(invalid, &program).code
+    require(execution::prepare_operation_program(invalid, &program).code
             == execution::executable_program_status_code::no_compatible_candidate
             && adapter_calls == 1u,
         "provider mismatch reached preparation callback");

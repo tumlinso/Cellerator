@@ -208,6 +208,7 @@ include(cmake/CelleratorFrameworkCUDA.cmake)
 # independent native-data CUDA targets. The module is include-guarded because
 # FrameworkCUDA also includes it when that optional SDK is enabled.
 include(cmake/CelleratorNativeDataCUDA.cmake)
+add_subdirectory(src/execution/streaming)
 include(cmake/CelleratorTorchSparse.cmake)
 include(cmake/CelleratorTorchDense.cmake)
 include(cmake/CelleratorNN.cmake)
@@ -275,7 +276,7 @@ if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     cellerator_append_component_validation()
     return()
 endif()
-# CE-EXOP provider inclusion and tuning are explicit build inputs.  The
+# Provider inclusion and tuning are explicit build inputs. The
 # provider policy module deliberately does not inspect a visible device or
 # mutate CMAKE_CUDA_ARCHITECTURES; binary content remains reproducible from
 # the cache configuration alone.
@@ -307,6 +308,7 @@ find_path(NCCL_INCLUDE_DIR
 
 # Canonical computational subsystem owners.
 include(src/runtime/CMakeLists.txt)
+include(src/compute/decomposition/CMakeLists.txt)
 include(src/execution/CMakeLists.txt)
 include(src/compute/foundation_targets.cmake)
 
@@ -341,6 +343,7 @@ cellerator_enable_perf(cellerator_runtime_fleet)
 cellerator_enable_perf(cellerator_csr_multiply)
 
 include(src/CMakeLists.txt)
+add_subdirectory(bench/execution/streaming)
 add_subdirectory(components/neighbors)
 # General numerical operations used by both native C++ and optional framework
 # adapters remain in Cellerator even when the Torch integration is disabled.
@@ -363,11 +366,9 @@ endif()
 include(cmake/providers/CelleratorProviderTargets.cmake)
 cellerator_finalize_cuda_provider_targets()
 include(src/geometry/owned_targets.cmake)
-include(src/planner/CMakeLists.txt)
+include(tests/execution/fixtures.cmake)
 
-# CE-EXOP core-contract fan-in.  Keep the portfolio and profiling surfaces
-# explicit: the portfolio is planner input rather than canonical selection,
-# and profiling remains a cold, optional observation path.
+# Complete geometry and provider registrations before building their consumers.
 target_sources(cellerator_semantic_geometry_v1 PRIVATE
     src/geometry/planning/v2/exact_evaluator.cc
     src/geometry/planning/v2/solution.cc
@@ -381,16 +382,9 @@ target_sources(cellerator_architecture_provider PRIVATE
     src/compute/architecture/target_cover/contract.cc
     src/compute/architecture/target_cover/strategy_registry.cc
 )
-target_sources(cellerator_planner PRIVATE
-    src/planner/end_to_end_planner/connected_economics_v1.cc
-    src/planner/end_to_end_planner/resource_cost_v1.cc
-    src/planner/portfolio/candidate_workspace_v1.cc
-    src/planner/portfolio/pareto_portfolio_v1.cc
-    src/planner/portfolio/validation_v1.cc
-)
-
 add_library(cellerator_profiling_v1 STATIC
     src/profiling/mechanism_manifest.cc
+    src/profiling/preparation/execution_export_v2.cc
     src/profiling/partition_export.cc
     src/profiling/resource_receipt.cc
     src/profiling/static_markers.cc
@@ -402,37 +396,6 @@ target_include_directories(cellerator_profiling_v1 PUBLIC
 )
 target_compile_features(cellerator_profiling_v1 PUBLIC cxx_std_20)
 
-# Source-linked JBC fragments remain independently registered by their owning
-# subsystems. This aggregate target is the integration and package-consumer
-# surface: it adds no planner authority and keeps every implementation visible
-# to ordinary linkers, sanitizers, and standalone consumers.
-file(GLOB_RECURSE CELLERATOR_EXECUTION_PREPARATION_SOURCES CONFIGURE_DEPENDS
-    src/compute/candidate/jbc_multi_extent/*.cc
-    src/compute/decomposition/*.cc
-    src/execution/decomposition/*.cc
-    src/execution/atom_fragment/*.cc
-    src/execution/atom_plane/*.cc
-    src/execution/preparation/*.cc
-    src/profiling/preparation/*.cc
-    src/execution/object_binding/*.cc
-    src/planner/external_cost/*.cc
-)
-add_library(cellerator_execution_preparation STATIC ${CELLERATOR_EXECUTION_PREPARATION_SOURCES})
-add_library(Cellerator::execution_preparation ALIAS cellerator_execution_preparation)
-set_target_properties(cellerator_execution_preparation PROPERTIES EXPORT_NAME execution_preparation)
-target_include_directories(cellerator_execution_preparation PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellerator_execution_preparation PUBLIC
-    Cellerator::builtin_candidate_catalog
-    Cellerator::executable_program
-    Cellerator::geometry_acquisition
-    Cellerator::operation_core
-    Cellerator::profiling_v1
-    Cellerator::projection_value_plane_v1
-)
-target_compile_features(cellerator_execution_preparation PUBLIC cxx_std_20)
 if(TARGET cellerator_dependency_execution_cuda)
     target_link_libraries(cellerator_dependency_execution_cuda PUBLIC
         Cellerator::execution_preparation Cellerator::gated_product)
@@ -446,12 +409,12 @@ block()
         Cellerator::operation_core)
     target_compile_features(cellerator_operation_core_v2_test PRIVATE cxx_std_20)
 
-    add_executable(cellerator_geometry_acquisition_v2_test
+    add_executable(cellerator_geometry_artifacts_test
         ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
-        src/execution/geometry_acquisition_v2/geometry_acquisition_v2_test.cc)
-    target_link_libraries(cellerator_geometry_acquisition_v2_test PRIVATE
-        Cellerator::geometry_acquisition)
-    target_compile_features(cellerator_geometry_acquisition_v2_test PRIVATE cxx_std_20)
+        tests/execution/geometry_artifacts_test.cc)
+    target_link_libraries(cellerator_geometry_artifacts_test PRIVATE
+        Cellerator::execution_geometry_acquisition)
+    target_compile_features(cellerator_geometry_artifacts_test PRIVATE cxx_std_20)
 
     add_executable(cellerator_geometry_v2_test
         ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
@@ -463,20 +426,20 @@ block()
 
     add_executable(cellerator_planner_portfolio_v1_test
         ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
-        src/planner/portfolio/tests/planner_portfolio_v1_test.cc)
+        tests/execution/planning/candidate_set_test.cc)
     target_link_libraries(cellerator_planner_portfolio_v1_test PRIVATE
-        Cellerator::planner)
+        Cellerator::execution_planning)
     target_compile_features(cellerator_planner_portfolio_v1_test PRIVATE cxx_std_20)
 
     # JBC standalone ABI gate. This target intentionally consumes only
     # Cellerator public headers and the Cellerator-owned profiling library;
     # it must not gain a CellShard source, include, or link dependency.
-    add_executable(cellerator_jbc_standalone_abi_gate
+    add_executable(cellerator_execution_contract_standalone_abi_gate
         ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         tests/jbc/verification/standalone_abi_gate_v1_test.cc)
-    target_link_libraries(cellerator_jbc_standalone_abi_gate PRIVATE
+    target_link_libraries(cellerator_execution_contract_standalone_abi_gate PRIVATE
         Cellerator::profiling_v1)
-    target_compile_features(cellerator_jbc_standalone_abi_gate PRIVATE cxx_std_20)
+    target_compile_features(cellerator_execution_contract_standalone_abi_gate PRIVATE cxx_std_20)
 
     file(GLOB_RECURSE CELLERATOR_EXECUTION_PREPARATION_TEST_SOURCES CONFIGURE_DEPENDS
         tests/jbc/atom_plane/*.cc
@@ -492,31 +455,31 @@ block()
         tests/jbc/verification/profiler_manifest_v1_test.cc
     )
     add_custom_target(cellerator_execution_preparation_tests)
-    foreach(cellerator_jbc_test_source IN LISTS CELLERATOR_EXECUTION_PREPARATION_TEST_SOURCES)
-        file(RELATIVE_PATH cellerator_jbc_test_relative
+    foreach(cellerator_execution_contract_test_source IN LISTS CELLERATOR_EXECUTION_PREPARATION_TEST_SOURCES)
+        file(RELATIVE_PATH cellerator_execution_contract_test_relative
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/jbc"
-            "${cellerator_jbc_test_source}")
-        string(REPLACE "/" "_" cellerator_jbc_test_name
-            "${cellerator_jbc_test_relative}")
-        string(REGEX REPLACE "\\.cc$" "" cellerator_jbc_test_name
-            "${cellerator_jbc_test_name}")
-        set(cellerator_jbc_test_target
-            "cellerator_jbc_${cellerator_jbc_test_name}")
-        add_executable(${cellerator_jbc_test_target}
+            "${cellerator_execution_contract_test_source}")
+        string(REPLACE "/" "_" cellerator_execution_contract_test_name
+            "${cellerator_execution_contract_test_relative}")
+        string(REGEX REPLACE "\\.cc$" "" cellerator_execution_contract_test_name
+            "${cellerator_execution_contract_test_name}")
+        set(cellerator_execution_contract_test_target
+            "cellerator_execution_contract_${cellerator_execution_contract_test_name}")
+        add_executable(${cellerator_execution_contract_test_target}
             ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
-            "${cellerator_jbc_test_source}")
-        target_link_libraries(${cellerator_jbc_test_target} PRIVATE
+            "${cellerator_execution_contract_test_source}")
+        target_link_libraries(${cellerator_execution_contract_test_target} PRIVATE
             Cellerator::execution_preparation)
-        target_compile_features(${cellerator_jbc_test_target} PRIVATE cxx_std_20)
-        add_dependencies(cellerator_execution_preparation_tests ${cellerator_jbc_test_target})
+        target_compile_features(${cellerator_execution_contract_test_target} PRIVATE cxx_std_20)
+        add_dependencies(cellerator_execution_preparation_tests ${cellerator_execution_contract_test_target})
     endforeach()
 
-    add_executable(cellerator_jbc_multi_extent_assembly_bench
+    add_executable(cellerator_execution_contract_multi_extent_assembly_bench
         ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
         bench/jbc/multi_extent/assembly_vs_direct_v1.cc)
-    target_link_libraries(cellerator_jbc_multi_extent_assembly_bench PRIVATE
+    target_link_libraries(cellerator_execution_contract_multi_extent_assembly_bench PRIVATE
         Cellerator::execution_preparation)
-    target_compile_features(cellerator_jbc_multi_extent_assembly_bench PRIVATE
+    target_compile_features(cellerator_execution_contract_multi_extent_assembly_bench PRIVATE
         cxx_std_20)
 endblock()
 

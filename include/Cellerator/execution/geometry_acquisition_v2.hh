@@ -1,6 +1,0 @@
-#pragma once
-
-#include <Cellerator/execution/geometry_acquisition_v2/assembly.hh>
-#include <Cellerator/execution/geometry_acquisition_v2/external_payload.hh>
-#include <Cellerator/execution/geometry_acquisition_v2/projections.hh>
-#include <Cellerator/execution/geometry_acquisition_v2/schema.hh>

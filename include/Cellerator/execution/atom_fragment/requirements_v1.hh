@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Cellerator/execution/geometry_acquisition_v2/projections.hh>
+#include <Cellerator/execution/preparation/acquisition/projections.hh>
 #include <Cellerator/execution/preparation/atom_fragment_request_v1.hh>
-#include <Cellerator/execution/program/program_v2.h>
-#include <Cellerator/planner/portfolio/candidate_workspace_v1.hh>
+#include <Cellerator/execution/program/stages.hh>
+#include <Cellerator/execution/planning/candidates/candidate_workspace_v1.hh>
 
 #include <cstdint>
 #include <type_traits>

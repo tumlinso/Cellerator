@@ -2,6 +2,7 @@ module;
 
 #include <stddef.h>
 #include <stdint.h>
+#include <Cellerator/execution/streaming/source.hh>
 #include <Cellerator/memory/view.hh>
 #include <Cellerator/tensor/base/compressed.hh>
 
@@ -93,6 +94,9 @@ public:
     void close() noexcept;
     FileInfo info() const noexcept;
 
+    // Differences of mapped column offsets. This reads no compressed payload.
+    [[nodiscard]] Status cell_lengths(ColumnRange, memory::array_view<uint64_t>) const noexcept;
+
     // The source, this session, and the unchanged range list must outlive the read.
     [[nodiscard]] Status prepare_read(const ColumnRange *, size_t, PreparedRead&) const noexcept;
     // Supply at least one run slot per input range. Keep the used run storage
@@ -101,6 +105,7 @@ public:
                                       PreparedRead&) const noexcept;
 
 private:
+    friend class FetchReader;
     friend class ReadContext;
     detail::IndexedFile *file_ = nullptr;
     uint64_t generation_ = 0;
@@ -129,7 +134,29 @@ public:
     IoStats stats() const noexcept;
 
 private:
+    friend class FetchReader;
     detail::Transfer *transfer_ = nullptr;
+};
+
+// The reader, its open file, and its provisioned numeric context must remain
+// at their original addresses through the final use of the returned source.
+class FetchReader {
+public:
+    FetchReader(const RdsFile&, ReadContext&, uint64_t feature_axis) noexcept;
+    FetchReader(const FetchReader&) = delete;
+    FetchReader& operator=(const FetchReader&) = delete;
+    execution::streaming::FetchSource source() noexcept;
+
+private:
+    bool ready() const noexcept;
+    static memory::status requirements(void*, execution::streaming::CellRange, uint64_t*) noexcept;
+    static memory::status read_into(void*, execution::streaming::CellRange, execution::streaming::SparseBuffers,
+                                    execution::streaming::ReadStats*) noexcept;
+    static memory::status lengths(void*, execution::streaming::CellRange, uint64_t*, size_t) noexcept;
+
+    const RdsFile& file_;
+    ReadContext& context_;
+    uint64_t generation_, feature_axis_;
 };
 
 } // namespace cellerator::rds

@@ -15,14 +15,14 @@ namespace {
 
 void require(bool condition, const char *message) {
     if (!condition) {
-        std::cerr << "cpMathExecutionCsrTest: " << message << '\n';
+        std::cerr << "cellerator_csr_execution_test: " << message << '\n';
         std::exit(1);
     }
 }
 
 void cuda_require(cudaError_t error, const char *message) {
     if (error != cudaSuccess) {
-        std::cerr << "cpMathExecutionCsrTest: " << message << ": "
+        std::cerr << "cellerator_csr_execution_test: " << message << ": "
                   << cudaGetErrorString(error) << '\n';
         std::exit(1);
     }
@@ -231,6 +231,6 @@ int main() {
     const cm::packed_dense_operand_view dense = test_dense_pack(fixture);
     test_packed_math(sparse, dense);
     test_lazy_cpk1_reconstruction(fixture);
-    std::cout << "cpMathExecutionCsrTest passed\n";
+    std::cout << "cellerator_csr_execution_test passed\n";
     return 0;
 }

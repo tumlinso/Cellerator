@@ -1,4 +1,4 @@
-#include <Cellerator/execution/program.hh>
+#include <Cellerator/execution/program/operation.hh>
 #include "../fixtures/model_execution/activated_projection.hh"
 
 #include <Cellerator/compute/candidate/csr_fallback_candidate.hh>
@@ -15,7 +15,7 @@
 namespace core = cellerator::compute::math::core;
 namespace cm = cellerator::compute::math;
 namespace execution = cellerator::execution;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 namespace runtime = cellerator::runtime;
 
 namespace {
@@ -250,7 +250,7 @@ int main() {
     auto request = make_request(
         &session, catalog, projections, costs, state, sizeof(state));
     execution::executable_program program{};
-    require(execution::compile_executable_program_v2(request, &program),
+    require(execution::prepare_operation_program(request, &program),
         "compile planner-backed program");
     require(program.candidate_count == 2u && program.legal_count == 2u
         && program.selection == planner::selection_source::empirical
@@ -275,17 +275,17 @@ int main() {
 
     auto invalid = request;
     invalid.source_axis = request.destination_axis;
-    require(execution::compile_executable_program_v2(invalid, &program).code
+    require(execution::prepare_operation_program(invalid, &program).code
             == execution::executable_program_status_code::identity_mismatch,
         "swapped logical axes were accepted");
     invalid = request;
     invalid.numeric.dense_storage = execution::numeric_type::f16;
-    require(execution::compile_executable_program_v2(invalid, &program).code
+    require(execution::prepare_operation_program(invalid, &program).code
             == execution::executable_program_status_code::no_compatible_candidate,
         "unsupported numeric tuple was accepted");
     invalid = request;
     invalid.dense_width = 17u;
-    require(execution::compile_executable_program_v2(invalid, &program).code
+    require(execution::prepare_operation_program(invalid, &program).code
             == execution::executable_program_status_code::no_compatible_candidate,
         "unsupported width was accepted");
     execution::activated_projection_reference_v2 incompatible[]{
@@ -294,12 +294,12 @@ int main() {
     incompatible[1].key.kind = core::projection_kind::native_feature_major;
     invalid = request;
     invalid.projections = incompatible;
-    require(execution::compile_executable_program_v2(invalid, &program).code
+    require(execution::prepare_operation_program(invalid, &program).code
             == execution::executable_program_status_code::no_compatible_candidate,
         "incompatible projection was accepted");
 
     // Negative compile attempts reset the output object.
-    require(execution::compile_executable_program_v2(request, &program),
+    require(execution::prepare_operation_program(request, &program),
         "recompile program after negative cases");
     device_buffer<float> input_a{3u}, input_b{3u}, output_a{2u}, output_b{2u};
     device_buffer<__half> values_b{3u};
@@ -358,7 +358,7 @@ int main() {
     execution::executable_program_launch launch{
         bindings, &readiness, {7u}, {1u}};
     execution::executable_program_result result{};
-    require(execution::run_executable_program(&program, launch, &result),
+    require(execution::run_operation_program(&program, launch, &result),
         "same-stream first generation");
     require_cuda(cudaStreamSynchronize(producer), "wait first result");
     check_output(output_a, 16.0f, 15.0f);
@@ -378,7 +378,7 @@ int main() {
             &readiness, 7u, 2u, producer, cudaSuccess)
             == runtime::value_readiness_status::success,
         "publish second generation");
-    require(execution::run_executable_program(&program, launch, &result),
+    require(execution::run_operation_program(&program, launch, &result),
         "cross-stream second generation");
     require_cuda(cudaStreamSynchronize(consumer), "wait second result");
     check_output(output_b, 14.0f, 12.0f);
@@ -387,17 +387,17 @@ int main() {
 
     auto bad = launch;
     bad.expected_structure_epoch = {8u};
-    require(execution::run_executable_program(&program, bad, &result).code
+    require(execution::run_operation_program(&program, bad, &result).code
             == execution::executable_program_status_code::stale_structure,
         "stale structure epoch was accepted");
     bad = launch;
     bad.expected_value_generation = {3u};
-    require(execution::run_executable_program(&program, bad, &result).code
+    require(execution::run_operation_program(&program, bad, &result).code
             == execution::executable_program_status_code::stale_or_unready_value,
         "wrong value generation was accepted");
     plane.generation = value.expected_generation = {3u};
     bad = {bindings, &readiness, {7u}, {3u}};
-    require(execution::run_executable_program(&program, bad, &result).code
+    require(execution::run_operation_program(&program, bad, &result).code
             == execution::executable_program_status_code::stale_or_unready_value,
         "unready generation was accepted");
     plane.generation = value.expected_generation = {2u};
@@ -405,25 +405,25 @@ int main() {
     wrong_relation.identity = {99u, 1u};
     bad = launch;
     bad.bindings.structures = &wrong_relation;
-    require(!execution::run_executable_program(&program, bad, &result),
+    require(!execution::run_operation_program(&program, bad, &result),
         "wrong structure identity was accepted");
     const auto workspace = program.prepared.binding_contract.workspace;
     program.prepared.binding_contract.workspace = {64u, 64u, 0u};
-    require(!execution::run_executable_program(&program, launch, &result),
+    require(!execution::run_operation_program(&program, launch, &result),
         "insufficient workspace was accepted");
     program.prepared.binding_contract.workspace = workspace;
     auto *order = const_cast<execution::output_axis_contract *>(
         program.prepared.binding_contract.output_orders);
     const auto output_axis = order[0].output_axis;
     order[0].output_axis = request.source_axis.live;
-    require(!execution::run_executable_program(&program, launch, &result),
+    require(!execution::run_operation_program(&program, launch, &result),
         "invalid output order was accepted");
     order[0].output_axis = output_axis;
     auto *effect = const_cast<execution::output_effect_contract *>(
         program.prepared.binding_contract.output_effects);
     const auto saved_effect = effect[0];
     effect[0].requires_initialized_destination = true;
-    require(!execution::run_executable_program(&program, launch, &result),
+    require(!execution::run_operation_program(&program, launch, &result),
         "invalid output effect was accepted");
     effect[0] = saved_effect;
 

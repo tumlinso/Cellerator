@@ -1,6 +1,6 @@
 #include <Cellerator/compute/architecture/provider.hh>
 #include <Cellerator/compute/operation/candidate_catalog_v2.hh>
-#include <Cellerator/execution/geometry_acquisition_v2.hh>
+#include <Cellerator/execution/preparation/geometry_artifacts.hh>
 #include <Cellerator/execution/opaque_artifact.hh>
 
 #include <cstdlib>

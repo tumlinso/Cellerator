@@ -18,7 +18,7 @@ common=(
     -gencode arch=compute_70,code=sm_70
 )
 
-"$nvcc" "${common[@]}" -c "$repo_root/src/execution/training_program.cu" \
+"$nvcc" "${common[@]}" -c "$repo_root/src/execution/program/feature_major_training.cu" \
     -o "$build_dir/training_program.o"
 "$nvcc" "${common[@]}" -c "$repo_root/tests/execution/training_program_test.cu" \
     -o "$build_dir/training_program_test.o"

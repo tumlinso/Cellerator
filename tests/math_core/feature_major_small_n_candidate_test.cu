@@ -2,7 +2,7 @@
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
 #include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
 #include <Cellerator/math/reference/referee.hh>
-#include <Cellerator/planner/end_to_end_planner.hh>
+#include <Cellerator/execution/planning/operation_planning.hh>
 
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
 
@@ -21,7 +21,7 @@
 namespace core = cellerator::compute::math::core;
 namespace cm = cellerator::compute::math;
 namespace execution = cellerator::execution;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 namespace cp = cellpack;
 namespace persistence = cellpack::persistence;
 

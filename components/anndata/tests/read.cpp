@@ -5,15 +5,19 @@
 #include <unistd.h>
 #include <filesystem>
 #include <new>
+#include <vector>
+#include <Cellerator/execution/streaming/source.hh>
 #include <Cellerator/memory/allocation.hh>
 #include <Cellerator/memory/view.hh>
 #include <Cellerator/tensor/base/compressed.hh>
+#include "../../../tests/execution/streaming/source_pack_fixture.hh"
 
 import cellerator.anndata;
 
 namespace ad = anndatapp;
 namespace native = cellerator::anndata;
 namespace memory = cellerator::memory;
+namespace streaming = cellerator::execution::streaming;
 using cellerator::tensor::base::CompressedAxis;
 
 static size_t cpp_allocations;
@@ -129,8 +133,77 @@ bool sparse(const ad::BackedAnnData& file, const char* format, const char* layer
         empty_view.structure.cols == 2 && empty_view.structure.major_ptr[0] == 0;
 }
 
+bool fetch(const ad::BackedAnnData& file) {
+    using memory::status;
+    auto transfer = file.layer("entries").prepare_transfer();
+    if (!rejects(ad::ErrorCode::unsupported_layout, [&] {
+            native::FetchReader wrong_axis{transfer, CompressedAxis::column, 27};
+        })) return false;
+    auto partial = file.slice(ad::range{1, 3}).layer("entries").prepare_transfer();
+    if (!rejects(ad::ErrorCode::unsupported_layout, [&] {
+            native::FetchReader shifted{partial, CompressedAxis::row, 27};
+        })) return false;
+
+    native::FetchReader reader{transfer, CompressedAxis::row, 27};
+    const auto source = reader.source();
+    if (source.info.cells != 3 || source.info.features != 2 || source.info.feature_axis != 27 ||
+        source.info.value != streaming::ScalarType::f32 || source.info.index != streaming::ScalarType::i32 ||
+        source.info.offset != streaming::ScalarType::i64 || source.cell_lengths) return false;
+
+    const streaming::CellRange cells{1, 2};
+    uint64_t nnz = 0;
+    if (source.requirements(source.context, cells, &nnz) != status::success || nnz != 4 ||
+        source.requirements(source.context, {3, 1}, &nnz) != status::invalid_argument) return false;
+
+    float values[4]{-9};
+    int32_t indices[4]{-9};
+    int64_t offsets[3]{-9};
+    const streaming::SparseBuffers out{values, indices, offsets, sizeof(values), sizeof(indices), sizeof(offsets)};
+    auto short_out = out; short_out.index_bytes -= sizeof(int32_t);
+    auto overlapping = out; overlapping.indices = values;
+    if (source.read_into(source.context, cells, short_out, nullptr) != status::capacity_exceeded ||
+        source.read_into(source.context, cells, overlapping, nullptr) != status::invalid_argument ||
+        values[0] != -9 || indices[0] != -9 || offsets[0] != -9) return false;
+
+    streaming::ReadStats stats;
+    if (source.read_into(source.context, cells, out, &stats) != status::success ||
+        offsets[0] != 0 || offsets[1] != 3 || offsets[2] != 4 ||
+        indices[0] != 0 || indices[1] != 0 || indices[2] != 1 || indices[3] != 0 ||
+        values[0] != 2 || values[1] != 0 || values[2] != 3 || values[3] != 4 ||
+        !stats.decoded_bytes) return false;
+
+    const float expected_values[]{2, 0, 3, 4};
+    const int32_t expected_indices[]{0, 0, 1, 0};
+    const int64_t expected_offsets[]{0, 3, 4};
+    if (!cellerator::test::check_source_packet(source, cells, expected_values,
+                                              expected_indices, expected_offsets)) return false;
+
+    const std::vector<size_t> start{1, 0}, count{2, 2};
+    const ad::SparseBuffer raw{values, indices, offsets, ad::DType::float32, ad::DType::int32,
+                               ad::DType::int64, 4, 4, 3};
+    const auto direct_allocations = allocations([&] {
+        (void)transfer.requirements(start, count);
+        transfer.read_into(start, count, raw);
+    });
+    bool repeated = false;
+    const auto fetch_allocations = allocations([&] {
+        repeated = source.requirements(source.context, cells, &nnz) == status::success && nnz == 4 &&
+            source.read_into(source.context, cells, out, nullptr) == status::success;
+    });
+    if (!repeated || fetch_allocations != direct_allocations) return false;
+
+    auto columns = file.layer("csc").prepare_transfer();
+    native::FetchReader csc{columns, CompressedAxis::column, 29};
+    const auto native_columns = csc.source();
+    return native_columns.info.cells == 2 && native_columns.info.features == 3 &&
+        native_columns.read_into(native_columns.context, {1, 1}, out, &stats) == status::success &&
+        offsets[0] == 0 && offsets[1] == 2 && indices[0] == 0 && indices[1] == 1 &&
+        values[0] == 2 && values[1] == 3;
+}
+
 bool verify(ad::BackedAnnData file, const char* format) {
-    if (!dense(file, format) || !sparse(file, format, "csr", true) || !sparse(file, format, "csc", false))
+    if (!dense(file, format) || !sparse(file, format, "csr", true) || !sparse(file, format, "csc", false) ||
+        !fetch(file))
         return false;
     auto half = native::read_allocated(file.layer("half"));
     auto moved = static_cast<native::BufferedMatrix&&>(half);
@@ -151,12 +224,17 @@ int main() {
     const float csr_values[] = {1, 2, 3, 4}, csc_values[] = {1, 4, 2, 3};
     const int32_t csr_indices[] = {0, 1, 1, 0}, csc_indices[] = {0, 2, 0, 1};
     const int64_t csr_offsets[] = {0, 2, 3, 4}, csc_offsets[] = {0, 2, 4};
+    const float entries_values[] = {1, 2, 0, 3, 4};
+    const int32_t entries_indices[] = {0, 0, 0, 1, 0};
+    const int64_t entries_offsets[] = {0, 1, 4, 5};
     using Half = ad::Float16;
     const Half half[] = {Half::from_bits(0x3c00), Half::from_bits(0x8000), Half::from_bits(1), {}, {}, {}};
     data.set_x(ad::Array::borrow_dense(values, {3, 2}, {2, 1}));
     data.set_layer("half", ad::Array::borrow_dense(half, {3, 2}, {2, 1}));
     data.set_layer("csr", ad::Array::borrow_sparse(ad::Layout::csr, 3, 2, 4, csr_values, csr_indices, csr_offsets));
     data.set_layer("csc", ad::Array::borrow_sparse(ad::Layout::csc, 3, 2, 4, csc_values, csc_indices, csc_offsets));
+    data.set_layer("entries", ad::Array::borrow_sparse(ad::Layout::csr, 3, 2, 5,
+                                                      entries_values, entries_indices, entries_offsets));
     bool ok = true;
 #if ANNDATAPP_HAS_HDF5
     auto h5ad = (dir / "sample.h5ad").string();

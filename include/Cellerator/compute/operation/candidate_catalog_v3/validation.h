@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Cellerator/compute/operation/candidate_catalog_v3/catalog.h"
-#include "Cellerator/execution/program/program_v2.h"
+#include "Cellerator/execution/program/stages.hh"
 
 #include <cstdint>
 

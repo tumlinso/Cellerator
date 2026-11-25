@@ -1,4 +1,4 @@
-#include <Cellerator/planner/distributed/hierarchy.hh>
+#include <Cellerator/execution/planning/distributed/hierarchy.hh>
 
 #include <cassert>
 #include <cmath>
@@ -6,7 +6,7 @@
 
 namespace distributed = cellerator::distributed;
 namespace execution = cellerator::execution;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 
 namespace {
 

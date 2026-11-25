@@ -1,4 +1,4 @@
-#include <Cellerator/execution/geometry_acquisition_diagnostics.hh>
+#include <Cellerator/execution/preparation/geometry_acquisition_diagnostics.hh>
 
 #include <cmath>
 #include <cstdint>
@@ -7,7 +7,7 @@
 #include <limits>
 
 namespace execution = cellerator::execution;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 
 namespace {
 

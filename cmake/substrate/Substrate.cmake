@@ -139,7 +139,7 @@ foreach(component IN LISTS _ce_selected)
       src/compute/cpu/cpu_projection_packing_and_order_transforms.cc
       src/compute/cpu/cpu_segment_gate_update_bundle_and_chain_paths.cc)
   elseif(component STREQUAL executable_program)
-    _ce_owner(${component} CAPABILITIES "fixed_stage_graph" SOURCES src/execution/program/program_v2.cc)
+    _ce_owner(${component} CAPABILITIES "fixed_stage_graph" SOURCES src/execution/program/stages.cc)
   elseif(component STREQUAL indexed_incidence)
     _ce_owner(${component} CAPABILITIES "host_ordered_incidence,no_evaluators,no_device_training" SOURCES
       src/ops/mechanism/indexed/incidence.cc)

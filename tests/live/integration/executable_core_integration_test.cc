@@ -1,6 +1,6 @@
 #include <Cellerator/compute/operation/builtin_catalog.hh>
 #include <Cellerator/compute/operation/preparation_factory.hh>
-#include <Cellerator/execution/projection_activation.hh>
+#include <Cellerator/execution/preparation/provider_projection.hh>
 #include <Cellerator/parameters.hh>
 #include <Cellerator/runtime/value_readiness.cuh>
 
@@ -78,7 +78,7 @@ void test_quantitative_planner_bridge() {
     phases.phases.static_value_pack_ns = 4.0;
     phases.phases.kernel_ns = 2.0;
     phases.reuse = {64u, 16u, 4u};
-    cellerator::planner::total_cost total{};
+    cellerator::execution::planning::total_cost total{};
     require(inputs::account_candidate_phases(phases, &total)
             == inputs::live_input_status::ok
             && std::fabs(total.amortized_total_ns - 12.0) < 1.0e-12

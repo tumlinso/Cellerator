@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/execution/training_program_v2/program.hh>
+#include <Cellerator/execution/program/training/program.hh>
 
 #include <cstdint>
 #include <type_traits>

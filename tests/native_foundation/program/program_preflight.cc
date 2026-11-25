@@ -1,4 +1,4 @@
-#include <Cellerator/execution/program/program_v2.h>
+#include <Cellerator/execution/program/stages.hh>
 #include <stdexcept>
 
 namespace p = cellerator::execution::program;

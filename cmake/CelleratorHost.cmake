@@ -6,7 +6,7 @@ include(CMakePackageConfigHelpers)
 function(cellerator_install_native_headers)
     foreach(dir IN ITEMS bindings biology common compute containers
             execution geometry interop layout math memory
-            ops packing planner profiling runtime state structure tensor)
+            ops packing profiling runtime state structure tensor)
         install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/${dir}"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN}
             PATTERN "cellshard" EXCLUDE)

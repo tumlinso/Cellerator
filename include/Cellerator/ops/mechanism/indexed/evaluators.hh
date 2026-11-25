@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/ops/mechanism/indexed/incidence.hh>
-#include <Cellerator/execution/program/program_v2.h>
+#include <Cellerator/execution/program/stages.hh>
 
 #include <cstddef>
 #include <cstdint>

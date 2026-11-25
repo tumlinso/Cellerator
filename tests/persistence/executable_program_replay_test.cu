@@ -1,7 +1,7 @@
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
 #include <CellShard/interop/cellerator/execution_payload.hh>
-#include <Cellerator/execution/program.hh>
-#include <Cellerator/execution/projection_activation.hh>
+#include <Cellerator/execution/program/operation.hh>
+#include <Cellerator/execution/preparation/provider_projection.hh>
 #include "../fixtures/model_execution/activated_projection.hh"
 
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
@@ -24,7 +24,7 @@ namespace cm = cellerator::compute::math;
 namespace core = cellerator::compute::math::core;
 namespace execution = cellerator::execution;
 namespace persistence = cellpack::persistence;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 namespace runtime = cellerator::runtime;
 namespace cp = cellpack;
 namespace cs = cellshard;
@@ -203,7 +203,7 @@ struct source_fixture {
 };
 
 std::string temporary_path() {
-    std::string path = "/tmp/cellerator_executable_program_replayXXXXXX";
+    std::string path = "/tmp/cellerator_execution_program_replayXXXXXX";
     const int descriptor = ::mkstemp(path.data());
     require(descriptor >= 0, "create temporary replay path");
     ::close(descriptor);
@@ -440,7 +440,7 @@ int main() {
     request.dense_column_axis = dense_axis;
     request.preparation_state = {preparation_state, sizeof(preparation_state)};
     execution::executable_program program{};
-    require(execution::compile_executable_program_v2(request, &program),
+    require(execution::prepare_operation_program(request, &program),
         "compile planner-selected replay program");
     require(core::same_stable_id(program.selected_candidate,
             core::feature_major_small_n_candidate_id)
@@ -493,7 +493,7 @@ int main() {
     execution::executable_program_launch launch{
         bindings, &readiness, epoch, {1u}};
     execution::executable_program_result result{};
-    require(execution::run_executable_program(&program, launch, &result),
+    require(execution::run_operation_program(&program, launch, &result),
         "execute reloaded planner-backed program");
     require(result.enqueued && result.consumed_generation.value == 1u
         && result.output_order_count == 2u,

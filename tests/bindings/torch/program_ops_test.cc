@@ -51,7 +51,7 @@ execution::biological_operand_view dense_binding(
 
 namespace cellerator::execution {
 
-executable_program_status run_executable_program(
+executable_program_status run_operation_program(
     executable_program *program,
     const executable_program_launch &launch,
     executable_program_result *result) noexcept {

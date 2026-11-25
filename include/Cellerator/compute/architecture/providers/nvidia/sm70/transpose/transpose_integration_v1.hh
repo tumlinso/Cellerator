@@ -2,7 +2,7 @@
 
 #include <Cellerator/compute/architecture/providers/nvidia/sm70/transpose/transpose_candidates_v1.hh>
 #include <Cellerator/compute/operation/candidate_catalog_v3/catalog.h>
-#include <Cellerator/planner/resource/planning_resources_v1.hh>
+#include <Cellerator/execution/planning/resource/planning_resources_v1.hh>
 
 #include <cstdint>
 
@@ -37,15 +37,15 @@ struct transpose_integration_profile_v1 {
 struct transpose_integration_storage_v1 {
     operation::catalog_v3::candidate_descriptor_v3 *catalog_candidates = nullptr;
     operation::catalog_v3::candidate_stage_v3 *catalog_stages = nullptr;
-    planner::resource::candidate_resource_manifest_v1 *resource_manifests = nullptr;
-    planner::resource::planning_stage_v1 *planning_stages = nullptr;
-    planner::resource::stage_resource_receipt_v1 *resource_receipts = nullptr;
+    ::cellerator::execution::planning::resource::candidate_resource_manifest_v1 *resource_manifests = nullptr;
+    ::cellerator::execution::planning::resource::planning_stage_v1 *planning_stages = nullptr;
+    ::cellerator::execution::planning::resource::stage_resource_receipt_v1 *resource_receipts = nullptr;
     std::uint64_t capacity = 0u;
 };
 
 struct transpose_integration_view_v1 {
     operation::catalog_v3::candidate_catalog_view_v3 catalog{};
-    const planner::resource::candidate_resource_manifest_v1 *resources = nullptr;
+    const ::cellerator::execution::planning::resource::candidate_resource_manifest_v1 *resources = nullptr;
     std::uint64_t resource_count = 0u;
 };
 

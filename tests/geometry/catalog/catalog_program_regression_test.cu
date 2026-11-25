@@ -1,4 +1,4 @@
-#include <Cellerator/execution/program.hh>
+#include <Cellerator/execution/program/operation.hh>
 
 #include <cstdint>
 #include <cstdlib>
@@ -6,7 +6,7 @@
 
 namespace core = cellerator::compute::math::core;
 namespace execution = cellerator::execution;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 namespace runtime = cellerator::runtime;
 
 namespace {
@@ -232,7 +232,7 @@ void test_enumeration_extension_and_atomic_rejection() {
     auto compile_request = request(
         &session, adapters, 1u, projections, 1u, costs, 1u, &state);
     execution::executable_program program{};
-    require(static_cast<bool>(execution::compile_executable_program_v2(
+    require(static_cast<bool>(execution::prepare_operation_program(
                 compile_request, &program))
             && program.candidate_count == 1u
             && core::same_stable_id(program.selected_candidate, candidate_a)
@@ -241,7 +241,7 @@ void test_enumeration_extension_and_atomic_rejection() {
 
     compile_request = request(
         &session, adapters, 2u, projections, 2u, costs, 2u, &state);
-    require(static_cast<bool>(execution::compile_executable_program_v2(
+    require(static_cast<bool>(execution::prepare_operation_program(
                 compile_request, &program))
             && program.candidate_count == 2u
             && program.legal_count == 2u
@@ -254,7 +254,7 @@ void test_enumeration_extension_and_atomic_rejection() {
         adapters[0], adapters[0]};
     auto invalid = request(
         &session, duplicate, 2u, projections, 2u, costs, 2u, &state);
-    require(execution::compile_executable_program_v2(invalid, &program).code
+    require(execution::prepare_operation_program(invalid, &program).code
             == execution::executable_program_status_code::invalid_argument
             && program.candidate_count == 0u
             && program.preparation_count == 0u,
@@ -264,7 +264,7 @@ void test_enumeration_extension_and_atomic_rejection() {
     wrong_capability.capability_identity.low += 1u;
     invalid = request(&session, &adapters[1], 1u, &wrong_capability, 1u,
         &costs[1], 1u, &state);
-    require(execution::compile_executable_program_v2(invalid, &program).code
+    require(execution::prepare_operation_program(invalid, &program).code
             == execution::executable_program_status_code::no_compatible_candidate
             && program.candidate_count == 0u && calls_b == 1u,
         "capability mismatch reached candidate preparation");

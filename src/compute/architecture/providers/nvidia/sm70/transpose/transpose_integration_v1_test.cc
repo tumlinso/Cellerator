@@ -4,7 +4,7 @@
 
 using namespace cellerator::compute::architecture::providers::nvidia::sm70;
 namespace operation = cellerator::compute::operation;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 
 namespace { void require(bool value) { if (!value) std::abort(); } }
 

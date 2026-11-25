@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/execution/geometry_acquisition_v2/schema.hh>
+#include <Cellerator/execution/preparation/acquisition/schema.hh>
 
 #include <cstdint>
 #include <cstring>

@@ -1,5 +1,5 @@
-#include <Cellerator/execution/geometry_acquisition.hh>
-#include <Cellerator/planner/end_to_end_planner.hh>
+#include <Cellerator/execution/preparation/geometry_acquisition.hh>
+#include <Cellerator/execution/planning/operation_planning.hh>
 
 #include <array>
 #include <cstdint>
@@ -10,7 +10,7 @@
 
 namespace execution = cellerator::execution;
 namespace persistence = cellerator::geometry::persistence;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 
 namespace {
 

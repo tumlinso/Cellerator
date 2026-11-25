@@ -1,8 +1,8 @@
-#include <Cellerator/planner/external_cost/geometry_objective_v1.hh>
+#include <Cellerator/execution/planning/external_cost/geometry_objective_v1.hh>
 
 #include <cassert>
 
-namespace external = cellerator::planner::external_cost;
+namespace external = cellerator::execution::planning::external_cost;
 
 int main() {
     external::external_cost_vector_v1 cost{};

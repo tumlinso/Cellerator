@@ -1,7 +1,6 @@
 #include <Cellerator/runtime/device_descriptor.hh>
 
 #include <Cellerator/execution/identity.hh>
-#include <Cellerator/planner/end_to_end_planner.hh>
 #include <Cellerator/runtime/session.cuh>
 
 #include <cuda_runtime_api.h>
@@ -206,17 +205,6 @@ execution::device_performance_class derive_execution_device_performance_class(
     // Historical field name: this compatibility view carries a hardware
     // performance identity, never a runtime or kernel build identity.
     result.build_identity = descriptor.performance_class_identity;
-    return result;
-}
-
-planner::device_performance_key derive_planner_device_performance_key(
-    const device_descriptor_v1 &descriptor) noexcept {
-    planner::device_performance_key result{};
-    if (!valid_device_descriptor_v1(descriptor)) return result;
-    result.vendor = descriptor.vendor;
-    result.architecture_major = descriptor.compute_major;
-    result.architecture_minor = descriptor.compute_minor;
-    result.performance_class = descriptor.performance_class_identity;
     return result;
 }
 

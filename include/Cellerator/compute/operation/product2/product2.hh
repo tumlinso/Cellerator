@@ -1,6 +1,6 @@
 #pragma once
 #include "Cellerator/compute/operation/product2/c_api.h"
-#include "Cellerator/execution/program/program_v2.h"
+#include "Cellerator/execution/program/stages.hh"
 #include <vector>
 #include "Cellerator/ops/mechanism/indexed/incidence.hh"
 namespace cellerator::compute::product2 {

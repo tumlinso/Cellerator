@@ -28,7 +28,8 @@ set_target_properties(cellerator_rds_access_bench PROPERTIES CXX_EXTENSIONS OFF 
 
 if(CELLERATOR_BUILD_TESTS)
     add_executable(cellerator_rds_indexed_test tests/indexed_read.cc)
-    target_link_libraries(cellerator_rds_indexed_test PRIVATE Cellerator::rds Threads::Threads)
+    target_link_libraries(cellerator_rds_indexed_test PRIVATE
+        Cellerator::rds Cellerator::execution_streaming Threads::Threads)
     set_target_properties(cellerator_rds_indexed_test PROPERTIES CXX_EXTENSIONS OFF CXX_SCAN_FOR_MODULES ON)
 
     find_program(CELLERATOR_RSCRIPT NAMES Rscript)

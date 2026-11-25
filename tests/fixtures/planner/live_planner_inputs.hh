@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/planner/end_to_end_planner.hh>
+#include <Cellerator/execution/planning/operation_planning.hh>
 
 #include <cstdint>
 
@@ -63,13 +63,13 @@ struct quantitative_statistics {
 };
 
 struct live_planner_input {
-    cellerator::planner::planning_keys keys{};
+    cellerator::execution::planning::planning_keys keys{};
     structural_statistics structure{};
     quantitative_statistics values{};
 };
 
 struct candidate_phase_input {
-    cellerator::planner::phase_costs phases{};
+    cellerator::execution::planning::phase_costs phases{};
     reuse_horizons reuse{};
     bool measured = false;
 };
@@ -77,8 +77,8 @@ struct candidate_phase_input {
 live_input_status derive_live_planner_input(
     const quantitative_relation_input &relation,
     compute::math::core::stable_id problem,
-    const cellerator::planner::device_performance_key &device,
-    const cellerator::planner::runtime_build_key &build,
+    const cellerator::execution::planning::device_performance_key &device,
+    const cellerator::execution::planning::runtime_build_key &build,
     reuse_horizons reuse,
     std::uint32_t numeric_policy,
     std::uint32_t determinism_policy,
@@ -88,7 +88,7 @@ live_input_status derive_live_planner_input(
 
 live_input_status account_candidate_phases(
     const candidate_phase_input &input,
-    cellerator::planner::total_cost *output) noexcept;
+    cellerator::execution::planning::total_cost *output) noexcept;
 
 // Analytical costs are admissible shortlist inputs. A final promotion record
 // must carry measured phases from an independent, correct candidate run.

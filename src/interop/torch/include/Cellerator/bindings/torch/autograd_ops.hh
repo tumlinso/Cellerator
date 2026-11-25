@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/execution/training_program.hh>
+#include <Cellerator/execution/program/feature_major_training.hh>
 
 #include <torch/torch.h>
 

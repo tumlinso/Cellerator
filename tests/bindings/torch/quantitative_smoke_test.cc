@@ -1,7 +1,7 @@
 #define main cellerator_embedded_quantitative_forward_main
-#define run_executable_program cellerator_quantitative_run_executable_program
+#define run_operation_program cellerator_quantitative_run_operation_program
 #include "../../live/quantitative_forward_fixture.cuh"
-#undef run_executable_program
+#undef run_operation_program
 #undef main
 
 #include <Cellerator/bindings/torch/program_ops.hh>
@@ -70,7 +70,7 @@ torch::Tensor alias_dense(
 
 namespace cellerator::execution {
 
-executable_program_status run_executable_program(
+executable_program_status run_operation_program(
     executable_program *program,
     const executable_program_launch &launch,
     executable_program_result *result) noexcept;
@@ -78,7 +78,7 @@ executable_program_status run_executable_program(
 // The embedded native quantitative test calls this instrumentation seam.  It
 // runs the exact native program and then the Cellerator Torch wrapper over the same
 // prepared program, fixture, value generation, buffers, and caller stream.
-executable_program_status cellerator_quantitative_run_executable_program(
+executable_program_status cellerator_quantitative_run_operation_program(
     executable_program *program,
     const executable_program_launch &launch,
     executable_program_result *result) noexcept {
@@ -102,7 +102,7 @@ executable_program_status cellerator_quantitative_run_executable_program(
     executable_program_result native_result{};
     (void)cudaEventRecord(native_begin, stream);
     const auto native_host_begin = std::chrono::steady_clock::now();
-    const auto native_status = run_executable_program(
+    const auto native_status = run_operation_program(
         program, launch, &native_result);
     const auto native_host_end = std::chrono::steady_clock::now();
     (void)cudaEventRecord(native_end, stream);

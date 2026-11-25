@@ -43,7 +43,7 @@ add_library(cellerator_native_foundation INTERFACE)
 add_library(Cellerator::native_foundation ALIAS cellerator_native_foundation)
 target_link_libraries(cellerator_native_foundation INTERFACE
     Cellerator::native_numeric
-    Cellerator::executable_program)
+    Cellerator::execution_program)
 if(TARGET Cellerator::model_ops)
     target_link_libraries(cellerator_native_foundation INTERFACE
         Cellerator::model_ops)
@@ -110,6 +110,9 @@ endif()
 # Export the actual linked dependency closure, including the preserved program
 # and candidate owners. Consumers use these libraries, never source inclusion.
 set(_nf_pending cellerator_native_foundation)
+if(TARGET cellerator_execution_tuning_cuda)
+    list(APPEND _nf_pending cellerator_execution_tuning_cuda)
+endif()
 if(TARGET cellerator_cellpack_geometry)
     # Export this physical-layout host API as its own target without making it
     # a dependency of the broad native-foundation umbrella.
@@ -120,10 +123,10 @@ if(TARGET cellerator_execution_preparation)
     # its real link closure installed for external native consumers.
     list(APPEND _nf_pending cellerator_execution_preparation)
 endif()
-if(TARGET cellerator_training_program)
+if(TARGET cellerator_execution_feature_major_training)
     # Keep the native training-program API available to optional bindings
     # without making the native owner depend on any framework adapter.
-    list(APPEND _nf_pending cellerator_training_program)
+    list(APPEND _nf_pending cellerator_execution_feature_major_training)
 endif()
 set(_nf_exports)
 while(_nf_pending)

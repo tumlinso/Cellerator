@@ -2,6 +2,7 @@ module;
 
 #include <stddef.h>
 #include <stdint.h>
+#include <Cellerator/execution/streaming/source.hh>
 #include <Cellerator/memory/view.hh>
 #include <Cellerator/tensor/base/compressed.hh>
 #include "dgcmatrix_rds.hh"
@@ -289,6 +290,16 @@ FileInfo RdsFile::info() const noexcept {
             {h.name_count[0] != 0, h.name_count[1] != 0}, h.source.bytes, h.index_bytes, h.decoded};
 }
 
+Status RdsFile::cell_lengths(ColumnRange range, memory::array_view<uint64_t> lengths) const noexcept {
+    if (!file_ || !range_fits(range, file_->header->columns)) return Status::invalid_argument;
+    if (lengths.count < range.count) return Status::insufficient_capacity;
+    Span span;
+    if (!output_span(lengths, range.count, span)) return Status::invalid_argument;
+    const auto *offsets = file_->offsets + range.start;
+    for (size_t i = 0; i < range.count; ++i) lengths.data[i] = uint64_t(offsets[i+1] - offsets[i]);
+    return Status::ok;
+}
+
 Status RdsFile::prepare_read(const ColumnRange *ranges, size_t count, PreparedRead& read) const noexcept {
     if (!file_ || (!ranges && count)) return Status::invalid_argument;
     const auto& file = *file_;
@@ -468,6 +479,88 @@ IoStats ReadContext::stats() const noexcept {
     auto n = transfer_->names ? transfer_->names->stats() : detail::GzipStats{};
     return {i.compressed_bytes + x.compressed_bytes + n.compressed_bytes,
             i.decoded_bytes + x.decoded_bytes + n.decoded_bytes};
+}
+
+namespace {
+
+using namespace execution::streaming;
+
+memory::status fetch_status(Status status) noexcept {
+    switch (status) {
+    case Status::ok: return memory::status::success;
+    case Status::invalid_argument: return memory::status::invalid_argument;
+    case Status::insufficient_capacity: return memory::status::capacity_exceeded;
+    case Status::unsupported: return memory::status::unsupported_domain;
+    default: return memory::status::invalid_state;
+    }
+}
+
+bool column_range(CellRange cells, ColumnRange& range) noexcept {
+    if (cells.first > UINT32_MAX || cells.count > UINT32_MAX) return false;
+    range = {uint32_t(cells.first), uint32_t(cells.count)};
+    return true;
+}
+
+} // namespace
+
+FetchReader::FetchReader(const RdsFile& file, ReadContext& context, uint64_t feature_axis) noexcept
+    : file_(file), context_(context), generation_(file.generation_), feature_axis_(feature_axis) {}
+
+bool FetchReader::ready() const noexcept {
+    const auto *transfer = context_.transfer_;
+    return file_.file_ && file_.generation_ == generation_ && transfer &&
+           transfer->owner == &file_ && transfer->file == file_.file_ &&
+           transfer->generation == generation_;
+}
+
+execution::streaming::FetchSource FetchReader::source() noexcept {
+    if (!ready()) return {};
+    const auto info = file_.info();
+    return {this, {info.columns, info.rows, feature_axis_, ScalarType::f64, ScalarType::i32, ScalarType::i32},
+            requirements, read_into, lengths};
+}
+
+memory::status FetchReader::requirements(void *context, CellRange cells, uint64_t *entries) noexcept {
+    auto& reader = *static_cast<FetchReader*>(context);
+    if (!reader.ready()) return memory::status::invalid_state;
+    ColumnRange range;
+    if (!entries || !column_range(cells, range)) return memory::status::invalid_argument;
+    PreparedRead read;
+    const auto status = reader.file_.prepare_read(&range, 1, read);
+    if (status == Status::ok) *entries = read.requirements().entries;
+    return fetch_status(status);
+}
+
+memory::status FetchReader::read_into(void *context, CellRange cells, SparseBuffers out,
+                                     ReadStats *stats) noexcept {
+    auto& reader = *static_cast<FetchReader*>(context);
+    if (!reader.ready()) return memory::status::invalid_state;
+    ColumnRange range;
+    if (!column_range(cells, range)) return memory::status::invalid_argument;
+    PreparedRead read;
+    const auto prepared = reader.file_.prepare_read(&range, 1, read);
+    if (prepared != Status::ok) return fetch_status(prepared);
+
+    constexpr memory::placement host_memory{memory::domain::host};
+    const auto before = stats ? reader.context_.stats() : IoStats{};
+    CscView view;
+    const auto status = reader.context_.read_into(read,
+        {static_cast<double*>(out.values), out.value_bytes/sizeof(double), host_memory},
+        {static_cast<int32_t*>(out.indices), out.index_bytes/sizeof(int32_t), host_memory},
+        {static_cast<int32_t*>(out.offsets), out.offset_bytes/sizeof(int32_t), host_memory}, view);
+    if (stats && status == Status::ok) {
+        const auto after = reader.context_.stats();
+        *stats = {after.compressed_bytes - before.compressed_bytes, after.decoded_bytes - before.decoded_bytes};
+    }
+    return fetch_status(status);
+}
+
+memory::status FetchReader::lengths(void *context, CellRange cells, uint64_t *lengths, size_t capacity) noexcept {
+    auto& reader = *static_cast<FetchReader*>(context);
+    if (!reader.ready()) return memory::status::invalid_state;
+    ColumnRange range;
+    if (!column_range(cells, range)) return memory::status::invalid_argument;
+    return fetch_status(reader.file_.cell_lengths(range, {lengths, capacity, {memory::domain::host}}));
 }
 
 } // namespace cellerator::rds

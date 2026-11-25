@@ -62,12 +62,12 @@ struct PanelPackingLayout {
     bool prepared = false;
 };
 
-// Selected logical blocks must be nonempty and have disjoint features. Supply
-// ceil(block_count/4)*64 dense features and source.csr.cols column entries
-// when any block is selected. When block_count*16 exceeds UINT16_MAX use
-// wide_columns, otherwise use columns. All written storage is disjoint
-// from the inputs and other outputs. Build a new layout when the catalog or
-// the ordered block selection changes.
+// Use a prepared source. Selected logical blocks must be nonempty and have
+// disjoint features. Supply ceil(block_count/4)*64 dense features and
+// source.csr.cols column entries when any block is selected. When
+// block_count*16 exceeds UINT16_MAX use wide_columns, otherwise use columns.
+// All written storage is disjoint from the inputs and other outputs. Build
+// a new layout when the catalog or the ordered block selection changes.
 PanelPackingStatus prepare_panel_packing_layout(const PanelPackingSource &source,
     const uint16_t *block_ids, size_t block_count, PanelPackingLayoutStorage storage,
     PanelPackingLayout *layout) noexcept;
@@ -144,9 +144,10 @@ struct PanelPackingPlan {
 
 // Count the selected CSR entries and residuals for exact sizing. The selected
 // blocks share one order within this selection and must be nonempty with
-// disjoint feature sets. A null row_ids selects
-// [0, row_count). Physical rows extend to groups*16 with empty tail cells.
-// Callers can query separate cohorts to select different block orders.
+// disjoint feature sets. A null row_ids selects [0, row_count). Physical
+// rows extend to groups*16 with empty tail cells. Callers can query separate
+// cohorts to select different block orders. Keep workspace and selection
+// output disjoint from each other and from the inputs to either overload.
 PanelPackingStatus query_panel_packing(const PanelPackingSource &source,
     PanelPackingInput input, PanelPackingWorkspace workspace,
     PanelPackingSelection *selection) noexcept;

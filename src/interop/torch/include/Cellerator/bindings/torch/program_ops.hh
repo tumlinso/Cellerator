@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/execution/program.hh>
+#include <Cellerator/execution/program/operation.hh>
 
 #include <ATen/core/Tensor.h>
 

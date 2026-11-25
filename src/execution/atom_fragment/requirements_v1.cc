@@ -81,7 +81,7 @@ atom_fragment_requirements_status_v1 query_atom_fragment_requirements_v1(
 
     std::uint64_t candidate_bytes = 0u;
     if (!add_product(limits.candidate_capacity,
-            sizeof(planner::portfolio::candidate_workspace_state_v1),
+            sizeof(planning::candidates::candidate_workspace_state_v1),
             &candidate_bytes)
         || !add_product(limits.candidate_capacity,
             2u * sizeof(std::uint64_t) + sizeof(double), &candidate_bytes))
@@ -119,7 +119,7 @@ atom_fragment_requirements_status_v1 query_atom_fragment_requirements_v1(
     requirements->projections = {projection_bytes,
         alignof(acquisition_v2::projection_record)};
     requirements->candidate_workspace = {candidate_bytes,
-        alignof(planner::portfolio::candidate_workspace_state_v1)};
+        alignof(planning::candidates::candidate_workspace_state_v1)};
     requirements->prepared_program = {
         program_bytes, alignof(program::prepared_stage_v2)};
     requirements->bindings = {

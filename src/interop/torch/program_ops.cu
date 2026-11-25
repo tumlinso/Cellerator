@@ -127,7 +127,7 @@ program_op_status run_program_forward(
             0u
         };
         const auto native_status =
-            execution::run_executable_program(program, launch, result);
+            execution::run_operation_program(program, launch, result);
         if (!native_status) {
             auto status = failure(program_op_status_code::native_failure,
                 native_status.message);

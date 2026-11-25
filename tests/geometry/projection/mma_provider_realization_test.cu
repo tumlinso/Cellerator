@@ -1,6 +1,6 @@
 #include <Cellerator/compute/architecture/provider.hh>
 #include <Cellerator/layout/projection/mma_hybrid.hh>
-#include <Cellerator/execution/projection_activation_v2.hh>
+#include <Cellerator/execution/preparation/activated_projection.hh>
 #include <Cellerator/geometry/persistence/execution_capability_manifest_v1.hh>
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
 

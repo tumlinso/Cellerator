@@ -5,7 +5,7 @@
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
 #include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
 #include <Cellerator/compute/candidate/transpose_backward_candidate.hh>
-#include <Cellerator/execution/projection_activation_v2.hh>
+#include <Cellerator/execution/preparation/activated_projection.hh>
 #include <Cellerator/runtime/session.cuh>
 
 #include <cstddef>

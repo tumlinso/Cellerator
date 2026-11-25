@@ -3,7 +3,7 @@
 #include <Cellerator/compute/training/v2/generation_readiness.hh>
 #include <Cellerator/compute/training/v2/relation_closure.hh>
 #include <Cellerator/compute/training/v2/value_modes.hh>
-#include <Cellerator/execution/training_program_v2/interface.hh>
+#include <Cellerator/execution/program/training/interface.hh>
 
 #include <cstdint>
 

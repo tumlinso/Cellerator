@@ -133,7 +133,7 @@ foreach(test_name IN LISTS CELLERATOR_OPERATION_FOCUSED_TESTS)
         Cellerator::compute_candidate_inventory)
     if(test_name STREQUAL "transpose_integration_v1_test")
         target_link_libraries(cellerator_operation_${test_name} PRIVATE
-            Cellerator::builtin_candidate_catalog Cellerator::planner)
+            Cellerator::builtin_candidate_catalog Cellerator::execution_planning)
     endif()
     target_compile_features(cellerator_operation_${test_name} PRIVATE cxx_std_20)
     target_compile_options(cellerator_operation_${test_name} PRIVATE -UNDEBUG)
@@ -206,14 +206,13 @@ add_library(cellerator_fusion_training STATIC
     src/compute/candidate/fusion/sparse_exchange_v1.cu
     src/compute/training/v2/generation_readiness.cc
     src/compute/training/v2/relation_closure.cc
-    src/compute/training/v2/value_modes.cc
-    src/execution/training_program_v2/graph_capture.cc
-    src/execution/training_program_v2/program.cc)
+    src/compute/training/v2/value_modes.cc)
 add_library(Cellerator::fusion_training ALIAS cellerator_fusion_training)
 target_include_directories(cellerator_fusion_training PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 target_link_libraries(cellerator_fusion_training PUBLIC
+    Cellerator::execution_training_stages
     Cellerator::relation_algebra
     CUDA::cudart)
 set_target_properties(cellerator_fusion_training PROPERTIES
@@ -255,7 +254,7 @@ set(CELLERATOR_OPERATION_TRAINING_PROGRAM_TESTS
     program)
 foreach(test_name IN LISTS CELLERATOR_OPERATION_TRAINING_PROGRAM_TESTS)
     add_executable(cellerator_operation_training_${test_name}_test ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
-        src/execution/training_program_v2/${test_name}_test.cc)
+        src/execution/program/training/${test_name}_test.cc)
     target_link_libraries(cellerator_operation_training_${test_name}_test PRIVATE
         Cellerator::fusion_training)
     target_compile_features(cellerator_operation_training_${test_name}_test
@@ -470,27 +469,6 @@ set_target_properties(cellerator_transpose_backward_candidate PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
-# CE-LIVE-29: Wave B executable-core fan-in. Leaf tasks own behavior; this
-# rendezvous owns their shared native target and test wiring.
-add_library(cellerator_projection_activation STATIC
-    src/execution/projection_activation.cc
-    src/execution/projection_activation_v2.cc
-)
-add_library(Cellerator::projection_activation ALIAS
-    cellerator_projection_activation)
-target_include_directories(cellerator_projection_activation PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellerator_projection_activation PUBLIC
-    CellPack::execution_image_v2
-    Cellerator::feature_major_projection
-    Cellerator::transpose_projection
-    Cellerator::csr_fallback_candidate
-)
-target_compile_features(cellerator_projection_activation PUBLIC cxx_std_20)
-
 add_library(cellerator_builtin_candidate_catalog STATIC
     src/compute/operation/builtin_catalog.cc
     src/compute/operation/candidate_catalog/catalog_v3.cc
@@ -525,60 +503,7 @@ target_include_directories(cellerator_preparation_factory PUBLIC
 )
 target_link_libraries(cellerator_preparation_factory PUBLIC
     Cellerator::builtin_candidate_catalog
-    Cellerator::projection_activation
+    Cellerator::execution_projection_binding
     Cellerator::runtime
 )
 target_compile_features(cellerator_preparation_factory PUBLIC cxx_std_20)
-
-add_library(cellerator_executable_core INTERFACE)
-add_library(Cellerator::executable_core ALIAS cellerator_executable_core)
-target_link_libraries(cellerator_executable_core INTERFACE
-    Cellerator::projection_activation
-    Cellerator::builtin_candidate_catalog
-    Cellerator::relation_catalog
-    Cellerator::preparation_factory
-    Cellerator::compute_candidate_inventory
-)
-
-# CE-LIVE-43: publish the CE-LIVE-30 host orchestration layer as a normal
-# native target so framework adapters consume the frozen executable-program
-# contract instead of compiling or reimplementing it privately.
-add_library(cellerator_executable_program STATIC
-    src/execution/program.cc
-    $<TARGET_OBJECTS:cellerator_fixed_stage_program>
-)
-add_library(Cellerator::executable_program ALIAS
-    cellerator_executable_program)
-target_include_directories(cellerator_executable_program PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellerator_executable_program PUBLIC
-    Cellerator::executable_core
-    Cellerator::planner
-)
-target_compile_features(cellerator_executable_program PUBLIC cxx_std_20)
-
-add_library(cellerator_training_program STATIC
-    src/execution/training_program.cu
-)
-add_library(Cellerator::training_program ALIAS cellerator_training_program)
-target_include_directories(cellerator_training_program PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellerator_training_program PUBLIC
-    Cellerator::native_training_slice
-    Cellerator::feature_major_projection
-    Cellerator::transpose_projection
-    Cellerator::runtime
-    CUDA::cudart
-)
-set_target_properties(cellerator_training_program PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 20
-    CUDA_STANDARD_REQUIRED YES
-)

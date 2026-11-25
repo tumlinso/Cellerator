@@ -49,7 +49,7 @@ Numerical reference helpers live under `src/math/reference/`, and physical
 projection construction and operand packing under `src/layout/projection/`.
 The original CP-Math v1 implementation is archived under `docs/history/compat/`.
 Consumers include the canonical owner headers directly. Runtime resources belong under `src/runtime/`, planning
-under `src/planner/`, and conventional preprocessing workflows in downstream
+under `src/execution/planning/`, and conventional preprocessing workflows in downstream
 BioPrep.
 
 Read `docs/core_execution_cp_math.qmd` before adding new runtime or planner abstractions.

@@ -19,8 +19,8 @@ target_compile_features(ce_ml2_test_runtime PUBLIC cxx_std_20)
 target_link_libraries(ce_ml2_test_runtime PUBLIC CUDA::cudart PRIVATE CUDA::cublas CUDA::cusparse)
 set_target_properties(ce_ml2_test_runtime PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 
-add_library(ce_ml2_test_program STATIC "${CE_ROOT}/src/execution/program/program_v2.cc")
-add_library(Cellerator::executable_program ALIAS ce_ml2_test_program)
+add_library(ce_ml2_test_program STATIC "${CE_ROOT}/src/execution/program/stages.cc")
+add_library(Cellerator::execution_program ALIAS ce_ml2_test_program)
 target_include_directories(ce_ml2_test_program PUBLIC "${CE_ROOT}/include")
 target_compile_features(ce_ml2_test_program PUBLIC cxx_std_20)
 

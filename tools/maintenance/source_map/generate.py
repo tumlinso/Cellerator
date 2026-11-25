@@ -92,7 +92,7 @@ COMPATIBILITY_RETIREMENTS = {
     'include/Cellerator/dist/distributed.cuh': 'include/Cellerator/runtime/multi_gpu/context.cuh',
     'include/Cellerator/dist/nccl_communicator.cuh': 'include/Cellerator/runtime/multi_gpu/nccl_communicator.cuh',
     'include/Cellerator/dist/nccl_select.cuh': 'include/Cellerator/runtime/multi_gpu/nccl_select.cuh',
-    'include/Cellerator/distributed/hierarchy.hh': 'include/Cellerator/planner/distributed/hierarchy.hh',
+    'include/Cellerator/distributed/hierarchy.hh': 'include/Cellerator/execution/planning/distributed/hierarchy.hh',
     'include/Cellerator/geometry/optimizer/oracle/optimizer_portfolio_contract.h': 'include/Cellerator/geometry/optimizer/portfolio_v1.hh',
     'include/Cellerator/interop/cellshard.cuh': 'include/Cellerator/interop/cellshard/matrix.cuh',
     'include/Cellerator/interop/cellshard_access.cuh': 'include/Cellerator/interop/cellshard/access.cuh',
@@ -108,8 +108,8 @@ COMPATIBILITY_RETIREMENTS = {
     'src/common/types.cuh': 'include/Cellerator/common/types.cuh',
     'src/common/cuda_compat.cuh': 'include/Cellerator/common/cuda_compat.cuh',
     'include/Cellerator/math/effects/providers.hh': 'include/Cellerator/ops',
-    'include/Cellerator/execution/program/program_v1_adapter.h': 'include/Cellerator/execution/program/program_v2.h',
-    'src/execution/program/program_v1_adapter.cc': 'src/execution/program/program_v2.cc',
+    'include/Cellerator/execution/program/program_v1_adapter.h': 'include/Cellerator/execution/program/stages.hh',
+    'src/execution/program/program_v1_adapter.cc': 'src/execution/program/stages.cc',
 }
 
 # Order matters: narrow exceptions precede broad tree rules.
@@ -597,7 +597,7 @@ def classify(p):
         return (role, owner, f'retain in its existing {family} subsystem until implementation and caller evidence supports a move', 'retain_named_legacy_native_subsystem', 'implementation present; target, consumer, and numerical maturity are operation-specific', 'inspect the family CMake and direct native includes before claiming target or package exposure', 'tests/math_core, tests/native_numeric, model tests, or examples only where they exercise this exact contract', 'preserve formulas, parameters, derivative behavior, and checkpoint/schema semantics')
     if p.startswith(('bindings/torch/', 'src/interop/torch/')):
         return ('native LibTorch or ATen integration', 'src/interop/torch', 'retain native adapters at their C++ build and package boundary', 'retain_native_torch_integration', 'optional native implementation; configure and test each selected component', 'native C++ Torch consumers and optional Python extensions', 'tests/bindings/torch, tests/interop, and the installed Torch consumer', 'preserve installed include paths, target names, and direct native consumers')
-    if p.startswith(('src/planner/','include/Cellerator/planner/','src/profiling/','include/Cellerator/profiling/','src/preprocess/','include/Cellerator/preprocess/','src/state/','include/Cellerator/state/','src/support/','include/Cellerator/support/','src/interop/','include/Cellerator/interop/','src/abi/','include/Cellerator/abi/')):
+    if p.startswith(('src/execution/planning/','include/Cellerator/execution/planning/','src/profiling/','include/Cellerator/profiling/','src/preprocess/','include/Cellerator/preprocess/','src/state/','include/Cellerator/state/','src/support/','include/Cellerator/support/','src/interop/','include/Cellerator/interop/','src/abi/','include/Cellerator/abi/')):
         parts = Path(p).parts
         family = parts[1] if parts[0] == 'src' else parts[2]
         owner = '/'.join(parts[:3] if parts[0] == 'src' else parts[:4])

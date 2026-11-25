@@ -1,4 +1,4 @@
-#include <Cellerator/execution/geometry_acquisition.hh>
+#include <Cellerator/execution/preparation/geometry_acquisition.hh>
 
 #include <cstdint>
 #include <cstdio>

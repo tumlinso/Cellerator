@@ -1,4 +1,4 @@
-#include <Cellerator/execution/projection_activation_v2.hh>
+#include <Cellerator/execution/preparation/activated_projection.hh>
 
 #include <cassert>
 #include <cstdint>

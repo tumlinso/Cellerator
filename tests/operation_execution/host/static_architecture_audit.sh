@@ -8,7 +8,7 @@ abi_paths=(
     include/Cellerator/compute/operation/operation_core_v2.hh
     include/Cellerator/compute/operation/candidate_catalog_v2.hh
     include/Cellerator/execution/geometry_acquisition_v2
-    include/Cellerator/execution/geometry_acquisition_v2.hh
+    include/Cellerator/execution/preparation/geometry_artifacts.hh
     include/Cellerator/execution/opaque_artifact.hh
     include/Cellerator/geometry/index/scalable_views_v2.hh
     include/Cellerator/geometry/validation/scalable_validation_v2.hh

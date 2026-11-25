@@ -1,6 +1,6 @@
 #include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
 #include <Cellerator/common/real/fp16.cuh>
-#include <Cellerator/planner/end_to_end_planner.hh>
+#include <Cellerator/execution/planning/operation_planning.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>
@@ -13,7 +13,7 @@
 
 namespace core = cellerator::compute::math::core;
 namespace execution = cellerator::execution;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 namespace cp = cellpack;
 
 namespace {

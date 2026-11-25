@@ -1,6 +1,8 @@
 module;
 
 #include <stddef.h>
+#include <vector>
+#include <Cellerator/execution/streaming/source.hh>
 #include <Cellerator/memory/allocation.hh>
 #include <Cellerator/memory/view.hh>
 #include <Cellerator/tensor/base/compressed.hh>
@@ -115,5 +117,30 @@ private:
 
 [[nodiscard]] BufferedMatrix read_allocated(const ::anndatapp::PreparedRead&);
 [[nodiscard]] BufferedMatrix read_allocated(const ::anndatapp::BackedArray&);
+
+// The prepared context must cover the full native cell axis and remain
+// unchanged. Keep this reader and its context live through all fetches.
+class FetchReader {
+public:
+    FetchReader(::anndatapp::TransferContext&, tensor::base::CompressedAxis cells, uint64_t feature_axis);
+    FetchReader(const FetchReader&) = delete;
+    FetchReader& operator=(const FetchReader&) = delete;
+    execution::streaming::FetchSource source() noexcept;
+
+private:
+    bool select(execution::streaming::CellRange) noexcept;
+    size_t prepare_block();
+    static memory::status requirements(void*, execution::streaming::CellRange, uint64_t*) noexcept;
+    static memory::status read_into(void*, execution::streaming::CellRange, execution::streaming::SparseBuffers,
+                                    execution::streaming::ReadStats*) noexcept;
+
+    ::anndatapp::TransferContext& context_;
+    // AnnData++ requires these vectors at the transfer boundary.
+    std::vector<size_t> start_, count_;
+    unsigned major_;
+    execution::streaming::SourceInfo info_{};
+    ::anndatapp::DType value_, index_, offset_;
+    size_t entries_ = SIZE_MAX;
+};
 
 }

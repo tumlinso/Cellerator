@@ -4,7 +4,7 @@
 #include <Cellerator/compute/operation/builtin_catalog.hh>
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
 #include <Cellerator/layout/projection/feature_major.hh>
-#include <Cellerator/execution/program.hh>
+#include <Cellerator/execution/program/operation.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>
@@ -26,7 +26,7 @@ namespace quantitative_fixture = cellerator::fixtures::quantitative_relation;
 namespace cm = cellerator::compute::math;
 namespace core = cellerator::compute::math::core;
 namespace execution = cellerator::execution;
-namespace planner = cellerator::planner;
+namespace planner = cellerator::execution::planning;
 namespace runtime = cellerator::runtime;
 
 namespace {
@@ -502,7 +502,7 @@ int main(int argc, char **argv) {
             request.preparation_state = {
                 preparation_state, sizeof(preparation_state)};
             execution::executable_program program{};
-            require(execution::compile_executable_program_v2(request, &program),
+            require(execution::prepare_operation_program(request, &program),
                 "compile PBMC3K executable program");
             require(program.candidate_count == costs.size()
                 && program.legal_count == costs.size()
@@ -559,7 +559,7 @@ int main(int argc, char **argv) {
                     require_cuda(cudaEventCreate(&stop), "create stop event");
                     require_cuda(cudaEventRecord(start, stream), "record start");
                     execution::executable_program_result result{};
-                    require(execution::run_executable_program(
+                    require(execution::run_operation_program(
                             &program, launch, &result),
                         "run PBMC3K executable program");
                     require(result.enqueued

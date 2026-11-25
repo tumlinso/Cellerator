@@ -39,17 +39,21 @@ CUDA_TARGETS = (
 # These are the reviewed post-golden source states. The golden is historical
 # evidence and is intentionally not rewritten. A seventh drift, or a further
 # change to one of these six files, is an unreviewed baseline change.
+MOVED_PINNED_PROGRAM_SOURCES = {
+    "include/Cellerator/execution/program.hh": "include/Cellerator/execution/program/operation.hh",
+    "src/execution/program.cc": "src/execution/program/operation.cc",
+}
 REVIEWED_SOURCE_DRIFTS = {
     "include/Cellerator/compute/operation/builtin_catalog.hh":
         "08c2c4c9f510e39620957dd0078df5ef6fc13dbf45418dfba7efab7223ae3993",
     "include/Cellerator/execution/program.hh":
-        "2c2232bdcc55c62ab91eac5eba958f58870182634b57188cb6042ef97efb0117",
+        "9009f567840061c37446bd70ec1e079aa9f77de89a646fa12452e0a0fbfff608",
     "include/Cellerator/geometry/persistence/execution_image_v2.hh":
         "efbe675cc85850b1061cd1c694c16ded8d6655e0d826958309476ce109d7aadc",
     "src/compute/operation/builtin_catalog.cc":
         "26bc5bf54fb9df77a643f77c7fe554fd7ea9287192d7dcc1edd281046a844172",
     "src/execution/program.cc":
-        "0114c938375639014dfccf877eafffa137962698e3f588fa7556546dc1a60c19",
+        "bba817227d1a7c26ca9a44d50e719ed9b46d450b8194f85dec8018c23d462754",
     "src/geometry/persistence/execution_image_v2.cc":
         "479a014daee998709078e40134e28fac9e5c34c99bcf995d9960a7801dda8359",
 }
@@ -193,7 +197,7 @@ def validate_pinned_sources(golden: dict[str, Any]) -> None:
 
     drifts: dict[str, tuple[str, str]] = {}
     for relative, expected in pinned.items():
-        path = ROOT / relative
+        path = ROOT / MOVED_PINNED_PROGRAM_SOURCES.get(relative, relative)
         if not path.is_file():
             fail(f"missing pinned baseline source: {relative}")
         actual = sha256(path)

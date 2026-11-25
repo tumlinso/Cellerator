@@ -20,7 +20,7 @@ common=(
 )
 
 if [[ ${1:-} != --run-only ]]; then
-    "$nvcc" "${common[@]}" -x cu -c "$repo_root/src/execution/program.cc" \
+    "$nvcc" "${common[@]}" -x cu -c "$repo_root/src/execution/program/operation.cc" \
         -o "$build_dir/program.o"
     "$nvcc" "${common[@]}" -c \
         "$repo_root/tests/persistence/executable_program_replay_test.cu" \
@@ -35,7 +35,7 @@ if [[ ${1:-} != --run-only ]]; then
         -Wl,-rpath,"$cuda_root/targets/x86_64-linux/lib:$cuda_root/../../math_libs/12.9/lib64" \
         -Wl,--start-group \
         -lcellerator_opaque_execution_artifact \
-        -lcellerator_projection_activation \
+        -lcellerator_execution_projection_binding \
         -lcellerator_preparation_factory \
         -lcellerator_builtin_candidate_catalog \
         -lcellerator_row_masked_n1_candidate \

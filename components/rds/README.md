@@ -31,6 +31,13 @@ trade sidecar size and open time for shorter seeks. The spacing is the minimum
 distance between checkpoints. The reader can only place them at eligible
 DEFLATE block boundaries, so spacing does not cap the bytes a read may decode.
 
+`RdsFile::cell_lengths(range, lengths)` fills a supplied array from the mapped
+column offsets. A streaming caller can plan its packet from those lengths
+before decoding feature indices or values. `FetchReader` binds a borrowed
+streaming source to the open file and a provisioned `ReadContext`. Fetches use
+whole-cell ranges and expose the original binary64 values and 32-bit sparse
+indices and offsets. Keep the reader and context live until its reads finish.
+
 ## Stream into supplied storage
 
 1. Pass a list of `ColumnRange` values to `RdsFile::prepare_read`. A

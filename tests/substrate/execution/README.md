@@ -34,8 +34,8 @@ unsupported. No new reverse sweep is implemented.
   `src/compute/operation/indexed_mechanism/training.cu` remain the device parameter
   owner, prepared mechanism program, capacity reservation, stream reader/writer
   events and single-use `mechanism_tape` owner. This façade does not replace them.
-- `include/Cellerator/execution/program/program_v2.h` and
-  `src/execution/program/program_v2.cc` remain the native fixed stage-graph runner.
+- `include/Cellerator/execution/program/stages.hh` and
+  `src/execution/program/stages.cc` remain the native fixed stage-graph runner.
 - `native_numeric/local_arithmetic` and `differential/local_arithmetic` remain the
   arithmetic and derivative providers. Only their host forward callbacks are used.
 - The optional `cellerator.torch` adapter continues to use the native mechanism

@@ -1,5 +1,5 @@
 include(tests/geometry/packing_targets.cmake)
-include(tests/planner_targets.cmake)
+include(tests/execution/planning_targets.cmake)
 include(tests/tensor_core/sm70/CMakeLists.txt)
 include(tests/relation_algebra/CMakeLists.txt)
 
@@ -51,7 +51,7 @@ cellerator_add_geometry_foundation_test(geometry_catalog_contract_test
     Cellerator::operation_core)
 cellerator_add_geometry_foundation_test(geometry_projection_reference_v2_test
     tests/geometry/catalog/projection_reference_v2_test.cc
-    Cellerator::projection_activation)
+    Cellerator::execution_projection_binding)
 cellerator_add_geometry_foundation_test(geometry_erased_prepare_test
     tests/geometry/catalog/erased_prepare_test.cu
     Cellerator::preparation_factory)
@@ -76,14 +76,14 @@ cellerator_add_geometry_foundation_test(geometry_cpe2_capability_manifest_test
     Cellerator::semantic_geometry_v1 CellPack::execution_image_v2)
 cellerator_add_geometry_foundation_test(geometry_prebound_projection_v2_test
     tests/geometry/contracts/prebound_projection_v2_test.cc
-    Cellerator::geometry_acquisition)
+    Cellerator::execution_geometry_acquisition)
 
 cellerator_add_geometry_foundation_test(geometry_acquisition_contract_test
     tests/geometry/acquisition/geometry_acquisition_contract_test.cc
-    Cellerator::geometry_acquisition)
+    Cellerator::execution_geometry_acquisition)
 cellerator_add_geometry_foundation_test(geometry_acquisition_cost_mapping_test
     tests/geometry/acquisition/acquisition_cost_mapping_test.cc
-    Cellerator::geometry_acquisition)
+    Cellerator::execution_geometry_acquisition)
 
 add_executable(celleratorIdentityRegistryTest
     tests/execution_identity/identity_registry_test.cc
@@ -170,7 +170,7 @@ add_executable(celleratorExecutableProgramTest
     tests/execution/program_test.cu
 )
 target_link_libraries(celleratorExecutableProgramTest PRIVATE
-    Cellerator::executable_program
+    Cellerator::execution_program
     CUDA::cudart
 )
 set_target_properties(celleratorExecutableProgramTest PROPERTIES
@@ -184,7 +184,7 @@ add_executable(celleratorTrainingProgramTest
     tests/execution/training_program_test.cu
 )
 target_link_libraries(celleratorTrainingProgramTest PRIVATE
-    Cellerator::training_program
+    Cellerator::execution_feature_major_training
     CUDA::cudart
 )
 set_target_properties(celleratorTrainingProgramTest PROPERTIES
@@ -198,7 +198,7 @@ add_executable(celleratorTrainingProgramConcurrencyTest
     tests/execution/training_program_concurrency_test.cu
 )
 target_link_libraries(celleratorTrainingProgramConcurrencyTest PRIVATE
-    Cellerator::training_program
+    Cellerator::execution_feature_major_training
     CUDA::cudart
 )
 set_target_properties(celleratorTrainingProgramConcurrencyTest PROPERTIES

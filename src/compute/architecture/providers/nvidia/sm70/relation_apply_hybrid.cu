@@ -20,7 +20,7 @@ bool finite_nonnegative(double value) noexcept {
     return std::isfinite(value) && value >= 0.0;
 }
 
-bool valid_cost(const planner::phase_costs &cost) noexcept {
+bool valid_cost(const ::cellerator::execution::planning::phase_costs &cost) noexcept {
     return finite_nonnegative(cost.host_preparation_ns)
         && finite_nonnegative(cost.semantic_packing_ns)
         && finite_nonnegative(cost.projection_construction_ns)
