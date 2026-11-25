@@ -4,7 +4,7 @@ Research proposal, 16 November 2026. This concerns Cellerator's reusable
 geometry, modeling, learning, and execution mathematics. CCell supplies a
 motivating atlas experiment; it should not become the owner of a parallel
 support-learning engine. The proposal extends the
-[compact-flow formulation](../../../CCell/docs/research/compact-flow-methods.md).
+[compact-flow formulation](ccell/compact-flow-methods.md).
 It is not an implemented algorithm, a kernel plan, or a biological finding.
 
 ## Proposed approach

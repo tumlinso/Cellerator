@@ -1,31 +1,3 @@
-add_library(cellerator_compute_exact_search STATIC
-    src/compute/neighbors/exact_search/exact_search.cu
-)
-target_include_directories(cellerator_compute_exact_search PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellerator_compute_exact_search PRIVATE CUDA::cudart)
-set_target_properties(cellerator_compute_exact_search PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(cellerator_compute_exact_search)
-
-add_library(cellerator_compute_forward_neighbors STATIC
-    src/compute/neighbors/forward_neighbors/forward_neighbors.cu
-)
-add_library(Cellerator::forward_neighbors ALIAS cellerator_compute_forward_neighbors)
-target_include_directories(cellerator_compute_forward_neighbors
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-)
-target_link_libraries(cellerator_compute_forward_neighbors
-    PUBLIC
-        cellerator_compute_exact_search
-        CUDA::cudart
-        CUDA::cusparse
-)
-set_target_properties(cellerator_compute_forward_neighbors PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(cellerator_compute_forward_neighbors)
-
 add_library(cellerator_compute_sampling STATIC
     src/compute/dataset/sampling.cc
     src/compute/dataset/sampling_materialization.cc

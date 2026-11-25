@@ -20,13 +20,15 @@ Python work is out of scope until the user explicitly unblocks it. This applies
 to Python APIs, bindings, packaging, examples, and tests. Native C++
 interoperability with LibTorch and ATen is within the C++ scope.
 
-## CCell methods and AnnData++ interop
+## Single-cell methods and AnnData++ interop
 
-Work on single-cell preprocessing and RNA velocity under
-[`components/CCell`](components/CCell/AGENTS.md). CCell methods use native
+Work on single-cell preprocessing, RNA velocity, and routed search under
+[`components/preprocess`](components/preprocess/AGENTS.md),
+[`components/velocity`](components/velocity/AGENTS.md), and
+[`components/neighbors`](components/neighbors/README.md). Methods use native
 Cellerator views and caller-owned storage. Keep reusable computational
-primitives with their Cellerator operation families. Keep dataset acquisition and
-Cellerator buffer interoperability in the optional Cellerator AnnData component.
+primitives with their Cellerator operation families. Keep dataset acquisition
+and buffer interoperability in the optional Cellerator AnnData component.
 
 Use `import anndatapp;` for standalone AnnData++ data access. The pinned
 upstream source is `packages/anndatapp`. Use `import cellerator.anndata;` to read

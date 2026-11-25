@@ -234,14 +234,6 @@ target_link_libraries(trajectoryRuntimeTest PRIVATE CUDA::cudart)
 set_target_properties(trajectoryRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(trajectoryRuntimeTest)
 
-add_executable(exactSearchRuntimeTest
-    tests/exact_search_runtime_test.cu
-)
-target_include_directories(exactSearchRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(exactSearchRuntimeTest PRIVATE cellerator_compute_exact_search CUDA::cudart)
-set_target_properties(exactSearchRuntimeTest PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(exactSearchRuntimeTest)
-
 add_executable(sparseOpsRuntimeTest
     tests/sparse_ops_runtime_test.cu
 )

@@ -1,15 +1,13 @@
-# CCell and Cellerator component ownership
+# Cellerator component ownership
 
-CCell owns the native preprocessing and RNA velocity implementations under
-[`components/CCell`](../../components/CCell/README.md). Cellerator supplies
-their numerical and modeling primitives and view contracts. AnnData++ owns
-arrays and file I/O. The optional Cellerator AnnData component reads selected
-backed arrays into Cellerator buffers for models or numerical methods.
+The native [single-cell components](single-cell-methods.md) own preprocessing,
+RNA velocity, and routed neighbor search. They use Cellerator numerical
+primitives and views over caller-owned storage. AnnData++ owns arrays and file
+I/O. The optional [AnnData component](anndata.md) reads backed selections into
+native Cellerator buffers.
 
-The standard build installs CCell and AnnData++ together. `find_package(ccell
-CONFIG REQUIRED)` loads the method targets. Request the Cellerator `anndata`
-component for native buffer reads. AnnData++ itself supplies
-`import anndatapp;`. See the [AnnData buffer guide](anndata.md).
+The original tracked methods and umbrella are preserved on the
+[CCell archive branch](https://github.com/tumlinso/CCell/tree/codex/cellerator-native).
 
 The former [AnnData++ and Velocity source archives](https://github.com/tumlinso/Cellerator/tree/d7414e7f830fcd25cac585399a0535b72e75ff01/quarantine)
 remain available in Git history. Local cutover recovery files and the retired
@@ -17,8 +15,7 @@ Python AnnData source snapshot with its checksum manifest were backed up
 outside the checkout.
 
 The former `src/velocity` checkout was archived outside the repository with
-its unpublished changes, Git metadata, and validation artifacts. CCell owns
-direct binary16 input and caller-scheduled gene blocks.
+its unpublished changes, Git metadata, and validation artifacts.
 
 ## Supported substrate surfaces
 
@@ -47,10 +44,15 @@ when building without module tooling.
 
 | Optional import | Source owner | Installed target |
 |---|---|---|
-| `cellerator.biology` | `components/biology` | `Cellerator::biology` |
+| `cellerator.annotation` | `components/annotation` | `Cellerator::annotation` |
 | `cellerator.tokenizers` | `components/tokenization` | `Cellerator::tokenization` |
 | `cellerator.anndata` | `components/anndata` | `Cellerator::anndata` |
 | `cellerator.nn` | `components/nn` | `Cellerator::nn` |
+| `cellerator.preprocess` | `components/preprocess` | `Cellerator::preprocess` |
+| `cellerator.velocity` | `components/velocity` | `Cellerator::velocity` |
+
+CUDA routed search is available through the headers and `Cellerator::neighbors`
+target supplied by `components/neighbors`.
 
 Select components and import them explicitly. The primary module has the same
 exports across builds. Use partitions to organize a named module when there
@@ -59,20 +61,25 @@ namespace independent of the named-module boundary. See the
 [C++ module unit](https://eel.is/c++draft/module.unit) and
 [import](https://eel.is/c++draft/module.import) rules.
 
+Request `find_package(Cellerator CONFIG REQUIRED COMPONENTS annotation)` for
+the installed Annotation component. Header consumers can link
+`Cellerator::annotation` and include `<Cellerator/biology/gene_annotation.hh>`.
+The annotation and catalog declarations remain in `cellerator::biology`.
+
 ### Root ownership
 
 | Shared source | Supported use |
 |---|---|
 | Tensor views, numeric types, packing, layouts, operations, and derivatives | Native host and CUDA operation consumers. NN uses Product2 through its own target. |
 | Axis and feature identity, sequence coordinates, and execution lifetimes | Shared data contracts across layouts and components. |
-| Borrowed memory views and native parameter descriptors | CCell, AnnData read bindings, Torch interop, and native training use the same contracts. |
+| Borrowed memory views and native parameter descriptors | Native single-cell methods, AnnData read bindings, Torch interop, and native training use the same contracts. |
 
 A reusable numerical primitive or shared contract with a concrete supported
 consumer earns a root source owner. Name that consumer and build target when
 adding or moving a family. Put format readers, tokenizer policy, and framework
-integration with the component that needs them. Biology owns annotation records,
-formats, and [optional compiled reference catalogs](../../components/biology/catalogs/README.md).
-Tokenization consumes Biology catalogs to build vocabularies
+integration with the component that needs them. Annotation owns reference
+annotation records, formats, and [optional compiled reference catalogs](../../components/annotation/catalogs/README.md).
+Tokenization consumes gene catalogs to build vocabularies
 with model token assignments. Keep modules as facades over
 the same header declarations. Export low-level types when they are needed for
 the public workflow and use focused headers for advanced controls.
@@ -83,8 +90,8 @@ and link the owning targets. Cross-component calls use the dependency’s
 public headers or module interface, with the dependency declared in CMake. Install their public headers and module sources through the
 Cellerator package. The `packages/` directory contains pinned Git
 submodules with their own repositories and independent builds. AnnData++
-builds independently of Cellerator. CCell uses Cellerator's view contracts
-from `components/CCell` and exports its own method targets.
+builds independently of Cellerator. The native method components build from
+Cellerator-tracked source and export their targets through Cellerator.
 
 ## Retained inactive source
 
@@ -92,14 +99,16 @@ from `components/CCell` and exports its own method targets.
 |---|---|
 | `components/CellShard` | Preserved in place; detached from supported Cellerator builds and package installs. No new CellShard development or IO transfer is included. |
 | `include/Cellerator/interop/cellshard` | Preserved source only; excluded from native and SDK header installs. |
-| `src/ops/velocity` and `tests/velocity` | Inactive native adapter and tests. The supported velocity method is owned by `components/CCell/src/velocity` and supplied by `ccell::velocity`. |
+| `src/ops/velocity` and `tests/velocity` | Inactive native adapter and tests. The supported velocity method is owned by `components/velocity` and supplied by `Cellerator::velocity`. |
 | `cmake/CelleratorVelocity.cmake` and `cmake/CelleratorVelocityModule.cmake` | Retained former integration definitions, no longer included or installed by supported builds. |
-| `src/preprocess` | Dormant reference copy preserved in place; CCell owns the active preprocessing implementation. |
+| `src/preprocess` | Dormant reference copy preserved in place; `components/preprocess` owns the active implementation. |
 | `examples/torch` | Existing CellShard-oriented example sources retained without a supported Cellerator build option. |
 
-Enabled retired velocity/CellShard options and required package components fail
+Enabled retired CellShard options and required package components fail
 explicitly. Their preserved sources can contain historical standalone build
 files; those files do not re-establish supported Cellerator integration.
+See the [CellShard server handoff](cellshard-server-handoff.md) for source
+preservation, legacy data recovery, and the proposed packing work.
 
 Source datasets, fixtures, recorded outputs, local histories, recovery trees,
 and historical scientific receipts remain at their original paths. Historical

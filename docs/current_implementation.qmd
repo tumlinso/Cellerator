@@ -11,9 +11,18 @@ an explicitly allocated owner. Dense, CSR, and CSC reads preserve the stored
 types and logical ordering. CCell uses its native view interfaces for these
 buffers as for any other data source.
 
+## Native method component split, 2026-11-25
+
+Native Velocity, Preprocess, and CUDA Neighbors replace the CCell umbrella.
+Velocity and Preprocess accept Cellerator views and caller-owned workspaces.
+AnnData++ is independently selectable for backed reads. Host builds and the
+installed module consumer compiled and linked. The
+[server checks](development/single-cell-methods.md) cover pending runtime
+parity and CUDA qualification.
+
 ## CCell native methods and AnnData++ distribution, 2026-11-22
 
-The standard native build includes [CCell](../components/CCell/README.md) and
+The native build at that revision included [CCell](https://github.com/tumlinso/CCell/tree/codex/cellerator-native) and
 the independently maintained AnnData++ v1.1.1 source pinned under
 `packages/anndatapp`. CCell's preprocessing and Velocity methods accept borrowed
 Cellerator dense and compressed views and use caller-provisioned buffers.

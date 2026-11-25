@@ -25,12 +25,10 @@ The new [biological modeling framework](docs/biological_framework.qmd)
 describes the shared state/dynamics/context vocabulary and current package
 entry points.
 
-The standard build includes [CCell](components/CCell/README.md) for preprocessing
-and RNA velocity. Its methods take Cellerator views over caller-owned arrays.
-Use the bundled AnnData++ library for native H5AD and Zarr access, and CCell's
-optional adapter to borrow a Cellerator view over acquired data. The Cellerator
-core package keeps an independent dependency graph. See the
-[component ownership guide](docs/development/component-ownership.md).
+The optional [single-cell methods](docs/development/single-cell-methods.md)
+provide native preprocessing and RNA velocity over caller-owned arrays.
+The [AnnData component](docs/development/anndata.md) reads selected H5AD and
+Zarr arrays into Cellerator buffers.
 C++ and CUDA builds require C++20 or newer; the normal CMake/Ninja package build
 exports named modules. See the [developer reference](docs/developer_reference.qmd)
 for build commands and the [implementation record](docs/current_implementation.qmd)

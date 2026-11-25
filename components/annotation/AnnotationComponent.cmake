@@ -1,0 +1,7 @@
+include("${CMAKE_CURRENT_LIST_DIR}/CelleratorAnnotationTargets.cmake")
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/CelleratorAnnotationModuleTargets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/CelleratorAnnotationModuleTargets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/CelleratorModuleInterfaces.cmake")
+    cellerator_attach_module(Cellerator::annotation Cellerator::annotation_interface_binary)
+endif()
+set(Cellerator_annotation_FOUND TRUE)

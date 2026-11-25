@@ -1,0 +1,18 @@
+module;
+
+#include <Cellerator/biology/gene_catalog.hh>
+
+export module cellerator.annotation;
+
+export namespace cellerator::biology {
+using ::cellerator::biology::AnnotationText;
+using ::cellerator::biology::BuiltinGeneCatalog;
+using ::cellerator::biology::GeneAnnotation;
+using ::cellerator::biology::GeneAnnotationError;
+using ::cellerator::biology::GeneAnnotationFormat;
+using ::cellerator::biology::GeneAnnotationRecord;
+using ::cellerator::biology::GeneCatalog;
+using ::cellerator::biology::GeneSubset;
+using ::cellerator::biology::builtin_gene_catalog;
+using ::cellerator::biology::read_gene_annotation;
+}

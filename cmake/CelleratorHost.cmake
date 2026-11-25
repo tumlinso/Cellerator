@@ -45,7 +45,7 @@ include("${PROJECT_SOURCE_DIR}/examples/install_headers.cmake")
 set(CELLERATOR_HOST_CONFIG "${CMAKE_CURRENT_BINARY_DIR}/CelleratorConfig.cmake")
 file(WRITE "${CELLERATOR_HOST_CONFIG}"
     "foreach(component IN LISTS Cellerator_FIND_COMPONENTS)\n"
-    "  if(component MATCHES \"^(velocity|cellshard|CellShard)$\")\n"
+    "  if(component MATCHES \"^(cellshard|CellShard)$\")\n"
     "    set(Cellerator_FOUND FALSE)\n"
     "    set(Cellerator_NOT_FOUND_MESSAGE \"The requested \${component} component is retired from Cellerator; retained data/analysis source is inactive.\")\n"
     "    return()\n"
@@ -63,9 +63,9 @@ install(FILES "${CELLERATOR_HOST_CONFIG}"
 # Import optional providers after the core build has registered its own exports.
 function(cellerator_append_optional_component_config)
     file(APPEND "${CELLERATOR_HOST_CONFIG}" [=[
-if(("biology" IN_LIST Cellerator_FIND_COMPONENTS OR "tokenization" IN_LIST Cellerator_FIND_COMPONENTS)
-   AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/BiologyComponent.cmake")
-    include("${CMAKE_CURRENT_LIST_DIR}/BiologyComponent.cmake")
+if(("annotation" IN_LIST Cellerator_FIND_COMPONENTS OR "tokenization" IN_LIST Cellerator_FIND_COMPONENTS)
+   AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/AnnotationComponent.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/AnnotationComponent.cmake")
 endif()
 if(("nn" IN_LIST Cellerator_FIND_COMPONENTS OR "nn_cuda" IN_LIST Cellerator_FIND_COMPONENTS)
    AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/NNComponent.cmake")
@@ -77,6 +77,18 @@ if(("aten_ops" IN_LIST Cellerator_FIND_COMPONENTS OR "tokenization" IN_LIST Cell
 endif()
 if("anndata" IN_LIST Cellerator_FIND_COMPONENTS AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/AnnDataComponent.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/AnnDataComponent.cmake")
+endif()
+if("rds" IN_LIST Cellerator_FIND_COMPONENTS AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/RDSComponent.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/RDSComponent.cmake")
+endif()
+if("velocity" IN_LIST Cellerator_FIND_COMPONENTS AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/VelocityComponent.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/VelocityComponent.cmake")
+endif()
+if("preprocess" IN_LIST Cellerator_FIND_COMPONENTS AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/PreprocessComponent.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/PreprocessComponent.cmake")
+endif()
+if("neighbors" IN_LIST Cellerator_FIND_COMPONENTS AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/NeighborsComponent.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/NeighborsComponent.cmake")
 endif()
 ]=])
 endfunction()

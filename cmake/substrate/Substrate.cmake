@@ -1,5 +1,8 @@
 # Selectable build projection of actual CE owners. This is not a runtime registry.
 include("${CMAKE_CURRENT_LIST_DIR}/../CelleratorRetiredComponents.cmake")
+if(CELLERATOR_ENABLE_VELOCITY OR CELLERATOR_ENABLE_PREPROCESS)
+    message(FATAL_ERROR "Velocity and Preprocess require the standard Cellerator build.")
+endif()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 get_filename_component(CE_SUBSTRATE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)

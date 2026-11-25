@@ -1,7 +1,0 @@
-include("${CMAKE_CURRENT_LIST_DIR}/CelleratorBiologyTargets.cmake")
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/CelleratorBiologyModuleTargets.cmake")
-    include("${CMAKE_CURRENT_LIST_DIR}/CelleratorBiologyModuleTargets.cmake")
-    include("${CMAKE_CURRENT_LIST_DIR}/CelleratorModuleInterfaces.cmake")
-    cellerator_attach_module(Cellerator::biology Cellerator::biology_interface_binary)
-endif()
-set(Cellerator_biology_FOUND TRUE)

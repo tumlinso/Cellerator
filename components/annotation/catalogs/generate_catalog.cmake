@@ -1,0 +1,31 @@
+file(SHA256 "${INPUT}" actual_sha256)
+if(NOT actual_sha256 STREQUAL SHA256)
+    message(FATAL_ERROR "Annotation checksum mismatch for '${INPUT}'. Expected ${SHA256}, got ${actual_sha256}.")
+endif()
+
+get_filename_component(directory "${OUTPUT}" DIRECTORY)
+file(MAKE_DIRECTORY "${directory}")
+set(annotation "${INPUT}")
+if(INPUT MATCHES "[.]gz$")
+    find_program(gzip gzip REQUIRED)
+    set(annotation "${OUTPUT}.annotation.tmp")
+    execute_process(COMMAND "${gzip}" -dc -- "${INPUT}"
+        OUTPUT_FILE "${annotation}" RESULT_VARIABLE result)
+    if(NOT result STREQUAL "0")
+        file(REMOVE "${annotation}")
+        message(FATAL_ERROR "Could not decompress '${INPUT}'.")
+    endif()
+endif()
+
+set(generated "${OUTPUT}.tmp")
+execute_process(COMMAND ${EMU} "${GENERATOR}" "${generated}" "${FORMAT}"
+    "${annotation}" "${ASSEMBLY}" "${RELEASE}" "${SOURCE}" ${SUBSETS}
+    RESULT_VARIABLE result)
+if(NOT annotation STREQUAL INPUT)
+    file(REMOVE "${annotation}")
+endif()
+if(NOT result STREQUAL "0")
+    file(REMOVE "${generated}")
+    message(FATAL_ERROR "Annotation catalog generation failed for '${INPUT}'.")
+endif()
+file(RENAME "${generated}" "${OUTPUT}")

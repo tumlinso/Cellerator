@@ -1,11 +1,13 @@
 # Cellerator Components
 
-`components/` contains repositories or integrations whose dependency boundary
-must remain explicit. A directory here belongs to one of two categories:
+`components/` contains Cellerator features with explicit build and dependency
+boundaries. It includes the following categories:
 
-1. a **framework adapter**, which translates an external framework boundary
+1. a **native component**, such as Velocity, Preprocess, or Neighbors, which
+   owns an additional capability built on Cellerator's numerical contracts;
+2. a **framework adapter**, which translates an external framework boundary
    into Cellerator-owned contracts; or
-2. a **privileged compiler component**, which may compose Cellerator with
+3. a **privileged compiler component**, which may compose Cellerator with
    higher-level compilation, storage, placement, or runtime services without
    becoming part of libCellerator.
 

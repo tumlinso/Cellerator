@@ -57,7 +57,7 @@ target_include_directories(cellerator_tokenization PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(cellerator_tokenization PUBLIC
     Cellerator::headers
-    Cellerator::aten_ops Cellerator::aten_runtime Cellerator::biology)
+    Cellerator::aten_ops Cellerator::aten_runtime Cellerator::annotation)
 target_compile_features(cellerator_tokenization PUBLIC cxx_std_20)
 set_target_properties(cellerator_tokenization PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
@@ -89,7 +89,7 @@ if(CELLERATOR_ENABLE_MODULES)
     target_include_directories(cellerator_tokenizers_interface PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-    target_link_libraries(cellerator_tokenizers_interface PUBLIC Cellerator::headers Cellerator::aten_runtime Cellerator::biology)
+    target_link_libraries(cellerator_tokenizers_interface PUBLIC Cellerator::headers Cellerator::aten_runtime Cellerator::annotation)
     target_sources(cellerator_tokenizers_interface PUBLIC FILE_SET CXX_MODULES
         BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/src"
         FILES "${CMAKE_CURRENT_LIST_DIR}/src/cellerator.tokenizers.ccm")
@@ -133,7 +133,7 @@ function(cellerator_write_tokenization_package_config)
         "${cellerator_tokenization_cuda_dependency}"
         "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorAtenOpsTargets.cmake\")\n"
         "set(Cellerator_aten_ops_FOUND TRUE)\n"
-        "if(\"tokenization\" IN_LIST Cellerator_FIND_COMPONENTS AND TARGET Cellerator::biology)\n"
+        "if(\"tokenization\" IN_LIST Cellerator_FIND_COMPONENTS AND TARGET Cellerator::annotation)\n"
         "  include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorTokenizationTargets.cmake\")\n"
         "  if(EXISTS \"\${CMAKE_CURRENT_LIST_DIR}/CelleratorTokenizersModuleTargets.cmake\")\n"
         "    include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorTokenizersModuleTargets.cmake\")\n"

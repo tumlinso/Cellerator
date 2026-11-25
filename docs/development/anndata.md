@@ -8,11 +8,9 @@ selection. Standalone consumers can use `import anndatapp;` and link
 
 ## Build and import
 
-Initialize the `packages/anndatapp` submodule for the standard native build.
-Set `CELLERATOR_ENABLE_ANNDATA=OFF` to omit the component. To build it
-independently of CCell, set `CELLERATOR_BUILD_CCELL=OFF` and
-`CELLERATOR_ENABLE_ANNDATA=ON`. AnnData++ controls its individual backends
-through `ANNDATAPP_ENABLE_HDF5` and `ANNDATAPP_ENABLE_ZARR`.
+Initialize the `packages/anndatapp` submodule and set
+`CELLERATOR_ENABLE_ANNDATA=ON` to build the component. AnnData++ controls its
+backends through `ANNDATAPP_ENABLE_HDF5` and `ANNDATAPP_ENABLE_ZARR`.
 
 ```cmake
 find_package(Cellerator CONFIG REQUIRED COMPONENTS anndata)

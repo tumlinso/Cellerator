@@ -171,7 +171,7 @@ Each tokenizer holds a shared, read-only
 token IDs. Optional metadata records the annotation source, organism, assembly
 and release. The existing integer `Vocabulary` remains the mapping machinery.
 Vocabulary construction belongs to `GeneVocabulary`; mechanisms consume a
-completed vocabulary. No organism-specific reference annotation is bundled.
+completed vocabulary. Compiled reference catalogs are opt-in at build time.
 
 Include `<Cellerator/compute/tokenization/gene_tokenizer.hh>` and link
 `Cellerator::tokenization`:
@@ -196,7 +196,8 @@ virtual execution signature remain deferred. There is no tagged universal
 
 ### Building and preserving a gene vocabulary
 
-Biology defines the annotation format and owns the plain GTF and GFF3 reader.
+The Annotation component owns the plain GTF and GFF3 reader and the optional
+compiled gene catalogs.
 `GeneVocabulary::from_catalog()` takes a loaded `biology::GeneAnnotation` and
 assigns token IDs. Call `biology::read_gene_annotation()` to load a file.
 The reader defaults to the `"gene"` feature type. GTF reads `gene_id` and

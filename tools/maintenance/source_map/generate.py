@@ -126,8 +126,8 @@ def classify(p):
                 'active source migration closure and focused owner checks',
                 'preserve historical bytes and qualification in Git and source-bound evidence')
     if p == 'src/compute/tokenization/gene_annotation.cc':
-        return ('former annotation reader path', 'components/biology/src/gene_annotation.cc',
-                'route format parsing to Biology and vocabulary construction to Tokenization',
+        return ('former annotation reader path', 'components/annotation/src/gene_annotation.cc',
+                'route format parsing to Annotation and vocabulary construction to Tokenization',
                 'record_canonical_native_source_move', 'historical source path', 'annotation reader and GeneVocabulary',
                 'annotation and vocabulary format tests', 'retain source-linked behavior and format evidence')
     moved_component_paths = {
@@ -163,14 +163,17 @@ def classify(p):
         return ('exact native sequence operations', 'src/ops/sequence targets Cellerator::sequence_ops and Cellerator::sequence_ops_cuda', 'retain exact scans, masks, borrowed detail queries, and bounded predicate preparation', 'retain_native_sequence_operations', 'host and optional specialized CUDA paths', 'native sequence callers and regulatory execution', 'tests/sequence, tests/execution/sequence, and bench/sequence', 'preserve ordering, capacity, and validity contracts')
     if p == 'packages/anndatapp':
         return ('pinned AnnData++ source dependency', 'AnnData++ upstream repository', 'bundle the indexed gitlink revision for the optional AnnData adapter', 'retain_pinned_anndatapp', 'standard native build includes H5AD and Zarr when their backends are enabled', 'anndatapp::anndatapp and Cellerator::anndata', 'pinned source archive and installed H5AD/Zarr consumer checks', 'keep upstream module and package names and update the pin explicitly')
-    if p.startswith('components/biology/'):
-        return ('native annotation catalog and GTF/GFF3 I/O', 'components/biology', 'optional host annotation component', 'retain_biology_annotation', 'plain-text annotation input', 'Cellerator::biology and GeneVocabulary', 'component annotation format checks', 'preserve identifiers, aliases, format selection and diagnostics')
+    if p.startswith('components/annotation/'):
+        return ('native annotation catalog and GTF/GFF3 I/O', 'components/annotation', 'optional host annotation component', 'retain_reference_annotation', 'plain-text annotation input', 'Cellerator::annotation and GeneVocabulary', 'component annotation format checks', 'preserve identifiers, aliases, format selection and diagnostics')
     if p.startswith('components/anndata/'):
         return ('AnnData++ backed reads into native views', 'components/anndata', 'optional native acquisition adapter', 'retain_anndata_adapter', 'AnnData++ backed array reads', 'Cellerator::anndata', 'component read and installed consumer checks', 'preserve native buffer ownership and the AnnData++ package boundary')
     if p in ('src/cellerator.ccm', 'src/tensor/cellerator.tensor-partition.ccm', 'cmake/CelleratorPrimaryModule.cmake'):
         return ('native primary C++ module interface', 'Cellerator::cellerator', 'export canonical tensor declarations through the primary module', 'retain_primary_module', 'host C++20 module frontend', 'import cellerator', 'tests/tensor/modules', 'preserve type identity with native headers')
-    if p.startswith('components/CCell/') or p == 'cmake/CelleratorCCell.cmake':
-        return ('native single-cell methods and component integration', 'components/CCell', 'route method behavior, references, and adapter code to the CCell component', 'retain_ccell_native_methods', 'host methods and optional AnnData++ borrowing adapter; imported evidence retains its original source identity', 'ccell::preprocess, ccell::velocity, ccell::ccell, and ccell::anndata_interop', 'native, installed-package, allocation, numerical-parity, and file-backed modeling checks by target', 'preserve borrowed layout and logical order, caller storage, and the separation of method and acquisition dependencies')
+    for component in ('velocity', 'preprocess', 'neighbors'):
+        if p.startswith(f'components/{component}/'):
+            return ('native numerical component', f'Cellerator::{component}', 'use the component target and its native interfaces', 'retain_native_method_component', 'host methods or CUDA routed search; imported evidence retains its original source identity', f'Cellerator::{component}', 'component regression and server validation', 'preserve borrowed layouts, ordering, and caller storage')
+    if p.startswith('tests/single_cell/'):
+        return ('single-cell component composition checks', 'tests/single_cell', 'exercise the direct native method targets together', 'retain_single_cell_composition_checks', 'build-tree, installed, and optional file-backed checks', 'Cellerator::preprocess and Cellerator::velocity', 'server validation', 'preserve independent AnnData discovery')
     if p == '.vscode/settings.json':
         return ('local editor configuration', '.vscode/settings.json', 'retain developer editor preferences without treating paths as package dependency authority', 'retain_editor_configuration', 'editor metadata only', 'local development tools', 'preserve existing preferences; builds use maintained CMake contracts', 'do not rewrite local developer settings as part of component detachment')
     if p.startswith(('components/CellShard/', 'src/preprocess/', 'src/ops/velocity/', 'tests/velocity/', 'include/Cellerator/interop/cellshard/', 'examples/torch/')) or p in {'cmake/CelleratorVelocity.cmake', 'cmake/CelleratorVelocityModule.cmake'}:

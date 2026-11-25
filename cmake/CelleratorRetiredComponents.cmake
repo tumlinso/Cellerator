@@ -1,6 +1,6 @@
 # Retained data/analysis source is outside supported substrate builds.
 include_guard(GLOBAL)
-foreach(retired IN ITEMS CELLERATOR_ENABLE_VELOCITY CELLERATOR_VELOCITY_BUILD_TESTS CELLERATOR_ENABLE_CELLSHARD CELLERATOR_BUILD_TORCH_EXAMPLES)
+foreach(retired IN ITEMS CELLERATOR_VELOCITY_BUILD_TESTS CELLERATOR_ENABLE_CELLSHARD CELLERATOR_BUILD_TORCH_EXAMPLES)
     if(${retired})
         message(FATAL_ERROR "${retired} is retired from supported Cellerator builds; retained source is inactive. See docs/development/component-ownership.md.")
     endif()
