@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace cellerator::ops::sequence {
+namespace cellerator::sequence {
 
 // The enclosing source binding carries identity, chunk origin, and halo ownership.
 struct sequence_event {
@@ -97,4 +97,4 @@ static_assert(__is_trivially_copyable(sequence_event));
 static_assert(__is_trivially_copyable(sequence_emit_counts));
 static_assert(__is_trivially_copyable(sequence_output_descriptor));
 
-} // namespace cellerator::ops::sequence
+} // namespace cellerator::sequence

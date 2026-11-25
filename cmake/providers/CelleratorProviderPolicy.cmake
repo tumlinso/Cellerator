@@ -28,11 +28,19 @@ set_property(CACHE CELLERATOR_PROVIDER_CACHE_POLICY PROPERTY STRINGS
 set(CELLERATOR_PROVIDER_MAX_REGISTERS "0" CACHE STRING
     "Optional provider-local CUDA register ceiling; zero leaves it unset")
 
-cellerator_require_choice(CELLERATOR_PROVIDER_SELECTION
+function(cellerator_require_provider_choice variable)
+    set(choices ${ARGN})
+    if(NOT "${${variable}}" IN_LIST choices)
+        string(JOIN ", " choice_list ${choices})
+        message(FATAL_ERROR "${variable} must be one of: ${choice_list}")
+    endif()
+endfunction()
+
+cellerator_require_provider_choice(CELLERATOR_PROVIDER_SELECTION
     baseline generic sm70 all)
-cellerator_require_choice(CELLERATOR_PROVIDER_TUNING_PROFILE
+cellerator_require_provider_choice(CELLERATOR_PROVIDER_TUNING_PROFILE
     precise throughput profiling)
-cellerator_require_choice(CELLERATOR_PROVIDER_CACHE_POLICY default ca cg)
+cellerator_require_provider_choice(CELLERATOR_PROVIDER_CACHE_POLICY default ca cg)
 if(NOT CELLERATOR_PROVIDER_MAX_REGISTERS MATCHES "^[0-9]+$")
     message(FATAL_ERROR
         "CELLERATOR_PROVIDER_MAX_REGISTERS must be a non-negative integer")

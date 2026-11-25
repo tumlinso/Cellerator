@@ -311,7 +311,7 @@ add_executable(celleratorBiologicalAbiHostTest
 )
 target_link_libraries(celleratorBiologicalAbiHostTest PRIVATE
     Cellerator::biological_abi
-    Cellerator::sequence_ops
+    Cellerator::sequence
 )
 set_target_properties(celleratorBiologicalAbiHostTest PROPERTIES
     CXX_STANDARD 20
@@ -336,8 +336,8 @@ add_executable(celleratorSequenceRegulatoryTest
     tests/execution/sequence/regulatory_test.cu
 )
 target_link_libraries(celleratorSequenceRegulatoryTest PRIVATE
-    Cellerator::sequence_integration
-    Cellerator::sequence_ops_cuda
+    cellerator_sequence_integration
+    Cellerator::sequence
 )
 set_target_properties(celleratorSequenceRegulatoryTest PROPERTIES
     CXX_STANDARD 20

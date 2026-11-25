@@ -9,7 +9,7 @@ python3 -B tests/substrate/install/check.py --build-dir /tmp/ce-is1-build-host -
 Baseline installs actual native host contracts, host relation/local arithmetic,
 fixed stage program, ordered incidence, Cellpack geometry, native effects, and
 host sequence operations. The package exports `Cellerator::effects` and
-`Cellerator::sequence_ops` from their native source owners. Requests for the
+`Cellerator::sequence` from their native source owners. Requests for the
 retired Moonshot components fail with an explicit diagnostic.
 
 The gate copies the installed SDK to a temporary independent prefix and compiles
@@ -31,7 +31,7 @@ fails configuration. There is no fallback to a sealed seed or another worktree.
 Baseline BUILD evidence does not establish that the integrated mode has passed.
 
 Producer roots are independently selectable with
-`-DCELLERATOR_SUBSTRATE_COMPONENTS=sequence_ops` (semicolon-separated names).
+`-DCELLERATOR_SUBSTRATE_COMPONENTS=sequence` (semicolon-separated names).
 Component dependency closure is explicit. Installed package imports load component
 exports lazily. Header presence alone does not imply all declared native GPU or
 adapter symbols are linked. `Cellerator::indexed_incidence` supports incidence only; the original full

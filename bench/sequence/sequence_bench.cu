@@ -1,5 +1,5 @@
 #include "workload.hh"
-#include <Cellerator/ops/sequence/dna2_cuda.hh>
+#include <Cellerator/sequence/cuda.hh>
 #include <cuda_runtime.h>
 
 namespace {
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
                "upload packed words and validity");
     cuda_check(cudaStreamSynchronize(stream), "complete upload");
     const double upload_ms = now_ms() - upload_start;
-    const tensor::PackedView device_view{words, words + input.word_count, input.word_count,
+    const seq::PackedView device_view{words, words + input.word_count, input.word_count,
                                          s.bases, input.validity_count};
 
     for (uint32_t i = 0; i < s.warmup; ++i)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/execution/sequence/bindings.hh>
-#include <Cellerator/ops/sequence/predicate_plan.hh>
+#include <Cellerator/sequence/predicate_plan.hh>
 #include <Cellerator/compute/operation/operation_core.hh>
 
 #include <stdint.h>
@@ -94,8 +94,8 @@ struct sequence_prepare_policy {
 };
 
 struct sequence_prepare_request {
-    const ops::sequence::sequence_predicate_program *program = nullptr;
-    const ops::sequence::prepared_predicate_plan *predicate_plan = nullptr;
+    const ::cellerator::sequence::sequence_predicate_program *program = nullptr;
+    const ::cellerator::sequence::prepared_predicate_plan *predicate_plan = nullptr;
     ::cellerator::structure::structure_id persistent_coordinate_structure{};
     ::cellerator::structure::structure_id persistent_regulatory_structure{};
     ::cellerator::structure::order_id persistent_coordinate_order{};
@@ -117,7 +117,7 @@ struct prepared_sequence_state {
     sequence_strategy strategy = sequence_strategy::automatic;
     uint8_t reserved = 0u;
     uint64_t predicate_semantic_hash = 0u;
-    ops::sequence::motif32_exact motif{};
+    ::cellerator::sequence::motif32_exact motif{};
     uint16_t predicate_id = 0u;
     uint16_t output_flags = 0u;
     ::cellerator::structure::structure_id persistent_coordinate_structure{};

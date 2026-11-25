@@ -1,9 +1,8 @@
-#include <Cellerator/ops/sequence/dna2_cuda.hh>
+#include <Cellerator/sequence/cuda.hh>
 
-#include "dna2_detail.hh"
+#include "operations_detail.hh"
 
-namespace cellerator::ops::sequence {
-namespace s = tensor::sequence;
+namespace cellerator::sequence {
 namespace {
 
 constexpr uint32_t threads = 256;
@@ -13,7 +12,7 @@ uint32_t scan_blocks(uint32_t n) noexcept {
     return blocks < 8192u ? blocks : 8192u;
 }
 
-__global__ void count_kernel(s::PackedView input, motif32_exact motif, uint32_t n, unsigned long long *out) {
+__global__ void count_kernel(PackedView input, motif32_exact motif, uint32_t n, unsigned long long *out) {
     __shared__ uint32_t block_count[threads];
     uint32_t lane = threadIdx.x, hits = 0;
     uint32_t stride = gridDim.x*blockDim.x;
@@ -28,7 +27,7 @@ __global__ void count_kernel(s::PackedView input, motif32_exact motif, uint32_t 
     if (!lane) atomicAdd(out, block_count[0]);
 }
 
-__global__ void emit_kernel(s::PackedView input, motif32_exact motif, uint32_t n, sequence_event *out,
+__global__ void emit_kernel(PackedView input, motif32_exact motif, uint32_t n, sequence_event *out,
                             uint32_t capacity, sequence_emit_counts *counts) {
     uint32_t stride = gridDim.x*blockDim.x;
     for (uint32_t i = blockIdx.x*blockDim.x + threadIdx.x; i < n; i += stride) {
@@ -45,17 +44,17 @@ __global__ void finish_emit(sequence_emit_counts *counts, uint32_t capacity) {
 }
 
 template<detail::Mask mask>
-__global__ void mask_kernel(s::BitPlanesView input, uint8_t code, uint32_t *out, uint32_t n) {
+__global__ void mask_kernel(BitPlanesView input, uint8_t code, uint32_t *out, uint32_t n) {
     uint32_t stride = gridDim.x*blockDim.x;
     for (uint32_t i = blockIdx.x*blockDim.x + threadIdx.x; i < n; i += stride)
         out[i] = detail::mask_word<mask>(input, i, code);
 }
 
 template<detail::Mask mask>
-cudaError_t mask_cuda(s::BitPlanesView input, uint8_t code, uint32_t *out, uint32_t capacity,
+cudaError_t mask_cuda(BitPlanesView input, uint8_t code, uint32_t *out, uint32_t capacity,
                       cudaStream_t stream) noexcept {
     if (detail::validate_mask(input, code, out, capacity) != Status::ok) return cudaErrorInvalidValue;
-    uint32_t n = s::word_count32(input.base_count);
+    uint32_t n = word_count32(input.base_count);
     if (!n) return cudaSuccess;
     mask_kernel<mask><<<scan_blocks(n), threads, 0, stream>>>(input, code, out, n);
     return cudaGetLastError();
@@ -63,9 +62,9 @@ cudaError_t mask_cuda(s::BitPlanesView input, uint8_t code, uint32_t *out, uint3
 
 }  // namespace
 
-cudaError_t count_motif_cuda(s::PackedView input, motif32_exact motif, unsigned long long *out,
+cudaError_t count_motif_cuda(PackedView input, motif32_exact motif, unsigned long long *out,
                              cudaStream_t stream) noexcept {
-    if (!out || !s::valid_view(input) || !dna2_valid_motif32_exact(motif)) return cudaErrorInvalidValue;
+    if (!out || !valid_view(input) || !dna2_valid_motif32_exact(motif)) return cudaErrorInvalidValue;
     uint32_t n = detail::window_count(input, motif);
     cudaError_t error = cudaMemsetAsync(out, 0, sizeof(*out), stream);
     if (error != cudaSuccess || !n) return error;
@@ -73,9 +72,9 @@ cudaError_t count_motif_cuda(s::PackedView input, motif32_exact motif, unsigned 
     return cudaGetLastError();
 }
 
-cudaError_t emit_motif_cuda(s::PackedView input, motif32_exact motif, sequence_event *out, uint32_t capacity,
+cudaError_t emit_motif_cuda(PackedView input, motif32_exact motif, sequence_event *out, uint32_t capacity,
                             sequence_emit_counts *counts, cudaStream_t stream) noexcept {
-    if ((capacity && !out) || !counts || !s::valid_view(input) || !dna2_valid_motif32_exact(motif))
+    if ((capacity && !out) || !counts || !valid_view(input) || !dna2_valid_motif32_exact(motif))
         return cudaErrorInvalidValue;
     uint32_t n = detail::window_count(input, motif);
     cudaError_t error = cudaMemsetAsync(counts, 0, sizeof(*counts), stream);
@@ -87,17 +86,17 @@ cudaError_t emit_motif_cuda(s::PackedView input, motif32_exact motif, sequence_e
     return cudaGetLastError();
 }
 
-cudaError_t base_mask_cuda(s::BitPlanesView input, uint8_t code, uint32_t *out, uint32_t capacity,
+cudaError_t base_mask_cuda(BitPlanesView input, uint8_t code, uint32_t *out, uint32_t capacity,
                            cudaStream_t stream) noexcept {
     return mask_cuda<detail::Mask::base>(input, code, out, capacity, stream);
 }
 
-cudaError_t gc_mask_cuda(s::BitPlanesView input, uint32_t *out, uint32_t capacity, cudaStream_t stream) noexcept {
+cudaError_t gc_mask_cuda(BitPlanesView input, uint32_t *out, uint32_t capacity, cudaStream_t stream) noexcept {
     return mask_cuda<detail::Mask::gc>(input, 0, out, capacity, stream);
 }
 
-cudaError_t cpg_start_mask_cuda(s::BitPlanesView input, uint32_t *out, uint32_t capacity, cudaStream_t stream) noexcept {
+cudaError_t cpg_start_mask_cuda(BitPlanesView input, uint32_t *out, uint32_t capacity, cudaStream_t stream) noexcept {
     return mask_cuda<detail::Mask::cpg>(input, 0, out, capacity, stream);
 }
 
-}  // namespace cellerator::ops::sequence
+}  // namespace cellerator::sequence

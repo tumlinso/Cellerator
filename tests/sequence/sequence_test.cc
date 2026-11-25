@@ -1,10 +1,9 @@
 #include "sequence_fixture.hh"
-#include <Cellerator/ops/sequence/predicate_plan.hh>
-#include <Cellerator/ops/sequence/source.hh>
+#include <Cellerator/sequence/predicate_plan.hh>
+#include <Cellerator/sequence/source.hh>
 
 namespace {
 using namespace sequence_test;
-namespace biology = cellerator::biology;
 
 static_assert(sizeof(seq::sequence_event) == 8u);
 static_assert(seq::sequence_predicate_abi_version == 1u);
@@ -27,13 +26,13 @@ void test_packing_and_scan() {
     }
     require((f.valid[2] >> 6u) == 0u, "nonzero tail validity");
     uint64_t canary[] = {129u, 456u};
-    require(layout::pack_ascii(f.bases, base_count, canary, 1u, canary + 1u, 1u, &f.packed)
-                == layout::Status::insufficient_capacity
+    require(seq::pack_ascii(f.bases, base_count, canary, 1u, canary + 1u, 1u, &f.packed)
+                == seq::Status::insufficient_capacity
         && canary[0] == 129u && canary[1] == 456u && f.packed.words == f.words,
         "insufficient pack capacity changed contents or binding");
     uint32_t spare[3] = {9u, 8u, 7u};
-    require(layout::pack_planes(f.packed, {spare, spare + 1u, spare + 2u, 1u})
-                == layout::Status::insufficient_capacity
+    require(seq::pack_planes(f.packed, {spare, spare + 1u, spare + 2u, 1u})
+                == seq::Status::insufficient_capacity
         && spare[0] == 9u && spare[1] == 8u && spare[2] == 7u, "short plane output changed");
 
     uint32_t positions[base_count];
@@ -63,7 +62,7 @@ void test_packing_and_scan() {
     count = 51u;
     require(seq::count_motif(f.packed, forged, &count) != seq::Status::ok && count == 51u,
             "forged motif changed count");
-    tensor::PackedView malformed = f.packed;
+    seq::PackedView malformed = f.packed;
     --malformed.word_count;
     require(seq::count_motif(malformed, f.motif, &count) != seq::Status::ok && count == 51u,
             "short input changed count");
@@ -72,8 +71,8 @@ void test_packing_and_scan() {
 
     // Same frame and backing buffers, smaller input and new values.
     f.bases[0] = 'A'; f.bases[1] = 'C'; f.bases[2] = 'G';
-    require(layout::pack_ascii(f.bases, 3u, f.words, word_count, f.validity, 2u, &f.packed)
-                == layout::Status::ok
+    require(seq::pack_ascii(f.bases, 3u, f.words, word_count, f.validity, 2u, &f.packed)
+                == seq::Status::ok
         && seq::count_motif(f.packed, f.motif, &count) == seq::Status::ok && count == 1u
         && f.packed.words == f.words, "smaller input in existing buffers");
 }
@@ -83,7 +82,7 @@ void test_masks() {
     make_fixture(&f);
     uint32_t cytosine[word_count], gc[word_count], cpg[word_count], actual[word_count + 1u]{};
     oracle_masks(f, cytosine, gc, cpg);
-    tensor::BitPlanesView bits{f.low, f.high, f.valid, word_count, base_count};
+    seq::BitPlanesView bits{f.low, f.high, f.valid, word_count, base_count};
     require(seq::match_exact_at(bits, 30u, f.motif) && seq::match_exact_at(bits, 62u, f.motif)
         && !seq::match_exact_at(bits, 45u, f.motif) && !seq::match_exact_at(bits, 68u, f.motif),
         "borrowed shifted-window match across a word, validity, or tail boundary");
@@ -118,7 +117,7 @@ void test_masks() {
 void test_motif_extents() {
     Fixture f{};
     make_fixture(&f);
-    const tensor::BitPlanesView bits{f.low, f.high, f.valid, word_count, base_count};
+    const seq::BitPlanesView bits{f.low, f.high, f.valid, word_count, base_count};
     const uint8_t lengths[] = {1u, 8u, 16u, 31u, 32u};
     for (uint8_t length : lengths) {
         seq::motif32_exact motif{};
@@ -223,7 +222,7 @@ void test_borrowed_detail() {
     constexpr uint64_t origin = 1000u;
     const seq::source_view source{f.packed, {{17u, 3u}, 1u, 4u, origin, base_count,
                                              4u, base_count - 2u, 4u, 2u}, {8u}, 5u};
-    const biology::SequenceStrand strands[] = {biology::SequenceStrand::forward, biology::SequenceStrand::reverse};
+    const seq::SequenceStrand strands[] = {seq::SequenceStrand::forward, seq::SequenceStrand::reverse};
     const seq::support_domain domains[] = {seq::support_domain::owned, seq::support_domain::include_halos};
     for (auto strand : strands) {
         for (auto domain : domains) {
@@ -238,7 +237,7 @@ void test_borrowed_detail() {
                     && result.source.value_generation == source.value_generation,
                     "source detail status or provenance");
                 uint32_t hits = 0u, invalid = 0u, excluded = 0u;
-                const bool reverse = strand == biology::SequenceStrand::reverse;
+                const bool reverse = strand == seq::SequenceStrand::reverse;
                 for (uint32_t i = 0; i < base_count; ++i) {
                     const uint32_t p = reverse ? base_count - i - 1u : i;
                     const int b = code(f.bases[p]);

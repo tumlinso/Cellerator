@@ -53,8 +53,8 @@ catalog.
 
 Every root CMake build requires CMake 3.28 or newer, Ninja 1.11 or newer,
 and Clang 18 or newer. Native C++ and CUDA targets require C++20 or newer.
-Set `CELLERATOR_ENABLE_MODULES=ON` to build the host tensor module and, when
-NN is enabled, the NN module. This option defaults to off. Module builds
+Set `CELLERATOR_ENABLE_MODULES=ON` to build the host tensor and sequence modules. When
+NN is enabled, this option also builds its module. The option defaults to off. Module builds
 require a matching `clang-scan-deps` executable. Set
 `CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS` if autodetection is unsuitable.
 Module consumers use strict C++20 or C++23. CUDA translation units use the

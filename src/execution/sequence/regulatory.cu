@@ -61,8 +61,8 @@ bool same_relation_cache_key(
 }
 
 bool plans_match(
-    const ops::sequence::prepared_predicate_plan &left,
-    const ops::sequence::prepared_predicate_plan &right) noexcept {
+    const ::cellerator::sequence::prepared_predicate_plan &left,
+    const ::cellerator::sequence::prepared_predicate_plan &right) noexcept {
     if (left.version != right.version || left.node_count != right.node_count
         || left.live_node_count != right.live_node_count
         || left.output_count != right.output_count
@@ -74,37 +74,37 @@ bool plans_match(
         || left.semantic_hash != right.semantic_hash)
         return false;
     for (uint16_t index = 0u;
-         index < ops::sequence::sequence_program_max_nodes; ++index)
+         index < ::cellerator::sequence::sequence_program_max_nodes; ++index)
         if (left.original_to_prepared[index]
             != right.original_to_prepared[index]) return false;
     return true;
 }
 
 bool supported_exact_mask_program(
-    const ops::sequence::sequence_predicate_program &program,
-    const ops::sequence::prepared_predicate_plan &plan) noexcept {
+    const ::cellerator::sequence::sequence_predicate_program &program,
+    const ::cellerator::sequence::prepared_predicate_plan &plan) noexcept {
     if (program.node_count != 1u || program.output_count != 1u
         || program.exact_motif_count != 1u || program.allowed_motif_count != 0u
-        || plan.family != ops::sequence::predicate_lowering_family::exact_scan)
+        || plan.family != ::cellerator::sequence::predicate_lowering_family::exact_scan)
         return false;
-    const ops::sequence::predicate_instruction &node = program.nodes[0];
-    const ops::sequence::predicate_output &output = program.outputs[0];
-    return node.opcode == ops::sequence::predicate_opcode::exact_motif
-        && node.result_kind == ops::sequence::predicate_value_kind::mask
-        && node.input_a == ops::sequence::sequence_program_no_input
-        && node.input_b == ops::sequence::sequence_program_no_input
+    const ::cellerator::sequence::predicate_instruction &node = program.nodes[0];
+    const ::cellerator::sequence::predicate_output &output = program.outputs[0];
+    return node.opcode == ::cellerator::sequence::predicate_opcode::exact_motif
+        && node.result_kind == ::cellerator::sequence::predicate_value_kind::mask
+        && node.input_a == ::cellerator::sequence::sequence_program_no_input
+        && node.input_b == ::cellerator::sequence::sequence_program_no_input
         && node.immediate == 0u && output.node == 0u
-        && output.mode == ops::sequence::sequence_output_mode::mask
-        && (output.flags & ops::sequence::sequence_event_reverse_strand) == 0u;
+        && output.mode == ::cellerator::sequence::sequence_output_mode::mask
+        && (output.flags & ::cellerator::sequence::sequence_event_reverse_strand) == 0u;
 }
 
 __device__ __forceinline__ bool predicate_matches(
-    tensor::sequence::BitPlanesView input,
+    ::cellerator::sequence::BitPlanesView input,
     const execution::sequence_domain &domain,
     uint32_t anchor,
-    ops::sequence::motif32_exact motif) noexcept {
+    ::cellerator::sequence::motif32_exact motif) noexcept {
     return anchor >= domain.owned_begin && anchor < domain.owned_end
-        && ops::sequence::match_exact_at(input, anchor, motif);
+        && ::cellerator::sequence::match_exact_at(input, anchor, motif);
 }
 
 __device__ __forceinline__ uint32_t find_regulatory_element(
@@ -138,9 +138,9 @@ __device__ __forceinline__ void accumulate_element(
 }
 
 __global__ void materialize_predicate_mask_kernel(
-    tensor::sequence::BitPlanesView input,
+    ::cellerator::sequence::BitPlanesView input,
     execution::sequence_domain domain,
-    ops::sequence::motif32_exact motif,
+    ::cellerator::sequence::motif32_exact motif,
     uint32_t *mask) {
     const uint32_t word = blockIdx.x * blockDim.x + threadIdx.x;
     if (word >= input.word_count) return;
@@ -172,9 +172,9 @@ __global__ void accumulate_materialized_mask_kernel(
 }
 
 __global__ void materialize_regulatory_relation_kernel(
-    tensor::sequence::BitPlanesView input,
+    ::cellerator::sequence::BitPlanesView input,
     execution::sequence_domain domain,
-    ops::sequence::motif32_exact motif,
+    ::cellerator::sequence::motif32_exact motif,
     regulatory_projection_view projection,
     uint16_t predicate_id,
     uint32_t *elements) {
@@ -199,9 +199,9 @@ __global__ void accumulate_materialized_relation_kernel(
 }
 
 __global__ void fused_predicate_accumulate_kernel(
-    tensor::sequence::BitPlanesView input,
+    ::cellerator::sequence::BitPlanesView input,
     execution::sequence_domain domain,
-    ops::sequence::motif32_exact motif,
+    ::cellerator::sequence::motif32_exact motif,
     regulatory_projection_view projection,
     uint16_t predicate_id,
     const float *weights,
@@ -429,14 +429,14 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
         || request.predicate_plan == nullptr)
         return fail(operation_core::operation_status_code::invalid_argument,
             "sequence preparation requires program, predicate plan, and outputs");
-    if (ops::sequence::verify_sequence_predicate_program(*request.program)
-        != ops::sequence::predicate_plan_status::ok)
+    if (::cellerator::sequence::verify_sequence_predicate_program(*request.program)
+        != ::cellerator::sequence::predicate_plan_status::ok)
         return fail(operation_core::operation_status_code::unsupported_problem,
             "sequence predicate program is invalid");
-    ops::sequence::prepared_predicate_plan expected{};
-    if (ops::sequence::prepare_sequence_predicate_program(
+    ::cellerator::sequence::prepared_predicate_plan expected{};
+    if (::cellerator::sequence::prepare_sequence_predicate_program(
             *request.program, &expected)
-            != ops::sequence::predicate_plan_status::ok
+            != ::cellerator::sequence::predicate_plan_status::ok
         || !plans_match(expected, *request.predicate_plan))
         return fail(operation_core::operation_status_code::unsupported_problem,
             "prepared predicate plan is stale");
@@ -487,7 +487,7 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
             request.coordinate_to_regulatory.source_axis.partition,
             request.regulatory_relation_axis.partition)
         || request.source_domain.local_base_count == 0u
-        || request.source_domain.local_base_count > tensor::sequence::max_chunk_bases
+        || request.source_domain.local_base_count > ::cellerator::sequence::max_chunk_bases
         || request.regulatory.interval_count
             != request.coordinate_to_regulatory.logical_edge_count
         || request.regulatory.edge_count

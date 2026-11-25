@@ -1,6 +1,5 @@
 #include "sequence_fixture.hh"
-#include <Cellerator/layout/sequence/dna2_cuda.hh>
-#include <Cellerator/ops/sequence/dna2_cuda.hh>
+#include <Cellerator/sequence/cuda.hh>
 #include <cuda_runtime.h>
 
 namespace {
@@ -61,10 +60,10 @@ int main() {
     cuda_check(cudaMemcpyAsync(device->validity, f.validity, sizeof(f.validity), cudaMemcpyHostToDevice, stream),
                "upload packed validity");
 
-    const tensor::PackedView packed{device->words, device->validity, word_count, base_count, 2u};
-    const tensor::BitPlanesView bits{device->low, device->high, device->valid, word_count, base_count};
-    const tensor::MutableBitPlanesView output{device->low, device->high, device->valid, word_count};
-    cuda_check(layout::pack_planes_cuda(packed, output, stream), "CUDA word-to-plane conversion");
+    const seq::PackedView packed{device->words, device->validity, word_count, base_count, 2u};
+    const seq::BitPlanesView bits{device->low, device->high, device->valid, word_count, base_count};
+    const seq::MutableBitPlanesView output{device->low, device->high, device->valid, word_count};
+    cuda_check(seq::pack_planes_cuda(packed, output, stream), "CUDA word-to-plane conversion");
     cuda_check(seq::base_mask_cuda(bits, 1u, device->cytosine, word_count, stream), "CUDA cytosine mask");
     cuda_check(seq::gc_mask_cuda(bits, device->gc, word_count, stream), "CUDA GC mask");
     cuda_check(seq::cpg_start_mask_cuda(bits, device->cpg, word_count, stream), "CUDA CpG mask");

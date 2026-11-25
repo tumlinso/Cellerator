@@ -1,16 +1,14 @@
 #pragma once
 
-#include <Cellerator/layout/sequence/dna2.hh>
-#include <Cellerator/ops/sequence/dna2.hh>
+#include <Cellerator/sequence/dna2.hh>
+#include <Cellerator/sequence/operations.hh>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 namespace sequence_test {
 
-namespace layout = cellerator::layout::sequence;
-namespace seq = cellerator::ops::sequence;
-namespace tensor = cellerator::tensor::sequence;
+namespace seq = cellerator::sequence;
 
 inline void require(bool ok, const char *message) {
     if (ok) return;
@@ -29,7 +27,7 @@ struct Fixture {
     char bases[base_count];
     uint64_t words[word_count], validity[2];
     uint32_t low[word_count], high[word_count], valid[word_count];
-    tensor::PackedView packed{};
+    seq::PackedView packed{};
     seq::motif32_exact motif{};
 };
 
@@ -41,10 +39,10 @@ inline void make_fixture(Fixture *f) {
     f->bases[45] = 'A'; f->bases[46] = 'N'; f->bases[47] = 'G';
     f->bases[62] = 'A'; f->bases[63] = 'C'; f->bases[64] = 'G';
     f->bases[68] = 'C';
-    require(layout::pack_ascii(f->bases, base_count, f->words, word_count,
-                              f->validity, 2u, &f->packed) == layout::Status::ok, "pack reference fixture");
-    require(layout::pack_planes(f->packed, {f->low, f->high, f->valid, word_count})
-                == layout::Status::ok, "pack reference planes");
+    require(seq::pack_ascii(f->bases, base_count, f->words, word_count,
+                              f->validity, 2u, &f->packed) == seq::Status::ok, "pack reference fixture");
+    require(seq::pack_planes(f->packed, {f->low, f->high, f->valid, word_count})
+                == seq::Status::ok, "pack reference planes");
     // Two-bit A/C/G = 0/1/2, least significant field first.
     require(seq::dna2_normalize_motif32_exact(0x24u, 3u, 1u, 17u, &f->motif), "normalize fixture motif");
 }

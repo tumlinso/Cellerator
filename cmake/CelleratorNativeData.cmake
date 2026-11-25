@@ -30,6 +30,13 @@ function(cellerator_add_native_data_memory_cuda_owner)
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
     target_link_libraries(cellerator_memory_cuda PUBLIC CUDA::cudart)
+    if(CELLERATOR_BUILD_TESTS)
+        add_executable(cellerator_tiled_buffer_test
+            "${PROJECT_SOURCE_DIR}/tests/memory/tiled_buffer_test.cc")
+        target_link_libraries(cellerator_tiled_buffer_test PRIVATE Cellerator::memory_cuda)
+        add_test(NAME cellerator_tiled_buffer COMMAND cellerator_tiled_buffer_test)
+        set_tests_properties(cellerator_tiled_buffer PROPERTIES SKIP_RETURN_CODE 77)
+    endif()
     # Keep the one canonical memory target in a small export set.  Both the
     # full SDK and the factorized-interaction component import this file, so
     # their target-export sets never define memory_cuda twice.

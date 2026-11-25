@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Cellerator/biology/sequence.hh>
+#include <Cellerator/sequence/chunk.hh>
 #include <Cellerator/execution/validation.hh>
-#include <Cellerator/tensor/sequence/dna2.hh>
+#include <Cellerator/sequence/dna2.hh>
 
 #include <stdint.h>
 
@@ -10,9 +10,9 @@ namespace cellerator::execution::sequence {
 
 // The persistent genome is resolved by the caller to genome_domain. Compact
 // launch metadata preserves the existing biological operand ABI.
-inline bool bind_sequence_chunk(const biology::SequenceChunk &source,
+inline bool bind_sequence_chunk(const ::cellerator::sequence::SequenceChunk &source,
     domain_handle genome_domain, sequence_domain *out) noexcept {
-    if (!out || !biology::valid_sequence_chunk(source)
+    if (!out || !::cellerator::sequence::valid_sequence_chunk(source)
         || source.contig > UINT32_MAX || source.chunk > UINT32_MAX
         || source.halo_left > UINT16_MAX || source.halo_right > UINT16_MAX)
         return false;
@@ -28,10 +28,10 @@ inline bool bind_sequence_chunk(const biology::SequenceChunk &source,
 
 // Borrow the same payload with launch identity and placement. The runtime
 // requires explicit validity for every nonempty sequence.
-inline bool bind_sequence_planes(tensor::sequence::BitPlanesView planes,
+inline bool bind_sequence_planes(::cellerator::sequence::BitPlanesView planes,
     axis_identity axis, device_location location,
     biological_operand_view *out) noexcept {
-    if (!out || planes.base_count > tensor::sequence::max_chunk_bases) return false;
+    if (!out || planes.base_count > ::cellerator::sequence::max_chunk_bases) return false;
     const bit_plane_view bits{axis, planes.low, planes.high, planes.validity,
         location, planes.word_count, planes.base_count};
     if (validate_bit_plane(bits) != biological_validation_code::ok) return false;
@@ -41,7 +41,7 @@ inline bool bind_sequence_planes(tensor::sequence::BitPlanesView planes,
     return true;
 }
 
-constexpr tensor::sequence::BitPlanesView sequence_planes(
+constexpr ::cellerator::sequence::BitPlanesView sequence_planes(
     const bit_plane_view &view) noexcept {
     return {view.low, view.high, view.validity, view.word_count, view.base_count};
 }

@@ -1,6 +1,6 @@
-#include <Cellerator/ops/sequence/motif.hh>
+#include <Cellerator/sequence/motif.hh>
 
-namespace cellerator::ops::sequence {
+namespace cellerator::sequence {
 namespace {
 
 bool valid_motif_length(uint8_t length, uint8_t max_mismatches) noexcept {
@@ -81,7 +81,7 @@ bool dna2_normalize_motif32_allowed(uint32_t allow_A, uint32_t allow_C,
     motif32_allowed *output) noexcept {
     if (!output || !valid_motif_length(length, max_mismatches)
         || !valid_allowed_policy(strand_mode, palindrome_policy)) return false;
-    const uint32_t active = tensor::sequence::low_mask32(length);
+    const uint32_t active = low_mask32(length);
     if (((allow_A | allow_C | allow_G | allow_T) & active) != active) return false;
     *output = {allow_A & active, allow_C & active, allow_G & active, allow_T & active,
         active, length, max_mismatches, motif_id, strand_mode, palindrome_policy};
@@ -91,7 +91,7 @@ bool dna2_normalize_motif32_allowed(uint32_t allow_A, uint32_t allow_C,
 bool dna2_valid_motif32_allowed(const motif32_allowed &motif) noexcept {
     if (!valid_motif_length(motif.length, motif.max_mismatches)
         || !valid_allowed_policy(motif.strand_mode, motif.palindrome_policy)) return false;
-    const uint32_t active = tensor::sequence::low_mask32(motif.length);
+    const uint32_t active = low_mask32(motif.length);
     return motif.active_mask == active
         && (motif.allow_A | motif.allow_C | motif.allow_G | motif.allow_T) == active;
 }
@@ -137,4 +137,4 @@ bool dna2_match_allowed_window(uint32_t low, uint32_t high, uint32_t validity_ma
     return true;
 }
 
-} // namespace cellerator::ops::sequence
+} // namespace cellerator::sequence

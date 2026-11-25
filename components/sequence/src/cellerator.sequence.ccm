@@ -1,0 +1,102 @@
+module;
+
+#include <Cellerator/sequence/operations.hh>
+#include <Cellerator/sequence/predicate_plan.hh>
+#include <Cellerator/sequence/source.hh>
+
+export module cellerator.sequence;
+
+export namespace cellerator::sequence {
+using ::cellerator::sequence::EncodedNucleotide;
+using ::cellerator::sequence::SequenceChunk;
+using ::cellerator::sequence::SequenceStrand;
+using ::cellerator::sequence::encode_nucleotide;
+using ::cellerator::sequence::valid_sequence_chunk;
+
+using ::cellerator::sequence::BitPlanesView;
+using ::cellerator::sequence::MutableBitPlanesView;
+using ::cellerator::sequence::PackedView;
+using ::cellerator::sequence::Status;
+using ::cellerator::sequence::base_code;
+using ::cellerator::sequence::gather_even_bits;
+using ::cellerator::sequence::low_mask32;
+using ::cellerator::sequence::max_chunk_bases;
+using ::cellerator::sequence::pack_ascii;
+using ::cellerator::sequence::pack_planes;
+using ::cellerator::sequence::packed_window;
+using ::cellerator::sequence::plane_window;
+using ::cellerator::sequence::split_word;
+using ::cellerator::sequence::valid_view;
+using ::cellerator::sequence::valid_window;
+using ::cellerator::sequence::validity_word32;
+using ::cellerator::sequence::word_count32;
+using ::cellerator::sequence::word_count64;
+
+using ::cellerator::sequence::dna2_allowed_is_palindrome;
+using ::cellerator::sequence::dna2_allowed_match_result;
+using ::cellerator::sequence::dna2_allowed_mismatch_mask;
+using ::cellerator::sequence::dna2_forward_strand_bit;
+using ::cellerator::sequence::dna2_make_motif32_allowed;
+using ::cellerator::sequence::dna2_match_allowed_window;
+using ::cellerator::sequence::dna2_normalize_motif32_allowed;
+using ::cellerator::sequence::dna2_normalize_motif32_exact;
+using ::cellerator::sequence::dna2_palindrome_policy;
+using ::cellerator::sequence::dna2_reverse_complement_allowed;
+using ::cellerator::sequence::dna2_reverse_strand_bit;
+using ::cellerator::sequence::dna2_strand_mode;
+using ::cellerator::sequence::dna2_valid_motif32_allowed;
+using ::cellerator::sequence::dna2_valid_motif32_exact;
+using ::cellerator::sequence::match_exact_at;
+using ::cellerator::sequence::motif32_allowed;
+using ::cellerator::sequence::motif32_exact;
+using ::cellerator::sequence::motif_mismatches;
+
+using ::cellerator::sequence::sequence_buffer_location_valid;
+using ::cellerator::sequence::sequence_buffer_residency;
+using ::cellerator::sequence::sequence_emit_counts;
+using ::cellerator::sequence::sequence_emit_counts_valid;
+using ::cellerator::sequence::sequence_event;
+using ::cellerator::sequence::sequence_event_forward_strand;
+using ::cellerator::sequence::sequence_event_ordering;
+using ::cellerator::sequence::sequence_event_reverse_strand;
+using ::cellerator::sequence::sequence_output_descriptor;
+using ::cellerator::sequence::sequence_output_descriptor_valid;
+using ::cellerator::sequence::sequence_output_mode;
+
+using ::cellerator::sequence::base_mask;
+using ::cellerator::sequence::count_motif;
+using ::cellerator::sequence::cpg_start_mask;
+using ::cellerator::sequence::emit_motif;
+using ::cellerator::sequence::gc_mask;
+
+using ::cellerator::sequence::predicate_instruction;
+using ::cellerator::sequence::predicate_lowering_family;
+using ::cellerator::sequence::predicate_opcode;
+using ::cellerator::sequence::predicate_output;
+using ::cellerator::sequence::predicate_plan_status;
+using ::cellerator::sequence::predicate_shift_right;
+using ::cellerator::sequence::predicate_value_kind;
+using ::cellerator::sequence::prepare_sequence_predicate_program;
+using ::cellerator::sequence::prepared_predicate_plan;
+using ::cellerator::sequence::sequence_predicate_abi_version;
+using ::cellerator::sequence::sequence_predicate_program;
+using ::cellerator::sequence::sequence_predicate_program_hash;
+using ::cellerator::sequence::sequence_program_max_motifs;
+using ::cellerator::sequence::sequence_program_max_nodes;
+using ::cellerator::sequence::sequence_program_max_outputs;
+using ::cellerator::sequence::sequence_program_max_span;
+using ::cellerator::sequence::sequence_program_no_input;
+using ::cellerator::sequence::sequence_program_version;
+using ::cellerator::sequence::verify_sequence_predicate_program;
+
+using ::cellerator::sequence::count_valid_source;
+using ::cellerator::sequence::detail_record;
+using ::cellerator::sequence::detail_result;
+using ::cellerator::sequence::emit_exact_detail;
+using ::cellerator::sequence::question_status;
+using ::cellerator::sequence::sequence_question;
+using ::cellerator::sequence::source_stamp;
+using ::cellerator::sequence::source_view;
+using ::cellerator::sequence::stamp;
+using ::cellerator::sequence::support_domain;
+}

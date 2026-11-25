@@ -1,14 +1,14 @@
 add_executable(cellerator_sequence_test "${CMAKE_CURRENT_LIST_DIR}/sequence_test.cc")
-target_link_libraries(cellerator_sequence_test PRIVATE Cellerator::sequence_ops)
+target_link_libraries(cellerator_sequence_test PRIVATE Cellerator::sequence)
 target_compile_features(cellerator_sequence_test PRIVATE cxx_std_20)
 if(CELLERATOR_BUILD_TESTS)
     add_test(NAME sequence_host COMMAND cellerator_sequence_test)
     set_tests_properties(sequence_host PROPERTIES LABELS sequence TIMEOUT 60)
 endif()
 
-if(TARGET Cellerator::sequence_ops_cuda)
+if(CELLERATOR_HAS_CUDA)
     add_executable(cellerator_sequence_cuda_test "${CMAKE_CURRENT_LIST_DIR}/sequence_cuda_test.cu")
-    target_link_libraries(cellerator_sequence_cuda_test PRIVATE Cellerator::sequence_ops_cuda CUDA::cudart)
+    target_link_libraries(cellerator_sequence_cuda_test PRIVATE Cellerator::sequence)
     set_target_properties(cellerator_sequence_cuda_test PROPERTIES
         CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
     if(CELLERATOR_BUILD_TESTS)

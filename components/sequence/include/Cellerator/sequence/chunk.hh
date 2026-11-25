@@ -3,7 +3,7 @@
 #include <Cellerator/structure/identity.hh>
 #include <stdint.h>
 
-namespace cellerator::biology {
+namespace cellerator::sequence {
 
 enum class SequenceStrand : uint8_t { forward = 1, reverse = 2 };
 
@@ -38,4 +38,4 @@ constexpr bool valid_sequence_chunk(const SequenceChunk &chunk) noexcept {
             || chunk.global_base_begin <= UINT64_MAX - (chunk.base_count - 1u));
 }
 
-} // namespace cellerator::biology
+} // namespace cellerator::sequence

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Cellerator/layout/sequence/dna2.hh>
-#include <Cellerator/ops/sequence/dna2.hh>
-#include <Cellerator/ops/sequence/predicate_plan.hh>
+#include <Cellerator/sequence/dna2.hh>
+#include <Cellerator/sequence/operations.hh>
+#include <Cellerator/sequence/predicate_plan.hh>
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -11,9 +11,7 @@
 
 namespace sequence_bench {
 
-namespace layout = cellerator::layout::sequence;
-namespace seq = cellerator::ops::sequence;
-namespace tensor = cellerator::tensor::sequence;
+namespace seq = cellerator::sequence;
 
 inline constexpr char alphabet[] = "ACGT";
 inline constexpr char motif_text[] = "ACGTTGCAAGTCTCGA";
@@ -85,11 +83,11 @@ inline Input make_input(uint32_t n) {
     return {bases, packed, packed + words, words, validity, expected};
 }
 
-inline tensor::PackedView pack(const Input &input, uint32_t n) {
-    tensor::PackedView view{};
-    require(layout::pack_ascii(input.bases, n, input.words, input.word_count,
+inline seq::PackedView pack(const Input &input, uint32_t n) {
+    seq::PackedView view{};
+    require(seq::pack_ascii(input.bases, n, input.words, input.word_count,
                                input.validity, input.validity_count, &view)
-                == layout::Status::ok, "pack benchmark input");
+                == seq::Status::ok, "pack benchmark input");
     return view;
 }
 

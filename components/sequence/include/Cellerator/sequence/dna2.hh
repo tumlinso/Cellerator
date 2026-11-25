@@ -3,7 +3,7 @@
 #include <Cellerator/common/compiler_annotations.hh>
 #include <stdint.h>
 
-namespace cellerator::tensor::sequence {
+namespace cellerator::sequence {
 
 inline constexpr uint32_t max_chunk_bases = 0x7fffffffu;
 
@@ -117,4 +117,16 @@ CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE void split_word(uint64_t pack
     *high = gather_even_bits(packed >> 1u);
 }
 
-}  // namespace cellerator::tensor::sequence
+enum class Status { ok, invalid_argument, insufficient_capacity };
+
+// Input text, output arrays and the result view occupy disjoint storage.
+// Invalid input bytes clear validity.
+// Query output extents with word_count32 and word_count64.
+Status pack_ascii(const char *bases, uint32_t base_count, uint64_t *words, uint32_t word_capacity,
+                  uint64_t *validity, uint32_t validity_capacity, PackedView *out) noexcept;
+
+// Input storage and all output arrays are mutually disjoint. Explicit input
+// validity requires an output validity buffer. Conversion retains base order.
+Status pack_planes(PackedView input, MutableBitPlanesView output) noexcept;
+
+}  // namespace cellerator::sequence

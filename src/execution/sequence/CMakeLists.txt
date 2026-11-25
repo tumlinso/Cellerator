@@ -1,9 +1,8 @@
 add_library(cellerator_sequence_integration STATIC
     src/execution/sequence/strategy.cc
     src/execution/sequence/regulatory.cu)
-add_library(Cellerator::sequence_integration ALIAS cellerator_sequence_integration)
 target_link_libraries(cellerator_sequence_integration PUBLIC
-    Cellerator::operation_core Cellerator::sequence_ops CUDA::cudart)
+    Cellerator::operation_core Cellerator::sequence CUDA::cudart)
 target_include_directories(cellerator_sequence_integration PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
 set_target_properties(cellerator_sequence_integration PROPERTIES

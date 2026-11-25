@@ -10,7 +10,7 @@
 
 namespace ce = cellerator::execution;
 namespace seq = cellerator::execution::sequence;
-namespace packed = cellerator::tensor::sequence;
+namespace packed = cellerator::sequence;
 
 namespace {
 

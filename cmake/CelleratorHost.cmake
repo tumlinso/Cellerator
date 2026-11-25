@@ -51,6 +51,12 @@ file(WRITE "${CELLERATOR_HOST_CONFIG}"
     "    return()\n"
     "  endif()\n"
     "endforeach()\n"
+    "if(\"sequence\" IN_LIST Cellerator_FIND_COMPONENTS AND EXISTS \"\${CMAKE_CURRENT_LIST_DIR}/SequenceComponent.cmake\")\n"
+    "  include(\"\${CMAKE_CURRENT_LIST_DIR}/SequenceComponent.cmake\")\n"
+    "  if(Cellerator_FIND_COMPONENTS STREQUAL \"sequence\" AND Cellerator_sequence_FOUND)\n"
+    "    return()\n"
+    "  endif()\n"
+    "endif()\n"
     "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorCoreTargets.cmake\")\n"
     "set(Cellerator_HAS_RUNTIME TRUE)\nset(Cellerator_HAS_CUDA_BACKEND FALSE)\n")
 write_basic_package_version_file(

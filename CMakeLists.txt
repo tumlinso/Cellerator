@@ -45,6 +45,8 @@ project(Cellerator LANGUAGES CXX)
 
 include(cmake/CelleratorBuildContract.cmake)
 
+option(CELLERATOR_ENABLE_MODULES "Build the primary and selected component C++20 modules" OFF)
+
 # Selectable installed host/SM70 substrate components use actual source owners.
 # Branch before legacy compiler/native/Torch exports to avoid namespace collisions.
 option(CELLERATOR_BUILD_SUBSTRATE_SDK "Build the selected substrate SDK" OFF)
@@ -100,7 +102,6 @@ option(CELLERATOR_ENABLE_NN
     "Build the optional native C++ neural-network foundation" OFF)
 option(CELLERATOR_ENABLE_NN_CUDA
     "Build optional CUDA neural-network derivative adapters" OFF)
-option(CELLERATOR_ENABLE_MODULES "Build the primary and selected component C++20 modules" OFF)
 if(CELLERATOR_ENABLE_MODULES)
     include(GNUInstallDirs)
     include(cmake/CelleratorModuleInterfaces.cmake)
@@ -150,24 +151,7 @@ option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visi
 option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the default CMAKE_CUDA_ARCHITECTURES when the user did not provide one." ON)
 
 include(cmake/CelleratorHost.cmake)
-add_subdirectory(src/ops/sequence)
-install(TARGETS cellerator_sequence_ops EXPORT CelleratorCoreTargets
-    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-file(APPEND "${CELLERATOR_HOST_CONFIG}" "set(Cellerator_sequence_ops_FOUND TRUE)\n")
-if(TARGET cellerator_sequence_ops_cuda)
-    install(TARGETS cellerator_sequence_ops_cuda EXPORT CelleratorSequenceCudaTargets
-        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-    install(EXPORT CelleratorSequenceCudaTargets NAMESPACE Cellerator::
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator")
-    file(APPEND "${CELLERATOR_HOST_CONFIG}" [=[
-if("sequence_ops_cuda" IN_LIST Cellerator_FIND_COMPONENTS)
-    include(CMakeFindDependencyMacro)
-    find_dependency(CUDAToolkit)
-    include("${CMAKE_CURRENT_LIST_DIR}/CelleratorSequenceCudaTargets.cmake")
-    set(Cellerator_sequence_ops_cuda_FOUND TRUE)
-endif()
-]=])
-endif()
+add_subdirectory(components/sequence)
 add_subdirectory(src/math/reference)
 add_subdirectory(src/ops/numeric/binary16)
 option(CELLERATOR_BUILD_SEMANTIC_SPINE_V1 "Build the bounded Semantic Spine v1 conformance suite" OFF)
@@ -307,6 +291,8 @@ if(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES
         "CUDA architectures detected from the first visible CUDA device." FORCE)
     message(STATUS "Cellerator CUDA architectures auto-detected as sm_${CELLERATOR_DETECTED_CUDA_SM}")
 endif()
+set_target_properties(cellerator_sequence cellerator_sequence_cuda_test
+    cellerator_sequence_cuda_bench PROPERTIES CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
 
 find_library(NCCL_LIBRARY
     NAMES nccl

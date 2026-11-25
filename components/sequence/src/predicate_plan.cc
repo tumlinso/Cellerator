@@ -1,6 +1,6 @@
-#include <Cellerator/ops/sequence/predicate_plan.hh>
+#include <Cellerator/sequence/predicate_plan.hh>
 
-namespace cellerator::ops::sequence {
+namespace cellerator::sequence {
 namespace {
 
 using Op = predicate_opcode;
@@ -188,4 +188,4 @@ predicate_plan_status prepare_sequence_predicate_program(
     return predicate_plan_status::ok;
 }
 
-} // namespace cellerator::ops::sequence
+} // namespace cellerator::sequence

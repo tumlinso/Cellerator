@@ -1,6 +1,6 @@
 #include <Cellerator/execution/sequence/regulatory.cuh>
 #include <Cellerator/execution/sequence/bindings.hh>
-#include <Cellerator/layout/sequence/dna2_cuda.hh>
+#include <Cellerator/sequence/cuda.hh>
 #include <Cellerator/execution/validation.hh>
 
 #include <cuda_runtime.h>
@@ -13,9 +13,7 @@
 namespace cs = cellerator::execution::sequence;
 namespace ce = cellerator::execution;
 namespace co = cellerator::compute::math::core;
-namespace sq = cellerator::ops::sequence;
-namespace layout = cellerator::layout::sequence;
-namespace biology = cellerator::biology;
+namespace sq = cellerator::sequence;
 
 namespace {
 
@@ -72,7 +70,7 @@ sq::sequence_predicate_program make_program() {
 
 void scalar_reference(
     const char *bases,
-    const biology::SequenceChunk &chunk,
+    const sq::SequenceChunk &chunk,
     const cs::regulatory_interval (&intervals)[3],
     const uint32_t *offsets,
     const uint32_t *genes,
@@ -236,13 +234,13 @@ int main(int argc, char **argv) {
     require(sq::prepare_sequence_predicate_program(program, &predicate_plan)
             == sq::predicate_plan_status::ok,
         "sequence plan preparation failed");
-    const biology::SequenceChunk chunk{
+    const sq::SequenceChunk chunk{
         {17u, 1u}, 2u, 9u, 1ull << 40u, base_count,
         4u, 60u, 4u, 10u};
     ce::sequence_domain source_domain{};
     require(cs::bind_sequence_chunk(chunk, {41u, 1u}, &source_domain),
         "chunk adapter rejected bounded coordinates");
-    biology::SequenceChunk oversized_chunk = chunk;
+    sq::SequenceChunk oversized_chunk = chunk;
     oversized_chunk.contig = UINT64_MAX;
     require(!cs::bind_sequence_chunk(
             oversized_chunk, {41u, 1u}, &source_domain),
@@ -300,13 +298,13 @@ int main(int argc, char **argv) {
         sizeof(genes), cudaMemcpyHostToDevice, stream), "copy genes");
     cuda_require(cudaMemcpyAsync(device_weights, weights,
         sizeof(weights), cudaMemcpyHostToDevice, stream), "copy weights");
-    cuda_require(layout::pack_planes_cuda(
+    cuda_require(sq::pack_planes_cuda(
         {device_packed, device_source_validity, word_count, base_count, validity_words},
         {device_low, device_high, device_validity, word_count}, stream),
         "prepare device sequence planes");
     const ce::device_location location{ce::residency_kind::device, {}, device, 0u};
     ce::biological_operand_view input{};
-    const cellerator::tensor::sequence::BitPlanesView planes{
+    const sq::BitPlanesView planes{
         device_low, device_high, device_validity, word_count, base_count};
     require(cs::bind_sequence_planes(
             planes, coordinate_axis, location, &input),
@@ -449,7 +447,7 @@ int main(int argc, char **argv) {
 
     // A new coordinate epoch can exclude an anchor while preserving the
     // sequence words, predicate, coordinate IDs, order, and projection.
-    biology::SequenceChunk narrowed_chunk = chunk;
+    sq::SequenceChunk narrowed_chunk = chunk;
     narrowed_chunk.owned_begin = narrowed_chunk.halo_left = 6u;
     cs::sequence_prepare_request narrowed_request = request;
     ++narrowed_request.coordinate_to_regulatory.epoch.value;

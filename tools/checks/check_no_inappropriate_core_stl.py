@@ -120,7 +120,10 @@ def stale_entries(repo_root: pathlib.Path) -> list[str]:
 # Patch mode covers the shipped native source surface, including modules and
 # examples. Retired source and explicit integration/vendor boundaries are not
 # native core. The legacy full-tree audit above intentionally retains its scope.
-PATCH_ROOTS = ("include/Cellerator/", "src/", "modules/", "examples/")
+PATCH_ROOTS = (
+    "include/Cellerator/", "src/", "modules/", "examples/",
+    "components/sequence/include/", "components/sequence/src/",
+)
 PATCH_EXCLUDED = (
     "include/Cellerator/interop/cellshard/", "src/velocity/",
     "src/ops/velocity/", "src/preprocess/",

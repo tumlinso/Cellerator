@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Cellerator/ops/sequence/motif.hh>
-#include <Cellerator/ops/sequence/sequence_event.hh>
+#include <Cellerator/sequence/motif.hh>
+#include <Cellerator/sequence/sequence_event.hh>
 
 #include <stdint.h>
 
-namespace cellerator::ops::sequence {
+namespace cellerator::sequence {
 
 // Fixed-size predicate records and semantic hashes keep the sequence v1 format.
 inline constexpr uint32_t sequence_predicate_abi_version = 1u;
@@ -134,4 +134,4 @@ static_assert(__is_trivially_copyable(prepared_predicate_plan));
 static_assert(__is_standard_layout(sequence_predicate_program));
 static_assert(__is_standard_layout(prepared_predicate_plan));
 
-} // namespace cellerator::ops::sequence
+} // namespace cellerator::sequence

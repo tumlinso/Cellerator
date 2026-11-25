@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Cellerator/common/compiler_annotations.hh>
-#include <Cellerator/tensor/sequence/dna2.hh>
+#include <Cellerator/sequence/dna2.hh>
 
 #include <stdint.h>
 
-namespace cellerator::ops::sequence {
+namespace cellerator::sequence {
 
 struct motif32_exact {
     uint64_t packed;
@@ -55,14 +55,13 @@ CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE uint8_t motif_mismatches(
 // The view and motif must have passed their admission checks. A start past the
 // final full window or a window with any invalid base does not match.
 CELLERATOR_HOST_DEVICE CELLERATOR_CUDA_FORCEINLINE bool match_exact_at(
-    tensor::sequence::BitPlanesView input, uint32_t anchor, motif32_exact motif) noexcept {
-    namespace ts = tensor::sequence;
-    if (!ts::valid_window(input, anchor, motif.length)) return false;
-    const uint32_t n = ts::word_count32(input.base_count), active = ts::low_mask32(motif.length);
+    BitPlanesView input, uint32_t anchor, motif32_exact motif) noexcept {
+    if (!valid_window(input, anchor, motif.length)) return false;
+    const uint32_t n = word_count32(input.base_count), active = low_mask32(motif.length);
     uint32_t lo, hi;
-    ts::split_word(motif.packed, &lo, &hi);
-    const uint32_t dl = ts::plane_window(input.low, n, anchor) ^ lo;
-    const uint32_t dh = ts::plane_window(input.high, n, anchor) ^ hi;
+    split_word(motif.packed, &lo, &hi);
+    const uint32_t dl = plane_window(input.low, n, anchor) ^ lo;
+    const uint32_t dh = plane_window(input.high, n, anchor) ^ hi;
 #if defined(__CUDA_ARCH__)
     return __popc((dl | dh) & active) <= motif.max_mismatches;
 #else
@@ -88,4 +87,4 @@ bool dna2_allowed_mismatch_mask(uint32_t low, uint32_t high, uint32_t validity_m
 bool dna2_match_allowed_window(uint32_t low, uint32_t high, uint32_t validity_mask,
     const motif32_allowed &motif, dna2_allowed_match_result *result) noexcept;
 
-} // namespace cellerator::ops::sequence
+} // namespace cellerator::sequence

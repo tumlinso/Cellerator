@@ -52,12 +52,12 @@ qualification uses Device Scheduler.
 
 ## Target dependency direction
 
-The SDK selects the same host `sequence_ops` target as the normal native
+The SDK selects the same `Cellerator::sequence` target as the normal native
 build. The target owns exact packed sequence operations and predicate
 preparation. Select it with `find_package(Cellerator CONFIG REQUIRED COMPONENTS
-sequence_ops)`. It requires neither CUDA nor a separate sequence package.
+sequence)`. It requires neither CUDA nor a separate sequence package.
 
 The former Moonshot component exports are retired. Consumers select maintained
-owners such as `effects`, `frontier`, and `sequence_ops` directly. Original inputs
+owners such as `effects`, `frontier`, and `sequence` directly. Original inputs
 and evidence remain available in the
 [pre-retirement revision](https://github.com/tumlinso/Cellerator/tree/2c2c222f36c3aa1f7f8bb22d97031002c6420978/experiments).

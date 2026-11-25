@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/memory/Tile.hh>
+#include <Cellerator/memory/tiled/Tile.hh>
 #include <Cellerator/memory/view.hh>
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>

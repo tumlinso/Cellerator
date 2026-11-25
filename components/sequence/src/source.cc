@@ -1,15 +1,13 @@
-#include <Cellerator/ops/sequence/source.hh>
+#include <Cellerator/sequence/source.hh>
 
-namespace cellerator::ops::sequence {
-namespace packed = tensor::sequence;
-using biology::SequenceStrand;
+namespace cellerator::sequence {
 
 detail_result emit_exact_detail(const source_view &source,
     const sequence_question &question, detail_record *output, uint64_t capacity) noexcept {
     const auto &chunk = source.coordinates;
     const auto current = stamp(source);
     detail_result result{question_status::ok, current, {}, 0u, 0u, 0u};
-    if (!biology::valid_sequence_chunk(chunk) || !packed::valid_view(source.sequence)
+    if (!valid_sequence_chunk(chunk) || !valid_view(source.sequence)
         || source.sequence.base_count != chunk.base_count) {
         result.status = question_status::invalid_source;
         return result;
@@ -41,7 +39,7 @@ detail_result emit_exact_detail(const source_view &source,
     result.examined = question.length;
     for (uint32_t i = question.begin; i < question.begin + question.length; ++i) {
         const uint32_t p = reverse ? chunk.base_count - 1u - i : i;
-        if (!packed::valid_window(source.sequence, p, 1u)) {
+        if (!valid_window(source.sequence, p, 1u)) {
             ++result.invalid_positions;
             continue;
         }
@@ -52,7 +50,7 @@ detail_result emit_exact_detail(const source_view &source,
         }
         ++result.counts.total_matches;
         if (result.counts.stored_records < capacity) {
-            const uint8_t code = packed::base_code(source.sequence, p) ^ (reverse ? 3u : 0u);
+            const uint8_t code = base_code(source.sequence, p) ^ (reverse ? 3u : 0u);
             output[result.counts.stored_records++] = {
                 chunk.global_base_begin + p, i, p, code, question.strand, owned};
         }
@@ -71,4 +69,4 @@ bool count_valid_source(const source_view &source,
     return true;
 }
 
-} // namespace cellerator::ops::sequence
+} // namespace cellerator::sequence
