@@ -25,9 +25,9 @@ ExplicitPattern::ExplicitPattern(std::vector<PatternEdge> edges,
         throw std::invalid_argument("invalid explicit pattern identity, edge IDs, or participants");
     const compact::SnapshotPairV1 pair{&logical, nullptr, epoch_};
     const auto requirements = posting_requirements(pair);
-    std::vector<containers::PostingRecord> scratch(requirements.record_capacity);
+    std::vector<::cellerator::structure::indexing::PostingRecord> scratch(requirements.record_capacity);
     postings_.resize(requirements.record_capacity);
-    containers::PostingIndexView result;
+    ::cellerator::structure::indexing::PostingIndexView result;
     const auto status = build_posting_index(
         pair, scratch.data(), scratch.size(), postings_.data(), postings_.size(), &result);
     if (status != PostingBuildStatus::success)
@@ -40,7 +40,7 @@ compact::ViewV1 ExplicitPattern::view() const noexcept {
             edges_.data(), edges_.size(), participants_.data(), participants_.size()};
 }
 
-containers::PostingIndexView ExplicitPattern::posting_view() const noexcept {
+::cellerator::structure::indexing::PostingIndexView ExplicitPattern::posting_view() const noexcept {
     return {pattern_id_, structure_id_, epoch_, postings_.data(), postings_.size()};
 }
 
@@ -52,7 +52,7 @@ std::size_t ExplicitPattern::ordinal(std::uint64_t edge_id) const {
     return static_cast<std::size_t>(found - edges_.begin());
 }
 
-std::vector<std::size_t> ExplicitPattern::query(const std::vector<containers::PostingTerm>& terms,
+std::vector<std::size_t> ExplicitPattern::query(const std::vector<::cellerator::structure::indexing::PostingTerm>& terms,
                                                 bool require_all) const {
     // Bound the query workspace by the total matching posting spans. Duplicate
     // terms are allowed, so count every supplied term even if it repeats.
@@ -75,14 +75,14 @@ std::vector<std::size_t> ExplicitPattern::query(const std::vector<containers::Po
             throw std::length_error("query workspace size overflow");
         scratch_size += count;
     }
-    std::vector<containers::IndexedWorkItem> scratch(scratch_size), output(size());
-    containers::CandidateOutput result{output.data(), output.size(), 0, 0};
-    const auto status = containers::query_postings(
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> scratch(scratch_size), output(size());
+    ::cellerator::structure::indexing::CandidateOutput result{output.data(), output.size(), 0, 0};
+    const auto status = ::cellerator::structure::indexing::query_postings(
         posting_view(), terms.data(), terms.size(),
-        require_all ? containers::PostingMatch::all
-                    : containers::PostingMatch::any,
+        require_all ? ::cellerator::structure::indexing::PostingMatch::all
+                    : ::cellerator::structure::indexing::PostingMatch::any,
         {scratch.data(), scratch.size()}, &result);
-    if (status != containers::PostingStatus::success)
+    if (status != ::cellerator::structure::indexing::PostingStatus::success)
         throw std::runtime_error("native participant-posting query failed");
     std::vector<std::size_t> ordinals;
     ordinals.reserve(result.written);

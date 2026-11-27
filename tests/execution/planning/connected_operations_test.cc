@@ -4,7 +4,7 @@
 #include <cmath>
 #include <cstdint>
 
-namespace core = cellerator::compute::math::core;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 namespace planner = cellerator::execution::planning;
 

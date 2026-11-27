@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/edge_map_or_gate.hh>
+#include <Cellerator/ops/condition/edge_map_or_gate.hh>
 
 #include <cuda_runtime.h>
 
@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <limits>
 
-namespace operation = cellerator::compute::operation;
+namespace operation = cellerator::execution::operation;
 namespace execution = cellerator::execution;
 
 namespace {

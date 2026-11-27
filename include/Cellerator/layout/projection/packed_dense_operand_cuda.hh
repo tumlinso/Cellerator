@@ -3,7 +3,7 @@
 #include <Cellerator/layout/projection/packed_dense_operand.hh>
 #include <cuda_runtime_api.h>
 
-namespace cellerator::compute::math {
+namespace cellerator::layout::projection {
 
 // The plan permutation and both value pointers are device-resident. The call
 // only enqueues the one-time pack; callers synchronize through their stream.

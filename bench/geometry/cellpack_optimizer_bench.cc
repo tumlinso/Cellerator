@@ -1,4 +1,4 @@
-#include <Cellerator/geometry/optimizer.hh>
+#include <Cellerator/geometry/packing/optimizer.hh>
 
 #include "benchmark_mutex.hh"
 

@@ -1,4 +1,4 @@
-#include "Cellerator/geometry/local_cell_ordering_cuda.hh"
+#include "Cellerator/geometry/packing/local_cell_ordering_cuda.hh"
 
 #include <cuda_runtime.h>
 

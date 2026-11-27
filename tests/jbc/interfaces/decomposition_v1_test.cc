@@ -1,8 +1,8 @@
-#include <Cellerator/compute/decomposition/decomposition_v1.hh>
+#include <Cellerator/execution/planning/decomposition/decomposition_v1.hh>
 
 #include <cassert>
 
-namespace decomposition = cellerator::compute::decomposition;
+namespace decomposition = cellerator::execution::planning::decomposition;
 namespace execution = cellerator::execution;
 
 void set_numeric(decomposition::decomposition_alternative_v1 *alternative) {

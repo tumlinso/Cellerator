@@ -1,11 +1,11 @@
 #include "reference_math.hh"
-#include <Cellerator/compute/operation/relation_calculus.hh>
+#include <Cellerator/ops/relation/relation_calculus.hh>
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <numeric>
 namespace ref=ru1_reference;
-namespace ce=cellerator::compute::relation;
+namespace ce=cellerator::ops::relation;
 namespace ex=cellerator::execution;
 namespace {
 std::uint64_t checks=0;

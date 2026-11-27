@@ -1,5 +1,5 @@
-#include <Cellerator/compute/operation/native_numeric/device_linear.hh>
-#include <Cellerator/compute/operation/prepared_relation.hh>
+#include <Cellerator/ops/relation/numeric/device_linear.hh>
+#include <Cellerator/execution/preparation/prepared_relation.hh>
 #include <cuda_runtime_api.h>
 #include <algorithm>
 #include <array>
@@ -23,8 +23,8 @@
 #include <sys/resource.h>
 #endif
 
-namespace ce = cellerator::compute::relation;
-namespace nn = cellerator::compute::native_numeric;
+namespace ce = cellerator::ops::relation;
+namespace nn = cellerator::ops::relation::numeric;
 namespace ex = cellerator::execution;
 namespace fs = std::filesystem;
 using u64 = std::uint64_t;

@@ -1,4 +1,4 @@
-#include <Cellerator/execution/atom_fragment/local_index_builder_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment/local_index_builder_v1.hh>
 
 #include <cassert>
 

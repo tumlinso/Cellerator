@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/preparation_factory.hh>
+#include <Cellerator/execution/preparation/preparation_factory.hh>
 #include "../fixtures/model_execution/activated_projection.hh"
 
 #include <cuda_fp16.h>
@@ -8,8 +8,8 @@
 #include <cstdlib>
 #include <iostream>
 
-namespace core = cellerator::compute::math::core;
-namespace cm = cellerator::compute::math;
+namespace core = cellerator::execution::operation_core;
+namespace cm = cellerator::layout::projection;
 namespace execution = cellerator::execution;
 namespace runtime = cellerator::runtime;
 

@@ -1,4 +1,4 @@
-#include <Cellerator/compute/candidate/segment/normalize.hh>
+#include <Cellerator/ops/segment/normalize.hh>
 
 #include <cuda_runtime.h>
 
@@ -9,7 +9,7 @@
 #include <limits>
 #include <vector>
 
-namespace segment = cellerator::compute::segment;
+namespace segment = cellerator::ops::segment;
 namespace execution = cellerator::execution;
 
 namespace {

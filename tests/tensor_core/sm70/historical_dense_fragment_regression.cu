@@ -1,5 +1,5 @@
-#include <Cellerator/compute/candidate/tensor_core/v100_dense_fragment_candidate.hh>
-#include <Cellerator/compute/candidate/tensor_core/v100_dense_fragment_plan.hh>
+#include <Cellerator/ops/relation/cuda/v100_dense_fragment_candidate.hh>
+#include <Cellerator/execution/planning/candidates/v100_dense_fragment_plan.hh>
 
 #include <cstdint>
 #include <cstdlib>
@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace tc = cellerator::compute::math::tensor_core;
+namespace tc = cellerator::ops::relation::tensor_core;
 
 namespace {
 
@@ -121,7 +121,7 @@ void preserve_pbmc3k_negative_control(const std::filesystem::path &root) {
         "historical complete-cost rejection rule changed");
 
     const std::string catalog = read_text(root /
-        "src/compute/operation/builtin_catalog.cc");
+        "src/execution/planning/candidates/builtin_catalog.cc");
     require(catalog.find("v100_dense_fragment_candidate") == std::string::npos,
         "historical candidate entered the production built-in catalog");
     require(catalog.find("v100-wmma-dense-fragment-f16-f32")

@@ -1,10 +1,10 @@
 // Actual N1/N16 FMP1 execution; independent logical CSR oracle.
-#include "../../src/compute/operation/prepared_relation.cu"
+#include "../../src/execution/preparation/prepared_relation.cu"
 #include "../semantic_spine/native/test_require.hh"
 #include <cuda_fp16.h>
 #include <cmath>
 #include <iostream>
-namespace ce = cellerator::compute::relation;
+namespace ce = cellerator::ops::relation;
 namespace ex = cellerator::execution;
 static void gpu(cudaError_t s) { SPINE_REQUIRE(s == cudaSuccess); }
 static void check(ce::status s) {
@@ -60,7 +60,7 @@ static void fixture(unsigned rows, unsigned cols, unsigned width,
         if(dy) gpu(cudaMemcpy(y.data(),dy,y.size()*4,cudaMemcpyDeviceToHost));
         for(unsigned i=0;i<y.size();++i) SPINE_REQUIRE(std::isfinite(y[i]) && std::abs(y[i]-reference[i])<=2e-6+2e-6*std::abs(reference[i]));
         SPINE_REQUIRE(pair->report.topology_preparations==1 && pair->report.accepted_forward_launches==generation);
-        SPINE_REQUIRE(ex::same_identity(projection,pair->report.forward_projection));
+        SPINE_REQUIRE(cellerator::structure::same_identity(projection,pair->report.forward_projection));
         if(dx)gpu(cudaFree(dx));if(dy)gpu(cudaFree(dy));
     }
     if(dw)gpu(cudaFree(dw));ce::destroy(pair);gpu(cudaStreamDestroy(stream));

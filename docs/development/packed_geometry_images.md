@@ -24,7 +24,7 @@ supplied. The v1 `row_active_block_references` objective remains a versioned
 surrogate; later objectives must not change its recorded meaning.
 
 `geometry::bind_packed_row_records` and `geometry::bind_row_masked_tiles` in
-`<Cellerator/geometry/persistence/packed_tensor_views.hh>` borrow the mask,
+`<Cellerator/layout/packing/persistence/packed_tensor_views.hh>` borrow the mask,
 offset, and value arrays through the native block-masked tensor views. The
 binding returns a validation status and allocates no storage. A supplied
 feature-block offset replica must match the validated plan and reside in the

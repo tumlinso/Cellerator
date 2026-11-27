@@ -1,5 +1,5 @@
-#include <Cellerator/containers/posting_index.hh>
-#include <Cellerator/execution/dependency/workset_view.hh>
+#include <Cellerator/structure/indexing/posting_index.hh>
+#include <Cellerator/execution/preparation/dependency/workset_view.hh>
 #include <Cellerator/geometry/dependency/compact_support.hh>
 #include <Cellerator/geometry/dependency/posting_index.hh>
 #include <Cellerator/ops/condition/program.hh>
@@ -22,7 +22,7 @@
 
 namespace {
 namespace compact = cellerator::geometry::dependency::compact;
-namespace containers = cellerator::containers;
+namespace containers = cellerator::structure::indexing;
 namespace geometry = cellerator::geometry::dependency;
 namespace condition = cellerator::ops::condition;
 namespace execution = cellerator::execution;
@@ -200,13 +200,13 @@ fixture make_fixture(const options &cfg) {
 }
 
 struct term_batch {
-    std::vector<containers::PostingTerm> primary;
-    std::vector<containers::PostingTerm> derivative;
+    std::vector<::cellerator::structure::indexing::PostingTerm> primary;
+    std::vector<::cellerator::structure::indexing::PostingTerm> derivative;
     std::uint64_t hash = 1469598103934665603ull;
 };
 
-bool term_less(const containers::PostingTerm &a,
-               const containers::PostingTerm &b) {
+bool term_less(const ::cellerator::structure::indexing::PostingTerm &a,
+               const ::cellerator::structure::indexing::PostingTerm &b) {
     if (a.role != b.role) return a.role < b.role;
     return a.entity_id < b.entity_id;
 }
@@ -216,9 +216,9 @@ term_batch make_terms(const options &cfg, const fixture &support_fixture) {
     result.primary.reserve(cfg.cells * cfg.query_terms);
     result.derivative.reserve(cfg.cells * cfg.query_terms);
     std::uint64_t rng = cfg.seed ^ 0xd1b54a32d192ed03ull;
-    auto append_any = [&](std::vector<containers::PostingTerm> &terms,
+    auto append_any = [&](std::vector<::cellerator::structure::indexing::PostingTerm> &terms,
                           std::uint64_t cell, std::uint32_t role) {
-        std::vector<containers::PostingTerm> row;
+        std::vector<::cellerator::structure::indexing::PostingTerm> row;
         row.reserve(cfg.query_terms);
         for (std::uint32_t k = 0; k < cfg.query_terms; ++k) {
             for (;;) {
@@ -236,7 +236,7 @@ term_batch make_terms(const options &cfg, const fixture &support_fixture) {
         std::sort(row.begin(), row.end(), term_less);
         terms.insert(terms.end(), row.begin(), row.end());
     };
-    auto append_all = [&](std::vector<containers::PostingTerm> &terms,
+    auto append_all = [&](std::vector<::cellerator::structure::indexing::PostingTerm> &terms,
                           std::uint64_t edge_ordinal) {
         const relation_storage *relation = &support_fixture.base;
         std::uint64_t local = edge_ordinal;
@@ -272,7 +272,7 @@ term_batch make_terms(const options &cfg, const fixture &support_fixture) {
 
 struct candidate_buffer {
     std::vector<std::uint64_t> offsets;
-    std::vector<containers::IndexedWorkItem> items;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> items;
     std::uint64_t written = 0;
 
     candidate_buffer(std::uint64_t cells, std::uint64_t edge_count)
@@ -285,12 +285,12 @@ struct candidate_buffer {
 
 bool edge_matches(const compact::ViewV1 &view,
                   const compact::EdgeV1 &edge,
-                  const containers::PostingTerm *terms,
+                  const ::cellerator::structure::indexing::PostingTerm *terms,
                   std::uint64_t term_count, bool all_terms) {
     std::array<std::uint8_t, 3> found{};
     for (std::uint32_t p = 0; p < edge.participant_count; ++p) {
         const auto &participant = view.participants[edge.participant_begin + p];
-        const containers::PostingTerm needle{participant.role, 0u,
+        const ::cellerator::structure::indexing::PostingTerm needle{participant.role, 0u,
                                                participant.entity_id};
         const auto *match = std::lower_bound(terms, terms + term_count,
                                              needle, term_less);
@@ -306,7 +306,7 @@ bool edge_matches(const compact::ViewV1 &view,
 }
 
 bool edge_matches(const fixture &f, std::uint64_t ordinal,
-                  const containers::PostingTerm *terms,
+                  const ::cellerator::structure::indexing::PostingTerm *terms,
                   std::uint64_t term_count, bool all_terms) {
     const relation_storage *relation = &f.base;
     std::uint64_t local = ordinal;
@@ -319,7 +319,7 @@ bool edge_matches(const fixture &f, std::uint64_t ordinal,
 }
 
 void scan_batch(const fixture &f, const options &cfg,
-                const std::vector<containers::PostingTerm> &terms,
+                const std::vector<::cellerator::structure::indexing::PostingTerm> &terms,
                 candidate_buffer &out) {
     out.written = 0u;
     out.offsets[0] = 0u;
@@ -335,23 +335,23 @@ void scan_batch(const fixture &f, const options &cfg,
     }
 }
 
-void postings_batch(const containers::PostingIndexView &index,
+void postings_batch(const ::cellerator::structure::indexing::PostingIndexView &index,
                     const options &cfg,
-                    const std::vector<containers::PostingTerm> &terms,
-                    std::vector<containers::IndexedWorkItem> &scratch,
+                    const std::vector<::cellerator::structure::indexing::PostingTerm> &terms,
+                    std::vector<::cellerator::structure::indexing::IndexedWorkItem> &scratch,
                     candidate_buffer &out) {
     out.written = 0u;
     out.offsets[0] = 0u;
     for (std::uint64_t cell = 0; cell < cfg.cells; ++cell) {
         const auto *cell_terms = terms.data() + cell * cfg.query_terms;
         auto *dest = out.items.data() + out.written;
-        containers::CandidateOutput candidate{dest, cfg.edges, 0u, 0u};
-        const auto status = containers::query_postings(index,
+        ::cellerator::structure::indexing::CandidateOutput candidate{dest, cfg.edges, 0u, 0u};
+        const auto status = ::cellerator::structure::indexing::query_postings(index,
             cell_terms, cfg.query_terms,
-            cfg.all_terms ? containers::PostingMatch::all
-                          : containers::PostingMatch::any,
+            cfg.all_terms ? ::cellerator::structure::indexing::PostingMatch::all
+                          : ::cellerator::structure::indexing::PostingMatch::any,
             {scratch.data(), scratch.size()}, &candidate);
-        if (status != containers::PostingStatus::success)
+        if (status != ::cellerator::structure::indexing::PostingStatus::success)
             throw std::runtime_error("reverse posting query failed, status="
                 + std::to_string(static_cast<unsigned>(status)));
         out.written += candidate.written;
@@ -468,8 +468,8 @@ bool bitmap_test(const std::uint64_t *words, std::uint64_t ordinal) {
 struct workset_buffers {
     std::vector<std::uint64_t> primal_offsets;
     std::vector<std::uint64_t> derivative_offsets;
-    std::vector<containers::IndexedWorkItem> primal_items;
-    std::vector<containers::IndexedWorkItem> derivative_items;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> primal_items;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> derivative_items;
     execution::dependency::ConditionWorksets pair{};
 
     workset_buffers(std::uint64_t cells, std::uint64_t edge_count)
@@ -518,8 +518,8 @@ void validate_gate_oracle(const gate_fixture &gate, const options &cfg,
         throw std::runtime_error("condition workset epoch metadata mismatch");
     std::uint64_t derivative_only_count = 0u;
     for (std::uint64_t cell = 0; cell < cfg.cells; ++cell) {
-        std::vector<containers::IndexedWorkItem> expected_primal;
-        std::vector<containers::IndexedWorkItem> expected_derivative;
+        std::vector<::cellerator::structure::indexing::IndexedWorkItem> expected_primal;
+        std::vector<::cellerator::structure::indexing::IndexedWorkItem> expected_derivative;
         for (std::uint64_t i = primal.offsets[cell]; i < primal.offsets[cell + 1u]; ++i)
             if (condition_pass(gate, cell, primal.items[i].logical_edge_ordinal))
                 expected_primal.push_back(primal.items[i]);
@@ -646,11 +646,11 @@ void run(const options &cfg) {
     fixture f = make_fixture(cfg);
     const auto terms = make_terms(cfg, f);
     const auto requirements = geometry::posting_requirements(f.snapshot);
-    std::vector<containers::PostingRecord> record_scratch(
+    std::vector<::cellerator::structure::indexing::PostingRecord> record_scratch(
         requirements.record_capacity);
-    std::vector<containers::PostingRecord> posting_entries(
+    std::vector<::cellerator::structure::indexing::PostingRecord> posting_entries(
         requirements.maximum_unique_entries);
-    containers::PostingIndexView index{};
+    ::cellerator::structure::indexing::PostingIndexView index{};
     auto build_index = [&]() -> std::uint64_t {
         const auto status = geometry::build_posting_index(f.snapshot,
             record_scratch.data(), record_scratch.size(), posting_entries.data(),
@@ -667,7 +667,7 @@ void run(const options &cfg) {
     candidate_buffer scan_derivative(cfg.cells, cfg.edges);
     candidate_buffer post_primal(cfg.cells, cfg.edges);
     candidate_buffer post_derivative(cfg.cells, cfg.edges);
-    std::vector<containers::IndexedWorkItem> query_scratch(
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> query_scratch(
         std::max<std::uint64_t>(1u, index.entry_count * cfg.query_terms));
     auto do_scan_pair = [&]() -> std::uint64_t {
         scan_batch(f, cfg, terms.primary, scan_primal);
@@ -861,13 +861,13 @@ void run(const options &cfg) {
             + f.delta.edges.capacity() * sizeof(compact::EdgeV1)
             + f.delta.participants.capacity() * sizeof(compact::ParticipantV1))
         << ",\"posting_index\":" << posting_entries.capacity()
-            * sizeof(containers::PostingRecord)
+            * sizeof(::cellerator::structure::indexing::PostingRecord)
         << ",\"posting_build_scratch\":" << record_scratch.capacity()
-            * sizeof(containers::PostingRecord)
+            * sizeof(::cellerator::structure::indexing::PostingRecord)
         << ",\"query_scratch\":" << query_scratch.capacity()
-            * sizeof(containers::IndexedWorkItem)
+            * sizeof(::cellerator::structure::indexing::IndexedWorkItem)
         << ",\"query_terms\":" << (terms.primary.capacity()
-                + terms.derivative.capacity()) * sizeof(containers::PostingTerm)
+                + terms.derivative.capacity()) * sizeof(::cellerator::structure::indexing::PostingTerm)
         << ",\"condition_program\":"
             << gate.bindings.capacity() * sizeof(condition::EdgeBindingV1)
                 + gate.nodes.size() * sizeof(condition::NodeV1)
@@ -880,14 +880,14 @@ void run(const options &cfg) {
         << ",\"candidate_buffers\":"
             << (scan_primal.items.capacity() + scan_derivative.items.capacity()
                 + post_primal.items.capacity() + post_derivative.items.capacity())
-                * sizeof(containers::IndexedWorkItem)
+                * sizeof(::cellerator::structure::indexing::IndexedWorkItem)
             + (scan_primal.offsets.capacity() + scan_derivative.offsets.capacity()
                 + post_primal.offsets.capacity() + post_derivative.offsets.capacity())
                 * sizeof(std::uint64_t)
         << ",\"gate_workset_buffers\":"
             << (work_scan.primal_items.capacity() + work_scan.derivative_items.capacity()
                 + work_post.primal_items.capacity() + work_post.derivative_items.capacity())
-                * sizeof(containers::IndexedWorkItem)
+                * sizeof(::cellerator::structure::indexing::IndexedWorkItem)
             + (work_scan.primal_offsets.capacity() + work_scan.derivative_offsets.capacity()
                 + work_post.primal_offsets.capacity() + work_post.derivative_offsets.capacity())
                 * sizeof(std::uint64_t)

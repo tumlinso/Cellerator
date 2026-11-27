@@ -1,9 +1,9 @@
-#include <Cellerator/compute/architecture/providers/nvidia/sm70/contract/contract_portfolio_v1.cuh>
+#include <Cellerator/ops/relation/cuda/sm70/contract/contract_portfolio_v1.cuh>
 #include <cassert>
 #include <cmath>
 #include <cstdio>
 #include <vector>
-using namespace cellerator::compute::architecture::providers::nvidia::sm70::contract;
+using namespace cellerator::execution::planning::architecture::providers::nvidia::sm70::contract;
 int main() {
     __half *a=nullptr,*b=nullptr; float *out=nullptr; rectangular_tile_v1 *dt=nullptr;
     assert(cudaMalloc(&a,32*32*sizeof(__half))==cudaSuccess);

@@ -24,14 +24,8 @@ set_target_properties(cellerator_feature_major_tiles_cuda PROPERTIES
 target_compile_features(cellerator_feature_major_tiles_cuda PUBLIC cxx_std_20)
 target_link_libraries(cellerator_feature_major_tiles_cuda PUBLIC CUDA::cudart)
 
-add_library(cellerator_value_readiness STATIC
-    "${PROJECT_SOURCE_DIR}/src/runtime/value_readiness.cu")
-add_library(Cellerator::value_readiness ALIAS cellerator_value_readiness)
-cellerator_configure_native_data_host_target(cellerator_value_readiness value_readiness)
-set_target_properties(cellerator_value_readiness PROPERTIES
-    CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
-target_compile_features(cellerator_value_readiness PUBLIC cxx_std_20)
-target_link_libraries(cellerator_value_readiness PUBLIC CUDA::cudart)
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/execution/preparation/readiness"
+    "${CMAKE_CURRENT_BINARY_DIR}/src/execution/preparation/readiness")
 
 # The legacy providers also use these targets. Import their CUDA runtime-only
 # export before the native foundation, which precedes the NativeData facade.
@@ -81,9 +75,9 @@ target_compile_options(cellerator_block_masked_cuda PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--fmad=false>)
 
 add_library(cellerator_dependency_execution_cuda STATIC
-    "${PROJECT_SOURCE_DIR}/src/execution/dependency/transfer.cu"
-    "${PROJECT_SOURCE_DIR}/src/execution/dependency/distributed.cu"
-    "${PROJECT_SOURCE_DIR}/src/execution/dependency/packed_program.cu")
+    "${PROJECT_SOURCE_DIR}/src/execution/program/dependency/transfer.cu"
+    "${PROJECT_SOURCE_DIR}/src/execution/program/dependency/distributed.cu"
+    "${PROJECT_SOURCE_DIR}/src/execution/program/dependency/packed_program.cu")
 add_library(Cellerator::dependency_execution_cuda
     ALIAS cellerator_dependency_execution_cuda)
 set_target_properties(cellerator_dependency_execution_cuda PROPERTIES
@@ -186,8 +180,10 @@ install(EXPORT ${_cellerator_native_data_cuda_export} NAMESPACE Cellerator::
 
 install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/ops/matrix/feature_major_tiles.cuh"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/ops/matrix" COMPONENT NativeDataCUDA)
-install(FILES "${PROJECT_SOURCE_DIR}/include/Cellerator/runtime/value_readiness.cuh"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/runtime" COMPONENT NativeDataCUDA)
+install(FILES
+    "${PROJECT_SOURCE_DIR}/include/Cellerator/execution/preparation/readiness/value_readiness.cuh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution/preparation/readiness"
+    COMPONENT NativeDataCUDA)
 
 foreach(_header_subtree IN ITEMS
         tensor/state_codes
@@ -216,9 +212,9 @@ foreach(_header IN ITEMS
         tensor/quantized/metadata.cuh
         tensor/quantized/numeric.cuh
         tensor/quantized/packing.cuh
-        execution/dependency/distributed.cuh
-        execution/dependency/packed_program.cuh
-        execution/dependency/transfer.cuh
+        execution/program/dependency/distributed.cuh
+        execution/program/dependency/packed_program.cuh
+        execution/program/dependency/transfer.cuh
         memory/domain.hh
         memory/view.hh
         tensor/base/compressed.hh

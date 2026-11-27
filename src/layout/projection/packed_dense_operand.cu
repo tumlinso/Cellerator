@@ -13,7 +13,7 @@ host-issued cudaMemcpyAsync-per-row reference (470.5x); outputs agreed bitwise.
 #include <cstring>
 #include <limits>
 
-namespace cellerator::compute::math {
+namespace cellerator::layout::projection {
 using ::cellerator::layout::projection::physical_view_status_code;
 namespace {
 
@@ -260,4 +260,4 @@ physical_view_status pack_dense_operand_cuda(
     return {};
 }
 
-} // namespace cellerator::compute::math
+} // namespace cellerator::layout::projection

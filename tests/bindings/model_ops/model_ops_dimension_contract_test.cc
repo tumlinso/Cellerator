@@ -1,10 +1,10 @@
-#include <Cellerator/compute/operation/model_ops/model_ops.hh>
+#include <Cellerator/ops/reduction/model/model_ops.hh>
 
 #include <cstdint>
 #include <limits>
 
 int main() {
-    using namespace cellerator::compute::operation::model_ops;
+    using namespace cellerator::ops::reduction::model;
     constexpr auto too_many = maximum_indexed_count + 1;
 
     const auto oversized_pairs = dense_reduce_pair_forward(

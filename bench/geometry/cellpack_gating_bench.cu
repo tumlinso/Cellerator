@@ -1,5 +1,5 @@
-#include <Cellerator/geometry/gating_cuda.cuh>
-#include <Cellerator/geometry/layout_selector.hh>
+#include <Cellerator/execution/program/packing/gating_cuda.cuh>
+#include <Cellerator/execution/planning/packing/layout_selector.hh>
 
 #include <cuda_runtime_api.h>
 

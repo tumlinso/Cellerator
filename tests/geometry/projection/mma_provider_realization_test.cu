@@ -1,4 +1,4 @@
-#include <Cellerator/compute/architecture/provider.hh>
+#include <Cellerator/execution/planning/providers/provider.hh>
 #include <Cellerator/layout/projection/mma_hybrid.hh>
 #include <Cellerator/execution/preparation/activated_projection.hh>
 #include <Cellerator/geometry/persistence/execution_capability_manifest_v1.hh>
@@ -12,13 +12,13 @@
 #include <cstring>
 #include <vector>
 
-namespace architecture = cellerator::compute::architecture;
-namespace core = cellerator::compute::math::core;
+namespace architecture = cellerator::execution::planning::architecture;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 namespace persistence = cellpack::persistence;
 namespace projection = cellerator::layout::projection;
 
-namespace cellerator::compute::architecture::providers::nvidia {
+namespace cellerator::execution::planning::architecture::providers::nvidia {
 bool realize_mma_provider_projection_v1(
     const architecture_provider_v1 &, const matrix_engine_capability_v1 &,
     const void *, std::size_t, core::stable_id, core::stable_id,
@@ -216,7 +216,7 @@ int main() {
         persistence::execution_projection_source source{};
         persistence::execution_capability_manifest_v1 manifest{};
         execution::activated_projection_reference_v2 activated{};
-        assert(cellerator::compute::architecture::providers::nvidia::
+        assert(cellerator::execution::planning::architecture::providers::nvidia::
             realize_mma_provider_projection_v1(provider, capability,
                 image.data(), image.size(), {0x41u, 0x42u}, {0x51u, 0x52u},
                 {0x61u, 0x62u}, {0x71u, 0x72u}, {0x80u + cover, 0x81u},
@@ -241,7 +241,7 @@ int main() {
     persistence::execution_projection_source source{};
     persistence::execution_capability_manifest_v1 manifest{};
     execution::activated_projection_reference_v2 activated{};
-    assert(!cellerator::compute::architecture::providers::nvidia::
+    assert(!cellerator::execution::planning::architecture::providers::nvidia::
         realize_mma_provider_projection_v1(provider, mismatched,
             image.data(), image.size(), {1u, 1u}, {2u, 2u}, {3u, 3u},
             {4u, 4u}, {5u, 5u}, {6u, 6u}, 0u, 1u, key, contract, location,

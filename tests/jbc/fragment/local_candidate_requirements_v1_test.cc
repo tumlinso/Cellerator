@@ -1,9 +1,9 @@
-#include <Cellerator/execution/atom_fragment/local_candidate_requirements_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment/local_candidate_requirements_v1.hh>
 
 #include <cassert>
 #include <cstring>
 
-namespace catalog = cellerator::compute::operation::catalog_v3;
+namespace catalog = cellerator::execution::operation::catalog_v3;
 namespace execution = cellerator::execution;
 namespace fragment = execution::atom_fragment;
 namespace joint = execution::preparation;

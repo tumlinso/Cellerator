@@ -6,7 +6,7 @@
 
 #include <Cellerator/memory/workspace.hh>
 
-#include <Cellerator/geometry/persistent_packing_payload.hh>
+#include <Cellerator/layout/packing/persistence/persistent_packing_payload.hh>
 
 #include <cstddef>
 #include <cstdint>

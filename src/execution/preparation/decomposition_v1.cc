@@ -1,6 +1,6 @@
-#include <Cellerator/compute/decomposition/decomposition_v1.hh>
+#include <Cellerator/execution/planning/decomposition/decomposition_v1.hh>
 
-namespace cellerator::compute::decomposition {
+namespace cellerator::execution::planning::decomposition {
 namespace {
 
 using identity = execution::preparation::persistent_identity_v1;
@@ -185,4 +185,4 @@ decomposition_validation_result_v1 validate_decomposition_portfolio_v1(
     return {};
 }
 
-}  // namespace cellerator::compute::decomposition
+}  // namespace cellerator::execution::planning::decomposition

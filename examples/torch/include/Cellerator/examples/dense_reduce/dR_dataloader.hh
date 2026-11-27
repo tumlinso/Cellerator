@@ -4,7 +4,7 @@
 #include <CellShard/runtime/storage/shard_storage.cuh>
 #include <CellShard/runtime/layout/sharded.cuh>
 #include <CellShard/runtime/host/sharded_host.cuh>
-#include <Cellerator/math/sampling/rng_fetch.hh>
+#include <Cellerator/examples/dense_reduce/rng_fetch.hh>
 
 #include <torch/torch.h>
 

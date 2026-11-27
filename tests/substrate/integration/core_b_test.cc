@@ -1,11 +1,11 @@
-#include <Cellerator/math/adaptive/frontier.hh>
-#include <Cellerator/math/frontier/compiled.hh>
-#include <Cellerator/math/response/requested.hh>
+#include <Cellerator/state/adaptive/frontier.hh>
+#include <Cellerator/execution/preparation/polynomial_program.hh>
+#include <Cellerator/ops/numeric/response/requested.hh>
 #include "../strategies/fixture.hh"
 #include <iostream>
-namespace f=cellerator::math::frontier;
-namespace ad=cellerator::math::adaptive;
-namespace r=cellerator::math::response;
+namespace f=cellerator::ops::matrix::frontier;
+namespace ad=cellerator::state::adaptive;
+namespace r=cellerator::ops::numeric::response;
 namespace nf=r::nf;
 namespace pg=ex::program;
 void close(double a,double b){check(std::abs(a-b)<1e-11*(1+std::abs(b)));}

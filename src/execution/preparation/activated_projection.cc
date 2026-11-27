@@ -3,11 +3,11 @@
 namespace cellerator::execution {
 namespace {
 
-using compute::math::core::candidate_catalog_status_v2;
-using compute::math::core::candidate_descriptor_requires_capability;
-using compute::math::core::projection_kind;
-using compute::math::core::same_stable_id;
-using compute::math::core::stable_id;
+using ::cellerator::execution::operation_core::candidate_catalog_status_v2;
+using ::cellerator::execution::operation_core::candidate_descriptor_requires_capability;
+using ::cellerator::execution::operation_core::projection_kind;
+using ::cellerator::execution::operation_core::same_stable_id;
+using ::cellerator::execution::operation_core::stable_id;
 
 constexpr bool valid_stable_identity(stable_id identity) noexcept {
     return identity.low != 0u || identity.high != 0u;
@@ -26,8 +26,8 @@ constexpr bool valid_projection_kind(projection_kind kind) noexcept {
 }
 
 constexpr bool same_contract(
-    const compute::math::core::candidate_projection_contract_v2 &lhs,
-    const compute::math::core::candidate_projection_contract_v2 &rhs) noexcept {
+    const ::cellerator::execution::operation_core::candidate_projection_contract_v2 &lhs,
+    const ::cellerator::execution::operation_core::candidate_projection_contract_v2 &rhs) noexcept {
     return same_stable_id(lhs.view_type, rhs.view_type)
         && lhs.abi_major == rhs.abi_major
         && lhs.abi_minor == rhs.abi_minor
@@ -98,12 +98,12 @@ projection_reference_status_v2 make_activated_projection_reference_v2(
 
 projection_reference_status_v2 match_activated_projection_reference_v2(
     const activated_projection_reference_v2 &reference,
-    const compute::math::core::candidate_descriptor_v2 &candidate) noexcept {
+    const ::cellerator::execution::operation_core::candidate_descriptor_v2 &candidate) noexcept {
     const projection_reference_status_v2 reference_status =
         validate_activated_projection_reference_v2(reference);
     if (reference_status != projection_reference_status_v2::success)
         return reference_status;
-    if (compute::math::core::validate_candidate_descriptor_v2(candidate)
+    if (::cellerator::execution::operation_core::validate_candidate_descriptor_v2(candidate)
         != candidate_catalog_status_v2::success)
         return projection_reference_status_v2::invalid_argument;
 

@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace cellerator::compute::math {
+namespace cellerator::layout::projection {
 
 using ::cellerator::layout::projection::u32;
 using ::cellerator::layout::projection::u64;
@@ -71,4 +71,4 @@ physical_view_status pack_dense_operand_host(
 static_assert(std::is_trivially_copyable<packed_dense_operand_view>::value,
     "packed dense operand view must remain pointer-copyable");
 
-} // namespace cellerator::compute::math
+} // namespace cellerator::layout::projection

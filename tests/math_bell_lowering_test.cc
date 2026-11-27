@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 
-namespace math = cellerator::compute::math;
+namespace math = cellerator::layout::projection;
 
 namespace {
 

@@ -2,8 +2,8 @@
 
 #include <Cellerator/layout/projection/identity.hh>
 
-#include <Cellerator/geometry/apply_plan.hh>
-#include <Cellerator/geometry/persistent_packing_payload.hh>
+#include <Cellerator/layout/packing/apply_plan.hh>
+#include <Cellerator/layout/packing/persistence/persistent_packing_payload.hh>
 
 #include <cstddef>
 #include <limits>

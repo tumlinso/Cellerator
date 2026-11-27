@@ -1,4 +1,4 @@
-#include <Cellerator/math/reference/operation.hh>
+#include <Cellerator/reference/operation.hh>
 #include <Cellerator/common/real/format_codes.hh>
 
 #include <cstdlib>
@@ -6,7 +6,7 @@
 #include <limits>
 #include <type_traits>
 
-namespace cm = cellerator::compute::math;
+namespace cm = cellerator::layout::projection;
 namespace cr = cellerator::real;
 
 namespace {

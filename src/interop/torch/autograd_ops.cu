@@ -15,7 +15,7 @@ namespace cellerator::bindings::torch::autograd {
 namespace {
 
 namespace execution = ::cellerator::execution;
-namespace native_math = ::cellerator::compute::math;
+namespace native_math = ::cellerator::layout::projection;
 
 void require(bool condition, std::string message) {
     if (!condition) throw std::invalid_argument(std::move(message));

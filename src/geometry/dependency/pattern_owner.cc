@@ -7,7 +7,7 @@
 
 namespace cellerator::geometry::dependency {
 namespace {
-namespace support = compute::support;
+namespace support = ::cellerator::geometry::support;
 
 void require_success(support::adaptive_support_status_v1 status, const char* operation) {
     if (status != support::adaptive_support_status_v1::success)

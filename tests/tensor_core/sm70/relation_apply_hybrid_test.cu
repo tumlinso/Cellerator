@@ -1,4 +1,4 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cuh"
+#include "../../../src/ops/relation/cuda/sm70/relation_apply_hybrid.cuh"
 
 #include <Cellerator/layout/projection/mma_hybrid.hh>
 
@@ -10,7 +10,7 @@
 #include <cstdint>
 
 namespace projection = cellerator::layout::projection;
-namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
+namespace sm70 = cellerator::execution::planning::architecture::providers::nvidia::sm70;
 
 namespace {
 

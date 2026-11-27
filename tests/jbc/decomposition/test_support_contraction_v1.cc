@@ -1,10 +1,10 @@
-#include <Cellerator/compute/decomposition/support_contraction_v1.hh>
+#include <Cellerator/execution/planning/decomposition/support_contraction_v1.hh>
 
 #include <cassert>
 #include <cstdint>
 
-namespace decomposition = cellerator::compute::decomposition;
-namespace operation = cellerator::compute::operation::v2;
+namespace decomposition = cellerator::execution::planning::decomposition;
+namespace operation = cellerator::execution::operation::v2;
 namespace execution = cellerator::execution;
 
 namespace {

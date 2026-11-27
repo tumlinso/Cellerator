@@ -2,7 +2,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/execution/dependency/incidence.hh>
+#include <Cellerator/execution/preparation/dependency/incidence.hh>
 #include <Cellerator/geometry/dependency/pattern_owner.hh>
 #include <Cellerator/layout/entity_layout.hh>
 

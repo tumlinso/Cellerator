@@ -38,7 +38,7 @@ basis migration are unsupported.
 Integration owner SDK recipe (shared build files are outside this leaf's scope):
 
 ```cmake
-add_library(cellerator_substrate_adaptive STATIC src/math/adaptive/reuse.cc)
+add_library(cellerator_substrate_adaptive STATIC src/state/adaptive/reuse.cc)
 target_compile_features(cellerator_substrate_adaptive PUBLIC cxx_std_20)
 target_include_directories(cellerator_substrate_adaptive PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -47,6 +47,6 @@ target_link_libraries(cellerator_substrate_adaptive PUBLIC cellerator_substrate_
 ```
 
 Include this target in the existing SDK export/install target set and install
-`include/Cellerator/math/adaptive/reuse.hh` alongside the existing public headers.
+`include/Cellerator/state/adaptive/reuse.hh` alongside the existing public headers.
 After installation, consumers include that header, link the adaptive target, and
 supply their mathematics owner callbacks. No registry extension is required.

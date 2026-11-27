@@ -1,4 +1,4 @@
-#include <Cellerator/profiling/preparation/manifest_v1.hh>
+#include <Cellerator/execution/profiling/preparation/manifest_v1.hh>
 
 #include <cassert>
 

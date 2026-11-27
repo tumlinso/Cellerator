@@ -7,10 +7,11 @@
 
 namespace cellerator::state {
 namespace ex = execution;
+namespace ids = structure;
 struct actor_tag;
 struct readout_tag;
-using actor_id = ex::persistent_identity<actor_tag>;
-using readout_id = ex::persistent_identity<readout_tag>;
+using actor_id = ids::persistent_identity<actor_tag>;
+using readout_id = ids::persistent_identity<readout_tag>;
 enum class state_kind { scalar_patch, actor_private };
 enum class activity { unknown, inactive, active };
 enum class status {
@@ -20,17 +21,17 @@ enum class status {
 };
 struct coordinate {
     actor_id actor{};
-    ex::domain_id private_domain{}; // zero for a scalar patch; no latent axis inferred
+    ids::domain_id private_domain{}; // zero for a scalar patch; no latent axis inferred
     std::uint64_t local_slot = 0, incarnation = 0;
 };
 struct generations {
-    ex::structure_id structure{};
-    ex::structure_epoch epoch{};
+    ids::structure_id structure{};
+    ids::structure_epoch epoch{};
     ex::value_generation values{}, activity{}, parameters{};
 };
 struct actor_layout {
     actor_id actor{};
-    ex::domain_id private_domain{};
+    ids::domain_id private_domain{};
 };
 struct structured_layout {
     state_kind kind = state_kind::scalar_patch;
@@ -45,9 +46,9 @@ enum class support_kind {
     output_contribution, source_interval, candidate_nomination
 };
 struct support_universe {
-    ex::domain_id identity{};
-    ex::structure_id structure{};
-    ex::structure_epoch epoch{};
+    ids::domain_id identity{};
+    ids::structure_id structure{};
+    ids::structure_epoch epoch{};
     support_kind kind = support_kind::primal_dependency;
     std::uint64_t extent = 0;
 };
@@ -126,7 +127,7 @@ public:
         if (!owner_.current || owner_.values.size()!=owner_.coordinates.size()
             || (owner_.values.size() && !owner_.values.data())) return status::invalid_binding;
         if (!same_generations(saved_,*owner_.current)) return status::stale_generation;
-        if (!ex::valid_identity(saved_.structure) || !saved_.epoch.value
+        if (!ids::valid_identity(saved_.structure) || !saved_.epoch.value
             || !saved_.values.value || !saved_.activity.value || !saved_.parameters.value)
             return status::invalid_identity;
         auto s=validate_layout(layout_,owner_.coordinates);
@@ -135,7 +136,7 @@ public:
         if (s!=status::success) return s;
         if (support_.universe.kind!=support_kind::primal_dependency
             || support_.universe.extent!=owner_.values.size()
-            || !ex::same_identity(support_.universe.structure,saved_.structure)
+            || !ids::same_identity(support_.universe.structure,saved_.structure)
             || support_.universe.epoch.value!=saved_.epoch.value) return status::invalid_support;
         if (bindings_.size() && !bindings_.data()) return status::invalid_binding;
         for (std::size_t i=0;i<bindings_.size();++i) {
@@ -177,11 +178,11 @@ public:
         if(bad_output(output) || detail::overlaps(declarations,output)) return status::alias;
         for(std::size_t i=0;i<declarations.size();++i) {
             const auto& r=declarations[i];
-            if(!ex::valid_identity(r.role) || !ex::valid_identity(r.actor)) return status::invalid_identity;
+            if(!ids::valid_identity(r.role) || !ids::valid_identity(r.actor)) return status::invalid_identity;
             bool known=false;
-            for(const auto& row:layout_.rows) known|=ex::same_identity(row.actor,r.actor);
+            for(const auto& row:layout_.rows) known|=ids::same_identity(row.actor,r.actor);
             if(!known) return status::invalid_identity;
-            for(std::size_t j=0;j<i;++j) if(ex::same_identity(declarations[j].role,r.role)) return status::invalid_identity;
+            for(std::size_t j=0;j<i;++j) if(ids::same_identity(declarations[j].role,r.role)) return status::invalid_identity;
             if(r.kind!=readout_kind::linear && r.kind!=readout_kind::explicit_observable)
                 return status::unsupported_readout;
             if(r.terms.size() && !r.terms.data()) return status::invalid_binding;
@@ -189,7 +190,7 @@ public:
             if(r.kind==readout_kind::explicit_observable &&
                 (r.terms.size()!=1 || r.terms[0].weight!=T(1))) return status::invalid_binding;
             for(const auto& term:r.terms) if(term.canonical_offset>=owner_.values.size()
-                || !ex::same_identity(owner_.coordinates[term.canonical_offset].actor,r.actor))
+                || !ids::same_identity(owner_.coordinates[term.canonical_offset].actor,r.actor))
                 return status::invalid_binding;
         }
         for(std::size_t i=0;i<declarations.size();++i) {

@@ -1,4 +1,4 @@
-#include <Cellerator/geometry/statistical_validation.hh>
+#include <Cellerator/geometry/validation/statistical_validation.hh>
 
 #include <algorithm>
 #include <cmath>

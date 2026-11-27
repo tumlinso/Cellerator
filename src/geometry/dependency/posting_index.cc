@@ -38,11 +38,11 @@ bool snapshot_sizes_fit(const compact::SnapshotPairV1& snapshot,
 
 } // namespace
 
-containers::PostingRequirements posting_requirements(
+::cellerator::structure::indexing::PostingRequirements posting_requirements(
     const compact::SnapshotPairV1& snapshot) noexcept {
     if (compact::validate_snapshot(snapshot) != compact::SnapshotStatusV1::success)
         return {};
-    containers::PostingRequirements requirements{};
+    ::cellerator::structure::indexing::PostingRequirements requirements{};
     if (!snapshot_sizes_fit(snapshot, &requirements.record_capacity,
                             &requirements.maximum_work_items))
         return {};
@@ -52,11 +52,11 @@ containers::PostingRequirements posting_requirements(
 
 PostingBuildStatus build_posting_index(
     const compact::SnapshotPairV1& snapshot,
-    containers::PostingRecord* record_scratch,
+    ::cellerator::structure::indexing::PostingRecord* record_scratch,
     std::uint64_t record_capacity,
-    containers::PostingRecord* entries,
+    ::cellerator::structure::indexing::PostingRecord* entries,
     std::uint64_t entry_capacity,
-    containers::PostingIndexView* out) noexcept {
+    ::cellerator::structure::indexing::PostingIndexView* out) noexcept {
     if (out == nullptr) return PostingBuildStatus::invalid_argument;
     if (compact::validate_snapshot(snapshot) != compact::SnapshotStatusV1::success)
         return PostingBuildStatus::invalid_snapshot;
@@ -88,17 +88,17 @@ PostingBuildStatus build_posting_index(
     if (snapshot.delta != nullptr)
         append_relation(*snapshot.delta, snapshot.base->edge_count);
 
-    const containers::PostingIndexView metadata{
+    const ::cellerator::structure::indexing::PostingIndexView metadata{
         snapshot.base->relation_id, snapshot.base->structure_id,
         snapshot.snapshot_structure_epoch, nullptr, 0u};
-    const auto status = containers::canonicalize_postings(
+    const auto status = ::cellerator::structure::indexing::canonicalize_postings(
         metadata, record_scratch, record_count, entries, entry_capacity, out);
     switch (status) {
-    case containers::PostingStatus::success:
+    case ::cellerator::structure::indexing::PostingStatus::success:
         return PostingBuildStatus::success;
-    case containers::PostingStatus::insufficient_output_capacity:
+    case ::cellerator::structure::indexing::PostingStatus::insufficient_output_capacity:
         return PostingBuildStatus::insufficient_output_capacity;
-    case containers::PostingStatus::invalid_argument:
+    case ::cellerator::structure::indexing::PostingStatus::invalid_argument:
         return PostingBuildStatus::invalid_argument;
     default:
         return PostingBuildStatus::invalid_snapshot;

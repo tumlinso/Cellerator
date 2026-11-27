@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cellerator/geometry/dependency/explicit_pattern.hh>
-#include <Cellerator/compute/support/adaptive_support.hh>
+#include <Cellerator/geometry/dependency/adaptive_support.hh>
 
 #include <cstdint>
 #include <memory>
@@ -27,7 +27,7 @@ public:
     std::uint64_t pending_removals() const noexcept { return manager_.pending_revocations(); }
 
 private:
-    compute::support::adaptive_support_manager_v1 manager_;
+    ::cellerator::geometry::support::adaptive_support_manager_v1 manager_;
     std::shared_ptr<const ExplicitPattern> current_;
 };
 

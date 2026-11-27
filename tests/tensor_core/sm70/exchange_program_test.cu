@@ -1,10 +1,10 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/exchange_program.cc"
+#include "../../../src/execution/program/exchange_program.cc"
 
 #include <cassert>
 #include <cstdint>
 
-namespace operation = cellerator::compute::operation;
-namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
+namespace operation = cellerator::execution::operation;
+namespace sm70 = cellerator::execution::planning::architecture::providers::nvidia::sm70;
 
 namespace {
 struct trace { std::uint32_t calls = 0u; std::uint64_t last = 0u; bool fail = false; };

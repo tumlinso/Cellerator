@@ -1,5 +1,5 @@
-#include <Cellerator/compute/architecture/provider.hh>
-#include <Cellerator/compute/operation/candidate_catalog_v2.hh>
+#include <Cellerator/execution/planning/providers/provider.hh>
+#include <Cellerator/execution/planning/candidates/candidate_catalog_v2.hh>
 #include <Cellerator/runtime/device_descriptor.hh>
 
 #include <cassert>
@@ -7,8 +7,8 @@
 #include <cstring>
 #include <iostream>
 
-namespace architecture = cellerator::compute::architecture;
-namespace core = cellerator::compute::math::core;
+namespace architecture = cellerator::execution::planning::architecture;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 namespace runtime = cellerator::runtime;
 

@@ -1,20 +1,6 @@
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
-
-# Native package surface. Keep language SDK headers and resources out of both
-# the regular and selectable substrate installations.
-function(cellerator_install_native_headers)
-    foreach(dir IN ITEMS bindings biology common compute containers
-            execution geometry interop layout math memory
-            ops packing profiling runtime state structure tensor)
-        install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/Cellerator/${dir}"
-            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN}
-            PATTERN "cellshard" EXCLUDE)
-    endforeach()
-    install(FILES
-        "${PROJECT_SOURCE_DIR}/include/Cellerator/parameters.hh"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" ${ARGN})
-endfunction()
+include("${CMAKE_CURRENT_LIST_DIR}/CelleratorNativeHeaders.cmake")
 
 add_library(cellerator_headers INTERFACE)
 add_library(Cellerator::headers ALIAS cellerator_headers)
@@ -24,10 +10,10 @@ target_include_directories(cellerator_headers INTERFACE
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_compile_features(cellerator_headers INTERFACE cxx_std_20)
 add_library(cellerator_cpu_numerics STATIC
-    src/compute/cpu/generic_cpu_relation_apply.cc
-    src/compute/cpu/cpu_transpose_and_contraction.cc
-    src/compute/cpu/cpu_projection_packing_and_order_transforms.cc
-    src/compute/cpu/cpu_segment_gate_update_bundle_and_chain_paths.cc)
+    src/ops/relation/cpu/generic_cpu_relation_apply.cc
+    src/ops/relation/cpu/cpu_transpose_and_contraction.cc
+    src/layout/projection/cpu_projection_packing_and_order_transforms.cc
+    src/ops/relation/cpu/cpu_segment_gate_update_bundle_and_chain_paths.cc)
 add_library(Cellerator::cpu_numerics ALIAS cellerator_cpu_numerics)
 target_include_directories(cellerator_cpu_numerics PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -39,7 +25,7 @@ install(TARGETS cellerator_cpu_numerics EXPORT CelleratorCoreTargets
 install(TARGETS cellerator_headers EXPORT CelleratorCoreTargets)
 install(EXPORT CelleratorCoreTargets NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
-cellerator_install_native_headers()
+cellerator_install_native_headers("${PROJECT_SOURCE_DIR}")
 include("${PROJECT_SOURCE_DIR}/examples/install_headers.cmake")
 
 set(CELLERATOR_HOST_CONFIG "${CMAKE_CURRENT_BINARY_DIR}/CelleratorConfig.cmake")

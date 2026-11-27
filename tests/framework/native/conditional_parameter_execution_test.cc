@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/execution/conditional/parameter_dispatch.hh>
+#include <Cellerator/execution/program/conditional/parameter_dispatch.hh>
 
 #include <cassert>
 

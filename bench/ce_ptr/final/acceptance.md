@@ -118,7 +118,7 @@ recognized by the Clang link step; GCC/NVCC is the supported full-build pair and
 passed the complete tree.
 
 The C++ context compiler's read-only `where` query resolved the prepared
-optimizer workspace contract to `src/geometry/optimizer.cc:625`, and a
+optimizer workspace contract to `src/geometry/packing/optimizer.cc:625`, and a
 5,000-token performance slice completed with `sufficient=1`. Its full refresh
 was stopped after it spent more than two minutes merging records without
 output. Status remains stale/incomplete because two dataset translation units

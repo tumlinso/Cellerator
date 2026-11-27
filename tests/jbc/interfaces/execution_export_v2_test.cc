@@ -1,9 +1,9 @@
-#include <Cellerator/profiling/preparation/execution_export_v2.hh>
+#include <Cellerator/execution/profiling/preparation/execution_export_v2.hh>
 
 #include <cassert>
 #include <cstdint>
 
-namespace decomposition = cellerator::compute::decomposition;
+namespace decomposition = cellerator::execution::planning::decomposition;
 namespace execution = cellerator::execution;
 namespace preparation = cellerator::execution::preparation;
 namespace profiling = cellerator::profiling;

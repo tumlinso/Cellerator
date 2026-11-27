@@ -4,7 +4,7 @@
  * the implementation header with the measured V100 result at the readiness gate.
  */
 
-#include "Cellerator/geometry/cell_block_records_cuda.hh"
+#include "Cellerator/layout/packing/cell_block_records_cuda.hh"
 
 #include "benchmark_mutex.hh"
 

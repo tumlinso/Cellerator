@@ -1,6 +1,6 @@
 #include <CellShard/interop/cellerator/execution_payload.hh>
 
-#include <Cellerator/execution/opaque_artifact.hh>
+#include <Cellerator/execution/preparation/opaque_artifact.hh>
 
 #include <type_traits>
 

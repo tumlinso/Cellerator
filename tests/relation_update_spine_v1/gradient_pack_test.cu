@@ -1,11 +1,11 @@
-#include <Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_pack.cuh>
+#include <Cellerator/ops/relation/cuda/sm70/edge_value_gradient/gradient_pack.cuh>
 #include <cassert>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <limits>
 #include <vector>
-using namespace cellerator::compute::architecture::providers::nvidia::sm70::edge_value_gradient;
+using namespace cellerator::execution::planning::architecture::providers::nvidia::sm70::edge_value_gradient;
 int main(){
     float *input;__half *output;std::uint32_t *ids;
     assert(cudaMalloc(&input,4*19*sizeof(float))==cudaSuccess);

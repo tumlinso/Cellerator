@@ -1,13 +1,13 @@
-#include <Cellerator/math/reference/operation.hh>
+#include <Cellerator/reference/operation.hh>
 #include <Cellerator/common/real/format_codes.hh>
-#include <Cellerator/math/reference/referee.hh>
+#include <Cellerator/reference/referee.hh>
 #include <Cellerator/layout/projection/bell.hh>
 #include <Cellerator/layout/projection/packed_dense_operand.hh>
-#include <Cellerator/compute/projection/native_tile_view.hh>
+#include <Cellerator/layout/projection/native_tile_view.hh>
 
 
 int main() {
-    namespace math = cellerator::compute::math;
+    namespace math = cellerator::layout::projection;
     if (!math::scalar_is_zero(math::make_scalar(0.0f))
         || math::scalar_is_zero(math::make_scalar(1.0))) return 1;
     const double a[]{1.0, -2.0}, b[]{1.0, -2.0};

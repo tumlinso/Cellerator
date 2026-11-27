@@ -4,7 +4,7 @@
 #include <cmath>
 #include <limits>
 
-namespace cellerator::compute::math {
+namespace cellerator::layout::projection {
 namespace physical_bell_detail {
 
 bell_lowering_status validate(const bell_csr_source_view &,
@@ -237,4 +237,4 @@ bell_lowering_status query_bell_candidates_host(
     return {};
 }
 
-} // namespace cellerator::compute::math
+} // namespace cellerator::layout::projection

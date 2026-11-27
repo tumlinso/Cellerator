@@ -73,7 +73,7 @@ struct fixture {
 };
 
 bool same_geometry(
-    exec::geometry_id lhs, exec::geometry_id rhs) {
+    cellerator::structure::geometry_id lhs, cellerator::structure::geometry_id rhs) {
     return lhs.low == rhs.low && lhs.high == rhs.high;
 }
 
@@ -100,7 +100,7 @@ void round_trip_and_relocation() {
         "build failed");
     require(built.image_bytes == requirements.image_bytes
             && built.section_count == requirements.section_count
-            && exec::valid_identity(built.geometry_identity),
+            && cellerator::structure::valid_identity(built.geometry_identity),
         "built view metadata mismatch");
 
     persist::semantic_geometry_section_view_v1 optional{};

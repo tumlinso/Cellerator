@@ -4,19 +4,17 @@ include(CTest)
 find_package(CUDAToolkit REQUIRED)
 
 get_filename_component(CE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
-add_library(ce_ml2_test_runtime STATIC
-  "${CE_ROOT}/src/runtime/runtime.cu"
-  "${CE_ROOT}/src/runtime/device_descriptor.cu"
-  "${CE_ROOT}/src/runtime/memory/allocation.cc"
-  "${CE_ROOT}/src/runtime/memory/copy.cu"
-  "${CE_ROOT}/src/runtime/memory/generation_marks.cc"
-  "${CE_ROOT}/src/runtime/memory/image.cc"
-  "${CE_ROOT}/src/runtime/memory/session_memory.cu"
-  "${CE_ROOT}/src/runtime/value_readiness.cu")
+add_subdirectory("${CE_ROOT}/src/memory" memory)
+add_subdirectory("${CE_ROOT}/src/execution/preparation/readiness" readiness)
+include("${CE_ROOT}/src/runtime/sources.cmake")
+add_library(ce_ml2_test_runtime STATIC)
+cellerator_target_runtime_sources(ce_ml2_test_runtime)
 add_library(Cellerator::runtime ALIAS ce_ml2_test_runtime)
 target_include_directories(ce_ml2_test_runtime PUBLIC "${CE_ROOT}/include")
 target_compile_features(ce_ml2_test_runtime PUBLIC cxx_std_20)
-target_link_libraries(ce_ml2_test_runtime PUBLIC CUDA::cudart PRIVATE CUDA::cublas CUDA::cusparse)
+target_link_libraries(ce_ml2_test_runtime
+  PUBLIC CUDA::cudart Cellerator::memory_contract Cellerator::value_readiness
+  PRIVATE CUDA::cublas CUDA::cusparse)
 set_target_properties(ce_ml2_test_runtime PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
 
 add_library(ce_ml2_test_program STATIC "${CE_ROOT}/src/execution/program/stages.cc")

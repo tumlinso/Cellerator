@@ -5,7 +5,7 @@
 #include <vector>
 
 int main() {
-    using namespace cellerator::compute::graph;
+    using namespace cellerator::ops::relation::graph;
     using namespace cellerator::trajectory;
 
     TrajectoryRecordTable records;

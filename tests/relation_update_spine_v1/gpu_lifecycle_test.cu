@@ -1,10 +1,10 @@
-#include <Cellerator/compute/operation/relation_update.hh>
+#include <Cellerator/execution/preparation/relation_update.hh>
 #include "reference_math.hh"
 #include <cuda_runtime.h>
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-namespace ce = cellerator::compute::relation;
+namespace ce = cellerator::ops::relation;
 namespace ex = cellerator::execution;
 namespace {
 unsigned checks = 0;

@@ -1,4 +1,4 @@
-#include <Cellerator/math/reference/referee.hh>
+#include <Cellerator/reference/referee.hh>
 
 #include <bench/math/benchmark_support.hh>
 
@@ -13,8 +13,8 @@
 #include <iostream>
 #include <limits>
 
-namespace cm = cellerator::compute::math;
-namespace cmb = cellerator::compute::math::bench;
+namespace cm = cellerator::layout::projection;
+namespace cmb = cellerator::layout::projection::bench;
 namespace cr = cellerator::real;
 
 namespace {

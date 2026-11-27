@@ -1,10 +1,10 @@
-#include <Cellerator/compute/decomposition/log_sum_exp_state_v1.hh>
+#include <Cellerator/ops/reduction/log_sum_exp_state_v1.hh>
 
 #include <cassert>
 #include <cmath>
 #include <limits>
 
-namespace decomposition = cellerator::compute::decomposition;
+namespace decomposition = cellerator::execution::planning::decomposition;
 
 namespace {
 

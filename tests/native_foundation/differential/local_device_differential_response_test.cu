@@ -1,11 +1,11 @@
-#include <Cellerator/compute/operation/differential/local_arithmetic.hh>
+#include <Cellerator/ops/numeric/differential/local_arithmetic.hh>
 #include <cuda_runtime_api.h>
 #include <array>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-namespace df=cellerator::compute::differential; namespace nf=df::nf1; namespace nn=cellerator::compute::native_numeric; namespace ex=cellerator::execution; namespace pg=ex::program;
+namespace df=cellerator::ops::numeric::differential; namespace nf=df::nf1; namespace nn=cellerator::ops::relation::numeric; namespace ex=cellerator::execution; namespace pg=ex::program;
 void check(bool v){if(!v) std::abort();} void gpu(cudaError_t v){check(v==cudaSuccess);}
 nf::generation_stamp stamp(std::uint64_t id,std::uint64_t g){return {{id,1},{g}};}
 nf::primal_record primal(const nf::identity& d){nf::primal_record p{}; p.instance.prepared={d,{2,1},{1},{3,1}};p.instance.state=stamp(4,7);p.instance.parameters=stamp(5,11);return p;}

@@ -10,8 +10,8 @@ if(TARGET Cellerator::local_differential)
 else()
   target_sources(ce_nf1_d01 PRIVATE
   "${CE_ROOT}/src/ops/numeric/local_arithmetic.cc"
-  "${CE_ROOT}/src/compute/operation/differential/local_arithmetic.cc"
-  "${CE_ROOT}/src/compute/operation/operation_core_v2/schema.cc"
+  "${CE_ROOT}/src/ops/numeric/differential/local_arithmetic.cc"
+  "${CE_ROOT}/src/execution/preparation/operation_core_v2/schema.cc"
   "${CE_ROOT}/src/execution/program/stages.cc")
 endif()
 target_include_directories(ce_nf1_d01 PRIVATE "${CE_ROOT}/include")

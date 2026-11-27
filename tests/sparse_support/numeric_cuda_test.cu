@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace sparse = cellerator::compute::operation::sparse_support;
+namespace sparse = cellerator::ops::sparse_support::numeric;
 namespace projection = cellerator::layout::projection;
 namespace persistence = cellpack::persistence;
 

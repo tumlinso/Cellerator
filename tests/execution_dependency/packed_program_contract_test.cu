@@ -1,5 +1,5 @@
 #include "gated_product_fixture.hh"
-#include <Cellerator/execution/dependency/packed_program.cuh>
+#include <Cellerator/execution/program/dependency/packed_program.cuh>
 
 #include <charconv>
 #include <cstdint>

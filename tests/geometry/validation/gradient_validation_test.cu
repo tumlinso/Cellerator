@@ -1,7 +1,7 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/edge_value_gradient.cu"
-#include "../../../src/compute/architecture/providers/nvidia/sm70/exchange_program.cc"
-#include "../../../src/compute/architecture/providers/nvidia/sm70/segment_backward_integration.cu"
-#include "../../../src/compute/architecture/providers/nvidia/sm70/transpose_relation_apply.cu"
+#include "../../../src/ops/relation/cuda/sm70/edge_value_gradient.cu"
+#include "../../../src/execution/program/exchange_program.cc"
+#include "../../../src/ops/segment/cuda/sm70/segment_backward_integration.cu"
+#include "../../../src/ops/relation/cuda/sm70/transpose_relation_apply.cu"
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -17,9 +17,9 @@
 #include <vector>
 
 namespace sm70 =
-    cellerator::compute::architecture::providers::nvidia::sm70;
+    cellerator::execution::planning::architecture::providers::nvidia::sm70;
 namespace projection = cellerator::layout::projection;
-namespace segment = cellerator::compute::segment;
+namespace segment = cellerator::ops::segment;
 namespace execution = cellerator::execution;
 
 namespace {
@@ -499,7 +499,7 @@ void validate_composed_exchange() {
     int stream_token = 0;
     exchange_state state{0.375, -1.25, 0.625, -0.4, 1.75, 0.0, 0.0,
         0.0, 0.0, 0.0, 0u, &stream_token};
-    using operation = cellerator::compute::operation::relation_algebra_kind_v1;
+    using operation = cellerator::execution::operation::relation_algebra_kind_v1;
     const std::array<sm70::prepared_exchange_step_v1, 4u> steps{{
         {operation::contract_on_support, exchange_contract, &state, 1u, 2u},
         {operation::edge_map_or_gate, exchange_gate, &state, 2u, 3u},

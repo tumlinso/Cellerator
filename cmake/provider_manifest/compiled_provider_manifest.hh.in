@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Cellerator/compute/architecture/provider.hh>
+#include <Cellerator/execution/planning/providers/provider.hh>
 
 @CELLERATOR_PROVIDER_MANIFEST_DECLARATIONS@
 
-namespace cellerator::compute::architecture {
+namespace cellerator::execution::planning::architecture {
 
 inline constexpr provider_registration_function_v1
     compiled_provider_registrations_v1[]{
@@ -18,4 +18,4 @@ inline constexpr compiled_provider_manifest_v1 cellerator_compiled_provider_mani
             / sizeof(compiled_provider_registrations_v1[0])
         - 1u)};
 
-} // namespace cellerator::compute::architecture
+} // namespace cellerator::execution::planning::architecture

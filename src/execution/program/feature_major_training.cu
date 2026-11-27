@@ -12,11 +12,11 @@ training_program_status fail(training_program_status_code code,
 }
 
 training_program_status from_native(
-    compute::math::native_training_status native) noexcept {
+    ::cellerator::layout::projection::native_training_status native) noexcept {
     training_program_status status{};
     status.native = native;
     status.message = native.message;
-    using native_code = compute::math::native_training_status_code;
+    using native_code = ::cellerator::layout::projection::native_training_status_code;
     switch (native.code) {
     case native_code::ok:
         return status;
@@ -64,12 +64,12 @@ training_program_status compile_training_program(
         || request.schema_version != training_program_schema_version
         || request.session == nullptr || !request.session->initialized
         || request.session->device < 0
-        || request.dense_width != compute::math::native_training_dense_width)
+        || request.dense_width != ::cellerator::layout::projection::native_training_dense_width)
         return fail(training_program_status_code::invalid_argument,
             "training program compile arguments are invalid");
 
     training_program compiled{};
-    const auto native = compute::math::prepare_native_training_slice(
+    const auto native = ::cellerator::layout::projection::prepare_native_training_slice(
         request.forward, request.transpose, request.session->device,
         request.feature_axis, request.module_axis, request.dense_axis,
         &compiled.prepared);
@@ -118,12 +118,12 @@ training_program_status run_training_program(
     }
 
     const value_generation consumed = launch.native.expected_generation;
-    const auto native = compute::math::run_native_training_step(
+    const auto native = ::cellerator::layout::projection::run_native_training_step(
         program->prepared, launch.native);
     if (!native) return from_native(native);
 
-    compute::math::native_training_parameter_descriptors descriptors{};
-    const auto described = compute::math::describe_native_training_parameters(
+    ::cellerator::layout::projection::native_training_parameter_descriptors descriptors{};
+    const auto described = ::cellerator::layout::projection::describe_native_training_parameters(
         program->prepared, launch.native, &descriptors);
     if (!described) return from_native(described);
 

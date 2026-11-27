@@ -1,8 +1,8 @@
 #include "../../src/ops/matrix/csr_multiply.cuh"
 #include <Cellerator/common/real/fp16.cuh>
-#include "Cellerator/geometry/feature_weighted_row_reduction_cuda.hh"
+#include "Cellerator/ops/reduction/feature_weighted_row_reduction_cuda.hh"
 #include "benchmark_mutex.hh"
-#include <Cellerator/compute/operators/sparse/ops.hh>
+#include <Cellerator/ops/matrix/sparse/ops.hh>
 
 #include <cuda_runtime.h>
 

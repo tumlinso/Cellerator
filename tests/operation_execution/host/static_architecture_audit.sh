@@ -4,12 +4,12 @@ set -euo pipefail
 repo_root="${1:-.}"
 
 abi_paths=(
-    include/Cellerator/compute/operation/operation_core_v2
-    include/Cellerator/compute/operation/operation_core_v2.hh
-    include/Cellerator/compute/operation/candidate_catalog_v2.hh
+    include/Cellerator/execution/preparation/operation_core_v2
+    include/Cellerator/execution/preparation/operation_core_v2.hh
+    include/Cellerator/execution/planning/candidates/candidate_catalog_v2.hh
     include/Cellerator/execution/geometry_acquisition_v2
     include/Cellerator/execution/preparation/geometry_artifacts.hh
-    include/Cellerator/execution/opaque_artifact.hh
+    include/Cellerator/execution/preparation/opaque_artifact.hh
     include/Cellerator/geometry/index/scalable_views_v2.hh
     include/Cellerator/geometry/validation/scalable_validation_v2.hh
     include/Cellerator/geometry/optimizer/oracle
@@ -18,9 +18,9 @@ abi_paths=(
 
 production_paths=(
     "${abi_paths[@]}"
-    src/compute/operation/operation_core_v2
+    src/execution/preparation/operation_core_v2
     src/execution/geometry_acquisition_v2
-    src/execution/opaque_artifact.cc
+    src/execution/preparation/opaque_artifact.cc
     src/geometry/validation/scalable_validation_v2.cc
     src/geometry/optimizer/oracle
 )

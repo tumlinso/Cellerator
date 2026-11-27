@@ -1,5 +1,5 @@
 #include <Cellerator/execution/preparation/geometry_acquisition.hh>
-#include <Cellerator/execution/opaque_artifact.hh>
+#include <Cellerator/execution/preparation/opaque_artifact.hh>
 #include <Cellerator/geometry/persistence/execution_capability_manifest_v1.hh>
 
 #include <array>
@@ -227,13 +227,13 @@ execution::activated_projection_reference_v2 activated_projection(
     result.key.persistent = {1000u + index, 2000u + index};
     result.key.runtime = {20u + index, 1u};
     result.key.kind = index == 0u
-        ? cellerator::compute::math::core::projection_kind::csr
-        : cellerator::compute::math::core::projection_kind::architecture_specific;
+        ? cellerator::execution::operation_core::projection_kind::csr
+        : cellerator::execution::operation_core::projection_kind::architecture_specific;
     result.key.schema_version = 1u;
     result.provider_identity = {3000u, 4000u};
     result.capability_identity = index == 0u
-        ? cellerator::compute::math::core::stable_id{}
-        : cellerator::compute::math::core::stable_id{5000u, 6000u};
+        ? cellerator::execution::operation_core::stable_id{}
+        : cellerator::execution::operation_core::stable_id{5000u, 6000u};
     result.contract.view_type = {7000u + index, 8000u + index};
     result.contract.abi_major = 1u;
     result.contract.schema_version = 1u;

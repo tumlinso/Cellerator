@@ -1,5 +1,5 @@
-#include <Cellerator/compute/indexing/cuda_postings.cuh>
-#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/structure/indexing/cuda_postings.cuh>
+#include <Cellerator/structure/indexing/posting_index.hh>
 #include <Cellerator/geometry/dependency/compact_support.hh>
 #include <Cellerator/geometry/dependency/posting_index.hh>
 
@@ -22,9 +22,9 @@
 #include <vector>
 
 namespace fs = std::filesystem;
-namespace ix = cellerator::compute::indexing;
+namespace ix = cellerator::structure::indexing;
 namespace compact = cellerator::geometry::dependency::compact;
-namespace containers = cellerator::containers;
+namespace containers = cellerator::structure::indexing;
 namespace geometry = cellerator::geometry::dependency;
 using clock_type = std::chrono::steady_clock;
 
@@ -227,7 +227,7 @@ __global__ void scatter_concat_terms(
     const std::uint64_t *query_entities, std::uint64_t query_count,
     const std::uint64_t *source_indptr, const std::uint64_t *source_ordinals,
     const std::uint64_t *term_prefix, const std::uint64_t *edge_ids,
-    const device_status *status, containers::IndexedWorkItem *output) {
+    const device_status *status, ::cellerator::structure::indexing::IndexedWorkItem *output) {
     if (status->code != 0u) return;
     const std::uint64_t term = blockIdx.x;
     if (term >= query_count) return;
@@ -247,7 +247,7 @@ __global__ void emit_edge_bits(
     const std::uint64_t *edge_ordinals_by_rank, bool identity_id_order,
     std::uint64_t edges,
     std::uint64_t words_per_cell, std::uint64_t total_words,
-    const device_status *status, containers::IndexedWorkItem *output) {
+    const device_status *status, ::cellerator::structure::indexing::IndexedWorkItem *output) {
     const std::uint64_t word_index = static_cast<std::uint64_t>(blockIdx.x) * blockDim.x
         + threadIdx.x;
     if (word_index >= total_words || status->code != 0u) return;
@@ -312,7 +312,7 @@ __global__ void emit_full_scan_tiles(
     std::uint64_t membership_words_per_cell,
     std::uint64_t tiles_per_cell,
     const device_status *status,
-    containers::IndexedWorkItem *output) {
+    ::cellerator::structure::indexing::IndexedWorkItem *output) {
     if (status->code != 0u) return;
     __shared__ typename full_scan::TempStorage scan_storage;
     const std::uint64_t block = blockIdx.x;
@@ -347,7 +347,7 @@ void launch_bitmap(
     const std::uint64_t *edge_ids,
     const std::uint64_t *edge_ids_by_rank,
     const std::uint64_t *edge_ordinals_by_rank,
-    containers::IndexedWorkItem *output,
+    ::cellerator::structure::indexing::IndexedWorkItem *output,
     cudaStream_t stream) {
     CUDA_CHECK(cudaMemsetAsync(edge_bits, 0,
         total_words * sizeof(std::uint32_t), stream));
@@ -392,7 +392,7 @@ void launch_full_scan(
     std::uint64_t *tile_counts, std::uint64_t *tile_prefix,
     void *scan_temp, std::size_t scan_temp_bytes,
     std::uint64_t *output_offsets, device_status *status,
-    containers::IndexedWorkItem *output, cudaStream_t stream) {
+    ::cellerator::structure::indexing::IndexedWorkItem *output, cudaStream_t stream) {
     CUDA_CHECK(cudaMemsetAsync(membership_bits, 0,
         total_membership_words * sizeof(std::uint32_t), stream));
     CUDA_CHECK(cudaMemsetAsync(status, 0, sizeof(device_status), stream));
@@ -518,8 +518,8 @@ void build_baseline_postings(
     const support_inputs &input,
     std::vector<compact::EdgeV1> &edges,
     std::vector<compact::ParticipantV1> &participants,
-    containers::PostingIndexView *out,
-    std::vector<containers::PostingRecord> &entry_storage) {
+    ::cellerator::structure::indexing::PostingIndexView *out,
+    std::vector<::cellerator::structure::indexing::PostingRecord> &entry_storage) {
     edges.resize(kEdges);
     participants.resize(kEdges);
     for (std::uint64_t ordinal = 0; ordinal < kEdges; ++ordinal) {
@@ -534,7 +534,7 @@ void build_baseline_postings(
         throw std::runtime_error("logical support fixture failed validation");
     const compact::SnapshotPairV1 snapshot{&logical, nullptr, 1u};
     const auto req = geometry::posting_requirements(snapshot);
-    std::vector<containers::PostingRecord> scratch(req.record_capacity);
+    std::vector<::cellerator::structure::indexing::PostingRecord> scratch(req.record_capacity);
     entry_storage.resize(req.maximum_unique_entries);
     const auto result = geometry::build_posting_index(snapshot,
         scratch.data(), scratch.size(), entry_storage.data(), entry_storage.size(), out);
@@ -543,12 +543,12 @@ void build_baseline_postings(
 }
 
 struct baseline_index_host {
-    std::vector<containers::PostingTerm> terms;
+    std::vector<::cellerator::structure::indexing::PostingTerm> terms;
     std::vector<std::uint64_t> offsets;
-    std::vector<containers::IndexedWorkItem> items;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> items;
 };
 
-baseline_index_host build_cuda_projection(const containers::PostingIndexView &host) {
+baseline_index_host build_cuda_projection(const ::cellerator::structure::indexing::PostingIndexView &host) {
     const auto req = ix::cuda_posting_projection_requirements_v1(host);
     baseline_index_host projection;
     projection.terms.resize(req.term_count);
@@ -693,7 +693,7 @@ void validate_output(
     const char *algorithm, const input_case &in,
     const std::vector<std::uint64_t> &edge_ids,
     const std::uint64_t *offsets_device,
-    const containers::IndexedWorkItem *items_device,
+    const ::cellerator::structure::indexing::IndexedWorkItem *items_device,
     const device_status *status_device) {
     device_status status{};
     std::vector<std::uint64_t> offsets(kCells + 1);
@@ -704,7 +704,7 @@ void validate_output(
         throw std::runtime_error(std::string(algorithm) + " status/count mismatch");
     if (offsets != in.oracle_offsets)
         throw std::runtime_error(std::string(algorithm) + " row offsets differ from CPU oracle");
-    std::vector<containers::IndexedWorkItem> items(status.required);
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> items(status.required);
     if (status.required) CUDA_CHECK(cudaMemcpy(items.data(), items_device,
         items.size() * sizeof(items[0]), cudaMemcpyDeviceToHost));
     for (std::uint64_t i = 0; i < status.required; ++i) {
@@ -768,10 +768,10 @@ struct benchmark_context {
 
     device_buffer<std::uint64_t> query_offsets;
     device_buffer<std::uint64_t> query_entities;
-    device_buffer<containers::PostingTerm> posting_queries;
-    device_buffer<containers::PostingTerm> index_terms;
+    device_buffer<::cellerator::structure::indexing::PostingTerm> posting_queries;
+    device_buffer<::cellerator::structure::indexing::PostingTerm> index_terms;
     device_buffer<std::uint64_t> index_term_offsets;
-    device_buffer<containers::IndexedWorkItem> index_items;
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> index_items;
     device_buffer<std::uint64_t> source_indptr;
     device_buffer<std::uint64_t> source_ordinals;
     device_buffer<std::uint64_t> edge_ids;
@@ -781,7 +781,7 @@ struct benchmark_context {
     device_buffer<std::uint32_t> source_by_rank;
 
     device_buffer<std::uint64_t> output_offsets;
-    device_buffer<containers::IndexedWorkItem> output_items;
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> output_items;
     device_buffer<ix::cuda_posting_scratch_v1::cursor_v1> posting_cursors;
     device_buffer<std::uint64_t> posting_counts;
     device_buffer<ix::cuda_posting_status_v1> posting_status;
@@ -921,7 +921,7 @@ void upload_query_case(benchmark_context &ctx, const input_case &in,
                        cudaStream_t stream, double *upload_ms) {
     if (in.query_entities.size() > ctx.query_capacity)
         throw std::runtime_error("query case exceeds allocated query capacity");
-    std::vector<containers::PostingTerm> postings(in.query_entities.size());
+    std::vector<::cellerator::structure::indexing::PostingTerm> postings(in.query_entities.size());
     for (std::size_t i = 0; i < in.query_entities.size(); ++i)
         postings[i] = {0u, 0u, in.query_entities[i]};
     const auto begin = clock_type::now();
@@ -1561,8 +1561,8 @@ int main(int argc, char **argv) {
 
         std::vector<compact::EdgeV1> logical_edges;
         std::vector<compact::ParticipantV1> participants;
-        containers::PostingIndexView host_postings{};
-        std::vector<containers::PostingRecord> host_posting_entries;
+        ::cellerator::structure::indexing::PostingIndexView host_postings{};
+        std::vector<::cellerator::structure::indexing::PostingRecord> host_posting_entries;
         const auto posting_begin = clock_type::now();
         build_baseline_postings(input, logical_edges, participants,
             &host_postings, host_posting_entries);

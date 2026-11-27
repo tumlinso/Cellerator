@@ -1,10 +1,10 @@
-#include <Cellerator/compute/operation/relation_algebra.hh>
+#include <Cellerator/ops/relation/relation_algebra.hh>
 
 #include <cassert>
 #include <cstdint>
 #include <type_traits>
 
-namespace operation = cellerator::compute::operation;
+namespace operation = cellerator::execution::operation;
 namespace execution = cellerator::execution;
 
 namespace {
@@ -27,8 +27,8 @@ operation::relation_numeric_semantics_v1 numeric() {
     return {execution::numeric_type::f16, execution::numeric_type::f16,
         execution::numeric_type::f16, execution::numeric_type::f32,
         execution::numeric_type::f32, execution::numeric_type::f32,
-        cellerator::compute::math::core::rounding_policy::nearest_even,
-        cellerator::compute::math::core::saturation_policy::none,
+        cellerator::execution::operation_core::rounding_policy::nearest_even,
+        cellerator::execution::operation_core::saturation_policy::none,
         operation::nan_policy_v1::propagate, {}};
 }
 

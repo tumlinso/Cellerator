@@ -1,17 +1,17 @@
-#include <Cellerator/compute/operation/relation_algebra.hh>
+#include <Cellerator/ops/relation/relation_algebra.hh>
 
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <limits>
 
-namespace operation = cellerator::compute::operation;
-namespace core = cellerator::compute::math::core;
+namespace operation = cellerator::execution::operation;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 
 // CE-GEO-81 intentionally keeps this mapping source-private. CE-GEO-86 owns
 // the reviewed public catalog declaration.
-namespace cellerator::compute::operation::compatibility_detail {
+namespace cellerator::execution::operation::compatibility_detail {
 relation_algebra_status_v1 map_relation_apply_to_operation_core_v1(
     const relation_algebra_problem_v1 &typed,
     execution::structure_handle runtime_structure,

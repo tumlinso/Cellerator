@@ -1,4 +1,4 @@
-#include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
+#include <Cellerator/ops/relation/feature_major_small_n_candidate.hh>
 #include <CellShard/interop/cellerator/execution_payload.hh>
 #include <Cellerator/execution/program/operation.hh>
 #include <Cellerator/execution/preparation/provider_projection.hh>
@@ -20,8 +20,8 @@
 
 #include <unistd.h>
 
-namespace cm = cellerator::compute::math;
-namespace core = cellerator::compute::math::core;
+namespace cm = cellerator::layout::projection;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 namespace persistence = cellpack::persistence;
 namespace planner = cellerator::execution::planning;

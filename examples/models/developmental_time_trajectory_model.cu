@@ -1,5 +1,5 @@
 #include "developmental_time_trajectory/dTT_model.hh"
-#include <Cellerator/compute/candidate/sparse/project.hh>
+#include <Cellerator/ops/matrix/sparse/project/project.hh>
 #include <Cellerator/tensor/base/device_views.cuh>
 
 #include <cuda_runtime.h>
@@ -17,7 +17,7 @@ namespace {
 namespace css = ::cellerator::tensor::base;
 namespace runtime = dt::runtime;
 namespace csv = dt::csv;
-namespace sparse_project = ::cellerator::compute::sparse::project;
+namespace sparse_project = ::cellerator::ops::matrix::sparse::project;
 namespace memory = ::cellerator::memory;
 
 constexpr int kScalarThreads = 256;

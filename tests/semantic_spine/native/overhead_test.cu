@@ -1,5 +1,5 @@
 // Bounded same-projection comparison; this is not a kernel promotion benchmark.
-#include "../../../src/compute/operation/prepared_relation.cu"
+#include "../../../src/execution/preparation/prepared_relation.cu"
 #include "test_require.hh"
 #include <cuda_fp16.h>
 #include <chrono>
@@ -7,9 +7,9 @@
 #include <iomanip>
 #include <iostream>
 
-namespace ce = cellerator::compute::relation;
+namespace ce = cellerator::ops::relation;
 namespace ex = cellerator::execution;
-namespace core = cellerator::compute::math::core;
+namespace core = cellerator::execution::operation_core;
 using clock_type = std::chrono::steady_clock;
 static double elapsed(clock_type::time_point start) {
     return std::chrono::duration<double, std::micro>(clock_type::now() - start).count();

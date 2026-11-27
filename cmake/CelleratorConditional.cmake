@@ -6,8 +6,8 @@ if(NOT CELLERATOR_ENABLE_CONDITIONAL)
 endif()
 
 add_library(cellerator_conditional STATIC
-    ${PROJECT_SOURCE_DIR}/src/execution/conditional/dispatch.cc
-    ${PROJECT_SOURCE_DIR}/src/execution/conditional/parameter_store.cc)
+    ${PROJECT_SOURCE_DIR}/src/execution/program/conditional/dispatch.cc
+    ${PROJECT_SOURCE_DIR}/src/execution/preparation/conditional/parameter_store.cc)
 add_library(Cellerator::conditional ALIAS cellerator_conditional)
 set_target_properties(cellerator_conditional PROPERTIES
     POSITION_INDEPENDENT_CODE ON EXPORT_NAME conditional)
@@ -70,8 +70,10 @@ if(CELLERATOR_BUILD_TESTS)
     endif()
 endif()
 
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Cellerator/execution/conditional
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution)
+foreach(owner IN ITEMS preparation program)
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Cellerator/execution/${owner}/conditional
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution/${owner})
+endforeach()
 install(TARGETS cellerator_conditional EXPORT CelleratorConditionalTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(EXPORT CelleratorConditionalTargets NAMESPACE Cellerator::

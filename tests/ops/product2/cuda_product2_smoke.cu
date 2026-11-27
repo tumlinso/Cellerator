@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/product2/product2.hh>
+#include <Cellerator/ops/mechanism/product2/product2.hh>
 #include <cuda_runtime.h>
 #include <cuda.h>
 #include <cmath>
@@ -35,7 +35,7 @@ void check(size_t m,cudaStream_t stream){
  require(ce_product2_cuda_forward(c,&oversized,stream)!=CE_PRODUCT2_SUCCESS,"actual allocation extent ignored");
  near(Y.get(),y);near(GX.get(),gx);
  }
- namespace p2=cellerator::compute::product2;namespace ep=cellerator::execution::program;
+ namespace p2=cellerator::ops::mechanism::product2;namespace ep=cellerator::execution::program;
  p2::prepared_owner owner({n,m,7,a.data(),b.data(),m,m});
  p2::bound_view views[3];for(auto&view:views)view.numeric=v;
  p2::cuda_stage_state states[3]={{&owner,c,p2::operation::forward},{&owner,c,p2::operation::jvp},{&owner,c,p2::operation::vjp}};

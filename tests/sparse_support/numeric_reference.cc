@@ -10,7 +10,7 @@
 #include <limits>
 #include <vector>
 
-using namespace cellerator::compute::operation::sparse_support;
+using namespace cellerator::ops::sparse_support::numeric;
 
 int main() {
     const auto image = physical_image();

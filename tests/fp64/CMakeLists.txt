@@ -23,15 +23,8 @@ target_link_libraries(fp64_qualification PRIVATE
     Cellerator::prepared_relation_cuda cellerator_compute_sparse_project)
 
 function(add_legacy_native_witness name)
-    file(READ "${CELLERATOR_SOURCE_DIR}/tests/semantic_spine/native/${name}_test.cu" witness_source)
-    string(REPLACE "../../../src/compute/operation/prepared_relation.cu"
-        "${CELLERATOR_SOURCE_DIR}/src/compute/operation/prepared_relation.cu"
-        witness_source "${witness_source}")
-    string(REPLACE "p->logical_map" "p->structure->logical_map"
-        witness_source "${witness_source}")
-    set(witness_copy "${CMAKE_CURRENT_BINARY_DIR}/compat_${name}_test.cu")
-    file(WRITE "${witness_copy}" "${witness_source}")
-    add_executable(fp64_existing_${name}_test "${witness_copy}")
+    add_executable(fp64_existing_${name}_test
+        "${CELLERATOR_SOURCE_DIR}/tests/semantic_spine/native/${name}_test.cu")
     target_include_directories(fp64_existing_${name}_test PRIVATE
         "${CELLERATOR_SOURCE_DIR}/include"
         "${CELLERATOR_SOURCE_DIR}/tests/semantic_spine/native")

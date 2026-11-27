@@ -1,6 +1,6 @@
 #include <Cellerator/neighbors/exact_search.hh>
 
-#include <Cellerator/compute/operators/graph/workspace.cuh>
+#include <Cellerator/ops/relation/graph/workspace.cuh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -10,7 +10,7 @@
 
 int main() {
     namespace ex = ::cellerator::neighbors::exact_search;
-    namespace cg = ::cellerator::compute::graph;
+    namespace cg = ::cellerator::ops::relation::graph;
 
     int device_count = 0;
     if (cudaGetDeviceCount(&device_count) != cudaSuccess || device_count <= 0) {

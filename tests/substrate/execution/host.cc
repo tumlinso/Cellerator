@@ -1,4 +1,4 @@
-#include <Cellerator/execution/prepared_host_sweep.hh>
+#include <Cellerator/execution/preparation/host/sweep.hh>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>

@@ -1,4 +1,4 @@
-#include <Cellerator/execution/atom_fragment/requirements_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment/requirements_v1.hh>
 
 #include <cassert>
 #include <limits>
@@ -6,8 +6,8 @@
 namespace fragment = cellerator::execution::atom_fragment;
 namespace joint = cellerator::execution::preparation;
 namespace execution = cellerator::execution;
-namespace operation = cellerator::compute::operation::v2;
-namespace decomposition = cellerator::compute::decomposition;
+namespace operation = cellerator::execution::operation::v2;
+namespace decomposition = cellerator::execution::planning::decomposition;
 
 template<typename Tag>
 ::cellerator::structure::persistent_identity<Tag> persistent(std::uint64_t value) {

@@ -1,4 +1,4 @@
-#include "Cellerator/geometry/feature_weighted_row_reduction.hh"
+#include "Cellerator/ops/reduction/feature_weighted_row_reduction.hh"
 #include <Cellerator/common/real/fp16.cuh>
 
 #include <algorithm>

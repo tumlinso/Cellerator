@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Cellerator/compute/architecture/provider.hh>
-#include <Cellerator/execution/projection_binding.hh>
+#include <Cellerator/execution/planning/providers/provider.hh>
+#include <Cellerator/execution/preparation/projection_binding.hh>
 #include <Cellerator/execution/identity.hh>
 
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
-#include <Cellerator/geometry/persistent_packing_payload.hh>
+#include <Cellerator/layout/packing/persistence/persistent_packing_payload.hh>
 
 #include <cstdint>
 #include <type_traits>
@@ -81,8 +81,8 @@ struct projection_provider_descriptor_v1 {
     // This record must already have passed validate_architecture_provider_v1
     // during cold registry assembly; activation rechecks its frozen shape and
     // selected capability identity without owning registry policy.
-    const compute::architecture::architecture_provider_v1 *architecture = nullptr;
-    compute::architecture::architecture_identity_v1 capability_identity{};
+    const ::cellerator::execution::planning::architecture::architecture_provider_v1 *architecture = nullptr;
+    ::cellerator::execution::planning::architecture::architecture_identity_v1 capability_identity{};
     cellpack::persistence::execution_projection_kind projection_kind{};
     std::uint32_t projection_schema_version = 0u;
     relation_orientation orientation = relation_orientation::forward;

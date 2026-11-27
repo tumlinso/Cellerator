@@ -27,11 +27,11 @@ bool valid_identity(const prepared_routing_identity_v1 &identity) noexcept {
 
 } // namespace
 
-compute::indexing::cuda_reverse_posting_view_v1
+::cellerator::structure::indexing::cuda_reverse_posting_view_v1
 prepared_entity_mechanism_index_v1::bind_device_view(
-    const containers::PostingTerm *terms,
+    const ::cellerator::structure::indexing::PostingTerm *terms,
     const std::uint64_t *term_offsets,
-    const containers::IndexedWorkItem *items) const noexcept {
+    const ::cellerator::structure::indexing::IndexedWorkItem *items) const noexcept {
     return {identity.relation_id, identity.structure_id, identity.structure_epoch,
         terms, term_offsets,
         static_cast<std::uint64_t>(device_terms.size()), items,
@@ -125,7 +125,7 @@ prepared_routing_status_v1 prepare_entity_mechanism_index_v1(
     if (posting_status != geometry::dependency::PostingBuildStatus::success)
         return prepared_routing_status_v1::invalid_support;
 
-    const auto projection = compute::indexing::cuda_posting_projection_requirements_v1(
+    const auto projection = ::cellerator::structure::indexing::cuda_posting_projection_requirements_v1(
         candidate.host_postings);
     if (projection.term_count > std::numeric_limits<std::size_t>::max()
         || projection.item_count > std::numeric_limits<std::size_t>::max())
@@ -136,15 +136,15 @@ prepared_routing_status_v1 prepare_entity_mechanism_index_v1(
     candidate.device_term_offsets.resize(
         static_cast<std::size_t>(projection.term_count + 1u));
     candidate.device_items.resize(static_cast<std::size_t>(projection.item_count));
-    compute::indexing::cuda_posting_prepare_requirements_v1 prepared{};
-    const auto projection_status = compute::indexing::build_cuda_posting_projection_v1(
+    ::cellerator::structure::indexing::cuda_posting_prepare_requirements_v1 prepared{};
+    const auto projection_status = ::cellerator::structure::indexing::build_cuda_posting_projection_v1(
         candidate.host_postings,
         candidate.device_terms.empty() ? nullptr : candidate.device_terms.data(),
         projection.term_count,
         candidate.device_term_offsets.data(), candidate.device_term_offsets.size(),
         candidate.device_items.empty() ? nullptr : candidate.device_items.data(),
         projection.item_count, &prepared);
-    if (projection_status != compute::indexing::cuda_posting_prepare_status_v1::success
+    if (projection_status != ::cellerator::structure::indexing::cuda_posting_prepare_status_v1::success
         || prepared.term_count != projection.term_count
         || prepared.item_count != projection.item_count)
         return prepared_routing_status_v1::insufficient_workspace;

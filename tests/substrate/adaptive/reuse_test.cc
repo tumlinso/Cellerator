@@ -1,8 +1,8 @@
-#include <Cellerator/math/adaptive/reuse.hh>
+#include <Cellerator/state/adaptive/reuse.hh>
 #include <iostream>
 #include <stdexcept>
 #include <cmath>
-namespace ad=cellerator::math::adaptive;
+namespace ad=cellerator::state::adaptive;
 void check(bool ok,const char* s) { if(!ok) throw std::runtime_error(s); }
 template<class F> void rejects(F f) { bool bad=false; try { f(); } catch(const std::invalid_argument&) { bad=true; } check(bad,"expected rejection"); }
 bool near(double a,double b) { return std::abs(a-b)<1e-12; }

@@ -10,10 +10,10 @@
 // paired fixture, measurement contract, and artifact writer must remain one
 // auditable benchmark translation unit; none is reusable runtime code.
 
-#include "Cellerator/geometry/feature_weighted_row_reduction_cuda.hh"
-#include "Cellerator/geometry/hardware_cost_model.hh"
+#include "Cellerator/ops/reduction/feature_weighted_row_reduction_cuda.hh"
+#include "Cellerator/execution/planning/packing/hardware_cost_model.hh"
 #include "benchmark_mutex.hh"
-#include <Cellerator/compute/operators/sparse/ops.hh>
+#include <Cellerator/ops/matrix/sparse/ops.hh>
 
 #include <cuda_runtime.h>
 

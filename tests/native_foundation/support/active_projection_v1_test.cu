@@ -1,13 +1,13 @@
-#include <Cellerator/compute/operation/active_projection/active_projection_v1.cuh>
-#include <Cellerator/compute/operation/edge/dynamic_support_mask_v1.cuh>
+#include <Cellerator/layout/projection/active/active_projection_v1.cuh>
+#include <Cellerator/ops/condition/edge/dynamic_support_mask_v1.cuh>
 
 #include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <limits>
 
-namespace projection = cellerator::compute::operation::active_projection;
-namespace edge = cellerator::compute::operation::edge;
+namespace projection = cellerator::layout::projection::active;
+namespace edge = cellerator::ops::relation::edge;
 
 namespace {
 

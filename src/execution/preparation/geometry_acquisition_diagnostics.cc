@@ -30,7 +30,7 @@ bool valid_work(const geometry_acquisition_work_v1 &work) noexcept {
         && finite_nonnegative(work.order_ns);
 }
 
-bool valid_stable(compute::math::core::stable_id identity) noexcept {
+bool valid_stable(::cellerator::execution::operation_core::stable_id identity) noexcept {
     return identity.low != 0u || identity.high != 0u;
 }
 

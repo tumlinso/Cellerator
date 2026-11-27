@@ -42,12 +42,12 @@ endfunction()
 cellerator_add_framework_cuda_provider(dispatch_cuda
     ops/routing/dispatch.cu ops/routing/dispatch_cuda.hh)
 cellerator_add_framework_cuda_provider(conditional_dispatch_cuda
-    execution/conditional/dispatch.cu execution/conditional/dispatch_cuda.hh
+    execution/program/conditional/dispatch.cu execution/program/conditional/dispatch_cuda.hh
     Cellerator::dispatch_cuda Cellerator::memory_cuda)
 cellerator_add_framework_cuda_provider(event_memory_cuda
     ops/sequence/event_memory.cu ops/sequence/event_memory_cuda.hh)
 cellerator_add_framework_cuda_provider(dependency_frontier_cuda
-    execution/dependency/frontier.cu execution/dependency/frontier_cuda.hh)
+    execution/program/dependency/frontier.cu execution/program/dependency/frontier_cuda.hh)
 cellerator_add_framework_cuda_provider(attention_cuda
     ops/attention/attention.cu ops/attention/sparse_cuda.hh)
 cellerator_add_framework_cuda_provider(grouped_linear_cuda
@@ -128,8 +128,8 @@ if(CELLERATOR_BUILD_FRAMEWORK_CUDA_SMOKE)
     cellerator_add_framework_cuda_smoke(regulatory_gates Cellerator::regulatory_gates_cuda)
     # GPU execution requires scheduler admission. Deliberately no add_test().
 endif()
-install(FILES "${_cellerator_framework_root}/include/Cellerator/execution/conditional/dispatch.hh"
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution/conditional)
+install(FILES "${_cellerator_framework_root}/include/Cellerator/execution/program/conditional/dispatch.hh"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution/program/conditional)
 install(TARGETS cellerator_framework_cuda_api EXPORT CelleratorFrameworkCUDATargets)
 install(EXPORT CelleratorFrameworkCUDATargets NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cellerator)
@@ -147,7 +147,7 @@ if(CELLERATOR_ENABLE_FRAMEWORK_PARAMETER_TRANSFER)
         message(FATAL_ERROR "Framework parameter transfer requires Cellerator::conditional; enable CELLERATOR_ENABLE_CONDITIONAL first")
     endif()
     add_library(cellerator_framework_parameter_transfer STATIC
-        "${_cellerator_framework_root}/src/execution/conditional/parameter_transfer.cu")
+        "${_cellerator_framework_root}/src/execution/preparation/conditional/parameter_transfer.cu")
     add_library(Cellerator::framework_parameter_transfer ALIAS cellerator_framework_parameter_transfer)
     set_target_properties(cellerator_framework_parameter_transfer PROPERTIES
         POSITION_INDEPENDENT_CODE ON EXPORT_NAME framework_parameter_transfer
@@ -159,8 +159,8 @@ if(CELLERATOR_ENABLE_FRAMEWORK_PARAMETER_TRANSFER)
         cellerator_add_framework_cuda_smoke(parameter_transfer
             Cellerator::framework_parameter_transfer)
     endif()
-    install(FILES "${_cellerator_framework_root}/include/Cellerator/execution/conditional/parameter_transfer_cuda.hh"
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution/conditional)
+    install(FILES "${_cellerator_framework_root}/include/Cellerator/execution/preparation/conditional/parameter_transfer_cuda.hh"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/execution/preparation/conditional)
     install(TARGETS cellerator_framework_parameter_transfer EXPORT CelleratorFrameworkParameterTransferTargets
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
     install(EXPORT CelleratorFrameworkParameterTransferTargets NAMESPACE Cellerator::

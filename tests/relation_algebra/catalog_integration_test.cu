@@ -1,10 +1,10 @@
-#include <Cellerator/compute/operation/relation_algebra_catalog.hh>
+#include <Cellerator/execution/planning/candidates/relation_algebra_catalog.hh>
 
 #include <cstdlib>
 #include <iostream>
 
-namespace operation = cellerator::compute::operation;
-namespace core = cellerator::compute::math::core;
+namespace operation = cellerator::execution::operation;
+namespace core = cellerator::execution::operation_core;
 
 namespace {
 

@@ -1,10 +1,10 @@
 // CE-SS1-N02 CUDA 12.9 sm70 controller evidence: c29f9f0d-1636-44b3-968e-8719d1f974dc.
-#include "../../../src/compute/operation/prepared_relation.cu"
+#include "../../../src/execution/preparation/prepared_relation.cu"
 #include <cuda_fp16.h>
 #include "test_require.hh"
 #include <cmath>
 #include <iostream>
-namespace ce=cellerator::compute::relation;
+namespace ce=cellerator::ops::relation;
 namespace ex=cellerator::execution;
 static void check(ce::status s){if(!s){std::cerr<<s.message<<'\n';std::abort();}}
 static void gpu(cudaError_t s){if(s!=cudaSuccess){std::cerr<<cudaGetErrorString(s)<<'\n';std::abort();}}
@@ -19,14 +19,20 @@ static void fixture(unsigned rows,unsigned cols,const std::vector<unsigned>& off
     auto t=f;t.direction=ce::orientation::transpose;
     cudaStream_t stream{};gpu(cudaStreamCreateWithFlags(&stream,cudaStreamNonBlocking));
     ce::prepared_relation_pair* p=nullptr;check(ce::prepare_relation_pair(f,t,{offsets.data(),offsets.size(),sources.data(),sources.size()},{0,1<<24},stream,&p));
-    std::vector<unsigned> mapping(sources.size());if(!mapping.empty())gpu(cudaMemcpy(mapping.data(),p->logical_map,mapping.size()*4,cudaMemcpyDeviceToHost));
+    std::vector<unsigned> mapping(sources.size());if(!mapping.empty())gpu(cudaMemcpy(mapping.data(),p->structure->logical_map,mapping.size()*4,cudaMemcpyDeviceToHost));
     auto sorted=mapping;std::sort(sorted.begin(),sorted.end());for(unsigned i=0;i<sorted.size();++i)SPINE_REQUIRE(sorted[i]==i);
     auto projection=p->report.forward_projection;
     for(unsigned generation=1;generation<=2;++generation){
-        std::vector<__half> logical(sources.size()),packed(sources.size());
+        std::vector<__half> logical(sources.size());
         for(unsigned e=0;e<sources.size();++e)logical[e]=__float2half(float(int(e%7)-3)*generation/2);
-        for(unsigned i=0;i<packed.size();++i)packed[i]=logical[mapping[i]];
-        if(!packed.empty())gpu(cudaMemcpyAsync(p->values,packed.data(),packed.size()*2,cudaMemcpyHostToDevice,stream));
+        __half* device_values=nullptr;
+        if(!logical.empty()){
+            gpu(cudaMalloc(&device_values,logical.size()*sizeof(__half)));
+            gpu(cudaMemcpyAsync(device_values,logical.data(),logical.size()*sizeof(__half),cudaMemcpyHostToDevice,stream));
+        }
+        ce::device_values_binding binding{device_values,logical.size(),f.topology.identity,
+            f.topology.epoch,f.topology.logical_edge_order,{generation},0};
+        check(ce::publish_values(*p,binding,stream));
         for(auto direction:{ce::orientation::forward,ce::orientation::transpose}){
             unsigned inputs=direction==ce::orientation::forward?cols:rows,outputs=direction==ce::orientation::forward?rows:cols;
             std::vector<float> x(inputs),y(outputs);std::vector<double> expected(outputs,0);
@@ -37,12 +43,16 @@ static void fixture(unsigned rows,unsigned cols,const std::vector<unsigned>& off
             }
             float* dx=nullptr;float* dy=nullptr;if(inputs)gpu(cudaMalloc(&dx,inputs*4));if(outputs)gpu(cudaMalloc(&dy,outputs*4));
             if(inputs)gpu(cudaMemcpyAsync(dx,x.data(),inputs*4,cudaMemcpyHostToDevice,stream));
-            check(ce::submit(*p,direction,dx,dy));gpu(cudaStreamSynchronize(stream));
+            const auto& op=direction==ce::orientation::forward?f:t;
+            check(ce::enqueue(*p,op,{dx,inputs,ce::input_axis(op),0},
+                {dy,outputs,ce::result_axis(op),0},{generation},stream));
+            gpu(cudaStreamSynchronize(stream));
             if(outputs)gpu(cudaMemcpy(y.data(),dy,outputs*4,cudaMemcpyDeviceToHost));
             for(unsigned i=0;i<outputs;++i)SPINE_REQUIRE(std::isfinite(y[i]) && std::abs(y[i]-expected[i])<=1e-5+1e-5*std::abs(expected[i]));
             if(dx)gpu(cudaFree(dx));if(dy)gpu(cudaFree(dy));
         }
-        SPINE_REQUIRE(ex::same_identity(projection,p->report.forward_projection));SPINE_REQUIRE(p->report.topology_preparations==1);
+        if(device_values)gpu(cudaFree(device_values));
+        SPINE_REQUIRE(cellerator::structure::same_identity(projection,p->report.forward_projection));SPINE_REQUIRE(p->report.topology_preparations==1);
     }
     ce::destroy(p);gpu(cudaStreamDestroy(stream));
 }

@@ -1,5 +1,5 @@
 // CE-WIDTH: FP32 prepared CSR execution against an independent logical FP64 oracle.
-#include <Cellerator/compute/operation/prepared_relation.hh>
+#include <Cellerator/execution/preparation/prepared_relation.hh>
 #include <cmath>
 #include <cstdint>
 #include <iostream>
@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace rel = cellerator::compute::relation;
+namespace rel = cellerator::ops::relation;
 namespace ex = cellerator::execution;
 namespace {
 int checks = 0;

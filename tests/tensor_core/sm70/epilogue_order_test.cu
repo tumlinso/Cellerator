@@ -2,7 +2,7 @@
 // production epilogue kernel directly across widths and launch tails. The
 // linked production value-pack, N64, and residual entry points still satisfy
 // the hybrid implementation's external definitions.
-#include "../../../src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cu"
+#include "../../../src/ops/relation/cuda/sm70/relation_apply_hybrid.cu"
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -14,7 +14,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
+namespace sm70 = cellerator::execution::planning::architecture::providers::nvidia::sm70;
 
 namespace {
 

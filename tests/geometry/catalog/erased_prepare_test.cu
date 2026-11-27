@@ -1,10 +1,10 @@
-#include <Cellerator/compute/operation/preparation_factory.hh>
+#include <Cellerator/execution/preparation/preparation_factory.hh>
 
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
 
-namespace core = cellerator::compute::math::core;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 namespace runtime = cellerator::runtime;
 

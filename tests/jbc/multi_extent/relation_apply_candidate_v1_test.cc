@@ -1,9 +1,9 @@
-#include <Cellerator/execution/object_binding/relation_apply_candidate_v1.hh>
+#include <Cellerator/execution/preparation/acquisition/relation_apply_candidate_v1.hh>
 
 #include <cassert>
 
 namespace binding = cellerator::execution::object_binding;
-namespace candidate = cellerator::compute::candidate::jbc_multi_extent;
+namespace candidate = cellerator::ops::relation::multi_extent;
 
 int main() {
     const float left[] = {1.0f, 2.0f};

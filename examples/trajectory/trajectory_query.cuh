@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/operators/graph/supernode_reduce.cuh>
+#include <Cellerator/ops/relation/graph/supernode_reduce.cuh>
 
 #include <algorithm>
 #include <cstdint>
@@ -9,7 +9,7 @@
 
 namespace cellerator::trajectory {
 
-namespace cg = ::cellerator::compute::graph;
+namespace cg = ::cellerator::ops::relation::graph;
 
 struct trajectory_id_span {
     const std::uint32_t *data = nullptr;

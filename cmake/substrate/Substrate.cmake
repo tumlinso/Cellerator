@@ -5,15 +5,16 @@ if(CELLERATOR_ENABLE_VELOCITY OR CELLERATOR_ENABLE_PREPROCESS)
 endif()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include("${CMAKE_CURRENT_LIST_DIR}/../CelleratorNativeHeaders.cmake")
 get_filename_component(CE_SUBSTRATE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
 option(CELLERATOR_SUBSTRATE_REQUIRE_INTEGRATED "Require all merged IS1 leaf sources" OFF)
 option(CELLERATOR_SUBSTRATE_ENABLE_SM70 "Build the existing device-linear CUDA 12.x provider" OFF)
 set(CELLERATOR_SUBSTRATE_COMPONENTS "host_operation_contracts;relation_semantics;native_numeric;executable_program;indexed_incidence;cellpack;effects;sequence" CACHE STRING "Explicit host component roots; dependencies are selected automatically")
 set(_ce_retired moonshot_effects moonshot_mechanisms moonshot_learning)
 if(CELLERATOR_SUBSTRATE_REQUIRE_INTEGRATED)
-  foreach(path include/Cellerator/state/structured_state.hh include/Cellerator/packing/strategy.hh
+  foreach(path include/Cellerator/state/structured_state.hh include/Cellerator/layout/packing/strategy.hh
       include/Cellerator/ops/matrix/patch.hh include/Cellerator/ops/process/ports.hh
-      include/Cellerator/math/effects/affine.hh include/Cellerator/execution/prepared_host_sweep.hh)
+      include/Cellerator/ops/process/effects/affine.hh include/Cellerator/execution/preparation/host/sweep.hh)
     if(NOT EXISTS "${CE_SUBSTRATE_ROOT}/${path}")
       message(FATAL_ERROR "IS1 integration prerequisite missing: ${path}; merge accepted leaves first")
     endif()
@@ -100,7 +101,8 @@ function(_ce_owner name)
   if(ARG_SOURCES)
     set(sources)
     foreach(source IN LISTS ARG_SOURCES)
-      list(APPEND sources "${CE_SUBSTRATE_ROOT}/${source}")
+      cmake_path(ABSOLUTE_PATH source BASE_DIRECTORY "${CE_SUBSTRATE_ROOT}" OUTPUT_VARIABLE absolute_source)
+      list(APPEND sources "${absolute_source}")
     endforeach()
     add_library(cellerator_substrate_${name} STATIC ${sources})
     set(scope PUBLIC)
@@ -123,31 +125,32 @@ function(_ce_owner name)
 endfunction()
 foreach(component IN LISTS _ce_selected)
   if(component STREQUAL operation_schema)
-    _ce_owner(${component} CAPABILITIES "native_v2_contract_validation" SOURCES src/compute/operation/operation_core_v2/schema.cc)
+    _ce_owner(${component} CAPABILITIES "native_v2_contract_validation" SOURCES src/execution/preparation/operation_core_v2/schema.cc)
   elseif(component STREQUAL host_operation_contracts)
     _ce_owner(${component} CAPABILITIES "native_contracts")
   elseif(component STREQUAL relation_semantics)
-    _ce_owner(${component} CAPABILITIES "host_relation_contracts" SOURCES src/compute/operation/relation_semantics.cc)
+    _ce_owner(${component} CAPABILITIES "host_relation_contracts" SOURCES src/ops/relation/relation_semantics.cc)
   elseif(component STREQUAL ops_numeric)
     _ce_owner(${component} CAPABILITIES "host_f32_f64_local" SOURCES
       src/ops/numeric/local_arithmetic.cc)
   elseif(component STREQUAL native_numeric)
     _ce_owner(${component} CAPABILITIES "host_relation,host_f32_f64_local" SOURCES
-      src/compute/operation/native_numeric/host_relation.cc
-      src/compute/cpu/generic_cpu_relation_apply.cc
-      src/compute/cpu/cpu_transpose_and_contraction.cc
-      src/compute/cpu/cpu_projection_packing_and_order_transforms.cc
-      src/compute/cpu/cpu_segment_gate_update_bundle_and_chain_paths.cc)
+      src/ops/relation/numeric/host_relation.cc
+      src/ops/relation/cpu/generic_cpu_relation_apply.cc
+      src/ops/relation/cpu/cpu_transpose_and_contraction.cc
+      src/layout/projection/cpu_projection_packing_and_order_transforms.cc
+      src/ops/relation/cpu/cpu_segment_gate_update_bundle_and_chain_paths.cc)
   elseif(component STREQUAL executable_program)
     _ce_owner(${component} CAPABILITIES "fixed_stage_graph" SOURCES src/execution/program/stages.cc)
   elseif(component STREQUAL indexed_incidence)
     _ce_owner(${component} CAPABILITIES "host_ordered_incidence,no_evaluators,no_device_training" SOURCES
       src/ops/mechanism/indexed/incidence.cc)
   elseif(component STREQUAL cellpack)
-    _ce_owner(${component} CAPABILITIES "host_geometry_planner,evaluator" SOURCES src/geometry/planner.cc src/geometry/evaluator.cc)
+    include("${CE_SUBSTRATE_ROOT}/src/geometry/packing/host_plan_sources.cmake")
+    _ce_owner(${component} CAPABILITIES "host_geometry_planner,evaluator" SOURCES ${CELLERATOR_HOST_PACKING_PLAN_SOURCES})
   elseif(component STREQUAL local_differential)
     _ce_owner(${component} CAPABILITIES "host_f32_f64_forward_jvp_vjp,cuda_headers_required" SOURCES
-      src/compute/operation/differential/local_arithmetic.cc)
+      src/ops/numeric/differential/local_arithmetic.cc)
     target_include_directories(cellerator_substrate_${component} SYSTEM PRIVATE "${CE_SUBSTRATE_CUDA_HEADERS}")
   elseif(component STREQUAL sequence)
     set(CELLERATOR_HAS_CUDA FALSE)
@@ -155,7 +158,7 @@ foreach(component IN LISTS _ce_selected)
   elseif(component STREQUAL structured_state)
     _ce_owner(${component} CAPABILITIES "host_borrowed_scalar_ragged_state" SOURCES src/state/structured_state.cc)
   elseif(component STREQUAL packing_strategy)
-    _ce_owner(${component} CAPABILITIES "cold_host_identity_supplied_cellpack" SOURCES src/layout/packing/core/strategy.cc)
+    _ce_owner(${component} CAPABILITIES "cold_host_identity_supplied_cellpack" SOURCES src/layout/packing/strategy.cc)
   elseif(component STREQUAL matrix_patch)
     _ce_owner(${component} CAPABILITIES "host_f32_patch_forward_vjp_jvp" SOURCES
       src/ops/matrix/patch.cc src/ops/matrix/patch_provider.cc)
@@ -167,31 +170,23 @@ foreach(component IN LISTS _ce_selected)
   elseif(component STREQUAL prepared_host)
     _ce_owner(${component} CAPABILITIES "host_f32_f64_prepared_scaled_tanh")
   elseif(component STREQUAL packing_strategies)
-    _ce_owner(${component} CAPABILITIES "host_order_preserving_placement" SOURCES src/layout/packing/strategies/placement.cc)
+    _ce_owner(${component} CAPABILITIES "host_order_preserving_placement" SOURCES src/execution/planning/packing/placement.cc)
   elseif(component STREQUAL frontier)
-    _ce_owner(${component} CAPABILITIES "finite_host_f64_quadratic_solve_ports_multilevel" SOURCES src/math/frontier/operators.cc)
+    _ce_owner(${component} CAPABILITIES "finite_host_f64_quadratic_solve_ports_multilevel" SOURCES src/ops/matrix/frontier/operators.cc)
   elseif(component STREQUAL response)
-    _ce_owner(${component} CAPABILITIES "host_requested_f32_f64_scaled_tanh" SOURCES src/math/response/requested.cc)
+    _ce_owner(${component} CAPABILITIES "host_requested_f32_f64_scaled_tanh" SOURCES src/ops/numeric/response/requested.cc)
   elseif(component STREQUAL adaptive)
-    _ce_owner(${component} CAPABILITIES "host_delta_ledger_serialized_publication" SOURCES src/math/adaptive/reuse.cc)
+    _ce_owner(${component} CAPABILITIES "host_delta_ledger_serialized_publication" SOURCES src/state/adaptive/reuse.cc)
   elseif(component STREQUAL native_numeric_sm70)
-    _ce_owner(${component} CAPABILITIES "cuda12_sm70_device_linear" SOURCES src/compute/operation/native_numeric/device_linear.cu)
+    _ce_owner(${component} CAPABILITIES "cuda12_sm70_device_linear" SOURCES src/ops/relation/numeric/device_linear.cu)
     target_link_libraries(cellerator_substrate_${component} PUBLIC CUDA::cudart)
     set_target_properties(cellerator_substrate_${component} PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
   endif()
 endforeach()
 # Public native headers are installed intact. Header presence is not a claim that
 # every declared GPU/adapter symbol is linked by a selected host component.
-foreach(dir IN ITEMS bindings biology common compute containers
-    execution geometry interop layout math memory ops packing
-    planner profiling runtime state structure tensor)
-  install(DIRECTORY "${CE_SUBSTRATE_ROOT}/include/Cellerator/${dir}"
-      DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator" PATTERN "cellshard" EXCLUDE)
-endforeach()
+cellerator_install_native_headers("${CE_SUBSTRATE_ROOT}")
 include("${CE_SUBSTRATE_ROOT}/examples/install_headers.cmake")
-install(FILES
-    "${CE_SUBSTRATE_ROOT}/include/Cellerator/parameters.hh"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
 set(CE_SUBSTRATE_DEPENDENCY_TABLE "")
 foreach(component IN LISTS _ce_known)
   string(APPEND CE_SUBSTRATE_DEPENDENCY_TABLE "set(_ce_deps_${component} \"${_ce_deps_${component}}\")\n")

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/compute/indexing/cuda_postings.cuh>
-#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/structure/indexing/cuda_postings.cuh>
+#include <Cellerator/structure/indexing/posting_index.hh>
 #include <Cellerator/geometry/dependency/compact_support.hh>
 #include <Cellerator/geometry/dependency/posting_index.hh>
 
@@ -12,7 +12,7 @@
 
 namespace cellerator::ops::sparse_support {
 
-namespace containers = ::cellerator::containers;
+namespace containers = ::cellerator::structure::indexing;
 namespace compact = ::cellerator::geometry::dependency::compact;
 
 struct prepared_routing_identity_v1 {
@@ -54,17 +54,17 @@ struct prepared_entity_mechanism_index_v1 {
 
     std::vector<compact::EdgeV1> edges;
     std::vector<compact::ParticipantV1> participants;
-    std::vector<containers::PostingRecord> record_scratch;
-    std::vector<containers::PostingRecord> posting_entries;
-    std::vector<containers::PostingTerm> device_terms;
+    std::vector<::cellerator::structure::indexing::PostingRecord> record_scratch;
+    std::vector<::cellerator::structure::indexing::PostingRecord> posting_entries;
+    std::vector<::cellerator::structure::indexing::PostingTerm> device_terms;
     std::vector<std::uint64_t> device_term_offsets;
-    std::vector<containers::IndexedWorkItem> device_items;
-    containers::PostingIndexView host_postings{};
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> device_items;
+    ::cellerator::structure::indexing::PostingIndexView host_postings{};
 
-    ::cellerator::compute::indexing::cuda_reverse_posting_view_v1 bind_device_view(
-        const containers::PostingTerm *terms,
+    ::cellerator::structure::indexing::cuda_reverse_posting_view_v1 bind_device_view(
+        const ::cellerator::structure::indexing::PostingTerm *terms,
         const std::uint64_t *term_offsets,
-        const containers::IndexedWorkItem *items) const noexcept;
+        const ::cellerator::structure::indexing::IndexedWorkItem *items) const noexcept;
 };
 
 prepared_routing_status_v1 prepare_entity_mechanism_index_v1(
@@ -83,29 +83,29 @@ prepared_routing_status_v1 query_requirements_v1(
 // outside the prepared domain set an invalid term so the native query fails
 // closed. Query offsets are fixed-width CSR (participants_per_cell per row).
 cudaError_t cuda_query_prepared_entity_mechanisms_i32_v1(
-    ::cellerator::compute::indexing::cuda_reverse_posting_view_v1 index,
+    ::cellerator::structure::indexing::cuda_reverse_posting_view_v1 index,
     std::uint64_t expected_structure_epoch, std::uint64_t entity_count,
     std::uint64_t cells, std::uint64_t participants_per_cell,
     const std::int32_t *entity_ids,
-    ::cellerator::compute::indexing::cuda_posting_output_v1 output,
-    ::cellerator::compute::indexing::cuda_posting_scratch_v1 scratch,
-    containers::PostingTerm *queries,
+    ::cellerator::structure::indexing::cuda_posting_output_v1 output,
+    ::cellerator::structure::indexing::cuda_posting_scratch_v1 scratch,
+    ::cellerator::structure::indexing::PostingTerm *queries,
     std::uint64_t query_capacity, std::uint64_t *query_offsets,
     std::uint64_t query_offsets_capacity, cudaStream_t stream) noexcept;
 
 cudaError_t cuda_query_prepared_entity_mechanisms_i64_v1(
-    ::cellerator::compute::indexing::cuda_reverse_posting_view_v1 index,
+    ::cellerator::structure::indexing::cuda_reverse_posting_view_v1 index,
     std::uint64_t expected_structure_epoch, std::uint64_t entity_count,
     std::uint64_t cells, std::uint64_t participants_per_cell,
     const std::int64_t *entity_ids,
-    ::cellerator::compute::indexing::cuda_posting_output_v1 output,
-    ::cellerator::compute::indexing::cuda_posting_scratch_v1 scratch,
-    containers::PostingTerm *queries,
+    ::cellerator::structure::indexing::cuda_posting_output_v1 output,
+    ::cellerator::structure::indexing::cuda_posting_scratch_v1 scratch,
+    ::cellerator::structure::indexing::PostingTerm *queries,
     std::uint64_t query_capacity, std::uint64_t *query_offsets,
     std::uint64_t query_offsets_capacity, cudaStream_t stream) noexcept;
 
 cudaError_t cuda_emit_prepared_mechanism_indices_v1(
-    const containers::IndexedWorkItem *items,
+    const ::cellerator::structure::indexing::IndexedWorkItem *items,
     std::uint64_t item_count, std::int32_t *mechanism_indices,
     std::uint64_t mechanism_capacity, cudaStream_t stream) noexcept;
 

@@ -1,5 +1,5 @@
 #include <Cellerator/nn/ops.hh>
-#include <Cellerator/compute/operation/product2/product2.hh>
+#include <Cellerator/ops/mechanism/product2/product2.hh>
 
 #include <torch/csrc/autograd/custom_function.h>
 
@@ -10,7 +10,7 @@
 namespace cellerator::nn::ops {
 namespace {
 
-namespace product2 = ::cellerator::compute::product2;
+namespace product2 = ::cellerator::ops::mechanism::product2;
 
 void validate_product2_inputs(const at::Tensor& x,
                               const at::Tensor& coefficient,

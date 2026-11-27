@@ -1,10 +1,10 @@
-#include <Cellerator/compute/operation/relation_calculus.hh>
+#include <Cellerator/ops/relation/relation_calculus.hh>
 #include <cstdlib>
 #include <iostream>
 #include <limits>
 #include <utility>
 using namespace cellerator;
-using namespace compute::relation;
+using namespace ::cellerator::ops::relation;
 namespace {
 unsigned checks = 0;
 void check(bool condition, const char* message) {

@@ -2,7 +2,7 @@
 #include <limits>
 extern "C" int ports_transport(int,std::int64_t,std::int64_t,std::int64_t,const std::int64_t*,const std::int64_t*,const std::int64_t*,
     const float*,const float*,const float*,const float*,const float*,const float*,const float*,const float*,float*,float*,float*,float*) noexcept;
-namespace cellerator::math::process {
+namespace cellerator::ops::process {
 namespace {
 status admit(const port_descriptor& d,const port_primal& p) {
     if(!matrix::valid_axis(d.actors) || !matrix::valid_axis(d.ports) || !matrix::valid_axis(d.hidden) || !matrix::valid_axis(d.edges)) return status::invalid_axes;
@@ -67,4 +67,4 @@ status port_jvp(const port_tape& t,std::span<const float> dh,std::span<const flo
     s=metadata(t.descriptor,p,{output}); if(s!=status::success) return s;
     return call(2,t.descriptor,p,dh.data(),de.data(),dd.data(),dw.data(),output.data()) ? status::provider_failure:status::success;
 }
-} // namespace cellerator::math::process
+} // namespace cellerator::ops::process

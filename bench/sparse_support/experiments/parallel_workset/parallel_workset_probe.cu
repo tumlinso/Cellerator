@@ -1,7 +1,7 @@
 #include <Cellerator/ops/condition/program.hh>
-#include <Cellerator/compute/gating/cuda_worksets.cuh>
-#include <Cellerator/compute/indexing/cuda_postings.cuh>
-#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/execution/program/dependency/cuda_worksets.cuh>
+#include <Cellerator/structure/indexing/cuda_postings.cuh>
+#include <Cellerator/structure/indexing/posting_index.hh>
 #include <Cellerator/geometry/dependency/posting_index.hh>
 #include <Cellerator/geometry/dependency/compact_support.hh>
 
@@ -24,11 +24,11 @@
 
 namespace {
 namespace compact = cellerator::geometry::dependency::compact;
-namespace containers = cellerator::containers;
+namespace containers = cellerator::structure::indexing;
 namespace geometry = cellerator::geometry::dependency;
 namespace condition = cellerator::ops::condition;
-namespace gating = cellerator::compute::gating;
-namespace indexing = cellerator::compute::indexing;
+namespace gating = cellerator::ops::condition;
+namespace indexing = cellerator::structure::indexing;
 
 #define CUDA_CHECK(call) do { \
     const auto e = (call); \
@@ -91,14 +91,14 @@ template<class T> std::vector<T> download(const device_buffer<T> &from, std::siz
 }
 
 __device__ __forceinline__ bool item_eligible(
-    const containers::IndexedWorkItem &x, std::uint64_t edge_count,
+    const ::cellerator::structure::indexing::IndexedWorkItem &x, std::uint64_t edge_count,
     const std::uint64_t *bitmap) {
     return x.logical_edge_id != 0u && x.logical_edge_ordinal < edge_count
         && ((bitmap[x.logical_edge_ordinal / 64u] >> (x.logical_edge_ordinal % 64u)) & 1u) != 0u;
 }
 
 __device__ __forceinline__ std::uint64_t lower_id(
-    const containers::IndexedWorkItem *items, std::uint64_t begin,
+    const ::cellerator::structure::indexing::IndexedWorkItem *items, std::uint64_t begin,
     std::uint64_t end, std::uint64_t id) {
     std::uint64_t lo = begin, hi = end;
     while (lo < hi) {
@@ -378,7 +378,7 @@ struct fixture_inputs {
     condition::ProgramViewV1 program{};
     std::vector<std::uint8_t> predicates;
     std::vector<std::uint64_t> bitmap;
-    std::vector<containers::PostingTerm> p_query,d_query;
+    std::vector<::cellerator::structure::indexing::PostingTerm> p_query,d_query;
     std::uint64_t digest=1469598103934665603ull;
     double gate_density=0;
 };
@@ -432,8 +432,8 @@ std::vector<std::uint8_t> scratch(o.cells*in.nodes.size());
 }
 
 struct host_posting_index {
-    std::vector<containers::PostingRecord> record_scratch,entries;
-    containers::PostingIndexView view{};
+    std::vector<::cellerator::structure::indexing::PostingRecord> record_scratch,entries;
+    ::cellerator::structure::indexing::PostingIndexView view{};
 };
 host_posting_index build_host_index(const fixture&f) {
     const auto req=geometry::posting_requirements(f.snapshot);
@@ -442,36 +442,36 @@ host_posting_index build_host_index(const fixture&f) {
         index.entries.data(),index.entries.size(),&index.view)!=geometry::PostingBuildStatus::success)throw std::runtime_error("host posting build failed");
     index.entries.resize(index.view.entry_count);return index;
 }
-struct host_candidates { std::vector<std::uint64_t> offsets; std::vector<containers::IndexedWorkItem> items; };
+struct host_candidates { std::vector<std::uint64_t> offsets; std::vector<::cellerator::structure::indexing::IndexedWorkItem> items; };
 host_candidates build_candidates(const options&o,const fixture_inputs&in,const host_posting_index&host_index,bool primal) {
     host_candidates out;out.offsets.resize(o.cells+1u);out.offsets[0]=0u;out.items.reserve(o.cells*o.edges);
-    std::vector<containers::IndexedWorkItem> query_scratch(o.edges*4u);
-    std::vector<containers::PostingTerm> all_targets;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> query_scratch(o.edges*4u);
+    std::vector<::cellerator::structure::indexing::PostingTerm> all_targets;
     if(!primal && o.derivative_heavy)for(std::uint64_t e=1;e<=o.entities;++e)all_targets.push_back({1u,0u,e});
     for(std::uint64_t c=0;c<o.cells;++c) {
         const auto &q=primal?in.p_query[c]:in.d_query[c];
         const auto *terms=(!primal&&o.derivative_heavy)?all_targets.data():&q;
         const auto nterms=(!primal&&o.derivative_heavy)?all_targets.size():1u;
         const auto start=out.items.size();
-        containers::CandidateOutput target{out.items.data()+start,o.edges,0u,0u};
-        std::vector<containers::IndexedWorkItem> row(o.edges);
+        ::cellerator::structure::indexing::CandidateOutput target{out.items.data()+start,o.edges,0u,0u};
+        std::vector<::cellerator::structure::indexing::IndexedWorkItem> row(o.edges);
         target.items=row.data();
-        const auto s=containers::query_postings(host_index.view,terms,nterms,containers::PostingMatch::any,
+        const auto s=::cellerator::structure::indexing::query_postings(host_index.view,terms,nterms,::cellerator::structure::indexing::PostingMatch::any,
             {query_scratch.data(),query_scratch.size()},&target);
-        if(s!=containers::PostingStatus::success)throw std::runtime_error("host posting query failed");
+        if(s!=::cellerator::structure::indexing::PostingStatus::success)throw std::runtime_error("host posting query failed");
         out.items.insert(out.items.end(),row.begin(),row.begin()+target.written);
         out.offsets[c+1u]=out.items.size();
     }
     return out;
 }
 
-struct host_worksets { std::vector<std::uint64_t> po,doff; std::vector<containers::IndexedWorkItem> p,d; };
+struct host_worksets { std::vector<std::uint64_t> po,doff; std::vector<::cellerator::structure::indexing::IndexedWorkItem> p,d; };
 host_worksets oracle(const options&o,const fixture_inputs&in,const host_candidates&p,const host_candidates&d) {
     host_worksets out;out.po.resize(o.cells+1u);out.doff.resize(o.cells+1u);out.po[0]=out.doff[0]=0u;
     const auto words=(o.edges+63u)/64u;
-    auto eligible=[&](std::uint64_t cell,const containers::IndexedWorkItem&x){return ((in.bitmap[cell*words+x.logical_edge_ordinal/64u]>>(x.logical_edge_ordinal%64u))&1u)!=0u;};
+    auto eligible=[&](std::uint64_t cell,const ::cellerator::structure::indexing::IndexedWorkItem&x){return ((in.bitmap[cell*words+x.logical_edge_ordinal/64u]>>(x.logical_edge_ordinal%64u))&1u)!=0u;};
     for(std::uint64_t c=0;c<o.cells;++c) {
-        std::map<std::uint64_t,containers::IndexedWorkItem> primal_set,derivative_set;
+        std::map<std::uint64_t,::cellerator::structure::indexing::IndexedWorkItem> primal_set,derivative_set;
         for(auto k=p.offsets[c];k<p.offsets[c+1u];++k)if(eligible(c,p.items[k])) {
             primal_set.emplace(p.items[k].logical_edge_id,p.items[k]);
             derivative_set.emplace(p.items[k].logical_edge_id,p.items[k]);
@@ -488,8 +488,8 @@ host_worksets oracle(const options&o,const fixture_inputs&in,const host_candidat
     return out;
 }
 
-bool equal_work(const std::vector<std::uint64_t>&ao,const std::vector<containers::IndexedWorkItem>&a,
-    const std::vector<std::uint64_t>&bo,const std::vector<containers::IndexedWorkItem>&b) {
+bool equal_work(const std::vector<std::uint64_t>&ao,const std::vector<::cellerator::structure::indexing::IndexedWorkItem>&a,
+    const std::vector<std::uint64_t>&bo,const std::vector<::cellerator::structure::indexing::IndexedWorkItem>&b) {
     if(ao!=bo||a.size()!=b.size())return false;
     for(std::size_t i=0;i<a.size();++i)if(a[i].logical_edge_id!=b[i].logical_edge_id||a[i].logical_edge_ordinal!=b[i].logical_edge_ordinal)return false;
     return true;
@@ -541,9 +541,9 @@ void run_case(options o) {
     const auto all_digest=mix_hash(f.digest,in.digest);
 
     const auto projection_req=indexing::cuda_posting_projection_requirements_v1(host_index.view);
-    std::vector<containers::PostingTerm> projection_terms(projection_req.term_count);
+    std::vector<::cellerator::structure::indexing::PostingTerm> projection_terms(projection_req.term_count);
     std::vector<std::uint64_t> projection_offsets(projection_req.term_count+1u);
-    std::vector<containers::IndexedWorkItem> projection_items(projection_req.item_count);
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> projection_items(projection_req.item_count);
     indexing::cuda_posting_prepare_requirements_v1 projection_actual{};
     if(indexing::build_cuda_posting_projection_v1(host_index.view,projection_terms.data(),projection_terms.size(),
         projection_offsets.data(),projection_offsets.size(),projection_items.data(),projection_items.size(),
@@ -556,15 +556,15 @@ void run_case(options o) {
     auto program=in.program;program.nodes=d_nodes.data;program.edges=d_bind.data;
     device_buffer<std::uint64_t> d_bitmap(in.bitmap.size());upload(d_bitmap,in.bitmap);
 
-    device_buffer<containers::PostingTerm> d_index_terms(projection_terms.size());upload(d_index_terms,projection_terms);
+    device_buffer<::cellerator::structure::indexing::PostingTerm> d_index_terms(projection_terms.size());upload(d_index_terms,projection_terms);
     device_buffer<std::uint64_t> d_index_offsets(projection_offsets.size());upload(d_index_offsets,projection_offsets);
-    device_buffer<containers::IndexedWorkItem> d_index_items(projection_items.size());upload(d_index_items,projection_items);
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> d_index_items(projection_items.size());upload(d_index_items,projection_items);
     indexing::cuda_reverse_posting_view_v1 device_index{host_index.view.relation_id,host_index.view.structure_id,
         host_index.view.structure_epoch,d_index_terms.data,d_index_offsets.data,projection_terms.size(),
         d_index_items.data,projection_items.size()};
 
     std::vector<std::uint64_t> hp_query_offsets(o.cells+1u),hd_query_offsets(o.cells+1u);
-    std::vector<containers::PostingTerm> hd_queries;
+    std::vector<::cellerator::structure::indexing::PostingTerm> hd_queries;
     for(std::uint64_t c=0;c<o.cells;++c){
         hp_query_offsets[c]=c;hd_query_offsets[c]=hd_queries.size();
         if(o.derivative_heavy)for(std::uint64_t entity=1;entity<=o.entities;++entity)hd_queries.push_back({1u,0u,entity});
@@ -572,14 +572,14 @@ void run_case(options o) {
     }
     hp_query_offsets[o.cells]=o.cells;hd_query_offsets[o.cells]=hd_queries.size();
     device_buffer<std::uint64_t> dp_query_offsets(hp_query_offsets.size()),dd_query_offsets(hd_query_offsets.size());
-    device_buffer<containers::PostingTerm> dp_queries(in.p_query.size()),dd_queries(hd_queries.size());
+    device_buffer<::cellerator::structure::indexing::PostingTerm> dp_queries(in.p_query.size()),dd_queries(hd_queries.size());
     upload(dp_query_offsets,hp_query_offsets);upload(dd_query_offsets,hd_query_offsets);
     upload(dp_queries,in.p_query);upload(dd_queries,hd_queries);
     const auto max_candidate_capacity=o.edges*o.cells;
     if(max_candidate_capacity>std::numeric_limits<std::uint64_t>::max()/2u)throw std::runtime_error("candidate output capacity overflow");
     const auto derivative_capacity=max_candidate_capacity*2u;
     device_buffer<std::uint64_t> d_p_post_offsets(o.cells+1u),d_d_post_offsets(o.cells+1u);
-    device_buffer<containers::IndexedWorkItem> d_p_post_items(std::max<std::uint64_t>(max_candidate_capacity,1u)),
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> d_p_post_items(std::max<std::uint64_t>(max_candidate_capacity,1u)),
         d_d_post_items(std::max<std::uint64_t>(max_candidate_capacity,1u));
     device_buffer<indexing::cuda_posting_scratch_v1::cursor_v1> d_p_cursors(in.p_query.size()),d_d_cursors(hd_queries.size());
     device_buffer<std::uint64_t> d_p_query_counts(o.cells),d_d_query_counts(o.cells);
@@ -597,7 +597,7 @@ void run_case(options o) {
 
     device_buffer<std::uint64_t> dp_offsets(p_host.offsets.size()),dd_offsets(d_host.offsets.size());
     upload(dp_offsets,p_host.offsets);upload(dd_offsets,d_host.offsets);
-    device_buffer<containers::IndexedWorkItem> dp_items(std::max<std::size_t>(p_host.items.size(),1u)),dd_items(std::max<std::size_t>(d_host.items.size(),1u));
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> dp_items(std::max<std::size_t>(p_host.items.size(),1u)),dd_items(std::max<std::size_t>(d_host.items.size(),1u));
     upload(dp_items,p_host.items);upload(dd_items,d_host.items);
     gating::cuda_candidate_csr_v1 pc_host{dp_offsets.data,dp_items.data,p_host.items.size()},dc_host{dd_offsets.data,dd_items.data,d_host.items.size()};
     gating::cuda_candidate_csr_v1 pc_device{d_p_post_offsets.data,d_p_post_items.data,max_candidate_capacity},
@@ -605,7 +605,7 @@ void run_case(options o) {
 
     const auto p_cap=std::max<std::uint64_t>(max_candidate_capacity,1u),d_cap=std::max<std::uint64_t>(derivative_capacity,1u);
     device_buffer<std::uint64_t> pbo(o.cells+1u),dbo(o.cells+1u),pso(o.cells+1u),dso(o.cells+1u),pcounts(o.cells),dcounts(o.cells);
-    device_buffer<containers::IndexedWorkItem> p_out(p_cap),d_out(d_cap),p_stage(p_cap),d_stage(d_cap);
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> p_out(p_cap),d_out(d_cap),p_stage(p_cap),d_stage(d_cap);
     device_buffer<gating::cuda_workset_status_v1> status(1u);
     std::vector<std::uint64_t> h_pso(o.cells+1u),h_dso(o.cells+1u);
     for(std::uint64_t c=0;c<o.cells;++c){
@@ -671,8 +671,8 @@ void run_case(options o) {
         if(required==0u)throw std::runtime_error("overflow fixture unexpectedly has an empty output");
         const std::uint64_t marker=0xfefefefefefefefeull;
         std::vector<std::uint64_t> sentinel_offsets(o.cells+1u,marker);
-        std::vector<containers::IndexedWorkItem> sentinel_p(p_out.size,{0xdeadbeefull,0xbeadfeedull});
-        std::vector<containers::IndexedWorkItem> sentinel_d(d_out.size,{0xdeadbeefull,0xbeadfeedull});
+        std::vector<::cellerator::structure::indexing::IndexedWorkItem> sentinel_p(p_out.size,{0xdeadbeefull,0xbeadfeedull});
+        std::vector<::cellerator::structure::indexing::IndexedWorkItem> sentinel_d(d_out.size,{0xdeadbeefull,0xbeadfeedull});
         upload(pbo,sentinel_offsets);upload(dbo,sentinel_offsets);upload(p_out,sentinel_p);upload(d_out,sentinel_d);
         auto short_po=po,short_do=doutput;
         if(primal_short)short_po.item_capacity=required-1u;

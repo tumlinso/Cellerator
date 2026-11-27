@@ -1,6 +1,6 @@
 #pragma once
-#include <Cellerator/math/matrix/contracts.hh>
-namespace cellerator::math::matrix {
+#include <Cellerator/ops/matrix/contracts.hh>
+namespace cellerator::ops::matrix {
 struct patch_descriptor {
     rel::axis_descriptor input_rows{},input_columns{},output_rows{},output_columns{};
     std::uint64_t row_stride=0; // zero selects contiguous width; other strides unsupported
@@ -29,4 +29,4 @@ status patch_vjp(const patch_tape&,std::span<const float> cotangent,
     std::span<float> state_gradient,std::span<float> left_gradient,std::span<float> right_gradient) noexcept;
 status patch_jvp(const patch_tape&,std::span<const float> state_direction,
     std::span<const float> left_direction,std::span<const float> right_direction,std::span<float> response) noexcept;
-} // namespace cellerator::math::matrix
+} // namespace cellerator::ops::matrix

@@ -1,4 +1,4 @@
-#include <Cellerator/execution/dependency/distributed.hh>
+#include <Cellerator/execution/program/dependency/distributed.hh>
 
 #include <array>
 #include <cassert>

@@ -1,10 +1,10 @@
 #pragma once
-#include <Cellerator/compute/operation/native_foundation_contract.hh>
+#include <Cellerator/execution/preparation/native_foundation_contract.hh>
 #include <span>
 #include <vector>
 namespace cellerator::ops::mechanism::indexed {
-namespace nf1 = ::cellerator::compute::operation::nf1;
-namespace v2 = ::cellerator::compute::operation::v2;
+namespace nf1 = ::cellerator::execution::operation::nf1;
+namespace v2 = ::cellerator::execution::operation::v2;
 using identity=nf1::identity;
 enum class incidence_status { success, invalid_identity, invalid_axis, invalid_slot,
     invalid_index, duplicate_writer, invalid_effect, invalid_binding, allocation_failure };

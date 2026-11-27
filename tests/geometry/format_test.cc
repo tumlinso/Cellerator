@@ -1,5 +1,5 @@
-#include <Cellerator/geometry/permutation.hh>
-#include <Cellerator/geometry/validate.hh>
+#include <Cellerator/layout/packing/permutation.hh>
+#include <Cellerator/geometry/packing/validate.hh>
 
 #include <stdexcept>
 

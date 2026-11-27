@@ -1,6 +1,6 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/transpose_relation_apply.cu"
-#include "../../../src/compute/architecture/providers/nvidia/sm70/contract_on_support.cu"
-#include "../../../src/compute/architecture/providers/nvidia/sm70/exchange_program.cc"
+#include "../../../src/ops/relation/cuda/sm70/transpose_relation_apply.cu"
+#include "../../../src/ops/relation/cuda/sm70/contract_on_support.cu"
+#include "../../../src/execution/program/exchange_program.cc"
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -9,9 +9,9 @@
 #include <cmath>
 #include <cstdint>
 
-namespace operation = cellerator::compute::operation;
+namespace operation = cellerator::execution::operation;
 namespace projection = cellerator::layout::projection;
-namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
+namespace sm70 = cellerator::execution::planning::architecture::providers::nvidia::sm70;
 
 namespace {
 

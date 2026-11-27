@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/training/native_training_slice.hh>
+#include <Cellerator/execution/program/training/native_training_slice.hh>
 #include <Cellerator/runtime/session.cuh>
 
 #include <cstdint>
@@ -21,7 +21,7 @@ struct training_program_request {
     axis_identity module_axis{};
     axis_identity dense_axis{};
     runtime::execution_session *session = nullptr;
-    std::uint32_t dense_width = compute::math::native_training_dense_width;
+    std::uint32_t dense_width = ::cellerator::layout::projection::native_training_dense_width;
 };
 
 // Persistent host orchestration state. Mutable values, operands, optimizer
@@ -31,7 +31,7 @@ struct training_program {
     training_program_backend backend =
         training_program_backend::native_feature_major_n16;
     std::uint8_t reserved[3]{};
-    compute::math::native_training_prepared_state prepared{};
+    ::cellerator::layout::projection::native_training_prepared_state prepared{};
     runtime::execution_session *session = nullptr;
     structure::projection_id forward_projection{};
     structure::projection_id transpose_projection{};
@@ -54,7 +54,7 @@ enum class training_program_status_code : std::uint8_t {
 
 struct training_program_status {
     training_program_status_code code = training_program_status_code::ok;
-    compute::math::native_training_status native{};
+    ::cellerator::layout::projection::native_training_status native{};
     runtime::value_readiness_status readiness =
         runtime::value_readiness_status::success;
     const char *message = "ok";
@@ -69,7 +69,7 @@ training_program_status compile_training_program(
     training_program *program) noexcept;
 
 struct training_program_launch {
-    compute::math::native_training_launch native{};
+    ::cellerator::layout::projection::native_training_launch native{};
     // Null is legal only for the caller-resident initial generation. Later
     // generations require an explicit readiness record.
     const runtime::value_readiness_record *current_value_readiness = nullptr;

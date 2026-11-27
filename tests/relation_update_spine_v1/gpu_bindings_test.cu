@@ -1,11 +1,11 @@
 // White-box access is only for owned-storage sentinels and cold failure injection.
 // All mutations under test call the real public relation entrypoints.
-#include "../../src/compute/operation/prepared_relation.cu"
+#include "../../src/execution/preparation/prepared_relation.cu"
 #include "reference_math.hh"
 #include <array>
 #include <cstdlib>
 #include <iostream>
-namespace ce=cellerator::compute::relation;
+namespace ce=cellerator::ops::relation;
 namespace ex=cellerator::execution;
 namespace ref=ru1_reference;
 namespace {

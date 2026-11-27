@@ -4,7 +4,7 @@
  * Command: ./build-cp-bp03/cellPackMergeCostBench.
  */
 
-#include "Cellerator/geometry/merge_cost.hh"
+#include "Cellerator/geometry/packing/merge_cost.hh"
 
 #include "benchmark_mutex.hh"
 
@@ -20,9 +20,9 @@
 #include <vector>
 
 namespace cp = ::cellpack;
-namespace gc = ::cellerator::compute::gene_candidates;
-namespace gs = ::cellerator::compute::gene_support;
-namespace sampling = ::cellerator::compute::sampling;
+namespace gc = ::cellerator::geometry::discovery::gene_candidates;
+namespace gs = ::cellerator::geometry::discovery::gene_support;
+namespace sampling = ::cellerator::geometry::discovery::sampling;
 
 struct benchmark_fixture {
     gs::gene_support_layout layout{};

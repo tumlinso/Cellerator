@@ -1,13 +1,13 @@
-#include <Cellerator/compute/operation/relation_bundle.hh>
+#include <Cellerator/ops/relation/relation_bundle.hh>
 
 #include <array>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 
-namespace operation = cellerator::compute::operation;
+namespace operation = cellerator::execution::operation;
 namespace execution = cellerator::execution;
-namespace core = cellerator::compute::math::core;
+namespace core = cellerator::execution::operation_core;
 
 namespace {
 

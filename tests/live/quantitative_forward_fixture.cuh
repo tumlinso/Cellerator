@@ -1,8 +1,8 @@
 #include <tests/fixtures/model_execution/quantitative_relation_fixture.hh>
 #include "../fixtures/model_execution/activated_projection.hh"
 
-#include <Cellerator/compute/operation/builtin_catalog.hh>
-#include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
+#include <Cellerator/execution/planning/candidates/builtin_catalog.hh>
+#include <Cellerator/ops/relation/feature_major_small_n_candidate.hh>
 #include <Cellerator/layout/projection/feature_major.hh>
 #include <Cellerator/execution/program/operation.hh>
 
@@ -23,8 +23,8 @@
 #include <vector>
 
 namespace quantitative_fixture = cellerator::fixtures::quantitative_relation;
-namespace cm = cellerator::compute::math;
-namespace core = cellerator::compute::math::core;
+namespace cm = cellerator::layout::projection;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 namespace planner = cellerator::execution::planning;
 namespace runtime = cellerator::runtime;

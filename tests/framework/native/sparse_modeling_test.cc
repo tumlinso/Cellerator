@@ -3,11 +3,11 @@
 #endif
 #include <Cellerator/geometry/dependency/explicit_pattern.hh>
 #include <Cellerator/geometry/dependency/pattern_owner.hh>
-#include <Cellerator/execution/dependency/incidence.hh>
-#include <Cellerator/execution/dependency/workset.hh>
+#include <Cellerator/execution/preparation/dependency/incidence.hh>
+#include <Cellerator/execution/preparation/dependency/workset.hh>
 #include <Cellerator/ops/incidence.hh>
 #include <Cellerator/layout/entity_layout.hh>
-#include <Cellerator/execution/dependency/value_field.hh>
+#include <Cellerator/execution/preparation/dependency/value_field.hh>
 
 #include <cassert>
 #include <cmath>

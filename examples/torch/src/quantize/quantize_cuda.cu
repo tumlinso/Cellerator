@@ -1,7 +1,7 @@
 #include <Cellerator/examples/quantize.hh>
 
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
-#include <Cellerator/compute/operators/sparse/ops.hh>
+#include <Cellerator/ops/matrix/sparse/ops.hh>
 
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDAGuard.h>
@@ -9,7 +9,7 @@
 namespace cellerator::examples::quantize::detail {
 
 namespace runtime = ::cellerator::runtime;
-namespace sparse_ops = ::cellerator::compute::sparse::ops;
+namespace sparse_ops = ::cellerator::ops::matrix::sparse::ops;
 
 namespace {
 

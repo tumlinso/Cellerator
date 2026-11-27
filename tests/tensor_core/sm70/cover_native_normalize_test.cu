@@ -1,11 +1,11 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/exchange_cover_native_normalize.cu"
+#include "../../../src/ops/relation/cuda/sm70/exchange_cover_native_normalize.cu"
 
 #include <cuda_runtime.h>
 #include <cassert>
 #include <cmath>
 
 namespace projection = cellerator::layout::projection;
-namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
+namespace sm70 = cellerator::execution::planning::architecture::providers::nvidia::sm70;
 namespace { void ok(cudaError_t status) { assert(status == cudaSuccess); } }
 
 int main() {

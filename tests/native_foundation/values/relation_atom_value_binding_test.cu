@@ -1,5 +1,5 @@
 #include "fixture.cuh"
-#include <Cellerator/execution/native_value_instance/atom_binding.hh>
+#include <Cellerator/execution/preparation/native_value_instance/atom_binding.hh>
 namespace ap=ex::atom_plane;
 namespace vp=ex::projection_value_plane;
 void atom_test(){

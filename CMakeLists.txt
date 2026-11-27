@@ -152,7 +152,7 @@ option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the 
 
 include(cmake/CelleratorHost.cmake)
 add_subdirectory(components/sequence)
-add_subdirectory(src/math/reference)
+add_subdirectory(components/reference)
 add_subdirectory(src/ops/numeric/binary16)
 option(CELLERATOR_BUILD_SEMANTIC_SPINE_V1 "Build the bounded Semantic Spine v1 conformance suite" OFF)
 option(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1 "Build the internal relation update spine and conformance suite" OFF)
@@ -308,9 +308,10 @@ find_path(NCCL_INCLUDE_DIR
 
 # Canonical computational subsystem owners.
 include(src/runtime/CMakeLists.txt)
-include(src/compute/decomposition/CMakeLists.txt)
+include(src/execution/planning/decomposition/CMakeLists.txt)
 include(src/execution/CMakeLists.txt)
-include(src/compute/foundation_targets.cmake)
+include(src/execution/preparation/operation_core.cmake)
+include(src/layout/conversion/CMakeLists.txt)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
@@ -338,6 +339,7 @@ function(cellerator_enable_perf target)
 endfunction()
 
 cellerator_enable_perf(cellerator_runtime)
+cellerator_enable_perf(cellerator_memory_contract)
 cellerator_enable_perf(cellerator_compute_matrix_convert)
 cellerator_enable_perf(cellerator_runtime_fleet)
 cellerator_enable_perf(cellerator_csr_multiply)
@@ -347,8 +349,8 @@ add_subdirectory(bench/execution/streaming)
 add_subdirectory(components/neighbors)
 # General numerical operations used by both native C++ and optional framework
 # adapters remain in Cellerator even when the Torch integration is disabled.
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/model_ops/CMakeLists.txt")
-    add_subdirectory(src/compute/operation/model_ops)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ops/reduction/model/CMakeLists.txt")
+    add_subdirectory(src/ops/reduction/model)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/bindings/model_ops/model_ops_dimension_contract_test.cc")
         add_executable(celleratorModelOpsDimensionContractTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
             tests/bindings/model_ops/model_ops_dimension_contract_test.cc)
@@ -360,7 +362,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/model_ops/CMakeList
         endif()
     endif()
 endif()
-# The legacy compute manifest declares the provider source inventories.  Split
+# The planning build declares the provider source inventories. Split
 # them into provider-owned targets after all of their shared dependencies have
 # been declared, then emit the cold compiled-provider manifest.
 include(cmake/providers/CelleratorProviderTargets.cmake)
@@ -379,23 +381,9 @@ target_sources(cellerator_semantic_geometry_v1 PRIVATE
     src/geometry/validation/scalable_validation_v2.cc
 )
 target_sources(cellerator_architecture_provider PRIVATE
-    src/compute/architecture/target_cover/contract.cc
-    src/compute/architecture/target_cover/strategy_registry.cc
+    src/execution/planning/providers/target_cover/contract.cc
+    src/execution/planning/providers/target_cover/strategy_registry.cc
 )
-add_library(cellerator_profiling_v1 STATIC
-    src/profiling/mechanism_manifest.cc
-    src/profiling/preparation/execution_export_v2.cc
-    src/profiling/partition_export.cc
-    src/profiling/resource_receipt.cc
-    src/profiling/static_markers.cc
-)
-add_library(Cellerator::profiling_v1 ALIAS cellerator_profiling_v1)
-target_include_directories(cellerator_profiling_v1 PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_compile_features(cellerator_profiling_v1 PUBLIC cxx_std_20)
-
 if(TARGET cellerator_dependency_execution_cuda)
     target_link_libraries(cellerator_dependency_execution_cuda PUBLIC
         Cellerator::execution_preparation Cellerator::gated_product)
@@ -404,7 +392,7 @@ endif()
 block()
     add_executable(cellerator_operation_core_v2_test
         ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
-        src/compute/operation/operation_core_v2/operation_core_v2_test.cc)
+        src/execution/preparation/operation_core_v2/operation_core_v2_test.cc)
     target_link_libraries(cellerator_operation_core_v2_test PRIVATE
         Cellerator::operation_core)
     target_compile_features(cellerator_operation_core_v2_test PRIVATE cxx_std_20)

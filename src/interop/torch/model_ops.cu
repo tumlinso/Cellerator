@@ -1,6 +1,6 @@
 #include <Cellerator/bindings/torch/model_ops.hh>
 
-#include <Cellerator/compute/operation/model_ops/model_ops.hh>
+#include <Cellerator/ops/reduction/model/model_ops.hh>
 
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDAGuard.h>
@@ -15,7 +15,7 @@
 
 namespace cellerator::bindings::torch::model_ops {
 namespace {
-namespace native = ::cellerator::compute::operation::model_ops;
+namespace native = ::cellerator::ops::reduction::model;
 
 void require_cuda(const ::torch::Tensor& tensor, const char* label) {
     if (!tensor.defined() || !tensor.is_cuda()) {

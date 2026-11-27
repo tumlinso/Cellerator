@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <span>
 
-namespace cellerator::compute::native_numeric {
+namespace cellerator::ops::relation::numeric {
 // Initial smooth vocabulary. No broadcasting, reduction, scheduling or allocation.
 enum class local_operation : std::uint8_t { add, multiply, tanh };
 enum class local_status : std::uint8_t {
@@ -28,4 +28,4 @@ local_status local_forward(local_operation, std::span<const float> left,
     std::span<const float> right, std::span<float> output) noexcept;
 local_status local_forward(local_operation, std::span<const double> left,
     std::span<const double> right, std::span<double> output) noexcept;
-} // namespace cellerator::compute::native_numeric
+} // namespace cellerator::ops::relation::numeric

@@ -1,8 +1,8 @@
-#include <Cellerator/compute/architecture/provider.hh>
+#include <Cellerator/execution/planning/providers/provider.hh>
 
 namespace cellerator::tests::ce_geo::fake_provider {
 
-namespace architecture = compute::architecture;
+namespace architecture = ::cellerator::execution::planning::architecture;
 
 constexpr architecture::architecture_identity_v1 provider_identity{
     0x46414b4550524f56ull, 0x4944455256310001ull};

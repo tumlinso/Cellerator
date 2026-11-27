@@ -2,7 +2,7 @@
 
 #include "../benchmark_mutex.hh"
 
-#include <Cellerator/math/reference/referee.hh>
+#include <Cellerator/reference/referee.hh>
 
 #if CELLERATOR_ENABLE_CUDA || defined(__CUDACC__)
 #include <cuda_runtime_api.h>
@@ -14,7 +14,7 @@
 #include <limits>
 #include <type_traits>
 
-namespace cellerator::compute::math::bench {
+namespace cellerator::layout::projection::bench {
 
 struct timing_summary {
     u64 sample_count = 0u;
@@ -266,4 +266,4 @@ static_assert(!std::is_copy_constructible<cuda_event_timer>::value,
 static_assert(std::is_trivially_copyable<benchmark_report>::value,
     "benchmark report must remain report-serializable");
 
-} // namespace cellerator::compute::math::bench
+} // namespace cellerator::layout::projection::bench

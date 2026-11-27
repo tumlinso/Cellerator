@@ -1,4 +1,4 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cuh"
+#include "../../../src/ops/relation/cuda/sm70/relation_apply_n64.cuh"
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -7,7 +7,7 @@
 #include <cmath>
 #include <cstdint>
 
-namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
+namespace sm70 = cellerator::execution::planning::architecture::providers::nvidia::sm70;
 
 namespace {
 

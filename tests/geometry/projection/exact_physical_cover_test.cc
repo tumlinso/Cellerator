@@ -1,7 +1,7 @@
 #include <cassert>
 #include <cstdint>
 
-namespace cellerator::compute::architecture::providers::nvidia {
+namespace cellerator::execution::planning::architecture::providers::nvidia {
 bool build_exact_rectangle_cover_v1(
     std::uint32_t, std::uint32_t, const std::uint64_t *,
     const std::uint32_t *, const std::uint64_t *, std::uint64_t,
@@ -12,7 +12,7 @@ bool build_exact_rectangle_cover_v1(
     std::uint64_t *) noexcept;
 }
 
-namespace provider = cellerator::compute::architecture::providers::nvidia;
+namespace provider = cellerator::execution::planning::architecture::providers::nvidia;
 
 int main() {
     // Destination-major relation. The last edge duplicates coordinate (d0,s0)

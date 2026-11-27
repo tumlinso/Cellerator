@@ -1,9 +1,9 @@
-#include <Cellerator/math/response/requested.hh>
+#include <Cellerator/ops/numeric/response/requested.hh>
 #include <array>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
-namespace r=cellerator::math::response;
+namespace r=cellerator::ops::numeric::response;
 namespace nf=r::nf;
 namespace df=r::df;
 namespace ex=r::ex;

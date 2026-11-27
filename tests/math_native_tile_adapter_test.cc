@@ -1,4 +1,4 @@
-#include <Cellerator/compute/projection/native_tile_view.hh>
+#include <Cellerator/layout/projection/native_tile_view.hh>
 
 #include <cmath>
 #include <cstdint>
@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 
-namespace math = cellerator::compute::math;
+namespace math = cellerator::layout::projection;
 
 namespace {
 

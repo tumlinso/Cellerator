@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operators/sparse/row_transforms.cuh>
+#include <Cellerator/ops/matrix/sparse/row_transforms.cuh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -31,8 +31,8 @@ bool run_blocked(const float *row_sums, const std::uint8_t *row_mask) {
     auto *d_columns = device_copy(columns, 2u);
     auto *d_values = device_copy(values, 8u);
     cellerator::tensor::base::device::BlockedEllView view{2u, 4u, 4u, 2u, 4u, d_columns, d_values};
-    cellerator::compute::sparse::masked_row_scale_log1p_params params{row_sums, row_mask, 4.0f};
-    const bool launched = cellerator::compute::sparse::masked_row_scale_log1p_inplace(&view, &params);
+    cellerator::ops::matrix::sparse::masked_row_scale_log1p_params params{row_sums, row_mask, 4.0f};
+    const bool launched = cellerator::ops::matrix::sparse::masked_row_scale_log1p_inplace(&view, &params);
     cudaMemcpy(values, d_values, sizeof(values), cudaMemcpyDeviceToHost);
     cudaFree(d_values); cudaFree(d_columns);
     return launched && close(values[0], std::log1p(1.0f)) && close(values[2], std::log1p(3.0f))
@@ -48,11 +48,11 @@ bool check_sliced(cellerator::tensor::base::device::SlicedEllView view,
     view.slice_slot_offsets = device_copy(view.slice_slot_offsets, view.slice_count);
     view.col_idx = device_copy(view.col_idx, Count);
     view.val = device_copy(view.val, Count);
-    cellerator::compute::sparse::masked_row_scale_log1p_params params{row_sums, row_mask, 4.0f};
+    cellerator::ops::matrix::sparse::masked_row_scale_log1p_params params{row_sums, row_mask, 4.0f};
     __half actual[Count];
     const bool copied = view.slice_row_offsets && view.slice_widths && view.slice_slot_offsets
         && view.col_idx && view.val
-        && cellerator::compute::sparse::masked_row_scale_log1p_inplace(&view, &params)
+        && cellerator::ops::matrix::sparse::masked_row_scale_log1p_inplace(&view, &params)
         && cudaMemcpy(actual, view.val, sizeof(actual), cudaMemcpyDeviceToHost) == cudaSuccess;
     cudaFree(view.val); cudaFree(view.col_idx); cudaFree(view.slice_slot_offsets);
     cudaFree(view.slice_widths); cudaFree(view.slice_row_offsets);
@@ -93,8 +93,8 @@ bool run_compressed(const float *row_sums, const std::uint8_t *row_mask) {
     auto *d_values = device_copy(values, 4u);
     const base::CompressedView<Index, void> view{
         {2u, 4u, 4u, base::CompressedAxis::row, d_pointers, d_columns}, d_values};
-    cellerator::compute::sparse::masked_row_scale_log1p_params params{row_sums, row_mask, 4.0f};
-    const bool transformed = cellerator::compute::sparse::masked_row_scale_log1p_inplace(&view, &params)
+    cellerator::ops::matrix::sparse::masked_row_scale_log1p_params params{row_sums, row_mask, 4.0f};
+    const bool transformed = cellerator::ops::matrix::sparse::masked_row_scale_log1p_inplace(&view, &params)
         && cudaMemcpy(values, d_values, sizeof(values), cudaMemcpyDeviceToHost) == cudaSuccess;
     cudaFree(d_values); cudaFree(d_columns); cudaFree(d_pointers);
     return transformed && close(values[0], std::log1p(1.0f)) && close(values[1], std::log1p(3.0f))

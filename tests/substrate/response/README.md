@@ -48,7 +48,7 @@ all value updates through generations and preserve saved intermediate storage.
 Unreported mutation and overwrites by another program sharing that storage are
 outside this borrowed contract.
 
-For MERGE-B, add `src/math/response`, install the public response directory and
+For MERGE-B, add `src/ops/numeric/response`, install the public response directory and
 static library, and export component `response` with dependency `prepared_host`.
 The scoped CMake target is `cellerator_response` / `Cellerator::response`; the SDK
 component export should use `EXPORT_NAME response`. Preserve the existing

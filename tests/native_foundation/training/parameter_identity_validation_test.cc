@@ -12,7 +12,7 @@
 
 namespace ix = cellerator::ops::mechanism::indexed;
 namespace detail = cellerator::ops::mechanism::indexed::detail;
-namespace v2 = cellerator::compute::operation::v2;
+namespace v2 = cellerator::execution::operation::v2;
 
 detail::parameter_input_validation reference_validate(
     std::span<const ix::identity> ids, std::span<const float> values) {

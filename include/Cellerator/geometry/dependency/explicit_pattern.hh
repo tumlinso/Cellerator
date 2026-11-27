@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/compute/support/adaptive_support.hh>
-#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/geometry/dependency/adaptive_support.hh>
+#include <Cellerator/structure/indexing/posting_index.hh>
 #include <Cellerator/geometry/dependency/compact_support.hh>
 #include <Cellerator/geometry/dependency/posting_index.hh>
 
@@ -41,20 +41,20 @@ public:
     std::size_t size() const noexcept { return edges_.size(); }
     const std::vector<ExplicitEdge>& edges() const noexcept { return edges_; }
     const std::vector<CompactParticipant>& participants() const noexcept { return participants_; }
-    const std::vector<containers::PostingRecord>& posting_records() const noexcept {
+    const std::vector<::cellerator::structure::indexing::PostingRecord>& posting_records() const noexcept {
         return postings_;
     }
     std::size_t ordinal(std::uint64_t edge_id) const;
     compact::ViewV1 view() const noexcept;
-    containers::PostingIndexView posting_view() const noexcept;
-    std::vector<std::size_t> query(const std::vector<containers::PostingTerm>& terms,
+    ::cellerator::structure::indexing::PostingIndexView posting_view() const noexcept;
+    std::vector<std::size_t> query(const std::vector<::cellerator::structure::indexing::PostingTerm>& terms,
                                    bool require_all = false) const;
 
 private:
     std::uint64_t pattern_id_, structure_id_, epoch_;
     std::vector<ExplicitEdge> edges_;
     std::vector<CompactParticipant> participants_;
-    std::vector<containers::PostingRecord> postings_;
+    std::vector<::cellerator::structure::indexing::PostingRecord> postings_;
 };
 
 } // namespace cellerator::geometry::dependency

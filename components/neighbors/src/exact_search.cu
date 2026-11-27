@@ -13,7 +13,7 @@ namespace cellerator::neighbors::exact_search {
 
 namespace detail {
 
-namespace cg = ::cellerator::compute::graph;
+namespace cg = ::cellerator::ops::relation::graph;
 
 constexpr int kWarpThreads = 32;
 constexpr int kWarpsPerBlock = 1;

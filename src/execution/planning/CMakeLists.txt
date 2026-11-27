@@ -5,6 +5,7 @@ add_library(cellerator_execution_planning STATIC
     src/execution/planning/layout_cost_calibration.cc
     src/execution/planning/candidates/connected_economics_v1.cc
     src/execution/planning/candidates/candidate_workspace_v1.cc
+    src/execution/planning/candidates/local_pareto_frontier_v1.cc
     src/execution/planning/candidates/pareto_portfolio_v1.cc
     src/execution/planning/candidates/validation_v1.cc
     src/execution/planning/resource/planning_resources_v1.cc

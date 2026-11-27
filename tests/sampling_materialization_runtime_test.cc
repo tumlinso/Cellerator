@@ -1,4 +1,4 @@
-#include <Cellerator/compute/sampling_materialization.hh>
+#include <Cellerator/geometry/discovery/sampling_materialization.hh>
 
 #include <algorithm>
 #include <cstdint>
@@ -10,7 +10,7 @@
 
 
 namespace cm = cellerator::tensor::base;
-namespace cs = cellerator::compute::sampling;
+namespace cs = cellerator::geometry::discovery::sampling;
 namespace ct = cellerator::types;
 
 int require(bool ok, const char *label) {

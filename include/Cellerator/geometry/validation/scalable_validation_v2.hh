@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <Cellerator/execution/index_space/hierarchical_index_space_v1.hh>
+#include <Cellerator/execution/preparation/index_space/hierarchical_index_space_v1.hh>
 #include <Cellerator/geometry/index/scalable_views_v2.hh>
 
 namespace cellerator::geometry {

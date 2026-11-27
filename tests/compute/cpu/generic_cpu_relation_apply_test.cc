@@ -1,11 +1,11 @@
-#include <Cellerator/compute/cpu/generic_cpu_relation_apply_v1.hh>
+#include <Cellerator/ops/relation/cpu/generic_cpu_relation_apply_v1.hh>
 
 #include <cassert>
 #include <cmath>
 
-namespace cb = cellerator::compute::cpu::v1;
-namespace co = cellerator::compute::operation;
-namespace cp = cellerator::compute::projection_family;
+namespace cb = cellerator::ops::relation::cpu::v1;
+namespace co = cellerator::execution::operation;
+namespace cp = cellerator::layout::projection::family;
 namespace ex = cellerator::execution;
 
 namespace {
@@ -27,8 +27,8 @@ co::relation_algebra_problem_v1 problem() {
     result.relation.logical_edge_count = 4;
     result.numeric = {ex::numeric_type::f32, ex::numeric_type::f32,
         ex::numeric_type::f32, ex::numeric_type::f32, ex::numeric_type::f32,
-        ex::numeric_type::f32, cellerator::compute::math::core::rounding_policy::nearest_even,
-        cellerator::compute::math::core::saturation_policy::none,
+        ex::numeric_type::f32, cellerator::execution::operation_core::rounding_policy::nearest_even,
+        cellerator::execution::operation_core::saturation_policy::none,
         co::nan_policy_v1::reject, {}};
     result.semantic_flags = co::alpha_applied_once | co::beta_applied_once;
     result.dense_width = 1;

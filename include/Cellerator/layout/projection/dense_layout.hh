@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace cellerator::compute::math {
+namespace cellerator::layout::projection {
 
 // Namespace and enum values preserve the existing packed-operand contract.
 enum class dense_layout_kind : std::uint32_t {
@@ -10,4 +10,4 @@ enum class dense_layout_kind : std::uint32_t {
     column_major = 2u
 };
 
-} // namespace cellerator::compute::math
+} // namespace cellerator::layout::projection

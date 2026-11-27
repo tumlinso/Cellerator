@@ -1,5 +1,5 @@
-#include <Cellerator/compute/operation/device_elementwise.hh>
-#include <Cellerator/compute/operation/prepared_relation.hh>
+#include <Cellerator/ops/numeric/device_elementwise.hh>
+#include <Cellerator/execution/preparation/prepared_relation.hh>
 #include "../../src/ops/matrix/csr_multiply.cuh"
 
 #include <cuda_runtime.h>
@@ -14,7 +14,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace ce = cellerator::compute::relation;
+namespace ce = cellerator::ops::relation;
 namespace ex = cellerator::execution;
 
 static void gpu_impl(cudaError_t result, int line) {

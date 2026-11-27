@@ -1,6 +1,6 @@
 #include <Cellerator/runtime/multi_gpu/fleet.cuh>
-#include <Cellerator/compute/operators/sparse/ops.hh>
-#include <Cellerator/compute/candidate/sparse/project.hh>
+#include <Cellerator/ops/matrix/sparse/ops.hh>
+#include <Cellerator/ops/matrix/sparse/project/project.hh>
 #include <Cellerator/ops/quantized/api.cuh>
 #include <Cellerator/memory/cuda/shared_buffer.hh>
 #include "blocked_ell_fixture.cuh"
@@ -23,8 +23,8 @@
 
 namespace runtime = ::cellerator::runtime;
 namespace memory_cuda = ::cellerator::memory::cuda;
-namespace sparse_ops = ::cellerator::compute::sparse::ops;
-namespace sparse_project = ::cellerator::compute::sparse::project;
+namespace sparse_ops = ::cellerator::ops::matrix::sparse::ops;
+namespace sparse_project = ::cellerator::ops::matrix::sparse::project;
 namespace base = ::cellerator::tensor::base;
 namespace msq = ::cellerator::tensor::quantized;
 namespace mso = ::cellerator::ops::quantized;

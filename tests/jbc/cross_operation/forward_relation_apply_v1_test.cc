@@ -1,10 +1,10 @@
-#include <Cellerator/compute/projection_family/forward_relation_apply_v1.hh>
+#include <Cellerator/layout/projection/family/forward_relation_apply_v1.hh>
 
 #include <array>
 #include <cassert>
 #include <cstdint>
 
-namespace family = cellerator::compute::projection_family;
+namespace family = cellerator::layout::projection::family;
 namespace execution = cellerator::execution;
 
 namespace {

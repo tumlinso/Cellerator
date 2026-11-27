@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/execution/conditional/parameter_transfer_cuda.hh>
+#include <Cellerator/execution/preparation/conditional/parameter_transfer_cuda.hh>
 #include <Cellerator/memory/cuda/resources.hh>
 #include <cassert>
 #include <cstring>

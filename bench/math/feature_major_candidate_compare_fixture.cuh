@@ -7,13 +7,13 @@ as dynamic input-pack and output-order work, never hidden in kernel timing.
 The production candidate kernels and layouts are unchanged by this harness.
 */
 
-#include <Cellerator/compute/candidate/csr_fallback_candidate.hh>
+#include <Cellerator/ops/relation/csr_fallback_candidate.hh>
 #include <Cellerator/common/real/fp16.cuh>
-#include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
-#include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
+#include <Cellerator/ops/relation/feature_major_small_n_candidate.hh>
+#include <Cellerator/ops/relation/row_masked_n1_candidate.hh>
 #include <Cellerator/layout/projection/csr.hh>
 
-#include <Cellerator/geometry/persistent_packing_payload.hh>
+#include <Cellerator/layout/packing/persistence/persistent_packing_payload.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>
@@ -31,8 +31,8 @@ The production candidate kernels and layouts are unchanged by this harness.
 #include <type_traits>
 #include <vector>
 
-namespace core = cellerator::compute::math::core;
-namespace cm = cellerator::compute::math;
+namespace core = cellerator::execution::operation_core;
+namespace cm = cellerator::layout::projection;
 namespace execution = cellerator::execution;
 namespace cp = cellpack;
 

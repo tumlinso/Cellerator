@@ -1,4 +1,4 @@
-#include <Cellerator/compute/gating/cuda_worksets.cuh>
+#include <Cellerator/execution/program/dependency/cuda_worksets.cuh>
 #include <Cellerator/ops/condition/program.hh>
 
 #include <cuda_runtime.h>
@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-using namespace cellerator::compute::gating;
+using namespace cellerator::ops::condition;
 namespace condition = cellerator::ops::condition;
 
 namespace {

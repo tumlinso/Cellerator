@@ -9,12 +9,14 @@ target_link_libraries(celleratorCeArch76CandidateBench PRIVATE
     Cellerator::row_masked_n1_candidate
     Cellerator::csr_fallback_candidate
     Cellerator::spmm_reference
+    Cellerator::physical_projection
 )
 target_link_libraries(celleratorCeArch92RealRegimeBench PRIVATE
     Cellerator::feature_major_small_n_candidate
     Cellerator::row_masked_n1_candidate
     Cellerator::csr_fallback_candidate
     Cellerator::spmm_reference
+    Cellerator::physical_projection
 )
 set_target_properties(celleratorCeArch76CandidateBench PROPERTIES
     CXX_STANDARD 20
@@ -40,6 +42,7 @@ target_include_directories(cpMathPackedDenseOperandBench PRIVATE
 )
 target_link_libraries(cpMathPackedDenseOperandBench PRIVATE
     Cellerator::packed_dense_operand
+    Cellerator::spmm_reference
 )
 set_target_properties(cpMathPackedDenseOperandBench PROPERTIES
     CXX_STANDARD 20

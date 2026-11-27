@@ -1,10 +1,10 @@
-#include <Cellerator/compute/architecture/capability.hh>
+#include <Cellerator/execution/planning/providers/capability.hh>
 
 #include <cstdlib>
 #include <iostream>
 #include <type_traits>
 
-namespace architecture = cellerator::compute::architecture;
+namespace architecture = cellerator::execution::planning::architecture;
 namespace execution = cellerator::execution;
 
 namespace {

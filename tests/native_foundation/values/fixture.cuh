@@ -1,13 +1,13 @@
 #pragma once
-#include <Cellerator/compute/operation/prepared_relation.hh>
-#include <Cellerator/compute/operation/relation_update.hh>
+#include <Cellerator/execution/preparation/prepared_relation.hh>
+#include <Cellerator/execution/preparation/relation_update.hh>
 #include <cuda_fp16.h>
 #include <array>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
-namespace rel=cellerator::compute::relation;
+namespace rel=cellerator::ops::relation;
 namespace ex=cellerator::execution;
 void require(bool b,const char* why){if(!b)throw std::runtime_error(why);}
 void ok(rel::status s){require(static_cast<bool>(s),s.message);}

@@ -1,9 +1,9 @@
-#include <Cellerator/compute/projection_family/value_gradient_identity_v1.hh>
+#include <Cellerator/layout/projection/family/value_gradient_identity_v1.hh>
 
 #include <cassert>
 #include <cstdint>
 
-namespace family = cellerator::compute::projection_family;
+namespace family = cellerator::layout::projection::family;
 namespace execution = cellerator::execution;
 
 namespace {

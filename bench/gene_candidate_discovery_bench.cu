@@ -5,7 +5,7 @@
  * Command: ./build-sampling/geneCandidateDiscoveryBench.
  */
 
-#include <Cellerator/geometry/gene_candidate_discovery.hh>
+#include <Cellerator/geometry/discovery/gene_candidate_discovery.hh>
 
 #include "benchmark_mutex.hh"
 
@@ -18,9 +18,9 @@
 #include <utility>
 #include <vector>
 
-namespace cg = ::cellerator::compute::gene_support;
-namespace cc = ::cellerator::compute::gene_candidates;
-namespace cs = ::cellerator::compute::sampling;
+namespace cg = ::cellerator::geometry::discovery::gene_support;
+namespace cc = ::cellerator::geometry::discovery::gene_candidates;
+namespace cs = ::cellerator::geometry::discovery::sampling;
 namespace ct = ::cellerator::types;
 
 bool build_clustered_support(std::uint64_t cells,

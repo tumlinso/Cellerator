@@ -42,6 +42,6 @@ coordinates. Validity distinguishes known bases, ambiguous input, and padding.
 
 Provision packed words, masks, event records, and counters before calling
 an operation. Keep borrowed storage live through its final consumer. The
-[internal regulatory executor](../../include/Cellerator/execution/sequence/README.md)
+[internal regulatory executor](../../include/Cellerator/execution/program/sequence/README.md)
 consumes sequence planes and selects among fused, mask-materialized, and
 relation-materialized execution for a forward exact-motif predicate.

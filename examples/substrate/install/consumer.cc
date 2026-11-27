@@ -1,12 +1,12 @@
-#include <Cellerator/compute/operation/host_contracts.hh>
-#include <Cellerator/compute/operation/native_numeric/host_relation.hh>
-#include <Cellerator/geometry/evaluator.hh>
+#include <Cellerator/execution/preparation/host_contracts.hh>
+#include <Cellerator/ops/relation/numeric/host_relation.hh>
+#include <Cellerator/geometry/packing/evaluator.hh>
 #include <Cellerator/ops/mechanism/indexed/incidence.hh>
 
-namespace nn = cellerator::compute::native_numeric;
+namespace nn = cellerator::ops::relation::numeric;
 namespace ix = cellerator::ops::mechanism::indexed;
 namespace pg = cellerator::execution::program;
-namespace nf = cellerator::compute::operation::nf1;
+namespace nf = cellerator::execution::operation::nf1;
 using type = cellerator::execution::numeric_type;
 
 #ifdef CE_REQUIRE_INTEGRATED

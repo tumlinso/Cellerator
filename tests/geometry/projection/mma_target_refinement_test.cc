@@ -6,7 +6,7 @@
 
 namespace planner = cellerator::execution::planning;
 
-namespace cellerator::compute::architecture::providers::nvidia {
+namespace cellerator::execution::planning::architecture::providers::nvidia {
 bool refine_mma_target_candidates_v1(
     const planner::phase_costs *, std::uint32_t, const std::uint32_t *,
     const std::uint8_t *, const std::uint8_t *, const planner::phase_costs *,
@@ -16,7 +16,7 @@ bool refine_mma_target_candidates_v1(
     double *) noexcept;
 }
 
-namespace provider = cellerator::compute::architecture::providers::nvidia;
+namespace provider = cellerator::execution::planning::architecture::providers::nvidia;
 
 planner::phase_costs kernel_cost(double value) {
     planner::phase_costs result{};

@@ -58,8 +58,8 @@ execution::activated_projection_reference_v2 projection(
     result.key.persistent = {100u + index, 200u + index};
     result.key.runtime = {10u + index, 1u};
     result.key.kind = index == 0u
-        ? cellerator::compute::math::core::projection_kind::csr
-        : cellerator::compute::math::core::projection_kind::native_feature_major;
+        ? cellerator::execution::operation_core::projection_kind::csr
+        : cellerator::execution::operation_core::projection_kind::native_feature_major;
     result.key.schema_version = 1u;
     result.provider_identity = {300u, 400u};
     result.contract.view_type = {500u + index, 600u + index};

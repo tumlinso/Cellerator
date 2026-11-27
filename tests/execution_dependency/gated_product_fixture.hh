@@ -3,7 +3,7 @@
 #include "../native_data/reference/fixture.hh"
 #include "../tensor/block_masked_fixture.hh"
 
-#include <Cellerator/execution/dependency/distributed.cuh>
+#include <Cellerator/execution/program/dependency/distributed.cuh>
 #include <Cellerator/geometry/dependency/applicability.hh>
 #include <Cellerator/ops/mechanism/gated_product_binding.hh>
 #include <Cellerator/tensor/block_masked/structure.hh>

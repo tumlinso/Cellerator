@@ -17,7 +17,7 @@
 namespace geometry = cellerator::geometry;
 namespace planner = cellerator::execution::planning;
 
-namespace cellerator::compute::architecture::providers::nvidia {
+namespace cellerator::execution::planning::architecture::providers::nvidia {
 bool build_sm70_support_groups_v1(
     const geometry::support_atlas_view_v1 &, std::uint32_t, std::uint32_t *,
     std::uint32_t, std::uint32_t *, std::uint32_t, std::uint32_t *,
@@ -38,12 +38,12 @@ bool refine_mma_target_candidates_v1(
     std::uint64_t, double, double, std::uint8_t *, std::uint8_t *,
     std::uint8_t *, std::uint32_t *, std::uint32_t *, double *, double *,
     double *) noexcept;
-} // namespace cellerator::compute::architecture::providers::nvidia
+} // namespace cellerator::execution::planning::architecture::providers::nvidia
 
 namespace {
 
 namespace provider =
-    cellerator::compute::architecture::providers::nvidia;
+    cellerator::execution::planning::architecture::providers::nvidia;
 
 constexpr std::uint32_t group_width = 16u;
 constexpr std::uint32_t original_group_count = 64u;

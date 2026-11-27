@@ -1,5 +1,5 @@
-#include "Cellerator/geometry/warp_tiles_cuda.hh"
-#include "Cellerator/geometry/persistence/packed_tensor_views.hh"
+#include "Cellerator/layout/packing/warp_tiles_cuda.hh"
+#include "Cellerator/layout/packing/persistence/packed_tensor_views.hh"
 
 #include <cuda_runtime.h>
 

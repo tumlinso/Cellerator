@@ -1,4 +1,4 @@
-#include <Cellerator/execution/atom_plane/generation_publication_binding_v1.hh>
+#include <Cellerator/execution/preparation/atom_plane/generation_publication_binding_v1.hh>
 
 #include <array>
 #include <cstdint>

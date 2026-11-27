@@ -1,7 +1,7 @@
 #include "../../src/ops/matrix/csr_multiply.cuh"
-#include <Cellerator/compute/candidate/sparse/project.hh>
-#include <Cellerator/compute/operation/device_elementwise.hh>
-#include <Cellerator/compute/operation/prepared_relation.hh>
+#include <Cellerator/ops/matrix/sparse/project/project.hh>
+#include <Cellerator/ops/numeric/device_elementwise.hh>
+#include <Cellerator/execution/preparation/prepared_relation.hh>
 #include <Cellerator/runtime/stream.cuh>
 
 #include <cuda_runtime.h>
@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace ce = cellerator::compute::relation;
+namespace ce = cellerator::ops::relation;
 namespace ex = cellerator::execution;
 namespace matrix = cellerator::ops::matrix;
 namespace runtime = cellerator::runtime;

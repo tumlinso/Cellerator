@@ -2,7 +2,7 @@
 
 #include <ATen/ATen.h>
 #include <Cellerator/biology/feature_binding.hh>
-#include <Cellerator/execution/dependency/feature_binding.hh>
+#include <Cellerator/execution/preparation/dependency/feature_binding.hh>
 #include <Cellerator/nn/types.hh>
 
 #include <cstdint>

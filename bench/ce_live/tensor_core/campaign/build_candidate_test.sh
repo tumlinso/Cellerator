@@ -10,8 +10,8 @@ nvcc -std=c++20 -arch=sm_70 \
     -I"$repo_root/include" \
     -I"$build_root/generated" \
     "$repo_root/tests/tensor_core/v100_dense_fragment_candidate_test.cu" \
-    "$repo_root/src/compute/candidate/tensor_core/v100_dense_fragment_candidate.cu" \
-    "$repo_root/src/compute/candidate/tensor_core/v100_dense_fragment_plan.cc" \
-    "$repo_root/src/compute/operation/operation_core.cc" \
+    "$repo_root/src/ops/relation/cuda/v100_dense_fragment_candidate.cu" \
+    "$repo_root/src/execution/planning/candidates/v100_dense_fragment_plan.cc" \
+    "$repo_root/src/execution/preparation/operation_core.cc" \
     -lcudart \
     -o "$output_dir/v100_dense_fragment_candidate_test"

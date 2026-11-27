@@ -1,9 +1,9 @@
-#include <Cellerator/math/frontier/operators.hh>
+#include <Cellerator/ops/matrix/frontier/operators.hh>
 #include <array>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
-namespace f=cellerator::math::frontier;
+namespace f=cellerator::ops::matrix::frontier;
 namespace cm=ce_moon::mechanisms;
 using M=f::Matrix;
 int checks=0;

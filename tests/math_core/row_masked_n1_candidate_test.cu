@@ -1,4 +1,4 @@
-#include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
+#include <Cellerator/ops/relation/row_masked_n1_candidate.hh>
 #include <Cellerator/common/real/fp16.cuh>
 #include <Cellerator/execution/planning/operation_planning.hh>
 
@@ -11,7 +11,7 @@
 #include <iostream>
 #include <vector>
 
-namespace core = cellerator::compute::math::core;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 namespace planner = cellerator::execution::planning;
 namespace cp = cellpack;

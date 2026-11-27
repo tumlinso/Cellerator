@@ -1,11 +1,11 @@
-#include "Cellerator/geometry/apply_plan.hh"
+#include "Cellerator/layout/packing/apply_plan.hh"
 #include <Cellerator/common/real/fp16.cuh>
-#include "Cellerator/geometry/merge_cost.hh"
-#include "Cellerator/geometry/optimizer.hh"
+#include "Cellerator/geometry/packing/merge_cost.hh"
+#include "Cellerator/geometry/packing/optimizer.hh"
 
-#include <Cellerator/geometry/gene_candidate_discovery.hh>
-#include <Cellerator/geometry/gene_support_bitset.hh>
-#include <Cellerator/compute/sampling_materialization.hh>
+#include <Cellerator/geometry/discovery/gene_candidate_discovery.hh>
+#include <Cellerator/geometry/discovery/gene_support_bitset.hh>
+#include <Cellerator/geometry/discovery/sampling_materialization.hh>
 
 #include <cuda_fp16.h>
 
@@ -20,10 +20,10 @@
 
 namespace {
 
-namespace candidates = ::cellerator::compute::gene_candidates;
-namespace gene_support = ::cellerator::compute::gene_support;
+namespace candidates = ::cellerator::geometry::discovery::gene_candidates;
+namespace gene_support = ::cellerator::geometry::discovery::gene_support;
 namespace matrix = ::cellerator::tensor::base;
-namespace sampling = ::cellerator::compute::sampling;
+namespace sampling = ::cellerator::geometry::discovery::sampling;
 namespace types = ::cellerator::types;
 
 using cellpack::u32;

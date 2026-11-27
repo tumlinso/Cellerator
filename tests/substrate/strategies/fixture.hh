@@ -1,11 +1,11 @@
 #pragma once
-#include <Cellerator/packing/strategies/placement.hh>
+#include <Cellerator/execution/planning/packing/placement.hh>
 #include <Cellerator/ops/numeric/local_arithmetic.hh>
 #include <array>
 #include <cmath>
 #include <stdexcept>
-namespace pk=cellerator::packing;
-namespace st=pk::strategies;
+namespace pk=cellerator::layout::packing;
+namespace st=cellerator::execution::planning::packing;
 namespace ex=pk::ex;
 namespace ix=pk::ix;
 namespace rel=pk::rel;

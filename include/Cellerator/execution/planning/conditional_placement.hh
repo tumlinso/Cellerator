@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/execution/conditional/parameter_store.hh>
-#include <Cellerator/execution/conditional/topology.hh>
+#include <Cellerator/execution/preparation/conditional/parameter_store.hh>
+#include <Cellerator/execution/preparation/conditional/topology.hh>
 #include <array>
 #include <exception>
 #include <functional>

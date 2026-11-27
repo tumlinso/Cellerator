@@ -9,7 +9,7 @@ tolerance. Reproduce through cuda_controller.py with
 /tmp/ce_arch_88_cuda_spec.json; preparation is persistent and excluded equally.
 */
 
-#include <Cellerator/compute/training/native_training_slice.hh>
+#include <Cellerator/execution/program/training/native_training_slice.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>
@@ -26,7 +26,7 @@ tolerance. Reproduce through cuda_controller.py with
 #include <string>
 #include <vector>
 
-namespace cm = cellerator::compute::math;
+namespace cm = cellerator::layout::projection;
 namespace execution = cellerator::execution;
 namespace cp = cellpack;
 namespace runtime = cellerator::runtime;

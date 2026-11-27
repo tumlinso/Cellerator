@@ -1,4 +1,4 @@
-#include <Cellerator/execution/atom_fragment/external_persistent_order_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment/external_persistent_order_v1.hh>
 
 #include <algorithm>
 #include <cassert>
@@ -6,8 +6,8 @@
 
 namespace execution = cellerator::execution;
 namespace atom_fragment = execution::atom_fragment;
-namespace decomposition = cellerator::compute::decomposition;
-namespace operation = cellerator::compute::operation::v2;
+namespace decomposition = cellerator::execution::planning::decomposition;
+namespace operation = cellerator::execution::operation::v2;
 
 template<typename Tag>
 ::cellerator::structure::persistent_identity<Tag> id(std::uint64_t value) {

@@ -1,13 +1,13 @@
-#include <Cellerator/compute/architecture/providers/nvidia/sm70_provider.hh>
+#include <Cellerator/execution/planning/providers/nvidia/sm70_provider.hh>
 
 #include <Cellerator/runtime/device_descriptor.hh>
 
 #include <cstdlib>
 #include <iostream>
 
-namespace architecture = cellerator::compute::architecture;
+namespace architecture = cellerator::execution::planning::architecture;
 namespace provider =
-    cellerator::compute::architecture::providers::nvidia;
+    cellerator::execution::planning::architecture::providers::nvidia;
 namespace runtime = cellerator::runtime;
 
 namespace {

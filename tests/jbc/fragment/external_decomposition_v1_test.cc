@@ -1,11 +1,11 @@
-#include <Cellerator/execution/atom_fragment/external_decomposition_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment/external_decomposition_v1.hh>
 
 #include <cassert>
 
 namespace fragment = cellerator::execution::atom_fragment;
 namespace joint = cellerator::execution::preparation;
-namespace operation = cellerator::compute::operation::v2;
-namespace decomposition = cellerator::compute::decomposition;
+namespace operation = cellerator::execution::operation::v2;
+namespace decomposition = cellerator::execution::planning::decomposition;
 namespace execution = cellerator::execution;
 
 void numeric(operation::numerical_policy *value) {

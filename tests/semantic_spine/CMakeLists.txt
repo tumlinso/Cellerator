@@ -45,8 +45,8 @@ int main(int argc, char **argv) {
 endfunction()
 
 add_library(cellerator_spine_algebra STATIC
-    src/compute/decomposition/support_embedding_v1.cc
-    src/compute/operation/operation_core_v2/schema.cc)
+    src/execution/planning/decomposition/support_embedding_v1.cc
+    src/execution/preparation/operation_core_v2/schema.cc)
 target_include_directories(cellerator_spine_algebra PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_compile_features(cellerator_spine_algebra PUBLIC cxx_std_20)
 spine_test(ceSpineAlgebra_support_product tests/semantic_spine/algebra/support_product_test.cc)
@@ -59,7 +59,8 @@ set(native_tests)
 foreach(name adapter preparation generation forward transpose lifecycle overhead)
     spine_test(ceSpineNative_${name} tests/semantic_spine/native/${name}_test.cu)
     target_link_libraries(ceSpineNative_${name} PRIVATE cellerator_relation_update_support
-        Cellerator::feature_major_small_n_candidate Cellerator::transpose_backward_candidate CUDA::cudart)
+        Cellerator::feature_major_small_n_candidate Cellerator::transpose_backward_candidate
+        Cellerator::execution_preparation Cellerator::csr_multiply CUDA::cudart CUDA::cusparse)
     list(APPEND native_tests ceSpineNative_${name})
 endforeach()
 spine_suite(ceSpineNativeTest 1 ${native_tests})

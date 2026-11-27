@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operators/sparse/column_moments.cuh>
+#include <Cellerator/ops/matrix/sparse/column_moments.cuh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -60,9 +60,9 @@ bool run(const View &view, const std::uint8_t *mask, const expected_moments &exp
     cudaMalloc(reinterpret_cast<void **>(&buffers.squares), 4u * sizeof(float));
     cudaMalloc(reinterpret_cast<void **>(&buffers.support), 4u * sizeof(float));
     cudaMalloc(reinterpret_cast<void **>(&buffers.active), sizeof(float));
-    cellerator::compute::sparse::column_moments_view output{4u, buffers.sum, buffers.squares, buffers.support, buffers.active};
-    const bool ok = buffers.active != nullptr && cellerator::compute::sparse::zero_column_moments(&output)
-        && cellerator::compute::sparse::accumulate_column_moments(&view, mask, &output)
+    cellerator::ops::matrix::sparse::column_moments_view output{4u, buffers.sum, buffers.squares, buffers.support, buffers.active};
+    const bool ok = buffers.active != nullptr && cellerator::ops::matrix::sparse::zero_column_moments(&output)
+        && cellerator::ops::matrix::sparse::accumulate_column_moments(&view, mask, &output)
         && cudaDeviceSynchronize() == cudaSuccess && check_output(buffers, expected);
     cudaFree(buffers.active); cudaFree(buffers.support); cudaFree(buffers.squares); cudaFree(buffers.sum);
     return ok;

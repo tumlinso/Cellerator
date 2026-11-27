@@ -1,6 +1,6 @@
 #pragma once
-#include <Cellerator/math/matrix/contracts.hh>
-namespace cellerator::math::process {
+#include <Cellerator/ops/matrix/contracts.hh>
+namespace cellerator::ops::process {
 using matrix::status;
 struct port_descriptor {
     matrix::rel::axis_descriptor actors{},ports{},hidden{},edges{};
@@ -26,4 +26,4 @@ status port_vjp(const port_tape&,std::span<const float> cotangent,std::span<floa
 status port_jvp(const port_tape&,std::span<const float> hidden_direction,
     std::span<const float> encoder_direction,std::span<const float> decoder_direction,
     std::span<const float> edge_direction,std::span<float> response) noexcept;
-} // namespace cellerator::math::process
+} // namespace cellerator::ops::process

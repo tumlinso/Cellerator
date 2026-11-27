@@ -1,4 +1,4 @@
-#include "../../src/compute/operation/prepared_relation.cu"
+#include "../../src/execution/preparation/prepared_relation.cu"
 #include "../semantic_spine/native/test_require.hh"
 #include <algorithm>
 #include <cstdio>
@@ -7,7 +7,7 @@
 #include <limits>
 #include <type_traits>
 #include <vector>
-namespace ce=cellerator::compute::relation;
+namespace ce=cellerator::ops::relation;
 namespace ex=cellerator::execution;
 static void gpu(cudaError_t e){SPINE_REQUIRE(e==cudaSuccess);}
 static void ok(ce::status s){if(!s)std::fprintf(stderr,"%s\n",s.message);SPINE_REQUIRE(s);}

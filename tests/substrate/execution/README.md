@@ -60,8 +60,8 @@ fixed graph identity, saved-primal invalidation, buffer rebinding, capacities, a
 wrong axis metadata, topology changes, invalid generations, stream/policy rejection,
 empty extent and direct native calls. It checks physical per-coordinate output.
 
-MERGE-A/BUILD should add `src/execution/prepared_host` after the existing
+MERGE-A/BUILD should add `src/execution/preparation/host` after the existing
 `Cellerator::local_differential` target, export `Cellerator::prepared_host`, install
-`include/Cellerator/execution/prepared_host_sweep.hh`, and add this test directory to
+`include/Cellerator/execution/preparation/host/sweep.hh`, and add this test directory to
 its focused gate. The interface target inherits existing native provider requirements.
 All shared build edits are intentionally returned to the integration owner.

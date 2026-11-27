@@ -1,14 +1,14 @@
 #pragma once
 
-#include <Cellerator/geometry/local_cell_ordering.hh>
-#include <Cellerator/geometry/packing_plan.hh>
+#include <Cellerator/geometry/packing/local_cell_ordering.hh>
+#include <Cellerator/geometry/packing/packing_plan.hh>
 
 #include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <type_traits>
 
-namespace cellerator::compute::math {
+namespace cellerator::layout::projection {
 
 inline constexpr std::uint32_t physical_bell_schema_version = 1u;
 inline constexpr std::uint32_t physical_bell_candidate_count = 3u;
@@ -194,4 +194,4 @@ bell_lowering_status materialize_bell_candidate_host(
 static_assert(std::is_trivially_copyable<physical_bell_view>::value,
     "physical BELL view must remain pointer-copyable");
 
-} // namespace cellerator::compute::math
+} // namespace cellerator::layout::projection

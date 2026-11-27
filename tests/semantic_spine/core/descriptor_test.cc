@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/relation_semantics.hh>
+#include <Cellerator/ops/relation/relation_semantics.hh>
 #include <cstdlib>
 #include <iostream>
 #include <limits>
@@ -6,7 +6,7 @@
 #include <utility>
 
 using namespace cellerator;
-using namespace compute::relation;
+using namespace ::cellerator::ops::relation;
 namespace {
 void check(bool value, const char* message) {
     if (!value) { std::cerr << message << '\n'; std::exit(1); }

@@ -1,7 +1,7 @@
-#include <Cellerator/compute/candidate/csr_fallback_candidate.hh>
-#include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
-#include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
-#include <Cellerator/math/reference/referee.hh>
+#include <Cellerator/ops/relation/csr_fallback_candidate.hh>
+#include <Cellerator/ops/relation/feature_major_small_n_candidate.hh>
+#include <Cellerator/ops/relation/row_masked_n1_candidate.hh>
+#include <Cellerator/reference/referee.hh>
 #include <Cellerator/execution/planning/operation_planning.hh>
 
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
@@ -18,8 +18,8 @@
 #include <iostream>
 #include <vector>
 
-namespace core = cellerator::compute::math::core;
-namespace cm = cellerator::compute::math;
+namespace core = cellerator::execution::operation_core;
+namespace cm = cellerator::layout::projection;
 namespace execution = cellerator::execution;
 namespace planner = cellerator::execution::planning;
 namespace cp = cellpack;

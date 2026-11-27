@@ -4,7 +4,7 @@
  * Native target: Tesla V100 sm_70.
  */
 
-#include "Cellerator/geometry/merge_cost.hh"
+#include "Cellerator/geometry/packing/merge_cost.hh"
 
 #include <cuda_runtime.h>
 
@@ -17,9 +17,9 @@
 #include <vector>
 
 namespace cp = ::cellpack;
-namespace gc = ::cellerator::compute::gene_candidates;
-namespace gs = ::cellerator::compute::gene_support;
-namespace sampling = ::cellerator::compute::sampling;
+namespace gc = ::cellerator::geometry::discovery::gene_candidates;
+namespace gs = ::cellerator::geometry::discovery::gene_support;
+namespace sampling = ::cellerator::geometry::discovery::sampling;
 
 int require(bool condition, const char *message) {
     if (!condition) std::fprintf(stderr, "%s\n", message);

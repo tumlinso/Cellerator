@@ -6,7 +6,7 @@ endif()
 option(CELLERATOR_BUILD_PRODUCT2 "Build standalone prepared product2 operation" ${_cellerator_build_product2_default})
 if(CELLERATOR_BUILD_PRODUCT2)
   add_library(cellerator_product2 SHARED
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/product2/product2.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ops/mechanism/product2/product2.cc
     $<TARGET_OBJECTS:cellerator_execution_stage_program>)
   add_library(Cellerator::product2 ALIAS cellerator_product2)
   target_compile_features(cellerator_product2 PUBLIC cxx_std_20)
@@ -15,7 +15,7 @@ if(CELLERATOR_BUILD_PRODUCT2)
     $<INSTALL_INTERFACE:include>)
   if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     enable_language(CUDA)
-    target_sources(cellerator_product2 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/product2/product2.cu)
+    target_sources(cellerator_product2 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/ops/mechanism/product2/product2.cu)
     target_link_libraries(cellerator_product2 PRIVATE CUDA::cudart CUDA::cuda_driver)
     target_include_directories(cellerator_product2 PRIVATE
       ${PROJECT_SOURCE_DIR}/src/runtime)
@@ -50,7 +50,7 @@ if(CELLERATOR_BUILD_PRODUCT2)
   endif()
   # Carry the public operation's established identity/program dependency headers
   # in the independently installable component, without changing native libraries.
-  cellerator_install_native_headers(COMPONENT Product2)
+  cellerator_install_native_headers("${PROJECT_SOURCE_DIR}" COMPONENT Product2)
   install(EXPORT CelleratorProduct2Targets NAMESPACE Cellerator::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/CelleratorProduct2 COMPONENT Product2)
   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/CelleratorProduct2Config.cmake

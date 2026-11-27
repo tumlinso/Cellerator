@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/containers/value_shape.hh>
-#include <Cellerator/execution/dependency/incidence.hh>
+#include <Cellerator/common/value_shape.hh>
+#include <Cellerator/execution/preparation/dependency/incidence.hh>
 
 #include <algorithm>
 #include <optional>
@@ -19,9 +19,9 @@ template<class Storage>
 std::vector<Storage> gather(const ::cellerator::execution::PreparedIncidence& plan,
                             const std::vector<Storage>& values,
                             std::size_t features = 1) {
-    if (values.size() != ::cellerator::containers::checked_value_count(plan.layout().size(), features))
+    if (values.size() != ::cellerator::common::checked_value_count(plan.layout().size(), features))
         throw std::invalid_argument("entity value shape does not match layout");
-    std::vector<Storage> result(::cellerator::containers::checked_value_count(plan.incidence_count(), features));
+    std::vector<Storage> result(::cellerator::common::checked_value_count(plan.incidence_count(), features));
     for (std::size_t incidence = 0; incidence < plan.incidence_count(); ++incidence)
         std::copy_n(values.begin() + plan.slots()[incidence] * features, features,
                     result.begin() + incidence * features);
@@ -34,13 +34,13 @@ std::vector<Output> joint_reduce(
     const std::vector<Storage>& values, std::size_t features = 1,
     JointReduction reduction = JointReduction::sum,
     std::optional<std::uint32_t> role = std::nullopt) {
-    if (values.size() != ::cellerator::containers::checked_value_count(plan.layout().size(), features))
+    if (values.size() != ::cellerator::common::checked_value_count(plan.layout().size(), features))
         throw std::invalid_argument("entity value shape does not match layout");
     if (reduction != JointReduction::sum && reduction != JointReduction::mean
         && reduction != JointReduction::product && reduction != JointReduction::minimum
         && reduction != JointReduction::maximum)
         throw std::invalid_argument("unknown joint reduction");
-    std::vector<Output> result(::cellerator::containers::checked_value_count(plan.edge_count(), features));
+    std::vector<Output> result(::cellerator::common::checked_value_count(plan.edge_count(), features));
     // Direct sparse reads avoid materializing the gather buffer.
     for (std::size_t edge = 0; edge < plan.edge_count(); ++edge) {
         std::size_t count = 0;
@@ -78,10 +78,10 @@ std::vector<Output> scatter_add(
     const ::cellerator::execution::PreparedIncidence& plan,
     const std::vector<Storage>& edge_values, std::size_t features = 1,
     std::optional<std::uint32_t> role = std::nullopt) {
-    if (edge_values.size() != ::cellerator::containers::checked_value_count(plan.edge_count(), features))
+    if (edge_values.size() != ::cellerator::common::checked_value_count(plan.edge_count(), features))
         throw std::invalid_argument("edge value shape does not match worklist");
     std::vector<Accumulator> accumulated(
-        ::cellerator::containers::checked_value_count(plan.layout().size(), features), Accumulator{0});
+        ::cellerator::common::checked_value_count(plan.layout().size(), features), Accumulator{0});
     for (std::size_t edge = 0; edge < plan.edge_count(); ++edge)
         for (std::size_t i = plan.offsets()[edge]; i < plan.offsets()[edge + 1]; ++i) {
             if (role && plan.roles()[i] != *role) continue;

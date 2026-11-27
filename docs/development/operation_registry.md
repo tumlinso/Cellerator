@@ -97,11 +97,11 @@
 ## `dense_reduce_pair_losses`
 
 - Purpose: provide reusable FP32 CUDA pairwise local-smoothness and far-separation loss evaluation with first-order gradients.
-- Owner: `src/compute/operation/model_ops/`
+- Owner: `src/ops/reduction/model/`
 - Boundary:
   Torch adapter in [`src/interop/torch/model_ops.cu`](../../src/interop/torch/model_ops.cu)
-  Torch-free pointer API in [`include/Cellerator/compute/operation/model_ops/model_ops.hh`](../../include/Cellerator/compute/operation/model_ops/model_ops.hh)
-  CUDA backend in [`src/compute/operation/model_ops/model_ops.cu`](../../src/compute/operation/model_ops/model_ops.cu)
+  Torch-free pointer API in [`include/Cellerator/ops/reduction/model/model_ops.hh`](../../include/Cellerator/ops/reduction/model/model_ops.hh)
+  CUDA backend in [`src/ops/reduction/model/model_ops.cu`](../../src/ops/reduction/model/model_ops.cu)
 - Inputs:
   contiguous CUDA `int64` `pair_rows`, `pair_cols`
   contiguous CUDA `float32` `latent_unit`, `developmental_time`
@@ -122,11 +122,11 @@
 ## `developmental_stage_bucket_losses`
 
 - Purpose: provide reusable FP32 CUDA bucket ranking, anchor, and spread losses with first-order gradients.
-- Owner: `src/compute/operation/model_ops/`
+- Owner: `src/ops/reduction/model/`
 - Boundary:
   Torch adapter in [`src/interop/torch/model_ops.cu`](../../src/interop/torch/model_ops.cu)
-  Torch-free pointer API in [`include/Cellerator/compute/operation/model_ops/model_ops.hh`](../../include/Cellerator/compute/operation/model_ops/model_ops.hh)
-  CUDA backend in [`src/compute/operation/model_ops/model_ops.cu`](../../src/compute/operation/model_ops/model_ops.cu)
+  Torch-free pointer API in [`include/Cellerator/ops/reduction/model/model_ops.hh`](../../include/Cellerator/ops/reduction/model/model_ops.hh)
+  CUDA backend in [`src/ops/reduction/model/model_ops.cu`](../../src/ops/reduction/model/model_ops.cu)
 - Inputs:
   contiguous CUDA `float32` `stage`
   contiguous CUDA `int64` `day_buckets`
@@ -147,11 +147,11 @@
 ## `weighted_future_target`
 
 - Purpose: build quantizer forward-neighbor dense targets on GPU when the reference feature table is already resident there.
-- Owner: `src/compute/operation/model_ops/` (numerical gather); quantizer remains a consumer
+- Owner: `src/ops/reduction/model/` (numerical gather); quantizer remains a consumer
 - Boundary:
   Torch adapter in [`src/interop/torch/model_ops.cu`](../../src/interop/torch/model_ops.cu)
-  Torch-free pointer API in [`include/Cellerator/compute/operation/model_ops/model_ops.hh`](../../include/Cellerator/compute/operation/model_ops/model_ops.hh)
-  CUDA backend in [`src/compute/operation/model_ops/model_ops.cu`](../../src/compute/operation/model_ops/model_ops.cu)
+  Torch-free pointer API in [`include/Cellerator/ops/reduction/model/model_ops.hh`](../../include/Cellerator/ops/reduction/model/model_ops.hh)
+  CUDA backend in [`src/ops/reduction/model/model_ops.cu`](../../src/ops/reduction/model/model_ops.cu)
 - Inputs:
   contiguous CUDA `float32` `reference_dense`
   contiguous CUDA `int64` `neighbor_row_indices`

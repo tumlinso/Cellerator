@@ -1,4 +1,4 @@
-#include <Cellerator/geometry/matrix_view.hh>
+#include <Cellerator/layout/packing/matrix_view.hh>
 
 #include <stdexcept>
 

@@ -1,4 +1,4 @@
-#include <Cellerator/execution/conditional/dispatch_cuda.hh>
+#include <Cellerator/execution/program/conditional/dispatch_cuda.hh>
 #include <Cellerator/memory/cuda/resources.hh>
 
 #include <cassert>

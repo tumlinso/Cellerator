@@ -1,10 +1,10 @@
-#include <Cellerator/compute/cpu/cpu_projection_packing_and_order_transforms_v1.hh>
+#include <Cellerator/layout/projection/cpu_projection_packing_and_order_transforms_v1.hh>
 
 #include <cassert>
 #include <chrono>
 #include <vector>
 
-namespace cb = cellerator::compute::cpu::v1;
+namespace cb = cellerator::ops::relation::cpu::v1;
 
 int main() {
     constexpr std::uint64_t count = 1024;

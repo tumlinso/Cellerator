@@ -5,7 +5,7 @@
 
 namespace geometry = cellerator::geometry;
 
-namespace cellerator::compute::architecture::providers::nvidia {
+namespace cellerator::execution::planning::architecture::providers::nvidia {
 bool build_sm70_support_groups_v1(
     const geometry::support_atlas_view_v1 &, std::uint32_t, std::uint32_t *,
     std::uint32_t, std::uint32_t *, std::uint32_t, std::uint32_t *,
@@ -13,7 +13,7 @@ bool build_sm70_support_groups_v1(
     std::uint64_t *, std::uint32_t, std::uint32_t *) noexcept;
 }
 
-namespace provider = cellerator::compute::architecture::providers::nvidia;
+namespace provider = cellerator::execution::planning::architecture::providers::nvidia;
 
 int main() {
     geometry::community_assignment_v1 communities[17]{};

@@ -1,10 +1,10 @@
 // N16 CTP1 transpose and non-square adjoint against independent logical loops.
-#include "../../src/compute/operation/prepared_relation.cu"
+#include "../../src/execution/preparation/prepared_relation.cu"
 #include "../semantic_spine/native/test_require.hh"
 #include <cuda_fp16.h>
 #include <cmath>
 #include <iostream>
-namespace ce = cellerator::compute::relation;
+namespace ce = cellerator::ops::relation;
 namespace ex = cellerator::execution;
 static void gpu(cudaError_t s) { SPINE_REQUIRE(s == cudaSuccess); }
 static void check(ce::status s) {
@@ -84,12 +84,12 @@ static void fixture(unsigned rows, unsigned cols, unsigned width,
         SPINE_REQUIRE(pair->report.accepted_transpose_launches==generation);
         if(!sources.empty()) {
             SPINE_REQUIRE(std::string(pair->report.transpose_candidate)=="cpbp-transpose-backward-n16-f16-f32");
-            SPINE_REQUIRE(cellerator::compute::math::core::same_stable_id(pair->transpose_operation.kernel,
-                cellerator::compute::math::core::transpose_backward_n16_candidate_id));
+            SPINE_REQUIRE(cellerator::execution::operation_core::same_stable_id(pair->transpose_operation.kernel,
+                cellerator::execution::operation_core::transpose_backward_n16_candidate_id));
         }
         if(dc)gpu(cudaFree(dc));if(da)gpu(cudaFree(da));
         SPINE_REQUIRE(pair->report.topology_preparations==1 && pair->report.accepted_forward_launches==generation);
-        SPINE_REQUIRE(ex::same_identity(projection,pair->report.forward_projection));
+        SPINE_REQUIRE(cellerator::structure::same_identity(projection,pair->report.forward_projection));
         if(dx)gpu(cudaFree(dx));if(dy)gpu(cudaFree(dy));
     }
     if(dw)gpu(cudaFree(dw));ce::destroy(pair);gpu(cudaStreamDestroy(stream));

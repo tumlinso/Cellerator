@@ -2,7 +2,7 @@
 
 #include <CellShard/io/pack/execution_payload.cuh>
 
-#include <Cellerator/execution/opaque_artifact.hh>
+#include <Cellerator/execution/preparation/opaque_artifact.hh>
 
 namespace cellshard::interop::cellerator {
 

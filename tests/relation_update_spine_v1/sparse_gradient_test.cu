@@ -1,10 +1,10 @@
 // Physical-order sparse gradients compared with independent logical N16 loops.
-#include "../../src/compute/operation/prepared_relation.cu"
+#include "../../src/execution/preparation/prepared_relation.cu"
 #include "../semantic_spine/native/test_require.hh"
 #include <cuda_fp16.h>
 #include <cmath>
 #include <iostream>
-namespace ce = cellerator::compute::relation;
+namespace ce = cellerator::ops::relation;
 namespace ex = cellerator::execution;
 static void gpu(cudaError_t s) { SPINE_REQUIRE(s == cudaSuccess); }
 static void check(ce::status s) {
@@ -113,7 +113,7 @@ static void fixture(unsigned rows, unsigned cols, unsigned width,
         SPINE_REQUIRE(pair->updates.gradient_preparations==1&&pair->updates.gradient_launches==generation);
         if(dc)gpu(cudaFree(dc));if(dg)gpu(cudaFree(dg));
         SPINE_REQUIRE(pair->report.topology_preparations==1 && pair->report.accepted_forward_launches==generation);
-        SPINE_REQUIRE(ex::same_identity(projection,pair->report.forward_projection));
+        SPINE_REQUIRE(cellerator::structure::same_identity(projection,pair->report.forward_projection));
         if(dx)gpu(cudaFree(dx));if(dy)gpu(cudaFree(dy));
     }
     if(dw)gpu(cudaFree(dw));ce::destroy(pair);gpu(cudaStreamDestroy(stream));

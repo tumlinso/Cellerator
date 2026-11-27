@@ -1,11 +1,11 @@
-#include <Cellerator/compute/decomposition/support_embedding_v1.hh>
+#include <Cellerator/execution/planning/decomposition/support_embedding_v1.hh>
 
 #include <cassert>
 #include <cstdint>
 #include <iostream>
 
-namespace decomposition = cellerator::compute::decomposition;
-namespace operation = cellerator::compute::operation::v2;
+namespace decomposition = cellerator::execution::planning::decomposition;
+namespace operation = cellerator::execution::operation::v2;
 namespace execution = cellerator::execution;
 
 namespace {
@@ -53,8 +53,8 @@ operation::operation_problem problem(operation::typed_relation &relation) {
 }  // namespace
 
 int main() {
-    using result = cellerator::compute::operation::support_product_result;
-    using assembly = cellerator::compute::operation::support_product_assembly;
+    using result = cellerator::execution::operation::support_product_result;
+    using assembly = cellerator::execution::operation::support_product_assembly;
     for (const unsigned k : {2u, 17u}) {
         operation::typed_relation relation{};
         auto op = problem(relation);
@@ -73,9 +73,9 @@ int main() {
         value.requires_partial_algebra = true;
         assert(decomposition::validate_support_embedding_decomposition_v1(value));
         std::cout << "K=" << k << " scalar_dot_width="
-            << cellerator::compute::operation::support_product_output_width(value.result, k)
+            << cellerator::execution::operation::support_product_output_width(value.result, k)
             << "\n";
-        assert(cellerator::compute::operation::support_product_output_width(value.result, k) == 1);
+        assert(cellerator::execution::operation::support_product_output_width(value.result, k) == 1);
         value.assembly = assembly::concatenate_channels;
         assert(decomposition::validate_support_embedding_decomposition_v1(value).code
             == decomposition::support_embedding_validation_code_v1::invalid_partial_result_contract);
@@ -83,7 +83,7 @@ int main() {
         value.produces_partial_results = false;
         value.requires_partial_algebra = false;
         assert(decomposition::validate_support_embedding_decomposition_v1(value));
-        assert(cellerator::compute::operation::support_product_output_width(value.result, k) == k);
+        assert(cellerator::execution::operation::support_product_output_width(value.result, k) == k);
         value.assembly = assembly::sum_partials;
         assert(!decomposition::validate_support_embedding_decomposition_v1(value));
         value.assembly = assembly::concatenate_channels;

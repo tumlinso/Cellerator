@@ -1,4 +1,4 @@
-#include <Cellerator/execution/opaque_artifact.hh>
+#include <Cellerator/execution/preparation/opaque_artifact.hh>
 #include <Cellerator/geometry/persistence/execution_capability_manifest_v1.hh>
 
 #include <cuda_runtime.h>

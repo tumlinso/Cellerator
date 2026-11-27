@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/memory/session_memory.cuh>
+#include <Cellerator/runtime/session_memory.cuh>
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>

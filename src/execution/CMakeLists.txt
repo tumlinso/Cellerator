@@ -1,4 +1,5 @@
 include(${CMAKE_CURRENT_LIST_DIR}/planning/CMakeLists.txt)
+add_subdirectory(src/execution/profiling)
 include(${CMAKE_CURRENT_LIST_DIR}/preparation/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/program/cuda_targets.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/tuning/CMakeLists.txt)

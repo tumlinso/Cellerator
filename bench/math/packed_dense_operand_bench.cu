@@ -14,8 +14,8 @@
 #include <cstdlib>
 #include <memory>
 
-namespace cm = cellerator::compute::math;
-namespace cmb = cellerator::compute::math::bench;
+namespace cm = cellerator::layout::projection;
+namespace cmb = cellerator::layout::projection::bench;
 
 namespace {
 

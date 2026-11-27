@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/native_numeric/device_linear.hh>
+#include <Cellerator/ops/relation/numeric/device_linear.hh>
 
 #include <cmath>
 #include <cstdint>
@@ -6,10 +6,10 @@
 #include <limits>
 #include <vector>
 
-using cellerator::compute::native_numeric::device_representation;
-using cellerator::compute::native_numeric::resident_vector;
-using cellerator::compute::native_numeric::enqueue_axpby;
-using cellerator::compute::native_numeric::enqueue_elementwise_multiply;
+using cellerator::ops::relation::numeric::device_representation;
+using cellerator::ops::relation::numeric::resident_vector;
+using cellerator::ops::relation::numeric::enqueue_axpby;
+using cellerator::ops::relation::numeric::enqueue_elementwise_multiply;
 
 namespace {
 int fail(const char* message) {

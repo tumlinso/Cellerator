@@ -1,8 +1,8 @@
 #include "fixtures.hh"
-#include <Cellerator/compute/operation/relation_semantics.hh>
+#include <Cellerator/ops/relation/relation_semantics.hh>
 #include <limits>
 #include <iostream>
-namespace ce = cellerator::compute::relation;
+namespace ce = cellerator::ops::relation;
 namespace ex = cellerator::execution;
 namespace spine_verify {
 ce::axis_descriptor probe_axis(std::uint64_t base, std::uint64_t count) {
@@ -41,7 +41,7 @@ void contract_probes() {
 }
 }
 #ifdef CELLERATOR_SPINE_DEVICE_PROBES
-#include <Cellerator/compute/operation/prepared_relation.hh>
+#include <Cellerator/execution/preparation/prepared_relation.hh>
 namespace spine_verify {
 void binding_probes(ce::prepared_relation_pair& pair,const ce::operation_descriptor& op,
                     ce::device_state_view input,ce::device_result_view output,

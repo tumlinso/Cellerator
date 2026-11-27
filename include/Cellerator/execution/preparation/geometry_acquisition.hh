@@ -99,7 +99,7 @@ struct geometry_acquisition_candidate_cost_v1 {
     std::uint32_t schema_version = geometry_acquisition_schema_version_v1;
     std::uint32_t record_bytes =
         sizeof(geometry_acquisition_candidate_cost_v1);
-    compute::math::core::stable_id candidate_identity{};
+    ::cellerator::execution::operation_core::stable_id candidate_identity{};
     std::uint32_t projection_index = 0u;
     std::uint32_t reserved0 = 0u;
     planning::phase_costs phases{};

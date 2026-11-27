@@ -1,6 +1,6 @@
-#include <Cellerator/compute/operation/prepared_relation.hh>
+#include <Cellerator/execution/preparation/prepared_relation.hh>
 #include <type_traits>
-namespace r = cellerator::compute::relation;
+namespace r = cellerator::ops::relation;
 namespace e = cellerator::execution;
 using prepare_signature = r::status (*)(const r::operation_descriptor&,
     const r::operation_descriptor&, const r::csr_host_view&,

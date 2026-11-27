@@ -11,7 +11,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include <Cellerator/compute/matrix/convert/compressed.cuh>
+#include <Cellerator/layout/conversion/compressed.cuh>
 #include <cub/cub.cuh>
 #include <CellShard/io/pack/packfile.cuh>
 #include <CellShard/runtime/storage/disk.cuh>
@@ -21,7 +21,7 @@ namespace cellshard {
 namespace ingest {
 namespace mtx {
 
-namespace matrix_convert = ::cellerator::compute::matrix::convert;
+namespace matrix_convert = ::cellerator::layout::conversion;
 namespace tensor_base = ::cellerator::tensor::base;
 
 // Chunk sizes for byte-range MTX scanning during transposed compressed ingest.

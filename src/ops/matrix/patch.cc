@@ -4,7 +4,7 @@
 extern "C" int patch_forward(int,const float*,const float*,const float*,float*,float*,float*);
 extern "C" int patch_vjp(int,const float*,const float*,const float*,const float*,const float*,const float*,float*,float*,float*);
 extern "C" int patch_jvp(int,const float*,const float*,const float*,const float*,const float*,const float*,const float*,const float*,float*);
-namespace cellerator::math::matrix {
+namespace cellerator::ops::matrix {
 namespace {
 status admit(const patch_descriptor& d,const patch_primal& p,std::uint64_t& count) {
     if(!valid_axis(d.input_rows) || !valid_axis(d.input_columns) || !valid_axis(d.output_rows) || !valid_axis(d.output_columns)) return status::invalid_axes;
@@ -48,4 +48,4 @@ status patch_jvp(const patch_tape& t,std::span<const float> dx,std::span<const f
     return ::patch_jvp(static_cast<int>(t.descriptor.input_rows.extent),t.primal.state.data(),t.primal.left.data(),t.primal.right.data(),
         t.preactivation.data(),t.activation.data(),dx.data(),dl.data(),dr.data(),output.data()) ? status::provider_failure:status::success;
 }
-} // namespace cellerator::math::matrix
+} // namespace cellerator::ops::matrix

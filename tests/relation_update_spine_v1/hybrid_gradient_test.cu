@@ -1,11 +1,11 @@
-#include <Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cuh>
+#include <Cellerator/ops/relation/cuda/sm70/edge_value_gradient/hybrid_gradient.cuh>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdio>
 #include <limits>
 #include <vector>
-using namespace cellerator::compute::architecture::providers::nvidia::sm70::edge_value_gradient;
+using namespace cellerator::execution::planning::architecture::providers::nvidia::sm70::edge_value_gradient;
 void fixture(unsigned kind){
     std::vector<contract::edge_ref_v1> edges;
     if(kind<2)for(unsigned s=0;s<16;++s)for(unsigned d=0;d<16;++d)

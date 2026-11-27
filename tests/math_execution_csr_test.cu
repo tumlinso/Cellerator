@@ -1,5 +1,5 @@
 #include <Cellerator/layout/projection/packed_dense_operand_cuda.hh>
-#include <Cellerator/math/reference/referee.hh>
+#include <Cellerator/reference/referee.hh>
 
 #include <cuda_runtime_api.h>
 
@@ -8,7 +8,7 @@
 #include <cstring>
 #include <iostream>
 
-namespace cm = cellerator::compute::math;
+namespace cm = cellerator::layout::projection;
 namespace cr = cellerator::real;
 
 namespace {

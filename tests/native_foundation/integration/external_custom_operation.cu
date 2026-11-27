@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/native_foundation_contract.hh>
+#include <Cellerator/execution/preparation/native_foundation_contract.hh>
 #include <cuda_runtime_api.h>
 
 #include <array>
@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace ex = cellerator::execution;
-namespace nf = cellerator::compute::operation::nf1;
+namespace nf = cellerator::execution::operation::nf1;
 namespace pg = cellerator::execution::program;
 
 void require(bool value) { if (!value) std::abort(); }

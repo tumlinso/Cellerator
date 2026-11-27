@@ -1,8 +1,8 @@
-#include <Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_cover.hh>
+#include <Cellerator/ops/relation/cuda/sm70/edge_value_gradient/gradient_cover.hh>
 #include <algorithm>
 #include <cassert>
 #include <cstdio>
-using namespace cellerator::compute::architecture::providers::nvidia::sm70::edge_value_gradient;
+using namespace cellerator::execution::planning::architecture::providers::nvidia::sm70::edge_value_gradient;
 void exact(const std::vector<gradient_edge>& e,const gradient_cover& c){
     std::vector<unsigned> n(e.size());
     for(unsigned t=0;t<c.tiles.size();++t)for(unsigned slot=0;slot<256;++slot){auto p=c.tiles[t].physical_slots[slot];if(p==absent_slot)continue;

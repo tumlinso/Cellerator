@@ -1,8 +1,8 @@
 # Linked numerical foundation used by external native consumers.  This preserves
 # the prepared-program/session and relation owners; it does not create a runner.
-add_subdirectory(src/compute/operation/native_numeric)
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/differential/CMakeLists.txt")
-    add_subdirectory(src/compute/operation/differential)
+add_subdirectory(src/ops/relation/numeric)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ops/numeric/differential/CMakeLists.txt")
+    add_subdirectory(src/ops/numeric/differential)
 endif()
 
 if(CELLERATOR_HAS_CUDA
@@ -11,9 +11,9 @@ if(CELLERATOR_HAS_CUDA
 endif()
 
 if(CELLERATOR_ENABLE_SPARSE_SUPPORT)
-    if(EXISTS "${PROJECT_SOURCE_DIR}/src/gating/cuda_worksets.cu")
+    if(EXISTS "${PROJECT_SOURCE_DIR}/src/execution/program/dependency/cuda_worksets.cu")
         add_library(cellerator_sparse_support_cuda STATIC
-            "${PROJECT_SOURCE_DIR}/src/gating/cuda_worksets.cu")
+            "${PROJECT_SOURCE_DIR}/src/execution/program/dependency/cuda_worksets.cu")
         add_library(Cellerator::sparse_support_cuda ALIAS cellerator_sparse_support_cuda)
         target_include_directories(cellerator_sparse_support_cuda PUBLIC
             $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -22,9 +22,9 @@ if(CELLERATOR_ENABLE_SPARSE_SUPPORT)
             Cellerator::gating Cellerator::indexing CUDA::cudart)
         set_target_properties(cellerator_sparse_support_cuda PROPERTIES
             POSITION_INDEPENDENT_CODE ON CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
-        if(EXISTS "${PROJECT_SOURCE_DIR}/src/indexing/cuda_postings.cu")
+        if(EXISTS "${PROJECT_SOURCE_DIR}/src/structure/indexing/cuda_postings.cu")
             target_sources(cellerator_sparse_support_cuda PRIVATE
-                "${PROJECT_SOURCE_DIR}/src/indexing/cuda_postings.cu")
+                "${PROJECT_SOURCE_DIR}/src/structure/indexing/cuda_postings.cu")
         endif()
     endif()
     add_subdirectory(src/ops/sparse_support)
@@ -74,7 +74,7 @@ if(TARGET cellerator_prepared_relation_cuda)
     # real CUDA pair whenever available; publish that facade only when its
     # existing owners are present rather than introducing a duplicate owner.
     if(TARGET Cellerator::execution_preparation AND TARGET cellerator_compute_sparse_project)
-        add_subdirectory(src/execution/native_value_instance)
+        add_subdirectory(src/execution/preparation/native_value_instance)
         target_link_libraries(cellerator_native_foundation INTERFACE
             Cellerator::native_value_instance)
     endif()

@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/native_numeric/host_relation.hh>
+#include <Cellerator/ops/relation/numeric/host_relation.hh>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -6,8 +6,8 @@
 #include <limits>
 #include <stdexcept>
 #include <vector>
-namespace native=cellerator::compute::native_numeric;
-namespace rel=cellerator::compute::relation;
+namespace native=cellerator::ops::relation::numeric;
+namespace rel=cellerator::ops::relation;
 namespace ex=cellerator::execution;
 namespace {
 int checks=0;

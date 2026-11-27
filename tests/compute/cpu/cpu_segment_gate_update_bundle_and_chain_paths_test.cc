@@ -1,9 +1,9 @@
-#include <Cellerator/compute/cpu/cpu_segment_gate_update_bundle_and_chain_paths_v1.hh>
+#include <Cellerator/ops/relation/cpu/cpu_segment_gate_update_bundle_and_chain_paths_v1.hh>
 
 #include <cassert>
 #include <cmath>
 
-namespace cb = cellerator::compute::cpu::v1;
+namespace cb = cellerator::ops::relation::cpu::v1;
 
 int main() {
     const std::uint64_t offsets[]{0, 2, 5};

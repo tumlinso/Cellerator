@@ -1,6 +1,6 @@
 # Cellerator preprocessing
 
-The preprocessing methods under `src/` provide direct C++20
+The preprocessing methods under `components/preprocess/src/` provide direct C++20
 numerical operations over native Cellerator views.
 The standard implementation makes traversal explicit and performs no
 allocation. Callers acquire storage, supply outputs and scratch, and choose
@@ -29,5 +29,8 @@ The historical Scanpy report records 302 cases for an earlier source snapshot.
 It is preserved as history and does not qualify the relocated or current code.
 See [development](development.md) for current commands and
 [validation](validation.md) for retained fixtures and evidence.
+
+The [retirement record](development.md#retired-duplicate-source) maps the removed
+`src/preprocess` copy to the component sources and preserves its Git provenance.
 
 The original code is MIT licensed. See the [license](../../licenses/ccell/LICENSE) and [third-party notices](../../licenses/ccell/THIRD_PARTY_NOTICES.md).

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/operation/operation_core_v2/schema.hh>
+#include <Cellerator/execution/preparation/operation_core_v2/schema.hh>
 
 #include <cstdint>
 #include <type_traits>
@@ -54,11 +54,11 @@ constexpr bool same_persistent_identity_v1(
 // bridge gives those fields namespace/local meaning without hashing, folding,
 // or changing any bits.
 constexpr persistent_identity_v1 from_operation_core_stable_id_v1(
-    compute::operation::v2::stable_id identity) noexcept {
+    ::cellerator::execution::operation::v2::stable_id identity) noexcept {
     return {identity.high, identity.low};
 }
 
-constexpr compute::operation::v2::stable_id to_operation_core_stable_id_v1(
+constexpr ::cellerator::execution::operation::v2::stable_id to_operation_core_stable_id_v1(
     persistent_identity_v1 identity) noexcept {
     return {identity.local_identity, identity.producer_namespace};
 }

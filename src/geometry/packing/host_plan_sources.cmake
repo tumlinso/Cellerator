@@ -1,0 +1,3 @@
+set(CELLERATOR_HOST_PACKING_PLAN_SOURCES
+    "${CMAKE_CURRENT_LIST_DIR}/evaluator.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/planner.cc")

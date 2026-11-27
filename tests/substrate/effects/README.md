@@ -1,7 +1,7 @@
 # Composable native host effects
 
 `Cellerator::effects` supplies the C++20 entry point
-`<Cellerator/math/effects/affine.hh>`. Existing numerical providers are included
+`<Cellerator/ops/process/effects/affine.hh>`. Existing numerical providers are included
 directly from their operation-family headers under `<Cellerator/ops/...>`:
 DFA/counted DFA, monomial/block-affine maps, weighted algebras, lifting/residual
 trees, finite relations, response jets/checkpoints and port condensation/recovery.
@@ -66,6 +66,6 @@ math and no contraction remain enabled. No GPU or benchmark is launched.
 ## Shared build and installed ownership
 
 The selectable SDK exports `Cellerator::effects`. Source consumers use the
-target defined in `src/math/effects`, and installed consumers select the
+target defined in `src/ops/process/effects`, and installed consumers select the
 `effects` component. The independent source gate exercises host arithmetic.
 The installed package has a separate relocation check.

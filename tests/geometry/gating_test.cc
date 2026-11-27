@@ -1,4 +1,4 @@
-#include <Cellerator/geometry/gating.hh>
+#include <Cellerator/execution/program/packing/gating.hh>
 
 #include <cmath>
 #include <stdexcept>

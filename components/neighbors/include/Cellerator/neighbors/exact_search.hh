@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/operators/graph/workspace.cuh>
+#include <Cellerator/ops/relation/graph/workspace.cuh>
 
 #include <cuda_fp16.h>
 

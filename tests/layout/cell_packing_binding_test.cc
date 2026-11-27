@@ -1,4 +1,4 @@
-#include <Cellerator/execution/cell_packing_binding.hh>
+#include <Cellerator/execution/preparation/cell_packing_binding.hh>
 #include <Cellerator/common/real/fp16.cuh>
 #include <Cellerator/layout/cell_packing_geometry.hh>
 

@@ -10,7 +10,7 @@
 
 namespace {
 
-namespace architecture = cellerator::compute::architecture;
+namespace architecture = cellerator::execution::planning::architecture;
 namespace execution = cellerator::execution;
 namespace persistence = cellpack::persistence;
 

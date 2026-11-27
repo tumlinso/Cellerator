@@ -1,4 +1,4 @@
-#include <Cellerator/execution/object_binding/relation_apply_candidate_v1.hh>
+#include <Cellerator/execution/preparation/acquisition/relation_apply_candidate_v1.hh>
 
 #include <chrono>
 #include <cstdint>
@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace binding = cellerator::execution::object_binding;
-namespace candidate = cellerator::compute::candidate::jbc_multi_extent;
+namespace candidate = cellerator::ops::relation::multi_extent;
 
 int main() {
     constexpr std::uint64_t extent_count = 8u;

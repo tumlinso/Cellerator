@@ -4,8 +4,8 @@
 
 namespace preparation = cellerator::execution::preparation;
 namespace execution = cellerator::execution;
-namespace operation = cellerator::compute::operation::v2;
-namespace decomposition = cellerator::compute::decomposition;
+namespace operation = cellerator::execution::operation::v2;
+namespace decomposition = cellerator::execution::planning::decomposition;
 
 template<typename Tag>
 ::cellerator::structure::persistent_identity<Tag> persistent(std::uint64_t value) {

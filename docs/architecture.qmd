@@ -676,18 +676,12 @@ python/cellerator/                   # installed Python package
 bench/ experiments/                  # candidates and bounded evidence
 ```
 
-Current code has begun to align with this structure. Native implementation
-families include `src/common`, `src/structure`, `src/support`, `src/indexing`,
-`src/gating`, `src/layout`, and several `src/ops` families. Their public
-headers do not all mirror those directory names: identity is under
-`include/Cellerator/structure`, while support, indexing, gating, and current
-projection contracts remain under `include/Cellerator/compute`; operation
-families are under `include/Cellerator/ops`. Python has `ops.py`, `nn.py`,
-`torch/`, and `experimental/`. Cellerator retains numerical geometry planning,
-runtime, tokenization, modeling, and compatibility paths; its language compiler
-is maintained in [Texo](https://github.com/tumlinso/Texo). The routing document
-is the exhaustive path-level source of truth; this architecture page avoids
-duplicating its changing inventory.
+Native source and public header paths follow their owners. Structure owns
+identity and indexing. Geometry owns declared support and grouping, and layout
+owns physical projections. Operation families live under `ops/`, with candidate
+selection, preparation, and program submission under `execution/`. Runtime
+owns device sessions and handles. See the [contributor routing guide](development/routing.md)
+for the current source owners. The language compiler is maintained in [Texo](https://github.com/tumlinso/Texo).
 
 ### Operation families
 

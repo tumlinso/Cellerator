@@ -1,6 +1,6 @@
 #include "gated_product_fixture.hh"
 
-#include <Cellerator/execution/dependency/distributed.cuh>
+#include <Cellerator/execution/program/dependency/distributed.cuh>
 
 #include <cuda_runtime_api.h>
 

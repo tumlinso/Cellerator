@@ -1,11 +1,11 @@
-#include <Cellerator/compute/operation/prepared_relation.hh>
+#include <Cellerator/execution/preparation/prepared_relation.hh>
 #include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
 
-namespace rel = cellerator::compute::relation;
+namespace rel = cellerator::ops::relation;
 namespace ex = cellerator::execution;
 namespace {
 void gpu(cudaError_t value) {

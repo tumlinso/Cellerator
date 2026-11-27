@@ -1,7 +1,7 @@
 include(GNUInstallDirs)
 # Borrowed CP-BP projection construction has no runtime or reference dependency.
 add_library(cellerator_physical_projection STATIC
-    csr.cc ../native_tile_view.cc bell.cc bell_candidates.cc)
+    csr.cc native_tile_view.cc bell.cc bell_candidates.cc)
 add_library(Cellerator::physical_projection ALIAS cellerator_physical_projection)
 target_include_directories(cellerator_physical_projection PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>

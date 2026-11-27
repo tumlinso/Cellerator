@@ -1,4 +1,4 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/value_pack.cuh"
+#include "../../../src/layout/projection/cuda/sm70/value_pack.cuh"
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -15,7 +15,7 @@
 #include <vector>
 
 namespace sm70 =
-    cellerator::compute::architecture::providers::nvidia::sm70;
+    cellerator::execution::planning::architecture::providers::nvidia::sm70;
 namespace projection = cellerator::layout::projection;
 
 namespace {

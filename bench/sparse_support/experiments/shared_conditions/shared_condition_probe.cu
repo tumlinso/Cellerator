@@ -1,5 +1,5 @@
-#include <Cellerator/compute/gating/cuda_worksets.cuh>
-#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/execution/program/dependency/cuda_worksets.cuh>
+#include <Cellerator/structure/indexing/posting_index.hh>
 #include <Cellerator/ops/condition/program.hh>
 
 #include <cuda_runtime.h>
@@ -21,9 +21,9 @@
 #include <utility>
 #include <vector>
 
-namespace gate = cellerator::compute::gating;
+namespace gate = cellerator::ops::condition;
 namespace condition = cellerator::ops::condition;
-namespace containers = cellerator::containers;
+namespace containers = cellerator::structure::indexing;
 
 #define CUDA_CHECK(expr) do { \
     const auto cuda_status = (expr); \
@@ -282,8 +282,8 @@ struct fixture {
     std::vector<std::uint8_t> changed_predicates;
     std::vector<std::uint64_t> dirty_offsets;
     std::vector<std::uint64_t> dirty_edges;
-    std::vector<containers::IndexedWorkItem> primal_items;
-    std::vector<containers::IndexedWorkItem> derivative_items;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> primal_items;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> derivative_items;
     std::vector<std::uint64_t> primal_offsets;
     std::vector<std::uint64_t> derivative_offsets;
     std::vector<bool> depends_on_changed;
@@ -527,16 +527,16 @@ struct workset_buffers {
     std::uint64_t derivative_per_cell = 0;
     device_buffer<std::uint64_t> primal_input_offsets;
     device_buffer<std::uint64_t> derivative_input_offsets;
-    device_buffer<containers::IndexedWorkItem> primal_input_items;
-    device_buffer<containers::IndexedWorkItem> derivative_input_items;
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> primal_input_items;
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> derivative_input_items;
     device_buffer<std::uint64_t> primal_output_offsets;
     device_buffer<std::uint64_t> derivative_output_offsets;
-    device_buffer<containers::IndexedWorkItem> primal_output_items;
-    device_buffer<containers::IndexedWorkItem> derivative_output_items;
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> primal_output_items;
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> derivative_output_items;
     device_buffer<std::uint64_t> primal_stage_offsets;
     device_buffer<std::uint64_t> derivative_stage_offsets;
-    device_buffer<containers::IndexedWorkItem> primal_stage_items;
-    device_buffer<containers::IndexedWorkItem> derivative_stage_items;
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> primal_stage_items;
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> derivative_stage_items;
     device_buffer<std::uint64_t> primal_counts;
     device_buffer<std::uint64_t> derivative_counts;
     device_buffer<gate::cuda_workset_status_v1> status;
@@ -790,7 +790,7 @@ bool check_worksets(const workset_buffers &w, const fixture &f,
                   << status.derivative_required << '\n';
         return false;
     }
-    std::vector<containers::IndexedWorkItem> expected_p, expected_d;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> expected_p, expected_d;
     std::vector<std::uint64_t> expected_po(f.cfg.cells + 1u), expected_do(f.cfg.cells + 1u);
     for (std::uint64_t cell = 0; cell < f.cfg.cells; ++cell) {
         expected_po[cell] = expected_p.size();

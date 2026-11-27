@@ -1,4 +1,5 @@
-include(src/compute/CMakeLists.txt)
-include(src/compute/current_targets.cmake)
-include(src/execution/sequence/CMakeLists.txt)
+include(src/ops/cuda_targets.cmake)
+include(src/geometry/discovery/CMakeLists.txt)
+include(src/ops/matrix/sparse/cuda_targets.cmake)
+include(src/execution/program/sequence/CMakeLists.txt)
 cellerator_include_checks(examples/CMakeLists.txt)

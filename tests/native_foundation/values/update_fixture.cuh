@@ -9,11 +9,11 @@ extern "C" void start_memory() __attribute__((weak));
 extern "C" void begin_steps() __attribute__((weak));
 extern "C" void report_memory(const char*, int) __attribute__((weak));
 
-namespace cellerator::compute::architecture::providers::nvidia::sm70::edge_value_gradient {
+namespace cellerator::execution::planning::architecture::providers::nvidia::sm70::edge_value_gradient {
 cudaError_t enqueue_relation_value_update_f32(float*, void*, const float*, std::uint32_t,
     bool, float, cudaStream_t) noexcept;
 }
-namespace trace_update = cellerator::compute::architecture::providers::nvidia::sm70::edge_value_gradient;
+namespace trace_update = cellerator::execution::planning::architecture::providers::nvidia::sm70::edge_value_gradient;
 void update_test(bool f32,bool derive=false){
     storage owner;cuda_ok(cudaStreamCreate(&owner.a));cuda_ok(cudaStreamCreate(&owner.b));
     rel::operation_descriptor f;f.topology={{40,1},{1},axis(1),axis(2),{41,1},3};f.dense_width=16;if(f32)f.arithmetic.relation_storage=ex::numeric_type::f32;

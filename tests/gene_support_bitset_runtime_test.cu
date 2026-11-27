@@ -1,4 +1,4 @@
-#include <Cellerator/geometry/gene_support_bitset.hh>
+#include <Cellerator/geometry/discovery/gene_support_bitset.hh>
 
 #include <cuda_runtime.h>
 
@@ -12,9 +12,9 @@
 #include <utility>
 #include <vector>
 
-namespace cg = ::cellerator::compute::gene_support;
+namespace cg = ::cellerator::geometry::discovery::gene_support;
 namespace cm = ::cellerator::tensor::base;
-namespace cs = ::cellerator::compute::sampling;
+namespace cs = ::cellerator::geometry::discovery::sampling;
 namespace ct = ::cellerator::types;
 
 int require(bool ok, const char *label) {

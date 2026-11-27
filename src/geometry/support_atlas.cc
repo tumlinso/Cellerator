@@ -1,4 +1,4 @@
-#include <Cellerator/compute/sampling.hh>
+#include <Cellerator/geometry/discovery/sampling.hh>
 #include <Cellerator/geometry/support_atlas.hh>
 
 #include <algorithm>
@@ -30,7 +30,7 @@ bool checked_add(std::uint64_t left, std::uint64_t right,
 
 std::uint64_t mix_identity(std::uint64_t identity,
                            std::uint64_t value) noexcept {
-    using ::cellerator::compute::sampling::splitmix64_hash;
+    using ::cellerator::geometry::discovery::sampling::splitmix64_hash;
     return splitmix64_hash(identity ^ splitmix64_hash(value));
 }
 
@@ -150,7 +150,7 @@ struct deterministic_permutation {
 deterministic_permutation make_permutation(std::uint64_t extent,
                                            std::uint64_t seed,
                                            std::uint64_t domain) noexcept {
-    using ::cellerator::compute::sampling::hash_global_row_index;
+    using ::cellerator::geometry::discovery::sampling::hash_global_row_index;
     deterministic_permutation result;
     result.extent = extent;
     if (extent == 0u) return result;
@@ -274,7 +274,7 @@ bool build_sampled_support_v1(
 
         const deterministic_permutation pairs = make_permutation(
             available_pairs,
-            policy.seed ^ ::cellerator::compute::sampling::hash_global_row_index(
+            policy.seed ^ ::cellerator::geometry::discovery::sampling::hash_global_row_index(
                 destination, pair_sampling_domain),
             pair_sampling_domain);
         const double inverse_destination_probability = static_cast<double>(

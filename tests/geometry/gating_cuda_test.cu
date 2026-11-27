@@ -1,4 +1,4 @@
-#include <Cellerator/geometry/gating_cuda.cuh>
+#include <Cellerator/execution/program/packing/gating_cuda.cuh>
 
 #include <cuda_runtime_api.h>
 

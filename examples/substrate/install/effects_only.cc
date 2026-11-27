@@ -1,6 +1,6 @@
-#include <Cellerator/math/effects/affine.hh>
+#include <Cellerator/ops/process/effects/affine.hh>
 
-namespace fx = cellerator::math::effects;
+namespace fx = cellerator::ops::process::effects;
 namespace ex = cellerator::execution;
 
 int main() {

@@ -1,8 +1,8 @@
 // Host adapter test: include the owning TU to inspect its deliberately private seam.
-#include "../../../src/compute/operation/prepared_relation.cu"
+#include "../../../src/execution/preparation/prepared_relation.cu"
 #include "test_require.hh"
 #include <iostream>
-namespace ce = cellerator::compute::relation;
+namespace ce = cellerator::ops::relation;
 namespace ex = cellerator::execution;
 int main() {
     ce::operation_descriptor op{};
@@ -21,7 +21,7 @@ int main() {
     for(auto direction:{ce::orientation::forward,ce::orientation::transpose}) {
         op.direction=direction;ce::native_contract contract{};
         SPINE_REQUIRE(ce::adapt(op,contract));SPINE_REQUIRE(ce::equivalent(op,contract.semantic));
-        SPINE_REQUIRE(ex::same_identity(contract.structures.structures[0].persistent,op.topology.identity));
+        SPINE_REQUIRE(cellerator::structure::same_identity(contract.structures.structures[0].persistent,op.topology.identity));
         SPINE_REQUIRE(contract.structures.structures[0].epoch.value==op.topology.epoch.value);
         SPINE_REQUIRE(contract.numeric.sparse_storage==ex::numeric_type::f16);
         SPINE_REQUIRE(contract.numeric.dense_storage==ex::numeric_type::f32);

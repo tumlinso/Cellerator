@@ -1,6 +1,6 @@
-#include "Cellerator/geometry/persistent_packing_payload.hh"
+#include "Cellerator/layout/packing/persistence/persistent_packing_payload.hh"
 #include <Cellerator/common/real/fp16.cuh>
-#include "Cellerator/geometry/feature_weighted_row_reduction_cuda.hh"
+#include "Cellerator/ops/reduction/feature_weighted_row_reduction_cuda.hh"
 
 #include <CellShard/io/pack/execution_payload.cuh>
 

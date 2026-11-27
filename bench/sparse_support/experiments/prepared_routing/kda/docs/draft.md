@@ -10,7 +10,7 @@
   `1d1dfda8c5b5ace00415c9bd0847f975f6b655b4`; baseline adapter file SHA-256
   `adcaca5c59a239349f4454928f9a9fb441e0f6e20b7031be8cc02af4387d9fbf`
   (`python/cellerator/torch/execution.py`). Native query source identity:
-  `src/indexing/cuda_postings.cu` SHA-256
+  `src/structure/indexing/cuda_postings.cu` SHA-256
   `d034ac6815e070b356d08b3f8852cf03d7ab39a91d008ab12008bbf30c92f99c`.
 - **Target:** Tesla V100, CUDA `sm_70`; build only for `sm_70` during this
   qualification. No live device identity or resource grant is assumed; the root

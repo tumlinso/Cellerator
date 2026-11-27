@@ -40,7 +40,7 @@ records report these limits; no allocation-free/capture claim is made.
 
 The [Moonshot archive](../../../docs/history/baseplane.md) retains the SM70
 patch candidate and its original receipts. The maintained native Product2 CUDA
-provider is `src/compute/operation/product2/product2.cu`. This host operator gate
+provider is `src/ops/mechanism/product2/product2.cu`. This host operator gate
 checks the selected host contracts.
 
 ## Accepted GH numerical requests

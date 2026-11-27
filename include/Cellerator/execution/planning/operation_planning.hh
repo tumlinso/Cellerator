@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/operation/operation_core.hh>
+#include <Cellerator/execution/preparation/operation_core.hh>
 
 #include <cstddef>
 #include <cstdint>
@@ -8,7 +8,7 @@
 
 namespace cellerator::execution::planning {
 
-namespace operation_core = compute::math::core;
+namespace operation_core = ::cellerator::execution::operation_core;
 
 inline constexpr std::uint32_t planner_schema_version = 2u;
 inline constexpr std::uint32_t objective_v2_schema_version = 2u;

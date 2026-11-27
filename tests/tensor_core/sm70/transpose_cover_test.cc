@@ -1,10 +1,10 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/transpose_cover.cc"
+#include "../../../src/ops/relation/cuda/sm70/transpose_cover.cc"
 
 #include <cassert>
 #include <cstdint>
 
 namespace projection = cellerator::layout::projection;
-namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
+namespace sm70 = cellerator::execution::planning::architecture::providers::nvidia::sm70;
 
 int main() {
     const sm70::logical_relation_edge_v1 edges[] = {

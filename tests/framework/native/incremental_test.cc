@@ -2,7 +2,7 @@
 #undef NDEBUG
 #endif
 #include <Cellerator/geometry/dependency/explicit_pattern.hh>
-#include <Cellerator/execution/dependency/incremental.hh>
+#include <Cellerator/execution/preparation/dependency/incremental.hh>
 
 #include <cassert>
 #include <iostream>

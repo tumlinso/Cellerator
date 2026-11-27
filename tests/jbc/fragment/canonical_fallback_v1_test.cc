@@ -1,8 +1,8 @@
-#include <Cellerator/execution/atom_fragment/canonical_fallback_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment/canonical_fallback_v1.hh>
 
 #include <cassert>
 
-namespace compute = cellerator::compute::operation::v2;
+namespace compute = cellerator::execution::operation::v2;
 namespace execution = cellerator::execution;
 namespace fragment = execution::atom_fragment;
 

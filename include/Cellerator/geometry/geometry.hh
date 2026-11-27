@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/execution/projection_value_plane/projection_value_plane_v1.hh>
-#include <Cellerator/execution/cell_packing_binding.hh>
+#include <Cellerator/execution/preparation/projection_value_plane/projection_value_plane_v1.hh>
+#include <Cellerator/execution/preparation/cell_packing_binding.hh>
 #include <Cellerator/geometry/relation_cover.hh>
 #include <Cellerator/layout/cell_packing_geometry.hh>
 #include <Cellerator/geometry/optimizer/device/device_assisted_disposition.h>

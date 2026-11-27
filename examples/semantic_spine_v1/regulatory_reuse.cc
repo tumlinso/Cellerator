@@ -8,7 +8,7 @@
 #include <string>
 
 #ifndef CELLERATOR_SPINE_REFERENCE_ONLY
-#include <Cellerator/compute/operation/prepared_relation.hh>
+#include <Cellerator/execution/preparation/prepared_relation.hh>
 #include <cuda_runtime_api.h>
 #include <memory>
 #endif
@@ -26,7 +26,7 @@ namespace {
     }
 }
 #ifndef CELLERATOR_SPINE_REFERENCE_ONLY
-namespace ce=cellerator::compute::relation;
+namespace ce=cellerator::ops::relation;
 namespace ex=cellerator::execution;
 void check(ce::status s,const char* what) {
     if(!s) throw std::runtime_error(std::string(what)+": "+(s.message?s.message:"unspecified error"));
@@ -88,7 +88,7 @@ int device_main(int device,bool require_sm70) {
     std::unique_ptr<ce::prepared_relation_pair,decltype(&ce::destroy)> prepared(raw,&ce::destroy);
     ce::preparation_report initial{};check(ce::inspect(*prepared,&initial),"inspect initial preparation");
     demand(initial.topology_preparations==1,"one topology preparation expected");
-    demand(ex::valid_identity(initial.forward_projection) && ex::valid_identity(initial.transpose_projection),"missing physical projection identity");
+    demand(cellerator::structure::valid_identity(initial.forward_projection) && cellerator::structure::valid_identity(initial.transpose_projection),"missing physical projection identity");
 
     auto publish=[&](const std::uint16_t* values,std::uint64_t generation) {
         upload(weights.data,values,sd::edges,stream.stream);
@@ -137,7 +137,7 @@ int device_main(int device,bool require_sm70) {
     demand(final.topology_preparations==1 && final.value_refreshes==2,"topology was rebuilt or refresh accounting is wrong");
     demand(final.latest_enqueued_generation.value==2,"wrong current generation");
     demand(final.accepted_forward_launches==3 && final.accepted_transpose_launches==2,"wrong actual launch accounting");
-    demand(ex::same_identity(initial.forward_projection,final.forward_projection) && ex::same_identity(initial.transpose_projection,final.transpose_projection),"refresh changed topology projections");
+    demand(cellerator::structure::same_identity(initial.forward_projection,final.forward_projection) && cellerator::structure::same_identity(initial.transpose_projection,final.transpose_projection),"refresh changed topology projections");
     demand(final.forward_candidate && *final.forward_candidate && final.transpose_candidate && *final.transpose_candidate,"missing actual candidate attribution");
     std::cout << "Bound implementations: " << final.forward_candidate << " / " << final.transpose_candidate << '\n'
               << "Topology preparations: " << final.topology_preparations << "; value refreshes: " << final.value_refreshes << '\n'

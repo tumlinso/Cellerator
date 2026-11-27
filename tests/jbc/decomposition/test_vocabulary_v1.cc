@@ -1,9 +1,9 @@
-#include <Cellerator/compute/decomposition/vocabulary_v1.hh>
+#include <Cellerator/execution/planning/decomposition/vocabulary_v1.hh>
 
 #include <cassert>
 #include <cstdint>
 
-namespace decomposition = cellerator::compute::decomposition;
+namespace decomposition = cellerator::execution::planning::decomposition;
 
 int main() {
     using decomposition::decomposition_kind_v1;

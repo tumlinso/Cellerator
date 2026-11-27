@@ -1,10 +1,10 @@
-#include <Cellerator/compute/architecture/target_refinement.hh>
+#include <Cellerator/execution/planning/providers/target_refinement.hh>
 
 #include <cassert>
 #include <cstdint>
 #include <type_traits>
 
-namespace architecture = cellerator::compute::architecture;
+namespace architecture = cellerator::execution::planning::architecture;
 namespace execution = cellerator::execution;
 namespace geometry = cellerator::geometry;
 

@@ -48,7 +48,7 @@ target_include_directories(cgs_teacher PUBLIC
     "${CELLERATOR_ROOT}/include" "${CMAKE_CURRENT_LIST_DIR}")
 target_link_libraries(cgs_teacher PUBLIC CUDA::cudart)
 add_library(cgs_consumers STATIC backends/consumers.cu backends/conditions.cu
-    "${CELLERATOR_ROOT}/src/gating/cuda_worksets.cu"
+    "${CELLERATOR_ROOT}/src/execution/program/dependency/cuda_worksets.cu"
     "${CELLERATOR_ROOT}/src/ops/condition/program.cc")
 target_compile_features(cgs_consumers PUBLIC cxx_std_20 cuda_std_20)
 target_include_directories(cgs_consumers PUBLIC

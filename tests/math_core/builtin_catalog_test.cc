@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/builtin_catalog.hh>
+#include <Cellerator/execution/planning/candidates/builtin_catalog.hh>
 
 #include <cstdlib>
 #include <cstring>
@@ -6,7 +6,7 @@
 
 namespace {
 
-namespace core = cellerator::compute::math::core;
+namespace core = cellerator::execution::operation_core;
 
 void require(bool condition, const char *message) {
     if (!condition) {

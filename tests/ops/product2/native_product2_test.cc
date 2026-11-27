@@ -1,10 +1,10 @@
-#include <Cellerator/compute/operation/product2/product2.hh>
+#include <Cellerator/ops/mechanism/product2/product2.hh>
 #include <stdexcept>
 #include <cmath>
 #include <iostream>
 #include <limits>
 #include <type_traits>
-using namespace cellerator::compute::product2;
+using namespace cellerator::ops::mechanism::product2;
 using namespace cellerator::execution::program;
 namespace execution=cellerator::execution;
 void require(bool v){if(!v)throw std::runtime_error("product2 required check failed");}

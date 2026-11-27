@@ -7,7 +7,7 @@
 
 namespace {
 
-namespace core = cellerator::compute::math::core;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 
 constexpr core::stable_id provider_id{0x101u, 0x201u};

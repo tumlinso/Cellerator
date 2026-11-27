@@ -11,7 +11,7 @@ Build `lifetime_bench.cu` as a normal CUDA17/sm70 translation unit and link the
 same relation/calculus/readiness/provider libraries as the RU1 GPU tests. It
 includes the independent verifier reference header, not any implementation TU.
 The integrated target is supplied by I03. A standalone build must separately
-compile `src/compute/operation/prepared_relation.cu`; do not include it twice.
+compile `src/execution/preparation/prepared_relation.cu`; do not include it twice.
 
 Run only under the CUDA controller and repository benchmark mutex. For example,
 place this argv in the controller spec (replace the binary path):

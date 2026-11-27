@@ -3,7 +3,7 @@
 #include <cfenv>
 #include <limits>
 
-namespace cellerator::compute::native_numeric {
+namespace cellerator::ops::relation::numeric {
 namespace {
 template<class T> local_status value(local_operation op, T a, T b, T& out) noexcept {
     switch (op) {
@@ -46,4 +46,4 @@ local_status local_value(local_operation op, double a, double b, double& out) no
 }
 local_status local_forward(local_operation op, std::span<const float> a, std::span<const float> b, std::span<float> out) noexcept { return forward(op,a,b,out); }
 local_status local_forward(local_operation op, std::span<const double> a, std::span<const double> b, std::span<double> out) noexcept { return forward(op,a,b,out); }
-} // namespace cellerator::compute::native_numeric
+} // namespace cellerator::ops::relation::numeric

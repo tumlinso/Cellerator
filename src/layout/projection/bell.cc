@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cstring>
 
-namespace cellerator::compute::math {
+namespace cellerator::layout::projection {
 namespace physical_bell_detail {
 
 bool fill_physical_offsets(const bell_semantic_plan_view &, std::uint32_t,
@@ -199,4 +199,4 @@ bell_lowering_status materialize_bell_candidate_host(
     return {};
 }
 
-} // namespace cellerator::compute::math
+} // namespace cellerator::layout::projection

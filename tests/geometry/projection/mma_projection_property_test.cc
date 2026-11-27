@@ -81,14 +81,14 @@ int main() {
     require_rejected(bad_slot);
 
     // Provider erasure retains exact projection, contract, and device identity.
-    cellerator::compute::math::core::projection_key key{};
+    cellerator::execution::operation_core::projection_key key{};
     key.persistent = {0x91u, 0x92u};
     key.runtime = {1u, 1u};
-    key.kind = cellerator::compute::math::core::projection_kind::
+    key.kind = cellerator::execution::operation_core::projection_kind::
         architecture_specific;
     key.schema_version = 1u;
     key.variant = 2u;
-    cellerator::compute::math::core::candidate_projection_contract_v2 contract{};
+    cellerator::execution::operation_core::candidate_projection_contract_v2 contract{};
     contract.view_type = {0xa1u, 0xa2u};
     contract.abi_major = 1u;
     contract.schema_version = 1u;

@@ -1,4 +1,4 @@
-#include <Cellerator/geometry/layout_metrics.hh>
+#include <Cellerator/layout/packing/layout_metrics.hh>
 
 #include <cmath>
 #include <stdexcept>

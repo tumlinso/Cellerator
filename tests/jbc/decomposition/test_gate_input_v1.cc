@@ -1,11 +1,11 @@
-#include <Cellerator/execution/decomposition/gate_input.hh>
+#include <Cellerator/execution/preparation/decomposition/gate_input.hh>
 
 #include <cassert>
 #include <cstdint>
 
 namespace decomposition = cellerator::execution::decomposition;
-namespace compute_decomposition = cellerator::compute::decomposition;
-namespace operation = cellerator::compute::operation::v2;
+namespace compute_decomposition = cellerator::execution::planning::decomposition;
+namespace operation = cellerator::execution::operation::v2;
 namespace execution = cellerator::execution;
 
 namespace {

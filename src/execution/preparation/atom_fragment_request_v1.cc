@@ -77,7 +77,7 @@ atom_fragment_request_validation_result_v1 validate_atom_fragment_request_v1(
         return failure(atom_fragment_request_validation_code_v1::
             invalid_request_identity);
     if (request.operation == nullptr
-        || !compute::operation::v2::validate_operation_problem(
+        || !::cellerator::execution::operation::v2::validate_operation_problem(
             *request.operation))
         return failure(atom_fragment_request_validation_code_v1::
             invalid_operation);
@@ -126,7 +126,7 @@ atom_fragment_request_validation_result_v1 validate_atom_fragment_request_v1(
                 duplicate_or_unordered_external_order, index);
     }
     if (request.decomposition == nullptr
-        || !compute::decomposition::validate_decomposition_portfolio_v1(
+        || !::cellerator::execution::planning::decomposition::validate_decomposition_portfolio_v1(
             *request.decomposition))
         return failure(atom_fragment_request_validation_code_v1::
             invalid_decomposition);

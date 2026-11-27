@@ -101,8 +101,14 @@ Cellerator-tracked source and export their targets through Cellerator.
 | `include/Cellerator/interop/cellshard` | Preserved source only; excluded from native and SDK header installs. |
 | `src/ops/velocity` and `tests/velocity` | Inactive native adapter and tests. The supported velocity method is owned by `components/velocity` and supplied by `Cellerator::velocity`. |
 | `cmake/CelleratorVelocity.cmake` and `cmake/CelleratorVelocityModule.cmake` | Retained former integration definitions, no longer included or installed by supported builds. |
-| `src/preprocess` | Dormant reference copy preserved in place; `components/preprocess` owns the active implementation. |
 | `examples/torch` | Existing CellShard-oriented example sources retained without a supported Cellerator build option. |
+
+The superseded `src/preprocess` copy has been removed. Its algorithms remain in
+`components/preprocess`, which owns `Cellerator::preprocess` and
+`import cellerator.preprocess;`. The
+[retirement record](preprocess/development.md#retired-duplicate-source) identifies
+the original Git snapshot and each replacement source. Historical qualification
+reports retain their original source identities.
 
 Enabled retired CellShard options and required package components fail
 explicitly. Their preserved sources can contain historical standalone build

@@ -1,19 +1,20 @@
 #include <Cellerator/ops/condition/program.hh>
-#include <Cellerator/execution/dependency/workset_view.hh>
-#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/execution/preparation/dependency/workset_view.hh>
+#include <Cellerator/structure/indexing/posting_index.hh>
 #include <Cellerator/geometry/dependency/compact_support.hh>
 #include <Cellerator/geometry/dependency/posting_index.hh>
-#include <Cellerator/compute/indexing/temporal_occurrences.hh>
-#include <Cellerator/compute/support/adaptive_support.hh>
-#include <Cellerator/compute/support/proposal_discovery.hh>
+#include <Cellerator/structure/indexing/temporal_occurrences.hh>
+#include <Cellerator/geometry/dependency/adaptive_support.hh>
+#include <Cellerator/geometry/discovery/proposal_discovery.hh>
 
 #include <cassert>
 #include <cstdint>
 #include <limits>
 
-using namespace cellerator::compute;
+namespace support = cellerator::geometry::support;
+namespace indexing = cellerator::structure::indexing;
 namespace compact = cellerator::geometry::dependency::compact;
-namespace containers = cellerator::containers;
+namespace containers = cellerator::structure::indexing;
 namespace condition = cellerator::ops::condition;
 namespace execution = cellerator::execution;
 namespace geometry = cellerator::geometry;
@@ -118,28 +119,28 @@ int main() {
         == support::adaptive_support_status_v1::invalid_snapshot);
     assert(conflicting_manager.structure_epoch() == 1u);
 
-    containers::PostingRecord records[6]{}, entries[6]{};
-    containers::PostingIndexView index{};
+    ::cellerator::structure::indexing::PostingRecord records[6]{}, entries[6]{};
+    ::cellerator::structure::indexing::PostingIndexView index{};
     assert(geometry::dependency::build_posting_index(snapshot, records, 6u,
         entries, 6u, &index) == geometry::dependency::PostingBuildStatus::success);
-    const containers::PostingTerm terms[] = {{0u, 0u, 101u}, {1u, 0u, 202u}};
-    containers::IndexedWorkItem scratch[4]{}, output_items[2]{};
-    containers::CandidateOutput output{output_items, 2u, 0u, 0u};
-    assert(containers::query_postings(index, terms, 2u,
-        containers::PostingMatch::any, {scratch, 4u}, &output)
-        == containers::PostingStatus::success);
+    const ::cellerator::structure::indexing::PostingTerm terms[] = {{0u, 0u, 101u}, {1u, 0u, 202u}};
+    ::cellerator::structure::indexing::IndexedWorkItem scratch[4]{}, output_items[2]{};
+    ::cellerator::structure::indexing::CandidateOutput output{output_items, 2u, 0u, 0u};
+    assert(::cellerator::structure::indexing::query_postings(index, terms, 2u,
+        ::cellerator::structure::indexing::PostingMatch::any, {scratch, 4u}, &output)
+        == ::cellerator::structure::indexing::PostingStatus::success);
     assert(output.written == 2u && output_items[0].logical_edge_id == 10u
         && output_items[1].logical_edge_id == 30u);
-    const containers::PostingTerm all_terms[] = {{0u, 0u, 101u}, {1u, 0u, 202u}};
+    const ::cellerator::structure::indexing::PostingTerm all_terms[] = {{0u, 0u, 101u}, {1u, 0u, 202u}};
     output.written = output.required = 0u;
-    assert(containers::query_postings(index, all_terms, 2u,
-        containers::PostingMatch::all, {scratch, 4u}, &output)
-        == containers::PostingStatus::success);
+    assert(::cellerator::structure::indexing::query_postings(index, all_terms, 2u,
+        ::cellerator::structure::indexing::PostingMatch::all, {scratch, 4u}, &output)
+        == ::cellerator::structure::indexing::PostingStatus::success);
     assert(output.written == 1u && output_items[0].logical_edge_id == 30u);
-    containers::CandidateOutput posting_too_small{output_items, 1u, 0u, 0u};
-    assert(containers::query_postings(index, terms, 2u,
-        containers::PostingMatch::any, {scratch, 4u}, &posting_too_small)
-        == containers::PostingStatus::output_overflow);
+    ::cellerator::structure::indexing::CandidateOutput posting_too_small{output_items, 1u, 0u, 0u};
+    assert(::cellerator::structure::indexing::query_postings(index, terms, 2u,
+        ::cellerator::structure::indexing::PostingMatch::any, {scratch, 4u}, &posting_too_small)
+        == ::cellerator::structure::indexing::PostingStatus::output_overflow);
     assert(posting_too_small.written == 0u && posting_too_small.required == 2u);
 
     const compact::EdgeV1 repeated_edge[] = {{40u, 0u, 2u, 0u}};
@@ -149,8 +150,8 @@ int main() {
         repeated_edge, 1u, repeated_parts, 2u};
     const compact::SnapshotPairV1 repeated_snapshot{
         &repeated_support, nullptr, 4u};
-    containers::PostingRecord repeated_scratch[2]{}, repeated_entries[2]{};
-    containers::PostingIndexView repeated_index{};
+    ::cellerator::structure::indexing::PostingRecord repeated_scratch[2]{}, repeated_entries[2]{};
+    ::cellerator::structure::indexing::PostingIndexView repeated_index{};
     assert(geometry::dependency::build_posting_index(repeated_snapshot,
         repeated_scratch, 2u, repeated_entries, 2u, &repeated_index)
         == geometry::dependency::PostingBuildStatus::success);
@@ -253,13 +254,13 @@ int main() {
     assert(bitmaps[1] == bitmap_before_invalid_update);
 
     const std::uint64_t offsets[] = {0u, 3u, 6u}, dormant_offsets[] = {0u, 1u, 2u};
-    const containers::IndexedWorkItem candidates[] = {
+    const ::cellerator::structure::indexing::IndexedWorkItem candidates[] = {
         {10u, 0u}, {20u, 1u}, {30u, 2u}, {10u, 0u}, {20u, 1u}, {30u, 2u}};
-    const containers::IndexedWorkItem dormant[] = {{30u, 2u}, {10u, 0u}};
+    const ::cellerator::structure::indexing::IndexedWorkItem dormant[] = {{30u, 2u}, {10u, 0u}};
     const execution::dependency::CandidateBatchView primal_input{offsets, candidates, 6u};
     const execution::dependency::CandidateBatchView derivative_input{dormant_offsets, dormant, 2u};
     std::uint64_t po[3]{}, doff[3]{};
-    containers::IndexedWorkItem pi[6]{}, di[6]{};
+    ::cellerator::structure::indexing::IndexedWorkItem pi[6]{}, di[6]{};
     execution::dependency::ConditionWorksets worksets{{po, 3u, pi, 6u, 0u, 0u},
                                   {doff, 3u, di, 6u, 0u, 0u}};
     assert(execution::dependency::build_condition_worksets(program, 2u, 9u, bitmaps, 2u,
@@ -267,7 +268,7 @@ int main() {
     assert(worksets.primal.written == 5u && worksets.derivative.written == 5u);
     assert(worksets.primal.structure_epoch == 3u
         && worksets.derivative.state_generation == 9u);
-    containers::IndexedWorkItem tiny[1]{};
+    ::cellerator::structure::indexing::IndexedWorkItem tiny[1]{};
     worksets.primal.items = tiny;
     worksets.primal.item_capacity = 1u;
     assert(execution::dependency::build_condition_worksets(program, 2u, 9u, bitmaps, 2u,

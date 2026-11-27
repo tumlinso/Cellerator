@@ -1,6 +1,6 @@
-#include <Cellerator/geometry/optimizer.hh>
+#include <Cellerator/geometry/packing/optimizer.hh>
 
-#include <Cellerator/geometry/gene_support_bitset.hh>
+#include <Cellerator/geometry/discovery/gene_support_bitset.hh>
 
 #include "optimizer_state.hh"
 
@@ -210,7 +210,7 @@ void test_candidate_normalization() {
 
 void test_zero_copy_gene_support_adapter() {
     support_fixture fixture = make_support(3u, {{0u, 2u}, {1u}});
-    cellerator::compute::gene_support::gene_support_bitset_view source;
+    cellerator::geometry::discovery::gene_support::gene_support_bitset_view source;
     source.layout.sampled_cell_count = fixture.rows;
     source.layout.gene_count = fixture.features;
     source.layout.words_per_gene = fixture.words_per_feature;

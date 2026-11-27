@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/geometry/persistent_packing_payload.hh>
+#include <Cellerator/layout/packing/persistence/persistent_packing_payload.hh>
 #include <Cellerator/geometry/relation_cover.hh>
 #include <Cellerator/geometry/work_layout.hh>
 

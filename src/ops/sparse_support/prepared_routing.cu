@@ -15,7 +15,7 @@ __global__ void prepare_entity_queries_kernel(
     const EntityId *entity_ids, std::uint64_t entity_count,
     std::uint64_t cells, std::uint64_t participants_per_cell,
     std::uint64_t query_count,
-    containers::PostingTerm *queries,
+    ::cellerator::structure::indexing::PostingTerm *queries,
     std::uint64_t *query_offsets, std::uint64_t work_count) {
     const auto i = static_cast<std::uint64_t>(blockIdx.x) * blockDim.x
         + threadIdx.x;
@@ -37,7 +37,7 @@ __global__ void prepare_entity_queries_kernel(
 }
 
 __global__ void emit_mechanism_indices_kernel(
-    const containers::IndexedWorkItem *items,
+    const ::cellerator::structure::indexing::IndexedWorkItem *items,
     std::uint64_t item_count, std::int32_t *mechanism_indices) {
     const auto i = static_cast<std::uint64_t>(blockIdx.x) * blockDim.x
         + threadIdx.x;
@@ -47,13 +47,13 @@ __global__ void emit_mechanism_indices_kernel(
 
 template <typename EntityId>
 cudaError_t query_impl(
-    compute::indexing::cuda_reverse_posting_view_v1 index,
+    ::cellerator::structure::indexing::cuda_reverse_posting_view_v1 index,
     std::uint64_t expected_structure_epoch, std::uint64_t entity_count,
     std::uint64_t cells, std::uint64_t participants_per_cell,
     const EntityId *entity_ids,
-    compute::indexing::cuda_posting_output_v1 output,
-    compute::indexing::cuda_posting_scratch_v1 scratch,
-    containers::PostingTerm *queries,
+    ::cellerator::structure::indexing::cuda_posting_output_v1 output,
+    ::cellerator::structure::indexing::cuda_posting_scratch_v1 scratch,
+    ::cellerator::structure::indexing::PostingTerm *queries,
     std::uint64_t query_capacity, std::uint64_t *query_offsets,
     std::uint64_t query_offsets_capacity, cudaStream_t stream) noexcept {
     if (cells == 0u || entity_count == 0u
@@ -79,7 +79,7 @@ cudaError_t query_impl(
         const auto err = cudaGetLastError();
         if (err != cudaSuccess) return err;
     }
-    return compute::indexing::cuda_query_reverse_postings_any_v1(index,
+    return ::cellerator::structure::indexing::cuda_query_reverse_postings_any_v1(index,
         expected_structure_epoch, cells, query_offsets, queries, query_count,
         output, scratch, stream);
 }
@@ -87,13 +87,13 @@ cudaError_t query_impl(
 } // namespace
 
 cudaError_t cuda_query_prepared_entity_mechanisms_i32_v1(
-    compute::indexing::cuda_reverse_posting_view_v1 index,
+    ::cellerator::structure::indexing::cuda_reverse_posting_view_v1 index,
     std::uint64_t expected_structure_epoch, std::uint64_t entity_count,
     std::uint64_t cells, std::uint64_t participants_per_cell,
     const std::int32_t *entity_ids,
-    compute::indexing::cuda_posting_output_v1 output,
-    compute::indexing::cuda_posting_scratch_v1 scratch,
-    containers::PostingTerm *queries,
+    ::cellerator::structure::indexing::cuda_posting_output_v1 output,
+    ::cellerator::structure::indexing::cuda_posting_scratch_v1 scratch,
+    ::cellerator::structure::indexing::PostingTerm *queries,
     std::uint64_t query_capacity, std::uint64_t *query_offsets,
     std::uint64_t query_offsets_capacity, cudaStream_t stream) noexcept {
     return query_impl(index, expected_structure_epoch, entity_count, cells,
@@ -102,13 +102,13 @@ cudaError_t cuda_query_prepared_entity_mechanisms_i32_v1(
 }
 
 cudaError_t cuda_query_prepared_entity_mechanisms_i64_v1(
-    compute::indexing::cuda_reverse_posting_view_v1 index,
+    ::cellerator::structure::indexing::cuda_reverse_posting_view_v1 index,
     std::uint64_t expected_structure_epoch, std::uint64_t entity_count,
     std::uint64_t cells, std::uint64_t participants_per_cell,
     const std::int64_t *entity_ids,
-    compute::indexing::cuda_posting_output_v1 output,
-    compute::indexing::cuda_posting_scratch_v1 scratch,
-    containers::PostingTerm *queries,
+    ::cellerator::structure::indexing::cuda_posting_output_v1 output,
+    ::cellerator::structure::indexing::cuda_posting_scratch_v1 scratch,
+    ::cellerator::structure::indexing::PostingTerm *queries,
     std::uint64_t query_capacity, std::uint64_t *query_offsets,
     std::uint64_t query_offsets_capacity, cudaStream_t stream) noexcept {
     return query_impl(index, expected_structure_epoch, entity_count, cells,
@@ -117,7 +117,7 @@ cudaError_t cuda_query_prepared_entity_mechanisms_i64_v1(
 }
 
 cudaError_t cuda_emit_prepared_mechanism_indices_v1(
-    const containers::IndexedWorkItem *items,
+    const ::cellerator::structure::indexing::IndexedWorkItem *items,
     std::uint64_t item_count, std::int32_t *mechanism_indices,
     std::uint64_t mechanism_capacity, cudaStream_t stream) noexcept {
     if (item_count > mechanism_capacity

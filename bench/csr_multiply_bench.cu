@@ -4,8 +4,8 @@
 
 #include <Cellerator/tensor/base/compressed.hh>
 #ifdef CSR_BENCH_PRE_MOVE
-#include <Cellerator/compute/operators/sparse/ops.hh>
-#include <Cellerator/compute/candidate/sparse/project.hh>
+#include <Cellerator/ops/matrix/sparse/ops.hh>
+#include <Cellerator/ops/matrix/sparse/project/project.hh>
 #else
 #include "src/ops/matrix/csr_multiply.cuh"
 #include "src/ops/matrix/csr_cusparse.cuh"
@@ -145,10 +145,10 @@ void enqueue_native(const fixture& f, const buffer<int32_t>& offsets,
     cellerator::runtime::execution_context ctx{};
     ctx.stream = s;
     ctx.device = 0;
-    namespace project = cellerator::compute::sparse::project;
+    namespace project = cellerator::ops::matrix::sparse::project;
     if constexpr (std::is_same_v<T, __half>) {
         if (f.width == 1)
-            cellerator::compute::sparse::ops::base::csr_spmv_fwd_f16_f32(
+            cellerator::ops::matrix::sparse::ops::base::csr_spmv_fwd_f16_f32(
                 ctx, row, col, a.data, f.rows, x.data, y.data);
         else
             project::csr_spmm_fwd_f16_f32(ctx, row, col, a.data, f.rows, f.cols,

@@ -4,7 +4,7 @@
 #include <cstdint>
 
 namespace preparation = cellerator::execution::preparation;
-namespace operation_v2 = cellerator::compute::operation::v2;
+namespace operation_v2 = cellerator::execution::operation::v2;
 
 int main() {
     constexpr operation_v2::stable_id operation_identity{

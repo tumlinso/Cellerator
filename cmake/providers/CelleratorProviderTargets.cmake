@@ -74,7 +74,7 @@ function(cellerator_finalize_cuda_provider_targets)
         target_link_libraries(cellerator_architecture_provider PUBLIC
             cellerator_provider_sm70)
         set(CELLERATOR_PROVIDER_MANIFEST_DECLARATIONS
-            "#include <Cellerator/compute/architecture/providers/nvidia/sm70_provider.hh>")
+            "#include <Cellerator/execution/planning/providers/nvidia/sm70_provider.hh>")
         set(CELLERATOR_PROVIDER_MANIFEST_ENTRIES
             "        &providers::nvidia::register_sm70_provider_v1,")
     else()
@@ -92,7 +92,7 @@ function(cellerator_finalize_cuda_provider_targets)
     endif()
 
     set(provider_manifest_directory
-        "${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/compute/architecture")
+        "${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/execution/planning/providers")
     file(MAKE_DIRECTORY "${provider_manifest_directory}")
     configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake/provider_manifest/compiled_provider_manifest.hh.in"

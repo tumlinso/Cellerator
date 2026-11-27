@@ -1,9 +1,9 @@
-#include <Cellerator/compute/operation/operation_core.hh>
+#include <Cellerator/execution/preparation/operation_core.hh>
 
 #include <cassert>
 #include <cstdint>
 
-namespace core = cellerator::compute::math::core;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 
 namespace {

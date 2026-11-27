@@ -1,11 +1,11 @@
-#include <Cellerator/compute/architecture/provider.hh>
+#include <Cellerator/execution/planning/providers/provider.hh>
 
 #include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
 
-namespace architecture = cellerator::compute::architecture;
+namespace architecture = cellerator::execution::planning::architecture;
 namespace runtime = cellerator::runtime;
 
 namespace {

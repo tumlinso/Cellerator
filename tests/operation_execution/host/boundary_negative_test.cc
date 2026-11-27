@@ -1,12 +1,12 @@
-#include <Cellerator/compute/architecture/provider.hh>
-#include <Cellerator/compute/operation/candidate_catalog_v2.hh>
+#include <Cellerator/execution/planning/providers/provider.hh>
+#include <Cellerator/execution/planning/candidates/candidate_catalog_v2.hh>
 #include <Cellerator/execution/preparation/geometry_artifacts.hh>
-#include <Cellerator/execution/opaque_artifact.hh>
+#include <Cellerator/execution/preparation/opaque_artifact.hh>
 
 #include <cstdlib>
 
-namespace architecture = cellerator::compute::architecture;
-namespace catalog = cellerator::compute::math::core;
+namespace architecture = cellerator::execution::planning::architecture;
+namespace catalog = cellerator::execution::operation_core;
 namespace acquisition = cellerator::execution::acquisition_v2;
 namespace execution = cellerator::execution;
 

@@ -1,10 +1,10 @@
-#include <Cellerator/packing/strategy.hh>
-#include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
+#include <Cellerator/layout/packing/strategy.hh>
+#include <Cellerator/ops/relation/row_masked_n1_candidate.hh>
 #include <array>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
-namespace pk=cellerator::packing;
+namespace pk=cellerator::layout::packing;
 namespace ix=pk::ix;
 namespace ex=pk::ex;
 namespace rel=pk::rel;
@@ -124,6 +124,6 @@ int main() try {
     empty.operation.topology.source.extent=0; empty.operation.topology.destination.extent=0; empty.state.extent=0;
     pk::realization emptyplan; success(pk::propose(empty,pk::identity_strategy{},emptyplan));
     success(pk::lower_host_relation(empty,emptyplan,lowered));
-    static_assert(cellerator::compute::math::core::row_masked_n1_candidate_schema_version==1);
+    static_assert(cellerator::execution::operation_core::row_masked_n1_candidate_schema_version==1);
     std::cout<<"PASS native packing strategy contract: "<<checks<<" checks\n";
 } catch(const std::exception& e) { std::cerr<<e.what()<<'\n'; return 1; }

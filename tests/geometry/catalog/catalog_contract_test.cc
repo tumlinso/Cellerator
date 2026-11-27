@@ -1,11 +1,11 @@
-#include <Cellerator/compute/operation/candidate_catalog_v2.hh>
+#include <Cellerator/execution/planning/candidates/candidate_catalog_v2.hh>
 
 #include <cassert>
 #include <cstdint>
 #include <iostream>
 #include <type_traits>
 
-namespace operation_core = cellerator::compute::math::core;
+namespace operation_core = cellerator::execution::operation_core;
 
 namespace {
 

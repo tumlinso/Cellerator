@@ -15,15 +15,10 @@ if(NCCL_LIBRARY)
 else()
     target_compile_definitions(cellerator_runtime_multi_gpu INTERFACE CELLERATOR_DIST_HAS_NCCL=0)
 endif()
-add_library(cellerator_runtime STATIC
-    src/runtime/runtime.cu
-    src/runtime/device_descriptor.cu
-    src/runtime/memory/allocation.cc
-    src/runtime/memory/copy.cu
-    src/runtime/memory/generation_marks.cc
-    src/runtime/memory/image.cc
-    src/runtime/memory/session_memory.cu
-)
+add_subdirectory(src/memory)
+include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
+add_library(cellerator_runtime STATIC)
+cellerator_target_runtime_sources(cellerator_runtime)
 add_library(Cellerator::runtime ALIAS cellerator_runtime)
 target_include_directories(cellerator_runtime PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -31,7 +26,8 @@ target_include_directories(cellerator_runtime PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 target_compile_features(cellerator_runtime PUBLIC cxx_std_20)
-target_link_libraries(cellerator_runtime PUBLIC CUDA::cudart Cellerator::value_readiness)
+target_link_libraries(cellerator_runtime PUBLIC
+    CUDA::cudart Cellerator::memory_contract Cellerator::value_readiness)
 target_link_libraries(cellerator_runtime PRIVATE CUDA::cublas CUDA::cusparse)
 set_target_properties(cellerator_runtime PROPERTIES
     CXX_STANDARD 20

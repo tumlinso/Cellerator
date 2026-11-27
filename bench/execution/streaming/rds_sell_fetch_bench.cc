@@ -1,7 +1,7 @@
 #include "../../benchmark_mutex.hh"
 
 #include <Cellerator/common/real/fp16.hh>
-#include <Cellerator/compute/operators/sparse/column_moments.cuh>
+#include <Cellerator/ops/matrix/sparse/column_moments.cuh>
 #include <Cellerator/execution/streaming/cuda_staging.cuh>
 #include <Cellerator/memory/view.hh>
 
@@ -23,7 +23,7 @@ namespace rds = cellerator::rds;
 namespace real = cellerator::real;
 namespace memory = cellerator::memory;
 namespace gpu = memory::cuda;
-namespace sparse = cellerator::compute::sparse;
+namespace sparse = cellerator::ops::matrix::sparse;
 namespace layout = cellerator::layout;
 using namespace cellerator::execution::streaming;
 using memory::status;

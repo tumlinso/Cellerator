@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace cellerator::compute::operation::sparse_support {
+namespace cellerator::ops::sparse_support::numeric {
 
 enum class status_v1 : std::uint8_t {
     success, invalid_argument, insufficient_capacity, stale_epoch,
@@ -373,4 +373,4 @@ status_v1 latent_transition_vjp_f32_reference_v2(
     std::span<float> matrix_a_gradient, std::span<float> matrix_b_gradient,
     std::span<float> bias_gradient) noexcept;
 
-} // namespace cellerator::compute::operation::sparse_support
+} // namespace cellerator::ops::sparse_support::numeric

@@ -1,6 +1,6 @@
-#include <Cellerator/compute/operation/active_projection/active_projection_v1.cuh>
-#include <Cellerator/compute/operation/differential/local_arithmetic.hh>
-#include <Cellerator/compute/operation/edge/dynamic_support_mask_v1.cuh>
+#include <Cellerator/layout/projection/active/active_projection_v1.cuh>
+#include <Cellerator/ops/numeric/differential/local_arithmetic.hh>
+#include <Cellerator/ops/condition/edge/dynamic_support_mask_v1.cuh>
 #include <cuda_runtime_api.h>
 
 #include <algorithm>
@@ -10,12 +10,12 @@
 #include <cstdlib>
 #include <vector>
 
-namespace ap = cellerator::compute::operation::active_projection;
-namespace df = cellerator::compute::differential;
-namespace edge = cellerator::compute::operation::edge;
+namespace ap = cellerator::layout::projection::active;
+namespace df = cellerator::ops::numeric::differential;
+namespace edge = cellerator::ops::relation::edge;
 namespace ex = cellerator::execution;
-namespace nf = cellerator::compute::operation::nf1;
-namespace nn = cellerator::compute::native_numeric;
+namespace nf = cellerator::execution::operation::nf1;
+namespace nn = cellerator::ops::relation::numeric;
 namespace pg = cellerator::execution::program;
 constexpr unsigned repetitions = 7;
 

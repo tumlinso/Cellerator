@@ -981,7 +981,7 @@ int main() {
     require(close_float(row_subset.data[5], 4.0f), "row subset data[5] mismatch");
 
 #if defined(CELLSHARD_TEST_CELLERATOR_ADAPTER)
-    namespace sampling = ::cellerator::compute::sampling;
+    namespace sampling = ::cellerator::geometry::discovery::sampling;
     sampling::sample_spec sample_spec;
     sampling::sample_plan sample_plan;
     sampling::owned_sampled_csr_structure sampled_structure;

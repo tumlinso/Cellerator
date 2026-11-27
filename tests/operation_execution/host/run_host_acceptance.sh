@@ -33,9 +33,9 @@ build_and_run() {
 }
 
 operation_sources=(
-    src/compute/operation/operation_core_v2/schema.cc
-    src/compute/operation/operation_core_v2/relation_algebra.cc
-    src/compute/operation/operation_core_v2/composition.cc
+    src/execution/preparation/operation_core_v2/schema.cc
+    src/execution/preparation/operation_core_v2/relation_algebra.cc
+    src/execution/preparation/operation_core_v2/composition.cc
 )
 acquisition_sources=(
     src/execution/preparation/acquisition/schema.cc
@@ -44,9 +44,9 @@ acquisition_sources=(
 )
 boundary_sources=(
     "${acquisition_sources[@]}"
-    src/execution/opaque_artifact.cc
+    src/execution/preparation/opaque_artifact.cc
     src/geometry/persistence/execution_image_v2.cc
-    src/compute/architecture/provider_registry.cc
+    src/execution/planning/providers/provider_registry.cc
 )
 
 for mode in strict sanitized; do
@@ -60,7 +60,7 @@ for mode in strict sanitized; do
         tests/operation_execution/host/boundary_negative_test.cc \
         "${boundary_sources[@]}"
     build_and_run "${mode}" operation-core-v2-integrated \
-        src/compute/operation/operation_core_v2/operation_core_v2_test.cc \
+        src/execution/preparation/operation_core_v2/operation_core_v2_test.cc \
         "${operation_sources[@]}"
     build_and_run "${mode}" acquisition-v2-integrated \
         tests/execution/geometry_artifacts_test.cc \

@@ -9,7 +9,7 @@ set(CELLERATOR_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../../.." CACHE PATH
 add_executable(scaled_condition_probe
     scaled_condition_probe.cu
     "${CELLERATOR_ROOT}/src/ops/condition/program.cc"
-    "${CELLERATOR_ROOT}/src/gating/cuda_worksets.cu")
+    "${CELLERATOR_ROOT}/src/execution/program/dependency/cuda_worksets.cu")
 target_include_directories(scaled_condition_probe PRIVATE
     "${CELLERATOR_ROOT}/include")
 target_link_libraries(scaled_condition_probe PRIVATE CUDA::cudart)

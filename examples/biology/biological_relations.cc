@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/relation_algebra.hh>
+#include <Cellerator/ops/relation/relation_algebra.hh>
 #include <Cellerator/execution/lifetimes.hh>
 
 #include <array>
@@ -7,8 +7,8 @@
 
 namespace {
 
-namespace operation = cellerator::compute::operation;
-namespace core = cellerator::compute::math::core;
+namespace operation = cellerator::execution::operation;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 
 execution::persistent_axis_identity persistent_axis(

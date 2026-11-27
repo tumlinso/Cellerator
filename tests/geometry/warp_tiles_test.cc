@@ -1,5 +1,5 @@
-#include "Cellerator/geometry/warp_tiles.hh"
-#include <Cellerator/geometry/persistence/packed_tensor_views.hh>
+#include "Cellerator/layout/packing/warp_tiles.hh"
+#include <Cellerator/layout/packing/persistence/packed_tensor_views.hh>
 
 #include <algorithm>
 #include <cstdlib>

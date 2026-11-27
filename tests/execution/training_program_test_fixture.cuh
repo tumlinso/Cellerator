@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 
-namespace cm = cellerator::compute::math;
+namespace cm = cellerator::layout::projection;
 namespace execution = cellerator::execution;
 namespace runtime = cellerator::runtime;
 

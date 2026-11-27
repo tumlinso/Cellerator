@@ -1,5 +1,5 @@
 #include <Cellerator/ops/sparse_support/training.hh>
-#include "../../compute/architecture/providers/nvidia/sm70/relation_apply_n64.cuh"
+#include "../relation/cuda/sm70/relation_apply_n64.cuh"
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <limits>
 
-namespace cellerator::compute::operation::sparse_support {
+namespace cellerator::ops::sparse_support::numeric {
 namespace {
 constexpr std::uint32_t width = 64;
 constexpr std::uint32_t block_size = 256;
@@ -821,7 +821,7 @@ status_v1 relation_forward_ce_geo_n64_cuda_v1(
             if (cudaGetLastError() != cudaSuccess) return status_v1::cuda_failure;
         }
         const auto n64_status =
-            architecture::providers::nvidia::sm70::enqueue_relation_apply_n64_v1({
+            execution::planning::architecture::providers::nvidia::sm70::enqueue_relation_apply_n64_v1({
                 reinterpret_cast<const __half*>(packed_tiles),
                 static_cast<std::uint32_t>(physical_workset.active_tile_capacity),
                 physical_workset.cell_group_offsets,
@@ -829,7 +829,7 @@ status_v1 relation_forward_ce_geo_n64_cuda_v1(
                 physical_workset.active_tile_source_bases,
                 reinterpret_cast<const __half*>(input),
                 physical_sources * mma_primal.cell_count, physical_output, stream});
-        if (n64_status != architecture::providers::nvidia::sm70::relation_apply_n64_status_v1::success)
+        if (n64_status != execution::planning::architecture::providers::nvidia::sm70::relation_apply_n64_status_v1::success)
             return status_v1::cuda_failure;
         scatter_physical_groups_kernel<<<grid(physical_count), block_size, 0, stream>>>(
             physical_workset.destination_members, mma_primal.cell_count,
@@ -1194,4 +1194,4 @@ status_v1 latent_transition_vjp_cuda_v2(
     return status_v1::success;
 }
 
-} // namespace cellerator::compute::operation::sparse_support
+} // namespace cellerator::ops::sparse_support::numeric

@@ -1,10 +1,10 @@
-#include <Cellerator/compute/decomposition/support_embedding_v1.hh>
+#include <Cellerator/execution/planning/decomposition/support_embedding_v1.hh>
 
 #include <cassert>
 #include <cstdint>
 
-namespace decomposition = cellerator::compute::decomposition;
-namespace operation = cellerator::compute::operation::v2;
+namespace decomposition = cellerator::execution::planning::decomposition;
+namespace operation = cellerator::execution::operation::v2;
 namespace execution = cellerator::execution;
 
 namespace {
@@ -57,8 +57,8 @@ int main() {
     const decomposition::dense_width_interval_v1 intervals[] = {
         {0u, 4u}, {4u, 12u}};
     decomposition::support_embedding_decomposition_v1 value{};
-    value.result = cellerator::compute::operation::support_product_result::edge_channel_product;
-    value.assembly = cellerator::compute::operation::support_product_assembly::concatenate_channels;
+    value.result = cellerator::execution::operation::support_product_result::edge_channel_product;
+    value.assembly = cellerator::execution::operation::support_product_assembly::concatenate_channels;
     value.decomposition_identity = {60u, 61u};
     value.problem = &operation_problem;
     value.embedding_intervals = intervals;

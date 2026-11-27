@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Cellerator/compute/operation/preparation_factory.hh>
+#include <Cellerator/execution/preparation/preparation_factory.hh>
 #include <Cellerator/execution/planning/operation_planning.hh>
-#include <Cellerator/runtime/value_readiness.cuh>
+#include <Cellerator/execution/preparation/readiness/value_readiness.cuh>
 
 #include <cstddef>
 #include <cstdint>
@@ -12,8 +12,6 @@ namespace cellerator::execution {
 inline constexpr std::uint32_t executable_program_schema_version_v2 = 2u;
 inline constexpr std::uint32_t maximum_program_candidates =
     planning::maximum_planner_candidates;
-
-namespace operation_core = compute::math::core;
 
 // Complete costs are supplied by the existing measurement/model layer. The
 // executable program never substitutes kernel-only ranking.

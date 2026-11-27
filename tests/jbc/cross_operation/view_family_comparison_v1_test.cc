@@ -1,10 +1,10 @@
-#include <Cellerator/compute/projection_family/view_family_comparison_v1.hh>
+#include <Cellerator/layout/projection/family/view_family_comparison_v1.hh>
 
 #include <cassert>
 #include <cstdint>
 #include <limits>
 
-namespace family = cellerator::compute::projection_family;
+namespace family = cellerator::layout::projection::family;
 namespace execution = cellerator::execution;
 
 namespace {
@@ -21,8 +21,8 @@ family::view_family_measurement_v1 measurement(
     family::view_family_kind_v1 kind) {
     family::view_family_measurement_v1 value{};
     value.candidate_identity = kind == family::view_family_kind_v1::specialized
-        ? cellerator::compute::operation::v2::stable_id{1, 2}
-        : cellerator::compute::operation::v2::stable_id{3, 4};
+        ? cellerator::execution::operation::v2::stable_id{1, 2}
+        : cellerator::execution::operation::v2::stable_id{3, 4};
     value.evidence_identity = {5, 6};
     value.family.family_identity = {7, 8};
     value.family.exact_support_identity = {9, 10};

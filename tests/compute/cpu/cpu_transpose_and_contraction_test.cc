@@ -1,9 +1,9 @@
-#include <Cellerator/compute/cpu/cpu_transpose_and_contraction_v1.hh>
+#include <Cellerator/ops/relation/cpu/cpu_transpose_and_contraction_v1.hh>
 
 #include <cassert>
 
-namespace cb = cellerator::compute::cpu::v1;
-namespace cp = cellerator::compute::projection_family;
+namespace cb = cellerator::ops::relation::cpu::v1;
+namespace cp = cellerator::layout::projection::family;
 
 int main() {
     const std::uint64_t offsets[]{0, 2, 4};

@@ -1,6 +1,6 @@
-#include <Cellerator/compute/decomposition/partial_result_algebra_v1.hh>
+#include <Cellerator/execution/planning/decomposition/partial_result_algebra_v1.hh>
 
-namespace cellerator::compute::decomposition {
+namespace cellerator::execution::planning::decomposition {
 namespace {
 
 using execution::preparation::persistent_identity_v1;
@@ -96,4 +96,4 @@ validate_partial_result_algebra_v1(
     return {};
 }
 
-}  // namespace cellerator::compute::decomposition
+}  // namespace cellerator::execution::planning::decomposition

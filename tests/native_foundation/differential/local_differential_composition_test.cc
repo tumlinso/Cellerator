@@ -1,4 +1,4 @@
-#include <Cellerator/compute/operation/differential/local_arithmetic.hh>
+#include <Cellerator/ops/numeric/differential/local_arithmetic.hh>
 #include <array>
 #include <cmath>
 #include <cfenv>
@@ -7,8 +7,8 @@
 #include <limits>
 #include <vector>
 
-namespace nn=cellerator::compute::native_numeric;
-namespace df=cellerator::compute::differential;
+namespace nn=cellerator::ops::relation::numeric;
+namespace df=cellerator::ops::numeric::differential;
 namespace nf=df::nf1;
 namespace ex=cellerator::execution;
 namespace pg=ex::program;
@@ -117,7 +117,7 @@ template<class T> void suite(ex::numeric_type type,double tolerance) {
     check(nf::bind_compiled_stage(forward_only.block.block,nf::jvp,&forward_only.block,1,1,0,untouched)==nf::status::unsupported_derivative);
     check(untouched.stable_stage_id==77);
     auto invalid=forward_only.block.block.contract;
-    invalid.numeric.rounding=cellerator::compute::operation::v2::rounding_policy::toward_zero;
+    invalid.numeric.rounding=cellerator::execution::operation::v2::rounding_policy::toward_zero;
     check(df::make_local_block(op::tanh,invalid,forward_only.block)==nf::status::unsupported_capability);
     check(forward_only.block.block.contract.capabilities==nf::forward);
 }

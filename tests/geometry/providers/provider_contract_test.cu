@@ -1,11 +1,11 @@
-#include <Cellerator/compute/architecture/provider.hh>
+#include <Cellerator/execution/planning/providers/provider.hh>
 #include <Cellerator/runtime/device_descriptor.hh>
 
 #include <cmath>
 #include <cstdint>
 #include <iostream>
 
-namespace architecture = cellerator::compute::architecture;
+namespace architecture = cellerator::execution::planning::architecture;
 namespace runtime = cellerator::runtime;
 
 namespace cellerator::tests::ce_geo::fake_provider {

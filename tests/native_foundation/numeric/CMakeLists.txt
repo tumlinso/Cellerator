@@ -15,7 +15,7 @@ endif()
 # Supported standalone source-linked qualification until B01's root hook integrates.
 get_filename_component(_nf1_numeric_root "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 if(NOT TARGET cellerator_native_numeric)
-  add_subdirectory("${_nf1_numeric_root}/src/compute/operation/native_numeric" "${CMAKE_CURRENT_BINARY_DIR}/native_numeric")
+  add_subdirectory("${_nf1_numeric_root}/src/ops/relation/numeric" "${CMAKE_CURRENT_BINARY_DIR}/native_numeric")
 endif()
 add_executable(ce_nf1_n01 host_relation_numeric_contract_test.cc)
 target_link_libraries(ce_nf1_n01 PRIVATE Cellerator::native_numeric)

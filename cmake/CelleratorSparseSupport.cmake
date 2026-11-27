@@ -8,15 +8,15 @@ if(NOT CELLERATOR_ENABLE_SPARSE_SUPPORT)
     return()
 endif()
 
-add_subdirectory(src/support)
-add_subdirectory(src/indexing)
-add_subdirectory(src/gating)
+add_subdirectory(src/geometry/dependency)
+add_subdirectory(src/structure/indexing)
+add_subdirectory(src/ops/condition)
 if(TARGET cellerator_layout)
     target_link_libraries(cellerator_layout PUBLIC Cellerator::support)
 endif()
 
-# Compatibility umbrella for existing native consumers. New code links the
-# owner matching its responsibility directly.
+# Sparse-support package target for the native support, indexing, gating, and
+# layout owners.
 add_library(cellerator_sparse_support INTERFACE)
 add_library(Cellerator::sparse_support ALIAS cellerator_sparse_support)
 target_link_libraries(cellerator_sparse_support INTERFACE
@@ -50,18 +50,3 @@ if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
         add_subdirectory(bench/sparse_support ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL})
     endif()
 endif()
-install(DIRECTORY
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/compute/support"
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/compute/indexing"
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/compute/gating"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/compute")
-install(DIRECTORY
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/containers"
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/geometry/dependency"
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/execution/dependency"
-    "${PROJECT_SOURCE_DIR}/include/Cellerator/ops/condition"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator"
-    PATTERN "accessibility.hh" EXCLUDE
-    PATTERN "frontier_cuda.hh" EXCLUDE
-    PATTERN "regulatory_gates_cuda.hh" EXCLUDE
-    PATTERN "value_field.hh" EXCLUDE)

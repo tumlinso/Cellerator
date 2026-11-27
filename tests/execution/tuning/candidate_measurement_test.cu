@@ -1,9 +1,9 @@
-#include <Cellerator/compute/candidate/csr_fallback_candidate.hh>
-#include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
+#include <Cellerator/ops/relation/csr_fallback_candidate.hh>
+#include <Cellerator/ops/relation/row_masked_n1_candidate.hh>
 #include <Cellerator/execution/execution_contract.hh>
 #include <Cellerator/execution/tuning/candidate_measurement.hh>
 
-#include <Cellerator/geometry/persistent_packing_payload.hh>
+#include <Cellerator/layout/packing/persistence/persistent_packing_payload.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>
@@ -14,8 +14,8 @@
 #include <iostream>
 #include <vector>
 
-namespace core = cellerator::compute::math::core;
-namespace cm = cellerator::compute::math;
+namespace core = cellerator::execution::operation_core;
+namespace cm = cellerator::layout::projection;
 namespace execution = cellerator::execution;
 namespace planner = cellerator::execution::planning;
 namespace cp = cellpack;

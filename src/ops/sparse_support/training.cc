@@ -6,7 +6,7 @@
 #include <limits>
 #include <stdexcept>
 
-namespace cellerator::compute::operation::sparse_support {
+namespace cellerator::ops::sparse_support::numeric {
 namespace {
 bool product(std::uint64_t a, std::uint64_t b, std::uint64_t* out) noexcept {
     if (out == nullptr || (b != 0 && a > std::numeric_limits<std::uint64_t>::max() / b))
@@ -692,4 +692,4 @@ status_v1 latent_transition_vjp_f32_reference_v2(
     return status_v1::success;
 }
 
-} // namespace cellerator::compute::operation::sparse_support
+} // namespace cellerator::ops::sparse_support::numeric

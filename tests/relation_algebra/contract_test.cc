@@ -1,10 +1,10 @@
-#include <Cellerator/compute/operation/relation_algebra.hh>
+#include <Cellerator/ops/relation/relation_algebra.hh>
 
 #include <iostream>
 
 namespace {
 
-namespace operation = cellerator::compute::operation;
+namespace operation = cellerator::execution::operation;
 namespace execution = cellerator::execution;
 
 execution::persistent_axis_identity axis(std::uint64_t seed) {
@@ -29,8 +29,8 @@ operation::relation_numeric_semantics_v1 numeric() {
         execution::numeric_type::f32,
         execution::numeric_type::f32,
         execution::numeric_type::f32,
-        cellerator::compute::math::core::rounding_policy::nearest_even,
-        cellerator::compute::math::core::saturation_policy::none,
+        cellerator::execution::operation_core::rounding_policy::nearest_even,
+        cellerator::execution::operation_core::saturation_policy::none,
         operation::nan_policy_v1::propagate,
         {}};
 }

@@ -1,4 +1,4 @@
-#include <Cellerator/compute/sampling.hh>
+#include <Cellerator/geometry/discovery/sampling.hh>
 
 #include <algorithm>
 #include <cmath>
@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-namespace cs = cellerator::compute::sampling;
+namespace cs = cellerator::geometry::discovery::sampling;
 namespace cm = cellerator::tensor::base;
 
 int require(bool ok, const char *label) {

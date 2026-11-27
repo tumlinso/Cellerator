@@ -1,11 +1,11 @@
-#include <Cellerator/compute/decomposition/moments_state_v1.hh>
+#include <Cellerator/ops/reduction/moments_state_v1.hh>
 
 #include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <limits>
 
-namespace decomposition = cellerator::compute::decomposition;
+namespace decomposition = cellerator::execution::planning::decomposition;
 
 namespace {
 

@@ -1,13 +1,13 @@
-#include <Cellerator/compute/operation/relation_update.hh>
+#include <Cellerator/execution/preparation/relation_update.hh>
 #include "reference_math.hh"
-#include <Cellerator/compute/architecture/providers/nvidia/sm70/contract/contract_portfolio_v1.cuh>
+#include <Cellerator/ops/relation/cuda/sm70/contract/contract_portfolio_v1.cuh>
 #include <cuda_runtime.h>
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <numeric>
 #include <string>
-namespace ce=cellerator::compute::relation;
+namespace ce=cellerator::ops::relation;
 namespace ex=cellerator::execution;
 namespace ref=ru1_reference;
 namespace {
@@ -145,7 +145,7 @@ void run_fixture(unsigned fixture_id,bool rounded,bool hybrid) {
         <<" wmma_launches="<<report.wmma_launches<<" residual_launches="<<report.residual_launches<<" sparse_launches="<<report.sparse_launches<<'\n';
 }
 void illegal_direct_wmma() {
-    namespace contract=cellerator::compute::architecture::providers::nvidia::sm70::contract;
+    namespace contract=cellerator::execution::planning::architecture::providers::nvidia::sm70::contract;
     stream_owner stream;
     device_buffer<__half> a(1024),b(1024);
     device_buffer<float> output(256);

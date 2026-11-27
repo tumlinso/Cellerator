@@ -1,5 +1,5 @@
-#include "Cellerator/geometry/cell_block_records.hh"
-#include <Cellerator/geometry/persistence/packed_tensor_views.hh>
+#include "Cellerator/layout/packing/cell_block_records.hh"
+#include <Cellerator/layout/packing/persistence/packed_tensor_views.hh>
 
 #include <algorithm>
 #include <cstdint>

@@ -1,4 +1,4 @@
-#include <Cellerator/geometry/pack.hh>
+#include <Cellerator/layout/packing/pack.hh>
 
 #include <cstddef>
 #include <cmath>

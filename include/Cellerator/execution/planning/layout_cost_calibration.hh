@@ -2,7 +2,7 @@
 
 #include <Cellerator/execution/planning/operation_planning.hh>
 
-#include <Cellerator/geometry/alternating_refinement.hh>
+#include <Cellerator/geometry/packing/alternating_refinement.hh>
 
 #include <cstdint>
 #include <type_traits>

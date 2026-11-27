@@ -26,11 +26,11 @@ real prerequisites have been created, separately from this standalone SDK projec
 
 ```cmake
 add_subdirectory(src/state)
-add_subdirectory(src/layout/packing/core) # native_numeric + selected indexed_incidence/full indexed_mechanism + cellpack
+add_subdirectory(src/layout/packing) # native_numeric + selected indexed_incidence/full indexed_mechanism + cellpack
 add_subdirectory(src/ops/matrix)
 add_subdirectory(src/ops/process)
-add_subdirectory(src/math/effects)
-add_subdirectory(src/execution/prepared_host) # local_differential
+add_subdirectory(src/ops/process/effects)
+add_subdirectory(src/execution/preparation/host) # local_differential
 ```
 
 Their existing include paths need BUILD_INTERFACE/INSTALL_INTERFACE conversion

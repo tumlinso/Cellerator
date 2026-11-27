@@ -6,9 +6,9 @@
  * median for 65,536 cells x 30,000 genes on 2026-08-14.
  */
 
-#include <Cellerator/geometry/gene_candidate_discovery.hh>
+#include <Cellerator/geometry/discovery/gene_candidate_discovery.hh>
 
-#include <Cellerator/geometry/candidate_discovery/gene_candidate_hash.cuh>
+#include <Cellerator/geometry/discovery/gene_candidate_hash.cuh>
 
 #include <cuda_runtime.h>
 
@@ -21,9 +21,9 @@
 #include <utility>
 #include <vector>
 
-namespace cg = ::cellerator::compute::gene_support;
-namespace cc = ::cellerator::compute::gene_candidates;
-namespace cs = ::cellerator::compute::sampling;
+namespace cg = ::cellerator::geometry::discovery::gene_support;
+namespace cc = ::cellerator::geometry::discovery::gene_candidates;
+namespace cs = ::cellerator::geometry::discovery::sampling;
 namespace ct = ::cellerator::types;
 
 int require(bool ok, const char *label) {

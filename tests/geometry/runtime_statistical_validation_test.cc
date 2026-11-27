@@ -1,5 +1,5 @@
-#include "Cellerator/geometry/runtime_statistical_validation.hh"
-#include "Cellerator/geometry/optimizer.hh"
+#include "Cellerator/geometry/validation/runtime_statistical_validation.hh"
+#include "Cellerator/geometry/packing/optimizer.hh"
 
 #include <algorithm>
 #include <cstdlib>

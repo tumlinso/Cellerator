@@ -1,9 +1,9 @@
-#include "../../../src/compute/operation/prepared_relation.cu"
+#include "../../../src/execution/preparation/prepared_relation.cu"
 #include <cuda_fp16.h>
 #include "test_require.hh"
 #include <cmath>
 #include <iostream>
-namespace ce=cellerator::compute::relation;
+namespace ce=cellerator::ops::relation;
 namespace ex=cellerator::execution;
 static void gpu(cudaError_t s){if(s!=cudaSuccess){std::cerr<<cudaGetErrorString(s)<<'\n';std::abort();}}
 static void check(ce::status s){if(!s){std::cerr<<s.message<<'\n';std::abort();}}

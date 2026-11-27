@@ -2,8 +2,8 @@
 
 #include <CellShard/export/dataset_export.hh>
 
-#include <Cellerator/compute/sampling.hh>
-#include <Cellerator/compute/sampling_materialization.hh>
+#include <Cellerator/geometry/discovery/sampling.hh>
+#include <Cellerator/geometry/discovery/sampling_materialization.hh>
 
 #include <algorithm>
 #include <cstdint>
@@ -17,10 +17,10 @@ namespace cellshard::interop::cellerator {
 // observation-name load; Cellerator owns the deterministic sampling contract.
 inline bool build_sample_plan(
     const char *path,
-    const ::cellerator::compute::sampling::sample_spec &spec,
-    ::cellerator::compute::sampling::sample_plan *out,
+    const ::cellerator::geometry::discovery::sampling::sample_spec &spec,
+    ::cellerator::geometry::discovery::sampling::sample_plan *out,
     std::string *error = nullptr) {
-    namespace sampling = ::cellerator::compute::sampling;
+    namespace sampling = ::cellerator::geometry::discovery::sampling;
     exporting::dataset_summary summary;
     sampling::cell_identity_view identities;
     std::vector<const char *> stable_ids;
@@ -41,10 +41,10 @@ inline bool build_sample_plan(
 // canonical CSR arrays cross into Cellerator's in-memory structural adapter.
 inline bool materialize_sampled_csr_structure(
     const char *path,
-    const ::cellerator::compute::sampling::sample_plan &plan,
-    ::cellerator::compute::sampling::owned_sampled_csr_structure *out,
+    const ::cellerator::geometry::discovery::sampling::sample_plan &plan,
+    ::cellerator::geometry::discovery::sampling::owned_sampled_csr_structure *out,
     std::string *error = nullptr) {
-    namespace sampling = ::cellerator::compute::sampling;
+    namespace sampling = ::cellerator::geometry::discovery::sampling;
     namespace types = ::cellerator::types;
     exporting::dataset_summary summary;
     exporting::csr_matrix_export csr;

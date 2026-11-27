@@ -60,7 +60,8 @@ require a matching `clang-scan-deps` executable. Set
 Module consumers use strict C++20 or C++23. CUDA translation units use the
 public headers.
 
-The standard build includes CCell preprocessing and RNA velocity. Initialize
+Preprocessing and RNA velocity are optional native components, disabled by
+default. Initialize
 the `packages/anndatapp` submodule for the optional Cellerator AnnData component
 and its H5AD and Zarr support. Enable it with `CELLERATOR_ENABLE_ANNDATA=ON`. See the
 [AnnData buffer guide](development/anndata.md) for its build and imports and the
@@ -163,30 +164,21 @@ untouched.
 The relation example checks clock and generation publication, explicit
 snapshot retention, and reuse of provisioned storage.
 
-Newer native organization includes `src/common`, `src/structure`, `src/support`,
-`src/indexing`, `src/gating`, `src/layout`, and `src/ops`. The public header
-paths are mixed-generation: structure uses `include/Cellerator/structure`,
-support/indexing/gating use `include/Cellerator/compute/{support,indexing,gating}`,
-physical projections use `include/Cellerator/compute/projection`, and newer
-operation families use `include/Cellerator/ops`. Existing `compute`, `math`,
-`execution`, `runtime`, and compatibility paths still own real code and
-consumers; Cellerator's language compiler is maintained in Texo. Numerical
-geometry planning and execution preparation remain Cellerator responsibilities.
-Do not infer that all files have been consolidated from the presence of a newer
-directory.
-CellPack headers live under `include/Cellerator/geometry`; the former
-`include/CellPack` forwarding directory has been removed. Include
-`Cellerator/geometry/...` directly. The `cellpack` namespace and `CellPack::`
-targets retain their existing contracts. Use the exhaustive
-[routing map](development/routing.md) before moving or archiving a path.
+The native source tree follows responsibility. Identity and lookup indices live
+in `structure`, declared dependencies and grouping in `geometry`, and physical
+projections and recovery maps in `layout`. Core model state lives in `state`.
+Numerical implementations live in `ops/<family>`, while execution owns
+planning, preparation, submission, streaming, tuning, and profiling. Runtime
+supplies device sessions and vendor handles. Public headers mirror their native
+owners. See the [source layout guide](development/source-layout-cleanup.md).
+Cellerator's language compiler is maintained in Texo.
 
-The independent SpMM numerical reference is installed as
-`Cellerator::spmm_reference`, with headers under `Cellerator/math/reference`.
-Borrowed CSR/native-tile adaptation and BELL lowering belong to
-`Cellerator::physical_projection`; CUDA operand packing remains the optional
-`Cellerator::packed_dense_operand` target. Their headers are under
-`Cellerator/layout/projection`, with the existing native-tile adapter header at
-`Cellerator/compute/projection/native_tile_view.hh`. Include these canonical headers directly. The historical execution-plan
+`components/reference` installs the independent SpMM numerical reference as
+`Cellerator::spmm_reference`, with headers under `Cellerator/reference`.
+`Cellerator::physical_projection` owns borrowed CSR and native-tile adapters
+and BELL lowering. `Cellerator::packed_dense_operand` provides optional CUDA
+operand packing. Both targets use headers under `Cellerator/layout/projection`.
+Include these headers directly. The historical execution-plan
 header and old `compute/math` forwarding paths have been retired. See the [compatibility archive](history/compat/README.md)
 for exact original sources and provenance.
 

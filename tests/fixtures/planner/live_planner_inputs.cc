@@ -81,7 +81,7 @@ live_input_status derive_values(const quantitative_relation_input &relation,
 
 live_input_status derive_live_planner_input(
     const quantitative_relation_input &relation,
-    compute::math::core::stable_id problem,
+    ::cellerator::execution::operation_core::stable_id problem,
     const cellerator::execution::planning::device_performance_key &device,
     const cellerator::execution::planning::runtime_build_key &build,
     reuse_horizons reuse,

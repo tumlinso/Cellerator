@@ -7,7 +7,7 @@
 #include <vector>
 
 using namespace cellerator::ops::sparse_support;
-namespace containers = cellerator::containers;
+namespace containers = cellerator::structure::indexing;
 
 static bool same_projection(const prepared_entity_mechanism_index_v1 &left,
                             const prepared_entity_mechanism_index_v1 &right) {
@@ -34,16 +34,16 @@ static bool same_projection(const prepared_entity_mechanism_index_v1 &left,
 
 static std::vector<std::uint64_t> host_query(
     const prepared_entity_mechanism_index_v1 &index,
-    const std::vector<containers::PostingTerm> &terms) {
+    const std::vector<::cellerator::structure::indexing::PostingTerm> &terms) {
     const auto capacity = index.host_postings.entry_count;
-    std::vector<containers::IndexedWorkItem> scratch(capacity), output_items(capacity);
-    containers::CandidateOutput output{
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> scratch(capacity), output_items(capacity);
+    ::cellerator::structure::indexing::CandidateOutput output{
         output_items.empty() ? nullptr : output_items.data(), capacity, 0u, 0u};
-    const auto status = containers::query_postings(index.host_postings,
+    const auto status = ::cellerator::structure::indexing::query_postings(index.host_postings,
         terms.empty() ? nullptr : terms.data(), terms.size(),
-        containers::PostingMatch::any,
+        ::cellerator::structure::indexing::PostingMatch::any,
         {scratch.empty() ? nullptr : scratch.data(), capacity}, &output);
-    assert(status == containers::PostingStatus::success);
+    assert(status == ::cellerator::structure::indexing::PostingStatus::success);
     std::vector<std::uint64_t> result;
     for (std::uint64_t i = 0u; i < output.written; ++i)
         result.push_back(output_items[i].logical_edge_id - 1u);

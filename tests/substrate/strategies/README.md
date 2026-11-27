@@ -61,11 +61,11 @@ new strategy owner; no sibling private source is compiled.
 ## Integration recipe for the root
 
 The new source target is `Cellerator::packing_strategies` from
-`src/layout/packing/strategies/CMakeLists.txt`, depending solely on actual
+`src/execution/planning/packing/CMakeLists.txt`, depending solely on actual
 `Cellerator::packing_strategy`. For the selected SDK module, add the component name
 `packing_strategies` to the known components, set its dependency to `packing_strategy`,
-and declare `_ce_owner(packing_strategies SOURCES src/layout/packing/strategies/placement.cc
+and declare `_ce_owner(packing_strategies SOURCES src/execution/planning/packing/placement.cc
 CAPABILITIES "host_two_sided_cohort_fixed_universe_repair,input_vjp_routes")` in the
 component dispatch. Request it explicitly when building/installing the next SDK.
-The existing public-header install includes `include/Cellerator/packing/strategies`.
+The existing public-header install includes `include/Cellerator/execution/planning/packing`.
 No shared CMake or native owner was changed by this leaf.

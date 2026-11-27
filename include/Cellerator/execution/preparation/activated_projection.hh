@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/operation/candidate_catalog_v2.hh>
+#include <Cellerator/execution/planning/candidates/candidate_catalog_v2.hh>
 #include <Cellerator/execution/identity.hh>
 
 #include <cstddef>
@@ -30,13 +30,13 @@ enum class projection_reference_status_v2 : std::uint8_t {
 // its exact interpretation. The capability identity may be zero only for a
 // candidate that does not require an architecture capability.
 struct projection_reference_binding_v2 {
-    compute::math::core::projection_key key{};
+    ::cellerator::execution::operation_core::projection_key key{};
     // Runtime association to the forward projection for transpose views.
     // This is execution metadata only and never enters persistent image bytes.
     projection_handle runtime_forward_projection{};
-    compute::math::core::stable_id provider_identity{};
-    compute::math::core::stable_id capability_identity{};
-    compute::math::core::candidate_projection_contract_v2 contract{};
+    ::cellerator::execution::operation_core::stable_id provider_identity{};
+    ::cellerator::execution::operation_core::stable_id capability_identity{};
+    ::cellerator::execution::operation_core::candidate_projection_contract_v2 contract{};
     device_location location{};
     const void *view = nullptr;
     std::uint64_t view_bytes = 0u;
@@ -49,11 +49,11 @@ struct activated_projection_reference_v2 {
     std::uint32_t schema_version =
         activated_projection_reference_schema_version_v2;
     std::uint32_t record_bytes = sizeof(activated_projection_reference_v2);
-    compute::math::core::projection_key key{};
+    ::cellerator::execution::operation_core::projection_key key{};
     projection_handle runtime_forward_projection{};
-    compute::math::core::stable_id provider_identity{};
-    compute::math::core::stable_id capability_identity{};
-    compute::math::core::candidate_projection_contract_v2 contract{};
+    ::cellerator::execution::operation_core::stable_id provider_identity{};
+    ::cellerator::execution::operation_core::stable_id capability_identity{};
+    ::cellerator::execution::operation_core::candidate_projection_contract_v2 contract{};
     device_location location{};
     const void *view = nullptr;
     std::uint64_t view_bytes = 0u;
@@ -73,7 +73,7 @@ projection_reference_status_v2 make_activated_projection_reference_v2(
 // provider records an otherwise irrelevant capability identity.
 projection_reference_status_v2 match_activated_projection_reference_v2(
     const activated_projection_reference_v2 &reference,
-    const compute::math::core::candidate_descriptor_v2 &candidate) noexcept;
+    const ::cellerator::execution::operation_core::candidate_descriptor_v2 &candidate) noexcept;
 
 static_assert(std::is_trivially_copyable<projection_reference_binding_v2>::value,
     "projection bindings must remain trivially copyable");

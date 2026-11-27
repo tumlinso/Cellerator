@@ -1,10 +1,10 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/contract_on_support_projection.cc"
+#include "../../../src/layout/projection/cuda/sm70/contract_on_support_projection.cc"
 
 #include <cassert>
 #include <cstdint>
 
 namespace projection = cellerator::layout::projection;
-namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
+namespace sm70 = cellerator::execution::planning::architecture::providers::nvidia::sm70;
 
 int main() {
     sm70::support_logical_edge_v1 edges[5]{};

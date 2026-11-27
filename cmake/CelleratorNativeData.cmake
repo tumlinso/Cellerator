@@ -128,11 +128,11 @@ if(CELLERATOR_ENABLE_MODULES)
 endif()
 
 add_library(cellerator_dependency_execution STATIC
-    "${PROJECT_SOURCE_DIR}/src/execution/dependency/distributed.cc"
-    "${PROJECT_SOURCE_DIR}/src/execution/dependency/workset.cc"
-    "${PROJECT_SOURCE_DIR}/src/execution/dependency/incidence.cc"
-    "${PROJECT_SOURCE_DIR}/src/execution/dependency/read_index.cc"
-    "${PROJECT_SOURCE_DIR}/src/execution/dependency/condition_index.cc")
+    "${PROJECT_SOURCE_DIR}/src/execution/program/dependency/distributed.cc"
+    "${PROJECT_SOURCE_DIR}/src/execution/preparation/dependency/workset.cc"
+    "${PROJECT_SOURCE_DIR}/src/execution/preparation/dependency/incidence.cc"
+    "${PROJECT_SOURCE_DIR}/src/execution/preparation/dependency/read_index.cc"
+    "${PROJECT_SOURCE_DIR}/src/execution/preparation/dependency/condition_index.cc")
 add_library(Cellerator::dependency_execution ALIAS cellerator_dependency_execution)
 target_compile_features(cellerator_dependency_execution PUBLIC cxx_std_20)
 cellerator_configure_native_data_host_target(
@@ -248,7 +248,7 @@ foreach(_header IN ITEMS
         ops/mechanism/gated_product_host.hh
         ops/mechanism/omission.hh
         layout/cell_packing_geometry.hh
-        execution/cell_packing_binding.hh
+        execution/preparation/cell_packing_binding.hh
         tensor/block_masked/layout.hh
         tensor/block_masked/view.hh
         tensor/block_masked/row_view.hh
@@ -257,18 +257,18 @@ foreach(_header IN ITEMS
         tensor/base/coordinate.hh
         tensor/feature_major_tiles.hh
         tensor/state_codes/view.hh
-        execution/dependency/distributed.hh
-        execution/dependency/condition_index.hh
-        execution/dependency/feature_binding.hh
-        execution/dependency/support_lifecycle.hh
-        execution/dependency/workset_view.hh
-        execution/dependency/incidence.hh
-        execution/dependency/incremental.hh
-        execution/dependency/read_index.hh
-        execution/dependency/workset.hh
-        execution/dependency/value_field.hh
-        containers/value_shape.hh
-        containers/posting_index.hh
+        execution/program/dependency/distributed.hh
+        execution/preparation/dependency/condition_index.hh
+        execution/preparation/dependency/feature_binding.hh
+        execution/preparation/dependency/support_lifecycle.hh
+        execution/preparation/dependency/workset_view.hh
+        execution/preparation/dependency/incidence.hh
+        execution/preparation/dependency/incremental.hh
+        execution/preparation/dependency/read_index.hh
+        execution/preparation/dependency/workset.hh
+        execution/preparation/dependency/value_field.hh
+        common/value_shape.hh
+        structure/indexing/posting_index.hh
         memory/domain.hh
         memory/view.hh
         memory/tiled/Panel.hh

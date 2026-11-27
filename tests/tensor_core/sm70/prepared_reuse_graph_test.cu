@@ -1,4 +1,4 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/value_pack.cuh"
+#include "../../../src/layout/projection/cuda/sm70/value_pack.cuh"
 
 #include <Cellerator/layout/projection/mma_hybrid.hh>
 
@@ -12,7 +12,7 @@
 #include <cstring>
 
 namespace projection = cellerator::layout::projection;
-namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
+namespace sm70 = cellerator::execution::planning::architecture::providers::nvidia::sm70;
 
 namespace {
 

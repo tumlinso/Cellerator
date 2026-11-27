@@ -1,5 +1,6 @@
 #include <Cellerator/execution/preparation/acquisition/schema.hh>
-#include <Cellerator/profiling/preparation/manifest_v1.hh>
+#include <Cellerator/execution/profiling/preparation/execution_export_v2.hh>
+#include <Cellerator/execution/profiling/preparation/manifest_v1.hh>
 
 #include <cassert>
 #include <type_traits>
@@ -33,4 +34,6 @@ int main() {
         }};
     assert(profile::export_atom_profile_manifest_v1(&record, 1u, sink));
     assert(emitted == 1u);
+    const auto result = profile::validate_execution_export_v2({});
+    return result.code == profile::execution_export_validation_code_v2::invalid_export_identity ? 0 : 1;
 }

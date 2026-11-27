@@ -179,11 +179,11 @@ endif()
 
 if(CELLSHARD_ENABLE_CUDA AND NOT TARGET cellshard_cellerator_compute_matrix_convert)
     if(CELLSHARD_CELLERATOR_SOURCE_DIR
-       AND EXISTS "${CELLSHARD_CELLERATOR_SOURCE_DIR}/src/compute/matrix/convert/bucket.cu"
-       AND EXISTS "${CELLSHARD_CELLERATOR_SOURCE_DIR}/src/compute/matrix/convert/compressed.cu")
+       AND EXISTS "${CELLSHARD_CELLERATOR_SOURCE_DIR}/src/layout/conversion/bucket.cu"
+       AND EXISTS "${CELLSHARD_CELLERATOR_SOURCE_DIR}/src/layout/conversion/compressed.cu")
         add_library(cellshard_cellerator_compute_matrix_convert STATIC
-            "${CELLSHARD_CELLERATOR_SOURCE_DIR}/src/compute/matrix/convert/bucket.cu"
-            "${CELLSHARD_CELLERATOR_SOURCE_DIR}/src/compute/matrix/convert/compressed.cu"
+            "${CELLSHARD_CELLERATOR_SOURCE_DIR}/src/layout/conversion/bucket.cu"
+            "${CELLSHARD_CELLERATOR_SOURCE_DIR}/src/layout/conversion/compressed.cu"
         )
         if(NOT TARGET Cellerator::compute_matrix_convert)
             add_library(Cellerator::compute_matrix_convert ALIAS cellshard_cellerator_compute_matrix_convert)
@@ -1391,9 +1391,9 @@ install(FILES
     "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/interop/cellshard/access.cuh"
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/interop/cellshard
 )
-if(EXISTS "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/compute/matrix/convert/compressed.cuh")
-    install(DIRECTORY "${CELLSHARD_CELLERATOR_SOURCE_DIR}/include/Cellerator/compute/matrix"
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/compute
+if(EXISTS "${CELLSHARD_CELLERATOR_INCLUDE_ROOT}/Cellerator/layout/conversion/compressed.cuh")
+    install(DIRECTORY "${CELLSHARD_CELLERATOR_SOURCE_DIR}/include/Cellerator/layout/conversion"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Cellerator/layout
         FILES_MATCHING
             PATTERN "*.cuh"
     )

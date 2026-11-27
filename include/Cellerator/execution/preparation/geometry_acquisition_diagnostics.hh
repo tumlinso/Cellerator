@@ -58,10 +58,10 @@ struct geometry_acquisition_reuse_diagnostics_v1 {
     structure::geometry_id semantic_geometry{};
     structure::projection_id projection{};
     value_generation values{};
-    compute::math::core::stable_id dense_layout{};
+    ::cellerator::execution::operation_core::stable_id dense_layout{};
     geometry::work_window_id work_window{};
-    compute::math::core::stable_id prepared_program{};
-    compute::math::core::stable_id graph_replay{};
+    ::cellerator::execution::operation_core::stable_id prepared_program{};
+    ::cellerator::execution::operation_core::stable_id graph_replay{};
     std::uint64_t structure_observed_uses = 0u;
     std::uint64_t semantic_geometry_observed_uses = 0u;
     std::uint64_t projection_observed_uses = 0u;

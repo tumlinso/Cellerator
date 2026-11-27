@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/compute/decomposition/decomposition_v1.hh>
-#include <Cellerator/execution/index_space/hierarchical_index_space_v1.hh>
+#include <Cellerator/execution/planning/decomposition/decomposition_v1.hh>
+#include <Cellerator/execution/preparation/index_space/hierarchical_index_space_v1.hh>
 #include <Cellerator/execution/preparation/atom_affordance_v1.hh>
 
 #include <cstdint>
@@ -21,14 +21,14 @@ struct atom_fragment_request_v1 {
     std::uint32_t schema_version = atom_fragment_request_schema_version_v1;
     std::uint32_t record_bytes = sizeof(atom_fragment_request_v1);
     persistent_identity_v1 request_identity{};
-    const compute::operation::v2::operation_problem *operation = nullptr;
+    const ::cellerator::execution::operation::v2::operation_problem *operation = nullptr;
     const logical_coverage_view_v1 *exact_coverages = nullptr;
     std::uint64_t exact_coverage_count = 0u;
     const hierarchical_index_space_view_v1 *local_index_spaces = nullptr;
     std::uint64_t local_index_space_count = 0u;
     const structure::order_id *external_orders = nullptr;
     std::uint64_t external_order_count = 0u;
-    const compute::decomposition::decomposition_portfolio_v1 *decomposition =
+    const ::cellerator::execution::planning::decomposition::decomposition_portfolio_v1 *decomposition =
         nullptr;
     const atom_binding_request_v1 *atom_bindings = nullptr;
     std::uint64_t atom_binding_count = 0u;

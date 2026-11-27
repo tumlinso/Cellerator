@@ -1,6 +1,6 @@
-#include "../../../src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cuh"
+#include "../../../src/ops/relation/cuda/sm70/relation_apply_n64.cuh"
 
-#include <Cellerator/compute/candidate/csr_fallback_candidate.hh>
+#include <Cellerator/ops/relation/csr_fallback_candidate.hh>
 
 #include <cublas_v2.h>
 #include <cuda_fp16.h>
@@ -15,9 +15,9 @@
 #include <string>
 #include <vector>
 
-namespace sm70 = cellerator::compute::architecture::providers::nvidia::sm70;
-namespace core = cellerator::compute::math::core;
-namespace math = cellerator::compute::math;
+namespace sm70 = cellerator::execution::planning::architecture::providers::nvidia::sm70;
+namespace core = cellerator::execution::operation_core;
+namespace math = cellerator::layout::projection;
 namespace execution = cellerator::execution;
 namespace wmma = nvcuda::wmma;
 

@@ -1,5 +1,5 @@
-#include <Cellerator/compute/candidate/tensor_core/v100_dense_fragment_candidate.hh>
-#include <Cellerator/compute/candidate/tensor_core/v100_dense_fragment_plan.hh>
+#include <Cellerator/ops/relation/cuda/v100_dense_fragment_candidate.hh>
+#include <Cellerator/execution/planning/candidates/v100_dense_fragment_plan.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>
@@ -12,8 +12,8 @@
 #include <iostream>
 #include <vector>
 
-namespace core = cellerator::compute::math::core;
-namespace tc = cellerator::compute::math::tensor_core;
+namespace core = cellerator::execution::operation_core;
+namespace tc = cellerator::ops::relation::tensor_core;
 namespace execution = cellerator::execution;
 
 namespace {

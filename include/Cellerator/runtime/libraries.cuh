@@ -29,17 +29,6 @@ struct cublas_cache {
 void init(cusparse_cache *cache);
 void clear(cusparse_cache *cache);
 cusparseHandle_t acquire_cusparse(cusparse_cache *cache, const execution_context &ctx);
-cusparseSpMatDescr_t acquire_blocked_ell_f16_descriptor(
-    cusparse_cache *cache,
-    const execution_context &ctx,
-    const void *matrix_token,
-    std::uint32_t rows,
-    std::uint32_t cols,
-    std::uint32_t block_size,
-    std::uint32_t ell_cols,
-    const std::uint32_t *block_col_idx,
-    const __half *values);
-std::size_t &cached_blocked_ell_spmm_bytes(cusparse_cache *cache, cusparseOperation_t op);
 
 void init(cublas_cache *cache);
 void clear(cublas_cache *cache);

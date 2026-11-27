@@ -1,11 +1,11 @@
-#include <Cellerator/compute/sampling_materialization.hh>
+#include <Cellerator/geometry/discovery/sampling_materialization.hh>
 
 #include <cstdint>
 #include <iostream>
 #include <string>
 #include <vector>
 
-namespace cs = ::cellerator::compute::sampling;
+namespace cs = ::cellerator::geometry::discovery::sampling;
 namespace cm = ::cellerator::tensor::base;
 
 int main() {

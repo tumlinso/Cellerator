@@ -1,5 +1,5 @@
 #include "conditions.hh"
-#include <Cellerator/compute/gating/cuda_worksets.cuh>
+#include <Cellerator/execution/program/dependency/cuda_worksets.cuh>
 #include <cuda_runtime.h>
 
 #include <algorithm>
@@ -10,7 +10,7 @@
 namespace cgs {
 namespace {
 namespace oc=cellerator::ops::condition;
-namespace cg=cellerator::compute::gating;
+namespace cg=cellerator::ops::condition;
 void check(cudaError_t e,const char* op){if(e!=cudaSuccess)throw std::runtime_error(std::string(op)+": "+cudaGetErrorString(e));}
 struct Allocation{void* data=nullptr;std::size_t bytes=0;explicit Allocation(std::size_t n):bytes(n){if(n)check(cudaMalloc(&data,n),"allocate condition fixture");}~Allocation(){if(data)cudaFree(data);}};
 

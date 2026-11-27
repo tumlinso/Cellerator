@@ -1,4 +1,4 @@
-#include <Cellerator/execution/lowering_resumption/resumption_v1.hh>
+#include <Cellerator/execution/preparation/resumption/resumption_v1.hh>
 
 #include <cassert>
 

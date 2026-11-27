@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 namespace cs = ::cellshard;
-namespace sampling = ::cellerator::compute::sampling;
+namespace sampling = ::cellerator::geometry::discovery::sampling;
 
 namespace {
 

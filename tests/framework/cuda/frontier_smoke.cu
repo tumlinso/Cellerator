@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/execution/dependency/frontier_cuda.hh>
+#include <Cellerator/execution/program/dependency/frontier_cuda.hh>
 #include <cuda_runtime.h>
 #include <algorithm>
 #include <cassert>

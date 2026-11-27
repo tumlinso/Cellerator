@@ -1,11 +1,11 @@
-#include <Cellerator/execution/atom_fragment/operation_adapter_v1.hh>
+#include <Cellerator/execution/preparation/atom_fragment/operation_adapter_v1.hh>
 
 #include <cassert>
 
 namespace fragment = cellerator::execution::atom_fragment;
 namespace joint = cellerator::execution::preparation;
 namespace execution = cellerator::execution;
-namespace operation = cellerator::compute::operation::v2;
+namespace operation = cellerator::execution::operation::v2;
 
 template<typename Tag>
 ::cellerator::structure::persistent_identity<Tag> id(std::uint64_t value) {

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Cellerator/compute/architecture/provider.hh>
+#include <Cellerator/execution/planning/providers/provider.hh>
 
 // Declarations are collected only from providers explicitly included by the
 // build. They may contain namespace-qualified declarations.
 @CELLERATOR_PROVIDER_MANIFEST_DECLARATIONS@
 
-namespace cellerator::compute::architecture {
+namespace cellerator::execution::planning::architecture {
 
 // The final null entry permits a valid zero-provider generated array. It is
 // not included in the manifest count and is never invoked.
@@ -24,4 +24,4 @@ inline constexpr compiled_provider_manifest_v1
             - 1u)};
 
 
-} // namespace cellerator::compute::architecture
+} // namespace cellerator::execution::planning::architecture

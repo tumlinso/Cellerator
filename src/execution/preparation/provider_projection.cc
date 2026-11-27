@@ -10,7 +10,7 @@ using cellpack::persistence::execution_projection_kind;
 using cellpack::persistence::prebound_projection_view_v1;
 using cellpack::persistence::projection_forward_capable;
 using cellpack::persistence::projection_transpose_capable;
-using compute::architecture::same_architecture_identity_v1;
+using ::cellerator::execution::planning::architecture::same_architecture_identity_v1;
 
 constexpr bool same_projection(
     const prebound_projection_view_v1 &prebound,
@@ -76,9 +76,9 @@ bool no_maps(const prebound_projection_view_v1 &prebound) noexcept {
         && prebound.transpose_map_bytes == 0u;
 }
 
-const compute::architecture::matrix_engine_capability_v1 *find_capability(
-    const compute::architecture::architecture_provider_v1 &provider,
-    compute::architecture::architecture_identity_v1 identity) noexcept {
+const ::cellerator::execution::planning::architecture::matrix_engine_capability_v1 *find_capability(
+    const ::cellerator::execution::planning::architecture::architecture_provider_v1 &provider,
+    ::cellerator::execution::planning::architecture::architecture_identity_v1 identity) noexcept {
     for (std::uint32_t index = 0u; index < provider.capability_count; ++index) {
         if (same_architecture_identity_v1(provider.capabilities[index].identity,
                 identity))
@@ -99,7 +99,7 @@ projection_activation_status validate_projection_provider_descriptor_v1(
         || provider.required_directory_capability == 0u
         || provider.validated_host_view_bytes == 0u
         || provider.activated_device_view_bytes == 0u
-        || !compute::architecture::valid_architecture_identity_v1(
+        || !::cellerator::execution::planning::architecture::valid_architecture_identity_v1(
             provider.capability_identity))
         return {projection_activation_code::invalid_argument,
             "projection provider descriptor is incomplete"};
@@ -111,10 +111,10 @@ projection_activation_status validate_projection_provider_descriptor_v1(
             return {projection_activation_code::invalid_argument,
                 "projection provider descriptor reserved field is nonzero"};
     if (provider.architecture->schema_version
-            != compute::architecture::architecture_provider_schema_version_v1
+            != ::cellerator::execution::planning::architecture::architecture_provider_schema_version_v1
         || provider.architecture->record_bytes
-            != sizeof(compute::architecture::architecture_provider_v1)
-        || !compute::architecture::valid_architecture_identity_v1(
+            != sizeof(::cellerator::execution::planning::architecture::architecture_provider_v1)
+        || !::cellerator::execution::planning::architecture::valid_architecture_identity_v1(
             provider.architecture->identity)
         || provider.architecture->name == nullptr
         || provider.architecture->capabilities == nullptr
@@ -124,8 +124,8 @@ projection_activation_status validate_projection_provider_descriptor_v1(
     const auto *capability = find_capability(
         *provider.architecture, provider.capability_identity);
     if (capability == nullptr
-        || compute::architecture::validate_matrix_engine_capability_v1(*capability)
-            != compute::architecture::capability_status_v1::success
+        || ::cellerator::execution::planning::architecture::validate_matrix_engine_capability_v1(*capability)
+            != ::cellerator::execution::planning::architecture::capability_status_v1::success
         || !same_architecture_identity_v1(capability->provider_identity,
             provider.architecture->identity))
         return {projection_activation_code::provider_mismatch,
@@ -186,9 +186,9 @@ projection_activation_status validate_and_activate_projection_via_provider_v1(
     if (!manifest_status)
         return {projection_activation_code::provider_mismatch,
             manifest_status.message};
-    const compute::architecture::architecture_identity_v1 manifest_provider{
+    const ::cellerator::execution::planning::architecture::architecture_identity_v1 manifest_provider{
         manifest.provider_identity_low, manifest.provider_identity_high};
-    const compute::architecture::architecture_identity_v1 manifest_capability{
+    const ::cellerator::execution::planning::architecture::architecture_identity_v1 manifest_capability{
         manifest.capability_identity_low, manifest.capability_identity_high};
     if (!same_architecture_identity_v1(manifest_provider,
             provider.architecture->identity)

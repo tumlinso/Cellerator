@@ -1,6 +1,6 @@
 #include <Cellerator/memory/compiler_hints.hh>
 #include <Cellerator/memory/copy.cuh>
-#include <Cellerator/memory/session_memory.cuh>
+#include <Cellerator/runtime/session_memory.cuh>
 #include <Cellerator/memory/view.hh>
 
 #include <cuda_runtime.h>

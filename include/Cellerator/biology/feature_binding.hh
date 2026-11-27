@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/execution/dependency/feature_binding.hh>
+#include <Cellerator/execution/preparation/dependency/feature_binding.hh>
 #include <Cellerator/layout/axis_binding.hh>
 #include <Cellerator/layout/occurrence_map.hh>
 #include <Cellerator/structure/coordinates.hh>

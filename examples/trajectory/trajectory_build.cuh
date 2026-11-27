@@ -1,17 +1,17 @@
 #pragma once
 
-#include <Cellerator/compute/operators/graph/branch_detect.cuh>
-#include <Cellerator/compute/operators/graph/forward_candidates.cuh>
-#include <Cellerator/compute/operators/graph/forward_prune.cuh>
-#include <Cellerator/compute/operators/graph/incremental_insert.cuh>
-#include <Cellerator/compute/operators/graph/slab_index.cuh>
-#include <Cellerator/compute/operators/graph/supernode_reduce.cuh>
+#include <Cellerator/ops/relation/graph/branch_detect.cuh>
+#include <Cellerator/ops/relation/graph/forward_candidates.cuh>
+#include <Cellerator/ops/relation/graph/forward_prune.cuh>
+#include <Cellerator/ops/relation/graph/incremental_insert.cuh>
+#include <Cellerator/ops/relation/graph/slab_index.cuh>
+#include <Cellerator/ops/relation/graph/supernode_reduce.cuh>
 
 #include <cstdint>
 
 namespace cellerator::trajectory {
 
-namespace cg = ::cellerator::compute::graph;
+namespace cg = ::cellerator::ops::relation::graph;
 
 struct TrajectoryBuildConfig {
     std::uint32_t target_rows_per_slab = 4096;

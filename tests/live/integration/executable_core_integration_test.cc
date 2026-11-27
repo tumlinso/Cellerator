@@ -1,8 +1,8 @@
-#include <Cellerator/compute/operation/builtin_catalog.hh>
-#include <Cellerator/compute/operation/preparation_factory.hh>
+#include <Cellerator/execution/planning/candidates/builtin_catalog.hh>
+#include <Cellerator/execution/preparation/preparation_factory.hh>
 #include <Cellerator/execution/preparation/provider_projection.hh>
 #include <Cellerator/parameters.hh>
-#include <Cellerator/runtime/value_readiness.cuh>
+#include <Cellerator/execution/preparation/readiness/value_readiness.cuh>
 
 #include <tests/fixtures/planner/live_planner_inputs.hh>
 #include <tests/fixtures/model_execution/quantitative_relation_fixture.hh>
@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-namespace core = cellerator::compute::math::core;
+namespace core = cellerator::execution::operation_core;
 namespace execution = cellerator::execution;
 namespace inputs = cellerator::fixtures::planner_inputs;
 

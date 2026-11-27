@@ -1,6 +1,6 @@
 #include <Cellerator/geometry/planning/workload_profile_v2.hh>
-#include <Cellerator/compute/architecture/target_cover/strategy_registry.hh>
-#include <Cellerator/compute/architecture/target_cover_strategy_v1.hh>
+#include <Cellerator/execution/planning/providers/target_cover/strategy_registry.hh>
+#include <Cellerator/execution/planning/providers/target_cover_strategy_v1.hh>
 
 #include <cstdlib>
 
@@ -97,16 +97,16 @@ void test_target_cover_keeps_semantics_separate() {
     workload_profile workload{workload_profile_schema_version,
         sizeof(workload_profile), &component, 1};
     const std::uint64_t edge_count = (std::uint64_t{1} << 32) + 5;
-    cellerator::compute::architecture::target_cover::semantic_component semantic{
+    cellerator::execution::planning::architecture::target_cover::semantic_component semantic{
         7, 0, edge_count};
-    cellerator::compute::architecture::target_cover::strategy_problem problem{};
+    cellerator::execution::planning::architecture::target_cover::strategy_problem problem{};
     problem.semantic_geometry_identity = {43, 44};
     problem.provider_identity = {45, 46};
     problem.semantic_components = &semantic;
     problem.semantic_component_count = 1;
     problem.logical_edge_count = edge_count;
     problem.workload = workload;
-    using namespace cellerator::compute::architecture::target_cover;
+    using namespace cellerator::execution::planning::architecture::target_cover;
     require(static_cast<bool>(validate_problem(problem)));
     target_region region{1, 7, {}, region_role::pure_sparse, {}, edge_count};
     ownership_range ownership{0, edge_count, 0};

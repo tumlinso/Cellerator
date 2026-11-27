@@ -1,6 +1,7 @@
-#include <Cellerator/compute/candidate/sparse/project.hh>
-#include <Cellerator/tensor/base/blocked_ell.cuh>
-#include "../../operators/sparse/primitives/common.cuh"
+#include <Cellerator/ops/matrix/sparse/project/project.hh>
+#include <Cellerator/tensor/base/blocked_ell_layout.hh>
+#include "../../../src/ops/matrix/sparse/primitives/common.cuh"
+#include "../../../src/ops/matrix/sparse/project/blocked_ell_descriptor.cuh"
 #include <Cellerator/ops/quantized/dispatch.cuh>
 #include <Cellerator/tensor/quantized/blocked_ell.cuh>
 #include <Cellerator/tensor/quantized/metadata.cuh>
@@ -8,7 +9,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace cellerator::compute::sparse::project {
+namespace cellerator::ops::matrix::sparse::project {
 
 namespace {
 
@@ -16,7 +17,7 @@ constexpr int kValueThreads = 256;
 constexpr int kSpmmColsThreads = 128;
 
 namespace base = ::cellerator::tensor::base;
-namespace primitives = ::cellerator::compute::sparse::ops::primitives;
+namespace primitives = ::cellerator::ops::matrix::sparse::ops::primitives;
 
 inline void cusparse_require_(cusparseStatus_t status, const char *label) {
     if (status == CUSPARSE_STATUS_SUCCESS) return;
@@ -471,4 +472,4 @@ void launch_blocked_ell_spmm_fwd_f16_f16_f32_lib(
 
 } // namespace dist
 
-} // namespace cellerator::compute::sparse::project
+} // namespace cellerator::ops::matrix::sparse::project

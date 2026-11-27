@@ -1,8 +1,8 @@
 #include <Cellerator/memory/view.hh>
 #include <Cellerator/tensor/base/compressed.hh>
 #include <Cellerator/tensor/base/coordinate.hh>
-#include <Cellerator/compute/matrix/convert/bucket.cuh>
-#include <Cellerator/compute/matrix/convert/compressed.cuh>
+#include <Cellerator/layout/conversion/bucket.cuh>
+#include <Cellerator/layout/conversion/compressed.cuh>
 
 #include <cub/cub.cuh>
 
@@ -14,8 +14,8 @@
 #include <cstdint>
 #include <stdexcept>
 
-namespace convert = ::cellerator::compute::matrix::convert;
-namespace bucket = ::cellerator::compute::matrix::convert::bucket;
+namespace convert = ::cellerator::layout::conversion;
+namespace bucket = ::cellerator::layout::conversion::bucket;
 namespace matrix = ::cellerator::tensor::base;
 
 namespace {

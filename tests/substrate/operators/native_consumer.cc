@@ -1,12 +1,12 @@
-#include <Cellerator/compute/operation/product2/product2.hh>
+#include <Cellerator/ops/mechanism/product2/product2.hh>
 #include <Cellerator/ops/matrix/patch.hh>
 #include <Cellerator/ops/process/ports.hh>
 #include <array>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
-namespace mx=cellerator::math::matrix;
-namespace ps=cellerator::math::process;
+namespace mx=cellerator::ops::matrix;
+namespace ps=cellerator::ops::process;
 namespace ex=cellerator::execution;
 int checks=0;
 void require(bool b,const char* why) { ++checks; if(!b) throw std::runtime_error(why); }

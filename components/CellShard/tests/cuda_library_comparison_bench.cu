@@ -1,7 +1,7 @@
 #include <CellShard/export/dataset_export.hh>
 
 #include "../src/bucket/major_nnz_raw.cuh"
-#include <Cellerator/compute/matrix/convert/compressed.cuh>
+#include <Cellerator/layout/conversion/compressed.cuh>
 #include "../src/convert/coo_from_compressed_raw.cuh"
 #include "../src/repack/kernels/sharded_blocked_ell.cuh"
 
@@ -483,7 +483,7 @@ struct nonzero_half {
 };
 
 static metric bench_coo_to_compressed(const scenario &s, int warmup, int repeats, cudaStream_t stream) {
-    namespace matrix_convert = ::cellerator::compute::matrix::convert;
+    namespace matrix_convert = ::cellerator::layout::conversion;
     namespace tensor_base = ::cellerator::tensor::base;
     const unsigned int nnz = (unsigned int) s.coo.size();
     std::vector<unsigned int> h_row(nnz), h_col(nnz);
@@ -575,7 +575,7 @@ static metric bench_compressed_to_coo(const scenario &s, int warmup, int repeats
 }
 
 static metric bench_compressed_transpose(const scenario &s, int warmup, int repeats, cudaStream_t stream) {
-    namespace matrix_convert = ::cellerator::compute::matrix::convert;
+    namespace matrix_convert = ::cellerator::layout::conversion;
     const unsigned int nnz = (unsigned int) s.csr_col.size();
     device_buffer<unsigned int> d_ptr, d_col;
     device_buffer<__half> d_val;

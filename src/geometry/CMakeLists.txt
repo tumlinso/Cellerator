@@ -1,15 +1,15 @@
+include("${CMAKE_CURRENT_LIST_DIR}/packing/host_plan_sources.cmake")
 add_library(cellpack STATIC
-    candidate_relation.cc
-    cell_block_records.cc
-    evaluator.cc
-    gating.cc
-    layout_metrics.cc
-    layout_selector.cc
-    merge_cost.cc
-    optimizer.cc
-    packing_plan.cc
-    pack.cc
-    planner.cc
+    ${PROJECT_SOURCE_DIR}/src/geometry/packing/candidate_relation.cc
+    ${PROJECT_SOURCE_DIR}/src/layout/packing/cell_block_records.cc
+    ${CELLERATOR_HOST_PACKING_PLAN_SOURCES}
+    ${PROJECT_SOURCE_DIR}/src/execution/program/packing/gating.cc
+    ${PROJECT_SOURCE_DIR}/src/layout/packing/layout_metrics.cc
+    ${PROJECT_SOURCE_DIR}/src/execution/planning/packing/layout_selector.cc
+    ${PROJECT_SOURCE_DIR}/src/geometry/packing/merge_cost.cc
+    ${PROJECT_SOURCE_DIR}/src/geometry/packing/optimizer.cc
+    ${PROJECT_SOURCE_DIR}/src/geometry/packing/packing_plan.cc
+    ${PROJECT_SOURCE_DIR}/src/layout/packing/pack.cc
 )
 
 # CE-GEO portable semantic-geometry compiler. CSG1 construction and
@@ -65,27 +65,6 @@ target_link_libraries(cellerator_semantic_geometry_v1 PUBLIC
     Cellerator::compute_sampling
 )
 target_compile_features(cellerator_semantic_geometry_v1 PUBLIC cxx_std_20)
-
-# Mutable value generations remain a separate execution-owned target from the
-# immutable semantic geometry planning target above.
-add_library(cellerator_projection_value_plane_v1 STATIC
-    ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/canonical_transfer_v1.cc
-    ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/composite_plane_v1.cc
-    ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/generation_publication_v1.cc
-    ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/validation_v1.cc
-    ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/value_plane_v1.cc
-    ${PROJECT_SOURCE_DIR}/src/compute/architecture/providers/nvidia/sm70/value_pack/value_pack_portfolio_v1.cc
-)
-add_library(Cellerator::projection_value_plane_v1 ALIAS
-    cellerator_projection_value_plane_v1)
-target_include_directories(cellerator_projection_value_plane_v1 PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellerator_projection_value_plane_v1 PUBLIC
-    Cellerator::biological_abi
-)
-target_compile_features(cellerator_projection_value_plane_v1 PUBLIC cxx_std_20)
 
 add_library(cellerator_geometry_optimizer_device_v1 STATIC
     optimizer/device/exact_census.cu
@@ -175,35 +154,15 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellpack)
 endif()
 
-add_library(cellpack_gating_cuda STATIC
-    gating_cuda.cu
-)
-add_library(CellPack::gating_cuda ALIAS cellpack_gating_cuda)
-target_include_directories(cellpack_gating_cuda PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellpack_gating_cuda PUBLIC CellPack::cellpack CUDA::cudart)
-target_compile_features(cellpack_gating_cuda PUBLIC cxx_std_20)
-set_target_properties(cellpack_gating_cuda PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 20
-    CUDA_STANDARD_REQUIRED YES
-)
-if(COMMAND cellerator_enable_perf)
-    cellerator_enable_perf(cellpack_gating_cuda)
-endif()
-
 add_library(cellpack_merge_cost_cuda STATIC
-    merge_cost_cuda.cu
+    ${PROJECT_SOURCE_DIR}/src/geometry/packing/merge_cost_cuda.cu
 )
 add_library(CellPack::merge_cost_cuda ALIAS cellpack_merge_cost_cuda)
 target_include_directories(cellpack_merge_cost_cuda PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_include_directories(cellpack_merge_cost_cuda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(cellpack_merge_cost_cuda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/packing)
 target_link_libraries(cellpack_merge_cost_cuda PUBLIC CellPack::cellpack CUDA::cudart)
 target_compile_features(cellpack_merge_cost_cuda PUBLIC cxx_std_20)
 set_target_properties(cellpack_merge_cost_cuda PROPERTIES
@@ -216,99 +175,11 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellpack_merge_cost_cuda)
 endif()
 
-add_library(cellpack_cell_block_records_cuda STATIC
-    cell_block_records_cuda.cu
-)
-add_library(CellPack::cell_block_records_cuda ALIAS cellpack_cell_block_records_cuda)
-target_include_directories(cellpack_cell_block_records_cuda PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellpack_cell_block_records_cuda PUBLIC CellPack::cellpack CUDA::cudart)
-target_compile_features(cellpack_cell_block_records_cuda PUBLIC cxx_std_20)
-set_target_properties(cellpack_cell_block_records_cuda PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 20
-    CUDA_STANDARD_REQUIRED YES
-)
-if(COMMAND cellerator_enable_perf)
-    cellerator_enable_perf(cellpack_cell_block_records_cuda)
-endif()
-
-# CP-BP-08 host warp-tile ABI/reference. CP-BP-07's local-order target is
-# defined by the parent Cellerator build after this subdirectory is added.
-add_library(cellpack_warp_tiles STATIC
-    warp_tiles.cc
-)
-add_library(CellPack::warp_tiles ALIAS cellpack_warp_tiles)
-target_include_directories(cellpack_warp_tiles PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellpack_warp_tiles PUBLIC
-    CellPack::cellpack
-    cellpack_local_cell_ordering
-)
-target_compile_features(cellpack_warp_tiles PUBLIC cxx_std_20)
-set_target_properties(cellpack_warp_tiles PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED YES
-)
-if(COMMAND cellerator_enable_perf)
-    cellerator_enable_perf(cellpack_warp_tiles)
-endif()
-
-# CP-BP-08 Phase D asynchronous CUDA tile construction. The Phase C host
-# target remains the exact semantic oracle and owns the frozen logical ABI.
-add_library(cellpack_warp_tiles_cuda STATIC
-    warp_tiles_cuda.cu
-)
-add_library(CellPack::warp_tiles_cuda ALIAS cellpack_warp_tiles_cuda)
-target_include_directories(cellpack_warp_tiles_cuda PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellpack_warp_tiles_cuda PUBLIC
-    CellPack::warp_tiles
-    CUDA::cudart
-)
-target_compile_features(cellpack_warp_tiles_cuda PUBLIC cxx_std_20)
-set_target_properties(cellpack_warp_tiles_cuda PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 20
-    CUDA_STANDARD_REQUIRED YES
-)
-if(COMMAND cellerator_enable_perf)
-    cellerator_enable_perf(cellpack_warp_tiles_cuda)
-endif()
-
-# CP-BP-09 Phase E: asynchronous direct configured-precision warp-tile
-# weighted-row reduction. The root-owned Phase D host target remains frozen.
-add_library(cellpack_feature_weighted_row_reduction_cuda STATIC
-    feature_weighted_row_reduction_cuda.cu
-)
-add_library(CellPack::feature_weighted_row_reduction_cuda ALIAS
-    cellpack_feature_weighted_row_reduction_cuda)
-target_include_directories(cellpack_feature_weighted_row_reduction_cuda PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellpack_feature_weighted_row_reduction_cuda PUBLIC
-    cellpack_feature_weighted_row_reduction
-    CUDA::cudart
-)
-target_compile_features(cellpack_feature_weighted_row_reduction_cuda PUBLIC cxx_std_20)
-set_target_properties(cellpack_feature_weighted_row_reduction_cuda PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 20
-    CUDA_STANDARD_REQUIRED YES
-)
-if(COMMAND cellerator_enable_perf)
-    cellerator_enable_perf(cellpack_feature_weighted_row_reduction_cuda)
-endif()
+include(${CMAKE_CURRENT_LIST_DIR}/packing/targets.cmake)
+include(${PROJECT_SOURCE_DIR}/src/execution/program/packing/targets.cmake)
+include(${PROJECT_SOURCE_DIR}/src/layout/packing/cellpack_targets.cmake)
+include(${PROJECT_SOURCE_DIR}/src/ops/reduction/feature_weighted_row_reduction.cmake)
+include(${PROJECT_SOURCE_DIR}/src/execution/planning/packing/hardware_cost_model.cmake)
 
 add_executable(cellPackFormatTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/format_test.cc
@@ -493,7 +364,7 @@ endif()
 add_executable(cellPackOptimizerTest ${CELLERATOR_CHECK_EXCLUDE_FROM_ALL}
     ${PROJECT_SOURCE_DIR}/tests/geometry/optimizer_test.cc
 )
-target_include_directories(cellPackOptimizerTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(cellPackOptimizerTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/packing)
 target_link_libraries(cellPackOptimizerTest PRIVATE CellPack::cellpack)
 set_target_properties(cellPackOptimizerTest PROPERTIES
     CXX_STANDARD 20

@@ -1,5 +1,5 @@
-#include <Cellerator/execution/sequence/regulatory.cuh>
-#include <Cellerator/execution/sequence/bindings.hh>
+#include <Cellerator/execution/program/sequence/regulatory.cuh>
+#include <Cellerator/execution/preparation/sequence/bindings.hh>
 #include <Cellerator/sequence/cuda.hh>
 #include <Cellerator/execution/validation.hh>
 
@@ -12,7 +12,7 @@
 
 namespace cs = cellerator::execution::sequence;
 namespace ce = cellerator::execution;
-namespace co = cellerator::compute::math::core;
+namespace co = cellerator::execution::operation_core;
 namespace sq = cellerator::sequence;
 
 namespace {

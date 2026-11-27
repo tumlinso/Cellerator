@@ -1,9 +1,9 @@
 #include <Cellerator/ops/condition/program.hh>
-#include <Cellerator/execution/dependency/workset_view.hh>
-#include <Cellerator/containers/posting_index.hh>
+#include <Cellerator/execution/preparation/dependency/workset_view.hh>
+#include <Cellerator/structure/indexing/posting_index.hh>
 #include <Cellerator/geometry/dependency/posting_index.hh>
-#include <Cellerator/compute/gating/cuda_worksets.cuh>
-#include <Cellerator/compute/indexing/cuda_postings.cuh>
+#include <Cellerator/execution/program/dependency/cuda_worksets.cuh>
+#include <Cellerator/structure/indexing/cuda_postings.cuh>
 #include <Cellerator/geometry/dependency/compact_support.hh>
 
 #include <cuda_runtime.h>
@@ -32,12 +32,12 @@
 
 namespace {
 namespace compact = cellerator::geometry::dependency::compact;
-namespace containers = cellerator::containers;
+namespace containers = cellerator::structure::indexing;
 namespace geometry = cellerator::geometry::dependency;
 namespace condition = cellerator::ops::condition;
 namespace execution = cellerator::execution;
-namespace gating = cellerator::compute::gating;
-namespace indexing = cellerator::compute::indexing;
+namespace gating = cellerator::ops::condition;
+namespace indexing = cellerator::structure::indexing;
 using host_clock = std::chrono::steady_clock;
 
 #define CUDA_CHECK(call) do { \
@@ -180,10 +180,10 @@ template <class T> std::vector<T> copy_from_device(const T *source, std::size_t 
 std::uint64_t total_requested_device_bytes() {
     return device_buffer<compact::EdgeV1>::requested_bytes
         + device_buffer<compact::ParticipantV1>::requested_bytes
-        + device_buffer<containers::PostingTerm>::requested_bytes
+        + device_buffer<::cellerator::structure::indexing::PostingTerm>::requested_bytes
         + device_buffer<std::uint32_t>::requested_bytes
         + device_buffer<std::uint64_t>::requested_bytes
-        + device_buffer<containers::IndexedWorkItem>::requested_bytes
+        + device_buffer<::cellerator::structure::indexing::IndexedWorkItem>::requested_bytes
         + device_buffer<std::uint8_t>::requested_bytes
         + device_buffer<condition::NodeV1>::requested_bytes
         + device_buffer<condition::EdgeBindingV1>::requested_bytes
@@ -447,7 +447,7 @@ struct host_candidates {
     std::vector<std::uint64_t> capacity_offsets;
     std::vector<std::uint64_t> row_capacities;
     std::vector<std::uint64_t> row_counts;
-    std::vector<containers::IndexedWorkItem> items;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> items;
     std::uint64_t count = 0;
 };
 
@@ -467,16 +467,16 @@ host_candidates make_host_candidates(const options &cfg,
     return result;
 }
 
-std::uint64_t posting_degree(const containers::PostingIndexView &index,
-                             const containers::PostingTerm &term) {
+std::uint64_t posting_degree(const ::cellerator::structure::indexing::PostingIndexView &index,
+                             const ::cellerator::structure::indexing::PostingTerm &term) {
     const auto key = std::pair<std::uint32_t, std::uint64_t>{term.role, term.entity_id};
     const auto *first = std::lower_bound(index.entries, index.entries + index.entry_count,
-        key, [](const containers::PostingRecord &record, const auto &value) {
+        key, [](const ::cellerator::structure::indexing::PostingRecord &record, const auto &value) {
             return record.role < value.first
                 || (record.role == value.first && record.entity_id < value.second);
         });
     const auto *last = std::upper_bound(first, index.entries + index.entry_count, key,
-        [](const auto &value, const containers::PostingRecord &record) {
+        [](const auto &value, const ::cellerator::structure::indexing::PostingRecord &record) {
             return value.first < record.role
                 || (value.first == record.role && value.second < record.entity_id);
         });
@@ -484,9 +484,9 @@ std::uint64_t posting_degree(const containers::PostingIndexView &index,
 }
 
 std::vector<std::uint64_t> candidate_row_capacity_upper_bounds(
-        const options &cfg, const containers::PostingIndexView &index,
+        const options &cfg, const ::cellerator::structure::indexing::PostingIndexView &index,
         const std::vector<std::uint64_t> &query_offsets,
-        const std::vector<containers::PostingTerm> &terms) {
+        const std::vector<::cellerator::structure::indexing::PostingTerm> &terms) {
     std::vector<std::uint64_t> capacities(cfg.cells);
     for (std::uint64_t cell = 0; cell < cfg.cells; ++cell) {
         std::uint64_t upper = 0u;
@@ -507,7 +507,7 @@ void compact_host_candidate_rows(host_candidates &out) {
             throw std::runtime_error("candidate output exceeded its posting-degree upper bound");
         out.offsets[cell + 1u] = out.offsets[cell] + out.row_counts[cell];
     }
-    std::vector<containers::IndexedWorkItem> compact(
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> compact(
         static_cast<std::size_t>(out.offsets.back()));
     for (std::size_t cell = 0; cell < out.row_counts.size(); ++cell) {
         if (out.row_counts[cell] != 0u)
@@ -520,8 +520,8 @@ void compact_host_candidate_rows(host_candidates &out) {
 }
 
 struct inputs {
-    std::vector<containers::PostingTerm> primal_queries;
-    std::vector<containers::PostingTerm> derivative_queries;
+    std::vector<::cellerator::structure::indexing::PostingTerm> primal_queries;
+    std::vector<::cellerator::structure::indexing::PostingTerm> derivative_queries;
     std::vector<std::uint64_t> query_offsets;
     std::vector<std::uint64_t> local_dirty_offsets;
     std::vector<std::uint64_t> local_dirty_edges;
@@ -774,7 +774,7 @@ inputs make_inputs(const options &cfg, const fixture &f) {
 
 void host_scan(const options &cfg, const fixture &f,
                const std::vector<std::uint64_t> &query_offsets,
-               const std::vector<containers::PostingTerm> &terms,
+               const std::vector<::cellerator::structure::indexing::PostingTerm> &terms,
                host_candidates &out) {
     out.count = 0u;
     for (std::uint64_t cell = 0; cell < cfg.cells; ++cell) {
@@ -807,22 +807,22 @@ void host_scan(const options &cfg, const fixture &f,
 }
 
 void host_postings(const options &cfg,
-                   const containers::PostingIndexView &index,
+                   const ::cellerator::structure::indexing::PostingIndexView &index,
                    const std::vector<std::uint64_t> &query_offsets,
-                   const std::vector<containers::PostingTerm> &terms,
-                   std::vector<containers::IndexedWorkItem> &scratch,
+                   const std::vector<::cellerator::structure::indexing::PostingTerm> &terms,
+                   std::vector<::cellerator::structure::indexing::IndexedWorkItem> &scratch,
                    host_candidates &out) {
     out.count = 0u;
     for (std::uint64_t cell = 0; cell < cfg.cells; ++cell) {
-        containers::CandidateOutput output{
+        ::cellerator::structure::indexing::CandidateOutput output{
             out.items.data() + out.capacity_offsets[cell],
             out.row_capacities[cell], 0u, 0u};
-        const auto status = containers::query_postings(index,
+        const auto status = ::cellerator::structure::indexing::query_postings(index,
             terms.data() + query_offsets[cell],
             query_offsets[cell + 1u] - query_offsets[cell],
-            containers::PostingMatch::any,
+            ::cellerator::structure::indexing::PostingMatch::any,
             {scratch.data(), scratch.size()}, &output);
-        if (status != containers::PostingStatus::success)
+        if (status != ::cellerator::structure::indexing::PostingStatus::success)
             throw std::runtime_error("host posting query failed");
         out.row_counts[cell] = output.written;
     }
@@ -911,8 +911,8 @@ host_gate make_host_gate(const options &cfg, const fixture &f, const inputs &in)
 struct host_worksets {
     std::vector<std::uint64_t> primal_offsets;
     std::vector<std::uint64_t> derivative_offsets;
-    std::vector<containers::IndexedWorkItem> primal_items;
-    std::vector<containers::IndexedWorkItem> derivative_items;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> primal_items;
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> derivative_items;
     execution::dependency::ConditionWorksets pair{};
 };
 
@@ -961,8 +961,8 @@ __global__ void mark_rescan_flags_kernel(
     const compact::ParticipantV1 *participants,
     std::uint64_t edge_count, std::uint64_t cell_count,
     const std::uint64_t *query_offsets,
-    const containers::PostingTerm *primal_queries,
-    const containers::PostingTerm *derivative_queries,
+    const ::cellerator::structure::indexing::PostingTerm *primal_queries,
+    const ::cellerator::structure::indexing::PostingTerm *derivative_queries,
     std::uint64_t *primal_flags, std::uint64_t *derivative_flags) {
     const auto flat = static_cast<std::uint64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
     const auto total = edge_count * cell_count;
@@ -1008,12 +1008,12 @@ __global__ void scatter_candidate_items_kernel(
     std::uint64_t edge_count, std::uint64_t cells,
     const std::uint64_t *p_flags, const std::uint64_t *p_prefix,
     const std::uint64_t *d_flags, const std::uint64_t *d_prefix,
-    containers::IndexedWorkItem *p_items,
-    containers::IndexedWorkItem *d_items) {
+    ::cellerator::structure::indexing::IndexedWorkItem *p_items,
+    ::cellerator::structure::indexing::IndexedWorkItem *d_items) {
     const auto flat = static_cast<std::uint64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
     if (flat >= edge_count * cells) return;
     const auto ordinal = flat % edge_count;
-    const containers::IndexedWorkItem item{edges[ordinal].logical_edge_id, ordinal};
+    const ::cellerator::structure::indexing::IndexedWorkItem item{edges[ordinal].logical_edge_id, ordinal};
     if (p_flags[flat]) p_items[p_prefix[flat]] = item;
     if (d_flags[flat]) d_items[d_prefix[flat]] = item;
 }
@@ -1158,9 +1158,9 @@ void run(const options &cfg) {
     const double state_program_prepare_ms = std::chrono::duration<double, std::milli>(
         host_clock::now() - state_prepare_start).count();
     const auto requirements = geometry::posting_requirements(f.snapshot);
-    std::vector<containers::PostingRecord> posting_scratch(requirements.record_capacity);
-    std::vector<containers::PostingRecord> host_entries(requirements.maximum_unique_entries);
-    containers::PostingIndexView host_index{};
+    std::vector<::cellerator::structure::indexing::PostingRecord> posting_scratch(requirements.record_capacity);
+    std::vector<::cellerator::structure::indexing::PostingRecord> host_entries(requirements.maximum_unique_entries);
+    ::cellerator::structure::indexing::PostingIndexView host_index{};
     auto build_host_index = [&] {
         const auto status = geometry::build_posting_index(f.snapshot,
             posting_scratch.data(), posting_scratch.size(), host_entries.data(),
@@ -1174,9 +1174,9 @@ void run(const options &cfg) {
     const auto host_index_stats = measure_host(cfg.warmup, cfg.samples, build_host_index);
     build_host_index();
     const auto projection_req = indexing::cuda_posting_projection_requirements_v1(host_index);
-    std::vector<containers::PostingTerm> projection_terms(projection_req.term_count);
+    std::vector<::cellerator::structure::indexing::PostingTerm> projection_terms(projection_req.term_count);
     std::vector<std::uint64_t> projection_offsets(projection_req.term_count + 1u);
-    std::vector<containers::IndexedWorkItem> projection_items(projection_req.item_count);
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> projection_items(projection_req.item_count);
     indexing::cuda_posting_prepare_requirements_v1 projection_required{};
     auto build_projection = [&] {
         if (indexing::build_cuda_posting_projection_v1(host_index,
@@ -1215,7 +1215,7 @@ void run(const options &cfg) {
     host_candidates expected_post_d = make_host_candidates(cfg, derivative_row_caps);
     host_scan(cfg, f, in.query_offsets, in.primal_queries, expected_p);
     host_scan(cfg, f, in.query_offsets, in.derivative_queries, expected_d);
-    std::vector<containers::IndexedWorkItem> host_query_scratch(
+    std::vector<::cellerator::structure::indexing::IndexedWorkItem> host_query_scratch(
         std::max<std::uint64_t>(1u, host_index.entry_count));
     host_postings(cfg, host_index, in.query_offsets, in.primal_queries,
                   host_query_scratch, expected_post_p);
@@ -1269,13 +1269,13 @@ void run(const options &cfg) {
     const std::uint64_t bitmap_count = cfg.cells * bitmap_words_per_cell;
     device_buffer<compact::EdgeV1> d_edges(f.gpu_edges.size());
     device_buffer<compact::ParticipantV1> d_participants(f.gpu_participants.size());
-    device_buffer<containers::PostingTerm> d_index_terms(projection_terms.size());
+    device_buffer<::cellerator::structure::indexing::PostingTerm> d_index_terms(projection_terms.size());
     device_buffer<std::uint64_t> d_index_offsets(projection_offsets.size());
-    device_buffer<containers::IndexedWorkItem> d_index_items(projection_items.size());
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> d_index_items(projection_items.size());
     device_buffer<std::uint32_t> d_root_node_by_edge(host_root_node_by_edge.size());
     device_buffer<std::uint64_t> d_query_offsets(in.query_offsets.size());
-    device_buffer<containers::PostingTerm> d_primal_queries(in.primal_queries.size());
-    device_buffer<containers::PostingTerm> d_derivative_queries(in.derivative_queries.size());
+    device_buffer<::cellerator::structure::indexing::PostingTerm> d_primal_queries(in.primal_queries.size());
+    device_buffer<::cellerator::structure::indexing::PostingTerm> d_derivative_queries(in.derivative_queries.size());
     device_buffer<std::uint8_t> d_predicates(in.predicates.size());
     device_buffer<std::uint8_t> d_changed_predicates(in.predicates.size());
     device_buffer<condition::NodeV1> d_nodes(in.nodes.size());
@@ -1322,7 +1322,7 @@ void run(const options &cfg) {
     device_buffer<std::uint64_t> d_p_counts(cfg.cells), d_d_counts(cfg.cells);
     device_buffer<indexing::cuda_posting_status_v1> d_p_post_status(1u), d_d_post_status(1u);
     device_buffer<std::uint64_t> d_p_post_offsets(cfg.cells + 1u), d_d_post_offsets(cfg.cells + 1u);
-    device_buffer<containers::IndexedWorkItem> d_p_post_items(primal_capacity),
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> d_p_post_items(primal_capacity),
         d_d_post_items(derivative_capacity);
     indexing::cuda_posting_scratch_v1 p_post_scratch{
         d_p_cursors.data, in.primal_queries.size(), d_p_counts.data, d_p_post_status.data};
@@ -1336,7 +1336,7 @@ void run(const options &cfg) {
     // Full-scan baseline workspaces and CUB exclusive-scan scratch.
     device_buffer<std::uint64_t> d_p_flags(n), d_d_flags(n), d_p_prefix(n), d_d_prefix(n);
     device_buffer<std::uint64_t> d_p_scan_offsets(cfg.cells + 1u), d_d_scan_offsets(cfg.cells + 1u);
-    device_buffer<containers::IndexedWorkItem> d_p_scan_items(primal_capacity),
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> d_p_scan_items(primal_capacity),
         d_d_scan_items(derivative_capacity);
     std::size_t p_scan_bytes = 0, d_scan_bytes = 0;
     CUDA_CHECK(cub::DeviceScan::ExclusiveSum(nullptr, p_scan_bytes,
@@ -1390,11 +1390,11 @@ void run(const options &cfg) {
     // Reserve only the posting-degree upper bounds. Per-row stage offsets keep
     // compact outputs bounded without truncating any possible candidate.
     device_buffer<std::uint64_t> d_p_stage_offsets(cfg.cells + 1u), d_d_stage_offsets(cfg.cells + 1u);
-    device_buffer<containers::IndexedWorkItem> d_p_stage_items(primal_capacity),
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> d_p_stage_items(primal_capacity),
         d_d_stage_items(derivative_work_capacity);
     device_buffer<std::uint64_t> d_p_counts_work(cfg.cells), d_d_counts_work(cfg.cells);
     device_buffer<std::uint64_t> d_p_work_offsets(cfg.cells + 1u), d_d_work_offsets(cfg.cells + 1u);
-    device_buffer<containers::IndexedWorkItem> d_p_work_items(primal_capacity),
+    device_buffer<::cellerator::structure::indexing::IndexedWorkItem> d_p_work_items(primal_capacity),
         d_d_work_items(derivative_work_capacity);
     std::vector<std::uint64_t> p_stage_offsets(cfg.cells + 1u), d_stage_offsets(cfg.cells + 1u);
     for (std::uint64_t c = 0; c < cfg.cells; ++c) {
@@ -1493,7 +1493,7 @@ void run(const options &cfg) {
     const auto post_p_offsets = copy_from_device(d_p_post_offsets.data, cfg.cells + 1u);
     const auto post_d_offsets = copy_from_device(d_d_post_offsets.data, cfg.cells + 1u);
     auto copy_candidates = [](std::vector<std::uint64_t> offsets,
-                              std::vector<containers::IndexedWorkItem> items) {
+                              std::vector<::cellerator::structure::indexing::IndexedWorkItem> items) {
         host_candidates result;
         result.count = offsets.back();
         result.offsets = std::move(offsets);
@@ -1561,8 +1561,8 @@ void run(const options &cfg) {
     auto verify_worksets = [&](const host_worksets &expected,
                                const device_buffer<std::uint64_t> &p_offsets,
                                const device_buffer<std::uint64_t> &d_offsets,
-                               const device_buffer<containers::IndexedWorkItem> &p_items,
-                               const device_buffer<containers::IndexedWorkItem> &d_items,
+                               const device_buffer<::cellerator::structure::indexing::IndexedWorkItem> &p_items,
+                               const device_buffer<::cellerator::structure::indexing::IndexedWorkItem> &d_items,
                                const char *label) {
         const auto po = copy_from_device(p_offsets.data, cfg.cells + 1u);
         const auto d_o = copy_from_device(d_offsets.data, cfg.cells + 1u);
@@ -1669,9 +1669,9 @@ void run(const options &cfg) {
         f.gpu_edges.size() * sizeof(compact::EdgeV1)
         + f.gpu_participants.size() * sizeof(compact::ParticipantV1);
     const auto projection_bytes =
-        projection_terms.size() * sizeof(containers::PostingTerm)
+        projection_terms.size() * sizeof(::cellerator::structure::indexing::PostingTerm)
         + projection_offsets.size() * sizeof(std::uint64_t)
-        + projection_items.size() * sizeof(containers::IndexedWorkItem);
+        + projection_items.size() * sizeof(::cellerator::structure::indexing::IndexedWorkItem);
     const auto posting_workspace_bytes =
         (in.primal_queries.size() + in.derivative_queries.size())
             * sizeof(indexing::cuda_posting_scratch_v1::cursor_v1)
@@ -1679,22 +1679,22 @@ void run(const options &cfg) {
         + 2u * sizeof(indexing::cuda_posting_status_v1)
         + 2u * (cfg.cells + 1u) * sizeof(std::uint64_t)
         + (primal_capacity + derivative_capacity)
-            * sizeof(containers::IndexedWorkItem);
+            * sizeof(::cellerator::structure::indexing::IndexedWorkItem);
     const auto rescan_workspace_bytes =
         4u * n * sizeof(std::uint64_t)
         + 2u * (cfg.cells + 1u) * sizeof(std::uint64_t)
         + (primal_capacity + derivative_capacity)
-            * sizeof(containers::IndexedWorkItem)
+            * sizeof(::cellerator::structure::indexing::IndexedWorkItem)
         + std::max(p_scan_bytes, d_scan_bytes);
     const auto workset_workspace_bytes =
         4u * (cfg.cells + 1u) * sizeof(std::uint64_t)
         + (4u * primal_capacity + 2u * derivative_capacity)
-            * sizeof(containers::IndexedWorkItem)
+            * sizeof(::cellerator::structure::indexing::IndexedWorkItem)
         + 2u * cfg.cells * sizeof(std::uint64_t);
     const auto state_and_gate_bytes =
         (cfg.cells + 1u) * sizeof(std::uint64_t)
         + (in.primal_queries.size() + in.derivative_queries.size())
-            * sizeof(containers::PostingTerm)
+            * sizeof(::cellerator::structure::indexing::PostingTerm)
         + 2u * in.predicates.size() * sizeof(std::uint8_t)
         + in.nodes.size() * sizeof(condition::NodeV1)
         + in.bindings.size() * sizeof(condition::EdgeBindingV1)

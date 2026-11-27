@@ -4,7 +4,7 @@
  * caller-owned scratch plus physical metadata/storage metrics.
  */
 
-#include "Cellerator/geometry/warp_tiles_cuda.hh"
+#include "Cellerator/layout/packing/warp_tiles_cuda.hh"
 
 #include "benchmark_mutex.hh"
 

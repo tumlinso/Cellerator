@@ -1,11 +1,11 @@
-#include <Cellerator/compute/decomposition/partial_result_algebra_v1.hh>
+#include <Cellerator/execution/planning/decomposition/partial_result_algebra_v1.hh>
 
 #include <cassert>
 #include <cstdint>
 
-namespace decomposition = cellerator::compute::decomposition;
+namespace decomposition = cellerator::execution::planning::decomposition;
 namespace execution = cellerator::execution;
-namespace operation = cellerator::compute::operation::v2;
+namespace operation = cellerator::execution::operation::v2;
 
 decomposition::partial_result_algebra_v1 valid_algebra() {
     decomposition::partial_result_algebra_v1 algebra{};

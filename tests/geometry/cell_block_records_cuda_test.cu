@@ -4,7 +4,7 @@
  * Native target: Tesla V100 sm_70.
  */
 
-#include "Cellerator/geometry/cell_block_records_cuda.hh"
+#include "Cellerator/layout/packing/cell_block_records_cuda.hh"
 
 #include <cuda_runtime.h>
 

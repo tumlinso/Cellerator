@@ -3,19 +3,20 @@
 Place new and consolidated native code by responsibility. Give each numerical
 operation one source home and one build owner that callers link. Use the
 [contributor routing guide](routing.md) to trace existing targets and callers.
-The destinations below guide future changes. Current CMake targets and callers
-show which paths are in use today.
+Current CMake targets and callers show which paths are in use.
 
 | Home | Responsibility |
 | --- | --- |
-| `structure` and `geometry/dependency` | Logical identities, relations, and declared dependencies. |
+| `structure` | Logical identities, axes, ordering, and lookup indices. |
+| `geometry/dependency` | Declared relationships and support. |
+| `state` | Structured model coordinates, gather, and gradient pullback. |
 | `geometry` | Packing policy and algorithms that choose row and feature groups. |
 | `tensor` | Numerical encodings, addressing, and views over storage. |
 | `layout` | Physical order, projections, and maps to and from logical order. |
 | `memory` | Allocation and resource ownership. |
 | `ops/<family>` | Native calculations, derivatives, and the provider code that performs them. |
 | `execution/planning` | Legal operation and placement candidates, cost comparison, and reusable plan evidence. |
-| `execution` | Preparation, program launch, tuning, and streaming, with explicit readiness and borrowed lifetimes. |
+| `execution` | Preparation, program launch, profiling, tuning, and streaming, with explicit readiness and borrowed lifetimes. |
 | `runtime` | Device sessions, streams, library handles, and fleet primitives. |
 | `interop` | Boundaries to external storage formats and frameworks. |
 

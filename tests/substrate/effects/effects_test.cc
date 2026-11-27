@@ -7,9 +7,9 @@
 #include <Cellerator/ops/response/quadratic_jet.hh>
 #include <Cellerator/ops/matrix/host_reference.hh>
 #include <Cellerator/ops/process/condensed_ports.hh>
-#include <Cellerator/math/effects/affine.hh>
+#include <Cellerator/ops/process/effects/affine.hh>
 #include <iostream>
-namespace fx=cellerator::math::effects;
+namespace fx=cellerator::ops::process::effects;
 namespace ex=cellerator::execution;
 int checks=0;
 void require(bool b,const char* why) { ++checks; if(!b) throw std::runtime_error(why); }

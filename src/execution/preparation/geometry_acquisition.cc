@@ -57,7 +57,7 @@ bool valid_phase_costs(const planning::phase_costs &costs) noexcept {
 bool valid_candidate_costs(const acquired_geometry_v1 &result) noexcept {
     if (result.candidate_costs == nullptr || result.candidate_cost_count == 0u
         || result.candidate_cost_count
-            > compute::math::core::operation_candidate_capacity)
+            > ::cellerator::execution::operation_core::operation_candidate_capacity)
         return false;
     for (std::uint32_t index = 0u; index < result.candidate_cost_count; ++index) {
         const geometry_acquisition_candidate_cost_v1 &cost =
@@ -65,7 +65,7 @@ bool valid_candidate_costs(const acquired_geometry_v1 &result) noexcept {
         if (cost.schema_version != geometry_acquisition_schema_version_v1
             || cost.record_bytes
                 != sizeof(geometry_acquisition_candidate_cost_v1)
-            || !compute::math::core::valid_catalog_identity_v2(
+            || !::cellerator::execution::operation_core::valid_catalog_identity_v2(
                 cost.candidate_identity)
             || cost.projection_index >= result.projection_count
             || cost.reserved0 != 0u || !valid_phase_costs(cost.phases))
@@ -74,7 +74,7 @@ bool valid_candidate_costs(const acquired_geometry_v1 &result) noexcept {
             if (value != 0u)
                 return false;
         for (std::uint32_t prior = 0u; prior < index; ++prior)
-            if (compute::math::core::same_stable_id(cost.candidate_identity,
+            if (::cellerator::execution::operation_core::same_stable_id(cost.candidate_identity,
                     result.candidate_costs[prior].candidate_identity))
                 return false;
     }

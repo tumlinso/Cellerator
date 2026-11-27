@@ -1,7 +1,7 @@
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <Cellerator/execution/conditional/dispatch.hh>
+#include <Cellerator/execution/program/conditional/dispatch.hh>
 
 #include <cassert>
 #include <cmath>
